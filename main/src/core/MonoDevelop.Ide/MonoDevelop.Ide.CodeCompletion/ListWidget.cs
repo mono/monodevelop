@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		int listWidth = minSize;
 		const int minSize = 400;
 		const int maxListWidth = 800;
-		const int rows = 10;
+		const int rows = 13;
 		Pango.Layout layout, categoryLayout, noMatchLayout;
 		ListWindow win;
 		int selection = 0;
