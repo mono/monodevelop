@@ -598,8 +598,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 						int w, h;
 						layout.GetPixelSize (out w, out h);
-						const int padding = 8;
-						w = Math.Min (w, Allocation.Width - textXPos - textW - padding);
+						const int leftpadding = 8;
+						const int rightpadding = 3;
+						w += rightpadding;
+						w = Math.Min (w, Allocation.Width - textXPos - textW - leftpadding);
 						wi += w;
 						typos = h < rowHeight ? ypos + (rowHeight - h) / 2 : ypos;
 						if (scalef <= 1.0)
