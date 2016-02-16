@@ -181,24 +181,24 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
 			
-			buttonStop = new ToolButton (Ide.Gui.Stock.Stop) { Sensitive = false };
-
+			buttonStop = new ToolButton (new ImageView (Gui.Stock.Stop, Gtk.IconSize.Menu), null) { Sensitive = false };
 			buttonStop.Clicked += ButtonStopClicked;
-
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
-			var buttonClear = new ToolButton (Ide.Gui.Stock.Clear);
+			var buttonClear = new ToolButton (new ImageView (Gui.Stock.Clear, Gtk.IconSize.Menu), null);
 			buttonClear.Clicked += ButtonClearClicked;
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
-			var buttonOutput = new ToggleToolButton (Gui.Stock.OutputIcon);
+			var buttonOutput = new ToggleToolButton ();
+			buttonOutput.IconWidget = new ImageView (Gui.Stock.OutputIcon, Gtk.IconSize.Menu);
 			buttonOutput.Clicked += ButtonOutputClicked;
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show output");
 			toolbar.Insert (buttonOutput, -1);
 			
-			buttonPin = new ToggleToolButton (Gui.Stock.PinUp);
+			buttonPin = new ToggleToolButton ();
+			buttonPin.IconWidget = new ImageView (Gui.Stock.PinUp, Gtk.IconSize.Menu);
 			buttonPin.Clicked += ButtonPinClicked;
 			buttonPin.TooltipText = GettextCatalog.GetString ("Pin results pad");
 			toolbar.Insert (buttonPin, -1);
