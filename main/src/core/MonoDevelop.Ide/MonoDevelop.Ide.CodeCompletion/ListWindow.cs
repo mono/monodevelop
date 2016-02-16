@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 	public class ListWindow : PopoverWindow
 	{
-		const int WindowWidth = 300;
+		const int WindowWidth = 400;
 
 		ListWidget list;
 		Widget footer;
