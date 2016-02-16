@@ -37,6 +37,9 @@
 		{ "name": "aluminium6", "value": "#2e3436" }
 	],
 
+
+
+
 	"colors": [
 		{ "name": "Background(Read Only)", "color": "white" },
 
@@ -126,8 +129,13 @@
 		{ "name": "String", "fore": "scarletred3" },
 		{ "name": "String(Escape)", "fore": "scarletred3" },
 		{ "name": "String(C# @ Verbatim)", "fore": "scarletred3" },
+		{ "name": "String(Regex Set Constructs)", "fore": "orange3" },
+		{ "name": "String(Regex Character Class)", "fore": "skyblue3" },
+		{ "name": "String(Regex Grouping Constructs)", "fore": "butter3" },
+		{ "name": "String(Regex Escape Character)", "fore": "chameleon3" },
+		{ "name": "String(Regex Alt Escape Character)", "fore": "chameleon2" },
 
-		{ "name": "Number", "fore": "scarletred3" },
+		{ "name": "Number", "fore": "chameleon3" },
 
 		{ "name": "Preprocessor", "fore": "butter3" },
 		{ "name": "Preprocessor(Region Name)", "fore": "text-black" },
@@ -153,6 +161,15 @@
 
 		{ "name": "Tooltip Text", "fore": "text-black", "back": "#fafae3" },
 		{ "name": "Notification Text", "fore": "text-black", "back": "#feffe9" },
+		
+		{ "name": "Completion Text", "fore": "#434343" },
+		{ "name": "Completion Matching Substring", "fore": "#BA3373" },
+
+		{ "name": "Completion Selected Text", "fore": "#434343" },
+		{ "name": "Completion Selected Matching Substring", "fore": "#BA3373" },
+
+		{ "name": "Completion Selected Text(Inactive)", "fore": "#434343" },
+		{ "name": "Completion Selected Matching Substring(Inactive)", "fore": "#BA3373" },
 
 		{ "name": "Keyword(Access)", "fore": "skyblue2" },
 		{ "name": "Keyword(Type)", "fore": "skyblue2" },
@@ -178,6 +195,7 @@
 		{ "name": "User Types(Delegates)", "fore": "plum2" },
 		{ "name": "User Types(Value types)", "fore": "plum2" },
 		{ "name": "User Types(Type parameters)", "fore": "plum2" },
+		{ "name": "User Types(Mutable)", "fore": "aluminium1", "back": "invalid-red" },
 
 		{ "name": "User Field Usage", "fore": "text-black", "style": "italic" },
 		{ "name": "User Field Declaration", "fore": "text-black", "style": "italic" },
