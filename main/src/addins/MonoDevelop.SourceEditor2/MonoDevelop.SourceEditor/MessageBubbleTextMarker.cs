@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Fonts;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.SourceEditor.Wrappers;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -665,27 +666,31 @@ namespace MonoDevelop.SourceEditor
 			var o = metrics.LineSegment.Offset;
 
 			foreach (var task in errors.Select (t => t.Task)) {
-				var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.Layout.LineChars.Length));
-				var line = editor.GetLine (task.Line);
-				// skip possible white space locations 
-				while (column < line.Length && char.IsWhiteSpace (editor.GetCharAt (line.Offset + (int)column))) {
-					column++;
-				}
-				if (column >= line.Length)
-					continue;
-				int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
-				var pos = metrics.Layout.Layout.IndexToPos (index);
-				var co = o + task.Column - 1;
-				g.SetSourceColor (GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd));
-				g.MoveTo (
-					metrics.TextRenderStartPosition + editor.TextViewMargin.TextStartPosition + pos.X / Pango.Scale.PangoScale,
-					y + editor.LineHeight - 3
-					);
-				g.RelLineTo (3, 3);
-				g.RelLineTo (-6, 0);
-				g.ClosePath ();
+				try {
+					var column = (uint)(Math.Min (Math.Max (0, task.Column - 1), metrics.Layout.LineChars.Length));
+					var line = editor.GetLine (task.Line);
+					// skip possible white space locations 
+					while (column < line.Length && char.IsWhiteSpace (editor.GetCharAt (line.Offset + (int)column))) {
+						column++;
+					}
+					if (column >= metrics.Layout.LineChars.Length)
+						continue;
+					int index = (int)metrics.Layout.TranslateToUTF8Index (column, ref curIndex, ref byteIndex);
+					var pos = metrics.Layout.Layout.IndexToPos (index);
+					var co = o + task.Column - 1;
+					g.SetSourceColor (GetMarkerColor (false, metrics.SelectionStart <= co && co < metrics.SelectionEnd));
+					g.MoveTo (
+						metrics.TextRenderStartPosition + editor.TextViewMargin.TextStartPosition + pos.X / Pango.Scale.PangoScale,
+						y + editor.LineHeight - 3
+						);
+					g.RelLineTo (3, 3);
+					g.RelLineTo (-6, 0);
+					g.ClosePath ();
 
-				g.Fill ();
+					g.Fill ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while drawing task marker " + task, e);
+				}				
 			}
 		}
 
