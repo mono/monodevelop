@@ -75,7 +75,6 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		public RunResponse Run (RunRequest r)
 		{
 			var res = Run (r.NameFilter, r.Path, r.SuiteName, r.SupportAssemblies, r.TestRunnerType, r.TestRunnerAssembly, r.CrashLogFile);
-			Console.WriteLine ("RR:" + res);
 			return new RunResponse () { Result = res };
 		}
 

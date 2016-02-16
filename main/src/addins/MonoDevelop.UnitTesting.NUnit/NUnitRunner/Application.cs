@@ -37,7 +37,6 @@ namespace NUnitRunner
 		public static void Main (string [] args)
 		{
 			server = new RemoteProcessServer ();
-			server.RegisterMessageTypes (typeof(RunRequest), typeof(GetTestInfoRequest));
 			server.Connect (args, new RemoteNUnitTestRunner (server));
 		}
 	}

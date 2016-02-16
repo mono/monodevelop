@@ -74,11 +74,17 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			};
 
 			var r = (await connection.SendMessage (msg)).Result;
+
+			await connection.ProcessPendingMessages ();
+
 			return ToUnitTestResult (r);
 		}
 
 		UnitTestResult ToUnitTestResult (RemoteTestResult r)
 		{
+			if (r == null)
+				return null;
+			
 			return new UnitTestResult {
 				TestDate = r.TestDate,
 				Status = (ResultStatus) (int)r.Status,
@@ -193,7 +199,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 					res.Message = GettextCatalog.GetString ("Test ignored");
 				else {
 					res.Message = GettextCatalog.GetString ("Test successful") + "\n\n";
-					res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", res.Time);
+					res.Message += GettextCatalog.GetString ("Execution time: {0:0.00}ms", res.Time.TotalMilliseconds);
 				}
 			}
 		}
