@@ -33,6 +33,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.TypeSystem;
+using System.Security.Cryptography;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -50,10 +51,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			this.workspace = workspace;
 			this.factory = factory;
 		}
-		
-		public async Task<ParameterHintingResult> GetParameterDataProviderAsync(Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
+
+		public Task<ParameterHintingResult> GetParameterDataProviderAsync (Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			if (position == 0)
+			return InternalGetParameterDataProviderAsync (document, semanticModel, position, cancellationToken, 0);
+		}
+
+		public async Task<ParameterHintingResult> InternalGetParameterDataProviderAsync (Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken, int recCount)
+		{
+			if (position == 0 || recCount > 1)
 				return ParameterHintingResult.Empty;
 			var tree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 			var tokenLeftOfPosition = tree.FindTokenOnLeftOfPosition (position, cancellationToken);
@@ -93,7 +99,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (!(targetParent is BaseArgumentListSyntax) && !(targetParent is AttributeArgumentListSyntax) && !(targetParent is InitializerExpressionSyntax)) {
 					if (position == targetParent.Span.Start)
 						return ParameterHintingResult.Empty;
-					return await GetParameterDataProviderAsync (document, semanticModel, targetParent.Span.Start, cancellationToken).ConfigureAwait (false);
+					return await InternalGetParameterDataProviderAsync (document, semanticModel, targetParent.Span.Start, cancellationToken, recCount + 1).ConfigureAwait (false);
 				}
 			}
 			switch (node.Kind()) {
