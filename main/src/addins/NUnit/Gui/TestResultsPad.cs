@@ -606,10 +606,14 @@ namespace MonoDevelop.NUnit
 				loc = res.GetFailureLocation ();
 			if (loc == null)
 				loc = test.SourceCodeLocation;
-			if (loc != null)
+			if (loc != null) {
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+			} else {
+				LoggingService.LogError ("Can't get source code location for test : "+ test);
+				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));
+			}
 		}
-		
+
 		[CommandHandler (TestCommands.ShowTestCode)]
 		protected void OnShowTestCode ()
 		{
@@ -617,8 +621,12 @@ namespace MonoDevelop.NUnit
 			if (test == null)
 				return;
 			SourceCodeLocation loc = test.SourceCodeLocation;
-			if (loc != null)
+			if (loc != null) {
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+			}  else {
+				LoggingService.LogError ("Can't get source code location for test : "+ test);
+				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));
+			}
 		}
 
 		[CommandHandler (TestCommands.RerunTest)]
@@ -636,7 +644,7 @@ namespace MonoDevelop.NUnit
 		protected void OnUpdateRunTest (CommandInfo info)
 		{
 			UnitTest test = GetSelectedTest ();
-			info.Enabled = test != null && test.SourceCodeLocation != null;
+			info.Enabled = true;
 		}
 		
 		UnitTest GetSelectedTest ()
