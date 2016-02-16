@@ -6,7 +6,6 @@
 
 	"palette": [
 		{ "name": "text-black", "value": "#222222" },
-		{ "name": "comment-gray", "value": "#b0b0b0" },
 		{ "name": "butter1", "value": "#fce94f" },
 		{ "name": "butter2", "value": "#edd400" },
 		{ "name": "butter3", "value": "#c4a000" },
@@ -118,13 +117,13 @@
 		{ "name": "Punctuation", "fore": "text-black" },
 		{ "name": "Punctuation(Brackets)", "fore": "text-black" },
 
-		{ "name": "Comment(Line)", "fore": "comment-gray" },
-		{ "name": "Comment(Block)", "fore": "comment-gray" },
-		{ "name": "Comment(Doc)", "fore": "comment-gray" },
-		{ "name": "Comment(DocTag)", "fore": "comment-gray" },
-		{ "name": "Comment Tag", "fore": "comment-gray" },
+		{ "name": "Comment(Line)", "fore": "aluminium3" },
+		{ "name": "Comment(Block)", "fore": "aluminium3" },
+		{ "name": "Comment(Doc)", "fore": "aluminium4" },
+		{ "name": "Comment(DocTag)", "fore": "aluminium3" },
+		{ "name": "Comment Tag", "fore": "aluminium3" },
 
-		{ "name": "Excluded Code", "fore": "comment-gray" },
+		{ "name": "Excluded Code", "fore": "aluminium4" },
 
 		{ "name": "String", "fore": "scarletred3" },
 		{ "name": "String(Escape)", "fore": "scarletred3" },
@@ -233,14 +232,14 @@
 		{ "name": "Diff Header(New)", "fore": "skyblue2", "weight": "bold" },
 		{ "name": "Diff Location", "fore": "plum2", "weight": "bold" },
 
-		{ "name": "Css Comment", "fore": "chameleon3", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "aluminium3", "weight": "bold" },
 		{ "name": "Css Property Name", "fore": "text-black", "weight": "bold" },
 		{ "name": "Css Property Value", "fore": "literal-orange", "weight": "bold" },
 		{ "name": "Css Selector", "fore": "chameleon3", "weight": "bold" },
 		{ "name": "Css String Value", "fore": "literal-orange", "weight": "bold" },
 		{ "name": "Css Keyword", "fore": "keyword-teal", "weight": "bold" },
 
-		{ "name": "Script Comment", "fore": "chameleon3" },
+		{ "name": "Script Comment", "fore": "aluminium3" },
 		{ "name": "Script Identifier" },
 		{ "name": "Script Keyword", "fore": "skyblue2" },
 		{ "name": "Script Number", "fore": "scarletred3" },
