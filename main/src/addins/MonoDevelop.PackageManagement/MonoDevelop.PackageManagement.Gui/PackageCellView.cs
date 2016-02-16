@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
+using MonoDevelop.Core;
 using Xwt;
 using Xwt.Drawing;
 
@@ -33,6 +33,9 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageCellView : CanvasCellView
 	{
+		int packageIdFontSize;
+		int packageDescriptionFontSize;
+
 		public PackageCellView ()
 		{
 			CellWidth = 260;
@@ -42,6 +45,14 @@ namespace MonoDevelop.PackageManagement
 			SelectionColor = Styles.CellSelectionColor;
 
 			UseStrongSelectionColor = true;
+
+			if (Platform.IsWindows) {
+				packageIdFontSize = 10;
+				packageDescriptionFontSize = 9;
+			} else {
+				packageIdFontSize = 12;
+				packageDescriptionFontSize = 11;
+			}
 		}
 
 		public IDataField<PackageViewModel> PackageField { get; set; }
@@ -88,7 +99,7 @@ namespace MonoDevelop.PackageManagement
 
 			// Package Id.
 			var packageIdTextLayout = new TextLayout ();
-			packageIdTextLayout.Font = packageIdTextLayout.Font.WithSize (12);
+			packageIdTextLayout.Font = packageIdTextLayout.Font.WithSize (packageIdFontSize);
 			packageIdTextLayout.Markup = packageViewModel.GetNameMarkup ();
 			packageIdTextLayout.Trimming = TextTrimming.WordElipsis;
 			Size packageIdTextSize = packageIdTextLayout.GetSize ();
@@ -100,7 +111,7 @@ namespace MonoDevelop.PackageManagement
 
 			// Package description.
 			var descriptionTextLayout = new TextLayout ();
-			descriptionTextLayout.Font = descriptionTextLayout.Font.WithSize (11);
+			descriptionTextLayout.Font = descriptionTextLayout.Font.WithSize (packageDescriptionFontSize);
 			descriptionTextLayout.Width = cellArea.Width - packageDescriptionPadding.HorizontalSpacing - packageDescriptionLeftOffset;
 			descriptionTextLayout.Height = cellArea.Height - packageIdTextSize.Height - packageDescriptionPadding.VerticalSpacing;
 			descriptionTextLayout.Text = packageViewModel.Summary;
@@ -267,7 +278,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var layout = new TextLayout ();
 			layout.Text = "W";
-			layout.Font = layout.Font.WithSize (11);
+			layout.Font = layout.Font.WithSize (packageDescriptionFontSize);
 			Size size = layout.GetSize ();
 			return new Size (CellWidth, size.Height * linesDisplayedCount + packageDescriptionPaddingHeight + packageDescriptionPadding.VerticalSpacing);
 		}

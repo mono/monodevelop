@@ -27,6 +27,7 @@
 using System;
 using ExtendedTitleBarDialog = MonoDevelop.Components.ExtendedTitleBarDialog;
 using Mono.Unix;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt;
 using Xwt.Drawing;
@@ -59,6 +60,7 @@ namespace MonoDevelop.PackageManagement
 		Label errorMessageLabel;
 		Label loadingSpinnerLabel;
 		FrameBox noPackagesFoundFrame;
+		int packageInfoFontSize = 11;
 
 		void Build ()
 		{
@@ -66,6 +68,10 @@ namespace MonoDevelop.PackageManagement
 			Width = 820;
 			Height = 520;
 			Padding = new WidgetSpacing ();
+
+			if (Platform.IsWindows) {
+				packageInfoFontSize = 9;
+			}
 
 			// Top part of dialog:
 			// Package sources and search.
@@ -184,17 +190,19 @@ namespace MonoDevelop.PackageManagement
 
 			packageNameLabel = new Label ();
 			packageNameLabel.Ellipsize = EllipsizeMode.End;
-			Font packageInfoSmallFont = packageNameLabel.Font.WithSize (11);
+			Font packageInfoSmallFont = packageNameLabel.Font.WithSize (packageInfoFontSize);
+			packageNameLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackStart (packageNameLabel, true);
 
 			packageVersionLabel = new Label ();
 			packageVersionLabel.TextAlignment = Alignment.End;
+			packageVersionLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackEnd (packageVersionLabel);
 
 			// Package description.
 			packageDescription = new Label ();
 			packageDescription.Wrap = WrapMode.Word;
-			packageDescription.Font = packageNameLabel.Font.WithSize (11);
+			packageDescription.Font = packageNameLabel.Font.WithSize (packageInfoFontSize);
 			packageDescription.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageInfoVBox.PackStart (packageDescription);
 
