@@ -276,14 +276,16 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}, delegate (Category curCategory, Item item, Gdk.Size itemDimension) {
 				if (!area.IntersectsWith (new Gdk.Rectangle (new Gdk.Point (xpos, ypos), itemDimension)))
 					return true;
-				
+
+				var icon = item.Icon;
 				if (item == SelectedItem) {
+					icon = icon.WithStyles ("sel");
 					cr.SetSourceColor (Style.Base (StateType.Selected).ToCairoColor ());
 					cr.Rectangle (xpos, ypos, itemDimension.Width, itemDimension.Height);
 					cr.Fill ();
 				}
 				if (listMode || !curCategory.CanIconizeItems)  {
-					cr.DrawImage (this, item.Icon, xpos + ItemLeftPadding, ypos + Math.Round ((itemDimension.Height - item.Icon.Height) / 2));
+					cr.DrawImage (this, icon, xpos + ItemLeftPadding, ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
 					layout.SetMarkup (item.Text);
 					int width, height;
 					layout.GetPixelSize (out width, out height);
@@ -291,7 +293,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 					cr.MoveTo (xpos + ItemLeftPadding + IconSize.Width + ItemIconTextItemSpacing, ypos + (double)(Math.Round ((double)(itemDimension.Height - height) / 2)));
 					Pango.CairoHelper.ShowLayout (cr, layout);
 				} else {
-					cr.DrawImage (this, item.Icon, xpos + Math.Round ((itemDimension.Width  - item.Icon.Width) / 2), ypos + Math.Round ((itemDimension.Height - item.Icon.Height) / 2));
+					cr.DrawImage (this, icon, xpos + Math.Round ((itemDimension.Width  - icon.Width) / 2), ypos + Math.Round ((itemDimension.Height - icon.Height) / 2));
 				}
 					
 				if (item == mouseOverItem) {
