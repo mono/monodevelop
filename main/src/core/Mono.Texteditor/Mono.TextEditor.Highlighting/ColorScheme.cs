@@ -773,8 +773,10 @@ namespace Mono.TextEditor.Highlighting
 				result.CopyValues (SyntaxModeService.DefaultColorStyle);
 
 			var version = Version.Parse (root.XPathSelectElement("version").Value);
-			if (version.Major != 1)
+			if (version.Major != 1) {
+				Console.WriteLine ("Can't load scheme : " + result.Name + " unsupported version:" + version);
 				return null;
+			}
 			var el = root.XPathSelectElement ("description");
 			if (el != null)
 				result.Description = el.Value;

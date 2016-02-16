@@ -38,6 +38,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class ColorScheme
 	{
+		public static string DefaultColorStyle = "Light";
+		public static string DefaultDarkColorStyle = "Dark";
+
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public string Originator { get; set; }
@@ -761,7 +764,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			// The fields we'd like to extract
 			result.Name = root.XPathSelectElement("name").Value;
 
-			if (result.Name != "Default")
+			if (result.Name != DefaultColorStyle)
 				result.CopyValues (SyntaxModeService.DefaultColorStyle);
 
 			var version = Version.Parse (root.XPathSelectElement("version").Value);
@@ -1044,7 +1047,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			result.TooltipPagerTriangle = new AmbientColor ();
 			result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
 
-			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : "Default");
+			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? DefaultDarkColorStyle : DefaultColorStyle);
 
 			foreach (var color in textColors.Values) {
 				if (color.Info.GetValue (result, null) == null)

@@ -166,9 +166,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			styleStore.Clear ();
 			bool error;
-			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (GettextCatalog.GetString ("Default"), GettextCatalog.GetString ("The default color scheme.")), LoadStyle ("Default", out error));
+			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle, out error);
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (defaultStyle.Name, defaultStyle.Description), defaultStyle);
 			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
-				if (styleName == "Default")
+				if (styleName == MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle)
 					continue;
 				var style = LoadStyle (styleName, out error);
 				string name = style.Name ?? "";

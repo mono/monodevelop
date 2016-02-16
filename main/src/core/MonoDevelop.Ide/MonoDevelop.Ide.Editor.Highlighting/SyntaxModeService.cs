@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static ColorScheme DefaultColorStyle {
 			get {
-				return GetColorStyle ("Default");
+				return GetColorStyle (ColorScheme.DefaultColorStyle);
 			}
 		}
 
