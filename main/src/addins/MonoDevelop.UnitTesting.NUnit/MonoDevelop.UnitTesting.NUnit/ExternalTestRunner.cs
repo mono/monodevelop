@@ -37,26 +37,103 @@ using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.Assemblies;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.UnitTesting.NUnit.External
 {
-	class ExternalTestRunner: RemoteProcessObject
+	class ExternalTestRunner: IDisposable
 	{
-		RemoteNUnitTestRunner runner;
+		RemoteProcessConnection connection;
+		IRemoteEventListener listener;
 
 		public ExternalTestRunner ()
 		{
-			runner = new RemoteNUnitTestRunner ();
 		}
 
-		public UnitTestResult Run (IRemoteEventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
+		public Task Connect (IExecutionHandler executionHandler = null, OperationConsole console = null)
 		{
-			return runner.Run (listener, nameFilter, path, suiteName, supportAssemblies, testRunnerType, testRunnerAssembly, crashLogFile); 
+			var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnit2", "NUnitRunner.exe");
+			connection = new RemoteProcessConnection (exePath, executionHandler, console, Runtime.MainSynchronizationContext);
+			connection.AddListener (this);
+			return connection.Connect ();
+		}
+
+		public async Task<UnitTestResult> Run (IRemoteEventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
+		{
+			this.listener = listener;
+
+			var msg = new RunRequest {
+				NameFilter = nameFilter,
+				Path = path,
+				SuiteName = suiteName,
+				SupportAssemblies = supportAssemblies.ToArray (),
+				TestRunnerType = testRunnerType,
+				TestRunnerAssembly = testRunnerAssembly,
+				CrashLogFile = crashLogFile
+			};
+
+			var r = (await connection.SendMessage (msg)).Result;
+			return ToUnitTestResult (r);
+		}
+
+		UnitTestResult ToUnitTestResult (RemoteTestResult r)
+		{
+			return new UnitTestResult {
+				TestDate = r.TestDate,
+				Status = (ResultStatus) (int)r.Status,
+				Passed = r.Passed,
+				Errors = r.Errors,
+				Failures = r.Failures,
+				Inconclusive = r.Inconclusive,
+				NotRunnable = r.NotRunnable,
+				Skipped = r.Skipped,
+				Ignored = r.Ignored,
+				Time = r.Time,
+				Message = r.Message,
+				StackTrace = r.StackTrace,
+				ConsoleOutput = r.ConsoleOutput,
+				ConsoleError = r.ConsoleError
+			};
 		}
 		
-		public NunitTestInfo GetTestInfo (string path, List<string> supportAssemblies)
+		public async Task<NunitTestInfo> GetTestInfo (string path, List<string> supportAssemblies)
 		{
-			return runner.GetTestInfo (path, supportAssemblies);
+			var msg = new GetTestInfoRequest {
+				Path = path,
+				SupportAssemblies = supportAssemblies.ToArray ()
+			};
+
+			return (await connection.SendMessage (msg)).Result;
+		}
+
+		[MessageHandler]
+		public void OnTestStarted (TestStartedMessage msg)
+		{
+			listener.TestStarted (msg.TestCase);
+		}
+
+		[MessageHandler]
+		public void OnTestFinished (TestFinishedMessage msg)
+		{
+			listener.TestFinished (msg.TestCase, ToUnitTestResult (msg.Result));
+		}
+
+		[MessageHandler]
+		public void OnSuiteStarted (SuiteStartedMessage msg)
+		{
+			listener.SuiteStarted (msg.Suite);
+		}
+
+		[MessageHandler]
+		public void OnSuiteFinished (SuiteFinishedMessage msg)
+		{
+			listener.SuiteFinished (msg.Suite, ToUnitTestResult (msg.Result));
+		}
+
+		public void Dispose ()
+		{
+			connection.Dispose ();
 		}
 	}
 
@@ -218,6 +295,13 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		}
 	}	
 
-	
+	public interface IRemoteEventListener
+	{
+		void TestStarted (string testCase);
+		void TestFinished (string test, UnitTestResult result);
+		void SuiteStarted (string suite);
+		void SuiteFinished (string suite, UnitTestResult result);
+	}
+
 }
 

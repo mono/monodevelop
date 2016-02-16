@@ -325,8 +325,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 				try {
 					if (File.Exists (ld.Path)) {
-						runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), false);
-						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies);
+						runner = new ExternalTestRunner ();
+						runner.Connect ().Wait ();
+						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies).Result;
 					}
 				} catch (Exception ex) {
 					Console.WriteLine (ex);
@@ -381,7 +382,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 			if (runnerExe != null)
 				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
 			var console = IdeApp.Workbench?.ProgressMonitors.ConsoleFactory.CreateConsole ();
-			ExternalTestRunner runner = (ExternalTestRunner)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalTestRunner), testContext.ExecutionContext, UserAssemblyPaths, console);
+			ExternalTestRunner runner = new ExternalTestRunner ();
+			runner.Connect (testContext.ExecutionContext, console).Wait ();
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 			string[] filter = null;
@@ -412,7 +414,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				string testRunnerAssembly, testRunnerType;
 				GetCustomTestRunner (out testRunnerAssembly, out testRunnerType);
 
-				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly, crashLogFile);
+				result = runner.Run (localMonitor, filter, AssemblyPath, "", new List<string> (SupportAssemblies), testRunnerType, testRunnerAssembly, crashLogFile).Result;
 				if (testName != null)
 					result = localMonitor.SingleTestResult;
 				
@@ -672,7 +674,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			public void Cancel ()
 			{
 				LocalMonitor.Canceled = true;
-				Runner.Shutdown ();
+				Runner.Dispose ();
 				ClearRunningStatus (Test);
 			}
 			

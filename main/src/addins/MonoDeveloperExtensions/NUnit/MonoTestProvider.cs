@@ -56,6 +56,10 @@ namespace MonoDeveloper
 		{
 			return null;
 		}
+
+		public void Dispose ()
+		{
+		}
 	}
 	
 	class MonoTestSuite: NUnitAssemblyTestSuite

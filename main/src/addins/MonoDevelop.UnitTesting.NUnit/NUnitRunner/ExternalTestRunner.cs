@@ -37,15 +37,19 @@ using System.Text;
 
 using NUnit.Core;
 using NUnit.Util;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.UnitTesting.NUnit.External
 {
-	public class RemoteNUnitTestRunner: MarshalByRefObject
+	public class RemoteNUnitTestRunner: MessageListener
 	{
 		NUnitTestRunner runner;
+		RemoteProcessServer server;
 
-		public RemoteNUnitTestRunner ()
+		public RemoteNUnitTestRunner (RemoteProcessServer server)
 		{
+			this.server = server;
+
 			// In some cases MS.NET can't properly resolve assemblies even if they
 			// are already loaded. For example, when deserializing objects from remoting.
 			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
@@ -65,21 +69,24 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			
 			// Initialize services
 			ServiceManager.Services.InitializeServices ();
-			
-			// Preload the runner assembly. Required because TestNameFilter is implemented there
-			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
-			Assembly.LoadFrom (asm);
 		}
 
-		public UnitTestResult Run (IRemoteEventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
+		[MessageHandler]
+		public RunResponse Run (RunRequest r)
+		{
+			var res = Run (r.NameFilter, r.Path, r.SuiteName, r.SupportAssemblies, r.TestRunnerType, r.TestRunnerAssembly, r.CrashLogFile);
+			Console.WriteLine ("RR:" + res);
+			return new RunResponse () { Result = res };
+		}
+
+		public RemoteTestResult Run (string[] nameFilter, string path, string suiteName, string[] supportAssemblies, string testRunnerType, string testRunnerAssembly, string crashLogFile)
 		{
 			NUnitTestRunner runner = GetRunner (path);
-			EventListenerWrapper listenerWrapper = listener != null ? new EventListenerWrapper (listener) : null;
+			EventListenerWrapper listenerWrapper = new EventListenerWrapper (server);
 			
 			UnhandledExceptionEventHandler exceptionHandler = (object sender, UnhandledExceptionEventArgs e) => {
-				
-				var ex = new RemoteUnhandledException ((Exception) e.ExceptionObject);
-				File.WriteAllText (crashLogFile, ex.Serialize ());
+				var ex = e.ExceptionObject;
+				File.WriteAllText (crashLogFile, e.ToString ());
 			};
 
 			AppDomain.CurrentDomain.UnhandledException += exceptionHandler;
@@ -90,11 +97,13 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 				AppDomain.CurrentDomain.UnhandledException -= exceptionHandler;
 			}
 		}
-		
-		public NunitTestInfo GetTestInfo (string path, List<string> supportAssemblies)
+
+		[MessageHandler]
+		public GetTestInfoResponse GetTestInfo (GetTestInfoRequest req)
 		{
-			NUnitTestRunner runner = GetRunner (path);
-			return runner.GetTestInfo (path, supportAssemblies);
+			NUnitTestRunner runner = GetRunner (req.Path);
+			var r = runner.GetTestInfo (req.Path, req.SupportAssemblies);
+			return new GetTestInfoResponse { Result = r };
 		}
 		
 		NUnitTestRunner GetRunner (string assemblyPath)
@@ -103,7 +112,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			package.Settings ["ShadowCopyFiles"] = false;
 			
 			AppDomain domain = Services.DomainManager.CreateDomain (package);
-			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.dll");
+			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.exe");
 			runner = (NUnitTestRunner)domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.UnitTesting.NUnit.External.NUnitTestRunner");
 			runner.Initialize ();
 			return runner;
@@ -112,13 +121,13 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 	
 	class EventListenerWrapper: MarshalByRefObject, EventListener
 	{
-		IRemoteEventListener wrapped;
+		RemoteProcessServer server;
 		StringBuilder consoleOutput;
 		StringBuilder consoleError;
 		
-		public EventListenerWrapper (IRemoteEventListener wrapped)
+		public EventListenerWrapper (RemoteProcessServer server)
 		{
-			this.wrapped = wrapped;
+			this.server = server;
 		}
 		
 		public void RunFinished (Exception exception)
@@ -135,17 +144,25 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		
 		public void SuiteFinished (TestResult result)
 		{
-			wrapped.SuiteFinished (GetTestName (result.Test), GetLocalTestResult (result));
+			server.SendMessage (new SuiteFinishedMessage {
+				Suite = GetTestName (result.Test),
+				Result = GetLocalTestResult (result)
+			});
 		}
 
 		public void SuiteStarted (TestName suite)
 		{
-			wrapped.SuiteStarted (GetTestName (suite));
+			server.SendMessage (new SuiteStartedMessage {
+				Suite = GetTestName (suite)
+			});
 		}
 		
 		public void TestFinished (TestResult result)
 		{
-			wrapped.TestFinished (GetTestName (result.Test), GetLocalTestResult (result));
+			server.SendMessage (new TestFinishedMessage {
+				TestCase = GetTestName (result.Test),
+				Result = GetLocalTestResult (result)
+			});
 		}
 		
 		public void TestOutput (TestOutput testOutput)
@@ -162,7 +179,9 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		
 		public void TestStarted (TestName testCase)
 		{
-			wrapped.TestStarted (GetTestName (testCase));
+			server.SendMessage (new TestStartedMessage {
+				TestCase = GetTestName (testCase)
+			});
 			consoleOutput = new StringBuilder ();
 			consoleError = new StringBuilder ();
 		}
@@ -186,10 +205,9 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			return t.FullName;
 		}
 		
-		public UnitTestResult GetLocalTestResult (TestResult t)
+		public RemoteTestResult GetLocalTestResult (TestResult t)
 		{
-
-			UnitTestResult res = new UnitTestResult ();
+			RemoteTestResult res = new RemoteTestResult ();
 			var summary = new ResultSummarizer (t);
 			res.Failures = summary.Failures;
 			res.Errors = summary.Errors;
@@ -219,9 +237,9 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 	public interface IRemoteEventListener
 	{
 		void TestStarted (string testCase);
-		void TestFinished (string test, UnitTestResult result);
+		void TestFinished (string test, RemoteTestResult result);
 		void SuiteStarted (string suite);
-		void SuiteFinished (string suite, UnitTestResult result);
+		void SuiteFinished (string suite, RemoteTestResult result);
 	}
 }
 

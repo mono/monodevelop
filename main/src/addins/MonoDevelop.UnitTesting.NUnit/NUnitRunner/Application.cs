@@ -24,12 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.UnitTesting.NUnit.External;
+using MonoDevelop.UnitTesting.NUnit;
+
 namespace NUnitRunner
 {
 	public class Application
 	{
-		public Application ()
+		static RemoteProcessServer server;
+
+		public static void Main (string [] args)
 		{
+			server = new RemoteProcessServer ();
+			server.RegisterMessageTypes (typeof(RunRequest), typeof(GetTestInfoRequest));
+			server.Connect (args, new RemoteNUnitTestRunner (server));
 		}
 	}
 }

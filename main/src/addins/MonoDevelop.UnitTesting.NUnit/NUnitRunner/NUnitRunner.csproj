@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0AF16AF1-0876-413E-9803-08BD33C19E00}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AssemblyName>NUnitRunner</AssemblyName>
     <RootNamespace>NUnitRunner</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -53,16 +53,19 @@
   <ItemGroup>
     <Compile Include="NUnitTestRunner.cs" />
     <Compile Include="ExternalTestRunner.cs" />
+    <Compile Include="Application.cs" />
+    <Compile Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.Execution\BinaryMessage.cs">
+      <Link>BinaryMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.Execution\RemoteProcessServer.cs">
+      <Link>RemoteProcessServer.cs</Link>
+    </Compile>
+    <Compile Include="..\MonoDevelop.UnitTesting.NUnit\RemoteTestResult.cs">
+      <Link>RemoteTestResult.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
-      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
-      <Name>MonoDevelop.UnitTesting</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
 </Project>

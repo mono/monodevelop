@@ -84,7 +84,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 				CoreExtensions.Host.InitializeService();
 		}
 		
-		public TestResult Run (EventListener listener, string[] nameFilter, string path, string suiteName, List<string> supportAssemblies, string testRunnerType, string testRunnerAssembly)
+		public TestResult Run (EventListener listener, string[] nameFilter, string path, string suiteName, string[] supportAssemblies, string testRunnerType, string testRunnerAssembly)
 		{
 			InitSupportAssemblies (supportAssemblies);
 
@@ -112,7 +112,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			return tr.Run (listener, filter, false, LoggingThreshold.All);
 		}
 		
-		public NunitTestInfo GetTestInfo (string path, List<string> supportAssemblies)
+		public NunitTestInfo GetTestInfo (string path, string[] supportAssemblies)
 		{
 			InitSupportAssemblies (supportAssemblies);
 			
@@ -163,7 +163,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 			return ti;
 		}
 		
-		void InitSupportAssemblies (List<string> supportAssemblies)
+		void InitSupportAssemblies (string[] supportAssemblies)
 		{
 			// Preload support assemblies (they may not be in the test assembly directory nor in the gac)
 			foreach (string asm in supportAssemblies)
@@ -174,18 +174,6 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		{
 			return null;
 		}
-	}
-
-	[Serializable]
-	public class NunitTestInfo
-	{
-		public string Name;
-		public string PathName;
-		public string TestId;
-		public string FixtureTypeName;
-		public string FixtureTypeNamespace;
-		public bool IsExplicit;
-		public NunitTestInfo[] Tests;
 	}
 		
 	[Serializable]
