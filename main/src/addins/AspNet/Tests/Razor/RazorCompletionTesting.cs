@@ -61,14 +61,14 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			var ctx = GetCodeCompletionContext (isInCSharpContext, ed.View, ed.Extension.hiddenInfo.UnderlyingDocument);
 
 			if (isCtrlSpace) {
-				var result = ed.Extension.CodeCompletionCommand (ctx).Result as CompletionDataList;
+				var result = await ed.Extension.CodeCompletionCommand (ctx) as CompletionDataList;
 				TypeSystemServiceTestExtensions.UnloadSolution (solution);
 				return result;
 			} else {
 				var task = ed.Extension.HandleCodeCompletionAsync (ctx, ed.EditorText [cursorPosition - 1], default(CancellationToken));
 				TypeSystemServiceTestExtensions.UnloadSolution (solution);
 				if (task != null) {
-					return task.Result as CompletionDataList;
+					return await task as CompletionDataList;
 				}
 				return null;
 			}
@@ -99,7 +99,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			var ctx = GetCodeCompletionContext (true, ed.View, ed.Extension.hiddenInfo.UnderlyingDocument);
 			var task = ed.Extension.HandleParameterCompletionAsync (ctx, ed.EditorText[cursorPosition - 1], default(CancellationToken));
 			if (task != null) {
-				return task.Result;
+				return await task;
 			}
 			return null;
 		}
@@ -158,7 +158,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 				FileName = sev.ContentName,
 				Content = new StringTextSource (parsedText)
 			};
-			var parsedDoc = (RazorCSharpParsedDocument)parser.Parse (options, default(CancellationToken)).Result;
+			var parsedDoc = await parser.Parse (options, default(CancellationToken)) as RazorCSharpParsedDocument;
 			doc.HiddenParsedDocument = parsedDoc;
 
 			var editorExtension = new RazorCSharpEditorExtension (doc, parsedDoc as RazorCSharpParsedDocument, isInCSharpContext);
