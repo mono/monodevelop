@@ -193,7 +193,7 @@
 		{ "name": "Diff Line(Removed)", "fore": "Red" },
 		{ "name": "Diff Line(Changed)", "fore": "Green" },
 		{ "name": "Diff Header", "fore": "Magenta", "weight": "bold" },
-		{ "name": "Diff Header(Separator)", "fore": "Magenta" },
+		{ "name": "Diff Header(Separator)", "fore": "Magenta", "weight": "bold" },
 		{ "name": "Diff Header(Old)", "fore": "Red", "weight": "bold" },
 		{ "name": "Diff Header(New)", "fore": "Blue", "weight": "bold" },
 		{ "name": "Diff Location", "fore": "Magenta", "weight": "bold" },

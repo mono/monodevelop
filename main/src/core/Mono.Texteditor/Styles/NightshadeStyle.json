@@ -231,7 +231,7 @@
 		{ "name": "Diff Line(Removed)", "fore": "skyblue1" },
 		{ "name": "Diff Line(Changed)", "fore": "plum1" },
 		{ "name": "Diff Header", "fore": "chameleon1", "weight": "bold" },
-		{ "name": "Diff Header(Separator)", "fore": "aluminium4" },
+		{ "name": "Diff Header(Separator)", "fore": "aluminium4", "weight": "bold" },
 		{ "name": "Diff Header(Old)", "fore": "chameleon1", "weight": "bold" },
 		{ "name": "Diff Header(New)", "fore": "chameleon1", "weight": "bold" },
 		{ "name": "Diff Location", "fore": "chameleon1", "weight": "bold" },

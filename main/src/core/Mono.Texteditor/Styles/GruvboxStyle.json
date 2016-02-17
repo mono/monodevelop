@@ -206,7 +206,7 @@
 		{ "name": "Diff Line(Added)", "fore": "#008A8B" },
 		{ "name": "Diff Line(Removed)", "fore": "line-removed" },
 		{ "name": "Diff Line(Changed)", "fore": "line-changed" },
-		{ "name": "Diff Header", "fore": "#008000" },
+		{ "name": "Diff Header", "fore": "#008000", "weight": "bold" },
 		{ "name": "Diff Header(Separator)", "fore": "#0000FF", "weight": "bold" },
 		{ "name": "Diff Header(Old)", "fore": "#008000", "weight": "bold" },
 		{ "name": "Diff Header(New)", "fore": "#008000", "weight": "bold" },
