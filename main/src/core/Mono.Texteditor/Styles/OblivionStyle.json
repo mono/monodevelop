@@ -20,6 +20,7 @@
 		{ "name": "plum1", "value": "#ad7fa8" },
 		{ "name": "scarletred1", "value": "#ef2929" },
 		{ "name": "scarletred2", "value": "#cc0000" },
+		{ "name": "scarletred3", "value": "#a40000" },
 		{ "name": "aluminium1", "value": "#eeeeec" },
 		{ "name": "aluminium2", "value": "#d3d7cf" },
 		{ "name": "aluminium3", "value": "#babdb6" },
@@ -91,7 +92,7 @@
 		{ "name": "Message Bubble Error Tag", "color": "#e3a6a1", "secondcolor": "black" },
 		{ "name": "Message Bubble Error Counter", "color": "black", "secondcolor": "#e3a6a1" },
 		{ "name": "Message Bubble Error IconMargin", "color": "#735c54", "bordercolor": "#805b4d" },
-		{ "name": "Message Bubble Error Line", "color": "#7b645c" },
+		{ "name": "Message Bubble Error Line", "color": "#740000" },
 		{ "name": "Message Bubble Error Tooltip", "color": "#e3a6a1" },
 
 		{ "name": "Message Bubble Warning Tag", "color": "#efe89d", "secondcolor": "black" },
