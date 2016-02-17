@@ -186,7 +186,7 @@
  	<Class class="MonoDevelop.FSharp.FSharpJumpToDeclarationHandler" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/NUnit/NUnitSourceCodeLocationFinder">
+  <Extension path = "/MonoDevelop/UnitTesting/NUnitSourceCodeLocationFinder">
  	<Class class="MonoDevelop.FSharp.FSharpNUnitSourceCodeLocationFinder" />
   </Extension>
   <!-- F# interactive -->

@@ -7,7 +7,7 @@ open System.Collections.Generic
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
-open MonoDevelop.NUnit
+open MonoDevelop.UnitTesting
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
