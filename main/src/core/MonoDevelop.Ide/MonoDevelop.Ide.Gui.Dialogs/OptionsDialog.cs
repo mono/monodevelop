@@ -285,6 +285,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (PanelInstance pi in panels.Values) {
 				if (pi.Widget != null)
 					pi.Widget.Destroy ();
+				else {
+					var widget = pi.Panel as Gtk.Widget;
+					if (widget != null) {
+						//TODO: Panels shouldn't inherit/implement view directly
+						//Mostly because it will constrcut some UI(in constrcutor calling this.Build())
+						//on Preferences opening that should be defereded until CreatePanelWidget call
+						widget.Destroy ();
+					}
+				}
 				IDisposable disp = pi.Panel as IDisposable;
 				if (disp != null)
 					disp.Dispose ();
