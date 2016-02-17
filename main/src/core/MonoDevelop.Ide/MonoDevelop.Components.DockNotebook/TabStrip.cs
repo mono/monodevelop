@@ -834,19 +834,7 @@ namespace MonoDevelop.Components.DockNotebook
 					color.A = 0;
 					lg.AddColorStop (1, color);
 					ctx.SetSource (lg);
-
-					if (Platform.IsWindows) {
-						// For some reason this text is too small, probably related to the Pango hdpi hack.
-						// Once we fix that then we must revert this.
-						var scale = GtkWorkarounds.GetScaleFactor ();
-						ctx.Save ();
-						ctx.MoveTo (textStart, tabBounds.Y + TopPadding + TextOffset * scale + VerticalTextSize / scale);
-						ctx.Scale ((double)scale, (double)scale);
-						Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
-						ctx.Restore ();
-					} else {
-						Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0).Layout);
-					}
+					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 				}
 			}
 
