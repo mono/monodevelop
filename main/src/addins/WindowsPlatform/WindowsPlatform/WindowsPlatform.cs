@@ -137,6 +137,14 @@ namespace MonoDevelop.Platform
 
 		internal static Xwt.Toolkit WPFToolkit;
 
+		public override void Initialize ()
+		{
+			// Only initialize elements for Win7+.
+			if (TaskbarManager.IsPlatformSupported) {
+				TaskbarManager.Instance.ApplicationId = BrandingService.ApplicationName;
+			}
+		}
+
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
