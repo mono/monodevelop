@@ -1459,11 +1459,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			
 			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc)) {
-				if (skipEol) {
-					updatemonitor.Log.Write (actiondesc);
-				} else {
-					updatemonitor.Log.WriteLine (actiondesc);
-				}
+				Runtime.RunInMainThread (() => {
+					if (skipEol) {
+						updatemonitor.Log.Write (actiondesc);
+					} else {
+						updatemonitor.Log.WriteLine (actiondesc);
+					}
+				});
 			}
 			if (updateFileList != null && notifyChange && File.Exists (file))
 				updateFileList.Add (file);
