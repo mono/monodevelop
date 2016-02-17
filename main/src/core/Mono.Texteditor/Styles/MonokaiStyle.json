@@ -186,6 +186,7 @@
 		{ "name": "User Types(Delegates)", "fore": "monokai-type" },
 		{ "name": "User Types(Value types)", "fore": "monokai-type" },
 		{ "name": "User Types(Type parameters)", "fore": "monokai-type" },
+		{ "name": "User Types(Mutable)", "fore": "monokai-background", "back": "#ffcf0f" },
 
 		{ "name": "User Field Usage", "fore": "#2EE2A6", "style": "italic" },
 		{ "name": "User Field Declaration", "fore": "#2EE2A6", "style": "italic" },
