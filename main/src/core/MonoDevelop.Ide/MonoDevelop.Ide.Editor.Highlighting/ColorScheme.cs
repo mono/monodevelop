@@ -854,7 +854,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (!string.IsNullOrEmpty (BaseScheme))
 					writer.WriteLine ("\t\"baseScheme\":\"{0}\",", BaseScheme);
 
-				var baseStyle = SyntaxModeService.GetColorStyle (BaseScheme ?? "Default");
+				var baseStyle = SyntaxModeService.GetColorStyle (BaseScheme ?? SyntaxModeService.GetDefaultColorStyleName ());
 
 				writer.WriteLine ("\t\"colors\":[");
 				bool first = true;

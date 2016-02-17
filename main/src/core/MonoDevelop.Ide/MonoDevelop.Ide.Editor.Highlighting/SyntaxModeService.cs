@@ -68,11 +68,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static ColorScheme GetDefaultColorStyle (this Skin skin)
 		{
+			return GetColorStyle (GetDefaultColorStyleName (skin));
+		}
+
+		public static string GetDefaultColorStyleName ()
+		{
+			return GetDefaultColorStyleName (IdeApp.Preferences.UserInterfaceSkin);
+		}
+
+		public static string GetDefaultColorStyleName (this Skin skin)
+		{
 			switch (skin) {
 				case Skin.Light:
-					return GetColorStyle (IdePreferences.DefaultLightColorScheme);
+					return IdePreferences.DefaultLightColorScheme;
 				case Skin.Dark:
-					return GetColorStyle (IdePreferences.DefaultDarkColorScheme);
+					return IdePreferences.DefaultDarkColorScheme;
 				default:
 					throw new InvalidOperationException ();
 			}
@@ -99,7 +109,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				LoadStyle (name);
 				return GetColorStyle (name);
 			}
-			return GetColorStyle ("Default");
+			return GetColorStyle (GetDefaultColorStyleName());
 		}
 
 		static IStreamProvider GetProvider (ColorScheme style)

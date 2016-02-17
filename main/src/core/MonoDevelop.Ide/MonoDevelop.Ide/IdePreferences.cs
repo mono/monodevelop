@@ -31,6 +31,8 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.Linq;
 
 namespace MonoDevelop.Ide
 {
@@ -146,13 +148,13 @@ namespace MonoDevelop.Ide
 			get { return MonoDevelop.Components.IdeTheme.UserInterfaceSkin; }
 		}
 
-		internal static readonly string DefaultLightColorScheme = "Default";
-		internal static readonly string DefaultDarkColorScheme = "Oblivion";
+		internal static readonly string DefaultLightColorScheme = "Light";
+		internal static readonly string DefaultDarkColorScheme = "Dark";
 
 		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled_V2", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
-		public readonly SkinConfigurationProperty<string> ColorScheme = new SkinConfigurationProperty<string> ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);
+		public readonly SchemeConfigurationProperty ColorScheme = new SchemeConfigurationProperty ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);
 
 		public readonly SkinConfigurationProperty<string> UserTasksHighPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksHighPrioColor", "", "rgb:ffff/ffff/ffff");
 		public readonly SkinConfigurationProperty<string> UserTasksNormalPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksNormalPrioColor", "", "rgb:ffff/ffff/ffff");
@@ -199,6 +201,26 @@ namespace MonoDevelop.Ide
 					return lightConfiguration.Set (value);
 				else
 					return darkConfiguration.Set (value);
+			}
+		}
+
+		public class SchemeConfigurationProperty: SkinConfigurationProperty<string>
+		{
+			public SchemeConfigurationProperty (string propertyName, string defaultLightValue, string defaultDarkValue, string oldName = null)
+				: base (propertyName, defaultLightValue, defaultDarkValue, oldName)
+			{
+			}
+
+			protected override string OnGetValue ()
+			{
+				var style = base.OnGetValue ();
+				if (SyntaxModeService.Styles.Contains (style))
+					return style;
+
+				var defaultStyle = SyntaxModeService.GetDefaultColorStyleName ();
+				LoggingService.LogWarning ("Highlighting Theme \"{0}\" not found, using default \"{1}\" instead", style, defaultStyle);
+				Value = defaultStyle;
+				return SyntaxModeService.GetDefaultColorStyleName ();
 			}
 		}
 	}
