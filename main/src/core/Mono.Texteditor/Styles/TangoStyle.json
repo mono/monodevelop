@@ -109,8 +109,8 @@
 		{ "name": "User Types(Value types)", "fore": "plum2" },
 		{ "name": "User Types(Type parameters)", "fore": "plum2" },
 
-		{ "name": "User Event Usage", "fore": "orange3", "weight": "bold" },
-		{ "name": "User Event Declaration", "fore": "orange3", "weight": "bold" },
+		{ "name": "User Event Usage", "fore": "orange3" },
+		{ "name": "User Event Declaration", "fore": "orange3" },
 
 		{ "name": "Syntax Error", "fore": "scarletred1" },
 

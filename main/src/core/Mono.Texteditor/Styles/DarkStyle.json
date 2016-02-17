@@ -198,8 +198,8 @@
 		{ "name": "User Property Usage", "fore": "aluminium1" },
 		{ "name": "User Property Declaration", "fore": "aluminium1" },
 
-		{ "name": "User Event Usage", "fore": "aluminium1", "weight": "bold" },
-		{ "name": "User Event Declaration", "fore": "aluminium1", "weight": "bold" },
+		{ "name": "User Event Usage", "fore": "aluminium1" },
+		{ "name": "User Event Declaration", "fore": "aluminium1" },
 
 		{ "name": "User Method Usage", "fore": "aluminium1" },
 		{ "name": "User Method Declaration", "fore": "aluminium1" },
