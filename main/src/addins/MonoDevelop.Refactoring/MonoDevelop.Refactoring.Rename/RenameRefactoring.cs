@@ -161,6 +161,44 @@ namespace MonoDevelop.Refactoring.Rename
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 
 			ws.TryApplyChanges (newSolution);
+
+
+			var changes = new List<Change> ();
+			if (properties.RenameFile && symbol is INamedTypeSymbol) {
+				var type = (INamedTypeSymbol)symbol;
+				int currentPart = 1;
+				var alreadyRenamed = new HashSet<string> ();
+				foreach (var part in type.Locations) {
+					if (!part.IsInSource)
+						continue;
+					var fileName = part?.SourceTree?.FilePath;
+					if (fileName == null || alreadyRenamed.Contains (fileName))
+						continue;
+					alreadyRenamed.Add (fileName);
+
+					string oldFileName = System.IO.Path.GetFileNameWithoutExtension (fileName);
+					string newFileName;
+					var newName = properties.NewName;
+					if (string.IsNullOrEmpty (oldFileName) || string.IsNullOrEmpty (newName))
+						continue;
+					if (oldFileName.ToUpper () == newName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + newName.ToUpper (), StringComparison.Ordinal))
+						continue;
+					int idx = oldFileName.IndexOf (type.Name, StringComparison.Ordinal);
+					if (idx >= 0) {
+						newFileName = oldFileName.Substring (0, idx) + newName + oldFileName.Substring (idx + type.Name.Length);
+					} else {
+						newFileName = currentPart != 1 ? newName + currentPart : newName;
+						currentPart++;
+					}
+
+					int t = 0;
+					while (System.IO.File.Exists (GetFullFileName (newFileName, fileName, t))) {
+						t++;
+					}
+					changes.Add (new RenameFileChange (fileName, GetFullFileName (newFileName, fileName, t)));
+				}
+			}
+			RefactoringService.AcceptChanges (new ProgressMonitor (), changes);
 		}
 		
 		static string GetFullFileName (string fileName, string oldFullFileName, int tryCount)
