@@ -5,6 +5,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
+open Mono.TextEditor.Highlighting
 open FsUnit
 
 [<TestFixture>]
@@ -14,21 +15,30 @@ type SemanticHighlighting() =
         let fixedc = content.Replace("§", "")
 
         let doc = TestHelpers.createDoc fixedc "defined"
-
+        let style = SyntaxModeService.GetColorStyle ("Gruvbox")
+        
         let segments =
-            SyntaxMode.getProcessedTokens(doc.Editor, doc, ["defined"])
-            |> Option.getOrElse (fun _ -> [])
+            doc.Editor.GetLines()
+            |> Seq.map (fun line -> let lineNumber = line.LineNumber
+                                    let lineOffset = line.Offset
+                                    let txt = doc.Editor.GetLineText line
+                                    let tsc = SyntaxMode.tryGetTokensSymbolsAndColours doc
+                                    let segments = SyntaxMode.getColouredSegment tsc lineNumber lineOffset txt style
+                                    segments)
+                                    
+        let sortedUniqueSegments =
+            segments
             |> Seq.concat
             |> Seq.distinct
-            |> Seq.sortBy (fun s -> s.Offset)
-
-        for seg in segments do
+            |> Seq.sortBy (fun s -> s.Offset)      
+        
+        for seg in sortedUniqueSegments do
             printf """Segment: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length
                 (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine
 
         let offset = content.IndexOf("§")
         let endOffset = content.LastIndexOf("§") - 1
-        let segment = segments |> Seq.tryFind (fun s -> s.Offset = offset && s.EndOffset = endOffset)
+        let segment = sortedUniqueSegments |> Seq.tryFind (fun s -> s.Offset = offset && s.EndOffset = endOffset)
         match segment with
         | Some(s) -> s.ColorStyleKey
         | _ -> "segment not found"

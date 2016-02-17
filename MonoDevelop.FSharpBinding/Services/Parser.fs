@@ -18,7 +18,7 @@ module Parsing =
       if lineStr = "" then
           None
       else
-          match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
+          match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.singleLineQueryLexState with
           | Some sym -> match sym.Text with
                         | "" -> None
                         | _ -> Some (sym.RightColumn, sym.Text.Split '.' |> Array.toList)
@@ -40,7 +40,7 @@ module Parsing =
   let findLongIdentsAndResidue (col, lineStr:string) =
       let lineStr = lineStr.Substring(0, col)
 
-      match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.queryLexState with
+      match Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.singleLineQueryLexState with
       | Some sym -> match sym.Text with
                     | "" -> [], ""
                     | _ -> let res = sym.Text.Split '.'

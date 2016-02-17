@@ -80,8 +80,9 @@
     <Compile Include="Services\FSharpConsoleView.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
     <Compile Include="Services\NRefactory.fs" />
-    <Compile Include="FSharpSymbolHelper.fs" />
+    <Compile Include="FSharpParsedDocument.fs" />
     <Compile Include="FSharpTokens.fs" />
+    <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="ProjectSearchCategory.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
@@ -160,7 +161,7 @@
       <HintPath>..\..\..\build\bin\MonoDevelop.Projects.Formats.MSBuild.dll</HintPath>
     </Reference>
     <Reference Include="monodoc">
-      <HintPath>../../../../main/build\bin\monodoc.dll</HintPath>
+      <HintPath>..\..\..\build\bin\monodoc.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
       <Private>False</Private>

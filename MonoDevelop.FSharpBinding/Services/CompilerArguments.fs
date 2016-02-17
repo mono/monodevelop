@@ -307,14 +307,13 @@ module CompilerArguments =
           Some(Path.Combine(dir,"fsc.exe"))
       | _ -> None
 
-  let getDefineSymbols (fileName:string) (project: Project option) =
+  let getDefineSymbols (fileName:string) (project: Project) =
       [if LanguageService.IsAScript fileName
        then yield! ["INTERACTIVE";"EDITING"]
        else yield! ["COMPILED";"EDITING"]
 
-       let workspace = IdeApp.Workspace |> Option.ofNull
        let configuration =
-           match workspace, project with
+           match IdeApp.Workspace |> Option.ofNull, project |> Option.ofNull with
            | None, Some proj ->
                //as there is no workspace use the default configuration for the project
                Some (proj.GetConfiguration(proj.DefaultConfiguration.Selector))

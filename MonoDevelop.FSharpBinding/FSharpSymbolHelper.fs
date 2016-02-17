@@ -248,7 +248,6 @@ module SymbolUse =
         | Entity symbol when symbol.IsEnum -> Some symbol
         | _ -> None
 
-
     let (|Interface|_|) = function
         | Entity symbol when symbol.IsInterface -> Some symbol
         | _ -> None

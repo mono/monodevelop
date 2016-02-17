@@ -7,61 +7,38 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.TypeSystem
 open System
-open System.Collections.Generic
 open System.IO
 open System.Threading
 
-type FSharpParsedDocument(fileName) =
-    inherit DefaultParsedDocument(fileName,Flags = ParsedDocumentFlags.NonSerializable)
-    member val Tokens = None with get,set
-    member val AllSymbolsKeyed = Dictionary<_,_>() with get, set
-    
-[<AutoOpen>]
-module DocumentContextExt =
-    open MonoDevelop
-    type DocumentContext with
-        member x.TryGetFSharpParsedDocumentTokens() =
-            x.TryGetParsedDocument()
-            |> Option.bind (function :? FSharpParsedDocument as fpd -> fpd.Tokens | _ -> None)
-            
 module ParsedDocument =
     /// Format errors for the given line (if there are multiple, we collapse them into a single one)
     let private formatError (error : FSharpErrorInfo) =
-      // Single error for this line
-        let errorType =
-            if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
-            else ErrorType.Warning
+        let errorType = if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error else ErrorType.Warning
         Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
-        
+       
     let create (parseOptions: ParseOptions) (parseResults: ParseAndCheckResults) defines =
       //Try creating tokens
         async {
             let fileName = parseOptions.FileName
             let shortFilename = Path.GetFileName fileName
             let doc = new FSharpParsedDocument(fileName, Flags = ParsedDocumentFlags.NonSerializable)
-            LoggingService.LogDebug ("FSharpParser: Processing tokens on {0}", shortFilename)
-            try
-                let readOnlyDoc = TextEditorFactory.CreateNewReadonlyDocument (parseOptions.Content, fileName)
-                let lineDetails =
-                  [ for i in 1..readOnlyDoc.LineCount do
-                        let line = readOnlyDoc.GetLine(i)
-                        yield Tokens.LineDetail(line.LineNumber, line.Offset, readOnlyDoc.GetTextAt(line.Offset, line.Length)) ]
-                let tokens = Tokens.getTokens lineDetails fileName defines
-                doc.Tokens <- Some(tokens)
-                LoggingService.LogDebug ("FSharpParser: Tokens processed for: {0}", shortFilename)
-            with ex ->
-              LoggingService.LogWarning ("FSharpParser: Couldn't update token information", ex)
+            
+            doc.Tokens <- Tokens.tryGetTokens parseOptions.Content defines fileName
 
             //Get all the symboluses now rather than in semantic highlighting
             LoggingService.LogDebug ("FSharpParser: Processing symbol uses on {0}", shortFilename)
 
             parseResults.GetErrors() |> (Seq.map formatError >> doc.AddRange)
             let! allSymbolUses = parseResults.GetAllUsesOfAllSymbolsInFile()
-            allSymbolUses |> Option.iter (fun symbolUses ->
-                for symbolUse in symbolUses do
-                    if not (doc.AllSymbolsKeyed.ContainsKey symbolUse.RangeAlternate.End)
-                    then doc.AllSymbolsKeyed.Add(symbolUse.RangeAlternate.End, symbolUse))
 
+            allSymbolUses
+            |> Option.iter
+                   (fun symbols -> let newSymbolKeys =
+                                       symbols
+                                       |> Array.distinctBy (fun symbol -> symbol.RangeAlternate.End)
+                                       |> Seq.map (fun symbol -> symbol.RangeAlternate.End, symbol)
+                                   doc.AllSymbolsKeyed <- dict newSymbolKeys )
+            
             //Set code folding regions, GetNavigationItems may throw in some situations
             LoggingService.LogDebug ("FSharpParser: processing regions on {0}", shortFilename)
             try
@@ -88,7 +65,7 @@ type FSharpParser() =
 
     let tryGetFilePath fileName (project: MonoDevelop.Projects.Project) =
         // TriggerParse will work only for full paths
-        if IO.Path.IsPathRooted(fileName) then Some(fileName)
+        if Path.IsPathRooted(fileName) then Some(fileName)
         else
             let workBench = IdeApp.Workbench
             match workBench with
@@ -150,7 +127,7 @@ type FSharpParser() =
                         try
                             let! pendingParseResults = Async.StartChild(languageService.ParseAndCheckFileInProject(projectFile, filePath, 0, content.Text, obsolete), ServiceSettings.maximumTimeout)
                             LoggingService.LogDebug ("FSharpParser: Parse and check results retieved on {0}", shortFilename)
-                            let defines = CompilerArguments.getDefineSymbols filePath (proj |> Option.ofNull)
+                            let defines = CompilerArguments.getDefineSymbols filePath proj
                             let! results = pendingParseResults
                             //if you ever want to see the current parse tree
                             //let pt = match results.ParseTree with Some pt -> sprintf "%A" pt | _ -> ""

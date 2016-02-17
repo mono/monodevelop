@@ -39,18 +39,15 @@ type FSharpTooltipProvider() =
 
     //keep the last enterNotofy handler so we can remove the handler as a new TipWindow is created
     let mutable enterNotify = None : IDisposable option
-
-    let killTooltipWindow() =
-        enterNotify |> Option.iter (fun en -> en.Dispose ())
-
+    let killTooltipWindow() = enterNotify |> Option.iter (fun en -> en.Dispose ())
+    let noTooltip = Task.FromResult null
+    
     override x.GetItem (editor, context, offset, cancellationToken) =
         try
-            let noTooltip = Task.FromResult null
             let doc = IdeApp.Workbench.ActiveDocument
             if doc = null then noTooltip else
 
             let file = doc.FileName.FullPath.ToString()
-            let projectFile = context.Project |> function null -> file | project -> project.FileName.ToString()
 
             if not (FileService.supportedFileName file) then noTooltip else
 
@@ -59,13 +56,13 @@ type FSharpTooltipProvider() =
 
             let line, col, lineStr = editor.GetLineInfoFromOffset offset
 
-            let cachedTokens = context.TryGetFSharpParsedDocumentTokens()
-            if Tokens.isCurrentTokenInvalid editor cachedTokens context.Project offset then noTooltip else
+            if Tokens.isInvalidTipTokenAtPoint editor context offset then noTooltip else
 
             let tooltipComputation =
                 asyncChoice {
                     try
                         LoggingService.LogDebug "TooltipProvider: Getting tool tip"
+                        let projectFile = context.Project |> function null -> file | project -> project.FileName.ToString()
                         let! parseAndCheckResults =
                             languageService.GetTypedParseResultIfAvailable (projectFile, file, source, AllowStaleResults.MatchingSource)
                             |> Choice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"

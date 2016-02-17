@@ -443,10 +443,9 @@ type FSharpTextEditorCompletion() =
         if completionChar <> '.' then null else
         let computation =
             async {
-                let cachedTokens = x.DocumentContext.TryGetFSharpParsedDocumentTokens()
-                if Tokens.isCurrentTokenInvalid x.Editor cachedTokens x.DocumentContext.Project x.Editor.CaretOffset then return null else
+                if Tokens.isInvalidTipTokenAtPoint x.Editor x.DocumentContext x.Editor.CaretOffset then return null else
                 return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true, false, completionChar) }
-        Async.StartAsTask (computation =computation, cancellationToken = token)
+        Async.StartAsTask (computation = computation, cancellationToken = token)
 
     /// Completion was triggered explicitly using Ctrl+Space or by the function above
     override x.CodeCompletionCommand(context) =
@@ -454,9 +453,8 @@ type FSharpTextEditorCompletion() =
         let completionIsDot = completionChar = '.'
         Async.StartAsTask(
             async {
-              let cachedTokens = x.DocumentContext.TryGetFSharpParsedDocumentTokens()
-              if Tokens.isCurrentTokenInvalid x.Editor cachedTokens x.DocumentContext.Project x.Editor.CaretOffset then return null
-              else return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, completionIsDot, true, completionChar) } )
+              if Tokens.isInvalidTipTokenAtPoint x.Editor x.DocumentContext x.Editor.CaretOffset then return null else
+              return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, completionIsDot, true, completionChar) } )
 
     // Returns the index of the parameter where the cursor is currently positioned.
     // -1 means the cursor is outside the method parameter list
