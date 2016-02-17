@@ -5,7 +5,6 @@
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
 	"palette": [
-		{ "name": "butter1", "value": "#fce94f" },
 		{ "name": "butter2", "value": "#edd400" },
 		{ "name": "butter3", "value": "#c4a000" },
 		{ "name": "orange1", "value": "#fcaf3e" },
@@ -18,14 +17,9 @@
 		{ "name": "chameleon2", "value": "#73d216" },
 		{ "name": "chameleon3", "value": "#4e9a06" },
 		{ "name": "skyblue1", "value": "#729fcf" },
-		{ "name": "skyblue2", "value": "#3465a4" },
-		{ "name": "skyblue3", "value": "#204a87" },
 		{ "name": "plum1", "value": "#ad7fa8" },
-		{ "name": "plum2", "value": "#75507b" },
-		{ "name": "plum3", "value": "#5c3566" },
 		{ "name": "scarletred1", "value": "#ef2929" },
 		{ "name": "scarletred2", "value": "#cc0000" },
-		{ "name": "scarletred3", "value": "#a40000" },
 		{ "name": "aluminium1", "value": "#eeeeec" },
 		{ "name": "aluminium2", "value": "#d3d7cf" },
 		{ "name": "aluminium3", "value": "#babdb6" },

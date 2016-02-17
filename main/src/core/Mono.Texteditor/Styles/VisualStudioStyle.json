@@ -8,8 +8,7 @@
 		{ "name": "text-black", "value": "#222222" },
 		{ "name": "comment-green", "value": "#008000" },
 		{ "name": "keyword-blue", "value": "#0000ff" },
-		{ "name": "semantic-type", "value": "#2B90AF" },
-		{ "name": "aluminium2", "value": "#d3d7cf" }
+		{ "name": "semantic-type", "value": "#2B90AF" }
 	],
 
 	"colors": [
