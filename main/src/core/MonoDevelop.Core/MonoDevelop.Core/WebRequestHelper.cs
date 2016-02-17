@@ -73,13 +73,28 @@ namespace MonoDevelop.Core
 		/// Keeps sending requests until a response code that doesn't require authentication happens or if the request
 		/// requires authentication and the user has stopped trying to enter them (i.e. they hit cancel when they are prompted).
 		/// </remarks>
-		public static Task<HttpWebResponse> GetResponseAsync (
+		public static async Task<HttpWebResponse> GetResponseAsync (
 			Func<HttpWebRequest> createRequest,
 			Action<HttpWebRequest> prepareRequest = null,
 			CancellationToken token = default(CancellationToken))
 		{
-			//TODO: make this really async under the covers
-			return Task.Factory.StartNew (() => GetResponse (createRequest, prepareRequest, token), token);
+			if (prepareRequest == null) {
+				prepareRequest = r => {};
+			}
+
+			if (credentialProvider == null) {
+				var req = createRequest ();
+				req.MakeCancelable (token);
+				prepareRequest (req);
+
+				return (HttpWebResponse) await req.GetResponseAsync ();
+			}
+
+			var handler = new RequestHelper (
+				createRequest, prepareRequest, proxyCache, CredentialStore.Instance, credentialProvider
+			);
+
+			return await handler.GetResponseAsync (token);
 		}
 
 		/// <summary>

@@ -34,7 +34,7 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components
 {
-	public class Control : IDisposable
+	public class Control : IDisposable, ICommandRouter
 	{
 		internal static Dictionary<object, WeakReference<Control>> cache = new Dictionary<object, WeakReference<Control>> ();
 		internal object nativeWidget;
@@ -51,7 +51,7 @@ namespace MonoDevelop.Components
 			cache.Add (nativeWidget, new WeakReference<Control> (this));
 		}
 
-		protected virtual object CreateNativeWidget ()
+		protected virtual object CreateNativeWidget<T> ()
 		{
 			throw new NotSupportedException ();
 		}
@@ -60,7 +60,7 @@ namespace MonoDevelop.Components
 		{
 			if (nativeWidget == null) {
 				var toCache = this;
-				var w = CreateNativeWidget ();
+				var w = CreateNativeWidget<T> ();
 				if (!(w is T)) {
 					var temp = w as Control;
 					while (temp != null) {
@@ -75,10 +75,7 @@ namespace MonoDevelop.Components
 					c.FocusChain = new [] { gtkWidget };
 					c.Show ();
 					nativeWidget = c;
-					c.Destroyed += delegate {
-						GC.SuppressFinalize (this);
-						Dispose (true);
-					};
+					c.Destroyed += OnGtkDestroyed;
 					toCache = c;
 				} else {
 					nativeWidget = w;
@@ -95,6 +92,12 @@ namespace MonoDevelop.Components
 				return (T)nativeWidget;
 			else
 				throw new NotSupportedException ();
+		}
+
+		void OnGtkDestroyed (object sender, EventArgs args)
+		{
+			GC.SuppressFinalize (this);
+			Dispose (true);
 		}
 
 		static object ConvertToType (Type t, object w)
@@ -140,7 +143,15 @@ namespace MonoDevelop.Components
 			if (d == null)
 				return null;
 
-			return GetImplicit<Control, Gtk.Widget>(d) ?? new Control (d);
+			var control = GetImplicit<Control, Gtk.Widget>(d);
+			if (control == null) {
+				control = new Control (d);
+				d.Destroyed += delegate {
+					GC.SuppressFinalize (control);
+					control.Dispose (true);
+				};
+			}
+			return control;
 		}
 
 		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
@@ -178,9 +189,9 @@ namespace MonoDevelop.Components
 
 		public void Dispose ()
 		{
-			if (nativeWidget is Gtk.Widget) {
-				((Gtk.Widget)nativeWidget).Destroy ();
-				return;
+			var gtkWidget = nativeWidget as Gtk.Widget;
+			if (gtkWidget != null) {
+				gtkWidget.Destroy ();
 			}
 #if MAC
 			else if (nativeWidget is NSView)
@@ -194,6 +205,16 @@ namespace MonoDevelop.Components
 		{
 			if (nativeWidget != null)
 				cache.Remove (nativeWidget);
+
+			var gtkWidget = nativeWidget as Gtk.Widget;
+			if (gtkWidget != null) {
+				gtkWidget.Destroyed -= OnGtkDestroyed;
+			}
+		}
+
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return nativeWidget;
 		}
 	}
 }

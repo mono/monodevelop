@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CSharpFeaturesTextEditorExtension ()
 		{
 			GoToDefinitionService.TryNavigateToSymbol = delegate (ISymbol symbol, Microsoft.CodeAnalysis.Project project, bool usePreviewTab) {
-				IdeApp.ProjectOperations.JumpToDeclaration (symbol, TypeSystemService.GetMonoProject (project));
+				RefactoringService.RoslynJumpToDeclaration (symbol, TypeSystemService.GetMonoProject (project));
 				return true;
 			};
 
@@ -89,9 +89,9 @@ namespace MonoDevelop.CSharp.Refactoring
 		}
 
 		[CommandHandler (EditCommands.Rename)]
-		public void RenameCommand ()
+		public async void RenameCommand ()
 		{
-			new RenameHandler ().Run (Editor, DocumentContext);
+			await new RenameHandler ().Run (Editor, DocumentContext);
 		}
 
 		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]

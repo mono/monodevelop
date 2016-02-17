@@ -5,21 +5,37 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	partial class SelectFileFormatDialog
 	{
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.VBox vbox3;
-		private global::Gtk.Image image146;
+		
+		private global::MonoDevelop.Components.ImageView iconWarning;
+		
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.Label labelMessage;
+		
 		private global::Gtk.Label labelWarnings;
+		
 		private global::Gtk.Label label6;
+		
 		private global::Gtk.Alignment alignment2;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.Alignment alignment3;
+		
 		private global::Gtk.Label labelCurrentFormat;
+		
 		private global::Gtk.ComboBox comboNewFormat;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.Label label4;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -43,11 +59,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
 			// Container child vbox3.Gtk.Box+BoxChild
-			this.image146 = new global::Gtk.Image ();
-			this.image146.Name = "image146";
-			this.image146.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Dialog);
-			this.vbox3.Add (this.image146);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.image146]));
+			this.iconWarning = new global::MonoDevelop.Components.ImageView ();
+			this.iconWarning.Name = "iconWarning";
+			this.iconWarning.IconId = "gtk-dialog-warning";
+			this.iconWarning.IconSize = ((global::Gtk.IconSize)(6));
+			this.vbox3.Add (this.iconWarning);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.iconWarning]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;

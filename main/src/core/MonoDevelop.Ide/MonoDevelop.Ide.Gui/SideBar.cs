@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Gui
 			this.orientation = orientation;
 			
 			if (string.IsNullOrEmpty (icon)) {
-//				if (label == "Debug") icon = "md-execute-debug";
+//				if (label == "Debug") icon = "md-bug";
 //				if (label == "Default") icon = "md-solution";
 			}
 			this.label = label;
@@ -299,6 +299,8 @@ namespace MonoDevelop.Ide.Gui
 					else
 						c2.L *= 0.9;
 					Cairo.Gradient pat;
+
+					// FIXME: VV: Remove gradient features
 					pat = new Cairo.LinearGradient (x, y, x+w-2, y);
 					pat.AddColorStop (0, c2);
 					pat.AddColorStop (1, c1);

@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			OpenFileDialog dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Policy File"));
 			dlg.TransientFor = this;
-			dlg.InitialFileName = currentSet.Name + ".mdpolicy";
+			dlg.InitialFileName = currentSet.Id + ".mdpolicy";
 			dlg.Action = MonoDevelop.Components.FileChooserAction.Save;
 			dlg.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			dlg.AddAllFilesFilter ();

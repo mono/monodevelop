@@ -33,6 +33,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
@@ -118,6 +119,7 @@ namespace MonoDevelop.AspNet.WebForms
 				return result;
 			
 			var refman = new WebFormsTypeContext { Project = project,  Doc = document };
+			refman.CreateCompilation (default(CancellationToken)).Wait ();
 			var memberList = new WebFormsMemberListBuilder (refman, document.XDocument);
 			memberList.Build ();
 
@@ -185,8 +187,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (memberList.Members.Count == 0)
 				return result;
 			
-			var dom = refman.Compilation;
-			var cls = dom.GetTypeByMetadataName (className);
+			var cls = refman.GetTypeByMetadataName (className);
 			var members = GetDesignerMembers (memberList.Members.Values, cls, filename);
 			
 			//add fields for each control in the page

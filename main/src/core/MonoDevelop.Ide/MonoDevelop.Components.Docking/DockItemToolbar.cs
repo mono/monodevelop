@@ -179,8 +179,8 @@ namespace MonoDevelop.Components.Docking
 	
 	public class DockToolButton : Control
 	{
-		public DockToolButtonImage Image {
-			get { return (Gtk.Image)button.Image; }
+		public ImageView Image {
+			get { return (ImageView)button.Image; }
 			set { button.Image = value; }
 		}
 
@@ -204,11 +204,12 @@ namespace MonoDevelop.Components.Docking
 		{
 			button = new Button ();
 			Label = label;
-			Image = new Gtk.Image (stockId, IconSize.Menu);
-			button.Image.Show ();
+
+			Image = new ImageView (stockId, IconSize.Menu);
+			Image.Show ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return button;
 		}
@@ -224,13 +225,13 @@ namespace MonoDevelop.Components.Docking
 
 		public class DockToolButtonImage : Control
 		{
-			Gtk.Image image;
-			internal DockToolButtonImage (Gtk.Image image)
+			ImageView image;
+			internal DockToolButtonImage (ImageView image)
 			{
 				this.image = image;
 			}
 
-			protected override object CreateNativeWidget ()
+			protected override object CreateNativeWidget<T> ()
 			{
 				return image;
 			}
@@ -240,7 +241,7 @@ namespace MonoDevelop.Components.Docking
 				return d.GetNativeWidget<Gtk.Widget> ();
 			}
 
-			public static implicit operator DockToolButtonImage (Gtk.Image d)
+			public static implicit operator DockToolButtonImage (ImageView d)
 			{
 				return new DockToolButtonImage (d);
 			}

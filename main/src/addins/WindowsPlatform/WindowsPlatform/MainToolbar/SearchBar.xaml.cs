@@ -26,8 +26,7 @@ namespace WindowsPlatform.MainToolbar
 	/// </summary>
 	public partial class SearchBarControl : UserControl, INotifyPropertyChanged
 	{
-		readonly ImageSource searchIcon, searchIconHovered, searchIconPressed;
-		readonly ImageSource clearIcon, clearIconHovered, clearIconPressed;
+		readonly Xwt.Drawing.Image searchIcon, clearIcon;
 
 		public SearchBarControl ()
 		{
@@ -46,15 +45,9 @@ namespace WindowsPlatform.MainToolbar
 				}
 			};
 
-			searchIcon = Stock.SearchboxSearch.GetImageSource (Xwt.IconSize.Small);
-			searchIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-24~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
-			searchIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-search-win-24~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
-			clearIcon = ((MonoDevelop.Core.IconId)"md-searchbox-clear").GetImageSource (Xwt.IconSize.Small);
-			clearIconHovered = Xwt.Drawing.Image.FromResource (typeof(IdeApp),"searchbox-clear-win-24~hover.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
-			clearIconPressed = Xwt.Drawing.Image.FromResource (typeof(IdeApp), "searchbox-clear-win-24~pressed.png").WithSize (Xwt.IconSize.Small).GetImageSource ();
+			searchIcon = Stock.SearchboxSearch.GetStockIcon ().WithSize (Xwt.IconSize.Small);
+			clearIcon = ((MonoDevelop.Core.IconId)"md-searchbox-clear").GetStockIcon ().WithSize (Xwt.IconSize.Small);
 			SearchIcon.Image = searchIcon;
-			SearchIcon.ImageHovered = searchIconHovered;
-			SearchIcon.ImagePressed = searchIconPressed;
 			SearchIcon.Focusable = false;
 		}
 
@@ -89,14 +82,10 @@ namespace WindowsPlatform.MainToolbar
 			if (string.IsNullOrEmpty (searchText) || searchText == PlaceholderText) {
 				if (isClearShown) {
 					SearchIcon.Image = searchIcon;
-					SearchIcon.ImageHovered = searchIconHovered;
-					SearchIcon.ImagePressed = searchIconPressed;
 					isClearShown = false;
 				}
 			} else if (!isClearShown) {
 				SearchIcon.Image = clearIcon;
-				SearchIcon.ImageHovered = clearIconHovered;
-				SearchIcon.ImagePressed = clearIconPressed;
 				isClearShown = true;
 			}
 		}

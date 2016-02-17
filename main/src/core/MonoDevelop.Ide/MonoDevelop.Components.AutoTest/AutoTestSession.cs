@@ -242,6 +242,17 @@ namespace MonoDevelop.Components.AutoTest
 			return TaskService.Errors.Count (x => x.Severity == severity);
 		}
 
+		public List<TaskListEntryDTO> GetErrors (TaskSeverity severity)
+		{
+			return TaskService.Errors.Where (x => x.Severity == severity).Select (x => new TaskListEntryDTO () {
+				Line = x.Line,
+				Description = x.Description,
+				File = x.FileName.FileName,
+				Path = x.FileName.FullPath,
+				Project = x.WorkspaceObject.Name
+			}).ToList ();
+		}
+
 		object SafeObject (object ob)
 		{
 			if (ob == null)

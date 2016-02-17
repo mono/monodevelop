@@ -28,6 +28,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.CheckButton checkbuttonGenerateFormattingUndoStep;
 
+		private global::Gtk.CheckButton checkbuttonEnableSelectionSurrounding;
+
 		private global::Gtk.Label GtkLabel7;
 
 		private global::Gtk.Alignment GtkAlignment;
@@ -172,12 +174,24 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w9.Position = 5;
 			w9.Expand = false;
 			w9.Fill = false;
+			// Container child vbox4.Gtk.Box+BoxChild
+			this.checkbuttonEnableSelectionSurrounding = new global::Gtk.CheckButton();
+			this.checkbuttonEnableSelectionSurrounding.CanFocus = true;
+			this.checkbuttonEnableSelectionSurrounding.Name = "checkbuttonEnableSelectionSurrounding";
+			this.checkbuttonEnableSelectionSurrounding.Label = global::Mono.Unix.Catalog.GetString("Enable _selection surrounding keys");
+			this.checkbuttonEnableSelectionSurrounding.DrawIndicator = true;
+			this.checkbuttonEnableSelectionSurrounding.UseUnderline = true;
+			this.vbox4.Add(this.checkbuttonEnableSelectionSurrounding);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.checkbuttonEnableSelectionSurrounding]));
+			w10.Position = 6;
+			w10.Expand = false;
+			w10.Fill = false;
 			this.alignment3.Add(this.vbox4);
 			this.vbox1.Add(this.alignment3);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment3]));
-			w11.Position = 1;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment3]));
+			w12.Position = 1;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.GtkLabel7 = new global::Gtk.Label();
 			this.GtkLabel7.Name = "GtkLabel7";
@@ -185,10 +199,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.GtkLabel7.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Indentation</b>");
 			this.GtkLabel7.UseMarkup = true;
 			this.vbox1.Add(this.GtkLabel7);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel7]));
-			w12.Position = 2;
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel7]));
+			w13.Position = 2;
+			w13.Expand = false;
+			w13.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.GtkAlignment = new global::Gtk.Alignment(0F, 0F, 1F, 1F);
 			this.GtkAlignment.Name = "GtkAlignment";
@@ -207,23 +221,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString("_Indentation mode:");
 			this.label1.UseUnderline = true;
 			this.hbox1.Add(this.label1);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
-			w13.Position = 0;
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.label1]));
+			w14.Position = 0;
+			w14.Expand = false;
+			w14.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.indentationCombobox = global::Gtk.ComboBox.NewText();
 			this.indentationCombobox.Name = "indentationCombobox";
 			this.hbox1.Add(this.indentationCombobox);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.indentationCombobox]));
-			w14.Position = 1;
-			w14.Expand = false;
-			w14.Fill = false;
-			this.vbox2.Add(this.hbox1);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
-			w15.Position = 0;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.indentationCombobox]));
+			w15.Position = 1;
 			w15.Expand = false;
 			w15.Fill = false;
+			this.vbox2.Add(this.hbox1);
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.hbox1]));
+			w16.Position = 0;
+			w16.Expand = false;
+			w16.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.tabAsReindentCheckbutton = new global::Gtk.CheckButton();
 			this.tabAsReindentCheckbutton.CanFocus = true;
@@ -232,16 +246,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.tabAsReindentCheckbutton.DrawIndicator = true;
 			this.tabAsReindentCheckbutton.UseUnderline = true;
 			this.vbox2.Add(this.tabAsReindentCheckbutton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.tabAsReindentCheckbutton]));
-			w16.Position = 1;
-			w16.Expand = false;
-			w16.Fill = false;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox2[this.tabAsReindentCheckbutton]));
+			w17.Position = 1;
+			w17.Expand = false;
+			w17.Fill = false;
 			this.GtkAlignment.Add(this.vbox2);
 			this.vbox1.Add(this.GtkAlignment);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkAlignment]));
-			w18.Position = 3;
-			w18.Expand = false;
-			w18.Fill = false;
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkAlignment]));
+			w19.Position = 3;
+			w19.Expand = false;
+			w19.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.GtkLabel9 = new global::Gtk.Label();
 			this.GtkLabel9.Name = "GtkLabel9";
@@ -249,10 +263,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.GtkLabel9.LabelProp = global::Mono.Unix.Catalog.GetString("<b>Navigation</b>");
 			this.GtkLabel9.UseMarkup = true;
 			this.vbox1.Add(this.GtkLabel9);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel9]));
-			w19.Position = 4;
-			w19.Expand = false;
-			w19.Fill = false;
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.GtkLabel9]));
+			w20.Position = 4;
+			w20.Expand = false;
+			w20.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.alignment4 = new global::Gtk.Alignment(0.5F, 0.5F, 1F, 1F);
 			this.alignment4.Name = "alignment4";
@@ -271,29 +285,29 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString("Word _break mode:");
 			this.label2.UseUnderline = true;
 			this.hbox3.Add(this.label2);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label2]));
-			w20.Position = 0;
-			w20.Expand = false;
-			w20.Fill = false;
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.label2]));
+			w21.Position = 0;
+			w21.Expand = false;
+			w21.Fill = false;
 			// Container child hbox3.Gtk.Box+BoxChild
 			this.controlLeftRightCombobox = global::Gtk.ComboBox.NewText();
 			this.controlLeftRightCombobox.Name = "controlLeftRightCombobox";
 			this.hbox3.Add(this.controlLeftRightCombobox);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.controlLeftRightCombobox]));
-			w21.Position = 1;
-			w21.Expand = false;
-			w21.Fill = false;
-			this.vbox5.Add(this.hbox3);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox3]));
-			w22.Position = 0;
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.hbox3[this.controlLeftRightCombobox]));
+			w22.Position = 1;
 			w22.Expand = false;
 			w22.Fill = false;
+			this.vbox5.Add(this.hbox3);
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox3]));
+			w23.Position = 0;
+			w23.Expand = false;
+			w23.Fill = false;
 			this.alignment4.Add(this.vbox5);
 			this.vbox1.Add(this.alignment4);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment4]));
-			w24.Position = 5;
-			w24.Expand = false;
-			w24.Fill = false;
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.alignment4]));
+			w25.Position = 5;
+			w25.Expand = false;
+			w25.Fill = false;
 			this.Add(this.vbox1);
 			if ((this.Child != null))
 			{

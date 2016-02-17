@@ -56,11 +56,13 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public static async Task<ParameterIndexResult> GetCurrentParameterIndex (Document document, int startOffset, int caretOffset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			List<string> usedNamedParameters = null;
-			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
-			var root = await tree.GetRootAsync (cancellationToken).ConfigureAwait (false);
-			if (startOffset >= root.Span.Length)
+			if (startOffset < 0)
 				return ParameterIndexResult.Invalid;
 
+			var tree = await document.GetSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
+			var root = await tree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+			if (startOffset >= root.FullSpan.Length)
+				return ParameterIndexResult.Invalid;
 			var token = root.FindToken (startOffset);
 			if (token.Parent == null)
 				return ParameterIndexResult.Invalid;
@@ -73,7 +75,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 			                 n is ElementAccessExpressionSyntax ||
 			                 n is ConstructorInitializerSyntax ||
 			                 n is AttributeSyntax);
-
 			if (invocation is InvocationExpressionSyntax) {
 				argList = ((InvocationExpressionSyntax)invocation).ArgumentList;
 			} else if (invocation is ObjectCreationExpressionSyntax) {
@@ -89,8 +90,9 @@ namespace ICSharpCode.NRefactory6.CSharp
 				return ParameterIndexResult.Invalid;
 			int i = 0;
 			int j = 0;
-			if (caretOffset < argList.SpanStart || caretOffset > argList.Span.End)
+			if (caretOffset <= argList.SpanStart || caretOffset >= argList.Span.End) {
 				return ParameterIndexResult.Invalid;
+			}
 			
 			foreach (var child in argList.ChildNodesAndTokens ()) {
 				if (child.Span.End > caretOffset) {

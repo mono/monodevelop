@@ -204,7 +204,7 @@ namespace MonoDevelop.NUnit
 			buttonOutput = new ToggleButton ();
 			buttonOutput.Label = GettextCatalog.GetString ("Output");
 			buttonOutput.Active = false;
-			buttonOutput.Image = ImageService.GetImage (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
+			buttonOutput.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.OutputIcon, IconSize.Menu);
 			buttonOutput.Image.Show ();
 			buttonOutput.Toggled += new EventHandler (OnShowOutputToggled);
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show Output");
@@ -214,12 +214,12 @@ namespace MonoDevelop.NUnit
 			
 			buttonRun = new Button ();
 			buttonRun.Label = GettextCatalog.GetString ("Rerun Tests");
-			buttonRun.Image = new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu));
+			buttonRun.Image = new ImageView ("md-execute-all", IconSize.Menu);
 			buttonRun.Image.Show ();
 			buttonRun.Sensitive = false;
 			toolbar.Add (buttonRun);
 			
-			buttonStop = new Button (new Gtk.Image (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
+			buttonStop = new Button (new ImageView (Ide.Gui.Stock.Stop, Gtk.IconSize.Menu));
 			toolbar.Add (buttonStop);
 			toolbar.ShowAll ();
 			
@@ -606,10 +606,14 @@ namespace MonoDevelop.NUnit
 				loc = res.GetFailureLocation ();
 			if (loc == null)
 				loc = test.SourceCodeLocation;
-			if (loc != null)
+			if (loc != null) {
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+			} else {
+				LoggingService.LogError ("Can't get source code location for test : "+ test);
+				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));
+			}
 		}
-		
+
 		[CommandHandler (TestCommands.ShowTestCode)]
 		protected void OnShowTestCode ()
 		{
@@ -617,8 +621,12 @@ namespace MonoDevelop.NUnit
 			if (test == null)
 				return;
 			SourceCodeLocation loc = test.SourceCodeLocation;
-			if (loc != null)
+			if (loc != null) {
 				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+			}  else {
+				LoggingService.LogError ("Can't get source code location for test : "+ test);
+				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));
+			}
 		}
 
 		[CommandHandler (TestCommands.RerunTest)]
@@ -628,15 +636,6 @@ namespace MonoDevelop.NUnit
 			if (test == null)
 				return;
 			NUnitService.Instance.RunTest (test, null);
-		}
-		
-		[CommandUpdateHandler (TestCommands.ShowTestCode)]
-		[CommandUpdateHandler (TestCommands.GoToFailure)]
-		[CommandUpdateHandler (TestCommands.RerunTest)]
-		protected void OnUpdateRunTest (CommandInfo info)
-		{
-			UnitTest test = GetSelectedTest ();
-			info.Enabled = test != null && test.SourceCodeLocation != null;
 		}
 		
 		UnitTest GetSelectedTest ()

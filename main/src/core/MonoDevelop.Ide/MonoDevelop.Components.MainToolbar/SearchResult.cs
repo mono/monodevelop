@@ -39,6 +39,7 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -55,9 +56,9 @@ namespace MonoDevelop.Components.MainToolbar
 	{
 		protected string match;
 		
-		public virtual string GetMarkupText ()
+		public virtual string GetMarkupText (bool selected)
 		{
-			return HighlightMatch (PlainText, match);
+			return HighlightMatch (PlainText, match, selected);
 		}
 
 		public virtual string GetDescriptionMarkupText ()
@@ -99,7 +100,7 @@ namespace MonoDevelop.Components.MainToolbar
 			Rank = rank;
 		}
 		
-		protected static string HighlightMatch (string text, string toMatch)
+		protected static string HighlightMatch (string text, string toMatch, bool selected)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
 			StringBuilder result = new StringBuilder ();
@@ -109,7 +110,8 @@ namespace MonoDevelop.Components.MainToolbar
 					int pos = lane[n];
 					if (pos - lastPos > 0)
 						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
-					result.Append ("<span foreground=\"#4d4d4d\" font_weight=\"bold\">");
+					var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
+					result.Append ("<span foreground=\"" + Styles.ColorGetHex (matchColor) + "\" font_weight=\"bold\">");
 					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
 					result.Append ("</span>");
 					lastPos = pos + 1;
@@ -135,55 +137,44 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 	}
 
-	class FileSearchResult: SearchResult
+	class FileSearchResult : SearchResult
 	{
 		ProjectFile file;
-		bool useFileName;
 
 		public override SearchResultType SearchResultType { get { return SearchResultType.File; } }
 
 		public override string PlainText {
 			get {
-				if (useFileName)
-					return System.IO.Path.GetFileName (file.FilePath);
-				return GetRelProjectPath (file);
+				return System.IO.Path.GetFileName (file.FilePath);
 			}
 		}
-		 
+
 		public override string File {
 			get {
 				return file.FilePath;
 			}
 		}
-		
+
 		public override Xwt.Drawing.Image Icon {
 			get {
 				return DesktopService.GetIconForFile (file.FilePath, IconSize.Menu);
 			}
 		}
 
-		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
-		{
-			return Task.FromResult<TooltipInformation> (null);
-		}
-
 		public override string Description {
 			get {
-				if (useFileName)
-					return file.Project != null
-						? GettextCatalog.GetString ("file \"{0}\" in project \"{1}\"", GetRelProjectPath (file), file.Project.Name)
-						: GettextCatalog.GetString ("file \"{0}\"", GetRelProjectPath (file));
-				return file.Project != null ? GettextCatalog.GetString ("file in project \"{0}\"", file.Project.Name) : "";
+				return file.Project != null
+					? GettextCatalog.GetString ("file \"{0}\" in project \"{1}\"", GetRelProjectPath (file), file.Project.Name)
+					: GettextCatalog.GetString ("file \"{0}\"", GetRelProjectPath (file));
 			}
 		}
-		
-		public FileSearchResult (string match, string matchedString, int rank, ProjectFile file, bool useFileName)
+
+		public FileSearchResult (string match, string matchedString, int rank, ProjectFile file)
 							: base (match, matchedString, rank)
 		{
 			this.file = file;
-			this.useFileName = useFileName;
 		}
-		
+
 		internal static string GetRelProjectPath (ProjectFile file)
 		{
 			if (file.Project != null)
@@ -229,11 +220,6 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
-		{
-			return Task.FromResult<TooltipInformation> (null);
-		}
-
 		public override string Description {
 			get {
 				string desc = "";
@@ -253,9 +239,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 		
-		public override string GetMarkupText ()
+		public override string GetMarkupText (bool selected)
 		{
-			return HighlightMatch (MatchedString, match);
+			return HighlightMatch (MatchedString, match, selected);
 		}
 
 		public override bool CanActivate {

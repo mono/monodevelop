@@ -63,11 +63,11 @@ namespace WindowsPlatform.MainToolbar
 					if (ec > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = ec;
-						BuildResultIcon = Stock.Error.GetImageSource (Xwt.IconSize.Small);
+						BuildResultIcon = Stock.Error.GetStockIcon ().WithSize (Xwt.IconSize.Small);
 					} else if (wc > 0) {
 						BuildResultPanelVisibility = Visibility.Visible;
 						BuildResultCount = wc;
-						BuildResultIcon = Stock.Warning.GetImageSource (Xwt.IconSize.Small);
+						BuildResultIcon = Stock.Warning.GetStockIcon ().WithSize (Xwt.IconSize.Small);
 					} else
 						BuildResultPanelVisibility = Visibility.Collapsed;
 				});
@@ -212,12 +212,12 @@ namespace WindowsPlatform.MainToolbar
 
 			if (ImageService.IsAnimation (currentIcon, Gtk.IconSize.Menu)) {
 				animatedIcon = ImageService.GetAnimatedIcon (currentIcon, Gtk.IconSize.Menu);
-				StatusImage = animatedIcon.FirstFrame.GetImageSource ();
+				StatusImage = animatedIcon.FirstFrame;
 				xwtAnimation = animatedIcon.StartAnimation (p => {
-					StatusImage = p.GetImageSource ();
+					StatusImage = p;
 				});
 			} else
-				StatusImage = currentIcon.GetImageSource (Xwt.IconSize.Small);
+				StatusImage = currentIcon.GetStockIcon ().WithSize (Xwt.IconSize.Small);
 		}
 
 		public void ShowReady ()
@@ -270,8 +270,8 @@ namespace WindowsPlatform.MainToolbar
 			set { SetValue (StatusTextBrushProperty, value); }
 		}
 
-		ImageSource statusImage;
-		public ImageSource StatusImage
+		Xwt.Drawing.Image statusImage;
+		public Xwt.Drawing.Image StatusImage
 		{
 			get { return statusImage; }
 			set { statusImage = value; RaisePropertyChanged (); }
@@ -284,8 +284,8 @@ namespace WindowsPlatform.MainToolbar
 			set { buildResultCount = value; RaisePropertyChanged (); }
 		}
 
-		ImageSource buildResultIcon;
-		public ImageSource BuildResultIcon
+		Xwt.Drawing.Image buildResultIcon;
+		public Xwt.Drawing.Image BuildResultIcon
 		{
 			get { return buildResultIcon; }
 			set { buildResultIcon = value; RaisePropertyChanged (); }
@@ -307,7 +307,7 @@ namespace WindowsPlatform.MainToolbar
 		public event PropertyChangedEventHandler PropertyChanged;
 	}
 
-	class StatusIcon : System.Windows.Controls.Image, StatusBarIcon
+	class StatusIcon : ImageBox, StatusBarIcon
 	{
 		StatusBar bar;
 
@@ -361,17 +361,6 @@ namespace WindowsPlatform.MainToolbar
 				Clicked (this, new StatusBarIconClickedEventArgs {
 					Button = button,
 				});
-		}
-
-		Xwt.Drawing.Image image;
-		public Xwt.Drawing.Image Image
-		{
-			get { return image; }
-			set
-			{
-				image = value;
-				Source = value.WithSize (Xwt.IconSize.Small).GetImageSource ();
-			}
 		}
 
 		public event EventHandler<StatusBarIconClickedEventArgs> Clicked;

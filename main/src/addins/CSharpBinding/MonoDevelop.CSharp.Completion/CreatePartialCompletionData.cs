@@ -131,5 +131,11 @@ namespace MonoDevelop.CSharp.Completion
 			OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
 			editor.CaretLine--;
 		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
+		}
+
 	}
 }

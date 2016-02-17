@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.MHex.Data;
+using MonoDevelop.HexEditor;
 using Xwt;
 
 namespace Mono.MHex
@@ -69,6 +70,7 @@ namespace Mono.MHex
 
 		public HexEditorDebugger ()
 		{
+			editor.HexEditorStyle = new MonoDevelopHexEditorStyle (editor);
 			var comboBox = new ComboBox ();
 			comboBox.Items.Add ("Hex 8");
 			comboBox.Items.Add ("Hex 16");

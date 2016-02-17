@@ -111,6 +111,9 @@ namespace MonoDevelop.PackageManagement
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
 			parentViewModel.Dispose ();
 			DisposeExistingTimer ();
+			packageStore.Clear ();
+			viewModel = null;
+			parentViewModel = null;
 			base.Dispose (disposing);
 		}
 

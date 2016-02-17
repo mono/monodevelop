@@ -229,7 +229,7 @@ namespace MonoDevelop.Components.Commands
 				this.Visible = cmdInfo.Visible && (disabledVisible || cmdInfo.Enabled);
 				
 				if (!cmdInfo.Icon.IsNull && cmdInfo.Icon != lastIcon) {
-					Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
+					Image = new ImageView (cmdInfo.Icon, Gtk.IconSize.Menu);
 					lastIcon = cmdInfo.Icon;
 				}
 				

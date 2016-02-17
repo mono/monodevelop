@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		Read       = 1,
 		Write      = 2,
 		Declariton = 4,
+		Keyword    = 8,
 		ReadWrite  = Read | Write
 	}
 

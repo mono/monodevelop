@@ -38,9 +38,13 @@ using Microsoft.CodeAnalysis.FindSymbols;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Refactoring;
+using System.Runtime.CompilerServices;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
+	
 	class FindDerivedSymbolsHandler
 	{
 		public static bool CanFindDerivedSymbols (ISymbol symbol, out string description)
@@ -68,11 +72,12 @@ namespace MonoDevelop.CSharp.Refactoring
 					} else if (symbol.Kind == SymbolKind.NamedType) {
 						var type = (INamedTypeSymbol)symbol;
 						if (type.TypeKind == TypeKind.Interface) {
-							result = (await type.FindDerivedInterfacesAsync (TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ().Concat (
-								await SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false) 
+							
+							result = (await SymbolFinder.FindImplementationsAsync (type, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ().Concat (
+								await FindInterfaceImplementaitonsAsync (type, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false) 
 							);
 						} else {
-							result = (await type.FindDerivedClassesAsync (TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ();
+							result = (await SymbolFinder.FindDerivedClassesAsync (type, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ();
 						}
 					} else {
 						result = await SymbolFinder.FindOverridesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false);
@@ -85,15 +90,25 @@ namespace MonoDevelop.CSharp.Refactoring
 			});
 		}
 
-		public async void Update (CommandInfo info)
+		static async Task<IEnumerable<ISymbol>> FindInterfaceImplementaitonsAsync (INamedTypeSymbol type, Microsoft.CodeAnalysis.Solution currentSolution, CancellationToken token = default(CancellationToken))
+		{
+			var result = new List<ISymbol> ();
+
+			foreach (var project in currentSolution.Projects) {
+				var comp = await project.GetCompilationAsync (token).ConfigureAwait (false);
+				foreach (var i in comp.GetAllTypesInMainAssembly (token).Where (t => t.TypeKind == TypeKind.Interface)) {
+					if (i.AllInterfaces.Any (t => t.InheritsFromOrEqualsIgnoringConstruction (type)))
+						result.Add (i);
+				}
+			}
+
+			return result;
+		}
+
+		public void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null) {
-				info.Enabled = false;
-				return;
-			}
-			var rinfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
-			info.Enabled = rinfo.DeclaredSymbol != null;
+			info.Enabled = doc != null && doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
 		}
 
 		public async void Run (object data)
@@ -101,7 +116,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset);
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
 			if (info.DeclaredSymbol != null)
 				FindDerivedSymbols (info.DeclaredSymbol);
 		}

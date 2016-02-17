@@ -617,20 +617,30 @@ namespace MonoDevelop.Ide.Gui
 		
 		void CheckRemovedFile (object sender, FileEventArgs args)
 		{
-			foreach (FileEventInfo e in args) {
+			foreach (var e in args) {
 				if (e.IsDirectory) {
-					ViewContent[] views = new ViewContent [viewContentCollection.Count];
+					var views = new ViewContent [viewContentCollection.Count];
 					viewContentCollection.CopyTo (views, 0);
-					foreach (ViewContent content in views) {
-						if (content.ContentName.StartsWith (e.FileName)) {
-							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+					foreach (var content in views) {
+						if (content.ContentName.StartsWith (e.FileName, StringComparison.CurrentCulture)) {
+							if (content.IsDirty) {
+								content.UntitledName = content.ContentName;
+								content.ContentName = null;
+							} else {
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+							}
 						}
 					}
 				} else {
-					foreach (ViewContent content in viewContentCollection) {
+					foreach (var content in viewContentCollection) {
 						if (content.ContentName != null &&
 							content.ContentName == e.FileName) {
-							((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+							if (content.IsDirty) {
+								content.UntitledName = content.ContentName;
+								content.ContentName = null;
+							} else {
+								((SdiWorkspaceWindow)content.WorkbenchWindow).CloseWindow (true, true);
+							}
 							return;
 						}
 					}
@@ -853,7 +863,6 @@ namespace MonoDevelop.Ide.Gui
 			// correct style (the style of the window). At this point the widget is not yet a child
 			// of the window, so its style is not yet the correct one.
 			tabControl.InitSize ();
-			var barHeight = tabControl.BarHeight;
 
 			// The main document area
 			documentDockItem = dock.AddItem ("Documents");
@@ -863,32 +872,8 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem.Label = GettextCatalog.GetString ("Documents");
 			documentDockItem.Content = new DockNotebookContainer (tabControl, true);
 
-			DockVisualStyle style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor.ToXwtColor ();
-			style.PadBackgroundColor = Styles.PadBackground.ToXwtColor ();
-			style.InactivePadBackgroundColor = Styles.InactivePadBackground.ToXwtColor ();
-			style.PadTitleHeight = barHeight;
-			dock.DefaultVisualStyle = style;
-
-			style = new DockVisualStyle ();
-			style.PadTitleLabelColor = Styles.PadLabelColor.ToXwtColor ();
-			style.PadTitleHeight = barHeight;
-			style.ShowPadTitleIcon = false;
-			style.UppercaseTitles = false;
-			style.ExpandedTabs = true;
-			style.PadBackgroundColor = Styles.BrowserPadBackground.ToXwtColor ();
-			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground.ToXwtColor ();
-			style.TreeBackgroundColor = Styles.BrowserPadBackground.ToXwtColor ();
-			dock.SetDockItemStyle ("ProjectPad", style);
-			dock.SetDockItemStyle ("ClassPad", style);
-
-//			dock.SetRegionStyle ("Documents/Left", style);
-			//dock.SetRegionStyle ("Documents/Right", style);
-
-//			style = new DockVisualStyle ();
-//			style.SingleColumnMode = true;
-//			dock.SetRegionStyle ("Documents/Left;Documents/Right", style);
-//			dock.SetDockItemStyle ("Documents", style);
+			LoadDockStyles ();
+			Styles.Changed += (sender, e) => LoadDockStyles ();
 
 			// Add some hiden items to be used as position reference
 			DockItem dit = dock.AddItem ("__left");
@@ -938,6 +923,45 @@ namespace MonoDevelop.Ide.Gui
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 			}
+		}
+
+		void LoadDockStyles ()
+		{
+			var barHeight = tabControl.BarHeight;
+
+			DockVisualStyle style = new DockVisualStyle ();
+			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.InactivePadTitleLabelColor = Styles.InactivePadLabelColor;
+			style.PadBackgroundColor = Styles.PadBackground;
+			style.TreeBackgroundColor = Styles.BaseBackgroundColor;
+			style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+			style.PadTitleHeight = barHeight;
+			dock.DefaultVisualStyle = style;
+
+			style = new DockVisualStyle ();
+			style.PadTitleLabelColor = Styles.PadLabelColor;
+			style.InactivePadTitleLabelColor = Styles.InactivePadLabelColor;
+			style.PadTitleHeight = barHeight;
+			// style.ShowPadTitleIcon = false; // VV: Now we want to have icons on all pads
+			style.UppercaseTitles = false;
+			style.ExpandedTabs = true;
+			style.PadBackgroundColor = Styles.BrowserPadBackground;
+			style.InactivePadBackgroundColor = Styles.InactiveBrowserPadBackground;
+			style.TreeBackgroundColor = Styles.BrowserPadBackground;
+			dock.SetDockItemStyle ("ProjectPad", style);
+			dock.SetDockItemStyle ("ClassPad", style);
+
+
+
+			//			dock.SetRegionStyle ("Documents/Left", style);
+			//dock.SetRegionStyle ("Documents/Right", style);
+
+			//			style = new DockVisualStyle ();
+			//			style.SingleColumnMode = true;
+			//			dock.SetRegionStyle ("Documents/Left;Documents/Right", style);
+			//			dock.SetDockItemStyle ("Documents", style);
+
+			dock.UpdateStyles ();
 		}
 		
 		void InitializeLayout (string name)
@@ -1012,6 +1036,12 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				return dock.CurrentLayout.EndsWith (fullViewModeTag);
 			}
+		}
+
+		protected override void OnStyleSet (Gtk.Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			IdeTheme.UpdateStyles ();
 		}
 		
 		protected override bool OnConfigureEvent (Gdk.EventConfigure evnt)

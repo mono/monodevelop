@@ -30,7 +30,7 @@ namespace MonoDevelop.Ide.Templates
 {
 	public class TestableWizardPage : WizardPage
 	{
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return new Gtk.EventBox ();
 		}

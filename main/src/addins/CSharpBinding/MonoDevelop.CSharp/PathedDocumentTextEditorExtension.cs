@@ -53,6 +53,7 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
+			CancelDocumentParsedUpdate ();
 			CancelUpdatePathTimeout ();
 			CancelUpdatePath ();
 			Editor.TextChanging -= Editor_TextChanging;
@@ -121,9 +122,31 @@ namespace MonoDevelop.CSharp
 			updatePathTimeoutId = 0;
 		}
 
+		CancellationTokenSource documentParsedCancellationTokenSource = new CancellationTokenSource ();
+
 		void DocumentContext_DocumentParsed (object sender, EventArgs e)
 		{
 			SubscribeCaretPositionChange ();
+
+			// Fixes a potential memory leak see: https://bugzilla.xamarin.com/show_bug.cgi?id=38041
+			if (ownerProjects.Count > 1) {
+				var currentOwners = ownerProjects.Where (p => p != DocumentContext.Project).Select (p => TypeSystemService.GetCodeAnalysisProject (p)).ToList ();
+				CancelDocumentParsedUpdate ();
+				var token = documentParsedCancellationTokenSource.Token;
+				Task.Run (async delegate {
+					foreach (var otherProject in currentOwners) {
+						if (otherProject == null)
+							continue;
+						await otherProject.GetCompilationAsync (token).ConfigureAwait (false);
+					}
+				});
+			}
+		}
+
+		void CancelDocumentParsedUpdate ()
+		{
+			documentParsedCancellationTokenSource.Cancel ();
+			documentParsedCancellationTokenSource = new CancellationTokenSource ();
 		}
 
 		void SubscribeCaretPositionChange ()
@@ -475,6 +498,8 @@ namespace MonoDevelop.CSharp
 					var node = memberList [n];
 					if (node is MemberDeclarationSyntax) {
 						icon = ((MemberDeclarationSyntax)node).GetStockIcon ();
+					} else if (node is VariableDeclaratorSyntax) {
+						icon = node.Parent.Parent.GetStockIcon ();
 					} else {
 						icon = node.Parent.GetStockIcon ();
 					}
@@ -699,7 +724,7 @@ namespace MonoDevelop.CSharp
 					return;
 				}
 
-				var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
+				var curMember = node != null ? node.AncestorsAndSelf ().FirstOrDefault (m => m is VariableDeclaratorSyntax && m.Parent != null && !(m.Parent.Parent is LocalDeclarationStatementSyntax) || (m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax))) : null;
 				var curType = node != null ? node.AncestorsAndSelf ().FirstOrDefault (IsType) : null;
 
 				var curProject = ownerProjects != null && ownerProjects.Count > 1 ? DocumentContext.Project : null;
@@ -719,14 +744,15 @@ namespace MonoDevelop.CSharp
 
 				var result = new List<PathEntry>();
 
-				if (ownerProjects != null && ownerProjects.Count > 1) {
-					// Current project if there is more than one
-					result.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
+				if (curProject != null) {
+					// Current project if there is more than one 
+					result.Add (new PathEntry (ImageService.GetIcon (curProject.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (curProject.Name)) { Tag = curProject });
 				}
+
 				if (curType == null) {
-					if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0].Tag is CSharpSyntaxTree)
+					if (CurrentPath != null && CurrentPath.Length == 1 && CurrentPath [0]?.Tag is CSharpSyntaxTree)
 						return;
-					if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1].Tag is CSharpSyntaxTree)
+					if (CurrentPath != null && CurrentPath.Length == 2 && CurrentPath [1]?.Tag is CSharpSyntaxTree)
 						return;
 					var prevPath = CurrentPath;
 					result.Add (new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = unit });

@@ -36,7 +36,7 @@ using MonoDevelop.Components;
 namespace MonoDevelop.RegexToolkit
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	partial class ElementHelpWidget : Gtk.Bin
+	internal partial class ElementHelpWidget : Gtk.Bin
 	{
 		TreeStore elementsStore;
 //		IWorkbenchWindow workbenchWindow;

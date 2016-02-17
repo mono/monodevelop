@@ -181,24 +181,24 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
 			
-			buttonStop = new ToolButton (Ide.Gui.Stock.Stop) { Sensitive = false };
-
+			buttonStop = new ToolButton (new ImageView (Gui.Stock.Stop, Gtk.IconSize.Menu), null) { Sensitive = false };
 			buttonStop.Clicked += ButtonStopClicked;
-
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
-			var buttonClear = new ToolButton (Ide.Gui.Stock.Clear);
+			var buttonClear = new ToolButton (new ImageView (Gui.Stock.Clear, Gtk.IconSize.Menu), null);
 			buttonClear.Clicked += ButtonClearClicked;
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear results");
 			toolbar.Insert (buttonClear, -1);
 			
-			var buttonOutput = new ToggleToolButton (Gui.Stock.OutputIcon);
+			var buttonOutput = new ToggleToolButton ();
+			buttonOutput.IconWidget = new ImageView (Gui.Stock.OutputIcon, Gtk.IconSize.Menu);
 			buttonOutput.Clicked += ButtonOutputClicked;
 			buttonOutput.TooltipText = GettextCatalog.GetString ("Show output");
 			toolbar.Insert (buttonOutput, -1);
 			
-			buttonPin = new ToggleToolButton (Gui.Stock.PinUp);
+			buttonPin = new ToggleToolButton ();
+			buttonPin.IconWidget = new ImageView (Gui.Stock.PinUp, Gtk.IconSize.Menu);
 			buttonPin.Clicked += ButtonPinClicked;
 			buttonPin.TooltipText = GettextCatalog.GetString ("Pin results pad");
 			toolbar.Insert (buttonPin, -1);
@@ -209,12 +209,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			scrolledwindowLogView.Hide ();
 			treeviewSearchResults.FixedHeightMode = true;
 
+			UpdateStyles ();
+			IdeApp.Preferences.ColorScheme.Changed += UpdateStyles;
 		}
-		
-		protected override void OnRealized ()
+
+		void UpdateStyles (object sender = null, EventArgs e = null)
 		{
-			base.OnRealized ();
 			highlightStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!highlightStyle.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				highlightStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
+
+			if (markupCache != null)
+				markupCache = new List<Tuple<SearchResult, string>> ();
+			if (IsRealized) {
+				store.Foreach ((model, path, iter) => {
+					model.EmitRowChanged (path, iter);
+					return false;
+				});
+			}
 		}
 
 		void ButtonPinClicked (object sender, EventArgs e)
@@ -311,10 +323,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			double delta = Math.Abs (b1 - b2);
 			if (delta < 0.1) {
 				HslColor color1 = color;
-				color1.L -= 0.5;
+				color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? -0.5 : 0.5;
 				if (Math.Abs (HslColor.Brightness (color1) - b2) < delta) {
 					color1 = color;
-					color1.L += 0.5;
+					color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? 0.5 : -0.5;
 				}
 				return color1;
 			}

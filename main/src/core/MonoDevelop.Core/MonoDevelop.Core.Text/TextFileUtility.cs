@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Core.Text
 {
@@ -224,7 +225,7 @@ namespace MonoDevelop.Core.Text
 			bool hadBom;
 			using (var stream = OpenStream (inputStream, out hadBom)) {
 				tc.Encoding = stream.CurrentEncoding;
-				tc.Text = await stream.ReadToEndAsync ();
+				tc.Text = await stream.ReadToEndAsync ().ConfigureAwait (false);
 				tc.HasBom = hadBom;
 			}
 			return tc;
@@ -233,6 +234,11 @@ namespace MonoDevelop.Core.Text
 		public static string GetText (string fileName)
 		{
 			return GetText (File.ReadAllBytes (fileName));
+		}
+
+		public static async Task<string> GetTextAsync (string fileName, CancellationToken token)
+		{
+			return GetText (await ReadAllBytesAsync (fileName, token).ConfigureAwait (false));
 		}
 
 		public static string GetText (string fileName, out Encoding encoding, out bool hadBom)
@@ -294,10 +300,10 @@ namespace MonoDevelop.Core.Text
 				if (hadBom) {
 					var bom = encoding.GetPreamble ();
 					if (bom != null && bom.Length > 0)
-						await stream.WriteAsync (bom, 0, bom.Length);
+						await stream.WriteAsync (bom, 0, bom.Length).ConfigureAwait (false);
 				}
 				byte[] bytes = encoding.GetBytes (text);
-				await stream.WriteAsync (bytes, 0, bytes.Length);
+				await stream.WriteAsync (bytes, 0, bytes.Length).ConfigureAwait (false);
 			}
 			WriteTextFinal (tmpPath, fileName);
 		}
@@ -376,7 +382,7 @@ namespace MonoDevelop.Core.Text
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
-			byte[] content = await ReadAllBytesAsync (fileName);
+			byte[] content = await ReadAllBytesAsync (fileName).ConfigureAwait (false);
 
 			bool hadBom;
 			Encoding encoding;
@@ -406,7 +412,7 @@ namespace MonoDevelop.Core.Text
 			if (encoding == null)
 				throw new ArgumentNullException ("encoding");
 
-			byte[] content = await ReadAllBytesAsync (fileName);
+			byte[] content = await ReadAllBytesAsync (fileName).ConfigureAwait (false);
 
 			bool hadBom;
 			var txt = GetText (content, encoding, out hadBom); 
@@ -417,13 +423,18 @@ namespace MonoDevelop.Core.Text
 			};
 		}
 
-		public static async Task<byte[]> ReadAllBytesAsync (string file)
+		public static Task<byte []> ReadAllBytesAsync (string file)
+		{
+			return ReadAllBytesAsync (file, CancellationToken.None);
+		}
+
+		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
 		{
 			using (var f = File.OpenRead (file)) {
 				var res = new byte [f.Length];
 				int nr = 0;
 				int c = 0;
-				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr)) > 0)
+				while (nr < res.Length && (c = await f.ReadAsync (res, nr, res.Length - nr, token).ConfigureAwait (false)) > 0)
 					nr += c;
 				return res;
 			}

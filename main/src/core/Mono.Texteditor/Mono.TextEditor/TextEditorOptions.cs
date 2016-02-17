@@ -61,7 +61,7 @@ namespace Mono.TextEditor
 		bool removeTrailingWhitespaces = true;
 		bool allowTabsAfterNonTabs = true;
 		string fontName = DEFAULT_FONT;
-		public static string DefaultColorStyle = "Default";
+		public static string DefaultColorStyle = "Light";
 		string colorStyle = DefaultColorStyle;
 		Pango.FontDescription font, gutterFont;
 		

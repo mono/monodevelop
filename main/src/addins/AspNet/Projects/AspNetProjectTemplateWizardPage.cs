@@ -119,7 +119,7 @@ namespace MonoDevelop.AspNet.Projects
 			get { return title; }
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return view ?? (view = new GtkAspNetProjectTemplateWizardPageWidget (this));
 		}

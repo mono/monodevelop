@@ -35,6 +35,7 @@ using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -65,8 +66,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		TargetFramework target;
 		HBox warningHBox;
 		Label warning;
-		Image warningImage;
-		Image infoImage;
+		ImageView warningImage;
+		ImageView infoImage;
 		ComboBox selectorCombo;
 		bool disableEvents;
 
@@ -414,8 +415,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			warning.SetAlignment (0.0f, 0.5f);
 			warning.Show ();
 
-			infoImage = new Image (GetType ().Assembly, "warning-16.png");
-			warningImage = new Image (GetType ().Assembly, "error-16.png");
+			infoImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "warning-16.png"));
+			warningImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "error-16.png"));
 
 			warningHBox = new HBox (false, 6);
 			warningHBox.PackStart (infoImage, false, false, 0);

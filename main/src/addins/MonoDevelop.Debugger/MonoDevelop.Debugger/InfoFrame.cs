@@ -27,6 +27,7 @@
 using System;
 
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -49,10 +50,10 @@ namespace MonoDevelop.Debugger
 				cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 				cr.ClipPreserve ();
 
-				cr.SetSourceRGB (1.00, 0.98, 0.91);
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.InfoFrameBackgroundColor.ToCairoColor ());
 				cr.FillPreserve ();
 
-				cr.SetSourceRGB (0.87, 0.83, 0.74);
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.InfoFrameBorderColor.ToCairoColor ());
 				cr.LineWidth = 2;
 				cr.Stroke ();
 			}

@@ -60,6 +60,7 @@ namespace Stetic
 			layout.Width = -1;
 			
 			Pango.FontDescription des = container.Style.FontDescription.Copy();
+			des.Size = 10 * (int) Pango.Scale.PangoScale;
 			layout.FontDescription = des;
 			
 			this.property = property;

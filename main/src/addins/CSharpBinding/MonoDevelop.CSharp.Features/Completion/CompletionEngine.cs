@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				ctx.TargetToken.Parent.Parent.IsKind(SyntaxKind.ParenthesizedLambdaExpression)) 
 				return CompletionResult.Empty;
 
-			var result = new CompletionResult();
+			var result = new CompletionResult { SyntaxContext = ctx };
 
 			if (position > 0) {
 				var nonExclusiveHandlers = new List<CompletionContextHandler> ();

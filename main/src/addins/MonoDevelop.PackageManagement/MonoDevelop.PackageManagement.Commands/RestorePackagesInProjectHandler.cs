@@ -42,6 +42,8 @@ namespace MonoDevelop.PackageManagement.Commands
 			var runner = new PackageRestoreRunner ();
 			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				runner.Run (project, progressMessage);
+				runner = null;
+				project = null;
 			});
 		}
 

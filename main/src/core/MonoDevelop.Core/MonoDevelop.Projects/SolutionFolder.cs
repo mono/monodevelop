@@ -216,8 +216,10 @@ namespace MonoDevelop.Projects
 				
 				SolutionItem newItem;
 				try {
-					if (ParentSolution.IsSolutionItemEnabled (item.FileName))
-						newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx:new SolutionLoadContext (ParentSolution));
+					if (ParentSolution.IsSolutionItemEnabled (item.FileName)) {
+						using (var ctx = new SolutionLoadContext (ParentSolution))
+							newItem = await Services.ProjectService.ReadSolutionItem (monitor, item.FileName, null, ctx: ctx);
+					}
 					else {
 						UnknownSolutionItem e = new UnloadedSolutionItem () {
 							FileName = item.FileName
@@ -309,9 +311,11 @@ namespace MonoDevelop.Projects
 		public async Task<SolutionItem> AddItem (ProgressMonitor monitor, string filename, bool createSolutionConfigurations)
 		{
 			if (monitor == null) monitor = new ProgressMonitor ();
-			SolutionItem entry = await Services.ProjectService.ReadSolutionItem (monitor, filename, null, ctx:new SolutionLoadContext (ParentSolution));
-			AddItem (entry, createSolutionConfigurations);
-			return entry;
+			using (var ctx = new SolutionLoadContext (ParentSolution)) {
+				var entry = await Services.ProjectService.ReadSolutionItem (monitor, filename, null, ctx: ctx);
+				AddItem (entry, createSolutionConfigurations);
+				return entry;
+			}
 		}
 
 		public void AddItem (SolutionFolderItem item)

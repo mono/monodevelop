@@ -3,4 +3,6 @@
 	<PropertyGroup Condition="$(cond2) == val2_7">
 		<Test1>One</Test1>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(cond1)|$(cond2)' == 'val14_5|val14_6'">
+	</PropertyGroup>
 </Project>

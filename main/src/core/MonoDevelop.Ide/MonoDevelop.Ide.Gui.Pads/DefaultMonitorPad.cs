@@ -80,18 +80,18 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Right);
 
-			buttonStop = new Button (new Gtk.Image (Stock.Stop, IconSize.Menu));
+			buttonStop = new Button (new ImageView (Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Add (buttonStop);
 
-			buttonClear = new Button (new Gtk.Image (Stock.Broom, IconSize.Menu));
+			buttonClear = new Button (new ImageView (Stock.Broom, IconSize.Menu));
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear console");
 			toolbar.Add (buttonClear);
 
 			buttonPin = new ToggleButton ();
-			buttonPin.Image = new Gtk.Image (Stock.PinUp, IconSize.Menu);
+			buttonPin.Image = new ImageView (Stock.PinUp, IconSize.Menu);
 			buttonPin.Image.ShowAll ();
 			buttonPin.Clicked += new EventHandler (OnButtonPinClick);
 			buttonPin.TooltipText = GettextCatalog.GetString ("Pin output pad");
@@ -135,9 +135,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnButtonPinClick (object sender, EventArgs e)
 		{
 			if (buttonPin.Active)
-				((Gtk.Image)buttonPin.Image).Stock = (IconId) "md-pin-down";
+				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
 			else
-				((Gtk.Image)buttonPin.Image).Stock = (IconId) "md-pin-up";
+				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
 		}
 		
 		public bool AllowReuse {

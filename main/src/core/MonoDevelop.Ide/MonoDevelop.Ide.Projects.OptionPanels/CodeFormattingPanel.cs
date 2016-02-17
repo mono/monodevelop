@@ -423,5 +423,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 			buttonRemove.Sensitive = buttonEdit.Sensitive = false;
 		}
+
+		public override void Destroy ()
+		{
+			store.Clear ();
+			base.Destroy ();
+		}
 	}
 }

@@ -1702,5 +1702,20 @@ namespace ICSharpCode.NRefactory6.CSharp
 				node.IsParentKind(SyntaxKind.DelegateDeclaration);
 		}
 
+		public static ConditionalAccessExpressionSyntax GetInnerMostConditionalAccessExpression(this SyntaxNode node)
+		{
+			if (!(node is ConditionalAccessExpressionSyntax))
+			{
+				return null;
+			}
+
+			var result = (ConditionalAccessExpressionSyntax)node;
+			while (result.WhenNotNull is ConditionalAccessExpressionSyntax)
+			{
+				result = (ConditionalAccessExpressionSyntax)result.WhenNotNull;
+			}
+
+			return result;
+		}
 	}
 }

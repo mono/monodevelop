@@ -244,9 +244,10 @@
               <widget class="Gtk.VBox" id="vbox2">
                 <property name="MemberName" />
                 <child>
-                  <widget class="Gtk.Image" id="image1">
+                  <widget class="MonoDevelop.Components.ImageView" id="image1">
                     <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-dialog-warning Dialog</property>
+                    <property name="IconId">gtk-dialog-warning</property>
+                    <property name="IconSize">Dialog</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>

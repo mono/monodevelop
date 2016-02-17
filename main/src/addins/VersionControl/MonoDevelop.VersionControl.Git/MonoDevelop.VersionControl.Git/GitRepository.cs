@@ -368,7 +368,7 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (var entry in changes.Deleted)
 				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.OldPath), RevisionAction.Delete, null));
 			foreach (var entry in changes.Renamed)
-				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), RevisionAction.Replace, null));
+				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), rev.GitRepository.FromGitPath (entry.OldPath), RevisionAction.Replace, null));
 			foreach (var entry in changes.Modified)
 				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
 			foreach (var entry in changes.TypeChanged)
@@ -713,6 +713,9 @@ namespace MonoDevelop.VersionControl.Git
 					Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 					break;
 				}
+				if (res == Git.ConflictResult.Continue) {
+					Add (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
+				}
 			}
 			if (!string.IsNullOrEmpty (message)) {
 				var sig = GetSignature ();
@@ -779,7 +782,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor)
+		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, FastForwardStrategy strategy = FastForwardStrategy.Default)
 		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;

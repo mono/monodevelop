@@ -56,7 +56,6 @@ namespace MonoDevelop.Components.Mac
 			AutoEnablesItems = false;
 
 			Title = (ces.Name ?? "").Replace ("_", "");
-			Font = NSFont.MenuFontOfSize (12);
 			foreach (CommandEntry ce in ces) {
 				if (ce.CommandId == Command.Separator) {
 					AddItem (NSMenuItem.SeparatorItem);

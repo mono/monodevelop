@@ -30,6 +30,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
@@ -123,6 +124,7 @@ namespace MonoDevelop.Components
 			BuildMenu ();
 
 			NoShowAll = true;
+			GtkWorkarounds.SetTransparentBgHint (this, true);
 		}
 
 		public Xwt.Drawing.Image FilterButtonPixbuf {
@@ -384,7 +386,10 @@ namespace MonoDevelop.Components
 			var alloc = new Gdk.Rectangle (alignment.Allocation.X, box.Allocation.Y, alignment.Allocation.Width, box.Allocation.Height);
 
 			if (hasFrame && (!roundedShape || (roundedShape && !customRoundedShapeDrawing))) {
-				Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
+				if (Platform.IsLinux)
+					Style.PaintFlatBox (Style, GdkWindow, entry.State, ShadowType.None,
+					                    evnt.Area, this, "entry_bg", alloc.X + 2, alloc.Y + 2, alloc.Width - 4, alloc.Height - 4);
+				Style.PaintShadow (entry.Style, GdkWindow, entry.State, entry.ShadowType,
 				                   evnt.Area, entry, "entry", alloc.X, alloc.Y, alloc.Width, alloc.Height);
 /*				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					ctx.LineWidth = 1;
@@ -413,7 +418,7 @@ namespace MonoDevelop.Components
 			if (hasFrame && roundedShape && customRoundedShapeDrawing) {
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
-					ctx.SetSourceColor (Styles.WidgetBorderColor);
+					ctx.SetSourceColor (Styles.WidgetBorderColor.ToCairoColor ());
 					ctx.LineWidth = 1;
 					ctx.Stroke ();
 				}
@@ -642,6 +647,8 @@ namespace MonoDevelop.Components
 
 				parent.StyleSet += OnParentStyleSet;
 				WidthChars = 1;
+
+				GtkWorkarounds.SetTransparentBgHint (this, true);
 			}
 
 			private void OnParentStyleSet (object o, EventArgs args)
@@ -720,7 +727,7 @@ namespace MonoDevelop.Components
 
 				if (layout == null) {
 					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = PangoContext.FontDescription.Copy ();
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 
 				int width, height;

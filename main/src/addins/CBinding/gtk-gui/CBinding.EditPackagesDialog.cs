@@ -5,24 +5,45 @@ namespace CBinding
 	public partial class EditPackagesDialog
 	{
 		private global::Gtk.VPaned vpaned1;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Notebook notebook1;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.TreeView normalPackageTreeView;
+		
 		private global::Gtk.Label labelSystemPackages;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow3;
+		
 		private global::Gtk.TreeView projectPackageTreeView;
+		
 		private global::Gtk.Label labelProjectPackages;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.Fixed fixed1;
+		
 		private global::Gtk.Button detailsButton;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
+		
 		private global::Gtk.TreeView selectedPackageTreeView;
+		
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Button removeButton;
+		
+		private global::MonoDevelop.Components.ImageView iconRemove;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -167,11 +188,12 @@ namespace CBinding
 			this.removeButton.Sensitive = false;
 			this.removeButton.CanFocus = true;
 			this.removeButton.Name = "removeButton";
-			this.removeButton.UseUnderline = true;
-			this.removeButton.Label = "";
-			global::Gtk.Image w14 = new global::Gtk.Image ();
-			w14.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-remove", global::Gtk.IconSize.Menu);
-			this.removeButton.Image = w14;
+			// Container child removeButton.Gtk.Container+ContainerChild
+			this.iconRemove = new global::MonoDevelop.Components.ImageView ();
+			this.iconRemove.Name = "iconRemove";
+			this.iconRemove.IconId = "gtk-remove";
+			this.iconRemove.IconSize = ((global::Gtk.IconSize)(1));
+			this.removeButton.Add (this.iconRemove);
 			this.vbox2.Add (this.removeButton);
 			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.removeButton]));
 			w15.Position = 0;

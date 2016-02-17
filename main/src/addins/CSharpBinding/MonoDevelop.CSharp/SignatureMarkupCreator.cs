@@ -77,12 +77,11 @@ namespace MonoDevelop.CSharp
 		public SignatureMarkupCreator (DocumentContext ctx, int offset)
 		{
 			this.offset = offset;
-			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
+			this.colorStyle = SyntaxModeService.GetColorStyle (Ide.IdeApp.Preferences.ColorScheme);
+			if (!this.colorStyle.FitsIdeSkin (Ide.IdeApp.Preferences.UserInterfaceSkin))
+				this.colorStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
 			this.ctx = ctx;
 			if (ctx != null) {
-				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null) {
-					LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
-				}
 				this.options = ctx.GetOptionSet ();
 			} else {
 				this.options = MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace.Options;
@@ -107,7 +106,7 @@ namespace MonoDevelop.CSharp
 				if (model == null) {
 					var parsedDocument = ctx.ParsedDocument;
 					if (parsedDocument != null) {
-						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument.GetSemanticModelAsync ().Result;
+						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument?.GetSemanticModelAsync ().Result;
 					}
 				}
 				//Math.Min (model.SyntaxTree.Length, offset)) is needed in case parsedDocument.GetAst<SemanticModel> () is outdated
@@ -1015,8 +1014,12 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.ClassKeyword:
 				result.SignatureMarkup = Highlight ("class", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("class", colorStyle.KeywordDeclaration) + " identifier [:base-list] { class-body }[;]");
-				result.SummaryMarkup = "Classes are declared using the keyword " + Highlight ("class", colorStyle.KeywordDeclaration) + ".";
+				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
+					result.SummaryMarkup = "The " + Highlight ("class", colorStyle.KeywordDeclaration) + " constraint specifies that the type argument must be a reference type; this applies also to any class, interface, delegate, or array type.";
+				} else {
+					result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("class", colorStyle.KeywordDeclaration) + " identifier [:base-list] { class-body }[;]");
+					result.SummaryMarkup = "Classes are declared using the keyword " + Highlight ("class", colorStyle.KeywordDeclaration) + ".";
+				}
 				break;
 			case SyntaxKind.ConstKeyword:
 				result.SignatureMarkup = Highlight ("const", colorStyle.KeywordModifiers) + keywordSign;
@@ -1066,7 +1069,10 @@ namespace MonoDevelop.CSharp
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " result-type identifier ([formal-parameters]);");
 				result.SummaryMarkup = "A " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
 				break;
-			case SyntaxKind.IdentifierName:
+			case SyntaxKind.IdentifierToken:
+				if (node.ToFullString () == "nameof" && node.Parent?.Parent?.Kind () == SyntaxKind.InvocationExpression)
+					goto case SyntaxKind.NameOfKeyword;
+
 				if (node.ToFullString () == "dynamic") {
 					result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
 					result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
@@ -1244,7 +1250,11 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.NewKeyword:
 				result.SignatureMarkup = Highlight ("new", colorStyle.KeywordOperators) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.";
+				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
+					result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " constraint specifies that any type argument in a generic class declaration must have a public parameterless constructor. To use the new constraint, the type cannot be abstract.";
+				} else {
+					result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.";
+				}
 				break;
 			case SyntaxKind.NullKeyword:
 				result.SignatureMarkup = Highlight ("null", colorStyle.KeywordConstants) + keywordSign;
@@ -1372,8 +1382,12 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.StructKeyword:
 				result.SignatureMarkup = Highlight ("struct", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("struct", colorStyle.KeywordDeclaration) + " identifier [:interfaces] body [;]");
-				result.SummaryMarkup = "A " + Highlight ("struct", colorStyle.KeywordDeclaration) + " type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types. ";
+				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
+					result.SummaryMarkup = "The " + Highlight ("struct", colorStyle.KeywordDeclaration) + " constraint specifies that the type argument must be a value type. Any value type except Nullable can be specified.";
+				} else {
+					result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("struct", colorStyle.KeywordDeclaration) + " identifier [:interfaces] body [;]");
+					result.SummaryMarkup = "A " + Highlight ("struct", colorStyle.KeywordDeclaration) + " type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types. ";
+				}
 				break;
 			case SyntaxKind.SwitchKeyword:
 				result.SignatureMarkup = Highlight ("switch", colorStyle.KeywordSelection) + keywordSign;
@@ -1469,6 +1483,11 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("while", colorStyle.KeywordIteration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("while", colorStyle.KeywordIteration) + " (expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("while", colorStyle.KeywordIteration) + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
+				break;
+				case SyntaxKind.NameOfKeyword:
+				result.SignatureMarkup = Highlight ("nameof", colorStyle.KeywordDeclaration) + keywordSign;
+				result.AddCategory ("Form", Highlight ("nameof", colorStyle.KeywordDeclaration) + "(identifier)");
+				result.SummaryMarkup = "Used to obtain the simple (unqualified) string name of a variable, type, or member.";
 				break;
 			default:
 				return null;

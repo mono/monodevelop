@@ -84,7 +84,7 @@ namespace MonoDevelop.Debugger
 		IPadWindow window;
 		bool needsUpdate;
 
-		static Xwt.Drawing.Image pointerImage = Xwt.Drawing.Image.FromResource ("stack-pointer-16.png");
+		static Xwt.Drawing.Image pointerImage = ImageService.GetIcon ("md-stack-pointer", IconSize.Menu);
 
 		public StackTracePadWidget ()
 		{

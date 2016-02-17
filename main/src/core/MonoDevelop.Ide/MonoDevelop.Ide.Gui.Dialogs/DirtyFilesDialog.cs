@@ -6,11 +6,12 @@ using Gtk;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	internal class DirtyFilesDialog : Gtk.Dialog
+	internal class DirtyFilesDialog : IdeDialog
 	{
 		Button btnSaveAndQuit;
 		Button btnQuit;

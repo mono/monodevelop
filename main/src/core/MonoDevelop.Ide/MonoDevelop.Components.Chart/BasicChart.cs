@@ -30,6 +30,7 @@ using System;
 using System.Collections;
 using Gtk;
 using Gdk;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.Chart
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.Components.Chart
 			widget = new ChartWidget ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return widget;
 		}
@@ -530,6 +531,8 @@ namespace MonoDevelop.Components.Chart
 
 			if (backgroundDisplay == BackgroundDisplay.Gradient) {
 				ctx.Rectangle (left - 1, top - 1, width + 2, height + 2);
+
+				// FIXME: VV: Remove gradient features
 				using (var pat = new Cairo.LinearGradient (left - 1, top - 1, left - 1, height + 2)) {
 					pat.AddColorStop (0, backroundColor);
 					Cairo.Color endc = new Cairo.Color (1,1,1);
@@ -627,7 +630,7 @@ namespace MonoDevelop.Components.Chart
 			
 			if (showLabels) {
 				layout = new Pango.Layout (this.PangoContext);
-				layout.FontDescription = Pango.FontDescription.FromString ("Tahoma 8");
+				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			}
 			
 			bool isX = pos == AxisPosition.Top || pos == AxisPosition.Bottom;
@@ -763,7 +766,7 @@ namespace MonoDevelop.Components.Chart
 		{
 			int max = 0;
 			Pango.Layout layout = new Pango.Layout (this.PangoContext);
-			layout.FontDescription = Pango.FontDescription.FromString ("Tahoma 8");
+			layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			
 			double start = GetStart (ad);
 			double end = GetEnd (ad);
@@ -874,7 +877,7 @@ namespace MonoDevelop.Components.Chart
 				
 				if (text != null && text.Length > 0) {
 					Pango.Layout layout = new Pango.Layout (this.PangoContext);
-					layout.FontDescription = Pango.FontDescription.FromString ("Tahoma 8");
+					layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 					layout.SetMarkup (text);
 					
 					int tw, th;
@@ -953,7 +956,10 @@ namespace MonoDevelop.Components.Chart
 					selectionStart = selectionEnd;
 					selectionEnd = tmp;
 				}
-				chart.OnSelectionChanged ();
+
+				if (chart != null) {
+					chart.OnSelectionChanged ();
+				}
 			}
 		}
 		

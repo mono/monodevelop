@@ -27,8 +27,8 @@
 using System;
 using ExtendedTitleBarDialog = MonoDevelop.Components.ExtendedTitleBarDialog;
 using Mono.Unix;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 using Xwt;
 using Xwt.Drawing;
 
@@ -60,8 +60,7 @@ namespace MonoDevelop.PackageManagement
 		Label errorMessageLabel;
 		Label loadingSpinnerLabel;
 		FrameBox noPackagesFoundFrame;
-		Color lineBorderColor = Color.FromBytes (163, 166, 171);
-		Color packageInfoBackgroundColor = Color.FromBytes (227, 231, 237);
+		int packageInfoFontSize = 11;
 
 		void Build ()
 		{
@@ -69,6 +68,10 @@ namespace MonoDevelop.PackageManagement
 			Width = 820;
 			Height = 520;
 			Padding = new WidgetSpacing ();
+
+			if (Platform.IsWindows) {
+				packageInfoFontSize = 9;
+			}
 
 			// Top part of dialog:
 			// Package sources and search.
@@ -95,7 +98,7 @@ namespace MonoDevelop.PackageManagement
 			var middleFrame = new FrameBox ();
 			middleFrame.Content = middleHBox;
 			middleFrame.BorderWidth = new WidgetSpacing (0, 0, 0, 1);
-			middleFrame.BorderColor = lineBorderColor;
+			middleFrame.BorderColor = Styles.LineBorderColor;
 			mainVBox.PackStart (middleFrame, true, true);
 
 			// Error information.
@@ -103,15 +106,15 @@ namespace MonoDevelop.PackageManagement
 			packagesListVBox.Spacing = 0;
 			errorMessageHBox = new HBox ();
 			errorMessageHBox.Margin = new WidgetSpacing ();
-			errorMessageHBox.BackgroundColor = Colors.Orange;
+			errorMessageHBox.BackgroundColor = Styles.ErrorBackgroundColor;
 			errorMessageHBox.Visible = false;
 			var errorImage = new ImageView ();
 			errorImage.Margin = new WidgetSpacing (10, 0, 0, 0);
-			errorImage.Image = ImageService.GetIcon (Stock.Warning, Gtk.IconSize.Menu);
+			errorImage.Image = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Warning, Gtk.IconSize.Menu);
 			errorImage.HorizontalPlacement = WidgetPlacement.End;
 			errorMessageHBox.PackStart (errorImage);
 			errorMessageLabel = new Label ();
-			errorMessageLabel.TextColor = Colors.White;
+			errorMessageLabel.TextColor = Styles.ErrorForegroundColor;
 			errorMessageLabel.Margin = new WidgetSpacing (5, 5, 5, 5);
 			errorMessageLabel.Wrap = WrapMode.Word;
 			errorMessageHBox.PackStart (errorMessageLabel, true);
@@ -138,7 +141,7 @@ namespace MonoDevelop.PackageManagement
 
 			loadingSpinnerFrame = new FrameBox ();
 			loadingSpinnerFrame.Visible = false;
-			loadingSpinnerFrame.BackgroundColor = Colors.White;
+			loadingSpinnerFrame.BackgroundColor = Styles.BackgroundColor;
 			loadingSpinnerFrame.Content = loadingSpinnerHBox;
 			loadingSpinnerFrame.BorderWidth = new WidgetSpacing ();
 			packagesListVBox.PackStart (loadingSpinnerFrame, true, true);
@@ -153,7 +156,7 @@ namespace MonoDevelop.PackageManagement
 
 			noPackagesFoundFrame = new FrameBox ();
 			noPackagesFoundFrame.Visible = false;
-			noPackagesFoundFrame.BackgroundColor = Colors.White;
+			noPackagesFoundFrame.BackgroundColor = Styles.BackgroundColor;
 			noPackagesFoundFrame.Content = noPackagesFoundHBox;
 			noPackagesFoundFrame.BorderWidth = new WidgetSpacing ();
 			packagesListVBox.PackStart (noPackagesFoundFrame, true, true);
@@ -161,7 +164,7 @@ namespace MonoDevelop.PackageManagement
 			// Package information
 			packageInfoVBox = new VBox ();
 			var packageInfoFrame = new FrameBox ();
-			packageInfoFrame.BackgroundColor = packageInfoBackgroundColor;
+			packageInfoFrame.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageInfoFrame.BorderWidth = new WidgetSpacing ();
 			packageInfoFrame.Content = packageInfoVBox;
 			packageInfoVBox.Margin = new WidgetSpacing (15, 12, 15, 12);
@@ -173,11 +176,11 @@ namespace MonoDevelop.PackageManagement
 			packageInfoScrollView.BorderVisible = false;
 			packageInfoScrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			packageInfoScrollView.Content = packageInfoContainerVBox;
-			packageInfoScrollView.BackgroundColor = packageInfoBackgroundColor;
+			packageInfoScrollView.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			var packageInfoScrollViewFrame = new FrameBox ();
-			packageInfoScrollViewFrame.BackgroundColor = packageInfoBackgroundColor;
+			packageInfoScrollViewFrame.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageInfoScrollViewFrame.BorderWidth = new WidgetSpacing (1, 0, 0, 0);
-			packageInfoScrollViewFrame.BorderColor = lineBorderColor;
+			packageInfoScrollViewFrame.BorderColor = Styles.LineBorderColor;
 			packageInfoScrollViewFrame.Content = packageInfoScrollView;
 			middleHBox.PackEnd (packageInfoScrollViewFrame);
 
@@ -187,18 +190,20 @@ namespace MonoDevelop.PackageManagement
 
 			packageNameLabel = new Label ();
 			packageNameLabel.Ellipsize = EllipsizeMode.End;
-			Font packageInfoSmallFont = packageNameLabel.Font.WithScaledSize (0.8);
+			Font packageInfoSmallFont = packageNameLabel.Font.WithSize (packageInfoFontSize);
+			packageNameLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackStart (packageNameLabel, true);
 
 			packageVersionLabel = new Label ();
 			packageVersionLabel.TextAlignment = Alignment.End;
+			packageVersionLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackEnd (packageVersionLabel);
 
 			// Package description.
 			packageDescription = new Label ();
 			packageDescription.Wrap = WrapMode.Word;
-			packageDescription.Font = packageNameLabel.Font.WithScaledSize (0.9);
-			packageDescription.BackgroundColor = packageInfoBackgroundColor;
+			packageDescription.Font = packageNameLabel.Font.WithSize (packageInfoFontSize);
+			packageDescription.BackgroundColor = Styles.PackageInfoBackgroundColor;
 			packageInfoVBox.PackStart (packageDescription);
 
 			// Package id.

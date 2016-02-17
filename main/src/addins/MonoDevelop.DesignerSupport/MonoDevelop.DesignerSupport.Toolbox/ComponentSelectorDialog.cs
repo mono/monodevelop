@@ -60,7 +60,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			using (ProgressMonitor monitor = new MessageDialogProgressMonitor (true, true, false, true)) {
 				index = DesignerSupport.Service.ToolboxService.GetComponentIndex (monitor);
 			}
-			
+
+			this.ApplyTheme ();
 			this.Build();
 			
 			store = new TreeStore (typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(Xwt.Drawing.Image), typeof(ItemToolboxNode), typeof(bool), typeof(int));

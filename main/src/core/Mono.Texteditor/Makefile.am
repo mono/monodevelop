@@ -1,7 +1,9 @@
 include $(top_srcdir)/xbuild.include
 
 EXTRA_DIST += \
-		Styles/DefaultStyle.json \
+		Styles/DarkStyle.json \
+		Styles/GruvboxStyle.json \
+		Styles/LightStyle.json \
 		Styles/MonokaiStyle.json \
 		Styles/NightshadeStyle.json \
 		Styles/OblivionStyle.json \

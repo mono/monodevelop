@@ -220,12 +220,12 @@ namespace MonoDevelop.Projects
 
 			Assert.IsNotNull (p.Configurations ["Debug|x86"]);
 			Assert.IsNotNull (p.Configurations ["Debug|x86-64"]);
-			Assert.IsNotNull (p.Configurations ["Debug|Other"]);
-
 			Assert.IsNotNull (p.Configurations ["Release|x86"]);
 			Assert.IsNotNull (p.Configurations ["Release|x86-64"]);
 			Assert.IsNotNull (p.Configurations ["Release|Other"]);
-			
+			Assert.IsNotNull (p.Configurations ["Test|More"]);
+			Assert.AreEqual (6, p.Configurations.Count);
+
 			string originalContent = File.ReadAllText (p.FileName);
 			
 			await p.SaveAsync (Util.GetMonitor ());
@@ -1181,8 +1181,7 @@ namespace MonoDevelop.Projects
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
 
-			c = p.Configurations.FirstOrDefault<SolutionItemConfiguration> (co => co.Id == "Debug");
-			p.Configurations.Remove (c);
+			p.Configurations.RemoveRange (p.Configurations.Where<SolutionItemConfiguration> (co => co.Name == "Debug"));
 
 			await p.SaveAsync (Util.GetMonitor ());
 
@@ -1502,6 +1501,72 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 			var compXml = Util.ToSystemEndings (File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-conf-renamed")));
 			Assert.AreEqual (compXml, savedXml);
+		}
+
+		[Test]
+		public async Task ProjectWithDuplicateConfigGroup ()
+		{
+			// The project has two property groups with Debug|AnyCPU. This has to result in a single
+			// Debug configuration. If a change is done in the configuration, it has to be applied
+			// to the last group.
+
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-duplicated-conf.csproj");
+			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.AreEqual (2, p.Configurations.Count);
+
+			var c = p.GetConfiguration (new ItemConfigurationSelector ("Debug")) as DotNetProjectConfiguration;
+			Assert.IsNotNull (c);
+			Assert.IsTrue (c.DebugSymbols);
+
+			c.Properties.SetValue ("Test","foo");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			var refXml = File.ReadAllText (p.FileName.ChangeName ("project-with-duplicated-conf-saved"));
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public async Task ConditionedHintPath ()
+		{
+			// A reference with several hint paths with conditions. Only the hint path with the true condition
+			// will be used
+
+			string projFile = Util.GetSampleProject ("msbuild-tests", "conditioned-hintpath.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.AreEqual (2, p.References.Count);
+
+			Assert.AreEqual (p.ItemDirectory.Combine ("a.dll").ToString (), p.References[0].HintPath.ToString ());
+			Assert.AreEqual (p.ItemDirectory.Combine ("b.dll").ToString (), p.References[1].HintPath.ToString ());
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public async Task MSBuildPropertiesSetWhenSaving ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
+
+			var p = sol.GetAllProjects ().First ();
+			var c = (ProjectConfiguration) p.Configurations [0];
+			Assert.IsFalse (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (c.Properties.HasProperty ("TargetName"));
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			// MSBuild properties defined in imported targets are loaded after saving a project for the first time
+
+			Assert.IsTrue (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (c.Properties.HasProperty ("TargetName"));
 		}
 	}
 

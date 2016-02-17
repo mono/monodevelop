@@ -13,6 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections;
+using System.Linq;
 namespace MonoDevelop.Ide.TypeSystem
 {
 /*
@@ -402,10 +403,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			return FromResultCache<T>.FromResult (t);
 		}
 
+
+		public static Task<IEnumerable<T>> EmptyEnumerable<T>()
+		{
+			return Empty<T>.EmptyEnumerable;
+		}
+
 		private static class Empty<T>
 		{
 			public static readonly Task<T> Default = Task.FromResult<T> (default(T));
 			public static readonly Task<ImmutableArray<T>> EmptyImmutableArray = Task.FromResult (ImmutableArray<T>.Empty);
+			public static readonly Task<IEnumerable<T>> EmptyEnumerable = Task.FromResult<IEnumerable<T>>(Enumerable.Empty<T> ());
 		}
 
 		private static class FromResultCache<T> where T : class

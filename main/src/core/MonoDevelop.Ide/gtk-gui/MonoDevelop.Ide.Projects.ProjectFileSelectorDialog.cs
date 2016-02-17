@@ -22,6 +22,8 @@ namespace MonoDevelop.Ide.Projects
 		
 		private global::Gtk.Button AddFileButton;
 		
+		private global::MonoDevelop.Components.ImageView imageAdd;
+		
 		private global::Gtk.HBox typeBox;
 		
 		private global::Gtk.Label label2;
@@ -93,11 +95,13 @@ namespace MonoDevelop.Ide.Projects
 			this.AddFileButton.TooltipMarkup = "Add existing files to the project";
 			this.AddFileButton.CanFocus = true;
 			this.AddFileButton.Name = "AddFileButton";
-			this.AddFileButton.UseUnderline = true;
 			this.AddFileButton.Relief = ((global::Gtk.ReliefStyle)(2));
-			global::Gtk.Image w7 = new global::Gtk.Image ();
-			w7.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-add", global::Gtk.IconSize.Menu);
-			this.AddFileButton.Image = w7;
+			// Container child AddFileButton.Gtk.Container+ContainerChild
+			this.imageAdd = new global::MonoDevelop.Components.ImageView ();
+			this.imageAdd.Name = "imageAdd";
+			this.imageAdd.IconSize = ((global::Gtk.IconSize)(1));
+			this.imageAdd.IconId = "gtk-add";
+			this.AddFileButton.Add (this.imageAdd);
 			this.hbox2.Add (this.AddFileButton);
 			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.AddFileButton]));
 			w8.Position = 0;

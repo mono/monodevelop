@@ -34,13 +34,14 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using MonoDevelop.Ide.Editor;
 using System.Text;
+using ICSharpCode.NRefactory.MonoCSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class ImportSymbolCompletionData : RoslynCompletionData
+	class ImportSymbolCompletionData : RoslynSymbolCompletionData
 	{
 		CSharpCompletionTextEditorExtension ext;
-		INamedTypeSymbol type;
+		ISymbol type;
 		bool useFullName;
 
 		public override IconId Icon {
@@ -51,7 +52,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int PriorityGroup { get { return int.MinValue; } }
 
-		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, INamedTypeSymbol type, bool useFullName) : base (null, type.Name)
+		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, RoslynCodeCompletionFactory factory, ISymbol type, bool useFullName) : base (null, factory, type)
 		{
 			this.ext = ext;
 			this.useFullName = useFullName;
@@ -100,14 +101,10 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			Initialize ();
 			var doc = ext.DocumentContext;
-			using (var undo = ext.Editor.OpenUndoGroup ()) {
-				string text = insertNamespace ? type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + type.Name : type.Name;
-				if (text != GetCurrentWord (window, descriptor)) {
-					if (window.WasShiftPressed && generateUsing) 
-						text = type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + text;
-					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window, descriptor), text);
-				}
 
+			base.InsertCompletionText (window, ref ka, descriptor);
+
+			using (var undo = ext.Editor.OpenUndoGroup ()) {
 				if (!window.WasShiftPressed && generateUsing) {
 					AddGlobalNamespaceImport (ext.Editor, doc, type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
 				}

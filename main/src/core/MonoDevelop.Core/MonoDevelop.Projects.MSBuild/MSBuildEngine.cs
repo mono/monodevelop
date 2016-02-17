@@ -103,11 +103,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public abstract IEnumerable<MSBuildTarget> GetTargets (object projectInstance);
 
+		public abstract IEnumerable<MSBuildTarget> GetTargetsIgnoringCondition (object projectInstance);
+
 		public abstract void SetGlobalProperty (object projectInstance, string property, string value);
 
 		public abstract void RemoveGlobalProperty (object projectInstance, string property);
 
-		public abstract IDictionary<string, List<string>> GetConditionedProperties (object projectInstance);
+		public abstract ConditionedPropertyCollection GetConditionedProperties (object projectInstance);
 	}
 }
 

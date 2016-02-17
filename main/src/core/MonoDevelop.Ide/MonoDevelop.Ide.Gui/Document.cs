@@ -164,14 +164,14 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
 			window.ViewContent.ContentNameChanged += delegate {
-				analysisDocument = null;
+				UnsubscibeAnalysisdocument ();
 			};
 			MonoDevelopWorkspace.LoadingFinished += TypeSystemService_WorkspaceItemLoaded;
 		}
 
 		void TypeSystemService_WorkspaceItemLoaded (object sender, EventArgs e)
 		{
-			analysisDocument = null;
+			UnsubscibeAnalysisdocument ();
 			EnsureAnalysisDocumentIsOpen ().ContinueWith (delegate {
 				if (analysisDocument != null)
 					StartReparseThread ();
@@ -370,6 +370,10 @@ namespace MonoDevelop.Ide.Gui
 			// Or at least one that updates "soon".
 			TypeSystemService.TrackFileChanges = false;
 			try {
+				// Freeze the file change events. There can be several such events, and sending them all together
+				// is more efficient
+				FileService.FreezeEvents ();
+
 				if (Window.ViewContent.IsViewOnly || !Window.ViewContent.IsDirty)
 					return;
 	
@@ -379,7 +383,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				
 				if (Window.ViewContent.ContentName == null) {
-					SaveAs ();
+					await SaveAs ();
 				} else {
 					try {
                         FileService.RequestFileEdit ((FilePath)Window.ViewContent.ContentName, true);
@@ -390,19 +394,23 @@ namespace MonoDevelop.Ide.Gui
 					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
 	
 					if (!File.Exists ((string)Window.ViewContent.ContentName) || (File.GetAttributes ((string)window.ViewContent.ContentName) & attr) != 0) {
-                        SaveAs();
+                        await SaveAs();
 					} else {
 						string fileName = Window.ViewContent.ContentName;
 						// save backup first						
 						if (IdeApp.Preferences.CreateFileBackupCopies) {
                             await Window.ViewContent.Save (fileName + "~");
-                            FileService.NotifyFileChanged (fileName);
+							FileService.NotifyFileChanged (fileName + "~");
 						}
 						await Window.ViewContent.Save (fileName);
+						FileService.NotifyFileChanged (fileName);
                         OnSaved(EventArgs.Empty);
 					}
 				}
 			} finally {
+				// Send all file change notifications
+				FileService.ThawEvents ();
+
 				// Set the file time of the current document after the file time of the written file, to prevent double file updates.
 				// Note that the parsed document may be overwritten by a background thread to a more recent one.
 				var doc = parsedDocument;
@@ -544,10 +552,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
-			if (analysisDocument != null) {
-				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
-				analysisDocument = null;
-			}
+			UnsubscibeAnalysisdocument ();
 			UnloadAdhocProject ();
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -568,7 +573,15 @@ namespace MonoDevelop.Ide.Gui
 			views = null;
 			viewsRO = null;
 		}
-#region document tasks
+
+		void UnsubscibeAnalysisdocument ()
+		{
+			if (analysisDocument != null) {
+				TypeSystemService.InformDocumentClose (analysisDocument, FileName);
+				analysisDocument = null;
+			}
+		}
+		#region document tasks
 		object lockObj = new object ();
 		
 		void ClearTasks ()
@@ -687,7 +700,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			UnloadAdhocProject ();
 			if (adhocProject == null) 
-				analysisDocument = null;
+				UnsubscibeAnalysisdocument ();
 			if (Window.ViewContent.ProjectReloadCapability != ProjectReloadCapability.None) {
 				// Unsubscribe project events
 				if (Window.ViewContent.Project != null)
@@ -727,7 +740,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				await EnsureAnalysisDocumentIsOpen ();
-				string currentParseFile = FileName;
+				string currentParseFile = GetCurrentParseFileName();
 				var editor = Editor;
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
 					return null;
@@ -768,13 +781,20 @@ namespace MonoDevelop.Ide.Gui
 		}
 			
 		uint parseTimeout = 0;
+		CancellationTokenSource analysisDocumentSrc = new CancellationTokenSource ();
+
+		void CancelEnsureAnalysisDocumentIsOpen ()
+		{
+			analysisDocumentSrc.Cancel ();
+			analysisDocumentSrc = new CancellationTokenSource ();
+		}
 
 		Task EnsureAnalysisDocumentIsOpen ()
 		{
 			if (analysisDocument != null)
 				return SpecializedTasks.EmptyTask;
 			if (Editor == null) {
-				analysisDocument = null;
+				UnsubscibeAnalysisdocument ();
 				return SpecializedTasks.EmptyTask;
 			}
 			if (Project != null && Editor.MimeType == "text/x-csharp" && !IsUnreferencedSharedProject(Project)) {
@@ -784,7 +804,9 @@ namespace MonoDevelop.Ide.Gui
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
 				}
 			} else {
+				CancelEnsureAnalysisDocumentIsOpen ();
 				lock (adhocProjectLock) {
+					var token = analysisDocumentSrc.Token;
 					if (adhocProject != null) {
 						return SpecializedTasks.EmptyTask;
 					}
@@ -809,9 +831,11 @@ namespace MonoDevelop.Ide.Gui
 						adhocSolution = new Solution ();
 						adhocSolution.AddConfiguration ("", true);
 						adhocSolution.DefaultSolutionFolder.AddItem (newProject);
-						return TypeSystemService.Load (adhocSolution, new ProgressMonitor ()).ContinueWith (task => {
+						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
+							if (token.IsCancellationRequested)
+								return;
 							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
-							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, adhocProject, adHocFile);
+							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, newProject, adHocFile);
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
 						});
 					}
@@ -829,6 +853,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void UnloadAdhocProject ()
 		{
+			CancelEnsureAnalysisDocumentIsOpen ();
 			lock (adhocProjectLock) {
 				if (adhocProject == null)
 					return;
@@ -849,7 +874,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void StartReparseThread ()
 		{
-			string currentParseFile = adhocProject != null ? adHocFile : FileName;
+			string currentParseFile = GetCurrentParseFileName ();
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
 			CancelParseTimeout ();
@@ -859,6 +884,13 @@ namespace MonoDevelop.Ide.Gui
 				parseTimeout = 0;
 				return false;
 			});
+		}
+
+		string GetCurrentParseFileName ()
+		{
+			var editor = Editor;
+			string result = adhocProject != null ? adHocFile : editor?.FileName;
+			return result ?? FileName;
 		}
 
 		async void StartReparseThreadDelayed (FilePath currentParseFile)

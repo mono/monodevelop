@@ -87,7 +87,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			// check if it's the first parameter and set autoselect == false if a parameterless version exists.
 			if (token.IsKind (SyntaxKind.OpenParenToken)) {
-				var symbolInfo = model.GetSymbolInfo (token.Parent.Parent);
+				var parent = token.Parent?.Parent;
+				if (parent == null)
+					return Enumerable.Empty<CompletionData> ();
+				var symbolInfo = model.GetSymbolInfo (parent);
 				foreach (var symbol in new [] { symbolInfo.Symbol }.Concat (symbolInfo.CandidateSymbols)) {
 					if (symbol != null && symbol.IsKind (SymbolKind.Method)) {
 						if (symbol.GetParameters ().Length == 0) {
@@ -114,10 +117,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				// Does type have any aliases?
 				ISymbol alias = await type.FindApplicableAlias(completionContext.Position, model, cancellationToken).ConfigureAwait(false);
 
+				var displayString = RoslynCompletionData.SafeMinimalDisplayString (type, model, completionContext.Position, SymbolDisplayFormat.CSharpErrorMessageFormat);
 				if (string.IsNullOrEmpty(completionResult.DefaultCompletionString))
-					completionResult.DefaultCompletionString = type.Name;
-
-				result.Add (engine.Factory.CreateSymbolCompletionData(this, type, RoslynCompletionData.SafeMinimalDisplayString (type, model, completionContext.Position, SymbolDisplayFormat.CSharpErrorMessageFormat)));
+					completionResult.DefaultCompletionString = displayString;
+				result.Add (engine.Factory.CreateSymbolCompletionData(this, type, displayString));
 				foreach (IFieldSymbol field in type.GetMembers().OfType<IFieldSymbol>()) {
 					if (field.DeclaredAccessibility == Accessibility.Public && (field.IsConst || field.IsStatic)) {
 						result.Add (engine.Factory.CreateEnumMemberCompletionData(this, alias, field));

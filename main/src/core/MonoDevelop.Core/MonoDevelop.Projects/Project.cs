@@ -176,17 +176,23 @@ namespace MonoDevelop.Projects
 				sourceProject.FileName = FileName;
 			}
 
+			var ggroup = sourceProject.GetGlobalPropertyGroup ();
+			// Avoid crash if there is not global group
+			if (ggroup == null)
+				ggroup = sourceProject.AddNewPropertyGroup (false);
+
+			// Load the evaluated properties
+			InitMainGroupProperties (ggroup);
+		}
+
+		void InitMainGroupProperties (MSBuildPropertyGroup globalGroup)
+		{
 			// Create a project instance to be used for comparing old and new values in the global property group
 			// We use a dummy configuration and platform to avoid loading default values from the configurations
 			// while evaluating
 			var c = Guid.NewGuid ().ToString ();
-			using (var pi = CreateProjectInstaceForConfiguration (c, c)) {
-				var globalGroup = sourceProject.GetGlobalPropertyGroup ();
-				// Avoid crash if there is not global group
-				if (globalGroup == null)
-					globalGroup = sourceProject.AddNewPropertyGroup (false);
+			using (var pi = CreateProjectInstaceForConfiguration (c, c))
 				mainGroupProperties = pi.GetPropertiesLinkedToGroup (globalGroup);
-			}
 		}
 
 		protected override void OnExtensionChainInitialized ()
@@ -256,8 +262,10 @@ namespace MonoDevelop.Projects
 		{
 			var conf = (ProjectConfiguration)args.Configuration;
 
-			// Initialize the property group
-			if (!Loading)
+			// Initialize the property group only if the project is not being loaded (in which case it will
+			// be initialized by the ReadProject method) or if the project is new (because it will be initialized
+			// after the project is fully written, since only then all imports are in place
+			if (!Loading && !sourceProject.IsNewProject)
 				InitConfiguration (conf);
 
 			base.OnConfigurationAdded (args);
@@ -897,7 +905,7 @@ namespace MonoDevelop.Projects
 
 		protected virtual bool OnGetSupportsTarget (string target)
 		{
-			return sourceProject.EvaluatedTargets.Any (t => t.Name == target);
+			return sourceProject.EvaluatedTargetsIgnoringCondition.Any (t => t.Name == target);
 		}
 
 		/// <summary>
@@ -2003,6 +2011,16 @@ namespace MonoDevelop.Projects
 				globalGroup.PurgeDefaultProperties ();
 				globalGroup.ResetIsNewFlags ();
 
+				if (sourceProject.IsNewProject) {
+					// If the project is new, the evaluated properties lists are empty. Now that the project is saved,
+					// those lists can be filled, so that the project is left in the same state it would have if it
+					// was just loaded.
+					sourceProject.Evaluate ();
+					InitMainGroupProperties (globalGroup);
+					foreach (ProjectConfiguration conf in Configurations)
+						InitConfiguration (conf);
+				}
+
 				sourceProject.IsNewProject = false;
 			} finally {
 				saving = false;
@@ -2018,10 +2036,6 @@ namespace MonoDevelop.Projects
 				Config = conf;
 				Platform = plt;
 				Group = grp;
-			}
-
-			public bool FullySpecified {
-				get { return Config != Unspecified && Platform != Unspecified; }
 			}
 
 			public string Config;
@@ -2098,77 +2112,10 @@ namespace MonoDevelop.Projects
 
 			timer.Trace ("Read configurations");
 
-			List<ConfigData> configData = GetConfigData (msproject, false);
-			List<ConfigData> partialConfigurations = new List<ConfigData> ();
-			HashSet<string> handledConfigurations = new HashSet<string> ();
-			var configurations = new HashSet<string> ();
-			var platforms = new HashSet<string> ();
+			List<ConfigData> configData = GetConfigData (msproject, true);
 
-			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
-			configData.Insert (0, new ConfigData (Unspecified, Unspecified, globalGroup));
-
-			// Load configurations, skipping the dummy config at index 0.
-			for (int i = 1; i < configData.Count; i++) {
-				ConfigData cgrp = configData[i];
-				string platform = cgrp.Platform;
-				string conf = cgrp.Config;
-
-				if (platform != Unspecified)
-					platforms.Add (platform);
-
-				if (conf != Unspecified)
-					configurations.Add (conf);
-
-				if (conf == Unspecified || platform == Unspecified) {
-					// skip partial configurations for now...
-					partialConfigurations.Add (cgrp);
-					continue;
-				}
-
-				string key = conf + "|" + platform;
-				if (handledConfigurations.Contains (key))
-					continue;
-
-				LoadConfiguration (monitor, cgrp, conf, platform);
-
-				handledConfigurations.Add (key);
-			}
-
-			// Now we can load any partial configurations by combining them with known configs or platforms.
-			if (partialConfigurations.Count > 0) {
-				if (platforms.Count == 0)
-					platforms.Add (string.Empty); // AnyCpu
-
-				foreach (ConfigData cgrp in partialConfigurations) {
-					if (cgrp.Config != Unspecified && cgrp.Platform == Unspecified) {
-						string conf = cgrp.Config;
-
-						foreach (var platform in platforms) {
-							string key = conf + "|" + platform;
-
-							if (handledConfigurations.Contains (key))
-								continue;
-
-							LoadConfiguration (monitor, cgrp, conf, platform);
-
-							handledConfigurations.Add (key);
-						}
-					} else if (cgrp.Config == Unspecified && cgrp.Platform != Unspecified) {
-						string platform = cgrp.Platform;
-
-						foreach (var conf in configurations) {
-							string key = conf + "|" + platform;
-
-							if (handledConfigurations.Contains (key))
-								continue;
-
-							LoadConfiguration (monitor, cgrp, conf, platform);
-
-							handledConfigurations.Add (key);
-						}
-					}
-				}
-			}
+			foreach (var cgrp in configData)
+				LoadConfiguration (monitor, cgrp, cgrp.Config, cgrp.Platform);
 
 			// Read extended properties
 
@@ -2181,14 +2128,50 @@ namespace MonoDevelop.Projects
 			loadedAvailableItemNames = msproject.EvaluatedItems.Where (i => i.Name == "AvailableItemName").Select (i => i.Include).ToArray ();
 		}
 
-		List<ConfigData> GetConfigData (MSBuildProject msproject, bool includeGlobalGroups)
+		List<ConfigData> GetConfigData (MSBuildProject msproject, bool includeEvaluated)
 		{
 			List<ConfigData> configData = new List<ConfigData> ();
 			foreach (MSBuildPropertyGroup cgrp in msproject.PropertyGroups) {
 				string conf, platform;
-				if (ParseConfigCondition (cgrp.Condition, out conf, out platform) || includeGlobalGroups)
-					configData.Add (new ConfigData (conf, platform, cgrp));
+				if (ParseConfigCondition (cgrp.Condition, out conf, out platform) && conf != null && platform != null) {
+					// If a group for this configuration already was found, set the new group. If there are changes we want to modify the last group.
+					var existing = configData.FirstOrDefault (cd => cd.Config == conf && cd.Platform == platform);
+					if (existing == null)
+						configData.Add (new ConfigData (conf, platform, cgrp));
+					else
+						existing.Group = cgrp;
+				}
 			}
+			if (includeEvaluated) {
+				var confValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("Configuration");
+				var platValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("Platform");
+				var confPlatValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("Configuration", "Platform");
+
+				// First of all, add configurations that have been specified using both the Configuration and Platform properties.
+				foreach (var co in confPlatValues) {
+					var c = co.GetValue ("Configuration");
+					var ep = co.GetValue ("Platform");
+					ep = ep == "AnyCPU" ? "" : ep;
+					if (!configData.Any (cd => cd.Config == c && cd.Platform == ep))
+						configData.Add (new ConfigData (c, ep, null));
+				}
+
+				// Now add configurations for which a platform has not been specified, but only if no other configuration
+				// exists with the same name. Combine them with individually specified platforms, if available
+				foreach (var c in confValues.Select (v => v.GetValue ("Configuration"))) {
+					if (platValues.Count > 0) {
+						foreach (var plat in platValues.Select (v => v.GetValue ("Platform"))) {
+							var ep = plat == "AnyCPU" ? "" : plat;
+							if (!configData.Any (cd => cd.Config == c && cd.Platform == ep))
+								configData.Add (new ConfigData (c, ep, null));
+						}
+					} else {
+						if (!configData.Any (cd => cd.Config == c))
+							configData.Add (new ConfigData (c, "", null));
+					}
+				}
+			}
+
 			return configData;
 		}
 
@@ -2243,13 +2226,9 @@ namespace MonoDevelop.Projects
 
 		void LoadConfiguration (ProgressMonitor monitor, ConfigData cgrp, string conf, string platform)
 		{
-			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf + "|" + platform);
-
-			// If the group is not fully specified it is not assigned to the configuration.
-			// In that case, a new group will be created
-			if (cgrp.FullySpecified)
+			ProjectConfiguration config = (ProjectConfiguration) CreateConfiguration (conf + "|" + (platform  != "AnyCPU" ? platform : ""));
+			if (cgrp.Group != null)
 				config.MainPropertyGroup = (MSBuildPropertyGroup) cgrp.Group;
-
 			config.MainPropertyGroup.ResetIsNewFlags ();
 			InitConfiguration (config);
 			projectExtension.OnReadConfiguration (monitor, config, config.Properties);
@@ -2470,7 +2449,7 @@ namespace MonoDevelop.Projects
 
 			if (Configurations.Count > 0) {
 				
-				List<ConfigData> configData = GetConfigData (msproject, true);
+				List<ConfigData> configData = GetConfigData (msproject, false);
 
 				// Write configuration data, creating new property groups if necessary
 
@@ -2542,7 +2521,7 @@ namespace MonoDevelop.Projects
 				// Remove groups corresponding to configurations that have been removed
 				// or groups which don't have any property and did not already exist
 				foreach (ConfigData cd in configData) {
-					if ((!cd.Exists && cd.FullySpecified) || (cd.IsNew && !cd.Group.GetProperties ().Any ()))
+					if (!cd.Exists || (cd.IsNew && !cd.Group.GetProperties ().Any ()))
 						msproject.Remove ((MSBuildPropertyGroup)cd.Group);
 				}
 
@@ -2577,7 +2556,7 @@ namespace MonoDevelop.Projects
 		IEnumerable<MergedProperty> GetMergeToProjectProperties (List<ConfigData> configData)
 		{
 			Dictionary<string,MergedProperty> mergeProps = new Dictionary<string, MergedProperty> ();
-			foreach (var cd in configData.Where (d => d.FullySpecified)) {
+			foreach (var cd in configData) {
 				foreach (var prop in cd.Group.GetProperties ()) {
 					if (!prop.MergeToMainGroup) {
 						mergeProps [prop.Name] = null;

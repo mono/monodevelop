@@ -28,7 +28,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		private global::Gtk.HBox warningBox;
 		
-		private global::Gtk.Image image3;
+		private global::MonoDevelop.Components.ImageView imageWarning;
 		
 		private global::Gtk.Label label2;
 		
@@ -140,11 +140,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.warningBox.Name = "warningBox";
 			this.warningBox.Spacing = 6;
 			// Container child warningBox.Gtk.Box+BoxChild
-			this.image3 = new global::Gtk.Image ();
-			this.image3.Name = "image3";
-			this.image3.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Menu);
-			this.warningBox.Add (this.image3);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.image3]));
+			this.imageWarning = new global::MonoDevelop.Components.ImageView ();
+			this.imageWarning.Name = "imageWarning";
+			this.imageWarning.IconId = "gtk-dialog-warning";
+			this.imageWarning.IconSize = ((global::Gtk.IconSize)(1));
+			this.warningBox.Add (this.imageWarning);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.warningBox [this.imageWarning]));
 			w8.Position = 0;
 			w8.Expand = false;
 			w8.Fill = false;
@@ -231,19 +232,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.updateButton.Name = "updateButton";
 			this.updateButton.UseUnderline = true;
 			this.updateButton.Label = global::Mono.Unix.Catalog.GetString ("Apply");
-			global::Gtk.Image w20 = new global::Gtk.Image ();
-			w20.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
-			this.updateButton.Image = w20;
 			this.hbox.Add (this.updateButton);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox [this.updateButton]));
-			w21.Position = 2;
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox [this.updateButton]));
+			w20.Position = 2;
+			w20.Expand = false;
+			w20.Fill = false;
+			this.vbox.Add (this.hbox);
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox [this.hbox]));
+			w21.Position = 6;
 			w21.Expand = false;
 			w21.Fill = false;
-			this.vbox.Add (this.hbox);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox [this.hbox]));
-			w22.Position = 6;
-			w22.Expand = false;
-			w22.Fill = false;
 			this.Add (this.vbox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

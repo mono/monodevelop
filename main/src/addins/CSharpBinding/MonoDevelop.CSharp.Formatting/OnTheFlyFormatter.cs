@@ -49,16 +49,6 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (editor, context, 0, editor.Length);
 		}
 
-		//		public static void Format (TextEditor editor, DocumentContext context, TextLocation location)
-		//		{
-		//			Format (editor, context, location, location, false);
-		//		} 
-		//
-		//		public static void Format (TextEditor editor, DocumentContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
-		//		{
-		//			Format (editor, context, editor.LocationToOffset (startLocation), editor.LocationToOffset (endLocation), exact);
-		//		}
-
 		public static void Format (TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact = true, OptionSet optionSet = null)
 		{
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
@@ -86,7 +76,6 @@ namespace MonoDevelop.CSharp.Formatting
 			var analysisDocument = context.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-
 			using (var undo = editor.OpenUndoGroup (/*OperationType.Format*/)) {
 				try {
 					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
@@ -113,14 +102,25 @@ namespace MonoDevelop.CSharp.Formatting
 					var doc = Formatter.FormatAsync (analysisDocument, span, optionSet).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					var caretOffset = editor.CaretOffset;
-					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
-						if (!exact && change.Span.Start >= caretOffset)
+
+					int delta = 0;
+					foreach (var change in newTree.GetChanges (syntaxTree)) {
+						if (!exact && change.Span.Start + delta >= caretOffset)
 							continue;
 						var newText = change.NewText;
-						editor.ReplaceText (change.Span.Start, change.Span.Length, newText); 
+						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);
+						delta = delta - change.Span.Length + newText.Length;
 					}
-					if (editor.CaretColumn == 1)
-						editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
+					if (startOffset < caretOffset) {
+						var caretEndOffset = caretOffset + delta;
+						if (0 <= caretEndOffset && caretEndOffset < editor.Length)
+							editor.CaretOffset = caretEndOffset;
+						if (editor.CaretColumn == 1) {
+							if (editor.CaretLine > 1 && editor.GetLine (editor.CaretLine - 1).Length == 0)
+								editor.CaretLine--;
+							editor.CaretColumn = editor.GetVirtualIndentationColumn (editor.CaretLine);
+						}
+					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the fly formatter", e);
 				}

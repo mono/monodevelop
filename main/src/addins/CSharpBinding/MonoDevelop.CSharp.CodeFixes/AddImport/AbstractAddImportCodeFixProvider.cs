@@ -53,6 +53,8 @@ namespace MonoDevelop.CSharp.CodeFixes
 			if (model.IsFromGeneratedCode (context.CancellationToken))
 				return;
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			if (root.FullSpan.Length < span.Start)
+				return;
 			var ancestors = root.FindToken(span.Start, findInsideTrivia: true).GetAncestors<SyntaxNode>();
 			if (!ancestors.Any())
 			{

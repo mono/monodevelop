@@ -92,7 +92,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public TextDocument Document {
 			get {
-				return widget.TextEditor.Document;
+				return widget?.TextEditor?.Document;
 			}
 			set {
 				widget.TextEditor.Document = value;
@@ -669,7 +669,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			FileRegistry.SuspendFileWatch = true;
+			FileRegistry.SkipNextChange (fileName);
 			try {
 				object attributes = null;
 				if (File.Exists (fileName)) {
@@ -714,6 +714,7 @@ namespace MonoDevelop.SourceEditor
 						}
 					}
 					await MonoDevelop.Core.Text.TextFileUtility.WriteTextAsync (fileName, writeText, writeEncoding, writeBom);
+					this.encoding = writeEncoding;
 				} catch (InvalidEncodingException) {
 					var result = MessageService.AskQuestion (GettextCatalog.GetString ("Can't save file with current codepage."), 
 						GettextCatalog.GetString ("Some unicode characters in this file could not be saved with the current encoding.\nDo you want to resave this file as Unicode ?\nYou can choose another encoding in the 'save as' dialog."),
@@ -738,11 +739,8 @@ namespace MonoDevelop.SourceEditor
 			} catch (UnauthorizedAccessException e) {
 				LoggingService.LogError ("Error while saving file", e);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
-			} finally {
-				FileService.NotifyFileChanged (fileName);
-				FileRegistry.SuspendFileWatch = false;
 			}
-				
+
 //			if (encoding != null)
 //				se.Buffer.SourceEncoding = encoding;
 //			TextFileService.FireCommitCountChanges (this);
@@ -794,7 +792,10 @@ namespace MonoDevelop.SourceEditor
 
 		public async Task Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
-			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
+			var document = Document;
+			if (document == null)
+				return;
+			document.TextReplaced -= OnTextReplaced;
 			
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -812,23 +813,18 @@ namespace MonoDevelop.SourceEditor
 			}
 			else {
 				if (loadEncoding == null) {
-					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName);
-					text = res.Text;
-					hadBom = res.HasBom;
-					encoding = res.Encoding;
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
 				} else {
 					encoding = loadEncoding;
-					var res = await MonoDevelop.Core.Text.TextFileUtility.ReadAllTextAsync (fileName, loadEncoding);
-					text = res.Text;
-					hadBom = res.HasBom;
+					text = MonoDevelop.Core.Text.TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
 				text = ProcessLoadText (text);
 				if (reload) {
-					Document.Replace (0, Document.TextLength, text);
-					Document.DiffTracker.Reset ();
+					document.Replace (0, Document.TextLength, text);
+					document.DiffTracker.Reset ();
 				} else {
-					Document.Text = text;
-					Document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
+					document.Text = text;
+					document.DiffTracker.SetBaseDocument (Document.CreateDocumentSnapshot ());
 				}
 				didLoadCleanly = true;
 			}
@@ -846,8 +842,8 @@ namespace MonoDevelop.SourceEditor
 			if (didLoadCleanly) {
 				widget.EnsureCorrectEolMarker (fileName);
 			}
-			UpdateTextDocumentEncoding ();			
-			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
+			UpdateTextDocumentEncoding ();
+			document.TextReplaced += OnTextReplaced;
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
@@ -2055,7 +2051,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static SourceEditorView ()
 		{
-			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press 'F2' for focus");
+			CodeSegmentPreviewWindow.CodeSegmentPreviewInformString = GettextCatalog.GetString ("Press F2 to focus");
 			ClipboardActions.CopyOperation.Copy += delegate (string text) {
 				if (String.IsNullOrEmpty (text))
 					return;
@@ -2456,10 +2452,6 @@ namespace MonoDevelop.SourceEditor
 				}
 				return wrapper;
 			}
-			set {
-				wrapper = (TextDocumentWrapper)value;
-				widget.TextEditor.Document = wrapper.Document;
-			}
 		}
 
 		event EventHandler ITextEditorImpl.SelectionChanged {
@@ -2471,7 +2463,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		event EventHandler ITextEditorImpl.BeginMouseHover {
+		event EventHandler<Xwt.MouseMovedEventArgs> ITextEditorImpl.MouseMoved {
 			add {
 				TextEditor.BeginHover += value;
 			}
@@ -2886,15 +2878,28 @@ namespace MonoDevelop.SourceEditor
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
 		}
 
-		public IList<SkipChar> SkipChars {
+		internal Stack<EditSession> editSessions = new Stack<EditSession> ();
+
+		public EditSession CurrentSession {
 			get {
-				return TextEditor.GetTextEditorData ().SkipChars.Select (sk => new SkipChar (sk.Offset, sk.Char)).ToList ();
+				return editSessions.Count () > 0 ? editSessions.Peek () : null;
 			}
 		}
 
-		public void AddSkipChar (int offset, char ch)
+		public void StartSession (EditSession session)
 		{
-			TextEditor.GetTextEditorData ().SetSkipChar (offset, ch);
+			if (session == null)
+				throw new ArgumentNullException (nameof (session));
+			editSessions.Push (session);
+			session.SessionStarted ();
+		}
+
+		public void EndSession ()
+		{
+			if (editSessions.Count == 0)
+				throw new InvalidOperationException ("No edit session was started.");
+			var session = editSessions.Pop ();
+			session.Dispose ();
 		}
 
 		void ITextEditorImpl.ScrollTo (int offset)
@@ -2974,9 +2979,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		string ITextEditorImpl.GetPangoMarkup (int offset, int length)
+		string ITextEditorImpl.GetPangoMarkup (int offset, int length, bool fitIdeStyle)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false);
+			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false, fitIdeStyle:fitIdeStyle);
 		}
 
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)
@@ -2995,26 +3000,73 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+
+		class BracketMatcherTextMarker : TextSegmentMarker
+		{
+			public BracketMatcherTextMarker (int offset, int length) : base (offset, length)
+			{
+			}
+
+			public override void DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
+			{
+				double fromX, toX;
+				GetLineDrawingPosition (metrics, startOffset, out fromX, out toX);
+
+				fromX = Math.Max (fromX, editor.TextViewMargin.XOffset);
+				toX = Math.Max (toX, editor.TextViewMargin.XOffset);
+				if (fromX < toX) {
+					var bracketMatch = new Cairo.Rectangle (fromX + 0.5, metrics.LineYRenderStartPosition + 0.5, toX - fromX - 1, editor.LineHeight - 2);
+					if (editor.TextViewMargin.BackgroundRenderer == null) {
+						cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.Color);
+						cr.Rectangle (bracketMatch);
+						cr.FillPreserve ();
+						cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.SecondColor);
+						cr.Stroke ();
+					}
+				}
+			}
+
+			void GetLineDrawingPosition (LineMetrics metrics, int startOffset, out double fromX, out double toX)
+			{
+				var startXPos = metrics.TextRenderStartPosition;
+				var endXPos = metrics.TextRenderEndPosition;
+				int start = this.Offset;
+				int end = this.EndOffset;
+
+				uint curIndex = 0, byteIndex = 0;
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
+
+				int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+
+				fromX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
+				x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
+
+				toX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
+			}
+		}
+
+		List<BracketMatcherTextMarker> bracketMarkers = new List<BracketMatcherTextMarker> ();
+
 		void ITextEditorImpl.UpdateBraceMatchingResult (BraceMatchingResult? result)
 		{
-			var oldOffset = widget.TextEditor.TextViewMargin.HighlightBracketOffset;
-
 			if (result.HasValue) {
-				if (result.Value.IsCaretInLeft) {
-					widget.TextEditor.TextViewMargin.HighlightBracketOffset = result.Value.RightSegment.Offset;
-				} else {
-					widget.TextEditor.TextViewMargin.HighlightBracketOffset = result.Value.LeftSegment.Offset;
-				}
+				if (bracketMarkers.Count > 0 && result.Value.LeftSegment.Offset == bracketMarkers [0].Offset)
+					return;
+				ClearBracketMarkers ();
+				bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.LeftSegment.Offset, result.Value.LeftSegment.Length));
+				bracketMarkers.Add (new BracketMatcherTextMarker (result.Value.RightSegment.Offset, result.Value.RightSegment.Length));
+				bracketMarkers.ForEach (marker => widget.TextEditor.Document.AddMarker (marker));
 			} else {
-				widget.TextEditor.TextViewMargin.HighlightBracketOffset = -1;
+				ClearBracketMarkers ();
 			}
+		}
 
-			if (oldOffset >= 0) {
-				widget.Document.CommitLineUpdate (widget.TextEditor.OffsetToLineNumber (oldOffset));
-			}
-			if (widget.TextEditor.TextViewMargin.HighlightBracketOffset >= 0) {
-				widget.Document.CommitLineUpdate (widget.TextEditor.OffsetToLineNumber (widget.TextEditor.TextViewMargin.HighlightBracketOffset));
-			}
+		void ClearBracketMarkers ()
+		{
+			bracketMarkers.ForEach (marker => widget.TextEditor.Document.RemoveMarker (marker));
+			bracketMarkers.Clear ();
 		}
 
 		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineChanged;
@@ -3039,7 +3091,7 @@ namespace MonoDevelop.SourceEditor
 
 		public double ZoomLevel {
 			get { return TextEditor != null && TextEditor.Options != null ? TextEditor.Options.Zoom : 1d; }
-			set { if (TextEditor != null && TextEditor.Options != null) TextEditor.Options.Zoom = value; } 
+			set { if (TextEditor != null && TextEditor.Options != null) TextEditor.Options.Zoom = value; }
 		}
 		event EventHandler ITextEditorImpl.ZoomLevelChanged {
 			add {
@@ -3200,7 +3252,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		void IEditorActionHost.MoveNextSubWord ()
-		{ 
+		{
 			TextEditor.RunAction (SelectionActions.MoveNextSubword);
 		}
 
@@ -3297,8 +3349,8 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
-	
-		 
+
+
 		#region ISegmentMarkerHost implementation
 
 		ITextSegmentMarker ITextMarkerFactory.CreateUsageMarker (MonoDevelop.Ide.Editor.TextEditor editor, Usage usage)
@@ -3384,7 +3436,7 @@ namespace MonoDevelop.SourceEditor
 		void GotoPgDown ()
 		{
 			widget.QuickTaskStrip.GotoPgDown ();
-		}	
+		}
 
 		[CommandUpdateHandler (ScrollbarCommand.ShowTasks)]
 		void UpdateShowMap (CommandInfo info)

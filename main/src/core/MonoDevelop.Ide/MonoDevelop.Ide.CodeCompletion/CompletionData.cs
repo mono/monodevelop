@@ -190,6 +190,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
 		}
+
+		public virtual bool IsOverload (CompletionData other)
+		{
+			return DisplayText == other.DisplayText;
+		}
 	}
 
 	public class ISymbolCompletionData : CompletionData

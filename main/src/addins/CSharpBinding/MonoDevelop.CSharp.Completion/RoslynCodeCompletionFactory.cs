@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp.Completion;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -63,6 +65,35 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 		#region ICompletionDataFactory implementation
+
+
+		class KeywordCompletionData : RoslynCompletionData
+		{
+			static SignatureMarkupCreator creator = new SignatureMarkupCreator (null, 0);
+
+			SyntaxKind kind;
+
+			public KeywordCompletionData (ICompletionDataKeyHandler keyHandler, SyntaxKind kind) : base (keyHandler)
+			{
+				this.kind = kind;
+			}
+
+			public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, System.Threading.CancellationToken cancelToken)
+			{
+				if (kind == SyntaxKind.IdentifierToken)
+					return Task.FromResult (creator.GetKeywordTooltip (SyntaxFactory.Identifier (this.DisplayText)));
+				return Task.FromResult (creator.GetKeywordTooltip (SyntaxFactory.Token (kind)));
+			}
+		}
+
+		CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind)
+		{
+			return new KeywordCompletionData (keyHandler, syntaxKind) {
+				CompletionText = data,
+				DisplayText = data,
+				Icon = "md-keyword"
+			};
+		}
 
 		CompletionData ICompletionDataFactory.CreateGenericData (ICompletionDataKeyHandler keyHandler, string data, GenericDataType genericDataType)
 		{

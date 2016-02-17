@@ -36,14 +36,16 @@ using System.Threading;
 using System.Text;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using MonoDevelop.Ide.TypeSystem;
+using System.Runtime.CompilerServices;
+using System.Collections.Concurrent;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
 	static class TypeExtensions
 	{
 		readonly static MethodInfo generateTypeSyntaxMethod;
-		readonly static MethodInfo findDerivedClassesAsyncMethod;
-		readonly static MethodInfo findDerivedInterfacesAsyncMethod;
+		readonly static MethodInfo findImplementingTypesAsync;
 
 		static TypeExtensions()
 		{
@@ -51,10 +53,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 			generateTypeSyntaxMethod = typeInfo.GetMethod("GenerateTypeSyntax", new[] { typeof(ITypeSymbol) });
 
 			typeInfo = Type.GetType("Microsoft.CodeAnalysis.FindSymbols.DependentTypeFinder" + ReflectionNamespaces.WorkspacesAsmName, true);
-			findDerivedClassesAsyncMethod = typeInfo.GetMethod("FindDerivedClassesAsync", new[] { typeof(INamedTypeSymbol), typeof(Solution), typeof(IImmutableSet<Project>), typeof(CancellationToken) });
-			findDerivedInterfacesAsyncMethod = typeInfo.GetMethod("FindDerivedInterfacesAsync", new[] { typeof(INamedTypeSymbol), typeof(Solution), typeof(IImmutableSet<Project>), typeof(CancellationToken) });
+			findImplementingTypesAsync = typeInfo.GetMethod("FindImplementingTypesAsync", new[] { typeof(INamedTypeSymbol), typeof(Solution), typeof(IImmutableSet<Project>), typeof(CancellationToken) });
+			if (findImplementingTypesAsync == null)
+				throw new Exception ("Can't find FindImplementingTypesAsync");
 		}
-
 
 		public static TypeSyntax GenerateTypeSyntax(this ITypeSymbol typeSymbol, SyntaxAnnotation simplifierAnnotation = null)
 		{
@@ -80,15 +82,15 @@ namespace ICSharpCode.NRefactory6.CSharp
 			return null;
 		}
 		#endregion
-		
-		public static Task<IEnumerable<INamedTypeSymbol>> FindDerivedClassesAsync(this INamedTypeSymbol type, Solution solution, IImmutableSet<Project> projects = null, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			return (Task<IEnumerable<INamedTypeSymbol>>)findDerivedClassesAsyncMethod.Invoke(null, new object[] { type, solution, projects, cancellationToken });
-		}
 
-		public static Task<IEnumerable<INamedTypeSymbol>> FindDerivedInterfacesAsync (this INamedTypeSymbol type, Solution solution, IImmutableSet<Project> projects = null, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<IEnumerable<INamedTypeSymbol>> FindImplementingTypesAsync (this INamedTypeSymbol type, Solution solution, IImmutableSet<Project> projects = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			return (Task<IEnumerable<INamedTypeSymbol>>)findDerivedInterfacesAsyncMethod.Invoke(null, new object[] { type, solution, projects, cancellationToken });
+			try {
+				return (Task<IEnumerable<INamedTypeSymbol>>)findImplementingTypesAsync.Invoke(null, new object[] { type, solution, projects, cancellationToken });
+			} catch (TargetInvocationException ex) {
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+				return null;
+			}
 		}
 
 		public static bool IsNullableType(this ITypeSymbol type)

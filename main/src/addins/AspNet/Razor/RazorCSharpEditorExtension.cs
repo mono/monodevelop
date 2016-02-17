@@ -567,14 +567,13 @@ namespace MonoDevelop.AspNet.Razor
 
 			return base.GetParameterCompletionCommandOffset (out cpos);
 		}*/
-
-		public override int GetCurrentParameterIndex (int startOffset)
+		public override Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
 				return completionBuilder.GetCurrentParameterIndex (defaultEditor, defaultDocumentContext, hiddenInfo, startOffset);
 			}
 
-			return base.GetCurrentParameterIndex (startOffset);
+			return base.GetCurrentParameterIndex (startOffset, token);
 		}
 
 		public override Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletionAsync (
@@ -585,7 +584,7 @@ namespace MonoDevelop.AspNet.Razor
 					hiddenInfo, completionChar);
 			}
 
-			return base.HandleParameterCompletionAsync (completionContext, completionChar);
+			return base.HandleParameterCompletionAsync (completionContext, completionChar, token);
 		}
 
 		#endregion

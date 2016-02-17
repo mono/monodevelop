@@ -52,8 +52,9 @@ usage ()
 	echo ""
 	echo "--enable-release"
 	echo "  Builds md in release mode"
-	echo "--enable-mac64"
-	echo "  Build for x64 on OS X"
+	echo ""
+	echo "--enable-mac32"
+	echo "  Build for i386 on OS X"
 	echo ""
 	echo "--profile=PROFILE"
 	echo ""
@@ -161,7 +162,7 @@ configure_packages ()
 			enable_tests=" "
 		fi
 
-		if [ -z "$MONODEVELOP_64BIT_SAFE" ]; then	
+		if test `uname` != "Darwin" || test xno == x$x64; then
 			enable_x64=--with-macarch=i386
 		else
 			enable_x64=--with-macarch=x86_64
@@ -246,8 +247,8 @@ while test x$1 != x; do
 		--enable-release)
 			release=yes
 			;;
-		--enable-mac64)
-			x64=yes
+		--enable-mac32)
+			x64=no
 			;;
 		--prefix=*)
 			prefix=`echo $1 | sed 's/--prefix=//'`

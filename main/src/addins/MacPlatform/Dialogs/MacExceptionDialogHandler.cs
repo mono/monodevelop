@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
+using MonoDevelop.Components;
 	
 namespace MonoDevelop.MacIntegration
 {
@@ -75,6 +76,7 @@ namespace MonoDevelop.MacIntegration
 		public bool Run (ExceptionDialogData data)
 		{
 			using (var alert = new NSAlert { AlertStyle = NSAlertStyle.Critical }) {
+				IdeTheme.ApplyTheme (alert.Window);
 				alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 				
 				alert.MessageText = data.Title ?? GettextCatalog.GetString ("Error");

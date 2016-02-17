@@ -31,6 +31,7 @@ namespace MonoDevelop.Components.Docking
 	{
 		public Xwt.Drawing.Color? PadBackgroundColor { get; set; }
 		public Xwt.Drawing.Color? PadTitleLabelColor { get; set; }
+		public Xwt.Drawing.Color? InactivePadTitleLabelColor { get; set; }
 		public DockTabStyle? TabStyle { get; set; }
 		public Xwt.Drawing.Color? TreeBackgroundColor { get; set; }
 		public bool? ShowPadTitleIcon { get; set; }
@@ -60,6 +61,8 @@ namespace MonoDevelop.Components.Docking
 				PadBackgroundColor = style.PadBackgroundColor;
 			if (style.PadTitleLabelColor != null)
 				PadTitleLabelColor = style.PadTitleLabelColor;
+			if (style.InactivePadTitleLabelColor != null)
+				InactivePadTitleLabelColor = style.InactivePadTitleLabelColor;
 			if (style.TabStyle != null)
 				TabStyle = style.TabStyle;
 			if (style.TreeBackgroundColor != null)
@@ -85,6 +88,7 @@ namespace MonoDevelop.Components.Docking
 			DockVisualStyle s = new DockVisualStyle ();
 			s.PadBackgroundColor = new Xwt.Drawing.Color (0,0,0);
 			s.PadTitleLabelColor = new Xwt.Drawing.Color (0,0,0);
+			s.InactivePadTitleLabelColor = new Xwt.Drawing.Color (0,0,0);
 			s.TabStyle = DockTabStyle.Normal;
 			s.TreeBackgroundColor = null;
 			s.ShowPadTitleIcon = true;

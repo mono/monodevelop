@@ -44,13 +44,6 @@ namespace MonoDevelop.Projects
 			parameters = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		}
 
-		public void MergeTo (IDictionary<string, string> other)
-		{
-			foreach (KeyValuePair<string, string> parameter in parameters) {
-				other [parameter.Key] = parameter.Value;
-			}
-		}
-
 		public string this [string name] {
 			get {
 				string result;
@@ -62,12 +55,6 @@ namespace MonoDevelop.Projects
 			set {
 				parameters [name] = value;
 			}
-		}
-
-		[Obsolete("Use StringTagModelExtensions.GetBoolValue")]
-		public bool GetBoolean (string name, bool defaultValue = false)
-		{
-			return ((IStringTagModel)this).GetBoolValue (name, defaultValue);
 		}
 
 		object IStringTagModel.GetValue (string name)

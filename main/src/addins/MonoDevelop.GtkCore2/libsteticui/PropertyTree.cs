@@ -224,6 +224,7 @@ namespace Stetic
 			layout = new Pango.Layout (this.PangoContext);
 			layout.Wrap = Pango.WrapMode.Char;
 			Pango.FontDescription des = this.Style.FontDescription.Copy();
+			des.Size = 10 * (int) Pango.Scale.PangoScale;
 			layout.FontDescription = des;
 		}
 		
@@ -444,6 +445,7 @@ namespace Stetic
 			layout.Wrap = Pango.WrapMode.Char;
 			
 			Pango.FontDescription des = tree.Style.FontDescription.Copy();
+			des.Size = 10 * (int) Pango.Scale.PangoScale;
 			layout.FontDescription = des;
 		}
 		

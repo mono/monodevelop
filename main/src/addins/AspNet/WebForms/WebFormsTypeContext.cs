@@ -50,12 +50,11 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNet.WebForms
 {
-	public class WebFormsTypeContext
+	class WebFormsTypeContext
 	{
 		Compilation compilation;
 		DotNetProject project;
 		WebFormsParsedDocument doc;
-		AspNetAppProjectFlavor aspFlavor;
 
 		public WebFormsParsedDocument Doc {
 			get {
@@ -87,14 +86,6 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		public Compilation Compilation {
-			get {
-				if (compilation == null)
-					UpdateCompilation ();
-				return compilation;
-			}
-		}
-
 		TargetFramework TargetFramework {
 			get {
 				return project != null
@@ -109,11 +100,14 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		void UpdateCompilation ()
+		public async Task CreateCompilation (CancellationToken token)
 		{
+			if (compilation != null)
+				return;
+
 			const string dummyAsmName = "CompiledAspNetPage";
 			compilation = CSharpCompilation.Create (dummyAsmName)
-				.AddReferences (GetReferencedAssemblies ());
+				.AddReferences (await GetReferencedAssemblies (token));
 		}
 		
 		public INamedTypeSymbol GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
@@ -157,7 +151,7 @@ namespace MonoDevelop.AspNet.WebForms
 				var ard = rd as WebFormsPageInfo.AssemblyRegisterDirective;
 				if (ard != null) {
 					string prefix = ard.TagPrefix + ":";
-					foreach (var cls in ListControlClasses (baseType, ard.Namespace, Compilation))
+					foreach (var cls in ListControlClasses (baseType, ard.Namespace, compilation))
 						if (names.Add (prefix + cls.Name))
 							yield return new AspTagCompletionData (prefix, cls);
 					continue;
@@ -383,20 +377,26 @@ namespace MonoDevelop.AspNet.WebForms
 			return usings;
 		}
 
-		IEnumerable<MetadataReference> GetReferencedAssemblies ()
+		async Task<IEnumerable<MetadataReference>> GetReferencedAssemblies (CancellationToken token)
 		{
 			var references = new HashSet<MetadataReference> ();
 
 			if (project != null) {
-				var task = TypeSystemService.GetCompilationAsync (project);
-				if (task.Result != null)
-					references.Add (task.Result.ToMetadataReference ());
+				var result = await TypeSystemService.GetCompilationAsync (project, token);
+				if (result != null)
+					references.Add (result.ToMetadataReference ());
 			}
-			if (doc != null)
-				foreach (var asm in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name)))
-					references.Add (asm);
 
-			foreach (var asm in GetRegisteredAssemblies ().Select (name => GetReferencedAssembly (name)))
+			var tasks = new List<Task<MetadataReference>> ();
+			if (doc != null)
+				foreach (var t in doc.Info.Assemblies.Select (a => a.Name).Select (name => GetReferencedAssembly (name, token)))
+					tasks.Add (t);
+
+			foreach (var t in GetRegisteredAssemblies ().Select (name => GetReferencedAssembly (name, token)))
+				tasks.Add (t);
+
+			MetadataReference[] assemblies = await Task.WhenAll (tasks);
+			foreach (var asm in assemblies)
 				references.Add (asm);
 
 			references.Remove (null);
@@ -404,13 +404,13 @@ namespace MonoDevelop.AspNet.WebForms
 			return references;
 		}
 
-		MetadataReference GetReferencedAssembly (string assemblyName)
+		async Task<MetadataReference> GetReferencedAssembly (string assemblyName, CancellationToken token)
 		{
 			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			if (string.IsNullOrEmpty (parsed.Name))
 				return null;
 
-			var r = GetProjectReference (parsed);
+			var r = await GetProjectReference (parsed, token);
 			if (r != null)
 				return r;
 
@@ -421,7 +421,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return null;
 		}
 
-		MetadataReference GetProjectReference (AssemblyName parsed)
+		async Task<MetadataReference> GetProjectReference (AssemblyName parsed, CancellationToken token)
 		{
 			if (project == null)
 				return null;
@@ -439,7 +439,11 @@ namespace MonoDevelop.AspNet.WebForms
 						var p = reference.ResolveProject (project.ParentSolution) as DotNetProject;
 						if (p == null)
 							continue;
-						return TypeSystemService.GetCompilationAsync (p).Result.ToMetadataReference ();
+						var result = await TypeSystemService.GetCompilationAsync (p);
+						if (result != null) {
+							return result.ToMetadataReference ();
+						}
+						return null;
 					}
 			}
 
@@ -601,7 +605,7 @@ namespace MonoDevelop.AspNet.WebForms
 		INamedTypeSymbol AssemblyTypeLookup (string namespac, string tagName)
 		{
 			var fullName = namespac + "." + tagName;
-			var type = Compilation.GetTypeByMetadataName (fullName);
+			var type = compilation.GetTypeByMetadataName (fullName);
 			if (type == null || type.Kind == SymbolKind.ErrorType)
 				return null;
 			return type;
@@ -638,10 +642,15 @@ namespace MonoDevelop.AspNet.WebForms
 		INamedTypeSymbol GetUserControlType (string virtualPath)
 		{
 			var name = GetUserControlTypeName (virtualPath);
-			var type = Compilation.GetTypeByMetadataName (name);
+			var type = compilation.GetTypeByMetadataName (name);
 			if (type.Kind == SymbolKind.ErrorType)
 				return null;
 			return type;
+		}
+
+		public INamedTypeSymbol GetTypeByMetadataName (string fullyQualifiedMetadataName)
+		{
+			return compilation.GetTypeByMetadataName (fullyQualifiedMetadataName);
 		}
 	}
 

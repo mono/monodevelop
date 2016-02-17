@@ -30,6 +30,8 @@ using System.Threading.Tasks;
 using ICSharpCode.NRefactory.Editor;
 using System.Threading;
 using MonoDevelop.Core;
+using Xwt;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -89,8 +91,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 			snooperId = Gtk.Key.SnooperInstall (TooltipKeySnooper);
 			//if (snooperId != 0)
 			//	Gtk.Key.SnooperRemove (snooperId);
+			IdeApp.Workbench.RootWindow.FocusOutEvent += RootWindow_FocusOutEvent;
 		}
 
+		static void RootWindow_FocusOutEvent (object o, Gtk.FocusOutEventArgs args)
+		{
+			LinksShown = false;
+		}
 
 		static int TooltipKeySnooper (Gtk.Widget widget, Gdk.EventKey evnt)
 		{
@@ -105,11 +112,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static bool IsTriggerKey (Gdk.EventKey evnt)
 		{
-			#if MAC
+#if MAC
 			return evnt.Key == Gdk.Key.Meta_L || evnt.Key == Gdk.Key.Meta_R;
-			#else
+#else
 			return evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R;
-			#endif
+#endif
 		}
 		#endregion
 
@@ -123,7 +130,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			LinksShownChanged += AbstractNavigationExtension_LinksShownChanged;
 			this.DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
-			this.Editor.LineShown += Editor_LineShown;
+			this.Editor.MouseMoved += Editor_MouseMoved;
+
 			if (LinksShown)
 				ShowLinks ();
 		}
@@ -149,36 +157,40 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 		List<ITextSegmentMarker> markers = new List<ITextSegmentMarker> ();
-
-		async void ShowLinks ()
+		List<IDocumentLine> visibleLines = new List<IDocumentLine> ();
+		void ShowLinks ()
 		{
 			HideLinks ();
 			try {
-				foreach (var line in Editor.VisibleLines) {
-					if (line.Length <= 0)
-						continue;
-					foreach (var segment in await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken))) {
-						var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
-						marker.OnlyShowLinkOnHover = true;
-						Editor.AddMarker (marker);
-						markers.Add (marker);
-					}
-				}
+				Editor_MouseMoved (this, null);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while retrieving nav links.", e);
 			}
 		}
 
-		async void Editor_LineShown (object sender, Ide.Editor.LineEventArgs e)
+		double x, y;
+		async void Editor_MouseMoved (object sender, MouseMovedEventArgs e)
 		{
+			if (e != null) {
+				x = e.X;
+				y = e.Y;
+			}
 			if (LinksShown) {
-				var line = e.Line;
-				foreach (var segment in await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken))) {
-					var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
-					marker.OnlyShowLinkOnHover = true;
-					Editor.AddMarker (marker);
-					markers.Add (marker);
+				var lineNumber = Editor.PointToLocation (x, y).Line;
+				var line = Editor.GetLine (lineNumber);
+				if (visibleLines.Any (l => l.Equals (line))) {
+					return;
 				}
+				visibleLines.Add (line);
+				var segments = await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken));
+				await Runtime.RunInMainThread (delegate {
+					foreach (var segment in segments) {
+						var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+						marker.OnlyShowLinkOnHover = true;
+						Editor.AddMarker (marker);
+						markers.Add (marker);
+					}
+				});
 			}
 		}
 
@@ -188,6 +200,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				Editor.RemoveMarker (m);
 			}
 			markers.Clear ();
+			visibleLines.Clear ();
 		}
 
 		void RemoveTimer ()
@@ -200,11 +213,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			LinksShownChanged -= AbstractNavigationExtension_LinksShownChanged;
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed;
-			Editor.LineShown -= Editor_LineShown;
+			this.Editor.MouseMoved -= Editor_MouseMoved;
 			HideLinks ();
 			RemoveTimer ();
 			base.Dispose ();
 		}
-
 	}
 }

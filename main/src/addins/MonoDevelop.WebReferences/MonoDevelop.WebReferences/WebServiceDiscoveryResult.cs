@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.IO;
 using System.CodeDom.Compiler;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.WebReferences
 {
@@ -72,7 +73,7 @@ namespace MonoDevelop.WebReferences
 		
 		public abstract string ProxyGenerator { get; }
 		
-		public virtual void GenerateFiles (DotNetProject project, string namspace, string referenceName)
+		public virtual async Task GenerateFiles (DotNetProject project, string namspace, string referenceName)
 		{
 			//make sure we have a valid value for the namespace
 			if (string.IsNullOrEmpty (namspace)) {
@@ -90,10 +91,10 @@ namespace MonoDevelop.WebReferences
 				project.Files.Remove (f);
 			
 			// Generate the wsdl, disco and map files
-			string mapSpec = GenerateDescriptionFiles (project, basePath);
+			string mapSpec = await GenerateDescriptionFiles (project, basePath);
 			
 			// Generate the proxy class
-			string proxySpec = CreateProxyFile (project, basePath, namspace + "." + referenceName, "Reference");
+			string proxySpec = await CreateProxyFile (project, basePath, namspace + "." + referenceName, "Reference");
 			
 			ProjectFile mapFile = project.Files.GetFile (mapSpec);
 			if (mapFile == null) {
@@ -136,10 +137,10 @@ namespace MonoDevelop.WebReferences
 			WebReferencesService.NotifyWebReferencesChanged (project);
 		}
 		
-		protected abstract string GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath);
+		protected abstract Task<string> GenerateDescriptionFiles (DotNetProject dotNetProject, FilePath basePath);
 		
-		protected abstract string CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName);
+		protected abstract Task<string> CreateProxyFile (DotNetProject dotNetProject, FilePath basePath, string proxyNamespace, string referenceName);
 		
-		public abstract void Update ();
+		public abstract Task Update ();
 	}
 }

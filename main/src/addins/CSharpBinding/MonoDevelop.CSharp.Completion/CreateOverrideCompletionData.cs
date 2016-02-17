@@ -140,5 +140,10 @@ namespace MonoDevelop.CSharp.Completion
 
 			OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
 		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
+		}
 	}
 }

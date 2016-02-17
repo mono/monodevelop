@@ -26,12 +26,14 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -54,21 +56,21 @@ namespace MonoDevelop.AspNet.Commands
 				info.Enabled = info.Visible = false;
 		}
 
-		protected override void Run ()
+		protected override async void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var name = doc.FileName.ParentDirectory.FileName;
-			var controller = FindController (doc.Project, name);
+			var controller = await FindController (doc.Project, name);
 
 			if (controller != null)
-				IdeApp.ProjectOperations.JumpToDeclaration (controller, doc.Project);
+				await RefactoringService.RoslynJumpToDeclaration (controller, doc.Project);
 			else
 				MessageService.ShowError ("Matching controller cannot be found.");
 		}
 
-		INamedTypeSymbol FindController (MonoDevelop.Projects.Project project, string name)
+		async Task<INamedTypeSymbol> FindController (MonoDevelop.Projects.Project project, string name)
 		{
-			var compilation = TypeSystemService.GetCompilationAsync (project).Result;
+			var compilation = await TypeSystemService.GetCompilationAsync (project);
 			if (compilation == null)
 				return null;
 

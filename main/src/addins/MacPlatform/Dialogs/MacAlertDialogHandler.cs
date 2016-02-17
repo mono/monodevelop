@@ -46,6 +46,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			using (var alert = new NSAlert ()) {
 				alert.Window.Title = data.Title ?? BrandingService.ApplicationName;
+				IdeTheme.ApplyTheme (alert.Window);
 
 				bool stockIcon;
 				if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Error || data.Message.Icon == Gtk.Stock.DialogError) {
@@ -61,7 +62,13 @@ namespace MonoDevelop.MacIntegration
 
 				if (!stockIcon && !string.IsNullOrEmpty (data.Message.Icon)) {
 					var img = ImageService.GetIcon (data.Message.Icon, Gtk.IconSize.Dialog);
-					alert.Icon = img.ToNSImage ();
+					// HACK: VK The icon is not rendered in dark style correctly
+					//       Use light variant and reder it here
+					//       as long as NSAppearance.NameVibrantDark is broken
+					if (IdeTheme.UserInterfaceSkin == Skin.Dark)
+						alert.Icon = img.WithStyles ("-dark").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
+					else
+						alert.Icon = img.ToNSImage ();
 				} else {
 					//for some reason the NSAlert doesn't pick up the app icon by default
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
@@ -149,7 +156,9 @@ namespace MonoDevelop.MacIntegration
 				}
 				
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
+
 					var result = (int)alert.RunModal () - (long)(int)NSAlertButtonReturn.First;
+					
 					completed = true;
 					if (result >= 0 && result < buttons.Count) {
 						data.ResultButton = buttons [(int)result];
@@ -171,7 +180,9 @@ namespace MonoDevelop.MacIntegration
 				
 				if (applyToAllCheck != null && applyToAllCheck.State != 0)
 					data.ApplyToAll = true;
-				
+
+
+
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}
 			

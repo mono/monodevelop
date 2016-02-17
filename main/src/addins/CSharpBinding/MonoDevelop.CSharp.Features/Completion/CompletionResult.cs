@@ -63,6 +63,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			set;
 		}
 
+		internal SyntaxContext SyntaxContext;
+
 		public readonly List<IMethodSymbol> PossibleDelegates = new List<IMethodSymbol>();
 
 		#region IReadOnlyList<ICompletionData> implemenation
@@ -97,12 +99,21 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		
 		internal void AddData (CompletionData completionData)
 		{
+			var displayText = completionData.DisplayText;
+			foreach (var od in data) {
+				if (od.IsOverload (completionData) && completionData.IsOverload (od)) {
+					od.AddOverload (completionData);
+					return;
+				}
+			}
 			data.Add(completionData); 
 		}
 
 		internal void AddRange (IEnumerable<CompletionData> completionData)
 		{
-			data.AddRange(completionData); 
+			foreach (var cd in completionData) {
+				AddData (cd);
+			}
 		}
 
 		public static CompletionResult Create(IEnumerable<CompletionData> data)

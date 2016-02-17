@@ -57,7 +57,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			get { return completionWidget; }
 			set
 			{
+				if (completionWidget != null)
+					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 				completionWidget = value;
+				if (completionWidget != null)
+					completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			}
 		}
 
@@ -289,15 +293,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			autoHideCompletionWindow = autoHideParameterWindow = true;
 		}
 
-		public virtual Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token)
+		public virtual Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token = default(CancellationToken))
 		{
 			return Task.FromResult (-1);
-		}
-
-		[Obsolete("Use GetCurrentParameterIndex (int startOffset, CancellationToken token)")]
-		public virtual int GetCurrentParameterIndex (int startOffset)
-		{
-			return GetCurrentParameterIndex (startOffset, default(CancellationToken)).Result;
 		}
 
 		internal protected virtual void OnCompletionContextChanged (object o, EventArgs a)
@@ -546,11 +544,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			return null;
 		}
 
-		public virtual int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
+		public virtual async Task<int> GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload, System.Threading.CancellationToken token)
 		{
-			int cparam = GetCurrentParameterIndex (provider.StartOffset, default(CancellationToken)).Result;
-
 			var currentHintingData = provider [currentOverload];
+			int cparam = await GetCurrentParameterIndex (provider.StartOffset, token).ConfigureAwait (false);
 			if (cparam > currentHintingData.ParameterCount && !currentHintingData.IsParameterListAllowed) {
 				// Look for an overload which has more parameters
 				int bestOverload = -1;
@@ -592,8 +589,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
-			if (CompletionWidget != null)
-				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
 //			if (document.Editor.Parent != null)
@@ -641,8 +636,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			Editor.CaretPositionChanged -= HandlePositionChanged;
 			CompletionWindowManager.WindowClosed -= HandleWindowClosed;
-			if (CompletionWidget != null)
-				CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;
+			CompletionWidget = null;
 		}
 	}
 

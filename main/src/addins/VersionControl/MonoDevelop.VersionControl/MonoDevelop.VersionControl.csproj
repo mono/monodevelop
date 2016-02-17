@@ -132,11 +132,23 @@
     <EmbeddedResource Include="icons\added-overlay-16%402x.png">
       <LogicalName>added-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\added-overlay-16~dark.png">
+      <LogicalName>added-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\added-overlay-16~dark%402x.png">
+      <LogicalName>added-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\modified-overlay-16.png">
       <LogicalName>modified-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\modified-overlay-16%402x.png">
       <LogicalName>modified-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\modified-overlay-16~dark.png">
+      <LogicalName>modified-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\modified-overlay-16~dark%402x.png">
+      <LogicalName>modified-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\conflict-overlay-16.png">
       <LogicalName>conflict-overlay-16.png</LogicalName>
@@ -144,11 +156,23 @@
     <EmbeddedResource Include="icons\conflict-overlay-16%402x.png">
       <LogicalName>conflict-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\conflict-overlay-16~dark.png">
+      <LogicalName>conflict-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\conflict-overlay-16~dark%402x.png">
+      <LogicalName>conflict-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\locked-overlay-16.png">
       <LogicalName>locked-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\locked-overlay-16%402x.png">
       <LogicalName>locked-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locked-overlay-16~dark.png">
+      <LogicalName>locked-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locked-overlay-16~dark%402x.png">
+      <LogicalName>locked-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="VersionControl.addin.xml">
       <LogicalName>VersionControl.addin.xml</LogicalName>
@@ -159,11 +183,23 @@
     <EmbeddedResource Include="icons\removed-overlay-16%402x.png">
       <LogicalName>removed-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\removed-overlay-16~dark.png">
+      <LogicalName>removed-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\removed-overlay-16~dark%402x.png">
+      <LogicalName>removed-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\renamed-overlay-16.png">
       <LogicalName>renamed-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\renamed-overlay-16%402x.png">
       <LogicalName>renamed-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16~dark.png">
+      <LogicalName>renamed-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16~dark%402x.png">
+      <LogicalName>renamed-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\ignored-overlay-16.png">
       <LogicalName>ignored-overlay-16.png</LogicalName>
@@ -171,11 +207,23 @@
     <EmbeddedResource Include="icons\ignored-overlay-16%402x.png">
       <LogicalName>ignored-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\ignored-overlay-16~dark.png">
+      <LogicalName>ignored-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ignored-overlay-16~dark%402x.png">
+      <LogicalName>ignored-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\repository-16.png">
       <LogicalName>repository-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\repository-16%402x.png">
       <LogicalName>repository-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\repository-16~dark.png">
+      <LogicalName>repository-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\repository-16~dark%402x.png">
+      <LogicalName>repository-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\versioned-overlay-16.png">
       <LogicalName>versioned-overlay-16.png</LogicalName>
@@ -183,11 +231,23 @@
     <EmbeddedResource Include="icons\versioned-overlay-16%402x.png">
       <LogicalName>versioned-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\versioned-overlay-16~dark.png">
+      <LogicalName>versioned-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\versioned-overlay-16~dark%402x.png">
+      <LogicalName>versioned-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\unversioned-overlay-16.png">
       <LogicalName>unversioned-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\unversioned-overlay-16%402x.png">
       <LogicalName>unversioned-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unversioned-overlay-16~dark.png">
+      <LogicalName>unversioned-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unversioned-overlay-16~dark%402x.png">
+      <LogicalName>unversioned-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\lock-required-overlay-16.png">
       <LogicalName>lock-required-overlay-16.png</LogicalName>
@@ -195,11 +255,23 @@
     <EmbeddedResource Include="icons\lock-required-overlay-16%402x.png">
       <LogicalName>lock-required-overlay-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\lock-required-overlay-16~dark.png">
+      <LogicalName>lock-required-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lock-required-overlay-16~dark%402x.png">
+      <LogicalName>lock-required-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\unlocked-overlay-16.png">
       <LogicalName>unlocked-overlay-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\unlocked-overlay-16%402x.png">
       <LogicalName>unlocked-overlay-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16~dark.png">
+      <LogicalName>unlocked-overlay-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16~dark%402x.png">
+      <LogicalName>unlocked-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Policies.xml">
       <LogicalName>Policies.xml</LogicalName>
@@ -213,11 +285,23 @@
     <EmbeddedResource Include="icons\version-control-16%402x.png">
       <LogicalName>version-control-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\version-control-16~dark.png">
+      <LogicalName>version-control-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\version-control-16~dark%402x.png">
+      <LogicalName>version-control-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\log-16.png">
       <LogicalName>log-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\log-16%402x.png">
       <LogicalName>log-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\log-16~dark.png">
+      <LogicalName>log-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\log-16~dark%402x.png">
+      <LogicalName>log-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\diff-16.png">
       <LogicalName>diff-16.png</LogicalName>
@@ -225,11 +309,59 @@
     <EmbeddedResource Include="icons\diff-16%402x.png">
       <LogicalName>diff-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\diff-16~dark.png">
+      <LogicalName>diff-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\diff-16~dark%402x.png">
+      <LogicalName>diff-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\diff-16~disabled.png">
+      <LogicalName>diff-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\diff-16~disabled%402x.png">
+      <LogicalName>diff-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\diff-16~dark~disabled.png">
+      <LogicalName>diff-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\diff-16~dark~disabled%402x.png">
+      <LogicalName>diff-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-added-15.png">
+      <LogicalName>gutter-added-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-added-15%402x.png">
+      <LogicalName>gutter-added-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-removed-15.png">
+      <LogicalName>gutter-removed-15.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-removed-15%402x.png">
+      <LogicalName>gutter-removed-15@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pull-16.png">
       <LogicalName>pull-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pull-16%402x.png">
       <LogicalName>pull-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pull-16~dark.png">
+      <LogicalName>pull-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pull-16~dark%402x.png">
+      <LogicalName>pull-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pull-16~disabled.png">
+      <LogicalName>pull-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pull-16~disabled%402x.png">
+      <LogicalName>pull-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pull-16~dark~disabled.png">
+      <LogicalName>pull-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pull-16~dark~disabled%402x.png">
+      <LogicalName>pull-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\push-16.png">
       <LogicalName>push-16.png</LogicalName>
@@ -237,11 +369,47 @@
     <EmbeddedResource Include="icons\push-16%402x.png">
       <LogicalName>push-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\push-16~dark.png">
+      <LogicalName>push-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\push-16~dark%402x.png">
+      <LogicalName>push-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\push-16~disabled.png">
+      <LogicalName>push-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\push-16~disabled%402x.png">
+      <LogicalName>push-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\push-16~dark~disabled.png">
+      <LogicalName>push-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\push-16~dark~disabled%402x.png">
+      <LogicalName>push-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\refresh-16.png">
       <LogicalName>refresh-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\refresh-16%402x.png">
       <LogicalName>refresh-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~dark.png">
+      <LogicalName>refresh-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~dark%402x.png">
+      <LogicalName>refresh-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~disabled.png">
+      <LogicalName>refresh-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~disabled%402x.png">
+      <LogicalName>refresh-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~dark~disabled.png">
+      <LogicalName>refresh-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\refresh-16~dark~disabled%402x.png">
+      <LogicalName>refresh-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\local-status-16.png">
       <LogicalName>local-status-16.png</LogicalName>
@@ -249,11 +417,35 @@
     <EmbeddedResource Include="icons\local-status-16%402x.png">
       <LogicalName>local-status-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\local-status-16~dark.png">
+      <LogicalName>local-status-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\local-status-16~dark%402x.png">
+      <LogicalName>local-status-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\commit-16.png">
       <LogicalName>commit-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\commit-16%402x.png">
       <LogicalName>commit-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\commit-16~dark.png">
+      <LogicalName>commit-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\commit-16~dark%402x.png">
+      <LogicalName>commit-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\commit-16~disabled.png">
+      <LogicalName>commit-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\commit-16~disabled%402x.png">
+      <LogicalName>commit-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\commit-16~dark~disabled.png">
+      <LogicalName>commit-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\commit-16~dark~disabled%402x.png">
+      <LogicalName>commit-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\remote-status-16.png">
       <LogicalName>remote-status-16.png</LogicalName>
@@ -261,11 +453,47 @@
     <EmbeddedResource Include="icons\remote-status-16%402x.png">
       <LogicalName>remote-status-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\remote-status-16~dark.png">
+      <LogicalName>remote-status-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remote-status-16~dark%402x.png">
+      <LogicalName>remote-status-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remote-status-16~disabled.png">
+      <LogicalName>remote-status-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remote-status-16~disabled%402x.png">
+      <LogicalName>remote-status-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remote-status-16~dark~disabled.png">
+      <LogicalName>remote-status-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\remote-status-16~dark~disabled%402x.png">
+      <LogicalName>remote-status-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-added-16.png">
       <LogicalName>vcs-added-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-added-16%402x.png">
       <LogicalName>vcs-added-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-added-16~dark.png">
+      <LogicalName>vcs-added-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-added-16~dark%402x.png">
+      <LogicalName>vcs-added-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-added-16~disabled.png">
+      <LogicalName>vcs-added-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-added-16~disabled%402x.png">
+      <LogicalName>vcs-added-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-added-16~dark~disabled.png">
+      <LogicalName>vcs-added-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-added-16~dark~disabled%402x.png">
+      <LogicalName>vcs-added-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-removed-16.png">
       <LogicalName>vcs-removed-16.png</LogicalName>
@@ -273,11 +501,47 @@
     <EmbeddedResource Include="icons\vcs-removed-16%402x.png">
       <LogicalName>vcs-removed-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-removed-16~dark.png">
+      <LogicalName>vcs-removed-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-removed-16~dark%402x.png">
+      <LogicalName>vcs-removed-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-removed-16~disabled.png">
+      <LogicalName>vcs-removed-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-removed-16~disabled%402x.png">
+      <LogicalName>vcs-removed-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-removed-16~dark~disabled.png">
+      <LogicalName>vcs-removed-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-removed-16~dark~disabled%402x.png">
+      <LogicalName>vcs-removed-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-renamed-16.png">
       <LogicalName>vcs-renamed-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-renamed-16%402x.png">
       <LogicalName>vcs-renamed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16~dark.png">
+      <LogicalName>vcs-renamed-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16~dark%402x.png">
+      <LogicalName>vcs-renamed-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16~disabled.png">
+      <LogicalName>vcs-renamed-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16~disabled%402x.png">
+      <LogicalName>vcs-renamed-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16~dark~disabled.png">
+      <LogicalName>vcs-renamed-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-renamed-16~dark~disabled%402x.png">
+      <LogicalName>vcs-renamed-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-conflicted-16.png">
       <LogicalName>vcs-conflicted-16.png</LogicalName>
@@ -285,11 +549,47 @@
     <EmbeddedResource Include="icons\vcs-conflicted-16%402x.png">
       <LogicalName>vcs-conflicted-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-conflicted-16~dark.png">
+      <LogicalName>vcs-conflicted-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-conflicted-16~dark%402x.png">
+      <LogicalName>vcs-conflicted-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-conflicted-16~disabled.png">
+      <LogicalName>vcs-conflicted-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-conflicted-16~disabled%402x.png">
+      <LogicalName>vcs-conflicted-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-conflicted-16~dark~disabled.png">
+      <LogicalName>vcs-conflicted-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-conflicted-16~dark~disabled%402x.png">
+      <LogicalName>vcs-conflicted-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-modified-16.png">
       <LogicalName>vcs-modified-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\vcs-modified-16%402x.png">
       <LogicalName>vcs-modified-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-modified-16~dark.png">
+      <LogicalName>vcs-modified-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-modified-16~dark%402x.png">
+      <LogicalName>vcs-modified-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-modified-16~disabled.png">
+      <LogicalName>vcs-modified-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-modified-16~disabled%402x.png">
+      <LogicalName>vcs-modified-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-modified-16~dark~disabled.png">
+      <LogicalName>vcs-modified-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\vcs-modified-16~dark~disabled%402x.png">
+      <LogicalName>vcs-modified-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\comment-16.png">
       <LogicalName>comment-16.png</LogicalName>
@@ -297,11 +597,47 @@
     <EmbeddedResource Include="icons\comment-16%402x.png">
       <LogicalName>comment-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\comment-16~dark.png">
+      <LogicalName>comment-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\comment-16~dark%402x.png">
+      <LogicalName>comment-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\comment-16~disabled.png">
+      <LogicalName>comment-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\comment-16~disabled%402x.png">
+      <LogicalName>comment-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\comment-16~dark~disabled.png">
+      <LogicalName>comment-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\comment-16~dark~disabled%402x.png">
+      <LogicalName>comment-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\revert-16.png">
       <LogicalName>revert-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\revert-16%402x.png">
       <LogicalName>revert-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-16~dark.png">
+      <LogicalName>revert-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-16~dark%402x.png">
+      <LogicalName>revert-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-16~disabled.png">
+      <LogicalName>revert-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-16~disabled%402x.png">
+      <LogicalName>revert-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-16~dark~disabled.png">
+      <LogicalName>revert-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\revert-16~dark~disabled%402x.png">
+      <LogicalName>revert-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\branch-16.png">
       <LogicalName>branch-16.png</LogicalName>
@@ -309,11 +645,47 @@
     <EmbeddedResource Include="icons\branch-16%402x.png">
       <LogicalName>branch-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\branch-16~dark.png">
+      <LogicalName>branch-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\branch-16~dark%402x.png">
+      <LogicalName>branch-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\branch-16~disabled.png">
+      <LogicalName>branch-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\branch-16~disabled%402x.png">
+      <LogicalName>branch-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\branch-16~dark~disabled.png">
+      <LogicalName>branch-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\branch-16~dark~disabled%402x.png">
+      <LogicalName>branch-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\tag-16.png">
       <LogicalName>tag-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\tag-16%402x.png">
       <LogicalName>tag-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag-16~dark.png">
+      <LogicalName>tag-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag-16~dark%402x.png">
+      <LogicalName>tag-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag-16~disabled.png">
+      <LogicalName>tag-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag-16~disabled%402x.png">
+      <LogicalName>tag-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag-16~dark~disabled.png">
+      <LogicalName>tag-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\tag-16~dark~disabled%402x.png">
+      <LogicalName>tag-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-git-16.png">
       <LogicalName>prefs-git-16.png</LogicalName>
@@ -321,17 +693,71 @@
     <EmbeddedResource Include="icons\prefs-git-16%402x.png">
       <LogicalName>prefs-git-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-git-16~dark.png">
+      <LogicalName>prefs-git-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-git-16~dark%402x.png">
+      <LogicalName>prefs-git-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-git-16~sel.png">
+      <LogicalName>prefs-git-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-git-16~sel%402x.png">
+      <LogicalName>prefs-git-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-git-16~dark~sel.png">
+      <LogicalName>prefs-git-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-git-16~dark~sel%402x.png">
+      <LogicalName>prefs-git-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-commit-message-style-16.png">
       <LogicalName>prefs-commit-message-style-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-commit-message-style-16%402x.png">
       <LogicalName>prefs-commit-message-style-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-version-control-general-16.png">
-      <LogicalName>prefs-version-control-general-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16~dark.png">
+      <LogicalName>prefs-commit-message-style-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-version-control-general-16%402x.png">
-      <LogicalName>prefs-version-control-general-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16~dark%402x.png">
+      <LogicalName>prefs-commit-message-style-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16~sel.png">
+      <LogicalName>prefs-commit-message-style-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16~sel%402x.png">
+      <LogicalName>prefs-commit-message-style-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16~dark~sel.png">
+      <LogicalName>prefs-commit-message-style-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-commit-message-style-16~dark~sel%402x.png">
+      <LogicalName>prefs-commit-message-style-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16.png">
+      <LogicalName>prefs-version-control-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16%402x.png">
+      <LogicalName>prefs-version-control-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16~dark.png">
+      <LogicalName>prefs-version-control-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16~dark%402x.png">
+      <LogicalName>prefs-version-control-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16~sel.png">
+      <LogicalName>prefs-version-control-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16~sel%402x.png">
+      <LogicalName>prefs-version-control-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16~dark~sel.png">
+      <LogicalName>prefs-version-control-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-version-control-16~dark~sel%402x.png">
+      <LogicalName>prefs-version-control-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -421,6 +847,7 @@
     <Compile Include="MonoDevelop.VersionControl\VersionControlTask.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\CommonTextEditorOptions.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

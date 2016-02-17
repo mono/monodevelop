@@ -609,6 +609,17 @@ namespace MonoDevelop.WebReferences.Dialogs
 			}
 		}
 
+
+		protected override void OnDestroyed ()
+		{
+			btnNavBack.Activated -= Browser_BackButtonClicked;
+			btnNavNext.Activated -= Browser_NextButtonClicked;
+			btnRefresh.Activated -= Browser_RefreshButtonClicked;
+			btnStop.Activated -= Browser_StopButtonClicked;
+			btnHome.Activated -= Browser_HomeButtonClicked;
+
+			base.OnDestroyed ();
+		}
 	}
 	
 	class AskCredentials: GuiSyncObject, ICredentials

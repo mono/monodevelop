@@ -56,6 +56,7 @@ namespace MonoDevelop.Projects.MSBuild
 			public Dictionary<MSBuildImport,string> Imports = new Dictionary<MSBuildImport, string> ();
 			public Dictionary<string,string> GlobalProperties = new Dictionary<string, string> ();
 			public List<MSBuildTarget> Targets = new List<MSBuildTarget> ();
+			public List<MSBuildTarget> TargetsIgnoringCondition = new List<MSBuildTarget> ();
 			public List<MSBuildProject> ReferencedProjects = new List<MSBuildProject> ();
 			public Dictionary<MSBuildImport, List<ProjectInfo>> ImportedProjects = new Dictionary<MSBuildImport, List<ProjectInfo>> ();
 			public ConditionedPropertyCollection ConditionedProperties = new ConditionedPropertyCollection ();
@@ -141,6 +142,7 @@ namespace MonoDevelop.Projects.MSBuild
 			pi.Properties.Clear ();
 			pi.Imports.Clear ();
 			pi.Targets.Clear ();
+			pi.TargetsIgnoringCondition.Clear ();
 
 			// Unload referenced projects after evaluating to avoid unnecessary unload + load
 			var oldRefProjects = pi.ReferencedProjects;
@@ -218,7 +220,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var include = context.EvaluateString (item.Include);
 				var exclude = context.EvaluateString (item.Exclude);
 
-				var it = CreateEvaluatedItem (context, project.Project, item, include);
+				var it = CreateEvaluatedItem (context, project, project.Project, item, include);
 
 				var trueCond = conditionIsTrue && (string.IsNullOrEmpty (it.Condition) || SafeParseAndEvaluate (project, context, it.Condition));
 
@@ -240,7 +242,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (path == "**" || path.EndsWith ("\\**"))
 					path = path + "/*";
 				var subpath = path.Split ('\\');
-				foreach (var eit in ExpandWildcardFilePath (project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0)) {
+				foreach (var eit in ExpandWildcardFilePath (project, project.Project, context, item, project.Project.BaseDirectory, FilePath.Null, false, subpath, 0)) {
 					if (excludeRegex != null && excludeRegex.IsMatch (eit.Include))
 						continue;
 					project.EvaluatedItemsIgnoringCondition.Add (eit);
@@ -251,7 +253,7 @@ namespace MonoDevelop.Projects.MSBuild
 			else if (include != it.Include) {
 				if (excludeRegex != null && excludeRegex.IsMatch (include))
 					return;
-				it = CreateEvaluatedItem (context, project.Project, item, include);
+				it = CreateEvaluatedItem (context, project, project.Project, item, include);
 				project.EvaluatedItemsIgnoringCondition.Add (it);
 				if (trueCond)
 					project.EvaluatedItems.Add (it);
@@ -274,7 +276,7 @@ namespace MonoDevelop.Projects.MSBuild
 				Evaluate (project, context, item, evalItems);
 		}
 
-		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
+		static IEnumerable<MSBuildItemEvaluated> ExpandWildcardFilePath (ProjectInfo pinfo, MSBuildProject project, MSBuildEvaluationContext context, MSBuildItem sourceItem, FilePath basePath, FilePath baseRecursiveDir, bool recursive, string[] filePath, int index)
 		{
 			var res = Enumerable.Empty<MSBuildItemEvaluated> ();
 
@@ -284,10 +286,10 @@ namespace MonoDevelop.Projects.MSBuild
 			var path = filePath [index];
 
 			if (path == "..")
-				return ExpandWildcardFilePath (project, context, sourceItem, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, index + 1);
+				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath.ParentDirectory, baseRecursiveDir, recursive, filePath, index + 1);
 			
 			if (path == ".")
-				return ExpandWildcardFilePath (project, context, sourceItem, basePath, baseRecursiveDir, recursive, filePath, index + 1);
+				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath, baseRecursiveDir, recursive, filePath, index + 1);
 
 			if (!Directory.Exists (basePath))
 				return res;
@@ -301,13 +303,13 @@ namespace MonoDevelop.Projects.MSBuild
 				if (baseRecursiveDir.IsNullOrEmpty)
 					baseRecursiveDir = basePath;
 				
-				return ExpandWildcardFilePath (project, context, sourceItem, basePath, baseRecursiveDir, true, filePath, index + 1);
+				return ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath, baseRecursiveDir, true, filePath, index + 1);
 			}
 
 			if (recursive) {
 				// Recursive search. Try to match the remaining subpath in all subdirectories.
 				foreach (var dir in Directory.GetDirectories (basePath))
-					res = res.Concat (ExpandWildcardFilePath (project, context, sourceItem, dir, baseRecursiveDir, true, filePath, index));
+					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, true, filePath, index));
 			}
 
 			if (index == filePath.Length - 1) {
@@ -321,7 +323,7 @@ namespace MonoDevelop.Projects.MSBuild
 				res = res.Concat (Directory.GetFiles (basePath, path).Select (f => {
 					context.SetItemContext (f, recursiveDir);
 					var ev = baseDir + Path.GetFileName (f);
-					return CreateEvaluatedItem (context, project, sourceItem, ev);
+					return CreateEvaluatedItem (context, pinfo, project, sourceItem, ev);
 				}));
 			}
 			else {
@@ -332,9 +334,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 				if (path.IndexOfAny (wildcards) != -1) {
 					foreach (var dir in Directory.GetDirectories (basePath, path))
-						res = res.Concat (ExpandWildcardFilePath (project, context, sourceItem, dir, baseRecursiveDir, false, filePath, index + 1));
+						res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, dir, baseRecursiveDir, false, filePath, index + 1));
 				} else
-					res = res.Concat (ExpandWildcardFilePath (project, context, sourceItem, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1));
+					res = res.Concat (ExpandWildcardFilePath (pinfo, project, context, sourceItem, basePath.Combine (path), baseRecursiveDir, false, filePath, index + 1));
 			}
 
 			return res;
@@ -375,12 +377,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static char [] regexEscapeChars = { '\\', '^', '$', '{', '}', '[', ']', '(', ')', '.', '*', '+', '?', '|', '<', '>', '-', '&' };
 
-		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, MSBuildProject project, MSBuildItem sourceItem, string include)
+		static MSBuildItemEvaluated CreateEvaluatedItem (MSBuildEvaluationContext context, ProjectInfo pinfo, MSBuildProject project, MSBuildItem sourceItem, string include)
 		{
 			var it = new MSBuildItemEvaluated (project, sourceItem.Name, sourceItem.Include, include);
 			var md = new Dictionary<string,IMSBuildPropertyEvaluated> ();
 			foreach (var c in sourceItem.Metadata.GetProperties ()) {
-				md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
+				if (string.IsNullOrEmpty (c.Condition) || SafeParseAndEvaluate (pinfo, context, c.Condition, true))
+					md [c.Name] = new MSBuildPropertyEvaluated (project, c.Name, c.Value, context.EvaluateString (c.Value));
 			}
 			((MSBuildPropertyGroupEvaluated)it.Metadata).SetProperties (md);
 			it.SourceItem = sourceItem;
@@ -401,7 +404,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		MSBuildItemEvaluated Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildItem item)
 		{
-			return CreateEvaluatedItem (context, project.Project, item, context.EvaluateString (item.Include));
+			return CreateEvaluatedItem (context, project, project.Project, item, context.EvaluateString (item.Include));
 		}
 
 		IEnumerable<ProjectInfo> GetImportedProjects (ProjectInfo project, MSBuildImport import)
@@ -449,10 +452,11 @@ namespace MonoDevelop.Projects.MSBuild
 						t.IsImported = true;
 						project.Targets.Add (t);
 					}
-					foreach (var cp in p.ConditionedProperties) {
-						foreach (var v in cp.Value)
-							project.ConditionedProperties.AddProperty (cp.Key, v);
+					foreach (var t in p.TargetsIgnoringCondition) {
+						t.IsImported = true;
+						project.TargetsIgnoringCondition.Add (t);
 					}
+					project.ConditionedProperties.Append (p.ConditionedProperties);
 				}
 				return;
             }
@@ -472,16 +476,19 @@ namespace MonoDevelop.Projects.MSBuild
 
 		string[] GetImportFiles (ProjectInfo project, MSBuildEvaluationContext context, MSBuildImport import, string extensionsPath)
 		{
-			var tempCtx = new MSBuildEvaluationContext (context);
-			var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
-			tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+			if (extensionsPath != null) {
+				var tempCtx = new MSBuildEvaluationContext (context);
+				var mep = MSBuildProjectService.ToMSBuildPath (null, extensionsPath);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath", mep);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath32", mep);
+				tempCtx.SetPropertyValue ("MSBuildExtensionsPath64", mep);
+				context = tempCtx;
+			}
 
 			var pr = context.EvaluateString (import.Project);
 			project.Imports [import] = pr;
 
-			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, tempCtx, import.Condition, true))
+			if (!string.IsNullOrEmpty (import.Condition) && !SafeParseAndEvaluate (project, context, import.Condition, true))
 				return null;
 
 			var path = MSBuildProjectService.FromMSBuildPath (project.Project.BaseDirectory, pr);
@@ -491,7 +498,10 @@ namespace MonoDevelop.Projects.MSBuild
 				return File.Exists (path) ? new [] { path } : null;
 			}
 			else {
-				var files = Directory.GetFiles (Path.GetDirectoryName (path), fileName);
+				path = Path.GetDirectoryName (path);
+				if (!Directory.Exists (path))
+					return null;
+				var files = Directory.GetFiles (path, fileName);
 				Array.Sort (files);
 				return files;
 			}
@@ -530,17 +540,18 @@ namespace MonoDevelop.Projects.MSBuild
 
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildTarget target)
 		{
-			if (SafeParseAndEvaluate (project, context, target.Condition)) {
-				var newTarget = new MSBuildTarget (target.Name, target.Tasks);
-				newTarget.AfterTargets = context.EvaluateString (target.AfterTargets);
-				newTarget.Inputs = context.EvaluateString (target.Inputs);
-				newTarget.Outputs = context.EvaluateString (target.Outputs);
-				newTarget.BeforeTargets = context.EvaluateString (target.BeforeTargets);
-				newTarget.DependsOnTargets = context.EvaluateString (target.DependsOnTargets);
-				newTarget.Returns = context.EvaluateString (target.Returns);
-				newTarget.KeepDuplicateOutputs = context.EvaluateString (target.KeepDuplicateOutputs);
+			bool condIsTrue = SafeParseAndEvaluate (project, context, target.Condition);
+			var newTarget = new MSBuildTarget (target.Name, target.Tasks);
+			newTarget.AfterTargets = context.EvaluateString (target.AfterTargets);
+			newTarget.Inputs = context.EvaluateString (target.Inputs);
+			newTarget.Outputs = context.EvaluateString (target.Outputs);
+			newTarget.BeforeTargets = context.EvaluateString (target.BeforeTargets);
+			newTarget.DependsOnTargets = context.EvaluateString (target.DependsOnTargets);
+			newTarget.Returns = context.EvaluateString (target.Returns);
+			newTarget.KeepDuplicateOutputs = context.EvaluateString (target.KeepDuplicateOutputs);
+			project.TargetsIgnoringCondition.Add (newTarget);
+			if (condIsTrue)
 				project.Targets.Add (newTarget);
-			}
 		}
 
 		static bool SafeParseAndEvaluate (ProjectInfo project, MSBuildEvaluationContext context, string condition, bool collectConditionedProperties = false)
@@ -653,6 +664,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return ((ProjectInfo)projectInstance).Targets;
 		}
 
+		public override IEnumerable<MSBuildTarget> GetTargetsIgnoringCondition (object projectInstance)
+		{
+			return ((ProjectInfo)projectInstance).TargetsIgnoringCondition;
+		}
+
 		public override void SetGlobalProperty (object projectInstance, string property, string value)
 		{
 			var pi = (ProjectInfo)projectInstance;
@@ -665,7 +681,7 @@ namespace MonoDevelop.Projects.MSBuild
 			pi.GlobalProperties.Remove (property);
 		}
 
-		public override IDictionary<string, List<string>> GetConditionedProperties (object projectInstance)
+		public override ConditionedPropertyCollection GetConditionedProperties (object projectInstance)
 		{
 			var pi = (ProjectInfo)projectInstance;
 			return pi.ConditionedProperties;

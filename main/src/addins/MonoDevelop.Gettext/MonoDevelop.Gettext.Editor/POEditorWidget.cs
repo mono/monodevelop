@@ -250,6 +250,15 @@ namespace MonoDevelop.Gettext
 			this.texteditorPlural.Options = DefaultSourceEditorOptions.PlainEditor;
 			this.texteditorOriginal.IsReadOnly = true;
 			this.texteditorPlural.IsReadOnly = true;
+			toolbarPages.ModifyBg (StateType.Normal, Styles.POEditor.TabBarBackgroundColor);
+
+			MonoDevelop.Ide.Gui.Styles.Changed += HandleStylesChanged;
+		}
+
+		void HandleStylesChanged (object sender, EventArgs e)
+		{
+			UpdateFromCatalog ();
+			toolbarPages.ModifyBg (StateType.Normal, Styles.POEditor.TabBarBackgroundColor);
 		}
 
 		void HandleCellRendFuzzyToggled (object sender, ToggledArgs args)
@@ -687,26 +696,21 @@ namespace MonoDevelop.Gettext
 			return entry.IsFuzzy ? iconFuzzy : entry.IsTranslated ? iconValid : iconMissing;
 		}
 		
-		static string iconFuzzy   = "error-16.png";// "md-translation-fuzzy";
-		static string iconValid   = "done-16.png";//"md-translation-valid";
-		static string iconMissing = "warning-16.png";//"md-translation-missing";
-		
-//		static Color translated   = new Color (255, 255, 255);
-		static Color untranslated = new Color (234, 232, 227);
-		static Color fuzzy        = new Color (237, 226, 187);
-		static Color missing      = new Color (237, 167, 167);
+		static string iconFuzzy   = "md-error";// "md-translation-fuzzy";
+		static string iconValid   = "md-done";//"md-translation-valid";
+		static string iconMissing = "md-warning";//"md-translation-missing";
 		
 		Color GetRowColorForEntry (CatalogEntry entry)
 		{
 			if (entry.References.Length == 0)
-				return missing;
-			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? Style.Base (StateType.Normal) : untranslated;
+				return Styles.POEditor.EntryMissingBackgroundColor;
+			return entry.IsFuzzy ? Styles.POEditor.EntryFuzzyBackgroundColor : entry.IsTranslated ? Style.Base (StateType.Normal) : Styles.POEditor.EntryUntranslatedBackgroundColor;
 		}
 		
 		Color GetForeColorForEntry (CatalogEntry entry)
 		{
 			if (entry.References.Length == 0)
-				return missing;
+				return Styles.POEditor.EntryMissingBackgroundColor;
 			return entry.IsFuzzy ? Style.Black : entry.IsTranslated ? Style.Text (StateType.Normal) : Style.Black;
 		}
 		
@@ -810,10 +814,12 @@ namespace MonoDevelop.Gettext
 				} catch (Exception e) {
 					IdeApp.Workbench.StatusBar.ShowError (e.Message);
 					this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, errorColor);
+					this.searchEntryFilter.QueueDraw ();
 					return;
 				}
 			}
 			this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
+			this.searchEntryFilter.QueueDraw ();
 			
 			int found = 0;
 			ListStore newStore = new ListStore (typeof(CatalogEntry));
@@ -942,6 +948,7 @@ namespace MonoDevelop.Gettext
 		
 		protected override void OnDestroyed ()
 		{
+			MonoDevelop.Ide.Gui.Styles.Changed -= HandleStylesChanged;
 			StopTaskWorkerThread ();
 		
 			if (store != null) {

@@ -122,10 +122,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
-				// ignore
-			}
 			#endregion
 			public void AddChar (char ch)
 			{
@@ -952,6 +948,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" } );
 			Assert.AreEqual ("foo", output);
+		}
+
+		/// <summary>
+		/// Bug 37985 - Code completion is selecting 'int32' instead of letting me type '2' 
+		/// </summary>
+		[Test]
+		public void TestBug37985 ()
+		{
+			var output = RunSimulation ("", "3\t", false, false, false, new [] { "Int32" } );
+			Assert.AreEqual (null, output);
 		}
 
 

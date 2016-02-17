@@ -91,14 +91,24 @@ namespace MonoDevelop.PackageManagement
 		ImageLoadedEventArgs LoadImage (Uri uri, object state)
 		{
 			try {
-				var httpClient = new HttpClient (uri);
-				Stream stream = httpClient.GetResponse ().GetResponseStream ();
+				Stream stream = GetResponseStream (uri);
 				Image image = Image.FromStream (stream);
 
 				return new ImageLoadedEventArgs (image, uri, state);
 			} catch (Exception ex) {
 				return new ImageLoadedEventArgs (ex, uri, state);
 			}
+		}
+
+		static Stream GetResponseStream (Uri uri)
+		{
+			if (uri.IsFile) {
+				var request = WebRequest.Create (uri);
+				return request.GetResponse ().GetResponseStream ();
+			}
+
+			var httpClient = new HttpClient (uri);
+			return httpClient.GetResponse ().GetResponseStream ();
 		}
 
 		void OnLoaded (ITask<ImageLoadedEventArgs> task, Uri uri, object state)

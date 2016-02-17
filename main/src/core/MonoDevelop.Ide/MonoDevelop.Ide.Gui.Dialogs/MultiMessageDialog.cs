@@ -27,13 +27,14 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	public partial class MultiMessageDialog : Gtk.Dialog
 	{
-		Image lastImage;
+		ImageView lastImage;
 		
 		public MultiMessageDialog()
 		{
@@ -56,13 +57,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				HSeparator sep = new HSeparator ();
 				sep.Show ();
 				msgBox.PackStart (sep, false, false, 0);
-				lastImage.IconSize = (int) Gtk.IconSize.Menu;
+				lastImage.IconSize = Gtk.IconSize.Menu;
 			}
 			
 			HBox box = new HBox ();
 			box.Spacing = 12;
 			Alignment imgBox = new Alignment (0, 0, 0, 0);
-			Image img = new Image (icon, lastImage != null ? Gtk.IconSize.Menu : IconSize.Dialog);
+			var img = new ImageView (icon, lastImage != null ? Gtk.IconSize.Menu : IconSize.Dialog);
 			imgBox.Add (img);
 			lastImage = img;
 			box.PackStart (imgBox, false, false, 0);

@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using System.Xml;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
@@ -56,12 +57,14 @@ namespace MonoDevelop.Ide.WelcomePage
 			label.Xalign = 0;
 			label.Wrap = true;
 			label.WidthRequest = 200;
+			label.ModifyFont (FontService.SansFont.CopyModified (Gui.Styles.FontScale11));
+			label.SetPadding (0, 10);
 
 			label.Text = currentTip != -1 ? tips[currentTip] : "";
 			box.PackStart (label, true, true, 0);
 
 			var next = new Gtk.Button (GettextCatalog.GetString ("Next Tip"));
-			next.Relief = Gtk.ReliefStyle.None;
+			next.Relief = Gtk.ReliefStyle.Normal;
 			next.Clicked += delegate {
 				if (tips.Count == 0)
 					return;

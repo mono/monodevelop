@@ -105,11 +105,11 @@ namespace MonoDevelop.CSharp.Completion
 //			return completion.GetParameterCompletionCommandOffset (out cpos);
 //		}
 
-		public int GetCurrentParameterIndex (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset)
+		public Task<int> GetCurrentParameterIndex (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset)
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
-			return completion.GetCurrentParameterIndex (startOffset);
+			return completion.GetCurrentParameterIndex (startOffset, default(CancellationToken));
 		}
 	}
 
@@ -245,11 +245,6 @@ namespace MonoDevelop.CSharp.Completion
 			get	{
 				return Gtk.Widget.DefaultStyle;
 			}
-		}
-
-		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-		{
-			// ignore
 		}
 
 		public double ZoomLevel {

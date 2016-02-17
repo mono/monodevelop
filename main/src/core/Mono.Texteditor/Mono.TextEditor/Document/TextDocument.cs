@@ -272,13 +272,12 @@ namespace Mono.TextEditor
 				throw new ArgumentOutOfRangeException (nameof (count), "must be > 0, was: " + count);
 
 			InterruptFoldWorker ();
+
 			//int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
-			if (value != null)
-				EnsureSegmentIsUnfolded (offset, value.Length);
-			OnTextReplacing (args);
-			value = args.InsertedText.Text;
+
 			UndoOperation operation = null;
+			bool endUndo = false;
 			if (!isInUndo) {
 				operation = new UndoOperation (args);
 				if (currentAtomicOperation != null) {
@@ -286,10 +285,17 @@ namespace Mono.TextEditor
 				} else {
 					OnBeginUndo ();
 					undoStack.Push (operation);
-					OnEndUndo (new UndoOperationEventArgs (operation));
+					endUndo = true;
 				}
 				redoStack.Clear ();
 			}
+
+			if (value != null)
+				EnsureSegmentIsUnfolded (offset, value.Length);
+			
+			OnTextReplacing (args);
+			value = args.InsertedText.Text;
+
 			cachedText = null;
 			buffer = buffer.RemoveText(offset, count);
 			if (!string.IsNullOrEmpty (value))
@@ -298,6 +304,8 @@ namespace Mono.TextEditor
 			splitter.TextReplaced (this, args);
 			versionProvider.AppendChange (args);
 			OnTextReplaced (args);
+			if (endUndo)
+				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
 		
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -652,16 +660,14 @@ namespace Mono.TextEditor
 			
 			public override void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.currentAtomicUndoOperationType.Push (operationType);
-				doc.atomicUndoLevel++;
+				doc.BeginAtomicUndo (operationType);
 				try {
 					for (int i = operations.Count - 1; i >= 0; i--) {
 						operations [i].Undo (doc, false);
 						doc.OnUndone (new UndoOperationEventArgs (operations [i]));
 					}
 				} finally {
-					doc.atomicUndoLevel--;
-					doc.currentAtomicUndoOperationType.Pop ();
+					doc.EndAtomicUndo ();
 				}
 				if (fireEvent)
 					OnUndoDone ();
@@ -669,12 +675,15 @@ namespace Mono.TextEditor
 			
 			public override void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.currentAtomicUndoOperationType.Push (operationType);
-				foreach (UndoOperation operation in this.operations) {
-					operation.Redo (doc, false);
-					doc.OnRedone (new UndoOperationEventArgs (operation));
+				doc.BeginAtomicUndo (operationType);
+				try {
+					foreach (UndoOperation operation in this.operations) {
+						operation.Redo (doc, false);
+						doc.OnRedone (new UndoOperationEventArgs (operation));
+					}
+				} finally {
+					doc.EndAtomicUndo ();
 				}
-				doc.currentAtomicUndoOperationType.Pop (); 
 				if (fireEvent)
 					OnRedoDone ();
 			}

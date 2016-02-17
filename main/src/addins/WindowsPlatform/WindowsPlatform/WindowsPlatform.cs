@@ -115,13 +115,7 @@ namespace MonoDevelop.Platform
 			};
 			foreach (CommandEntrySet ce in ces)
 			{
-				var item = new TitleMenuItem(commandManager, ce);
-				item.SubmenuClosing += (o, e) =>
-				{
-					bool shouldFocusIde = !mainMenu.Items.OfType<MenuItem>().Any(mi => mi.IsSubmenuOpen);
-					if (shouldFocusIde)
-						IdeApp.Workbench.RootWindow.Present();
-				};
+				var item = new TitleMenuItem (commandManager, ce, menu: mainMenu);
 				mainMenu.Items.Add(item);
 			}
 
@@ -142,6 +136,14 @@ namespace MonoDevelop.Platform
 		#endregion
 
 		internal static Xwt.Toolkit WPFToolkit;
+
+		public override void Initialize ()
+		{
+			// Only initialize elements for Win7+.
+			if (TaskbarManager.IsPlatformSupported) {
+				TaskbarManager.Instance.ApplicationId = BrandingService.ApplicationName;
+			}
+		}
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{

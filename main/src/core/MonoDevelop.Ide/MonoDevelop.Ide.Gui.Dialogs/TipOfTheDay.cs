@@ -5,10 +5,11 @@ using System.Xml;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-    internal partial class TipOfTheDayWindow : Gtk.Window
+	internal partial class TipOfTheDayWindow : IdeWindow
 	{
         List<string> tips = new List<string> ();
         int currentTip;
