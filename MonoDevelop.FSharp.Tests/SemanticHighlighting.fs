@@ -13,17 +13,18 @@ type SemanticHighlighting() =
 
     let getStyle (content : string) =
         let fixedc = content.Replace("§", "")
-
         let doc = TestHelpers.createDoc fixedc "defined"
-        let style = SyntaxModeService.GetColorStyle ("Gruvbox")
-        
+        let style = SyntaxModeService.GetColorStyle "Gruvbox"
         let segments =
             doc.Editor.GetLines()
-            |> Seq.map (fun line -> let lineNumber = line.LineNumber
-                                    let lineOffset = line.Offset
-                                    let txt = doc.Editor.GetLineText line
-                                    let tsc = SyntaxMode.tryGetTokensSymbolsAndColours doc
-                                    let segments = SyntaxMode.getColouredSegment tsc lineNumber lineOffset txt style
+            |> Seq.map (fun line -> let tokensSymbolsColours = SyntaxMode.tryGetTokensSymbolsAndColours doc
+                                    let segments =
+                                        SyntaxMode.getColouredSegment
+                                            tokensSymbolsColours
+                                            line.LineNumber
+                                            line.Offset
+                                            (doc.Editor.GetLineText line)
+                                            style
                                     segments)
                                     
         let sortedUniqueSegments =
@@ -33,8 +34,7 @@ type SemanticHighlighting() =
             |> Seq.sortBy (fun s -> s.Offset)      
         
         for seg in sortedUniqueSegments do
-            printf """Segment: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length
-                (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine
+            printf """Seg: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine
 
         let offset = content.IndexOf("§")
         let endOffset = content.LastIndexOf("§") - 1
