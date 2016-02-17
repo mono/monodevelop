@@ -1,7 +1,7 @@
 ﻿{
 	"name": "Dark",
 	"version": "1.0.0",
-	"description": "A dark scheme using colors from the Tango Project.",
+	"description": "A dark scheme using colors from the Tango Project",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
 	"palette": [

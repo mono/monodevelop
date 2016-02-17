@@ -1,7 +1,7 @@
 {
 	"name": "Visual Studio",
 	"version": "1.2.0",
-	"description": "Reminiscent of Microsoft Visual Studio's default colors.",
+	"description": "Reminiscent of Microsoft Visual Studio's default colors",
 	"originator": "Jeffrey Stedfast <fejj@novell.com>",
 
 	"palette": [
