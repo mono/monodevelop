@@ -281,8 +281,6 @@ type LanguageService(dirtyNotify) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
-
-
     member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
         let properties = defaultArg properties ["Configuration", "Debug"]
         let key = (projFilename, properties)
@@ -337,30 +335,7 @@ type LanguageService(dirtyNotify) as x =
         //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
         opts
 
-    //static member GetProjectOptionsFromProject(msbuildproject: DotNetProject, ?properties : (string * string) list, ?loadedTimeStamp, ?enableLogging) =
-    //    let enableLogging = defaultArg enableLogging false
-    //    let config = IdeApp.Workspace.ActiveConfiguration
-    //    let rec getOptions project logs =
-    //        //let parsedProject = ProjectCracking.FSharpProjectFileInfo.Parse(file, ?properties=properties, enableLogging=enableLogging)
-    //        let projectOptions = ProjectCracker.GetProjectOptionsFromCommandLineArgs(file, Array.ofList parsedProject.Options, ?loadedTimeStamp=loadedTimeStamp)
-    //        let newlogs = logs
-    //            //if enableLogging then Map.add file parsedProject.LogOutput logs
-    //            //else logs
-    //        let referencedProjectOptions, finalLogs =
-    //           msbuildproject.References
-    //           //|> Seq.filter (fun r -> r :? ProjectReference)
-    //          |> Seq.fold (fun (acc,logs) file ->
-    //                            if Path.GetExtension(file.Project.FileName.ToString()) = ".fsproj" then
-    //                               match getOptions file.Project newlogs with
-    //                               | Some outFile, opts, logs  -> (outFile, opts) :: acc, logs
-    //                               | None,_,_ -> acc, logs
-    //                            else acc, logs ) ([], newlogs)
-                              
-    //        (Some (msbuildproject.GetOutputFileName(config).ToString()), { projectOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList }, finalLogs )
-    
-    //    let _file, projectOptions, logs  = getOptions msbuildproject Map.empty
-    //    projectOptions, logs
-    member x.GetProjectOptionsFromProjectFile(project:DotNetProject, ?properties : (string * string) list, ?loadedTimeStamp, ?enableLogging) =
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject) =
         let config =
             match IdeApp.Workspace with
             | null -> ConfigurationSelector.Default
@@ -369,30 +344,24 @@ type LanguageService(dirtyNotify) as x =
                | null -> ConfigurationSelector.Default
                | config -> config
 
-        let enableLogging = defaultArg enableLogging false
-
         let getReferencedProjects (project:DotNetProject) =
             project.GetReferencedAssemblyProjects config
             |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
 
-        let rec getOptions referencedProject logs =
-            //let parsedProject = ProjectCracking.FSharpProjectFileInfo.Parse(file, ?properties=properties, enableLogging=enableLogging)
+        let rec getOptions referencedProject =
             let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject
-            let newlogs = logs
-            //    if enableLogging then Map.add file parsedProject.LogOutput logs
-            //    else logs
-            let referencedProjectOptions, finalLogs =
+            let referencedProjectOptions =
                 referencedProject
                 |> getReferencedProjects
-                |> Seq.fold (fun (acc,logs) reference ->
-                                 match getOptions reference newlogs with
-                                 | Some outFile, opts, logs  -> (outFile, opts) :: acc, logs
-                                 | None,_,_ -> acc, logs) ([], newlogs)
+                |> Seq.fold (fun (acc) reference ->
+                                 match getOptions reference with
+                                 | Some outFile, opts  -> (outFile, opts) :: acc
+                                 | None,_ -> acc) ([])
                                 
-            (Some (referencedProject.FileName.FullPath.ToString()), { projectOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList }, finalLogs )
+            (Some (referencedProject.FileName.FullPath.ToString()), { projectOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } )
     
-        let _file, projectOptions, logs  = getOptions project Map.empty
-        projectOptions, logs
+        let _file, projectOptions = getOptions project
+        projectOptions
 
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties) =
@@ -409,46 +378,9 @@ type LanguageService(dirtyNotify) as x =
                               |> Seq.find (fun p -> p.FileName.FullPath.ToString() = projFilename))
                               :?> DotNetProject
 
-                //project.re
-                //let msbuild = project.MSBuildProject
-                //let ops = CompilerService.ProjectCracker.GetProjectOptionsFromProjectFile(projectFileName = projFilename)
-                try
-                    let opts, _nonexistantlog = x.GetProjectOptionsFromProjectFile project
-                    projectInfoCache := cache.Add (key, opts)
-                    opts
-                with ex -> LoggingService.LogDebug("LanguageService: GetProjectCheckerOptions Exception", ex)
-                           reraise())
-                //msbuild
-                //LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for:%s" (Path.GetFileName(projFilename))
-                //let filename = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "CompilerService.exe")
-                //let processName = if Environment.runningOnMono then Environment.getMonoPath() else filename
-                //let arguments =
-                //    //For debug you might want to pass --log, which will populate _log below with a map of project name/msbuild output
-                //    if Environment.runningOnMono then sprintf "\"%s\" --project \"%s\"" filename projFilename
-                //    else sprintf "--project \"%s\"" projFilename
-                //try
-                //    use proc =
-                //        let startInfo = ProcessStartInfo(processName, arguments, RedirectStandardError = false, RedirectStandardOutput = true,
-                //                                        RedirectStandardInput = true, UseShellExecute = false, CreateNoWindow = true)
-                //        new Process(EnableRaisingEvents = true, StartInfo = startInfo)
-
-                //    let _started = proc.Start()
-                //    let _exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
-                //    let serializer =  FsPickler.CreateJsonSerializer()
-                //    let result = serializer.Deserialize(proc.StandardOutput.BaseStream)
-                //    match result with
-                //    | Choice1Of2(optsNew, _log: Map<string,string>) ->
-                //      //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
-                //        projectInfoCache := cache.Add (key, optsNew)
-                //        LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Generation complete for:%s" (Path.GetFileName(projFilename))
-                //        optsNew
-                //    | Choice2Of2 (ex) -> raise ex
-                //with ex -> LoggingService.LogDebug("LanguageService: GetProjectCheckerOptions Exception", ex)
-                //           reraise())
-
-      // Print contents of check option for debugging purposes
-      // LoggingService.LogDebug(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-      //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+                let opts = x.GetProjectOptionsFromProjectFile project
+                projectInfoCache := cache.Add (key, opts)
+                opts)
 
     member x.StartBackgroundCompileOfProject (projectFilename) =
         let opts = x.GetProjectCheckerOptions(projectFilename)

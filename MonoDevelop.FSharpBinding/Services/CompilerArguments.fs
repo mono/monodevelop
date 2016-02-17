@@ -157,26 +157,14 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  //let generateCompilerOptions (project: DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
-  //    let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
-  //    let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
-  //    let currentProjectConfig = getCurrentConfigurationOrDefault project
-  //    let outputFilename = project.GetOutputFileName(currentProjectConfig).ToString ()
-  //    [  yield "--noframework"
-  //       yield "-o:" + outputFilename
-  //       for symbol in defines do yield "--define:" + symbol
-  //       yield generateDebug fsconfig
-  //       yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
-  //       yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
-  //       // TODO: This currently ignores escaping using "..."
-  //       for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
-  //           yield arg
-  //       yield! dashr ]
 
   let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+    let files = project.Files|> Seq.map(fun f -> f.Name)
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
-    [  yield "--noframework"
+    [  
+       yield "--simpleresolution"
+       yield "--noframework"
        for symbol in defines do yield "--define:" + symbol
        yield if true (* fsconfig.DebugSymbols *) then  "--debug+" else  "--debug-"
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
@@ -184,7 +172,8 @@ module CompilerArguments =
        // TODO: This currently ignores escaping using "..."
        for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
          yield arg 
-       yield! dashr ] 
+       yield! dashr 
+       yield! files] 
 
   let generateProjectOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let compilerOptions = generateCompilerOptions (project, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
