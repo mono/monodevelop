@@ -118,7 +118,7 @@ module Lexer =
         tokens
         |> List.fold (fun (acc, lastToken) token ->
             match lastToken with
-            | Some t when token.LeftColumn <= t.RightColumn -> acc, lastToken
+            | Some t when token.LeftColumn <= t.RightColumn && not (t.Kind = SymbolKind.Other) -> acc, lastToken
             | _ ->
                 match token, lineStr with
                 | GenericTypeParameterPrefix -> acc, Some (DraftToken.Create GenericTypeParameter token)
@@ -150,9 +150,6 @@ module Lexer =
                         yield! parseLine()
                     | None, nstate -> state <- nstate ]
               yield parseLine(), state ]
-
-    let getTokens lines filename defines =
-        getTokensWithInitialState 0L lines filename defines
     
     let findTokenAt col (tokens:FSharpTokenInfo list) =
         let isTokenAtOffset col (t:FSharpTokenInfo) = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
