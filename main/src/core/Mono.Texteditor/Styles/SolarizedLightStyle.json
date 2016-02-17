@@ -193,8 +193,8 @@
 		{ "name": "User Property Usage", "fore": "blue" },
 		{ "name": "User Property Declaration", "fore": "blue" },
 
-		{ "name": "User Event Usage", "fore": "blue" },
-		{ "name": "User Event Declaration", "fore": "blue" },
+		{ "name": "User Event Usage", "fore": "blue", "weight": "bold" },
+		{ "name": "User Event Declaration", "fore": "blue", "weight": "bold" },
 
 		{ "name": "User Method Usage", "fore": "blue" },
 		{ "name": "User Method Declaration", "fore": "blue" },

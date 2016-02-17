@@ -195,8 +195,8 @@
 		{ "name": "User Property Usage", "fore": "#2EE2A6" },
 		{ "name": "User Property Declaration", "fore": "#2EE2A6" },
 
-		{ "name": "User Event Usage", "fore": "#FFAE81" },
-		{ "name": "User Event Declaration", "fore": "#FFAE81" },
+		{ "name": "User Event Usage", "fore": "#FFAE81", "weight": "bold" },
+		{ "name": "User Event Declaration", "fore": "#FFAE81", "weight": "bold" },
 
 		{ "name": "User Method Usage", "fore": "monokai-functionargument" },
 		{ "name": "User Method Declaration", "fore": "monokai-functionargument" },

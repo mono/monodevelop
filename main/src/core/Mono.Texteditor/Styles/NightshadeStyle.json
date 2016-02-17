@@ -207,8 +207,8 @@
 		{ "name": "User Property Usage", "fore": "NormalVim" },
 		{ "name": "User Property Declaration", "fore": "NormalVim" },
 
-		{ "name": "User Event Usage", "fore": "NormalVim" },
-		{ "name": "User Event Declaration", "fore": "NormalVim" },
+		{ "name": "User Event Usage", "fore": "NormalVim", "weight": "bold" },
+		{ "name": "User Event Declaration", "fore": "NormalVim", "weight": "bold" },
 
 		{ "name": "User Method Usage", "fore": "NormalVim" },
 		{ "name": "User Method Declaration", "fore": "NormalVim" },

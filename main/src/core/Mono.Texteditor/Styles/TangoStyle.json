@@ -191,8 +191,6 @@
 		{ "name": "User Property Usage", "fore": "text-black" },
 		{ "name": "User Property Declaration", "fore": "text-black" },
 
-		{ "name": "User Event Usage", "fore": "orange3" },
-		{ "name": "User Event Declaration", "fore": "orange3" },
 
 		{ "name": "User Method Usage", "fore": "text-black" },
 		{ "name": "User Method Declaration", "fore": "text-black" },
@@ -202,6 +200,8 @@
 
 		{ "name": "User Variable Usage", "fore": "text-black" },
 		{ "name": "User Variable Declaration", "fore": "text-black" },
+		{ "name": "User Event Usage", "fore": "orange3", "weight": "bold" },
+		{ "name": "User Event Declaration", "fore": "orange3", "weight": "bold" },
 
 		{ "name": "Syntax Error", "fore": "scarletred1" },
 

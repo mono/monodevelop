@@ -181,8 +181,8 @@
 		{ "name": "User Property Usage", "fore": "bright-blue" },
 		{ "name": "User Property Declaration", "fore": "bright-blue" },
 
-		{ "name": "User Event Usage", "fore": "neutral-blue" },
-		{ "name": "User Event Declaration", "fore": "neutral-blue" },
+		{ "name": "User Event Usage", "fore": "neutral-blue", "weight": "bold" },
+		{ "name": "User Event Declaration", "fore": "neutral-blue", "weight": "bold" },
 
 		{ "name": "User Method Usage", "fore": "bright-green" },
 		{ "name": "User Method Declaration", "fore": "bright-green" },
