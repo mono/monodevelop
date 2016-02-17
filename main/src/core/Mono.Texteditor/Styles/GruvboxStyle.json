@@ -40,7 +40,7 @@
 
 		{ "name": "Notification Border", "color": "#989892" },
 
-		{ "name": "Completion Window", "color": "background", "bordercolor": "#989892"},
+		{ "name": "Completion Window", "color": "background", "bordercolor": "#989892" },
 		{ "name": "Completion Tooltip Window", "color": "#272725", "bordercolor": "#989892" },
 		{ "name": "Completion Selection Bar Border", "color": "selection" },
 		{ "name": "Completion Selection Bar Border(Inactive)", "color": "#383830" },
@@ -65,29 +65,29 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color": "#707070", "bordercolor": "#7b7b7b" },
 		{ "name": "Breakpoint Marker(Invalid)", "color": "#604343", "bordercolor": "#6a4a4a" },
 
-		{ "name": "Current Line Marker", "color": "#323229"},
-		{ "name": "Current Line Marker(Inactive)", "color": "#2F2F28"},
+		{ "name": "Current Line Marker", "color": "#323229" },
+		{ "name": "Current Line Marker(Inactive)", "color": "#2F2F28" },
 
 		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#747354" },
-		{ "name": "Debugger Stack Line Marker", "color": "#5c6b4d", "bordercolor": "#657655"},
+		{ "name": "Debugger Stack Line Marker", "color": "#5c6b4d", "bordercolor": "#657655" },
 
-		{ "name": "Primary Link", "color": "foreground", "secondcolor": "#7f4a81"},
-		{ "name": "Primary Link(Highlighted)", "color": "foreground", "secondcolor": "#b167b3"},
-		{ "name": "Secondary Link", "color": "foreground", "secondcolor": "#262228"},
-		{ "name": "Secondary Link(Highlighted)", "color": "foreground", "secondcolor": "#4e4552"},
+		{ "name": "Primary Link", "color": "foreground", "secondcolor": "#7f4a81" },
+		{ "name": "Primary Link(Highlighted)", "color": "foreground", "secondcolor": "#b167b3" },
+		{ "name": "Secondary Link", "color": "foreground", "secondcolor": "#262228" },
+		{ "name": "Secondary Link(Highlighted)", "color": "foreground", "secondcolor": "#4e4552" },
 
-		{ "name": "Message Bubble Error Marker", "color": "#b28d37"},
-		{ "name": "Message Bubble Error Tag", "color": "#e3a6a1", "secondcolor": "black"},
-		{ "name": "Message Bubble Error Counter", "color": "black", "secondcolor": "#e3a6a1"},
-		{ "name": "Message Bubble Error IconMargin", "color": "#735c54", "bordercolor": "#805b4d"},
-		{ "name": "Message Bubble Error Line", "color": "#7b645c"},
-		{ "name": "Message Bubble Error Tooltip", "color": "#e3a6a1"},
+		{ "name": "Message Bubble Error Marker", "color": "#b28d37" },
+		{ "name": "Message Bubble Error Tag", "color": "#e3a6a1", "secondcolor": "black" },
+		{ "name": "Message Bubble Error Counter", "color": "black", "secondcolor": "#e3a6a1" },
+		{ "name": "Message Bubble Error IconMargin", "color": "#735c54", "bordercolor": "#805b4d" },
+		{ "name": "Message Bubble Error Line", "color": "#7b645c" },
+		{ "name": "Message Bubble Error Tooltip", "color": "#e3a6a1" },
 
-		{ "name": "Message Bubble Warning Marker", "color": "#b28d37"},
-		{ "name": "Message Bubble Warning Tag", "color": "#efe89d", "secondcolor": "black"},
-		{ "name": "Message Bubble Warning Counter", "color": "black", "secondcolor": "#efe89d"},
-		{ "name": "Message Bubble Warning IconMargin", "color": "#777553", "bordercolor": "#948e51"},
-		{ "name": "Message Bubble Warning Line", "color": "#807e5c"},
+		{ "name": "Message Bubble Warning Marker", "color": "#b28d37" },
+		{ "name": "Message Bubble Warning Tag", "color": "#efe89d", "secondcolor": "black" },
+		{ "name": "Message Bubble Warning Counter", "color": "black", "secondcolor": "#efe89d" },
+		{ "name": "Message Bubble Warning IconMargin", "color": "#777553", "bordercolor": "#948e51" },
+		{ "name": "Message Bubble Warning Line", "color": "#807e5c" },
 		{ "name": "Message Bubble Warning Tooltip", "color": "#efe89d"}
 	],
 
@@ -98,7 +98,7 @@
 
 		{ "name": "Collapsed Text", "fore": "comment", "back": "background" },
 
-		{ "name": "Line Numbers", "fore": "comment", "back": "background"},
+		{ "name": "Line Numbers", "fore": "comment", "back": "background" },
 
 		{ "name": "Punctuation", "fore": "foreground" },
 		{ "name": "Punctuation(Brackets)", "fore": "neutral-blue" },
@@ -111,11 +111,11 @@
 
 		{ "name": "Excluded Code", "fore": "comment" },
 
-		{ "name": "String", "fore": "bright-green"},
-		{ "name": "String(Escape)", "fore": "#A6AB34"},
-		{ "name": "String(C# @ Verbatim)", "fore": "bright-green"},
+		{ "name": "String", "fore": "bright-green" },
+		{ "name": "String(Escape)", "fore": "#A6AB34" },
+		{ "name": "String(C# @ Verbatim)", "fore": "bright-green" },
 
-		{ "name": "Number", "fore": "bright-purple"},
+		{ "name": "Number", "fore": "bright-purple" },
 
 		{ "name": "Preprocessor", "fore": "bright-red" },
 		{ "name": "Preprocessor(Region Name)", "fore": "bright-red" },
