@@ -888,7 +888,8 @@ namespace MonoDevelop.Ide.Gui
 
 		string GetCurrentParseFileName ()
 		{
-			string result = adhocProject != null ? adHocFile : Editor.FileName;
+			var editor = Editor;
+			string result = adhocProject != null ? adHocFile : editor?.FileName;
 			return result ?? FileName;
 		}
 
