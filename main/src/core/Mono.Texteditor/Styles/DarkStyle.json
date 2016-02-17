@@ -118,7 +118,7 @@
 		{ "name": "Comment(Block)", "fore": "aluminium4" },
 		{ "name": "Comment(Doc)", "fore": "aluminium3" },
 		{ "name": "Comment(DocTag)", "fore": "aluminium4" },
-		{ "name": "Comment Tag", "fore": "aluminium4" },
+		{ "name": "Comment Tag", "fore": "#ff00ff" },
 
 		{ "name": "Excluded Code", "fore": "aluminium4" },
 

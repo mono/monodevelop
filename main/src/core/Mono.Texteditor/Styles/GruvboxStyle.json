@@ -107,7 +107,8 @@
 		{ "name": "Comment(Block)", "fore": "comment" },
 		{ "name": "Comment(Doc)", "fore": "comment" },
 		{ "name": "Comment(DocTag)", "fore": "comment" },
-		{ "name": "Comment Tag", "fore": "comment", "weight": "bold" },
+		{ "name": "Comment Tag", "fore": "#ff00ff" },
+
 		{ "name": "Excluded Code", "fore": "comment" },
 
 		{ "name": "String", "fore": "bright-green"},
