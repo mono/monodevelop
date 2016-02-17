@@ -87,8 +87,21 @@ namespace MonoDevelop.Components
 		}
 
 		public Menu Menu {
-			get { return menu; }
-			set { menu = value; menu.Deactivated += OnMenuDeactivated; }
+			get {
+				if (menu != null)
+					return menu;
+				return menu = new Menu ();
+			}
+			set {
+				if (menu != null) {
+					menu.Deactivated -= OnMenuDeactivated;
+					menu.Destroy ();
+				}
+				menu = value;
+				if (value != null) {
+					menu.Deactivated += OnMenuDeactivated;
+				}
+			}
 		}
 
 		public Entry Entry {
@@ -121,7 +134,6 @@ namespace MonoDevelop.Components
 			AppPaintable = true;
 
 			BuildWidget ();
-			BuildMenu ();
 
 			NoShowAll = true;
 			GtkWorkarounds.SetTransparentBgHint (this, true);
@@ -209,12 +221,6 @@ namespace MonoDevelop.Components
 				activated_event (this, EventArgs.Empty);
 		}
 
-		private void BuildMenu ()
-		{
-			menu = new Menu ();
-			menu.Deactivated += OnMenuDeactivated;
-		}
-
 		public void PopupFilterMenu ()
 		{
 			ShowMenu (0);
@@ -223,10 +229,15 @@ namespace MonoDevelop.Components
 		void ShowMenu (uint time)
 		{
 			OnRequestMenu (EventArgs.Empty);
-			if (menu.Children.Length > 0) {
-				menu.Popup (null, null, OnPositionMenu, 0, time);
-				menu.ShowAll ();
+			if (MenuHasChildren ()) {
+				Menu.Popup (null, null, OnPositionMenu, 0, time);
+				Menu.ShowAll ();
 			}
+		}
+
+		bool MenuHasChildren ()
+		{
+			return menu != null && Menu.Children.Length > 0;
 		}
 
 		private void ShowHideButtons ()
@@ -234,7 +245,7 @@ namespace MonoDevelop.Components
 			clear_button.Visible = entry.Text.Length > 0;
 			entryAlignment.RightPadding = (uint) (!clear_button.Visible && roundedShape ? 6 : 0);
 
-			filter_button.Visible = ForceFilterButtonVisible || (menu != null && menu.Children.Length > 0);
+			filter_button.Visible = ForceFilterButtonVisible || MenuHasChildren ();
 			entryAlignment.LeftPadding = (uint) (!filter_button.Visible && roundedShape ? 6 : 0);
 		}
 
@@ -266,7 +277,7 @@ namespace MonoDevelop.Components
 			toggling = true;
 			FilterMenuItem item = (FilterMenuItem)o;
 
-			foreach (MenuItem child_item in menu) {
+			foreach (MenuItem child_item in Menu) {
 				if (!(child_item is FilterMenuItem)) {
 					continue;
 				}
@@ -369,6 +380,7 @@ namespace MonoDevelop.Components
 		protected override void OnDestroyed ()
 		{
 			if (menu != null) {
+				menu.Deactivated -= OnMenuDeactivated;
 				menu.Destroy ();
 				menu = null;
 			}
@@ -483,7 +495,7 @@ namespace MonoDevelop.Components
 			FilterMenuItem item = new FilterMenuItem (id, label);
 
 			item.Toggled += OnMenuItemToggled;
-			menu.Append (item);
+			Menu.Append (item);
 
 			if (ActiveFilterID < 0) {
 				item.Toggle ();
@@ -496,20 +508,20 @@ namespace MonoDevelop.Components
 		public MenuItem AddMenuItem (string label)
 		{
 			var item = new MenuItem (label);
-			menu.Append (item);
+			Menu.Append (item);
 			return item;
 		}
 
 		public void AddFilterSeparator ()
 		{
-			menu.Append (new SeparatorMenuItem ());
+			Menu.Append (new SeparatorMenuItem ());
 		}
 
 		public void RemoveFilterOption (int id)
 		{
 			FilterMenuItem item = FindFilterMenuItem (id);
 			if (item != null) {
-				menu.Remove (item);
+				Menu.Remove (item);
 			}
 		}
 
@@ -523,7 +535,7 @@ namespace MonoDevelop.Components
 
 		private FilterMenuItem FindFilterMenuItem (int id)
 		{
-			foreach (MenuItem item in menu) {
+			foreach (MenuItem item in Menu) {
 				if (item is FilterMenuItem && ((FilterMenuItem)item).ID == id) {
 					return (FilterMenuItem)item;
 				}
