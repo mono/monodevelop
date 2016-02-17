@@ -149,8 +149,22 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
 				foreach (var loc in mref.Locations) {
-					var node = loc.Location.SourceTree.GetRoot ().FindNode (loc.Location.SourceSpan);
-					result.Add (new MemberReference (symbol, doc.FilePath, node.Span.Start, node.Span.Length) {
+					Microsoft.CodeAnalysis.Text.TextSpan span = loc.Location.SourceSpan;
+					var root = loc.Location.SourceTree.GetRoot ();
+					var node = root.FindNode (loc.Location.SourceSpan);
+					var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+					if (!trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+						span = node.Span;
+					}
+
+
+
+
+
+					if (span.Start != loc.Location.SourceSpan.Start) {
+						span = loc.Location.SourceSpan;
+					}
+					result.Add (new MemberReference (symbol, doc.FilePath, span.Start, span.Length) {
 						ReferenceUsageType = GetUsage (node)
 					});
 				}
