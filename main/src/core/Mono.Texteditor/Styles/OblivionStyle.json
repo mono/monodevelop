@@ -94,7 +94,6 @@
 		{ "name": "Message Bubble Error Line", "color": "#7b645c" },
 		{ "name": "Message Bubble Error Tooltip", "color": "#e3a6a1" },
 
-		{ "name": "Message Bubble Warning Marker", "color": "#b28d37" },
 		{ "name": "Message Bubble Warning Tag", "color": "#efe89d", "secondcolor": "black" },
 		{ "name": "Message Bubble Warning Counter", "color": "black", "secondcolor": "#efe89d" },
 		{ "name": "Message Bubble Warning IconMargin", "color": "#777553", "bordercolor": "#948e51" },
@@ -118,7 +117,6 @@
 		{ "name": "Comment(Block)", "fore": "aluminium4" },
 		{ "name": "Comment(Doc)", "fore": "#7ab8c8" },
 		{ "name": "Comment(DocTag)", "fore": "#79809e" },
-		{ "name": "Comment Tag", "fore": "#ff00ff" },
 
 		{ "name": "Excluded Code", "fore": "aluminium4" },
 

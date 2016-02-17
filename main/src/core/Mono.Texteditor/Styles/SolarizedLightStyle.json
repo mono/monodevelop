@@ -63,36 +63,19 @@
 		{ "name": "Quick Diff(Dirty)", "color": "yellow" },
 		{ "name": "Quick Diff(Changed)", "color": "green" },
 
-		{ "name": "Brace Matching(Rectangle)", "color": "#fde5d6", "secondcolor": "#fde5d6" },
-		{ "name": "Usages(Rectangle)", "color": "#B1DFF9", "secondcolor": "#B1DFF9", "bordercolor": "#B1DFF9" },
-		{ "name": "Changing usages(Rectangle)", "color": "#FFD6DD", "secondcolor": "#FFD6DD", "bordercolor": "#FFD6DD" },
-
-		{ "name": "Breakpoint Marker", "color": "#f9dbda", "bordercolor": "#f9dbda" },
-		{ "name": "Breakpoint Marker(Disabled)", "color": "#e9e9e9", "bordercolor": "#e9e9e9" },
-		{ "name": "Breakpoint Marker(Invalid)", "color": "#f1e3e3", "bordercolor": "#f1e3e3" },
-
 		{ "name": "Current Line Marker", "color": "#f5eedd", "secondcolor": "#f5eedd" },
 		{ "name": "Current Line Marker(Inactive)", "color": "#f5eedd", "secondcolor": "#f5eedd" },
 
-		{ "name": "Debugger Current Line Marker", "color": "#f8f4a1", "bordercolor": "#f8f4a1" },
 		{ "name": "Debugger Stack Line Marker", "color": "#c9e1a9", "bordercolor": "#c9e1a9" },
-
-		{ "name": "Primary Link", "color": "chameleon3", "secondcolor": "chameleon2" },
-		{ "name": "Primary Link(Highlighted)", "color": "chameleon3", "secondcolor": "chameleon1" },
-		{ "name": "Secondary Link", "color": "aluminium2", "secondcolor": "white" },
-		{ "name": "Secondary Link(Highlighted)", "color": "aluminium3", "secondcolor": "aluminium1" },
 
 		{ "name": "Message Bubble Error Marker", "color": "#b28d37" },
 		{ "name": "Message Bubble Error Tag", "color": "#e3a6a1", "secondcolor": "black" },
 		{ "name": "Message Bubble Error Counter", "color": "black", "secondcolor": "#e3a6a1" },
-		{ "name": "Message Bubble Error IconMargin", "color": "#d83f3f", "bordercolor": "#d83f3f" },
 		{ "name": "Message Bubble Error Line", "color": "#7b645c" },
 		{ "name": "Message Bubble Error Tooltip", "color": "#e3a6a1" },
 
-		{ "name": "Message Bubble Warning Marker", "color": "#b28d37" },
 		{ "name": "Message Bubble Warning Tag", "color": "#efe89d", "secondcolor": "black" },
 		{ "name": "Message Bubble Warning Counter", "color": "black", "secondcolor": "#efe89d" },
-		{ "name": "Message Bubble Warning IconMargin", "color": "#e68100", "bordercolor": "#e68100" },
 		{ "name": "Message Bubble Warning Line", "color": "#807e5c" },
 		{ "name": "Message Bubble Warning Tooltip", "color": "#efe89d" }
 	],
@@ -113,7 +96,6 @@
 		{ "name": "Comment(Block)", "fore": "base01" },
 		{ "name": "Comment(Doc)", "fore": "base01" },
 		{ "name": "Comment(DocTag)", "fore": "base01" },
-		{ "name": "Comment Tag", "fore": "#ff00ff" },
 
 		{ "name": "Excluded Code", "fore": "base01" },
 
@@ -205,14 +187,7 @@
 		{ "name": "User Variable Usage", "fore": "base00" },
 		{ "name": "User Variable Declaration", "fore": "base00" },
 
-		{ "name": "Syntax Error", "fore": "invalid-red" },
-
 		{ "name": "String Format Items", "fore": "base00" },
-
-		{ "name": "Breakpoint Text", "fore": "text-black", "back": "#ffe8e7" },
-
-		{ "name": "Debugger Current Statement", "fore": "text-black", "back": "#f8f4a1" },
-		{ "name": "Debugger Stack Line", "fore": "text-black", "back": "#ccfca6" },
 
 		{ "name": "Diff Line(Added)", "fore": "Blue" },
 		{ "name": "Diff Line(Removed)", "fore": "Red" },
@@ -228,7 +203,6 @@
 		{ "name": "Css Property Value", "fore": "cyan", "weight": "bold" },
 		{ "name": "Css Selector", "fore": "base01", "weight": "bold" },
 		{ "name": "Css String Value", "fore": "cyan", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "keyword-teal", "weight": "bold" },
 
 		{ "name": "Script Comment", "fore": "base01" },
 		{ "name": "Script Keyword", "fore": "green" },

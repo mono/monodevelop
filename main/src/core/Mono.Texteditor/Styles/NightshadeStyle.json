@@ -127,7 +127,6 @@
 		{ "name": "Comment(Block)", "fore": "CommentVim" },
 		{ "name": "Comment(Doc)", "fore": "CommentVim" },
 		{ "name": "Comment(DocTag)", "fore": "CommentVim" },
-		{ "name": "Comment Tag", "fore": "#ff00ff" },
 
 		{ "name": "Excluded Code", "fore": "CommentVim" },
 

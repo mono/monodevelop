@@ -95,7 +95,6 @@
 		{ "name": "Message Bubble Error Line", "color": "#7b645c" },
 		{ "name": "Message Bubble Error Tooltip", "color": "#e3a6a1" },
 
-		{ "name": "Message Bubble Warning Marker", "color": "#b28d37" },
 		{ "name": "Message Bubble Warning Tag", "color": "#efe89d", "secondcolor": "black" },
 		{ "name": "Message Bubble Warning Counter", "color": "black", "secondcolor": "#efe89d" },
 		{ "name": "Message Bubble Warning IconMargin", "color": "#777553", "bordercolor": "#948e51" },
