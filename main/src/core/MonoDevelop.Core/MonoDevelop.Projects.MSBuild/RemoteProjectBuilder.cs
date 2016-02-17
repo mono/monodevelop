@@ -377,7 +377,7 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		~RemoteProjectBuilder ()
 		{
-			Dispose ();
+			LoggingService.LogWarning ("RemoteProjectBuilder not disposed");
 		}
 
 		void BeginOperation ()
@@ -404,6 +404,39 @@ namespace MonoDevelop.Projects.MSBuild
 		public bool IsBusy {
 			get {
 				return engine.IsBusy;
+			}
+		}
+
+		object usageLock = new object ();
+		public int references;
+		bool shuttingDown;
+
+		public bool AddReference ()
+		{
+			lock (usageLock) {
+				if (shuttingDown)
+					return false;
+				references++;
+				return true;
+			}
+		}
+
+		public void ReleaseReference ()
+		{
+			lock (usageLock) {
+				if (--references == 0 && shuttingDown)
+					Dispose ();
+			}
+		}
+
+		public void Shutdown ()
+		{
+			lock (usageLock) {
+				if (!shuttingDown) {
+					shuttingDown = true;
+					if (references == 0)
+						Dispose ();
+				}
 			}
 		}
 	}

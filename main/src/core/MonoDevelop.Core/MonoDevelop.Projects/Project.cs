@@ -526,8 +526,16 @@ namespace MonoDevelop.Projects
 			await WriteProjectAsync (monitor);
 
 			// Doesn't save the file to disk if the content did not change
-			if (await sourceProject.SaveAsync (FileName) && projectBuilder != null)
-				await projectBuilder.Refresh ();
+			if (await sourceProject.SaveAsync (FileName)) {
+				var pb = GetCachedProjectBuilder ();
+				if (pb != null) {
+					try {
+						await pb.Refresh ();
+					} finally {
+						pb.ReleaseReference ();
+					}
+				}
+			}
 		}
 
 		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
@@ -1014,9 +1022,14 @@ namespace MonoDevelop.Projects
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
 					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
 
+					bool newBuilderRequested = false;
+
 					RemoteProjectBuilder builder = await GetProjectBuilder ();
-					if (builder.IsBusy)
+					if (builder.IsBusy) {
+						builder.ReleaseReference ();
+						newBuilderRequested = true;
 						builder = await RequestLockedBuilder ();
+					}
 					else
 						builder.Lock ();
 
@@ -1024,7 +1037,8 @@ namespace MonoDevelop.Projects
 						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new [] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
 						builder.Unlock ();
-						if (builder != this.projectBuilder) {
+						builder.ReleaseReference ();
+						if (newBuilderRequested) {
 							// Dispose the builder after a while, so that it can be reused
 							#pragma warning disable 4014
 							Task.Delay (10000).ContinueWith (t => builder.Dispose ());
@@ -1154,28 +1168,47 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
+			RemoteProjectBuilder result = null;
+
 			using (await builderLock.EnterAsync ()) {
-				if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
-					if (projectBuilder != null) {
-						projectBuilder.Dispose ();
-						projectBuilder = null;
+				bool refAdded = false;
+				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
+					if (projectBuilder != null && refAdded) {
+						projectBuilder.Shutdown ();
+						projectBuilder.ReleaseReference ();
 					}
-					projectBuilder = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0);
-					projectBuilder.Disconnected += delegate {
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0);
+					pb.AddReference ();
+					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
 					};
+					projectBuilder = pb;
 					lastBuildToolsVersion = ToolsVersion;
 					lastBuildRuntime = runtime.Id;
 					lastFileName = FileName;
 					lastSlnFileName = slnFile;
 				}
 				if (modifiedInMemory) {
-					modifiedInMemory = false;
-					await WriteProjectAsync (new ProgressMonitor ());
-					await projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
+					try {
+						modifiedInMemory = false;
+						await WriteProjectAsync (new ProgressMonitor ());
+						await projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
+					} catch {
+						projectBuilder.ReleaseReference ();
+						throw;
+					}
 				}
+				result = projectBuilder;
 			}
-			return projectBuilder;
+			return result;
+		}
+
+		RemoteProjectBuilder GetCachedProjectBuilder ()
+		{
+			var pb = projectBuilder;
+			if (pb != null && pb.AddReference ())
+				return pb;
+			return null;
 		}
 
 		async Task<RemoteProjectBuilder> RequestLockedBuilder ()
@@ -1188,27 +1221,34 @@ namespace MonoDevelop.Projects
 			var slnFile = sln != null ? sln.FileName : null;
 
 			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, true);
+			pb.AddReference ();
 			if (modifiedInMemory) {
-				await WriteProjectAsync (new ProgressMonitor ());
-				await pb.RefreshWithContent (sourceProject.SaveToString ());
+				try {
+					await WriteProjectAsync (new ProgressMonitor ());
+					await pb.RefreshWithContent (sourceProject.SaveToString ());
+				} catch {
+					pb.Dispose ();
+					throw;
+				}
 			}
 			return pb;
 		}
 
 		void CleanupProjectBuilder ()
 		{
-			if (projectBuilder != null) {
-				projectBuilder.Dispose ();
-				projectBuilder = null;
+			var pb = GetCachedProjectBuilder ();
+			if (pb != null) {
+				pb.Shutdown ();
+				pb.ReleaseReference ();
 			}
 		}
 
 		public Task RefreshProjectBuilder ()
 		{
-			if (projectBuilder != null)
-				return projectBuilder.Refresh ();
-			else
-				return Task.FromResult (true);
+			var pb = GetCachedProjectBuilder ();
+			if (pb != null)
+				return pb.Refresh ().ContinueWith (t => pb.ReleaseReference ());
+			return Task.FromResult (true);
 		}
 
 		public void ReloadProjectBuilder ()

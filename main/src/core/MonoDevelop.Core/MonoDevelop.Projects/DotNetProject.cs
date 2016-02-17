@@ -878,13 +878,17 @@ namespace MonoDevelop.Projects
 			if (CheckUseMSBuildEngine (configuration)) {
 				// Get the references list from the msbuild project
 				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				var configs = GetConfigurations (configuration, false);
+				try {
+					var configs = GetConfigurations (configuration, false);
 
-				string [] refs;
-				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-					refs = await builder.ResolveAssemblyReferences (configs, CancellationToken.None);
-				foreach (var r in refs)
-					result.Add (r);
+					string [] refs;
+					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+						refs = await builder.ResolveAssemblyReferences (configs, CancellationToken.None);
+					foreach (var r in refs)
+						result.Add (r);
+				} finally {
+					builder.ReleaseReference ();
+				}
 			} else {
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType != ReferenceType.Project) {
