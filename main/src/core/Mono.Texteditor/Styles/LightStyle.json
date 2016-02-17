@@ -98,8 +98,8 @@
 		{ "name": "Message Bubble Warning Line", "color": "#fff1da" },
 		{ "name": "Message Bubble Warning Tooltip", "color": "#D1590B" },
 
-		{ "name": "Link Color", "color": "#0645ad" },
-		{ "name": "Link Color(Active)", "color": "#faa700" }
+		{ "name": "Link Color", "color": "#26c8b1" },
+		{ "name": "Link Color(Active)", "color": "#26c8b1" }
 	],
 
 	"text": [

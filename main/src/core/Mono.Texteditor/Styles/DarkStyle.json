@@ -99,7 +99,10 @@
 		{ "name": "Message Bubble Warning Counter", "color": "black", "secondcolor": "#efe89d" },
 		{ "name": "Message Bubble Warning IconMargin", "color": "#777553", "bordercolor": "#948e51" },
 		{ "name": "Message Bubble Warning Line", "color": "#807e5c" },
-		{ "name": "Message Bubble Warning Tooltip", "color": "#efe89d" }
+		{ "name": "Message Bubble Warning Tooltip", "color": "#efe89d" },
+
+		{ "name": "Link Color", "color": "#41e2cb" },
+		{ "name": "Link Color(Active)", "color": "#41e2cb" }
 	],
 
 	"text": [
