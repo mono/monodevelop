@@ -16,6 +16,8 @@ open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 
+open Microsoft.FSharp.Compiler.SourceCodeServices
+
 // --------------------------------------------------------------------------------------
 // Common utilities for working with files & extracting information from
 // MonoDevelop objects (e.g. references, project items etc.)
@@ -155,29 +157,54 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (project: DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
-      let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
-      let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
-      let currentProjectConfig = getCurrentConfigurationOrDefault project
-      let outputFilename = project.GetOutputFileName(currentProjectConfig).ToString ()
-      [  yield "--noframework"
-         yield "-o:" + outputFilename
-         for symbol in defines do yield "--define:" + symbol
-         yield generateDebug fsconfig
-         yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
-         yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
-         // TODO: This currently ignores escaping using "..."
-         for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
-             yield arg
-         yield! dashr ]
+  //let generateCompilerOptions (project: DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+  //    let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+  //    let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
+  //    let currentProjectConfig = getCurrentConfigurationOrDefault project
+  //    let outputFilename = project.GetOutputFileName(currentProjectConfig).ToString ()
+  //    [  yield "--noframework"
+  //       yield "-o:" + outputFilename
+  //       for symbol in defines do yield "--define:" + symbol
+  //       yield generateDebug fsconfig
+  //       yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
+  //       yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
+  //       // TODO: This currently ignores escaping using "..."
+  //       for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
+  //           yield arg
+  //       yield! dashr ]
 
+  let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+    let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+    let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
+    [  yield "--noframework"
+       for symbol in defines do yield "--define:" + symbol
+       yield if true (* fsconfig.DebugSymbols *) then  "--debug+" else  "--debug-"
+       yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
+       yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
+       // TODO: This currently ignores escaping using "..."
+       for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
+         yield arg 
+       yield! dashr ] 
+
+  let generateProjectOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+    let compilerOptions = generateCompilerOptions (project, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+    let loadedTimeStamp =  DateTime.MaxValue // Not 'now', we don't want to force reloading
+    //new FSharp.Core.FSharpProjectOptions()
+    { ProjectFileName = project.FileName.FullPath.ToString()
+      ProjectFileNames = [| |] // the project file names will be inferred from the ProjectOptions
+      OtherOptions = compilerOptions
+      ReferencedProjects = [| |]
+      IsIncompleteTypeCheckEnvironment = false
+      UseScriptResolutionRules = false
+      LoadTime = loadedTimeStamp
+      UnresolvedReferences = None }
 
   /// Get source files of the current project (returns files that have
   /// build action set to 'Compile', but not e.g. scripts or resources)
   let getSourceFiles (items:ProjectItemCollection) =
       [ for file in items.GetAll<ProjectFile>() do
             if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then
-                yield file.Name.ToString() ]
+                yield file.FilePath.FullPath.ToString() ]
 
 
   /// Generate inputs for the compiler (excluding source code!); returns list of items
@@ -307,8 +334,8 @@ module CompilerArguments =
           Some(Path.Combine(dir,"fsc.exe"))
       | _ -> None
 
-  let getDefineSymbols (fileName:string) (project: Project) =
-      [if LanguageService.IsAScript fileName
+  let getDefineSymbols (fileName:string) (project: Project option) =
+      [if FileSystem.IsAScript fileName
        then yield! ["INTERACTIVE";"EDITING"]
        else yield! ["COMPILED";"EDITING"]
 
@@ -327,3 +354,14 @@ module CompilerArguments =
            | :? DotNetProjectConfiguration as config -> yield! config.GetDefineSymbols()
            | _ -> ()
        | None -> () ]
+
+  let getArgumentsFromProject (proj:DotNetProject) =
+        let config =
+            match MonoDevelop.Ide.IdeApp.Workspace with
+            | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
+            | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
+
+        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
+        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
+        generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+

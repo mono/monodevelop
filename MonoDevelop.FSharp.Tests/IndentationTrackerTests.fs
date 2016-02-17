@@ -9,7 +9,7 @@ type IndentationTrackerTests() =
 
     let docWithCaretAt (content:string) =
         let d = TestHelpers.createDoc(content.Replace("§", "")) ""
-        d.Editor.SetIndentationTracker (FSharpIndentationTracker(d.Editor))
+        d.Editor.SetIndentationTracker (new FSharpIndentationTracker(d.Editor))
         do match content.IndexOf('§') with
            | -1 -> ()
            | x  -> let l = d.Editor.OffsetToLocation(x)
