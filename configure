@@ -162,7 +162,7 @@ configure_packages ()
 			enable_tests=" "
 		fi
 
-		if test `uname` != "Darwin" || xno == x$x64; then 
+		if test `uname` != "Darwin" || test xno == x$x64; then
 			enable_x64=--with-macarch=i386
 		else
 			enable_x64=--with-macarch=x86_64
