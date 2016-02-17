@@ -58,7 +58,6 @@
 
 		{ "name": "Line Numbers", "fore": "semantic-type", "back": "#FFFFFF" },
 
-		{ "name": "Punctuation" },
 		{ "name": "Punctuation(Brackets)", "fore": "#000000", "back": "#FFFFFF" },
 
 		{ "name": "Comment(Line)", "fore": "comment-green" },
@@ -73,12 +72,9 @@
 		{ "name": "String(Escape)", "fore": "#A31515" },
 		{ "name": "String(C# @ Verbatim)", "fore": "#A31515" },
 
-		{ "name": "Number" },
-
 		{ "name": "Preprocessor", "fore": "keyword-blue" },
 		{ "name": "Preprocessor(Region Name)", "fore": "#000000" },
 
-		{ "name": "Xml Text" },
 		{ "name": "Xml Delimiter", "fore": "keyword-blue" },
 		{ "name": "Xml Name", "fore": "#A31515" },
 		{ "name": "Xml Attribute", "fore": "#FF0000" },
@@ -124,21 +120,6 @@
 		{ "name": "User Field Usage", "style": "italic" },
 		{ "name": "User Field Declaration", "style": "italic" },
 
-		{ "name": "User Property Usage" },
-		{ "name": "User Property Declaration" },
-
-		{ "name": "User Event Usage" },
-		{ "name": "User Event Declaration" },
-
-		{ "name": "User Method Usage" },
-		{ "name": "User Method Declaration" },
-
-		{ "name": "User Parameter Usage" },
-		{ "name": "User Parameter Declaration" },
-
-		{ "name": "User Variable Usage" },
-		{ "name": "User Variable Declaration" },
-
 		{ "name": "Syntax Error", "fore": "#FF0000" },
 
 		{ "name": "Breakpoint Text", "fore": "#000000", "back": "#963945" },
@@ -153,11 +134,7 @@
 		{ "name": "Css Keyword", "fore": "keyword-blue", "weight": "bold" },
 
 		{ "name": "Script Comment", "fore": "comment-green" },
-		{ "name": "Script Identifier" },
 		{ "name": "Script Keyword", "fore": "keyword-blue" },
-		{ "name": "Script Number" },
-		{ "name": "Script Operator" },
-		{ "name": "Script String" },
 
 		{ "name": "Tooltip Text", "fore": "text-black", "back": "#fafae3" }
 	]

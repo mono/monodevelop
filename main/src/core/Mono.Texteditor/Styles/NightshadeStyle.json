@@ -245,10 +245,8 @@
 		{ "name": "Css Keyword", "fore": "StatementVim", "weight": "bold" },
 
 		{ "name": "Script Comment", "fore": "CommentVim" },
-		{ "name": "Script Identifier" },
 		{ "name": "Script Keyword", "fore": "StatementVim" },
 		{ "name": "Script Number", "fore": "NumberVim" },
-		{ "name": "Script Operator" },
 		{ "name": "Script String", "fore": "StringVim" }
 	]
 }

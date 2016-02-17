@@ -219,10 +219,8 @@
 		{ "name": "Css Keyword", "fore": "bright-red", "weight": "bold" },
 
 		{ "name": "Script Comment", "fore": "comment" },
-		{ "name": "Script Identifier" },
 		{ "name": "Script Keyword", "fore": "bright-red" },
 		{ "name": "Script Number", "fore": "foreground" },
-		{ "name": "Script Operator" },
 		{ "name": "Script String", "fore": "bright-green" }
 	]
 }

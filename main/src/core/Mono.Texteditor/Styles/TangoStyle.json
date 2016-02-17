@@ -229,10 +229,8 @@
 		{ "name": "Css Keyword", "fore": "keyword-teal", "weight": "bold" },
 
 		{ "name": "Script Comment", "fore": "aluminium3" },
-		{ "name": "Script Identifier" },
 		{ "name": "Script Keyword", "fore": "skyblue2" },
 		{ "name": "Script Number", "fore": "scarletred3" },
-		{ "name": "Script Operator" },
 		{ "name": "Script String", "fore": "scarletred3" }
 	]
 }
