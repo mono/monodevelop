@@ -315,6 +315,7 @@ module Patterns =
                 | StringLiteral -> style.String
                 | NumberLiteral -> style.Number
                 | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ | Constructor _ -> style.UserTypes
+                | GenericParameter _ -> style.UserTypesTypeParameters
                 | Namespace _ -> style.PlainText
                 | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
                 | Field (fromDef, isMut) ->
