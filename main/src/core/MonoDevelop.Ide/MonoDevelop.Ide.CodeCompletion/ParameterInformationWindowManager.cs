@@ -217,6 +217,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal static async void UpdateWindow (CompletionTextEditorExtension textEditorExtension, ICompletionWidget completionWidget)
 		{
+			if (textEditorExtension == null)
+				throw new ArgumentNullException (nameof (textEditorExtension));
+			if (completionWidget == null)
+				throw new ArgumentNullException (nameof (completionWidget));
 			// Updates the parameter information window from the information
 			// of the current method overload
 			if (currentMethodGroup != null) {
