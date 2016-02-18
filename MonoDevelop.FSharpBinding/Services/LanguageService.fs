@@ -369,17 +369,20 @@ type LanguageService(dirtyNotify) as x =
         let key = (projFilename, properties)
         lock projectInfoCache (fun () ->
             match (!projectInfoCache).TryFind (key) with
-            | Some entry, cache ->
-                LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for:%s}" (Path.GetFileName(projFilename))
-                projectInfoCache := cache
-                entry
-            | None, cache ->
+            //| Some entry, cache ->
+            //    LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for:%s}" (Path.GetFileName(projFilename))
+            //    projectInfoCache := cache
+            //    entry
+            | _, cache ->
                 let project = (IdeApp.Workspace.GetAllProjects()
                               |> Seq.find (fun p -> p.FileName.FullPath.ToString() = projFilename))
                               :?> DotNetProject
 
                 let opts = x.GetProjectOptionsFromProjectFile project
                 projectInfoCache := cache.Add (key, opts)
+                // Print contents of check option for debugging purposes     
+                LoggingService.logDebug "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                    opts.ProjectFileName opts.ProjectFileNames opts.OtherOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
                 opts)
 
     member x.StartBackgroundCompileOfProject (projectFilename) =
