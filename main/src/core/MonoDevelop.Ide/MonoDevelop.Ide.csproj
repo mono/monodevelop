@@ -1522,17 +1522,29 @@
     <EmbeddedResource Include="icons\project-console-overlay-32~dark~sel%402x.png">
       <LogicalName>project-console-overlay-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gui-overlay-32.png">
-      <LogicalName>project-gui-overlay-32.png</LogicalName>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32.png">
+      <LogicalName>project-gtk2-overlay-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gui-overlay-32%402x.png">
-      <LogicalName>project-gui-overlay-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32%402x.png">
+      <LogicalName>project-gtk2-overlay-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gui-overlay-32~dark.png">
-      <LogicalName>project-gui-overlay-32~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark.png">
+      <LogicalName>project-gtk2-overlay-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gui-overlay-32~dark%402x.png">
-      <LogicalName>project-gui-overlay-32~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark%402x.png">
+      <LogicalName>project-gtk2-overlay-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32~sel.png">
+      <LogicalName>project-gtk2-overlay-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32~sel%402x.png">
+      <LogicalName>project-gtk2-overlay-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark~sel.png">
+      <LogicalName>project-gtk2-overlay-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark~sel%402x.png">
+      <LogicalName>project-gtk2-overlay-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\project-library-overlay-32.png">
       <LogicalName>project-library-overlay-32.png</LogicalName>

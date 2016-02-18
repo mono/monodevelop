@@ -376,7 +376,7 @@
 	<StockIcon stockid="md-private-struct" icon="res:element-struct-16.png|res:element-visibility-private-diamond-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-private-literal" icon="res:element-constant-16.png|res:element-visibility-private-square-overlay-16.png" size="Menu" />
 	<StockIcon stockid="md-project-console" icon="md-project|res:project-console-overlay-32.png" size="Dnd" />
-	<StockIcon stockid="md-project-gui" icon="md-project|res:project-gui-overlay-32.png" size="Dnd" />
+	<StockIcon stockid="md-project-gui" icon="md-project|res:project-gtk2-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-library" icon="md-project|md-library-overlay" size="Dnd" />
 	<StockIcon stockid="md-project-package" icon="md-project|res:project-package-overlay-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-shared-assets" icon="md-project|res:project-shared-assets-overlay-32.png" size="Dnd" />
