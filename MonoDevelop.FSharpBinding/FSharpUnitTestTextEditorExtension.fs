@@ -109,7 +109,7 @@ module unitTestGatherer =
 type FSharpUnitTestTextEditorExtension() =
     inherit AbstractUnitTestTextEditorExtension()
 
-    override x.GatherUnitTests (cancellationToken) =
+    override x.GatherUnitTests (unitTestMarkers, cancellationToken) =
         let tests = ResizeArray<UnitTestLocation>()
 
         if x.DocumentContext = null || 
