@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=d47bbeec9cc848c469a9bf85b1a6b18853f38237
+DEP_NEEDED_VERSION[0]=3d3ac8f03ff145ec14897e2c3241a1bff809f75f
 DEP_BRANCH_AND_REMOTE[0]="nunit-reorg origin/nunit-reorg"
 
 # heap-shot
