@@ -37,7 +37,6 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using System.Collections.Immutable;
-using MonoDevelop.NUnit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;

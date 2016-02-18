@@ -115,11 +115,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Xml.Tests", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Xml", "src\addins\Xml\MonoDevelop.Xml.csproj", "{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.NUnit", "MonoDevelop.NUnit", "{DE462010-393D-4655-A42C-2C78BB14D2FA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTesting", "UnitTesting", "{DE462010-393D-4655-A42C-2C78BB14D2FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.NUnit", "src\addins\NUnit\MonoDevelop.NUnit.csproj", "{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting", "src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj", "{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitRunner", "src\addins\NUnit\NUnitRunner\NUnitRunner.csproj", "{0AF16AF1-0876-413E-9803-08BD33C19E00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitRunner", "src\addins\MonoDevelop.UnitTesting.NUnit\NUnitRunner\NUnitRunner.csproj", "{0AF16AF1-0876-413E-9803-08BD33C19E00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacPlatform", "src\addins\MacPlatform\MacPlatform.csproj", "{50D6768C-C072-4E79-AFC5-C1C40767EF45}"
 EndProject
@@ -263,8 +263,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiUnit_NET_4_5", "external
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibGit2Sharp", "external\libgit2sharp\LibGit2Sharp\LibGit2Sharp.csproj", "{EE6ED99F-CB12-4683-B055-D28FC7357A34}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{AC7D119C-980B-4712-8811-5368C14412D7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5D3F7E65-E55B-45CA-A83B-D1E10040281E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdhost", "src\tools\mdhost\mdhost.csproj", "{BFE8691A-D323-4622-9021-7B8B27F81599}"
@@ -297,6 +295,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.CSharpBinding.Tests", "tests\MonoDevelop.CSharpBinding.Tests\MonoDevelop.CSharpBinding.Tests.csproj", "{84E22F5F-0562-4B51-8B9A-FD79FF33A8B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.0", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.dotnet.v14.0.csproj", "{8EE5A588-9445-48EC-97BD-BF066E7FFD51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting.NUnit", "src\addins\MonoDevelop.UnitTesting.NUnit\MonoDevelop.UnitTesting.NUnit.csproj", "{6224D87E-2AC1-4D9F-91ED-714F797297BF}"
+EndProject
+Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{9E061B40-12E7-470A-B225-E566BAF745EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnit3Runner", "src\addins\MonoDevelop.UnitTesting.NUnit\NUnit3Runner\NUnit3Runner.csproj", "{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1332,16 +1336,6 @@ Global
 		{ABB21D58-6EFA-49EA-9555-EDDEC8123DD6}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{ABB21D58-6EFA-49EA-9555-EDDEC8123DD6}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{ABB21D58-6EFA-49EA-9555-EDDEC8123DD6}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.ReleaseGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.ReleaseMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.ReleaseWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC7D119C-980B-4712-8811-5368C14412D7}.ReleaseWin32|Any CPU.Build.0 = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADDC9D20-83C5-4245-9B46-2C5F6642CFBC}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1930,6 +1924,55 @@ Global
 		{8EE5A588-9445-48EC-97BD-BF066E7FFD51}.Debug|x86.Build.0 = Debug|Any CPU
 		{8EE5A588-9445-48EC-97BD-BF066E7FFD51}.Release|x86.ActiveCfg = Release|Any CPU
 		{8EE5A588-9445-48EC-97BD-BF066E7FFD51}.Release|x86.Build.0 = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|x86.Build.0 = Release|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugGnome|Any CPU.ActiveCfg = DebugGnome|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
+		{9E061B40-12E7-470A-B225-E566BAF745EB}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Debug|x86.Build.0 = Debug|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Release|x86.ActiveCfg = Release|Any CPU
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2062,6 +2105,8 @@ Global
 		{C465A5DC-AD28-49A2-89C0-F81838814A7E} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
 		{84E22F5F-0562-4B51-8B9A-FD79FF33A8B5} = {78C10DAE-D3D7-44FC-93DF-831D8D54ECF9}
 		{8EE5A588-9445-48EC-97BD-BF066E7FFD51} = {8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF}
+		{6224D87E-2AC1-4D9F-91ED-714F797297BF} = {DE462010-393D-4655-A42C-2C78BB14D2FA}
+		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A} = {DE462010-393D-4655-A42C-2C78BB14D2FA}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -2073,7 +2118,7 @@ Global
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
 		$2.inheritsScope = text/plain
-		$2.scope = application/config+xml
+		$2.scope = application/json
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
@@ -2109,8 +2154,8 @@ Global
 		$12.inheritsSet = null
 		$12.scope = image/svg+xml
 		$0.XmlFormattingPolicy = $13
-		$13.inheritsSet = Mono
-		$13.scope = application/xml
+		$13.inheritsSet = null
+		$13.scope = application/config+xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
 		$14.TabsToSpaces = False

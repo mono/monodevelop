@@ -17,7 +17,8 @@ SUBDIRS = \
 	AspNet \
 	CSharpBinding \
 	ILAsmBinding \
-	NUnit \
+	MonoDevelop.UnitTesting \
+	MonoDevelop.UnitTesting.NUnit \
 	MonoDeveloperExtensions \
 	VBNetBinding \
 	MonoDevelop.GtkCore \
