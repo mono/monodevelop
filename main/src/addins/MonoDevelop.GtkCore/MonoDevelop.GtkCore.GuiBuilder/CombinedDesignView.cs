@@ -124,7 +124,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected override void OnWorkbenchWindowChanged ()
 		{
 			base.OnWorkbenchWindowChanged ();
-			content.WorkbenchWindow = WorkbenchWindow;
+			if (content != null)
+				content.WorkbenchWindow = WorkbenchWindow;
+
 			if (WorkbenchWindow != null) {
 				foreach (TabView view in tabs) {
 					view.WorkbenchWindow = WorkbenchWindow;
