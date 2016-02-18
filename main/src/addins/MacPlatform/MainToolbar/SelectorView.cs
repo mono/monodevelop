@@ -453,6 +453,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.ConfigurationShown;
 						UpdatePathText (ConfigurationIdx, ConfigurationPlaceholder);
+						activeConfiguration = null;
 					}
 					PathComponentCells [ConfigurationIdx].Enabled = count > 1;
 					OnSizeChanged ();
@@ -468,6 +469,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (count == 0) {
 						state |= CellState.RuntimeShown;
 						UpdatePathText (RuntimeIdx, RuntimePlaceholder);
+						activeRuntime = null;
 					}
 					PathComponentCells [RuntimeIdx].Enabled = count > 1;
 					OnSizeChanged ();
