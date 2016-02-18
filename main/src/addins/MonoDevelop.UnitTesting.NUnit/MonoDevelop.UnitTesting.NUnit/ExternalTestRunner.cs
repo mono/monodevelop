@@ -51,9 +51,9 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		{
 		}
 
-		public Task Connect (IExecutionHandler executionHandler = null, OperationConsole console = null)
+		public Task Connect (NUnitVersion version, IExecutionHandler executionHandler = null, OperationConsole console = null)
 		{
-			var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnit2", "NUnitRunner.exe");
+			var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), version.ToString (), "NUnitRunner.exe");
 			connection = new RemoteProcessConnection (exePath, executionHandler, console, Runtime.MainSynchronizationContext);
 			connection.AddListener (this);
 			return connection.Connect ();
@@ -309,5 +309,10 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		void SuiteFinished (string suite, UnitTestResult result);
 	}
 
+	public enum NUnitVersion
+	{
+		NUnit2,
+		NUnit3
+	}
 }
 

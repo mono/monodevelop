@@ -39,6 +39,12 @@ using Microsoft.CodeAnalysis;
 using System.Threading;
 using ProjectReference = MonoDevelop.Projects.ProjectReference;
 using System.Threading.Tasks;
+using MonoDevelop.UnitTesting.NUnit.External;
+using System.Reflection;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {
@@ -47,7 +53,6 @@ namespace MonoDevelop.UnitTesting.NUnit
 		DotNetProject project;
 		string resultsPath;
 		string storeId;
-		bool building;
 
 		public override IList<string> UserAssemblyPaths {
 			get {
@@ -55,8 +60,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 			}
 		}
 
-		public NUnitProjectTestSuite (DotNetProject project): base (project.Name, project)
+		public NUnitProjectTestSuite (DotNetProject project, NUnitVersion version): base (project.Name, project)
 		{
+			NUnitVersion = version;
 			storeId = Path.GetFileName (project.FileName);
 			resultsPath = UnitTestService.GetTestResultsDirectory (project.BaseDirectory);
 			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
@@ -67,12 +73,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 		protected override async Task OnBuild ()
 		{
-			try {
-				building = true;
-				await IdeApp.ProjectOperations.Build (project).Task;
-			} finally {
-				building = false;
-			}
+			await IdeApp.ProjectOperations.Build (project).Task;
 			OnProjectBuilt (null, null);
 		}
 
@@ -81,15 +82,38 @@ namespace MonoDevelop.UnitTesting.NUnit
 			if (!project.ParentSolution.GetConfiguration (IdeApp.Workspace.ActiveConfiguration).BuildEnabledForItem (project))
 				return null;
 
-			foreach (var p in project.References)
-				if (IsNUnitReference (p))
-					return new NUnitProjectTestSuite (project);
+			foreach (var p in project.References) {
+				var nv = GetNUnitVersion (p);
+				if (nv != null)
+					return new NUnitProjectTestSuite (project, nv.Value);
+			}
 			return null;
 		}
 
 		public static bool IsNUnitReference (ProjectReference p)
 		{
-			return p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1 || p.Reference.IndexOf ("nunitlite") != -1;
+			return GetNUnitVersion (p).HasValue;
+		}
+
+		public static NUnitVersion? GetNUnitVersion (ProjectReference p)
+		{
+			if (p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunitlite", StringComparison.OrdinalIgnoreCase) != -1)
+				return NUnitVersion.NUnit2;
+			if (p.Reference.IndexOf ("nunit.framework", StringComparison.OrdinalIgnoreCase) != -1) {
+				var f = p.GetReferencedFileNames (p.Project.DefaultConfiguration.Selector).FirstOrDefault ();
+				if (f != null && File.Exists (f)) {
+					try {
+						var aname = new AssemblyName (SystemAssemblyService.GetAssemblyName (f));
+						if (aname.Version.Major == 2)
+							return NUnitVersion.NUnit2;
+						else
+							return NUnitVersion.NUnit3;
+					} catch (Exception ex) {
+						LoggingService.LogError ("Could not get assembly version", ex);
+					}
+				}
+			}
+			return null;
 		}
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string testName)

@@ -83,6 +83,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 			base.Dispose ();
 		}
 
+		public NUnitVersion NUnitVersion { get; set; }
+
 		public override bool HasTests {
 			get {
 				return true;
@@ -209,6 +211,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				});
 			};
 			ld.SupportAssemblies = new List<string> (SupportAssemblies);
+			ld.NUnitVersion = NUnitVersion;
 			
 			AsyncLoadTest (ld);
 
@@ -326,7 +329,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				try {
 					if (File.Exists (ld.Path)) {
 						runner = new ExternalTestRunner ();
-						runner.Connect ().Wait ();
+						runner.Connect (ld.NUnitVersion).Wait ();
 						ld.Info = runner.GetTestInfo (ld.Path, ld.SupportAssemblies).Result;
 					}
 				} catch (Exception ex) {
@@ -383,7 +386,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
 			var console = IdeApp.Workbench?.ProgressMonitors.ConsoleFactory.CreateConsole ();
 			ExternalTestRunner runner = new ExternalTestRunner ();
-			runner.Connect (testContext.ExecutionContext, console).Wait ();
+			runner.Connect (NUnitVersion, testContext.ExecutionContext, console).Wait ();
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
 
 			string[] filter = null;
@@ -663,6 +666,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			public TestInfoCache InfoCache;
 			public WaitCallback Callback;
 			public List<string> SupportAssemblies;
+			public NUnitVersion NUnitVersion;
 		}
 		
 		class RunData
