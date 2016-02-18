@@ -106,30 +106,35 @@ namespace MonoDevelop.CSharp.Refactoring
 		internal static async Task<LookupResult> TryLookupSymbol (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
 		{
 			Microsoft.CodeAnalysis.Project codeAnalysisHintProject = null;
+			LookupResult result = LookupResult.Failure;
+
 			if (hintProject != null) {
 				codeAnalysisHintProject = TypeSystemService.GetCodeAnalysisProject (hintProject);
 				if (codeAnalysisHintProject != null) {
-					var result = await TryLookupSymbolInProject (codeAnalysisHintProject, documentationCommentId, token);
-					if (result.Success) {
-						result.MonoDevelopProject = hintProject;
-						return result;
+					var curResult = await TryLookupSymbolInProject (codeAnalysisHintProject, documentationCommentId, token);
+					if (curResult.Success) {
+						curResult.MonoDevelopProject = hintProject;
+						result = curResult;
 					}
 				}
 			}
-
+			if (result.Success && result.Symbol.IsDefinedInSource ())
+				return result;
 			foreach (var ws in TypeSystemService.AllWorkspaces) {
 				foreach (var prj in ws.CurrentSolution.Projects) {
 					if (prj == codeAnalysisHintProject)
 						continue;
-					var result = await TryLookupSymbolInProject (prj, documentationCommentId, token);
-					if (result.Success) {
-						result.MonoDevelopProject = TypeSystemService.GetMonoProject (prj);
-						return result;
+					var curResult = await TryLookupSymbolInProject (prj, documentationCommentId, token);
+					if (curResult.Success) {
+						curResult.MonoDevelopProject = TypeSystemService.GetMonoProject (prj);
+						if (curResult.Symbol.IsDefinedInSource ())
+							return curResult;
+						result = curResult;
 					}
 				}
 			}
 
-			return LookupResult.Failure;
+			return result;
 		}
 
 		static INamedTypeSymbol LookupType (string documentationCommentId, int reminder, INamedTypeSymbol current)
@@ -184,47 +189,52 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		public override Task<IEnumerable<SearchResult>> FindReferences (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
 		{
-			var workspace = TypeSystemService.Workspace as MonoDevelopWorkspace;
-			if (workspace == null)
-				return Task.FromResult (Enumerable.Empty<SearchResult> ());
-			 
 			return Task.Run (async delegate {
 				var result = new List<SearchResult> ();
-				var lookup = await TryLookupSymbol (documentationCommentId, hintProject, token);
-				if (!lookup.Success) {
-					return result;
-				}
-
 				var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
-				foreach (var loc in lookup.Symbol.Locations) {
-					if (!loc.IsInSource)
-						continue;
-					var fileName = loc.SourceTree.FilePath;
-					var offset = loc.SourceSpan.Start;
-					string projectedName;
-					int projectedOffset;
-					if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
-						fileName = projectedName;
-						offset = projectedOffset;
-					}
-					var sr = new SearchResult (new FileProvider (fileName), offset, loc.SourceSpan.Length);
-					antiDuplicatesSet.Add (sr);
-					result.Add (sr);
-				}
+				foreach (var workspace in TypeSystemService.AllWorkspaces.OfType<MonoDevelopWorkspace> ()) {
+					LookupResult lookup = null;
 
-				foreach (var mref in await SymbolFinder.FindReferencesAsync (lookup.Symbol, lookup.Solution).ConfigureAwait (false)) {
-					foreach (var loc in mref.Locations) {
-						var fileName = loc.Document.FilePath;
-						var offset = loc.Location.SourceSpan.Start;
+					foreach (var project in workspace.CurrentSolution.Projects) {
+						lookup = await TryLookupSymbolInProject (project, documentationCommentId, token);
+						if (lookup.Success)
+							break;
+					}
+
+					if (lookup == null || !lookup.Success) {
+						continue;
+					}
+
+					foreach (var loc in lookup.Symbol.Locations) {
+						if (!loc.IsInSource)
+							continue;
+						var fileName = loc.SourceTree.FilePath;
+						var offset = loc.SourceSpan.Start;
 						string projectedName;
 						int projectedOffset;
 						if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
 							fileName = projectedName;
 							offset = projectedOffset;
 						}
-						var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
-						if (antiDuplicatesSet.Add (sr)) {
-							result.Add (sr);
+						var sr = new SearchResult (new FileProvider (fileName), offset, loc.SourceSpan.Length);
+						antiDuplicatesSet.Add (sr);
+						result.Add (sr);
+					}
+
+					foreach (var mref in await SymbolFinder.FindReferencesAsync (lookup.Symbol, lookup.Solution).ConfigureAwait (false)) {
+						foreach (var loc in mref.Locations) {
+							var fileName = loc.Document.FilePath;
+							var offset = loc.Location.SourceSpan.Start;
+							string projectedName;
+							int projectedOffset;
+							if (workspace.TryGetOriginalFileFromProjection (fileName, offset, out projectedName, out projectedOffset)) {
+								fileName = projectedName;
+								offset = projectedOffset;
+							}
+							var sr = new SearchResult (new FileProvider (fileName), offset, loc.Location.SourceSpan.Length);
+							if (antiDuplicatesSet.Add (sr)) {
+								result.Add (sr);
+							}
 						}
 					}
 				}
