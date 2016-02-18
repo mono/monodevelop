@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
@@ -69,8 +70,9 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			if (policyParent == null)
 				policyParent = PolicyService.DefaultPolicies;
-			var txtPol = policyParent.Get<TextStylePolicy> (mimeType);
-			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeType);
+			var mimeTypeInheritanceChain = DesktopService.GetMimeTypeInheritanceChain (mimeType).ToList ();
+			var txtPol = policyParent.Get<TextStylePolicy> (mimeTypeInheritanceChain);
+			var xmlPol = policyParent.Get<XmlFormattingPolicy> (mimeTypeInheritanceChain);
 			return new StringTextSource(FormatXml (txtPol, xmlPol, input.Text));
 		}
 		
