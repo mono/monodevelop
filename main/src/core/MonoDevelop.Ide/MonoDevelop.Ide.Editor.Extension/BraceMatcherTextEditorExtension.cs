@@ -31,6 +31,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -99,6 +100,18 @@ namespace MonoDevelop.Ide.Editor.Extension
 						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
 					if (result == null)
 						return;
+					if (result.HasValue) {
+						if (result.Value.LeftSegment.Offset < 0 || 
+						    result.Value.LeftSegment.EndOffset > snapshot.Length) {
+							LoggingService.LogError ("bracket matcher left segment invalid:" + result.Value.LeftSegment);
+							return;
+						}
+						if (result.Value.RightSegment.Offset < 0 ||
+						    result.Value.RightSegment.EndOffset > snapshot.Length) {
+							LoggingService.LogError ("bracket matcher right segment invalid:" + result.Value.RightSegment);
+							return;
+						}
+					}
 				} catch (OperationCanceledException) {
 					return;
 				} catch (AggregateException ae) {

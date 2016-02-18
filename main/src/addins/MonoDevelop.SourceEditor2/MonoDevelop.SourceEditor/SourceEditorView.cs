@@ -3009,20 +3009,24 @@ namespace MonoDevelop.SourceEditor
 
 			public override void DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 			{
-				double fromX, toX;
-				GetLineDrawingPosition (metrics, startOffset, out fromX, out toX);
+				try {
+					double fromX, toX;
+					GetLineDrawingPosition (metrics, startOffset, out fromX, out toX);
 
-				fromX = Math.Max (fromX, editor.TextViewMargin.XOffset);
-				toX = Math.Max (toX, editor.TextViewMargin.XOffset);
-				if (fromX < toX) {
-					var bracketMatch = new Cairo.Rectangle (fromX + 0.5, metrics.LineYRenderStartPosition + 0.5, toX - fromX - 1, editor.LineHeight - 2);
-					if (editor.TextViewMargin.BackgroundRenderer == null) {
-						cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.Color);
-						cr.Rectangle (bracketMatch);
-						cr.FillPreserve ();
-						cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.SecondColor);
-						cr.Stroke ();
+					fromX = Math.Max (fromX, editor.TextViewMargin.XOffset);
+					toX = Math.Max (toX, editor.TextViewMargin.XOffset);
+					if (fromX < toX) {
+						var bracketMatch = new Cairo.Rectangle (fromX + 0.5, metrics.LineYRenderStartPosition + 0.5, toX - fromX - 1, editor.LineHeight - 2);
+						if (editor.TextViewMargin.BackgroundRenderer == null) {
+							cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.Color);
+							cr.Rectangle (bracketMatch);
+							cr.FillPreserve ();
+							cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.SecondColor);
+							cr.Stroke ();
+						}
 					}
+				} catch (Exception e) {
+					LoggingService.LogError ($"Error while drawing bracket matcher ({this}) startOffset={startOffset} lineCharLength={metrics.Layout.LineChars.Length}", e);
 				}
 			}
 
