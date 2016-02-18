@@ -356,7 +356,7 @@ module Patterns =
                 let tokens, _state = tokens.[lineNumber-1]
                 tokens
                 |> Lexer.fixTokens txt
-                |> List.map (fun draft -> makeChunk symbols lineNumber lineOffset colours style draft.Token)
+                |> List.map (fun draft -> makeChunk symbols lineNumber lineOffset colours style {draft.Token with RightColumn=draft.RightColumn} )
                 |> List.toSeq
             | _ -> Seq.empty
 
