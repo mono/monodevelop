@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
-"PO-Revision-Date: 2016-01-21 09:12+0800\n"
+"PO-Revision-Date: 2016-02-18 18:02+0800\n"
 "Last-Translator: MysticBoy <mysticboy@live.com>\n"
 "Language-Team: Chinese (Simplified) <mysticboy@live.com>\n"
 "Language: zh_CN\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.7\n"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:16
 msgid "{0} External Console"
@@ -3511,7 +3511,7 @@ msgstr "加载解决方案 {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:21
 msgid "Hold Control to open in current workspace."
-msgstr ""
+msgstr "按住Control在当前工作区中打开。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/FileCommands.cs:21
 msgid "Clear recent projects"
@@ -4117,7 +4117,6 @@ msgstr "ApplicationIconId"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DefaultWorkbench.cs:58
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/DocumentSwitcher.cs:11
-#, fuzzy
 msgid "Documents"
 msgstr "文档"
 
@@ -4895,89 +4894,78 @@ msgid "<b>Whitespace</b>"
 msgstr "<b>空白</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
-#, fuzzy
 msgid "_Tab width:"
-msgstr "Tab 大小(_T)"
+msgstr "Tabk宽度(_T)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
-#, fuzzy
 msgid "_Indent width:"
-msgstr "Tab 大小(_T)"
+msgstr "缩进宽度(_I):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
-#, fuzzy
 msgid "_Convert tabs to spaces"
-msgstr "将跳格转换为空格(_O)"
+msgstr "将制表符转换为空格(_C)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TextStylePolicyPanelWidget.cs:2
 msgid "_Allow tabs after non-tabs"
-msgstr ""
+msgstr "non-tabs之后允许tabs(_A)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:4
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:3
 msgid "Key"
-msgstr ""
+msgstr "键"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:7
-#, fuzzy
 msgid "Remove template"
-msgstr "删除"
+msgstr "删除模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplatePanel.cs:7
-#, fuzzy
 msgid "Are you sure you want to remove this template?"
-msgstr "您确定要删除此文件吗？"
+msgstr "您确定要删除此模板吗？"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs:2
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:1
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingPolicyPanelWidget.cs:2
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Formatting.CSharpFormattingProfileDialog.cs:2
-#, fuzzy
 msgid "Preview:"
-msgstr "预览"
+msgstr "预览:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.CodeTemplatePanelWidget.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:2
-#, fuzzy
 msgid "S_how whitespaces"
-msgstr "显示信息"
+msgstr "显示空格(_H)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:4
-#, fuzzy
 msgid "New template"
-msgstr "模板"
+msgstr "新建模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:4
-#, fuzzy
 msgid "Edit template"
-msgstr "代码模板"
+msgstr "编辑模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/EditTemplateDialog.cs:8
 msgid "notset"
-msgstr ""
+msgstr "未设置"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
-#, fuzzy
 msgid "_Mime:"
-msgstr "名称(_N)："
+msgstr "_Mime:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
-#, fuzzy
 msgid "_Group:"
-msgstr "组"
+msgstr "组(_G):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
 msgid "Is _expandable template"
-msgstr ""
+msgstr "可扩展模板(_E)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
 msgid "Is _surround with template"
-msgstr ""
+msgstr "环绕模板(_S)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
 msgid "_Shortcut:"
-msgstr ""
+msgstr "快捷方式(_S):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineInformationWidget.cs:2
@@ -4985,12 +4973,11 @@ msgstr ""
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs:35
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.cs:10
 msgid "_Description:"
-msgstr "描述(_D)："
+msgstr "描述(_D):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.CodeTemplates.EditTemplateDialog.cs:2
-#, fuzzy
 msgid "Template Text:"
-msgstr "模板"
+msgstr "模板文本:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:2
 msgid "Editable"
@@ -5017,45 +5004,43 @@ msgstr "此变量的默认值。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:2
 msgid "The tooltip to display to the user for this variable."
-msgstr ""
+msgstr "此提示将此变量显示给用户。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:2
 msgid "A function to be evaluated for the contents of this variable."
-msgstr ""
+msgstr "对于此变量的内容进行计算的功能。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:2
 msgid "Whether the variable is an editable region."
-msgstr ""
+msgstr "无论变量是一个可编辑区域。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:3
 msgid ""
 "Whether the variable is an identifier, and should only accept valid "
 "identifiers as input."
-msgstr ""
+msgstr "是否变量是一个标识符，并且应该只接受有效标识符作为输入。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/CodeTemplateVariable.cs:3
 msgid "A list of values for the user to choose from."
-msgstr ""
+msgstr "供用户选择值的列表。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:4
 msgid "{0} is currently running on <b>{1}</b>."
-msgstr ""
+msgstr "{0}当前正在运行在 <b>{1}</b>."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
-#, fuzzy
 msgid "Select the mono installation prefix"
-msgstr "<b>选择要安装的插件，然后点击下一步</b>"
+msgstr "选择mono安装前缀"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
-#, fuzzy
 msgid "Mono runtime not found"
-msgstr "文件未找到：{0}"
+msgstr "Mono运行时未找到"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
 msgid ""
 "Please provide a valid directory prefix where mono is installed (for "
 "example, /usr)"
-msgstr ""
+msgstr "请提供有效的mono安装前缀(例如: /usr)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
 msgid ""
@@ -5064,6 +5049,8 @@ msgid ""
 "the .NET runtime to be used for building and running applications when none "
 "is specifically selected."
 msgstr ""
+"如果你有Mono的并行安装，你可以在这里注册，所以你可以用它来构建和运行项目。 "
+"<b>默认运行时间</b>是用于构建和时专门选择任何运行的应用程序.NET运行库。"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
 msgid "Set as Default"
@@ -5072,14 +5059,14 @@ msgstr "设为缺省"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInfoView.cs:2
 msgid "label1"
-msgstr ""
+msgstr "label1"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:8
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:6
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchPopupWindow.cs:115
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/PackagesWidget.cs:89
 msgid "Searching..."
-msgstr "搜索..."
+msgstr "正在搜索..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:8
 msgid "Search completed"
@@ -5170,18 +5157,16 @@ msgid "Directory not found: {0}"
 msgstr "目录未找到：{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:38
-#, fuzzy
 msgid "There is a search already in progress. Do you want to stop it?"
-msgstr "已经有另外一个搜索正在进行中。您是否想要取消它？"
+msgstr "有正在进行的搜索。你想阻止它？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:39
 msgid "Search pattern is invalid"
 msgstr "搜索模式无效"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:40
-#, fuzzy
 msgid "Replace pattern is invalid"
-msgstr "搜索模式无效"
+msgstr "替换模式是无效"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:44
 msgid "The search could not be finished: {0}"
@@ -5192,9 +5177,8 @@ msgid "Search cancelled."
 msgstr "搜索已取消。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:44
-#, fuzzy
 msgid "Search completed."
-msgstr "搜索已取消。"
+msgstr "搜索完成。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindInFilesDialog.cs:44
 msgid "Search time: {0} seconds."
@@ -5216,237 +5200,198 @@ msgstr "查找(_F):"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:2
 msgid "_Look in:"
-msgstr ""
+msgstr "搜索于："
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:2
-#, fuzzy
 msgid "C_ase sensitive"
-msgstr "区分大小写"
+msgstr "区分大小写(_A)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:2
-#, fuzzy
 msgid "Rege_x search"
-msgstr "库"
+msgstr "正则表达式搜索(_X)"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.FindInFiles.FindInFilesDialog.cs:2
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:17
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:16
-#, fuzzy
 msgid "_Whole words only"
-msgstr "匹配整个单词"
+msgstr "全字匹配(_W)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:10
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:29
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:37
-#, fuzzy
 msgid "Looking in '{0}'"
-msgstr "正在装入解决方案：{0}"
+msgstr "搜索于{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:11
-#, fuzzy
 msgid "Looking for '{0}' in current document"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "正在当前文档搜索“{0}”"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:11
-#, fuzzy
 msgid "Replacing '{0}' in current document"
-msgstr "正在 {1} 中替换“{0}”。"
+msgstr "正在当前文档中'{0}'替换"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:16
-#, fuzzy
 msgid "Looking for '{0}' in current selection"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "正在当前选择块中搜索 '{0}' "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:16
-#, fuzzy
 msgid "Replacing '{0}' in current selection"
-msgstr "正在 {1} 中替换“{0}”。"
+msgstr "正在当前选择块中替换'{0}' "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:19
-#, fuzzy
 msgid "Looking in solution folder '{0}'"
-msgstr "正在打开解决方案：{0}"
+msgstr "搜索于解决方案目录 '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:19
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:25
-#, fuzzy
 msgid "Looking in project '{0}'"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "搜索于项目'{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:20
-#, fuzzy
 msgid "Looking for '{0}' in all projects"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "在所有项目中搜索 '{0}' "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:20
-#, fuzzy
 msgid "Replacing '{0}' in all projects"
-msgstr "正在 {1} 中替换“{0}”。"
+msgstr "正在所有项目中替换'{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:26
-#, fuzzy
 msgid "Looking for '{0}' in project '{1}'"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "正在项目'{1}'中搜索 '{0}' "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:26
-#, fuzzy
 msgid "Replacing '{0}' in project '{1}'"
-msgstr "正在 {1} 中替换“{0}”。"
+msgstr "正在项目{1}'中替换'{0}' "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:30
-#, fuzzy
 msgid "Looking for '{0}' in all open documents"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "正在所有已打开文档中搜索  '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:30
-#, fuzzy
 msgid "Replacing '{0}' in all open documents"
-msgstr "正在 {1} 中替换“{0}”。"
+msgstr "正在所有已打开文档中替换'{0}' "
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
-#, fuzzy
 msgid "Looking for '{0}' in directory '{1}'"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "搜索 '{0}' 于目录 '{1}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
-#, fuzzy
 msgid "Replacing '{0}' in directory '{1}'"
-msgstr "正在 {1} 中替换“{0}”。"
+msgstr "正在替换'{0}' 于目录 '{1}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindReplace.cs:10
-#, fuzzy
 msgid "File {0} not found."
-msgstr "中找不到文件 '{0}'。"
+msgstr "文件 '{0}'未找到。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:26
-#, fuzzy
 msgid "Clear results"
-msgstr "搜索结果"
+msgstr "清除结果"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:26
-#, fuzzy
 msgid "Show output"
 msgstr "显示输出"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:26
-#, fuzzy
 msgid "Pin results pad"
 msgstr "显示结果面板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:67
-#, fuzzy
 msgid "Search Result"
 msgstr "搜索结果"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeFormatting/CodeFormattingCommands.cs:4
-#, fuzzy
 msgid "_Format Selection"
-msgstr "小写选中内容(_L)"
+msgstr "格式化选择(_F)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:2
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:4
-#, fuzzy
 msgid "Run With: {0}"
-msgstr "使用其他程序打开"
+msgstr "打开方式:{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:2
 msgid "Hold Control key to display the execution parameters dialog."
-msgstr ""
+msgstr "按住Ctrl键显示执行参数对话框。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:5
 msgid "Edit Custom Modes..."
-msgstr ""
+msgstr "编辑自定义模式..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/ExecutionModeCommandService.cs:6
-#, fuzzy
 msgid "Custom Parameters..."
-msgstr "参数"
+msgstr "自定义参数..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Debug Mode"
-msgstr "调试"
+msgstr "调试模式"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Debug Casts"
-msgstr "调试"
+msgstr "调试转换"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "MDB Mode"
-msgstr ""
+msgstr "MDB模式"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "GDB Symbols"
-msgstr "定义符号(_Y)："
+msgstr "GDB的符号"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Profiler"
-msgstr "提供者"
+msgstr "分析工具"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Verbose Level"
-msgstr ""
+msgstr "详细级别"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Runtime Version"
-msgstr "运行时刻版本(_V)："
+msgstr "运行时版本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Security Mode"
-msgstr "保安程序"
+msgstr "安全模式"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Verify All"
-msgstr ""
+msgstr "验证全部"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:6
-#, fuzzy
 msgid "Trace Expression"
-msgstr "正则表达式"
+msgstr "跟踪表达式"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Log Level"
-msgstr "警告级别(_W)："
+msgstr "日志级别"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Log Mask"
-msgstr ""
+msgstr "日志掩码"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Serializer Generation"
-msgstr "代码生成"
+msgstr "序列化生成"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Mono Configuration Directory"
-msgstr "解决方案目录(_S)"
+msgstr "Mono配置目录"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Mono Configuration File"
-msgstr "应用程序配置文件"
+msgstr "Mono配置文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Disable AIO"
-msgstr "禁用"
+msgstr "禁用AIO"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Disable Managed Collation"
-msgstr ""
+msgstr "禁用托管手机"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "External Encodings"
-msgstr "外部工具"
+msgstr "扩展编码"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "GAC Prefix"
@@ -5454,16 +5399,15 @@ msgstr "GAC 前缀"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Strip Drive Letters"
-msgstr ""
+msgstr "Strip Drive Letters"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
-#, fuzzy
 msgid "Case Insensitive Paths"
-msgstr "区分大小写"
+msgstr "不区分大小写的路径"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Managed Watcher"
-msgstr ""
+msgstr "管理监视器"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "No SMP"
@@ -5479,7 +5423,7 @@ msgstr "Windows 窗体主题"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Threads Per Cpu"
-msgstr ""
+msgstr "线程每CPU"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Keep ASP.NET Temporary Files"
@@ -5805,18 +5749,17 @@ msgstr "选择文件格式"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:2
 msgid "<b>File Format Incompatibility Detected</b>"
-msgstr ""
+msgstr "<b>文件格式不兼容检测</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:2
 msgid ""
 "The current file format for project {0} is not compatible with some settings "
 "of the project."
-msgstr ""
+msgstr "项目{0}当前的文件格式不与该项目的一些设置兼容。"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:2
-#, fuzzy
 msgid "Please select a new file format for the solution:"
-msgstr "为每个解决方案项选择一个目标配置："
+msgstr "请选择该解决方案一个新的文件格式："
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs:2
 msgid "Current Format:"
@@ -5842,7 +5785,7 @@ msgstr "列表末尾"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanelWidget.cs:2
 msgid ""
 "Custom folders where MonoDevelop should look for assemblies and packages:"
-msgstr ""
+msgstr "自定义文件夹，其中的MonoDevelop应该寻找组件和包："
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:5
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:108
@@ -5878,18 +5821,16 @@ msgid "For Errors and Warnings"
 msgstr "错误和警告"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:2
-#, fuzzy
 msgid "Show error pad:"
-msgstr "显示错误"
+msgstr "显示错误面板："
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:2
-#, fuzzy
 msgid "Show message bubbles:"
-msgstr "显示信息"
+msgstr "显示消息气泡:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanelWidget.cs:2
 msgid "Jump to first error or warning:"
-msgstr ""
+msgstr "跳转到第一个错误或警告："
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/LogView.cs:31
 msgid "Search:"
@@ -5915,6 +5856,8 @@ msgid ""
 "application needs to read data from the standard input, please set the 'Run "
 "in External Console' option in the project options."
 msgstr ""
+"使用{0}输出控制台时，不支持控制台输入。如果你的应用程序需要从标准输入读取数"
+"据，请设置项目中选择选项“在外部控制台中运行”。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:9
 msgid "Generate templates"
@@ -5954,18 +5897,16 @@ msgid "Warnings in file generation."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:27
-#, fuzzy
 msgid "Generated files successfully."
-msgstr "操作成功完成。"
+msgstr "生成文件成功。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:41
 msgid "Cancelled because generator ran again for the same file"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:42
-#, fuzzy
 msgid "The '{0}' code generator crashed"
-msgstr "无法创建文件“{0}”。"
+msgstr "'{0}' 代码生成器崩溃"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:43
 msgid "The '{0}' code generator output invalid filename '{1}'"
@@ -6163,9 +6104,8 @@ msgid "Loading Workbench"
 msgstr "加载工作台"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:29
-#, fuzzy
 msgid "Could not open file: {0}"
-msgstr "无法删除文件夹“{0}”"
+msgstr "无法打开文件：{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:15
 msgid "Workspace saved."
@@ -6180,29 +6120,24 @@ msgid "Save failed."
 msgstr "保存失败。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:17
-#, fuzzy
 msgid "Saving Workspace..."
-msgstr "正在保存..."
+msgstr "正在保存工作区..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:20
-#, fuzzy
 msgid "No solution has been selected."
-msgstr "安装已经成功完成。"
+msgstr "没有解决方案已被选择。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:26
-#, fuzzy
 msgid "Could not close solution '{0}'."
-msgstr "无法保存解决方案：{0}"
+msgstr "无法关闭解决方案“{0}”。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:33
-#, fuzzy
 msgid "{0} is already opened"
-msgstr "文件名 {0} 无效"
+msgstr "{0}已打开"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:41
-#, fuzzy
 msgid "File is not a project or solution: {0}"
-msgstr "无法保存解决方案：{0}"
+msgstr "文件不是一个项目或解决方案：{0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:44
 msgid "Solution loaded."
@@ -6234,22 +6169,20 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:54
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:8
-#, fuzzy
 msgid ""
 "The project '{0}' has been modified by an external application. Do you want "
 "to reload it?"
-msgstr "文件“{0}”已经存在。您是否想要替换它？"
+msgstr "该项目“{0}”已经由外部应用程序进行修改。你想重新加载吗？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:14
-#, fuzzy
 msgid "Text file"
-msgstr "删除文件"
+msgstr "文本文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Desktop/PlatformService.cs:14
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ItemToolboxNode.cs:40
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/TreeNodes/AssemblyNodeBuilder.cs:4
 msgid "Unknown"
-msgstr ""
+msgstr "未知"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:7
 msgid "_Reload"
@@ -6286,16 +6219,15 @@ msgstr "覆盖文件(_O)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/MessageService.cs:41
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:4
 msgid "An error has occurred"
-msgstr ""
+msgstr "发生一个错误"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsPanel.cs:11
-#, fuzzy
 msgid "Use default settings from '{0}'"
-msgstr "使用默认 sans-serif 字体(_S)"
+msgstr "从使用默认设置“{0}”"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:4
 msgid "_Policy:"
-msgstr ""
+msgstr "策略(_P):"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:4
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:4
@@ -6307,31 +6239,27 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:6
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:6
-#, fuzzy
 msgid "System Default"
-msgstr "设为缺省"
+msgstr "系统默认"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:6
 msgid "Inherited Policy"
-msgstr ""
+msgstr "继承策略"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:4
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.BinariesZipEditorWidget.cs:1
-#, fuzzy
 msgid "Configuration:"
-msgstr "配置"
+msgstr "配置:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:4
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewConfigurationDialog.cs:2
-#, fuzzy
 msgid "Platform:"
-msgstr "目标路径"
+msgstr "平台："
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:5
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:16
-#, fuzzy
 msgid "All Configurations"
-msgstr "配置"
+msgstr "全部配置"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MultiConfigItemOptionsPanel.cs:8
 msgid "(Active)"
@@ -6355,14 +6283,12 @@ msgstr ""
 "请只使用字母、数字、空格、“.”和“_”。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:4
-#, fuzzy
 msgid "The project could not be renamed."
-msgstr "工程无法创建"
+msgstr "该项目不能被重命名。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:4
-#, fuzzy
 msgid "The file '{0}' already exist. Do you want to replace it?"
-msgstr "文件“{0}”已经存在。您是否想要替换它？"
+msgstr "文件“{0}”已经存在。你想取代它？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/RenameConfigDialog.cs:2
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewConfigurationDialog.cs:4
@@ -6376,16 +6302,15 @@ msgstr "已经存在一个名为“{0}”的配置。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AddFileDialog.cs:12
 msgid "Override default build action"
-msgstr ""
+msgstr "覆盖默认生成操作"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AddMimeTypeDialog.cs:3
 msgid "Unknown type"
 msgstr "未知类型"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AddMimeTypeDialog.cs:3
-#, fuzzy
 msgid "Type '{0}' already registered"
-msgstr "文件 {0} 已经存在。是否覆盖？"
+msgstr "类型“{0}”已注册"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:11
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:21
@@ -6424,7 +6349,7 @@ msgstr "解决方案选项"
 msgid ""
 "Project directory can't be deleted since it contains files from other "
 "projects or solutions"
-msgstr ""
+msgstr "项目目录无法删除，因为它包含其他项目或解决方案的文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
 msgid "Custom Policies"
@@ -6485,18 +6410,16 @@ msgstr "MonoDevelop 策略文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:13
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ApplyPolicyDialog.cs:2
-#, fuzzy
 msgid "The policy set could not be loaded"
-msgstr "无法装入文件“{0}”。"
+msgstr "该策略集无法加载"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:14
 msgid "Apply to Project"
 msgstr "应用到项目"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:15
-#, fuzzy
 msgid "The policy set could not be saved"
-msgstr "项目无法被保存"
+msgstr "该策略集无法保存"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:15
 msgid "No Selection"
@@ -6504,7 +6427,6 @@ msgstr "无选择"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectFileSelectorDialog.cs:3
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:6
-#, fuzzy
 msgid "All files"
 msgstr "全部文件"
 
@@ -6695,77 +6617,70 @@ msgid "Could not create directory '{0}'."
 msgstr "无法创建目录“{0}”。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:106
-#, fuzzy
 msgid "Directory '{0}' could not be moved."
-msgstr "无法删除目录“{0}”。"
+msgstr "目录“{0}”无法移动。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:108
-#, fuzzy
 msgid "File '{0}' could not be moved."
-msgstr "无法装入文件“{0}”。"
+msgstr "文件“{0}”无法移动。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:108
-#, fuzzy
 msgid "File '{0}' could not be copied."
-msgstr "无法装入文件“{0}”。"
+msgstr "文件“{0}”无法复制。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
-#, fuzzy
 msgid "copy"
-msgstr "复制(_C)"
+msgstr "复制"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "another copy"
-msgstr ""
+msgstr "另一个副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "3rd copy"
-msgstr ""
+msgstr "第三个副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "4th copy"
-msgstr ""
+msgstr "第四副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "5th copy"
-msgstr ""
+msgstr "第五副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "6th copy"
-msgstr ""
+msgstr "第六副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "7th copy"
-msgstr ""
+msgstr "第七副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "8th copy"
-msgstr ""
+msgstr "第八副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
 msgid "9th copy"
-msgstr ""
+msgstr "第九副本"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:109
-#, fuzzy
 msgid "copy {0}"
-msgstr "正在打开 {0}"
+msgstr "复制 {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:112
-#, fuzzy
 msgid ""
 "The project '{0}' is currently running and will have to be stopped. Do you "
 "want to continue closing it?"
-msgstr "文件“{0}”已经存在。您是否想要替换它？"
+msgstr "该项目“{0}”当前正在运行，将不得不被停止。你要继续关闭它？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:112
-#, fuzzy
 msgid "Close Project"
-msgstr "控制台工程"
+msgstr "关闭项目"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:113
 msgid "Code completion database generation"
-msgstr ""
+msgstr "代码完成数据库生成"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeDialog.cs:3
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
@@ -6796,14 +6711,12 @@ msgid "Execution Mode"
 msgstr "执行模式"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:6
-#, fuzzy
 msgid "Available for"
-msgstr "可用的编码："
+msgstr "有效"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:6
-#, fuzzy
 msgid "Current solution"
-msgstr "当前列"
+msgstr "当前解决方案"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeManagerDialog.cs:8
 #, fuzzy
@@ -6839,7 +6752,7 @@ msgstr "目录"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:12
 msgid "(Cyclic dependencies not allowed)"
-msgstr ""
+msgstr "（不允许循环依赖）"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:17
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:3
@@ -6893,7 +6806,7 @@ msgstr "根目录："
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanelWidget.cs:2
 msgid "This is a summary of all file types used in the project or solution:"
-msgstr ""
+msgstr "这是项目或解决方案中使用的所有类型的文件的摘要："
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.OptionPanels.CombineBuildOptionsWidget.cs:2
 msgid "<b>Output Directory</b>"
@@ -7423,9 +7336,8 @@ msgid ""
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:2
-#, fuzzy
 msgid "_Remove from Solution"
-msgstr "从工程中删除(_R)"
+msgstr "从解决方案中删除(_R)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/SolutionFolderFileNodeBuilder.cs:3
 #, fuzzy
@@ -7439,54 +7351,46 @@ msgid "Are you sure you want to remove the file {0} from the solution {1}?"
 msgstr "您真的确定想要将文件夹“{0}”移动到文件夹“{1}”中吗？"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Fonts/FontChooserPanelWidget.cs:7
-#, fuzzy
 msgid "Select Font"
-msgstr "全部不选"
+msgstr "选择字体"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Fonts/FontChooserPanelWidget.cs:8
-#, fuzzy
 msgid "Set To Default"
-msgstr "设为缺省"
+msgstr "设为默认值"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GtkAlertDialog.cs:7
 #: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:8
 msgid "Apply to all"
-msgstr ""
+msgstr "应用到全部"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewPolicySetDialog.cs:2
-#, fuzzy
 msgid "New Policy"
-msgstr "新建工程"
+msgstr "新建策略"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewPolicySetDialog.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ImportProjectPolicyDialog.cs:2
-#, fuzzy
 msgid "Policy Name:"
-msgstr "工程名称："
+msgstr "策略名称:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewPolicySetDialog.cs:2
 msgid "Copy Settings From:"
-msgstr ""
+msgstr "复制设置从："
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:3
-#, fuzzy
 msgid "Recent Templates"
-msgstr "代码模板"
+msgstr "最近模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:3
-#, fuzzy
 msgid "Installed Templates"
-msgstr "模板(_T)"
+msgstr "已安装模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:3
-#, fuzzy
 msgid "Online Templates"
-msgstr "代码模板"
+msgstr "在线模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:3
-#, fuzzy
 msgid "Search..."
-msgstr "正在保存..."
+msgstr "搜索..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:4
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:2
@@ -7495,18 +7399,16 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs:2
-#, fuzzy
 msgid "<b>Project Options</b>"
-msgstr "工程选项"
+msgstr "<b>项目选项</b>"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs:2
 msgid "N_ame:"
 msgstr "名称(_A)："
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs:2
-#, fuzzy
 msgid "L_ocation:"
-msgstr "位置："
+msgstr "位置(_O)："
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectOptionsWidget.cs:2
 msgid "_Solution name:"
@@ -8755,9 +8657,8 @@ msgid "Select target directory"
 msgstr "选择输出目录"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:1
-#, fuzzy
 msgid "Adding..."
-msgstr "正在添加文件..."
+msgstr "添加..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:2
 #, fuzzy
@@ -8777,9 +8678,8 @@ msgid "The files will be kept on disk."
 msgstr "无法删除文件 {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:2
-#, fuzzy
 msgid "Removing..."
-msgstr "正在保存..."
+msgstr "正在删除..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/AddRemoveMoveCommand.cs:2
 #, fuzzy
@@ -8812,38 +8712,32 @@ msgid "Solution checked out"
 msgstr "解决方案已保存。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:11
-#, fuzzy
 msgid "Add File"
 msgstr "添加文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:11
-#, fuzzy
 msgid "Remove File"
-msgstr "资源文件"
+msgstr "删除文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:11
-#, fuzzy
 msgid "Revert File"
-msgstr "最近文件(_F)"
+msgstr "还原文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:11
-#, fuzzy
 msgid "Lock File"
-msgstr " (装入失败)"
+msgstr "锁定文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:11
-#, fuzzy
 msgid "Unlock File"
-msgstr " (装入失败)"
+msgstr "解锁文件"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:4
 msgid "Committing {0}..."
-msgstr ""
+msgstr "正在提交{0} ..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:4
-#, fuzzy
 msgid "Commit operation completed."
-msgstr "保存操作失败。"
+msgstr "提交操作完成。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:6
 msgid "Initial check-in of module {0}"
@@ -17207,7 +17101,7 @@ msgstr "备份程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "A tool to manage compressed data/archives"
-msgstr ""
+msgstr "一个工具来管理压缩的数据/归档"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Electronics software, e.g. a circuit designer"
@@ -17222,25 +17116,24 @@ msgid "Engineering software, e.g. CAD programs"
 msgstr "工程程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
-#, fuzzy
 msgid "A file tool utility"
-msgstr "打开文件或解决方案"
+msgstr "文件工具实用程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "A file manager"
-msgstr "档案管理程序"
+msgstr "文件管理器"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "A terminal emulator application"
-msgstr ""
+msgstr "终端模拟应用程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "A file system tool"
-msgstr ""
+msgstr "文件系统工具"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Monitor application/applet that monitors some resource or activity"
-msgstr ""
+msgstr "监视应用程序监视某些资源或活动"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "A security tool"
@@ -17248,7 +17141,7 @@ msgstr "保安程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Accessibility"
-msgstr ""
+msgstr "辅助的"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "A calculator"
@@ -17263,46 +17156,44 @@ msgid "A text editor"
 msgstr "文本编辑器"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
-#, fuzzy
 msgid "Help or documentation"
-msgstr "Mono 文档"
+msgstr "帮助或文档"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid ""
 "Important application, core to the desktop such as a file manager or a help "
 "browser"
-msgstr "重要程序，如档案总管程序"
+msgstr "重要的应用，例如一个文件管理器或帮助浏览器桌面的核心"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Application based on KDE libraries"
-msgstr ""
+msgstr "应用基于 KDE 库"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Application based on GNOME libraries"
-msgstr ""
+msgstr "应用基于 GNOME 库"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Application based on GTK+ libraries "
-msgstr ""
+msgstr "基于 GTK + 库的应用程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Application based on Qt libraries "
-msgstr ""
+msgstr "基于 Qt 库应用程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
-#, fuzzy
 msgid "Application based on Motif libraries"
-msgstr "应用程序配置文件"
+msgstr "应用基于Motif 库"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Application based on Java GUI libraries, such as AWT or Swing"
-msgstr ""
+msgstr "基于 Java GUI 库，如 AWT 和 Swing 应用程序"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid ""
 "Application that only works inside a terminal (text-based or command line "
 "application)"
-msgstr ""
+msgstr "应用程序只能在终端内（基于文本或命令行应用程序）"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:2
 msgid "GNOME Desktop"
@@ -17367,11 +17258,11 @@ msgstr "其他类别"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:2
 msgid "Launch script for {0}"
-msgstr ""
+msgstr "针对{0}启动脚本"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/LinuxDeployExtension.cs:2
 msgid "pkg-config file for {0}"
-msgstr ""
+msgstr " {0}的pkg-config 文件"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.BasicOptionPanelWidget.cs:1
 msgid "Generate launch script"
@@ -17439,7 +17330,7 @@ msgstr "菜单分类："
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "Select the environments that should display this desktop entry:"
-msgstr ""
+msgstr "选择要显示该桌面项的环境："
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "Always show"
@@ -17447,11 +17338,11 @@ msgstr "始终可见"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "Only show in the following environments:"
-msgstr ""
+msgstr "仅显示在以下环境:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "Not show in the following environments:"
-msgstr ""
+msgstr "不显示在以下环境:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "Menu entry"
@@ -17459,332 +17350,293 @@ msgstr "菜单项"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "MIME types supported by this application:"
-msgstr ""
+msgstr "此应用程序所支持的 MIME 类型:"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "Mime types"
-msgstr ""
+msgstr "Mime 类型"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
 msgid "Other entries"
-msgstr ""
+msgstr "其他条目"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:1
-#, fuzzy
 msgid "Menu Category Selection"
-msgstr "剪切选中内容"
+msgstr "菜单选择类别"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs:1
-#, fuzzy
 msgid "Select the categories you want to assign to the desktop entry:"
-msgstr "选择您想要注册安装源的位置："
+msgstr "选择您想要指定桌面项的类别:"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:48
-#, fuzzy
 msgid "Xml Editor"
-msgstr "编辑"
+msgstr "Xml 编辑器"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:50
-#, fuzzy
 msgid "Create _Schema"
-msgstr "创建新文件夹"
+msgstr "创建布局(_S)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:53
-#, fuzzy
 msgid "_Validate"
-msgstr "有效性"
+msgstr "验证(_V)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:56
 msgid "_Assign XSLT..."
-msgstr ""
+msgstr "指定XSLT(_A)..."
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:59
 msgid "_Open XSLT"
-msgstr ""
+msgstr "打开XSLT(_O)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:62
 msgid "Run XSL_T"
-msgstr ""
+msgstr "运行XSLT(_T)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:66
-#, fuzzy
 msgid "_Go to Schema Definition"
-msgstr "转到定义"
+msgstr "转到布局定义(_G)"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:73
 msgid "_XML"
-msgstr ""
+msgstr "_XML"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:88
 msgid "XML Schemas"
-msgstr ""
+msgstr "XML 架构"
 
 #: ../src/addins/Xml/Properties/MonoDevelop.XmlEditor.addin.xml:105
-#, fuzzy
 msgid "XML Format"
-msgstr "文件掩码："
+msgstr "XML 格式"
 
 #: ../src/addins/Xml/Completion/XmlMultipleClosingTagCompletionData.cs:3
 msgid "Closing tag for '{0}', also closing all intermediate tags"
-msgstr ""
+msgstr "结束标记为\"{0}\"，也结束所有中间标记"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Omit XML declaration"
-msgstr "转到定义"
+msgstr "忽略 XML声明"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "New line chars"
-msgstr "查看列表"
+msgstr "新行字符"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Indent content"
-msgstr "缩进选中内容(_I)"
+msgstr "缩进内容"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Indent string"
-msgstr "<b>代码生成</b>"
+msgstr "缩进字符串"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Attributes in new line"
-msgstr "向上一行"
+msgstr "在新行中的属性"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Max attributes per line"
-msgstr ""
+msgstr "每行的最大属性"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Attributes indent string"
-msgstr ""
+msgstr "缩进字符串属性"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Wrap attributes"
-msgstr ""
+msgstr "标签属性"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Align attributes"
-msgstr ""
+msgstr "对齐属性"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Align attribute values"
-msgstr ""
+msgstr "对齐属性值"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Quote char"
-msgstr "结果图"
+msgstr "引用字符"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Spaces before assignment"
-msgstr ""
+msgstr "分配前的空格"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Spaces after assignment"
-msgstr ""
+msgstr "分配后的空格"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Empty lines before start"
-msgstr ""
+msgstr "开始之前的空行"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
 msgid "Empty lines after start"
-msgstr ""
+msgstr "开始之后的空行"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Empty lines before end"
-msgstr "空资源文件"
+msgstr "结束之前的空行"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Empty lines after end"
-msgstr "空搜索模式"
+msgstr "结束之后的空行"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicy.cs:2
-#, fuzzy
 msgid "Document"
 msgstr "文档"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:7
 msgid "Enter one or several xpath expressions to which this format applies:"
-msgstr ""
+msgstr "请输入一个或几个 xpath 表达式，这种格式适用于:"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:10
-#, fuzzy
 msgid "Advanced Settings"
-msgstr "设置"
+msgstr "高级设置"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:20
-#, fuzzy
 msgid "Format #{0}"
-msgstr "错误：{0}"
+msgstr "格式 #{0}"
 
 #: ../src/addins/Xml/Formatting/XmlFormattingPolicyPanelWidget.cs:20
-#, fuzzy
 msgid "XPath scope:"
-msgstr "查询"
+msgstr "XPath 的范围:"
 
 #: ../src/addins/Xml/Editor/XmlTextEditorExtension.cs:185
-#, fuzzy
 msgid "Creating schema..."
-msgstr "正在生成程序集"
+msgstr "创建架构..."
 
 #: ../src/addins/Xml/Editor/XmlTextEditorExtension.cs:186
-#, fuzzy
 msgid "Schema created."
-msgstr "搜索已取消。"
+msgstr "架构已创建 。 "
 
 #: ../src/addins/Xml/Editor/XmlTextEditorExtension.cs:186
 msgid "Error creating XML schema."
-msgstr ""
+msgstr "创建 XML 架构时出现错误。"
 
 #: ../src/addins/Xml/Editor/XmlTextEditorExtension.cs:205
-#, fuzzy
 msgid "Error reading file '{0}'."
-msgstr "从资源 {0} 中装入模板出错"
+msgstr "读取文件 '{0}'出错."
 
 #: ../src/addins/Xml/Editor/XmlTextEditorExtension.cs:205
 msgid "Executing transform..."
-msgstr ""
+msgstr "正在执行转换..."
 
 #: ../src/addins/Xml/Editor/XmlTextEditorExtension.cs:205
-#, fuzzy
 msgid "Transform completed."
-msgstr "搜索已取消。"
+msgstr "转换完成。"
 
 #: ../src/addins/Xml/Editor/XmlTextEditorExtension.cs:205
-#, fuzzy
 msgid "Could not run transform."
-msgstr "无法从安装源中获得信息"
+msgstr "不能运行转换。"
 
 #: ../src/addins/Xml/Editor/BaseXmlEditorExtension.cs:73
-#, fuzzy
 msgid "Closing tag for '{0}'"
-msgstr "正在 {1} 中查找“{0}”。"
+msgstr "结束标记\"{0}\""
 
 #: ../src/addins/Xml/Editor/BaseXmlEditorExtension.cs:73
-#, fuzzy
 msgid "Character data"
-msgstr "创建新数据库"
+msgstr "字符数据"
 
 #: ../src/addins/Xml/Editor/BaseXmlEditorExtension.cs:76
-#, fuzzy
 msgid "Select"
-msgstr "选择(_S)"
+msgstr "选择"
 
 #: ../src/addins/Xml/Editor/BaseXmlEditorExtension.cs:76
-#, fuzzy
 msgid "Select contents"
-msgstr "全部不选"
+msgstr "选择内容"
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "Validating XML..."
-msgstr ""
+msgstr "正在验证 XML..."
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
-#, fuzzy
 msgid "Validation failed."
-msgstr "安装失败"
+msgstr "验证失败。"
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "XML is valid."
-msgstr ""
+msgstr "XML 是有效的。"
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "Validating schema..."
-msgstr ""
+msgstr "正在验证架构..."
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
-#, fuzzy
 msgid "Schema is valid."
-msgstr "搜索模式无效"
+msgstr "架构是有效的。"
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "Validating stylesheet..."
-msgstr ""
+msgstr "正在验证样式表..."
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "Stylesheet is valid."
-msgstr ""
+msgstr "样式表是有效的。"
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "Select XSLT Stylesheet"
-msgstr ""
+msgstr "选择 XSLT 样式表"
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
-#, fuzzy
 msgid "XSL Files"
-msgstr "全部文件"
+msgstr "XSL 文件"
 
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
-#, fuzzy
 msgid "Select XML Schema"
-msgstr "选择图像"
+msgstr "选择 XML 架构"
 
 #: ../src/addins/Xml/Editor/XmlEditorOptionsPanelWidget.cs:4
-#, fuzzy
 msgid "Automatically insert closing tags"
-msgstr "自动包含找到的文件(_I)"
+msgstr "自动插入结束标记"
 
 #: ../src/addins/Xml/Editor/XmlEditorOptionsPanelWidget.cs:4
 msgid "Automatically insert punctuation (=\"\", />, etc.)"
-msgstr ""
+msgstr "自动插入标点符号 (=\"\"，/ >，等等.)"
 
 #: ../src/addins/Xml/Editor/XmlEditorOptionsPanelWidget.cs:4
 msgid "Show schema annotation"
-msgstr ""
+msgstr "显示架构批注"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanel.cs:49
-#, fuzzy
 msgid "Schema changes could not be saved"
-msgstr "工程无法创建"
+msgstr "架构更改无法保存"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
 msgid "Built in"
 msgstr "内置"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
-#, fuzzy
 msgid "User schema"
-msgstr "用户"
+msgstr "用户架构"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
 msgid "File Extension"
 msgstr "文件扩展名"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
-#, fuzzy
 msgid "Prefix"
-msgstr "预览"
+msgstr "前缀"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:9
-#, fuzzy
 msgid "<b>Registered Schema</b>"
-msgstr "<b>保存</b>"
+msgstr "<b>已注册布局</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:11
-#, fuzzy
 msgid "<b>Default File Associations</b>"
-msgstr "<b>常规选项</b>"
+msgstr "<b>默认文件关联</b>"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:19
-#, fuzzy
 msgid "Schema '{0}' could not be loaded."
-msgstr "无法装入文件“{0}”。"
+msgstr "无法加载架构\"{0}\"。"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:21
 msgid "Schema '{0}' has no target namespace."
-msgstr ""
+msgstr "架构\"{0}\"具有没有目标命名空间。"
 
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:24
 msgid ""
 "A schema is already registered with the namespace '{0}'. Would you like to "
 "replace it?"
-msgstr ""
+msgstr "架构是已注册的命名空间\"{0}\"。你想要替换它?"
 
 #: ../src/addins/NUnit/templates/NUnitAssemblyGroup.xpt.xml:0
 msgid "NUnit assembly test collection"
@@ -17794,21 +17646,19 @@ msgstr "NUnit 测试程序集"
 #: ../src/addins/NUnit/templates/NUnitTestClass.xft.xml:0
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
 msgid "NUnit"
-msgstr ""
+msgstr "NUnit"
 
 #: ../src/addins/NUnit/templates/NUnitAssemblyGroup.xpt.xml:0
 msgid "Create an NUnit assembly test collection"
 msgstr "创建一个 NUnit 测试程序集"
 
 #: ../src/addins/NUnit/templates/NUnitTestClass.xft.xml:0
-#, fuzzy
 msgid "Test Fixture"
-msgstr "文本编辑器"
+msgstr "Test Fixture"
 
 #: ../src/addins/NUnit/templates/NUnitTestClass.xft.xml:0
-#, fuzzy
 msgid "Creates a Test Fixture."
-msgstr "创建一个空接口。"
+msgstr "创建一个Test Fixture。"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:11
 msgid "Unit Tests"
@@ -17823,33 +17673,29 @@ msgid "Show Test Counters"
 msgstr "显示测试计数"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:11
-#, fuzzy
 msgid "Test Results"
 msgstr "测试结果"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:12
-#, fuzzy
 msgid "Unit Testing"
 msgstr "单元测试"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
-#, fuzzy
 msgid "Run Unit Tests"
-msgstr "单元测试"
+msgstr "运行单元测试"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
 msgid "Runs all tests of the current selected project."
-msgstr ""
+msgstr "运行当前选定项目的所有测试。"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
 msgid "Runs tests using a special execution mode."
-msgstr ""
+msgstr "运行测试使用一种特殊的执行模式。"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
 #: ../src/addins/NUnit/Gui/TestPad.cs:11
-#, fuzzy
 msgid "Debug Test"
-msgstr "调试"
+msgstr "调试测试"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
 msgid "Run Test"
@@ -17860,9 +17706,8 @@ msgid "Show test source code"
 msgstr "显示测试源代码"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
-#, fuzzy
 msgid "Go to failure"
-msgstr "转到行"
+msgstr "转到失败"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
 msgid "Select test in tree"
@@ -17873,9 +17718,8 @@ msgid "Show results pad"
 msgstr "显示结果面板"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
-#, fuzzy
 msgid "Rerun test"
-msgstr "运行测试"
+msgstr "重新运行测试"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
 msgid "Proportional time scale"
@@ -17906,40 +17750,34 @@ msgid "Show ignored tests"
 msgstr "显示忽略测试"
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:14
-#, fuzzy
 msgid "Add assembly..."
 msgstr "添加程序集..."
 
 #: ../src/addins/NUnit/MonoDevelopNUnit.addin.xml:19
-#, fuzzy
 msgid "Run Test With"
-msgstr "使用其他程序打开"
+msgstr "运行测试方式"
 
 #: ../src/addins/NUnit/templates/NUnitProject.xpt.xml:0
 #: ../src/addins/NUnit/templates/NUnitProjectVBNet.xpt.xml:0
-#, fuzzy
 msgid "NUnit Library Project"
-msgstr "整个工程"
+msgstr "NUnit 类库项目"
 
 #: ../src/addins/NUnit/templates/NUnitProject.xpt.xml:0
 #: ../src/addins/NUnit/templates/NUnitProjectVBNet.xpt.xml:0
-#, fuzzy
 msgid "Creates an NUnit library"
-msgstr "创建一个空 C# 类库"
+msgstr "创建 NUnit库"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:5
-#, fuzzy
 msgid "Run All"
-msgstr "重新构建"
+msgstr "运行所有"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:5
-#, fuzzy
 msgid "Run all tests"
-msgstr "运行测试"
+msgstr "运行所有测试"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:5
 msgid "Cancel running test"
-msgstr ""
+msgstr "取消正在运行的测试"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:6
 msgid "Regressions"
@@ -17954,9 +17792,8 @@ msgid "Result"
 msgstr "结果"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:10
-#, fuzzy
 msgid "Debug Test ({0})"
-msgstr "空枚举"
+msgstr "调试测试 ({0})"
 
 #: ../src/addins/NUnit/Gui/TestPad.cs:20
 msgid "No regressions found."
@@ -17975,14 +17812,12 @@ msgid "Show Successful Tests"
 msgstr "显示成功测试"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:6
-#, fuzzy
 msgid "Inconclusive Tests"
-msgstr "被忽略测试"
+msgstr "无结论的测试"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:6
-#, fuzzy
 msgid "Show Inconclusive Tests"
-msgstr "显示被忽略的测试"
+msgstr "显示无结论的测试"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:6
 msgid "Failed Tests"
@@ -18005,9 +17840,8 @@ msgid "Show Output"
 msgstr "显示输出"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:7
-#, fuzzy
 msgid "Rerun Tests"
-msgstr "运行测试"
+msgstr "重新运行测试"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:14
 msgid ""
@@ -18022,9 +17856,8 @@ msgstr "运行 <b>{0}</b> 的测试，使用配置 <b>{1}</b>"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:16
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:21
-#, fuzzy
 msgid "Test results for <b>{0}</b> configuration <b>{1}</b>"
-msgstr "运行 <b>{0}</b> 的测试，使用配置 <b>{1}</b>"
+msgstr "测试结果为<b>{0}</b>配置<b>{1} 的</b>"
 
 #: ../src/addins/NUnit/Gui/TestResultsPad.cs:18
 msgid "Internal error"
@@ -18052,54 +17885,47 @@ msgid " (Load failed)"
 msgstr " (装入失败)"
 
 #: ../src/addins/NUnit/Gui/TestNodeBuilder.cs:4
-#, fuzzy
 msgid " ({0} passed, {1} failed, {2} not run)"
-msgstr " ({0} 个成功，{1} 个失败，{2} 个忽略)"
+msgstr "({0} 通过，{1} 失败，{2} 未运行)"
 
 #: ../src/addins/NUnit/Services/NUnitService.cs:9
 msgid "Test results"
 msgstr "测试结果"
 
 #: ../src/addins/NUnit/Services/ExternalTestRunner.cs:10
-#, fuzzy
 msgid "Test failed"
-msgstr "保存失败。"
+msgstr "测试失败"
 
 #: ../src/addins/NUnit/Services/ExternalTestRunner.cs:10
-#, fuzzy
 msgid "Test ignored"
-msgstr "文本编辑器"
+msgstr "被忽略的测试"
 
 #: ../src/addins/NUnit/Services/ExternalTestRunner.cs:10
-#, fuzzy
 msgid "Test successful"
-msgstr "构建成功。"
+msgstr "测试成功"
 
 #: ../src/addins/NUnit/Services/ExternalTestRunner.cs:10
-#, fuzzy
 msgid "Execution time: {0:0.00}ms"
-msgstr "正在执行：{0}"
+msgstr "执行时间: {0:0.00}ms"
 
 #: ../src/addins/NUnit/Services/NUnitAssemblyTestSuite.cs:35
 msgid ""
 "Could not get a valid path to the assembly. There may be a conflict in the "
 "project configurations."
-msgstr ""
+msgstr "无法向大会获得一个有效的路径。在项目配置中可能有冲突。"
 
 #: ../src/addins/NUnit/Services/NUnitAssemblyTestSuite.cs:38
 #: ../src/addins/NUnit/Services/NUnitAssemblyTestSuite.cs:40
-#, fuzzy
 msgid "Unhandled exception"
-msgstr "取消选中内容的缩进(_U)"
+msgstr "未处理的异常"
 
 #: ../src/addins/NUnit/Services/NUnitAssemblyTestSuite.cs:38
-#, fuzzy
 msgid "Canceled"
-msgstr "构建失败。"
+msgstr "已取消"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:19
 msgid "Some dependencies need to be updated"
-msgstr ""
+msgstr "一些依赖关系需要更新"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:19
 msgid ""
@@ -18107,125 +17933,110 @@ msgid ""
 "Framework. Please download and install the latest stable Mono Framework "
 "package and restart {0}."
 msgstr ""
+"{0} 需要更新版本的 GTK + 中，包括在单框架。请下载并安装最新的稳定单框架包并重"
+"新启动 {0}。"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
-#, fuzzy
 msgid "Preferences..."
-msgstr "选项"
+msgstr "偏好设置"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
-#, fuzzy
 msgid "Custom Policies..."
-msgstr "编译器："
+msgstr "自定义策略..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
-#, fuzzy
 msgid "Hide {0}"
-msgstr "构建 {0}"
+msgstr "隐藏 {0}"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 msgid "Add-in Manager..."
 msgstr "插件管理器..."
 
 #: ../src/addins/MacPlatform/Dialogs/MacAddFileDialogHandler.cs:3
-#, fuzzy
 msgid "Override build action:"
-msgstr "构建解决方案(_D)"
+msgstr "重写生成操作:"
 
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:6
-#, fuzzy
 msgid "Show files:"
-msgstr "新文件："
+msgstr "显示文件："
 
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:7
-#, fuzzy
 msgid "Encoding:"
-msgstr "编码"
+msgstr "编码："
 
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:8
-#, fuzzy
 msgid "Open with:"
-msgstr "使用其他程序打开"
+msgstr "打开方式："
 
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:4
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:16
 msgid "OK"
-msgstr ""
+msgstr "确定"
 
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:4
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:16
-#, fuzzy
 msgid "Cancel"
-msgstr "构建失败。"
+msgstr "取消"
 
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPopUpButton.cs:3
 #: ../src/addins/WindowsPlatform/WindowsPlatform/Dialogs/OpenFileDialogHandler.cs:204
-#, fuzzy
 msgid "Add or Remove..."
-msgstr "添加配置..."
+msgstr "增加或移除"
 
 #: ../src/addins/MacPlatform/Dialogs/MacExceptionDialogHandler.cs:10
-#, fuzzy
 msgid "View details"
-msgstr "查看:"
+msgstr "查看详情"
 
 #: ../src/addins/MacPlatform/Dialogs/MacExceptionDialogHandler.cs:10
-#, fuzzy
 msgid "Hide details"
-msgstr "细节"
+msgstr "隐藏详情"
 
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:15
 #: ../src/addins/WindowsPlatform/WindowsPlatform/WindowsProxyCredentialProvider.cs:116
 msgid "{0} needs credentials to access the proxy server {1}."
-msgstr ""
+msgstr "{0} 需要凭据访问代理服务器 {1}。"
 
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:15
 #: ../src/addins/WindowsPlatform/WindowsPlatform/WindowsProxyCredentialProvider.cs:121
 msgid "{0} needs credentials to access {1}."
-msgstr ""
+msgstr "{0} 需要凭据以访问 {1}。"
 
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:16
 #: ../src/addins/WindowsPlatform/WindowsPlatform/WindowsProxyCredentialProvider.cs:129
-#, fuzzy
 msgid "Credentials Required"
-msgstr "清除最近打开的文件"
+msgstr "所需的凭据"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
 msgid "_Minimize"
-msgstr ""
+msgstr "最小化(_M)"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
 msgid "Minimize the window"
-msgstr ""
+msgstr "最小化窗口"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
-#, fuzzy
 msgid "_Hide Application"
-msgstr "AWT 应用程序"
+msgstr "隐藏应用程序(_H)"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
-#, fuzzy
 msgid "Hide Application"
-msgstr "AWT 应用程序"
+msgstr "隐藏应用程序"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
 msgid "_Hide Others"
-msgstr ""
+msgstr "隐藏其他(_H)"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
-#, fuzzy
 msgid "Hide other applications' windows"
-msgstr "窗口(_W)"
+msgstr "隐藏其他应用程序的窗口"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
-#, fuzzy
 msgid "Show All"
-msgstr "显示全部文件"
+msgstr "显示所有"
 
 #: ../src/addins/MacPlatform/MacPlatform.addin.xml:1
-#, fuzzy
 msgid "Show all applications' windows"
-msgstr "解决方案选项"
+msgstr "显示所有应用程序窗口"
 
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/AnalysisOptionsPanel.cs:3
 msgid "Enable source analysis of open files"
