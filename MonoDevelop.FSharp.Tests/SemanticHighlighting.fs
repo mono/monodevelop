@@ -10,7 +10,7 @@ open FsUnit
 
 [<TestFixture>]
 type SemanticHighlighting() =
-
+    let defaultStyles = SyntaxModeService.DefaultColorStyle
     let getStyle (content : string) =
         let fixedc = content.Replace("§", "")
         let doc = TestHelpers.createDoc fixedc "defined"
@@ -132,7 +132,7 @@ type SemanticHighlighting() =
 module Test =
     let ( §>>=§ ) a b = a + b"""
         let output = getStyle content
-        output |> should equal "Punctuation(Brackets)"
+        output |> should equal defaultStyles.PunctuationForBrackets.Name
         
     [<Test>]    
     member x.Generics_are_highlighted() =
@@ -140,16 +140,16 @@ module Test =
 type Class<§'a§>() = class end
     let _ = new Class<_>()"""
         let output = getStyle content
-        output |> should equal "User Types(Type parameters)"
+        output |> should equal defaultStyles.UserTypesTypeParameters.Name
      
     [<Test>]    
     member x.Type_constraints_are_highlighted() =
         let content = """type Constrained<'a when §'a§ :> IDisposable> = class end"""
         let output = getStyle content
-        output |> should equal SyntaxModeService.DefaultColorStyle.UserTypesTypeParameters.Name
+        output |> should equal defaultStyles.UserTypesTypeParameters.Name
 
     [<Test>]    
-        member x.Static_inlined_type_constraints_are_highlighted() =
-            let content = """let inline test (x: §^a§) (y: ^b) = x + y"""
-            let output = getStyle content
-            output |> should equal SyntaxModeService.DefaultColorStyle.UserTypesTypeParameters.Name
+    member x.Static_inlined_type_constraints_are_highlighted() =
+        let content = """let inline test (x: §^a§) (y: ^b) = x + y"""
+        let output = getStyle content
+        output |> should equal defaultStyles.UserTypesTypeParameters.Name
