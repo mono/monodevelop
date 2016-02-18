@@ -16,11 +16,13 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 
 module TooltipImpl =
+    let bangKeywords = ["let!";"do!";"return!";"use!";"yield!"]
     let tryKeyword col lineStr =
         maybe {
             let! keyword = Parsing.findKeyword(col, lineStr)
             match keyword with
-            | keyword when PrettyNaming.KeywordNames |> List.contains keyword ->
+            | keyword when PrettyNaming.KeywordNames |> List.contains keyword ||
+                           bangKeywords |> List.contains keyword ->
               return keyword
             | _ -> return! None }
 
