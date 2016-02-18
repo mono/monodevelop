@@ -68,6 +68,10 @@ namespace MonoDevelop.Components
 				UpdateGtkTheme ();
 
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
+
+			// Reset our environment after initialization on Mac
+			if (Platform.IsMac)
+				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 		}
 
 		internal static void SetupXwtTheme ()
@@ -185,6 +189,10 @@ namespace MonoDevelop.Components
 					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
 
 					Gtk.Rc.ReparseAll ();
+
+					// reset the environment only after Gtk has been fully initialized. See SetupGtkTheme ().
+					if (Gtk.Settings.Default != null)
+						Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 				}
 
 			} else if (Gtk.Settings.Default != null && current_theme != Gtk.Settings.Default.ThemeName) {
