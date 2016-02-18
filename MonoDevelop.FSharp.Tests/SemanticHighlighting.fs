@@ -125,3 +125,31 @@ type SemanticHighlighting() =
     [<TestCase("§type§ x() = ()", "Keyword(Iteration)")>]
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
+        
+    [<Test>]    
+    member x.Overlapping_custom_operators_are_highlighted() =
+        let content = """
+module Test =
+    let ( §>>=§ ) a b = a + b"""
+        let output = getStyle content
+        output |> should equal "Punctuation(Brackets)"
+        
+    [<Test>]    
+    member x.Generics_are_highlighted() =
+        let content = """
+type Class<§'a§>() = class end
+    let _ = new Class<_>()"""
+        let output = getStyle content
+        output |> should equal "User Types(Type parameters)"
+     
+    [<Test>]    
+    member x.Type_constraints_are_highlighted() =
+        let content = """type Constrained<'a when §'a§ :> IDisposable> = class end"""
+        let output = getStyle content
+        output |> should equal SyntaxModeService.DefaultColorStyle.UserTypesTypeParameters.Name
+
+    [<Test>]    
+        member x.Static_inlined_type_constraints_are_highlighted() =
+            let content = """let inline test (x: §^a§) (y: ^b) = x + y"""
+            let output = getStyle content
+            output |> should equal SyntaxModeService.DefaultColorStyle.UserTypesTypeParameters.Name
