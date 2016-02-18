@@ -28,6 +28,12 @@ module Parsing =
         else
             Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.Fuzzy [||] Lexer.singleLineQueryLexState
             |> Option.bind tryGetLexerSymbolIslands
+            
+    let findKeyword (col, lineStr) =
+        if lineStr = "" then None
+        else
+            Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.Simple [||] Lexer.singleLineQueryLexState
+            |> Option.bind (fun t -> Some t.Text)
     
     /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
     let findLongIdentsAtGetMethodsTrigger (col, lineStr) =

@@ -25,6 +25,7 @@ type SymbolLookupKind =
     | Fuzzy
     | ByRightColumn
     | ByLongIdent
+    | Simple
 
 type internal DraftToken =
     { Kind: SymbolKind
@@ -166,7 +167,7 @@ module Lexer =
         // One or two tokens that in touch with the cursor (for "let x|(g) = ()" the tokens will be "x" and "(")
         let tokensUnderCursor =
             match lookupKind with
-            | SymbolLookupKind.Fuzzy ->
+            | SymbolLookupKind.Simple | SymbolLookupKind.Fuzzy ->
                 tokens |> List.filter (fun x -> x.Token.LeftColumn <= col && x.RightColumn + 1 >= col)
             | SymbolLookupKind.ByRightColumn ->
                 tokens |> List.filter (fun x -> x.RightColumn = col)
@@ -215,6 +216,15 @@ module Lexer =
                 | Ident | GenericTypeParameter | StaticallyResolvedTypeParameter -> true
                 | _ -> false)
             |> Option.orTry (fun _ -> tokensUnderCursor |> List.tryFind (fun { DraftToken.Kind = k } -> k = Operator))
+            |> Option.map (fun token ->
+                { Kind = token.Kind
+                  Line = line
+                  LeftColumn = token.Token.LeftColumn
+                  RightColumn = token.RightColumn + 1
+                  Text = lineStr.Substring(token.Token.LeftColumn, token.Token.FullMatchedLength) })
+        | SymbolLookupKind.Simple ->
+            tokensUnderCursor
+            |> List.tryLast
             |> Option.map (fun token ->
                 { Kind = token.Kind
                   Line = line

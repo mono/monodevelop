@@ -18,20 +18,19 @@ open ExtCore.Control
 module TooltipImpl =
     let tryKeyword col lineStr =
         maybe {
-            let! _col, identIsland = Parsing.findLongIdents(col, lineStr)
-            match identIsland with
-            | [single] when PrettyNaming.KeywordNames |> List.contains single ->
-              return single
+            let! keyword = Parsing.findKeyword(col, lineStr)
+            match keyword with
+            | keyword when PrettyNaming.KeywordNames |> List.contains keyword ->
+              return keyword
             | _ -> return! None }
 
 module MDTooltip =
     let keywordToTooltip (editor:TextEditor) line col (keyword:string) =
-        async {
-            let startOffset = editor.LocationToOffset(line, col - keyword.Length+1)
-            let endOffset = startOffset + keyword.Length
-            let segment = Text.TextSegment.FromBounds(startOffset, endOffset)
-            let tip = SymbolTooltips.getKeywordTooltip keyword
-            return  TooltipItem( tip, segment :> Text.ISegment) }
+        let startOffset = editor.LocationToOffset(line, col - keyword.Length+1)
+        let endOffset = startOffset + keyword.Length
+        let segment = Text.TextSegment.FromBounds(startOffset, endOffset)
+        let tip = SymbolTooltips.getKeywordTooltip keyword
+        TooltipItem( tip, segment :> Text.ISegment)
 
 /// Resolves locations to tooltip items, and orchestrates their display.
 type FSharpTooltipProvider() =
@@ -78,12 +77,16 @@ type FSharpTooltipProvider() =
                     with
                     | :? TimeoutException -> return! AsyncChoice.error "TooltipProvider: timeout"
                     | ex -> return! AsyncChoice.error (sprintf "TooltipProvider: Error: %A" ex)}
+                    
+            match TooltipImpl.tryKeyword col lineStr with
+            | Some t ->
+                let keywordTip = MDTooltip.keywordToTooltip editor line col t
+                Task.FromResult keywordTip
+            | None ->
 
             Async.StartAsTask(
                 async {
-                    match TooltipImpl.tryKeyword col lineStr with
-                    | Some t -> return! MDTooltip.keywordToTooltip editor line col t
-                    | None ->
+
                     let! tooltipResult = tooltipComputation
                     match tooltipResult with
                     | Success(tip) -> return tip
