@@ -112,7 +112,7 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
         async {
             match infoOpt with
             | Some (checkResults) ->
-                match Parsing.findLongIdents(col, lineStr) with
+                match Option.coalesce (Parsing.findLongIdents (col, lineStr)) (Parsing.findOperator (col, lineStr)) with
                 | None -> return None
                 | Some(colu, identIsland) ->
                     try
