@@ -422,6 +422,9 @@ namespace MonoDevelop.Components.Docking
 			
 			rect.X += leftPadding;
 			rect.Width -= leftPadding + rightPadding;
+			if (rect.Width < 1) {
+				rect.Width = 1;
+			}
 
 			if (Child != null) {
 				var bottomPadding = active ? (int)TabActivePadding.Bottom : (int)TabPadding.Bottom;
