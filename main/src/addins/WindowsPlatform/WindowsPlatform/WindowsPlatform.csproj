@@ -119,6 +119,7 @@
     <Compile Include="MainToolbar\Toolbar.xaml.cs">
       <DependentUpon>ToolBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainToolbar\WPFTitlebar.cs" />
     <Compile Include="MainToolbar\WPFToolbar.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="WindowsPlatform.cs" />
