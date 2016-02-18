@@ -35,13 +35,11 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using System;
-using Microsoft.CodeAnalysis;
 using System.Threading;
 using ProjectReference = MonoDevelop.Projects.ProjectReference;
 using System.Threading.Tasks;
 using MonoDevelop.UnitTesting.NUnit.External;
 using System.Reflection;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core;
@@ -125,12 +123,6 @@ namespace MonoDevelop.UnitTesting.NUnit
 				return null;
 			return task.Result;
 
-		}
-
-		SourceCodeLocation ConvertToSourceCodeLocation (Location loc)
-		{
-			var lineSpan = loc.GetLineSpan ();
-			return new SourceCodeLocation (loc.SourceTree.FilePath, lineSpan.StartLinePosition.Line, lineSpan.StartLinePosition.Character);
 		}
 
 		public override void Dispose ()

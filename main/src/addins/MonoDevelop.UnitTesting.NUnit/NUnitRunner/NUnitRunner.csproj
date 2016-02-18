@@ -21,7 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\NUnit\NUnitRunner.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
