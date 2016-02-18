@@ -104,12 +104,6 @@ namespace MonoDevelop.Core.Execution
 
 				this.writers = writers;
 				encoding = writers [0].Encoding;
-
-				foreach (var writer in writers) {
-					if (encoding.GetType () != writer.Encoding.GetType ()) {
-						throw new Exception ("Encodings mismatch between writers.");
-					}
-				}
 			}
 
 			public override Encoding Encoding {
