@@ -2,14 +2,14 @@
 open NUnit.Framework
 open FsUnit
 open MonoDevelop.FSharp
+open ExtCore
 
 
 [<TestFixture>]
 type ParsingTests() =
     let checkGetSymbol col lineStr expected expectedColumn =
-        let expected = if expected = "" then [] else expected.Split '.'
-                                                     |> Array.toList
-        match Parsing.findLongIdents(col, lineStr)  with
+        let expected = if expected = "" then [] else expected.Split '.' |> Array.toList
+        match Parsing.findLongIdents(col, lineStr) |> Option.coalesce <| Parsing.findOperator(col, lineStr) with
         | Some(colu, ident) -> ident |> should equal expected
                                colu |> should equal expectedColumn
         | None -> Assert.Fail "Could not find ident"
@@ -44,3 +44,8 @@ type ParsingTests() =
     [<TestCase("open |  ", "", "")>]
     member x.``Find long idents and residue``(source: string, expectedIdent, expectedResidue) =
         assertLongIdentsAndResidue source expectedIdent expectedResidue
+        
+    [<Test>]
+    member x.``Find custom operator``() =
+        let source = "let ( >|.> ) a b = a + b"
+        assertIdents source ">.>" 9
