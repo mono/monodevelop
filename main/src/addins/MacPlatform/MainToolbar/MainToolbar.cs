@@ -33,7 +33,6 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
-using MonoDevelop.MacIntegration;
 using Xwt;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
@@ -304,10 +303,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
 						nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
 
-					CGPoint gdkOrigin = ScreenMonitor.GdkPointForNSScreen (searchEntry.Window.Screen);
+					var workbenchNsWindow = nsWindows.FirstOrDefault (nswin =>
+						GtkMacInterop.GetGtkWindow (nswin) is MonoDevelop.Ide.Gui.DefaultWorkbench);
 
-					widget.Allocation = new Gdk.Rectangle (0, (int)(gdkOrigin.Y + fullscreenToolbarNsWindow.Frame.Height - 20),
-						(int)(gdkOrigin.X + fullscreenToolbarNsWindow.Frame.Width - 16), 0);
+					// Gtk and Cocoa coordinates are not the same. Offset by left and top screens to get the correct
+					// coordinate for the popup window based on Cocoa coordinates which offset left/top from current desktop.
+					nfloat xOffset = -NSScreen.Screens.Min (screen => screen.Frame.Left);
+					nfloat yOffset = NSScreen.Screens.Max (screen => screen.Frame.Bottom);
+
+					widget.Allocation = new Gdk.Rectangle (0, (int)(yOffset - workbenchNsWindow.Frame.Height),
+						(int)(xOffset + fullscreenToolbarNsWindow.Frame.Width - 16), 0);
 				}
 				return widget;
 			}
