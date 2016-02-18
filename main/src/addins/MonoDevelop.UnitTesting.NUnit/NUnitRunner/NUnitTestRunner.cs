@@ -45,33 +45,23 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 	{
 		public NUnitTestRunner ()
 		{
-			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			string nunitPath = Path.Combine (path, "nunit.framework.dll");
-			string nunitCorePath = Path.Combine (path, "nunit.core.dll");
-			string nunitCoreInterfacesPath = Path.Combine (path, "nunit.core.interfaces.dll");
-
-			PreloadAssemblies (nunitPath, nunitCorePath, nunitCoreInterfacesPath);
+			PreloadAssemblies ();
 		}
 
-		public void PreloadAssemblies (string nunitPath, string nunitCorePath, string nunitCoreInterfacesPath)
+		public static void PreloadAssemblies ()
 		{
 			// Note: We need to load all nunit.*.dll assemblies before we do *anything* else in this class
 			// This is to ensure that we always load the assemblies from the monodevelop directory and not
 			// from the directory of the assembly under test. For example we wnat to load
 			// /Applications/MonoDevelop/lib/Addins/nunit.framework.dll and not /user/app/foo/bin/debug/nunit.framework.dll
 
-			// In some cases MS.NET can't properly resolve assemblies even if they
-			// are already loaded. For example, when deserializing objects from remoting.
-			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
-				foreach (Assembly am in AppDomain.CurrentDomain.GetAssemblies ()) {
-					if (am.GetName ().FullName == args.Name)
-						return am;
-				}
-				return null;
-			};
-			
 			// Force the loading of the NUnit.Framework assembly.
 			// It's needed since that dll is not located in the test dll directory.
+			var path = Path.GetDirectoryName (typeof(NUnitTestRunner).Assembly.Location);
+			string nunitPath = Path.Combine (path, "nunit.framework.dll");
+			string nunitCorePath = Path.Combine (path, "nunit.core.dll");
+			string nunitCoreInterfacesPath = Path.Combine (path, "nunit.core.interfaces.dll");
+
 			Assembly.LoadFrom (nunitCoreInterfacesPath);
 			Assembly.LoadFrom (nunitCorePath);
 			Assembly.LoadFrom (nunitPath);
@@ -115,7 +105,6 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		public NunitTestInfo GetTestInfo (string path, string[] supportAssemblies)
 		{
 			InitSupportAssemblies (supportAssemblies);
-			
 			TestSuite rootTS = new TestSuiteBuilder ().Build (new TestPackage (path));
 			return BuildTestInfo (rootTS);
 		}

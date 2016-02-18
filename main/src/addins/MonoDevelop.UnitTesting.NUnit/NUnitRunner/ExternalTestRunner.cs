@@ -50,16 +50,6 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		{
 			this.server = server;
 
-			// In some cases MS.NET can't properly resolve assemblies even if they
-			// are already loaded. For example, when deserializing objects from remoting.
-			AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
-				foreach (Assembly am in AppDomain.CurrentDomain.GetAssemblies ()) {
-					if (am.GetName ().FullName == args.Name)
-						return am;
-				}
-				return null;
-			};
-			
 			// Add standard services to ServiceManager
 			ServiceManager.Services.AddService (new DomainManager ());
 			ServiceManager.Services.AddService (new ProjectService ());
@@ -107,11 +97,14 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		
 		NUnitTestRunner GetRunner (string assemblyPath)
 		{
+			string basePath = Path.GetDirectoryName (GetType ().Assembly.Location);
+
 			TestPackage package = new TestPackage (assemblyPath);
 			package.Settings ["ShadowCopyFiles"] = false;
+			package.BasePath = basePath;
 			
 			AppDomain domain = Services.DomainManager.CreateDomain (package);
-			string asm = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), "NUnitRunner.exe");
+			string asm = Path.Combine (basePath, "NUnitRunner.exe");
 			runner = (NUnitTestRunner)domain.CreateInstanceFromAndUnwrap (asm, "MonoDevelop.UnitTesting.NUnit.External.NUnitTestRunner");
 			runner.Initialize ();
 			return runner;

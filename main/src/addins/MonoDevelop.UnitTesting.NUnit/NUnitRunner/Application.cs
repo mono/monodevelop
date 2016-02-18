@@ -36,6 +36,7 @@ namespace NUnitRunner
 
 		public static void Main (string [] args)
 		{
+			NUnitTestRunner.PreloadAssemblies ();
 			server = new RemoteProcessServer ();
 			server.Connect (args, new RemoteNUnitTestRunner (server));
 		}
