@@ -12,6 +12,8 @@ open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 open MonoDevelop.FSharp.Symbols
+open MonoDevelop
+open Gtk
 
 [<AutoOpen>]
 module Patterns =
@@ -98,7 +100,7 @@ module Patterns =
         if isIdentifier ts.TokenInfo.ColorClass
         then ts.SymbolUse |> Option.map (fun su -> IdentifierSymbol(su))
         else None
-
+        
     let (|Namespace|_|) ts =
         match ts with
         | IdentifierSymbol symbolUse ->
@@ -135,7 +137,15 @@ module Patterns =
         match ts with
         | IdentifierSymbol symbolUse ->
             match symbolUse with
-            | SymbolUse.Function _ | SymbolUse.ClosureOrNestedFunction _ -> Some symbolUse.IsFromDefinition
+            | SymbolUse.Function _ | SymbolUse.ClosureOrNestedFunction _  -> Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+        
+    let (|Constructor|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse ->
+            match symbolUse with
+            | SymbolUse.Constructor _  -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
@@ -145,7 +155,7 @@ module Patterns =
             match symbolUse with
             | SymbolUse.Val v ->
                 let isMut = v.IsMutable && (match v.EnclosingEntitySafe with Some de -> not de.IsEnum | None -> v.IsMutable)
-                Some (symbolUse.IsFromDefinition, isMut)
+                Some (symbolUse, isMut)
             | _ -> None
         | _ -> None
 
@@ -253,134 +263,127 @@ module Patterns =
             | _ -> None
         | _ -> None
 
-  module internal Rules =
-      let baseMode =
-          let assembly = Reflection.Assembly.GetExecutingAssembly()
-          let manifest = assembly.GetManifestResourceNames() |> Seq.tryFind (fun s -> s.Contains("FSharpSyntaxMode"))
-          manifest
-          |> Option.map (fun manifest ->
-                             let provider = ResourceStreamProvider(assembly, manifest)
-                             use stream = provider.Open()
-                             let baseMode = SyntaxMode.Read(stream)
-                             baseMode)
+    module internal Rules =
+        let baseMode =
+            let assembly = Reflection.Assembly.GetExecutingAssembly()
+            let manifest = assembly.GetManifestResourceNames() |> Seq.tryFind (fun s -> s.Contains("FSharpSyntaxMode"))
+            manifest
+            |> Option.map (fun manifest ->
+                               let provider = ResourceStreamProvider(assembly, manifest)
+                               use stream = provider.Open()
+                               let baseMode = SyntaxMode.Read(stream)
+                               baseMode)
+    
+    module Keywords =
+        let getType (scheme : ColorScheme) (token : TokenSymbol) =
+          match Rules.baseMode with
+          | Some mode ->
+              Option.ofNull (mode.GetKeyword(token.TokenInfo.TokenName.ToLowerInvariant()))
+              |> Option.map (fun keywords -> scheme.GetChunkStyle keywords.Color)
+              |> Option.fill scheme.KeywordTypes
+          | None -> scheme.KeywordTypes
 
-  module Keywords =
-      let getType (scheme : ColorScheme) (token : TokenSymbol) =
-        match Rules.baseMode with
-        | Some mode ->
-            Option.ofNull (mode.GetKeyword(token.TokenInfo.TokenName.ToLowerInvariant()))
-            |> Option.map (fun keywords -> scheme.GetChunkStyle keywords.Color)
-            |> Option.fill scheme.KeywordTypes
-        | None -> scheme.KeywordTypes
+    module SyntaxMode =
+        let makeChunk (symbolsInFile:IDictionary<_,_>) lineNo lineOffset colourisations (style : ColorScheme) token =
+            let symbol =
+                if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
+                    match symbolsInFile.TryGetValue(Range.mkPos lineNo (token.RightColumn + 1)) with
+                    | true, v -> Some(v)
+                    | _ -> None
+                else None
+    
+            let extraColor =
+                if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
+                    colourisations
+                    |> Option.bind (Array.tryFind (fun (rng : Range.range, _) -> rng.StartLine = lineNo && rng.EndColumn = token.RightColumn + 1))
+                else None
+    
+            let tokenSymbol =
+                { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
+    
+            let highlightMutable isMut =
+                isMut && PropertyService.Get("FSharpBinding.HighlightMutables", true)
 
-  module SyntaxMode =
-      let makeChunk (symbolsInFile:Dictionary<_,_>) (Tokens.LineDetail(lineNo, lineOffset, _lineText)) colourisations (style : ColorScheme) token =
-          let symbol =
-              if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
-                  match symbolsInFile.TryGetValue(Range.mkPos lineNo (token.RightColumn + 1)) with
-                  | true, v -> Some(v)
-                  | _ -> None
-              else None
+            let chunkStyle =
+                match tokenSymbol with
+                | InactiveCode -> style.ExcludedCode
+                | ComputationExpression _name -> style.KeywordTypes
+                | Punctuation -> style.Punctuation
+                | PunctuationBrackets -> style.PunctuationForBrackets
+                | Keyword ts -> Keywords.getType style ts
+                | Comment -> style.CommentsSingleLine
+                | StringLiteral -> style.String
+                | NumberLiteral -> style.Number
+                | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ | Constructor _ -> style.UserTypes
+                | GenericParameter _ -> style.UserTypesTypeParameters
+                | Namespace _ -> style.PlainText
+                | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
+                | Field (fromDef, isMut) ->
+                    if highlightMutable isMut then style.UserTypesMutable
+                    elif fromDef then style.UserFieldDeclaration
+                    else style.UserFieldUsage
+                | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
+                | Val (su, isMut) ->
+                    if highlightMutable isMut then style.UserTypesMutable
+                    //elif su.Symbol.DisplayName.StartsWith "_" then style.ExcludedCode 
+                    elif su.IsFromDefinition then style.UserFieldDeclaration
+                    else style.UserFieldUsage
+                | UnionCase | Enum _ -> style.UserTypesEnums
+                | Delegate _ -> style.UserTypesDelegates
+                | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
+                | Interface -> style.UserTypesInterfaces
+                | ValueType _ -> style.UserTypesValueTypes
+                | PreprocessorKeyword -> style.Preprocessor
+                | _other -> style.PlainText
+    
+            //let seg = ColoredSegment(lineOffset + token.LeftColumn, max (token.RightColumn - token.LeftColumn + 1) token.FullMatchedLength, chunkStyle.Name)
+            let seg = ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
+            //Uncomment to visualise tokens segments
+            //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
+            seg
+            
+        let tryGetTokensSymbolsAndColours (context:DocumentContext) =
+            maybe {
+                let! pd = context.TryGetFSharpParsedDocument()
+                let! checkResults = pd.TryGetAst()
+                let! tokens = pd.Tokens 
+                let symbolsInFile = pd.AllSymbolsKeyed
+                let colourisations = checkResults.GetExtraColorizations()
+                return tokens, symbolsInFile, colourisations }
 
-          let extraColor =
-              if token.CharClass = FSharpTokenCharKind.Identifier || token.CharClass = FSharpTokenCharKind.Operator then
-                  colourisations
-                  |> Option.bind (Array.tryFind (fun (rng : Range.range, _) -> rng.StartLine = lineNo && rng.EndColumn = token.RightColumn + 1))
-              else None
+        let getColouredSegment tokenssymbolscolours lineNumber lineOffset txt style =
+            match tokenssymbolscolours with
+            | Some (tokens:_ list, symbols, colours) when tokens.Length >= lineNumber ->
+                let tokens, _state = tokens.[lineNumber-1]
+                tokens
+                |> Lexer.fixTokens txt
+                |> List.map (fun draft -> makeChunk symbols lineNumber lineOffset colours style {draft.Token with RightColumn=draft.RightColumn} )
+                |> List.toSeq
+            | _ -> Seq.empty
 
-          let tokenSymbol =
-              { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
-
-          let highlightMutable isMut =
-              isMut && PropertyService.Get("FSharpBinding.HighlightMutables", true)
-
-          let chunkStyle =
-              match tokenSymbol with
-              | InactiveCode -> style.ExcludedCode
-              | ComputationExpression _name -> style.KeywordTypes
-              | Punctuation -> style.Punctuation
-              | PunctuationBrackets -> style.PunctuationForBrackets
-              | Keyword ts -> Keywords.getType style ts
-              | Comment -> style.CommentsSingleLine
-              | StringLiteral -> style.String
-              | NumberLiteral -> style.Number
-              | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ -> style.UserTypes
-              | Namespace _ -> style.PlainText
-              | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
-              | Field (fromDef, isMut) ->
-                  if highlightMutable isMut then style.UserTypesMutable
-                  elif fromDef then style.UserFieldDeclaration
-                  else style.UserFieldUsage
-
-              | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
-              | Val (fromDef, isMut) ->
-                  if highlightMutable isMut then style.UserTypesMutable
-                  elif fromDef then style.UserFieldDeclaration
-                  else style.UserFieldUsage
-
-              | UnionCase | Enum _ -> style.UserTypesEnums
-              | Delegate _ -> style.UserTypesDelegates
-              | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
-              | Interface -> style.UserTypesInterfaces
-              | ValueType _ -> style.UserTypesValueTypes
-              | PreprocessorKeyword -> style.Preprocessor
-              | _ -> style.PlainText
-
-          //let seg = ColoredSegment(lineOffset + token.LeftColumn, max (token.RightColumn - token.LeftColumn + 1) token.FullMatchedLength, chunkStyle.Name)
-          let seg = ColoredSegment(lineOffset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
-          //Uncomment to visualise tokens segments
-          //LoggingService.LogInfo (sprintf """Segment: %s S:%i E:%i L:%i - "%s" """ seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (editor.GetTextBetween (seg.Offset, seg.EndOffset)) )
-          seg
-
-
-      let getProcessedTokens(editor:TextEditor, context:DocumentContext, defines) =
-          LoggingService.LogDebug "F# semantic highlighting - GetProcessedTokens"
-          maybe {
-              let! localParsedDocument = context.ParsedDocument |> Option.ofNull
-              let! pd = localParsedDocument |> Option.tryCast<FSharpParsedDocument>
-              let! checkResults = pd.Ast |> Option.tryCast<ParseAndCheckResults>
-              let symbolsInFile = pd.AllSymbolsKeyed
-
-              let colourisations = checkResults.GetExtraColorizations()
-              let lineDetails =
-                  editor.GetLines() |> Seq.map (fun line -> Tokens.LineDetail(line.LineNumber, line.Offset, editor.GetLineText line))
-
-              let processedTokens =
-                  let style = getColourScheme()
-                  LoggingService.LogDebug "F# semantic highlighting - DocumentParsed - GetTokens"
-                  let tokens =
-                      match pd.Tokens with
-                      | Some t -> t
-                      | None -> Tokens.getTokens lineDetails context.Name defines
-
-                  LoggingService.LogDebug "F# semantic highlighting - DocumentParsed - map tokens"
-                  tokens
-                  |> List.map
-                      (fun (Tokens.TokenisedLine(lineDetail, chunks, _state)) ->
-                           chunks
-                           |> List.map (makeChunk symbolsInFile lineDetail colourisations style))
-              LoggingService.LogDebug "F# semantic highlighting - DocumentParsed - returning coloured segments"
-              return processedTokens
-          }
 
 type FSharpSyntaxMode(editor, context) =
-  inherit SemanticHighlighting(editor, context)
-  let mutable segments = None
+    inherit SemanticHighlighting(editor, context)
+    let tokenssymbolscolours = ref None
+    let style = ref (getColourScheme())
+    let colourSchemChanged =
+        PropertyService.PropertyChanged.Subscribe
+            (fun _ (eventArgs:PropertyChangedEventArgs) ->
+                              if eventArgs.Key = "ColorScheme" && eventArgs.OldValue <> eventArgs.NewValue then
+                                  let colourStyles = SyntaxModeService.GetColorStyle(IdeApp.Preferences.ColorScheme.Value)
+                                  style := colourStyles )
+                                  
+    override x.DocumentParsed() =
+        if MonoDevelop.isDocumentVisible context.Name then
+            SyntaxMode.tryGetTokensSymbolsAndColours context
+            |> Option.iter (fun tsc -> tokenssymbolscolours := Some tsc
+                                       Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
 
-  override x.DocumentParsed() =
-      if MonoDevelop.isDocumentVisible context.Name then
-          LoggingService.LogDebug "F# semantic highlighting - DocumentParsed"
-          let defines = CompilerArguments.getDefineSymbols context.Name (context.Project |> Option.ofNull)
+    override x.GetColoredSegments(segment) =
+        let line = editor.GetLineByOffset segment.Offset
+        let lineNumber = line.LineNumber
+        let txt = editor.GetLineText line
 
-          let processedTokens = SyntaxMode.getProcessedTokens(editor, context, defines)
-          processedTokens |> Option.iter (fun _ ->
-                              LoggingService.LogDebug "F# semantic highlighting - DocumentParsed applying coloured segments"
-                              segments <- processedTokens
-                              Gtk.Application.Invoke(fun _ _ -> x.NotifySemanticHighlightingUpdate()))
-
-  override x.GetColoredSegments(segment) =
-      let line = editor.GetLineByOffset segment.Offset
-      let lineNumber = line.LineNumber
-      match segments with
-      | Some segments when segments.Length >= lineNumber -> segments.[lineNumber - 1] |> List.toSeq
-      | _ -> Seq.empty
+        SyntaxMode.getColouredSegment !tokenssymbolscolours lineNumber line.Offset txt !style
+        
+    interface IDisposable with member x.Dispose() = colourSchemChanged.Dispose()

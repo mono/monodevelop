@@ -5,6 +5,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open NUnit.Framework
 open MonoDevelop.FSharp
 open MonoDevelop.Ide.Editor
+open Mono.TextEditor.Highlighting
 open FsUnit
 
 [<TestFixture>]
@@ -12,23 +13,32 @@ type SemanticHighlighting() =
 
     let getStyle (content : string) =
         let fixedc = content.Replace("§", "")
-
         let doc = TestHelpers.createDoc fixedc "defined"
-
+        let style = SyntaxModeService.GetColorStyle "Gruvbox"
         let segments =
-            SyntaxMode.getProcessedTokens(doc.Editor, doc, ["defined"])
-            |> Option.getOrElse (fun _ -> [])
+            doc.Editor.GetLines()
+            |> Seq.map (fun line -> let tokensSymbolsColours = SyntaxMode.tryGetTokensSymbolsAndColours doc
+                                    let segments =
+                                        SyntaxMode.getColouredSegment
+                                            tokensSymbolsColours
+                                            line.LineNumber
+                                            line.Offset
+                                            (doc.Editor.GetLineText line)
+                                            style
+                                    segments)
+                                    
+        let sortedUniqueSegments =
+            segments
             |> Seq.concat
             |> Seq.distinct
-            |> Seq.sortBy (fun s -> s.Offset)
-
-        for seg in segments do
-            printf """Segment: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length
-                (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine
+            |> Seq.sortBy (fun s -> s.Offset)      
+        
+        for seg in sortedUniqueSegments do
+            printf """Seg: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine
 
         let offset = content.IndexOf("§")
         let endOffset = content.LastIndexOf("§") - 1
-        let segment = segments |> Seq.tryFind (fun s -> s.Offset = offset && s.EndOffset = endOffset)
+        let segment = sortedUniqueSegments |> Seq.tryFind (fun s -> s.Offset = offset && s.EndOffset = endOffset)
         match segment with
         | Some(s) -> s.ColorStyleKey
         | _ -> "segment not found"
@@ -115,3 +125,31 @@ type SemanticHighlighting() =
     [<TestCase("§type§ x() = ()", "Keyword(Iteration)")>]
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
+        
+    [<Test>]    
+    member x.Overlapping_custom_operators_are_highlighted() =
+        let content = """
+module Test =
+    let ( §>>=§ ) a b = a + b"""
+        let output = getStyle content
+        output |> should equal "Punctuation(Brackets)"
+        
+    [<Test>]    
+    member x.Generics_are_highlighted() =
+        let content = """
+type Class<§'a§>() = class end
+    let _ = new Class<_>()"""
+        let output = getStyle content
+        output |> should equal "User Types(Type parameters)"
+     
+    [<Test>]    
+    member x.Type_constraints_are_highlighted() =
+        let content = """type Constrained<'a when §'a§ :> IDisposable> = class end"""
+        let output = getStyle content
+        output |> should equal SyntaxModeService.DefaultColorStyle.UserTypesTypeParameters.Name
+
+    [<Test>]    
+        member x.Static_inlined_type_constraints_are_highlighted() =
+            let content = """let inline test (x: §^a§) (y: ^b) = x + y"""
+            let output = getStyle content
+            output |> should equal SyntaxModeService.DefaultColorStyle.UserTypesTypeParameters.Name
