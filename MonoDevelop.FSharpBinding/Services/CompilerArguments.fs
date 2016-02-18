@@ -54,15 +54,20 @@ module CompilerArguments =
           |> Seq.exists isPortable
 
       let getAssemblyLocation (reference:ProjectReference) =
-          match reference.ReferenceType with
-          | ReferenceType.Assembly ->
+          let tryGetFromHintPath() =
               if reference.HintPath.IsNotNull then 
-                  Some (reference.HintPath.FullPath |> string)
+                  let path = reference.HintPath.FullPath |> string
+                  Some (path.Replace("/Library/Frameworks/Mono.framework/External",
+                                     "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono"))
               else
                   None
+
+          match reference.ReferenceType with
+          | ReferenceType.Assembly ->
+              tryGetFromHintPath()
           | ReferenceType.Package ->
                   if isNull reference.Package then
-                      None
+                      tryGetFromHintPath()
                   else 
                       let assembly = 
                           reference.Package.Assemblies
@@ -83,8 +88,6 @@ module CompilerArguments =
              | Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName), "*.dll")
              | None -> Seq.empty
 
-      
-
       let getPortableReferences (project: DotNetProject) configSelector =
           project.References// .MSBuildProject.EvaluatedItems
           |> Seq.choose getAssemblyLocation
@@ -95,8 +98,9 @@ module CompilerArguments =
           //|> Async.AwaitTask
           //|> Async.RunSynchronously
           //|> Seq.map ((+) "-r:")
-          //|> Seq.append (portableReferences project)
+          |> Seq.append (portableReferences project)
           |> set
+          //|> Set.map ((+) "-r:")
           |> Set.toList
 
   module ReferenceResolution =
@@ -120,7 +124,8 @@ module CompilerArguments =
   /// list of strings of the form [ "-r:<full-path>"; ... ]
   let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) =
    if Project.isPortable project then
-        Project.getPortableReferences project configSelector
+       [for ref in Project.getPortableReferences project configSelector do
+            yield "-r:" + ref]
    else
        let wrapf = if shouldWrap then wrapFile else id
 
@@ -135,7 +140,7 @@ module CompilerArguments =
 
         let refs =
           project.References
-          |> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly || r.ReferenceType = ReferenceType.Package)// Name = "Reference")
+          //|> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly || r.ReferenceType = ReferenceType.Package)// Name = "Reference")
           |> Seq.choose Project.getAssemblyLocation
           |> Seq.append portableRefs
           |> Seq.toList
@@ -182,8 +187,6 @@ module CompilerArguments =
         for file in projectReferences do
             yield "-r:" + wrapf(file) ]
 
-
-
   let generateDebug (config:FSharpCompilerParameters) =
       match config.ParentConfiguration.DebugSymbols, config.ParentConfiguration.DebugType with
       | true, typ ->
@@ -198,15 +201,28 @@ module CompilerArguments =
   /// parameters and assemblies referenced by the project ("-r" options)
   let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
-    let files = project.Files|> Seq.map(fun f -> f.Name)
+    let files = project.Files
+                |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
+                |> Seq.map(fun f -> f.Name)
+
     let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [  
        yield "--simpleresolution"
        yield "--noframework"
+       yield "--out:" + project.GetOutputFileName(configSelector).ToString()
+       if Project.isPortable project then 
+           yield "--targetprofile:netcore"
+           yield "--platform:anycpu"
+       yield "--fullpaths"
+       yield "--flaterrors"
        for symbol in defines do yield "--define:" + symbol
        yield if fsconfig.HasDefineSymbol "DEBUG" then  "--debug+" else  "--debug-"
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
+       yield match project.CompileTarget with
+             | CompileTarget.Library -> "--target:library" 
+             | CompileTarget.Module -> "--target:module" 
+             | _ -> "--target:exe"
        // TODO: This currently ignores escaping using "..."
        for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
          yield arg 
