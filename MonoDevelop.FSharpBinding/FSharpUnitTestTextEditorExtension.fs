@@ -7,7 +7,7 @@ open System.Collections.Generic
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
-open MonoDevelop.NUnit
+open MonoDevelop.UnitTesting
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -109,7 +109,7 @@ module unitTestGatherer =
 type FSharpUnitTestTextEditorExtension() =
     inherit AbstractUnitTestTextEditorExtension()
 
-    override x.GatherUnitTests (cancellationToken) =
+    override x.GatherUnitTests (unitTestMarkers, cancellationToken) =
         let tests = ResizeArray<UnitTestLocation>()
 
         if x.DocumentContext = null || 

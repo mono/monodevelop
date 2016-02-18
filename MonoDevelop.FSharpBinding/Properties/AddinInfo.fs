@@ -15,5 +15,5 @@ open Mono.Addins
 [<AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)>]
 [<AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)>]
 [<AddinDependency ("Refactoring", MonoDevelop.BuildInfo.Version)>]
-[<AddinDependency ("NUnit", MonoDevelop.BuildInfo.Version)>]
+[<AddinDependency ("UnitTesting", MonoDevelop.BuildInfo.Version)>]
 ()

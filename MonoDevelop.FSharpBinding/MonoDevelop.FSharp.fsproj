@@ -179,9 +179,9 @@
       <Private>False</Private>
       <HintPath>..\..\..\build\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
     </Reference>
-    <Reference Include="MonoDevelop.NUnit">
+    <Reference Include="MonoDevelop.UnitTesting">
       <Private>False</Private>
-      <HintPath>..\..\..\build\AddIns\NUnit\MonoDevelop.NUnit.dll</HintPath>
+      <HintPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
