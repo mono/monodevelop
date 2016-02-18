@@ -89,9 +89,8 @@ namespace MonoDevelop.Platform
         internal override void AttachMainToolbar (Gtk.VBox parent, Components.MainToolbar.IMainToolbarView toolbar)
 		{
 			titleBar = new TitleBar ();
-			var topMenu = new GtkWPFWidget (titleBar) {
-				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
-			};
+			var topMenu = new WPFTitlebar (titleBar);
+
 			//commandManager.IncompleteKeyPressed += (sender, e) => {
 			//	if (e.Key == Gdk.Key.Alt_L) {
 			//		Keyboard.Focus(titleBar.DockTitle.Children[0]);

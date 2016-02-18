@@ -105,7 +105,7 @@ namespace WindowsPlatform.MainToolbar
         protected override void RepositionWpfWindow()
         {
             int scale = (int)MonoDevelop.Components.GtkWorkarounds.GetScaleFactor(this);
-            RepositionWpfWindow (scale);
+            RepositionWpfWindow (scale, scale);
         }
 
         void SendKeyPress(KeyEventArgs ka)
