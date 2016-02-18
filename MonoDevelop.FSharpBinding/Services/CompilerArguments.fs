@@ -53,6 +53,23 @@ module CompilerArguments =
           project.GetReferencedAssemblyProjects(getCurrentConfigurationOrDefault project)
           |> Seq.exists isPortable
 
+      let getAssemblyLocation (reference:ProjectReference) =
+          match reference.ReferenceType with
+          | ReferenceType.Assembly ->
+              if reference.HintPath.IsNotNull then 
+                  Some (reference.HintPath.FullPath |> string)
+              else
+                  None
+          | ReferenceType.Package ->
+                  if isNull reference.Package then
+                      None
+                  else 
+                      let assembly = 
+                          reference.Package.Assemblies
+                          |> Seq.find (fun a -> a.Name = reference.Include)
+                      Some assembly.Location
+          | _ -> None
+
       let portableReferences (project: DotNetProject) =
           // create a new target framework  moniker, the default one is incorrect for portable unless the project type is PortableDotnetProject
           // which has the default moniker profile of ".NETPortable" rather than ".NETFramework".  We cant use a PortableDotnetProject as this
@@ -61,30 +78,28 @@ module CompilerArguments =
           let assemblyDirectoryName = frameworkMoniker.GetAssemblyDirectoryName()
 
           project.TargetRuntime.GetReferenceFrameworkDirectories()
-          |> Seq.tryFind (fun fd ->  Directory.Exists(fd.Combine([|TargetFrameworkMoniker.ID_PORTABLE|]).ToString()))
+          |> Seq.tryFind (fun fd -> Directory.Exists(fd.Combine([|TargetFrameworkMoniker.ID_PORTABLE|]).ToString()))
           |> function
              | Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName), "*.dll")
              | None -> Seq.empty
 
+      
+
       let getPortableReferences (project: DotNetProject) configSelector =
-
-
           project.References// .MSBuildProject.EvaluatedItems
-          |> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly || r.ReferenceType = ReferenceType.Package)// Name = "Reference")
-          |> Seq.map (fun i -> if i.HintPath.IsNotNull then i.HintPath.FullPath.ToString() else i.Include)
+          |> Seq.choose getAssemblyLocation
           //project.MSBuildProject.EvaluatedItems
           //|> Seq.filter (fun i -> i.Name = "Reference")
           //|> Seq.map (fun i -> i.Include)
           //project.GetReferencedAssemblies(configSelector)
           //|> Async.AwaitTask
           //|> Async.RunSynchronously
-          |> Seq.append (portableReferences project)
+          //|> Seq.map ((+) "-r:")
+          //|> Seq.append (portableReferences project)
           |> set
-          |> Set.map ((+) "-r:")
           |> Set.toList
 
   module ReferenceResolution =
-
     let tryGetDefaultReference langVersion targetFramework filename (extrapath: string option) =
         let dirs =
             match extrapath with
@@ -121,7 +136,7 @@ module CompilerArguments =
         let refs =
           project.References
           |> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly || r.ReferenceType = ReferenceType.Package)// Name = "Reference")
-          |> Seq.map (fun i -> if i.HintPath.IsNotNull then i.HintPath.FullPath.ToString() else i.Include)
+          |> Seq.choose Project.getAssemblyLocation
           |> Seq.append portableRefs
           |> Seq.toList
 
