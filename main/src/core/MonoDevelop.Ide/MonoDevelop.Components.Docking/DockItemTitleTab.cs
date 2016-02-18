@@ -194,7 +194,7 @@ namespace MonoDevelop.Components.Docking
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
-				box.PackStart (alignLabel, true, true, 0);
+				box.PackStart (alignLabel, false, false, 0);
 			} else {
 				labelWidget = null;
 			}
