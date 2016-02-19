@@ -117,7 +117,7 @@ namespace MonoDevelop.Xml.Completion
 				var completionWidget = window.CompletionWidget;
 				base.InsertCompletionText (window, ref ka, descriptor);
 				if (completionWidget is ITextEditorImpl) {
-					((ITextEditorImpl)completionWidget).StartSession (new SkipCharSession ('"'));
+					((ITextEditorImpl)completionWidget).EditorExtension.Editor.StartSession (new SkipCharSession ('"'));
 				}
 
 				//Even if we are on UI thread call Application.Invoke to postpone calling command
