@@ -10,7 +10,7 @@
     <AssemblyName>MonoDevelop.FSharp.Tests</AssemblyName>
     <UsePartialTypes>False</UsePartialTypes>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <TestRunnerCommand>..\..\..\..\main\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
   </PropertyGroup>
