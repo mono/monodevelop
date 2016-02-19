@@ -23,6 +23,10 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
            Some bytes
         | _ -> None
 
+    static member IsAScript fileName =
+        let ext = Path.GetExtension fileName
+        [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
+
     interface IFileSystem with
         member x.FileStreamReadShim fileName =
             getOpenDocContent fileName

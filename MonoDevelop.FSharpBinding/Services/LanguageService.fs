@@ -8,6 +8,7 @@ open ExtCore
 open ExtCore.Control
 open ExtCore.Control.Collections
 open MonoDevelop.Core
+open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
 open Nessos.FsPickler.Json
@@ -280,10 +281,6 @@ type LanguageService(dirtyNotify) as x =
         //cache 50 project infos, then start evicting the least recently used entries
         ref (ExtCore.Caching.LruCache.create 50u)
 
-    static member IsAScript fileName =
-        let ext = Path.GetExtension fileName
-        [".fsx";".fsscript";".sketchfs"] |> List.exists ((=) ext)
-
     member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
         let properties = defaultArg properties ["Configuration", "Debug"]
         let key = (projFilename, properties)
@@ -299,7 +296,7 @@ type LanguageService(dirtyNotify) as x =
     /// Constructs options for the interactive checker for the given file in the project under the given configuration.
     member x.GetCheckerOptions(fileName, projFilename, source) =
         let opts =
-            if LanguageService.IsAScript fileName || fileName = projFilename
+            if FileSystem.IsAScript fileName || fileName = projFilename
             // We are in a stand-alone file or we are in a project, but currently editing a script file
             then x.GetScriptCheckerOptions(fileName, projFilename, source)
             // We are in a project - construct options using current properties
@@ -338,6 +335,34 @@ type LanguageService(dirtyNotify) as x =
         //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
         opts
 
+    member x.GetProjectOptionsFromProjectFile(project:DotNetProject) =
+        let config =
+            match IdeApp.Workspace with
+            | null -> ConfigurationSelector.Default
+            | ws ->
+               match ws.ActiveConfiguration with
+               | null -> ConfigurationSelector.Default
+               | config -> config
+
+        let getReferencedProjects (project:DotNetProject) =
+            project.GetReferencedAssemblyProjects config
+            |> Seq.filter (fun p -> p <> project && p.SupportedLanguages |> Array.contains "F#")
+
+        let rec getOptions referencedProject =
+            let projectOptions = CompilerArguments.getArgumentsFromProject referencedProject
+            let referencedProjectOptions =
+                referencedProject
+                |> getReferencedProjects
+                |> Seq.fold (fun (acc) reference ->
+                                 match getOptions reference with
+                                 | Some outFile, opts  -> (outFile, opts) :: acc
+                                 | None,_ -> acc) ([])
+                                
+            (Some (referencedProject.GetOutputFileName(config).ToString()), { projectOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } )
+    
+        let _file, projectOptions = getOptions project
+        projectOptions
+                
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties) =
         let properties = defaultArg properties ["Configuration", "Debug"]
@@ -348,37 +373,17 @@ type LanguageService(dirtyNotify) as x =
                 LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for:%s}" (Path.GetFileName(projFilename))
                 projectInfoCache := cache
                 entry
-            | None, cache ->
-                LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Generating ProjectOptions for:%s" (Path.GetFileName(projFilename))
-                let filename = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "CompilerService.exe")
-                let processName = if Environment.runningOnMono then Environment.getMonoPath() else filename
-                let arguments =
-                    //For debug you might want to pass --log, which will populate _log below with a map of project name/msbuild output
-                    if Environment.runningOnMono then sprintf "\"%s\" --project \"%s\"" filename projFilename
-                    else sprintf "--project \"%s\"" projFilename
-                try
-                    use proc =
-                        let startInfo = ProcessStartInfo(processName, arguments, RedirectStandardError = false, RedirectStandardOutput = true,
-                                                        RedirectStandardInput = true, UseShellExecute = false, CreateNoWindow = true)
-                        new Process(EnableRaisingEvents = true, StartInfo = startInfo)
+            | _, cache ->
+                let project = (IdeApp.Workspace.GetAllProjects()
+                              |> Seq.find (fun p -> p.FileName.FullPath.ToString() = projFilename))
+                              :?> DotNetProject
 
-                    let _started = proc.Start()
-                    let _exited = proc.WaitForExit(ServiceSettings.maximumTimeout)
-                    let serializer =  FsPickler.CreateJsonSerializer()
-                    let result = serializer.Deserialize(proc.StandardOutput.BaseStream)
-                    match result with
-                    | Choice1Of2(optsNew, _log: Map<string,string>) ->
-                      //let opts = checker.GetProjectOptionsFromProjectFile(projFilename, properties)
-                        projectInfoCache := cache.Add (key, optsNew)
-                        LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Generation complete for:%s" (Path.GetFileName(projFilename))
-                        optsNew
-                    | Choice2Of2 (ex) -> raise ex
-                with ex -> LoggingService.LogDebug("LanguageService: GetProjectCheckerOptions Exception", ex)
-                           reraise())
-
-      // Print contents of check option for debugging purposes
-      // LoggingService.LogDebug(sprintf "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A"
-      //                      opts.ProjectFileName opts.ProjectFileNames opts.ProjectOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules)
+                let opts = x.GetProjectOptionsFromProjectFile project
+                projectInfoCache := cache.Add (key, opts)
+                // Print contents of check option for debugging purposes     
+                LoggingService.logDebug "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                    opts.ProjectFileName opts.ProjectFileNames opts.OtherOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
+                opts)
 
     member x.StartBackgroundCompileOfProject (projectFilename) =
         let opts = x.GetProjectCheckerOptions(projectFilename)

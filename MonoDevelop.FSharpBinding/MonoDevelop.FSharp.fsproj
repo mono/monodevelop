@@ -73,8 +73,8 @@
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\TooltipHelpers.fs" />
     <Compile Include="Services\FileService.fs" />
-    <Compile Include="Services\LanguageService.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
+    <Compile Include="Services\LanguageService.fs" />
     <Compile Include="Services\MDLanguageService.fs" />
     <Compile Include="Services\CompilerService.fs" />
     <Compile Include="Services\FSharpConsoleView.fs" />
@@ -113,9 +113,6 @@
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
     <EmbeddedResource Include="FSharpBinding.addin.xml" />
     <None Include="paket.references" />
-    <None Include="CompilerService.exe.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Compile Include="Properties\AddinInfo.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -186,10 +183,6 @@
     <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
       <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
       <Name>MonoDevelop.FSharp.Gui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CompilerService\CompilerService.fsproj">
-      <Project>{4DC4E86C-49C1-4B7B-89A1-F6432DED847D}</Project>
-      <Name>CompilerService</Name>
     </ProjectReference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>

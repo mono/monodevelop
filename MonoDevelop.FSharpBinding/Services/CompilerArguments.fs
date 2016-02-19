@@ -16,6 +16,8 @@ open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
 
+open Microsoft.FSharp.Compiler.SourceCodeServices
+
 // --------------------------------------------------------------------------------------
 // Common utilities for working with files & extracting information from
 // MonoDevelop objects (e.g. references, project items etc.)
@@ -36,34 +38,108 @@ module CompilerArguments =
       else FSharpTargetFramework.NET_4_5
 
   module Project =
+      ///Use the IdeApp.Workspace active configuration failing back to proj.DefaultConfiguration then ConfigurationSelector.Default
+      let getCurrentConfigurationOrDefault (proj:Project) =
+          match IdeApp.Workspace with
+          | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
+          | _ -> if proj <> null then proj.DefaultConfiguration.Selector
+                 else ConfigurationSelector.Default
 
       let isPortable (project: DotNetProject) =
           not (String.IsNullOrEmpty project.TargetFramework.Id.Profile)
 
+      let isOrReferencesPortableProject (project: DotNetProject) =
+          isPortable project ||
+          project.GetReferencedAssemblyProjects(getCurrentConfigurationOrDefault project)
+          |> Seq.exists isPortable
+
+      let getAssemblyLocation (reference:ProjectReference) =
+          let tryGetFromHintPath() =
+              if reference.HintPath.IsNotNull then 
+                  let path = reference.HintPath.FullPath |> string
+                  let path = path.Replace("/Library/Frameworks/Mono.framework/External",
+                                         "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono")
+                  if File.Exists path then 
+                      Some path 
+                  else
+                      // try and resolve from GAC
+                      Some reference.HintPath.FileName
+              else
+                  None
+
+          match reference.ReferenceType with
+          | ReferenceType.Assembly ->
+              tryGetFromHintPath()
+          | ReferenceType.Package ->
+              if isNull reference.Package then
+                  tryGetFromHintPath()
+              else 
+                  let assembly = 
+                      reference.Package.Assemblies
+                      |> Seq.find (fun a -> a.Name = reference.Include)
+                  Some assembly.Location
+          | ReferenceType.Project -> 
+              let referencedProject = reference.Project :?> DotNetProject
+              referencedProject.GetReferencedAssemblyProjects (getCurrentConfigurationOrDefault referencedProject)
+              |> Seq.tryFind(fun p -> p.Name = reference.Reference)
+              |> Option.map(fun p -> let output = p.GetOutputFileName(getCurrentConfigurationOrDefault p)
+                                     output.FullPath.ToString())
+          | _ -> None
+
+      let getDefaultTargetFramework (runtime:TargetRuntime) =
+          let newest_net_framework_folder (best:TargetFramework,best_version:int[]) (candidate_framework:TargetFramework) =
+              if runtime.IsInstalled(candidate_framework) && candidate_framework.Id.Identifier = TargetFrameworkMoniker.ID_NET_FRAMEWORK then
+                  let version = candidate_framework.Id.Version
+                  let parsed_version_s = (if version.[0] = 'v' then version.[1..] else version).Split('.')
+                  let parsed_version =
+                      try
+                          Array.map int parsed_version_s
+                      with
+                          | _ -> [| 0 |]
+                  let mutable level = 0
+                  let mutable cont = true
+                  let min_level = min parsed_version.Length best_version.Length
+                  let mutable new_best = false
+                  while cont && level < min_level do
+                      if parsed_version.[level] > best_version.[level] then
+                          new_best <- true
+                          cont <- false
+                      elif best_version.[level] > parsed_version.[level] then
+                          cont <- false
+                      else
+                          cont <- true
+                      level <- level + 1
+                  if new_best then
+                      (candidate_framework, parsed_version)
+                  else
+                      (best,best_version)
+              else
+                  (best,best_version)
+          let candidate_frameworks = MonoDevelop.Core.Runtime.SystemAssemblyService.GetTargetFrameworks()
+          let first = Seq.head candidate_frameworks
+          let best_info = Seq.fold newest_net_framework_folder (first,[| 0 |]) candidate_frameworks
+          fst best_info
+
+      let portableReferences (project: DotNetProject) =
+          // create a new target framework  moniker, the default one is incorrect for portable unless the project type is PortableDotnetProject
+          // which has the default moniker profile of ".NETPortable" rather than ".NETFramework".  We cant use a PortableDotnetProject as this
+          // requires adding a guid flavour, which breaks compatiability with VS until the MD project system is refined to support projects the way VS does.
+          let frameworkMoniker = TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, project.TargetFramework.Id.Version, project.TargetFramework.Id.Profile)
+          let assemblyDirectoryName = frameworkMoniker.GetAssemblyDirectoryName()
+          project.TargetRuntime.GetReferenceFrameworkDirectories()
+          |> Seq.tryFind (fun fd -> Directory.Exists(fd.Combine([|TargetFrameworkMoniker.ID_PORTABLE|]).ToString()))
+          |> function
+             | Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName), "*.dll")
+             | None -> Seq.empty
+
       let getPortableReferences (project: DotNetProject) configSelector =
-          let portableReferences =
-              // create a new target framework  moniker, the default one is incorrect for portable unless the project type is PortableDotnetProject
-              // which has the default moniker profile of ".NETPortable" rather than ".NETFramework".  We cant use a PortableDotnetProject as this
-              // requires adding a guid flavour, which breaks compatiability with VS until the MD project system is refined to support projects the way VS does.
-              let frameworkMoniker = TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, project.TargetFramework.Id.Version, project.TargetFramework.Id.Profile)
-              let assemblyDirectoryName = frameworkMoniker.GetAssemblyDirectoryName()
-
-              project.TargetRuntime.GetReferenceFrameworkDirectories()
-              |> Seq.tryFind (fun fd ->  Directory.Exists(fd.Combine([|TargetFrameworkMoniker.ID_PORTABLE|]).ToString()))
-              |> function
-                 | Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName), "*.dll")
-                 | None -> Seq.empty
-
-          project.GetReferencedAssemblies(configSelector)
-          |> Async.AwaitTask
-          |> Async.RunSynchronously
-          |> Seq.append portableReferences
+          project.References
+          |> Seq.choose getAssemblyLocation
+          |> Seq.append (portableReferences project)
           |> set
-          |> Set.map ((+) "-r:")
           |> Set.toList
 
   module ReferenceResolution =
-
     let tryGetDefaultReference langVersion targetFramework filename (extrapath: string option) =
         let dirs =
             match extrapath with
@@ -84,15 +160,25 @@ module CompilerArguments =
   /// list of strings of the form [ "-r:<full-path>"; ... ]
   let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) =
    if Project.isPortable project then
-        Project.getPortableReferences project configSelector
+       [for ref in Project.getPortableReferences project configSelector do
+            yield "-r:" + ref]
    else
        let wrapf = if shouldWrap then wrapFile else id
 
        [
+        let referencedProjects = project.GetReferencedAssemblyProjects configSelector
+        let portableRefs = 
+            match referencedProjects |> Seq.tryFind Project.isPortable with
+            | Some _ -> project.TargetRuntime.FindFacadeAssembliesForPCL project.TargetFramework
+                        |> Seq.filter (fun r -> not (r.EndsWith("mscorlib.dll"))
+                                                && not (r.EndsWith("FSharp.Core.dll")))
+            | None -> Seq.empty
+
         let refs =
-          project.GetReferencedAssemblies(configSelector)
-          |> Async.AwaitTask
-          |> Async.RunSynchronously
+          project.References
+          |> Seq.choose Project.getAssemblyLocation
+          |> Seq.append portableRefs
+          |> Seq.toList
 
         let projectReferences =
             refs
@@ -136,13 +222,6 @@ module CompilerArguments =
         for file in projectReferences do
             yield "-r:" + wrapf(file) ]
 
-  ///Use the IdeApp.Workspace active configuration failing back to proj.DefaultConfiguration then ConfigurationSelector.Default
-  let getCurrentConfigurationOrDefault (proj:Project) =
-      match IdeApp.Workspace with
-      | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
-      | _ -> if proj <> null then proj.DefaultConfiguration.Selector
-             else ConfigurationSelector.Default
-
   let generateDebug (config:FSharpCompilerParameters) =
       match config.ParentConfiguration.DebugSymbols, config.ParentConfiguration.DebugType with
       | true, typ ->
@@ -155,29 +234,54 @@ module CompilerArguments =
   /// Generates command line options for the compiler specified by the
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
-  let generateCompilerOptions (project: DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
-      let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
-      let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
-      let currentProjectConfig = getCurrentConfigurationOrDefault project
-      let outputFilename = project.GetOutputFileName(currentProjectConfig).ToString ()
-      [  yield "--noframework"
-         yield "-o:" + outputFilename
-         for symbol in defines do yield "--define:" + symbol
-         yield generateDebug fsconfig
-         yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
-         yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
-         // TODO: This currently ignores escaping using "..."
-         for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
-             yield arg
-         yield! dashr ]
+  let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+    let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+    let files = project.Files
+                |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
+                |> Seq.map(fun f -> f.Name)
 
+    let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
+    [  
+       yield "--simpleresolution"
+       yield "--noframework"
+       yield "--out:" + project.GetOutputFileName(configSelector).ToString()
+       if Project.isPortable project then 
+           yield "--targetprofile:netcore"
+       yield "--platform:anycpu" //?
+       yield "--fullpaths"
+       yield "--flaterrors"
+       for symbol in defines do yield "--define:" + symbol
+       yield if fsconfig.HasDefineSymbol "DEBUG" then  "--debug+" else  "--debug-"
+       yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
+       yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
+       yield match project.CompileTarget with
+             | CompileTarget.Library -> "--target:library" 
+             | CompileTarget.Module -> "--target:module" 
+             | _ -> "--target:exe"
+       // TODO: This currently ignores escaping using "..."
+       for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
+         yield arg 
+       yield! dashr 
+       yield! files] 
+
+  let generateProjectOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
+    let compilerOptions = generateCompilerOptions (project, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
+    let loadedTimeStamp =  DateTime.MaxValue // Not 'now', we don't want to force reloading
+    { ProjectFileName = project.FileName.FullPath.ToString()
+      ProjectFileNames = [| |] // the project file names will be inferred from the ProjectOptions
+      OtherOptions = compilerOptions
+      ReferencedProjects = [| |]
+      IsIncompleteTypeCheckEnvironment = false
+      UseScriptResolutionRules = false
+      LoadTime = loadedTimeStamp
+      UnresolvedReferences = None }
 
   /// Get source files of the current project (returns files that have
   /// build action set to 'Compile', but not e.g. scripts or resources)
   let getSourceFiles (items:ProjectItemCollection) =
       [ for file in items.GetAll<ProjectFile>() do
             if file.BuildAction = "Compile" && file.Subtype <> Subtype.Directory then
-                yield file.Name.ToString() ]
+                yield file.FilePath.FullPath.ToString() ]
 
 
   /// Generate inputs for the compiler (excluding source code!); returns list of items
@@ -211,45 +315,10 @@ module CompilerArguments =
 
       Seq.tryPick (tryFindPathAndFile filesToSearch) pathsToSearch
 
-
   /// Get full path to tool
   let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (toolName:string) =
       let pathsToSearch = runtime.GetToolsPaths(framework)
       getToolPath pathsToSearch extensions toolName
-
-  let getDefaultTargetFramework (runtime:TargetRuntime) =
-      let newest_net_framework_folder (best:TargetFramework,best_version:int[]) (candidate_framework:TargetFramework) =
-          if runtime.IsInstalled(candidate_framework) && candidate_framework.Id.Identifier = TargetFrameworkMoniker.ID_NET_FRAMEWORK then
-              let version = candidate_framework.Id.Version
-              let parsed_version_s = (if version.[0] = 'v' then version.[1..] else version).Split('.')
-              let parsed_version =
-                  try
-                      Array.map int parsed_version_s
-                  with
-                      | _ -> [| 0 |]
-              let mutable level = 0
-              let mutable cont = true
-              let min_level = min parsed_version.Length best_version.Length
-              let mutable new_best = false
-              while cont && level < min_level do
-                  if parsed_version.[level] > best_version.[level] then
-                      new_best <- true
-                      cont <- false
-                  elif best_version.[level] > parsed_version.[level] then
-                      cont <- false
-                  else
-                      cont <- true
-                  level <- level + 1
-              if new_best then
-                  (candidate_framework, parsed_version)
-              else
-                  (best,best_version)
-          else
-              (best,best_version)
-      let candidate_frameworks = MonoDevelop.Core.Runtime.SystemAssemblyService.GetTargetFrameworks()
-      let first = Seq.head candidate_frameworks
-      let best_info = Seq.fold newest_net_framework_folder (first,[| 0 |]) candidate_frameworks
-      fst best_info
 
   let private getShellToolPath (extensions:seq<string>) (toolName:string)  =
     let pathVariable = Environment.GetEnvironmentVariable("PATH")
@@ -259,7 +328,7 @@ module CompilerArguments =
   let getDefaultInteractive() =
 
       let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
-      let framework = getDefaultTargetFramework runtime
+      let framework = Project.getDefaultTargetFramework runtime
 
       match getEnvironmentToolPath runtime framework [|""; ".exe"; ".bat" |] "fsharpi" with
       | Some(dir,file)-> Some(Path.Combine(dir,file))
@@ -291,7 +360,7 @@ module CompilerArguments =
   let getDefaultFSharpCompiler() =
 
       let runtime = IdeApp.Preferences.DefaultTargetRuntime.Value
-      let framework = getDefaultTargetFramework runtime
+      let framework = Project.getDefaultTargetFramework runtime
 
       match getCompilerFromEnvironment runtime framework with
       | Some(result)-> Some(result)
@@ -308,7 +377,7 @@ module CompilerArguments =
       | _ -> None
 
   let getDefineSymbols (fileName:string) (project: Project) =
-      [if LanguageService.IsAScript fileName
+      [if FileSystem.IsAScript fileName
        then yield! ["INTERACTIVE";"EDITING"]
        else yield! ["COMPILED";"EDITING"]
 
@@ -327,3 +396,14 @@ module CompilerArguments =
            | :? DotNetProjectConfiguration as config -> yield! config.GetDefineSymbols()
            | _ -> ()
        | None -> () ]
+
+  let getArgumentsFromProject (proj:DotNetProject) =
+        let config =
+            match MonoDevelop.Ide.IdeApp.Workspace with
+            | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
+            | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
+
+        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
+        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
+        generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+
