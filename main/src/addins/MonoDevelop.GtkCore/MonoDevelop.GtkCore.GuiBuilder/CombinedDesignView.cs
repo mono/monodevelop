@@ -267,8 +267,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		protected override object OnGetContent (Type type)
 		{
-			if (type.IsInstanceOfType (Control))
-				return Control;
+			if (type.IsInstanceOfType (content))
+				return content;
 			return base.OnGetContent (type);
 		}
 		
