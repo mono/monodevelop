@@ -57,8 +57,13 @@ module CompilerArguments =
           let tryGetFromHintPath() =
               if reference.HintPath.IsNotNull then 
                   let path = reference.HintPath.FullPath |> string
-                  Some (path.Replace("/Library/Frameworks/Mono.framework/External",
-                                     "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono"))
+                  let path = path.Replace("/Library/Frameworks/Mono.framework/External",
+                                         "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono")
+                  if File.Exists path then 
+                      Some path 
+                  else
+                      // try and resolve from GAC
+                      Some reference.HintPath.FileName
               else
                   None
 
