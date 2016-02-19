@@ -466,7 +466,7 @@ namespace Mono.TextEditor.PopupWindow
 				if (SupportsAlpha) {
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
 				} else {
-					g.Rectangle (0, 0, Allocation.Width, height + yTitleBorder * 2);
+					g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				}
 				g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
 				g.FillPreserve ();
