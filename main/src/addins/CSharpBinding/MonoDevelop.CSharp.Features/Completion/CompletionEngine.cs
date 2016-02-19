@@ -35,6 +35,7 @@ using System.Text;
 using Microsoft.CodeAnalysis.Recommendations;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -60,7 +61,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			new SenderCompletionContextHandler(),
 			new CastCompletionContextHandler(),
 			new PreProcessorExpressionContextHandler(), 
-			new RegexContextHandler()
+			new RegexContextHandler(),
+			new ProtocolMemberContextHandler()
 		};
 
 		readonly ICompletionDataFactory factory;
