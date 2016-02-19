@@ -376,7 +376,7 @@ module CompilerArguments =
           Some(Path.Combine(dir,"fsc.exe"))
       | _ -> None
 
-  let getDefineSymbols (fileName:string) (project: Project option) =
+  let getDefineSymbols (fileName:string) (project: Project) =
       [if FileSystem.IsAScript fileName
        then yield! ["INTERACTIVE";"EDITING"]
        else yield! ["COMPILED";"EDITING"]
