@@ -369,10 +369,10 @@ type LanguageService(dirtyNotify) as x =
         let key = (projFilename, properties)
         lock projectInfoCache (fun () ->
             match (!projectInfoCache).TryFind (key) with
-            //| Some entry, cache ->
-            //    LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for:%s}" (Path.GetFileName(projFilename))
-            //    projectInfoCache := cache
-            //    entry
+            | Some entry, cache ->
+                LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for:%s}" (Path.GetFileName(projFilename))
+                projectInfoCache := cache
+                entry
             | _, cache ->
                 let project = (IdeApp.Workspace.GetAllProjects()
                               |> Seq.find (fun p -> p.FileName.FullPath.ToString() = projFilename))
