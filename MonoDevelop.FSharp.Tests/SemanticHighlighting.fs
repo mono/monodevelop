@@ -39,75 +39,40 @@ type SemanticHighlighting() =
         | _ -> "segment not found"
 
     [<Test>]
-    member x.If_is_preprocessor_one_line() =
-        let content ="""§#if§ undefined"""
-        let output = getStyle content
-        output |> should equal "Preprocessor"
+    member x.Let_is_keyword() =
+        let content ="""
+#if defined
+§let§ add = (+)
+#endif"""
+        getStyle content |> should equal "Keyword(Type)"
         
     [<Test>]
-    member x.If_is_preprocessor() =
-        let content ="""§#if§ undefined
-let add = (+)
+    member x.Undefined_IfDef() =
+       let content ="""
+#if undefined
+let sub = (-)
+§let§ add = (+)
 #endif"""
-        let output = getStyle content
-        output |> should equal "Preprocessor"
-
-    [<Test>]
-    member x.Test_is_plain_text() =
-        let content =
-            """#if §undefined§
-            let add = (+)
-            #endif
-            """
-        getStyle content |> should equal "Plain Text"
-
-    [<Test>]
-    member x.Ifdeffed_code_is_excluded() =
-        let content =
-            """#if undefined
-            §let§ add = (+)
-            #endif
-            """
-        getStyle content |> should equal "Excluded Code"
-
-    [<Test>]
-    member x.Endif_is_preprocessor() =
-        let content =
-            """#if undefined
-            let add = (+)
-            §#endif§
-            """
-        getStyle content |> should equal "Preprocessor"
-
-    [<Test>]
-    member x.Let_is_keyword() =
-        let content =
-            """#if defined
-            §let§ add = (+)
-            #endif
-            """
-        getStyle content |> should equal "Keyword(Type)"
+       getStyle content |> should equal "Excluded Code"
 
     [<Test>]
     member x.Module_is_highlighted() =
         let content = """
-                    module MyModule =
-                        let someFunc() = ()
+module MyModule =
+    let someFunc() = ()
 
-                    module Consumer =
-                        §MyModule§.someFunc()
-                    """
+module Consumer =
+    §MyModule§.someFunc()"""
         let output = getStyle content
         output |> should equal "User Types"
 
     [<Test>]
     member x.Type_is_highlighted() =
         let content = """
-                    open System
+open System
 
-                    module MyModule =
-                        let guid = §Guid§.NewGuid()
-                    """
+module MyModule =
+    let guid = §Guid§.NewGuid()"""
         let output = getStyle content
         output |> should equal "User Types(Value types)"
 
@@ -124,14 +89,6 @@ let add = (+)
     [<TestCase("§type§ x() = ()", "Keyword(Iteration)")>]
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
-        
-    [<Test;Ignore>]    
-    member x.Overlapping_custom_operators_are_highlighted() =
-        let content = """
-module Test =
-    let ( §>>=§ ) a b = a + b"""
-        let output = getStyle content
-        output |> should equal defaultStyles.PunctuationForBrackets.Name
         
     [<Test>]    
     member x.Generics_are_highlighted() =
