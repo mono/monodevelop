@@ -15,41 +15,40 @@ type SemanticHighlighting() =
         let fixedc = content.Replace("§", "")
         let doc = TestHelpers.createDoc fixedc "defined"
         let style = SyntaxModeService.GetColorStyle "Gruvbox"
+        let tsc = SyntaxMode.tryGetTokensSymbolsAndColours doc
         let segments =
             doc.Editor.GetLines()
-            |> Seq.map (fun line -> let tokensSymbolsColours = SyntaxMode.tryGetTokensSymbolsAndColours doc
-                                    let segments =
-                                        SyntaxMode.getColouredSegment
-                                            tokensSymbolsColours
-                                            line.LineNumber
-                                            line.Offset
-                                            (doc.Editor.GetLineText line)
-                                            style
-                                    segments)
-                                    
-        let sortedUniqueSegments =
-            segments
-            |> Seq.concat
-            |> Seq.distinct
-            |> Seq.sortBy (fun s -> s.Offset)      
-        
-        for seg in sortedUniqueSegments do
-            printf """Seg: %s S:%i E:%i L:%i - "%s" %s""" seg.ColorStyleKey seg.Offset seg.EndOffset seg.Length (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset)) Environment.NewLine
+            |> Seq.map (fun line -> SyntaxMode.getColouredSegment tsc line.LineNumber line.Offset (doc.Editor.GetLineText line) style)
+
+        for line in segments do
+            line |> Seq.rev |> Seq.iteri (fun i seg ->
+                printfn """%s"%s" Style:%s S:%i E:%i L:%i"""
+                    (String.replicate i " ")
+                    (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset))
+                    seg.ColorStyleKey
+                    seg.Offset
+                    seg.EndOffset
+                    seg.Length )
+            printfn "\n"
 
         let offset = content.IndexOf("§")
         let endOffset = content.LastIndexOf("§") - 1
-        let segment = sortedUniqueSegments |> Seq.tryFind (fun s -> s.Offset = offset && s.EndOffset = endOffset)
+        let segment = segments |> Seq.concat |>  Seq.tryFind (fun s -> s.Offset = offset && s.EndOffset = endOffset)
         match segment with
         | Some(s) -> s.ColorStyleKey
         | _ -> "segment not found"
 
     [<Test>]
+    member x.If_is_preprocessor_one_line() =
+        let content ="""§#if§ undefined"""
+        let output = getStyle content
+        output |> should equal "Preprocessor"
+        
+    [<Test>]
     member x.If_is_preprocessor() =
-        let content =
-            """§#if§ undefined
-            let add = (+)
-            #endif
-            """
+        let content ="""§#if§ undefined
+let add = (+)
+#endif"""
         let output = getStyle content
         output |> should equal "Preprocessor"
 
@@ -126,7 +125,7 @@ type SemanticHighlighting() =
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
         
-    [<Test>]    
+    [<Test;Ignore>]    
     member x.Overlapping_custom_operators_are_highlighted() =
         let content = """
 module Test =
