@@ -119,7 +119,7 @@ module Lexer =
         tokens
         |> List.fold (fun (acc, lastToken) token ->
             match lastToken with
-            | Some t when token.LeftColumn <= t.RightColumn && not (t.Kind = SymbolKind.Other) -> acc, lastToken
+            | Some t when token.LeftColumn <= t.RightColumn -> acc, lastToken
             | _ ->
                 match token, lineStr with
                 | GenericTypeParameterPrefix -> acc, Some (DraftToken.Create GenericTypeParameter token)
