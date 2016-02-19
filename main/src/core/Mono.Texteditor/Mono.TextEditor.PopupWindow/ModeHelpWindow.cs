@@ -58,12 +58,12 @@ namespace Mono.TextEditor.PopupWindow
 
 		void CheckScreenColormap ()
 		{
-			SupportsAlpha = Screen.IsComposited;
-			if (SupportsAlpha) {
-				Colormap = Screen.RgbaColormap;
-			} else {
+			Colormap = Screen.RgbaColormap;
+			if (Colormap == null) {
 				Colormap = Screen.RgbColormap;
-			}
+				SupportsAlpha = false;
+			} else
+				SupportsAlpha = true;
 		}
 		
 		protected override void OnScreenChanged (Gdk.Screen previous_screen)
