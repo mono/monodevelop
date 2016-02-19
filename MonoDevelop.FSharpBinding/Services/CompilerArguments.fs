@@ -170,7 +170,6 @@ module CompilerArguments =
         let portableRefs = 
             match referencedProjects |> Seq.tryFind Project.isPortable with
             | Some _ -> project.TargetRuntime.FindFacadeAssembliesForPCL project.TargetFramework
-                        //Project.getPortableReferences project configSelector
                         |> Seq.filter (fun r -> not (r.EndsWith("mscorlib.dll"))
                                                 && not (r.EndsWith("FSharp.Core.dll")))
             | None -> Seq.empty
@@ -320,8 +319,6 @@ module CompilerArguments =
   let getEnvironmentToolPath (runtime:TargetRuntime) (framework:TargetFramework) (extensions:seq<string>) (toolName:string) =
       let pathsToSearch = runtime.GetToolsPaths(framework)
       getToolPath pathsToSearch extensions toolName
-
-
 
   let private getShellToolPath (extensions:seq<string>) (toolName:string)  =
     let pathVariable = Environment.GetEnvironmentVariable("PATH")
