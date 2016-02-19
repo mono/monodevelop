@@ -125,7 +125,7 @@ let add = (+)
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
         
-    [<Test>]    
+    [<Test;Ignore>]    
     member x.Overlapping_custom_operators_are_highlighted() =
         let content = """
 module Test =
