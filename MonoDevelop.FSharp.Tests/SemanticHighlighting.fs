@@ -21,7 +21,7 @@ type SemanticHighlighting() =
             |> Seq.map (fun line -> SyntaxMode.getColouredSegment tsc line.LineNumber line.Offset (doc.Editor.GetLineText line) style)
 
         for line in segments do
-            line |> Seq.rev |> Seq.iteri (fun i seg ->
+            line |> Seq.toList |> List.rev |> List.iteri (fun i seg ->
                 printfn """%s"%s" Style:%s S:%i E:%i L:%i"""
                     (String.replicate i " ")
                     (doc.Editor.GetTextBetween(seg.Offset, seg.EndOffset))
