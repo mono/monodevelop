@@ -738,7 +738,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			newCategories.Sort (delegate (Category left, Category right) {
-				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
+				if (left.CompletionCategory == null)
+					return 1;
+				if (right.CompletionCategory == null)
+					return -1;
+				
+				return left.CompletionCategory.CompareTo (right.CompletionCategory);
 			});
 			categories = newCategories;
 
