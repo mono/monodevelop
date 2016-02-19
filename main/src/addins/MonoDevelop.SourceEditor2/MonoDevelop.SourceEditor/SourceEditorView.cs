@@ -194,7 +194,7 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Caret.PositionChanged += HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
-
+			widget.TextEditor.TextArea.FocusOutEvent += TextArea_FocusOutEvent;
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
 			TextEditorService.FileExtensionAdded += HandleFileExtensionAdded;
@@ -971,6 +971,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
 			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
+			widget.TextEditor.TextArea.FocusOutEvent += TextArea_FocusOutEvent;
 
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
@@ -3131,6 +3132,9 @@ namespace MonoDevelop.SourceEditor
 
 		public event EventHandler<Ide.Editor.LineEventArgs> LineShown;
 
+
+
+
 		#region IEditorActionHost implementation
 
 		void IEditorActionHost.MoveCaretDown ()
@@ -3467,5 +3471,14 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
+	
+	
+
+		public event EventHandler FocusLost;
+
+		void TextArea_FocusOutEvent (object o, FocusOutEventArgs args)
+		{
+			FocusLost?.Invoke (this, EventArgs.Empty);
+		}
 	}
 } 

@@ -1418,5 +1418,7 @@ namespace MonoDevelop.Ide.Editor
 		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }
 
 		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
+
+		public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
 	}
 }
