@@ -56,7 +56,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-webreference-item" resource = "WebReferenceItem.png" />
+		<StockIcon stockid = "md-webreference-item" resource = "web-reference-16.png" />
+		<StockIcon stockid = "md-webreference-folder" resource = "folder-web-16.png" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
