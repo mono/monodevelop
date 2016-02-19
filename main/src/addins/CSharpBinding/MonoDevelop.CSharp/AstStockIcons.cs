@@ -108,6 +108,11 @@ namespace MonoDevelop.CSharp
 				AdjustAccessibility (((BasePropertyDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
 			if (element is BaseMethodDeclarationSyntax)
 				AdjustAccessibility (((BaseMethodDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			if (element is EnumDeclarationSyntax)
+				AdjustAccessibility (((EnumDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			if (element is DelegateDeclarationSyntax)
+				AdjustAccessibility (((DelegateDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			
 			return result;
 		}
 
