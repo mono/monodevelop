@@ -349,15 +349,16 @@ module Patterns =
                 let! tokens = pd.Tokens 
                 let symbolsInFile = pd.AllSymbolsKeyed
                 let colourisations = checkResults.GetExtraColorizations()
-                return tokens, symbolsInFile, colourisations }
+                let formatters = checkResults.GetStringFormatterColours()
+                return tokens, symbolsInFile, colourisations, formatters }
 
         let getColouredSegment tokenssymbolscolours lineNumber lineOffset txt style =
             match tokenssymbolscolours with
-            | Some (tokens:_ list, symbols, colours) when tokens.Length >= lineNumber ->
+            | Some (tokens:_ list, symbols, colours, _formatters) when tokens.Length >= lineNumber ->
                 let tokens, _state = tokens.[lineNumber-1]
                 tokens
                 |> Lexer.fixTokens txt
-                |> List.map (fun draft -> makeChunk symbols lineNumber lineOffset colours style {draft.Token with RightColumn=draft.RightColumn} )
+                |> List.map (fun draft -> makeChunk symbols lineNumber lineOffset colours style draft.Token )
                 |> List.toSeq
             | _ -> Seq.empty
 
