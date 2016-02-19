@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				if (containingType.TypeKind == TypeKind.Class || containingType.TypeKind == TypeKind.Struct)
 				{
-					var baseTypes = containingType.GetBaseTypes().Reverse();
+					var baseTypes = containingType.GetBaseTypes().Reverse().Concat(containingType.AllInterfaces);
 					foreach (var type in baseTypes)
 					{
 						cancellationToken.ThrowIfCancellationRequested();
@@ -106,13 +106,12 @@ namespace MonoDevelop.CSharp.Completion
 		static void AddProtocolMembers(SemanticModel semanticModel, HashSet<ISymbol> result, INamedTypeSymbol containingType, INamedTypeSymbol type, CancellationToken cancellationToken)
 		{
 			string name;
-			if (!HasProtocolAttribute (containingType, out name))
+			if (!HasProtocolAttribute (type, out name))
 				return;
 			var protocolType = semanticModel.Compilation.GlobalNamespace.GetAllTypes (cancellationToken).FirstOrDefault (t => string.Equals (t.Name, name, StringComparison.OrdinalIgnoreCase));
 			if (protocolType == null)
 				return;
 			
-
 			foreach (var member in protocolType.GetMembers ().OfType<IMethodSymbol> ()) {
 				if (member.ExplicitInterfaceImplementations.Length > 0 || member.IsAbstract || !member.IsVirtual)
 					continue;
