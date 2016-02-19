@@ -61,8 +61,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			new SenderCompletionContextHandler(),
 			new CastCompletionContextHandler(),
 			new PreProcessorExpressionContextHandler(), 
-			new RegexContextHandler(),
-			new ProtocolMemberContextHandler()
+			new RegexContextHandler()
 		};
 
 		readonly ICompletionDataFactory factory;

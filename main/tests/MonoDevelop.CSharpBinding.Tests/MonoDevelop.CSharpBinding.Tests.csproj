@@ -119,6 +119,7 @@
     <Compile Include="Features\IndentationTests\StringTests.cs" />
     <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
     <Compile Include="Features\CodeCompletion\NR6\RegexContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\ProtocolContextHandlerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
