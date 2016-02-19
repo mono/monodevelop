@@ -87,14 +87,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			this.workspace = workspace;
 			this.factory = factory;
 		}
-		
-		public void AddImportCompletionData (CompletionResult result, Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var ns = new Stack<INamespaceOrTypeSymbol>();
-			ns.Push(semanticModel.Compilation.GlobalNamespace);
-			
-			semanticModel.LookupNamespacesAndTypes(position);
-		}
 
 		public async Task<CompletionResult> GetCompletionDataAsync(CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken = default(CancellationToken))
 		{

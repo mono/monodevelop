@@ -505,7 +505,7 @@ namespace MonoDevelop.CSharp.Completion
 						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
 					}
 
-					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol))) {
+					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => (cd.GetType () == typeof (RoslynSymbolCompletionData)) && (cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol)))) {
 						AddImportCompletionData (completionResult, list, roslynCodeCompletionFactory, semanticModel, offset, token);
 					}
 
