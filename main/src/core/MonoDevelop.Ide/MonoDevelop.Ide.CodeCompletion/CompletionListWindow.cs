@@ -181,6 +181,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 				defaultComparer = null;
 			}
 
+			if (Style != null) {
+				Style.Dispose ();
+				Style = null;
+			}
+
 			HideDeclarationView ();
 			
 			if (declarationviewwindow != null) {
@@ -416,7 +421,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if ((completionDataList.Count == 0) && !IsChanging)
 				return false;
-			
+
+			if (Style != null)
+				Style.Dispose ();
 			Style = CompletionWidget.GtkStyle;
 			
 			//sort, sinking obsolete items to the bottoms

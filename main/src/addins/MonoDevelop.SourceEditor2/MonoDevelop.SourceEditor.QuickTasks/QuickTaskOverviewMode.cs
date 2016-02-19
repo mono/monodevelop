@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					win81Slider = scrollstyle.Background (StateType.Normal).ToCairoColor ();
 					win81SliderPrelight = scrollstyle.Background (StateType.Prelight).ToCairoColor ();
 					win81ScrollbarWidth = (int)scrl.StyleGetProperty ("slider-width");
-					scrl.Dispose ();
+					scrl.Destroy ();
 				}
 			}
 		}

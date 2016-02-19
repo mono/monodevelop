@@ -562,5 +562,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Initialize (OptionsDialog dialog, object dataObject)
 		{
 		}
+
+		protected override void OnDestroyed ()
+		{
+			keyStore.Dispose ();
+			filterModel.Dispose ();
+			base.OnDestroyed ();
+		}
 	}
 }
