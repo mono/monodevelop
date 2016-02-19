@@ -358,11 +358,11 @@ type LanguageService(dirtyNotify) as x =
                                  | Some outFile, opts  -> (outFile, opts) :: acc
                                  | None,_ -> acc) ([])
                                 
-            (Some (referencedProject.FileName.FullPath.ToString()), { projectOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } )
+            (Some (referencedProject.GetOutputFileName(config).ToString()), { projectOptions with ReferencedProjects = referencedProjectOptions |> Array.ofList } )
     
         let _file, projectOptions = getOptions project
         projectOptions
-
+                
     /// Constructs options for the interactive checker for a project under the given configuration.
     member x.GetProjectCheckerOptions(projFilename, ?properties) =
         let properties = defaultArg properties ["Configuration", "Debug"]
