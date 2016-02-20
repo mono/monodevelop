@@ -117,7 +117,9 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		internal static async Task<Document> SortUsingsAsync (Document ad, CancellationToken token)
 		{
-			return await service.OrganizeImportsAsync (ad, true, token);
+			var policy = IdeApp.Workbench.ActiveDocument.GetFormattingPolicy ();
+			Console.WriteLine (policy.PlaceSystemDirectiveFirst);
+			return await service.OrganizeImportsAsync (ad, policy != null ? policy.PlaceSystemDirectiveFirst : true, token);
 		}
 
 		protected async override void Run ()
@@ -149,7 +151,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var model = await ad.GetSemanticModelAsync (token);
 			var root = model.SyntaxTree.GetRoot (token);
 			var newDocument = RemoveUnusedImportsCommandHandler.service.RemoveUnnecessaryImports (ad, model, root, token);
-			return await OrganizeImportsCommandHandler.service.OrganizeImportsAsync (newDocument, true, token);
+			return await OrganizeImportsCommandHandler.SortUsingsAsync (newDocument, token);
 		}
 
 		protected async override void Run ()

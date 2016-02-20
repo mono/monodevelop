@@ -105,6 +105,9 @@ namespace MonoDevelop.CSharp.Formatting
 				case 3:
 					treeView = treeviewWrapping;
 					break;
+				case 4:
+					treeView = treeviewStyle;
+					break;
 				default:
 					return;
 				}
@@ -118,8 +121,8 @@ namespace MonoDevelop.CSharp.Formatting
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Indentation"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("New Lines"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Spacing"));
-//			comboboxCategories.AppendText (GettextCatalog.GetString ("Style"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Wrapping"));
+			comboboxCategories.AppendText (GettextCatalog.GetString ("Style"));
 			comboboxCategories.Changed += delegate {
 				texteditor.Text = "";
 				notebookCategories.Page = comboboxCategories.Active;
@@ -547,8 +550,10 @@ namespace MonoDevelop.CSharp.Formatting
 
 			treeviewStyle.AppendColumn (column);
 
-			AddOption (styleOptions, category, null, GettextCatalog.GetString ("Qualify member access with 'this'"), null);
-			AddOption (styleOptions, category, null, GettextCatalog.GetString ("Use 'var' when generating locals"), null);
+			AddOption (styleOptions, "PlaceSystemDirectiveFirst", GettextCatalog.GetString ("Place System directives first when sorting usings"), "");
+
+			// AddOption (styleOptions, category, null, GettextCatalog.GetString ("Qualify member access with 'this'"), null);
+			// AddOption (styleOptions, category, null, GettextCatalog.GetString ("Use 'var' when generating locals"), null);
 
 			treeviewStyle.ExpandAll ();
 			#endregion
