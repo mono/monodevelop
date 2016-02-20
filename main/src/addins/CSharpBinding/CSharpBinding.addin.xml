@@ -31,6 +31,18 @@
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.CurrentRefactoryOperationsHandler"
 			type="array"
 			_label = "Refactory Operations" /> 
+		<Command id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommandHandler"
+			_label = "_Sort Usings" 
+		/>
+		<Command id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommandHandler"
+			_label = "_Remove Unused Usings" 
+		/>
+		<Command id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommandHandler"
+			_label = "R_emove and Sort" 
+		/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/CodeNavigation">
@@ -276,6 +288,11 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+		<ItemSet id = "Organize Imports" _label = "Organize Usings">
+			<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
+			<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
+			<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
+		</ItemSet>
 <!--		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>-->
 	</Extension>
 
