@@ -45,6 +45,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -60,22 +61,19 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, CodeActionContainer container)
 		{
 			if (editor == null)
-				throw new ArgumentNullException ("editor");
+				throw new ArgumentNullException (nameof (editor));
 			if (ctx == null)
-				throw new ArgumentNullException ("ctx");
+				throw new ArgumentNullException (nameof (ctx));
 			if (container == null)
-				throw new ArgumentNullException ("container");
+				throw new ArgumentNullException (nameof (container));
 			var result = new CommandInfoSet ();
 			result.Text = GettextCatalog.GetString ("Fix");
 			foreach (var diagnostic in container.CodeFixActions) {
 				var info = new CommandInfo (diagnostic.CodeAction.Title);
 				result.CommandInfos.Add (info, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run ()));
 			}
-			if (result.CommandInfos.Count == 0)
-				return result;
-			bool firstDiagnosticOption = true;
+			bool firstDiagnosticOption = result.CommandInfos.Count != 0;
 			foreach (var fix in container.DiagnosticsAtCaret) {
-
 				var inspector = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (fix.Id);
 				if (inspector == null)
 					continue;
