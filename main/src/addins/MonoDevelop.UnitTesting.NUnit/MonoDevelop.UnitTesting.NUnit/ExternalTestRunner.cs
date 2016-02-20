@@ -311,6 +311,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 
 	public enum NUnitVersion
 	{
+		Unknown,
 		NUnit2,
 		NUnit3
 	}

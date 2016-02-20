@@ -98,7 +98,11 @@ namespace MonoDevelop.UnitTesting.NUnit
 			if (p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunitlite", StringComparison.OrdinalIgnoreCase) != -1)
 				return NUnitVersion.NUnit2;
 			if (p.Reference.IndexOf ("nunit.framework", StringComparison.OrdinalIgnoreCase) != -1) {
-				var f = p.GetReferencedFileNames (p.Project.DefaultConfiguration.Selector).FirstOrDefault ();
+				var selector = p.Project?.DefaultConfiguration.Selector;
+				if (selector == null)
+					return NUnitVersion.Unknown;
+
+				var f = p.GetReferencedFileNames (selector).FirstOrDefault ();
 				if (f != null && File.Exists (f)) {
 					try {
 						var aname = new AssemblyName (SystemAssemblyService.GetAssemblyName (f));
