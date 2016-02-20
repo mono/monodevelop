@@ -89,6 +89,7 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 				Editor.CaretOffset++;
 				this.endOffset = this.startOffset = 0;
 				handledCommand = true;
+				Editor.EndSession ();
 			}
 		}
 
