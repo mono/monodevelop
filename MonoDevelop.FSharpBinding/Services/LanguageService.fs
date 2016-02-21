@@ -11,7 +11,6 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Projects
-open Nessos.FsPickler.Json
 
 module Symbol =
     /// We always know the text of the identifier that resolved to symbol.

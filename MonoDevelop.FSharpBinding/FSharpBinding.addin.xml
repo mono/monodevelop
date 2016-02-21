@@ -7,7 +7,6 @@
     <Import assembly="FantomasLib.dll" />
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
     <Import assembly="ExtCore.dll" />
-    <Import assembly="Newtonsoft.Json.dll" />
 
   <!--INSTALL_DEBUG
     <Import file = "FSharpBinding.dll.mdb" />
