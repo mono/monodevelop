@@ -26,7 +26,7 @@ type FakePad() =
                 //*attempt* to add the pad manually this seems to fail sporadically on updates and reinstalls, returning null
                 let pad = IdeApp.Workbench.AddPad(new FakePad(),
                                                   "MonoDevelop.FSharp.FakePad",
-                                                  "FAKE task runner",
+                                                  "FAKE",
                                                   "Center Bottom",
                                                   IconId("md-command"))
                 if pad <> null then Some(pad)
