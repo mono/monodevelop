@@ -139,20 +139,6 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			findAllReferencesHandler.Run (null);
 		}
-
-		static readonly FindDerivedSymbolsHandler findDerivedSymbolsHandler = new FindDerivedSymbolsHandler ();
-		[CommandUpdateHandler (RefactoryCommands.FindDerivedClasses)]
-		public void FindDerivedClasses_Update (CommandInfo ci)
-		{
-			findDerivedSymbolsHandler.Update (ci);
-		}
-
-		[CommandHandler (RefactoryCommands.FindDerivedClasses)]
-		public void FindDerivedClasses ()
-		{
-			findDerivedSymbolsHandler.Run (null);
-		}
-
 	}
 }
 

@@ -15,8 +15,23 @@
 		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsagesHandler"
 			_label = "_Find reference usages"/>
+		<Command id = "MonoDevelop.CSharp.Navigation.FindExtensionMethods"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindExtensionMethodsHandler"
+			_label = "Extension Methods"/>
+		<Command id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindBaseSymbolsHandler"
+			_label = "Base Symbols"/>
+		<Command id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindDerivedSymbolsHandler"
+			_label = "Derived Symbols"/>
+		<Command id = "MonoDevelop.CSharp.Navigation.FindMemberOverloads"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindMemberOverloadsHandler"
+			_label = "Member Overloads"/>
+		<Command id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindImplementingMembersHandler"
+			_label = "Implementing Members"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
 <!--		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
 				defaultHandler = "MonoDevelop.CSharp.Refactoring.ResolveCommandHandler"
@@ -287,13 +302,28 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
-		<ItemSet id = "Organize Imports" _label = "Organize Usings">
-			<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
-			<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
-			<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
-		</ItemSet>
-<!--		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>-->
+		<Condition id="FileType" mimeTypes="text/x-csharp">
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+
+			<ItemSet id = "Navigate" _label = "Navigate">
+				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"/>
+				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"/>
+				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"/>
+				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"/>
+				<SeparatorItem id = "Separator1" />
+				
+				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindExtensionMethods"/>
+				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindMemberOverloads"/>
+				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"/>
+			</ItemSet>
+
+				
+			<ItemSet id = "Organize Imports" _label = "Organize Usings" insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow">
+				<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
+				<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
+				<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
+			</ItemSet>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">

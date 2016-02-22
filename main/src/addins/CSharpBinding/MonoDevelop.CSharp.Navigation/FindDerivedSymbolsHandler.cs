@@ -41,11 +41,11 @@ using MonoDevelop.Refactoring;
 using System.Runtime.CompilerServices;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using MonoDevelop.CSharp.Navigation;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	
-	class FindDerivedSymbolsHandler
+	class FindDerivedSymbolsHandler : CommandHandler
 	{
 		public static bool CanFindDerivedSymbols (ISymbol symbol, out string description)
 		{
@@ -64,6 +64,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 		public static void FindDerivedSymbols (ISymbol symbol)
 		{
+			if (symbol == null)
+				return;
 			Task.Run (async delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					IEnumerable<ISymbol> result;
@@ -105,20 +107,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 
-		public void Update (CommandInfo info)
+		protected override async void Update (CommandInfo info)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			info.Enabled = doc != null && doc.ParsedDocument != null && doc.ParsedDocument.GetAst<SemanticModel> () != null;
+			var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
+			info.Enabled = sym != null;
+			info.Bypass = !info.Enabled;
 		}
 
-		public async void Run (object data)
+		protected override async void Run (object dataItem)
 		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null)
-				return;
-			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
-			if (info.DeclaredSymbol != null)
-				FindDerivedSymbols (info.DeclaredSymbol);
+			var sym = await FindBaseSymbolsHandler.GetSymbolAtCaret (IdeApp.Workbench.ActiveDocument);
+			if (sym != null)
+				FindDerivedSymbols (sym);
 		}
 	}
 }

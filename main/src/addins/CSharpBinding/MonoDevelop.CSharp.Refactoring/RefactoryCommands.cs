@@ -46,6 +46,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.CSharp.Navigation;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -257,23 +258,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			added = true;
 
-			if (info.DeclaredSymbol != null) {
-				string description;
-				if (FindDerivedSymbolsHandler.CanFindDerivedSymbols (info.DeclaredSymbol, out description)) {
-					ainfo.Add (description, new Action (() => FindDerivedSymbolsHandler.FindDerivedSymbols (info.DeclaredSymbol)));
-					added = true;
-				}
-
-				if (FindMemberOverloadsHandler.CanFindMemberOverloads (info.DeclaredSymbol, out description)) {
-					ainfo.Add (description, new Action (() => FindMemberOverloadsHandler.FindOverloads (info.DeclaredSymbol)));
-					added = true;
-				}
-
-				if (FindExtensionMethodHandler.CanFindExtensionMethods (info.DeclaredSymbol, out description)) {
-					ainfo.Add (description, new Action (() => FindExtensionMethodHandler.FindExtensionMethods (info.DeclaredSymbol)));
-					added = true;
-				}
-			}
 		}
 
 		static string FormatFileName (string fileName)

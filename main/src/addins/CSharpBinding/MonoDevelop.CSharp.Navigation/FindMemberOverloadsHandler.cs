@@ -29,10 +29,13 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Refactoring;
+using ICSharpCode.NRefactory6.CSharp;
 
-namespace MonoDevelop.CSharp.Refactoring
+namespace MonoDevelop.CSharp.Navigation
 {
-	static class FindMemberOverloadsHandler
+	class FindMemberOverloadsHandler : CommandHandler
 	{
 		public static bool CanFindMemberOverloads (ISymbol symbol, out string description)
 		{
@@ -69,6 +72,29 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 			}
 		}
+
+		protected override async void Update (CommandInfo info)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null) {
+				info.Enabled = false;
+				return;
+			}
+			var symInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var sym = symInfo.Symbol ?? symInfo.DeclaredSymbol;
+			info.Enabled = sym != null && (sym.IsKind (SymbolKind.Method) || sym.IsKind (SymbolKind.Property) && ((IPropertySymbol)sym).IsIndexer);
+			info.Bypass = !info.Enabled;
+		}
+
+		protected async override void Run ()
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+			var info = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			var sym = info.Symbol ?? info.DeclaredSymbol;
+			if (sym != null)
+				FindOverloads (sym);
+		}
 	}
 }
-
