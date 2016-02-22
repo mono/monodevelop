@@ -1,6 +1,6 @@
 {
 	"name": "Solarized Dark",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "An artful, dark scheme that's easy on the eyes",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -182,7 +182,7 @@
 		{ "name": "User Types(Delegates)", "fore": "yellow" },
 		{ "name": "User Types(Value types)", "fore": "yellow" },
 		{ "name": "User Types(Type parameters)", "fore": "yellow" },
-		{ "name": "User Types(Mutable)", "fore": "base03", "back": "#ffcf0f" },
+		{ "name": "User Types(Mutable)", "fore": "#ffd21c" },
 
 		{ "name": "User Field Usage", "fore": "blue", "style": "italic" },
 		{ "name": "User Field Declaration", "fore": "blue", "style": "italic" },

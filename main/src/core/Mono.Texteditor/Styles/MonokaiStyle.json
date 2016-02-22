@@ -1,6 +1,6 @@
 {
 	"name": "Monokai",
-	"version": "1.3.0",
+	"version": "1.3.1",
 	"description": "A smooth, dusky scheme",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -189,7 +189,7 @@
 		{ "name": "User Types(Delegates)", "fore": "monokai-type" },
 		{ "name": "User Types(Value types)", "fore": "monokai-type" },
 		{ "name": "User Types(Type parameters)", "fore": "monokai-type" },
-		{ "name": "User Types(Mutable)", "fore": "monokai-background", "back": "#ffcf0f" },
+		{ "name": "User Types(Mutable)", "fore": "#ffd21c" },
 
 		{ "name": "User Field Usage", "fore": "#2EE2A6", "style": "italic" },
 		{ "name": "User Field Declaration", "fore": "#2EE2A6", "style": "italic" },

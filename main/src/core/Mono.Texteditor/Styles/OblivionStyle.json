@@ -1,6 +1,6 @@
 {
 	"name": "Oblivion",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "‘...where the soul at last is lost in utter peace’",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -193,7 +193,7 @@
 		{ "name": "User Types(Delegates)", "fore": "chameleon1" },
 		{ "name": "User Types(Value types)", "fore": "chameleon1" },
 		{ "name": "User Types(Type parameters)", "fore": "chameleon1" },
-		{ "name": "User Types(Mutable)", "fore": "aluminium6", "back": "#ffcf0f" },
+		{ "name": "User Types(Mutable)", "fore": "#ffd21c" },
 
 		{ "name": "User Field Usage", "fore": "aluminium2", "style": "italic" },
 		{ "name": "User Field Declaration", "fore": "aluminium2", "style": "italic" },

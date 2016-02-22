@@ -1,6 +1,6 @@
 {
 	"name": "Gruvbox",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A retro groove color scheme",
 	"originator": "https://github.com/morhetz/gruvbox",
 
@@ -178,7 +178,7 @@
 		{ "name": "User Types(Delegates)", "fore": "bright-purple" },
 		{ "name": "User Types(Value types)", "fore": "bright-purple" },
 		{ "name": "User Types(Type parameters)", "fore": "bright-purple" },
-		{ "name": "User Types(Mutable)", "fore": "background", "back": "#ffcf0f" },
+		{ "name": "User Types(Mutable)", "fore": "#ffd21c" },
 
 		{ "name": "User Field Usage", "fore": "bright-blue", "style": "italic" },
 		{ "name": "User Field Declaration", "fore": "bright-blue", "style": "italic" },
