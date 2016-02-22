@@ -163,7 +163,7 @@
 		{ "name": "Keyword(Context)", "fore": "bright-red" },
 		{ "name": "Keyword(Exception)", "fore": "bright-red" },
 		{ "name": "Keyword(Modifiers)", "fore": "bright-red" },
-		{ "name": "Keyword(Constants)", "fore": "bright-purple" },
+		{ "name": "Keyword(Constants)", "fore": "bright-red" },
 		{ "name": "Keyword(Void)", "fore": "bright-red" },
 		{ "name": "Keyword(Namespace)", "fore": "bright-red" },
 		{ "name": "Keyword(Property)", "fore": "bright-red" },
