@@ -486,6 +486,7 @@ module SymbolTooltips =
                 | _ when constrainedBy.IsEqualityConstraint -> seq { yield asSymbol " : "; yield asKeyword "equality" }
                 | _ when constrainedBy.IsDelegateConstraint -> delegateConstraint constrainedBy.DelegateConstraintData
                 | _ when constrainedBy.IsUnmanagedConstraint -> seq { yield asSymbol " : "; yield asKeyword "unmanaged"}
+                | _ when constrainedBy.IsNonNullableValueTypeConstraint -> seq { yield asSymbol " : "; yield asKeyword "struct" }
                 | _ -> Seq.empty
 
             seq {
