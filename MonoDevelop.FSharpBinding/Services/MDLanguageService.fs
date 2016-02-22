@@ -235,4 +235,7 @@ Also used to perform side effects after object construction."""
             "while",  """Introduces a looping construct."""
             "with",  """Used together with the match keyword in pattern matching expressions. Also used in object expressions, record copying expressions, and type extensions to introduce member definitions, and to introduce exception handlers."""
             "yield",  """Used in a sequence expression to produce a value for a sequence."""
-            "yield!",  """Used in a computation expression to append the result of a given computation expression to a collection of results for the containing computation expression."""]
+            "yield!",  """Used in a computation expression to append the result of a given computation expression to a collection of results for the containing computation expression."""
+            "->", """In function types, delimits arguments and return values.
+Yields an expression (in sequence expressions); equivalent to the yield keyword.
+Used in match expressions"""]
