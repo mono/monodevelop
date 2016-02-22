@@ -16,15 +16,12 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 
 module TooltipImpl =
-    let bangKeywords = ["let!";"do!";"return!";"use!";"yield!"]
+    let extraKeywords = ["let!";"do!";"return!";"use!";"yield!";"->"]
     let tryKeyword col lineStr =
-        maybe {
-            let! keyword = Parsing.findKeyword(col, lineStr)
-            match keyword with
-            | keyword when PrettyNaming.KeywordNames |> List.contains keyword ||
-                           bangKeywords |> List.contains keyword ->
-              return keyword
-            | _ -> return! None }
+        maybe {let! keyword = Parsing.findKeyword(col, lineStr)
+               if PrettyNaming.KeywordNames |> List.contains keyword || extraKeywords |> List.contains keyword
+               then return keyword
+               else return! None }
 
 module MDTooltip =
     let keywordToTooltip (editor:TextEditor) line col (keyword:string) =
