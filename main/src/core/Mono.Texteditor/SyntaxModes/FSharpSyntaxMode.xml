@@ -276,8 +276,6 @@
 		<Group color="User Types"/>
 	</Match>
 	
-	<!-- |> |< << >> <= >= <- -> :?> -->
-	<Match color="Plain Text">\b(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)\b</Match>
 
 	<Match expression="(let)(\s)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s)(\w+|``.*``)\s[^=:]" ignorecase="False">
 		<!-- let inline add x y = x + y -->
@@ -323,7 +321,7 @@
 		<Group color="User Types"/>
 	</Match>
 	
-	<Match expression="(&lt;)([^_]\w*)">
+	<Match expression="(&lt;)([^_&lt;&gt;]\w*)">
 		<Group color="Punctuation(Brackets)"/>
 		<Group color="User Types"/>
 	</Match>
@@ -380,5 +378,8 @@
 		<Group color="Plain Text" />
 		<Group color="User Property Declaration"/>
 	</Match>
+	
+	<!-- |> |< << >> <= >= <- -> :?> -->
+	<Match color="Punctuation(Brackets)">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
 
 </SyntaxMode>
