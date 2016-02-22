@@ -25,7 +25,11 @@ module Patterns =
     let (|Keyword|_|) ts =
         match ts.TokenInfo.ColorClass, ts.ExtraColorInfo with
         | FSharpTokenColorKind.Keyword, _ -> Some ts
-        | _, Some(_range, extra) when extra = FSharpTokenColorKind.Keyword -> Some ts
+        | _ -> None
+        
+    let (|CustomKeyword|_|) ts =
+        match ts.ExtraColorInfo with
+        | Some(_range, extra) when extra = FSharpTokenColorKind.Keyword -> Some ts
         | _ -> None
 
     let (|Punctuation|_|) (ts : TokenSymbol) =
@@ -309,28 +313,45 @@ module Patterns =
             
             let tryGetStyle =
                 match { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor } with
-                | InactiveCode -> makeSeg style.ExcludedCode
-                | ComputationExpression _name -> makeSeg style.KeywordTypes
-                | Keyword ts -> makeSeg (Keywords.getType style ts)
-                | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ | Constructor _ -> makeSeg style.UserTypes
-                | GenericParameter _ -> makeSeg style.UserTypesTypeParameters
-                | Namespace _ -> makeSeg style.PlainText
-                | Property fromDef -> if fromDef then makeSeg style.UserPropertyDeclaration else makeSeg style.UserPropertyUsage
+                | InactiveCode ->
+                    makeSeg style.ExcludedCode
+                | ComputationExpression _name ->
+                    makeSeg style.KeywordTypes
+                | CustomKeyword _ ->   
+                    makeSeg style.KeywordTypes
+                | Module _ | ActivePatternCase | Record _ | Union _ | TypeAbbreviation | Class _ | Constructor _ ->
+                    makeSeg style.UserTypes
+                | GenericParameter _ ->
+                    makeSeg style.UserTypesTypeParameters
+                | Namespace _ ->
+                    makeSeg style.PlainText
+                | Property fromDef ->
+                    if fromDef then makeSeg style.UserPropertyDeclaration 
+                    else makeSeg style.UserPropertyUsage
                 | Field (fromDef, isMut) ->
                     if highlightMutable isMut then makeSeg style.UserTypesMutable
                     elif fromDef then makeSeg style.UserFieldDeclaration
                     else makeSeg style.UserFieldUsage
-                | Function fromDef -> if fromDef then makeSeg style.UserMethodDeclaration else makeSeg style.UserMethodUsage
+                | Function fromDef ->
+                    if fromDef then makeSeg style.UserMethodDeclaration
+                    else makeSeg style.UserMethodUsage
                 | Val (su, isMut) ->
                     if highlightMutable isMut then makeSeg style.UserTypesMutable
                     //elif su.Symbol.DisplayName.StartsWith "_" then style.ExcludedCode 
                     elif su.IsFromDefinition then makeSeg style.UserFieldDeclaration
                     else makeSeg style.UserFieldUsage
-                | UnionCase | Enum _ -> makeSeg style.UserTypesEnums
-                | Delegate _ -> makeSeg style.UserTypesDelegates
-                | Event fromDef -> if fromDef then makeSeg style.UserEventDeclaration else makeSeg style.UserEventUsage
-                | Interface -> makeSeg style.UserTypesInterfaces
-                | ValueType _ -> makeSeg style.UserTypesValueTypes
+                | UnionCase | Enum _ ->
+                    makeSeg style.UserTypesEnums
+                | Delegate _ ->
+                    makeSeg style.UserTypesDelegates
+                | Event fromDef ->
+                    if fromDef then makeSeg style.UserEventDeclaration
+                    else makeSeg style.UserEventUsage
+                | Interface ->
+                    makeSeg style.UserTypesInterfaces
+                | ValueType _ ->
+                    makeSeg style.UserTypesValueTypes
+                //| Keyword ts -> makeSeg (Keywords.getType style ts)
                 //| Comment -> makeSeg style.CommentsSingleLine
                 //| StringLiteral -> makeSeg style.String
                 //| NumberLiteral -> makeSeg style.Number
