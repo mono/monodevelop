@@ -51,7 +51,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+			IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
 			UninstallPackageAction action = project.CreateUninstallPackageAction ();
 			action.Package = project.FindPackage (packageReferenceNode.Id);
 
@@ -86,7 +86,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 
 			try {
-				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
 				UpdatePackageAction action = project.CreateUpdatePackageAction ();
 				action.PackageId = packageReferenceNode.Id;

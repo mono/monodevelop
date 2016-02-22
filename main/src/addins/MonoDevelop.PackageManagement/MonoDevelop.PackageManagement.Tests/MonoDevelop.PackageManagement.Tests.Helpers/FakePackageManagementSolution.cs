@@ -218,6 +218,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			SolutionPackageRepository.AddPackageReference (packageId, packageVersion);
 		}
+
+		public IPackageManagementProject GetProject (IDotNetProject project)
+		{
+			return FakeActiveProject;
+		}
 	}
 }
 
