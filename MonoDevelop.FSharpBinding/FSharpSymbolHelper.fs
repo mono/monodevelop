@@ -516,6 +516,8 @@ module SymbolTooltips =
                     | _ ->
                         LoggingService.LogWarning(sprintf "getFuncSignatureWithFormat: No enclosing entity found for: %s" func.DisplayName)
                         func.DisplayName
+                elif func.IsOperatorOrActivePattern then func.DisplayName
+                elif func.DisplayName.StartsWith "( " then PrettyNaming.QuoteIdentifierIfNeeded func.LogicalName
                 else func.DisplayName
             name |> escapeText
 
@@ -689,7 +691,11 @@ module SymbolTooltips =
         let prefix =
             if v.IsMutable then asKeyword "val" ++ asKeyword "mutable"
             else asKeyword "val"
-        prefix ++ v.DisplayName ++ asSymbol ":" ++ retType
+        let name =
+            if v.DisplayName.StartsWith "( "
+            then PrettyNaming.QuoteIdentifierIfNeeded v.LogicalName
+            else v.DisplayName
+        prefix ++ name ++ asSymbol ":" ++ retType
 
     let getFieldSignature displayContext (field: FSharpField) =
         let retType = asUserType (escapeText(field.FieldType.Format displayContext))
