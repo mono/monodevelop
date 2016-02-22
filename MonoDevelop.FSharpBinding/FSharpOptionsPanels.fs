@@ -84,7 +84,7 @@ type FSharpSettingsPanel() =
         let interactiveAdvanceToNextLine = PropertyService.Get (fsiAdvanceToNextLine, true)
         let matchWithTheme = PropertyService.Get (fsiMatchWithThemePropName, true)
         let compilerPath = PropertyService.Get (fscPathPropName, "")
-        let highlightMutables = PropertyService.Get (fsHighlightMutables, true)
+        let highlightMutables = PropertyService.Get (fsHighlightMutables, false)
 
         setInteractiveDisplay (interactivePath = "" && interactiveArgs = "")
         setCompilerDisplay (compilerPath = "")
