@@ -39,14 +39,6 @@ type SemanticHighlighting() =
         | _ -> "segment not found"
 
     [<Test>]
-    member x.Let_is_keyword() =
-        let content ="""
-#if defined
-§let§ add = (+)
-#endif"""
-        getStyle content |> should equal "Keyword(Type)"
-        
-    [<Test>]
     member x.Undefined_IfDef() =
        let content ="""
 #if undefined
@@ -81,12 +73,8 @@ module MyModule =
         let content = "let §add§ = (+)"
         getStyle content |> should equal "User Method Declaration"
 
-    //[<TestCase("let add = (§+§)", "Punctuation")>]
     [<TestCase("let §add§ = (+)", "User Method Declaration")>]
-    //[<TestCase("let add = §(§+)", "Punctuation(Brackets)")>]
     [<TestCase("let §simpleBinding§ = 1", "User Field Declaration")>]
-    //[<TestCase("let simpleBinding = §1§", "Number")>]
-    [<TestCase("§type§ x() = ()", "Keyword(Iteration)")>]
     member x.Semantic_highlighting(source, expectedStyle) =
         getStyle source |> should equal expectedStyle
         
