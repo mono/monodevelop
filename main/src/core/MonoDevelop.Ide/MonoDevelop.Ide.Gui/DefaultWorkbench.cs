@@ -101,6 +101,7 @@ namespace MonoDevelop.Ide.Gui
 #endif
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
+		public event EventHandler WorkbenchTabsChanged;
 		
 		public MonoDevelop.Ide.StatusBar StatusBar {
 			get {
@@ -218,8 +219,14 @@ namespace MonoDevelop.Ide.Gui
 			SetAppIcons ();
 
 			IdeApp.CommandService.SetRootWindow (this);
+			DockNotebook.NotebookChanged += NotebookPagesChanged;
 		}
-		
+
+		void NotebookPagesChanged (object sender, EventArgs e)
+		{
+			WorkbenchTabsChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		void SetAppIcons ()
 		{
 			//first try to get the icon from the GTK icon theme

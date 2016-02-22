@@ -91,6 +91,7 @@ namespace MonoDevelop.Ide.Gui
 				
 				((Gtk.Window)workbench).Visible = false;
 				workbench.ActiveWorkbenchWindowChanged += OnDocumentChanged;
+				workbench.WorkbenchTabsChanged += WorkbenchTabsChanged;
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
 				
@@ -1302,6 +1303,24 @@ namespace MonoDevelop.Ide.Gui
 				if (doc.ParsedDocument != null)
 					doc.ReparseDocument ();
 			}
+		}
+
+		System.Timers.Timer tabsChangedTimer = null;
+		void WorkbenchTabsChanged (object sender, EventArgs ev)
+		{
+			if (tabsChangedTimer != null) {
+				tabsChangedTimer.Stop ();
+				tabsChangedTimer.Dispose ();
+			}
+
+			tabsChangedTimer = new System.Timers.Timer (10000);
+			tabsChangedTimer.Elapsed += async (s, e) => {
+				await IdeApp.Workspace.SaveAsync ();
+				tabsChangedTimer.Stop ();
+				tabsChangedTimer.Dispose ();
+				tabsChangedTimer = null;
+			};
+			tabsChangedTimer.Start ();
 		}
 	}
 	
