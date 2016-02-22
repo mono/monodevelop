@@ -88,7 +88,7 @@
 	</Match> -->
 
 	<Match color="String" ignorecase="True">'(\w|\\['ntbrafv])'</Match>
-    <Match color="User Method Declaration">``(.*)``</Match>   
+<!--    <Match color="User Method Declaration">``(.*)``</Match>   -->
 
 	
 	<Match color="Number">CSharpNumber</Match>
@@ -367,11 +367,11 @@
 		<Group color="User Method Declaration"/>
 	</Match>
 
-	<Match expression="([a-z]{1}\w*)\s?[\(]" ignorecase="False">
+	<Match expression="([a-z]{1}\w*|``.*``)\s?[\(]" ignorecase="False">
 		<Group color="User Method Declaration"/>
 	</Match>
 	
-	<Match expression="([a-z]{1}\w*)" ignorecase="False">
+	<Match expression="([a-z]{1}\w*|``.*``)" ignorecase="False">
 		<Group color="User Field Declaration"/>
 	</Match>
 
