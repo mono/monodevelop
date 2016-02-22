@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.DocumentsDirty;
+			info.Enabled = IdeApp.Workbench.Documents.Any (v => v.IsDirty);
 		}
 	}
 	//MonoDevelop.Ide.Commands.FileCommands.NewProject

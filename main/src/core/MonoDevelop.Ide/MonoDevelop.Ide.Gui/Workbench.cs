@@ -145,12 +145,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return workbench.Close();
 		}
-		
+
 		public ImmutableList<Document> Documents {
 			get { return documents; }
 		}
 
-		public bool DocumentsDirty {
+		/// <summary>
+		/// This is a wrapper for use with AutoTest
+		/// </summary>
+		internal bool DocumentsDirty {
 			get { return Documents.Any (d => d.IsDirty); }
 		}
 
