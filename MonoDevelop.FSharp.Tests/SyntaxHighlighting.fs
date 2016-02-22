@@ -65,7 +65,8 @@ type SyntaxHighlighting() =
     [<TestCase("Seq.§add§", "User Method Declaration")>]
     [<TestCase("let inline §add§ x y = x + y", "User Method Declaration")>]
     [<TestCase("§override§ x.Something()", "Keyword(Modifiers)")>]
-    [<TestCase("member x.§``some identifier``§", "User Method Declaration")>]
+    [<TestCase("member x.§``some identifier``§ = 1", "User Field Declaration")>]
+    [<TestCase("member x.§``some identifier``§ () = 1", "User Method Declaration")>]
     [<TestCase("let mutable §vbox4§ : Gtk.VBox = null", "User Field Declaration")>]
     [<TestCase("§return§ x", "Keyword(Iteration)")>]
     [<TestCase("§return!§ x", "Keyword(Iteration)")>]
@@ -86,5 +87,6 @@ type SyntaxHighlighting() =
     [<TestCase("Map<'n, Set<'n§>>§", "Punctuation(Brackets)")>]
     [<TestCase("let docs = §openDocuments§()", "User Method Declaration")>]
     [<TestCase("let x = §true§", "Keyword(Constants)")>]
+    [<TestCase("let §``simple binding``§ = 1", "User Field Declaration")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
