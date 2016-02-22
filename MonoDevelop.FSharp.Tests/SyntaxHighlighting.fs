@@ -83,7 +83,7 @@ type SyntaxHighlighting() =
     [<TestCase("let inline private §is§ expr s =", "User Method Declaration")>]
     [<TestCase("override x.§CanHandle§ editor", "User Method Declaration")>]
     [<TestCase("let addEdge ((n1, n2): 'n * §'n§)", "User Types")>]
-    [<TestCase("Map<'n, Set<'n§>§>", "Punctuation(Brackets)")>]
+    [<TestCase("Map<'n, Set<'n§>>§", "Punctuation(Brackets)")>]
     [<TestCase("let docs = §openDocuments§()", "User Method Declaration")>]
     [<TestCase("let x = §true§", "Keyword(Constants)")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
