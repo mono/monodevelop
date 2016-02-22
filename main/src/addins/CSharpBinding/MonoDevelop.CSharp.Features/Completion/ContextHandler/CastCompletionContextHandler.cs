@@ -122,6 +122,22 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						}
 					}
 				}
+
+				var binOp = ancestor as BinaryExpressionSyntax;
+				if (binOp != null && binOp.IsKind (SyntaxKind.LogicalAndExpression)) {
+					if (binOp.Left.SkipParens ().IsKind (SyntaxKind.IsExpression)) {
+						var isExpr = ((BinaryExpressionSyntax)binOp.Left.SkipParens ());
+						var leftSymbol = model.GetSymbolInfo (isExpr.Left);
+
+						if (leftSymbol.Symbol == symbolInfo.Symbol) {
+							var type = model.GetTypeInfo (isExpr.Right).Type;
+							if (type != null) {
+								Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
+							}
+						}
+					}
+				}
+
 				loop: ancestor = ancestor.Parent;
 			}
 

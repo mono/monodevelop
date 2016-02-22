@@ -185,6 +185,25 @@ class FooBar
 ", "Bar");
 		}
 
+		[Test]
+		public void TestExpression()
+		{
+			VerifyItemExists (@"
+using System;
+
+class FooBar
+{
+	public event EventHandler Foo;
+
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		if (fb is FooBar && fb.$$
+	}
+}
+", "Bar");
+		}
 
 	}
 }
