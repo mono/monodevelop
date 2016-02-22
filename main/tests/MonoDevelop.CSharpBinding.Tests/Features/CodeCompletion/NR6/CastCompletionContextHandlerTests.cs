@@ -38,6 +38,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 		{
 			return new CastCompletionContextHandler ();
 		}
+
 		[Test]
 		public void TestSimple()
 		{
@@ -59,8 +60,6 @@ class FooBar
 }
 ", "Bar");
 		}
-
-
 
 		[Test]
 		public void TestNoUpcastAvailable()
@@ -89,8 +88,6 @@ class TestClass
 }
 }	");
 		}
-
-
 
 		[Test]
 		public void TestReturn()
@@ -157,6 +154,30 @@ class FooBar
 		for (int i = 0; i < 10; i++) {
 			if (!(fb is FooBar))
 				break;
+			fb.$$
+		}
+	}
+}
+", "Bar");
+		}
+
+		/// <summary>
+		/// Bug 38957 - Casting code completion(one based on if "is") offers wrong in case of "if else if" 
+		/// </summary>
+		[Test]
+		public void TestBug38957()
+		{
+			VerifyItemsAbsent (@"
+using System;
+
+class FooBar
+{
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		if (fb is FooBar) {
+		} else if (true) {
 			fb.$$
 		}
 	}
