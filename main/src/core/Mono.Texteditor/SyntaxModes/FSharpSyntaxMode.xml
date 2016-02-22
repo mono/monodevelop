@@ -196,7 +196,6 @@
 			<Word>}</Word>
 		</Keywords>
 
-
 		<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
 		<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 <!--	</Rule>-->
@@ -277,10 +276,8 @@
 		<Group color="User Types"/>
 	</Match>
 	
-
-	
 	<!-- |> |< << >> <= >= <- -> :?> -->
-	<Match color="Plain Text">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
+	<Match color="Plain Text">\b(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)\b</Match>
 
 	<Match expression="(let)(\s)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s)([\w]+)\s[^=:]" ignorecase="False">
 		<!-- let inline add x y = x + y -->
@@ -326,10 +323,9 @@
 		<Group color="User Types"/>
 	</Match>
 	
-	<Match expression="(&lt;)([^_]\w*)(&gt;)">
+	<Match expression="(&lt;)([^_]\w*)">
 		<Group color="Punctuation(Brackets)"/>
 		<Group color="User Types"/>
-		<Group color="Punctuation(Brackets)"/>
 	</Match>
 	
 	<Match color="User Types">'\w+</Match>
@@ -348,7 +344,7 @@
 	<Match color="Keyword(Jump)" ignorecase="False">(function|fun|new)\b</Match>
 
 	<Match color="Keyword(Constants)" ignorecase="False">\b(false|null|true|__LINE__|__SOURCE_DIRECTORY__|__SOURCE_FILE__)\b</Match>
-	<Match color="Keyword(Iteration)" ignorecase="False">(async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in)\b</Match>
+	<Match color="Keyword(Iteration)" ignorecase="False">\b(async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in)\b</Match>
 
     <Match expression="([a-z]{1}\w*)\s\&quot;">
 		<Group color="User Method Declaration"/>
@@ -384,4 +380,5 @@
 		<Group color="Plain Text" />
 		<Group color="User Property Declaration"/>
 	</Match>
+
 </SyntaxMode>
