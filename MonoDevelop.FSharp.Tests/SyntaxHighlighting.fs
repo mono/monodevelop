@@ -89,5 +89,6 @@ type SyntaxHighlighting() =
     [<TestCase("let x = §true§", "Keyword(Constants)")>]
     [<TestCase("let §``simple binding``§ = 1", "User Field Declaration")>]
     [<TestCase("let inline §``add number``§ x y = x + y", "User Method Declaration")>]
+    [<TestCase("§|>§ Option.bind", "Punctuation(Brackets)")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
