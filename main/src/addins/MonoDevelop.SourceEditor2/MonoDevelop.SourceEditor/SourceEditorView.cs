@@ -1735,7 +1735,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public Style GtkStyle { 
 			get {
-				return widget.Vbox.Style.Copy ();
+				return widget.Vbox.Style;
 			}
 		}
 
