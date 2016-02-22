@@ -81,7 +81,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			} else {
 				nodeInfo.Label = "(" + translation.IsoCode + ")";
 			}			
-			nodeInfo.Icon = Context.GetIcon ("md-gettext-locale");
+			nodeInfo.Icon = Context.GetIcon ("md-po-file");
 		}
 		
 		class TranslationNodeCommandHandler : NodeCommandHandler
