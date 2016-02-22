@@ -101,6 +101,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				if (doc != null && doc.Editor != null) {
 					result = doc.Editor.Text;
+					encoding = doc.Editor.Encoding;
+					hadBom = doc.Editor.UseBOM;
 				} else {
 					try {
 						if (!File.Exists (FileName))
