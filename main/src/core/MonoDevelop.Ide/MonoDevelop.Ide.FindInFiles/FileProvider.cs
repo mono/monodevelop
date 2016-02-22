@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			if (buffer != null && somethingReplaced) {
 				object attributes = DesktopService.GetFileAttributes (FileName);
-				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding, hadBom);
+				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding ?? Encoding.UTF8, hadBom);
 				DesktopService.SetFileAttributes (FileName, attributes);
 			}
 			FileService.NotifyFileChanged (FileName);
