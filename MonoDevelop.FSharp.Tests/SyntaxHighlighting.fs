@@ -85,6 +85,6 @@ type SyntaxHighlighting() =
     [<TestCase("let addEdge ((n1, n2): 'n * §'n§)", "User Types")>]
     [<TestCase("Map<'n, Set<'n§>§>", "Punctuation(Brackets)")>]
     [<TestCase("let docs = §openDocuments§()", "User Method Declaration")>]
-
+    [<TestCase("let x = §true§", "Keyword(Constants)")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
