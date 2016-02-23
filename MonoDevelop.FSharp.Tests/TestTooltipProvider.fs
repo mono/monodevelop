@@ -23,11 +23,8 @@ type TestTooltipProvider() =
         let doc = TestHelpers.createDoc source ""
         let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
 
-        let symbolUse = doc.Ast.GetSymbolAtLocation(line, col - 1, lineStr)
-                        |> Async.RunSynchronously
-                        |> Option.get
-
-        SymbolTooltips.getTooltipFromSymbolUse symbolUse
+        let symbolUse = doc.Ast.GetSymbolAtLocation(line, col - 1, lineStr) |> Async.RunSynchronously
+        symbolUse |> Option.bind SymbolTooltips.getTooltipFromSymbolUse
 
     let getTooltipSignature (source: string) =
         let signature =
@@ -346,16 +343,67 @@ type TestTooltipProvider() =
 
         signature |> should equal expected
         
-    [<Test;Ignore>]
-    member this.``Format Active Pattern tooltip``() =
-        let input =
-            """
-            let (|Ev§en|Odd|) v =
-                if v % 2 = 0 then Even(v)
-                else Odd(v)
-            """
+    [<Test>]
+    member this.``Format complete Active Pattern tooltip inbetween first bananna clips``() =
+        let input = """let (§|Even|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+        let signature = getTooltipSignature input
+        let expected = ""
+
+        signature |> should equal expected
+        
+    [<Test>]
+    member this.``Format complete Active Pattern tooltip before first pattern``() =
+        let input = """let (|§Even|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
         let signature = getTooltipSignature input
         let expected = """unit"""
+
+        signature |> should equal expected
+        
+    [<Test>]
+    member this.``Format Active Pattern tooltip middle of first pattern``() =
+        let input = """let (|Ev§en|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+        let signature = getTooltipSignature input
+        let expected = """unit"""
+
+        signature |> should equal expected
+        
+    [<Test>]
+    member this.``Format Active Pattern tooltip end of first pattern``() =
+        let input = """let (|Even§|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+        let signature = getTooltipSignature input
+        let expected = """unit"""
+
+        signature |> should equal expected
+        
+    [<Test>]
+    member this.``Format Active Pattern tooltip before second pattern``() =
+        let input = """let (|Even|§Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+        let signature = getTooltipSignature input
+        let expected = """unit"""
+
+        signature |> should equal expected
+        
+    [<Test>]
+    member this.``Format Active Pattern tooltip middle of second pattern``() =
+        let input = """let (|Even|Od§d|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+        let signature = getTooltipSignature input
+        let expected = """unit"""
+
+        signature |> should equal expected
+        
+    [<Test>]
+    member this.``Format Active Pattern tooltip after second pattern``() =
+        let input = """let (|Even|Odd§|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+        let signature = getTooltipSignature input
+        let expected = """unit"""
+
+        signature |> should equal expected
+        
+    [<Test>]
+    member this.``Format complete Active Pattern tooltip inbetween last bananna clips``() =
+        let input = """let (|Even|Odd|§) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+        let signature = getTooltipSignature input
+        let expected = ""
 
         signature |> should equal expected
         
