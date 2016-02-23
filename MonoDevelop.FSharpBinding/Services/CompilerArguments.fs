@@ -9,6 +9,7 @@ open System.IO
 open System.Diagnostics
 open System.Reflection
 open System.Globalization
+open System.Runtime.Versioning
 open Microsoft.FSharp.Reflection
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui
@@ -58,7 +59,7 @@ module CompilerArguments =
               if reference.HintPath.IsNotNull then 
                   let path = reference.HintPath.FullPath |> string
                   let path = path.Replace("/Library/Frameworks/Mono.framework/External",
-                                         "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono")
+                                          "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono")
                   if File.Exists path then 
                       Some path 
                   else
@@ -163,16 +164,42 @@ module CompilerArguments =
        [for ref in Project.getPortableReferences project configSelector do
             yield "-r:" + ref]
    else
+       let isAssemblyPortable path =
+           let assembly = Assembly.ReflectionOnlyLoadFrom path
+           try
+               assembly.GetCustomAttributes(true)
+               |> Seq.tryFind (fun a -> 
+                      match a with
+                      | :? TargetFrameworkAttribute as attr -> 
+                           let fn = new FrameworkName(attr.FrameworkName)
+                           not (fn.Profile = "")             
+                      | _ -> false)
+               |> Option.isSome
+           with
+           | :? IOException -> true
+           | _e -> false
+                        
+       let needsFacades () = 
+           let referencedAssemblies = project.GetReferencedAssemblyProjects configSelector
+           match referencedAssemblies |> Seq.tryFind Project.isPortable with
+           | Some _ -> true
+           | None -> project.References
+                     |> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly)
+                     |> Seq.map Project.getAssemblyLocation
+                     |> Seq.choose id
+                     |> Seq.tryFind isAssemblyPortable
+                     |> Option.isSome
+
        let wrapf = if shouldWrap then wrapFile else id
 
        [
-        let referencedProjects = project.GetReferencedAssemblyProjects configSelector
-        let portableRefs = 
-            match referencedProjects |> Seq.tryFind Project.isPortable with
-            | Some _ -> project.TargetRuntime.FindFacadeAssembliesForPCL project.TargetFramework
-                        |> Seq.filter (fun r -> not (r.EndsWith("mscorlib.dll"))
-                                                && not (r.EndsWith("FSharp.Core.dll")))
-            | None -> Seq.empty
+        let portableRefs =
+            if needsFacades() then
+                project.TargetRuntime.FindFacadeAssembliesForPCL project.TargetFramework
+                |> Seq.filter (fun r -> not (r.EndsWith("mscorlib.dll"))
+                                        && not (r.EndsWith("FSharp.Core.dll")))
+            else
+                Seq.empty
 
         let refs =
           project.References
