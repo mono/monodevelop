@@ -239,7 +239,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			if (o is SyntaxNode) {
 				pixRenderer.Image = ImageService.GetIcon (((SyntaxNode)o).GetStockIcon (), IconSize.Menu);
 			} else if (o is SyntaxTrivia) {
-				pixRenderer.Image = ImageService.GetIcon (Ide.Gui.Stock.Add, IconSize.Menu);
+				pixRenderer.Image = ImageService.GetIcon (Ide.Gui.Stock.Region, IconSize.Menu);
 			}
 		}
 

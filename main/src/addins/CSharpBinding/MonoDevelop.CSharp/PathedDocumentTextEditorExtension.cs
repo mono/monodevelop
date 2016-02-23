@@ -593,7 +593,7 @@ namespace MonoDevelop.CSharp
 			
 			internal static Xwt.Drawing.Image Pixbuf {
 				get {
-					return ImageService.GetIcon (Gtk.Stock.Add, Gtk.IconSize.Menu);
+					return ImageService.GetIcon (Ide.Gui.Stock.Region, Gtk.IconSize.Menu);
 				}
 			}
 			
