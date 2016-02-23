@@ -187,6 +187,9 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
+			widget.TextEditor.Document.TextSet += HandleDocumentTextSet;
+
+
 			widget.TextEditor.TextViewMargin.LineShown += TextViewMargin_LineShown;
 			//			widget.TextEditor.Document.DocumentUpdated += delegate {
 			//				this.IsDirty = Document.IsDirty;
@@ -228,6 +231,13 @@ namespace MonoDevelop.SourceEditor
 				Document.FileName = document.FileName;
 			}
 			FileRegistry.Add (this);
+		}
+
+		void HandleDocumentTextSet (object sender, EventArgs e)
+		{
+			while (editSessions.Count > 0) {
+				EndSession ();
+			}
 		}
 
 		protected override void OnContentNameChanged ()
@@ -971,7 +981,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
 			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
-			widget.TextEditor.TextArea.FocusOutEvent += TextArea_FocusOutEvent;
+			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
+			widget.TextEditor.Document.TextSet -= HandleDocumentTextSet;
 
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
