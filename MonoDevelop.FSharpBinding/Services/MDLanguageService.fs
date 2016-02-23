@@ -29,7 +29,7 @@ module MonoDevelop =
     type TextEditor with
         member x.GetLineInfoFromOffset (offset) =
             let loc  = x.OffsetToLocation(offset)
-            let line, col = max loc.Line 1, loc.Column-1
+            let line, col = max loc.Line 1, loc.Column
             let currentLine = x.GetLineByOffset(offset)
             let lineStr = x.Text.Substring(currentLine.Offset, currentLine.EndOffset - currentLine.Offset)
             line, col, lineStr
