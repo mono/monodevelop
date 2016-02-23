@@ -87,8 +87,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		public CompletionTriggerInfo WithIsImmediateWindow(bool isImmediateWIndow)
 		{
 			return this.IsImmediateWindow == isImmediateWIndow
-				? this
-				: new CompletionTriggerInfo(this.CompletionTriggerReason, this.TriggerCharacter, this.IsAugment, this.IsDebugger, isImmediateWIndow);
+				       ? this
+					       : new CompletionTriggerInfo(this.CompletionTriggerReason, this.TriggerCharacter, this.IsAugment, this.IsDebugger, isImmediateWIndow);
+		}
+
+		public CompletionTriggerInfo WithCompletionTriggerReason(CompletionTriggerReason reason)
+		{
+			return this.CompletionTriggerReason == reason
+				       ? this
+					       : new CompletionTriggerInfo(reason, this.TriggerCharacter, this.IsAugment, this.IsDebugger, this.IsImmediateWindow);
 		}
 	}
 }
