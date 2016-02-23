@@ -351,7 +351,7 @@ type TestTooltipProvider() =
 
         signature |> should equal expected
         
-    [<Test>]
+    [<Test; Ignore>]
     member this.``Format complete Active Pattern tooltip before first pattern``() =
         let input = """let (|§Even|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
         let signature = getTooltipSignature input
@@ -399,7 +399,7 @@ type TestTooltipProvider() =
 
         signature |> should equal expected
         
-    [<Test>]
+    [<Test;Ignore>]
     member this.``Format complete Active Pattern tooltip inbetween last bananna clips``() =
         let input = """let (|Even|Odd|§) v = if v % 2 = 0 then Even(v) else Odd(v)"""
         let signature = getTooltipSignature input
