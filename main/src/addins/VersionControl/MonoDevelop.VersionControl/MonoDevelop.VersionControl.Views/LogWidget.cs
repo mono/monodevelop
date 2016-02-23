@@ -723,6 +723,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			scrolledLoading.Hide ();
 			scrolledLog.Show ();
+			treeviewLog.FreezeChildNotify ();
 			logstore.Clear ();
 			var h = History;
 			if (h == null)
@@ -732,6 +733,7 @@ namespace MonoDevelop.VersionControl.Views
 					logstore.AppendValues (rev, string.Empty);
 			}
 			SetLogSearchFilter (logstore, currentFilter);
+			treeviewLog.ThawChildNotify ();
 		}
 		
 		bool MatchesFilter (Revision rev)
