@@ -112,6 +112,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (position > 0) {
 				var nonExclusiveHandlers = new List<CompletionContextHandler> ();
 				var exclusiveHandlers = new List<CompletionContextHandler> ();
+				var toRetriggerHandlers = new List<CompletionContextHandler> ();
 				IEnumerable<CompletionContextHandler> handlerList;
 				if (completionContext.UseDefaultContextHandlers) {
 					handlerList = handlers.Concat (completionContext.AdditionalContextHandlers);
@@ -125,6 +126,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						} else {
 							nonExclusiveHandlers.Add (handler);
 						}
+					} else {
+						toRetriggerHandlers.Add (handler);
 					}
 				}
 
@@ -153,8 +156,20 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						//} else {
 						//	Console.WriteLine ("-----" + handler + " == NULL");
 						//}
-						if (handlerResult != null)
+						if (handlerResult != null && handlerResult.Any ()) {
 							result.AddRange (handlerResult);
+						} else {
+							toRetriggerHandlers.Add (handler);
+						}
+					}
+
+					if (result.Count > 0) {
+						info = info.WithCompletionTriggerReason (CompletionTriggerReason.RetriggerCommand);
+						foreach (var handler in toRetriggerHandlers) {
+							var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
+							if (handlerResult != null)
+								result.AddRange (handlerResult);
+						}
 					}
 				}
 			}
