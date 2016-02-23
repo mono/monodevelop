@@ -131,6 +131,9 @@ namespace MonoDevelop.Ide.Updater
 
 		static async void CheckForUpdates (bool automatic)
 		{
+			if (automatic && !AutoCheckForUpdates)
+				return;
+
 			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			PropertyService.SaveProperties ();
 			var handlers = AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/Updater/UpdateHandlers");
