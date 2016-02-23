@@ -121,8 +121,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			foreach (var symbol in await GetPreselectedSymbolsWorker(ctx.CSharpSyntaxContext, type, completionContext.Position, cancellationToken)) {
 				var symbolCompletionData = engine.Factory.CreateObjectCreation (this, type, symbol, newExpression.SpanStart, true);
 				list.Add (symbolCompletionData);
-				if (string.IsNullOrEmpty (result.DefaultCompletionString))
+				if (string.IsNullOrEmpty (result.DefaultCompletionString)) {
 					result.DefaultCompletionString = symbolCompletionData.DisplayText;
+					result.AutoCompleteEmptyMatch = true;
+				}
 			}
 			for (int i = 0; i < primitiveTypesKeywords.Length; i++) {
 				var keyword = primitiveTypesKeywords [i];
