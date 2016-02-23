@@ -16,7 +16,7 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide
 open MonoDevelop.Core.Assemblies
 open MonoDevelop.Core
-
+open ExtCore
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 // --------------------------------------------------------------------------------------
@@ -75,10 +75,10 @@ module CompilerArguments =
               if isNull reference.Package then
                   tryGetFromHintPath()
               else 
-                  let assembly = 
-                      reference.Package.Assemblies
-                      |> Seq.find (fun a -> a.Name = reference.Include)
-                  Some assembly.Location
+                  reference.Package.Assemblies
+                  |> Seq.tryFind (fun a -> a.FullName = reference.Include
+                                           || a.Name = reference.Include)
+                  |> Option.map (fun a -> a.Location)
           | ReferenceType.Project -> 
               let referencedProject = reference.Project :?> DotNetProject
               referencedProject.GetReferencedAssemblyProjects (getCurrentConfigurationOrDefault referencedProject)
@@ -165,18 +165,11 @@ module CompilerArguments =
             yield "-r:" + ref]
    else
        let isAssemblyPortable path =
-           let assembly = Assembly.ReflectionOnlyLoadFrom path
            try
-               assembly.GetCustomAttributes(true)
-               |> Seq.tryFind (fun a -> 
-                      match a with
-                      | :? TargetFrameworkAttribute as attr -> 
-                           let fn = new FrameworkName(attr.FrameworkName)
-                           not (fn.Profile = "")             
-                      | _ -> false)
-               |> Option.isSome
+               let assembly = Assembly.ReflectionOnlyLoadFrom path
+               assembly.GetReferencedAssemblies()
+               |> Seq.exists (fun a -> a.Name = "System.Runtime")
            with
-           | :? IOException -> true
            | _e -> false
                         
        let needsFacades () = 
