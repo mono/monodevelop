@@ -249,7 +249,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			object o = model.GetValue (iter, 0);
 			var syntaxNode = o as SyntaxNode;
 			if (syntaxNode != null) {
-				txtRenderer.Text = astAmbience.GetEntityMarkup (syntaxNode);
+				txtRenderer.Markup = astAmbience.GetEntityMarkup (syntaxNode);
 			} else if (o is SyntaxTrivia) {
 				txtRenderer.Text = ((SyntaxTrivia)o).ToString ();
 			}
