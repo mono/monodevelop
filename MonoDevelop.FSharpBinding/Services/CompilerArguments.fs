@@ -76,7 +76,8 @@ module CompilerArguments =
                   tryGetFromHintPath()
               else 
                   reference.Package.Assemblies
-                  |> Seq.tryFind (fun a -> a.FullName = reference.Include)
+                  |> Seq.tryFind (fun a -> a.FullName = reference.Include
+                                           || a.Name = reference.Include)
                   |> Option.map (fun a -> a.Location)
           | ReferenceType.Project -> 
               let referencedProject = reference.Project :?> DotNetProject
