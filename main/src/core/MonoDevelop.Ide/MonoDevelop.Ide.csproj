@@ -5152,6 +5152,30 @@
     <EmbeddedResource Include="icons\refresh-16~dark~disabled%402x.png">
       <LogicalName>refresh-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16.png">
+      <LogicalName>region-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16%402x.png">
+      <LogicalName>region-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16~dark.png">
+      <LogicalName>region-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16~dark%402x.png">
+      <LogicalName>region-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16~sel.png">
+      <LogicalName>region-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16~sel%402x.png">
+      <LogicalName>region-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16~dark~sel.png">
+      <LogicalName>region-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\region-16~dark~sel%402x.png">
+      <LogicalName>region-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\save-16.png">
       <LogicalName>save-16.png</LogicalName>
     </EmbeddedResource>
