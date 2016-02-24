@@ -963,15 +963,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			StartReparseThread ();
 		}
-		
-		internal object ExtendedCommandTargetChain {
-			get {
-				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent.GetContent (typeof(TextEditor)) != null)
-					return Editor.CommandRouter;
-				return null;
-			}
-		}
 
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)
 		{

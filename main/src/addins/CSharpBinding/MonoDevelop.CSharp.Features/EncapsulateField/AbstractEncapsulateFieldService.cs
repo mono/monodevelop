@@ -28,7 +28,9 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 	{
 		static AbstractEncapsulateFieldService()
 		{
-			renameSymbolMethod = typeof (Renamer).GetMethod ("RenameSymbolAsync", new Type [] { typeof(Solution), typeof(ISymbol), typeof(string), typeof(OptionSet), typeof(Func<Location, bool>), typeof(Func<IEnumerable<ISymbol>, bool?>), typeof(CancellationToken) });
+			renameSymbolMethod = typeof (Renamer).GetMethod ("RenameSymbolAsync", BindingFlags.Static | BindingFlags.NonPublic, null, new Type [] { typeof(Solution), typeof(ISymbol), typeof(string), typeof(OptionSet), typeof(Func<Location, bool>), typeof(Func<IEnumerable<ISymbol>, bool?>), typeof(CancellationToken) }, null);
+			if (renameSymbolMethod == null)
+				throw new Exception ("Can't find RenameSymbolAsync method.");
 		}
 
 		public async Task<EncapsulateFieldResult> EncapsulateFieldAsync(Document document, TextSpan span, bool useDefaultBehavior, CancellationToken cancellationToken)

@@ -42,6 +42,7 @@ using System.Threading;
 using MonoDevelop.Ide.Editor.Projection;
 using Xwt;
 using System.Collections.Immutable;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -1044,6 +1045,11 @@ namespace MonoDevelop.Ide.Editor
 			get {
 				return commandRouter;
 			}
+		}
+
+		protected override object GetNextCommandTarget ()
+		{
+			return commandRouter;
 		}
 
 		DocumentContext documentContext;
