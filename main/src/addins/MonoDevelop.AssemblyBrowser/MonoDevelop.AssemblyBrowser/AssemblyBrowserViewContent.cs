@@ -120,13 +120,15 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Open (Microsoft.CodeAnalysis.ISymbol element, bool expandNode = true)
 		{
 			var url = element.OriginalDefinition.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
-			widget.PublicApiOnly = element.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
+			if (element.DeclaredAccessibility != Microsoft.CodeAnalysis.Accessibility.Public)
+				widget.PublicApiOnly = false;
 			widget.Open (url, expandNode: expandNode);
 		}
 
 		public void Open (string documentationCommentId, bool openInPublicOnlyMode = true, bool expandNode = true)
 		{
-			widget.PublicApiOnly = openInPublicOnlyMode;
+			if (!openInPublicOnlyMode)
+				widget.PublicApiOnly = false;
 			widget.Open (documentationCommentId, expandNode: expandNode);
 		}
 
