@@ -161,7 +161,7 @@ namespace MonoDevelop.Components.MainToolbar
 					lineNumber = 0;
 				break;
 			}
-			return new SearchPopupSearchPattern (tag, pattern, lineNumber, column, searchPattern);
+			return new SearchPopupSearchPattern (tag, pattern?.Trim (), lineNumber, column, searchPattern);
 		}
 
 		static bool TryParseLineColumn (string str, ref int lineNumber, ref int columnNumber)
