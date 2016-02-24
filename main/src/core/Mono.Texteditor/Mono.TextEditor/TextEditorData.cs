@@ -615,9 +615,11 @@ namespace Mono.TextEditor
 		
 		public bool CanEdit (int line)
 		{
+			if (document.ReadOnly)
+				return false;
 			if (document.ReadOnlyCheckDelegate != null)
 				return document.ReadOnlyCheckDelegate (line);
-			return !document.ReadOnly;
+			return true;
 		}
 
 		public int FindNextWordOffset (int offset)
