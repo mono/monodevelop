@@ -17,24 +17,12 @@ module Parsing =
     // (we look for full identifier in the backward direction, but only
     // for a short identifier forward - this means that when you hover
     // 'B' in 'A.B.C', you will get intellisense for 'A.B' module)
-    let findLongIdents (col, lineStr) =
+    let findIdents col lineStr lookupType =
         if lineStr = "" then None
         else
-            Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.ByLongIdent [||] Lexer.singleLineQueryLexState
+            Lexer.getSymbol lineStr 0 col lineStr lookupType [||] Lexer.singleLineQueryLexState
             |> Option.bind tryGetLexerSymbolIslands
-            
-    let findOperator (col, lineStr) =
-        if lineStr = "" then None
-        else
-            Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.Fuzzy [||] Lexer.singleLineQueryLexState
-            |> Option.bind tryGetLexerSymbolIslands
-            
-    let findKeyword (col, lineStr) =
-        if lineStr = "" then None
-        else
-            Lexer.getSymbol lineStr 0 col lineStr SymbolLookupKind.Simple [||] Lexer.singleLineQueryLexState
-            |> Option.bind (fun t -> Some t.Text)
-    
+               
     /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
     let findLongIdentsAtGetMethodsTrigger (col, lineStr) =
         /// Create sequence that reads the string backwards
@@ -44,7 +32,7 @@ module Parsing =
         let _char, index = createBackStringReader lineStr col
                            |> Seq.takeWhile (fun (c, _index) -> c <> ')')
                            |> Seq.head
-        match findLongIdents(index-1, lineStr) with
+        match findIdents (index-1) lineStr SymbolLookupKind.ByLongIdent with
         | Some (_col, ident) -> Some(col, ident)
         | _ -> None
     
