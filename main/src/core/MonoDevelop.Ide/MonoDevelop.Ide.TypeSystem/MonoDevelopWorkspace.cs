@@ -618,6 +618,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
+		ProjectChanges projectChanges;
 
 		public override bool TryApplyChanges (Solution newSolution)
 		{
@@ -629,7 +630,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				internalChanges = true;
-
+				this.projectChanges = projectChanges;
 				base.ApplyProjectChanges (projectChanges);
 			} finally {
 				internalChanges = false;
@@ -683,7 +684,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 
-		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
+		protected override async void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
 			if (document == null)
@@ -758,11 +759,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
+				var root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
+				var annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (TypeSystemService.InsertionModeAnnotation));
+
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
 					using (var undo = editor.OpenUndoGroup ()) {
+						var oldVersion = editor.Version;
 						delta = ApplyChanges (projection, data, changes);
-
+						var versionBeforeFormat = editor.Version;
+							
 						if (formatter.SupportsOnTheFlyFormatting) {
 							foreach (var change in changes) {
 								delta -= change.Span.Length - change.NewText.Length;
@@ -779,20 +785,108 @@ namespace MonoDevelop.Ide.TypeSystem
 								}
 							}
 						}
+						if (annotatedNode != null && GetInsertionPoints != null) {
+							await Runtime.RunInMainThread (async () => {
+								var formattedVersion = editor.Version;
+
+								int startOffset = versionBeforeFormat.MoveOffsetTo (editor.Version, annotatedNode.Span.Start);
+								int endOffset = versionBeforeFormat.MoveOffsetTo (editor.Version, annotatedNode.Span.End);
+
+								// alway whole line start & delimiter
+								var startLine = editor.GetLineByOffset (startOffset);
+								startOffset = startLine.Offset;
+
+								var endLine = editor.GetLineByOffset (endOffset);
+								endOffset = endLine.EndOffsetIncludingDelimiter + 1;
+
+								var insertionCursorSegment = TextSegment.FromBounds (startOffset, endOffset);
+								string textToInsert = editor.GetTextAt (insertionCursorSegment).TrimEnd ();
+								editor.RemoveText (insertionCursorSegment);
+								var insertionPoints = await GetInsertionPoints (editor, editor.CaretOffset);
+								if (insertionPoints.Count == 0) {
+									// Just to get sure if no insertion points -> go back to the formatted version.
+									var textChanges = editor.Version.GetChangesTo (formattedVersion).ToList ();
+									using (var undo2 = editor.OpenUndoGroup ()) {
+										foreach (var v in textChanges) {
+											editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+										}
+									}
+									return;
+								}
+								string insertionModeOperation;
+								const int CSharpMethodKind = 8875;
+
+
+								bool isMethod = annotatedNode.RawKind == CSharpMethodKind;
+
+								if (!isMethod) {
+									// atm only for generate field/property : remove all new lines generated & just insert the plain node.
+									// for methods it's not so easy because of "extract code" changes.
+									foreach (var v in editor.Version.GetChangesTo (oldVersion).ToList ()) {
+										editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+									}
+								}
+									
+								switch (annotatedNode.RawKind) {
+								case 8873: // C# field
+									insertionModeOperation = GettextCatalog.GetString ("Insert Field");
+									break;
+								case CSharpMethodKind:
+									insertionModeOperation = GettextCatalog.GetString ("Insert Method");
+									break;
+								case 8892: // C# property 
+									insertionModeOperation = GettextCatalog.GetString ("Insert Property");
+									break;
+								default:
+									insertionModeOperation = GettextCatalog.GetString ("Insert Code");
+									break;
+								}
+
+								var options = new InsertionModeOptions (
+									insertionModeOperation,
+									insertionPoints,
+									point => {
+										if (!point.Success)
+											return;
+										point.InsertionPoint.Insert (editor, textToInsert);
+									}
+								);
+								options.ModeExitedAction += delegate (InsertionCursorEventArgs args) {
+									if (!args.Success) {
+										var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
+										using (var undo2 = editor.OpenUndoGroup ()) {
+											foreach (var v in textChanges) {
+												editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+											}
+										}
+									}
+								};
+								for (int i = 0; i < insertionPoints.Count; i++) {
+									if (insertionPoints [i].Location.Line < editor.CaretLine) {
+										options.FirstSelectedInsertionPoint = Math.Min (isMethod ? i + 1 : i, insertionPoints.Count - 1);
+									} else {
+										break;
+									}
+								}
+								editor.StartInsertionMode (options);
+							});
+						}
 					}
 				}
+
 				if (projection != null) {
 					UpdateProjectionsDocuments (document, data);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
 				}
-				Runtime.RunInMainThread (() => {
-					if (IdeApp.Workbench != null)
+				await Runtime.RunInMainThread (() => {
+						if (IdeApp.Workbench != null)
 						foreach (var w in IdeApp.Workbench.Documents)
 							w.StartReparseThread ();
 				});
 			}
 		}
+		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
 
 		void UpdateProjectionsDocuments (Document document, ITextDocument data)
 		{

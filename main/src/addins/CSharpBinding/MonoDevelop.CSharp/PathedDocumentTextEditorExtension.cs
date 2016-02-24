@@ -28,7 +28,6 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Completion;
 using System.Linq;
@@ -41,16 +40,33 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using MonoDevelop.Core.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp
 {
 	class PathedDocumentTextEditorExtension : TextEditorExtension, IPathedDocument
 	{
+		static PathedDocumentTextEditorExtension ()
+		{
+			MonoDevelopWorkspace.GetInsertionPoints = async delegate (TextEditor editor, int offset) {
+				var doc = IdeApp.Workbench.ActiveDocument;
+				if (doc == null || doc.AnalysisDocument == null)
+					return new List<InsertionPoint> ();
+				var semanticModel = await doc.AnalysisDocument.GetSemanticModelAsync ();
+				var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (offset, default(CancellationToken));
+				if (declaringType == null)
+					return new List<InsertionPoint> ();
+				return MonoDevelop.Refactoring.InsertionPointService.GetInsertionPoints (
+					editor,
+					semanticModel,
+					declaringType,
+					offset
+				);
+			};
+		}
+
 		public override void Dispose ()
 		{
 			CancelDocumentParsedUpdate ();
@@ -246,7 +262,7 @@ namespace MonoDevelop.CSharp
 				DocumentContext.AttachToProject (FindBestDefaultProject ());
 		}
 
-		DotNetProject FindBestDefaultProject (MonoDevelop.Projects.Solution solution = null)
+		DotNetProject FindBestDefaultProject (Projects.Solution solution = null)
 		{
 			// The best candidate to be selected as default project for this document is the startup project.
 			// If the startup project is not an owner, pick any project that is not disabled in the current configuration.

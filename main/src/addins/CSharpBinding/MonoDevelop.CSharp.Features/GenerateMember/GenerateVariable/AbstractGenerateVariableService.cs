@@ -202,7 +202,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode (_document, result);
 				}
 				else
 				{
@@ -221,8 +221,22 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode (_document, result);
 				}
+			}
+
+			async Task<Document> AnnotateInsertionMode (Document oldDocument, Document result)
+			{
+				var newRoot = await result.GetSyntaxRootAsync ();
+				var changes = await oldDocument.GetTextChangesAsync (result);
+				foreach (var change in changes) {
+
+					var parent = newRoot.FindNode (change.Span);
+					if (parent == null || !(parent is FieldDeclarationSyntax || parent is PropertyDeclarationSyntax))
+						continue;
+					return result.WithSyntaxRoot (newRoot.ReplaceNode (parent, parent.WithAdditionalAnnotations (TypeSystemService.InsertionModeAnnotation)));
+				}
+				return result;
 			}
 
 			private Accessibility DetermineMaximalAccessibility(State state)
