@@ -26,11 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -92,6 +88,24 @@ namespace MonoDevelop.PackageManagement.Commands
 				return SelectedDotNetSolutionHasPackages ();
 			}
 			return false;
+		}
+
+		Solution GetSelectedSolution ()
+		{
+			DotNetProject project = GetSelectedDotNetProject ();
+			if (project != null) {
+				return project.ParentSolution;
+			}
+			return IdeApp.ProjectOperations.CurrentSelectedSolution;
+		}
+
+		protected IPackageManagementSolution GetPackageManagementSolution ()
+		{
+			Solution solution = GetSelectedSolution ();
+			if (solution != null) {
+				return new PackageManagementSolution (new PackageManagementSolutionProjectService (solution));
+			}
+			return null;
 		}
 	}
 }

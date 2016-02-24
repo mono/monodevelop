@@ -1,10 +1,10 @@
 ﻿//
-// RestorePackagesInProjectHandler.cs
+// PackageManagementSolutionProjectService.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,40 +24,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Components.Commands;
+using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.PackageManagement
 {
-	public class RestorePackagesInProjectHandler : PackagesCommandHandler
+	class PackageManagementSolutionProjectService : IPackageManagementProjectService
 	{
-		protected override void Run ()
-		{
-			IDotNetProject project = GetSelectedProject ();
-			if (project == null)
-				return;
+		SolutionProxy solution;
 
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-			var runner = new PackageRestoreRunner (GetPackageManagementSolution ());
-			PackageManagementBackgroundDispatcher.Dispatch (() => {
-				runner.Run (project, progressMessage);
-				runner = null;
-				project = null;
-			});
+		public PackageManagementSolutionProjectService (Solution solution)
+		{
+			this.solution = new SolutionProxy (solution);
 		}
 
-		IDotNetProject GetSelectedProject ()
-		{
-			DotNetProject project = GetSelectedDotNetProject ();
-			if (project != null) {
-				return new DotNetProjectProxy (project);
+		public IProject CurrentProject {
+			get {
+				throw new NotImplementedException ();
 			}
-			return null;
 		}
 
-		protected override void Update (CommandInfo info)
+		public ISolution OpenSolution {
+			get { return solution; }
+		}
+
+		public IEnumerable<IDotNetProject> GetOpenProjects ()
 		{
-			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
+			return solution.GetAllProjects ();
+		}
+
+		public event EventHandler<ProjectReloadedEventArgs> ProjectReloaded;
+		public event EventHandler SolutionLoaded;
+		public event EventHandler SolutionUnloaded;
+
+		public IProjectBrowserUpdater CreateProjectBrowserUpdater ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public string GetDefaultCustomToolForFileName (ProjectFile projectItem)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }
