@@ -15,7 +15,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
 {
-	public partial class CSharpIntroduceVariableService
+	partial class CSharpIntroduceVariableService
 	{
 		private static bool IsAnyQueryClause(SyntaxNode node)
 		{

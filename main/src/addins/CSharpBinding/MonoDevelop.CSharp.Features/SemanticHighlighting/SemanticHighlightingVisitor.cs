@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Analysis
 	/// <summary>
 	/// C# Semantic highlighter.
 	/// </summary>
-	public abstract class SemanticHighlightingVisitor<TColor> : CSharpSyntaxWalker
+	abstract class SemanticHighlightingVisitor<TColor> : CSharpSyntaxWalker
 	{
 		protected CancellationToken cancellationToken = default(CancellationToken);
 

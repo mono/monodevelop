@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	///     Delegates the responsibility for pushing a new char to the current 
 	///     state and changes between states depending on the pushed chars.
 	/// </remarks>
-	public class CSharpIndentEngine : IStateMachineIndentEngine
+	class CSharpIndentEngine : IStateMachineIndentEngine
 	{
 		#region Properties
 

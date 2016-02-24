@@ -41,7 +41,7 @@ using MonoDevelop.Ide.CodeCompletion;
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 
-	//	public class CompletionEngineCache
+	//	class CompletionEngineCache
 	//	{
 	//		public List<INamespace>  namespaces;
 	//		public ICompletionData[] importCompletion;

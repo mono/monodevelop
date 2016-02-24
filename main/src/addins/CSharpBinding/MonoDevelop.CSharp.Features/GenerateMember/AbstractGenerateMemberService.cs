@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember
 {
-	public abstract partial class AbstractGenerateMemberService<TSimpleNameSyntax, TExpressionSyntax>
+	abstract partial class AbstractGenerateMemberService<TSimpleNameSyntax, TExpressionSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax
 		where TExpressionSyntax : SyntaxNode
 	{

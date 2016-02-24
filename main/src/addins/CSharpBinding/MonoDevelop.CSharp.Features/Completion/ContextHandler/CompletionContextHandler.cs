@@ -38,7 +38,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	public abstract class CompletionContextHandler : ICompletionDataKeyHandler
+	abstract class CompletionContextHandler : ICompletionDataKeyHandler
 	{
 		public async Task<IEnumerable<CompletionData>> GetCompletionDataAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken = default(CancellationToken))
 		{

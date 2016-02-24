@@ -21,7 +21,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMember
 {
-	public partial class CSharpGenerateConversionService :
+	partial class CSharpGenerateConversionService :
 	AbstractGenerateConversionService<CSharpGenerateConversionService, SimpleNameSyntax, ExpressionSyntax, InvocationExpressionSyntax>
 	{
 		protected override bool IsImplicitConversionGeneration(SyntaxNode node)

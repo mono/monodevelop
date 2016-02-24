@@ -26,7 +26,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 {
-	public class CSharpGenerateTypeService :
+	class CSharpGenerateTypeService :
 	AbstractGenerateTypeService<CSharpGenerateTypeService, SimpleNameSyntax, ObjectCreationExpressionSyntax, ExpressionSyntax, TypeDeclarationSyntax, ArgumentSyntax>
 	{
 		private static readonly SyntaxAnnotation s_annotation = new SyntaxAnnotation();

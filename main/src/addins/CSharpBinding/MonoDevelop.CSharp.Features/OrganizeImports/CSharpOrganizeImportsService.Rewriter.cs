@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.OrganizeImports
 {
-	public partial class CSharpOrganizeImportsService
+	partial class CSharpOrganizeImportsService
     {
         private class Rewriter : CSharpSyntaxRewriter
         {

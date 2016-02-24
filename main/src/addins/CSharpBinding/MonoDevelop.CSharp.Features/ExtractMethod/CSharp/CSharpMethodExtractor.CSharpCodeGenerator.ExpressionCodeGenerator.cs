@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpMethodExtractor
+	partial class CSharpMethodExtractor
     {
         private partial class CSharpCodeGenerator
         {

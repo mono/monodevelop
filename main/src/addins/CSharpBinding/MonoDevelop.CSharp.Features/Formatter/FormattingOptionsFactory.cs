@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	/// The formatting options factory creates pre defined formatting option styles.
 	/// </summary>
-	public static class FormattingOptionsFactory
+	static class FormattingOptionsFactory
 	{
 		readonly static Workspace defaultWs = new TestWorkspace ();
 

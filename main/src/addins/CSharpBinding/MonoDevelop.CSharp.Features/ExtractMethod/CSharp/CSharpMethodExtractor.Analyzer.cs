@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpMethodExtractor : MethodExtractor
+	partial class CSharpMethodExtractor : MethodExtractor
     {
         private class CSharpAnalyzer : Analyzer
         {

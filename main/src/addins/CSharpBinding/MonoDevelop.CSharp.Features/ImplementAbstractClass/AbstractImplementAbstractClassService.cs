@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementAbstractClass
 {
-	public abstract partial class AbstractImplementAbstractClassService
+	abstract partial class AbstractImplementAbstractClassService
 	{
 		protected AbstractImplementAbstractClassService()
 		{

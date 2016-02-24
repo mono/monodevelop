@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CommonFormattingHelpers
+	static class CommonFormattingHelpers
 	{
 //		public static readonly Comparison<SuppressOperation> SuppressOperationComparer = (o1, o2) =>
 //		{

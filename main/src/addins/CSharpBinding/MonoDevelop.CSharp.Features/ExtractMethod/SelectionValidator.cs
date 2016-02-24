@@ -13,7 +13,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public abstract partial class SelectionValidator
+	abstract partial class SelectionValidator
     {
         protected static readonly SelectionResult NullSelection = new NullSelectionResult();
 

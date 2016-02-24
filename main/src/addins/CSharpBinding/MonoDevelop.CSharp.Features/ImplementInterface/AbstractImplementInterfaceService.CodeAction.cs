@@ -19,7 +19,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
 {
-	public abstract partial class AbstractImplementInterfaceService
+	abstract partial class AbstractImplementInterfaceService
     {
         internal partial class ImplementInterfaceCodeAction : CodeAction
         {

@@ -20,7 +20,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
 {
-	public abstract partial class AbstractIntroduceVariableService<TService, TExpressionSyntax, TTypeSyntax, TTypeDeclarationSyntax, TQueryExpressionSyntax>
+	abstract partial class AbstractIntroduceVariableService<TService, TExpressionSyntax, TTypeSyntax, TTypeDeclarationSyntax, TQueryExpressionSyntax>
 		where TService : AbstractIntroduceVariableService<TService, TExpressionSyntax, TTypeSyntax, TTypeDeclarationSyntax, TQueryExpressionSyntax>
 		where TExpressionSyntax : SyntaxNode
 		where TTypeSyntax : TExpressionSyntax

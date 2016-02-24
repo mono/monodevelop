@@ -16,7 +16,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public abstract partial class MethodExtractor
+    abstract partial class MethodExtractor
     {
         protected abstract partial class CodeGenerator<TStatement, TExpression, TNodeUnderContainer>
             where TStatement : SyntaxNode
