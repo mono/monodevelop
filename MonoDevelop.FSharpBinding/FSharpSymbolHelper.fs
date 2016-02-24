@@ -24,7 +24,7 @@ module Symbols =
 
     ///Given a column and line string returns the identifier portion of the string
     let lastIdent column lineString =
-        match Parsing.findLongIdents(column, lineString) with
+        match Parsing.findIdents column lineString SymbolLookupKind.ByLongIdent with
         | Some (_col, identIsland) -> Seq.last identIsland
         | None -> ""
 
