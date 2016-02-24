@@ -108,7 +108,7 @@ namespace MonoDevelop.VersionControl
 		/// Determines whether a patch can be created 
 		/// from a ChangeSet.
 		/// </summary>
-		public static bool CanCreatePatch (ChangeSet items) 
+		static bool CanCreatePatch (ChangeSet items)
 		{
 			if (null == items || 0 == items.Count){ return false; }
 			
@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl
 		/// Determines whether a patch can be created 
 		/// from a VersionControlItemList.
 		/// </summary>
-		public static bool CanCreatePatch (VersionControlItemList items) 
+		static bool CanCreatePatch (VersionControlItemList items)
 		{
 			if (null == items || 0 == items.Count){ return false; }
 			return items.All (i => i.VersionInfo.CanRevert);
