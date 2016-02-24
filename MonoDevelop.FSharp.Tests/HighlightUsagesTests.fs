@@ -17,7 +17,7 @@ type HighlightUsagesTests() =
         let line, col, lineStr = doc.Editor.GetLineInfoFromOffset offset
         //doc.Ast
 
-        match Parsing.findLongIdents(col, lineStr)  with
+        match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent with
         | None -> Assert.Fail "Could not find ident"
         | Some(colu, ident) -> let symbolUse = doc.Ast.GetSymbolAtLocation(line, col, lineStr) |> Async.RunSynchronously
                                match symbolUse with
