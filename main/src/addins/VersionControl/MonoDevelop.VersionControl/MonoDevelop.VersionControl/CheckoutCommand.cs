@@ -84,22 +84,13 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			string projectFn = null;
-			
-			string[] list = System.IO.Directory.GetFiles (path);
-			if (projectFn == null) {
-				foreach (string str in list) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (str)) {
-						projectFn = str;
-						break;
-					}
-				}	
-			}
-			
-			if (projectFn != null) {
-				Runtime.RunInMainThread (delegate {
-					IdeApp.Workspace.OpenWorkspaceItem (projectFn);
-				});
+			foreach (string str in System.IO.Directory.EnumerateFiles (path, "*", System.IO.SearchOption.AllDirectories)) {
+				if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (str)) {
+					Runtime.RunInMainThread (delegate {
+						IdeApp.Workspace.OpenWorkspaceItem (str);
+					});
+					break;
+				}
 			}
 			
 			Monitor.ReportSuccess (GettextCatalog.GetString ("Solution checked out"));
