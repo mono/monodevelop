@@ -38,7 +38,16 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementProjectService projectService;
 		IPackageManagementProjectFactory projectFactory;
 		ISolutionPackageRepositoryFactory solutionPackageRepositoryFactory;
-		
+
+		internal PackageManagementSolution (
+			IPackageManagementProjectService projectService)
+			: this (
+				PackageManagementServices.RegisteredPackageRepositories,
+				projectService,
+				PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementProjectService projectService,
