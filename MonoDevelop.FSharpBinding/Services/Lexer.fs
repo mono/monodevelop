@@ -10,6 +10,7 @@ type SymbolKind =
     | Operator
     | GenericTypeParameter
     | StaticallyResolvedTypeParameter
+    | ActivePattern
     | Other
 
 type LexerSymbol =
@@ -95,7 +96,7 @@ module Lexer =
     let inline isIdentifier t = t.CharClass = FSharpTokenCharKind.Identifier
     let inline isOperator t = t.ColorClass = FSharpTokenColorKind.Operator
             
-    let inline internal (|GenericTypeParameterPrefix|StaticallyResolvedTypeParameterPrefix|Other|) ((token: FSharpTokenInfo), (lineStr:string)) =
+    let inline internal (|GenericTypeParameterPrefix|StaticallyResolvedTypeParameterPrefix|ActivePattern|Other|) ((token: FSharpTokenInfo), (lineStr:string)) =
         if token.Tag = FSharpTokenTag.QUOTE then GenericTypeParameterPrefix
         elif token.Tag = FSharpTokenTag.INFIX_AT_HAT_OP then
              // The lexer return INFIX_AT_HAT_OP token for both "^" and "@" symbols.
@@ -103,6 +104,10 @@ module Lexer =
              if token.FullMatchedLength = 1 && lineStr.[token.LeftColumn] = '^' then
                 StaticallyResolvedTypeParameterPrefix
              else Other
+        elif token.Tag = FSharpTokenTag.LPAREN then
+            if token.FullMatchedLength = 1 && lineStr.[token.LeftColumn+1] = '|' then
+               ActivePattern
+            else Other
         else Other
 
     // Operators: Filter out overlapped operators (>>= operator is tokenized as three distinct tokens: GREATER, GREATER, EQUALS.
@@ -119,17 +124,28 @@ module Lexer =
         tokens
         |> List.fold (fun (acc, lastToken) token ->
             match lastToken with
-            | Some t when token.LeftColumn <= t.RightColumn -> acc, lastToken
+            | Some t when token.LeftColumn <= t.RightColumn ->
+                acc, lastToken
+            | Some ( {Kind = SymbolKind.ActivePattern} as lastToken) when token.Tag = FSharpTokenTag.BAR || token.Tag = FSharpTokenTag.IDENT || token.Tag = FSharpTokenTag.UNDERSCORE ->
+                let mergedToken = 
+                    {lastToken.Token with Tag = FSharpTokenTag.IDENT
+                                                RightColumn = token.RightColumn
+                                                FullMatchedLength = lastToken.Token.FullMatchedLength + token.FullMatchedLength }
+                                                                             
+                acc, Some { lastToken with Token = mergedToken; RightColumn = lastToken.RightColumn + token.FullMatchedLength }
             | _ ->
                 match token, lineStr with
                 | GenericTypeParameterPrefix -> acc, Some (DraftToken.Create GenericTypeParameter token)
                 | StaticallyResolvedTypeParameterPrefix -> acc, Some (DraftToken.Create StaticallyResolvedTypeParameter token)
+                | ActivePattern -> acc, Some (DraftToken.Create ActivePattern token)
                 | Other ->
                     let draftToken =
                         match lastToken with
                         | Some { Kind = GenericTypeParameter | StaticallyResolvedTypeParameter as kind } when isIdentifier token ->
-                            DraftToken.Create kind { token with LeftColumn = token.LeftColumn - 1
-                                                                FullMatchedLength = token.FullMatchedLength + 1 }
+                              DraftToken.Create kind { token with LeftColumn = token.LeftColumn - 1
+                                                                  FullMatchedLength = token.FullMatchedLength + 1 }
+                        | Some ( { Kind = SymbolKind.ActivePattern } as ap) when token.Tag = FSharpTokenTag.RPAREN ->
+                              DraftToken.Create SymbolKind.Ident ap.Token
                         | _ ->
                             let kind = if isOperator token then Operator elif isIdentifier token then Ident else Other
                             DraftToken.Create kind token
