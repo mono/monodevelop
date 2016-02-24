@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.FindSymbols;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMember
 {
@@ -236,7 +237,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 						cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode(_document, result);
 				}
 				else
 				{
@@ -250,8 +251,22 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 						cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode(_document, result);
 				}
+			}
+
+			async Task<Document> AnnotateInsertionMode (Document oldDocument, Document result)
+			{
+				var newRoot = await result.GetSyntaxRootAsync ();
+				var changes = await oldDocument.GetTextChangesAsync (result);
+				foreach (var change in changes) {
+
+					var parent = newRoot.FindNode (change.Span);
+					if (parent == null || !(parent is MethodDeclarationSyntax || parent is PropertyDeclarationSyntax))
+						continue;
+					return result.WithSyntaxRoot (newRoot.ReplaceNode (parent, parent.WithAdditionalAnnotations (TypeSystemService.InsertionModeAnnotation)));
+				}
+				return result;
 			}
 
 			public override string Title

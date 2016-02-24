@@ -2594,13 +2594,16 @@ namespace MonoDevelop.SourceEditor
 			mode.CurIndex = insertionModeOptions.FirstSelectedInsertionPoint;
 			mode.StartMode ();
 			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs iCArgs) {
-				insertionModeOptions.ModeExitedAction (new MonoDevelop.Ide.Editor.InsertionCursorEventArgs (iCArgs.Success, 
-					new MonoDevelop.Ide.Editor.InsertionPoint (
-						new MonoDevelop.Ide.Editor.DocumentLocation (iCArgs.InsertionPoint.Location.Line, iCArgs.InsertionPoint.Location.Column),
-						(MonoDevelop.Ide.Editor.NewLineInsertion)iCArgs.InsertionPoint.LineBefore,
-						(MonoDevelop.Ide.Editor.NewLineInsertion)iCArgs.InsertionPoint.LineAfter
-					)
-				));
+				if (insertionModeOptions.ModeExitedAction != null) {
+					insertionModeOptions.ModeExitedAction (new MonoDevelop.Ide.Editor.InsertionCursorEventArgs (iCArgs.Success,
+																												iCArgs.Success ? 
+					                                                                                            new MonoDevelop.Ide.Editor.InsertionPoint (
+						                                                                                            new MonoDevelop.Ide.Editor.DocumentLocation (iCArgs.InsertionPoint.Location.Line, iCArgs.InsertionPoint.Location.Column),
+						                                                                                            (MonoDevelop.Ide.Editor.NewLineInsertion)iCArgs.InsertionPoint.LineBefore, 
+						                                                                                            (MonoDevelop.Ide.Editor.NewLineInsertion)iCArgs.InsertionPoint.LineAfter) 
+					                                                                                            : null
+																											   ));
+				}
 			};
 		}
 

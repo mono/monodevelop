@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 
                 this.MethodNameAnnotation = new SyntaxAnnotation();
                 this.CallSiteAnnotation = new SyntaxAnnotation();
-                this.MethodDefinitionAnnotation = new SyntaxAnnotation();
+				this.MethodDefinitionAnnotation = MonoDevelop.Ide.TypeSystem.TypeSystemService.InsertionModeAnnotation;
             }
 
             #region method to be implemented in sub classes
