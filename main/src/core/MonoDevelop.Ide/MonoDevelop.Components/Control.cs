@@ -212,9 +212,14 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		object ICommandRouter.GetNextCommandTarget ()
+		protected virtual object GetNextCommandTarget ()
 		{
 			return nativeWidget;
+		}
+
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return GetNextCommandTarget ();
 		}
 	}
 }

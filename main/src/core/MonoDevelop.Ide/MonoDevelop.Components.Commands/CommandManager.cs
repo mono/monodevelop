@@ -1332,6 +1332,8 @@ namespace MonoDevelop.Components.Commands
 								info.Visible = true;
 							return info;
 						}
+						if (info.Enabled && !info.Bypass)
+							return info;
 						continue;
 					}
 					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
