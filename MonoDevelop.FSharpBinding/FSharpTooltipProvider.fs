@@ -18,7 +18,8 @@ open ExtCore.Control
 module TooltipImpl =
     let extraKeywords = ["let!";"do!";"return!";"use!";"yield!";"->"]
     let tryKeyword col lineStr =
-        maybe {let! keyword = Parsing.findKeyword(col, lineStr)
+        maybe {let! (_col, keyword) = Parsing.findIdents col lineStr SymbolLookupKind.Simple
+               let! keyword = keyword |> List.tryHead
                if PrettyNaming.KeywordNames |> List.contains keyword || extraKeywords |> List.contains keyword
                then return keyword
                else return! None }

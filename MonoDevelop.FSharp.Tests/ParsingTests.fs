@@ -9,7 +9,8 @@ open ExtCore
 type ParsingTests() =
     let checkGetSymbol col lineStr expected expectedColumn =
         let expected = if expected = "" then [] else expected.Split '.' |> Array.toList
-        match Parsing.findLongIdents(col, lineStr) |> Option.coalesce <| Parsing.findOperator(col, lineStr) with
+        match Parsing.findIdents col lineStr SymbolLookupKind.ByLongIdent
+              |> Option.orTry (fun () -> Parsing.findIdents col lineStr SymbolLookupKind.Fuzzy) with
         | Some(colu, ident) -> ident |> should equal expected
                                colu |> should equal expectedColumn
         | None -> Assert.Fail "Could not find ident"

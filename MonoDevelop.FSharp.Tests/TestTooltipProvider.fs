@@ -43,7 +43,7 @@ type TestTooltipProvider() =
         footer |> stripHtml |> htmlDecode
 
     [<Test>]
-    member this.Formats_tooltip_arrows_right_aligned() =
+    member this.``ooltip arrows are right aligned``() =
         let input =
             """
             open System
@@ -62,7 +62,7 @@ type TestTooltipProvider() =
         signature |> shouldEqualIgnoringLineEndings expected
 
     [<Test>]
-    member this.Formats_forall2_tooltip_arrows_right_aligned() =
+    member this.``Forall2 tooltip arrows right aligned``() =
         let input =
             """
             open System
@@ -81,7 +81,7 @@ type TestTooltipProvider() =
         // Base Type Constraint
 
     [<Test>]
-    member this.Formats_base_type_constraint_tooltip() =
+    member this.``Base type constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T :> System.Exception> =
@@ -95,7 +95,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_interface_type_constraint_tooltip() =
+    member this.``Interface type constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T :> System.IComparable> =
@@ -109,7 +109,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_null_type_constraint_tooltip() =
+    member this.``Null type constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : null> =
@@ -123,7 +123,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_member_constraint_with_static_member_tooltip() =
+    member this.``Member constraint with static member tooltip``() =
         let input =
             """
             type A§<'T when 'T : (static member staticMethod1 : unit -> 'T) > =
@@ -135,7 +135,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_member_constraint_with_instance_member_tooltip() =
+    member this.``Member constraint with instance member tooltip``() =
         let input =
             """
             type A§<'T when 'T : (member Method1 : 'T -> int)> =
@@ -147,7 +147,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_member_constraint_with_property_tooltip() =
+    member this.``Member constraint with property tooltip``() =
         let input =
             """
             type A§<'T when 'T : (member Property1 : int)> =
@@ -160,7 +160,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_constructor_constraint_tooltip() =
+    member this.``Constructor constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : (new : unit -> 'T)>() =
@@ -173,7 +173,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_reference_type_constraint_tooltip() =
+    member this.``Reference type constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : not struct> =
@@ -186,7 +186,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_enum_constraint_tooltip() =
+    member this.``Enum constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : enum<uint32>> =
@@ -199,7 +199,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_comparison_constraint_tooltip() =
+    member this.``Comparison constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : comparison> =
@@ -212,7 +212,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_equality_constraint_tooltip() =
+    member this.``Equality constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : equality> =
@@ -225,7 +225,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_delegate_constraint_tooltip() =
+    member this.``Delegate constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : delegate<obj * System.EventArgs, unit>> =
@@ -238,7 +238,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_unmanaged_constraint_tooltip() =
+    member this.``Unmanaged constraint tooltip``() =
         let input =
             """
             type A§<'T when 'T : unmanaged> =
@@ -251,8 +251,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    [<Ignore>]
-    member this.Formats_member_constraints_with_two_type_parameters_tooltip() =
+    member this.``Member constraints with two type parameters tooltip``() =
         let input =
             """
             let inline ad§d(value1 : ^T when ^T : (static member (+) : ^T * ^T -> ^T), value2: ^T) =
@@ -261,12 +260,14 @@ type TestTooltipProvider() =
 
         let signature = getTooltipSignature input
 
-        let expected = """???"""
+        let expected = """val add :
+   value1:  ^T  * 
+   value2:  ^T 
+        ->  ^T"""
         signature |> should startWith expected
 
     [<Test>]
-    [<Ignore>]
-    member this.Formats_member_operator_constraint_tooltip() =
+    member this.``Member operator constraint tooltip``() =
         let input =
             """
             let inline heterog§enousAdd(value1 : ^T when (^T or ^U) : (static member (+) : ^T * ^U -> ^T), value2 : ^U) =
@@ -275,11 +276,14 @@ type TestTooltipProvider() =
 
         let signature = getTooltipSignature input
 
-        let expected = """???"""
+        let expected = """val heterogenousAdd :
+   value1:  ^T  * 
+   value2:  ^U 
+        ->  ^T"""
         signature |> should startWith expected
 
     [<Test>]
-    member this.Formats_multiple_type_constraints_tooltip() =
+    member this.``Multiple type constraints tooltip``() =
         let input =
             """
             type A§<'T,'U when 'T : equality and 'U : equality> =
@@ -293,7 +297,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
         
     [<Test>]
-    member this.``Formats struct type_constraints tooltip``() =
+    member this.``Struct type constraints tooltip``() =
         let input =
             """
             type A§<'T when 'T : struct> =
@@ -305,7 +309,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
 
     [<Test>]
-    member this.``Formats backticked val tooltip``() =
+    member this.``Backticked val tooltip``() =
         let input =
             """
             let ``backt§icked val`` =
@@ -317,7 +321,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
         
     [<Test>]
-    member this.``Formats backticked function tooltip``() =
+    member this.``Backticked function tooltip``() =
         let input =
             """
             let ``backt§icked fun`` =
@@ -329,7 +333,7 @@ type TestTooltipProvider() =
         signature |> should startWith expected
         
     [<Test>]
-    member this.``Formats operator tooltip``() =
+    member this.``Operator tooltip``() =
         let input =
             """
             let add = ( +§ )
@@ -343,68 +347,29 @@ type TestTooltipProvider() =
 
         signature |> should equal expected
         
-    [<Test>]
-    member this.``Format complete Active Pattern tooltip inbetween first bananna clips``() =
-        let input = """let (§|Even|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+    [<TestCase("let (§|Even|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)");
+      TestCase("let (|§Even|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)");
+      TestCase("let (|Ev§en|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)");
+      TestCase("let (|Even§|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)");
+      TestCase("let (|Even|§Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)");
+      TestCase("let (|Even|Od§d|) v = if v % 2 = 0 then Even(v) else Odd(v)");
+      TestCase("let (|Even|Odd§|) v = if v % 2 = 0 then Even(v) else Odd(v)");
+      TestCase("let (|Even|Odd|§) v = if v % 2 = 0 then Even(v) else Odd(v)")>]
+    member this.``Complete Active Pattern tooltip``(input) =
         let signature = getTooltipSignature input
-        let expected = ""
-
+        let expected = "val ( |Even|Odd| ) :\n   v: int \n   -> Choice<int,int>"
         signature |> should equal expected
         
-    [<Test; Ignore>]
-    member this.``Format complete Active Pattern tooltip before first pattern``() =
-        let input = """let (|§Even|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
+    [<TestCase("let (§|Even|_|) v = if v % 2 = 0 then Some v else None");
+      TestCase("let (|§Even|_|) v = if v % 2 = 0 then Some v else None");
+      TestCase("let (|Ev§en|_|) v = if v % 2 = 0 then Some v else None");
+      TestCase("let (|Even§|_|) v = if v % 2 = 0 then Some v else None");
+      TestCase("let (|Even|§_|) v = if v % 2 = 0 then Some v else None");
+      TestCase("let (|Even|_§|) v = if v % 2 = 0 then Some v else None");
+      TestCase("let (|Even|_|§) v = if v % 2 = 0 then Some v else None")>]
+    member this.``Partial Active Pattern tooltip``(input) =
         let signature = getTooltipSignature input
-        let expected = """unit"""
-
-        signature |> should equal expected
-        
-    [<Test>]
-    member this.``Format Active Pattern tooltip middle of first pattern``() =
-        let input = """let (|Ev§en|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
-        let signature = getTooltipSignature input
-        let expected = """unit"""
-
-        signature |> should equal expected
-        
-    [<Test>]
-    member this.``Format Active Pattern tooltip end of first pattern``() =
-        let input = """let (|Even§|Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
-        let signature = getTooltipSignature input
-        let expected = """unit"""
-
-        signature |> should equal expected
-        
-    [<Test>]
-    member this.``Format Active Pattern tooltip before second pattern``() =
-        let input = """let (|Even|§Odd|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
-        let signature = getTooltipSignature input
-        let expected = """unit"""
-
-        signature |> should equal expected
-        
-    [<Test>]
-    member this.``Format Active Pattern tooltip middle of second pattern``() =
-        let input = """let (|Even|Od§d|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
-        let signature = getTooltipSignature input
-        let expected = """unit"""
-
-        signature |> should equal expected
-        
-    [<Test>]
-    member this.``Format Active Pattern tooltip after second pattern``() =
-        let input = """let (|Even|Odd§|) v = if v % 2 = 0 then Even(v) else Odd(v)"""
-        let signature = getTooltipSignature input
-        let expected = """unit"""
-
-        signature |> should equal expected
-        
-    [<Test;Ignore>]
-    member this.``Format complete Active Pattern tooltip inbetween last bananna clips``() =
-        let input = """let (|Even|Odd|§) v = if v % 2 = 0 then Even(v) else Odd(v)"""
-        let signature = getTooltipSignature input
-        let expected = ""
-
+        let expected = "val ( |Even|_| ) :\n   v: int \n   -> int option"
         signature |> should equal expected
         
     [<Test>]
