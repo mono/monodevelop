@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMember
 {
-	public abstract partial class AbstractGenerateParameterizedMemberService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax> :
+	abstract partial class AbstractGenerateParameterizedMemberService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax> :
 	AbstractGenerateMemberService<TSimpleNameSyntax, TExpressionSyntax>
 		where TService : AbstractGenerateParameterizedMemberService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax

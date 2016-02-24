@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
 //    [ExportLanguageServiceFactory(typeof(ISyntaxTriviaService), LanguageNames.CSharp), Shared]
-//    public class CSharpSyntaxTriviaServiceFactory : ILanguageServiceFactory
+//    class CSharpSyntaxTriviaServiceFactory : ILanguageServiceFactory
 //    {
 //        public ILanguageService CreateLanguageService(HostLanguageServices provider)
 //        {

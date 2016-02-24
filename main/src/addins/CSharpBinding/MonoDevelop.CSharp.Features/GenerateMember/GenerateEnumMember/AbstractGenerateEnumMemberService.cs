@@ -16,7 +16,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateEnumMember
 {
-	public abstract class AbstractGenerateEnumMemberService<TService, TSimpleNameSyntax, TExpressionSyntax> :
+	abstract class AbstractGenerateEnumMemberService<TService, TSimpleNameSyntax, TExpressionSyntax> :
 	AbstractGenerateMemberService<TSimpleNameSyntax, TExpressionSyntax>
 		where TService : AbstractGenerateEnumMemberService<TService, TSimpleNameSyntax, TExpressionSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CodeRefactorings;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
 {
-	public class IntroduceVariableResult
+	class IntroduceVariableResult
 	{
 		public static readonly IntroduceVariableResult Failure = new IntroduceVariableResult(null);
 

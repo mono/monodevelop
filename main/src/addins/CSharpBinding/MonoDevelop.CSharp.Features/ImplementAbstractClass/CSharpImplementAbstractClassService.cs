@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementAbstractClass
 {
-	public class CSharpImplementAbstractClassService : AbstractImplementAbstractClassService
+	class CSharpImplementAbstractClassService : AbstractImplementAbstractClassService
 	{
 		protected override bool TryInitializeState(
 			Document document, SemanticModel model, SyntaxNode node, CancellationToken cancellationToken,

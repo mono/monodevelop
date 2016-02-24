@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public interface IExtractMethodService : ILanguageService
+    interface IExtractMethodService : ILanguageService
     {
         Task<ExtractMethodResult> ExtractMethodAsync(Document document, TextSpan textSpan, OptionSet options = null, CancellationToken cancellationToken = default(CancellationToken));
     }

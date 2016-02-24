@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	public class ParameterHintingResult : IReadOnlyList<IParameterHintingData>
+	class ParameterHintingResult : IReadOnlyList<IParameterHintingData>
 	{
 		public static readonly ParameterHintingResult Empty = new ParameterHintingResult (-1);
 		

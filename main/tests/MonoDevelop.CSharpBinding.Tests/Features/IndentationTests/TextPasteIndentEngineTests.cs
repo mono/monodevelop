@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory6.IndentationTests
 	[TestFixture]
 	public class TextPasteIndentEngineTests
 	{
-		public static CacheIndentEngine CreateEngine(string text, out SourceText sourceText, OptionSet options = null)
+		internal static CacheIndentEngine CreateEngine(string text, out SourceText sourceText, OptionSet options = null)
 		{
 			if (options == null) {
 				options = FormattingOptionsFactory.CreateMono();

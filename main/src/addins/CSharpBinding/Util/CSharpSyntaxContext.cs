@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		public const string CACSharpAsmName = ", Microsoft.CodeAnalysis.CSharp";
 	}
 
-	public class CSharpSyntaxContext
+	class CSharpSyntaxContext
 	{
 		readonly static Type typeInfoCSharpSyntaxContext;
 		readonly static Type typeInfoAbstractSyntaxContext;
@@ -433,7 +433,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		}
 	}
 
-	public class CSharpTypeInferenceService
+	class CSharpTypeInferenceService
 	{
 		readonly static Type typeInfo;
 		readonly static MethodInfo inferTypesMethod;
@@ -537,7 +537,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 	}
 
-	public class CaseCorrector
+	class CaseCorrector
 	{
 		readonly static Type typeInfo;
 		readonly static MethodInfo caseCorrectAsyncMethod;

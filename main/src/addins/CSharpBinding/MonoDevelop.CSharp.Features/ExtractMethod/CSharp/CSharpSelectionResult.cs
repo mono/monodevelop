@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public abstract partial class CSharpSelectionResult : SelectionResult
+    abstract partial class CSharpSelectionResult : SelectionResult
     {
         public static async Task<CSharpSelectionResult> CreateAsync(
             OperationStatus status,

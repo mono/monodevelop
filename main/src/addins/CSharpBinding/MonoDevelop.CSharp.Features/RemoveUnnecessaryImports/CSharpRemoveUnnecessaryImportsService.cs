@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.RemoveUnnecessaryImports
 {
-	public partial class CSharpRemoveUnnecessaryImportsService
+	partial class CSharpRemoveUnnecessaryImportsService
 	{
 		public static IEnumerable<SyntaxNode> GetUnnecessaryImports(SemanticModel semanticModel, SyntaxNode root, CancellationToken cancellationToken)
 		{

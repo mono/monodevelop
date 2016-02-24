@@ -37,7 +37,7 @@ using System.Security.Cryptography;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	public class ParameterHintingEngine
+	class ParameterHintingEngine
 	{
 		readonly IParameterHintingDataFactory factory;
 		readonly Workspace workspace;

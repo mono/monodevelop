@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 {
-	public class GenerateTypeOptionsResult
+	class GenerateTypeOptionsResult
 	{
 		public static readonly GenerateTypeOptionsResult Cancelled = new GenerateTypeOptionsResult(isCancelled: true);
 

@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	///     Represents a decorator of an IStateMachineIndentEngine instance
 	///     that provides logic for text paste events.
 	/// </summary>
-	public class TextPasteIndentEngine : IDocumentIndentEngine, ITextPasteHandler
+	class TextPasteIndentEngine : IDocumentIndentEngine, ITextPasteHandler
 	{
 
 		#region Properties
@@ -286,7 +286,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	///     Defines some helper methods for dealing with text-paste events.
 	/// </summary>
-	public static class TextPasteUtils
+	static class TextPasteUtils
 	{
 		/// <summary>
 		///     Collection of text-paste strategies.
@@ -373,7 +373,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		/// <summary>
 		///     Doesn't do any formatting. Serves as the default strategy.
 		/// </summary>
-		public class PlainTextPasteStrategy : IPasteStrategy
+		class PlainTextPasteStrategy : IPasteStrategy
 		{
 
 			#region Singleton
@@ -414,7 +414,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		///     Escapes chars in the given text so that they don't
 		///     break a valid string literal.
 		/// </summary>
-		public class StringLiteralPasteStrategy : IPasteStrategy
+		internal class StringLiteralPasteStrategy : IPasteStrategy
 		{
 
 			#region Singleton
@@ -618,7 +618,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		///     Escapes chars in the given text so that they don't
 		///     break a valid verbatim string.
 		/// </summary>
-		public class VerbatimStringPasteStrategy : IPasteStrategy
+		class VerbatimStringPasteStrategy : IPasteStrategy
 		{
 
 			#region Singleton

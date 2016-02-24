@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 			}
 		}
 
-		public CompletionResult CreateProvider(string input, SourceCodeKind? sourceCodeKind = null, bool usePreviousCharAsTrigger = false)
+		internal CompletionResult CreateProvider(string input, SourceCodeKind? sourceCodeKind = null, bool usePreviousCharAsTrigger = false)
 		{
 			int cursorPosition;
 			SemanticModel semanticModel;

@@ -19,7 +19,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 {
-	public abstract partial class AbstractGenerateVariableService<TService, TSimpleNameSyntax, TExpressionSyntax> :
+	abstract partial class AbstractGenerateVariableService<TService, TSimpleNameSyntax, TExpressionSyntax> :
 	AbstractGenerateMemberService<TSimpleNameSyntax, TExpressionSyntax>
 		where TService : AbstractGenerateVariableService<TService, TSimpleNameSyntax, TExpressionSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax

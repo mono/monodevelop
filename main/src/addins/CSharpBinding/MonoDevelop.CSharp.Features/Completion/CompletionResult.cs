@@ -30,7 +30,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	public class CompletionResult : IReadOnlyList<CompletionData>
+	class CompletionResult : IReadOnlyList<CompletionData>
 	{
 		public static readonly CompletionResult Empty = new CompletionResult ();
 

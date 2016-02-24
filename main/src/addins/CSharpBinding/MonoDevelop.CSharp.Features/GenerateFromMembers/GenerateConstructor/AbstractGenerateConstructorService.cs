@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers.GenerateConstructor
 {
-	public abstract partial class AbstractGenerateConstructorService<TService, TMemberDeclarationSyntax> :
+	abstract partial class AbstractGenerateConstructorService<TService, TMemberDeclarationSyntax> :
 	AbstractGenerateFromMembersService<TMemberDeclarationSyntax>
 		where TService : AbstractGenerateConstructorService<TService, TMemberDeclarationSyntax>
 		where TMemberDeclarationSyntax : SyntaxNode

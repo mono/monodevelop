@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public class InsertionPoint
+	class InsertionPoint
     {
         private readonly SyntaxAnnotation _annotation;
         private readonly Lazy<SyntaxNode> _context;

@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public class CSharpExtractMethodService : AbstractExtractMethodService<CSharpSelectionValidator, CSharpMethodExtractor, CSharpSelectionResult>
+	class CSharpExtractMethodService : AbstractExtractMethodService<CSharpSelectionValidator, CSharpMethodExtractor, CSharpSelectionResult>
     {
         [ImportingConstructor]
         public CSharpExtractMethodService()

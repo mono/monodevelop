@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		string GetParameterName (int currentParameter);
 	}
 	
-	public class ParameterHintingData : IParameterHintingData
+	class ParameterHintingData : IParameterHintingData
 	{
 		public ISymbol Symbol {
 			get;
@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		}
 	}
 	
-	public class DelegateParameterHintingData : IParameterHintingData
+	class DelegateParameterHintingData : IParameterHintingData
 	{
 		readonly IMethodSymbol invocationMethod;
 
@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		}
 	}
 
-	public class ArrayParameterHintingData : IParameterHintingData
+	class ArrayParameterHintingData : IParameterHintingData
 	{
 		readonly IArrayTypeSymbol arrayType;
 
@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		}
 	}
 
-	public class TypeParameterHintingData : IParameterHintingData
+	class TypeParameterHintingData : IParameterHintingData
 	{
 		public ISymbol Symbol {
 			get;

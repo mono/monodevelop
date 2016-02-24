@@ -11,7 +11,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public abstract partial class MethodExtractor
+    abstract partial class MethodExtractor
     {
         /// <summary>
         /// temporary symbol until we have a symbol that can hold onto both local and parameter symbol
