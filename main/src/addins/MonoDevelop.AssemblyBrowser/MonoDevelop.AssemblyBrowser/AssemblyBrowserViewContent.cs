@@ -27,7 +27,6 @@
 //
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Refactoring;
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components;
@@ -35,11 +34,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
-using System.Linq;
-using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {

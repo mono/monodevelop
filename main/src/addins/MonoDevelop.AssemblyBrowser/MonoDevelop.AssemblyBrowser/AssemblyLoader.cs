@@ -56,7 +56,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public AssemblyDefinition Assembly {
 			get {
-				return assemblyLoaderTask.Result.Item1;
+				return assemblyLoaderTask.Result?.Item1;
 			}
 		}
 

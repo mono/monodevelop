@@ -68,7 +68,8 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var compilationUnit = (AssemblyLoader)dataObject;
-			
+			if (compilationUnit.Assembly == null)
+				return;
 			var references = new AssemblyReferenceFolder (compilationUnit.Assembly);
 			if (references.AssemblyReferences.Any () || references.ModuleReferences.Any ())
 				treeBuilder.AddChild (references);
@@ -112,9 +113,9 @@ namespace MonoDevelop.AssemblyBrowser
 				
 				if (e1 == null && e2 == null)
 					return 0;
-				if (e1 == null)
+				if (e1 == null || e1.Assembly == null)
 					return 1;
-				if (e2 == null)
+				if (e2 == null || e2.Assembly == null)
 					return -1;
 				
 				return string.Compare (e1.Assembly.Name.Name, e2.Assembly.Name.Name, StringComparison.Ordinal);
