@@ -347,7 +347,7 @@ module SymbolTooltips =
         | false, false -> a + " " + b
 
     let getKeywordTooltip (keyword:string) =
-        let signatureline = asKeyword keyword ++ "(keyword)"
+        let signatureline = asKeyword (escapeText keyword) ++ "(keyword)"
         let summary =
             match KeywordList.keywordDescriptions.TryGetValue keyword with
             | true, description -> Full description
@@ -375,8 +375,8 @@ module SymbolTooltips =
                 unionCase.UnionCaseFields
                 |> Seq.map (fun unionField -> unionField.Name ++ asSymbol ":" ++ asUserType (escapeText (unionField.FieldType.Format displayContext)))
                 |> String.concat (asSymbol " * " )
-            unionCase.Name ++ asKeyword "of" ++ typeList
-         else unionCase.Name
+            unionCase.DisplayName ++ asKeyword "of" ++ typeList
+         else unionCase.DisplayName
 
     let formatGenericParameter displayContext (param:FSharpGenericParameter) =
         let chopStringTo (s:string) (c:char) =

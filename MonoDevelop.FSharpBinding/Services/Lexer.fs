@@ -174,7 +174,7 @@ module Lexer =
       
     let isNonTipToken token =
         token.ColorClass = FSharpTokenColorKind.Comment || token.ColorClass = FSharpTokenColorKind.String ||
-                        token.ColorClass = FSharpTokenColorKind.Text || token.ColorClass = FSharpTokenColorKind.InactiveCode
+                        (*token.ColorClass = FSharpTokenColorKind.Text ||*) token.ColorClass = FSharpTokenColorKind.InactiveCode
 
     // Returns symbol at a given position.
     let getSymbolFromTokens (tokens: FSharpTokenInfo list) line col (lineStr: string) lookupKind: LexerSymbol option =

@@ -238,4 +238,11 @@ Also used to perform side effects after object construction."""
             "yield!",  """Used in a computation expression to append the result of a given computation expression to a collection of results for the containing computation expression."""
             "->", """In function types, delimits arguments and return values.
 Yields an expression (in sequence expressions); equivalent to the yield keyword.
-Used in match expressions"""]
+Used in match expressions"""
+            "<-", "Assigns a value to a variable."
+            ":>", "Converts a type to type that is higher in the hierarchy."
+            ":?>", "Converts a type to a type that is lower in the hierarchy."
+            "<@", "Delimits a typed code quotation."
+            "@>", "Delimits a typed code quotation."
+            "<@@", "Delimits a untyped code quotation."
+            "@@>", "Delimits a untyped code quotation."]

@@ -16,7 +16,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 
 module TooltipImpl =
-    let extraKeywords = ["let!";"do!";"return!";"use!";"yield!";"->"]
+    let extraKeywords = ["let!";"do!";"return!";"use!";"yield!";"->";"<-";"<@";"@>";"<@@";"@@>";":>";":?>"]
     let tryKeyword col lineStr =
         maybe {let! (_col, keyword) = Parsing.findIdents col lineStr SymbolLookupKind.Simple
                let! keyword = keyword |> List.tryHead
