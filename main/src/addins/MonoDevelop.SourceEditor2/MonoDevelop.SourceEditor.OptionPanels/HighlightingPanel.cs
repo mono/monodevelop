@@ -267,6 +267,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 			if (success) {
 				Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
+				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}
