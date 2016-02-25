@@ -718,7 +718,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			SourceText oldFile;
 			if (!isOpen || !document.TryGetText (out oldFile)) {
-				oldFile = document.GetTextAsync ().Result;
+				oldFile = await document.GetTextAsync ();
 			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
 			int delta = 0;
@@ -751,7 +751,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				data.Save ();
 				if (projection != null) {
-					UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments (document, data);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
@@ -875,7 +875,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				if (projection != null) {
-					UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments (document, data);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
 				}
@@ -888,7 +888,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
 
-		void UpdateProjectionsDocuments (Document document, ITextDocument data)
+		async Task UpdateProjectionsDocuments (Document document, ITextDocument data)
 		{
 			var project = TypeSystemService.GetMonoProject (document.Project);
 			var file = project.Files.GetFile (data.FileName);
@@ -899,7 +899,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Project = project,
 					Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath),
 				};
-				var projections = node.Parser.GenerateProjections (options).Result;
+				var projections = await node.Parser.GenerateProjections (options);
 				UpdateProjectionEntry (file, projections);
 				var projectId = GetProjectId (project);
 				var projectdata = GetProjectData (projectId);
