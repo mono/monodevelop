@@ -135,6 +135,7 @@
     <Compile Include="ProjectCracking.fs" />
     <Compile Include="GlobalSearch.fs" />
     <Compile Include="ParsingTests.fs" />
+    <Compile Include="CompletionTests.fs" />
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>

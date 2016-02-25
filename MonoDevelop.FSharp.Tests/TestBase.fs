@@ -37,6 +37,8 @@ module FsUnit =
 
     let haveCount n = Has.Count.EqualTo(n)
 
+    let NotEmpty = Has.Length.GreaterThan(0)
+
     let endWith (s:string) = new EndsWithConstraint(s)
 
     let startWith (s:string) = new StartsWithConstraint(s)
