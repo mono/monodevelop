@@ -97,8 +97,8 @@ style "default" {
     GtkComboBox::arrow-size = 12
 
     GtkMenu::vertical-padding = 4
-    GtkMenuItem::horizontal-padding = 9
-    GtkMenuItem::toggle-spacing = 0
+    GtkMenuItem::horizontal-padding = 3
+    GtkMenuItem::toggle-spacing = 6
     GtkSeparatorMenuItem::horizontal-padding = 2
 
     engine "xamarin" {
