@@ -136,7 +136,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string Version {
 			get {
-				return GetVersion ();
+				try {
+					return GetVersion ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Failed to query Subversion version info", e);
+					return base.Version;
+				}
 			}
 		}
 
