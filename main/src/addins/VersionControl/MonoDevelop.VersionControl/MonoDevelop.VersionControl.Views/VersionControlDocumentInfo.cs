@@ -112,9 +112,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected virtual void OnUpdated (EventArgs e)
 		{
-			EventHandler handler = this.Updated;
-			if (handler != null)
-				handler (this, e);
+			Updated?.Invoke (this, e);
 		}
 
 		public event EventHandler Updated;

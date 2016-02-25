@@ -1311,8 +1311,7 @@ namespace MonoDevelop.VersionControl.Git
 			// Notify file changes
 			NotifyFileChanges (monitor, statusList);
 
-			if (BranchSelectionChanged != null)
-				BranchSelectionChanged (this, EventArgs.Empty);
+			BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
 
 			monitor.EndTask ();
 			return true;

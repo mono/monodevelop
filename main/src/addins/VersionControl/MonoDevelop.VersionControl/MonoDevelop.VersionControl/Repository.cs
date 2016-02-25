@@ -115,8 +115,7 @@ namespace MonoDevelop.VersionControl
 			get { return name ?? string.Empty; }
 			set {
 				name = value;
-				if (NameChanged != null)
-					NameChanged (this, EventArgs.Empty);
+				NameChanged?.Invoke (this, EventArgs.Empty);
 			}		
 		}
 		

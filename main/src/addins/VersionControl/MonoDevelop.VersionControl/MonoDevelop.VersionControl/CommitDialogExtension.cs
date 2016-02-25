@@ -79,8 +79,7 @@ namespace MonoDevelop.VersionControl
 				if (value == allowCommit)
 					return;
 				allowCommit = value;
-				if (AllowCommitChanged != null)
-					AllowCommitChanged (this, EventArgs.Empty);
+				AllowCommitChanged?.Invoke (this, EventArgs.Empty);
 			}
 		}
 	}

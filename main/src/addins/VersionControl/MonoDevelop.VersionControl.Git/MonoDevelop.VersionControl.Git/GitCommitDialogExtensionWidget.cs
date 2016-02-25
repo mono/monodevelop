@@ -59,8 +59,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void OnChanged (object sender, EventArgs e)
 		{
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
+			Changed?.Invoke (this, EventArgs.Empty);
 		}
 
 		public event EventHandler Changed;

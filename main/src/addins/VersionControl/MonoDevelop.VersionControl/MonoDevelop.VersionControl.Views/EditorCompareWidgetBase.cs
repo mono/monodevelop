@@ -1085,9 +1085,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected virtual void OnDiffChanged (EventArgs e)
 		{
-			EventHandler handler = this.DiffChanged;
-			if (handler != null)
-				handler (this, e);
+			DiffChanged?.Invoke (this, e);
 		}
 		
 		public event EventHandler DiffChanged;
