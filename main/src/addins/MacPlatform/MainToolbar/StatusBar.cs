@@ -705,13 +705,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			((NSTextField)popover.ContentViewController.View).AttributedStringValue = attrString;
 		}
 
-		void CreatePopoverForLayer (CALayer layer)
+		bool CreatePopoverForLayer (CALayer layer)
 		{
 			string tooltip = layerToStatus [layer.Name].ToolTip;
 			if (tooltip == null)
-				return;
+				return false;
 
 			CreatePopoverCommon (230, tooltip);
+			return true;
 		}
 
 		void CreatePopoverForStatusBar ()
@@ -727,7 +728,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (!layerToStatus.ContainsKey (layer.Name))
 				return;
 
-			CreatePopoverForLayer (layer);
+			if (!CreatePopoverForLayer (layer))
+				return;
+
 			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
 		}
 
