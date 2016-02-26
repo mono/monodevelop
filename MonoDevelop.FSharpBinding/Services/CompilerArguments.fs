@@ -177,9 +177,7 @@ module CompilerArguments =
            match referencedAssemblies |> Seq.tryFind Project.isPortable with
            | Some _ -> true
            | None -> project.References
-                     |> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly)
-                     |> Seq.map Project.getAssemblyLocation
-                     |> Seq.choose id
+                     |> Seq.choose (fun r -> if r.ReferenceType = ReferenceType.Assembly then Project.getAssemblyLocation r else None)
                      |> Seq.tryFind isAssemblyPortable
                      |> Option.isSome
 
