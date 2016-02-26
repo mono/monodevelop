@@ -186,8 +186,10 @@ type FSharpConsoleView() as x =
         disposables.Add(
             PropertyService.PropertyChanged.Subscribe
               (fun _ (eventArgs:PropertyChangedEventArgs) ->
-                if eventArgs.Key = "ColorScheme" && eventArgs.OldValue <> eventArgs.NewValue then
-                    updateColors ()))
+                if eventArgs.Key = "ColorScheme-Dark" ||
+                   eventArgs.Key = "ColorScheme" && eventArgs.OldValue <> eventArgs.NewValue then
+                    updateColors()
+                    x.ShowAll()))
 
         let handleKeyPressDelegate =
             let mainType = typeof<FSharpConsoleView>

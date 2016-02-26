@@ -61,7 +61,7 @@ type FSharpInteractivePad() as this =
             let colourSchemChanged =
                 PropertyService.PropertyChanged.Subscribe
                     (fun _ (eventArgs:PropertyChangedEventArgs) ->
-                                      if eventArgs.Key = "ColorScheme" &&
+                                      if eventArgs.Key = "ColorScheme-Dark" || eventArgs.Key = "ColorScheme" &&
                                           eventArgs.OldValue <> eventArgs.NewValue then
                                           this.UpdateColors ())
             ses.Exited.Add(fun _ ->
