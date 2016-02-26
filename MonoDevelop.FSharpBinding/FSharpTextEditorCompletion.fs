@@ -265,9 +265,14 @@ module Completion =
                     // Get declarations and generate list for MonoDevelop
                     let! symbols = tyRes.GetDeclarationSymbols(line, col, lineStr)
                     match symbols with
-                    | Some (symbols, _residue) ->
+                    | Some (symbols, residue) ->
                         let data = getCompletionData symbols
                         result.AddRange data
+
+                        if completionChar <> '.' && result.Count > 0 then
+                            result.DefaultCompletionString <- residue
+                            result.TriggerWordLength <- residue.Length
+
                         //TODO Use previous token and pattern match to detect whitespace
                         if Regex.IsMatch(lineToCursor, "\s+\w+$") ||
                            Regex.IsMatch(lineToCursor, "^\w+$") then
@@ -285,12 +290,8 @@ module Completion =
                 () //TODOresult.Add(FSharpErrorCompletionData(e))
 
             result.AutoCompleteUniqueMatch <- false//ctrlSpace
-            if completionChar <> '.' && result.Count > 0 then
-                match Parsing.findKeyword(col, lineStr) with
-                | Some ident -> 
-                    result.DefaultCompletionString <- ident
-                    result.TriggerWordLength <- ident.Length
-                | _ -> ()
+
+                //| _ -> ()
             return result :> ICompletionDataList }
 
 type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
@@ -363,10 +364,6 @@ type FSharpTextEditorCompletion() =
     //  let prevEnd = editor.FindCurrentWordEnd(prevStart)
     //  let previousWord = editor.GetTextBetween(prevStart, prevEnd)
     //  lastWord = "get" && previousWord = "with"
-
-   
-
-    
 
     let isValidParamCompletionDecriptor (d:KeyDescriptor) =
         d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)

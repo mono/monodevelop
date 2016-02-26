@@ -30,7 +30,7 @@ type ``Completion Tests``() =
         ctx.TriggerOffset <- offset
 
         let results =
-            Completion.codeCompletionCommandImpl(getParseResults, editor, doc, ctx, true)
+            Completion.codeCompletionCommandImpl(getParseResults, editor, doc, ctx, false)
             |> Async.RunSynchronously
             |> Seq.map (fun c -> c.DisplayText)
 
