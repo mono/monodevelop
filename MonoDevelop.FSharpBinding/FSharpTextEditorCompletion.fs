@@ -213,7 +213,27 @@ module Completion =
         [for keyValuePair in KeywordList.keywordDescriptions do
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
-    let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, ctrlSpace) =
+    let getParseResults (editor:TextEditor, documentContext:DocumentContext) =
+        async {
+            let filename = documentContext.Name
+            // Try to get typed information from LanguageService (with the specified timeout)
+            let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
+
+            let curVersion = editor.Version
+            let isObsolete =
+                IsResultObsolete(fun () ->
+                let doc = IdeApp.Workbench.GetDocument(filename)
+                let newVersion = doc.Editor.Version
+                if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+                then
+                    false
+                else
+                    LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+                    true )
+            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, editor.Text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
+        }
+
+    let codeCompletionCommandImpl(getParseResults, editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
             let result = CompletionDataList()
             let emptyResult = result :> ICompletionDataList
@@ -239,23 +259,23 @@ module Completion =
             let filename = documentContext.Name
             try
 
-                // Try to get typed information from LanguageService (with the specified timeout)
-                let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
+                //// Try to get typed information from LanguageService (with the specified timeout)
+                //let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
 
-                let curVersion = editor.Version
-                let isObsolete =
-                    IsResultObsolete(fun () ->
-                    let doc = IdeApp.Workbench.GetDocument(filename)
-                    let newVersion = doc.Editor.Version
-                    if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-                    then
-                        false
-                    else
-                        LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
-                        true )
+                //let curVersion = editor.Version
+                //let isObsolete =
+                //    IsResultObsolete(fun () ->
+                //    let doc = IdeApp.Workbench.GetDocument(filename)
+                //    let newVersion = doc.Editor.Version
+                //    if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+                //    then
+                //        false
+                //    else
+                //        LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+                //        true )
 
-                let! typedParseResults =
-                    languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, editor.Text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
+                let! (typedParseResults:ParseAndCheckResults option) 
+                    = getParseResults(editor, documentContext)
 
                 match typedParseResults with
                 | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
@@ -474,12 +494,10 @@ type FSharpTextEditorCompletion() =
 
     // Run completion automatically when the user hits '.'
     override x.HandleCodeCompletionAsync(context, completionChar, token) =
-
-        
         let computation =
             async {
                 //if Tokens.isInvalidTipTokenAtPoint x.Editor x.DocumentContext x.Editor.CaretOffset then return null else
-                return! Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true) 
+                return! Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true) 
             }
         Async.StartAsTask (computation = computation, cancellationToken = token)
 
@@ -490,7 +508,7 @@ type FSharpTextEditorCompletion() =
         Async.StartAsTask(
             async {
 
-                return! Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true) 
+                return! Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true) 
             } )
 
     // Returns the index of the parameter where the cursor is currently positioned.

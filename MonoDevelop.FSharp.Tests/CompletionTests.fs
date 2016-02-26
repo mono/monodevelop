@@ -8,10 +8,15 @@ open Mono.TextEditor
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
 open FsUnit
-
+open MonoDevelop
+        
 
 type ``Completion Tests``() =
-
+    let getParseResults (editor:TextEditor, documentContext:DocumentContext) =
+        async {
+            return documentContext.TryGetAst()
+        }
+    
     let getCompletions (input: string) =
         let offset = input.IndexOf "|"
         if offset = -1 then
@@ -25,7 +30,7 @@ type ``Completion Tests``() =
         ctx.TriggerOffset <- offset
 
         let results =
-            Completion.codeCompletionCommandImpl(editor, doc, ctx, true)
+            Completion.codeCompletionCommandImpl(getParseResults, editor, doc, ctx, true)
             |> Async.RunSynchronously
             |> Seq.map (fun c -> c.DisplayText)
 
