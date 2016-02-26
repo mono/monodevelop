@@ -384,7 +384,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 			var runnerExe = GetCustomConsoleRunnerCommand ();
 			if (runnerExe != null)
 				return RunWithConsoleRunner (runnerExe, test, suiteName, pathName, testName, testContext);
-			var console = IdeApp.Workbench?.ProgressMonitors.ConsoleFactory.CreateConsole ();
+			var killProcessOnTestFinished = new CancellationTokenSource ();
+			var console = IdeApp.Workbench?.ProgressMonitors.ConsoleFactory.CreateConsole (killProcessOnTestFinished.Token);
 			ExternalTestRunner runner = new ExternalTestRunner ();
 			runner.Connect (NUnitVersion, testContext.ExecutionContext, console).Wait ();
 			LocalTestMonitor localMonitor = new LocalTestMonitor (testContext, test, suiteName, testName != null);
@@ -444,6 +445,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 				testContext.Monitor.CancelRequested -= new TestHandler (rd.Cancel);
 				runner.Dispose ();
 				System.Runtime.Remoting.RemotingServices.Disconnect (localMonitor);
+				killProcessOnTestFinished.Cancel ();
 			}
 			
 			return result;
