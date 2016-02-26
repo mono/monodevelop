@@ -83,9 +83,10 @@ style "default" {
     GtkScrolledWindow::scrollbars-within-bevel = 1
     GtkScale::slider-length = 14
 
-    GtkMenu::horizontal-padding = 1
-    GtkMenu::vertical-padding = 1
-    GtkMenuItem::horizontal-padding = 2
+    GtkMenu::horizontal-padding = 3
+    GtkMenu::vertical-padding = 3
+    GtkMenuItem::horizontal-padding = 3
+    GtkMenuItem::toggle-spacing = 6
     GtkSeparatorMenuItem::horizontal-padding = 0
 
     GtkTreeView::expander-size = 8
@@ -94,7 +95,7 @@ style "default" {
     GtkComboBox::appears-as-list = 0
 
     engine "xamarin" {
-        arrowstyle = 3
+        arrowstyle = 2
         rgba = TRUE
         roundness = 0
         glazestyle = 0
@@ -161,11 +162,11 @@ style "menubar" = "default" {
 }
 
 style "menu-item" = "menu" {
-    xthickness = 5
+    xthickness = 2
     ythickness = 3
 
     engine "xamarin" {
-        arrowstyle = 2
+        arrowstyle = 3
         contrast = 0.0
     }
 }
@@ -255,6 +256,10 @@ style "combo-box" = "default"
     bg[ACTIVE] = @base_color
     ythickness = 0
     xthickness = 0
+
+    engine "xamarin" {
+        arrowstyle = 3
+    }
 }
 
 style "combo-box-button" = "button"
