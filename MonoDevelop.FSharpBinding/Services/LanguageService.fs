@@ -60,16 +60,18 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
     /// Get the symbols for declarations at the current location in the specified document and the long ident residue
     /// e.g. The incomplete ident One.Two.Th will return Th
     member x.GetDeclarationSymbols(line, col, lineStr) =
-        match infoOpt, parseResults with
-        | Some checkResults, parseResults ->
-              let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
-              LoggingService.logDebug "GetDeclarationSymbols: '%A', '%s'" longName residue
-              // Get items & generate output
-              try
-                  let results = Async.RunSynchronously (checkResults.GetDeclarationListSymbols(parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false), timeout = ServiceSettings.blockingTimeout )
-                  Some (results, residue)
-              with :? TimeoutException -> None
-        | None, _ -> None
+        async {
+            match infoOpt, parseResults with
+            | Some checkResults, parseResults ->
+                  let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
+                  LoggingService.logDebug "GetDeclarationSymbols: '%A', '%s'" longName residue
+                  // Get items & generate output
+                  try
+                      let! results = checkResults.GetDeclarationListSymbols(parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
+                      return Some (results, residue)
+                  with :? TimeoutException -> return None
+            | None, _ -> return None
+        }
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
     /// from the beginning of the current document)

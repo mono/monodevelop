@@ -6,6 +6,8 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.Collections.Generic
+open System.Text.RegularExpressions
+open System.Threading.Tasks
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Debugger
@@ -16,155 +18,62 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.CodeCompletion
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
-type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
-    inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
-                           DisplayText = name,
-                           DisplayFlags = DisplayFlags.DescriptionHasMarkup,
-                           Icon = icon)
+module Completion = 
+    type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
+        inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
+                               DisplayText = name,
+                               DisplayFlags = DisplayFlags.DescriptionHasMarkup,
+                               Icon = icon)
+    
+        /// Check if the datatip has multiple overloads
+        override x.HasOverloads = not (List.isEmpty overloads)
 
-    /// Check if the datatip has multiple overloads
-    override x.HasOverloads = not (List.isEmpty overloads)
-
-    /// Split apart the elements into separate overloads
-    override x.OverloadedData =
-        overloads
-        |> List.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, []) :> CompletionData)
-        |> ResizeArray.ofList :> _
-
-    // TODO: what does 'smartWrap' indicate?
-    override x.CreateTooltipInformation (_smartWrap, cancel) =
-        Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
-
-type SimpleCategory(text) =
-    inherit CompletionCategory(text, null)
-    override x.CompareTo other =
-        if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
-
-type Category(text, s:FSharpSymbol) =
-    inherit CompletionCategory(text, null)
-
-    let ancestry (e: FSharpEntity) =
-        e.UnAnnotate()
-        |> Seq.unfold (fun x -> x.BaseType
-                                |> Option.map (fun x -> let entity = x.TypeDefinition.UnAnnotate()
-                                                        entity, entity))
-        |> Seq.append (e.AllInterfaces
-                       |> Seq.map (fun a -> a.TypeDefinition.UnAnnotate()))
-
-    member x.Symbol = s
-    override x.CompareTo other =
-        match other with
-        | null -> 1
-        | :? Category as other ->
-            match s, other.Symbol with
-            | (:? FSharpEntity as aa), (:? FSharpEntity as bb) ->
-                let comparisonResult =
-                    let aaAllBases = ancestry aa
-                    match (aaAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs bb)) with
-                    | Some _ ->  -1
-                    | _ ->
-                        let bbAllBases = ancestry bb
-                        match (bbAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs aa)) with
-                        | Some _ ->  1
-                        | _ -> aa.DisplayName.CompareTo(bb.DisplayName)
-                comparisonResult
-            | a, b -> a.DisplayName.CompareTo(b.DisplayName)
-        | _ -> -1
-
-type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
-    inherit ParameterHintingData (null)
-
-    let getTooltipInformation symbol paramIndex =
-        async {
-            match symbol with
-            | MemberFunctionOrValue _f ->
-                let tooltipInfo = SymbolTooltips.getParameterTooltipInformation symbol paramIndex
-                return tooltipInfo
-            | symbol ->
-                LoggingService.LogDebug(sprintf "FSharpParameterHintingData - CreateTooltipInformation could not create tooltip for %A" symbol.Symbol)
-                return null }
-
-
-    override x.ParameterCount =
-        match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm ->
-            let cpg = fsm.CurriedParameterGroups
-            cpg.[0].Count
-        | _ -> 0
-
-    override x.IsParameterListAllowed =
-        match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm 
-            when fsm.CurriedParameterGroups.Count > 0 ->
-                //TODO: How do we handle non tupled arguments?
-                let group = fsm.CurriedParameterGroups.[0] 
-                if group.Count > 0 then
-                    let last = group |> Seq.last
-                    last.IsParamArrayArg
-                else
-                    false
-        | _ -> false
-
-    override x.GetParameterName i =
-        match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm 
-            when fsm.CurriedParameterGroups.Count > 0 &&
-                 fsm.CurriedParameterGroups.[0].Count > 0 ->
-                //TODO: How do we handle non tupled arguments?
-                let group = fsm.CurriedParameterGroups.[0]
-                let param = group.[i]
-                match param.Name with
-                | Some n -> n
-                | None -> param.DisplayName
-        | _ -> ""
-
-    /// Returns the markup to use to represent the method overload in the parameter information window.
-    override x.CreateTooltipInformation (_editor, _context, paramIndex:int, _smartWrap:bool, cancel) =
-        Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
-
-
-/// Implements text editor extension for MonoDevelop that shows F# completion
-type FSharpTextEditorCompletion() =
-    inherit CompletionTextEditorExtension()
-
-    let keywordCompletionData =
-        [for keyValuePair in KeywordList.keywordDescriptions do
-            yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
-
-    let mutable suppressParameterCompletion = false
-    let mutable lastCharDottedInto = false
-
-    let compilerIdentifiers =
-        let icon = Stock.Literal
-        let compilerIdentifierCategory = SimpleCategory "Compiler Identifiers"
-        [ CompletionData("__LINE__", icon,
-                         "Evaluates to the current line number, considering <tt>#line</tt> directives.",
-                          CompletionCategory = compilerIdentifierCategory,
-                          DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-          CompletionData("__SOURCE_DIRECTORY__", icon,
-                         "Evaluates to the current full path of the source directory, considering <tt>#line</tt> directives.",
-                          CompletionCategory = compilerIdentifierCategory,
-                          DisplayFlags = DisplayFlags.DescriptionHasMarkup)
-          CompletionData("__SOURCE_FILE__", icon,
-                         "Evaluates to the current source file name and its path, considering <tt>#line</tt> directives.",
-                          CompletionCategory = compilerIdentifierCategory,
-                          DisplayFlags = DisplayFlags.DescriptionHasMarkup) ]
-
-    // Until we build some functionality around a reversing tokenizer that detect this and other contexts
-    // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
-    let isAnAutoProperty (_editor: TextEditor) _offset =
-        //let line, col, txt = editor.GetLineInfoFromOffset(offset)
-        false
-    //TODO
-    //  let lastStart = editor.FindPrevWordOffset(offset)
-    //  let lastEnd = editor.FindCurrentWordEnd(lastStart)
-    //  let lastWord = editor.GetTextBetween(lastStart, lastEnd)
-
-    //  let prevStart = editor.FindPrevWordOffset(lastStart)
-    //  let prevEnd = editor.FindCurrentWordEnd(prevStart)
-    //  let previousWord = editor.GetTextBetween(prevStart, prevEnd)
-    //  lastWord = "get" && previousWord = "with"
-
+        /// Split apart the elements into separate overloads
+        override x.OverloadedData =
+            overloads
+            |> List.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, []) :> CompletionData)
+            |> ResizeArray.ofList :> _
+    
+        // TODO: what does 'smartWrap' indicate?
+        override x.CreateTooltipInformation (_smartWrap, cancel) =
+            Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
+    
+    type SimpleCategory(text) =
+        inherit CompletionCategory(text, null)
+        override x.CompareTo other =
+            if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
+    
+    type Category(text, s:FSharpSymbol) =
+        inherit CompletionCategory(text, null)
+    
+        let ancestry (e: FSharpEntity) =
+            e.UnAnnotate()
+            |> Seq.unfold (fun x -> x.BaseType
+                                    |> Option.map (fun x -> let entity = x.TypeDefinition.UnAnnotate()
+                                                            entity, entity))
+            |> Seq.append (e.AllInterfaces
+                           |> Seq.map (fun a -> a.TypeDefinition.UnAnnotate()))
+    
+        member x.Symbol = s
+        override x.CompareTo other =
+            match other with
+            | null -> 1
+            | :? Category as other ->
+                match s, other.Symbol with
+                | (:? FSharpEntity as aa), (:? FSharpEntity as bb) ->
+                    let comparisonResult =
+                        let aaAllBases = ancestry aa
+                        match (aaAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs bb)) with
+                        | Some _ ->  -1
+                        | _ ->
+                            let bbAllBases = ancestry bb
+                            match (bbAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs aa)) with
+                            | Some _ ->  1
+                            | _ -> aa.DisplayName.CompareTo(bb.DisplayName)
+                    comparisonResult
+                | a, b -> a.DisplayName.CompareTo(b.DisplayName)
+            | _ -> -1
+    
     let getCompletionData (symbols:FSharpSymbolUse list list) =
         let categories = Dictionary<string, Category>()
         let getOrAddCategory symbol id =
@@ -283,57 +192,178 @@ type FSharpTextEditorCompletion() =
             | _ -> null //FSharpTryAgainMemberCompletionData() :> ICompletionData
         symbols |> List.map symbolToCompletionData
 
+    let compilerIdentifiers =
+        let icon = Stock.Literal
+        let compilerIdentifierCategory = SimpleCategory "Compiler Identifiers"
+        [ CompletionData("__LINE__", icon,
+                         "Evaluates to the current line number, considering <tt>#line</tt> directives.",
+                          CompletionCategory = compilerIdentifierCategory,
+                          DisplayFlags = DisplayFlags.DescriptionHasMarkup)
+          CompletionData("__SOURCE_DIRECTORY__", icon,
+                         "Evaluates to the current full path of the source directory, considering <tt>#line</tt> directives.",
+                          CompletionCategory = compilerIdentifierCategory,
+                          DisplayFlags = DisplayFlags.DescriptionHasMarkup)
+          CompletionData("__SOURCE_FILE__", icon,
+                         "Evaluates to the current source file name and its path, considering <tt>#line</tt> directives.",
+                          CompletionCategory = compilerIdentifierCategory,
+                          DisplayFlags = DisplayFlags.DescriptionHasMarkup) ]
 
-    let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, dottedInto, ctrlSpace, completionChar) =
+    let keywordCompletionData =
+        [for keyValuePair in KeywordList.keywordDescriptions do
+            yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
+
+    let getParseResults (editor:TextEditor, documentContext:DocumentContext) =
+        async {
+            let filename = documentContext.Name
+            // Try to get typed information from LanguageService (with the specified timeout)
+            let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
+
+            let curVersion = editor.Version
+            let isObsolete =
+                IsResultObsolete(fun () ->
+                let doc = IdeApp.Workbench.GetDocument(filename)
+
+                let newVersion = doc.Editor.Version
+                if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+                then
+                    false
+                else
+                    LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+                    true )
+            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, editor.Text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
+        }
+
+    let codeCompletionCommandImpl(getParseResults, editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
             let result = CompletionDataList()
+            let emptyResult = result :> ICompletionDataList
+            let token = Tokens.getTokenAtPoint editor documentContext editor.CaretOffset
+            if Tokens.isInvalidCompletionToken token then 
+                return emptyResult
+            else
+            
+            let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
+
+            if not (Char.IsLetterOrDigit completionChar || ctrlSpace) && completionChar <> '.' then 
+                return emptyResult
+            else
+            let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
+            let lineToCursor = lineStr.Substring (0,col)
+            if Regex.IsMatch(lineToCursor, "\s?(let|module|type)\s+[^=]+$") && not (lineToCursor.Contains("=")) then
+                return emptyResult
+            else
+
             result.IsSorted <- true
-            let filename = documentContext.Name
+
             try
-                // Try to get typed information from LanguageService (with the specified timeout)
-                let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-
-                let curVersion = editor.Version
-                let isObsolete =
-                    IsResultObsolete(fun () ->
-                    let doc = IdeApp.Workbench.GetDocument(filename)
-                    let newVersion = doc.Editor.Version
-                    if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-                    then
-                        false
-                    else
-                        LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
-                        true )
-
-                let! typedParseResults =
-                    languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, editor.Text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
+                let! (typedParseResults:ParseAndCheckResults option) 
+                    = getParseResults(editor, documentContext)
 
                 match typedParseResults with
                 | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
                 | Some tyRes ->
                     // Get declarations and generate list for MonoDevelop
-                    let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
-                    match tyRes.GetDeclarationSymbols(line, col, lineStr) with
-                    | Some (symbols, _residue) ->
+                    let! symbols = tyRes.GetDeclarationSymbols(line, col, lineStr)
+                    match symbols with
+                    | Some (symbols, residue) ->
                         let data = getCompletionData symbols
                         result.AddRange data
+
+                        if completionChar <> '.' && result.Count > 0 then
+                            result.DefaultCompletionString <- residue
+                            result.TriggerWordLength <- residue.Length
+
+                        //TODO Use previous token and pattern match to detect whitespace
+                        if Regex.IsMatch(lineToCursor, "\s+\w+$") ||
+                           Regex.IsMatch(lineToCursor, "^\w+$") then
+                            // Add the code templates and compiler generated identifiers if the completion char is not '.'
+                            CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
+                            result.AddRange compilerIdentifiers
+                                    
+                            result.AddRange keywordCompletionData
                     | None -> ()
             with
-            | :? Threading.Tasks.TaskCanceledException -> ()
+            | :? Threading.Tasks.TaskCanceledException -> 
+                ()
             | e ->
                 LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
                 () //TODOresult.Add(FSharpErrorCompletionData(e))
 
-            if completionChar = '.' then lastCharDottedInto <- dottedInto
-            else
-                // Add the code templates and compiler generated identifiers if the completion char is not '.'
-                CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-                result.AddRange compilerIdentifiers
-                result.AddRange keywordCompletionData
-            //If we are forcing completion ensure that AutoCompleteUniqueMatch is set
-            if ctrlSpace then
-                result.AutoCompleteUniqueMatch <- true
+            result.AutoCompleteUniqueMatch <- false//ctrlSpace
+
+                //| _ -> ()
             return result :> ICompletionDataList }
+
+type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
+    inherit ParameterHintingData (null)
+
+    let getTooltipInformation symbol paramIndex =
+        async {
+            match symbol with
+            | MemberFunctionOrValue _f ->
+                let tooltipInfo = SymbolTooltips.getParameterTooltipInformation symbol paramIndex
+                return tooltipInfo
+            | symbol ->
+                LoggingService.LogDebug(sprintf "FSharpParameterHintingData - CreateTooltipInformation could not create tooltip for %A" symbol.Symbol)
+                return null }
+
+    override x.ParameterCount =
+        match symbol.Symbol with
+        | :? FSharpMemberOrFunctionOrValue as fsm ->
+            let cpg = fsm.CurriedParameterGroups
+            cpg.[0].Count
+        | _ -> 0
+
+    override x.IsParameterListAllowed =
+        match symbol.Symbol with
+        | :? FSharpMemberOrFunctionOrValue as fsm 
+            when fsm.CurriedParameterGroups.Count > 0 ->
+                //TODO: How do we handle non tupled arguments?
+                let group = fsm.CurriedParameterGroups.[0] 
+                if group.Count > 0 then
+                    let last = group |> Seq.last
+                    last.IsParamArrayArg
+                else
+                    false
+        | _ -> false
+
+    override x.GetParameterName i =
+        match symbol.Symbol with
+        | :? FSharpMemberOrFunctionOrValue as fsm 
+            when fsm.CurriedParameterGroups.Count > 0 &&
+                 fsm.CurriedParameterGroups.[0].Count > 0 ->
+                //TODO: How do we handle non tupled arguments?
+                let group = fsm.CurriedParameterGroups.[0]
+                let param = group.[i]
+                match param.Name with
+                | Some n -> n
+                | None -> param.DisplayName
+        | _ -> ""
+
+    /// Returns the markup to use to represent the method overload in the parameter information window.
+    override x.CreateTooltipInformation (_editor, _context, paramIndex:int, _smartWrap:bool, cancel) =
+        Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
+
+/// Implements text editor extension for MonoDevelop that shows F# completion
+type FSharpTextEditorCompletion() =
+    inherit CompletionTextEditorExtension()
+
+    let mutable suppressParameterCompletion = false
+
+    // Until we build some functionality around a reversing tokenizer that detect this and other contexts
+    // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
+    let isAnAutoProperty (_editor: TextEditor) _offset =
+        //let line, col, txt = editor.GetLineInfoFromOffset(offset)
+        false
+    //TODO
+    //  let lastStart = editor.FindPrevWordOffset(offset)
+    //  let lastEnd = editor.FindCurrentWordEnd(lastStart)
+    //  let lastWord = editor.GetTextBetween(lastStart, lastEnd)
+
+    //  let prevStart = editor.FindPrevWordOffset(lastStart)
+    //  let prevEnd = editor.FindCurrentWordEnd(prevStart)
+    //  let previousWord = editor.GetTextBetween(prevStart, prevEnd)
+    //  lastWord = "get" && previousWord = "with"
 
     let isValidParamCompletionDecriptor (d:KeyDescriptor) =
         d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
@@ -423,38 +453,23 @@ type FSharpTextEditorCompletion() =
             return ParameterHintingResult.Empty})
 
     override x.KeyPress (descriptor:KeyDescriptor) =
-        // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'
-        let suppressMemberCompletion = lastCharDottedInto && descriptor.KeyChar = '.'
-        lastCharDottedInto <- false
-        if suppressMemberCompletion then true else
-        // base.KeyPress will execute RunParameterCompletionCommand so suppress it here.
-
         suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
         base.KeyPress (descriptor)
-  //
-  //    suppressParameterCompletion <- false
-  //    if (descriptor.KeyChar = ')' && x.CanRunParameterCompletionCommand ()) then
-  //      base.RunParameterCompletionCommand ()
-  //
-  //    result
-
+  
     // Run completion automatically when the user hits '.'
     override x.HandleCodeCompletionAsync(context, completionChar, token) =
-        if completionChar <> '.' then null else
-        let computation =
-            async {
-                if Tokens.isInvalidTipTokenAtPoint x.Editor x.DocumentContext x.Editor.CaretOffset then return null else
-                return! codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true, false, completionChar) }
-        Async.StartAsTask (computation = computation, cancellationToken = token)
+        if IdeApp.Preferences.EnableAutoCodeCompletion.Value || completionChar = '.' then
+            let computation =
+                Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, false) 
+                    
+            Async.StartAsTask (computation = computation, cancellationToken = token)
+        else
+            Task.FromResult null
 
     /// Completion was triggered explicitly using Ctrl+Space or by the function above
     override x.CodeCompletionCommand(context) =
-        let completionChar = x.Editor.GetCharAt(context.TriggerOffset - 1)
-        let completionIsDot = completionChar = '.'
-        Async.StartAsTask(
-            async {
-              if Tokens.isInvalidTipTokenAtPoint x.Editor x.DocumentContext x.Editor.CaretOffset then return null else
-              return! codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, completionIsDot, true, completionChar) } )
+        Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true)
+        |> Async.StartAsTask
 
     // Returns the index of the parameter where the cursor is currently positioned.
     // -1 means the cursor is outside the method parameter list

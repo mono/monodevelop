@@ -19,6 +19,14 @@ module FsUnit =
             | _                 -> y
         Assert.That(y, c)
 
+    let shouldnot (f : 'a -> #Constraint) x (y : obj) =
+        let c = f x
+        let y =
+            match y with
+            | :? (unit -> unit) -> box (new TestDelegate(y :?> unit -> unit))
+            | _                 -> y
+        Assert.That(y, new NotConstraint(c))
+
     let equal x = new EqualConstraint(x)
 
     // like "should equal", but validates same-type
@@ -31,11 +39,15 @@ module FsUnit =
 
     let notEqual x = new NotConstraint(new EqualConstraint(x))
 
+    let NOT c = new NotConstraint(c)
+
     let contain x = new ContainsConstraint(x)
 
     let haveLength n = Has.Length.EqualTo(n)
 
     let haveCount n = Has.Count.EqualTo(n)
+
+    let NotEmpty = Has.Length.GreaterThan(0)
 
     let endWith (s:string) = new EndsWithConstraint(s)
 
