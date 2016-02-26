@@ -7,6 +7,7 @@ namespace MonoDevelop.FSharp
 open System
 open System.Collections.Generic
 open System.Text.RegularExpressions
+open System.Threading.Tasks
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Debugger
@@ -191,8 +192,6 @@ module Completion =
             | _ -> null //FSharpTryAgainMemberCompletionData() :> ICompletionData
         symbols |> List.map symbolToCompletionData
 
-    let mutable lastCharDottedInto = false
-
     let compilerIdentifiers =
         let icon = Stock.Literal
         let compilerIdentifierCategory = SimpleCategory "Compiler Identifiers"
@@ -223,6 +222,7 @@ module Completion =
             let isObsolete =
                 IsResultObsolete(fun () ->
                 let doc = IdeApp.Workbench.GetDocument(filename)
+
                 let newVersion = doc.Editor.Version
                 if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
                 then
@@ -244,7 +244,7 @@ module Completion =
             
             let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
 
-            if not (Char.IsLetterOrDigit completionChar) && completionChar <> '.' then 
+            if not (Char.IsLetterOrDigit completionChar || ctrlSpace) && completionChar <> '.' then 
                 return emptyResult
             else
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
@@ -252,28 +252,10 @@ module Completion =
             if Regex.IsMatch(lineToCursor, "\s?(let|module|type)\s+[^=]+$") && not (lineToCursor.Contains("=")) then
                 return emptyResult
             else
-            //let completionIsDot = completionChar = '.'
 
             result.IsSorted <- true
 
-            let filename = documentContext.Name
             try
-
-                //// Try to get typed information from LanguageService (with the specified timeout)
-                //let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-
-                //let curVersion = editor.Version
-                //let isObsolete =
-                //    IsResultObsolete(fun () ->
-                //    let doc = IdeApp.Workbench.GetDocument(filename)
-                //    let newVersion = doc.Editor.Version
-                //    if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-                //    then
-                //        false
-                //    else
-                //        LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
-                //        true )
-
                 let! (typedParseResults:ParseAndCheckResults option) 
                     = getParseResults(editor, documentContext)
 
@@ -302,8 +284,6 @@ module Completion =
                 LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
                 () //TODOresult.Add(FSharpErrorCompletionData(e))
 
-            if completionChar = '.' then lastCharDottedInto <- true//dottedInto
-            
             result.AutoCompleteUniqueMatch <- false//ctrlSpace
             if completionChar <> '.' && result.Count > 0 then
                 match Parsing.findKeyword(col, lineStr) with
@@ -476,40 +456,23 @@ type FSharpTextEditorCompletion() =
             return ParameterHintingResult.Empty})
 
     override x.KeyPress (descriptor:KeyDescriptor) =
-        // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'
-        let suppressMemberCompletion = Completion.lastCharDottedInto && descriptor.KeyChar = '.'
-
-        Completion.lastCharDottedInto <- false
-        //if suppressMemberCompletion then true else
-        // base.KeyPress will execute RunParameterCompletionCommand so suppress it here.
-
         suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
         base.KeyPress (descriptor)
-  //
-  //    suppressParameterCompletion <- false
-  //    if (descriptor.KeyChar = ')' && x.CanRunParameterCompletionCommand ()) then
-  //      base.RunParameterCompletionCommand ()
-  //
-  //    result
-
+  
     // Run completion automatically when the user hits '.'
     override x.HandleCodeCompletionAsync(context, completionChar, token) =
-        let computation =
-            async {
-                //if Tokens.isInvalidTipTokenAtPoint x.Editor x.DocumentContext x.Editor.CaretOffset then return null else
-                return! Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true) 
-            }
-        Async.StartAsTask (computation = computation, cancellationToken = token)
+        if IdeApp.Preferences.EnableAutoCodeCompletion.Value || completionChar = '.' then
+            let computation =
+                Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, false) 
+                    
+            Async.StartAsTask (computation = computation, cancellationToken = token)
+        else
+            Task.FromResult null
 
     /// Completion was triggered explicitly using Ctrl+Space or by the function above
     override x.CodeCompletionCommand(context) =
-        //let completionChar = x.Editor.GetCharAt(context.TriggerOffset - 1)
-        //let completionIsDot = completionChar = '.'
-        Async.StartAsTask(
-            async {
-
-                return! Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true) 
-            } )
+        Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true)
+        |> Async.StartAsTask
 
     // Returns the index of the parameter where the cursor is currently positioned.
     // -1 means the cursor is outside the method parameter list

@@ -51,7 +51,6 @@ type ``Completion Tests``() =
                             let completeme = 1
                             let x = compl|
                         """
-       
                         
         results |> should contain "completeme"
 
