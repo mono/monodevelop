@@ -17,14 +17,6 @@ module List =
     let maxUnderThreshold nmax =
         List.maxBy(fun n -> if n > nmax then 0 else n)
         
-    let toStringWithDelims (fr: String) (sep: String) (bk: String) (xs: List<'a>) : String =
-        let rec toSWD acc ys =
-            match ys with
-            | []       -> acc
-            | [z]      -> sprintf "%s%A" acc z
-            | y::z::zs -> toSWD (sprintf "%s%A%s" acc y sep) (z::zs)
-        fr + toSWD "" xs + bk
-        
 module Option =
     let inline getOrElse f o =
         match o with
