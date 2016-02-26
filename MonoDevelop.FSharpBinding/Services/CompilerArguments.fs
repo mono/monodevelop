@@ -415,13 +415,19 @@ module CompilerArguments =
            | _ -> ()
        | None -> () ]
 
-  let getArgumentsFromProject (proj:DotNetProject) =
-        let config =
-            match MonoDevelop.Ide.IdeApp.Workspace with
+  let getConfig() =
+      match MonoDevelop.Ide.IdeApp.Workspace with
             | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
             | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
-
+       
+  let getArgumentsFromProject (proj:DotNetProject) =
+        let config = getConfig()
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
         generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
+        
+  let getReferencesFromProject (proj:DotNetProject) =
+        let config = getConfig()
+        let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
+        generateReferences(proj, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
 
