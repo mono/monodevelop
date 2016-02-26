@@ -23,11 +23,12 @@ type ``Completion Tests``() =
         editor.CaretOffset <- offset
         let ctx = new CodeCompletionContext()
         ctx.TriggerOffset <- offset
-        //ctx.TriggerLine <- editor.CaretLine
+
         let results =
             Completion.codeCompletionCommandImpl(editor, doc, ctx, true)
             |> Async.RunSynchronously
             |> Seq.map (fun c -> c.DisplayText)
+
         results |> Seq.iter (fun r -> printfn "%s" r)
 
         results |> Seq.toList
@@ -45,6 +46,8 @@ type ``Completion Tests``() =
                             let completeme = 1
                             let x = compl|
                         """
+       
+                        
         results |> should contain "completeme"
 
     [<TestCase("let x|")>]
@@ -57,6 +60,7 @@ type ``Completion Tests``() =
         results |> should be Empty
 
     [<TestCase("let x = s|")>]
+    [<TestCase("let x = \"\".|.")>]
     member x.``Not empty completions``(input: string) =
         let results = getCompletions input
         results |> shouldnot be Empty

@@ -27,7 +27,7 @@ module Tokens =
                   // so tokenize the current line now
                   getTokens() |> Lexer.findTokenAt col
 
-    let isInvalidTipTokenAtPoint (editor:TextEditor) (context:DocumentContext) offset noTokenDefault =
+    let isInvalidTipTokenAtPoint (editor:TextEditor) (context:DocumentContext) offset =
         match getTokenAtPoint editor context offset with 
         | Some token -> Lexer.isNonTipToken token
         | None -> true

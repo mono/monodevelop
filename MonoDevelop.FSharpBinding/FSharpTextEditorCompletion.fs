@@ -26,7 +26,7 @@ module Completion =
     
         /// Check if the datatip has multiple overloads
         override x.HasOverloads = not (List.isEmpty overloads)
-    
+
         /// Split apart the elements into separate overloads
         override x.OverloadedData =
             overloads
@@ -215,18 +215,21 @@ module Completion =
 
     let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
-            //if Tokens.isInvalidTipTokenAtPoint editor documentContext editor.CaretOffset then 
-            //    return null 
-            //else
             let result = CompletionDataList()
             let emptyResult = result :> ICompletionDataList
+            let token = Tokens.getTokenAtPoint editor documentContext editor.CaretOffset
+            if Tokens.isInvalidCompletionToken token then 
+                return emptyResult
+            else
+            
             let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
+
             if not (Char.IsLetterOrDigit completionChar) && completionChar <> '.' then 
                 return emptyResult
             else
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
             let lineToCursor = lineStr.Substring (0,col)
-            if Regex.IsMatch(lineToCursor, "\s?let\s+[^=]+$") && not (lineToCursor.Contains("=")) then
+            if Regex.IsMatch(lineToCursor, "\s?(let|module|type)\s+[^=]+$") && not (lineToCursor.Contains("=")) then
                 return emptyResult
             else
             //let completionIsDot = completionChar = '.'
@@ -258,17 +261,19 @@ module Completion =
                 | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
                 | Some tyRes ->
                     // Get declarations and generate list for MonoDevelop
-                    //let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
-                    match tyRes.GetDeclarationSymbols(line, col, lineStr) with
+                    let! symbols = tyRes.GetDeclarationSymbols(line, col, lineStr)
+                    match symbols with
                     | Some (symbols, _residue) ->
                         let data = getCompletionData symbols
                         result.AddRange data
-
-                        // Add the code templates and compiler generated identifiers if the completion char is not '.'
-                        CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-                        result.AddRange compilerIdentifiers
-        
-                        result.AddRange keywordCompletionData
+                        //TODO Use previous token and pattern match to detect whitespace
+                        if Regex.IsMatch(lineToCursor, "\s+\w+$") ||
+                           Regex.IsMatch(lineToCursor, "^\w+$") then
+                            // Add the code templates and compiler generated identifiers if the completion char is not '.'
+                            CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
+                            result.AddRange compilerIdentifiers
+                                    
+                            result.AddRange keywordCompletionData
                     | None -> ()
             with
             | :? Threading.Tasks.TaskCanceledException -> 
@@ -485,7 +490,7 @@ type FSharpTextEditorCompletion() =
         Async.StartAsTask(
             async {
 
-                return! Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext,context, true) 
+                return! Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true) 
             } )
 
     // Returns the index of the parameter where the cursor is currently positioned.
