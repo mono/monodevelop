@@ -170,7 +170,7 @@ module Lexer =
     
     let findTokenAt col (tokens:FSharpTokenInfo list) =
         let isTokenAtOffset col (t:FSharpTokenInfo) = col-1 >= t.LeftColumn && col-1 <= t.RightColumn
-        tokens |> List.tryFind (isTokenAtOffset col)
+        tokens |> List.tryFindBack (isTokenAtOffset col)
       
     let isNonTipToken token =
         token.ColorClass = FSharpTokenColorKind.Comment || token.ColorClass = FSharpTokenColorKind.String ||
