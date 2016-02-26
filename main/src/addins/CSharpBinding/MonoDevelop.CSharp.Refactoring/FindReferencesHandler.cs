@@ -38,6 +38,7 @@ using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -95,7 +96,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						monitor.Dispose ();
 				}
 			});
-		}		
+		}
 
 		public void Update (CommandInfo info)
 		{
@@ -120,9 +121,18 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
 					FindRefs (sym);
 				} else {
-					RefactoringService.FindReferencesAsync (sym.GetDocumentationCommentId ());
+					RefactoringService.FindReferencesAsync (FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 				}
 			}
+		}
+
+		internal static ISymbol FilterSymbolForFindReferences (ISymbol sym)
+		{
+			var meth = sym as IMethodSymbol;
+			if (meth != null && meth.IsReducedExtension ()) {
+				return meth.ReducedFrom;
+			}
+			return sym;
 		}
 	}
 
@@ -154,7 +164,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
 					FindReferencesHandler.FindRefs (sym);
 				} else {
-					RefactoringService.FindAllReferencesAsync (sym.GetDocumentationCommentId ());
+					RefactoringService.FindAllReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 				}
 			}
 		}
