@@ -235,29 +235,24 @@ type FSharpInteractivePad() as this =
         let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
         
         let references =
-            let getAbsProjRefs (proj:DotNetProject) =
-                proj.GetReferencedAssemblies(ConfigurationSelector.Default, true)
-                |> Async.AwaitTask
-                |> Async.RunSynchronously
-                |> Seq.map (makeAbsolute (proj.BaseDirectory.ToString()))
-        
-            let projRefAssemblies =
-                project.References
-                |> Seq.filter (fun refs -> refs.ReferenceType = ReferenceType.Project)
-                |> Seq.map (fun refs -> IdeApp.Workspace.GetAllProjects()
-                                        |> Seq.find (fun proj -> proj.Name = refs.Reference && proj :? DotNetProject) :?> DotNetProject)
-                |> Seq.collect getAbsProjRefs
-        
-            getAbsProjRefs project
-            |> Seq.append projRefAssemblies
-            |> Seq.filter (fun ref ->  not (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll") )
-            |> Seq.distinct
-            |> Seq.toArray
-        
+            let args =
+                CompilerArguments.getReferencesFromProject project
+                |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
+                                          then None
+                                          else
+                                              let ref = ref |> String.replace "-r:" ""
+                                              if File.Exists ref then Some ref
+                                              else None )
+                |> Seq.distinct
+                |> Seq.toArray
+            args
+
         let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
         let orderedreferences = orderAssemblyReferences.Order references
         ensureCorrectDirectory()
-        sendCommand orderedreferences
+        orderedreferences
+        |> List.iter (fun a -> sendCommand (sprintf  """#r @"%s";;""" a.Path ))
+
 
     member x.IsValidSession = !session |> Option.isSome
 
