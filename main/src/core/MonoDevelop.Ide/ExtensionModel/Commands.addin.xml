@@ -129,9 +129,6 @@
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines"
 			_description = "Sort the selected lines"
 			_label = "_Sort Lines" />
-	<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
-			_label = "_Word Count..."
-			description = "Count words in a text file"/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid"
 			_label = "_Insert Guid"
 			description = "Inserts a Guid at caret position"/>
