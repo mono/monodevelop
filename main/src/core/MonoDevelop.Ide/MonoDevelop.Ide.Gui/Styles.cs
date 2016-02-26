@@ -49,6 +49,13 @@ namespace MonoDevelop.Ide.Gui
 		public static Color ErrorForegroundColor { get; internal set; }
 		public static Color WarningForegroundColor { get; internal set; }
 		public static Color InformationForegroundColor { get; internal set; }
+
+		public static Color ErrorBoxForegroundColor { get; internal set; }
+		public static Color ErrorBoxBackgroundColor { get; internal set; }
+		public static Color WarningBoxForegroundColor { get; internal set; }
+		public static Color WarningBoxBackgroundColor { get; internal set; }
+		public static Color InformationBoxForegroundColor { get; internal set; }
+		public static Color InformationBoxBackgroundColor { get; internal set; }
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
 		public static string DefaultFontName { get; internal set; }
@@ -414,6 +421,13 @@ namespace MonoDevelop.Ide.Gui
 			WarningForegroundColor = Color.FromName ("#a08000");
 			InformationForegroundColor = Color.FromName ("#5785bd");
 
+			ErrorBoxForegroundColor = Color.FromName ("#ffffff"); // TODO: VV
+			ErrorBoxBackgroundColor = Color.FromName ("#e27267"); // TODO: VV
+			WarningBoxForegroundColor = Color.FromName ("#563b00"); // TODO: VV
+			WarningBoxBackgroundColor = Color.FromName ("#efd46c"); // TODO: VV
+			InformationBoxForegroundColor = Color.FromName ("#ffffff"); // TODO: VV
+			InformationBoxBackgroundColor = Color.FromName ("#5785bd"); // TODO: VV
+
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
 			StatusInformationTextColor = BaseBackgroundColor;
@@ -512,6 +526,13 @@ namespace MonoDevelop.Ide.Gui
 			ErrorForegroundColor = Color.FromName ("#ff866b");
 			WarningForegroundColor = Color.FromName ("#ffd21c");
 			InformationForegroundColor = Color.FromName ("#9cc8ff");
+
+			ErrorBoxForegroundColor = Color.FromName ("#ffffff"); // TODO: VV
+			ErrorBoxBackgroundColor = Color.FromName ("#ff866b"); // TODO: VV
+			WarningBoxForegroundColor = Color.FromName ("#563b00"); // TODO: VV
+			WarningBoxBackgroundColor = Color.FromName ("#ffd21c"); // TODO: VV
+			InformationBoxForegroundColor = Color.FromName ("#ffffff"); // TODO: VV
+			InformationBoxBackgroundColor = Color.FromName ("#6c99c5"); // TODO: VV
 
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
