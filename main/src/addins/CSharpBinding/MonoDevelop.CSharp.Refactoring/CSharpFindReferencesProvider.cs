@@ -256,6 +256,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 				foreach (var simSym in SymbolFinder.FindSimilarSymbols (lookup.Symbol, lookup.Compilation)) {
 					foreach (var loc in simSym.Locations) {
+						if (!loc.IsInSource)
+							continue;
 						var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 						if (antiDuplicatesSet.Add (sr)) {
 							result.Add (sr);

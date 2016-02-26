@@ -245,13 +245,13 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
 						FindReferencesHandler.FindRefs (sym);
 					} else {
-						RefactoringService.FindReferencesAsync (sym.GetDocumentationCommentId ());
+						RefactoringService.FindReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
 					}
 
 				}));
 				try {
 					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, semanticModel.Compilation).Count () > 1)
-						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => RefactoringService.FindAllReferencesAsync (sym.GetDocumentationCommentId ())));
+						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => RefactoringService.FindAllReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ())));
 				} catch (Exception) {
 					// silently ignore roslyn bug.
 				}
