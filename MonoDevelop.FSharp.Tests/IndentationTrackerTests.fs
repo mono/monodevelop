@@ -78,5 +78,5 @@ let b = (fun a ->
         let input = """  let a = §123"""
         input
         |> insertEnterAtSection
-        |> should equal """  let a = 
+        |> shouldEqualIgnoringLineEndings """  let a = 
   123"""
