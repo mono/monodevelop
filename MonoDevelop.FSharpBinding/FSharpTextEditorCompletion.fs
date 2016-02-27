@@ -16,6 +16,7 @@ open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.CodeCompletion
+open Mono.TextEditor
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module Completion = 
@@ -212,32 +213,49 @@ module Completion =
         [for keyValuePair in KeywordList.keywordDescriptions do
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
-    let getParseResults (editor:TextEditor, documentContext:DocumentContext) =
+    let getParseResults (documentContext:DocumentContext, text, editorVersion) =
         async {
             let filename = documentContext.Name
             // Try to get typed information from LanguageService (with the specified timeout)
             let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
 
-            let curVersion = editor.Version
             let isObsolete =
                 IsResultObsolete(fun () ->
                 let doc = IdeApp.Workbench.GetDocument(filename)
 
                 let newVersion = doc.Editor.Version
-                if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+                if newVersion.BelongsToSameDocumentAs(editorVersion) && newVersion.CompareAge(editorVersion) = 0
                 then
                     false
                 else
                     LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
                     true )
-            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, editor.Text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
+            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
         }
+
+    let fixEditorText (editor: TextEditor) =
+        let missingBraceCount text =
+                let accumulator acc c =
+                    if c = '(' then acc + 1
+                    elif c = ')' then (acc - 1)
+                    else acc
+                Seq.fold accumulator 0 text
+
+        let count = missingBraceCount editor.Text
+
+        if count > 0 then
+            let data = new TextEditorData()
+            data.Text <- editor.Text
+            data.Insert(editor.CaretOffset, String(')', count)) |> ignore
+            data.Text
+        else
+            editor.Text
 
     let codeCompletionCommandImpl(getParseResults, editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
             let result = CompletionDataList()
             let emptyResult = result :> ICompletionDataList
-            let token = Tokens.getTokenAtPoint editor documentContext editor.CaretOffset
+            let token = Tokens.getTokenAtPoint editor documentContext context.TriggerOffset
             if Tokens.isInvalidCompletionToken token then 
                 return emptyResult
             else
@@ -249,7 +267,7 @@ module Completion =
             else
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
             let lineToCursor = lineStr.Substring (0,col)
-            if Regex.IsMatch(lineToCursor, "\s?(let|module|type)\s+[^=]+$") && not (lineToCursor.Contains("=")) then
+            if Regex.IsMatch(lineToCursor, "\s?(fun|let|module|type)\s+[^=]+$") && not (lineToCursor.Contains("=")) then
                 return emptyResult
             else
 
@@ -257,7 +275,7 @@ module Completion =
 
             try
                 let! (typedParseResults:ParseAndCheckResults option) 
-                    = getParseResults(editor, documentContext)
+                    = getParseResults(documentContext, fixEditorText editor, editor.Version)
 
                 match typedParseResults with
                 | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
