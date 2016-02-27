@@ -10,9 +10,8 @@ open MonoDevelop.Ide.CodeCompletion
 open FsUnit
 open MonoDevelop
         
-
 type ``Completion Tests``() =
-    let getParseResults (editor:TextEditor, documentContext:DocumentContext) =
+    let getParseResults (documentContext:DocumentContext, _text, _version) =
         async {
             return documentContext.TryGetAst()
         }
@@ -33,8 +32,6 @@ type ``Completion Tests``() =
             Completion.codeCompletionCommandImpl(getParseResults, editor, doc, ctx, false)
             |> Async.RunSynchronously
             |> Seq.map (fun c -> c.DisplayText)
-
-        results |> Seq.iter (fun r -> printfn "%s" r)
 
         results |> Seq.toList
 
@@ -88,3 +85,18 @@ type ``Completion Tests``() =
     member x.``Keywords appear at column 0``() =
         let results = getCompletions @"o|"
         results |> should contain "open"
+
+    [<Test>]
+    member x.``Completes local identifier with mismatched parens``() =
+        let identifier = 1
+
+        let results = getCompletions
+                        """
+                        type rectangle(width, height) =
+                            class end
+
+                        module s =
+                            let height = 10
+                            let x = rectangle(he|
+                        """
+        results |> should contain "height"

@@ -20,6 +20,7 @@ type FakePad() =
     do view.InitialiseEvents()
 
     static member private Pad =
+
         try let pad = IdeApp.Workbench.GetPad<FakePad>()
             if pad <> null then Some(pad)
             else
@@ -68,7 +69,6 @@ type FakePad() =
         match view.Child with
         | :? Gtk.TextView as v ->
             let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme.Value)
-
             let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", false)
             let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
             let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
@@ -86,7 +86,8 @@ type FakePad() =
     member x.UpdateFont() =
         let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
         let fontName = PropertyService.Get ("FSharpBinding.FsiFontName", fontName)
-        LoggingService.LogDebug ("FAKE task runner: Loading font '{0}'", fontName)
+        LoggingService.logDebug "FAKE task runner: Loading font '%s'" fontName
+
         let font = Pango.FontDescription.FromString(fontName)
         view.SetFont(font)
 
