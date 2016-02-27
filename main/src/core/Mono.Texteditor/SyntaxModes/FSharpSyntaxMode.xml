@@ -297,7 +297,6 @@
 		<Group color="User Method Declaration"/>
 	</Match>
 
-	
 	<Match expression="(let)(\s)(?!(?:static|abstract|default|override|public|extern|internal|mutable|rec|inline|private))(\w+|``[^`]*``)\s[^=]" ignorecase="False">
 		<!-- let add x y = x + y -->
 		<Group color="Keyword(Iteration)"/>
@@ -320,8 +319,13 @@
 		<Group color="Plain Text"/>
 		<Group color="User Types"/>
 	</Match>
-	
-	<Match expression="(&lt;)([^_&lt;&gt;]\w*)">
+
+	<!-- |> |< << >> <= >= <- -> :?> -->
+	<Match color="Punctuation(Brackets)">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
+	<Match expression="(\&lt;\-)">
+		<Group color="Punctuation(Brackets)"/>
+	</Match>
+	<Match expression="(&lt;)([^-_&lt;&gt;]\w*)">
 		<Group color="Punctuation(Brackets)"/>
 		<Group color="User Types"/>
 	</Match>
@@ -333,7 +337,7 @@
 		<Group color="Plain Text"/>
 	</Match>
 	
-	<Match expression="(module|type)(\s*)(\w+|``[^`]``)" ignorecase="False">
+	<Match expression="(module|type)(\s+)(\w+|``[^`]``)" ignorecase="False">
 		<Group color="Keyword(Namespace)"/>
 		<Group color="Plain Text"/>
 		<Group color="User Types"/>
@@ -379,7 +383,5 @@
 		<Group color="User Property Declaration"/>
 	</Match>
 	
-	<!-- |> |< << >> <= >= <- -> :?> -->
-	<Match color="Punctuation(Brackets)">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
 
 </SyntaxMode>
