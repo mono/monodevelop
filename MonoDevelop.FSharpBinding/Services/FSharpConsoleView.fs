@@ -184,10 +184,8 @@ type FSharpConsoleView() as x =
 
     member x.InitialiseEvents() =
         disposables.Add(
-            PropertyService.PropertyChanged.Subscribe
-              (fun _ (eventArgs:PropertyChangedEventArgs) ->
-                if eventArgs.Key = "ColorScheme-Dark" ||
-                   eventArgs.Key = "ColorScheme" && eventArgs.OldValue <> eventArgs.NewValue then
+            IdeApp.Preferences.ColorScheme.Changed.Subscribe
+              (fun _ (eventArgs:EventArgs) ->
                     updateColors()
                     x.ShowAll()))
 
