@@ -132,6 +132,9 @@ namespace MonoDevelop.Xml.Editor
 						DocumentContext.AttachToProject (pp);
 				}
 			}
+			if (DocumentContext == null) {
+				return;//This can happen if this object is disposed, which is likely to happen in DocumentContext.AttachToProject (pp);
+			}
 			if (DocumentContext.Project == null && ownerProjects.Count > 0)
 				DocumentContext.AttachToProject (ownerProjects[0]);
 			UpdatePath ();
