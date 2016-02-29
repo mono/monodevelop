@@ -55,8 +55,11 @@ type FSharpCompilerParameters() =
         x.DefineConstants <- x.DefineConstants.Replace(";" + symbol, "")
 
   override x.GetDefineSymbols () =
-      x.DefineConstants.Split (';', ',', ' ', '\t')
-      |> Seq.where (String.IsNullOrWhiteSpace >> not)
+      if String.IsNullOrWhiteSpace x.DefineConstants then
+        Seq.empty
+      else
+        x.DefineConstants.Split (';', ',', ' ', '\t')
+        |> Seq.where (String.IsNullOrWhiteSpace >> not)
 
   override x.CreateCompilationOptions () =
       null //TODO
