@@ -141,7 +141,7 @@ namespace MonoDevelop.UnitTesting
 					UnitTestResult res;
 					try {
 						res = OnRunChildTest (t, testContext);
-						if (testContext.Monitor.IsCancelRequested)
+						if (testContext.Monitor.CancellationToken.IsCancellationRequested)
 							break;
 					} catch (Exception ex) {
 						res = UnitTestResult.CreateFailure (ex);

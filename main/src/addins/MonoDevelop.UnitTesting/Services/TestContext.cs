@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.UnitTesting
@@ -39,13 +40,13 @@ namespace MonoDevelop.UnitTesting
 		ITestProgressMonitor monitor;
 		DateTime testDate;
 		object contextData;
-		IExecutionHandler executionContext;
+		MonoDevelop.Projects.ExecutionContext executionContext;
 
-		internal TestContext (ITestProgressMonitor monitor, TestResultsPad resultsPad, IExecutionHandler executionContext, DateTime testDate)
+		internal TestContext (ITestProgressMonitor monitor, TestResultsPad resultsPad, MonoDevelop.Projects.ExecutionContext executionContext, DateTime testDate)
 		{
 			this.monitor = monitor;
 			if (executionContext == null)
-				executionContext = Runtime.ProcessService.DefaultExecutionHandler;
+				executionContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
 			this.executionContext = executionContext;
 			// Round to seconds
 			this.testDate = new DateTime ((testDate.Ticks / TimeSpan.TicksPerSecond) * TimeSpan.TicksPerSecond);
@@ -64,7 +65,7 @@ namespace MonoDevelop.UnitTesting
 			set { contextData = value; }
 		}
 		
-		public IExecutionHandler ExecutionContext {
+		public ExecutionContext ExecutionContext {
 			get { return executionContext; }
 		}
 	}

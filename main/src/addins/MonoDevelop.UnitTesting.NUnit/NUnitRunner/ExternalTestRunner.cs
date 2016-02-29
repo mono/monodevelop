@@ -159,10 +159,9 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		
 		public void TestOutput (TestOutput testOutput)
 		{
-			if (consoleOutput == null) {
-				Console.WriteLine (testOutput.Text);
+			Console.WriteLine (testOutput.Text);
+			if (consoleOutput == null)
 				return;
-			}
 			else if (testOutput.Type == TestOutputType.Out)
 				consoleOutput.Append (testOutput.Text);
 			else

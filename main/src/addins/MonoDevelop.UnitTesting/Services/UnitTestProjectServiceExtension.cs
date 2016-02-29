@@ -97,7 +97,7 @@ namespace MonoDevelop.UnitTesting
 			if (test != null) {
 				var cs = new CancellationTokenSource ();
 				using (monitor.CancellationToken.Register (cs.Cancel))
-					await UnitTestService.RunTest (test, context.ExecutionHandler, false, false, cs);
+					await UnitTestService.RunTest (test, context, false, false, cs);
 			}
 		}
 
