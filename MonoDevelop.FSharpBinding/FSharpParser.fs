@@ -15,7 +15,10 @@ module ParsedDocument =
     let private formatError (error : FSharpErrorInfo) =
         let errorType = if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error else ErrorType.Warning
         Error(errorType, String.wrapText error.Message 80, DocumentRegion (error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
-       
+    
+    let inline private isMoreThanNLines n (range:Range.range) =
+        range.EndLine - range.StartLine > n
+        
     let create (parseOptions: ParseOptions) (parseResults: ParseAndCheckResults) defines =
       //Try creating tokens
         async {
@@ -48,9 +51,11 @@ module ParsedDocument =
                         FoldingRegion(decl.Name, DocumentRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
 
                     seq { for toplevel in parseResults.GetNavigationItems() do
-                              yield processDecl toplevel.Declaration
+                              if toplevel.Declaration.Range |> isMoreThanNLines 1
+                              then yield processDecl toplevel.Declaration
                               for next in toplevel.Nested do
-                                  yield processDecl next }
+                                  if next.Range |> isMoreThanNLines 1
+                                  then yield processDecl next }
                 regions |> doc.AddRange
             with ex -> LoggingService.LogWarning ("FSharpParser: Couldn't update navigation items.", ex)
             //Store the AST of active results
