@@ -17,10 +17,10 @@ type ``Completion Tests``() =
         }
 
     let getCompletions (input: string) =
-        let offset = input.IndexOf "|"
+        let offset = input.LastIndexOf "|"
         if offset = -1 then
             failwith "Input must contain a |"
-        let input = input.Replace("|", "")
+        let input = input.Remove(offset, 1)
         let doc = TestHelpers.createDoc input "defined"
         let editor = doc.Editor
         editor.CaretOffset <- offset
@@ -59,6 +59,8 @@ type ``Completion Tests``() =
     [<TestCase("member x|")>]
     [<TestCase("override x|")>]
     [<TestCase("1|")>]
+    [<TestCase("fun c|")>]
+
     member x.``Empty completions``(input: string) =
         let results = getCompletions input
         results |> should be Empty
@@ -95,6 +97,12 @@ type ``Completion Tests``() =
     member x.``Completes modifiers``() =
         let results = getCompletions @"let mut|"
         results |> should contain "mutable"
+
+    [<Test>]
+    member x.``Completes lambda``() =
+        let results = getCompletions @"let x = ""string"" |> Seq.map (fun c -> c.|"
+        results |> should contain "ToString"
+        results |> shouldnot contain "mutable"
 
     [<Test>]
     member x.``Completes local identifier with mismatched parens``() =
