@@ -44,8 +44,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		{
 			return false;
 		}
-
-		public override async Task<bool> IsExclusiveAsync (Document document, int position, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		public override async Task<bool> IsExclusiveAsync (CompletionContext completionContext, SyntaxContext syntaxContext, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
 		{
 			// We're exclusive if this context could only be an object initializer and not also a
 			// collection initializer. If we're initializing something that could be initialized as
@@ -69,6 +68,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			// initializer. Since we don't know which the user will use, we'll be non-exclusive, so
 			// the other providers can help the user write the collection initializer, if they want
 			// to.
+			var document = completionContext.Document;
+			var position = completionContext.Position;
 			var tree = await document.GetCSharpSyntaxTreeAsync (cancellationToken).ConfigureAwait (false);
 
 			if (tree.IsInNonUserCode (position, cancellationToken)) {

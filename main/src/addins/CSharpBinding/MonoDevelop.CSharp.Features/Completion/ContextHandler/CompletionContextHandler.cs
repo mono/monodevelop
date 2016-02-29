@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return false;
 		}
 
-		public virtual Task<bool> IsExclusiveAsync(Document document, int position, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		public virtual Task<bool> IsExclusiveAsync(CompletionContext completionContext, SyntaxContext syntaxContext, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
 		{
 			return Task.FromResult (false);
 		}
