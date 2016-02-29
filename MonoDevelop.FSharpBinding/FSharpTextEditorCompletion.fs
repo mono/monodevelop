@@ -346,8 +346,7 @@ module Completion =
                                 result.TriggerWordLength <- residue.Length
 
                             //TODO Use previous token and pattern match to detect whitespace
-                            if Regex.IsMatch(lineToCaret, "\s+\w+$") ||
-                               Regex.IsMatch(lineToCaret, "^\w+$") then
+                            if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$") then
                                 // Add the code templates and compiler generated identifiers if the completion char is not '.'
                                 CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
                                 result.AddRange compilerIdentifiers

@@ -94,6 +94,11 @@ type ``Completion Tests``() =
         results |> should contain "open"
 
     [<Test>]
+    member x.``Keywords can be parameters``() =
+        let results = getCompletions @"let x = new System.IO.FileInfo(n|"
+        results |> should contain "null"
+
+    [<Test>]
     member x.``Completes modifiers``() =
         let results = getCompletions @"let mut|"
         results |> should contain "mutable"
