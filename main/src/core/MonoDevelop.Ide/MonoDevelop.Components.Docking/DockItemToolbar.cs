@@ -194,6 +194,11 @@ namespace MonoDevelop.Components.Docking
 			set { button.Label = value; }
 		}
 
+		public bool Sensitive {
+			get { return button.Sensitive; }
+			set { button.Sensitive = value; }
+		}
+
 		Gtk.Button button;
 
 		public DockToolButton (string stockId) : this (stockId, null)
