@@ -17,6 +17,7 @@ open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.CodeCompletion
 open Mono.TextEditor
+open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module Completion = 
@@ -43,7 +44,7 @@ module Completion =
         inherit CompletionCategory(text, null)
         override x.CompareTo other =
             if other = null then -1 else x.DisplayText.CompareTo other.DisplayText
-    
+           
     type Category(text, s:FSharpSymbol) =
         inherit CompletionCategory(text, null)
     
@@ -213,24 +214,12 @@ module Completion =
         [for keyValuePair in KeywordList.keywordDescriptions do
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
-    let getParseResults (documentContext:DocumentContext, text, editorVersion) =
+    let getParseResults (documentContext:DocumentContext, text) =
         async {
             let filename = documentContext.Name
             // Try to get typed information from LanguageService (with the specified timeout)
             let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-
-            let isObsolete =
-                IsResultObsolete(fun () ->
-                let doc = IdeApp.Workbench.GetDocument(filename)
-
-                let newVersion = doc.Editor.Version
-                if newVersion.BelongsToSameDocumentAs(editorVersion) && newVersion.CompareAge(editorVersion) = 0
-                then
-                    false
-                else
-                    LoggingService.LogDebug ("FSharpTextEditorCompletion - codeCompletionCommandImpl: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
-                    true )
-            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
+            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false))
         }
 
     let fixEditorText (editor: TextEditor) =
@@ -251,32 +240,76 @@ module Completion =
         else
             editor.Text
 
-    let codeCompletionCommandImpl(getParseResults, editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, ctrlSpace) =
+    // cache parse results for current filename/line number
+    let mutable parseCache: FilePath * int * ParseAndCheckResults option = (Unchecked.defaultof<FilePath>, -1, None) 
+
+    let parseLock = obj()
+
+    let shouldComplete (editor, context:CodeCompletionContext, ctrlSpace) =
+        let isValidToken() =
+            let token = Tokens.getTokenAtPoint editor editor.DocumentContext context.TriggerOffset
+            not (Tokens.isInvalidCompletionToken token)
+
+        let isValidCompletionChar() =
+            let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
+            (Char.IsLetter completionChar || ctrlSpace) || completionChar = '.'
+
+        let _line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
+        let lineToCaret = lineStr.Substring (0,col)
+        let isFunModuleOrTypeIdentifier()  =
+            Regex.IsMatch(lineToCaret, "\s?(fun|module|type)\s+[^=]+$") && not (lineToCaret.Contains("="))
+
+        let isLetIdentifier() =
+            if Regex.IsMatch(lineToCaret, "\s?(let|override|member)\s+[^=]+$") 
+                 && not (lineToCaret.Contains("=")) then
+                 let document = new TextDocument(lineToCaret)
+                 let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
+     
+                 let documentLine = document.GetLine 1
+                 let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, col, lineToCaret.Length)
+                                  |> Seq.map (fun c -> c.Style)   
+                                  |> Seq.head
+                 chunkStyle <> "User Types"
+            else
+                false
+
+        isValidCompletionChar() &&
+        isValidToken() &&
+        not (isFunModuleOrTypeIdentifier()) &&
+        not (isLetIdentifier())
+
+    let codeCompletionCommandImpl(getParseResults, editor, documentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
             let result = CompletionDataList()
             let emptyResult = result :> ICompletionDataList
-            let token = Tokens.getTokenAtPoint editor documentContext context.TriggerOffset
-            if Tokens.isInvalidCompletionToken token then 
-                return emptyResult
-            else
-            
-            let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
-
-            if not (Char.IsLetterOrDigit completionChar || ctrlSpace) && completionChar <> '.' then 
+            if not (shouldComplete(editor, context, ctrlSpace)) then
                 return emptyResult
             else
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
-            let lineToCursor = lineStr.Substring (0,col)
-            if Regex.IsMatch(lineToCursor, "\s?(fun|let|module|type)\s+[^=]+$") && not (lineToCursor.Contains("=")) then
-                return emptyResult
-            else
-
+            let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
+            let lineToCaret = lineStr.Substring (0,col)
             result.IsSorted <- true
 
             try
-                let! (typedParseResults:ParseAndCheckResults option) 
-                    = getParseResults(documentContext, fixEditorText editor, editor.Version)
+                let! (typedParseResults: ParseAndCheckResults option) =
+                    lock parseLock (fun() ->
+                        async {
+                            match parseCache with
+                            | (filename, lastLine, parseResults) when lastLine = line && filename = editor.FileName -> 
+                                LoggingService.logDebug "Completion: got parse results from cache"
 
+                                return parseResults
+                            | _ -> 
+                                let! (parseResults: ParseAndCheckResults option) = 
+                                    getParseResults(documentContext, fixEditorText editor)
+                                match parseResults with
+                                | Some _ -> parseCache <- (editor.FileName, line, parseResults)
+                                            LoggingService.logDebug "Completion: got some parse results"
+                                            return parseResults
+                                | None -> LoggingService.logDebug "Completion: got no parse results"
+                                          return None
+                        })
+                 
                 match typedParseResults with
                 | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
                 | Some tyRes ->
@@ -288,12 +321,13 @@ module Completion =
                         result.AddRange data
 
                         if completionChar <> '.' && result.Count > 0 then
+                            LoggingService.logDebug "Completion: residue %s" residue
                             result.DefaultCompletionString <- residue
                             result.TriggerWordLength <- residue.Length
 
                         //TODO Use previous token and pattern match to detect whitespace
-                        if Regex.IsMatch(lineToCursor, "\s+\w+$") ||
-                           Regex.IsMatch(lineToCursor, "^\w+$") then
+                        if Regex.IsMatch(lineToCaret, "\s+\w+$") ||
+                           Regex.IsMatch(lineToCaret, "^\w+$") then
                             // Add the code templates and compiler generated identifiers if the completion char is not '.'
                             CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
                             result.AddRange compilerIdentifiers
@@ -306,10 +340,9 @@ module Completion =
             | e ->
                 LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
                 () //TODOresult.Add(FSharpErrorCompletionData(e))
+            result.AutoCompleteEmptyMatch <- false
+            result.AutoCompleteUniqueMatch <- ctrlSpace
 
-            result.AutoCompleteUniqueMatch <- false//ctrlSpace
-
-                //| _ -> ()
             return result :> ICompletionDataList }
 
 type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
@@ -359,7 +392,7 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
         | _ -> ""
 
     /// Returns the markup to use to represent the method overload in the parameter information window.
-    override x.CreateTooltipInformation (_editor, _context, paramIndex:int, _smartWrap:bool, cancel) =
+    override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
         Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
 
 /// Implements text editor extension for MonoDevelop that shows F# completion
@@ -429,22 +462,22 @@ type FSharpTextEditorCompletion() =
             LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
 
             let filename = x.DocumentContext.Name
-            let curVersion = x.Editor.Version
-            let isObsolete =
-                IsResultObsolete(fun () ->
-                let doc = IdeApp.Workbench.GetDocument(filename)
-                let newVersion = doc.Editor.Version
-                if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-                then
-                    false
-                else
-                    LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
-                    true )
+            //let curVersion = x.Editor.Version
+            //let isObsolete =
+            //    IsResultObsolete(fun () ->
+            //    let doc = IdeApp.Workbench.GetDocument(filename)
+            //    let newVersion = doc.Editor.Version
+            //    if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+            //    then
+            //        false
+            //    else
+            //        LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+            //        true )
 
             // Try to get typed result - within the specified timeout
             let! methsOpt =
                 async { let projectFile = x.DocumentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-                        let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, isObsolete)
+                        let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false) )
                         match tyRes with
                         | Some tyRes ->
                             let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
