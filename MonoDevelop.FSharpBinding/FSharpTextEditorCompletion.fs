@@ -226,23 +226,23 @@ module Completion =
             return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false))
         }
 
-    let fixEditorText (editor: TextEditor) =
-        let missingBraceCount text =
-                let accumulator acc c =
-                    if c = '(' then acc + 1
-                    elif c = ')' then (acc - 1)
-                    else acc
-                Seq.fold accumulator 0 text
+    //let fixEditorText (editor: TextEditor) =
+    //    let missingBraceCount text =
+    //            let accumulator acc c =
+    //                if c = '(' then acc + 1
+    //                elif c = ')' then (acc - 1)
+    //                else acc
+    //            Seq.fold accumulator 0 text
 
-        let count = missingBraceCount editor.Text
+    //    let count = missingBraceCount editor.Text
 
-        if count > 0 then
-            let data = new TextEditorData()
-            data.Text <- editor.Text
-            data.Insert(editor.CaretOffset, String(')', count)) |> ignore
-            data.Text
-        else
-            editor.Text
+    //    if count > 0 then
+    //        let data = new TextEditorData()
+    //        data.Text <- editor.Text
+    //        data.Insert(editor.CaretOffset, String(')', count)) |> ignore
+    //        data.Text
+    //    else
+    //        editor.Text
 
     // cache parse results for current filename/line number
     let mutable parseCache = (Unchecked.defaultof<FilePath>, -1, None) 
@@ -271,7 +271,6 @@ module Completion =
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
             let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
             let lineToCaret = lineStr.Substring (0,col)
-
             let isFunctionIdentifier() =
                 Regex.IsMatch(lineToCaret, "\s?(fun)\s+[^-]+$")
 
@@ -317,11 +316,10 @@ module Completion =
                                 match parseCache with
                                 | (filename, lastLine, parseResults) when lastLine = line && filename = editor.FileName -> 
                                     LoggingService.logDebug "Completion: got parse results from cache"
-
                                     return parseResults
                                 | _ -> 
                                     let! (parseResults: ParseAndCheckResults option) = 
-                                        getParseResults(documentContext, fixEditorText editor)
+                                        getParseResults(documentContext, editor.Text)
                                     match parseResults with
                                     | Some _ -> parseCache <- (editor.FileName, line, parseResults)
                                                 LoggingService.logDebug "Completion: got some parse results"
