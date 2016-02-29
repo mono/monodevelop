@@ -45,6 +45,31 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
+		public override async Task<bool> IsExclusiveAsync (CompletionContext completionContext, SyntaxContext ctx, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		{
+			var document = completionContext.Document;
+			var position = completionContext.Position;
+			var tree = ctx.SyntaxTree;
+
+			//DeclarationModifiers modifiers;
+			SyntaxToken token;
+
+			var semanticModel = ctx.SemanticModel;
+			var enclosingSymbol = semanticModel.GetEnclosingSymbol (position, cancellationToken) as INamedTypeSymbol;
+
+			// Only inside classes and structs
+			if (enclosingSymbol == null || !(enclosingSymbol.TypeKind == TypeKind.Struct || enclosingSymbol.TypeKind == TypeKind.Class)) {
+				return false;
+			}
+
+			if (!IsPartialCompletionContext (tree, position, cancellationToken/*, out modifiers*/, out token)) {
+				return false;
+			}
+
+			return true;
+
+		}
+
 		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;

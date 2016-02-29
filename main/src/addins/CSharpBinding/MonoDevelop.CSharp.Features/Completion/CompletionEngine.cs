@@ -119,9 +119,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				} else {
 					handlerList = completionContext.AdditionalContextHandlers;
 				}
+
 				foreach (var handler in handlerList) {
 					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || handler.IsTriggerCharacter (text, position - 1)) {
-						if (await handler.IsExclusiveAsync (document, position, info, cancellationToken)) {
+						if (await handler.IsExclusiveAsync (completionContext, ctx, info, cancellationToken)) {
 							exclusiveHandlers.Add (handler);
 						} else {
 							nonExclusiveHandlers.Add (handler);
