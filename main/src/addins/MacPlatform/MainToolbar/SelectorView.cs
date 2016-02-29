@@ -159,9 +159,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return new CGSize (10 + 52.0, size.Height);
 			}
 
+			string EllipsizeString (string s)
+			{
+				if (s.Length > 50) {
+					var start = s.Substring (0, 20);
+					var end = s.Substring (s.Length - 20, 20);
+
+					return start + "…" + end;
+				} else {
+					return s;
+				}
+			}
+
 			string TextForActiveConfiguration {
 				get {
-					return ActiveConfiguration != null ? ActiveConfiguration.DisplayString : ConfigurationPlaceholder;
+					return EllipsizeString (ActiveConfiguration != null ? ActiveConfiguration.DisplayString : ConfigurationPlaceholder);
 				}
 			}
 
@@ -169,9 +181,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				get {
 					if (ActiveRuntime != null) {
 						using (var mutableModel = ActiveRuntime.GetMutableModel ())
-							return mutableModel.FullDisplayString;
+							return EllipsizeString (mutableModel.FullDisplayString);
 					} else {
-						return RuntimePlaceholder;
+						return EllipsizeString (RuntimePlaceholder);
 					}
 				}
 			}
@@ -260,12 +272,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				PathComponentCells = new [] {
 					new NSPathComponentCell {
 						Image = MultiResImage.CreateMultiResImage ("project", "disabled"),
-						Title = ConfigurationPlaceholder,
+						Title = TextForActiveConfiguration,
 						Enabled = false,
 					},
 					new NSPathComponentCell {
 						Image = MultiResImage.CreateMultiResImage ("device", "disabled"),
-						Title = RuntimePlaceholder,
+						Title = TextForRuntimeConfiguration,
 						Enabled = false,
 					}
 				};
