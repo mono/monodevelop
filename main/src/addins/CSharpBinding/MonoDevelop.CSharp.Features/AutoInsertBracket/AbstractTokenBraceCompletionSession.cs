@@ -93,6 +93,20 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			}
 		}
 
+		public override void AfterBackspace ()
+		{
+			if (Editor.CaretOffset == StartOffset) {
+				Editor.EndSession ();
+			}
+		}
+
+		public override void AfterDelete ()
+		{
+			if (Editor.CaretOffset - 1 == StartOffset) {
+				Editor.EndSession ();
+			}
+		}
+
 		protected bool IsValidToken(SyntaxToken token)
 		{
 			return token.Parent != null && !(token.Parent is SkippedTokensTriviaSyntax);

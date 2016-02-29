@@ -348,10 +348,20 @@ namespace MonoDevelop.SourceEditor
 			bool wasHandled = false;
 			var currentSession = this.view.CurrentSession;
 			if (currentSession != null) {
-				if (key == Gdk.Key.Return) {
+				switch (key) {
+				case Gdk.Key.Return:
 					currentSession.BeforeReturn (out wasHandled);
-				} else {
+					break;
+				case Gdk.Key.BackSpace:
+					currentSession.BeforeBackspace (out wasHandled);
+					break;
+				case Gdk.Key.Delete:
+				case Gdk.Key.KP_Delete:
+					currentSession.BeforeDelete (out wasHandled);
+					break;
+				default:
 					currentSession.BeforeType ((char)ch, out wasHandled);
+					break;
 				}
 			}
 
@@ -371,10 +381,20 @@ namespace MonoDevelop.SourceEditor
 				}
 
 				if (currentSession != null) {
-					if (key == Gdk.Key.Return) {
+					switch (key) {
+					case Gdk.Key.Return:
 						currentSession.AfterReturn ();
-					} else {
+						break;
+					case Gdk.Key.BackSpace:
+						currentSession.AfterBackspace ();
+						break;
+					case Gdk.Key.Delete:
+					case Gdk.Key.KP_Delete:
+						currentSession.AfterDelete ();
+						break;
+					default:
 						currentSession.AfterType ((char)ch);
+						break;
 					}
 				}
 			}

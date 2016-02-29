@@ -97,16 +97,14 @@ namespace MonoDevelop.Ide.Editor
 		{
 		}
 
-		// Future enhancements (when needed): 
+		public virtual void BeforeBackspace(out bool handledCommand) 
+		{
+			handledCommand = false;
+		}
 
-		//public virtual void BeforeBackspace(out bool handledCommand) 
-		//{
-		//	handledCommand = false;
-		//}
-
-		//public virtual void AfterBackspace()
-		//{
-		//}
+		public virtual void AfterBackspace()
+		{
+		}
 
 		//public virtual void BeforeTab(out bool handledCommand) 
 		//{
@@ -117,14 +115,14 @@ namespace MonoDevelop.Ide.Editor
 		//{
 		//}
 
-		//public virtual void BeforeDelete(out bool handledCommand) 
-		//{
-		//	handledCommand = false;
-		//}
+		public virtual void BeforeDelete(out bool handledCommand) 
+		{
+			handledCommand = false;
+		}
 
-		//public virtual void AfterDelete()
-		//{
-		//}
+		public virtual void AfterDelete()
+		{
+		}
 
 		public virtual void SessionStarted ()
 		{
@@ -163,6 +161,20 @@ namespace MonoDevelop.Ide.Editor
 		{
 			startOffset = Editor.CaretOffset;
 			endOffset = StartOffset + 1;
+		}
+
+		public override void AfterBackspace ()
+		{
+			if (Editor.CaretOffset == StartOffset) {
+				Editor.EndSession ();
+			}
+		}
+
+		public override void AfterDelete ()
+		{
+			if (Editor.CaretOffset == StartOffset) {
+				Editor.EndSession ();
+			}
 		}
 	}
 }
