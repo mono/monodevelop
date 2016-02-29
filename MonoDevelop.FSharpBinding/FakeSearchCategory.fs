@@ -69,7 +69,7 @@ type FakePad() =
         match view.Child with
         | :? Gtk.TextView as v ->
             let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme.Value)
-            let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", false)
+            let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", true)
             let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
             let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
 
