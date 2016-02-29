@@ -2624,7 +2624,7 @@ namespace Mono.TextEditor
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
 			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
-
+			var startLineNr = lineNr;
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
 			if (BackgroundRenderer == null)
@@ -2794,7 +2794,7 @@ namespace Mono.TextEditor
 						DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.Background, false);
 					if (line.Length == 0)
 						DrawIndent (cr, wrapper, line, lx, y);
-				} else if (!(HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) || Caret.Line != lineNr) {
+				} else if (!(HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) || Caret.Line != lineNr && Caret.Line != startLineNr) {
 					wrapper = GetLayout (line);
 					if (wrapper.EolSpanStack != null) {
 						foreach (var span in wrapper.EolSpanStack) {
