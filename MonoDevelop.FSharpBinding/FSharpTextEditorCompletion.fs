@@ -272,15 +272,18 @@ module Completion =
             let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
             let lineToCaret = lineStr.Substring (0,col)
 
-            let isFunModuleOrTypeIdentifier()  =
-                Regex.IsMatch(lineToCaret, "\s?(fun|module|type)\s+[^=]+$") && not (lineToCaret.Contains("="))
-    
+            let isFunctionIdentifier() =
+                Regex.IsMatch(lineToCaret, "\s?(fun)\s+[^-]+$")
+
+            let isModuleOrTypeIdentifier() =
+                Regex.IsMatch(lineToCaret, "\s?(module|type)\s+[^=]+$") && not (lineToCaret.Contains("="))
+
             let isLetIdentifier() =
                 if Regex.IsMatch(lineToCaret, "\s?(let|override|member)\s+[^=]+$") 
                      && not (lineToCaret.Contains("=")) then
                      let document = new TextDocument(lineToCaret)
                      let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
-         
+
                      let documentLine = document.GetLine 1
                      let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, col, lineToCaret.Length)
                                       |> Seq.map (fun c -> c.Style)   
@@ -288,10 +291,10 @@ module Completion =
                      chunkStyle <> "User Types"
                 else
                     false
-    
+
             result.IsSorted <- true
 
-            if isFunModuleOrTypeIdentifier() || isLetIdentifier() then
+            if isModuleOrTypeIdentifier() || isLetIdentifier() then
                 let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineStr)
                 result.DefaultCompletionString <- residue
                 result.TriggerWordLength <- residue.Length 
@@ -301,9 +304,11 @@ module Completion =
                 // here -> `let mutab|`
                 // but not here -> `let m|`
                 let filteredModifiers = modifierCompletionData 
-                                        |> Seq.filter (fun c -> c.DisplayText.StartsWith(residue))
+                                        |> Seq.filter (fun c -> c .DisplayText.StartsWith(residue))
                 if residue.Length > 1 || ctrlSpace then
                     result.AddRange filteredModifiers
+            elif isFunctionIdentifier() then
+                ()
             else
                 try
                     let! (typedParseResults: ParseAndCheckResults option) =
