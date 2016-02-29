@@ -11,17 +11,16 @@ open FsUnit
 open MonoDevelop
         
 type ``Completion Tests``() =
-    let getParseResults (documentContext:DocumentContext, _text, _version) =
+    let getParseResults (documentContext:DocumentContext, _text) =
         async {
             return documentContext.TryGetAst()
         }
-    
+
     let getCompletions (input: string) =
         let offset = input.IndexOf "|"
         if offset = -1 then
             failwith "Input must contain a |"
         let input = input.Replace("|", "")
-
         let doc = TestHelpers.createDoc input "defined"
         let editor = doc.Editor
         editor.CaretOffset <- offset
@@ -52,16 +51,23 @@ type ``Completion Tests``() =
         results |> should contain "completeme"
 
     [<TestCase("let x|")>]
+    [<TestCase("let in|")>]
     [<TestCase("let x |")>]
     [<TestCase("let x =|")>]
     [<TestCase("let x, y|")>]
     [<TestCase("let x = \"System.|")>]
+    [<TestCase("let x = ``System.|");Ignore("Not implemented yet")>]
+    [<TestCase("member x|")>]
+    [<TestCase("override x|")>]
+    [<TestCase("1|")>]
     member x.``Empty completions``(input: string) =
         let results = getCompletions input
         results |> should be Empty
 
     [<TestCase("let x = s|")>]
     [<TestCase("let x = \"\".|.")>]
+    [<TestCase("let x (y:strin|")>]
+    [<TestCase("member x.Something (y:strin|")>]
     member x.``Not empty completions``(input: string) =
         let results = getCompletions input
         results |> shouldnot be Empty
@@ -85,6 +91,11 @@ type ``Completion Tests``() =
     member x.``Keywords appear at column 0``() =
         let results = getCompletions @"o|"
         results |> should contain "open"
+
+    [<Test;Ignore("Not yet working")>]
+    member x.``Completes modifiers``() =
+        let results = getCompletions @"let mut|"
+        results |> should contain "mutable"
 
     [<Test>]
     member x.``Completes local identifier with mismatched parens``() =
