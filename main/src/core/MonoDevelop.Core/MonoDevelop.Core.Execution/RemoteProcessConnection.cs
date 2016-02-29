@@ -437,6 +437,7 @@ namespace MonoDevelop.Core.Execution
 				connection.Close ();
 				connection = null;
 			}
+			process.Cancel ();
 		}
 
 		void OnConnected (IAsyncResult res)

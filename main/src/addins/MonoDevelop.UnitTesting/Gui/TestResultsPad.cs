@@ -86,6 +86,7 @@ namespace MonoDevelop.UnitTesting
 		UnitTestResult resultSummary;
 
 		UnitTest rootTest;
+		CancellationTokenSource cancellationSource;
 		string configuration;
 		ArrayList results = new ArrayList ();
 		
@@ -314,10 +315,12 @@ namespace MonoDevelop.UnitTesting
 		{
 			infoLabel.Markup = GetResultsMarkup ();
 		}
-		
-		public void InitializeTestRun (UnitTest test)
+
+		public void InitializeTestRun (UnitTest test, CancellationTokenSource cs)
 		{
 			rootTest = test;
+			cancellationSource = cs;
+			cs.Token.Register (OnCancel);
 			results.Clear ();
 
 			testsToRun = test.CountTestCases ();
@@ -789,24 +792,25 @@ namespace MonoDevelop.UnitTesting
 			infoCurrent.Text = GettextCatalog.GetString ("Running ") + test.FullName;
 			infoCurrent.Xalign = 0;
 		}
-		
+
 		public void Cancel ()
 		{
 			if (cancel)
 				return;
 			cancel = true;
+			cancellationSource.Cancel ();
+		}
+
+		void OnCancel ()
+		{
 			Gtk.Application.Invoke (delegate {
 				failuresStore.AppendValues (TestStatusIcon.Failure, GettextCatalog.GetString ("Test execution cancelled."), null);
 			});
-			if (CancelRequested != null)
-				CancelRequested ();
 		}
 		
-		bool ITestProgressMonitor.IsCancelRequested {
-			get { return cancel; }
+		CancellationToken ITestProgressMonitor.CancellationToken {
+			get { return cancellationSource.Token; }
 		}
-		
-		public event TestHandler CancelRequested;
 	}
 	
 	class TestMonitor: ITestProgressMonitor
@@ -818,24 +822,11 @@ namespace MonoDevelop.UnitTesting
 		{
 			this.pad = pad;
 			this.monitor = pad;
-			cs.Token.Register (Cancel);
-		}
-		public void InitializeTestRun (UnitTest test)
-		{
-			Runtime.RunInMainThread (delegate {
-				pad.InitializeTestRun (test);
-			});
 		}
 		public void FinishTestRun ()
 		{
 			Runtime.RunInMainThread (delegate {
 				pad.FinishTestRun ();
-			});
-		}
-		public void Cancel ()
-		{
-			Runtime.RunInMainThread (delegate {
-				pad.Cancel ();
 			});
 		}
 		public void BeginTest (UnitTest test)
@@ -862,12 +853,9 @@ namespace MonoDevelop.UnitTesting
 				monitor.WriteGlobalLog (message);
 			});
 		}
-		public bool IsCancelRequested {
-			get { return monitor.IsCancelRequested; }
-		}
-		public event TestHandler CancelRequested {
-			add { monitor.CancelRequested += value; }
-			remove { monitor.CancelRequested -= value; }
+
+		public CancellationToken CancellationToken {
+			get { return monitor.CancellationToken; }
 		}
 	}
 }

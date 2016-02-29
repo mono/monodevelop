@@ -148,8 +148,10 @@ namespace NUnit3Runner
 			res.Time = TimeSpan.FromSeconds (double.Parse (e.GetAttribute ("duration"), CultureInfo.InvariantCulture));
 
 			var output = e.SelectSingleNode ("output");
-			if (output != null)
+			if (output != null) {
+				Console.WriteLine (output.InnerText);
 				res.ConsoleOutput = output.InnerText;
+			}
 			
 			return res;
 		}

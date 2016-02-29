@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Threading;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -36,9 +37,7 @@ namespace MonoDevelop.UnitTesting
 		void EndTest (UnitTest test, UnitTestResult result);
 		void ReportRuntimeError (string message, Exception exception);
 		void WriteGlobalLog (string message);
-		
-		bool IsCancelRequested { get; }
-		event TestHandler CancelRequested;
+		CancellationToken CancellationToken { get; }
 	}
 	
 	public delegate void TestHandler ();

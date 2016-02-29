@@ -492,9 +492,11 @@ namespace MonoDevelop.UnitTesting
 			this.buttonRunAll.Sensitive = false;
 			this.buttonStop.Sensitive = true;
 
+			ExecutionContext context = new ExecutionContext (mode, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+
 			if (bringToFront)
 				IdeApp.Workbench.GetPad<TestPad> ().BringToFront ();
-			runningTestOperation = UnitTestService.RunTest (test, mode);
+			runningTestOperation = UnitTestService.RunTest (test, context);
 			runningTestOperation.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return runningTestOperation;
 		}

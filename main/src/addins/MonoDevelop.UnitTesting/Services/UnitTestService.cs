@@ -98,20 +98,20 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 
-		public static AsyncOperation RunTest (UnitTest test, IExecutionHandler context)
+		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context)
 		{
 			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
 			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return result;
 		}
 		
-		public static AsyncOperation RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject)
+		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject)
 		{
 			var cs = new CancellationTokenSource ();
 			return new AsyncOperation (RunTest (test, context, buildOwnerObject, true, cs), cs);
 		}
 
-		internal static async Task RunTest (UnitTest test, IExecutionHandler context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
+		internal static async Task RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
 		{
 			string testName = test.FullName;
 			
@@ -392,30 +392,28 @@ namespace MonoDevelop.UnitTesting
 	
 
 
-	class TestSession: AsyncOperation, ITestProgressMonitor
+	class TestSession: AsyncOperation
 	{
 		UnitTest test;
 		TestMonitor monitor;
-		IExecutionHandler context;
+		MonoDevelop.Projects.ExecutionContext context;
 		TestResultsPad resultsPad;
 
-		public TestSession (UnitTest test, IExecutionHandler context, TestResultsPad resultsPad, CancellationTokenSource cs)
+		public TestSession (UnitTest test, MonoDevelop.Projects.ExecutionContext context, TestResultsPad resultsPad, CancellationTokenSource cs)
 		{
 			this.test = test;
-			this.context = context;
+			this.context = new Projects.ExecutionContext (context.ExecutionHandler, new CustomConsoleFactory (context.ConsoleFactory, cs), context.ExecutionTarget);
 			CancellationTokenSource = cs;
 			this.monitor = new TestMonitor (resultsPad, CancellationTokenSource);
 			this.resultsPad = resultsPad;
-			resultsPad.InitializeTestRun (test);
-			Task = new Task (RunTests);
+			resultsPad.InitializeTestRun (test, cs);
 		}
 		
 		public Task Start ()
 		{
-			Task.Start ();
-			return Task;
+			return Task = Task.Run ((Action)RunTests);
 		}
-		
+
 		void RunTests ()
 		{
 			try {
@@ -431,41 +429,29 @@ namespace MonoDevelop.UnitTesting
 				monitor.FinishTestRun ();
 			}
 		}
-		
-		void ITestProgressMonitor.BeginTest (UnitTest test)
-		{
-			monitor.BeginTest (test);
-		}
-		
-		void ITestProgressMonitor.EndTest (UnitTest test, UnitTestResult result)
-		{
-			monitor.EndTest (test, result);
-		}
-		
-		void ITestProgressMonitor.ReportRuntimeError (string message, Exception exception)
-		{
-			monitor.ReportRuntimeError (message, exception);
-		}
-		
-		void ITestProgressMonitor.WriteGlobalLog (string message)
-		{
-			monitor.WriteGlobalLog (message);
-		}
-
-		bool ITestProgressMonitor.IsCancelRequested {
-			get { return monitor.IsCancelRequested; }
-		}
-
-		public event TestHandler CancelRequested {
-			add { monitor.CancelRequested += value; }
-			remove { monitor.CancelRequested -= value; }
-		}
 	}
 
 	public class TestSessionEventArgs: EventArgs
 	{
 		public AsyncOperation Session { get; set; }
 		public UnitTest Test { get; set; }
+	}
+
+	class CustomConsoleFactory : OperationConsoleFactory
+	{
+		OperationConsoleFactory factory;
+		CancellationTokenSource cancelSource;
+
+		public CustomConsoleFactory (OperationConsoleFactory factory, CancellationTokenSource cs)
+		{
+			this.factory = factory;
+			cancelSource = cs;
+		}
+
+		protected override OperationConsole OnCreateConsole ()
+		{
+			return factory.CreateConsole ().WithCancelCallback (cancelSource.Cancel);
+		}
 	}
 }
 
