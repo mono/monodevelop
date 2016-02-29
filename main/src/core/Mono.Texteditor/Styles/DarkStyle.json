@@ -77,8 +77,8 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color": "#4d4d4d", "bordercolor": "#4d4d4d" },
 		{ "name": "Breakpoint Marker(Invalid)", "color": "#604343", "bordercolor": "#604343" },
 
-		{ "name": "Current Line Marker", "color": "#1a1f22", "secondcolor": "#1a1f22" },
-		{ "name": "Current Line Marker(Inactive)", "color": "#1a1f22", "secondcolor": "#1a1f22" },
+		{ "name": "Current Line Marker", "color": "#14171a", "secondcolor": "#14171a" },
+		{ "name": "Current Line Marker(Inactive)", "color": "#14171a", "secondcolor": "#14171a" },
 
 		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#69684c" },
 		{ "name": "Debugger Stack Line Marker", "color": "#5f7247", "bordercolor": "#5f7247" },
@@ -106,13 +106,13 @@
 	],
 
 	"text": [
-		{ "name": "Plain Text", "fore": "aluminium1", "back": "#2c2f30" },
+		{ "name": "Plain Text", "fore": "aluminium1", "back": "#1c1e1f" },
 		{ "name": "Selected Text", "back": "#245176" },
 		{ "name": "Selected Text(Inactive)", "back": "aluminium5" },
 
 		{ "name": "Collapsed Text", "fore": "aluminium4", "back": "aluminium6" },
 
-		{ "name": "Line Numbers", "fore": "aluminium5", "back": "#2c2f30" },
+		{ "name": "Line Numbers", "fore": "aluminium5", "back": "#242424" },
 
 		{ "name": "Punctuation", "fore": "aluminium1" },
 		{ "name": "Punctuation(Brackets)", "fore": "aluminium1" },
