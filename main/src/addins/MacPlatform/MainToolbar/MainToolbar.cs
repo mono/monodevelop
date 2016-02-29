@@ -173,7 +173,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			searchEntry.Focus ();
 
 			var entry = searchEntry;
-			entry.SelectText (entry);
+			if (!string.IsNullOrEmpty (entry.StringValue)) {
+				entry.SelectText (entry);
+			}
 		}
 
 		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
@@ -315,7 +317,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public string SearchPlaceholderMessage {
 			// Analysis disable once ValueParameterNotUsed
-			set { }
+			set {
+				searchEntry.PlaceholderText = value;
+			}
 		}
 
 		public MonoDevelop.Ide.StatusBar StatusBar {

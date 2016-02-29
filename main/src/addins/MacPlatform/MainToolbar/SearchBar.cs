@@ -155,6 +155,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		static readonly string firstResponderPlaceholder = "Search";
+		string placeholderText = "Search";
+		public string PlaceholderText {
+			get {
+				return placeholderText;
+			}
+			set {
+				placeholderText = value ?? "Search";
+				PlaceholderAttributedString = MakePlaceholderString (placeholderText);
+			}
+		}
+
 		public SearchBar ()
 		{
 			Cell = new DarkSkinSearchFieldCell ();
@@ -167,23 +179,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			UpdateLayout ();
 		}
 
+		NSAttributedString MakePlaceholderString (string t)
+		{
+			return new NSAttributedString (GettextCatalog.GetString (t), 
+			                               foregroundColor: NSColor.FromRgba (0.63f, 0.63f, 0.63f, 1.0f));
+		}
+
 		void UpdateLayout ()
 		{
-			/*
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-				Bezeled = true;
-			} else {
-				BezelStyle = NSTextFieldBezelStyle.Rounded;
-				Bezeled = true;
-			}
-*/
 			Bezeled = true;
 			BezelStyle = NSTextFieldBezelStyle.Rounded;
 			Editable = true;
 			Cell.Scrollable = true;
 			Selectable = true;
 
-			PlaceholderAttributedString = new NSAttributedString ("Search", foregroundColor: NSColor.FromRgba (0.63f, 0.63f, 0.63f, 1.0f));
+			PlaceholderAttributedString = MakePlaceholderString (placeholderText);
 		}
 
 		internal void LogMessage (string message)
@@ -238,11 +248,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return baseHandled;
 		}
 
+		bool ignoreEndEditing = false;
 		public override void DidEndEditing (NSNotification notification)
 		{
 			base.DidEndEditing (notification);
 
 			LogMessage ("Did end editing");
+
+			if (ignoreEndEditing) {
+				ignoreEndEditing = false;
+				return;
+			}
+
+			PlaceholderAttributedString = MakePlaceholderString (placeholderText);
 
 			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
 			if (value == (nint)(long)NSTextMovement.Tab) {
@@ -282,8 +300,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			LogMessage ("Becoming first responder");
 			bool firstResponder = base.BecomeFirstResponder ();
-			if (firstResponder)
-				Focus ();
+			if (firstResponder) {
+				ignoreEndEditing = true;
+				PlaceholderAttributedString = MakePlaceholderString (firstResponderPlaceholder);
+				ignoreEndEditing = false;
+
+				GainedFocus?.Invoke (this, EventArgs.Empty);
+			}
 
 			return firstResponder;
 		}
@@ -291,8 +314,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void Focus ()
 		{
 			LogMessage ("Focused");
-			if (GainedFocus != null)
-				GainedFocus (this, EventArgs.Empty);
+			Window.MakeFirstResponder (this);
 		}
 	}
 }
