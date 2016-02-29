@@ -26,7 +26,6 @@ type ``Completion Tests``() =
         editor.CaretOffset <- offset
         let ctx = new CodeCompletionContext()
         ctx.TriggerOffset <- offset
-
         let results =
             Completion.codeCompletionCommandImpl(getParseResults, editor, doc, ctx, false)
             |> Async.RunSynchronously
@@ -56,7 +55,7 @@ type ``Completion Tests``() =
     [<TestCase("let x =|")>]
     [<TestCase("let x, y|")>]
     [<TestCase("let x = \"System.|")>]
-    [<TestCase("let x = ``System.|");Ignore("Not implemented yet")>]
+    //[<TestCase("let x = ``System.|");Ignore("Not implemented yet")>]
     [<TestCase("member x|")>]
     [<TestCase("override x|")>]
     [<TestCase("1|")>]
@@ -92,7 +91,7 @@ type ``Completion Tests``() =
         let results = getCompletions @"o|"
         results |> should contain "open"
 
-    [<Test;Ignore("Not yet working")>]
+    [<Test>]
     member x.``Completes modifiers``() =
         let results = getCompletions @"let mut|"
         results |> should contain "mutable"

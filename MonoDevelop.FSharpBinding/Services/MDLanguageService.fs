@@ -159,6 +159,15 @@ module internal ServiceUtils =
              | _, _ -> "md-breakpoint"
 
 module internal KeywordList =
+    let modifiers = 
+        dict [
+            "abstract",  """Indicates a method that either has no implementation in the type in which it is declared or that is virtual and has a default implementation."""
+            "inline",  """Used to indicate a function that should be integrated directly into the caller's code."""
+            "mutable",  """Used to declare a variable, that is, a value that can be changed."""
+            "private",  """Restricts access to a member to code in the same type or module."""
+            "public",  """Allows access to a member from outside the type."""
+        ]
+
     let keywordDescriptions =
         dict [
             "abstract",  """Indicates a method that either has no implementation in the type in which it is declared or that is virtual and has a default implementation."""

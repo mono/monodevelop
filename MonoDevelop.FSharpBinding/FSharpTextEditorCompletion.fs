@@ -214,6 +214,10 @@ module Completion =
         [for keyValuePair in KeywordList.keywordDescriptions do
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
+    let modifierCompletionData =
+        [for keyValuePair in KeywordList.modifiers do
+            yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
+
     let getParseResults (documentContext:DocumentContext, text) =
         async {
             let filename = documentContext.Name
@@ -241,7 +245,7 @@ module Completion =
             editor.Text
 
     // cache parse results for current filename/line number
-    let mutable parseCache: FilePath * int * ParseAndCheckResults option = (Unchecked.defaultof<FilePath>, -1, None) 
+    let mutable parseCache = (Unchecked.defaultof<FilePath>, -1, None) 
 
     let parseLock = obj()
 
@@ -254,29 +258,8 @@ module Completion =
             let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
             (Char.IsLetter completionChar || ctrlSpace) || completionChar = '.'
 
-        let _line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
-        let lineToCaret = lineStr.Substring (0,col)
-        let isFunModuleOrTypeIdentifier()  =
-            Regex.IsMatch(lineToCaret, "\s?(fun|module|type)\s+[^=]+$") && not (lineToCaret.Contains("="))
-
-        let isLetIdentifier() =
-            if Regex.IsMatch(lineToCaret, "\s?(let|override|member)\s+[^=]+$") 
-                 && not (lineToCaret.Contains("=")) then
-                 let document = new TextDocument(lineToCaret)
-                 let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
-     
-                 let documentLine = document.GetLine 1
-                 let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, col, lineToCaret.Length)
-                                  |> Seq.map (fun c -> c.Style)   
-                                  |> Seq.head
-                 chunkStyle <> "User Types"
-            else
-                false
-
         isValidCompletionChar() &&
-        isValidToken() &&
-        not (isFunModuleOrTypeIdentifier()) &&
-        not (isLetIdentifier())
+        isValidToken() 
 
     let codeCompletionCommandImpl(getParseResults, editor, documentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
@@ -288,58 +271,90 @@ module Completion =
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
             let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
             let lineToCaret = lineStr.Substring (0,col)
+
+            let isFunModuleOrTypeIdentifier()  =
+                Regex.IsMatch(lineToCaret, "\s?(fun|module|type)\s+[^=]+$") && not (lineToCaret.Contains("="))
+    
+            let isLetIdentifier() =
+                if Regex.IsMatch(lineToCaret, "\s?(let|override|member)\s+[^=]+$") 
+                     && not (lineToCaret.Contains("=")) then
+                     let document = new TextDocument(lineToCaret)
+                     let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
+         
+                     let documentLine = document.GetLine 1
+                     let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, col, lineToCaret.Length)
+                                      |> Seq.map (fun c -> c.Style)   
+                                      |> Seq.head
+                     chunkStyle <> "User Types"
+                else
+                    false
+    
             result.IsSorted <- true
 
-            try
-                let! (typedParseResults: ParseAndCheckResults option) =
-                    lock parseLock (fun() ->
-                        async {
-                            match parseCache with
-                            | (filename, lastLine, parseResults) when lastLine = line && filename = editor.FileName -> 
-                                LoggingService.logDebug "Completion: got parse results from cache"
+            if isFunModuleOrTypeIdentifier() || isLetIdentifier() then
+                let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineStr)
+                result.DefaultCompletionString <- residue
+                result.TriggerWordLength <- residue.Length 
+                // To prevent the "No completions found" when typing an identifier
+                // here -> `let myident|`
+                // but allow completions
+                // here -> `let mutab|`
+                // but not here -> `let m|`
+                let filteredModifiers = modifierCompletionData 
+                                        |> Seq.filter (fun c -> c.DisplayText.StartsWith(residue))
+                if residue.Length > 1 || ctrlSpace then
+                    result.AddRange filteredModifiers
+            else
+                try
+                    let! (typedParseResults: ParseAndCheckResults option) =
+                        lock parseLock (fun() ->
+                            async {
+                                match parseCache with
+                                | (filename, lastLine, parseResults) when lastLine = line && filename = editor.FileName -> 
+                                    LoggingService.logDebug "Completion: got parse results from cache"
 
-                                return parseResults
-                            | _ -> 
-                                let! (parseResults: ParseAndCheckResults option) = 
-                                    getParseResults(documentContext, fixEditorText editor)
-                                match parseResults with
-                                | Some _ -> parseCache <- (editor.FileName, line, parseResults)
-                                            LoggingService.logDebug "Completion: got some parse results"
-                                            return parseResults
-                                | None -> LoggingService.logDebug "Completion: got no parse results"
-                                          return None
-                        })
-                 
-                match typedParseResults with
-                | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
-                | Some tyRes ->
-                    // Get declarations and generate list for MonoDevelop
-                    let! symbols = tyRes.GetDeclarationSymbols(line, col, lineStr)
-                    match symbols with
-                    | Some (symbols, residue) ->
-                        let data = getCompletionData symbols
-                        result.AddRange data
+                                    return parseResults
+                                | _ -> 
+                                    let! (parseResults: ParseAndCheckResults option) = 
+                                        getParseResults(documentContext, fixEditorText editor)
+                                    match parseResults with
+                                    | Some _ -> parseCache <- (editor.FileName, line, parseResults)
+                                                LoggingService.logDebug "Completion: got some parse results"
+                                                return parseResults
+                                    | None -> LoggingService.logDebug "Completion: got no parse results"
+                                              return None
+                            })
+                     
+                    match typedParseResults with
+                    | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
+                    | Some tyRes ->
+                        // Get declarations and generate list for MonoDevelop
+                        let! symbols = tyRes.GetDeclarationSymbols(line, col, lineStr)
+                        match symbols with
+                        | Some (symbols, residue) ->
+                            let data = getCompletionData symbols
+                            result.AddRange data
 
-                        if completionChar <> '.' && result.Count > 0 then
-                            LoggingService.logDebug "Completion: residue %s" residue
-                            result.DefaultCompletionString <- residue
-                            result.TriggerWordLength <- residue.Length
+                            if completionChar <> '.' && result.Count > 0 then
+                                LoggingService.logDebug "Completion: residue %s" residue
+                                result.DefaultCompletionString <- residue
+                                result.TriggerWordLength <- residue.Length
 
-                        //TODO Use previous token and pattern match to detect whitespace
-                        if Regex.IsMatch(lineToCaret, "\s+\w+$") ||
-                           Regex.IsMatch(lineToCaret, "^\w+$") then
-                            // Add the code templates and compiler generated identifiers if the completion char is not '.'
-                            CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-                            result.AddRange compilerIdentifiers
-                                    
-                            result.AddRange keywordCompletionData
-                    | None -> ()
-            with
-            | :? Threading.Tasks.TaskCanceledException -> 
-                ()
-            | e ->
-                LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
-                () //TODOresult.Add(FSharpErrorCompletionData(e))
+                            //TODO Use previous token and pattern match to detect whitespace
+                            if Regex.IsMatch(lineToCaret, "\s+\w+$") ||
+                               Regex.IsMatch(lineToCaret, "^\w+$") then
+                                // Add the code templates and compiler generated identifiers if the completion char is not '.'
+                                CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
+                                result.AddRange compilerIdentifiers
+                                        
+                                result.AddRange keywordCompletionData
+                        | None -> ()
+                with
+                | :? Threading.Tasks.TaskCanceledException -> 
+                    ()
+                | e ->
+                    LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
+                    () //TODOresult.Add(FSharpErrorCompletionData(e))
             result.AutoCompleteEmptyMatch <- false
             result.AutoCompleteUniqueMatch <- ctrlSpace
 
