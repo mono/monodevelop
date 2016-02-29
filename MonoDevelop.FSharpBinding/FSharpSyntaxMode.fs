@@ -387,11 +387,10 @@ type FSharpSyntaxMode(editor, context) =
     let tokenssymbolscolours = ref None
     let style = ref (getColourScheme())
     let colourSchemChanged =
-        PropertyService.PropertyChanged.Subscribe
-            (fun _ (eventArgs:PropertyChangedEventArgs) ->
-                              if eventArgs.Key = "ColorScheme" && eventArgs.OldValue <> eventArgs.NewValue then
-                                  let colourStyles = SyntaxModeService.GetColorStyle(IdeApp.Preferences.ColorScheme.Value)
-                                  style := colourStyles )
+        IdeApp.Preferences.ColorScheme.Changed.Subscribe
+            (fun _ (eventArgs:EventArgs) ->
+                              let colourStyles = SyntaxModeService.GetColorStyle(IdeApp.Preferences.ColorScheme.Value)
+                              style := colourStyles )
                                   
     override x.DocumentParsed() =
         if MonoDevelop.isDocumentVisible context.Name then

@@ -59,11 +59,7 @@ type FSharpInteractivePad() as this =
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> view.WriteOutput(t, promptReceived) ) |> ignore)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived<- true; view.Prompt(true, Prompt.Normal) ) |> ignore)
             let colourSchemChanged =
-                PropertyService.PropertyChanged.Subscribe
-                    (fun _ (eventArgs:PropertyChangedEventArgs) ->
-                                      if eventArgs.Key = "ColorScheme-Dark" || eventArgs.Key = "ColorScheme" &&
-                                          eventArgs.OldValue <> eventArgs.NewValue then
-                                          this.UpdateColors ())
+                IdeApp.Preferences.ColorScheme.Changed.Subscribe (fun _ -> this.UpdateColors ())
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
