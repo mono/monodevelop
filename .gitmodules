@@ -35,7 +35,7 @@
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = master
+	branch = cycle6
 [submodule "main/external/monomac"]
 	path = main/external/monomac
 	url = git://github.com/mono/monomac.git
