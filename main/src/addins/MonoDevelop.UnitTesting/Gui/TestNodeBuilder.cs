@@ -178,6 +178,7 @@ namespace MonoDevelop.UnitTesting
 				default:
 					sb.Append (text [i]);
 					break;
+				}
 			}
 			return sb.ToString ();
 		}
