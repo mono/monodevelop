@@ -361,6 +361,7 @@ type FSharpConsoleView() as x =
                 using (startInputProcessing()) (fun _ ->
                 let nextKey = Gdk.Keyval.ToUnicode(args.Event.KeyValue) |> char |> string
                 buffer.InsertAtCursor(nextKey)
+                let cursorOffset = buffer.CursorPosition
                 let line = x.InputLine
                 eraseCurrentLine()
                 let lines = line.Split([|'\n'|], StringSplitOptions.None)
@@ -373,7 +374,8 @@ type FSharpConsoleView() as x =
                               lastLineState <- highlightLine line lastLineState
                               x.ProcessReturn()
                           else
-                              tempState <- highlightLine line lastLineState))
+                              tempState <- highlightLine line lastLineState)
+                buffer.PlaceCursor(buffer.GetIterAtOffset(cursorOffset)))
                 true
 
         returnCode
