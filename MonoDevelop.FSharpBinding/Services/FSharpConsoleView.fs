@@ -212,20 +212,23 @@ type FSharpConsoleView() as x =
 
     member x.TextInserted _ =
         if not !inputBeingProcessed then
-            using (startInputProcessing()) (fun _ ->
-            let line : string = x.InputLine
-            eraseCurrentLine()
-            let lines = line.Split([|'\n'|], StringSplitOptions.None)
-            if lines.Length = 1 then tempState <- highlightLine line lastLineState
-            else
-                lines
-                |> Array.iteri
-                    (fun i line ->
-                        if i < lines.Length-1 then
-                            lastLineState <- highlightLine line lastLineState
-                            x.ProcessReturn()
-                        else
-                            tempState <- highlightLine line lastLineState))
+            using (startInputProcessing())
+                (fun _ ->
+                    let line : string = x.InputLine
+                    let cursorPosition = buffer.CursorPosition
+                    eraseCurrentLine()
+                    let lines = line.Split([|'\n'|], StringSplitOptions.None)
+                    if lines.Length = 1 then tempState <- highlightLine line lastLineState
+                    else
+                        lines
+                        |> Array.iteri
+                            (fun i line ->
+                                if i < lines.Length-1 then
+                                    lastLineState <- highlightLine line lastLineState
+                                    x.ProcessReturn()
+                                else
+                                    tempState <- highlightLine line lastLineState)
+                    buffer.PlaceCursor(buffer.GetIterAtOffset(cursorPosition)))
 
     [<GLib.ConnectBeforeAttribute>]
     member x.HandleKeyPress(_o:obj, args) =
