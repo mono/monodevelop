@@ -60,14 +60,10 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition
 			}
 
 			var preferredSourceLocations = GeneratedCodeRecognitionService.GetPreferredSourceLocations(solution, symbol).ToArray();
-			if (!preferredSourceLocations.Any())
-			{
-				// If there are no visible source locations, then tell the host about the symbol and 
-				// allow it to navigate to it.  THis will either navigate to any non-visible source
-				// locations, or it can appropriately deal with metadata symbols for hosts that can go 
-				// to a metadata-as-source view.
-				return GoToDefinitionService.TryNavigateToSymbol(symbol, project, true);
-			}
+			if (GoToDefinitionService.TryNavigateToSymbol (symbol, project, true))
+				return true;
+			else if (!preferredSourceLocations.Any ())
+				return false;
 
 			// If we have a single location, then just navigate to it.
 			if (preferredSourceLocations.Length == 1)
