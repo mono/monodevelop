@@ -80,14 +80,7 @@ namespace MonoDevelop.Ide.Projects
 		public bool OpenSolution { get; set; }
 		public bool IsNewItemCreated { get; private set; }
 
-		public IWorkspaceFileObject NewItem {
-			get { 
-				if (processedTemplate != null) {
-					return processedTemplate.WorkspaceItems.FirstOrDefault ();
-				}
-				return null;
-			}
-		}
+		public IWorkspaceFileObject NewItem { get; private set; }
 
 		public SolutionFolder ParentFolder { get; set; }
 		public string BasePath { get; set; }
@@ -598,9 +591,12 @@ namespace MonoDevelop.Ide.Projects
 				// The item is not a solution being opened, so it is going to be added to
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
+				var workspaceItems = await ReloadProjects ();
+				NewItem = workspaceItems.FirstOrDefault ();
+
 				RunTemplateActions (processedTemplate);
 				if (wizardProvider.HasWizard)
-					wizardProvider.CurrentWizard.ItemsCreated (processedTemplate.WorkspaceItems);
+					wizardProvider.CurrentWizard.ItemsCreated (workspaceItems);
 				if (ParentFolder != null)
 					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}
@@ -608,6 +604,34 @@ namespace MonoDevelop.Ide.Projects
 			IsNewItemCreated = true;
 			UpdateDefaultSettings ();
 			dialog.CloseDialog ();
+		}
+
+		async Task<IEnumerable<IWorkspaceFileObject>> ReloadProjects ()
+		{
+			if (ParentFolder == null)
+				return processedTemplate.WorkspaceItems;
+
+			var items = new List<IWorkspaceFileObject> ();
+			foreach (IWorkspaceFileObject item in processedTemplate.WorkspaceItems) {
+				var project = item as Project;
+				if (project != null) {
+					var reloadedProject = await ParentFolder.ReloadItem (new ProgressMonitor (), project) as SolutionItem;
+					items.Add (reloadedProject);
+				} else if (item is Solution) {
+					await ReloadProjects ((Solution)item);
+					items.Add (item);
+				} else {
+					items.Add (item);
+				}
+			}
+			return items;
+		}
+
+		async Task ReloadProjects (Solution solution)
+		{
+			foreach (Project project in solution.GetAllProjects ()) {
+				await project.ParentFolder.ReloadItem (new ProgressMonitor (), project);
+			}
 		}
 
 		public WizardPage CurrentWizardPage {
