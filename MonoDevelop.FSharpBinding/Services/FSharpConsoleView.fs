@@ -336,6 +336,9 @@ type FSharpConsoleView() as x =
                   else false
               elif x.Cursor.Compare (x.InputLineBegin) <= 0 then true
               else false
+            | Gdk.Key.KP_Right | Gdk.Key.Right ->
+                if x.Cursor.Compare (x.InputLineEnd) >= 0 then true
+                else false
             | Gdk.Key.KP_Home | Gdk.Key.Home ->
                 buffer.MoveMark (buffer.InsertMark, x.InputLineBegin)
 
