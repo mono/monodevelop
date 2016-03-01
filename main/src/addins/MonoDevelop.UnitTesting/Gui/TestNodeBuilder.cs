@@ -34,6 +34,7 @@ using MonoDevelop.UnitTesting.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -69,16 +70,16 @@ namespace MonoDevelop.UnitTesting
 			var title = RemoveMarkup(test.Title);
 
 			if (test.Status == TestStatus.Running) {
-				nodeInfo.Label = title;
+				nodeInfo.Label = Ambience.EscapeText (title);
 				return;
 			} else if (test.Status == TestStatus.Loading) {
-				nodeInfo.Label = title + GettextCatalog.GetString (" (Loading)");
+				nodeInfo.Label = Ambience.EscapeText (title) + GettextCatalog.GetString (" (Loading)");
 				return;
 			} else if (test.Status == TestStatus.LoadError) {
-				nodeInfo.Label = title + GettextCatalog.GetString (" (Load failed)");
+				nodeInfo.Label = Ambience.EscapeText (title) + GettextCatalog.GetString (" (Load failed)");
 				return;
 			} else {
-				nodeInfo.Label = title;
+				nodeInfo.Label = Ambience.EscapeText (title);
 
 				UnitTestResult res = test.GetLastResult ();
 				if (res != null && treeBuilder.Options ["ShowTestCounters"] && (test is UnitTestGroup)) {
