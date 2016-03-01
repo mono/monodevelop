@@ -81,9 +81,7 @@ namespace MonoDevelop.Core.Execution
 		public T GetArgument<T> (string name)
 		{
 			var r = GetArgument (name);
-			if ((r is IDictionary<string, object>) && IsSerializableType (typeof(T)))
-				return (T)(object)ReadMessageData (typeof(T), (Dictionary<string, object>)r);
-			return (T)r;
+			return (T)ConvertToType (r, typeof (T));
 		}
 		
 		public List<BinaryMessageArgument> Args {
@@ -92,6 +90,7 @@ namespace MonoDevelop.Core.Execution
 		
 		protected BinaryMessage ()
 		{
+			Id = System.Threading.Interlocked.Increment (ref nextId);
 		}
 
 		public BinaryMessage (string name)
@@ -201,22 +200,22 @@ namespace MonoDevelop.Core.Execution
 			} else if (val is TimeSpan) {
 				bw.Write ((byte)TypeCode.TimeSpan);
 				bw.Write (((TimeSpan)val).Ticks);
-			} else if (val is IDictionary<string, object>) {
+			} else if (val.GetType ().IsGenericType && val.GetType ().GetGenericTypeDefinition () == typeof(Dictionary<,>)) {
 				bw.Write ((byte)TypeCode.Map);
-				var dict = (IDictionary<string, object>)val;
-				bw.Write (dict.Count);
-				foreach (var e in dict) {
-					bw.Write (e.Key);
-					WriteValue (bw, e.Value);
+				var t = val.GetType ();
+				var keyType = t.GetGenericArguments () [0];
+				var valueType = t.GetGenericArguments () [1];
+				var dict = (IDictionary)val;
+				var keys = Array.CreateInstance (keyType, dict.Count);
+				var values = Array.CreateInstance (valueType, dict.Count);
+				int n = 0;
+				foreach (DictionaryEntry e in dict) {
+					keys.SetValue (e.Key, n);
+					values.SetValue (e.Value, n);
+					n++;
 				}
-			} else if (val is IDictionary<string, string>) {
-				bw.Write ((byte)TypeCode.Map);
-				var dict = (IDictionary<string, string>)val;
-				bw.Write (dict.Count);
-				foreach (var e in dict) {
-					bw.Write (e.Key);
-					WriteValue (bw, e.Value);
-				}
+				WriteArray (bw, keys);
+				WriteArray (bw, values);
 			} else if (val.GetType ().IsEnum) {
 				WriteValue (bw, Convert.ToInt64(val));
 			} else {
@@ -303,11 +302,8 @@ namespace MonoDevelop.Core.Execution
 			switch ((TypeCode)t) {
 			case TypeCode.Null:
 				return null;
-			case TypeCode.Array: {
-					int n = br.ReadInt32 ();
-					var et = (TypeCode)br.ReadByte ();
-					return ReadArray (br, et, n);
-				}
+			case TypeCode.Array:
+				return ReadArray (br);
 			case TypeCode.Double:
 				return br.ReadDouble ();
 			case TypeCode.Byte:
@@ -329,21 +325,25 @@ namespace MonoDevelop.Core.Execution
 			case TypeCode.TimeSpan:
 				return new TimeSpan (br.ReadInt64 ());
 			case TypeCode.Map: {
-					Dictionary<string, object> dict = new Dictionary<string, object> ();
-					int size = br.ReadInt32 ();
-					while (size-- > 0) {
-						string key = br.ReadString ();
-						object value = ReadValue (br);
-						dict [key] = value;
-					}
+					var keys = (Array)ReadArray (br);
+					var values = (Array)ReadArray (br);
+					var dt = typeof (Dictionary<,>);
+					var dictType = dt.MakeGenericType (keys.GetType ().GetElementType (), values.GetType ().GetElementType ());
+
+					var dict = (IDictionary)Activator.CreateInstance (dictType);
+					for (int n = 0; n < keys.Length; n++)
+						dict [keys.GetValue (n)] = values.GetValue (n);
 					return dict;
 				}
 			}
 			throw new NotSupportedException ("code: " + t);
 		}
 
-		static object ReadArray (BinaryReader br, TypeCode type, int count)
+		static object ReadArray (BinaryReader br)
 		{
+			int count = br.ReadInt32 ();
+			var type = (TypeCode)br.ReadByte ();
+
 			switch (type) {
 			case TypeCode.Object: {
 					var a = new object [count];
@@ -414,7 +414,7 @@ namespace MonoDevelop.Core.Execution
 
 		bool IsSerializableType (Type type)
 		{
-			return Type.GetTypeCode (type) == System.TypeCode.Object && !type.IsArray && !typeof(IDictionary<string, string>).IsAssignableFrom (type);
+			return Type.GetTypeCode (type) == System.TypeCode.Object && !type.IsArray && !typeof(IDictionary).IsAssignableFrom (type);
 		}
 		
 		public override string ToString ()
@@ -470,7 +470,7 @@ namespace MonoDevelop.Core.Execution
 				} else {
 					map = new TypeMap ();
 					foreach (var m in type.GetMembers (BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)) {
-						var at = m.GetCustomAttribute<MessageDataPropertyAttribute> ();
+						var at = (MessageDataPropertyAttribute)Attribute.GetCustomAttribute (m, typeof(MessageDataPropertyAttribute));
 						if (at == null || (!(m is PropertyInfo) && !(m is FieldInfo)))
 							continue;
 						map [at.Name ?? m.Name] = m;
@@ -492,24 +492,22 @@ namespace MonoDevelop.Core.Execution
 				var m = e.Value;
 				object val = GetArgument (e.Key);
 				if (m is PropertyInfo) {
-					if (val is IDictionary<string, object> && IsSerializableType (((PropertyInfo)m).PropertyType))
-						val = ReadMessageData (((PropertyInfo)m).PropertyType, (IDictionary<string, object>)val);
+					val = ConvertToType (val, ((PropertyInfo)m).PropertyType);
 					((PropertyInfo)m).SetValue (this, val, null);
 				} else {
-					if (val is IDictionary<string, object> && IsSerializableType (((FieldInfo)m).FieldType))
-						val = ReadMessageData (((FieldInfo)m).FieldType, (IDictionary<string, object>)val);
+					val = ConvertToType (val, ((FieldInfo)m).FieldType);
 					((FieldInfo)m).SetValue (this, val);
 				}
 			}
 		}
 
-		object ReadMessageData (Type type, IDictionary<string, object> data)
+		object ReadMessageData (Type type, Dictionary<string, object> data)
 		{
 			TypeMap map = GetTypeMap (type);
 			if (map == null)
 				throw new InvalidOperationException ("Type '" + type.FullName + "' can't be read from message data. The type must have the [MessageDataType] attribute applied to it");
 
-			var result = Activator.CreateInstance (type);
+			var result = Activator.CreateInstance (type, true);
 			foreach (var e in map) {
 				var m = e.Value;
 				object val;
@@ -530,9 +528,29 @@ namespace MonoDevelop.Core.Execution
 
 		object ConvertToType (object ob, Type type)
 		{
-			if (ob is IDictionary<string, object> && IsSerializableType (type))
-				return ReadMessageData (type, (IDictionary<string, object>)ob);
+			if (ob == null)
+				return null;
+			
+			if (type.IsAssignableFrom (ob.GetType ()))
+				return ob;
+			
+		    if (ob is Dictionary<string, object> && IsSerializableType (type))
+				return ReadMessageData (type, (Dictionary<string, object>)ob);
 
+			if (ob.GetType ().IsGenericType && ob.GetType().GetGenericTypeDefinition () == typeof(Dictionary<,>)) {
+				if (type.IsGenericType && type.GetGenericTypeDefinition () == typeof(Dictionary<,>)) {
+					var targs = type.GetGenericArguments ();
+					var keyType = targs [0];
+					var elemType = targs [1];
+					var dict = (IDictionary)Activator.CreateInstance (type);
+					foreach (DictionaryEntry e in (IDictionary)ob) {
+						var key = ConvertToType (e.Key, keyType);
+						var val = ConvertToType (e.Value, elemType);
+						dict [key] = val;
+					}
+					return dict;
+				}
+			}
 			if (type.IsEnum && !ob.GetType ().IsEnum) {
 				return Enum.ToObject (type, ob);
 			}
