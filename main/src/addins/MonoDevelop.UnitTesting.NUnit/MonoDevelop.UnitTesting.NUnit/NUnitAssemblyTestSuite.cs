@@ -506,7 +506,12 @@ namespace MonoDevelop.UnitTesting.NUnit
 				// Note that we always dispose the tcp listener as we don't want it listening
 				// forever if the test runner does not try to connect to it
 				using (tcpListener) {
-					var p = testContext.ExecutionContext.ExecutionHandler.Execute (cmd, cons);
+					var handler = testContext.ExecutionContext.ExecutionHandler;
+
+					if (handler == null)
+						handler = Runtime.ProcessService.DefaultExecutionHandler;
+					
+					var p = handler.Execute (cmd, cons);
 					using (testContext.Monitor.CancellationToken.Register (p.Cancel))
 						p.Task.Wait ();
 
