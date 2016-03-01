@@ -69,8 +69,8 @@ namespace MonoDevelop.UnitTesting
 			UnitTest test = dataObject as UnitTest;
 			nodeInfo.Icon = test.StatusIcon;
 
-			var title = EscapeTestName(test.Title);
-
+			var title = RemoveGenericArgument (test.Title);
+			title = test.Title;
 			if (test.Status == TestStatus.Running) {
 				nodeInfo.Label = Ambience.EscapeText (title);
 				return;
@@ -149,38 +149,6 @@ namespace MonoDevelop.UnitTesting
 				}
 			}
 			return title;
-		}
-
-		public static string EscapeTestName (string title)
-		{
-			if (title == null)
-				return null;
-
-			var text = RemoveGenericArgument (title);
-			var sb = new StringBuilder (text.Length);
-
-			var len = text.Length;
-			for (var i = 0; i < len; i++) {
-				switch (text [i]) {
-
-				case '<':
-					sb.Append ("&lt;");
-					break;
-				case '>':
-					sb.Append ("&gt;");
-					break;
-				case '"':
-					sb.Append ("&quot;");
-					break;
-				case '&':
-					sb.Append ("&amp;");
-					break;
-				default:
-					sb.Append (text [i]);
-					break;
-				}
-			}
-			return sb.ToString ();
 		}
 	}
 	
