@@ -78,9 +78,16 @@ namespace MonoDevelop.Components
 		{
 			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled");
 
-			#if MAC
-			Xwt.Drawing.Context.RegisterStyles ("sel");
-			#endif
+			if (Core.Platform.IsMac) {
+				Xwt.Drawing.Context.RegisterStyles ("mac", "sel");
+				Xwt.Drawing.Context.SetGlobalStyle ("mac");
+			} else if (Core.Platform.IsWindows) {
+				Xwt.Drawing.Context.RegisterStyles ("win");
+				Xwt.Drawing.Context.SetGlobalStyle ("win");
+			} else if (Core.Platform.IsLinux) {
+				Xwt.Drawing.Context.RegisterStyles ("linux");
+				Xwt.Drawing.Context.SetGlobalStyle ("linux");
+			}
 
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IWindowBackend, ThemedGtkWindowBackend>();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
