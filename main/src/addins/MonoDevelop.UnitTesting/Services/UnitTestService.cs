@@ -450,7 +450,7 @@ namespace MonoDevelop.UnitTesting
 
 		protected override OperationConsole OnCreateConsole ()
 		{
-			return factory.CreateConsole ().WithCancelCallback (cancelSource.Cancel);
+			return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Ide.Gui.Stock.MessageLog, false, true)).Console.WithCancelCallback (cancelSource.Cancel);
 		}
 	}
 }
