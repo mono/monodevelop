@@ -27,6 +27,8 @@
 //
 
 using System;
+using System.Globalization;
+using System.Text;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
@@ -66,7 +68,7 @@ namespace MonoDevelop.UnitTesting
 			UnitTest test = dataObject as UnitTest;
 			nodeInfo.Icon = test.StatusIcon;
 
-			var title = RemoveMarkup(test.Title);
+			var title = EscapeTestName(test.Title);
 
 			if (test.Status == TestStatus.Running) {
 				nodeInfo.Label = title;
@@ -133,19 +135,51 @@ namespace MonoDevelop.UnitTesting
 			if (tb != null) tb.Update ();
 		}
 
-		static string RemoveMarkup (string title)
+		static string RemoveGenericArgument (string title)
 		{
-			var leftAngleIndex = title.IndexOf ('<');
-			if (leftAngleIndex > -1) {
-				var rightAngleIndex = title.IndexOf ('>');
-				if (rightAngleIndex > -1) {
-					title = title.Substring (0, leftAngleIndex) + title.Substring (rightAngleIndex + 1);
+			var leftParen = title.LastIndexOf ('(', title.Length - 1);
+			if (leftParen > -1) {
+				var leftAngleIndex = title.LastIndexOf ('<', leftParen);
+				if (leftAngleIndex > -1) {
+					var rightAngleIndex = title.IndexOf ('>', leftAngleIndex);
+					if (rightAngleIndex > -1) {
+						title = title.Substring (0, leftAngleIndex) + title.Substring (rightAngleIndex + 1);
+					}
 				}
 			}
-
 			return title;
 		}
 
+		public static string EscapeTestName (string title)
+		{
+			if (title == null)
+				return null;
+
+			var text = RemoveGenericArgument (title);
+			var sb = new StringBuilder (text.Length);
+
+			var len = text.Length;
+			for (var i = 0; i < len; i++) {
+				switch (text [i]) {
+
+				case '<':
+					sb.Append ("&lt;");
+					break;
+				case '>':
+					sb.Append ("&gt;");
+					break;
+				case '"':
+					sb.Append ("&quot;");
+					break;
+				case '&':
+					sb.Append ("&amp;");
+					break;
+				default:
+					sb.Append (text [i]);
+					break;
+			}
+			return sb.ToString ();
+		}
 	}
 	
 	class TestNodeCommandHandler: NodeCommandHandler
