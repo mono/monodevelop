@@ -32,7 +32,6 @@ using System.IO;
 using System;
 using System.Text;
 using System.Threading;
-using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects.MSBuild
 {
@@ -79,20 +78,35 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		void DisposeLogger ()
 		{
-			if (currentLogWriter != null) {
-				flushTimer.Dispose ();
-				flushTimer = null;
-				FlushLog ();
-				currentLogWriter = null;
+			lock (flushLogLock)
+				lock (log) {
+					if (currentLogWriter != null) {
+						try {
+							flushTimer.Dispose ();
+							FlushLog ();
+						} catch {
+							// Ignoree
+						} finally {
+							// This needs to be done inside the finally, to make sure it is called even in
+							// the case the thread is being aborted.
+							flushTimer = null;
+							currentLogWriter = null;
+						}
+					}
 			}
 		}
 
 		void LogWriteLine (string txt)
 		{
-			if (currentLogWriter != null) {
-				lock (log) {
+			LogWrite (txt + Environment.NewLine);
+		}
+
+		void LogWrite (string txt)
+		{
+			lock (log) {
+				if (currentLogWriter != null) {
 					// Append the line to the log, and schedule the flush of the log, unless it has already been done
-					log.AppendLine (txt);
+					log.Append (txt);
 					if (!flushingLog) {
 						// Flush the log after 100ms
 						flushingLog = true;

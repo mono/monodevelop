@@ -39,6 +39,9 @@ namespace MonoDevelop.Projects.MSBuild
 		public string CultureName { get; set; }
 
 		[MessageDataProperty]
+		public string BinDir { get; set; }
+
+		[MessageDataProperty]
 		public Dictionary<string, string> GlobalProperties { get; set; }
 	}
 

@@ -296,8 +296,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Projects.Format
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.UnitTesting.NUnit", "src\addins\MonoDevelop.UnitTesting.NUnit\MonoDevelop.UnitTesting.NUnit.csproj", "{6224D87E-2AC1-4D9F-91ED-714F797297BF}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{9E061B40-12E7-470A-B225-E566BAF745EB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnit3Runner", "src\addins\MonoDevelop.UnitTesting.NUnit\NUnit3Runner\NUnit3Runner.csproj", "{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FSharpBinding", "FSharpBinding", "{4804F98F-A891-463C-893D-7134D66C234F}"
@@ -321,6 +319,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIThreadMonitorDaemon", "src\addins\PerformanceDiagnostics\UIThreadMonitorDaemon\UIThreadMonitorDaemon.csproj", "{3FDB97B5-916E-4817-8098-41659687A8FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging.Win32", "src\addins\MonoDevelop.Debugger.Win32\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj", "{74704C00-5861-4F86-920C-865148A175C5}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MonoDevelop.Projects.MSBuild.Shared", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MonoDevelop.Projects.MSBuild.Shared.shproj", "{DB95FF74-275D-4488-84E9-1060527988BF}"
+EndProject
+Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "po", "po\po.mdproj", "{6EB4E15A-5750-441A-98C0-FFC5888354AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1960,16 +1962,6 @@ Global
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Debug|x86.Build.0 = Debug|Any CPU
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{6224D87E-2AC1-4D9F-91ED-714F797297BF}.Release|x86.Build.0 = Release|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.DebugGnome|Any CPU.ActiveCfg = DebugGnome|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.ReleaseWin32|Any CPU.Build.0 = ReleaseWin32|Any CPU
-		{9E061B40-12E7-470A-B225-E566BAF745EB}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
 		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2126,6 +2118,15 @@ Global
 		{74704C00-5861-4F86-920C-865148A175C5}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
 		{74704C00-5861-4F86-920C-865148A175C5}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{74704C00-5861-4F86-920C-865148A175C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.DebugGnome|Any CPU.ActiveCfg = DebugGnome|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseMac|Any CPU.ActiveCfg = ReleaseMac|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseWin32|Any CPU.ActiveCfg = ReleaseWin32|Any CPU
+		{6EB4E15A-5750-441A-98C0-FFC5888354AA}.ReleaseGnome|Any CPU.ActiveCfg = ReleaseGnome|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2270,6 +2271,7 @@ Global
 		{DD14AD77-6FBB-4F0D-8083-CEC28A9D0BBD} = {19C4CC37-7050-4944-B11F-60F52121B24C}
 		{3FDB97B5-916E-4817-8098-41659687A8FF} = {19C4CC37-7050-4944-B11F-60F52121B24C}
 		{74704C00-5861-4F86-920C-865148A175C5} = {8F47F5EC-2F57-4030-B658-7B1002DA90C2}
+		{DB95FF74-275D-4488-84E9-1060527988BF} = {8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

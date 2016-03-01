@@ -579,6 +579,18 @@
     <Compile Include="MonoDevelop.Core\ErrorHelper.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Core\StructEqualityComparer.cs" />
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\RemoteBuildEngineMessages.cs">
+      <Link>MonoDevelop.Projects.MSBuild\RemoteBuildEngineMessages.cs</Link>
+    </Compile>
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MSBuildEvaluatedItem.cs">
+      <Link>MonoDevelop.Projects.MSBuild\MSBuildEvaluatedItem.cs</Link>
+    </Compile>
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MSBuildResult.cs">
+      <Link>MonoDevelop.Projects.MSBuild\MSBuildResult.cs</Link>
+    </Compile>
+    <Compile Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.MSBuild.Shared\MSBuildTargetResult.cs">
+      <Link>MonoDevelop.Projects.MSBuild\MSBuildTargetResult.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -646,11 +658,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
-      <Project>{A437F1A3-78DF-4F00-8053-D32A8B1EB679}</Project>
-      <Name>MonoDevelop.Projects.Formats.MSBuild</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\cecil\Mono.Cecil.csproj">
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>

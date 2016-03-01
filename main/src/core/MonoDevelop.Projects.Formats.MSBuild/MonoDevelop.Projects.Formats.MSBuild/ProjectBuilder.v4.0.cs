@@ -38,7 +38,7 @@ using System.Xml;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
+	partial class ProjectBuilder
 	{
 		readonly ProjectCollection engine;
 		readonly string file;

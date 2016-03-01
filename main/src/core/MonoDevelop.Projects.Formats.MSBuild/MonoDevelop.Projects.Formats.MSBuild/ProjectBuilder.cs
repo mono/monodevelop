@@ -42,7 +42,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.MSBuild
 {
-	public partial class ProjectBuilder: MarshalByRefObject, IProjectBuilder
+	partial class ProjectBuilder: MarshalByRefObject
 	{
 		readonly string file;
 		readonly MDConsoleLogger consoleLogger;
@@ -113,7 +113,7 @@ namespace MonoDevelop.Projects.MSBuild
 								}
 								list.Add (evItem);
 							}
-							result.Items[name] = list;
+							result.Items[name] = list.ToArray ();
 						}
 					}
 				} catch (InvalidProjectFileException ex) {
