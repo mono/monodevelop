@@ -375,12 +375,12 @@ namespace MonoDevelop.Core.Execution
 				message.Write (connectionStream);
 
 				connectionStream.Flush ();
-			}
-			catch {
+			}	
+			catch (Exception ex){
 				if (connection == null || (!connection.Connected && status == ConnectionStatus.Connected)) {
 					AbortConnection ("Disconnected from remote process due to a communication error", isAsync: true);
 				} else
-					ProcessResponse (message.CreateErrorResponse ("Connection is closed"));
+					ProcessResponse (message.CreateErrorResponse (ex.ToString ()));
 			}
 		}
 
@@ -528,19 +528,27 @@ namespace MonoDevelop.Core.Execution
 				MessageRequest req;
 				if (messageWaiters.TryGetValue (msg.Id, out req)) {
 					messageWaiters.Remove (msg.Id);
-					var rt = req.Request.GetResponseType ();
-					if (rt != typeof (BinaryMessage)) {
-						var resp = (BinaryMessage)Activator.CreateInstance (rt);
-						resp.CopyFrom (msg);
-						msg = resp;
+					try {
+						var rt = req.Request.GetResponseType ();
+						if (rt != typeof (BinaryMessage)) {
+							var resp = (BinaryMessage)Activator.CreateInstance (rt);
+							resp.CopyFrom (msg);
+							msg = resp;
+						}
+					} catch (Exception ex) {
+						msg = msg.CreateErrorResponse (ex.ToString ());
 					}
+
+					if (DebugMode) {
+						var time = (int)(respTime - req.Request.SentTime).TotalMilliseconds;
+						LogMessage (MessageType.Response, msg, time);
+					}
+
 					if (!req.Request.OneWay)
 						NotifyResponse (req, msg);
 				}
-				if (DebugMode) {
-					var time = req != null ? (int)(respTime - req.Request.SentTime).TotalMilliseconds : -1;
-					LogMessage (MessageType.Response, msg, time);
-				}
+				else if (DebugMode)
+					LogMessage (MessageType.Response, msg, -1);
 			}
 		}
 
@@ -593,15 +601,15 @@ namespace MonoDevelop.Core.Execution
 			Console.Write ("[" + (Environment.TickCount - tickBase) + "] ");
 
 			if (type == MessageType.Request)
-				Console.WriteLine ("XS >> RP " + msg);
+				Console.WriteLine ("[CLIENT] XS >> RP " + msg);
 			else if (type == MessageType.Response) {
 				if (time != -1)
-					Console.WriteLine ("XS << RP " + time + "ms " + msg);
+					Console.WriteLine ("[CLIENT] XS << RP " + time + "ms " + msg);
 				else
-					Console.WriteLine ("XS << RP " + msg);
+					Console.WriteLine ("[CLIENT] XS << RP " + msg);
 			}
 			else
-				Console.WriteLine ("XS <- RP " + msg);
+				Console.WriteLine ("[CLIENT] XS <- RP " + msg);
 		}
 
 		void PingConnection (object state)

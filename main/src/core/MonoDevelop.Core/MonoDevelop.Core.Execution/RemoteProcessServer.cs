@@ -159,7 +159,7 @@ namespace MonoDevelop.Core.Execution
 					msg = LoadMessageData (msg);
 					if (DebugMode) {
 						String mtype = type == MESSAGE_QUEUE_END ? "[M] " : "[Q] ";
-						Console.WriteLine ("XS >> RP " + mtype + msg);
+						Console.WriteLine ("[SERVER] XS >> RP " + mtype + msg);
 					}
 				} catch (Exception e) {
 					Console.WriteLine (e);
@@ -208,7 +208,7 @@ namespace MonoDevelop.Core.Execution
 			msg.ReadCustomData ();
 			lock (listeners) {
 				if (DebugMode)
-					Console.WriteLine ("XS << RP " + type + " [" + msg.ProcessingTime + "ms] " + msg);
+					Console.WriteLine ("[SERVER] XS << RP " + type + " [" + msg.ProcessingTime + "ms] " + msg);
 				outStream.WriteByte (type);
 				try {
 					msg.Write (outStream);
@@ -297,6 +297,7 @@ namespace MonoDevelop.Core.Execution
 					Console.WriteLine (ex);
 				}
 				if (response != null) {
+					response.Id = msg.Id;
 					response.ProcessingTime = sw.ElapsedMilliseconds;
 					server.SendResponse (response);
 				} else if (!msg.OneWay)
