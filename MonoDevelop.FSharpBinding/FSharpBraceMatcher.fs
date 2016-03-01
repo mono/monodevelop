@@ -22,34 +22,30 @@ type FSharpBraceMatcher() =
 
         match editor.GetCharAt(caretOffset) with
         | '(' | ')' ->
-            match context.TryGetAst() with
-            | Some _ast -> 
-                let computation = async {
-                    let getOffset (range:Range.range) =
-                        editor.LocationToOffset (range.StartLine, range.StartColumn+1)
+            let computation = async {
+                let getOffset (range:Range.range) =
+                    editor.LocationToOffset (range.StartLine, range.StartColumn+1)
+                let! braces = languageService.MatchingBraces(editor.FileName.ToString(), context.Project.FileName.ToString(), editor.Text)
+                let matching = 
+                    braces |> Seq.choose
+                                  (fun (startRange, endRange) -> 
+                                      let startOffset = getOffset startRange
+                                      let endOffset = getOffset endRange
+                                      match (startOffset, endOffset) with
+                                      | (startOffset, endOffset) when startOffset = caretOffset 
+                                          -> Some (startOffset, endOffset, true)
+                                      | (startOffset, endOffset) when endOffset = caretOffset
+                                          -> Some (startOffset, endOffset, false)
+                                      | _ -> None)
+                           |> Seq.tryHead
 
-                    let! braces = languageService.MatchingBraces(editor.FileName.ToString(), context.Project.FileName.ToString(), editor.Text)
-                    let matching = 
-                        braces |> Seq.choose
-                                      (fun (startRange, endRange) -> 
-                                          let startOffset = getOffset startRange
-                                          let endOffset = getOffset endRange
-                                          match (startOffset, endOffset) with
-                                          | (startOffset, endOffset) when startOffset = caretOffset 
-                                              -> Some (startOffset, endOffset, true)
-                                          | (startOffset, endOffset) when endOffset = caretOffset
-                                              -> Some (startOffset, endOffset, false)
-                                          | _ -> None)
-                               |> Seq.tryHead
+                return
+                    match matching with
+                    | Some (startBrace, endBrace, isLeft) -> 
+                        Nullable(new BraceMatchingResult(new TextSegment(startBrace, 1), new TextSegment(endBrace, 1), isLeft))
+                    | None -> Nullable()
 
-                    return
-                        match matching with
-                        | Some (startBrace, endBrace, isLeft) -> 
-                            Nullable(new BraceMatchingResult(new TextSegment(startBrace, 1), new TextSegment(endBrace, 1), isLeft))
-                        | None -> Nullable()
-
-                }
-                Async.StartAsTask (computation = computation, cancellationToken = cancellationToken)
-            | None -> defaultMatcher.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken)
+            }
+            Async.StartAsTask (computation = computation, cancellationToken = cancellationToken)
         | _ -> defaultMatcher.GetMatchingBracesAsync (editor, context, caretOffset, cancellationToken)
         
