@@ -448,9 +448,9 @@ namespace MonoDevelop.UnitTesting
 			cancelSource = cs;
 		}
 
-		protected override OperationConsole OnCreateConsole ()
+		protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 		{
-			return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Ide.Gui.Stock.MessageLog, false, true)).Console.WithCancelCallback (cancelSource.Cancel);
+			return factory.CreateConsole (options.WithBringToFront (false)).WithCancelCallback (cancelSource.Cancel);
 		}
 	}
 }
