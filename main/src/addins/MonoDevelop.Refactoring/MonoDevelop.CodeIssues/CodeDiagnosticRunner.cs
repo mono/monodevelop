@@ -65,13 +65,18 @@ namespace MonoDevelop.CodeIssues
 				if (diagnostics == null) {
 					diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
 				}
+				var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
 				foreach (var diagnostic in diagnostics) {
 					if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
+						continue;
+					if (!diagnostic.IsEnabled)
 						continue;
 					alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);
 					var provider = diagnostic.GetProvider ();
 					if (provider == null)
 						continue;
+					foreach (var diag in provider.SupportedDiagnostics)
+						diagnosticTable [diag.Id] = diagnostic;
 					providers.Add (provider);
 				}
 
@@ -102,6 +107,7 @@ namespace MonoDevelop.CodeIssues
 
 				return diagnosticList
 					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
+					.Where (d => diagnosticTable[d.Id].GetIsEnabled (d.Descriptor))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
 						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);

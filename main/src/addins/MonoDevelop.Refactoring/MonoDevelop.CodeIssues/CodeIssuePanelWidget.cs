@@ -38,6 +38,7 @@ using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -366,6 +367,8 @@ namespace MonoDevelop.CodeIssues
 				}
 				kv.Key.Item1.SetIsEnabled (kv.Key.Item2, userIsEnabled);
 			}
+			foreach (var doc in IdeApp.Workbench.Documents)
+				doc.StartReparseThread ();
 		}
 	}
 }
