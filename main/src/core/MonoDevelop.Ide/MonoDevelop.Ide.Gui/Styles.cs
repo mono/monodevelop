@@ -417,24 +417,24 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#ebedf0");
 			PropertyPadDividerColor = Color.FromName ("#efefef");
 
-			ErrorForegroundColor = Color.FromName ("#db6246");
-			WarningForegroundColor = Color.FromName ("#a08000");
-			InformationForegroundColor = Color.FromName ("#5785bd");
-
-			ErrorBoxForegroundColor = Color.FromName ("#ffffff");
-			ErrorBoxBackgroundColor = Color.FromName ("#e27267");
-			WarningBoxForegroundColor = Color.FromName ("#563b00");
-			WarningBoxBackgroundColor = Color.FromName ("#efd46c");
-			InformationBoxForegroundColor = Color.FromName ("#ffffff");
-			InformationBoxBackgroundColor = Color.FromName ("#5785bd");
-
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
 			StatusInformationTextColor = BaseBackgroundColor;
+			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
+			InformationBoxForegroundColor = Color.FromName ("#000000");
+			InformationForegroundColor = Color.FromName ("#5785bd");
+
 			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
 			StatusWarningTextColor = BaseBackgroundColor;
+			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
+			WarningBoxForegroundColor = Color.FromName ("#000000");
+			WarningForegroundColor = Color.FromName ("#a08000");
+
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
 			StatusErrorTextColor = BaseBackgroundColor;
+			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
+			ErrorBoxForegroundColor = Color.FromName ("#000000");
+			ErrorForegroundColor = Color.FromName ("#db6246");
 
 			// Tabs
 
@@ -523,24 +523,24 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#484b55");
 			PropertyPadDividerColor = SeparatorColor;
 
-			ErrorForegroundColor = Color.FromName ("#ff866b");
-			WarningForegroundColor = Color.FromName ("#ffd21c");
-			InformationForegroundColor = Color.FromName ("#9cc8ff");
-
-			ErrorBoxForegroundColor = Color.FromName ("#ffffff");
-			ErrorBoxBackgroundColor = Color.FromName ("#ff866b");
-			WarningBoxForegroundColor = Color.FromName ("#563b00");
-			WarningBoxBackgroundColor = Color.FromName ("#ffd21c");
-			InformationBoxForegroundColor = Color.FromName ("#ffffff");
-			InformationBoxBackgroundColor = Color.FromName ("#6c99c5");
-
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
 			StatusInformationTextColor = Color.FromName ("#394d66");
+			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
+			InformationBoxForegroundColor = Color.FromName ("#000000");
+			InformationForegroundColor = Color.FromName ("#9cc8ff");
+
 			StatusWarningBackgroundColor = Color.FromName ("#ffcf0f");
 			StatusWarningTextColor = Color.FromName ("#665206");
+			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
+			WarningBoxForegroundColor = Color.FromName ("#000000");
+			WarningForegroundColor = Color.FromName ("#ffd21c");
+
 			StatusErrorBackgroundColor = Color.FromName ("#ff7152");
 			StatusErrorTextColor = Color.FromName ("#662d20");
+			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
+			ErrorBoxForegroundColor = Color.FromName ("#000000");
+			ErrorForegroundColor = Color.FromName ("#ff866b");
 
 			// Tabs
 
