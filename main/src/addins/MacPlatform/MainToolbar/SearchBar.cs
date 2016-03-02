@@ -306,7 +306,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			bool firstResponder = base.BecomeFirstResponder ();
 			if (firstResponder) {
 				ignoreEndEditing = true;
-				PlaceholderAttributedString = MakePlaceholderString (firstResponderPlaceholder);
+				PlaceholderAttributedString = MakePlaceholderString (FirstResponderPlaceholder);
 				ignoreEndEditing = false;
 
 				GainedFocus?.Invoke (this, EventArgs.Empty);
