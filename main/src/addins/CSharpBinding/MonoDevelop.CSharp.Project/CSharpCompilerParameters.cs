@@ -144,15 +144,17 @@ namespace MonoDevelop.CSharp.Project
 			);
 		}
 
-		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions ()
+		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions (DotNetProjectConfiguration configuration)
 		{
+			var symbols = GetDefineSymbols ();
+			if (configuration != null)
+				symbols = symbols.Concat (configuration.GetDefineSymbols ()).Distinct ();
 			return new Microsoft.CodeAnalysis.CSharp.CSharpParseOptions (
 				GetRoslynLanguageVersion (langVersion),
 				Microsoft.CodeAnalysis.DocumentationMode.Parse,
 				Microsoft.CodeAnalysis.SourceCodeKind.Regular,
-				ImmutableArray<string>.Empty.AddRange (GetDefineSymbols ())
+				ImmutableArray<string>.Empty.AddRange (symbols)
 			);
-
 		}
 
 

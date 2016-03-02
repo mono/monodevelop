@@ -408,7 +408,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					p.FileName,
 					fileName,
 					cp != null ? cp.CreateCompilationOptions () : null,
-					cp != null ? cp.CreateParseOptions () : null,
+					cp != null ? cp.CreateParseOptions (config) : null,
 					CreateDocuments (projectData, p, token, sourceFiles),
 					CreateProjectReferences (p, token),
 					references
