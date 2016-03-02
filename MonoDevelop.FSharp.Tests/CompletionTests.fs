@@ -5,17 +5,13 @@ open NUnit.Framework
 open NUnit.Framework.Extensibility
 open MonoDevelop.FSharp
 open Mono.TextEditor
+open MonoDevelop.Core
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
 open FsUnit
 open MonoDevelop
         
 type ``Completion Tests``() =
-    let getParseResults (documentContext:DocumentContext, _text) =
-        async {
-            return documentContext.TryGetAst()
-        }
-
     let getCompletions (input: string) =
         let offset = input.LastIndexOf "|"
         if offset = -1 then
@@ -26,8 +22,9 @@ type ``Completion Tests``() =
         editor.CaretOffset <- offset
         let ctx = new CodeCompletionContext()
         ctx.TriggerOffset <- offset
+        Completion.parseCache <- (Unchecked.defaultof<FilePath>, None)
         let results =
-            Completion.codeCompletionCommandImpl(getParseResults, editor, doc, ctx, false)
+            Completion.codeCompletionCommandImpl(editor, doc, ctx, false)
             |> Async.RunSynchronously
             |> Seq.map (fun c -> c.DisplayText)
 
