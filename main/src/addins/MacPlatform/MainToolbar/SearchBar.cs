@@ -155,14 +155,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		static readonly string firstResponderPlaceholder = "Search";
-		string placeholderText = "Search";
+		static string FirstResponderPlaceholder {
+			get {
+				return GettextCatalog.GetString ("Search");
+			}
+		}
+
+		string placeholderText;
 		public string PlaceholderText {
 			get {
-				return placeholderText;
+				return placeholderText ?? FirstResponderPlaceholder;
 			}
 			set {
-				placeholderText = value ?? "Search";
+				placeholderText = value ?? FirstResponderPlaceholder;
 				PlaceholderAttributedString = MakePlaceholderString (placeholderText);
 			}
 		}
@@ -181,8 +186,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		NSAttributedString MakePlaceholderString (string t)
 		{
-			return new NSAttributedString (GettextCatalog.GetString (t), 
-			                               foregroundColor: NSColor.FromRgba (0.63f, 0.63f, 0.63f, 1.0f));
+			return new NSAttributedString (t, foregroundColor: NSColor.FromRgba (0.63f, 0.63f, 0.63f, 1.0f));
 		}
 
 		void UpdateLayout ()
