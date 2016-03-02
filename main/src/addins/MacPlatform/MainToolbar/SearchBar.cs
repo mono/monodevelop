@@ -197,7 +197,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Cell.Scrollable = true;
 			Selectable = true;
 
-			PlaceholderAttributedString = MakePlaceholderString (placeholderText);
+			PlaceholderAttributedString = MakePlaceholderString (PlaceholderText);
 		}
 
 		internal void LogMessage (string message)
@@ -264,7 +264,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return;
 			}
 
-			PlaceholderAttributedString = MakePlaceholderString (placeholderText);
+			PlaceholderAttributedString = MakePlaceholderString (PlaceholderText);
 
 			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
 			if (value == (nint)(long)NSTextMovement.Tab) {
