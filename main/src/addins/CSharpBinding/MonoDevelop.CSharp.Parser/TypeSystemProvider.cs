@@ -51,7 +51,6 @@ namespace MonoDevelop.CSharp.Parser
 					result.Flags |= ParsedDocumentFlags.NonSerializable;
 			}
 
-			var compilerArguments = GetCompilerArguments (project);
 			SyntaxTree unit = null;
 
 			if (project != null) {
@@ -81,6 +80,7 @@ namespace MonoDevelop.CSharp.Parser
 			}
 
 			if (unit == null) {
+				var compilerArguments = GetCompilerArguments (project);
 				unit = CSharpSyntaxTree.ParseText (SourceText.From (options.Content.Text), compilerArguments, fileName);
 			} 
 
