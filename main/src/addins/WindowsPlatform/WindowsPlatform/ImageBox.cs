@@ -68,11 +68,20 @@ namespace WindowsPlatform
 		{
 			var image = Image;
 			if (image != null) {
+				if (!IsEnabled)
+					image = image.WithStyles ("disabled").WithAlpha (0.4);
 				image = image.WithBoxSize (RenderSize.Width, RenderSize.Height);
 				var x = (RenderSize.Width - image.Size.Width) / 2;
 				var y = (RenderSize.Height - image.Size.Height) / 2;
 				MonoDevelop.Platform.WindowsPlatform.WPFToolkit.RenderImage (this, dc, image, x, y);
 			}
+		}
+
+		protected override void OnPropertyChanged (DependencyPropertyChangedEventArgs e)
+		{
+			base.OnPropertyChanged (e);
+			if (e.Property == IsEnabledProperty)
+				InvalidateVisual ();
 		}
 
 		public Xwt.Drawing.Image Image
