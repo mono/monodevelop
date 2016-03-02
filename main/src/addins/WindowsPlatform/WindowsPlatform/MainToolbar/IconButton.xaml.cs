@@ -56,16 +56,17 @@ namespace WindowsPlatform.MainToolbar
 		protected override void OnPropertyChanged (DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged (e);
-			if (e.Property == ImageProperty)
+			if (e.Property == ImageProperty) {
 				RunIcon.Image = Image;
+				if (Image != null)
+					InvalidateMeasure ();
+			}
 			if (Image == null)
 				return;
-			if (e.Property == IsEnabledProperty)
-				RunIcon.Image = IsEnabled ? Image : Image.WithStyles ("disabled");
-			if (e.Property == IsMouseOverProperty && IsEnabled)
-				RunIcon.Image = IsMouseOver ?  Image.WithStyles ("hover") : Image;
-			
-			InvalidateMeasure ();
+			if (e.Property == IsMouseOverProperty && IsEnabled) {
+				RunIcon.Image = IsMouseOver ? Image.WithStyles ("hover") : Image;
+				InvalidateVisual ();
+			}
 		}
 
 		void OnMouseLeftButtonDown (object sender, MouseButtonEventArgs e)
