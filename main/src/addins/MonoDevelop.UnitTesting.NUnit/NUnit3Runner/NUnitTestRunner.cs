@@ -158,10 +158,8 @@ namespace NUnit3Runner
 			string tname = test.GetAttribute ("name");
 			string fullName = test.GetAttribute ("fullname");
 
-			var type = test.GetAttribute ("type");
-
-			if (type == "TestFixture" || type == "ParameterizedMethod") {
-				var tn = test.GetAttribute ("classname");
+			var tn = test.GetAttribute ("classname");
+			if (tn != null) {
 				var i = tn.LastIndexOf ('.');
 				if (i != -1) {
 					ti.FixtureTypeName = tn.Substring (i + 1);
@@ -173,7 +171,6 @@ namespace NUnit3Runner
 			}
 			ti.Name = tname;
 			ti.TestId = fullName;
-
 			// Trim short name from end of full name to get the path
 			string testNameWithDelimiter = "." + tname;
 			if (fullName.EndsWith (testNameWithDelimiter)) {
