@@ -438,7 +438,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Tabs
 
-			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO: VV
+			TabBarNotifyTextColor = Color.FromName ("#1FAECE");
 
 			// Breadcrumb
 
@@ -544,7 +544,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Tabs
 
-			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO: VV
+			TabBarNotifyTextColor = Color.FromName ("#4FCAE6");
 
 			// Breadcrumb
 
