@@ -34,6 +34,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool IsExecuted;
 
 		public FakePackageManagementProject FakeProject;
+		public FakeFileRemover FileRemover;
+		public FakeLicenseAcceptanceService LicenseAcceptanceService;
 
 		public FakeUpdatePackageAction ()
 			: this (new FakePackageManagementProject ())
@@ -41,9 +43,21 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public FakeUpdatePackageAction (IPackageManagementProject project)
-			: base (project, null)
+			: this (project, null, new FakeFileRemover (), new FakeLicenseAcceptanceService ())
 		{
 			FakeProject = project as FakePackageManagementProject;
+		}
+
+		public FakeUpdatePackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			FakeFileRemover fileRemover,
+			FakeLicenseAcceptanceService licenseAcceptanceService)
+			: base (project, packageManagementEvents, fileRemover, licenseAcceptanceService)
+		{
+			FakeProject = project as FakePackageManagementProject;
+			FileRemover = fileRemover;
+			LicenseAcceptanceService = licenseAcceptanceService;
 		}
 
 		protected override void ExecuteCore ()

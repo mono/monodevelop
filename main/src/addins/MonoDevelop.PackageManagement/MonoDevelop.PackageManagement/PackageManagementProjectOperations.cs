@@ -72,6 +72,7 @@ namespace MonoDevelop.PackageManagement
 					InstallPackageAction action = packageManagementProject.CreateInstallPackageAction ();
 					action.PackageId = packageReference.Id;
 					action.PackageVersion = new SemanticVersion (packageReference.Version);
+					action.LicensesMustBeAccepted = false;
 					return (IPackageAction)action;
 				}).ToList ();
 			}).Wait ();
