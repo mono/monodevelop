@@ -84,6 +84,7 @@ namespace MonoDevelop.PackageManagement
 			action.Package = Package;
 			action.OpenReadMeText = false;
 			action.PreserveLocalCopyReferences = false;
+			action.LicensesMustBeAccepted = false;
 			action.Execute ();
 		}
 	}

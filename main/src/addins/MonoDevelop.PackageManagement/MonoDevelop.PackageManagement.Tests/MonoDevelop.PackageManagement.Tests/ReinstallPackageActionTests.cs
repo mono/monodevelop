@@ -169,6 +169,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (fileRemovedResult.Value);
 			Assert.IsNull (fileRemover.FileRemoved);
 		}
+
+		[Test]
+		public void Execute_PackageExistsInSourceRepository_PackageIsInstalledWithoutLicenseAgreementDialogShowns ()
+		{
+			CreateAction ("MyPackage", "1.2.3.4");
+			AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
+
+			action.Execute ();
+
+			Assert.IsTrue (project.LastInstallPackageCreated.IsExecuteCalled);
+			Assert.IsFalse (project.LastInstallPackageCreated.LicensesMustBeAccepted);
+		}
 	}
 }
 
