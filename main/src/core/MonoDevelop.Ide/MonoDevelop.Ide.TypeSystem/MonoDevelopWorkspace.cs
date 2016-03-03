@@ -203,7 +203,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			await Task.WhenAll (allTasks.ToArray ());
 			if (token.IsCancellationRequested)
 				return null;
+			var modifiedWhileLoading = modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 			var solutionInfo = SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
+			foreach (var project in modifiedWhileLoading) {
+				if (solution.ContainsItem (project)) {
+					return await CreateSolutionInfo (solution, token).ConfigureAwait (false);
+				}
+			}
+
 			lock (addLock) {
 				if (!added) {
 					added = true;
@@ -1150,6 +1157,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
+
 		async void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
 			if (internalChanges)
@@ -1162,6 +1171,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var projectId = GetProjectId (project);
 			if (CurrentSolution.ContainsProject (projectId)) {
 				OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));
+			} else {
+				modifiedProjects.Add (project);
 			}
 		}
 
