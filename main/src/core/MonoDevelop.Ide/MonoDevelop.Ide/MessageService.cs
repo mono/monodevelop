@@ -88,8 +88,9 @@ namespace MonoDevelop.Ide
 		public static AlertButton Stop    = new AlertButton (Gtk.Stock.Stop, true);
 		public static AlertButton Proceed = new AlertButton (GettextCatalog.GetString ("_Proceed"));
 		public static AlertButton Replace = new AlertButton (GettextCatalog.GetString ("_Replace"));
-		
+
 		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
+		public static AlertButton AddExistingFile = new AlertButton (GettextCatalog.GetString ("Add existing file"));
 		
 		
 		public string Label { get; set; }

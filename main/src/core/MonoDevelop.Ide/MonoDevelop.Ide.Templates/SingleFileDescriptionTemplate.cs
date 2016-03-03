@@ -193,31 +193,36 @@ namespace MonoDevelop.Ide.Templates
 		public string SaveFile (SolutionFolderItem policyParent, Project project, string language, string baseDirectory, string entryName)
 		{
 			string file = GetFileName (policyParent, project, language, baseDirectory, entryName);
+			AlertButton questionResult = null;
 			
 			if (File.Exists (file)) {
-				if (!MessageService.Confirm (GettextCatalog.GetString ("File already exists"),
-				                                GettextCatalog.GetString ("File {0} already exists. Do you want to overwrite\nthe existing file?", file),
-				                                AlertButton.OverwriteFile)) {
+				questionResult = MessageService.AskQuestion (GettextCatalog.GetString ("File already exists"),
+				                                             GettextCatalog.GetString ("File {0} already exists.\nDo you want to overwrite the existing file or add it to the project?", file),
+				                                             AlertButton.Cancel,
+				                                             AlertButton.AddExistingFile,
+				                                             AlertButton.OverwriteFile);
+				if (questionResult == AlertButton.Cancel)
 					return null;
-				}
 			}
-			
+
 			if (!Directory.Exists (Path.GetDirectoryName (file)))
 				Directory.CreateDirectory (Path.GetDirectoryName (file));
-					
-			Stream stream = CreateFileContent (policyParent, project, language, file, entryName);
-			
-			byte[] buffer = new byte [2048];
-			int nr;
-			FileStream fs = null;
-			try {
-				fs = File.Create (file);
-				while ((nr = stream.Read (buffer, 0, 2048)) > 0)
-					fs.Write (buffer, 0, nr);
-			} finally {
-				stream.Close ();
-				if (fs != null)
-					fs.Close ();
+
+			if (questionResult == null || questionResult == AlertButton.OverwriteFile) {
+				Stream stream = CreateFileContent (policyParent, project, language, file, entryName);
+
+				byte [] buffer = new byte [2048];
+				int nr;
+				FileStream fs = null;
+				try {
+					fs = File.Create (file);
+					while ((nr = stream.Read (buffer, 0, 2048)) > 0)
+						fs.Write (buffer, 0, nr);
+				} finally {
+					stream.Close ();
+					if (fs != null)
+						fs.Close ();
+				}
 			}
 			return file;
 		}
