@@ -119,6 +119,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			operations.Add (new PackageOperation (package, PackageAction.Install));
 			action.Operations = operations;
 			action.Package = package;
+			action.LicensesMustBeAccepted = false;
 		}
 
 		void AddInstallActionWithMissingPackageId (string packageId = "Unknown")

@@ -48,12 +48,22 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents,
 			IFileRemover fileRemover)
-			: base (project, packageManagementEvents)
+			: this (project, packageManagementEvents, fileRemover, new LicenseAcceptanceService ())
+		{
+		}
+
+		public InstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover,
+			ILicenseAcceptanceService licenseAcceptanceService)
+			: base (project, packageManagementEvents, licenseAcceptanceService)
 		{
 			this.fileRemover = fileRemover;
 
 			OpenReadMeText = true;
 			PreserveLocalCopyReferences = true;
+			LicensesMustBeAccepted = true;
 		}
 
 		public bool IgnoreDependencies { get; set; }

@@ -51,11 +51,21 @@ namespace ICSharpCode.PackageManagement
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents,
 			IFileRemover fileRemover)
-			: base (project, packageManagementEvents)
+			: this (project, packageManagementEvents, fileRemover, new LicenseAcceptanceService ())
+		{
+		}
+
+		public UpdatePackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover,
+			ILicenseAcceptanceService licenseAcceptanceService)
+			: base (project, packageManagementEvents, licenseAcceptanceService)
 		{
 			this.fileRemover = fileRemover;
 			UpdateDependencies = true;
 			UpdateIfPackageDoesNotExistInProject = true;
+			LicensesMustBeAccepted = true;
 		}
 		
 		public bool UpdateDependencies { get; set; }
@@ -123,6 +133,13 @@ namespace ICSharpCode.PackageManagement
 		protected override bool ShouldLogStartingMessage ()
 		{
 			return ShouldUpdatePackage ();
+		}
+
+		protected override void CheckLicenses ()
+		{
+			if (ShouldUpdatePackage ()) {
+				base.CheckLicenses ();
+			}
 		}
 	}
 }

@@ -26,8 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using NuGet;
@@ -36,14 +36,27 @@ namespace ICSharpCode.PackageManagement
 {
 	public class LicenseAcceptanceService : ILicenseAcceptanceService
 	{
-		public bool AcceptLicenses(IEnumerable<IPackage> packages)
+		public bool AcceptLicenses (IEnumerable<IPackage> packages)
+		{
+			if (DispatchService.IsGuiThread) {
+				return ShowLicenseAcceptanceDialog (packages);
+			}
+
+			bool accepted = false;
+			DispatchService.GuiSyncDispatch (() => {
+				accepted = ShowLicenseAcceptanceDialog (packages);
+			});
+			return accepted;
+		}
+
+		bool ShowLicenseAcceptanceDialog (IEnumerable<IPackage> packages)
 		{
 			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (packages)) {
 				int result = MessageService.ShowCustomDialog (dialog);
 				return result == (int)Gtk.ResponseType.Ok;
 			}
 		}
-		
+
 		LicenseAcceptanceDialog CreateLicenseAcceptanceDialog(IEnumerable<IPackage> packages)
 		{
 			var viewModel = new LicenseAcceptanceViewModel(packages);

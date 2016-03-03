@@ -35,16 +35,28 @@ namespace ICSharpCode.PackageManagement
 	public abstract class ProcessPackageOperationsAction : ProcessPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
+		ILicenseAcceptanceService licenseAcceptanceService;
+
+		protected ProcessPackageOperationsAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			ILicenseAcceptanceService licenseAcceptanceService)
+			: base (project, packageManagementEvents)
+		{
+			this.packageManagementEvents = packageManagementEvents;
+			this.licenseAcceptanceService = licenseAcceptanceService;
+		}
 
 		public ProcessPackageOperationsAction(
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
-			: base(project, packageManagementEvents)
+			: this (project, packageManagementEvents, new LicenseAcceptanceService ())
 		{
-			this.packageManagementEvents = packageManagementEvents;
 		}
 		
 		public IEnumerable<PackageOperation> Operations { get; set; }
+
+		public bool LicensesMustBeAccepted { get; set; }
 
 		public override bool HasPackageScriptsToRun()
 		{
@@ -80,6 +92,15 @@ namespace ICSharpCode.PackageManagement
 		protected void OnParentPackageInstalled ()
 		{
 			packageManagementEvents.OnParentPackageInstalled (Package, Project, Operations);
+		}
+
+		protected override bool OnAcceptLicenses (IEnumerable<IPackage> packages)
+		{
+			if (LicensesMustBeAccepted) {
+				return licenseAcceptanceService.AcceptLicenses (packages);
+			} else {
+				return base.OnAcceptLicenses (packages);
+			}
 		}
 	}
 }

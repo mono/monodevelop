@@ -35,8 +35,19 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents,
 			FakeFileRemover fileRemover)
-			: base (project, packageManagementEvents, fileRemover)
+			: this (project, packageManagementEvents, fileRemover, new FakeLicenseAcceptanceService ())
 		{
+		}
+
+		public TestableInstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			FakeFileRemover fileRemover,
+			FakeLicenseAcceptanceService licenseAcceptanceService)
+			: base (project, packageManagementEvents, fileRemover, licenseAcceptanceService)
+		{
+			LicenseAcceptanceService = licenseAcceptanceService;
+
 			CreateOpenPackageReadMeMonitorAction = packageId => {
 				IOpenPackageReadMeMonitor monitor = base.CreateOpenPackageReadMeMonitor (packageId);
 				OpenPackageReadMeMonitor = monitor as OpenPackageReadMeMonitor;
@@ -54,6 +65,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public bool NullOpenPackageReadMeMonitorIsCreated;
+
+		public FakeLicenseAcceptanceService LicenseAcceptanceService;
 	}
 }
 

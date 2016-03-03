@@ -422,9 +422,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAccepted_AcceptLicensesEventRaised ()
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedAndLicensesMustBeAcceptedIsFalse_AcceptLicensesEventRaised ()
 		{
 			CreateAction ();
+			action.LicensesMustBeAccepted = false;
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
 			expectedPackage.RequireLicenseAcceptance = true;
 			var expectedPackages = new IPackage [] { expectedPackage };
@@ -444,9 +445,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedButPackageInstalledAlready_NoAcceptLicensesEventIsRaised ()
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedButPackageInstalledAlreadyAndLicensesMustBeAcceptedIsFalse_NoAcceptLicensesEventIsRaised ()
 		{
 			CreateAction ();
+			action.LicensesMustBeAccepted = false;
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
 			expectedPackage.RequireLicenseAcceptance = true;
 			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
@@ -465,9 +467,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedAndLicensesNotAccepted_ExceptionThrown ()
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedAndLicensesNotAcceptedAndLicensesMustBeAcceptedIsFalse_ExceptionThrown ()
 		{
 			CreateAction ();
+			action.LicensesMustBeAccepted = false;
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
 			expectedPackage.RequireLicenseAcceptance = true;
 			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
@@ -684,6 +687,50 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (fileRemovedResult.Value);
 			Assert.IsNull (fileRemover.FileRemoved);
+		}
+
+		[Test]
+		public void NewInstance_LicensesMustBeAccepted_TrueByDefault ()
+		{
+			CreateAction ();
+
+			Assert.IsTrue (action.LicensesMustBeAccepted);
+		}
+
+		[Test]
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAccepted_PackagesPassedToLicenseAcceptanceService ()
+		{
+			CreateAction ();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
+			expectedPackage.RequireLicenseAcceptance = true;
+			var expectedPackages = new IPackage [] { expectedPackage };
+			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
+			action.PackageId = expectedPackage.Id;
+			action.PackageVersion = expectedPackage.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+
+			action.Execute ();
+
+			PackageCollectionAssert.AreEqual (expectedPackages, action.LicenseAcceptanceService.PackagesAccepted);
+		}
+
+		[Test]
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedAndLicensesNotAccepted_LicenseAcceptanceServiceUsedAndExceptionThrown ()
+		{
+			CreateAction ();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
+			expectedPackage.RequireLicenseAcceptance = true;
+			var expectedPackages = new IPackage [] { expectedPackage };
+			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
+			action.PackageId = expectedPackage.Id;
+			action.PackageVersion = expectedPackage.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+			action.LicenseAcceptanceService.AcceptLicensesReturnValue = false;
+
+			Exception ex = Assert.Throws (typeof(ApplicationException), () => action.Execute ());
+
+			Assert.AreEqual ("Licenses not accepted.", ex.Message);
+			PackageCollectionAssert.AreEqual (expectedPackages, action.LicenseAcceptanceService.PackagesAccepted);
 		}
 	}
 }

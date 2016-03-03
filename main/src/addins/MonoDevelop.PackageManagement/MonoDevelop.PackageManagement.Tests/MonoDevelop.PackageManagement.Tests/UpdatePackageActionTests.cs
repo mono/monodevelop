@@ -651,6 +651,35 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
 			Assert.IsFalse (fileRemovedResult.Value);
 		}
+
+		[Test]
+		public void NewInstance_LicensesMustBeAccepted_TrueByDefault ()
+		{
+			CreateSolution ();
+
+			Assert.IsTrue (action.LicensesMustBeAccepted);
+		}
+
+		[Test]
+		public void Execute_UpdateIfPackageDoesNotExistInProjectSetToFalseAndPackageDoesNotExistInProjectAndPackageRequiresLicenseAcceptance_PackageLicenseAcceptanceIsNotRequested ()
+		{
+			CreateSolution ();
+			var package = new FakePackage ("Test") {
+				RequireLicenseAcceptance = true
+			};
+			action.Package = package;
+			var operation = new FakePackageOperation (package, PackageAction.Install);
+			action.PackageId = package.Id;
+			action.PackageVersion = package.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+			action.UpdateIfPackageDoesNotExistInProject = false;
+			action.Execute ();
+
+			bool updated = fakeProject.IsUpdatePackageCalled;
+
+			Assert.IsFalse (updated);
+			Assert.IsNull (action.LicenseAcceptanceService.PackagesAccepted);
+		}
 	}
 }
 
