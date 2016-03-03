@@ -221,9 +221,6 @@ namespace MonoDevelop.Ide
 		
 			commandService.EnableIdleUpdate = true;
 
-			// Perser service initialization
-			TypeSystemService.TrackFileChanges = true;
-
 			if (Customizer != null)
 				Customizer.OnIdeInitialized ();
 			

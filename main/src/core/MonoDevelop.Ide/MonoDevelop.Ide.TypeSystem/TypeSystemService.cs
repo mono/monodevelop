@@ -58,11 +58,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static bool TrackFileChanges {
-			get;
-			set;
-		}
-
 		public static void RemoveSkippedfile (FilePath fileName)
 		{
 			filesSkippedInParseThread = filesSkippedInParseThread.Where (f => f != fileName).ToArray ();
