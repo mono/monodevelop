@@ -18,13 +18,17 @@ namespace SubversionAddinWindows
 	{
 		static bool errorShown;
 		static bool installError {
-			get { return client.Value == null; }
+			get { return client?.Value == null; }
 		}
 		static readonly internal Lazy<SvnClient> client;
 		
 		static SvnSharpClient ()
 		{
-			client = new Lazy<SvnClient> (CheckInstalled);
+			try {
+				client = new Lazy<SvnClient> (CheckInstalled);
+			} catch (Exception e) {
+				LoggingService.LogError ("SharpSvn client could not be initialized", e);
+			}
 		}
 
 		public override string Version {
@@ -55,9 +59,9 @@ namespace SubversionAddinWindows
 				if (!errorShown && installError) {
 					errorShown = true;
 					var db = new AlertButton ("Go to Download Page");
-					AlertButton res = MessageService.AskQuestion ("The Subversion add-in could not be initialized", "This add-in requires the 'Microsoft Visual C++ 2005 Service Pack 1 Redistributable'. You may need to install it.", db, AlertButton.Ok);
+					AlertButton res = MessageService.AskQuestion ("The Subversion add-in could not be initialized", "This add-in requires the 'Microsoft Visual C++ 2010 Redistributable'. You may need to install it.", db, AlertButton.Ok);
 					if (res == db) {
-						DesktopService.ShowUrl ("http://www.microsoft.com/downloads/details.aspx?familyid=766a6af7-ec73-40ff-b072-9112bab119c2");
+						DesktopService.ShowUrl ("https://www.microsoft.com/en-us/download/details.aspx?id=5555");
 					}
 				}
 				return !installError;
