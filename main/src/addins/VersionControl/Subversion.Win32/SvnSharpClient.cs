@@ -17,8 +17,23 @@ namespace SubversionAddinWindows
 	sealed class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
+		static bool initialized;
 		static bool installError {
-			get { return client.Value == null; }
+			get {
+				if (initialized)
+					return !client.IsValueCreated;
+
+				try {
+					initialized = true;
+
+					// Intended.
+					var dummy = client.Value;
+				} catch (Exception e) {
+					LoggingService.LogError ("SVN client could not be initialized", e);
+					return true;
+				}
+				return false;
+			}
 		}
 		static readonly internal Lazy<object> client;
 		
