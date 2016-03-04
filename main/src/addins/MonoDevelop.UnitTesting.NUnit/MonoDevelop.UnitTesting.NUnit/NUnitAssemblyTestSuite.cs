@@ -393,9 +393,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 			string[] filter = null;
 			if (test != null) {
-				if (test is UnitTestGroup) {
+				if (test is UnitTestGroup && NUnitVersion == NUnitVersion.NUnit2) {
 					filter = CollectTests ((UnitTestGroup)test);
-				} else {
+				} else if (test.TestId != null) {
 					filter = new string [] { test.TestId };
 				}
 			}
