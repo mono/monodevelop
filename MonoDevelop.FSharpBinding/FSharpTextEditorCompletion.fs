@@ -226,6 +226,28 @@ module Completion =
             return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false))
         }
 
+    //let fixEditorText (editor: TextEditor) =
+    //    let missingBraceCount text =
+    //            let accumulator acc c =
+    //                if c = '(' then acc + 1
+    //                elif c = ')' then (acc - 1)
+    //                else acc
+    //            Seq.fold accumulator 0 text
+
+    //    let count = missingBraceCount editor.Text
+
+    //    if count > 0 then
+    //        let data = new TextEditorData()
+    //        data.Text <- editor.Text
+    //        data.Insert(editor.CaretOffset, String(')', count)) |> ignore
+    //        data.Text
+    //    else
+    //        editor.Text
+
+    // cache parse results for current filename/line number
+    let mutable parseCache = (Unchecked.defaultof<FilePath>, -1, None) 
+
+    let parseLock = obj()
 
     let shouldComplete (editor, context:CodeCompletionContext, ctrlSpace) =
         let isValidToken() =
@@ -238,43 +260,17 @@ module Completion =
 
         isValidCompletionChar() &&
         isValidToken() 
-                
-    // cache parse results for current filename/line number
-    let mutable parseCache = (Unchecked.defaultof<FilePath>, None) 
 
-    let parseLock = obj()
-    let getParseResultsFromCacheOrCompiler (documentContext:DocumentContext, editor:TextEditor) =
-        lock parseLock (fun() ->
-            async {
-                match parseCache with
-                | (filename, parseResults) when filename = editor.FileName -> 
-                    LoggingService.logDebug "Completion: got parse results from cache"
-                    return parseResults
-                | _ -> 
-                    let! (parseResults: ParseAndCheckResults option) = 
-                        getParseResults(documentContext, editor.Text)
-
-                    match parseResults with
-                    | Some _ -> parseCache <- (editor.FileName, parseResults)
-                                LoggingService.logDebug "Completion: got some parse results"
-                                return parseResults
-                    | None -> LoggingService.logDebug "Completion: got no parse results"
-                              return None
-            })
-
-    let codeCompletionCommandImpl(editor, documentContext, context:CodeCompletionContext, ctrlSpace) =
+    let codeCompletionCommandImpl(getParseResults, editor, documentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
             let result = CompletionDataList()
-
             let emptyResult = result :> ICompletionDataList
             if not (shouldComplete(editor, context, ctrlSpace)) then
                 return emptyResult
             else
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
-
             let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
             let lineToCaret = lineStr.Substring (0,col)
-
             let isFunctionIdentifier() =
                 Regex.IsMatch(lineToCaret, "\s?(fun)\s+[^-]+$")
 
@@ -286,6 +282,7 @@ module Completion =
                      && not (lineToCaret.Contains("=")) then
                      let document = new TextDocument(lineToCaret)
                      let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
+
                      let documentLine = document.GetLine 1
                      let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, col, lineToCaret.Length)
                                       |> Seq.map (fun c -> c.Style)   
@@ -300,8 +297,7 @@ module Completion =
                 let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineStr)
                 result.DefaultCompletionString <- residue
                 result.TriggerWordLength <- residue.Length 
-
-                // To prevent "No completions found" when typing an identifier
+                // To prevent the "No completions found" when typing an identifier
                 // here -> `let myident|`
                 // but allow completions
                 // here -> `let mutab|`
@@ -314,9 +310,24 @@ module Completion =
                 ()
             else
                 try
-                    let! (typedParseResults: ParseAndCheckResults option) = 
-                        getParseResultsFromCacheOrCompiler(documentContext, editor)
-                                 
+                    let! (typedParseResults: ParseAndCheckResults option) =
+                        lock parseLock (fun() ->
+                            async {
+                                match parseCache with
+                                | (filename, lastLine, parseResults) when lastLine = line && filename = editor.FileName -> 
+                                    LoggingService.logDebug "Completion: got parse results from cache"
+                                    return parseResults
+                                | _ -> 
+                                    let! (parseResults: ParseAndCheckResults option) = 
+                                        getParseResults(documentContext, editor.Text)
+                                    match parseResults with
+                                    | Some _ -> parseCache <- (editor.FileName, line, parseResults)
+                                                LoggingService.logDebug "Completion: got some parse results"
+                                                return parseResults
+                                    | None -> LoggingService.logDebug "Completion: got no parse results"
+                                              return None
+                            })
+                     
                     match typedParseResults with
                     | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
                     | Some tyRes ->
@@ -410,8 +421,10 @@ type FSharpTextEditorCompletion() =
     // Until we build some functionality around a reversing tokenizer that detect this and other contexts
     // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
     let isAnAutoProperty (_editor: TextEditor) _offset =
+        //let line, col, txt = editor.GetLineInfoFromOffset(offset)
         false
     //TODO
+    //  let lastStart = editor.FindPrevWordOffset(offset)
     //  let lastEnd = editor.FindCurrentWordEnd(lastStart)
     //  let lastWord = editor.GetTextBetween(lastStart, lastEnd)
 
@@ -433,39 +446,9 @@ type FSharpTextEditorCompletion() =
 
     override x.CompletionLanguage = "F#"
     override x.Initialize() =
-        let mutable unparsedChanges = true
-        let mutable lastEditedLine = -1
-
-        do 
-            x.Editor.SetIndentationTracker (FSharpIndentationTracker(x.Editor))
-            x.Editor.TextChanged.Subscribe
-                (fun(args) -> unparsedChanges <- true
-                              lastEditedLine <- x.Editor.OffsetToLineNumber args.Offset
-                            ) |> ignore
-
-            x.Editor.CaretPositionChanged.Subscribe
-                (fun (_e) -> 
-
-                    if unparsedChanges && x.Editor.CaretLine <> lastEditedLine
-                       && MonoDevelop.isDocumentVisible (x.Editor.FileName.ToString()) then
-
-                        lock Completion.parseLock (fun () ->
-                            LoggingService.logDebug "%s" "Completion: pre-emptively fetching new parse results"
-                            async {
-                                let! (parseResults: ParseAndCheckResults option) = 
-                                    Completion.getParseResults(x.DocumentContext, x.Editor.Text)
-
-                                if parseResults.IsSome then
-                                    unparsedChanges <- false
-                                    lastEditedLine <- x.Editor.CaretLine
-                                    Completion.parseCache <- (x.Editor.FileName, parseResults)
-                            }
-                            |> Async.StartImmediate
-                        ))
-                    |> ignore
-        
+        do x.Editor.SetIndentationTracker (FSharpIndentationTracker(x.Editor))
         base.Initialize()
-    
+
     /// Provide parameter and method overload information when you type '(', '<' or ','
     override x.HandleParameterCompletionAsync (context, completionChar, token) =
       //TODO refactor computation to remove some return statements (clarity)
@@ -495,17 +478,29 @@ type FSharpTextEditorCompletion() =
             else
             LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
 
+            let filename = x.DocumentContext.Name
+            //let curVersion = x.Editor.Version
+            //let isObsolete =
+            //    IsResultObsolete(fun () ->
+            //    let doc = IdeApp.Workbench.GetDocument(filename)
+            //    let newVersion = doc.Editor.Version
+            //    if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
+            //    then
+            //        false
+            //    else
+            //        LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
+            //        true )
+
             // Try to get typed result - within the specified timeout
             let! methsOpt =
-                async { 
-                    let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
-                    let! tyRes = Completion.getParseResultsFromCacheOrCompiler (x.DocumentContext, x.Editor)
-                    match tyRes with
-                    | Some tyRes ->
-                        let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
-                        return allMethodSymbols
-                    | None -> return None
-                }
+                async { let projectFile = x.DocumentContext.Project |> function null -> filename | project -> project.FileName.ToString()
+                        let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false) )
+                        match tyRes with
+                        | Some tyRes ->
+                            let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
+                            let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
+                            return allMethodSymbols
+                        | None -> return None}
 
             match methsOpt with
             | Some(meths) when meths.Length > 0 ->
@@ -533,7 +528,7 @@ type FSharpTextEditorCompletion() =
     override x.HandleCodeCompletionAsync(context, completionChar, token) =
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value || completionChar = '.' then
             let computation =
-                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
+                Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, false) 
                     
             Async.StartAsTask (computation = computation, cancellationToken = token)
         else
@@ -541,7 +536,7 @@ type FSharpTextEditorCompletion() =
 
     /// Completion was triggered explicitly using Ctrl+Space or by the function above
     override x.CodeCompletionCommand(context) =
-        Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true)
+        Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true)
         |> Async.StartAsTask
 
     // Returns the index of the parameter where the cursor is currently positioned.
