@@ -1601,6 +1601,23 @@ namespace MonoDevelop.Projects
 				WorkspaceObject.UnregisterCustomExtension (fn);
 			}
 		}
+
+		[Test]
+		public async Task RemoveAndAddProperty ()
+		{
+			string solFile = Util.GetSampleProject ("msbuild-project-test", "test.csproj");
+
+			Project p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			string projectXml = File.ReadAllText (p.FileName);
+
+			p.ProjectProperties.RemoveProperty ("TestRewrite");
+			await p.SaveAsync (Util.GetMonitor ());
+			p.ProjectProperties.SetValue ("TestRewrite", "Val");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName));
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
