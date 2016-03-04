@@ -2741,7 +2741,7 @@ namespace MonoDevelop.Projects
 				var p2 = evalItem.Metadata.GetProperty (p.Name);
 				if (p2 == null)
 					return false;
-				if (!p.ValueType.Equals (p.Value, p2.Value))
+				if (!p.ValueType.Equals (p.Value, p2.UnevaluatedValue))
 					return false;
 				n++;
 			}
