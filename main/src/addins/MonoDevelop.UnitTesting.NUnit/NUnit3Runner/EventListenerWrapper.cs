@@ -142,6 +142,11 @@ namespace NUnit3Runner
 					var msg = e.SelectSingleNode ("reason/message");
 					if (msg != null)
 						res.Message = msg.InnerText;
+				} else if (runResult == "Inconclusive") {
+					res.Inconclusive = 1;
+					var msg = e.SelectSingleNode ("reason/message");
+					if (msg != null)
+						res.Message = msg.InnerText;
 				}
 			}
 
