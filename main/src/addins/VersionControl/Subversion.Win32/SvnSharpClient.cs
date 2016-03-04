@@ -68,6 +68,9 @@ namespace SubversionAddinWindows
 		{
 			string wc_path;
 			try {
+				if (client.Value == null)
+					return string.Empty;
+				
 				lock (client.Value)
 					wc_path = ((SvnClient)client.Value).GetWorkingCopyRoot (path.FullPath);
 				return wc_path;
