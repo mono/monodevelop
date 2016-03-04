@@ -33,5 +33,13 @@ namespace MonoDevelop.Refactoring
 	{
 		public abstract Task<bool> TryJumpToDeclarationAsync (string documentIdString, Projects.Project hintProject, CancellationToken token = default(CancellationToken));
 	}
+
+	class DummyJumpToDeclarationHandler : JumpToDeclarationHandler
+	{
+		public override Task<bool> TryJumpToDeclarationAsync (string documentIdString, Projects.Project hintProject, CancellationToken token = default (CancellationToken))
+		{
+			return Task.FromResult (false);
+		}
+	}
 }
 
