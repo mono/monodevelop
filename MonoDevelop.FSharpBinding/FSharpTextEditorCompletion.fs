@@ -226,24 +226,6 @@ module Completion =
             return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false))
         }
 
-    //let fixEditorText (editor: TextEditor) =
-    //    let missingBraceCount text =
-    //            let accumulator acc c =
-    //                if c = '(' then acc + 1
-    //                elif c = ')' then (acc - 1)
-    //                else acc
-    //            Seq.fold accumulator 0 text
-
-    //    let count = missingBraceCount editor.Text
-
-    //    if count > 0 then
-    //        let data = new TextEditorData()
-    //        data.Text <- editor.Text
-    //        data.Insert(editor.CaretOffset, String(')', count)) |> ignore
-    //        data.Text
-    //    else
-    //        editor.Text
-
     // cache parse results for current filename/line number
     let mutable parseCache = (Unchecked.defaultof<FilePath>, -1, None) 
 
@@ -278,7 +260,7 @@ module Completion =
                 Regex.IsMatch(lineToCaret, "\s?(module|type)\s+[^=]+$") && not (lineToCaret.Contains("="))
 
             let isLetIdentifier() =
-                if Regex.IsMatch(lineToCaret, "\s?(let|override|member)\s+[^=]+$") 
+                if Regex.IsMatch(lineToCaret, "\s?(let!?|override|member)\s+[^=]+$") 
                      && not (lineToCaret.Contains("=")) then
                      let document = new TextDocument(lineToCaret)
                      let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
@@ -421,17 +403,7 @@ type FSharpTextEditorCompletion() =
     // Until we build some functionality around a reversing tokenizer that detect this and other contexts
     // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
     let isAnAutoProperty (_editor: TextEditor) _offset =
-        //let line, col, txt = editor.GetLineInfoFromOffset(offset)
         false
-    //TODO
-    //  let lastStart = editor.FindPrevWordOffset(offset)
-    //  let lastEnd = editor.FindCurrentWordEnd(lastStart)
-    //  let lastWord = editor.GetTextBetween(lastStart, lastEnd)
-
-    //  let prevStart = editor.FindPrevWordOffset(lastStart)
-    //  let prevEnd = editor.FindCurrentWordEnd(prevStart)
-    //  let previousWord = editor.GetTextBetween(prevStart, prevEnd)
-    //  lastWord = "get" && previousWord = "with"
 
     let isValidParamCompletionDecriptor (d:KeyDescriptor) =
         d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
@@ -479,17 +451,6 @@ type FSharpTextEditorCompletion() =
             LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
 
             let filename = x.DocumentContext.Name
-            //let curVersion = x.Editor.Version
-            //let isObsolete =
-            //    IsResultObsolete(fun () ->
-            //    let doc = IdeApp.Workbench.GetDocument(filename)
-            //    let newVersion = doc.Editor.Version
-            //    if newVersion.BelongsToSameDocumentAs(curVersion) && newVersion.CompareAge(curVersion) = 0
-            //    then
-            //        false
-            //    else
-            //        LoggingService.LogDebug ("FSharpTextEditorCompletion - HandleParameterCompletionAsync: type check of {0} is obsolete, cancelled", IO.Path.GetFileName filename)
-            //        true )
 
             // Try to get typed result - within the specified timeout
             let! methsOpt =
