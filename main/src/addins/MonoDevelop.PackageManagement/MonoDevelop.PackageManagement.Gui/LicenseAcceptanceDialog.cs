@@ -69,7 +69,7 @@ namespace MonoDevelop.PackageManagement
 
 			GtkWorkarounds.SetLinkHandler (label, DesktopService.ShowUrl);
 
-			this.packagesVBox.Add (label);
+			this.packagesVBox.PackStart (label, false, false, 0);
 		}
 
 		string CreatePackageMarkup (PackageLicenseViewModel package)
