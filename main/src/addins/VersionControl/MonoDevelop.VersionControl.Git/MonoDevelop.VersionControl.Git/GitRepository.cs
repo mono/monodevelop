@@ -340,9 +340,15 @@ namespace MonoDevelop.VersionControl.Git
 					if (count > 1)
 						return false;
 
-					return c.Tree [localPath] != null &&
-							(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
-							 c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id);
+					var localTreeEntry = c.Tree [localPath];
+					if (localTreeEntry == null)
+						return false;
+
+					if (count == 0)
+						return true;
+
+					var parentTreeEntry = c.Parents.Single ().Tree [localPath];
+					return parentTreeEntry == null || localTreeEntry.Target.Id != parentTreeEntry.Target.Id;
 				});
 			}
 
