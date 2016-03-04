@@ -34,6 +34,7 @@ using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
@@ -77,9 +78,8 @@ namespace ICSharpCode.NRefactory6.CSharp
 		#endregion
 
 		#region ITextPasteHandler
-
 		/// <inheritdoc />
-		string ITextPasteHandler.FormatPlainText(SourceText sourceText, int offset, string text, byte[] copyData)
+		string ITextPasteHandler.FormatPlainText(SourceText sourceText, int offset, string text, byte [] copyData)
 		{
 			if (copyData != null && copyData.Length == 1) {
 				var strategy = TextPasteUtils.Strategies [(PasteStrategy)copyData [0]];
@@ -121,6 +121,12 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 				return TextPasteUtils.VerbatimStringStrategy.Encode(text);
 			}
+
+			// on the fly formatting is done in post formatting, if turned off just correct indenting.
+			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
+				return text;
+			}
+
 			var line = sourceText.Lines.GetLineFromPosition(offset);
 			var pasteAtLineStart = line.Start == offset;
 			var indentedText = new StringBuilder();

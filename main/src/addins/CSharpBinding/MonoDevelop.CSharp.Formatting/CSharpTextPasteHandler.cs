@@ -45,11 +45,6 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override string FormatPlainText (int offset, string text, byte[] copyData)
 		{
-			// on the fly formatting is done in post formatting, if turned off just correct indenting.
-			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
-				return text;
-			}
-
 			return engine.FormatPlainText (indent.Editor, offset, text, copyData);
 		}
 
