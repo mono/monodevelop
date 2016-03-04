@@ -18,17 +18,13 @@ namespace SubversionAddinWindows
 	{
 		static bool errorShown;
 		static bool installError {
-			get { return client?.Value == null; }
+			get { return client.Value == null; }
 		}
-		static readonly internal Lazy<SvnClient> client;
+		static readonly internal Lazy<object> client;
 		
 		static SvnSharpClient ()
 		{
-			try {
-				client = new Lazy<SvnClient> (CheckInstalled);
-			} catch (Exception e) {
-				LoggingService.LogError ("SharpSvn client could not be initialized", e);
-			}
+			client = new Lazy<object> (CheckInstalled);
 		}
 
 		public override string Version {
@@ -37,7 +33,7 @@ namespace SubversionAddinWindows
 			}
 		}
 
-		static SvnClient CheckInstalled ()
+		static object CheckInstalled ()
 		{
 			try {
 				return new SvnClient ();
@@ -73,7 +69,7 @@ namespace SubversionAddinWindows
 			string wc_path;
 			try {
 				lock (client.Value)
-					wc_path = client.Value.GetWorkingCopyRoot (path.FullPath);
+					wc_path = ((SvnClient)client.Value).GetWorkingCopyRoot (path.FullPath);
 				return wc_path;
 			} catch (SvnException e) {
 				switch (e.SvnErrorCode) {
@@ -89,7 +85,7 @@ namespace SubversionAddinWindows
 	sealed class SvnSharpBackend: SubversionBackend
 	{
 		static SvnClient client {
-			get { return SvnSharpClient.client.Value; }
+			get { return (SvnClient)SvnSharpClient.client.Value; }
 		}
 
 		ProgressMonitor updateMonitor;
