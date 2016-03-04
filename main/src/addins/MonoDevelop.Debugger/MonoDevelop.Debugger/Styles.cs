@@ -68,7 +68,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
-				ObjectValueTreeValueModifiedText = Color.FromName ("#85B7F3");
+				ObjectValueTreeValueModifiedText = Color.FromName ("#1FAECE");
 
 				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#fbefce");
 				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#f0e4c2");
@@ -80,7 +80,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#a4bbd5");
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
-				ObjectValueTreeValueModifiedText = Color.FromName ("#4283d2");
+				ObjectValueTreeValueModifiedText = Color.FromName ("#4FCAE6");
 
 				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#675831");
 				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#7a6a3d");
