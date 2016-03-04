@@ -787,9 +787,9 @@
       <placeholder />
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.PackageManagement.LicenseAcceptanceDialog" design-size="447 300">
+  <widget class="Gtk.Dialog" id="MonoDevelop.PackageManagement.LicenseAcceptanceDialog" design-size="494 365">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">License Agreements</property>
+    <property name="Title" translatable="yes">License Acceptance</property>
     <property name="WindowPosition">Center</property>
     <property name="Modal">True</property>
     <property name="Buttons">2</property>
@@ -799,13 +799,29 @@
         <property name="MemberName" />
         <property name="BorderWidth">2</property>
         <child>
-          <widget class="Gtk.HBox" id="subTitleHBoxForSinglePackage">
+          <widget class="Gtk.VBox" id="topVBox">
             <property name="MemberName" />
             <property name="Spacing">6</property>
+            <property name="BorderWidth">10</property>
             <child>
-              <widget class="Gtk.Label" id="subTitleLabelForSinglePackage">
+              <widget class="Gtk.HBox" id="subTitleHBoxForSinglePackage">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">The following package requires a click-to-accept license:</property>
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Label" id="subTitleLabelForSinglePackage">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">The following package requires that you accept the license terms before installing.</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
+                </child>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -815,96 +831,90 @@
               </packing>
             </child>
             <child>
-              <placeholder />
+              <widget class="Gtk.HBox" id="subTitleHBoxForMultiplePackages">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Label" id="subTitleLabelForMultiplePackages">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">The following packages require that you accept their license terms before installing.</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.Viewport" id="GtkViewport">
+                    <property name="MemberName" />
+                    <property name="ShadowType">None</property>
+                    <child>
+                      <widget class="Gtk.VBox" id="packagesVBox">
+                        <property name="MemberName" />
+                        <property name="ShowScrollbars">True</property>
+                        <property name="Spacing">6</property>
+                        <child>
+                          <placeholder />
+                        </child>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.HBox" id="bottomMessageHBox">
+                <property name="MemberName" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Label" id="mainMessageLabel">
+                    <property name="MemberName" />
+                    <property name="LabelProp" translatable="yes">By clicking Accept you agree to the license terms for the packages listed above.
+If you do not agree to the license terms click Decline.</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">3</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HBox" id="subTitleHBoxForMultiplePackages">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="subTitleLabelForMultiplePackages">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">The following packages require a click-to-accept license:</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder />
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-            <property name="MemberName" />
-            <property name="ShadowType">In</property>
-            <child>
-              <widget class="Gtk.Viewport" id="GtkViewport">
-                <property name="MemberName" />
-                <property name="ShadowType">None</property>
-                <child>
-                  <widget class="Gtk.VBox" id="packagesVBox">
-                    <property name="MemberName" />
-                    <property name="ShowScrollbars">True</property>
-                    <property name="Spacing">6</property>
-                    <child>
-                      <placeholder />
-                    </child>
-                  </widget>
-                </child>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Padding">3</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.HBox" id="bottomMessageHBox">
-            <property name="MemberName" />
-            <property name="Spacing">6</property>
-            <child>
-              <widget class="Gtk.Label" id="mainMessageLabel">
-                <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">By clicking "OK" you agree to the license terms for the packages listed above.
-If you do not agree to the license terms click "Cancel".</property>
-              </widget>
-              <packing>
-                <property name="Position">0</property>
-                <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder />
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>
@@ -921,11 +931,10 @@ If you do not agree to the license terms click "Cancel".</property>
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-cancel</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">_Decline</property>
+            <property name="UseUnderline">True</property>
             <property name="ResponseId">-6</property>
-            <property name="label">gtk-cancel</property>
           </widget>
           <packing>
             <property name="Expand">False</property>
@@ -937,11 +946,10 @@ If you do not agree to the license terms click "Cancel".</property>
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-ok</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">_Accept</property>
+            <property name="UseUnderline">True</property>
             <property name="ResponseId">-5</property>
-            <property name="label">gtk-ok</property>
           </widget>
           <packing>
             <property name="Position">1</property>

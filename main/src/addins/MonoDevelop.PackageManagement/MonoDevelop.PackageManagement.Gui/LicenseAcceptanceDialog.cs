@@ -27,8 +27,12 @@
 //
 
 using System;
+using Gtk;
 using ICSharpCode.PackageManagement;
-using NuGet;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using Mono.TextEditor;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -42,21 +46,43 @@ namespace MonoDevelop.PackageManagement
 			this.viewModel = viewModel;
 			this.subTitleHBoxForSinglePackage.Visible = viewModel.HasOnePackage;
 			this.subTitleHBoxForMultiplePackages.Visible = viewModel.HasMultiplePackages;
+
 			AddPackages ();
 		}
 
 		void AddPackages ()
 		{
 			foreach (PackageLicenseViewModel package in viewModel.Packages) {
-				AddPackageWidget (package);
+				AddPackage (package);
 			}
 			this.packagesVBox.ShowAll ();
 		}
 
-		void AddPackageWidget (PackageLicenseViewModel package)
+		void AddPackage (PackageLicenseViewModel package)
 		{
-			var widget = new PackageLicenseWidget (package);
-			this.packagesVBox.Add (widget);
+			var label = new Label () {
+				Xalign = 0,
+				Yalign = 0,
+				Xpad = 5,
+				Ypad = 5,
+				Wrap = true,
+				Markup = CreatePackageMarkup (package)
+			};
+
+			GtkWorkarounds.SetLinkHandler (label, DesktopService.ShowUrl);
+
+			this.packagesVBox.Add (label);
+		}
+
+		string CreatePackageMarkup (PackageLicenseViewModel package)
+		{
+			return String.Format (
+				"<span weight='bold'>{0}</span>\t{1}\n<a href='{2}'>{3}</a>",
+				package.Id,
+				package.GetAuthors (),
+				package.LicenseUrl,
+				GettextCatalog.GetString ("View License")
+			);
 		}
 	}
 }
