@@ -335,9 +335,15 @@ namespace MonoDevelop.VersionControl.Git
 			IEnumerable<Commit> commits = repository.Commits;
 			if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
 				var localPath = repository.ToGitPath (localFile);
-				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
-					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
-					 c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
+				commits = commits.Where (c => {
+					int count = c.Parents.Count ();
+					if (count > 1)
+						return false;
+
+					return c.Tree [localPath] != null &&
+							(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
+							 c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id);
+				});
 			}
 
 			return commits.TakeWhile (c => c != sinceRev).Select (commit => {
