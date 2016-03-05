@@ -27,7 +27,7 @@ type ``Completion Tests``() =
         let ctx = new CodeCompletionContext()
         ctx.TriggerOffset <- offset
         let results =
-            Completion.codeCompletionCommandImpl(getParseResults, editor, doc, ctx, false)
+            Completion.codeCompletionCommandImpl(editor, doc, ctx, false)
             |> Async.RunSynchronously
             |> Seq.map (fun c -> c.DisplayText)
 
@@ -61,7 +61,7 @@ type ``Completion Tests``() =
     [<TestCase("override x|")>]
     [<TestCase("1|")>]
     [<TestCase("fun c|")>]
-
+    [<TestCase("let x = [1..|")>]
     member x.``Empty completions``(input: string) =
         let results = getCompletions input
         results |> should be Empty
@@ -124,3 +124,19 @@ type ``Completion Tests``() =
                             let x = rectangle(he|
                         """
         results |> should contain "height"
+
+    [<Test>]
+    member x.``Completes attribute``() =
+        let input = 
+            """
+            type TestAttribute() =
+                inherit System.Attribute()
+
+            type TestCaseAttribute() =
+              inherit TestAttribute()
+            [<t|
+            """
+        let results = getCompletions input
+        results |> should contain "Test"
+        results |> should contain "TestCase"
+        results |> shouldnot contain "Array"

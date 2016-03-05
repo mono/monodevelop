@@ -236,6 +236,7 @@ module SymbolUse =
             | _ -> None
         | _ -> None
 
+    
     let (|Val|_|) = function
         | MemberFunctionOrValue symbol when notCtorOrProp symbol &&
                                             not symbol.IsOperatorOrActivePattern ->

@@ -18,6 +18,7 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.CodeCompletion
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
+
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module Completion = 
@@ -33,7 +34,7 @@ module Completion =
         /// Split apart the elements into separate overloads
         override x.OverloadedData =
             overloads
-            |> List.map (fun symbol -> FSharpMemberCompletionData(symbol.Symbol.DisplayName, icon, symbol, []) :> CompletionData)
+            |> List.map (fun symbol -> FSharpMemberCompletionData(name, icon, symbol, []) :> CompletionData)
             |> ResizeArray.ofList :> _
     
         // TODO: what does 'smartWrap' indicate?
@@ -76,7 +77,71 @@ module Completion =
                 | a, b -> a.DisplayName.CompareTo(b.DisplayName)
             | _ -> -1
     
-    let getCompletionData (symbols:FSharpSymbolUse list list) =
+    type Context = { 
+        completionChar: char
+        lineToCaret: string
+        editor: TextEditor
+        documentContext: DocumentContext
+        triggerOffset: int
+        column: int
+        line: int
+        ctrlSpace: bool
+    }
+
+    let (|InvalidToken|_|) context =
+        let token = Tokens.getTokenAtPoint context.editor context.editor.DocumentContext context.triggerOffset
+        if Tokens.isInvalidCompletionToken token then
+            Some InvalidToken
+        else
+            None
+
+    let (|InvalidCompletionChar|_|) context =
+        if Char.IsLetter context.completionChar || context.ctrlSpace || context.completionChar = '.' then
+            None
+        else
+            Some InvalidCompletionChar
+
+    let (|FunctionIdentifier|_|) context =
+        if Regex.IsMatch(context.lineToCaret, "\s?(fun)\s+[^-]+$", RegexOptions.Compiled) then
+            Some FunctionIdentifier
+        else
+            None
+
+    let (|ModuleOrTypeIdentifier|_|) context =
+        if Regex.IsMatch(context.lineToCaret, "\s?(module|type)\s+[^=]+$", RegexOptions.Compiled) then
+            Some ModuleOrTypeIdentifier
+        else
+            None
+
+    let (|DoubleDot|_|) context =
+        if Regex.IsMatch(context.lineToCaret, "\[\s?[0-9]+\s?\.+$", RegexOptions.Compiled) then
+            Some DoubleDot
+        else
+            None
+    
+    let (|Attribute|_|) context =
+        if Regex.IsMatch(context.lineToCaret, "\[<\w+$", RegexOptions.Compiled) then
+            Some Attribute
+        else
+            None
+
+    let (|LetIdentifier|_|) context =
+        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member)\s+[^=]+$", RegexOptions.Compiled) then
+             let document = new TextDocument(context.lineToCaret)
+             let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
+
+             let documentLine = document.GetLine 1
+
+             let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, context.column, context.lineToCaret.Length)
+                              |> Seq.map (fun c -> c.Style)   
+                              |> Seq.head
+             if chunkStyle <> "User Types" then
+                 Some LetIdentifier
+             else
+                 None
+        else
+            None
+    let getCompletionData (symbols:FSharpSymbolUse list list) context =
         let categories = Dictionary<string, Category>()
         let getOrAddCategory symbol id =
             match categories.TryGetValue id with
@@ -180,19 +245,61 @@ module Completion =
                 with exn -> None
             category
 
+        let rec allBaseTypes (entity:FSharpEntity) =
+            seq {
+                match entity.TryFullName with
+                | Some _ ->
+                    match entity.BaseType with
+                    | Some t ->
+                        yield t
+                        if t.HasTypeDefinition then
+                            yield! allBaseTypes t.TypeDefinition
+                    | _ -> ()
+                | _ -> ()
+            }
+
+        let isAttribute (symbolUse: FSharpSymbolUse) =
+            match symbolUse.Symbol with
+            | :? FSharpEntity as ent ->
+                allBaseTypes ent
+                |> Seq.exists (fun t -> if t.HasTypeDefinition then
+                                            match t.TypeDefinition.TryFullName with
+                                            | Some name -> name = "System.Attribute"
+                                            | _ -> false
+                                        else
+                                            false)
+            | _ -> false
+
         let symbolToCompletionData (symbols : FSharpSymbolUse list) =
             match symbols with
             | head :: tail ->
-                let cd = FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData
-                //cd.PriorityGroup <- 1 + inheritanceDepth l.Head.Symbol
-                match tryGetCategory head with
-                | Some (id, ent) ->
+                LoggingService.logDebug "%s" head.Symbol.DisplayName
+                let completion =
+                    match context with
+                    | Attribute -> 
+                        if isAttribute head then
+                            let name = head.Symbol.DisplayName
+                            let name =
+                                if name.EndsWith("Attribute") then
+                                    name.Remove(name.Length - 9)
+                                else
+                                    name
+                            Some (FSharpMemberCompletionData(name, symbolToIcon head, head, tail) :> CompletionData)
+                        else
+                            None
+                    | _ -> 
+                        Some (FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData)
+
+                match tryGetCategory head, completion with
+                | Some (id, ent), Some comp -> 
                     let category = getOrAddCategory ent id
-                    cd.CompletionCategory <- category
-                | None -> ()
-                cd
-            | _ -> null //FSharpTryAgainMemberCompletionData() :> ICompletionData
-        symbols |> List.map symbolToCompletionData
+                    comp.CompletionCategory <- category
+                | _, _ -> ()
+
+                completion
+            | _ -> None
+        
+        symbols |> List.choose symbolToCompletionData
 
     let compilerIdentifiers =
         let icon = Stock.Literal
@@ -231,118 +338,125 @@ module Completion =
 
     let parseLock = obj()
 
-    let shouldComplete (editor, context:CodeCompletionContext, ctrlSpace) =
-        let isValidToken() =
-            let token = Tokens.getTokenAtPoint editor editor.DocumentContext context.TriggerOffset
-            not (Tokens.isInvalidCompletionToken token)
-
-        let isValidCompletionChar() =
-            let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
-            (Char.IsLetter completionChar || ctrlSpace) || completionChar = '.'
-
-        isValidCompletionChar() &&
-        isValidToken() 
-
-    let codeCompletionCommandImpl(getParseResults, editor, documentContext, context:CodeCompletionContext, ctrlSpace) =
+    let getCompletions context  =
         async {
-            let result = CompletionDataList()
-            let emptyResult = result :> ICompletionDataList
-            if not (shouldComplete(editor, context, ctrlSpace)) then
-                return emptyResult
-            else
+            try
+                let { 
+                    editor = editor
+                    line = line
+                    column = column
+                    documentContext = documentContext
+                    lineToCaret = lineToCaret
+                    completionChar = completionChar
+                    } = context
+
+                let! (typedParseResults: ParseAndCheckResults option) =
+                    lock parseLock (fun() ->
+                        async {
+                            match parseCache with
+                            | (filename, lastLine, parseResults) when lastLine = context.line && filename = editor.FileName -> 
+                                LoggingService.logDebug "Completion: got parse results from cache"
+                                return parseResults
+                            | _ -> 
+                                let! (parseResults: ParseAndCheckResults option) = 
+                                    getParseResults(documentContext, editor.Text)
+                                match parseResults with
+                                | Some _ -> parseCache <- (editor.FileName, line, parseResults)
+                                            LoggingService.logDebug "Completion: got some parse results"
+                                            return parseResults
+                                | None -> LoggingService.logDebug "Completion: got no parse results"
+                                          return None
+                        })
+
+                let result = CompletionDataList()                 
+                match typedParseResults with
+                | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
+                | Some tyRes ->
+                    // Get declarations and generate list for MonoDevelop
+                    let! symbols = tyRes.GetDeclarationSymbols(line, column, lineToCaret)
+                    match symbols with
+                    | Some (symbols, residue) ->
+                        let data = getCompletionData symbols context
+                        result.AddRange data
+
+                        if completionChar <> '.' && result.Count > 0 then
+                            LoggingService.logDebug "Completion: residue %s" residue
+                            result.DefaultCompletionString <- residue
+                            result.TriggerWordLength <- residue.Length
+
+                        //TODO Use previous token and pattern match to detect whitespace
+                        if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
+                            // Add the code templates and compiler generated identifiers if the completion char is not '.'
+                            CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
+                            result.AddRange compilerIdentifiers
+                                    
+                            result.AddRange keywordCompletionData
+                    | None -> ()
+                return result
+            with
+            | :? Threading.Tasks.TaskCanceledException -> 
+                return CompletionDataList()
+            | e ->
+                LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
+                return CompletionDataList()
+        }
+
+    let getModifiers context =
+        let { 
+            column = column
+            lineToCaret = lineToCaret
+            ctrlSpace = ctrlSpace
+            } = context
+
+        let (_, residue) = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+        let result = CompletionDataList()
+        result.DefaultCompletionString <- residue
+        result.TriggerWordLength <- residue.Length 
+        // To prevent the "No completions found" when typing an identifier
+        // here -> `let myident|`
+        // but allow completions
+        // here -> `let mutab|`
+        // but not here -> `let m|`
+        let filteredModifiers = modifierCompletionData 
+                                |> Seq.filter (fun c -> c .DisplayText.StartsWith(residue))
+        if residue.Length > 1 || ctrlSpace then
+            result.AddRange filteredModifiers
+        result
+
+    let codeCompletionCommandImpl((editor:TextEditor), documentContext, context:CodeCompletionContext, ctrlSpace) =
+        async {
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
-            let completionChar = editor.GetCharAt(context.TriggerOffset - 1)
-            let lineToCaret = lineStr.Substring (0,col)
-            let isFunctionIdentifier() =
-                Regex.IsMatch(lineToCaret, "\s?(fun)\s+[^-]+$")
+            let completionContext = {
+                completionChar = editor.GetCharAt(context.TriggerOffset - 1)
+                lineToCaret = lineStr.[0..col-1]
+                line = line
+                column = col
+                editor = editor
+                triggerOffset = context.TriggerOffset
+                ctrlSpace = ctrlSpace
+                documentContext = documentContext
+            }
 
-            let isModuleOrTypeIdentifier() =
-                Regex.IsMatch(lineToCaret, "\s?(module|type)\s+[^=]+$") && not (lineToCaret.Contains("="))
+            let! results = async {
+                match completionContext with
+                | InvalidToken 
+                | InvalidCompletionChar
+                | DoubleDot
+                | FunctionIdentifier -> 
+                    return CompletionDataList()
+                | ModuleOrTypeIdentifier
+                | LetIdentifier ->
+                    return getModifiers completionContext
+                | _ ->
+                    return! getCompletions completionContext
+            }
 
-            let isLetIdentifier() =
-                if Regex.IsMatch(lineToCaret, "\s?(let!?|override|member)\s+[^=]+$") 
-                     && not (lineToCaret.Contains("=")) then
-                     let document = new TextDocument(lineToCaret)
-                     let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
+            results.IsSorted <- true
+            results.AutoCompleteEmptyMatch <- false
+            results.AutoCompleteUniqueMatch <- ctrlSpace
 
-                     let documentLine = document.GetLine 1
-                     let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, col, lineToCaret.Length)
-                                      |> Seq.map (fun c -> c.Style)   
-                                      |> Seq.head
-                     chunkStyle <> "User Types"
-                else
-                    false
-
-            result.IsSorted <- true
-
-            if isModuleOrTypeIdentifier() || isLetIdentifier() then
-                let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineStr)
-                result.DefaultCompletionString <- residue
-                result.TriggerWordLength <- residue.Length 
-                // To prevent the "No completions found" when typing an identifier
-                // here -> `let myident|`
-                // but allow completions
-                // here -> `let mutab|`
-                // but not here -> `let m|`
-                let filteredModifiers = modifierCompletionData 
-                                        |> Seq.filter (fun c -> c .DisplayText.StartsWith(residue))
-                if residue.Length > 1 || ctrlSpace then
-                    result.AddRange filteredModifiers
-            elif isFunctionIdentifier() then
-                ()
-            else
-                try
-                    let! (typedParseResults: ParseAndCheckResults option) =
-                        lock parseLock (fun() ->
-                            async {
-                                match parseCache with
-                                | (filename, lastLine, parseResults) when lastLine = line && filename = editor.FileName -> 
-                                    LoggingService.logDebug "Completion: got parse results from cache"
-                                    return parseResults
-                                | _ -> 
-                                    let! (parseResults: ParseAndCheckResults option) = 
-                                        getParseResults(documentContext, editor.Text)
-                                    match parseResults with
-                                    | Some _ -> parseCache <- (editor.FileName, line, parseResults)
-                                                LoggingService.logDebug "Completion: got some parse results"
-                                                return parseResults
-                                    | None -> LoggingService.logDebug "Completion: got no parse results"
-                                              return None
-                            })
-                     
-                    match typedParseResults with
-                    | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
-                    | Some tyRes ->
-                        // Get declarations and generate list for MonoDevelop
-                        let! symbols = tyRes.GetDeclarationSymbols(line, col, lineStr)
-                        match symbols with
-                        | Some (symbols, residue) ->
-                            let data = getCompletionData symbols
-                            result.AddRange data
-
-                            if completionChar <> '.' && result.Count > 0 then
-                                LoggingService.logDebug "Completion: residue %s" residue
-                                result.DefaultCompletionString <- residue
-                                result.TriggerWordLength <- residue.Length
-
-                            //TODO Use previous token and pattern match to detect whitespace
-                            if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$") then
-                                // Add the code templates and compiler generated identifiers if the completion char is not '.'
-                                CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-                                result.AddRange compilerIdentifiers
-                                        
-                                result.AddRange keywordCompletionData
-                        | None -> ()
-                with
-                | :? Threading.Tasks.TaskCanceledException -> 
-                    ()
-                | e ->
-                    LoggingService.LogError ("FSharpTextEditorCompletion, An error occured in CodeCompletionCommandImpl", e)
-                    () //TODOresult.Add(FSharpErrorCompletionData(e))
-            result.AutoCompleteEmptyMatch <- false
-            result.AutoCompleteUniqueMatch <- ctrlSpace
-
-            return result :> ICompletionDataList }
+            return results :> ICompletionDataList 
+        }
 
 type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
     inherit ParameterHintingData (null)
@@ -489,7 +603,7 @@ type FSharpTextEditorCompletion() =
     override x.HandleCodeCompletionAsync(context, completionChar, token) =
         if IdeApp.Preferences.EnableAutoCodeCompletion.Value || completionChar = '.' then
             let computation =
-                Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, false) 
+                Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, false) 
                     
             Async.StartAsTask (computation = computation, cancellationToken = token)
         else
@@ -497,7 +611,7 @@ type FSharpTextEditorCompletion() =
 
     /// Completion was triggered explicitly using Ctrl+Space or by the function above
     override x.CodeCompletionCommand(context) =
-        Completion.codeCompletionCommandImpl(Completion.getParseResults, x.Editor, x.DocumentContext, context, true)
+        Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true)
         |> Async.StartAsTask
 
     // Returns the index of the parameter where the cursor is currently positioned.
