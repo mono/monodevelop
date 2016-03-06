@@ -31,7 +31,7 @@ let localFour = localOne.Property|One"""
         offset
 
     let resolveExpression (doc:TestDocument, content:string, offset:int) =
-        let resolver = new FSharpTextEditorCompletion() :> IDebuggerExpressionResolver
+        let resolver = new FSharpDebuggerExpressionResolver() :> IDebuggerExpressionResolver
         Async.AwaitTask (resolver.ResolveExpressionAsync(doc.Editor, doc, offset, Async.DefaultCancellationToken))
         |> Async.RunSynchronously
 
