@@ -157,6 +157,7 @@
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpOutlineTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpNavigationTextEditorExtension" />
+	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpDebuggerExpressionResolver" />
     <Class class = "MonoDevelop.FSharp.FSharpCommandsTextEditorExtension" />
   </Extension>
 
