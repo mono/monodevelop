@@ -337,7 +337,7 @@
 		<Group color="Plain Text"/>
 	</Match>
 	
-	<Match expression="(module|type)(\s+)(\w+|``[^`]``)" ignorecase="False">
+	<Match expression="(module|type)(\s+)(\w+|``[^`]*``)" ignorecase="False">
 		<Group color="Keyword(Namespace)"/>
 		<Group color="Plain Text"/>
 		<Group color="User Types"/>
@@ -348,26 +348,26 @@
 	<Match color="Keyword(Constants)" ignorecase="False">\b(false|null|true|__LINE__|__SOURCE_DIRECTORY__|__SOURCE_FILE__)\b</Match>
 	<Match color="Keyword(Iteration)" ignorecase="False">\b(async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in)\b</Match>
 
-    <Match expression="([a-z]{1}\w*|``[^`]``)\s\&quot;">
+    <Match expression="([a-z]{1}\w*|``[^`]*``)\s\&quot;">
 		<Group color="User Method Declaration"/>
 	</Match>
 
-	<Match expression="(\|>\s?)([a-z]{1}\w*|``[^`]``)" ignorecase="False">
+	<Match expression="(\|>\s?)([a-z]{1}\w*|``[^`]*``)" ignorecase="False">
 		<Group color="Plain Text" />
 		<Group color="User Method Declaration"/>
 	</Match>
 	
-	<Match expression="(\.)(\w+|``[^`]``)\s?[\(]{1}">
+	<Match expression="(\.)(\w+|``[^`]*``)\s?[\(]{1}">
 		<Group color="Plain Text" />
 		<Group color="User Method Declaration"/>
 		<Group color="Plain Text" />
 		<Group color="Punctuation(Brackets)" />
 	</Match>
 
-	<Match expression="(\.)([a-z]{1}\w*|``[^`]``)" ignorecase="False">
+	<Match expression="(\.)([a-z]{1}\w*)" ignorecase="False">
 		<Group color="Plain Text" />
 		<Group color="User Method Declaration"/>
-	</Match>
+	</Match>	
 
 	<Match expression="([a-z]{1}\w*|``[^`]*``)\s?[\(]" ignorecase="False">
 		<Group color="User Method Declaration"/>
