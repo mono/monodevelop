@@ -41,6 +41,7 @@ type SyntaxHighlighting() =
     [<TestCase("Seq.find (§fun§ c", "Keyword(Jump)")>]
     [<TestCase("§type§ SyntaxHighlighting() =", "Keyword(Namespace)")>]
     [<TestCase("type §SyntaxHighlighting§ () =", "User Types")>]
+    [<TestCase("type §``Completion Tests``§ () =", "User Types")>]
     [<TestCase("§module§ MyModule =", "Keyword(Namespace)")>]
     [<TestCase("module §MyModule§ =", "User Types")>]
     [<TestCase("[<§TestCase§(", "User Types")>]
