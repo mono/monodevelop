@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.CSharp.Completion;
+using System.Threading;
 
 namespace MonoDevelop.CSharp
 {
@@ -90,9 +91,27 @@ namespace MonoDevelop.CSharp
 		public string GetTypeReferenceString (ITypeSymbol type, bool highlight = true)
 		{
 			if (type == null)
-				throw new ArgumentNullException ("type");
-			if (type.TypeKind == TypeKind.Error)
-				return "?";
+				throw new ArgumentNullException (nameof (type));
+			if (type.TypeKind == TypeKind.Error) {
+				SemanticModel model = SemanticModel;
+				if (model == null) {
+					var parsedDocument = ctx.ParsedDocument;
+					if (parsedDocument != null) {
+						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument?.GetSemanticModelAsync ().Result;
+					}
+				}
+				var typeSyntax = type.GenerateTypeSyntax ();
+				string generatedTypeSyntaxString;
+				try {
+					var oldDoc = ctx.AnalysisDocument;
+					var newDoc = oldDoc.WithSyntaxRoot (SyntaxFactory.ParseCompilationUnit (typeSyntax.ToString ()).WithAdditionalAnnotations (Simplifier.Annotation));
+					var reducedDoc = Simplifier.ReduceAsync (newDoc, options);
+					generatedTypeSyntaxString = Ambience.EscapeText (reducedDoc.Result.GetSyntaxRootAsync ().Result.ToString ());
+				} catch (Exception e) {
+					generatedTypeSyntaxString = typeSyntax != null ? Ambience.EscapeText (typeSyntax.ToString ()) : "?";
+				}
+				return highlight ? HighlightSemantically (generatedTypeSyntaxString, colorStyle.UserTypes) : generatedTypeSyntaxString;
+			}
 			if (type.TypeKind == TypeKind.Array) {
 				var arrayType = (IArrayTypeSymbol)type;
 				return GetTypeReferenceString (arrayType.ElementType, highlight) + "[" + new string (',', arrayType.Rank - 1) + "]";
