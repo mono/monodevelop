@@ -272,7 +272,6 @@ module Completion =
         let symbolToCompletionData (symbols : FSharpSymbolUse list) =
             match symbols with
             | head :: tail ->
-                LoggingService.logDebug "%s" head.Symbol.DisplayName
                 let completion =
                     match context with
                     | Attribute -> 
