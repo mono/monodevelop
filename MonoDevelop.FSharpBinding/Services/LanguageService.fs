@@ -98,18 +98,6 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                 | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
             | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown }
 
-    member x.GetMethods(line, col, lineStr) =
-        async {
-            match infoOpt with
-            | Some checkResults ->
-                match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with
-                | None -> return None
-                | Some(col,identIsland) ->
-                    let! res = checkResults.GetMethodsAlternate(line, col, lineStr, Some identIsland)
-                    LoggingService.logDebug("Result: Got something, returning")
-                    return Some (res.MethodName, res.Methods)
-            | None -> return None }
-
     member x.GetSymbolAtLocation(line, col, lineStr) =
         async {
             match infoOpt with
@@ -126,14 +114,19 @@ type ParseAndCheckResults (infoOpt : FSharpCheckFileResults option, parseResults
                         return None
             | None -> return None }
 
-    member x.GetMethodsAsSymbols(line, col, lineStr) =
+    member x.GetMethodsAsSymbols(line, col, (lineStr:string)) =
         async {
             match infoOpt with
-            | Some (checkResults) ->
-                match Parsing.findLongIdentsAtGetMethodsTrigger(col, lineStr) with
-                | None -> return None
-                | Some(colu, identIsland) ->
-                    return! checkResults.GetMethodsAsSymbols(line, colu, lineStr, identIsland)
+            | Some checkResults ->
+                let lineToCaret = lineStr.[0..col-1]
+                let column = lineToCaret |> Seq.tryFindIndexBack (fun c -> c <> '(' && c <> ' ')
+                match column with
+                | Some col ->
+                    match Parsing.findIdents (col-1) lineToCaret SymbolLookupKind.ByLongIdent with
+                    | None -> return None
+                    | Some(colu, identIsland) ->
+                        return! checkResults.GetMethodsAsSymbols(line, colu, lineToCaret, identIsland)
+                | _ -> return None
             | None -> return None }
 
     member x.GetUsesOfSymbolInFile(symbol) =
