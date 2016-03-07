@@ -110,6 +110,9 @@
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBase.fs" />
