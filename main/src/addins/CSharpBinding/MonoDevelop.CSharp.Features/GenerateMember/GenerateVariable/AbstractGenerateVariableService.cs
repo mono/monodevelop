@@ -202,7 +202,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 
-					return await AnnotateInsertionMode (_document, result);
+					return await AnnotateInsertionMode (_document.Project.Solution.GetDocument(result.Id), result);
 				}
 				else
 				{
@@ -221,7 +221,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 
-					return await AnnotateInsertionMode (_document, result);
+					return await AnnotateInsertionMode (_document.Project.Solution.GetDocument (result.Id), result);
 				}
 			}
 

@@ -794,6 +794,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 						if (annotatedNode != null && GetInsertionPoints != null) {
 							await Runtime.RunInMainThread (async () => {
+								IdeApp.Workbench.Documents.First(d => d.FileName == editor.FileName).Select();
 								var formattedVersion = editor.Version;
 
 								int startOffset = versionBeforeFormat.MoveOffsetTo (editor.Version, annotatedNode.Span.Start);

@@ -237,7 +237,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 						cancellationToken)
 						.ConfigureAwait(false);
 
-					return await AnnotateInsertionMode(_document, result);
+					return await AnnotateInsertionMode(_document.Project.Solution.GetDocument(result.Id), result);
 				}
 				else
 				{
@@ -251,7 +251,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 						cancellationToken)
 						.ConfigureAwait(false);
 
-					return await AnnotateInsertionMode(_document, result);
+					return await AnnotateInsertionMode(_document.Project.Solution.GetDocument(result.Id), result);
 				}
 			}
 
