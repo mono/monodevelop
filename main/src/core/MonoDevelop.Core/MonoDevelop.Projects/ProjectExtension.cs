@@ -174,7 +174,7 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual string[] SupportedLanguages {
 			get {
-				return next.SupportedLanguages;
+				return next?.SupportedLanguages;
 			}
 		}
 
