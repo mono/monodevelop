@@ -233,3 +233,4 @@ module LoggingService =
     let logDebug format = log LoggingService.LogDebug format
     let logError format = log LoggingService.LogError format
     let logInfo format = log LoggingService.LogInfo format
+    let logWarning format = log LoggingService.LogWarning format

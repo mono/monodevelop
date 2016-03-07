@@ -507,43 +507,17 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
     override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
         Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
 
-/// Implements text editor extension for MonoDevelop that shows F# completion
-type FSharpTextEditorCompletion() =
-    inherit CompletionTextEditorExtension()
-
-    let mutable suppressParameterCompletion = false
+module ParameterHinting =
 
     // Until we build some functionality around a reversing tokenizer that detect this and other contexts
     // A crude detection of being inside an auto property decl: member val Foo = 10 with get,$ set
     let isAnAutoProperty (_editor: TextEditor) _offset =
         false
 
-    let isValidParamCompletionDecriptor (d:KeyDescriptor) =
-        d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
-
-    let validCompletionChar c =
-        c = '(' || c = ',' || c = '<'
-
-    //only used for testing
-    member x.Initialize(editor, context) =
-        x.DocumentContext <- context
-        x.Editor <- editor
-
-    override x.CompletionLanguage = "F#"
-    override x.Initialize() =
-        do x.Editor.SetIndentationTracker (FSharpIndentationTracker(x.Editor))
-        base.Initialize()
-
-    /// Provide parameter and method overload information when you type '(', '<' or ','
-    override x.HandleParameterCompletionAsync (context, completionChar, token) =
-      //TODO refactor computation to remove some return statements (clarity)
-      if suppressParameterCompletion || not (validCompletionChar completionChar)
-      then suppressParameterCompletion <- false
-           System.Threading.Tasks.Task.FromResult(ParameterHintingResult.Empty)
-      else
-        Async.StartAsTask (cancellationToken = token, computation = async {
+    let getHints (editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext) =
+        async {
         try
-            let docText = x.Editor.Text
+            let docText = editor.Text
             let offset = context.TriggerOffset
 
             // Parse backwards, skipping (...) and { ... } and [ ... ] to determine the parameter index.
@@ -558,41 +532,93 @@ type FSharpTextEditorCompletion() =
                         else loop depth (i-1)
                 loop 0 (offset-1)
 
-            if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty x.Editor offset
+            if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 || isAnAutoProperty editor offset
             then return ParameterHintingResult.Empty
             else
             LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
 
-            let filename = x.DocumentContext.Name
+            let filename = documentContext.Name
 
             // Try to get typed result - within the specified timeout
             let! methsOpt =
-                async { let projectFile = x.DocumentContext.Project |> function null -> filename | project -> project.FileName.ToString()
+                async { let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
                         let! tyRes = languageService.GetTypedParseResultWithTimeout (projectFile, filename, 0, docText, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false) )
                         match tyRes with
                         | Some tyRes ->
-                            let line, col, lineStr = x.Editor.GetLineInfoFromOffset (startOffset)
+                            let line, col, lineStr = editor.GetLineInfoFromOffset (startOffset)
                             let! allMethodSymbols = tyRes.GetMethodsAsSymbols (line, col, lineStr)
                             return allMethodSymbols
                         | None -> return None}
 
             match methsOpt with
             | Some(meths) when meths.Length > 0 ->
-                LoggingService.LogDebug ("FSharpTextEditorCompletion: Getting Parameter Info: {0} methods", meths.Length)
+                LoggingService.logDebug "FSharpTextEditorCompletion: Getting Parameter Info: %d methods" meths.Length
                 let hintingData =
                     meths
                     |> List.map (fun meth -> FSharpParameterHintingData (meth) :> ParameterHintingData)
                     |> ResizeArray.ofList
 
                 return ParameterHintingResult(hintingData, startOffset)
-            | _ -> LoggingService.LogWarning("FSharpTextEditorCompletion: Getting Parameter Info: no methods found")
+            | _ -> LoggingService.logWarning "FSharpTextEditorCompletion: Getting Parameter Info: no methods found"
                    return ParameterHintingResult.Empty
         with
         | :? Threading.Tasks.TaskCanceledException ->
             return ParameterHintingResult.Empty
         | ex ->
             LoggingService.LogError ("FSharpTextEditorCompletion: Error in HandleParameterCompletion", ex)
-            return ParameterHintingResult.Empty})
+            return ParameterHintingResult.Empty
+        }
+
+    // Returns the index of the parameter where the cursor is currently positioned.
+    // -1 means the cursor is outside the method parameter list
+    // 0 means no parameter entered
+    // > 0 is the index of the parameter (1-based)
+    let getParameterIndex (editor:TextEditor, startOffset) = 
+        let cursor = editor.CaretOffset
+        let i = startOffset // the original context
+        if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then -1
+        elif (i + 1 = cursor && (match editor.GetCharAt(i) with '(' | '<' -> true | _ -> false)) then 0
+        else
+            // The first character is a '('
+            // Note this will be confused by comments.
+            let rec loop depth i parameterIndex =
+                if (i = cursor) then parameterIndex
+                elif (i > cursor) then -1
+                elif (i >= editor.Length) then  parameterIndex else
+                let ch = editor.GetCharAt(i)
+                if (ch = '(' || ch = '{' || ch = '[') then loop (depth+1) (i+1) parameterIndex
+                elif ((ch = ')' || ch = '}' || ch = ']') && depth > 1 ) then loop (depth-1) (i+1) parameterIndex
+                elif (ch = ',' && depth = 1) then loop depth (i+1) (parameterIndex+1)
+                elif (ch = ')' || ch = '>') then -1
+                else loop depth (i+1) parameterIndex
+            loop 0 i 1
+
+/// Implements text editor extension for MonoDevelop that shows F# completion
+type FSharpTextEditorCompletion() =
+    inherit CompletionTextEditorExtension()
+
+    let mutable suppressParameterCompletion = false
+
+    let isValidParamCompletionDecriptor (d:KeyDescriptor) =
+        d.KeyChar = '(' || d.KeyChar = '<' || d.KeyChar = ',' || (d.KeyChar = ' ' && d.ModifierKeys = ModifierKeys.Control)
+
+    let validCompletionChar c =
+        c = '(' || c = ',' || c = '<'
+
+    override x.CompletionLanguage = "F#"
+    override x.Initialize() =
+        do x.Editor.SetIndentationTracker (FSharpIndentationTracker(x.Editor))
+        base.Initialize()
+
+    /// Provide parameter and method overload information when you type '(', '<' or ','
+    override x.HandleParameterCompletionAsync (context, completionChar, token) =
+        //TODO refactor computation to remove some return statements (clarity)
+        if suppressParameterCompletion || not (validCompletionChar completionChar)
+        then suppressParameterCompletion <- false
+             System.Threading.Tasks.Task.FromResult(ParameterHintingResult.Empty)
+        else
+            let computation = ParameterHinting.getHints(x.Editor, x.DocumentContext, context)
+            Async.StartAsTask (cancellationToken = token, computation = computation)
 
     override x.KeyPress (descriptor:KeyDescriptor) =
         suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
@@ -613,34 +639,10 @@ type FSharpTextEditorCompletion() =
         Completion.codeCompletionCommandImpl(x.Editor, x.DocumentContext, context, true)
         |> Async.StartAsTask
 
-    // Returns the index of the parameter where the cursor is currently positioned.
-    // -1 means the cursor is outside the method parameter list
-    // 0 means no parameter entered
-    // > 0 is the index of the parameter (1-based)
+
     override x.GetCurrentParameterIndex (startOffset: int, token) =
         let computation =
             async {
-                let editor = x.Editor
-                let cursor = editor.CaretOffset
-                let i = startOffset // the original context
-                if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then return -1
-                elif (i + 1 = cursor && (match editor.GetCharAt(i) with '(' | '<' -> true | _ -> false)) then return 0
-                else
-                    // The first character is a '('
-                    // Note this will be confused by comments.
-                    let rec loop depth i parameterIndex =
-                        if (i = cursor) then parameterIndex
-                        elif (i > cursor) then -1
-                        elif (i >= editor.Length) then  parameterIndex else
-                        let ch = editor.GetCharAt(i)
-                        if (ch = '(' || ch = '{' || ch = '[') then loop (depth+1) (i+1) parameterIndex
-                        elif ((ch = ')' || ch = '}' || ch = ']') && depth > 1 ) then loop (depth-1) (i+1) parameterIndex
-                        elif (ch = ',' && depth = 1) then loop depth (i+1) (parameterIndex+1)
-                        elif (ch = ')' || ch = '>') then -1
-                        else loop depth (i+1) parameterIndex
-                    let res = loop 0 i 1
-                    return res
+                return ParameterHinting.getParameterIndex(x.Editor, startOffset)
             }
         Async.StartAsTask (computation = computation, cancellationToken = token)
-
-
