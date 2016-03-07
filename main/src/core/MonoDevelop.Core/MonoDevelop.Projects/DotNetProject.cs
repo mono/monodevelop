@@ -1682,6 +1682,12 @@ namespace MonoDevelop.Projects
 				return Project.OnExecuteCommand (monitor, context, configuration, executionCommand);
 			}
 
+			internal protected override string[] SupportedLanguages {
+				get {
+					return Project.OnGetSupportedLanguages ();
+				}
+			}
+
 			#region Framework management
 
 			internal protected override TargetFrameworkMoniker OnGetDefaultTargetFrameworkId ()

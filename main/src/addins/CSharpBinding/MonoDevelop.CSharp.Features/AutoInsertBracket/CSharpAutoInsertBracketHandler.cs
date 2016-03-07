@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
 		{
 			char closingBrace;
-			if (!IsSupportedOpeningBrace (descriptor.KeyChar, out closingBrace)  || !CheckCodeContext (editor, ctx, editor.CaretOffset - 1, descriptor.KeyChar, default (CancellationToken)))
+			if (!IsSupportedOpeningBrace (descriptor.KeyChar, out closingBrace)  || !CheckCodeContext (editor, ctx, editor.CaretOffset - 1, descriptor.KeyChar, default (CancellationToken))  || ctx.AnalysisDocument == null)
 				return false;
 			
 			var session = CreateEditorSession (editor, ctx, editor.CaretOffset, descriptor.KeyChar, default (CancellationToken));

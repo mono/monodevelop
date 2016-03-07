@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		///     logic for indentation will be delegated.
 		/// </param>
 		/// <param name = "options"></param>
-		public TextPasteIndentEngine(IStateMachineIndentEngine decoratedEngine, OptionSet options)
+		public TextPasteIndentEngine (IStateMachineIndentEngine decoratedEngine, OptionSet options)
 		{
 			this.engine = decoratedEngine;
 			this.options = options;
@@ -79,47 +79,47 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		#region ITextPasteHandler
 		/// <inheritdoc />
-		string ITextPasteHandler.FormatPlainText(SourceText sourceText, int offset, string text, byte [] copyData)
+		string ITextPasteHandler.FormatPlainText (SourceText sourceText, int offset, string text, byte [] copyData)
 		{
 			if (copyData != null && copyData.Length == 1) {
 				var strategy = TextPasteUtils.Strategies [(PasteStrategy)copyData [0]];
-				text = strategy.Decode(text);
+				text = strategy.Decode (text);
 			}
-			engine.Update(sourceText, offset);
+			engine.Update (sourceText, offset);
 
 			if (engine.IsInsideStringLiteral) {
-				int idx = text.IndexOf('"');
+				int idx = text.IndexOf ('"');
 				if (idx > 0) {
 					var o = offset;
 					while (o < sourceText.Length) {
-						char ch = sourceText[o];
-						engine.Push(ch); 
-						if (NewLine.IsNewLine(ch))
+						char ch = sourceText [o];
+						engine.Push (ch);
+						if (NewLine.IsNewLine (ch))
 							break;
 						o++;
 						if (!engine.IsInsideStringLiteral)
-							return TextPasteUtils.StringLiteralStrategy.Encode(text);
+							return TextPasteUtils.StringLiteralStrategy.Encode (text);
 					}
-					return TextPasteUtils.StringLiteralStrategy.Encode(text.Substring(0, idx)) + text.Substring(idx);
+					return TextPasteUtils.StringLiteralStrategy.Encode (text.Substring (0, idx)) + text.Substring (idx);
 				}
-				return TextPasteUtils.StringLiteralStrategy.Encode(text);
+				return TextPasteUtils.StringLiteralStrategy.Encode (text);
 
 			} else if (engine.IsInsideVerbatimString) {
 
-				int idx = text.IndexOf('"');
+				int idx = text.IndexOf ('"');
 				if (idx > 0) {
 					var o = offset;
 					while (o < sourceText.Length) {
-						char ch = sourceText[o];
-						engine.Push(ch); 
+						char ch = sourceText [o];
+						engine.Push (ch);
 						o++;
 						if (!engine.IsInsideVerbatimString)
-							return TextPasteUtils.VerbatimStringStrategy.Encode(text);
+							return TextPasteUtils.VerbatimStringStrategy.Encode (text);
 					}
-					return TextPasteUtils.VerbatimStringStrategy.Encode(text.Substring(0, idx)) + text.Substring(idx);
+					return TextPasteUtils.VerbatimStringStrategy.Encode (text.Substring (0, idx)) + text.Substring (idx);
 				}
 
-				return TextPasteUtils.VerbatimStringStrategy.Encode(text);
+				return TextPasteUtils.VerbatimStringStrategy.Encode (text);
 			}
 
 			// on the fly formatting is done in post formatting, if turned off just correct indenting.
@@ -127,79 +127,79 @@ namespace ICSharpCode.NRefactory6.CSharp
 				return text;
 			}
 
-			var line = sourceText.Lines.GetLineFromPosition(offset);
+			var line = sourceText.Lines.GetLineFromPosition (offset);
 			var pasteAtLineStart = line.Start == offset;
-			var indentedText = new StringBuilder();
-			var curLine = new StringBuilder();
-			var clonedEngine = engine.Clone();
+			var indentedText = new StringBuilder ();
+			var curLine = new StringBuilder ();
+			var clonedEngine = engine.Clone ();
 			bool isNewLine = false, gotNewLine = false;
 			for (int i = 0; i < text.Length; i++) {
 				var ch = text [i];
 				if (clonedEngine.IsInsideVerbatimString || clonedEngine.IsInsideMultiLineComment || clonedEngine.IsInsidePreprocessorComment) {
-					clonedEngine.Push(ch);
-					curLine.Append(ch);
+					clonedEngine.Push (ch);
+					curLine.Append (ch);
 					continue;
 				}
 
-				var delimiterLength = NewLine.GetDelimiterLength(ch, i + 1 < text.Length ? text[i + 1] : ' ');
+				var delimiterLength = NewLine.GetDelimiterLength (ch, i + 1 < text.Length ? text [i + 1] : ' ');
 				if (delimiterLength > 0) {
 					isNewLine = true;
 					if (gotNewLine || pasteAtLineStart) {
 						if (curLine.Length > 0 /*|| formattingOptions.EmptyLineFormatting == EmptyLineFormatting.Indent*/)
-							indentedText.Append(clonedEngine.ThisLineIndent);
+							indentedText.Append (clonedEngine.ThisLineIndent);
 					}
-					indentedText.Append(curLine);
-					var newLine = options.GetOption(FormattingOptions.NewLine, LanguageNames.CSharp);
-					indentedText.Append(newLine);
+					indentedText.Append (curLine);
+					var newLine = options.GetOption (FormattingOptions.NewLine, LanguageNames.CSharp);
+					indentedText.Append (newLine);
 					curLine.Length = 0;
 					gotNewLine = true;
 					i += delimiterLength - 1;
 					// textEditorOptions.EolMarker[0] is the newLineChar used by the indentation engine.
-					clonedEngine.Push(newLine [0]);
+					clonedEngine.Push (newLine [0]);
 				} else {
 					if (isNewLine) {
 						if (ch == '\t' || ch == ' ') {
-							clonedEngine.Push(ch);
+							clonedEngine.Push (ch);
 							continue;
 						}
 						isNewLine = false;
 					}
-					curLine.Append(ch);
-					clonedEngine.Push(ch);
+					curLine.Append (ch);
+					clonedEngine.Push (ch);
 				}
-				if (clonedEngine.IsInsideVerbatimString || clonedEngine.IsInsideMultiLineComment && 
-				    !(clonedEngine.LineBeganInsideVerbatimString || clonedEngine.LineBeganInsideMultiLineComment)) {
+				if (clonedEngine.IsInsideVerbatimString || clonedEngine.IsInsideMultiLineComment &&
+					!(clonedEngine.LineBeganInsideVerbatimString || clonedEngine.LineBeganInsideMultiLineComment)) {
 					if (gotNewLine) {
 						if (curLine.Length > 0 /*|| formattingOptions.EmptyLineFormatting == EmptyLineFormatting.Indent*/)
-							indentedText.Append(clonedEngine.ThisLineIndent);
+							indentedText.Append (clonedEngine.ThisLineIndent);
 					}
 					pasteAtLineStart = false;
-					indentedText.Append(curLine);
+					indentedText.Append (curLine);
 					curLine.Length = 0;
 					gotNewLine = false;
 					continue;
 				}
 			}
 			if (gotNewLine && (!pasteAtLineStart || curLine.Length > 0)) {
-				indentedText.Append(clonedEngine.ThisLineIndent);
+				indentedText.Append (clonedEngine.ThisLineIndent);
 			}
 			if (curLine.Length > 0) {
-				indentedText.Append(curLine);
+				indentedText.Append (curLine);
 			}
-			return indentedText.ToString();
+			return indentedText.ToString ();
 		}
 
 		/// <inheritdoc />
-		byte[] ITextPasteHandler.GetCopyData(SourceText sourceText, TextSpan segment)
+		byte [] ITextPasteHandler.GetCopyData (SourceText sourceText, TextSpan segment)
 		{
-			engine.Update(sourceText, segment.Start);
-			
+			engine.Update (sourceText, segment.Start);
+
 			if (engine.IsInsideStringLiteral) {
-				return new[] { (byte)PasteStrategy.StringLiteral };
+				return new [] { (byte)PasteStrategy.StringLiteral };
 			} else if (engine.IsInsideVerbatimString) {
-				return new[] { (byte)PasteStrategy.VerbatimString };
+				return new [] { (byte)PasteStrategy.VerbatimString };
 			}
-			
+
 			return null;
 		}
 
@@ -232,47 +232,47 @@ namespace ICSharpCode.NRefactory6.CSharp
 			get { return engine.Offset; }
 		}
 
-//		/// <inheritdoc />
-//		public TextLocation Location {
-//			get { return engine.Location; }
-//		}
+		//		/// <inheritdoc />
+		//		public TextLocation Location {
+		//			get { return engine.Location; }
+		//		}
 
 		/// <inheritdoc />
 		public bool EnableCustomIndentLevels {
 			get { return engine.EnableCustomIndentLevels; }
 			set { engine.EnableCustomIndentLevels = value; }
 		}
-		
+
 		/// <inheritdoc />
-		public void Push(char ch)
+		public void Push (char ch)
 		{
-			engine.Push(ch);
+			engine.Push (ch);
 		}
 
 		/// <inheritdoc />
-		public void Reset()
+		public void Reset ()
 		{
-			engine.Reset();
+			engine.Reset ();
 		}
 
 		/// <inheritdoc />
-		public void Update(SourceText sourceText, int offset)
+		public void Update (SourceText sourceText, int offset)
 		{
-			engine.Update(sourceText, offset);
+			engine.Update (sourceText, offset);
 		}
 
 		#endregion
 
 		#region IClonable
 
-		public IDocumentIndentEngine Clone()
+		public IDocumentIndentEngine Clone ()
 		{
-			return new TextPasteIndentEngine(engine, options);
+			return new TextPasteIndentEngine (engine, options);
 		}
 
-		object ICloneable.Clone()
+		object ICloneable.Clone ()
 		{
-			return Clone();
+			return Clone ();
 		}
 
 		#endregion
@@ -297,7 +297,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		/// <summary>
 		///     Collection of text-paste strategies.
 		/// </summary>
-		public static TextPasteStrategies Strategies = new TextPasteStrategies();
+		public static TextPasteStrategies Strategies = new TextPasteStrategies ();
 
 		/// <summary>
 		///     The interface for a text-paste strategy.
@@ -313,7 +313,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			/// <returns>
 			///     Formatted text.
 			/// </returns>
-			string Encode(string text);
+			string Encode (string text);
 
 			/// <summary>
 			///     Converts text formatted according with this strategy rules
@@ -325,7 +325,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			/// <returns>
 			///     Original form of the given formatted text.
 			/// </returns>
-			string Decode(string text);
+			string Decode (string text);
 
 			/// <summary>
 			///     Type of this strategy.
@@ -348,7 +348,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			///     Uses reflection to find all types derived from <see cref="IPasteStrategy"/>
 			///     and adds an instance of each strategy to <see cref="strategies"/>.
 			/// </summary>
-			public TextPasteStrategies()
+			public TextPasteStrategies ()
 			{
 				strategies = new Dictionary<PasteStrategy, IPasteStrategy> ();
 				strategies [PlainTextPasteStrategy.Instance.Type] = PlainTextPasteStrategy.Instance;
@@ -367,10 +367,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 			/// </returns>
 			public IPasteStrategy this [PasteStrategy strategy] {
 				get {
-					if (strategies.ContainsKey(strategy)) {
+					if (strategies.ContainsKey (strategy)) {
 						return strategies [strategy];
 					}
-					
+
 					return DefaultStrategy;
 				}
 			}
@@ -386,26 +386,26 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			public static IPasteStrategy Instance {
 				get {
-					return instance ?? (instance = new PlainTextPasteStrategy());
+					return instance ?? (instance = new PlainTextPasteStrategy ());
 				}
 			}
 
 			static PlainTextPasteStrategy instance;
 
-			protected PlainTextPasteStrategy()
+			protected PlainTextPasteStrategy ()
 			{
 			}
 
 			#endregion
 
 			/// <inheritdoc />
-			public string Encode(string text)
+			public string Encode (string text)
 			{
 				return text;
 			}
 
 			/// <inheritdoc />
-			public string Decode(string text)
+			public string Decode (string text)
 			{
 				return text;
 			}
@@ -427,172 +427,171 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			public static IPasteStrategy Instance {
 				get {
-					return instance ?? (instance = new StringLiteralPasteStrategy());
+					return instance ?? (instance = new StringLiteralPasteStrategy ());
 				}
 			}
 
 			static StringLiteralPasteStrategy instance;
 
-			protected StringLiteralPasteStrategy()
+			protected StringLiteralPasteStrategy ()
 			{
 			}
 
 			#endregion
 
 			/// <inheritdoc />
-			public string Encode(string text)
+			public string Encode (string text)
 			{
-				return ConvertString(text);
+				return ConvertString (text);
 			}
-			
+
 			/// <summary>
 			/// Gets the escape sequence for the specified character.
 			/// </summary>
 			/// <remarks>This method does not convert ' or ".</remarks>
-			public static string ConvertChar(char ch)
+			public static string ConvertChar (char ch)
 			{
 				switch (ch) {
-					case '\\':
-						return "\\\\";
-					case '\0':
-						return "\\0";
-					case '\a':
-						return "\\a";
-					case '\b':
-						return "\\b";
-					case '\f':
-						return "\\f";
-					case '\n':
-						return "\\n";
-					case '\r':
-						return "\\r";
-					case '\t':
-						return "\\t";
-					case '\v':
-						return "\\v";
-					default:
-						if (char.IsControl(ch) || char.IsSurrogate(ch) ||
-						    // print all uncommon white spaces as numbers
-						    (char.IsWhiteSpace(ch) && ch != ' ')) {
-							return "\\u" + ((int)ch).ToString("x4");
-						} else {
-							return ch.ToString();
-						}
+				case '\\':
+					return "\\\\";
+				case '\0':
+					return "\\0";
+				case '\a':
+					return "\\a";
+				case '\b':
+					return "\\b";
+				case '\f':
+					return "\\f";
+				case '\n':
+					return "\\n";
+				case '\r':
+					return "\\r";
+				case '\t':
+					return "\\t";
+				case '\v':
+					return "\\v";
+				default:
+					if (char.IsControl (ch) || char.IsSurrogate (ch) ||
+						// print all uncommon white spaces as numbers
+						(char.IsWhiteSpace (ch) && ch != ' ')) {
+						return "\\u" + ((int)ch).ToString ("x4");
+					} else {
+						return ch.ToString ();
+					}
 				}
 			}
-			
+
 			/// <summary>
 			/// Converts special characters to escape sequences within the given string.
 			/// </summary>
-			public static string ConvertString(string str)
+			public static string ConvertString (string str)
 			{
 				StringBuilder sb = new StringBuilder ();
 				foreach (char ch in str) {
 					if (ch == '"') {
-						sb.Append("\\\"");
+						sb.Append ("\\\"");
 					} else {
-						sb.Append(ConvertChar(ch));
+						sb.Append (ConvertChar (ch));
 					}
 				}
-				return sb.ToString();
+				return sb.ToString ();
 			}
 
 			/// <inheritdoc />
-			public string Decode(string text)
+			public string Decode (string text)
 			{
-				var result = new StringBuilder();
+				var result = new StringBuilder ();
 				bool isEscaped = false;
 
 				for (int i = 0; i < text.Length; i++) {
-					var ch = text[i];
+					var ch = text [i];
 					if (isEscaped) {
 						switch (ch) {
-							case 'a':
-								result.Append('\a');
+						case 'a':
+							result.Append ('\a');
+							break;
+						case 'b':
+							result.Append ('\b');
+							break;
+						case 'n':
+							result.Append ('\n');
+							break;
+						case 't':
+							result.Append ('\t');
+							break;
+						case 'v':
+							result.Append ('\v');
+							break;
+						case 'r':
+							result.Append ('\r');
+							break;
+						case '\\':
+							result.Append ('\\');
+							break;
+						case 'f':
+							result.Append ('\f');
+							break;
+						case '0':
+							result.Append (0);
+							break;
+						case '"':
+							result.Append ('"');
+							break;
+						case '\'':
+							result.Append ('\'');
+							break;
+						case 'x':
+							char r;
+							if (TryGetHex (text, -1, ref i, out r)) {
+								result.Append (r);
 								break;
-							case 'b':
-								result.Append('\b');
+							}
+							goto default;
+						case 'u':
+							if (TryGetHex (text, 4, ref i, out r)) {
+								result.Append (r);
 								break;
-							case 'n':
-								result.Append('\n');
+							}
+							goto default;
+						case 'U':
+							if (TryGetHex (text, 8, ref i, out r)) {
+								result.Append (r);
 								break;
-							case 't':
-								result.Append('\t');
-								break;
-							case 'v':
-								result.Append('\v');
-								break;
-							case 'r':
-								result.Append('\r');
-								break;
-							case '\\':
-								result.Append('\\');
-								break;
-							case 'f':
-								result.Append('\f');
-								break;
-							case '0':
-								result.Append(0);
-								break;
-							case '"':
-								result.Append('"');
-								break;
-							case '\'':
-								result.Append('\'');
-								break;
-							case 'x':
-								char r;
-								if (TryGetHex(text, -1, ref i, out r)) {
-									result.Append(r);
-									break;
-								}
-								goto default;
-							case 'u':
-								if (TryGetHex(text, 4, ref i, out r)) {
-									result.Append(r);
-									break;
-								}
-								goto default;
-							case 'U':
-								if (TryGetHex(text, 8, ref i, out r)) {
-									result.Append(r);
-									break;
-								}
-								goto default;
-							default:
-								result.Append('\\');
-								result.Append(ch);
-								break;
+							}
+							goto default;
+						default:
+							result.Append ('\\');
+							result.Append (ch);
+							break;
 						}
 						isEscaped = false;
 						continue;
 					}
 					if (ch != '\\') {
-						result.Append(ch);
-					}
-					else {
+						result.Append (ch);
+					} else {
 						isEscaped = true;
 					}
 				}
 
-				return result.ToString();
+				return result.ToString ();
 			}
 
-			static bool TryGetHex(string text, int count, ref int idx, out char r)
+			static bool TryGetHex (string text, int count, ref int idx, out char r)
 			{
 				int i;
 				int total = 0;
 				int top = count != -1 ? count : 4;
 
 				for (i = 0; i < top; i++) {
-					int c = text[idx + 1 + i];
+					int c = text [idx + 1 + i];
 
 					if (c >= '0' && c <= '9')
-						c = (int) c - (int) '0';
+						c = (int)c - (int)'0';
 					else if (c >= 'A' && c <= 'F')
-						c = (int) c - (int) 'A' + 10;
+						c = (int)c - (int)'A' + 10;
 					else if (c >= 'a' && c <= 'f')
-						c = (int) c - (int) 'a' + 10;
+						c = (int)c - (int)'a' + 10;
 					else {
 						r = '\0';
 						return false;
@@ -631,13 +630,13 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 			public static IPasteStrategy Instance {
 				get {
-					return instance ?? (instance = new VerbatimStringPasteStrategy());
+					return instance ?? (instance = new VerbatimStringPasteStrategy ());
 				}
 			}
 
 			static VerbatimStringPasteStrategy instance;
 
-			protected VerbatimStringPasteStrategy()
+			protected VerbatimStringPasteStrategy ()
 			{
 			}
 
@@ -648,16 +647,16 @@ namespace ICSharpCode.NRefactory6.CSharp
 			};
 
 			/// <inheritdoc />
-			public string Encode(string text)
+			public string Encode (string text)
 			{
-				return string.Concat(text.SelectMany(c => encodeReplace.ContainsKey(c) ? encodeReplace [c] : new[] { c }));
+				return string.Concat (text.SelectMany (c => encodeReplace.ContainsKey (c) ? encodeReplace [c] : new [] { c }));
 			}
 
 			/// <inheritdoc />
-			public string Decode(string text)
+			public string Decode (string text)
 			{
 				bool isEscaped = false;
-				return string.Concat(text.Where(c => !(isEscaped = !isEscaped && c == '"')));
+				return string.Concat (text.Where (c => !(isEscaped = !isEscaped && c == '"')));
 			}
 
 			/// <inheritdoc />
