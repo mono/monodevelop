@@ -2,7 +2,6 @@
 
 open System
 open NUnit.Framework
-open NUnit.Framework.Extensibility
 open MonoDevelop.FSharp
 open Mono.TextEditor
 open MonoDevelop.Ide.Editor

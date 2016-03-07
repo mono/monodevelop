@@ -22,19 +22,6 @@ module Parsing =
         else
             Lexer.getSymbol lineStr 0 col lineStr lookupType [||] Lexer.singleLineQueryLexState
             |> Option.bind tryGetLexerSymbolIslands
-               
-    /// find the identifier prior to a '(' or ',' once the method tip trigger '(' shows
-    let findLongIdentsAtGetMethodsTrigger (col, lineStr) =
-        /// Create sequence that reads the string backwards
-        let createBackStringReader (str:string) from = seq {
-            for i in (min from (str.Length-1)) .. -1 .. 0 do yield str.[i], i }
-    
-        let _char, index = createBackStringReader lineStr col
-                           |> Seq.takeWhile (fun (c, _index) -> c <> ')')
-                           |> Seq.head
-        match findIdents (index-1) lineStr SymbolLookupKind.ByLongIdent with
-        | Some (_col, ident) -> Some(col, ident)
-        | _ -> None
     
     let findLongIdentsAndResidue (col, lineStr:string) =
         let lineStr = lineStr.Substring(0, col)

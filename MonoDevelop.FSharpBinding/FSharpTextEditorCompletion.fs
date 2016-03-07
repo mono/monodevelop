@@ -577,7 +577,7 @@ module ParameterHinting =
         let cursor = editor.CaretOffset
         let i = startOffset // the original context
         if (i < 0 || i >= editor.Length || editor.GetCharAt (i) = ')') then -1
-        elif (i + 1 = cursor && (match editor.GetCharAt(i) with '(' | '<' -> true | _ -> false)) then 0
+        //elif (i + 1 = cursor && (match editor.GetCharAt(i) with '(' | '<' -> true | _ -> false)) then 0
         else
             // The first character is a '('
             // Note this will be confused by comments.
