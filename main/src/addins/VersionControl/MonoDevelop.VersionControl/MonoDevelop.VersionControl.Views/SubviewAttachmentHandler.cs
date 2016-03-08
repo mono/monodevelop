@@ -45,7 +45,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var document = Ide.IdeApp.Workbench.ActiveDocument;
 			try {
-				if (document == null || !document.IsFile || document.Window.FindView<IDiffView> () >= 0)
+				if (document == null || !document.IsFile || document.Window.FindView<ILogView> () >= 0)
 					return;
 
 				WorkspaceObject project = document.Project;

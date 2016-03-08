@@ -775,8 +775,7 @@ namespace MonoDevelop.VersionControl
 	
 	class InternalRepositoryReference: IDisposable
 	{
-		Repository repo;
-		
+		readonly Repository repo;
 		public InternalRepositoryReference (Repository repo)
 		{
 			this.repo = repo;
