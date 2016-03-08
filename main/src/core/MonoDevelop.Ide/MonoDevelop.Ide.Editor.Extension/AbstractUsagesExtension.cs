@@ -98,6 +98,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			Editor.SelectionChanged -= HandleTextEditorDataSelectionChanged;
 			Editor.CaretPositionChanged -= HandleTextEditorDataCaretPositionChanged;
 			Editor.TextChanged -= HandleTextEditorDataDocumentTextReplaced;
+			RemoveMarkers ();
 			base.Dispose ();
 			RemoveTimer ();
 		}
