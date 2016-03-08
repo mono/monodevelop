@@ -183,8 +183,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 			AddOption (indentationOptions, "IndentBlock", GettextCatalog.GetString ("Indent block contents"), "namespace Test { class AClass { void Method () { int x; int y; } } }");
 			AddOption (indentationOptions, "IndentBraces", GettextCatalog.GetString ("Indent open and close braces"), "class AClass { int aField; void AMethod () {}}");
-			AddOption (indentationOptions, "IndentSwitchSection", GettextCatalog.GetString ("Indent case contents"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
-			AddOption (indentationOptions, "IndentSwitchCaseSection", GettextCatalog.GetString ("Indent case labels"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
+			AddOption (indentationOptions, "IndentSwitchSection", GettextCatalog.GetString ("Indent switch sections"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
+			AddOption (indentationOptions, "IndentSwitchCaseSection", GettextCatalog.GetString ("Indent case sections"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
 			AddOption (indentationOptions, "LabelPositioning", GettextCatalog.GetString ("Label indentation"), "enum AEnum { A, B, C }");
 			treeviewIndentOptions.ExpandAll ();
 			#endregion
