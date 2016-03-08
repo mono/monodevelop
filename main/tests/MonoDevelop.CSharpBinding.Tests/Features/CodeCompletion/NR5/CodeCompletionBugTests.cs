@@ -43,7 +43,7 @@ using MonoDevelop.Ide.CodeCompletion;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class CodeCompletionBugTests : TestBase
+	class CodeCompletionBugTests : TestBase
 	{
 		internal static CompletionResult CreateProvider (string text, SourceCodeKind? sourceCodeKind = null)
 		{

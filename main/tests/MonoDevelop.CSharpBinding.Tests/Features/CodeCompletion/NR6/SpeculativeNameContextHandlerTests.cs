@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class SpeculativeNameContextHandlerTests : TestBase
+	class SpeculativeNameContextHandlerTests : TestBase
 	{
 		[Ignore("FixMe")]
 		[Test]

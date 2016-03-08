@@ -31,7 +31,7 @@ using System.Diagnostics;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public abstract class TestBase 
+	abstract class TestBase : ICSharpCode.NRefactory6.TestBase
 	{
 		//class TestListener : TraceListener
 		//{

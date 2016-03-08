@@ -28,7 +28,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
-	public class PreProcessorTests: TestBase
+	class PreProcessorTests: TestBase
 	{
 		[Test]
 		public void TestPreProcessorContext ()

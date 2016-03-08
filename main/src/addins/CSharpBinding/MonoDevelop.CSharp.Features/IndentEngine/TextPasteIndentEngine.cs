@@ -123,8 +123,12 @@ namespace ICSharpCode.NRefactory6.CSharp
 			}
 
 			// on the fly formatting is done in post formatting, if turned off just correct indenting.
-			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
-				return text;
+			try {
+				if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
+					return text;
+				}
+			} catch {
+				// may happen in unit tests -> ignore
 			}
 
 			var line = sourceText.Lines.GetLineFromPosition (offset);

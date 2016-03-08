@@ -30,7 +30,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
-	public class ObjectInitializerTests : TestBase
+	class ObjectInitializerTests : TestBase
 	{
 		[Test()]
 		public void TestArrayInitializerStart ()
@@ -77,7 +77,7 @@ class MyTest
 		{
 			CompletionResult provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
 @"
-public class A
+class A
 {
 	public string Name { get; set; }
 }
@@ -103,7 +103,7 @@ class MyTest
 		{
 			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
 @"
-public class A
+class A
 {
 	public string Name { get; set; }
 }
@@ -126,7 +126,7 @@ class MyTest
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
 @"
-public class A
+class A
 {
 	public int Test;
 }
@@ -148,7 +148,7 @@ class MyTest
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
 @"
-public class A
+class A
 {
 	public int Test { get; set; }
 }
@@ -178,7 +178,7 @@ class MyTest
 using System;
 using System.Collections.Generic;
 
-public class O
+class O
 {
 	public string X {
 		get;
@@ -284,7 +284,7 @@ class CCTest {
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
 @"
-public class A
+class A
 {
 	public string Name { get; set; }
 }
@@ -424,7 +424,7 @@ class Test
 		{
 			// only affects ctrl+space completion.
 			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider(
-@"public class ClassName
+@"class ClassName
 {
 	public int Foo { get; set; }
 }

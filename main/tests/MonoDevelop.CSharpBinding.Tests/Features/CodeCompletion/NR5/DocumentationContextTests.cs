@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[Ignore("broken")]
 	[TestFixture]
-	public class DocumentationContextTests
+	class DocumentationContextTests
 	{
 		[Test]
 		public void TestClosingTag()
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			CodeCompletionBugTests.CombinedProviderTest(
 @"using System;
 
-public class Test
+class Test
 {
 	///<summary>Foo$<$
 	void TestFoo()
@@ -57,7 +57,7 @@ public class Test
 			CodeCompletionBugTests.CombinedProviderTest(
 				@"using System;
 
-public class Test
+class Test
 {
 	///<summary>
 	///Foo
@@ -80,7 +80,7 @@ public class Test
 			CodeCompletionBugTests.CombinedProviderTest(
 				@"using System;
 
-public class Test
+class Test
 {
 		/// <summary>
 		/// </summary>

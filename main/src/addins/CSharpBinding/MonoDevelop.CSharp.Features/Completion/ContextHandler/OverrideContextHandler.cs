@@ -248,7 +248,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return false;
 		}
 
-		static bool TryDetermineOverridableMembers(SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
+		internal static bool TryDetermineOverridableMembers(SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
 		{
 			var result = new HashSet<ISymbol>();
 			var containingType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol>(startToken.SpanStart, cancellationToken);

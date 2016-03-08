@@ -29,18 +29,99 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 using MonoDevelop.CSharp.Completion;
+using System.Runtime.Remoting.Messaging;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 
 	[TestFixture]
-	public class ProtocolMemberContextHandlerTests : CompletionTestBase
+	class ProtocolMemberContextHandlerTests : CompletionTestBase
 	{
+		static readonly string Header = @"
+using System;
+using Foundation;
+
+namespace Foundation
+{
+	public class ExportAttribute : Attribute
+	{
+		public ExportAttribute(string id) { }
+	}
+
+	public class ProtocolAttribute : Attribute
+	{
+		public string Name { get; set; }
+		public ProtocolAttribute() { }
+	}
+}";
+
 		internal override CompletionContextHandler CreateContextHandler ()
 		{
 			return new ProtocolMemberContextHandler ();
 		}
 
-		// todo
+		[Test]
+		public void TestSimple ()
+		{
+			VerifyItemsExist (Header + @"
+
+class MyProtocol
+{
+	[Export("":FooBar"")]
+	public virtual void FooBar()
+	{
+
+	}
+}
+
+
+[Protocol(Name = ""MyProtocol"")]
+class ProtocolClass
+{
+
+}
+
+
+class FooBar : ProtocolClass
+{
+	override $$
+}
+
+", "FooBar");
+		}
+
+		/// <summary>
+		/// Bug 39428 - [iOS] Override of protocol method shows 2 completions
+		/// </summary>
+		[Test]
+		public void TestBug39428 ()
+		{
+			VerifyItemIsAbsent (Header + @"
+
+class MyProtocol
+{
+	[Export("":FooBar"")]
+	public virtual void FooBar()
+	{
+
+	}
+}
+
+
+[Protocol(Name = ""MyProtocol"")]
+class ProtocolClass
+{
+	public virtual void FooBar()
+	{
+	}
+}
+
+class FooBar : ProtocolClass
+{
+	override $$
+}
+
+", "FooBar");
+		}
 	}
 }

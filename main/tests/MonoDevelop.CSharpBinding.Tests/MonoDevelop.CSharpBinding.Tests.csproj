@@ -61,6 +61,10 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="MonoDevelop.Debugger, Version=2.6.0.0, Culture=neutral">
+      <Package>monodevelop-core-addins</Package>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\CodeCompletion\NR5\BrowsableAttributeTests.cs" />
@@ -119,6 +123,9 @@
     <Compile Include="Features\IndentationTests\StringTests.cs" />
     <Compile Include="Features\IndentationTests\TextPasteIndentEngineTests.cs" />
     <Compile Include="Features\CodeCompletion\NR6\RegexContextHandlerTests.cs" />
+    <Compile Include="Features\CodeCompletion\NR6\ProtocolMemberContextHandlerTests.cs" />
+    <Compile Include="Features\TestBase.cs" />
+    <Compile Include="Features\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
@@ -136,6 +143,14 @@
     <ProjectReference Include="..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
+      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
+      <Name>RefactoringEssentials</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
