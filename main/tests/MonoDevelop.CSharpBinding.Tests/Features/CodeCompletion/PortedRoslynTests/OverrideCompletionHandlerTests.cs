@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
 	[Ignore]
 	[TestFixture]
-	public class OverrideCompletionProviderTests : CompletionTestBase
+	class OverrideCompletionProviderTests : CompletionTestBase
 	{
 		internal override CompletionContextHandler CreateContextHandler()
 		{

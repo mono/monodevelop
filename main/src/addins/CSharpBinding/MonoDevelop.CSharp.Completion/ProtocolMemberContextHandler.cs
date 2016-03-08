@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var result = new List<CompletionData> ();
 			ISet<ISymbol> overridableMembers;
-			if (!TryDetermineOverridableMembers (semanticModel, tokenBeforeReturnType, seenAccessibility, out overridableMembers, cancellationToken)) {
+			if (!TryDetermineOverridableProtocolMembers (semanticModel, tokenBeforeReturnType, seenAccessibility, out overridableMembers, cancellationToken)) {
 				return result;
 			}
 			if (returnType != null) {
@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 
-		static bool TryDetermineOverridableMembers(SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
+		static bool TryDetermineOverridableProtocolMembers(SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
 		{
 			var result = new HashSet<ISymbol>();
 			var containingType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol>(startToken.SpanStart, cancellationToken);
@@ -99,8 +99,20 @@ namespace MonoDevelop.CSharp.Completion
 				result.RemoveWhere(m => m.DeclaredAccessibility != seenAccessibility);
 			}
 
+
+			// Filter members that are already overriden - they're already part of 'override completion'
+			ISet<ISymbol> realOverridableMembers;
+			if (OverrideContextHandler.TryDetermineOverridableMembers (semanticModel, startToken, seenAccessibility, out realOverridableMembers, cancellationToken)) {
+				result.RemoveWhere (m => realOverridableMembers.Any (m2 => IsEqualMember (m, m2)));
+			}
+
 			overridableMembers = result;
 			return overridableMembers.Count > 0;
+		}
+
+		static bool IsEqualMember (ISymbol m, ISymbol m2)
+		{
+			return SignatureComparer.HaveSameSignature (m, m2, true);
 		}
 
 		static void AddProtocolMembers(SemanticModel semanticModel, HashSet<ISymbol> result, INamedTypeSymbol containingType, INamedTypeSymbol type, CancellationToken cancellationToken)

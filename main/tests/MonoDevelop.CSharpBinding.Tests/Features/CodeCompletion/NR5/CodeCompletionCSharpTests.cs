@@ -35,7 +35,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture()]
-	public class CodeCompletionCSharpTests : TestBase
+	class CodeCompletionCSharpTests : TestBase
 	{
 		[Ignore("FixMe")]
 		[Test()]

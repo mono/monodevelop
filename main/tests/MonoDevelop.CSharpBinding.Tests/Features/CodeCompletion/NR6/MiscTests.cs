@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class MiscTests : CompletionTestBase
+	class MiscTests : CompletionTestBase
 	{
 		[Test]
 		public void TestSimple ()

@@ -32,7 +32,7 @@ using System.Text;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class GetCurrentParameterIndexTests
+	class GetCurrentParameterIndexTests
 	{
 		static int GetIndex(string text)
 		{
