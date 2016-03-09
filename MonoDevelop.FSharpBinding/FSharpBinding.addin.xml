@@ -151,13 +151,14 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-    <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
+    <Class class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpOutlineTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpNavigationTextEditorExtension" />
 	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpDebuggerExpressionResolver" />
+	<Class class = "MonoDevelop.FSharp.FSharpFsiEditorCompletion" />
     <Class class = "MonoDevelop.FSharp.FSharpCommandsTextEditorExtension" />
   </Extension>
 
@@ -194,6 +195,7 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
       <Pad id="MonoDevelop.FSharp.FSharpInteractivePad" defaultPlacement="Bottom" _label="F# Interactive" icon="md-project" class="MonoDevelop.FSharp.FSharpInteractivePad" />
+			<Pad id="MonoDevelop.FSharp.FSharpInteractivePad2" defaultPlacement="Bottom" _label="F# Interactive 2" icon="md-project" class="MonoDevelop.FSharp.FSharpInteractivePad2" />
       <Pad id="MonoDevelop.FSharp.FakePad" defaultPlacement="Bottom" _label="FAKE" icon="md-command" class="MonoDevelop.FSharp.FakePad" />
     </ComplexCondition>
   </Extension>

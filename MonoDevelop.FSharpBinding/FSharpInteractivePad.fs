@@ -14,6 +14,14 @@ open MonoDevelop.Ide
 open MonoDevelop.Projects
 open MonoDevelop.FSharp
 
+open MonoDevelop
+open Mono.TextEditor
+open MonoDevelop.Ide.CodeCompletion
+open MonoDevelop.Ide.Editor
+open MonoDevelop.Ide.Editor.Extension
+open MonoDevelop.Ide.TypeSystem
+open MonoDevelop.SourceEditor
+open System.Threading.Tasks
 [<AutoOpen>]
 module ColorHelpers =
     let strToColor s =
@@ -38,6 +46,223 @@ type KillIntent =
     | Kill
     | NoIntent // Unexpected kill, or from #q/#quit, so we prompt
 
+type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultSourceEditorOptions) =
+    inherit TextEditorOptions()
+    interface Mono.TextEditor.ITextEditorOptions with
+        member x.ColorScheme = options.ColorScheme
+
+type FsiDocumentContext() =
+    inherit DocumentContext()
+    let name = "__FSI__.fsx"
+    let pd = new FSharpParsedDocument(name) :> ParsedDocument
+    let project = Services.ProjectService.CreateDotNetProject ("F#")
+
+    let mutable editor:TextEditor = null
+    //let mutable view:MonoDevelop.SourceEditor.SourceEditorView = null
+    let contextChanged = DelegateEvent<_>()
+    let currentContext:CodeCompletionContext = null
+    let createContext triggerOffset =
+        let loc = editor.CaretLocation
+        let point = editor.LocationToPoint loc
+        //let (tx, ty) = 
+
+        new CodeCompletionContext(
+                    TriggerLine = loc.Line,
+                    TriggerLineOffset = loc.Column - 1,
+                    TriggerOffset = triggerOffset)
+    do 
+        project.FileName <- FilePath name
+    override x.ParsedDocument = pd
+    override x.AttachToProject(_) = ()
+    override x.ReparseDocument() = ()
+    override x.GetOptionSet() = TypeSystemService.Workspace.Options
+    override x.Project = project :> Project
+    override x.Name = name
+    override x.AnalysisDocument with get() = null
+    override x.UpdateParseDocument() = Task.FromResult pd
+
+    member x.Editor with set (value) = editor <- value
+        //view <- value.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
+
+    interface ICompletionWidget with
+        member x.CaretOffset 
+            with get() = editor.CaretOffset
+            and set(offset) = editor.CaretOffset <- offset
+        member x.TextLength = editor.Length
+        member x.SelectedLength =
+            if editor.SelectedText = null then 0
+            else editor.SelectedText.Length
+        member x.GetText(startOffset, endOffset) =
+            //let t = editor.GetTextBetween(startOffset, endOffset)
+            //t
+            let _line, col, lineStr = editor.GetLineInfoFromOffset editor.CaretOffset
+            let lineToCaret = lineStr.[0..col-1]
+            let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineToCaret)
+            residue
+        member x.GetChar offset = editor.GetCharAt offset
+        member x.Replace(offset, count, text) =
+
+            ()
+        member x.GtkStyle = null
+        member x.ZoomLevel = editor.ZoomLevel
+        member x.CreateCodeCompletionContext triggerOffset =
+            createContext triggerOffset
+        member x.CurrentCodeCompletionContext 
+            with get() = 
+                if currentContext <> null then
+                    //currentContext
+                    createContext (editor.CaretOffset)
+                else
+                    createContext (editor.CaretOffset)
+
+        member x.GetCompletionText ctx =
+            //let min = Math.Min (ctx.TriggerOffset, editor.CaretOffset)
+            //let max = Math.Max (ctx.TriggerOffset, editor.CaretOffset)
+            //let t = editor.GetTextBetween(min-1, max)
+            //t
+            let _line, col, lineStr = editor.GetLineInfoFromOffset ctx.TriggerOffset
+            let lineToCaret = lineStr.[0..col-1]
+            let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineToCaret)
+            residue
+        member x.SetCompletionText (ctx, partialWord, completeWord) =
+            let segment = new Text.TextSegment(ctx.TriggerOffset, partialWord.Length)
+            editor.ReplaceText(segment :> Text.ISegment, completeWord)
+        member x.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset) =
+            let segment = new Text.TextSegment(completeWordOffset, partialWord.Length)
+            editor.ReplaceText(segment :> Text.ISegment, completeWord)
+        [<CLIEvent>]
+        member x.CompletionContextChanged = contextChanged.Publish
+
+    //override x.GetContent<'a> = FSharpInteractivePad2.ge
+type FSharpInteractivePad2() as this =
+    inherit MonoDevelop.Ide.Gui.PadContent()
+   
+    //let options = new TextEditorOptions()
+    //options.ColorScheme <- 
+    let options = DefaultSourceEditorOptions.Instance// :> Mono.TextEditor.ITextEditorOptions
+    //options.
+    //MonoDevelop.Ide.Editor.Util.SimpleReadonlyDocument
+    //let doc = new ReadOnlyTextDocument()
+    //let doc = new MonoDevelop.Ide.Gui.Document()
+    let ctx = FsiDocumentContext()
+    //let view = new Mono.TextEditor.MonoTextEditor(doc, new FSharpInteractiveTextEditorOptions(options))
+    let editor = TextEditorFactory.CreateNewEditor(ctx, TextEditorType.Default)
+    //let v = editor.Implementation :?> MonoDevelop.SourceEditor.SourceEditorView
+    //let view = editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
+    //editor
+    let mutable killIntent = NoIntent
+    let mutable promptReceived = false
+    let mutable activeDoc : IDisposable option = None
+
+    let getCorrectDirectory () =
+        if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
+            let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+            if doc <> null then Path.GetDirectoryName(doc) |> Some else None
+        else None
+
+    let editorLock = obj()
+    let fsiOutput t =
+        lock editorLock (fun() -> editor.InsertAtCaret ("-" + t))
+
+    let prompt() =
+        lock editorLock (fun() -> editor.InsertAtCaret ("\n"))
+
+    let setupSession() =
+        try
+            let ses = InteractiveSession()
+            let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
+            let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived<- true; prompt() ) |> ignore)
+            //let colourSchemChanged =
+            //    IdeApp.Preferences.ColorScheme.Changed.Subscribe (fun _ -> this.UpdateColors ())
+            ses.Exited.Add(fun _ ->
+                textReceived.Dispose()
+                promptReady.Dispose()
+                //colourSchemChanged.Dispose()
+                if killIntent = NoIntent then
+                    Runtime.RunInMainThread(fun () ->
+                        LoggingService.LogDebug ("Interactive: process stopped")
+                        fsiOutput "\nSession termination detected. Press Enter to restart.") |> ignore
+                elif killIntent = Restart then
+                    Runtime.RunInMainThread (fun () -> editor.Text <- "") |> ignore
+                killIntent <- NoIntent
+                promptReceived <- false)
+            ses.StartReceiving()
+            // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
+            getCorrectDirectory() |> Option.iter (fun path -> ses.SendCommand("#silentCd @\"" + path + "\";;"))
+            Some(ses)
+        with exn -> None
+
+    let session = setupSession()
+
+    //static member GetContent<'T>()  = editor.GetContent<'T>()
+    member x.Session = session
+    member x.Shutdown()  =
+        do LoggingService.LogDebug ("Interactive: Shutdown()!")
+        //resetFsi Kill
+
+    override x.Dispose() =
+        LoggingService.LogDebug ("Interactive: disposing pad...")
+        //activeDoc |> Option.iter (fun ad -> ad.Dispose())
+        x.Shutdown()
+        editor.Dispose()
+
+    override x.Control = editor :> Control
+
+    static member Pad =
+        try let pad = IdeApp.Workbench.GetPad<FSharpInteractivePad2>()
+            
+            if pad <> null then Some(pad)
+            else
+                //*attempt* to add the pad manually this seems to fail sporadically on updates and reinstalls, returning null
+                let pad = IdeApp.Workbench.AddPad(new FSharpInteractivePad2(),
+                                                  "FSharp.MonoDevelop.FSharpInteractivePad2",
+                                                  "F# Interactive",
+                                                  "Center Bottom",
+                                                  IconId("md-fs-project"))
+                if pad <> null then Some(pad)
+                else None
+        with exn -> None
+
+    static member BringToFront(grabfocus) =
+        FSharpInteractivePad2.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
+
+    static member Fsi =
+        FSharpInteractivePad2.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad2))
+    override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
+        do 
+            LoggingService.LogDebug ("InteractivePad: created!")
+            //view.ColorStyle <- MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ColorScheme;
+            //x.Child.KeyPressEvent.Add(fun ea ->
+            //  if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
+            //      !session |> Option.iter (fun s -> s.Interrupt()))
+            //doc.FileName <- "FSEYE.fsx"
+            //doc.FileName <- FSharpInteractivePad2.FsiFileName
+            editor.MimeType <- "text/x-fsharp"
+            ctx.Editor <- editor
+        
+/// Implements text editor extension for MonoDevelop that shows F# completion
+type FSharpFsiEditorCompletion() =
+    inherit TextEditorExtension()
+
+    override x.IsValidInContext(context) =
+        context :? FsiDocumentContext
+
+    override x.KeyPress (descriptor:KeyDescriptor) =
+        //suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
+    
+        match FSharpInteractivePad2.Fsi with
+        | Some fsi -> 
+            if descriptor.SpecialKey = SpecialKey.Return then
+                match fsi.Session with
+                | Some session ->
+                    let line = 
+                        x.Editor.GetLineText (x.Editor.GetLine(x.Editor.CaretLine))
+                    session.SendCommand line
+                | _ -> ()
+
+        | _ -> ()
+        base.KeyPress (descriptor)
+
 type FSharpInteractivePad() as this =
     inherit MonoDevelop.Ide.Gui.PadContent()
     let view = new FSharpConsoleView()
@@ -56,8 +281,10 @@ type FSharpInteractivePad() as this =
     let setupSession() =
         try
             let ses = InteractiveSession()
-            let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> view.WriteOutput(t, promptReceived) ) |> ignore)
-            let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived<- true; view.Prompt(true, Prompt.Normal) ) |> ignore)
+            let textReceived = 
+                ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> view.WriteOutput(t, promptReceived) ) |> ignore)
+            let promptReady = 
+                ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived<- true; view.Prompt(true, Prompt.Normal) ) |> ignore)
             let colourSchemChanged =
                 IdeApp.Preferences.ColorScheme.Changed.Subscribe (fun _ -> this.UpdateColors ())
             ses.Exited.Add(fun _ ->
