@@ -162,16 +162,21 @@ type FSharpInteractivePad2() =
         with exn -> None
 
     let session = setupSession()
-
+    let prompt = "> "
     let getCaretLine() =
-        if editor.CaretColumn = 1 then
-            ""
+        let lineStr =
+            editor.CaretLine 
+            |> editor.GetLine 
+            |> editor.GetLineText
+
+        if lineStr.[0..1] = prompt then
+            lineStr.[2..]
         else
-            editor.CaretLine |> editor.GetLine |> editor.GetLineText
+            lineStr
 
     let setCaretLine (s:string) =
         let line = editor.GetLineByOffset editor.CaretOffset
-        editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, "> " + s)
+        editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, prompt + s)
 
     member x.Session = session
     member x.Shutdown()  =
