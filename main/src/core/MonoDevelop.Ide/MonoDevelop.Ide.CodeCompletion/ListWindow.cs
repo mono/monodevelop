@@ -636,7 +636,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (curMruIndex < bestMruIndex) {
 					int r1 = 0, r2 = 0;
 					if (currentData == null || matcher != null && matcher.CalcMatchRank (mruData.DisplayText, out r1) && matcher.CalcMatchRank (currentData.DisplayText, out r2)) {
-						if (r1 >= r2 || PartialWord.Length <= 1) {
+						if (r1 >= r2 || PartialWord.Length == 0 ||  PartialWord.Length == 1 && mruData.DisplayText[0] == PartialWord[0]) {
 							bestMruIndex = curMruIndex;
 							idx = i;
 							currentData = mruData;
