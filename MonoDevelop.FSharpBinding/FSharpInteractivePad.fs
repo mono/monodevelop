@@ -122,19 +122,19 @@ type FSharpInteractivePad2() as this =
             if doc <> null then Path.GetDirectoryName(doc) |> Some else None
         else None
 
-    let editorLock = obj()
     let nonBreakingSpace = "\u00A0" // used for the editor syntax highlighting
     let fsiOutput t =
-        lock editorLock (fun() -> editor.InsertAtCaret (nonBreakingSpace + t))
+        editor.InsertAtCaret (nonBreakingSpace + t)
 
     let prompt() =
-        lock editorLock (fun() -> editor.InsertAtCaret ("\n"))
+        editor.InsertAtCaret ("\n")
 
     let setupSession() =
         try
             let ses = InteractiveSession()
+
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
-            let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived<- true; prompt() ) |> ignore)
+            let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; prompt() ) |> ignore)
             //let colourSchemChanged =
             //    IdeApp.Preferences.ColorScheme.Changed.Subscribe (fun _ -> this.UpdateColors ())
             ses.Exited.Add(fun _ ->
@@ -195,6 +195,7 @@ type FSharpInteractivePad2() as this =
         do 
             LoggingService.LogDebug ("InteractivePad: created!")
             editor.MimeType <- "text/x-fsharp"
+            editor.InsertAtCaret ("\n")
             ctx.SourceEditorView <- editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
         
 /// Implements text editor extension for MonoDevelop that shows F# completion
