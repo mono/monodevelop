@@ -113,7 +113,7 @@ module Completion =
             None
 
     let (|DoubleDot|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\[\s?[0-9]+\s?\.+$", RegexOptions.Compiled) then
+        if Regex.IsMatch(context.lineToCaret, "\[[^\[]+\.+$", RegexOptions.Compiled) then
             Some DoubleDot
         else
             None
@@ -421,7 +421,7 @@ module Completion =
             result.AddRange filteredModifiers
         result
 
-    let codeCompletionCommandImpl((editor:TextEditor), documentContext, context:CodeCompletionContext, ctrlSpace) =
+    let codeCompletionCommandImpl(editor:TextEditor, documentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
             let completionContext = {

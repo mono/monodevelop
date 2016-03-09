@@ -112,6 +112,8 @@
     </Reference>
     <Reference Include="Xamarin.Mac">
       <HintPath>..\..\..\build\bin\Xamarin.Mac.dll</HintPath>
+    <Reference Include="MonoDevelop.SourceEditor">
+      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
