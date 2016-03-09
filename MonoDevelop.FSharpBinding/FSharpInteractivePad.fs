@@ -248,6 +248,7 @@ type FSharpFsiEditorCompletion() =
         | Some fsi -> 
             match descriptor.SpecialKey with
             | SpecialKey.Return -> 
+                if x.Editor.CaretLine = x.Editor.LineCount then
                     let line =
                         x.Editor.CaretLine
                         |> x.Editor.GetLine 
@@ -255,13 +256,24 @@ type FSharpFsiEditorCompletion() =
                     fsi.SendCommand (line |> x.Editor.GetLineText)
                     x.Editor.CaretOffset <- line.EndOffset
                     x.Editor.InsertAtCaret "\n"
-                    false
-            | SpecialKey.Up -> 
-                fsi.ProcessCommandHistoryUp()
-                false        
-            | SpecialKey.Down -> 
-                fsi.ProcessCommandHistoryDown()
                 false
+            | SpecialKey.Up -> 
+                if x.Editor.CaretLine = x.Editor.LineCount then
+                    fsi.ProcessCommandHistoryUp()
+                    false
+                else
+                    base.KeyPress (descriptor)
+            | SpecialKey.Down -> 
+                if x.Editor.CaretLine = x.Editor.LineCount then
+                    fsi.ProcessCommandHistoryDown()
+                    false
+                else
+                    base.KeyPress (descriptor)
+            | SpecialKey.BackSpace -> 
+                if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 1 then
+                    base.KeyPress (descriptor)
+                else
+                    false
             | _ -> base.KeyPress (descriptor)
         | _ -> base.KeyPress (descriptor)
 
