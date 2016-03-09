@@ -22,6 +22,7 @@ open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.SourceEditor
 open System.Threading.Tasks
+open System.Collections.Generic
 [<AutoOpen>]
 module ColorHelpers =
     let strToColor s =
@@ -118,6 +119,8 @@ type FSharpInteractivePad2() =
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
     let mutable activeDoc : IDisposable option = None
+    let commandHistoryPast = new Stack<string> ()
+    let commandHistoryFuture = new Stack<string> ()
 
     let getCorrectDirectory () =
         if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
@@ -160,11 +163,43 @@ type FSharpInteractivePad2() =
 
     let session = setupSession()
 
-    //static member GetContent<'T>()  = editor.GetContent<'T>()
+    let getCaretLine() =
+        if editor.CaretColumn = 1 then
+            ""
+        else
+            editor.CaretLine |> editor.GetLine |> editor.GetLineText
+
+    let setCaretLine (s:string) =
+        let line = editor.GetLineByOffset editor.CaretOffset
+        editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
+
     member x.Session = session
     member x.Shutdown()  =
         do LoggingService.LogDebug ("Interactive: Shutdown()!")
         //resetFsi Kill
+
+    member x.SendCommand command =
+        session 
+        |> Option.iter(fun ses ->
+            commandHistoryPast.Push command
+            ses.SendCommand command)
+
+    member x.ProcessCommandHistoryUp () =
+        if commandHistoryPast.Count > 0 then
+            if commandHistoryFuture.Count = 0 then
+                commandHistoryFuture.Push (getCaretLine())
+            else
+                if commandHistoryPast.Count = 1 then ()
+                else commandHistoryFuture.Push (commandHistoryPast.Pop ())
+            setCaretLine (commandHistoryPast.Peek ())
+
+    member x.ProcessCommandHistoryDown () =
+        if commandHistoryFuture.Count > 0 then
+            if commandHistoryFuture.Count = 1 then
+                setCaretLine (commandHistoryFuture.Pop ())
+            else
+                commandHistoryPast.Push (commandHistoryFuture.Pop ())
+                setCaretLine (commandHistoryPast.Peek ())
 
     override x.Dispose() =
         LoggingService.LogDebug ("Interactive: disposing pad...")
@@ -201,7 +236,7 @@ type FSharpInteractivePad2() =
             editor.InsertAtCaret ("\n")
             ctx.SourceEditorView <- editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
         
-/// Implements text editor extension for MonoDevelop that shows F# completion
+/// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
     inherit TextEditorExtension()
 
@@ -209,20 +244,27 @@ type FSharpFsiEditorCompletion() =
         context :? FsiDocumentContext
 
     override x.KeyPress (descriptor:KeyDescriptor) =
-        //suppressParameterCompletion <- not (isValidParamCompletionDecriptor descriptor)
-    
         match FSharpInteractivePad2.Fsi with
         | Some fsi -> 
-            if descriptor.SpecialKey = SpecialKey.Return then
-                match fsi.Session with
-                | Some session ->
-                    let line = 
-                        x.Editor.GetLineText (x.Editor.GetLine(x.Editor.CaretLine))
-                    session.SendCommand line
-                | _ -> ()
+            match descriptor.SpecialKey with
+            | SpecialKey.Return -> 
+                    let line =
+                        x.Editor.CaretLine
+                        |> x.Editor.GetLine 
 
-        | _ -> ()
-        base.KeyPress (descriptor)
+                    fsi.SendCommand (line |> x.Editor.GetLineText)
+                    x.Editor.CaretOffset <- line.EndOffset
+                    x.Editor.InsertAtCaret "\n"
+                    false
+            | SpecialKey.Up -> 
+                fsi.ProcessCommandHistoryUp()
+                false        
+            | SpecialKey.Down -> 
+                fsi.ProcessCommandHistoryDown()
+                false
+            | _ -> base.KeyPress (descriptor)
+        | _ -> base.KeyPress (descriptor)
+
 
 type FSharpInteractivePad() as this =
     inherit MonoDevelop.Ide.Gui.PadContent()
