@@ -95,7 +95,6 @@ module Lexer =
             
     let inline isIdentifier t = t.CharClass = FSharpTokenCharKind.Identifier
     let inline isOperator t = t.ColorClass = FSharpTokenColorKind.Operator
-            
     let inline internal (|GenericTypeParameterPrefix|StaticallyResolvedTypeParameterPrefix|ActivePattern|Other|) ((token: FSharpTokenInfo), (lineStr:string)) =
         if token.Tag = FSharpTokenTag.QUOTE then GenericTypeParameterPrefix
         elif token.Tag = FSharpTokenTag.INFIX_AT_HAT_OP then
@@ -105,7 +104,9 @@ module Lexer =
                 StaticallyResolvedTypeParameterPrefix
              else Other
         elif token.Tag = FSharpTokenTag.LPAREN then
-            if token.FullMatchedLength = 1 && lineStr.[token.LeftColumn+1] = '|' then
+            if token.FullMatchedLength = 1 &&
+               lineStr.Length > token.LeftColumn+1 &&
+               lineStr.[token.LeftColumn+1] = '|' then
                ActivePattern
             else Other
         else Other
