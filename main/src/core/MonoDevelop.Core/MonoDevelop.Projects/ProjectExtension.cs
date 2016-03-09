@@ -125,6 +125,11 @@ namespace MonoDevelop.Projects
 			next.OnWriteConfiguration (monitor, config, pset);
 		}
 
+		internal protected virtual Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return next.OnGetSourceFiles (monitor, configuration);
+		}
+
 		#region Building
 
 		internal protected virtual bool OnGetIsCompileable (string fileName)

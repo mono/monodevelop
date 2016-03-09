@@ -429,7 +429,15 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public Task<ProjectFile []> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetSourceFiles (monitor, configuration);
+		}
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		protected virtual async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// pre-load the results with the current list of files in the project
 			var results = new List<ProjectFile> ();
@@ -3051,6 +3059,11 @@ namespace MonoDevelop.Projects
 			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 			{
 				return Project.OnFastCheckNeedsBuild (configuration);
+			}
+
+			internal protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				return Project.OnGetSourceFiles (monitor, configuration);
 			}
 		}
 	}
