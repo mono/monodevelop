@@ -105,6 +105,10 @@ type FSharpInteractivePad2() as this =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
     let options = DefaultSourceEditorOptions.Instance// :> Mono.TextEditor.ITextEditorOptions
+    do
+        options.ShowLineNumberMargin <- false
+        options.TabsToSpaces <- true
+        options.ShowWhitespaces <- ShowWhitespaces.Never
     let ctx = FsiDocumentContext()
     let editor = TextEditorFactory.CreateNewEditor(ctx, TextEditorType.Default)
 
@@ -119,8 +123,9 @@ type FSharpInteractivePad2() as this =
         else None
 
     let editorLock = obj()
+    let nonBreakingSpace = "\u00A0" // used for the editor syntax highlighting
     let fsiOutput t =
-        lock editorLock (fun() -> editor.InsertAtCaret ("-" + t))
+        lock editorLock (fun() -> editor.InsertAtCaret (nonBreakingSpace + t))
 
     let prompt() =
         lock editorLock (fun() -> editor.InsertAtCaret ("\n"))
