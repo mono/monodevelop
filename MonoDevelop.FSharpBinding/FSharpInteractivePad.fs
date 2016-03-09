@@ -57,19 +57,9 @@ type FsiDocumentContext() =
     let pd = new FSharpParsedDocument(name) :> ParsedDocument
     let project = Services.ProjectService.CreateDotNetProject ("F#")
 
-    let mutable editor:TextEditor = null
-    //let mutable view:MonoDevelop.SourceEditor.SourceEditorView = null
+    let mutable view:MonoDevelop.SourceEditor.SourceEditorView = null
     let contextChanged = DelegateEvent<_>()
-    let currentContext:CodeCompletionContext = null
-    let createContext triggerOffset =
-        let loc = editor.CaretLocation
-        let point = editor.LocationToPoint loc
-        //let (tx, ty) = 
 
-        new CodeCompletionContext(
-                    TriggerLine = loc.Line,
-                    TriggerLineOffset = loc.Column - 1,
-                    TriggerOffset = triggerOffset)
     do 
         project.FileName <- FilePath name
     override x.ParsedDocument = pd
@@ -81,75 +71,43 @@ type FsiDocumentContext() =
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
 
-    member x.Editor with set (value) = editor <- value
-        //view <- value.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
+    member x.SourceEditorView 
+        with set (value) = view <- value
 
     interface ICompletionWidget with
-        member x.CaretOffset 
-            with get() = editor.CaretOffset
-            and set(offset) = editor.CaretOffset <- offset
-        member x.TextLength = editor.Length
-        member x.SelectedLength =
-            if editor.SelectedText = null then 0
-            else editor.SelectedText.Length
+        member x.CaretOffset
+            with get() = view.CaretOffset
+            and set(offset) = view.CaretOffset <- offset
+        member x.TextLength = view.Length
+        member x.SelectedLength = view.SelectedLength
         member x.GetText(startOffset, endOffset) =
-            //let t = editor.GetTextBetween(startOffset, endOffset)
-            //t
-            let _line, col, lineStr = editor.GetLineInfoFromOffset editor.CaretOffset
-            let lineToCaret = lineStr.[0..col-1]
-            let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineToCaret)
-            residue
-        member x.GetChar offset = editor.GetCharAt offset
+            view.GetText(startOffset, endOffset)
+        member x.GetChar offset = view.GetCharAt offset
         member x.Replace(offset, count, text) =
-
-            ()
-        member x.GtkStyle = null
-        member x.ZoomLevel = editor.ZoomLevel
+            view.Replace(offset, count, text)
+        member x.GtkStyle = view.GtkStyle
+        member x.ZoomLevel = view.ZoomLevel
         member x.CreateCodeCompletionContext triggerOffset =
-            createContext triggerOffset
+            view.CreateCodeCompletionContext triggerOffset
         member x.CurrentCodeCompletionContext 
-            with get() = 
-                if currentContext <> null then
-                    //currentContext
-                    createContext (editor.CaretOffset)
-                else
-                    createContext (editor.CaretOffset)
+            with get() = view.CurrentCodeCompletionContext
 
-        member x.GetCompletionText ctx =
-            //let min = Math.Min (ctx.TriggerOffset, editor.CaretOffset)
-            //let max = Math.Max (ctx.TriggerOffset, editor.CaretOffset)
-            //let t = editor.GetTextBetween(min-1, max)
-            //t
-            let _line, col, lineStr = editor.GetLineInfoFromOffset ctx.TriggerOffset
-            let lineToCaret = lineStr.[0..col-1]
-            let (_, residue) = Parsing.findLongIdentsAndResidue(col, lineToCaret)
-            residue
+        member x.GetCompletionText ctx = view.GetCompletionText ctx
+
         member x.SetCompletionText (ctx, partialWord, completeWord) =
-            let segment = new Text.TextSegment(ctx.TriggerOffset, partialWord.Length)
-            editor.ReplaceText(segment :> Text.ISegment, completeWord)
+            view.SetCompletionText (ctx, partialWord, completeWord)
         member x.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset) =
-            let segment = new Text.TextSegment(completeWordOffset, partialWord.Length)
-            editor.ReplaceText(segment :> Text.ISegment, completeWord)
+            view.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset)
         [<CLIEvent>]
         member x.CompletionContextChanged = contextChanged.Publish
 
-    //override x.GetContent<'a> = FSharpInteractivePad2.ge
 type FSharpInteractivePad2() as this =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
-    //let options = new TextEditorOptions()
-    //options.ColorScheme <- 
     let options = DefaultSourceEditorOptions.Instance// :> Mono.TextEditor.ITextEditorOptions
-    //options.
-    //MonoDevelop.Ide.Editor.Util.SimpleReadonlyDocument
-    //let doc = new ReadOnlyTextDocument()
-    //let doc = new MonoDevelop.Ide.Gui.Document()
     let ctx = FsiDocumentContext()
-    //let view = new Mono.TextEditor.MonoTextEditor(doc, new FSharpInteractiveTextEditorOptions(options))
     let editor = TextEditorFactory.CreateNewEditor(ctx, TextEditorType.Default)
-    //let v = editor.Implementation :?> MonoDevelop.SourceEditor.SourceEditorView
-    //let view = editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
-    //editor
+
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
     let mutable activeDoc : IDisposable option = None
@@ -231,14 +189,8 @@ type FSharpInteractivePad2() as this =
     override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
         do 
             LoggingService.LogDebug ("InteractivePad: created!")
-            //view.ColorStyle <- MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ColorScheme;
-            //x.Child.KeyPressEvent.Add(fun ea ->
-            //  if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
-            //      !session |> Option.iter (fun s -> s.Interrupt()))
-            //doc.FileName <- "FSEYE.fsx"
-            //doc.FileName <- FSharpInteractivePad2.FsiFileName
             editor.MimeType <- "text/x-fsharp"
-            ctx.Editor <- editor
+            ctx.SourceEditorView <- editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
         
 /// Implements text editor extension for MonoDevelop that shows F# completion
 type FSharpFsiEditorCompletion() =
