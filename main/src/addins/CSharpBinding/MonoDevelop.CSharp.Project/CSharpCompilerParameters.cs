@@ -56,9 +56,9 @@ namespace MonoDevelop.CSharp.Project
 	public class CSharpCompilerParameters: DotNetCompilerParameters
 	{
 		// Configuration parameters
-		
-		[ItemProperty ("WarningLevel")]
-		int  warninglevel = 4;
+
+		[ItemProperty ("WarningLevel", DefaultValue = 4)]
+		int warninglevel = 4;
 		
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
