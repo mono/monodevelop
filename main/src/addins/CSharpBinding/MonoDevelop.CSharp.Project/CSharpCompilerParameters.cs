@@ -57,8 +57,7 @@ namespace MonoDevelop.CSharp.Project
 	{
 		// Configuration parameters
 
-		[ItemProperty ("WarningLevel", DefaultValue = 4)]
-		int warninglevel = 4;
+		int? warninglevel = 4;
 		
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
@@ -100,6 +99,8 @@ namespace MonoDevelop.CSharp.Project
 
 			if (optimize.HasValue)
 				pset.SetValue ("Optimize", optimize.Value);
+			if (warninglevel.HasValue)
+				pset.SetValue ("WarningLevel", warninglevel.Value);
 		}
 
 		protected override void Read (IPropertySet pset)
@@ -115,6 +116,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 
 			optimize = pset.GetValue ("Optimize", (bool?)null);
+			warninglevel = pset.GetValue<int?> ("WarningLevel", null);
 		}
 
 		public override CompilationOptions CreateCompilationOptions ()
@@ -260,10 +262,15 @@ namespace MonoDevelop.CSharp.Project
 #region Errors and Warnings 
 		public int WarningLevel {
 			get {
-				return warninglevel;
+				return warninglevel ?? 4;
 			}
 			set {
-				warninglevel = value;
+				if (warninglevel.HasValue) {
+					warninglevel = value;
+				} else {
+					if (value != 4)
+						warninglevel = value; 
+				}
 			}
 		}
 		
