@@ -133,7 +133,7 @@ type FSharpInteractivePad2() =
         editor.InsertAtCaret (nonBreakingSpace + t)
 
     let prompt() =
-        editor.InsertAtCaret ("\n")
+        editor.InsertAtCaret ("\n> ")
 
     let setupSession() =
         try
@@ -171,7 +171,7 @@ type FSharpInteractivePad2() =
 
     let setCaretLine (s:string) =
         let line = editor.GetLineByOffset editor.CaretOffset
-        editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
+        editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, "> " + s)
 
     member x.Session = session
     member x.Shutdown()  =
@@ -229,7 +229,8 @@ type FSharpInteractivePad2() =
 
     static member Fsi =
         FSharpInteractivePad2.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad2))
-    override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
+
+    override x.Initialize(_container:MonoDevelop.Ide.Gui.IPadWindow) =
         do 
             LoggingService.LogDebug ("InteractivePad: created!")
             editor.MimeType <- "text/x-fsharp"
@@ -252,10 +253,17 @@ type FSharpFsiEditorCompletion() =
                     let line =
                         x.Editor.CaretLine
                         |> x.Editor.GetLine 
+                    let lineStr = (line |> x.Editor.GetLineText)
 
-                    fsi.SendCommand (line |> x.Editor.GetLineText)
+                    if lineStr.TrimStart().StartsWith("> ") then
+                        fsi.SendCommand lineStr.[2..]
+                    else
+                        fsi.SendCommand lineStr
+                          
                     x.Editor.CaretOffset <- line.EndOffset
                     x.Editor.InsertAtCaret "\n"
+                    if not (lineStr.TrimEnd().EndsWith(";;")) then
+                        x.Editor.InsertAtCaret "- "
                 false
             | SpecialKey.Up -> 
                 if x.Editor.CaretLine = x.Editor.LineCount then
@@ -269,14 +277,19 @@ type FSharpFsiEditorCompletion() =
                     false
                 else
                     base.KeyPress (descriptor)
-            | SpecialKey.BackSpace -> 
-                if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 1 then
+            | SpecialKey.Left ->
+                if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > 3 then // 3 = prompt width
+                    base.KeyPress (descriptor)
+                else
+                    false
+            | SpecialKey.BackSpace
+            | SpecialKey.Delete ->
+                if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 3 then // 3 = prompt width
                     base.KeyPress (descriptor)
                 else
                     false
             | _ -> base.KeyPress (descriptor)
         | _ -> base.KeyPress (descriptor)
-
 
 type FSharpInteractivePad() as this =
     inherit MonoDevelop.Ide.Gui.PadContent()
