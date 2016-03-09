@@ -51,7 +51,7 @@ type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultS
     interface Mono.TextEditor.ITextEditorOptions with
         member x.ColorScheme = options.ColorScheme
 
-type FsiDocumentContext() =
+type FsiDocumentContext() as this =
     inherit DocumentContext()
     let name = "__FSI__.fsx"
     let pd = new FSharpParsedDocument(name) :> ParsedDocument
@@ -59,7 +59,6 @@ type FsiDocumentContext() =
 
     let mutable view:MonoDevelop.SourceEditor.SourceEditorView = null
     let contextChanged = DelegateEvent<_>()
-
     do 
         project.FileName <- FilePath name
     override x.ParsedDocument = pd
@@ -101,16 +100,20 @@ type FsiDocumentContext() =
         [<CLIEvent>]
         member x.CompletionContextChanged = contextChanged.Publish
 
-type FSharpInteractivePad2() as this =
+type FSharpInteractivePad2() =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
-    let options = DefaultSourceEditorOptions.Instance// :> Mono.TextEditor.ITextEditorOptions
+    let options = DefaultSourceEditorOptions.Instance
+    let ctx = FsiDocumentContext()
+    let doc = TextEditorFactory.CreateNewDocument()
+
     do
         options.ShowLineNumberMargin <- false
         options.TabsToSpaces <- true
         options.ShowWhitespaces <- ShowWhitespaces.Never
-    let ctx = FsiDocumentContext()
-    let editor = TextEditorFactory.CreateNewEditor(ctx, TextEditorType.Default)
+        doc.FileName <- FilePath ctx.Name
+
+    let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
 
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
