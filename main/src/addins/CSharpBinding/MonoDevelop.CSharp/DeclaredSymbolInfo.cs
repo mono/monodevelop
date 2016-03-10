@@ -553,7 +553,7 @@ namespace MonoDevelop.CSharp
 			if (doc != null) {
 				var symbol = await type.GetSymbolAsync (doc, token);
 				var project = TypeSystemService.GetMonoProject (doc.Id);
-				RefactoringService.RoslynJumpToDeclaration (symbol, project);
+				await RefactoringService.RoslynJumpToDeclaration (symbol, project);
 			}
 		}
 	}

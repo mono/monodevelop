@@ -35,6 +35,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis.Text;
 using ICSharpCode.NRefactory6.CSharp.Analysis;
+using MonoDevelop.Ide;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {	
@@ -46,7 +47,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == '\\' || base.IsTriggerCharacter (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
@@ -58,19 +59,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 					var symbolInfo = semanticModel.GetSymbolInfo (ctx.TargetToken.Parent.Parent.Parent.Parent);
 					if (symbolInfo.Symbol == null)
-						return Enumerable.Empty<CompletionData> ();
+						return TaskUtil.EmptyEnumerable<CompletionData> ();
 
 					if (SemanticHighlightingVisitor<int>.IsRegexMatchMethod (symbolInfo)) {
 						if (((ArgumentListSyntax)argument.Parent).Arguments [1] != argument)
-							return Enumerable.Empty<CompletionData> ();
+							return TaskUtil.EmptyEnumerable<CompletionData> ();
 						completionResult.AutoSelect = false;
-						return GetFormatCompletionData (engine, argument.Expression.ToString () [0] == '@');
+						return Task.FromResult (GetFormatCompletionData (engine, argument.Expression.ToString () [0] == '@'));
 					}
 					if (SemanticHighlightingVisitor<int>.IsRegexConstructor (symbolInfo)) {
 						if (((ArgumentListSyntax)argument.Parent).Arguments [0] != argument)
-							return Enumerable.Empty<CompletionData> ();
+							return TaskUtil.EmptyEnumerable<CompletionData> ();
 						completionResult.AutoSelect = false;
-						return GetFormatCompletionData (engine, argument.Expression.ToString () [0] == '@');
+						return Task.FromResult (GetFormatCompletionData (engine, argument.Expression.ToString () [0] == '@'));
 					}
 				}
 			} else {
@@ -85,11 +86,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 							items.Add (engine.Factory.CreateGenericData (this, "Groups[\"" + grp + "\"]", GenericDataType.Undefined));
 						}
 
-						return items;
+						return Task.FromResult ((IEnumerable<CompletionData>)items);
 					}
 				}
 			}
-			return Enumerable.Empty<CompletionData> ();
+			return TaskUtil.EmptyEnumerable<CompletionData> ();
 		}
 
 		IEnumerable<string> GetGroups (SyntaxContext ctx, ISymbol symbol)

@@ -162,7 +162,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return result;
 		}
 
-		protected override async void Update (CommandArrayInfo ainfo)
+		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)

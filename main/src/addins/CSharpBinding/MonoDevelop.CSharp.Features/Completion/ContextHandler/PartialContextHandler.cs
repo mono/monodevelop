@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
-		public override async Task<bool> IsExclusiveAsync (CompletionContext completionContext, SyntaxContext ctx, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		public override Task<bool> IsExclusiveAsync (CompletionContext completionContext, SyntaxContext ctx, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
 		{
 			var document = completionContext.Document;
 			var position = completionContext.Position;
@@ -59,14 +59,14 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			// Only inside classes and structs
 			if (enclosingSymbol == null || !(enclosingSymbol.TypeKind == TypeKind.Struct || enclosingSymbol.TypeKind == TypeKind.Class)) {
-				return false;
+				return Task.FromResult (false);
 			}
 
 			if (!IsPartialCompletionContext (tree, position, cancellationToken/*, out modifiers*/, out token)) {
-				return false;
+				return Task.FromResult (false);
 			}
 
-			return true;
+			return Task.FromResult (true);
 
 		}
 

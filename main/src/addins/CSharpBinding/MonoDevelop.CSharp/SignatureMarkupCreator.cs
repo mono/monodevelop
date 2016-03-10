@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharp
 					var newDoc = oldDoc.WithSyntaxRoot (SyntaxFactory.ParseCompilationUnit (typeSyntax.ToString ()).WithAdditionalAnnotations (Simplifier.Annotation));
 					var reducedDoc = Simplifier.ReduceAsync (newDoc, options);
 					generatedTypeSyntaxString = Ambience.EscapeText (reducedDoc.Result.GetSyntaxRootAsync ().Result.ToString ());
-				} catch (Exception e) {
+				} catch {
 					generatedTypeSyntaxString = typeSyntax != null ? Ambience.EscapeText (typeSyntax.ToString ()) : "?";
 				}
 				return highlight ? HighlightSemantically (generatedTypeSyntaxString, colorStyle.UserTypes) : generatedTypeSyntaxString;

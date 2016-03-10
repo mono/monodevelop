@@ -40,7 +40,7 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class ImportSymbolCompletionData : RoslynSymbolCompletionData
 	{
-		CSharpCompletionTextEditorExtension ext;
+		CSharpCompletionTextEditorExtension completionExt;
 		ISymbol type;
 		bool useFullName;
 
@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, RoslynCodeCompletionFactory factory, ISymbol type, bool useFullName) : base (null, factory, type)
 		{
-			this.ext = ext;
+			this.completionExt = ext;
 			this.useFullName = useFullName;
 			this.type = type;
 			this.DisplayFlags |= DisplayFlags.IsImportCompletion;
@@ -100,13 +100,13 @@ namespace MonoDevelop.CSharp.Completion
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
 			Initialize ();
-			var doc = ext.DocumentContext;
+			var doc = completionExt.DocumentContext;
 
 			base.InsertCompletionText (window, ref ka, descriptor);
 
-			using (var undo = ext.Editor.OpenUndoGroup ()) {
+			using (var undo = completionExt.Editor.OpenUndoGroup ()) {
 				if (!window.WasShiftPressed && generateUsing) {
-					AddGlobalNamespaceImport (ext.Editor, doc, type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+					AddGlobalNamespaceImport (completionExt.Editor, doc, type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
 				}
 			}
 			ka |= KeyActions.Ignore;
