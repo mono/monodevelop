@@ -1427,7 +1427,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsAdded (objs);
 			foreach (var pref in objs.OfType<ProjectReference> ()) {
@@ -1436,7 +1436,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsRemoved (objs);
 			foreach (var pref in objs.OfType<ProjectReference> ()) {

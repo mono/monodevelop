@@ -1895,22 +1895,40 @@ namespace MonoDevelop.Projects
 			return baseFiles;
 		}
 
-		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		internal void NotifyItemsAdded (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemsAdded (objs);
+			ProjectExtension.OnItemsAdded (objs);
+		}
+
+		internal void NotifyItemsRemoved (IEnumerable<ProjectItem> objs)
+		{
+			ProjectExtension.OnItemsRemoved (objs);
+		}
+
+		protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
 			foreach (var it in objs) {
 				if (it.Project != null)
 					throw new InvalidOperationException (it.GetType ().Name + " already belongs to a project");
 				it.Project = this;
 			}
+		
+			NotifyModified ("Items");
+			if (ProjectItemAdded != null)
+				ProjectItemAdded (this, new ProjectItemEventArgs (objs.Select (pi => new ProjectItemEventInfo (this, pi))));
+		
 			NotifyFileAddedToProject (objs.OfType<ProjectFile> ());
 		}
 
-		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemsRemoved (objs);
 			foreach (var it in objs)
 				it.Project = null;
+		
+			NotifyModified ("Items");
+			if (ProjectItemRemoved != null)
+				ProjectItemRemoved (this, new ProjectItemEventArgs (objs.Select (pi => new ProjectItemEventInfo (this, pi))));
+		
 			NotifyFileRemovedFromProject (objs.OfType<ProjectFile> ());
 		}
 
@@ -2897,6 +2915,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
+
+		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+	
 		/// <summary>
 		/// Occurs when a file is removed from this project.
 		/// </summary>
@@ -3064,6 +3086,16 @@ namespace MonoDevelop.Projects
 			internal protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 			{
 				return Project.OnGetSourceFiles (monitor, configuration);
+			}
+
+			internal protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+			{
+				Project.OnItemsAdded (objs);
+			}
+
+			internal protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+			{
+				Project.OnItemsRemoved (objs);
 			}
 		}
 	}

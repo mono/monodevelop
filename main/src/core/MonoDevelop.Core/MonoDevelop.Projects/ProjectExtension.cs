@@ -192,6 +192,16 @@ namespace MonoDevelop.Projects
 
 		#region Events
 
+		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
+			next.OnItemsAdded (objs);
+		}
+
+		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		{
+			next.OnItemsRemoved (objs);
+		}
+
 		internal protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{
 			next.OnFileRemovedFromProject (e);
