@@ -800,11 +800,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public async Task Load (string fileName, Encoding loadEncoding, bool reload = false)
+		public Task Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
 			var document = Document;
 			if (document == null)
-				return;
+				return TaskUtil.Default<object> ();
 			document.TextReplaced -= OnTextReplaced;
 			
 			if (warnOverwrite) {
@@ -854,6 +854,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			UpdateTextDocumentEncoding ();
 			document.TextReplaced += OnTextReplaced;
+			return TaskUtil.Default<object> ();
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
