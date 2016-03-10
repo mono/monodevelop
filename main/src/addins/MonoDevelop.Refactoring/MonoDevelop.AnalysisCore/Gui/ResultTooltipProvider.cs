@@ -64,7 +64,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (LanguageItemWindow) tipWindow;
-			requiredWidth = win.SetMaxWidth (win.Screen.Width);
+			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
 			xalign = 0.5;
 		}
 		#endregion
