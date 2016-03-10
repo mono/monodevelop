@@ -163,26 +163,7 @@ namespace MonoDevelop.Refactoring
 			IdeApp.ProjectOperations.SaveAsync (rctx.DocumentContext.Project);
 		}
 	}
-	
-	public class OpenFileChange : Change
-	{
-		public string FileName {
-			get;
-			set;
-		}
-		
-		public OpenFileChange (string fileName)
-		{
-			this.FileName = fileName;
-			this.Description = string.Format (GettextCatalog.GetString ("Open file '{0}'"), Path.GetFileName (fileName));
-		}
-		
-		public override void PerformChange (ProgressMonitor monitor, RefactoringOptions rctx)
-		{
-			IdeApp.Workbench.OpenDocument (FileName);
-		}
-	}
-	
+
 	public class RenameFileChange : Change
 	{
 		public string OldName {
