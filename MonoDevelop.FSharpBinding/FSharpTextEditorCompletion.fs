@@ -21,7 +21,7 @@ open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module Completion = 
-    type internal FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
+    type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
         inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
                                DisplayText = name,
                                DisplayFlags = DisplayFlags.DescriptionHasMarkup,
@@ -140,7 +140,8 @@ module Completion =
                  None
         else
             None
-    let getCompletionData (symbols:FSharpSymbolUse list list) context =
+
+    let getCompletionData (symbols:FSharpSymbolUse list list) isInsideAttribute =
         let categories = Dictionary<string, Category>()
         let getOrAddCategory symbol id =
             match categories.TryGetValue id with
@@ -273,8 +274,7 @@ module Completion =
             match symbols with
             | head :: tail ->
                 let completion =
-                    match context with
-                    | Attribute -> 
+                    if isInsideAttribute then
                         if isAttribute head then
                             let name = head.Symbol.DisplayName
                             let name =
@@ -285,7 +285,7 @@ module Completion =
                             Some (FSharpMemberCompletionData(name, symbolToIcon head, head, tail) :> CompletionData)
                         else
                             None
-                    | _ -> 
+                    else
                         Some (FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData)
 
                 match tryGetCategory head, completion with
@@ -374,7 +374,12 @@ module Completion =
                     let! symbols = tyRes.GetDeclarationSymbols(line, column, lineToCaret)
                     match symbols with
                     | Some (symbols, residue) ->
-                        let data = getCompletionData symbols context
+                        let isInAttribute = 
+                            match context with
+                            | Attribute -> true
+                            | _ -> false
+
+                        let data = getCompletionData symbols isInAttribute
                         result.AddRange data
 
                         if completionChar <> '.' && result.Count > 0 then
