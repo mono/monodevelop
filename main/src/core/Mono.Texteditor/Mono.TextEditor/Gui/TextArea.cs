@@ -285,6 +285,8 @@ namespace Mono.TextEditor
 			VAdjustmentValueChanged ();
 			SetChildrenPositions (alloc);
 		}
+		[DllImport ("libc")]
+		static extern IntPtr memcpy (IntPtr src, IntPtr dest, int size);
 
 		protected virtual void VAdjustmentValueChanged ()
 		{
@@ -298,21 +300,51 @@ namespace Mono.TextEditor
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
 
-			double delta = value - this.oldVadjustment;
+			double delta = this.oldVadjustment - value;
 			oldVadjustment = value;
 			TextViewMargin.caretY -= delta;
 
-//			if (System.Math.Abs (delta) >= Allocation.Height - this.LineHeight * 2 || this.TextViewMargin.InSelectionDrag) {
+//			if (System.Math.Abs (delta) >= 32 || this.TextViewMargin.InSelectionDrag) {
 				this.QueueDraw ();
 				OnVScroll (EventArgs.Empty);
 				return;
-/*			}
+//			}
 
-			if (GdkWindow != null)
-				GdkWindow.Scroll (0, (int)-delta);
+			// TODO - smooth scrolling 
+			Console.WriteLine (delta);
+			if (delta < 0) {
+				int count = -(int)delta * 4 * imageSurface.Width;
+				Console.WriteLine ("1 :" + count);
+				memcpy (imageSurface.DataPtr, new IntPtr (imageSurface.DataPtr.ToInt64 () + count), this.imageSurface.Data.Length - count);
+				/*for (int i = 0; i < this.imageSurface.Data.Length - count; i++) {
+					Console.WriteLine (i);
+					this.imageSurface.Data [i + count] = this.imageSurface.Data [i];
+				}*/
 
-			OnVScroll (EventArgs.Empty);*/
+				//				Array.Copy (this.imageSurface.Data, count,
+				//				            this.imageSurface.Data, 0, this.imageSurface.Data.Length - count);
+			} else {
+				int count = (int)delta * 4 * imageSurface.Width;
+				Console.WriteLine ("2 :" + count);
+				memcpy (new IntPtr (imageSurface.DataPtr.ToInt64 () + count), imageSurface.DataPtr, this.imageSurface.Data.Length - count);
+
+				//				Array.Copy (this.imageSurface.Data, 0,
+				//			this.imageSurface.Data, count, this.imageSurface.Data.Length - count);
+			}
+			Console.WriteLine ("done!");
+			skipR = true;
+			this.QueueDraw ();
+
+			//MakeCurrent ();
+			//BlitImageSurface ();
+			//GdkWindow.Display.Sync (); // Add Sync call to fix resize rendering problem (Jay L. T. Cornwall) - How does this affect VSync?
+			//graphicsContext.SwapBuffers ();
+
+
+			OnVScroll (EventArgs.Empty);
 		}
+
+		bool skipR;
 
 		protected virtual void OnVScroll (EventArgs e)
 		{
@@ -365,9 +397,6 @@ namespace Mono.TextEditor
 			snooperID = Gtk.Key.SnooperInstall (TooltipKeySnooper);
 
 			var graphicsMode = GraphicsMode.Default;
-			var glVersionMajor = 1;
-			var glVersionMinor = 0;
-			var graphicsContextFlags = GraphicsContextFlags.Default;
 			this.DoubleBuffered = false;
 
 			SingleBuffer = graphicsMode.Buffers == 1;
@@ -378,9 +407,9 @@ namespace Mono.TextEditor
 			Samples = graphicsMode.Samples;
 			Stereo = graphicsMode.Stereo;
 
-			GlVersionMajor = glVersionMajor;
-			GlVersionMinor = glVersionMinor;
-			GraphicsContextFlags = graphicsContextFlags;
+			GlVersionMajor = 1;
+			GlVersionMinor = 0;
+			GraphicsContextFlags = GraphicsContextFlags.ForwardCompatible;
 		}
 
 		uint snooperID;
@@ -1795,14 +1824,15 @@ namespace Mono.TextEditor
 			base.OnSizeAllocated (allocation);
 			if (imageSurface != null) {
 				imageSurface.Dispose ();
+				swapImageSurface.Dispose ();
 				if (textures != null) {
 					GL.DeleteTextures (1, textures);
 					textures = null;
 				}
 			}
 
-			imageSurface = new Cairo.ImageSurface(Cairo.Format.Rgb24, allocation.Width, allocation.Height);
-
+			imageSurface = new Cairo.ImageSurface (Cairo.Format.Argb32, allocation.Width, allocation.Height * 2);
+			swapImageSurface = new Cairo.ImageSurface (Cairo.Format.Argb32, allocation.Width, allocation.Height * 2);
 			SetAdjustments (Allocation);
 			sizeHasBeenAllocated = true;
 			if (Options.WrapLines)
@@ -2024,82 +2054,157 @@ namespace Mono.TextEditor
 			if (this.isDisposed)
 				return false;
 			UpdateAdjustments ();
+			MakeCurrent ();
 
+			bool result = base.OnExposeEvent (e);
+
+			var area = e.Region.Clipbox;
+			if (!skipR) {
+				RenderSurface (imageSurface, area);
+			} else {
+				skipR = false;
+			}
+			BlitImageSurface ();
+			e.Window.Display.Sync (); // Add Sync call to fix resize rendering problem (Jay L. T. Cornwall) - How does this affect VSync?
+			graphicsContext.SwapBuffers ();
+
+			return result;
+		}
+
+		void MakeCurrent ()
+		{
 			if (!initialized) {
-				initialized = true;
-
-				// If this looks uninitialized...  initialize.
-				if (ColorBPP == 0) {
-					ColorBPP = 32;
-
-					if (DepthBPP == 0) DepthBPP = 16;
-				}
-
-				ColorFormat colorBufferColorFormat = new ColorFormat (ColorBPP);
-
-				ColorFormat accumulationColorFormat = new ColorFormat (AccumulatorBPP);
-
-				int buffers = 2;
-				if (SingleBuffer) buffers--;
-
-				GraphicsMode graphicsMode = new GraphicsMode (colorBufferColorFormat, DepthBPP, StencilBPP, Samples, accumulationColorFormat, buffers, Stereo);
-				// IWindowInfo
-				if (Platform.IsWindows) {
-					IntPtr windowHandle = gdk_win32_drawable_get_handle (GdkWindow.Handle);
-					windowInfo = OpenTK.Platform.Utilities.CreateWindowsWindowInfo (windowHandle);
-				} else if (Platform.IsMac) {
-					IntPtr windowHandle = gdk_quartz_window_get_nswindow (GdkWindow.Handle);
-					windowInfo = OpenTK.Platform.Utilities.CreateMacOSWindowInfo (windowHandle);
-				} else {
-					IntPtr display = gdk_x11_display_get_xdisplay (Display.Handle);
-					int screen = Screen.Number;
-					IntPtr windowHandle = gdk_x11_drawable_get_xid (GdkWindow.Handle);
-					IntPtr rootWindow = gdk_x11_drawable_get_xid (RootWindow.Handle);
-
-					IntPtr visualInfo;
-					if (graphicsMode.Index.HasValue) {
-						XVisualInfo info = new XVisualInfo ();
-						info.VisualID = graphicsMode.Index.Value;
-						int dummy;
-						visualInfo = XGetVisualInfo (display, XVisualInfoMask.ID, ref info, out dummy);
-					} else {
-						visualInfo = GetVisualInfo (display);
-					}
-
-					windowInfo = OpenTK.Platform.Utilities.CreateX11WindowInfo (display, screen, windowHandle, rootWindow, visualInfo);
-					XFree (visualInfo);
-				}
-				// GraphicsContext
-				graphicsContext = new GraphicsContext (graphicsMode, windowInfo, GlVersionMajor, GlVersionMinor, graphicsContextFlags);
-				graphicsContext.MakeCurrent (windowInfo);
-
-				if (GraphicsContext.ShareContexts) {
-					Interlocked.Increment (ref graphicsContextCount);
-
-					if (!sharedContextInitialized) {
-						sharedContextInitialized = true;
-						((IGraphicsContextInternal)graphicsContext).LoadAll ();
-					}
-				} else {
-					((IGraphicsContextInternal)graphicsContext).LoadAll ();
-				}
-
+				InitializeContext ();
 			} else {
 				try {
 					graphicsContext.MakeCurrent (windowInfo);
 				} catch (Exception ex) {
 					Console.WriteLine (ex);
-					return false;
 				}
 			}
+		}
 
-			bool result = base.OnExposeEvent (e);
+		void BlitImageSurface ()
+		{
+			if (imageSurface != null) {
+				if (textures == null) {
+					var w = imageSurface.Width;
+					var h = imageSurface.Height;
+					GL.Viewport (0, 0, w, h);
+					GL.MatrixMode (MatrixMode.Projection);
+					GL.LoadIdentity ();
+					GL.Ortho (0, w, 0, h, -1.0, 1.0);
+					GL.MatrixMode (MatrixMode.Modelview);
 
-			var area = e.Region.Clipbox;
+					textures = new int [1];
+					GL.Enable (EnableCap.Texture2D);
+					GL.GenTextures (1, textures);
+					GL.BindTexture (TextureTarget.Texture2D, textures [0]);
+					GL.TexImage2D (
+						TextureTarget.Texture2D,
+						0,
+						PixelInternalFormat.Rgba,
+						imageSurface.Width,
+						imageSurface.Height,
+						0,
+						PixelFormat.Rgba,
+						PixelType.UnsignedByte,
+						imageSurface.DataPtr
+					);
+					GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+					GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+					GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
+					GL.TexParameter (TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
+				} else {
+					GL.TexSubImage2D (TextureTarget.Texture2D, 0, 0, Allocation.Height / 2, imageSurface.Width, Allocation.Height + Allocation.Height / 2, PixelFormat.Bgra, PixelType.UnsignedByte, imageSurface.Data);
+				}
+				GL.Clear (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+				GL.Begin (PrimitiveType.Quads);
+				GL.BindTexture (TextureTarget.Texture2D, textures [0]);
+				GL.TexCoord2 (new Vector2 (0.0f, 1.0f));
+				GL.Vertex2 (new Vector2 (0.0f, 0.0f));
+				GL.TexCoord2 (new Vector2 (1.0f, 1.0f));
+				GL.Vertex2 (new Vector2 (imageSurface.Width, 0.0f));
+				GL.TexCoord2 (new Vector2 (1.0f, 0.0f));
+				GL.Vertex2 (new Vector2 (imageSurface.Width, imageSurface.Height));
+				GL.TexCoord2 (new Vector2 (0.0f, 0.0f));
+				GL.Vertex2 (new Vector2 (0.0f, imageSurface.Height));
+				GL.End ();
+			}
+		}
+
+		void InitializeContext ()
+		{
+			initialized = true;
+
+			// If this looks uninitialized...  initialize.
+			if (ColorBPP == 0) {
+				ColorBPP = 24;
+
+				if (DepthBPP == 0) DepthBPP = 16;
+			}
+			ColorBPP = 24;
+			AccumulatorBPP = 24;
+			DepthBPP = StencilBPP = 16;
+
+			ColorFormat colorBufferColorFormat = new ColorFormat (ColorBPP);
+
+			ColorFormat accumulationColorFormat = new ColorFormat (AccumulatorBPP);
+
+			int buffers = 2;
+			if (SingleBuffer) buffers--;
+
+			GraphicsMode graphicsMode = new GraphicsMode (colorBufferColorFormat, DepthBPP, StencilBPP, Samples, accumulationColorFormat, buffers, Stereo);
+			// IWindowInfo
+			if (Platform.IsWindows) {
+				IntPtr windowHandle = gdk_win32_drawable_get_handle (GdkWindow.Handle);
+				windowInfo = OpenTK.Platform.Utilities.CreateWindowsWindowInfo (windowHandle);
+			} else if (Platform.IsMac) {
+				IntPtr windowHandle = gdk_quartz_window_get_nswindow (GdkWindow.Handle);
+				windowInfo = OpenTK.Platform.Utilities.CreateMacOSWindowInfo (windowHandle);
+			} else {
+				IntPtr display = gdk_x11_display_get_xdisplay (Display.Handle);
+				int screen = Screen.Number;
+				IntPtr windowHandle = gdk_x11_drawable_get_xid (GdkWindow.Handle);
+				IntPtr rootWindow = gdk_x11_drawable_get_xid (RootWindow.Handle);
+
+				IntPtr visualInfo;
+				if (graphicsMode.Index.HasValue) {
+					XVisualInfo info = new XVisualInfo ();
+					info.VisualID = graphicsMode.Index.Value;
+					int dummy;
+					visualInfo = XGetVisualInfo (display, XVisualInfoMask.ID, ref info, out dummy);
+				} else {
+					visualInfo = GetVisualInfo (display);
+				}
+
+				windowInfo = OpenTK.Platform.Utilities.CreateX11WindowInfo (display, screen, windowHandle, rootWindow, visualInfo);
+				XFree (visualInfo);
+			}
+			// GraphicsContext
+			graphicsContext = new GraphicsContext (graphicsMode, windowInfo, GlVersionMajor, GlVersionMinor, graphicsContextFlags);
+			graphicsContext.MakeCurrent (windowInfo);
+
+			if (GraphicsContext.ShareContexts) {
+				Interlocked.Increment (ref graphicsContextCount);
+
+				if (!sharedContextInitialized) {
+					sharedContextInitialized = true;
+					((IGraphicsContextInternal)graphicsContext).LoadAll ();
+				}
+			} else {
+				((IGraphicsContextInternal)graphicsContext).LoadAll ();
+			}
+		}
+
+		void RenderSurface (Cairo.ImageSurface imageSurface, Rectangle area)
+		{
 			var cairoArea = new Cairo.Rectangle (area.X, area.Y, area.Width, area.Height);
 			using (Cairo.Context cr = new Cairo.Context (imageSurface)) {
 				UpdateMarginXOffsets ();
+				int realStart = Allocation.Height / 2;
 
+				cr.Translate (0, realStart);
 				cr.LineWidth = Options.Zoom;
 				cr.Antialias = Cairo.Antialias.None;
 
@@ -2130,55 +2235,6 @@ namespace Mono.TextEditor
 				o.Dispose ();
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
-		
-			if (imageSurface != null) {
-				if (textures == null) {
-					var w = imageSurface.Width;
-					var h = imageSurface.Height;
-					GL.Viewport (0, 0, w,h);
-					GL.MatrixMode (MatrixMode.Projection);
-					GL.LoadIdentity ();
-					GL.Ortho (0, w, 0, h, -1.0, 1.0);
-					GL.MatrixMode (MatrixMode.Modelview);
-
-					textures = new int[1];
-					GL.Enable (EnableCap.Texture2D);
-					GL.GenTextures (1, textures);
-					GL.BindTexture (TextureTarget.Texture2D, textures[0]);
-					GL.TexImage2D (
-						TextureTarget.Texture2D,
-						0,
-						PixelInternalFormat.Rgba,
-						imageSurface.Width,
-						imageSurface.Height,
-						0,
-						PixelFormat.Rgba,
-						PixelType.UnsignedByte,
-						imageSurface.DataPtr
-					);
-					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Clamp);
-					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Clamp);
-				} else {
-					GL.TexSubImage2D (TextureTarget.Texture2D, 0, 0, 0, imageSurface.Width, imageSurface.Height, PixelFormat.Rgba, PixelType.UnsignedByte, imageSurface.Data);
-				}
-				GL.Clear (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-				GL.Begin (PrimitiveType.Quads);
-				GL.BindTexture (TextureTarget.Texture2D, textures[0]); 
-				GL.TexCoord2 (new Vector2 (0.0f, 1.0f));
-				GL.Vertex2 (new Vector2 (0.0f, 0.0f));
-				GL.TexCoord2 (new Vector2 (1.0f, 1.0f)); 
-				GL.Vertex2(new Vector2 (imageSurface.Width, 0.0f));
-				GL.TexCoord2 (new Vector2 (1.0f, 0.0f)); 
-				GL.Vertex2(new Vector2 (imageSurface.Width, imageSurface.Height));
-				GL.TexCoord2 (new Vector2 (0.0f, 0.0f));
-				GL.Vertex2(new Vector2 (0.0f, imageSurface.Height));
-				GL.End ();
-			}
-			e.Window.Display.Sync (); // Add Sync call to fix resize rendering problem (Jay L. T. Cornwall) - How does this affect VSync?
-			graphicsContext.SwapBuffers ();
-			return result;
 		}
 
 		protected virtual void OnPainted (PaintEventArgs e)
@@ -3810,7 +3866,7 @@ namespace Mono.TextEditor
 
 		const string linux_libgl_name = "libGL.so.1";
 		bool sharedContextInitialized;
-		Cairo.ImageSurface imageSurface;
+		Cairo.ImageSurface imageSurface, swapImageSurface;
 
 		[SuppressUnmanagedCodeSecurity, DllImport (linux_libgl_name)]
 		static extern IntPtr glXChooseVisual (IntPtr display, int screen, int [] attr);
