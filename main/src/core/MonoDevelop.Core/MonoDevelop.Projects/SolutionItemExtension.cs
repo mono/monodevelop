@@ -244,16 +244,6 @@ namespace MonoDevelop.Projects
 			next.OnReloadRequired (args);
 		}
 
-		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
-		{
-			next.OnItemsAdded (objs);
-		}
-
-		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
-		{
-			next.OnItemsRemoved (objs);
-		}
-
 		internal protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)
 		{
 			next.OnDefaultConfigurationChanged (args);
