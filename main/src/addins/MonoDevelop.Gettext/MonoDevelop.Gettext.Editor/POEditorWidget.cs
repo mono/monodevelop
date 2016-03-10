@@ -45,6 +45,7 @@ using System.Threading;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Gettext
 {
@@ -186,7 +187,7 @@ namespace MonoDevelop.Gettext
 					lineNr = 1 + int.Parse (line);
 				} catch {
 				}
-				IdeApp.Workbench.OpenDocument (file, lineNr, 1);
+				IdeApp.Workbench.OpenDocument (new FileOpenInformation (file, project, lineNr, 1, OpenDocumentOptions.Default));
 			};
 			this.notebookTranslated.RemovePage (0);
 			this.searchEntryFilter.Entry.Text = "";

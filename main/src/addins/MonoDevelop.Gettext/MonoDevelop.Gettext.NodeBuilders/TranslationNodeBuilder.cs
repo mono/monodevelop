@@ -92,7 +92,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				Translation        translation = CurrentNode.DataItem as Translation;
 				if (project == null || translation == null)
 					return;
-				IdeApp.Workbench.OpenDocument (Path.Combine (project.BaseDirectory, translation.FileName));
+				IdeApp.Workbench.OpenDocument (Path.Combine (project.BaseDirectory, translation.FileName), project);
 			}
 			
 			public override void DeleteItem ()
