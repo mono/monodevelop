@@ -1018,7 +1018,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetDocument (documentId);
 		}
 
-		public void UpdateFileContent (string fileName, string text)
+		public async void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
 			foreach (var kv in this.projectDataMap) {
@@ -1033,7 +1033,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (pf != null) {
 						var mimeType = DesktopService.GetMimeTypeForUri (fileName);
 						if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName))
-							TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType);
+							await TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType).ConfigureAwait (false);
 					}
 				}
 

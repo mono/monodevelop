@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public static event EventHandler LinksShownChanged;
 
-		static uint snooperId;
+		//static uint snooperId;
 
 
 		public class NavigationSegment : ISegment
@@ -89,7 +89,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static AbstractNavigationExtension ()
 		{
-			snooperId = Gtk.Key.SnooperInstall (TooltipKeySnooper);
+			// snooperId =
+				Gtk.Key.SnooperInstall (TooltipKeySnooper);
 			//if (snooperId != 0)
 			//	Gtk.Key.SnooperRemove (snooperId);
 			IdeApp.Workbench.RootWindow.FocusOutEvent += RootWindow_FocusOutEvent;

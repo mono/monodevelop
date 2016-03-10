@@ -80,7 +80,7 @@ namespace MonoDevelop.Components.DockNotebook
 		static readonly int LeftBarPadding = (int)(44 * PixelScale);
 		static readonly int RightBarPadding = (int)(22 * PixelScale);
 		static readonly int VerticalTextSize = (int)(11 * PixelScale);
-		static readonly int ButtonSize = (int)(16 * PixelScale);
+		// static readonly int ButtonSize = (int)(16 * PixelScale);
 		const int TabSpacing = 0;
 		const int LeanWidth = 12;
 		const double CloseButtonMarginRight = 0;

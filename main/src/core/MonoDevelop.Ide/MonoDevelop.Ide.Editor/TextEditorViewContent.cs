@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Editor
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
 
-		DocumentContext currentContext;
 		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
 
 		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
@@ -73,12 +72,6 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-			this.textEditor.DocumentContextChanged += HandleDocumentContextChanged;
-		}
-
-		void HandleDocumentContextChanged (object sender, EventArgs e)
-		{
-			currentContext = textEditor.DocumentContext;
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -314,7 +307,6 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
 			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
 			textEditor.TextChanged -= HandleTextChanged;
-			textEditor.DocumentContextChanged -= HandleDocumentContextChanged;
 
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();

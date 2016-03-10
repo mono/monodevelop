@@ -35,7 +35,6 @@ using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {

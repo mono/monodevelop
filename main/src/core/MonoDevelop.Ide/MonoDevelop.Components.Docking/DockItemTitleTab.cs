@@ -450,13 +450,12 @@ namespace MonoDevelop.Components.Docking
 		{
 			bool first = true;
 			bool last = true;
-			TabStrip tabStrip = null;
+
 			if (Parent is TabStrip.TabStripBox) {
 				var tsb = (TabStrip.TabStripBox) Parent;
 				var cts = tsb.Children;
 				first = cts[0] == this;
 				last = cts[cts.Length - 1] == this;
-				tabStrip = tsb.TabStrip;
 			}
 
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {

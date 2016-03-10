@@ -34,7 +34,6 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.Commands;
 using Gtk;
 using System.Collections.Generic;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
