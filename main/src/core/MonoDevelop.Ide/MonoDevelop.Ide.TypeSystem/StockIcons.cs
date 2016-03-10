@@ -66,8 +66,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			switch (symbol.Kind) {
 			case Microsoft.CodeAnalysis.SymbolKind.NamedType:
 				return "";
-			case Microsoft.CodeAnalysis.SymbolKind.Event:
 			case Microsoft.CodeAnalysis.SymbolKind.Field:
+				var field = (IFieldSymbol)symbol;
+				if (field.IsConst)
+					return "";
+				return symbol.IsStatic ? "static-" : "";
+			case Microsoft.CodeAnalysis.SymbolKind.Event:
 			case Microsoft.CodeAnalysis.SymbolKind.Method:
 			case Microsoft.CodeAnalysis.SymbolKind.Property:
 				return symbol.IsStatic ? "static-" : "";
@@ -85,15 +89,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			case Microsoft.CodeAnalysis.SymbolKind.DynamicType:
 			case Microsoft.CodeAnalysis.SymbolKind.ErrorType:
 			case Microsoft.CodeAnalysis.SymbolKind.Label:
-			case Microsoft.CodeAnalysis.SymbolKind.Local:
+
 			case Microsoft.CodeAnalysis.SymbolKind.NetModule:
 			case Microsoft.CodeAnalysis.SymbolKind.PointerType:
-			case Microsoft.CodeAnalysis.SymbolKind.Field:
-			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
 			case Microsoft.CodeAnalysis.SymbolKind.RangeVariable:
 			case Microsoft.CodeAnalysis.SymbolKind.TypeParameter:
 			case Microsoft.CodeAnalysis.SymbolKind.Preprocessing:
 				return "field";
+			case Microsoft.CodeAnalysis.SymbolKind.Parameter:
+				return "variable";
+			case Microsoft.CodeAnalysis.SymbolKind.Field:
+				var field = (IFieldSymbol)symbol;
+				if (field.IsConst)
+					return "literal";
+				return "field";
+			case Microsoft.CodeAnalysis.SymbolKind.Local:
+				var local = (ILocalSymbol)symbol;
+				if (local.IsConst)
+					return "literal";
+				return "variable";
 			case Microsoft.CodeAnalysis.SymbolKind.NamedType:
 				var namedTypeSymbol = (Microsoft.CodeAnalysis.INamedTypeSymbol)symbol;
 				switch (namedTypeSymbol.TypeKind) {

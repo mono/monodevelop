@@ -69,6 +69,24 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			"decimal",
 			"string"
 		};
+		static SyntaxKind[] primitiveTypesKeywordKinds = {
+			// "void",
+			SyntaxKind.ObjectKeyword,
+			SyntaxKind.BoolKeyword,
+			SyntaxKind.ByteKeyword,
+			SyntaxKind.SByteKeyword,
+			SyntaxKind.CharKeyword,
+			SyntaxKind.ShortKeyword,
+			SyntaxKind.IntKeyword,
+			SyntaxKind.LongKeyword,
+			SyntaxKind.UShortKeyword,
+			SyntaxKind.UIntKeyword,
+			SyntaxKind.ULongKeyword,
+			SyntaxKind.FloatKeyword,
+			SyntaxKind.DoubleKeyword,
+			SyntaxKind.DecimalKeyword,
+			SyntaxKind.StringKeyword
+		};
 
 		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult result, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
@@ -103,12 +121,16 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			foreach (var symbol in await GetPreselectedSymbolsWorker(ctx.CSharpSyntaxContext, type, completionContext.Position, cancellationToken)) {
 				var symbolCompletionData = engine.Factory.CreateObjectCreation (this, type, symbol, newExpression.SpanStart, true);
 				list.Add (symbolCompletionData);
-				if (string.IsNullOrEmpty (result.DefaultCompletionString))
+				if (string.IsNullOrEmpty (result.DefaultCompletionString)) {
 					result.DefaultCompletionString = symbolCompletionData.DisplayText;
+					result.AutoCompleteEmptyMatch = true;
+				}
 			}
-			foreach (var keyword in primitiveTypesKeywords) {
-				list.Add (engine.Factory.CreateGenericData (this, keyword, GenericDataType.Keyword));
+			for (int i = 0; i < primitiveTypesKeywords.Length; i++) {
+				var keyword = primitiveTypesKeywords [i];
+				list.Add (engine.Factory.CreateKeywordCompletion (this, keyword, primitiveTypesKeywordKinds[i]));
 			}
+
 			return list;
 		}
 

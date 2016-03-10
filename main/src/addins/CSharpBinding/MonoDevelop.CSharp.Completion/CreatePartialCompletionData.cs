@@ -48,9 +48,12 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = Ambience.EscapeText (SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
-
+					if (factory == null) {
+						displayText = Symbol.Name;
+					} else {
+						var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+						displayText = Ambience.EscapeText (SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
+					}
 					if (!afterKeyword)
 						displayText = "partial " + displayText;
 				}
@@ -131,5 +134,11 @@ namespace MonoDevelop.CSharp.Completion
 			OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
 			editor.CaretLine--;
 		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
+		}
+
 	}
 }

@@ -12,7 +12,6 @@
     <AssemblyName>property-evaluation-test</AssemblyName>
     <BaseIntermediateOutputPath>obj\1.0</BaseIntermediateOutputPath>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
-    <DelaySign>False</DelaySign>
     <AAA>test1</AAA>
     <BBB>test2</BBB>
     <BBB>$(AAA)_$(BBB)</BBB>

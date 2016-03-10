@@ -41,7 +41,7 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         Padding="{TemplateBinding Padding}" 
                         SnapsToDevicePixels="true"
-            			TextElement.Foreground="{Binding Path=(platform:Styles.MenuBarForegroundBrush), Mode=OneWay}">
+                        TextElement.Foreground="{Binding Path=(platform:Styles.MenuBarForegroundBrush), Mode=OneWay}">
                         <ItemsPresenter 
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </Border>
@@ -287,8 +287,8 @@
                 <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter TargetName="templateRoot" Property="Background" Value="{Binding Path=(platform:Styles.MenuHighlightBackgroundBrush), Mode=OneWay}" />
-                <Setter TargetName="templateRoot" Property="BorderBrush" Value="{Binding Path=(platform:Styles.MenuHighlightBorderBrush), Mode=OneWay}" />
+                <Setter TargetName="templateRoot" Property="Background" Value="{Binding Path=(platform:Styles.MenuBarHighlightBackgroundBrush), Mode=OneWay}" />
+                <Setter TargetName="templateRoot" Property="BorderBrush" Value="{Binding Path=(platform:Styles.MenuBarHighlightBorderBrush), Mode=OneWay}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter TargetName="templateRoot" Property="TextElement.Foreground" Value="{Binding Path=(platform:Styles.MenuDisabledForegroundBrush), Mode=OneWay}" />
@@ -355,7 +355,7 @@
                 <TextBlock x:Name="menuGestureText"
                     Grid.Column="4"
                     Text="{TemplateBinding InputGestureText}"
-                    Margin="0,0,0,1"
+                    Margin="{TemplateBinding MenuItem.Padding}"
                     VerticalAlignment="Center"
                     Opacity="0.7" />
             </Grid>

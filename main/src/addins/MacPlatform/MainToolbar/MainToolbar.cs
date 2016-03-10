@@ -33,6 +33,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
+using MonoDevelop.MacIntegration;
 using Xwt;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
@@ -122,8 +123,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				case AwesomeBarId:
 					return new NSToolbarItem (AwesomeBarId) {
 						View = awesomeBar,
-						MinSize = new CGSize (1024, 25),
-						MaxSize = new CGSize (1024, 25)
+						MinSize = new CGSize (1024, AwesomeBar.ToolbarWidgetHeight),
+						MaxSize = new CGSize (1024, AwesomeBar.ToolbarWidgetHeight)
 					};
 
 				default:
@@ -140,7 +141,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var item = widget.Items[0];
 
 				var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
-				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, 25);
+				var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;//MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 24 : 22;
+				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, awesomebarHeight);
 				item.MinSize = size;
 				item.MaxSize = size;
 			});
@@ -171,7 +173,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			searchEntry.Focus ();
 
 			var entry = searchEntry;
-			entry.SelectText (entry);
+			if (!string.IsNullOrEmpty (entry.StringValue)) {
+				entry.SelectText (entry);
+			}
 		}
 
 		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
@@ -256,7 +260,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				};
 				foreach (var item in value)
 					menu.AddItem (new NSMenuItem (item.DisplayString, (o, e) => item.NotifyActivated ()));
-
 				searchEntry.SearchMenuTemplate = menu;
 			}
 		}
@@ -303,16 +306,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
 						nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
 
-					var workbenchNsWindow = nsWindows.FirstOrDefault (nswin =>
-						GtkMacInterop.GetGtkWindow (nswin) is MonoDevelop.Ide.Gui.DefaultWorkbench);
+					CGPoint gdkOrigin = ScreenMonitor.GdkPointForNSScreen (searchEntry.Window.Screen);
 
-					// Gtk and Cocoa coordinates are not the same. Offset by left and top screens to get the correct
-					// coordinate for the popup window based on Cocoa coordinates which offset left/top from current desktop.
-					nfloat xOffset = -NSScreen.Screens.Min (screen => screen.Frame.Left);
-					nfloat yOffset = NSScreen.Screens.Max (screen => screen.Frame.Bottom);
-
-					widget.Allocation = new Gdk.Rectangle (0, (int)(yOffset - workbenchNsWindow.Frame.Height),
-						(int)(xOffset + fullscreenToolbarNsWindow.Frame.Width - 16), 0);
+					widget.Allocation = new Gdk.Rectangle (0, (int)(gdkOrigin.Y + fullscreenToolbarNsWindow.Frame.Height - 20),
+						(int)(gdkOrigin.X + fullscreenToolbarNsWindow.Frame.Width - 16), 0);
 				}
 				return widget;
 			}
@@ -320,7 +317,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public string SearchPlaceholderMessage {
 			// Analysis disable once ValueParameterNotUsed
-			set { }
+			set {
+				searchEntry.PlaceholderText = value;
+			}
 		}
 
 		public MonoDevelop.Ide.StatusBar StatusBar {

@@ -90,6 +90,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
+		bool isDisposed;
 		Queue<Tuple<DocumentLine, HighlightingSegmentTree>> lineSegments = new Queue<Tuple<DocumentLine, HighlightingSegmentTree>> ();
 
 		public SemanticHighlightingSyntaxMode (ExtensibleTextEditor editor, ISyntaxMode syntaxMode, SemanticHighlighting semanticHighlighting)
@@ -108,6 +109,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public void UpdateSemanticHighlighting (SemanticHighlighting newHighlighting)
 		{
+			if (isDisposed)
+				return;
 			if (semanticHighlighting !=null)
 				semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;
 			semanticHighlighting = newHighlighting;
@@ -118,12 +121,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		void SemanticHighlighting_SemanticHighlightingUpdated (object sender, EventArgs e)
 		{
 			Application.Invoke (delegate {
-				if (lineSegments == null)
+				if (isDisposed)
 					return;
 				UnregisterLineSegmentTrees ();
 				lineSegments.Clear ();
 
 				var margin = editor.TextViewMargin;
+				if (margin == null)
+					return;
 				margin.PurgeLayoutCache ();
 				editor.QueueDraw ();
 			});
@@ -131,7 +136,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		void UnregisterLineSegmentTrees ()
 		{
-			if (lineSegments == null)
+			if (isDisposed)
 				return;
 			foreach (var kv in lineSegments) {
 				try {
@@ -143,8 +148,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public void Dispose()
 		{
-			if (lineSegments == null)
+			if (isDisposed)
 				return;
+			isDisposed = true;
 			UnregisterLineSegmentTrees ();
 			lineSegments = null;
 			semanticHighlighting.SemanticHighlightingUpdated -= SemanticHighlighting_SemanticHighlightingUpdated;

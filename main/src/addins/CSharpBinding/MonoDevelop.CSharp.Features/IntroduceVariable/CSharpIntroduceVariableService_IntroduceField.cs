@@ -15,7 +15,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
 {
-	public partial class CSharpIntroduceVariableService
+	partial class CSharpIntroduceVariableService
 	{
 		protected override Task<Tuple<Document, SyntaxNode, int>> IntroduceFieldAsync(
 			SemanticDocument document,

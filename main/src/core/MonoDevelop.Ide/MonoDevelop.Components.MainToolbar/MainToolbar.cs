@@ -206,7 +206,6 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
 			matchEntry.IsCheckMenu = true;
-			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
 			matchEntry.WidthRequest = 240;
 			if (!Platform.IsMac && !Platform.IsWindows)
 				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9")); // TODO: VV: "Segoe UI 9"
@@ -355,14 +354,8 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				context.MoveTo (0, Allocation.Height - 0.5);
 				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomBorderColor);
+				context.SetSourceColor (Styles.ToolbarBottomBorderColor.ToCairoColor ());
 				context.Stroke ();
-
-				context.MoveTo (0, Allocation.Height - 1.5);
-				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomGlowColor);
-				context.Stroke ();
-
 			}
 			return base.OnExposeEvent (evnt);
 		}

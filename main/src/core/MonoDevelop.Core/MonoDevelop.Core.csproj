@@ -94,7 +94,6 @@
     <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
@@ -556,6 +555,11 @@
     <Compile Include="CoreExtensions.cs" />
     <Compile Include="MonoDevelop.Core\FileWriteableState.cs" />
     <Compile Include="MonoDevelop.Projects\ConditionedPropertyCollection.cs" />
+    <Compile Include="MonoDevelop.Core\AsyncEventHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\MultipleOperationConsoles.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\BinaryMessage.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\RemoteProcessConnection.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\RemoteProcessServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

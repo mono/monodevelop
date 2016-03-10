@@ -47,7 +47,8 @@ namespace MonoDevelop.VersionControl.Views
 		List<VersionInfo> statuses;
 		bool remoteStatus = false;
 
-		class DiffData {
+		class DiffData
+		{
 			public Exception Exception {
 				get; private set;
 			}
@@ -576,7 +577,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		TreeIter AppendFileInfo (VersionInfo n)
+		TreeIter AppendFileInfo (VersionInfo n, bool expanded)
 		{
 			Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus(n.Status);
 			string lstatus = VersionControlService.GetStatusLabel (n.Status);
@@ -602,7 +603,15 @@ namespace MonoDevelop.VersionControl.Views
 			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
 			if (!n.IsDirectory)
 				filestore.AppendValues (it, statusicon, "", new string[0], "", false, true, n.LocalPath.ToString (), false, false, fileIcon, false, null, null, false);
+			if (expanded)
+				filelist.ExpandRow (filestore.GetPath (it), open_all: false);
+
 			return it;
+		}
+
+		TreeIter AppendFileInfo (VersionInfo n)
+		{
+			return AppendFileInfo (n, expanded: false);
 		}
 
 		string[] GetCurrentFiles ()
@@ -773,12 +782,17 @@ namespace MonoDevelop.VersionControl.Views
 
 		void OnTestExpandRow (object sender, Gtk.TestExpandRowArgs args)
 		{
-			bool filled = (bool) filestore.GetValue (args.Iter, ColFilled);
+			OnRowExpanded (args.Iter);
+		}
+
+		void OnRowExpanded (TreeIter it)
+		{
+			bool filled = (bool) filestore.GetValue (it, ColFilled);
 			if (!filled) {
-				filestore.SetValue (args.Iter, ColFilled, true);
+				filestore.SetValue (it, ColFilled, true);
 				TreeIter iter;
-				filestore.IterChildren (out iter, args.Iter);
-				string fileName = (string) filestore.GetValue (args.Iter, ColFullPath);
+				filestore.IterChildren (out iter, it);
+				string fileName = (string) filestore.GetValue (it, ColFullPath);
 				FillDiffInfo (iter, fileName, GetDiffData (remoteStatus));
 			}
 		}
@@ -956,6 +970,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 
 			bool found = false;
+			bool wasExpanded = false;
 			int oldStatusIndex;
 			TreeIter oldStatusIter = TreeIter.Zero;
 
@@ -976,6 +991,7 @@ namespace MonoDevelop.VersionControl.Views
 				if (filestore.GetIterFirst (out oldStatusIter)) {
 					do {
 						if (args.FilePath == (string) filestore.GetValue (oldStatusIter, ColFullPath)) {
+							wasExpanded = filelist.GetRowExpanded (filestore.GetPath (oldStatusIter));
 							found = true;
 							break;
 						}
@@ -1010,19 +1026,32 @@ namespace MonoDevelop.VersionControl.Views
 				}
 
 				statuses [oldStatusIndex] = newInfo;
+				InvalidateDiffData (args.FilePath, false, newInfo);
+				InvalidateDiffData (args.FilePath, true, newInfo);
 
 				// Update the tree
-				AppendFileInfo (newInfo);
+				AppendFileInfo (newInfo, wasExpanded);
 				filestore.Remove (ref oldStatusIter);
 			}
 			else {
 				if (FileVisible (newInfo)) {
 					statuses.Add (newInfo);
 					changeSet.AddFile (newInfo);
-					AppendFileInfo (newInfo);
+					AppendFileInfo (newInfo, wasExpanded);
 				}
 			}
 			return true;
+		}
+
+		void InvalidateDiffData (FilePath path, bool remote, VersionInfo info)
+		{
+			var ddata = GetDiffData (remote);
+			var index = ddata.FindIndex (dobj => dobj.VersionInfo.LocalPath == path);
+			if (index != -1) {
+				ddata.RemoveAt (index);
+			}
+
+			ddata.Add (new DiffData (vc, filepath, info, remote));
 		}
 
 		static bool FileVisible (VersionInfo vinfo)
@@ -1164,14 +1193,13 @@ namespace MonoDevelop.VersionControl.Views
 				return true;
 			}
 
-			if (evnt.Key == Gdk.Key.space && CommitSelectionToggled != null) {
-				CommitSelectionToggled (this, EventArgs.Empty);
+			if (evnt.Key == Gdk.Key.space) {
+				CommitSelectionToggled?.Invoke (this, EventArgs.Empty);
 				return true;
 			}
 
 			if (evnt.Key == Gdk.Key.Return || evnt.Key == Gdk.Key.KP_Enter) {
-				if (DiffLineActivated != null)
-					DiffLineActivated (this, EventArgs.Empty);
+				DiffLineActivated?.Invoke (this, EventArgs.Empty);
 				return true;
 			}
 
@@ -1193,8 +1221,8 @@ namespace MonoDevelop.VersionControl.Views
 					vpos = Vadjustment.Value;
 					keepPos = true;
 					if (Selection.PathIsSelected (path) && Selection.GetSelectedRows ().Length == 1 && evnt.Button == 1) {
-						if (evnt.Type == Gdk.EventType.TwoButtonPress && DiffLineActivated != null)
-							DiffLineActivated (this, EventArgs.Empty);
+						if (evnt.Type == Gdk.EventType.TwoButtonPress)
+							DiffLineActivated?.Invoke (this, EventArgs.Empty);
 						handled = true;
 					}
 				}
@@ -1230,8 +1258,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override bool OnPopupMenu()
 		{
-			if (DoPopupMenu != null)
-				DoPopupMenu (null);
+			DoPopupMenu?.Invoke (null);
 			return true;
 		}
 

@@ -51,7 +51,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring
 {
-	public static class CodeGenerationService
+	static class CodeGenerationService
 	{
 		//		public static IUnresolvedMember AddCodeDomMember (MonoDevelop.Projects.Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
 		//		{

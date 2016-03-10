@@ -23,7 +23,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public partial class CSharpEditorFormattingService
+	partial class CSharpEditorFormattingService
 	{
 		private readonly ImmutableHashSet<char> _supportedChars;
 		private readonly ImmutableHashSet<char> _autoFormattingTriggerChars;

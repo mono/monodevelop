@@ -48,6 +48,8 @@ namespace MonoDevelop.CSharp.CodeRefactorings.InlineTemporary
 			if (model.IsFromGeneratedCode (cancellationToken))
 				return;
 			var root = await document.GetCSharpSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			if (textSpan.Start >= root.FullSpan.Length)
+				return;
 			var token = root.FindToken(textSpan.Start);
 
 			if (!token.Span.Contains(textSpan))
@@ -465,10 +467,9 @@ namespace MonoDevelop.CSharp.CodeRefactorings.InlineTemporary
 			var newVariableDeclarator = await FindDeclaratorAsync(updatedDocument, cancellationToken).ConfigureAwait(false);
 			localSymbol = (ILocalSymbol)semanticModel.GetDeclaredSymbol(newVariableDeclarator, cancellationToken);
 
-			bool wasCastAdded;
-			var explicitCastExpression = newExpression.CastIfPossible(localSymbol.Type, newVariableDeclarator.SpanStart, semanticModel, out wasCastAdded);
+			var explicitCastExpression = newExpression.CastIfPossible(localSymbol.Type, newVariableDeclarator.SpanStart, semanticModel);
 
-			if (wasCastAdded)
+			if (explicitCastExpression != newExpression)
 			{
 				updatedDocument = await updatedDocument.ReplaceNodeAsync(newExpression, explicitCastExpression, cancellationToken).ConfigureAwait(false);
 				semanticModel = await updatedDocument.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);

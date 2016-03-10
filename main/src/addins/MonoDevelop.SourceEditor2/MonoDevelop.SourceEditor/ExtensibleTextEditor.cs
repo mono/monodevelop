@@ -155,7 +155,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.view = view;
 
-			Document.TextReplaced += HandleSkipCharsOnReplace;
 			Document.SyntaxModeChanged += delegate {
 				UpdateSemanticHighlighting ();
 			};
@@ -163,23 +162,6 @@ namespace MonoDevelop.SourceEditor
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;
 		}
-		
-		void HandleSkipCharsOnReplace (object sender, DocumentChangeEventArgs args)
-		{
-			var skipChars = GetTextEditorData ().SkipChars;
-			for (int i = 0; i < skipChars.Count; i++) {
-				var sc = skipChars [i];
-				if (args.Offset > sc.Offset) {
-					skipChars.RemoveAt (i);
-					i--;
-					continue;
-				}
-				if (args.Offset <= sc.Offset) {
-					sc.Offset += args.ChangeDelta;
-				}
-			}
-		}
-		
 
 		static bool? testNewViMode = null;
 		static bool TestNewViMode {
@@ -243,6 +225,14 @@ namespace MonoDevelop.SourceEditor
 			UpdateEditMode ();
 			base.OptionsChanged (sender, args);
 		}
+
+		protected override string GetIdeColorStyleName ()
+		{
+			var scheme = Ide.Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				scheme = Ide.Editor.Highlighting.SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+			return scheme.Name;
+		}
 		
 		bool isInKeyStroke = false;
 		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
@@ -289,7 +279,7 @@ namespace MonoDevelop.SourceEditor
 			LoggingService.LogInternalError ("Error in text editor extension chain", ex);
 		}
 
-		static IEnumerable<char> GetTextWithoutCommentsAndStrings (Mono.TextEditor.TextDocument doc, int start, int end) 
+		internal static IEnumerable<char> GetTextWithoutCommentsAndStrings (Mono.TextEditor.TextDocument doc, int start, int end) 
 		{
 			bool isInString = false, isInChar = false;
 			bool isInLineComment = false, isInBlockComment = false;
@@ -336,8 +326,8 @@ namespace MonoDevelop.SourceEditor
 				escaping--;
 			}
 		}
-		
-		
+
+
 		protected override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			bool result = true;
@@ -347,144 +337,70 @@ namespace MonoDevelop.SourceEditor
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
 				}
-				return false; 
+				return false;
 			}
 
 			if (Document == null)
 				return true;
 
-			bool inStringOrComment = false;
-			bool isString = false;
-			DocumentLine line = Document.GetLine (Caret.Line);
-			if (line == null)
-				return true;
-			//			string escape = "\"";
-			var stack = line.StartSpan.Clone ();
-			var sm = Document.SyntaxMode as SyntaxMode;
-			if (sm != null)
-				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, sm, sm, stack, line.Offset, Caret.Offset);
 
-			foreach (Span span in stack) {
-				if (string.IsNullOrEmpty (span.Color))
-					continue;
-				if (span.Color.StartsWith ("String", StringComparison.Ordinal) ||
-				    span.Color.StartsWith ("Comment", StringComparison.Ordinal) ||
-				    span.Color.StartsWith ("Xml Attribute Value", StringComparison.Ordinal)) {
-					//Treat "Xml Attribute Value" as "String" so quotes in SkipChars works in Xml
-					if (span.Color.StartsWith ("Comment", StringComparison.Ordinal)) {
-						isString = false;
-					} else {
-						isString = true;
-					}
-					inStringOrComment = true;
+			var oldMode = Caret.IsInInsertMode;
+			bool wasHandled = false;
+			var currentSession = this.view.CurrentSession;
+			if (currentSession != null) {
+				switch (key) {
+				case Gdk.Key.Return:
+					currentSession.BeforeReturn (out wasHandled);
+					break;
+				case Gdk.Key.BackSpace:
+					currentSession.BeforeBackspace (out wasHandled);
+					break;
+				case Gdk.Key.Delete:
+				case Gdk.Key.KP_Delete:
+					currentSession.BeforeDelete (out wasHandled);
+					break;
+				default:
+					currentSession.BeforeType ((char)ch, out wasHandled);
 					break;
 				}
 			}
-			// insert template when space is typed (currently disabled - it's annoying).
-			bool templateInserted = false;
-			//!inStringOrComment && (key == Gdk.Key.space) && DoInsertTemplate ();
-			bool returnBetweenBraces = key == Gdk.Key.Return && (state & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) == Gdk.ModifierType.None && Caret.Offset > 0 && Caret.Offset < Document.TextLength && Document.GetCharAt (Caret.Offset - 1) == '{' && Document.GetCharAt (Caret.Offset) == '}' && !inStringOrComment;
-//			int initialOffset = Caret.Offset;
-			const string openBrackets = "{[('\"";
-			const string closingBrackets = "}])'\"";
-			int braceIndex = openBrackets.IndexOf ((char)ch);
-			var skipChars = GetTextEditorData ().SkipChars;
-			var skipChar = skipChars.Find (sc => sc.Char == (char)ch && sc.Offset == Caret.Offset);
-//			bool startedAtomicOperation = false;
 
-			// special handling for escape chars inside ' and "
-			if (Caret.Offset > 0) {
-				char charBefore = Document.GetCharAt (Caret.Offset - 1);
-				if (ch == '"') {
-					if (!inStringOrComment && charBefore == '"' || 
-						isString && charBefore == '\\' ) {
-						skipChar = null;
-						braceIndex = -1;
-					}
-				}
-
-			}
-			char insertionChar = '\0';
-			bool insertMatchingBracket = false;
-			IDisposable undoGroup = null;
-			if (skipChar == null && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket && braceIndex >= 0 && !IsSomethingSelected) {
-				if (!inStringOrComment) {
-					char closingBrace = closingBrackets [braceIndex];
-					char openingBrace = openBrackets [braceIndex];
-
-					int count = 0;
-					foreach (char curCh in GetTextWithoutCommentsAndStrings(Document, 0, Document.TextLength)) {
-						if (curCh == openingBrace) {
-							count++;
-						} else if (curCh == closingBrace) {
-							count--;
+			if (!wasHandled) {
+				if (EditorExtension != null) {
+					if (!DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
+						using (var undo = Document.OpenUndoGroup ()) {
+							if (ExtensionKeyPress (key, ch, state))
+								result = base.OnIMProcessedKeyPressEvent (key, ch, state);
 						}
-					}
-
-					if (count >= 0) {
-						insertMatchingBracket = true;
-						insertionChar = closingBrace;
-					}
-				} else {
-					char charBefore = Document.GetCharAt (Caret.Offset - 1);
-					if (!inStringOrComment && ch == '"' && charBefore != '\\') {
-						insertMatchingBracket = true;
-						insertionChar = '"';
-					}
-				}
-			}
-			
-			//Console.WriteLine (Caret.Offset + "/" + insOff);
-			if (insertMatchingBracket)
-				undoGroup = Document.OpenUndoGroup ();
-
-			var oldMode = Caret.IsInInsertMode;
-			if (skipChar != null) {
-				Caret.IsInInsertMode = false;
-				skipChars.Remove (skipChar);
-			}
-			if (EditorExtension != null) {
-				if (!MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
-					using (var undo = Document.OpenUndoGroup ()) {
+					} else {
 						if (ExtensionKeyPress (key, ch, state))
 							result = base.OnIMProcessedKeyPressEvent (key, ch, state);
 					}
 				} else {
-					if (ExtensionKeyPress (key, ch, state))
-						result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
 				}
-				if (returnBetweenBraces)
-					HitReturn ();
-			} else {
-				result = base.OnIMProcessedKeyPressEvent (key, ch, state);
-				if (returnBetweenBraces)
-					HitReturn ();
-			}
-			if (skipChar != null) {
-				Caret.IsInInsertMode = oldMode;
-			}
 
-			if (insertMatchingBracket) {
-				GetTextEditorData ().EnsureCaretIsNotVirtual ();
-				int offset = Caret.Offset;
-				Caret.AutoUpdatePosition = false;
-				Insert (offset, insertionChar.ToString ());
-				Caret.AutoUpdatePosition = true;
-				GetTextEditorData ().SetSkipChar (offset, insertionChar);
-				undoGroup.Dispose ();
+				if (currentSession != null) {
+					switch (key) {
+					case Gdk.Key.Return:
+						currentSession.AfterReturn ();
+						break;
+					case Gdk.Key.BackSpace:
+						currentSession.AfterBackspace ();
+						break;
+					case Gdk.Key.Delete:
+					case Gdk.Key.KP_Delete:
+						currentSession.AfterDelete ();
+						break;
+					default:
+						currentSession.AfterType ((char)ch);
+						break;
+					}
+				}
 			}
-			return templateInserted || result;
+			return result;
 		}
-		
-		void HitReturn ()
-		{
-			int o = Caret.Offset - 1;
-			while (o > 0 && char.IsWhiteSpace (GetCharAt (o - 1))) 
-				o--;
-			Caret.Offset = o;
-			ExtensionKeyPress (Gdk.Key.Return, (char)0, Gdk.ModifierType.None);			
-		}
-		
+
 		internal string GetErrorInformationAt (int offset)
 		{
 			var location = Document.OffsetToLocation (offset);

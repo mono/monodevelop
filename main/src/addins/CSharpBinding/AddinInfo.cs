@@ -15,7 +15,7 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Refactoring", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]
-[assembly:AddinDependency ("NUnit", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("UnitTesting", MonoDevelop.BuildInfo.Version)]
 
 // Submodules
 [assembly:AddinModule ("MonoDevelop.CSharpBinding.Autotools.dll")]

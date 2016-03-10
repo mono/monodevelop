@@ -15,8 +15,23 @@
 		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsagesHandler"
 			_label = "_Find reference usages"/>
+		<Command id = "MonoDevelop.CSharp.Navigation.FindExtensionMethods"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindExtensionMethodsHandler"
+			_label = "Extension Methods"/>
+		<Command id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindBaseSymbolsHandler"
+			_label = "Base Symbols"/>
+		<Command id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindDerivedSymbolsHandler"
+			_label = "Derived Symbols"/>
+		<Command id = "MonoDevelop.CSharp.Navigation.FindMemberOverloads"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindMemberOverloadsHandler"
+			_label = "Member Overloads"/>
+		<Command id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"
+			defaultHandler = "MonoDevelop.CSharp.Navigation.FindImplementingMembersHandler"
+			_label = "Implementing Members"/>
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
 <!--		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve"
 				defaultHandler = "MonoDevelop.CSharp.Refactoring.ResolveCommandHandler"
@@ -31,6 +46,18 @@
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.CurrentRefactoryOperationsHandler"
 			type="array"
 			_label = "Refactory Operations" /> 
+		<Command id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommandHandler"
+			_label = "_Sort Usings" 
+		/>
+		<Command id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommandHandler"
+			_label = "_Remove Unused Usings" 
+		/>
+		<Command id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"
+			defaultHandler = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommandHandler"
+			_label = "R_emove and Sort" 
+		/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/CodeNavigation">
@@ -275,8 +302,28 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
-<!--		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.Resolve" insertbefore="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations"/>-->
+		<Condition id="FileType" mimeTypes="text/x-csharp">
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
+
+			<ItemSet id = "Navigate" _label = "Navigate">
+				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"/>
+				<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"/>
+				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"/>
+				<CommandItem id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"/>
+				<SeparatorItem id = "Separator1" />
+				
+				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindExtensionMethods"/>
+				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindMemberOverloads"/>
+				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"/>
+			</ItemSet>
+
+				
+			<ItemSet id = "Organize Imports" _label = "Organize Usings" insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow">
+				<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
+				<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
+				<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
+			</ItemSet>
+		</Condition>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/CSharp/Completion/ContextHandler">
@@ -295,5 +342,21 @@
 	
 	<Extension path="/MonoDevelop/Ide/SearchCategories">
 		<Class class="MonoDevelop.CSharp.ProjectSearchCategory" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Refactoring/FindReferencesProvider">
+		<Class class="MonoDevelop.CSharp.Refactoring.CSharpFindReferencesProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
+		<Class class="MonoDevelop.CSharp.Refactoring.CSharpJumpToDeclarationHandler" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/UnitTesting/NUnitSourceCodeLocationFinder">
+		<Class class="MonoDevelop.CSharp.UnitTests.CSharpNUnitSourceCodeLocationFinder" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
+		<Class class="MonoDevelop.CSharp.Features.AutoInsertBracket.CSharpAutoInsertBracketHandler" insertbefore="Default"/>
 	</Extension>
 </ExtensionModel>

@@ -26,6 +26,7 @@
 
 using MonoDevelop.Core;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -46,8 +47,10 @@ namespace MonoDevelop.VersionControl.Git
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
 			GitRepository repo;
-			if (!repositories.TryGetValue (path.CanonicalPath, out repo) || repo.Disposed)
-				repositories [path.CanonicalPath] = repo = new GitRepository (this, path, null);
+			if (!repositories.TryGetValue (path.CanonicalPath, out repo) || repo.Disposed) {
+				repo = new GitRepository (this, path, null);
+				repositories [repo.RootPath.CanonicalPath] = repo;
+			}
 			return repo;
 		}
 
@@ -63,7 +66,13 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override FilePath OnGetRepositoryPath (FilePath path, string id)
 		{
-			return LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
+			string repo = LibGit2Sharp.Repository.Discover (path.ResolveLinks ());
+			if (!string.IsNullOrEmpty (repo)) {
+				repo = repo.TrimEnd ('\\', '/');
+				if (repo.EndsWith (".git", System.StringComparison.OrdinalIgnoreCase))
+					repo = Path.GetDirectoryName (repo);
+			}
+			return repo;
 		}
 
 		internal void UnregisterRepo (GitRepository repo)

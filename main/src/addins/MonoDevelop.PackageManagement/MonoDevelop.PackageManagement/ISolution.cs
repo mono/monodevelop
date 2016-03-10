@@ -41,6 +41,7 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<IDotNetProject> GetAllProjects ();
 
 		event EventHandler<DotNetProjectEventArgs> ProjectAdded;
+		event EventHandler<DotNetProjectEventArgs> ProjectRemoved;
 	}
 }
 

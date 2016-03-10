@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide
 			get {
 				return currentWorkspaceItem;
 			}
-			internal set {
+			set {
 				if (value != currentWorkspaceItem) {
 					WorkspaceItem oldValue = currentWorkspaceItem;
 					currentWorkspaceItem = value;
@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide
 					return CurrentSelectedSolution.RootFolder;
 				return currentSolutionItem;
 			}
-			internal set {
+			set {
 				if (value != currentSolutionItem) {
 					SolutionFolderItem oldValue = currentSolutionItem;
 					currentSolutionItem = value;
@@ -149,7 +149,7 @@ namespace MonoDevelop.Ide
 			get {
 				return currentItem;
 			}
-			internal set {
+			set {
 				currentItem = value;
 			}
 		}
@@ -880,10 +880,14 @@ namespace MonoDevelop.Ide
 					foreach (var reference in editEventArgs.ReferencesToAdd)
 						project.References.Add (reference);
 
+					selDialog.SetProject (null);
+
 					return editEventArgs.ReferencesToAdd.Count > 0 || editEventArgs.ReferencesToRemove.Count > 0;
 				}
-				else
+				else {
+					selDialog.SetProject (null);
 					return false;
+				}
 			} finally {
 				selDialog.Hide ();
 			}

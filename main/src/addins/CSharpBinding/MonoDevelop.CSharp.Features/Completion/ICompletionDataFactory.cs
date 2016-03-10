@@ -26,6 +26,7 @@
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide.CodeCompletion;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -33,7 +34,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 	{
 		AttributeTarget,
 		Undefined,
-		Keyword,
 		PreprocessorKeyword,
 		PreprocessorSymbol,
 		NameProposal,
@@ -42,6 +42,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 	public interface ICompletionDataFactory
 	{
+		CompletionData CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind);
+
 		CompletionData CreateGenericData (ICompletionDataKeyHandler keyHandler, string data, GenericDataType genericDataType = GenericDataType.Undefined);
 
 		CompletionData CreateFormatItemCompletionData (ICompletionDataKeyHandler keyHandler, string format, string description, object example);

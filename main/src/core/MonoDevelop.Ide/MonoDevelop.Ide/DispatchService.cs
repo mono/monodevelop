@@ -42,31 +42,34 @@ namespace MonoDevelop.Ide
 {
 	public static class DispatchService
 	{
-		static Queue<GenericMessageContainer> backgroundQueue = new Queue<GenericMessageContainer> ();
-		static ManualResetEvent backgroundThreadWait = new ManualResetEvent (false);
-		static Queue<GenericMessageContainer> guiQueue = new Queue<GenericMessageContainer> ();
-		static Thread thrBackground;
-		static uint iIdle = 0;
-		static GLib.TimeoutHandler handler;
-		static Thread guiThread;
 		static GuiSyncContext guiContext;
-		static internal bool DispatchDebug;
-		const string errormsg = "An exception was thrown while dispatching a method call in the UI thread.";
 
 		class GtkSynchronizationContext: SynchronizationContext
 		{
 			public override void Post (SendOrPostCallback d, object state)
 			{
-				GuiDispatch (delegate {
+				Gtk.Application.Invoke (delegate {
 					d (state);
 				});
 			}
 
 			public override void Send (SendOrPostCallback d, object state)
 			{
-				GuiSyncDispatch (delegate {
+				if (Runtime.IsMainThread) {
 					d (state);
-				});
+					return;
+				}
+				var ob = new object ();
+				lock (ob) {
+					Gtk.Application.Invoke (delegate {
+						try {
+							d (state);
+						} finally {
+							Monitor.Pulse (ob);
+						}
+					});
+					Monitor.Wait (ob);
+				}
 			}
 
 			public override SynchronizationContext CreateCopy ()
@@ -81,63 +84,11 @@ namespace MonoDevelop.Ide
 				return;
 			
 			guiContext = new GuiSyncContext ();
-			guiThread = Thread.CurrentThread;
-			
-			handler = new GLib.TimeoutHandler (guiDispatcher);
-			
-			thrBackground = new Thread (new ThreadStart (backgroundDispatcher)) {
-				Name = "Background dispatcher",
-				IsBackground = true,
-				Priority = ThreadPriority.Lowest,
-			};
-			thrBackground.Start ();
-			
-			DispatchDebug = Environment.GetEnvironmentVariable ("MONODEVELOP_DISPATCH_DEBUG") != null;
 
 			SynchronizationContext = new GtkSynchronizationContext ();
 		}
 
 		public static SynchronizationContext SynchronizationContext { get; private set; }
-		
-		static Task GuiDispatch (Action cb)
-		{
-			TaskCompletionSource<bool> ts = new TaskCompletionSource<bool> ();
-			if (IsGuiThread) {
-				try {
-					cb ();
-					ts.SetResult (true);
-				} catch (Exception ex) {
-					ts.SetException (ex);
-				}
-				return ts.Task;
-			}
-
-			QueueMessage (new GenericMessageContainer (() => {
-				try {
-					cb ();
-				} finally {
-					ts.SetResult (true);
-				}
-			}, false));
-
-			return ts.Task;
-		}
-
-		static void GuiSyncDispatch (MessageHandler cb)
-		{
-			if (IsGuiThread) {
-				cb ();
-				return;
-			}
-
-			GenericMessageContainer mc = new GenericMessageContainer (cb, true);
-			lock (mc) {
-				QueueMessage (mc);
-				Monitor.Wait (mc);
-			}
-			if (mc.Exception != null)
-				throw new Exception (errormsg, mc.Exception);
-		}
 		
 		static DateTime lastPendingEvents;
 		internal static void RunPendingEvents ()
@@ -168,152 +119,8 @@ namespace MonoDevelop.Ide
 			sw.Stop ();
 
 			Gdk.Threads.Leave();
-			guiDispatcher ();
 		}
 		
-		static void QueueMessage (GenericMessageContainer msg)
-		{
-			lock (guiQueue) {
-				guiQueue.Enqueue (msg);
-				if (iIdle == 0)
-					iIdle = GLib.Timeout.Add (0, handler);
-			}
-		}
-		
-		static bool IsGuiThread
-		{
-			get { return guiThread == Thread.CurrentThread; }
-		}
-		
-		static void AssertGuiThread ()
-		{
-			if (guiThread != Thread.CurrentThread)
-				throw new InvalidOperationException ("This method can only be called in the GUI thread");
-		}
-		
-		/// <summary>
-		/// Runs the provided delegate in the background, but waits until finished, pumping the
-		/// message queue if necessary.
-		/// </summary>
-		public static void BackgroundDispatchAndWait (MessageHandler cb)
-		{
-			object eventObject = new object ();
-			lock (eventObject) {
-				BackgroundDispatch (delegate {
-					try {
-						cb ();
-					} finally {
-						lock (eventObject) {
-							Monitor.Pulse (eventObject);
-						}
-					}
-				});
-				if (IsGuiThread) {
-					while (true) {
-						if (Monitor.Wait (eventObject, 50))
-							return;
-						RunPendingEvents ();
-					}
-				}
-				else {
-					Monitor.Wait (eventObject);
-				}
-			}
-		}
-		
-		public static void BackgroundDispatch (MessageHandler cb)
-		{
-			QueueBackground (new GenericMessageContainer (cb, false));
-		}
-
-		static void BackgroundDispatch (StatefulMessageHandler cb, object state)
-		{
-			QueueBackground (new StatefulMessageContainer (cb, state, false));
-		}
-		
-		static void QueueBackground (GenericMessageContainer c)
-		{
-			lock (backgroundQueue) {
-				backgroundQueue.Enqueue (c);
-				if (backgroundQueue.Count == 1)
-					backgroundThreadWait.Set ();
-			}
-		}
-		
-		static bool guiDispatcher ()
-		{
-			GenericMessageContainer msg;
-			int iterCount;
-			
-			lock (guiQueue) {
-				iterCount = guiQueue.Count;
-				if (iterCount == 0) {
-					iIdle = 0;
-					return false;
-				}
-			}
-			
-			for (int n=0; n<iterCount; n++) {
-				lock (guiQueue) {
-					if (guiQueue.Count == 0) {
-						iIdle = 0;
-						return false;
-					}
-					msg = guiQueue.Dequeue ();
-				}
-				
-				msg.Run ();
-				
-				if (msg.IsSynchronous)
-					lock (msg) Monitor.PulseAll (msg);
-				else if (msg.Exception != null)
-					HandlerError (msg);
-			}
-			
-			lock (guiQueue) {
-				if (guiQueue.Count == 0) {
-					iIdle = 0;
-					return false;
-				} else
-					return true;
-			}
-		}
-
-		static void backgroundDispatcher ()
-		{
-			while (true) {
-				GenericMessageContainer msg = null;
-				bool wait = false;
-				lock (backgroundQueue) {
-					if (backgroundQueue.Count == 0) {
-						backgroundThreadWait.Reset ();
-						wait = true;
-					} else
-						msg = backgroundQueue.Dequeue ();
-				}
-				
-				if (wait) {
-					backgroundThreadWait.WaitOne ();
-					continue;
-				}
-				
-				if (msg != null) {
-					msg.Run ();
-					if (msg.Exception != null)
-						HandlerError (msg);
-				}
-			}
-		}
-		
-		static void HandlerError (GenericMessageContainer msg)
-		{
-			if (msg.CallerStack != null) {
-				LoggingService.LogError ("{0} {1}\nCaller stack:{2}", errormsg, msg.Exception.ToString (), msg.CallerStack);
-			}
-			else
-				LoggingService.LogError ("{0} {1}\nCaller stack not available. Define the environment variable MONODEVELOP_DISPATCH_DEBUG to enable caller stack capture.", errormsg, msg.Exception.ToString ());
-		}
-
 		#region Animations
 
 		/// <summary>
@@ -399,76 +206,4 @@ namespace MonoDevelop.Ide
 
 		#endregion
 	}
-
-	public delegate void MessageHandler ();
-	public delegate void StatefulMessageHandler (object state);
-
-	class GenericMessageContainer
-	{
-		MessageHandler callback;
-		protected Exception ex;
-		protected bool isSynchronous;
-		protected string callerStack;
-
-		protected GenericMessageContainer () { }
-
-		public GenericMessageContainer (MessageHandler cb, bool isSynchronous)
-		{
-			callback = cb;
-			this.isSynchronous = isSynchronous;
-			if (DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
-		}
-
-		public virtual void Run ( )
-		{
-			try {
-				callback ();
-				callback = null;
-			}
-			catch (Exception e) {
-				ex = e;
-				callback = null;
-			}
-		}
-		
-		public Exception Exception
-		{
-			get { return ex; }
-		}
-		
-		public bool IsSynchronous
-		{
-			get { return isSynchronous; }
-		}
-		
-		public string CallerStack
-		{
-			get { return callerStack; }
-		}
-	}
-
-	class StatefulMessageContainer : GenericMessageContainer
-	{
-		object data;
-		StatefulMessageHandler callback;
-
-		public StatefulMessageContainer (StatefulMessageHandler cb, object state, bool isSynchronous)
-		{
-			data = state;
-			callback = cb;
-			this.isSynchronous = isSynchronous;
-			if (DispatchService.DispatchDebug) callerStack = Environment.StackTrace;
-		}
-
-		public override void Run ( )
-		{
-			try {
-				callback (data);
-			}
-			catch (Exception e) {
-				ex = e;
-			}
-		}
-	}
-
 }

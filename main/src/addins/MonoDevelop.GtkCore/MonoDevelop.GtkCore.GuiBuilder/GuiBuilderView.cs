@@ -46,6 +46,7 @@ using Gdk;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -267,7 +268,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.TargetObject = designer.RootComponent;
 		}
 		
-		void OnComponentNameChanged (object s, Stetic.ComponentNameEventArgs args)
+		async void OnComponentNameChanged (object s, Stetic.ComponentNameEventArgs args)
 		{
 			try {
 				// Make sure the fields in the partial class are up to date.
@@ -278,7 +279,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (gproject.Project.UsePartialTypes)
 					GuiBuilderService.GenerateSteticCodeStructure ((DotNetProject)gproject.Project, designer.RootComponent, args, false, false);
 				
-				codeBinder.UpdateField (args.Component, args.OldName);
+				await codeBinder.UpdateField (args.Component, args.OldName);
 			}
 			catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -323,9 +324,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 
-		void OnSignalChanged (object sender, Stetic.ComponentSignalEventArgs args)
+		async void OnSignalChanged (object sender, Stetic.ComponentSignalEventArgs args)
 		{
-			codeBinder.UpdateSignal (args.OldSignal, args.Signal);
+			await codeBinder.UpdateSignal (args.OldSignal, args.Signal);
 		}
 		
 		public override async Task Save (FileSaveInformation fileSaveInformation)
@@ -378,7 +379,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				.FirstOrDefault ();
 			if (met != null) {
 				ShowPage (0);
-				IdeApp.ProjectOperations.JumpToDeclaration (met);
+				RefactoringService.RoslynJumpToDeclaration (met);
 			}
 		}
 		

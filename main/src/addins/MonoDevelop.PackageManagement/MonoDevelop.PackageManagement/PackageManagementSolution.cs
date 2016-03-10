@@ -26,10 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -40,7 +38,16 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementProjectService projectService;
 		IPackageManagementProjectFactory projectFactory;
 		ISolutionPackageRepositoryFactory solutionPackageRepositoryFactory;
-		
+
+		internal PackageManagementSolution (
+			IPackageManagementProjectService projectService)
+			: this (
+				PackageManagementServices.RegisteredPackageRepositories,
+				projectService,
+				PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IPackageManagementProjectService projectService,
@@ -152,6 +159,11 @@ namespace MonoDevelop.PackageManagement
 		public IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project)
 		{
 			return CreateProject (sourceRepository, project);
+		}
+
+		public IPackageManagementProject GetProject (IDotNetProject project)
+		{
+			return CreateProject (registeredPackageRepositories.CreateAggregateRepository(), project);
 		}
 		
 		public IEnumerable<IDotNetProject> GetDotNetProjects ()

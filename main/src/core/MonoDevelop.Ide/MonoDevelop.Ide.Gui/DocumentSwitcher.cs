@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide
 						cr.MoveTo (xPos + item.Icon.Width + 2 + itemPadding, yPos + (iconHeight - h) / 2);
 						layout.SetText (Ellipsize (item.ListTitle ?? item.Title, maxLength));
 						cr.ShowLayout (layout);
-						cr.DrawImage (this, item.Icon, (int)xPos + itemPadding,
+						cr.DrawImage (this, item == ActiveItem ? item.Icon.WithStyles ("sel") : item.Icon, (int)xPos + itemPadding,
 						                                 (int)(yPos + (iconHeight - item.Icon.Height) / 2));
 						yPos += iconHeight;
 						if (++curItem >= maxItems) {
@@ -549,7 +549,7 @@ namespace MonoDevelop.Ide
 		}
 	}
 	
-	internal class DocumentSwitcher : Gtk.Window
+	internal class DocumentSwitcher : IdeWindow
 	{
 		List<MonoDevelop.Ide.Gui.Document> documents;
 		Xwt.ImageView imageTitle = new Xwt.ImageView ();
@@ -573,7 +573,7 @@ namespace MonoDevelop.Ide
 			this.WindowPosition = Gtk.WindowPosition.CenterOnParent;
 			this.TypeHint = WindowTypeHint.Dialog;
 			
-			this.ModifyBg (StateType.Normal, this.Style.Base (StateType.Normal));
+			this.ModifyBg (StateType.Normal, Styles.BaseBackgroundColor.ToGdkColor ());
 			
 			VBox vBox = new VBox ();
 			HBox hBox = new HBox ();
@@ -616,7 +616,7 @@ namespace MonoDevelop.Ide
 					Title = pad.Title,
 					Tag = pad
 				};
-				if (pad.Window.Content.Control.HasFocus)
+				if (pad.InternalContent.Initialized && pad.Window.Content.Control.HasFocus)
 					activeItem = item;
 				padCategory.AddItem (item);
 			}

@@ -32,34 +32,26 @@ using System.Collections;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
-	public class EventNodeBuilder: MemberNodeBuilder
+	public class EventNodeBuilder : MemberNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(IEvent); }
+			get { return typeof (IEventSymbol); }
 		}
 
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Event"; }
 		}
-		
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			// IEvent data = dataObject as IEvent;
-			// nodeInfo.Label = Ambience.GetString (data, OutputFlags.ClassBrowserEntries  | OutputFlags.IncludeMarkup);
-			// nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
-		}
-
-		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)
-		{
-			if (thisNode.Options ["GroupByType"]) {
-			
-			}
-			return DefaultSort;
+			var data = dataObject as IEventSymbol;
+			nodeInfo.Label = Ambience.EscapeText (((ISymbol)dataObject).ToDisplayString (Ambience.NameFormat));
+			nodeInfo.Icon = Context.GetIcon (data.GetStockIcon ());
 		}
 	}
 }

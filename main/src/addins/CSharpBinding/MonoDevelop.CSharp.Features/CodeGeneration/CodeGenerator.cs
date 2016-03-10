@@ -35,7 +35,7 @@ using System.Runtime.ExceptionServices;
 namespace ICSharpCode.NRefactory6.CSharp
 {
 	#if NR6
-	public
+		public
 	#endif
 	static class CodeGenerator
 	{

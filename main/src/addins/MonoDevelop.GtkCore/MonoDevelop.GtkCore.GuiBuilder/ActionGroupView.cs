@@ -38,6 +38,7 @@ using MonoDevelop.DesignerSupport;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -183,7 +184,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var met = cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
 			if (met != null) { 
 				ShowPage (1);
-				IdeApp.ProjectOperations.JumpToDeclaration (met);
+				RefactoringService.RoslynJumpToDeclaration(met);
 			}
 		}
 		
@@ -197,9 +198,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.BindSignal (a.Signal);
 		}
 		
-		void OnSignalChanged (object s, Stetic.ComponentSignalEventArgs a)
+		async void OnSignalChanged (object s, Stetic.ComponentSignalEventArgs a)
 		{
-			codeBinder.UpdateSignal (a.OldSignal, a.Signal);
+			await codeBinder.UpdateSignal (a.OldSignal, a.Signal);
 		}
 		
 		async void OnBindField (object s, EventArgs args)

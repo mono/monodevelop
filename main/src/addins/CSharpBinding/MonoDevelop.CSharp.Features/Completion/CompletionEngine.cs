@@ -35,10 +35,11 @@ using System.Text;
 using Microsoft.CodeAnalysis.Recommendations;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	public partial class CompletionEngine 
+	partial class CompletionEngine 
 	{
 		static CompletionContextHandler[] handlers = {
 			new RoslynRecommendationsCompletionContextHandler (),
@@ -87,14 +88,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			this.workspace = workspace;
 			this.factory = factory;
 		}
-		
-		public void AddImportCompletionData (CompletionResult result, Document document, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var ns = new Stack<INamespaceOrTypeSymbol>();
-			ns.Push(semanticModel.Compilation.GlobalNamespace);
-			
-			semanticModel.LookupNamespacesAndTypes(position);
-		}
 
 		public async Task<CompletionResult> GetCompletionDataAsync(CompletionContext completionContext, CompletionTriggerInfo info, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -114,24 +107,28 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				ctx.TargetToken.Parent.Parent.IsKind(SyntaxKind.ParenthesizedLambdaExpression)) 
 				return CompletionResult.Empty;
 
-			var result = new CompletionResult();
+			var result = new CompletionResult { SyntaxContext = ctx };
 
 			if (position > 0) {
 				var nonExclusiveHandlers = new List<CompletionContextHandler> ();
 				var exclusiveHandlers = new List<CompletionContextHandler> ();
+				var toRetriggerHandlers = new List<CompletionContextHandler> ();
 				IEnumerable<CompletionContextHandler> handlerList;
 				if (completionContext.UseDefaultContextHandlers) {
 					handlerList = handlers.Concat (completionContext.AdditionalContextHandlers);
 				} else {
 					handlerList = completionContext.AdditionalContextHandlers;
 				}
+
 				foreach (var handler in handlerList) {
 					if (info.CompletionTriggerReason == CompletionTriggerReason.CompletionCommand || handler.IsTriggerCharacter (text, position - 1)) {
-						if (await handler.IsExclusiveAsync (document, position, info, cancellationToken)) {
+						if (await handler.IsExclusiveAsync (completionContext, ctx, info, cancellationToken)) {
 							exclusiveHandlers.Add (handler);
 						} else {
 							nonExclusiveHandlers.Add (handler);
 						}
+					} else {
+						toRetriggerHandlers.Add (handler);
 					}
 				}
 
@@ -160,8 +157,20 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						//} else {
 						//	Console.WriteLine ("-----" + handler + " == NULL");
 						//}
-						if (handlerResult != null)
+						if (handlerResult != null && handlerResult.Any ()) {
 							result.AddRange (handlerResult);
+						} else {
+							toRetriggerHandlers.Add (handler);
+						}
+					}
+
+					if (result.Count > 0) {
+						info = info.WithCompletionTriggerReason (CompletionTriggerReason.RetriggerCommand);
+						foreach (var handler in toRetriggerHandlers) {
+							var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
+							if (handlerResult != null)
+								result.AddRange (handlerResult);
+						}
 					}
 				}
 			}

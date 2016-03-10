@@ -98,7 +98,7 @@ namespace MonoDevelop.RegexToolkit
 		public static RegexToolkitWidget RunRegexWindow ()
 		{
 			foreach (var document in IdeApp.Workbench.Documents) {
-				if (document.Window.ViewContent.Control is RegexToolkitWidget) {
+				if (document.Window.ViewContent.Control.GetNativeWidget<Gtk.Widget> () is RegexToolkitWidget) {
 					document.Window.SelectWindow ();
 					return (RegexToolkitWidget)document.Window.ViewContent.Control;
 				}

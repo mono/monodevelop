@@ -180,17 +180,8 @@ namespace MonoDevelop.MacIntegration
 
 			mimeTimer.BeginTiming ();
 			try {
-				using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
-					using (var reader = new StreamReader (file)) {
-						var mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
-						string line;
-						while ((line = reader.ReadLine ()) != null) {
-							Match m = mime.Match (line);
-							if (m.Success)
-								map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value;
-						}
-					}
-				}
+				var loader = new MimeMapLoader (map);
+				loader.LoadMimeMap ("/etc/apache2/mime.types");
 			} catch (Exception ex){
 				LoggingService.LogError ("Could not load Apache mime database", ex);
 			}
@@ -278,47 +269,54 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			PatchGtkTheme ();
+			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Runtime.RunInMainThread (
+				delegate {
+					Styles.LoadStyle();
+					PatchGtkTheme();
+				}));
+			
+			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
+			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
 		}
 
+		// VV/VK: Disable tint based color generation
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
 		void PatchGtkTheme ()
 		{
-			string color_hex, text_hex;
-
-			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
-				NSControlTint tint = NSColor.CurrentControlTint;
-				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
-				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
-
-				color_hex = ConvertColorToHex (color);
-				text_hex = ConvertColorToHex (text);
-			} else {
-				color_hex = "#c5d4e0";
-				text_hex = "#000";
-			}
-
-			string gtkrc = String.Format (@"
-				style ""treeview"" = ""default"" {{
-					GtkTreeView::odd-row-color = ""#f5f5f5""
-
-					base[SELECTED] = ""{0}""
-					base[ACTIVE] = ""{0}""
-					text[SELECTED] = ""{1}""
-					text[ACTIVE] = ""{1}""
-					engine ""xamarin"" {{
-						roundness = 0
-						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
-						glazestyle = 1
-					}}
-				}}
-
-				widget_class ""*.<GtkTreeView>*"" style ""treeview""
-				",
-				color_hex,
-				text_hex
-			);
-
-			Gtk.Rc.ParseString (gtkrc);
+//			string color_hex, text_hex;
+//
+//			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+//				NSControlTint tint = NSColor.CurrentControlTint;
+//				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+//				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+//
+//				color_hex = ConvertColorToHex (color);
+//				text_hex = ConvertColorToHex (text);
+//			} else {
+//				color_hex = "#c5d4e0";
+//				text_hex = "#000";
+//			}
+//
+//			string gtkrc = String.Format (@"
+//				style ""treeview"" = ""default"" {{
+//					base[SELECTED] = ""{0}""
+//					base[ACTIVE] = ""{0}""
+//					text[SELECTED] = ""{1}""
+//					text[ACTIVE] = ""{1}""
+//					engine ""xamarin"" {{
+//						roundness = 0
+//						gradient_shades = {{ 1.01, 1.01, 1.01, 1.01 }}
+//						glazestyle = 1
+//					}}
+//				}}
+//
+//				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+//				",
+//				color_hex,
+//				text_hex
+//			);
+//
+//			Gtk.Rc.ParseString (gtkrc);
 		}
 
 		void GlobalSetup ()
@@ -729,6 +727,7 @@ namespace MonoDevelop.MacIntegration
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = true;
 			w.StyleMask |= NSWindowStyle.UnifiedTitleAndToolbar;
+			IdeTheme.ApplyTheme (w);
 		}
 
 		internal override void RemoveWindowShadow (Gtk.Window window)

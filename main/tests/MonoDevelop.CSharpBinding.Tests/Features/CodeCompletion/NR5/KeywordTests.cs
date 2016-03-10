@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture()]
-	public class KeywordTests : TestBase
+	class KeywordTests : TestBase
 	{
 		[Test()]
 		public void TestTooManyOptions ()

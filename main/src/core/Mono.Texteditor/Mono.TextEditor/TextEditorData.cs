@@ -368,10 +368,10 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 		
-		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true)
+		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
 			ISyntaxMode mode = Document.SyntaxMode;
-			var style = ColorStyle;
+			var style = fitIdeStyle ? SyntaxModeService.GetColorStyle(Parent.GetIdeColorStyleName()) : ColorStyle;
 
 			if (style == null) {
 				var str = Document.GetTextAt (offset, length);
@@ -615,9 +615,11 @@ namespace Mono.TextEditor
 		
 		public bool CanEdit (int line)
 		{
+			if (document.ReadOnly)
+				return false;
 			if (document.ReadOnlyCheckDelegate != null)
 				return document.ReadOnlyCheckDelegate (line);
-			return !document.ReadOnly;
+			return true;
 		}
 
 		public int FindNextWordOffset (int offset)
@@ -1601,41 +1603,6 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		#endregion
-
-		#region SkipChars
-		public class SkipChar
-		{
-			
-			public int Start { get; set; }
-			
-			public int Offset { get; set; }
-
-			public char Char  { get; set; }
-
-			public override string ToString ()
-			{
-				return string.Format ("[SkipChar: Start={0}, Offset={1}, Char={2}]", Start, Offset, Char);
-			}
-		}
-		
-		List<SkipChar> skipChars = new List<SkipChar> ();
-		
-		public List<SkipChar> SkipChars {
-			get {
-				return skipChars;
-			}
-		}
-		
-		public void SetSkipChar (int offset, char ch)
-		{
-			skipChars.Add (new SkipChar () {
-				Start = offset - 1,
-				Offset = offset,
-				Char = ch
-			});
-		}
-
 		#endregion
 
 		/// <summary>

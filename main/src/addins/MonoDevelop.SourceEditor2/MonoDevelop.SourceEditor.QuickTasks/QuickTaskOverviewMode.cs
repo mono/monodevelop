@@ -75,11 +75,24 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			}
 		}
 
-		//TODO: find a way to look these up from the theme
-		static readonly Cairo.Color win81Background = new Cairo.Color (240 / 255d, 240 / 255d, 240 / 255d);
-		static readonly Cairo.Color win81Slider = new Cairo.Color (205 / 255d, 205 / 255d, 205 / 255d);
-		static readonly Cairo.Color win81SliderPrelight = new Cairo.Color (166 / 255d, 166 / 255d, 166 / 255d);
-		//static readonly Cairo.Color win81SliderActive = new Cairo.Color (96 / 255d, 96 / 255d, 96 / 255d);
+		Cairo.Color win81Slider;
+		Cairo.Color win81SliderPrelight;
+		int win81ScrollbarWidth; 
+
+		protected override void OnStyleSet (Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			if (Core.Platform.IsWindows) {
+				using (var scrollstyle = Rc.GetStyleByPaths (Settings, null, null, VScrollbar.GType)) {
+					var scrl = new VScrollbar (null);
+					scrl.Style = scrollstyle;
+					win81Slider = scrollstyle.Background (StateType.Normal).ToCairoColor ();
+					win81SliderPrelight = scrollstyle.Background (StateType.Prelight).ToCairoColor ();
+					win81ScrollbarWidth = (int)scrl.StyleGetProperty ("slider-width");
+					scrl.Destroy ();
+				}
+			}
+		}
 
 		readonly int barPadding = MonoDevelop.Core.Platform.IsWindows ? 1 : 3;
 
@@ -644,7 +657,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition.Width = MonoDevelop.Core.Platform.IsWindows ? 17 : 15;
+			requisition.Width = MonoDevelop.Core.Platform.IsWindows ? win81ScrollbarWidth : 15;
 		}
 
 		double LineToY (int logicalLine)
@@ -700,9 +713,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				HslColor color;
 				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declariton) != 0) {
 					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
+					if (color.Alpha == 0.0)
+						color = TextEditor.ColorStyle.UsagesRectangle.Color;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
 					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
-				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0) {
+					if (color.Alpha == 0.0)
+						color = TextEditor.ColorStyle.UsagesRectangle.Color;
+				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0 || (usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Keyword) != 0) {
 					color = TextEditor.ColorStyle.UsagesRectangle.Color;
 				} else {
 					color = usageColor;
@@ -721,7 +738,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (!lineCache[1].Contains (y)) {
 					lineCache[1].Add (y);
 					cr.SetSourceColor (GetBarColor (task.Severity));
-					cr.Rectangle (0, y - 1, Allocation.Width, 2);
+					cr.Rectangle (1, y - 1, Allocation.Width - 1, 2);
 					cr.Fill ();
 				}
 				if (task.Severity == DiagnosticSeverity.Error)
@@ -740,7 +757,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (TextEditor.ColorStyle != null) {
 				var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
 				if (!MonoDevelop.Core.Platform.IsWindows) {
-					col.Light *= 0.88;
+					col.Light *= 0.95;
 				}
 				cr.SetSourceColor (col.ToCairoColor ());
 			}
@@ -792,7 +809,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (MonoDevelop.Core.Platform.IsWindows) {
 				c = prelight ? win81SliderPrelight : win81Slider;
 				//compute new color such that it will produce same color when blended with bg
-				c = AddAlpha (win81Background, c, 0.5d);
+				c = AddAlpha (TextEditor.ColorStyle.PlainText.Background, c, 0.5d);
 			} else {
 				var brightness = HslColor.Brightness (TextEditor.ColorStyle.PlainText.Background);
 				c = new Cairo.Color (1 - brightness, 1 - brightness, 1 - brightness, barColorValue * (barAlphaMax - barAlphaMin) + barAlphaMin);
@@ -1032,20 +1049,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			if (TextEditor.ColorStyle != null) {
 				if (MonoDevelop.Core.Platform.IsWindows) {
-					using (var pattern = new Cairo.SolidPattern (win81Background)) {
+					using (var pattern = new Cairo.SolidPattern (TextEditor.ColorStyle.PlainText.Background)) {
 						cr.SetSource (pattern);
 						cr.Fill ();
 					}
 				} else {
-					var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
-					col.Light *= 0.948;
-					using (var grad = new Cairo.LinearGradient (0, 0, allocation.Width, 0)) {
-						grad.AddColorStop (0, col.ToCairoColor ());
-						grad.AddColorStop (0.7, TextEditor.ColorStyle.PlainText.Background);
-						grad.AddColorStop (1, col.ToCairoColor ());
-						cr.SetSource (grad);
-						cr.Fill ();
-					}
+					cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
+					cr.Fill ();
 				}
 			}
 			DrawLeftBorder (cr);

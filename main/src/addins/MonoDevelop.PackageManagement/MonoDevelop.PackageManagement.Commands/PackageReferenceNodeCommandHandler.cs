@@ -27,11 +27,11 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using MonoDevelop.Projects;
-using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -51,7 +51,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+			IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
 			UninstallPackageAction action = project.CreateUninstallPackageAction ();
 			action.Package = project.FindPackage (packageReferenceNode.Id);
 
@@ -86,13 +86,14 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 
 			try {
-				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
 				UpdatePackageAction action = project.CreateUpdatePackageAction ();
 				action.PackageId = packageReferenceNode.Id;
 				action.AllowPrereleaseVersions = !packageReferenceNode.IsReleaseVersion ();
 
-				RestoreBeforeUpdateAction.Restore (project, () => {
+				IPackageManagementSolution solution = GetPackageManagementSolution ();
+				RestoreBeforeUpdateAction.Restore (solution, project, () => {
 					UpdatePackage (progressMessage, action);
 				});
 			} catch (Exception ex) {
@@ -131,6 +132,24 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 			var reinstaller = new PackageReinstaller ();
 			reinstaller.Run (packageReferenceNode);
+		}
+
+		Solution GetSelectedSolution ()
+		{
+			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			if (project != null) {
+				return project.ParentSolution;
+			}
+			return IdeApp.ProjectOperations.CurrentSelectedSolution;
+		}
+
+		IPackageManagementSolution GetPackageManagementSolution ()
+		{
+			Solution solution = GetSelectedSolution ();
+			if (solution != null) {
+				return new PackageManagementSolution (new PackageManagementSolutionProjectService (solution));
+			}
+			return null;
 		}
 	}
 }

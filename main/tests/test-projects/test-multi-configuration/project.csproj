@@ -22,7 +22,7 @@
     <EnvironmentVariables>
       <EnvironmentVariables>
         <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
-        <Variable name="MONODEVELOP_TEST_PROFILE" value="./test-profile" />
+        <Variable name="MONODEVELOP_PROFILE" value="./test-profile" />
       </EnvironmentVariables>
     </EnvironmentVariables>
     <PlatformTarget>x86</PlatformTarget>
@@ -52,7 +52,7 @@
     <EnvironmentVariables>
       <EnvironmentVariables>
         <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
-        <Variable name="MONODEVELOP_TEST_PROFILE" value="./test-profile" />
+        <Variable name="MONODEVELOP_PROFILE" value="./test-profile" />
       </EnvironmentVariables>
     </EnvironmentVariables>
     <Execution>

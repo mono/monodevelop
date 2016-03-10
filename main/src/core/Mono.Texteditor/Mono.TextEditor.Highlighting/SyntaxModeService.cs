@@ -68,8 +68,9 @@ namespace Mono.TextEditor.Highlighting
 		
 		public static ColorScheme GetColorStyle (string name)
 		{
-			if (styles.ContainsKey (name))
+			if (styles.ContainsKey (name)) {
 				return styles [name];
+			}
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
 				return GetColorStyle (name);
@@ -124,6 +125,8 @@ namespace Mono.TextEditor.Highlighting
 					styles [name] = ColorScheme.LoadFrom (stream);
 				}
 				styleLookup.Remove (name); 
+			} catch (StyleImportException)  {
+				throw;
 			} catch (Exception e) {
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {
@@ -487,9 +490,10 @@ namespace Mono.TextEditor.Highlighting
 		static string ScanStyle (Stream stream)
 		{
 			try {
-				var file = new StreamReader (stream);
+				var file = Utils.TextFileUtility.OpenStream (stream);
 				file.ReadLine ();
 				var nameLine = file.ReadLine ();
+				file.Close ();
 				var match = nameRegex.Match (nameLine);
 				if (!match.Success)
 					return null;
@@ -551,7 +555,10 @@ namespace Mono.TextEditor.Highlighting
 
 		public static ColorScheme DefaultColorStyle {
 			get {
-				return GetColorStyle (TextEditorOptions.DefaultColorStyle);
+				var defaultStyle = GetColorStyle (TextEditorOptions.DefaultColorStyle);
+				if (defaultStyle == null)
+					Console.WriteLine ("Default style {0} can't be loaded.", TextEditorOptions.DefaultColorStyle);
+				return defaultStyle;
 			}
 		}
 		

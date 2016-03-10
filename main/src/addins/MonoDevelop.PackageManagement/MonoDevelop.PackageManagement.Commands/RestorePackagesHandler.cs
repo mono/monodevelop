@@ -26,13 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.PackageManagement.Commands
@@ -41,9 +34,10 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			var runner = new PackageRestoreRunner ();
+			var runner = new PackageRestoreRunner (GetPackageManagementSolution ());
 			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				runner.Run ();
+				runner = null;
 			});
 		}
 

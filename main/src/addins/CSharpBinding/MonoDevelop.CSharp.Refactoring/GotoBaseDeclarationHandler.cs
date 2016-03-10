@@ -28,6 +28,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -81,28 +82,28 @@ namespace MonoDevelop.CSharp.Refactoring
 				throw new ArgumentNullException ("symbol");
 			switch (symbol.Kind) {
 			case SymbolKind.NamedType:
-				IdeApp.ProjectOperations.JumpToDeclaration (((ITypeSymbol)symbol).BaseType, doc.Project);
+				RefactoringService.RoslynJumpToDeclaration (((ITypeSymbol)symbol).BaseType, doc.Project);
 				break;
 			case SymbolKind.Property:
 				var property = (IPropertySymbol)symbol;
 				if (property.OverriddenProperty != null)
-					IdeApp.ProjectOperations.JumpToDeclaration (property.OverriddenProperty, doc.Project);
+					RefactoringService.RoslynJumpToDeclaration (property.OverriddenProperty, doc.Project);
 				else
-					IdeApp.ProjectOperations.JumpToDeclaration (property.ExplicitInterfaceImplementations.First (), doc.Project);
+					RefactoringService.RoslynJumpToDeclaration (property.ExplicitInterfaceImplementations.First (), doc.Project);
 				break;
 			case SymbolKind.Event:
 				var evt = (IEventSymbol)symbol;
 				if (evt.OverriddenEvent != null)
-					IdeApp.ProjectOperations.JumpToDeclaration (evt.OverriddenEvent, doc.Project);
+					RefactoringService.RoslynJumpToDeclaration (evt.OverriddenEvent, doc.Project);
 				else
-					IdeApp.ProjectOperations.JumpToDeclaration (evt.ExplicitInterfaceImplementations.First (), doc.Project);
+					RefactoringService.RoslynJumpToDeclaration (evt.ExplicitInterfaceImplementations.First (), doc.Project);
 				break;
 			case SymbolKind.Method:
 				var method = (IMethodSymbol)symbol;
 				if (method.OverriddenMethod != null)
-					IdeApp.ProjectOperations.JumpToDeclaration (method.OverriddenMethod, doc.Project);
+					RefactoringService.RoslynJumpToDeclaration (method.OverriddenMethod, doc.Project);
 				else
-					IdeApp.ProjectOperations.JumpToDeclaration (method.ExplicitInterfaceImplementations.First (), doc.Project);
+					RefactoringService.RoslynJumpToDeclaration (method.ExplicitInterfaceImplementations.First (), doc.Project);
 				break;
 			}
 		}

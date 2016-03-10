@@ -46,8 +46,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		ScrolledWindow scroller;
 		TreeIter root_iter;
+
+		public override string Id {
+			get { return "MonoDevelop.Ide.Gui.Pads.HelpTree"; }
+		}
 	
-		public HelpTree () : base (GettextCatalog.GetString ("Help"), Stock.Help)
+		public HelpTree ()
 		{
 			tree_view = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 
@@ -90,6 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return;
 			if (populated.ContainsKey (node))
 				return;
+#pragma warning disable 618
 			if (node.Nodes == null)
 				return;
 			TreeIter iter;
@@ -116,6 +121,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
+#pragma warning disable 618
 		void PopulateNode (TreeIter parent)
 		{
 			Node node = (Node)store.GetValue (parent, 1);

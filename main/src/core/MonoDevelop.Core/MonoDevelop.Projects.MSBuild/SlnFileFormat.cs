@@ -534,6 +534,12 @@ namespace MonoDevelop.Projects.MSBuild
 					monitor.Step (1);
 				});
 				loadTasks.Add (ft);
+
+				// Limit the number of concurrent tasks. Por solutions with many projects, spawning one thread per
+				// project makes the whole load process slower.
+				loadTasks.RemoveAll (t => t.IsCompleted);
+				if (loadTasks.Count > 4)
+					Task.WaitAny (loadTasks.ToArray ());
 			}
 
 			Task.WaitAll (loadTasks.ToArray ());

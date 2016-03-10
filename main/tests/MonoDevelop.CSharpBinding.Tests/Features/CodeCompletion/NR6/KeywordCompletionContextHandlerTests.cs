@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class KeywordCompletionContextHandlerTests : CompletionTestBase
+	class KeywordCompletionContextHandlerTests : CompletionTestBase
 	{
 		[Test]
 		public void TestSpaceAutoPopup()

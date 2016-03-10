@@ -104,10 +104,6 @@
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
       <Private>False</Private>
@@ -158,7 +154,6 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticRunner.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionContainer.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\IssueMarker.cs" />
-    <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\BuiltInCodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AnalyzersFromAssembly.cs" />
@@ -170,6 +165,9 @@
     <Compile Include="MonoDevelop.CodeIssues\ISuppressionFixProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeFix.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CSharpSuppressionFixProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring\FindReferencesProvider.cs" />
+    <Compile Include="MonoDevelop.Refactoring\JumpToDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -195,17 +193,71 @@
     <EmbeddedResource Include="icons\prefs-code-actions-16%402x.png">
       <LogicalName>prefs-code-actions-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~dark.png">
+      <LogicalName>prefs-code-actions-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~dark%402x.png">
+      <LogicalName>prefs-code-actions-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~sel.png">
+      <LogicalName>prefs-code-actions-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~sel%402x.png">
+      <LogicalName>prefs-code-actions-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~dark~sel.png">
+      <LogicalName>prefs-code-actions-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-actions-16~dark~sel%402x.png">
+      <LogicalName>prefs-code-actions-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-rules-16.png">
       <LogicalName>prefs-code-rules-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-rules-16%402x.png">
       <LogicalName>prefs-code-rules-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~dark.png">
+      <LogicalName>prefs-code-rules-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~dark%402x.png">
+      <LogicalName>prefs-code-rules-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~sel.png">
+      <LogicalName>prefs-code-rules-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~sel%402x.png">
+      <LogicalName>prefs-code-rules-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~dark~sel.png">
+      <LogicalName>prefs-code-rules-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-rules-16~dark~sel%402x.png">
+      <LogicalName>prefs-code-rules-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-analysis-16.png">
       <LogicalName>prefs-code-analysis-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-code-analysis-16%402x.png">
       <LogicalName>prefs-code-analysis-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~dark.png">
+      <LogicalName>prefs-code-analysis-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~dark%402x.png">
+      <LogicalName>prefs-code-analysis-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~sel.png">
+      <LogicalName>prefs-code-analysis-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~sel%402x.png">
+      <LogicalName>prefs-code-analysis-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~dark~sel.png">
+      <LogicalName>prefs-code-analysis-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-code-analysis-16~dark~sel%402x.png">
+      <LogicalName>prefs-code-analysis-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

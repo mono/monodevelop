@@ -588,6 +588,7 @@ namespace MonoDevelop.Components.Docking
 	{
 		public DockFloatingWindow (Gtk.Window dockParent, string title) : base (title)
 		{
+			this.ApplyTheme ();
 			this.DockParent = dockParent;
 		}
 

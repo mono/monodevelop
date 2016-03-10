@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components
 {
@@ -124,7 +125,11 @@ namespace MonoDevelop.Components
 
 		internal void Click ()
 		{
-			DoClick ();
+			try {
+				DoClick ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception in context menu", ex);
+			}
 		}
 
 		protected virtual void DoClick ()

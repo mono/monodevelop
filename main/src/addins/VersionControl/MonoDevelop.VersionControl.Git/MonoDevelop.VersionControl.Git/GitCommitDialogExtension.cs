@@ -42,8 +42,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override bool Initialize (ChangeSet changeSet)
 		{
-			if (changeSet.Repository is GitRepository) {
-				widget = new GitCommitDialogExtensionWidget ();
+			var repo = changeSet.Repository as GitRepository;
+			if (repo != null) {
+				widget = new GitCommitDialogExtensionWidget (repo);
 				Add (widget);
 				widget.Show ();
 				Show ();
@@ -162,7 +163,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.textView = textView;
 			overflowTextTag = new Gtk.TextTag ("overflow");
-			overflowTextTag.Foreground = "red";
+			overflowTextTag.Foreground = Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false);
 			overflowTextTag.ForegroundSet = true;
 			textView.Buffer.TagTable.Add (overflowTextTag);
 			textView.Buffer.Changed += OnTextChanged;

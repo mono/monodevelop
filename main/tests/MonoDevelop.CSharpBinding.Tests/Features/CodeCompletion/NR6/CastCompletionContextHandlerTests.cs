@@ -32,8 +32,13 @@ using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class CastCompletionContextHandlerTests: CompletionTestBase
+	class CastCompletionContextHandlerTests: CompletionTestBase
 	{
+		internal override CompletionContextHandler CreateContextHandler ()
+		{
+			return new CastCompletionContextHandler ();
+		}
+
 		[Test]
 		public void TestSimple()
 		{
@@ -55,5 +60,150 @@ class FooBar
 }
 ", "Bar");
 		}
+
+		[Test]
+		public void TestNoUpcastAvailable()
+		{
+			VerifyNoItemsExist (@"
+class A 
+{
+	public int Foo;
+	public void Bar (){}
+	public string FooBar { get ; set; }
+	public event FooEvt;
+}
+
+class B : A
+{
+
+}
+
+class TestClass
+{
+	public TestClass(A a)
+	{
+		if (a is B) {
+			a.$$
+		}
+}
+}	");
+		}
+
+		[Test]
+		public void TestReturn()
+		{
+			VerifyItemExists (@"
+using System;
+
+class FooBar
+{
+	public event EventHandler Foo;
+
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		if (true) {
+			if (!(fb is FooBar))
+				return;
+			fb.$$
+		}
+	}
+}
+", "Bar");
+		}
+
+		[Test]
+		public void TestContinue()
+		{
+			VerifyItemExists (@"
+using System;
+
+class FooBar
+{
+	public event EventHandler Foo;
+
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		for (int i = 0; i < 10; i++) {
+			if (!(fb is FooBar))
+				continue;
+			fb.$$
+		}
+	}
+}
+", "Bar");
+		}
+
+		[Test]
+		public void TestBreak()
+		{
+			VerifyItemExists (@"
+using System;
+
+class FooBar
+{
+	public event EventHandler Foo;
+
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		for (int i = 0; i < 10; i++) {
+			if (!(fb is FooBar))
+				break;
+			fb.$$
+		}
+	}
+}
+", "Bar");
+		}
+
+		/// <summary>
+		/// Bug 38957 - Casting code completion(one based on if "is") offers wrong in case of "if else if" 
+		/// </summary>
+		[Test]
+		public void TestBug38957()
+		{
+			VerifyItemsAbsent (@"
+using System;
+
+class FooBar
+{
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		if (fb is FooBar) {
+		} else if (true) {
+			fb.$$
+		}
+	}
+}
+", "Bar");
+		}
+
+		[Test]
+		public void TestExpression()
+		{
+			VerifyItemExists (@"
+using System;
+
+class FooBar
+{
+	public event EventHandler Foo;
+
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		if (fb is FooBar && fb.$$
+	}
+}
+", "Bar");
+		}
+
 	}
 }

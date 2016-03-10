@@ -29,7 +29,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture()]
-	public class EnumContextTests : TestBase
+	class EnumContextTests : TestBase
 	{
 		/// <summary>
 		/// Bug 2142 - Enum member list triggers completion

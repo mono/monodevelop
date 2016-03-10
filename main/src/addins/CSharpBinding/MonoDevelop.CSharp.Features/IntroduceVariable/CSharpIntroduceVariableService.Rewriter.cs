@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Simplification;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
 {
-	public partial class CSharpIntroduceVariableService
+	partial class CSharpIntroduceVariableService
 	{
 		private class Rewriter : CSharpSyntaxRewriter
 		{

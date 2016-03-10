@@ -5,55 +5,107 @@ namespace MonoDevelop.PackageManagement
 	public partial class PackagesWidget
 	{
 		private global::Gtk.HPaned mainPane;
+		
 		private global::Gtk.VBox packagesListVBox;
+		
 		private global::Gtk.ScrolledWindow packagesTreeScrolledWindow;
+		
 		private global::Gtk.TreeView packagesTreeView;
+		
 		private global::Gtk.HBox pagedResultsHBox;
+		
 		private global::Gtk.Label pagedResultsLeftLabel;
+		
 		private global::MonoDevelop.PackageManagement.PagedResultsWidget pagedResultsWidget;
+		
 		private global::Gtk.Label pagedResultsRightLabel;
+		
 		private global::Gtk.VBox packageInfoVBox;
+		
 		private global::Gtk.ComboBox packageSourceComboBox;
+		
 		private global::Gtk.HBox packageSearchHBox;
+		
 		private global::Gtk.Entry packageSearchEntry;
+		
 		private global::Gtk.Button packageSearchButton;
+		
+		private global::MonoDevelop.Components.ImageView imageSearch;
+		
 		private global::Gtk.CheckButton includePrereleaseCheckButton;
+		
 		private global::Gtk.HButtonBox updateAllPackagesButtonBox;
+		
 		private global::Gtk.Button updateAllPackagesButton;
+		
 		private global::Gtk.Frame packageInfoFrame;
+		
 		private global::Gtk.Alignment packageInfoFrameAlignment;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.VBox packageInfoFrameVBox;
+		
 		private global::Gtk.HBox packageCreatedByHBox;
+		
 		private global::Gtk.Label packageCreatedByLabel;
+		
 		private global::Gtk.Label packageCreatedByTextBox;
+		
 		private global::Gtk.HBox packageIdHBox;
+		
 		private global::Gtk.Label packageIdLabel;
+		
 		private global::MonoDevelop.PackageManagement.HyperlinkWidget packageIdButton;
+		
 		private global::Gtk.Label packageIdTextBox;
+		
 		private global::Gtk.HBox packageVersionHBox;
+		
 		private global::Gtk.Label packageVersionLabel;
+		
 		private global::Gtk.Label packageVersionTextBox;
+		
 		private global::Gtk.HBox packageLastUpdatedHBox;
+		
 		private global::Gtk.Label packageLastUpdatedLabel;
+		
 		private global::Gtk.Label packageLastUpdatedTextBox;
+		
 		private global::Gtk.HBox packageDownloadsHBox;
+		
 		private global::Gtk.Label packageDownloadsLabel;
+		
 		private global::Gtk.Label packageDownloadsTextBox;
+		
 		private global::Gtk.HBox viewLicenseTermsHBox;
+		
 		private global::MonoDevelop.PackageManagement.HyperlinkWidget viewLicenseTermsButton;
+		
 		private global::Gtk.HBox moreInformationHBox;
+		
 		private global::MonoDevelop.PackageManagement.HyperlinkWidget moreInformationButton;
+		
 		private global::Gtk.TextView packageDescriptionTextView;
+		
 		private global::Gtk.HBox packageDependenciesHBox;
+		
 		private global::Gtk.Label packageDependenciesLabel;
+		
 		private global::Gtk.Label packageDependenciesNoneLabel;
+		
 		private global::Gtk.HBox packageDependenciesListHBox;
+		
 		private global::Gtk.Label packageDependenciesListLabel;
+		
 		private global::Gtk.Label packageDependenciesListFillerLabel;
+		
 		private global::Gtk.HButtonBox managePackageButtonBox;
+		
 		private global::Gtk.Button addPackageButton;
+		
 		private global::Gtk.Button removePackageButton;
+		
 		private global::Gtk.Button managePackageButton;
 
 		protected virtual void Build ()
@@ -145,10 +197,12 @@ namespace MonoDevelop.PackageManagement
 			this.packageSearchButton = new global::Gtk.Button ();
 			this.packageSearchButton.CanFocus = true;
 			this.packageSearchButton.Name = "packageSearchButton";
-			this.packageSearchButton.UseUnderline = true;
-			global::Gtk.Image w10 = new global::Gtk.Image ();
-			w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-find", global::Gtk.IconSize.Menu);
-			this.packageSearchButton.Image = w10;
+			// Container child packageSearchButton.Gtk.Container+ContainerChild
+			this.imageSearch = new global::MonoDevelop.Components.ImageView ();
+			this.imageSearch.Name = "imageSearch";
+			this.imageSearch.IconId = "gtk-find";
+			this.imageSearch.IconSize = ((global::Gtk.IconSize)(1));
+			this.packageSearchButton.Add (this.imageSearch);
 			this.packageSearchHBox.Add (this.packageSearchButton);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.packageSearchHBox [this.packageSearchButton]));
 			w11.Position = 1;
@@ -216,7 +270,7 @@ namespace MonoDevelop.PackageManagement
 			// Container child packageCreatedByHBox.Gtk.Box+BoxChild
 			this.packageCreatedByLabel = new global::Gtk.Label ();
 			this.packageCreatedByLabel.Name = "packageCreatedByLabel";
-			this.packageCreatedByLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\'bold\'>Created by:</span>");
+			this.packageCreatedByLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight='bold'>Created by:</span>");
 			this.packageCreatedByLabel.UseMarkup = true;
 			this.packageCreatedByHBox.Add (this.packageCreatedByLabel);
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.packageCreatedByHBox [this.packageCreatedByLabel]));
@@ -244,7 +298,7 @@ namespace MonoDevelop.PackageManagement
 			// Container child packageIdHBox.Gtk.Box+BoxChild
 			this.packageIdLabel = new global::Gtk.Label ();
 			this.packageIdLabel.Name = "packageIdLabel";
-			this.packageIdLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\'bold\'>Id:</span>");
+			this.packageIdLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight='bold'>Id:</span>");
 			this.packageIdLabel.UseMarkup = true;
 			this.packageIdHBox.Add (this.packageIdLabel);
 			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.packageIdHBox [this.packageIdLabel]));
@@ -277,7 +331,7 @@ namespace MonoDevelop.PackageManagement
 			// Container child packageVersionHBox.Gtk.Box+BoxChild
 			this.packageVersionLabel = new global::Gtk.Label ();
 			this.packageVersionLabel.Name = "packageVersionLabel";
-			this.packageVersionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\'bold\'>Version:</span>");
+			this.packageVersionLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight='bold'>Version:</span>");
 			this.packageVersionLabel.UseMarkup = true;
 			this.packageVersionHBox.Add (this.packageVersionLabel);
 			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.packageVersionHBox [this.packageVersionLabel]));
@@ -305,7 +359,7 @@ namespace MonoDevelop.PackageManagement
 			// Container child packageLastUpdatedHBox.Gtk.Box+BoxChild
 			this.packageLastUpdatedLabel = new global::Gtk.Label ();
 			this.packageLastUpdatedLabel.Name = "packageLastUpdatedLabel";
-			this.packageLastUpdatedLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\'bold\'>Last Updated:</span>");
+			this.packageLastUpdatedLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight='bold'>Last Updated:</span>");
 			this.packageLastUpdatedLabel.UseMarkup = true;
 			this.packageLastUpdatedHBox.Add (this.packageLastUpdatedLabel);
 			global::Gtk.Box.BoxChild w27 = ((global::Gtk.Box.BoxChild)(this.packageLastUpdatedHBox [this.packageLastUpdatedLabel]));
@@ -333,7 +387,7 @@ namespace MonoDevelop.PackageManagement
 			// Container child packageDownloadsHBox.Gtk.Box+BoxChild
 			this.packageDownloadsLabel = new global::Gtk.Label ();
 			this.packageDownloadsLabel.Name = "packageDownloadsLabel";
-			this.packageDownloadsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\'bold\'>Downloads:</span>");
+			this.packageDownloadsLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight='bold'>Downloads:</span>");
 			this.packageDownloadsLabel.UseMarkup = true;
 			this.packageDownloadsHBox.Add (this.packageDownloadsLabel);
 			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.packageDownloadsHBox [this.packageDownloadsLabel]));
@@ -397,7 +451,7 @@ namespace MonoDevelop.PackageManagement
 			// Container child packageDependenciesHBox.Gtk.Box+BoxChild
 			this.packageDependenciesLabel = new global::Gtk.Label ();
 			this.packageDependenciesLabel.Name = "packageDependenciesLabel";
-			this.packageDependenciesLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight=\'bold\'>Dependencies:</span>");
+			this.packageDependenciesLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<span weight='bold'>Dependencies:</span>");
 			this.packageDependenciesLabel.UseMarkup = true;
 			this.packageDependenciesHBox.Add (this.packageDependenciesLabel);
 			global::Gtk.Box.BoxChild w38 = ((global::Gtk.Box.BoxChild)(this.packageDependenciesHBox [this.packageDependenciesLabel]));

@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			bool installPending = false,
 			PackageName updatedPackage = null)
 		{
-			node = new PackageReferenceNode (packageReference, installed, installPending, updatedPackage);
+			node = new PackageReferenceNode (null, packageReference, installed, installPending, updatedPackage);
 		}
 
 		void CreatePackageReference (

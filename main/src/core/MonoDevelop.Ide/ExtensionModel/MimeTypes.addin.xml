@@ -19,6 +19,12 @@
 	<MimeType id="application/xml" _description="XML document" icon="md-xml-file-icon" isText="true">
 		<File pattern="*.xml" />
 	</MimeType>
+	<MimeType id="application/png" _description="PNG resource" icon="md-file-image">
+		<File pattern="*.png" />
+	</MimeType>
+	<MimeType id="text/css" _description="CSS document" icon="md-file-css" isText="true">
+		<File pattern="*.css" />
+	</MimeType>
 	<MimeType id="application/config+xml" _description="Configuration File" baseType="application/xml">
 		<File pattern="*.config" />
 	</MimeType>

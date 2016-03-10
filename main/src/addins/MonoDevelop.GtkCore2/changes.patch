@@ -4034,7 +4034,7 @@ Index: MonoDevelop.GtkCore.addin.xml
  	</Extension>
  	
 +	<Extension path = "/MonoDevelop/Core/MimeTypes">
-+		<MimeType id="text/x-gtkx" _description="Gtk# designer file" icon="gtk-page-setup" isText="true">
++		<MimeType id="text/x-gtkx" _description="Gtk# designer file" isText="true">
 +			<File pattern="*.gtkx" />
 +		</MimeType>
 +	</Extension>

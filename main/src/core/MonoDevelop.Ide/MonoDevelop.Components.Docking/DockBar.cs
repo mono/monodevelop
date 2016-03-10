@@ -213,29 +213,8 @@ namespace MonoDevelop.Components.Docking
 			var alloc = Allocation;
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 				ctx.Rectangle (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y + alloc.Height);
-				Cairo.LinearGradient gr;
-				if (Orientation == Gtk.Orientation.Vertical)
-					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X + alloc.Width, alloc.Y);
-				else
-					gr = new Cairo.LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height);
-				using (gr) {
-					gr.AddColorStop (0, Styles.DockBarBackground1);
-					gr.AddColorStop (1, Styles.DockBarBackground2);
-					ctx.SetSource (gr);
-				}
+				ctx.SetSourceColor (Styles.DockBarBackground.ToCairoColor ());
 				ctx.Fill ();
-
-				// Light shadow
-				double offs = ShowBorder ? 1.5 : 0.5;
-				switch (Position) {
-				case PositionType.Left:ctx.MoveTo (alloc.X + alloc.Width - offs, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
-				case PositionType.Right: ctx.MoveTo (alloc.X + offs, alloc.Y); ctx.RelLineTo (0, Allocation.Height); break;
-				case PositionType.Top: ctx.MoveTo (alloc.X, alloc.Y + alloc.Height - offs); ctx.RelLineTo (Allocation.Width, 0); break;
-				case PositionType.Bottom: ctx.MoveTo (alloc.X, alloc.Y + offs); ctx.RelLineTo (Allocation.Width, 0); break;
-				}
-				ctx.LineWidth = 1;
-				ctx.SetSourceColor (Styles.DockBarSeparatorColorLight);
-				ctx.Stroke ();
 			}
 
 			if (Child != null)

@@ -40,7 +40,20 @@ namespace UnitTests
 	{
 		static bool firstRun = true;
 		
-		
+		static TestBase ()
+		{
+			var topPath = LocateTopLevel ();
+			LoggingService.AddLogger (new MonoDevelop.Core.Logging.FileLogger (Path.Combine (topPath, "TestResult_LoggingService.log")));
+		}
+
+		static string LocateTopLevel ()
+		{
+			var cwd = typeof (TestBase).Assembly.Location;
+			while (!string.IsNullOrEmpty (cwd) && !File.Exists (Path.Combine (cwd, "top_level_monodevelop")))
+				cwd = Path.GetDirectoryName (cwd);
+			return cwd;
+		}
+
 		[TestFixtureSetUp]
 		public void Simulate ()
 		{
@@ -70,7 +83,6 @@ namespace UnitTests
 			Runtime.Initialize (true);
 			Xwt.Application.Initialize ();
 			Gtk.Application.Init ();
-			TypeSystemService.TrackFileChanges = true;
 			DesktopService.Initialize ();
 			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
 				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);

@@ -39,8 +39,9 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			try {
+				IPackageManagementSolution solution = GetPackageManagementSolution ();
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-				RestoreBeforeUpdateAction.Restore (project, () => {
+				RestoreBeforeUpdateAction.Restore (solution, project, () => {
 					Runtime.RunInMainThread (() => Update (project)).Wait ();
 				});
 			} catch (Exception ex) {

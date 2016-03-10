@@ -109,21 +109,21 @@ namespace MonoDevelop.Ide.Tasks
 			
 			newButton = new Button ();
 			newButton.Label = GettextCatalog.GetString ("New Task");
-			newButton.Image = new Gtk.Image (Gtk.Stock.New, IconSize.Button);
+			newButton.Image = new ImageView (Gtk.Stock.New, IconSize.Menu);
 			newButton.Image.Show ();
 			newButton.Clicked += new EventHandler (NewUserTaskClicked); 
 			newButton.TooltipText = GettextCatalog.GetString ("Create New Task");
 
 			copyButton = new Button ();
 			copyButton.Label = GettextCatalog.GetString ("Copy Task");
-			copyButton.Image = new Gtk.Image (Gtk.Stock.Copy, IconSize.Button);
+			copyButton.Image = new ImageView (Gtk.Stock.Copy, IconSize.Menu);
 			copyButton.Image.Show ();
 			copyButton.Clicked += CopyUserTaskClicked;
 			copyButton.TooltipText = GettextCatalog.GetString ("Copy Task Description");
 			
 			delButton = new Button ();
 			delButton.Label = GettextCatalog.GetString ("Delete Task");
-			delButton.Image = new Gtk.Image (Gtk.Stock.Delete, IconSize.Button);
+			delButton.Image = new ImageView (Gtk.Stock.Delete, IconSize.Menu);
 			delButton.Image.Show ();
 			delButton.Clicked += new EventHandler (DeleteUserTaskClicked); 
 			delButton.TooltipText = GettextCatalog.GetString ("Delete Task");

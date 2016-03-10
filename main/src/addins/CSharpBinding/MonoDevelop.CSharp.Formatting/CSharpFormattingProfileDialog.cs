@@ -105,6 +105,9 @@ namespace MonoDevelop.CSharp.Formatting
 				case 3:
 					treeView = treeviewWrapping;
 					break;
+				case 4:
+					treeView = treeviewStyle;
+					break;
 				default:
 					return;
 				}
@@ -118,8 +121,8 @@ namespace MonoDevelop.CSharp.Formatting
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Indentation"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("New Lines"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Spacing"));
-//			comboboxCategories.AppendText (GettextCatalog.GetString ("Style"));
 			comboboxCategories.AppendText (GettextCatalog.GetString ("Wrapping"));
+			comboboxCategories.AppendText (GettextCatalog.GetString ("Style"));
 			comboboxCategories.Changed += delegate {
 				texteditor.Text = "";
 				notebookCategories.Page = comboboxCategories.Active;
@@ -180,8 +183,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 			AddOption (indentationOptions, "IndentBlock", GettextCatalog.GetString ("Indent block contents"), "namespace Test { class AClass { void Method () { int x; int y; } } }");
 			AddOption (indentationOptions, "IndentBraces", GettextCatalog.GetString ("Indent open and close braces"), "class AClass { int aField; void AMethod () {}}");
-			AddOption (indentationOptions, "IndentSwitchSection", GettextCatalog.GetString ("Indent case contents"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
-			AddOption (indentationOptions, "IndentSwitchCaseSection", GettextCatalog.GetString ("Indent case labels"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
+			AddOption (indentationOptions, "IndentSwitchSection", GettextCatalog.GetString ("Indent switch sections"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
+			AddOption (indentationOptions, "IndentSwitchCaseSection", GettextCatalog.GetString ("Indent case sections"), "class AClass { void Method (int x) { switch (x) { case 1: break; } } }");
 			AddOption (indentationOptions, "LabelPositioning", GettextCatalog.GetString ("Label indentation"), "enum AEnum { A, B, C }");
 			treeviewIndentOptions.ExpandAll ();
 			#endregion
@@ -388,7 +391,7 @@ namespace MonoDevelop.CSharp.Formatting
 {
 }");
 
-			AddOption (spacingOptions, category, "SpaceWithinMethodDeclarationParenthesis", GettextCatalog.GetString ("Insert space withing argument list parentheses"), 
+			AddOption (spacingOptions, category, "SpaceWithinMethodDeclarationParenthesis", GettextCatalog.GetString ("Insert space within argument list parentheses"), 
 				@"void Example(int i, int j)
 {
 }");
@@ -401,7 +404,7 @@ namespace MonoDevelop.CSharp.Formatting
 {
 	Test();
 }");
-			AddOption (spacingOptions, category, "SpaceWithinMethodCallParentheses", GettextCatalog.GetString ("Insert space withing argument list parentheses"), @"void Example()
+			AddOption (spacingOptions, category, "SpaceWithinMethodCallParentheses", GettextCatalog.GetString ("Insert space within argument list parentheses"), @"void Example()
 {
 	Test(1, 2);
 }");
@@ -547,8 +550,10 @@ namespace MonoDevelop.CSharp.Formatting
 
 			treeviewStyle.AppendColumn (column);
 
-			AddOption (styleOptions, category, null, GettextCatalog.GetString ("Qualify member access with 'this'"), null);
-			AddOption (styleOptions, category, null, GettextCatalog.GetString ("Use 'var' when generating locals"), null);
+			AddOption (styleOptions, "PlaceSystemDirectiveFirst", GettextCatalog.GetString ("Place System directives first when sorting usings"), "");
+
+			// AddOption (styleOptions, category, null, GettextCatalog.GetString ("Qualify member access with 'this'"), null);
+			// AddOption (styleOptions, category, null, GettextCatalog.GetString ("Use 'var' when generating locals"), null);
 
 			treeviewStyle.ExpandAll ();
 			#endregion

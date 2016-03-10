@@ -113,7 +113,7 @@ run-gdb:
 	cd main && $(MAKE) run-gdb
 
 run-gdb-64:
-	cd main && (MAKE) run-gdb-64
+	cd main && $(MAKE) run-gdb-64
 test:
 	cd main && $(MAKE) test assembly=$(assembly)
 

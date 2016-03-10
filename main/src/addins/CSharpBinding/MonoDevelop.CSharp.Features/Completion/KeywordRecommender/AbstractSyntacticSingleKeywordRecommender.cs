@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion.KeywordRecommenders
             if (syntaxKind.HasValue)
             {
 				return new [] {
-                    new RecommendedKeyword(SyntaxFacts.GetText(syntaxKind.Value), shouldFormatOnCommit: this.ShouldFormatOnCommit)
+					new RecommendedKeyword(SyntaxFacts.GetText(syntaxKind.Value), syntaxKind.Value, shouldFormatOnCommit: this.ShouldFormatOnCommit)
 				};
             }
 
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion.KeywordRecommenders
             if (syntaxKind.HasValue)
             {
 				return  new [] {
-                    new RecommendedKeyword(SyntaxFacts.GetText(syntaxKind.Value))
+					new RecommendedKeyword(SyntaxFacts.GetText(syntaxKind.Value), syntaxKind.Value)
 				};
             }
 

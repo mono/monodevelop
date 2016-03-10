@@ -103,10 +103,10 @@ namespace MonoDevelop.CodeIssues
 		public bool IsEnabled {
 			get {
 				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {
-					if (!GetIsEnabled (diagnostic))
-						return false;
+					if (GetIsEnabled (diagnostic))
+						return true;
 				}
-				return true;
+				return false;
 			}
 			set {
 				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {

@@ -82,6 +82,11 @@ namespace MonoDevelop.Components
 			IntPtr handle = pango_layout_get_context (layout.Handle);
 			return handle.Equals (IntPtr.Zero) ? null : GLib.Object.GetObject (handle) as Pango.Context;
 		}
+
+		public static double GetPixelBaseline (this Pango.Layout layout)
+		{
+			return layout.Iter.Baseline / Pango.Scale.PangoScale;
+		}
 		
 		public static void DrawLine (this Cairo.Context cr, Cairo.Color color, double x1, double y1, double x2, double y2)
 		{
@@ -112,6 +117,28 @@ namespace MonoDevelop.Components
 		public static void SetSourceColor (this Cairo.Context cr, Cairo.Color color)
 		{
 			cr.SetSourceRGBA (color.R, color.G, color.B, color.A);
+		}
+
+		public static bool Contains (this Cairo.Rectangle rect, Gdk.Point point)
+		{
+			return ((point.X >= rect.X) && (point.X < (rect.X + rect.Width)) && 
+				(point.Y >= rect.Y) && (point.Y < (rect.Y + rect.Height)));
+		}
+
+		public static bool Contains (this Cairo.Rectangle rect, double x, double y)
+		{
+			return ((x >= rect.X) && (x < (rect.X + rect.Width)) && 
+				(y >= rect.Y) && (y < (rect.Y + rect.Height)));
+		}
+
+		public static Cairo.Rectangle Inflate (this Cairo.Rectangle rect, double width, double height)
+		{
+			return new Cairo.Rectangle(
+				rect.X - width,
+				rect.Y - height,
+				rect.Width + (width * 2),
+				rect.Height + (height * 2)
+			);
 		}
 
 		//this is needed for building against old Mono.Cairo versions

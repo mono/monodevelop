@@ -31,12 +31,19 @@ namespace MonoDevelop.VersionControl
 		{
 			base.Initialize ();
 			VersionControlService.FileStatusChanged += Monitor;
+			IdeApp.Workspace.LastWorkspaceItemClosed += OnWorkspaceRefresh;
 		}
 
 		public override void Dispose ()
 		{
 			VersionControlService.FileStatusChanged -= Monitor;
+			IdeApp.Workspace.LastWorkspaceItemClosed -= OnWorkspaceRefresh;
 			base.Dispose ();
+		}
+
+		void OnWorkspaceRefresh (object sender, EventArgs args)
+		{
+			pathToObject.Clear ();
 		}
 
 		public override void BuildNode (ITreeBuilder builder, object dataObject, NodeInfo nodeInfo)

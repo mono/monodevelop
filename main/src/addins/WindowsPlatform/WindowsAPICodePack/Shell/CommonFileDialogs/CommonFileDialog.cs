@@ -638,6 +638,8 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
                 PopulateWithIShellItems(items);
             }
 
+            CleanupEventSink();
+
             return result;
         }
         /// <summary>
@@ -672,6 +674,15 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
                 nativeEventSink = new NativeDialogEventSink(this);
                 nativeDlg.Advise(nativeEventSink, out cookie);
                 nativeEventSink.Cookie = cookie;
+            }
+        }
+
+        private void CleanupEventSink()
+        {
+            if (nativeEventSink != null)
+            {
+                nativeDialog.Unadvise(nativeEventSink.Cookie);
+                nativeEventSink = null;
             }
         }
 

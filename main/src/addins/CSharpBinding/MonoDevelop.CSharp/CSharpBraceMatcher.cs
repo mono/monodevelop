@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp
 				return null;
 			var token = root.FindToken (offset);
 			var tokenSpan = token.Span;
-			if (offset < tokenSpan.Start || offset > tokenSpan.End)
+			if (offset < tokenSpan.Start || offset >= tokenSpan.End)
 				return null;
 			for (int i = 0; i < tokenPairs.Length / 2; i++) {
 				var open = tokenPairs [i * 2];
@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			if (token.IsKind (SyntaxKind.StringLiteralToken)) {
+			if (token.IsKind (SyntaxKind.StringLiteralToken) && token.ToString().EndsWith ("\"", StringComparison.Ordinal)) {
 				if (token.IsVerbatimStringLiteral ()) {
 					if (offset <= tokenSpan.Start)
 						return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 2), new TextSegment (tokenSpan.End - 1, 1), true);
@@ -96,7 +96,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			if (token.IsKind (SyntaxKind.CharacterLiteralToken)) {
+			if (token.IsKind (SyntaxKind.CharacterLiteralToken) && token.ToString().EndsWith ("\'", StringComparison.Ordinal)) {
 				if (offset <= tokenSpan.Start)
 					return new BraceMatchingResult (new TextSegment (tokenSpan.Start, 1), new TextSegment (tokenSpan.End - 1, 1), true);
 				if (offset >= tokenSpan.End - 1)

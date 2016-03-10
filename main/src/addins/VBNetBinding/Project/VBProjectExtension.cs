@@ -102,6 +102,7 @@ namespace MonoDevelop.VBNetBinding
 		{
 			base.OnInitialize ();
 			DefaultNamespaceIsImplicit = true;
+			SupportsRoslyn = true;
 			StockIcon = "md-project";
 		}
 

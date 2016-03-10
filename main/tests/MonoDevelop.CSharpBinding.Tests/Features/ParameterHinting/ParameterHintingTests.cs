@@ -40,7 +40,7 @@ using System;
 namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 {
 	[TestFixture]
-	public class ParameterHintingTests : TestBase
+	class ParameterHintingTests : TestBase
 	{
 		internal class TestFactory : IParameterHintingDataFactory
 		{
@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 			}
 			var document = workspace.CurrentSolution.GetDocument(documentId);
 			var semanticModel = document.GetSemanticModelAsync().Result;
-			
+
 			return engine.GetParameterDataProviderAsync(document, semanticModel, cursorPosition).Result;
 		}
 		
@@ -1273,6 +1273,55 @@ public static class Lib
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.Count);
 			Assert.AreEqual ("M:Lib.Foo``1(``0)", provider[0].Symbol.GetDocumentationCommentId ());
+		}
+
+		[Test]
+		public void TestHintingTooEager ()
+		{
+			var provider = CreateProvider (
+				@"using System;
+class TestClass
+{
+	public static void Main ()
+	{
+		$Main $();
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (0, provider.Count);
+
+			provider = CreateProvider (
+				@"using System;
+class TestClass
+{
+	public static void Main ()
+	{
+		Main ()$  $;
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (0, provider.Count);
+		}
+
+
+		[Test]
+		public void TestHintingToParentInvocation ()
+		{
+			var provider = CreateProvider (
+				@"using System;
+class TestClass
+{
+	static string SS(string s) {}
+	static string ZZ(string s) {}
+
+	public static void Main ()
+	{
+		SS($ZZ $());
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual ("M:TestClass.SS(System.String)", provider[0].Symbol.GetDocumentationCommentId ());
 		}
 	}
 }

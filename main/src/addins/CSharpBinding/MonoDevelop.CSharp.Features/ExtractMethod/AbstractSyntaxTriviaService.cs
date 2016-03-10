@@ -11,7 +11,7 @@ using ICSharpCode.NRefactory6.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public abstract partial class AbstractSyntaxTriviaService : ISyntaxTriviaService
+    abstract partial class AbstractSyntaxTriviaService : ISyntaxTriviaService
     {
         private const int TriviaLocationsCount = 4;
 

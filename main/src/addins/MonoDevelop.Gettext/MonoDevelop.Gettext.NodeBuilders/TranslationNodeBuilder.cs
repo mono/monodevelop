@@ -81,7 +81,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			} else {
 				nodeInfo.Label = "(" + translation.IsoCode + ")";
 			}			
-			nodeInfo.Icon = Context.GetIcon ("md-gettext-locale");
+			nodeInfo.Icon = Context.GetIcon ("md-po-file");
 		}
 		
 		class TranslationNodeCommandHandler : NodeCommandHandler
@@ -92,7 +92,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 				Translation        translation = CurrentNode.DataItem as Translation;
 				if (project == null || translation == null)
 					return;
-				IdeApp.Workbench.OpenDocument (Path.Combine (project.BaseDirectory, translation.FileName));
+				IdeApp.Workbench.OpenDocument (Path.Combine (project.BaseDirectory, translation.FileName), project);
 			}
 			
 			public override void DeleteItem ()

@@ -256,7 +256,7 @@ namespace MonoDevelop.AssemblyBrowser
 			languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
 			languageCombobox.Active = Math.Min (2, Math.Max (0, PropertyService.Get ("AssemblyBrowser.Language", 0)));
 			languageCombobox.Changed += LanguageComboboxhandleChanged;
-
+#pragma warning disable 618
 			loader = new CecilLoader (true);
 			loader.InterningProvider = new FastNonInterningProvider ();
 			loader.IncludeInternalMembers = true;

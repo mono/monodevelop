@@ -28,19 +28,20 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
 {
-	partial class GtkNewProjectDialogBackend : Gtk.Dialog
+	partial class GtkNewProjectDialogBackend : IdeDialog
 	{
-		Color bannerBackgroundColor = new Color (119, 130, 140);
-		Color bannerLineColor = new Color (112, 122, 131);
-		Color whiteColor = new Color (255, 255, 255);
-		Color categoriesBackgroundColor = new Color (225, 228, 232);
-		Color templateListBackgroundColor = new Color (240, 240, 240);
-		Color templateBackgroundColor = new Color (255, 255, 255);
-		Color templateSectionSeparatorColor = new Color (208, 208, 208);
+		Color bannerBackgroundColor = Styles.NewProjectDialog.BannerBackgroundColor.ToGdkColor ();
+		Color bannerLineColor = Styles.NewProjectDialog.BannerLineColor.ToGdkColor ();
+		Color whiteColor = Styles.NewProjectDialog.BannerForegroundColor.ToGdkColor ();
+		Color categoriesBackgroundColor = Styles.NewProjectDialog.CategoriesBackgroundColor.ToGdkColor ();
+		Color templateListBackgroundColor = Styles.NewProjectDialog.TemplateListBackgroundColor.ToGdkColor ();
+		Color templateBackgroundColor = Styles.NewProjectDialog.TemplateBackgroundColor.ToGdkColor ();
+		Color templateSectionSeparatorColor = Styles.NewProjectDialog.TemplateSectionSeparatorColor.ToGdkColor ();
 
 		VBox centreVBox;
 		HBox templatesHBox;
@@ -68,6 +69,32 @@ namespace MonoDevelop.Ide.Projects
 		GtkProjectConfigurationWidget projectConfigurationWidget;
 		GtkTemplateCellRenderer templateTextRenderer;
 		GtkTemplateCategoryCellRenderer categoryTextRenderer;
+
+		static GtkNewProjectDialogBackend ()
+		{
+			UpdateStyles ();
+			Styles.Changed += (sender, e) => UpdateStyles ();
+		}
+
+		static void UpdateStyles ()
+		{
+			var categoriesBackgroundColorHex = Styles.ColorGetHex (Styles.NewProjectDialog.CategoriesBackgroundColor);
+			var templateListBackgroundColorHex = Styles.ColorGetHex (Styles.NewProjectDialog.TemplateListBackgroundColor);
+
+			string rcstyle = "style \"templateCategoriesTreeView\"\r\n{\r\n" +
+				"    base[NORMAL] = \"" + categoriesBackgroundColorHex + "\"\r\n" +
+				"    GtkTreeView::even-row-color = \"" + categoriesBackgroundColorHex + "\"\r\n" +
+				"}\r\n";
+			rcstyle += "style \"templatesTreeView\"\r\n{\r\n" +
+				"    base[NORMAL] = \"" + templateListBackgroundColorHex + "\"\r\n" +
+				"    GtkTreeView::even-row-color = \"" + templateListBackgroundColorHex + "\"" +
+				"\r\n}";
+
+			rcstyle += "widget \"*templateCategoriesTreeView*\" style \"templateCategoriesTreeView\"\r\n";
+			rcstyle += "widget \"*templatesTreeView*\" style \"templatesTreeView\"\r\n";
+
+			Rc.ParseString (rcstyle);
+		}
 
 		void Build ()
 		{
@@ -105,7 +132,7 @@ namespace MonoDevelop.Ide.Projects
 
 			topBannerLabel = new Label ();
 			topBannerLabel.Name = "topBannerLabel";
-			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy ();
+			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy (); // UNDONE: VV: Use FontService?
 			font.Size = (int)(font.Size * 1.8);
 			topBannerLabel.ModifyFont (font);
 			topBannerLabel.ModifyFg (StateType.Normal, whiteColor);
@@ -127,10 +154,11 @@ namespace MonoDevelop.Ide.Projects
 			centreVBox.PackEnd (templatesHBox, true, true, 0);
 
 			// Template categories.
-			var templateCategoriesVBox = new VBox ();
-			templateCategoriesVBox.Name = "templateCategoriesVBox";
-			templateCategoriesVBox.BorderWidth = 0;
-			templateCategoriesVBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (220);
+			var templateCategoriesBgBox = new EventBox ();
+			templateCategoriesBgBox.Name = "templateCategoriesVBox";
+			templateCategoriesBgBox.BorderWidth = 0;
+			templateCategoriesBgBox.ModifyBg (StateType.Normal, categoriesBackgroundColor);
+			templateCategoriesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (220);
 			var templateCategoriesScrolledWindow = new ScrolledWindow ();
 			templateCategoriesScrolledWindow.Name = "templateCategoriesScrolledWindow";
 			templateCategoriesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
@@ -141,17 +169,17 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.BorderWidth = 0;
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
-			templateCategoriesTreeView.ModifyBase (StateType.Normal, categoriesBackgroundColor);
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
-			templateCategoriesVBox.PackStart (templateCategoriesScrolledWindow, true, true, 0);
-			templatesHBox.PackStart (templateCategoriesVBox, false, false, 0);
+			templateCategoriesBgBox.Add (templateCategoriesScrolledWindow);
+			templatesHBox.PackStart (templateCategoriesBgBox, false, false, 0);
 
 			// Templates.
-			var templatesVBox = new VBox ();
-			templatesVBox.Name = "templatesVBox";
-			templatesVBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (400);
-			templatesHBox.PackStart (templatesVBox, false, false, 0);
+			var templatesBgBox = new EventBox ();
+			templatesBgBox.ModifyBg (StateType.Normal, templateListBackgroundColor);
+			templatesBgBox.Name = "templatesVBox";
+			templatesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (400);
+			templatesHBox.PackStart (templatesBgBox, false, false, 0);
 			var templatesScrolledWindow = new ScrolledWindow ();
 			templatesScrolledWindow.Name = "templatesScrolledWindow";
 			templatesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
@@ -161,10 +189,9 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.Name = "templatesTreeView";
 			templatesTreeView.HeadersVisible = false;
 			templatesTreeView.Model = templatesListStore;
-			templatesTreeView.ModifyBase (StateType.Normal, templateListBackgroundColor);
 			templatesTreeView.AppendColumn (CreateTemplateListTreeViewColumn ());
 			templatesScrolledWindow.Add (templatesTreeView);
-			templatesVBox.PackStart (templatesScrolledWindow, true, true, 0);
+			templatesBgBox.Add (templatesScrolledWindow);
 
 			// Template
 			var templateEventBox = new EventBox ();

@@ -43,8 +43,13 @@ namespace MonoDevelop.CSharp.Completion
 
 		public bool GenerateBody { get; set; }
 
-		static readonly SymbolDisplayFormat NameFormat =
-			new SymbolDisplayFormat(
+		static readonly SymbolDisplayFormat NameFormat;
+
+		internal static readonly SymbolDisplayFormat overrideNameFormat;
+
+		static ProtocolCompletionData ()
+		{
+			NameFormat = new SymbolDisplayFormat (
 				globalNamespaceStyle: SymbolDisplayGlobalNamespaceStyle.Omitted,
 				typeQualificationStyle: SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces,
 				propertyStyle: SymbolDisplayPropertyStyle.NameOnly,
@@ -57,14 +62,17 @@ namespace MonoDevelop.CSharp.Completion
 				SymbolDisplayParameterOptions.IncludeName,
 				miscellaneousOptions:
 				SymbolDisplayMiscellaneousOptions.EscapeKeywordIdentifiers |
-				SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+				SymbolDisplayMiscellaneousOptions.UseSpecialTypes
+			);
 
-		internal static readonly SymbolDisplayFormat overrideNameFormat = NameFormat.WithParameterOptions(
-			SymbolDisplayParameterOptions.IncludeDefaultValue |
-			SymbolDisplayParameterOptions.IncludeExtensionThis |
-			SymbolDisplayParameterOptions.IncludeType |
-			SymbolDisplayParameterOptions.IncludeName |
-			SymbolDisplayParameterOptions.IncludeParamsRefOut);
+			overrideNameFormat = NameFormat.WithParameterOptions (
+				SymbolDisplayParameterOptions.IncludeDefaultValue |
+				SymbolDisplayParameterOptions.IncludeExtensionThis |
+				SymbolDisplayParameterOptions.IncludeType |
+				SymbolDisplayParameterOptions.IncludeName |
+				SymbolDisplayParameterOptions.IncludeParamsRefOut
+			);
+		}
 
 		string displayText;
 
@@ -73,8 +81,12 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = RoslynCompletionData.SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, overrideNameFormat);
+					if (factory == null) {
+						displayText = Symbol.Name;
+					} else {
+						var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+						displayText = RoslynCompletionData.SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, overrideNameFormat);
+					}
 					if (!afterKeyword)
 						displayText = "override " + displayText;
 				}
@@ -83,17 +95,25 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		public override string CompletionText {
+			get {
+				return Symbol.Name;
+			}
+		}
+
 		public override string GetDisplayTextMarkup ()
 		{
+			if (factory == null)
+				return Symbol.Name;
 			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
 
 			var result = RoslynCompletionData.SafeMinimalDisplayString (base.Symbol, model, declarationBegin, Ambience.LabelFormat) + " {...}";
 			var idx = result.IndexOf (Symbol.Name);
 			if (idx >= 0) {
-				result = 
-					result.Substring(0, idx) +
-					      "<b>" + Symbol.Name + "</b>"+
-					      result.Substring(idx + Symbol.Name.Length);
+				result =
+					result.Substring (0, idx) +
+						  "<b>" + Symbol.Name + "</b>" +
+						  result.Substring (idx + Symbol.Name.Length);
 			}
 
 			if (!afterKeyword)
@@ -132,7 +152,7 @@ namespace MonoDevelop.CSharp.Completion
 			sb = sb.TrimEnd ();
 
 			var lastRegion = result.BodyRegions.LastOrDefault ();
-			var region = lastRegion == null? null
+			var region = lastRegion == null ? null
 				: new CodeGeneratorBodyRegion (lastRegion.StartOffset - trimStart, lastRegion.EndOffset - trimStart);
 
 			int targetCaretPosition;
@@ -144,7 +164,7 @@ namespace MonoDevelop.CSharp.Completion
 						selectionEndPosition = declarationBegin + region.EndOffset;
 					} else {
 						//FIXME: if there are multiple regions, remove all of them
-						sb = sb.Substring (0, region.StartOffset) + sb.Substring (region.EndOffset); 
+						sb = sb.Substring (0, region.StartOffset) + sb.Substring (region.EndOffset);
 					}
 				}
 			} else {

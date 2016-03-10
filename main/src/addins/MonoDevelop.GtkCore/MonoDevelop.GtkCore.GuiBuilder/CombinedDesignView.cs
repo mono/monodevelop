@@ -124,7 +124,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		protected override void OnWorkbenchWindowChanged ()
 		{
 			base.OnWorkbenchWindowChanged ();
-			content.WorkbenchWindow = WorkbenchWindow;
+			if (content != null)
+				content.WorkbenchWindow = WorkbenchWindow;
 			if (WorkbenchWindow != null) {
 				foreach (TabView view in tabs) {
 					view.WorkbenchWindow = WorkbenchWindow;
@@ -166,6 +167,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Dispose ()
 		{
+			if (content == null)
+				return;
+
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			content.Dispose ();
@@ -267,8 +271,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		protected override object OnGetContent (Type type)
 		{
-			if (type.IsInstanceOfType (Control))
-				return Control;
+			if (type.IsInstanceOfType (content))
+				return content;
 			return base.OnGetContent (type);
 		}
 		

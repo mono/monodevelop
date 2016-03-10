@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>NUnit3Runner</RootNamespace>
+    <AssemblyName>NUnitRunner</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.UnitTesting\NUnit3</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.UnitTesting\NUnit3</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ExternalConsole>true</ExternalConsole>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\packages\NUnit.3.0.1\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.engine">
+      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit.engine.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.engine.api">
+      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit.engine.api.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit-agent">
+      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit-agent.exe</HintPath>
+    </Reference>
+    <Reference Include="nunit-agent-x86">
+      <HintPath>..\..\..\..\packages\NUnit.Engine.3.0.1\lib\nunit-agent-x86.exe</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.Execution\BinaryMessage.cs">
+      <Link>BinaryMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.Execution\RemoteProcessServer.cs">
+      <Link>RemoteProcessServer.cs</Link>
+    </Compile>
+    <Compile Include="..\MonoDevelop.UnitTesting.NUnit\RemoteTestResult.cs">
+      <Link>RemoteTestResult.cs</Link>
+    </Compile>
+    <Compile Include="NUnitTestRunner.cs" />
+    <Compile Include="EventListenerWrapper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

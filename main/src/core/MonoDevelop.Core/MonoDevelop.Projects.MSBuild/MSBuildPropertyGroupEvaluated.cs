@@ -260,7 +260,13 @@ namespace MonoDevelop.Projects.MSBuild
 			if (ep.LinkedProperty != null) {
 				// Unlink the property
 				ep.LinkToProperty (null);
-				if (ep.IsNew) {
+
+				// The corresponding evaluated property instance will be removed id
+				// 1) It didn't exist when the project was loaded
+				// 2) The property did exist in the property group when the project was loaded,
+				//    which means that the evaluated property is actually the result of evaluating
+				//    that property group property.
+				if (ep.IsNew || !prop.IsNew) {
 					ep.IsNew = false;
 					properties.Remove (ep.Name);
 				}

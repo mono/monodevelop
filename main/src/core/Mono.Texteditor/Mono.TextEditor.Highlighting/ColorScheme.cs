@@ -33,9 +33,25 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using Xwt.Drawing;
+using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor.Highlighting
 {
+	public class StyleImportException : Exception
+	{
+		public ImportFailReason Reason { get; private set; }
+
+		public StyleImportException (ImportFailReason reason)
+		{
+			Reason = reason;
+		}
+
+		public enum ImportFailReason {
+			Unknown,
+			NoValidColorsFound
+		}
+
+	}
 	public sealed class ColorScheme
 	{
 		public string Name { get; set; }
@@ -70,14 +86,8 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Indicator Margin(Separator)", VSSetting="color=Indicator Margin/Background")]
 		public AmbientColor IndicatorMarginSeparator { get; private set; }
 
-		[ColorDescription("Tooltip Border")]
-		public AmbientColor TooltipBorder { get; private set; }
-
 		[ColorDescription("Tooltip Pager Top")]
-		public AmbientColor TooltipPagerTop { get; private set; }
-
-		[ColorDescription("Tooltip Pager Bottom")]
-		public AmbientColor TooltipPagerBottom { get; private set; }
+		public AmbientColor TooltipPager { get; private set; }
 
 		[ColorDescription("Tooltip Pager Triangle")]
 		public AmbientColor TooltipPagerTriangle { get; private set; }
@@ -115,7 +125,7 @@ namespace Mono.TextEditor.Highlighting
 		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor UsagesRectangle { get; private set; }
 
-		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
+		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Foreground,secondcolor=MarkerFormatDefinition/HighlightedReference/Foreground,bordercolor=MarkerFormatDefinition/HighlightedReference/Foreground")]
 		public AmbientColor ChangingUsagesRectangle { get; private set; }
 
 		[ColorDescription("Breakpoint Marker", VSSetting = "color=Breakpoint (Enabled)/Background")]
@@ -762,7 +772,12 @@ namespace Mono.TextEditor.Highlighting
 		public static ColorScheme LoadFrom (Stream stream)
 		{
 			var result = new ColorScheme ();
-			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (stream, new System.Xml.XmlDictionaryReaderQuotas ());
+			byte [] bytes;
+			using (var sr = TextFileUtility.OpenStream (stream)) {
+				bytes = System.Text.Encoding.UTF8.GetBytes (sr.ReadToEnd ());
+			}
+
+			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (bytes, new System.Xml.XmlDictionaryReaderQuotas ());
 
 			var root = XElement.Load(reader);
 			
@@ -773,8 +788,10 @@ namespace Mono.TextEditor.Highlighting
 				result.CopyValues (SyntaxModeService.DefaultColorStyle);
 
 			var version = Version.Parse (root.XPathSelectElement("version").Value);
-			if (version.Major != 1)
+			if (version.Major != 1) {
+				Console.WriteLine ("Can't load scheme : " + result.Name + " unsupported version:" + version);
 				return null;
+			}
 			var el = root.XPathSelectElement ("description");
 			if (el != null)
 				result.Description = el.Value;
@@ -1044,6 +1061,9 @@ namespace Mono.TextEditor.Highlighting
 					Console.WriteLine (vsc.Name + " not imported!");
 			}
 
+			if (result.PlainText == null)
+				throw new StyleImportException (StyleImportException.ImportFailReason.NoValidColorsFound);
+
 			result.IndentationGuide = new AmbientColor ();
 			result.IndentationGuide.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.3)));
 
@@ -1052,17 +1072,11 @@ namespace Mono.TextEditor.Highlighting
 			h.L += 0.01;
 			result.TooltipText.Background = h;
 
-			result.TooltipPagerTop = new AmbientColor ();
-			result.TooltipPagerTop.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
+			result.TooltipPager = new AmbientColor ();
+			result.TooltipPager.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
 
-			result.TooltipPagerBottom = new AmbientColor ();
-			result.TooltipPagerBottom.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
-			
 			result.TooltipPagerTriangle = new AmbientColor ();
 			result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
-
-			result.TooltipBorder = new AmbientColor ();
-			result.TooltipBorder.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.5)));
 
 			var defaultStyle = SyntaxModeService.GetColorStyle (HslColor.Brightness (result.PlainText.Background) < 0.5 ? "Monokai" : TextEditorOptions.DefaultColorStyle);
 

@@ -134,6 +134,7 @@
     <Compile Include="CustomDialogs\CustomCommonSaveFileDialog.cs" />
     <Compile Include="Dialogs\CommonFileDialogExtensions.cs" />
     <Compile Include="ImageHelper.cs" />
+    <Compile Include="ImageBox.cs" />
     <Compile Include="Styles.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -236,12 +237,6 @@
     <EmbeddedResource Include="icons\build~dark.png">
       <LogicalName>build~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~disabled.png">
-      <LogicalName>build~disabled.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\build~disabled~dark.png">
-      <LogicalName>build~disabled~dark.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\build~hover.png">
       <LogicalName>build~hover.png</LogicalName>
     </EmbeddedResource>
@@ -260,12 +255,6 @@
     <EmbeddedResource Include="icons\stop~dark.png">
       <LogicalName>stop~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~disabled.png">
-      <LogicalName>stop~disabled.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\stop~disabled~dark.png">
-      <LogicalName>stop~disabled~dark.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\stop~hover.png">
       <LogicalName>stop~hover.png</LogicalName>
     </EmbeddedResource>
@@ -283,12 +272,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\execute~dark.png">
       <LogicalName>execute~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~disabled.png">
-      <LogicalName>execute~disabled.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\execute~disabled~dark.png">
-      <LogicalName>execute~disabled~dark.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\execute~hover.png">
       <LogicalName>execute~hover.png</LogicalName>

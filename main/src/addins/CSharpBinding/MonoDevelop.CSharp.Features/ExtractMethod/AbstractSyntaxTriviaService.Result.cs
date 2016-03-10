@@ -9,7 +9,7 @@ using ICSharpCode.NRefactory6.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public abstract partial class AbstractSyntaxTriviaService
+    abstract partial class AbstractSyntaxTriviaService
     {
         private class Result : ITriviaSavedResult
         {

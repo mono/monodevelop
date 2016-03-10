@@ -15650,8 +15650,8 @@ msgstr "Operação de impresão falhou."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
 #, fuzzy
-msgid "Press 'F2' for focus"
-msgstr "Pressione 'shift+espaço' para dar foco"
+msgid "Press F2 to focus"
+msgstr "Pressione F2 para dar foco"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
 msgid "Clipboard ring"

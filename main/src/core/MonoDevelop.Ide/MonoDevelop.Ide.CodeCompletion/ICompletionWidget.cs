@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Projects;
 using Gtk;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -55,8 +56,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word);
 
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset);
-
-		void AddSkipChar (int cursorPosition, char c);
 
 		event EventHandler CompletionContextChanged;
 	}

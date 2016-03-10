@@ -14,13 +14,14 @@ namespace WindowsPlatform.MainToolbar
 {
 	public class TitleMenuItem : MenuItem
 	{
-		public TitleMenuItem (MonoDevelop.Components.Commands.CommandManager manager, CommandEntry entry, CommandInfo commandArrayInfo = null, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
+		public TitleMenuItem (MonoDevelop.Components.Commands.CommandManager manager, CommandEntry entry, CommandInfo commandArrayInfo = null, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null, Menu menu = null)
 		{
 			this.manager = manager;
 			this.initialCommandTarget = initialCommandTarget;
 			this.commandSource = commandSource;
 			this.commandArrayInfo = commandArrayInfo;
 
+			this.menu = menu;
 			menuEntry = entry;
 			menuEntrySet = entry as CommandEntrySet;
 			menuLinkEntry = entry as LinkCommandEntry;
@@ -34,7 +35,7 @@ namespace WindowsPlatform.MainToolbar
 						if (item.IsArraySeparator)
 							Items.Add (new Separator { UseLayoutRounding = true, });
 						else
-							Items.Add (new TitleMenuItem (manager, entry, item, commandSource, initialCommandTarget));
+							Items.Add (new TitleMenuItem (manager, entry, item, commandSource, initialCommandTarget, menu));
 					}
 				}
 			}
@@ -46,7 +47,7 @@ namespace WindowsPlatform.MainToolbar
 					if (item.CommandId == MonoDevelop.Components.Commands.Command.Separator) {
 						Items.Add (new Separator { UseLayoutRounding = true, });
 					} else
-						Items.Add (new TitleMenuItem (manager, item));
+						Items.Add (new TitleMenuItem (manager, item, menu: menu));
 				}
 			} else if (menuLinkEntry != null) {
 				Header = menuLinkEntry.Text;
@@ -62,14 +63,20 @@ namespace WindowsPlatform.MainToolbar
 				if (actionCommand.KeyBinding != null)
 					InputGestureText = actionCommand.KeyBinding.ToString ();
 				
-				if (!actionCommand.Icon.IsNull)
-					Icon = new Image { Source = actionCommand.Icon.GetImageSource (Xwt.IconSize.Small) };
+				try {
+					if (!actionCommand.Icon.IsNull)
+						Icon = new ImageBox (actionCommand.Icon.GetStockIcon ().WithSize (Xwt.IconSize.Small));
+				} catch (Exception ex) {
+					MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + actionCommand.Icon, ex);
+				}
 				Click += OnMenuClicked;
 			}
 
 			Height = SystemParameters.CaptionHeight;
 			UseLayoutRounding = true;
 		}
+
+		Menu menu;
 
 		/// <summary>
 		/// Updates a command entry. Should only be called from a toplevel node.
@@ -128,7 +135,7 @@ namespace WindowsPlatform.MainToolbar
 						if (child.IsArraySeparator) {
 							toAdd = new Separator ();
 						} else {
-							toAdd = new TitleMenuItem (manager, menuEntry, child);
+							toAdd = new TitleMenuItem (manager, menuEntry, child, menu: menu);
 						}
 
 						toRemoveFromParent.Add (toAdd);
@@ -146,7 +153,12 @@ namespace WindowsPlatform.MainToolbar
 		{
 			hasCommand = true;
 			Header = info.Text;
-			Icon = new Image { Source = info.Icon.GetImageSource (Xwt.IconSize.Small) };
+			try {
+				if (!info.Icon.IsNull)
+					Icon = new ImageBox (info.Icon.GetStockIcon ().WithSize (Xwt.IconSize.Small));
+			} catch (Exception ex) {
+				MonoDevelop.Core.LoggingService.LogError ("Failed loading menu icon: " + info.Icon, ex);
+			}
 			IsEnabled = info.Enabled;
 			Visibility = info.Visible && (menuEntry.DisabledVisible || IsEnabled) ?
 				Visibility.Visible : Visibility.Collapsed;
@@ -185,18 +197,27 @@ namespace WindowsPlatform.MainToolbar
 			return ret;
 		}
 
+		static bool closingSent;
 		protected override void OnSubmenuOpened (RoutedEventArgs e)
 		{
-			if (Parent is Menu)
+			if (Parent is Menu) {
 				Update ();
+				closingSent = false;
+			}
 
 			base.OnSubmenuOpened (e);
 		}
+
 
 		protected override void OnSubmenuClosed (RoutedEventArgs e)
 		{
 			if (Parent is Menu)
 				Clear ();
+
+			if (!closingSent) {
+				OnSubmenuClosing ();
+				closingSent = false;
+			}
 
 			base.OnSubmenuClosed (e);
 		}
@@ -206,7 +227,8 @@ namespace WindowsPlatform.MainToolbar
 			if (!hasCommand)
 				return;
 
-			SubmenuClosing?.Invoke (this, e);
+			closingSent = true;
+			OnSubmenuClosing ();
 
 			Xwt.Application.Invoke(() => {
 				if (commandArrayInfo != null) {
@@ -222,7 +244,13 @@ namespace WindowsPlatform.MainToolbar
 			DesktopService.ShowUrl (menuLinkEntry.Url);
 		}
 
-		internal event EventHandler SubmenuClosing;
+		void OnSubmenuClosing ()
+		{
+			bool shouldFocusIde = !menu.Items.OfType<MenuItem> ().Any (mi => mi.IsSubmenuOpen);
+			if (shouldFocusIde)
+				IdeApp.Workbench.RootWindow.Present ();
+		}
+
 		readonly MonoDevelop.Components.Commands.CommandManager manager;
 		readonly object initialCommandTarget;
 		readonly CommandSource commandSource;

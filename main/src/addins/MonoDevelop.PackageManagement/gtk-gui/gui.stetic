@@ -284,11 +284,15 @@
                   <widget class="Gtk.Button" id="packageSearchButton">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
-                    <property name="Type">TextAndIcon</property>
-                    <property name="Icon">stock:gtk-find Menu</property>
-                    <property name="Label" translatable="yes" />
-                    <property name="UseUnderline">True</property>
+                    <property name="Type">Custom</property>
                     <signal name="Clicked" handler="SearchButtonClicked" />
+                    <child>
+                      <widget class="MonoDevelop.Components.ImageView" id="imageSearch">
+                        <property name="MemberName" />
+                        <property name="IconId">gtk-find</property>
+                        <property name="IconSize">Menu</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="Position">1</property>
@@ -1366,12 +1370,17 @@ If you do not agree to the license terms click "Cancel".</property>
           <widget class="Gtk.Button" id="backButton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-go-back Menu</property>
-            <property name="Label" translatable="yes" />
+            <property name="Type">Custom</property>
             <property name="FocusOnClick">False</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="BackButtonClicked" />
+            <child>
+              <widget class="MonoDevelop.Components.ImageView" id="imageBack">
+                <property name="MemberName" />
+                <property name="IconId">gtk-go-back</property>
+                <property name="IconSize">Menu</property>
+              </widget>
+            </child>
           </widget>
           <packing>
             <property name="Position">0</property>
@@ -1470,12 +1479,17 @@ If you do not agree to the license terms click "Cancel".</property>
           <widget class="Gtk.Button" id="forwardButton">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextAndIcon</property>
-            <property name="Icon">stock:gtk-go-forward Menu</property>
-            <property name="Label" translatable="yes" />
+            <property name="Type">Custom</property>
             <property name="FocusOnClick">False</property>
             <property name="Relief">None</property>
             <signal name="Clicked" handler="ForwardButtonClicked" />
+            <child>
+              <widget class="MonoDevelop.Components.ImageView" id="imageForward">
+                <property name="MemberName" />
+                <property name="IconId">gtk-go-forward</property>
+                <property name="IconSize">Menu</property>
+              </widget>
+            </child>
           </widget>
           <packing>
             <property name="Position">6</property>

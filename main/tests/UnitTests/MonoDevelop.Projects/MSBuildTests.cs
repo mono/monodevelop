@@ -1526,6 +1526,98 @@ namespace MonoDevelop.Projects
 			var refXml = File.ReadAllText (p.FileName.ChangeName ("project-with-duplicated-conf-saved"));
 			Assert.AreEqual (refXml, savedXml);
 		}
+
+		[Test]
+		public async Task ConditionedHintPath ()
+		{
+			// A reference with several hint paths with conditions. Only the hint path with the true condition
+			// will be used
+
+			string projFile = Util.GetSampleProject ("msbuild-tests", "conditioned-hintpath.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.AreEqual (2, p.References.Count);
+
+			Assert.AreEqual (p.ItemDirectory.Combine ("a.dll").ToString (), p.References[0].HintPath.ToString ());
+			Assert.AreEqual (p.ItemDirectory.Combine ("b.dll").ToString (), p.References[1].HintPath.ToString ());
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public async Task MSBuildPropertiesSetWhenSaving ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
+
+			var p = sol.GetAllProjects ().First ();
+			var c = (ProjectConfiguration) p.Configurations [0];
+			Assert.IsFalse (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (c.Properties.HasProperty ("TargetName"));
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			// MSBuild properties defined in imported targets are loaded after saving a project for the first time
+
+			Assert.IsTrue (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (c.Properties.HasProperty ("TargetName"));
+		}
+
+		[Test()]
+		public async Task LoadSaveConsoleProjectWithEmptyGroup()
+		{
+			var fn = new CustomFlavorNode ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string solFile = Util.GetSampleProject ("console-project-empty-group", "ConsoleProject.sln");
+
+				Solution item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				Assert.IsTrue (item is Solution);
+
+				Solution sol = (Solution)item;
+				TestProjectsChecks.CheckBasicVsConsoleProject (sol);
+
+				var p = sol.GetAllProjects ().FirstOrDefault ();
+				Assert.NotNull (p);
+				Assert.NotNull (p.GetFlavor<CustomFlavor> ());
+
+				string projectFile = ((Project)sol.Items [0]).FileName;
+
+				string solXml = File.ReadAllText (solFile);
+				string projectXml = File.ReadAllText (projectFile);
+
+				await sol.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (solXml, File.ReadAllText (solFile));
+				Assert.AreEqual (projectXml, File.ReadAllText (projectFile));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task RemoveAndAddProperty ()
+		{
+			string solFile = Util.GetSampleProject ("msbuild-project-test", "test.csproj");
+
+			Project p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			string projectXml = File.ReadAllText (p.FileName);
+
+			p.ProjectProperties.RemoveProperty ("TestRewrite");
+			await p.SaveAsync (Util.GetMonitor ());
+			p.ProjectProperties.SetValue ("TestRewrite", "Val");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName));
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
@@ -1601,5 +1693,22 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty]
 		public string SomeMetadata { get; set; }
+	}
+
+	class CustomFlavorNode: SolutionItemExtensionNode
+	{
+		public CustomFlavorNode ()
+		{
+			Guid = "{57EDDE80-A1D8-43D5-8478-C17416DFC16F}";
+		}
+
+		public override object CreateInstance ()
+		{
+			return new CustomFlavor ();
+		}
+	}
+
+	class CustomFlavor: ProjectExtension
+	{
 	}
 }

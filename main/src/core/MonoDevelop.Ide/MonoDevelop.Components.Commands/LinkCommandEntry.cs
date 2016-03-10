@@ -76,7 +76,7 @@ namespace MonoDevelop.Components.Commands
 		internal override Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
 			Gtk.ImageMenuItem item = new Gtk.ImageMenuItem (text != null ? text : url);
-			item.Image = new Gtk.Image (icon, Gtk.IconSize.Menu);
+			item.Image = new ImageView (icon, Gtk.IconSize.Menu);
 			item.Activated += new EventHandler (HandleActivation);
 			item.Selected += delegate {
 				CommandInfo ci = new CommandInfo (Text);

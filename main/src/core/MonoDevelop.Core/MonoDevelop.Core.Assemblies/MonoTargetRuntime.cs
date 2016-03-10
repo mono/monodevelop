@@ -109,13 +109,6 @@ namespace MonoDevelop.Core.Assemblies
 
 		public override IEnumerable<FilePath> GetReferenceFrameworkDirectories ()
 		{
-			//during initializion, only return the global directory once (for the running runtime) so that it doesn't
-			//get scanned multiple times
-			return GetReferenceFrameworkDirectories (IsInitialized || IsRunning);
-		}
-
-		IEnumerable<FilePath> GetReferenceFrameworkDirectories (bool includeGlobalDirectories)
-		{
 			//duplicate xbuild's framework folders path logic
 			//see xbuild man page
 			string env;
@@ -124,7 +117,7 @@ namespace MonoDevelop.Core.Assemblies
 					yield return (FilePath) dir;
 			}
 
-			if (includeGlobalDirectories && Platform.IsMac) {
+			if (Platform.IsMac) {
 				yield return "/Library/Frameworks/Mono.framework/External/xbuild-frameworks";
 			}
 
@@ -144,11 +137,12 @@ namespace MonoDevelop.Core.Assemblies
 			return new MonoFrameworkBackend ();
 		}
 
-		
+
 		public override IExecutionHandler GetExecutionHandler ()
 		{
 			if (execHandler == null) {
-				string monoPath = Path.Combine (Path.Combine (MonoRuntimeInfo.Prefix, "bin"), "mono");
+				string monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin");
+				monoPath = Path.Combine (monoPath, MonoRuntimeInfo.Force64or32bit.HasValue ? (MonoRuntimeInfo.Force64or32bit.Value ? "mono64" : "mono32") : "mono");
 				execHandler = new MonoPlatformExecutionHandler (monoPath, environmentVariables);
 			}
 			return execHandler;

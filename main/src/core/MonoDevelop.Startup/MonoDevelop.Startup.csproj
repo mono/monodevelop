@@ -22,7 +22,6 @@
     <EnvironmentVariables>
       <EnvironmentVariables>
         <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
-        <Variable name="MONODEVELOP_TEST_PROFILE" value="./test-profile" />
       </EnvironmentVariables>
     </EnvironmentVariables>
     <PlatformTarget>x86</PlatformTarget>
@@ -31,6 +30,7 @@
     </Execution>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\bin\MonoDevelop.xml</DocumentationFile>
+    <Commandlineparameters>-no-redirect</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -50,7 +50,6 @@
     <EnvironmentVariables>
       <EnvironmentVariables>
         <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
-        <Variable name="MONODEVELOP_TEST_PROFILE" value="./test-profile" />
       </EnvironmentVariables>
     </EnvironmentVariables>
     <Execution>

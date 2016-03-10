@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	class DockWindow : Gtk.Window
+	class DockWindow : IdeWindow
 	{
 		static List<DockWindow> allWindows = new List<DockWindow> ();
 

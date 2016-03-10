@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
 	[TestFixture]
-	public class XmlDocumentationCommentCompletionProviderTests : CompletionTestBase
+	class XmlDocumentationCommentCompletionProviderTests : CompletionTestBase
 	{
 		[Test]
 		public void AlwaysVisibleAtAnyLevelItems1()

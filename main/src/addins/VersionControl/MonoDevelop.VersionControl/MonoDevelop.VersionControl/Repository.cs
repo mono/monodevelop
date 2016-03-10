@@ -115,8 +115,7 @@ namespace MonoDevelop.VersionControl
 			get { return name ?? string.Empty; }
 			set {
 				name = value;
-				if (NameChanged != null)
-					NameChanged (this, EventArgs.Empty);
+				NameChanged?.Invoke (this, EventArgs.Empty);
 			}		
 		}
 		
@@ -543,7 +542,8 @@ namespace MonoDevelop.VersionControl
 			
 			if (null != diffs) {
 				foreach (DiffInfo diff in diffs) {
-					patch.AppendLine (diff.Content);
+					if (!string.IsNullOrWhiteSpace (diff.Content))
+						patch.AppendLine (diff.Content);
 				}
 			}
 			

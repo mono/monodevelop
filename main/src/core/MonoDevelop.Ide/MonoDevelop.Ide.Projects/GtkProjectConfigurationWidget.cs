@@ -31,6 +31,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -39,8 +40,8 @@ namespace MonoDevelop.Ide.Projects
 	{
 		FinalProjectConfigurationPage projectConfiguration;
 		uint defaultTableRows;
-		Gdk.Color separatorColor = new Gdk.Color (176, 178, 181);
-		Gdk.Color leftHandBackgroundColor = new Gdk.Color (225, 228, 232);
+		Gdk.Color separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
+		Gdk.Color leftHandBackgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
 		DrawingArea extraControlsSeparator;
 		List<ExtraControlTableRow> extraControlRows = new List<ExtraControlTableRow> ();
 
@@ -51,7 +52,7 @@ namespace MonoDevelop.Ide.Projects
 			solutionNameSeparator.ModifyBg (StateType.Normal, separatorColor);
 			locationSeparator.ModifyBg (StateType.Normal, separatorColor);
 
-			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (255, 255, 255));
+			eventBox.ModifyBg (StateType.Normal, Styles.NewProjectDialog.ProjectConfigurationRightHandBackgroundColor.ToGdkColor ());
 
 			leftBorderEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
 			projectConfigurationRightBorderEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);

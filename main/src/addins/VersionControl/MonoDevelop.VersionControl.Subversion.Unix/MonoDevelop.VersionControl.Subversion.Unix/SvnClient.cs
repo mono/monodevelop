@@ -136,7 +136,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string Version {
 			get {
-				return GetVersion ();
+				try {
+					return GetVersion ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Failed to query Subversion version info", e);
+					return base.Version;
+				}
 			}
 		}
 
@@ -1459,11 +1464,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			
 			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc)) {
-				if (skipEol) {
-					updatemonitor.Log.Write (actiondesc);
-				} else {
-					updatemonitor.Log.WriteLine (actiondesc);
-				}
+				Runtime.RunInMainThread (() => {
+					if (skipEol) {
+						updatemonitor.Log.Write (actiondesc);
+					} else {
+						updatemonitor.Log.WriteLine (actiondesc);
+					}
+				});
 			}
 			if (updateFileList != null && notifyChange && File.Exists (file))
 				updateFileList.Add (file);

@@ -57,8 +57,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				var helpTree = MonoDevelop.Projects.HelpService.HelpTree;
 				if (helpTree == null)
 					return null;
+#pragma warning disable 618
 				if (entity.Kind == SymbolKind.NamedType) {
-					doc = helpTree.GetHelpXml (idString);
+				doc = helpTree.GetHelpXml (idString);
 				} else {
 					var containingType = entity.ContainingType;
 					if (containingType == null)

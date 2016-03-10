@@ -33,14 +33,49 @@ namespace MonoDevelop.Core.Execution
 {
 	public abstract class OperationConsoleFactory
 	{
+		public class CreateConsoleOptions 
+		{
+			public static readonly CreateConsoleOptions Default = new CreateConsoleOptions { BringToFront = true };
+
+			public bool BringToFront { get; private set; }
+
+			CreateConsoleOptions ()
+			{
+			}
+
+			CreateConsoleOptions (CreateConsoleOptions options)
+			{
+				this.BringToFront = options.BringToFront;
+			}
+
+			public CreateConsoleOptions (bool bringToFront)
+			{
+				BringToFront = bringToFront;
+			}
+
+			public CreateConsoleOptions WithBringToFront (bool bringToFront)
+			{
+				if (bringToFront == BringToFront)
+					return this;
+				var result = new CreateConsoleOptions (this);
+				result.BringToFront = bringToFront;
+				return result;
+			}
+		}
+
 		public OperationConsole CreateConsole (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var c = OnCreateConsole ();
+			return CreateConsole (CreateConsoleOptions.Default, cancellationToken);
+		}
+
+		public OperationConsole CreateConsole (CreateConsoleOptions options, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var c = OnCreateConsole (options);
 			if (cancellationToken != default(CancellationToken))
 				c.BindToCancelToken (cancellationToken);
 			return c;
 		}
 
-		protected abstract OperationConsole OnCreateConsole ();
+		protected abstract OperationConsole OnCreateConsole (CreateConsoleOptions options);
 	}
 }

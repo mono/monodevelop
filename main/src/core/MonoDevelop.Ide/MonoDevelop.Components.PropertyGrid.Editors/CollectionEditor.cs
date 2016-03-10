@@ -93,6 +93,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				AllowGrow = true,
 				AllowShrink = true,
 			};
+			IdeTheme.ApplyTheme (dialog);
 			var toplevel = this.Container.GetNativeWidget<Gtk.Widget> ().Toplevel as Gtk.Window;
 			if (toplevel != null)
 				dialog.TransientFor = toplevel;
@@ -118,17 +119,17 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			hBox.PackEnd (buttonBox, false, false, 5);
 			
 			//add/remove buttons
-			Button addButton = new Button (new Image (Stock.Add, IconSize.Button));
+			Button addButton = new Button (new ImageView (Stock.Add, IconSize.Button));
 			buttonBox.PackStart (addButton, false, false, 0);
 			if (types [0].IsAbstract)
 				addButton.Sensitive = false;
-			Button removeButton = new Button (new Gtk.Image (Stock.Remove, IconSize.Button));
+			Button removeButton = new Button (new ImageView (Stock.Remove, IconSize.Button));
 			buttonBox.PackStart (removeButton, false, false, 0);
 			
 			//sorting buttons
-			Button upButton = new Button (new Image (Stock.GoUp, IconSize.Button));
+			Button upButton = new Button (new ImageView (Stock.GoUp, IconSize.Button));
 			buttonBox.PackStart (upButton, false, false, 0);
-			Button downButton = new Button (new Image (Stock.GoDown, IconSize.Button));
+			Button downButton = new Button (new ImageView (Stock.GoDown, IconSize.Button));
 			buttonBox.PackStart (downButton, false, false, 0);
 
 			//Third column has list (TreeView) in a ScrolledWindow

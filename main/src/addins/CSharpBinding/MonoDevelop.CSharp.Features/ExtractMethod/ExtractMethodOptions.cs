@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Options;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public static class ExtractMethodOptions
+    static class ExtractMethodOptions
     {
         public const string FeatureName = "ExtractMethod";
 

@@ -5,14 +5,29 @@ namespace CBinding
 	public partial class GeneralOptionsPanel
 	{
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.ComboBox cCombo;
+		
 		private global::Gtk.ComboBox cppCombo;
+		
 		private global::Gtk.Button ctagsBrowse;
+		
+		private global::Gtk.HBox hboxBtnBrowse;
+		
+		private global::MonoDevelop.Components.ImageView ctagsBrowseIcon;
+		
+		private global::Gtk.Label ctagsBrowselabel;
+		
 		private global::Gtk.Entry ctagsEntry;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.CheckButton parseLocalVariablesCheck;
+		
 		private global::Gtk.CheckButton parseSystemTagsCheck;
 
 		protected virtual void Build ()
@@ -52,19 +67,39 @@ namespace CBinding
 			this.ctagsBrowse = new global::Gtk.Button ();
 			this.ctagsBrowse.CanFocus = true;
 			this.ctagsBrowse.Name = "ctagsBrowse";
-			this.ctagsBrowse.UseUnderline = true;
-			this.ctagsBrowse.Label = global::Mono.Unix.Catalog.GetString ("Browse");
-			global::Gtk.Image w3 = new global::Gtk.Image ();
-			w3.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-open", global::Gtk.IconSize.Menu);
-			this.ctagsBrowse.Image = w3;
+			// Container child ctagsBrowse.Gtk.Container+ContainerChild
+			this.hboxBtnBrowse = new global::Gtk.HBox ();
+			this.hboxBtnBrowse.Name = "hboxBtnBrowse";
+			this.hboxBtnBrowse.Spacing = 2;
+			// Container child hboxBtnBrowse.Gtk.Box+BoxChild
+			this.ctagsBrowseIcon = new global::MonoDevelop.Components.ImageView ();
+			this.ctagsBrowseIcon.Name = "ctagsBrowseIcon";
+			this.ctagsBrowseIcon.IconId = "gtk-open";
+			this.ctagsBrowseIcon.IconSize = ((global::Gtk.IconSize)(1));
+			this.hboxBtnBrowse.Add (this.ctagsBrowseIcon);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hboxBtnBrowse [this.ctagsBrowseIcon]));
+			w3.Position = 0;
+			w3.Expand = false;
+			w3.Fill = false;
+			// Container child hboxBtnBrowse.Gtk.Box+BoxChild
+			this.ctagsBrowselabel = new global::Gtk.Label ();
+			this.ctagsBrowselabel.Name = "ctagsBrowselabel";
+			this.ctagsBrowselabel.LabelProp = global::Mono.Unix.Catalog.GetString ("Browse");
+			this.ctagsBrowselabel.UseUnderline = true;
+			this.hboxBtnBrowse.Add (this.ctagsBrowselabel);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hboxBtnBrowse [this.ctagsBrowselabel]));
+			w4.Position = 1;
+			w4.Expand = false;
+			w4.Fill = false;
+			this.ctagsBrowse.Add (this.hboxBtnBrowse);
 			this.table1.Add (this.ctagsBrowse);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table1 [this.ctagsBrowse]));
-			w4.TopAttach = ((uint)(2));
-			w4.BottomAttach = ((uint)(3));
-			w4.LeftAttach = ((uint)(2));
-			w4.RightAttach = ((uint)(3));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.ctagsBrowse]));
+			w6.TopAttach = ((uint)(2));
+			w6.BottomAttach = ((uint)(3));
+			w6.LeftAttach = ((uint)(2));
+			w6.RightAttach = ((uint)(3));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.ctagsEntry = new global::Gtk.Entry ();
 			this.ctagsEntry.CanFocus = true;
@@ -72,13 +107,13 @@ namespace CBinding
 			this.ctagsEntry.IsEditable = true;
 			this.ctagsEntry.InvisibleChar = '●';
 			this.table1.Add (this.ctagsEntry);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.table1 [this.ctagsEntry]));
-			w5.TopAttach = ((uint)(2));
-			w5.BottomAttach = ((uint)(3));
-			w5.LeftAttach = ((uint)(1));
-			w5.RightAttach = ((uint)(2));
-			w5.XOptions = ((global::Gtk.AttachOptions)(4));
-			w5.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.ctagsEntry]));
+			w7.TopAttach = ((uint)(2));
+			w7.BottomAttach = ((uint)(3));
+			w7.LeftAttach = ((uint)(1));
+			w7.RightAttach = ((uint)(2));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
@@ -86,9 +121,9 @@ namespace CBinding
 			this.label1.Xalign = 1F;
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Default C Compiler:");
 			this.table1.Add (this.label1);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label1]));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
@@ -96,11 +131,11 @@ namespace CBinding
 			this.label2.Xalign = 1F;
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Default C++ Compiler:");
 			this.table1.Add (this.label2);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
-			w7.TopAttach = ((uint)(1));
-			w7.BottomAttach = ((uint)(2));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.label2]));
+			w9.TopAttach = ((uint)(1));
+			w9.BottomAttach = ((uint)(2));
+			w9.XOptions = ((global::Gtk.AttachOptions)(4));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
@@ -109,11 +144,11 @@ namespace CBinding
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("CTags: ");
 			this.label3.Justify = ((global::Gtk.Justification)(1));
 			this.table1.Add (this.label3);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
-			w8.TopAttach = ((uint)(2));
-			w8.BottomAttach = ((uint)(3));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.label3]));
+			w10.TopAttach = ((uint)(2));
+			w10.BottomAttach = ((uint)(3));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.parseLocalVariablesCheck = new global::Gtk.CheckButton ();
 			this.parseLocalVariablesCheck.CanFocus = true;
@@ -122,12 +157,12 @@ namespace CBinding
 			this.parseLocalVariablesCheck.DrawIndicator = true;
 			this.parseLocalVariablesCheck.UseUnderline = true;
 			this.table1.Add (this.parseLocalVariablesCheck);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.table1 [this.parseLocalVariablesCheck]));
-			w9.TopAttach = ((uint)(4));
-			w9.BottomAttach = ((uint)(5));
-			w9.XPadding = ((uint)(10));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.table1 [this.parseLocalVariablesCheck]));
+			w11.TopAttach = ((uint)(4));
+			w11.BottomAttach = ((uint)(5));
+			w11.XPadding = ((uint)(10));
+			w11.XOptions = ((global::Gtk.AttachOptions)(4));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table1.Gtk.Table+TableChild
 			this.parseSystemTagsCheck = new global::Gtk.CheckButton ();
 			this.parseSystemTagsCheck.TooltipMarkup = "Choose whether you want to parse system tags or not, if you do you will get completion for things like printf, but the tag parsing process will take considerably longer.";
@@ -137,12 +172,12 @@ namespace CBinding
 			this.parseSystemTagsCheck.DrawIndicator = true;
 			this.parseSystemTagsCheck.UseUnderline = true;
 			this.table1.Add (this.parseSystemTagsCheck);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.table1 [this.parseSystemTagsCheck]));
-			w10.TopAttach = ((uint)(3));
-			w10.BottomAttach = ((uint)(4));
-			w10.XPadding = ((uint)(10));
-			w10.XOptions = ((global::Gtk.AttachOptions)(4));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.parseSystemTagsCheck]));
+			w12.TopAttach = ((uint)(3));
+			w12.BottomAttach = ((uint)(4));
+			w12.XPadding = ((uint)(10));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.Add (this.table1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

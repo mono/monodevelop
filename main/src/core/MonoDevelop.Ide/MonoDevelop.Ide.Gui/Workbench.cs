@@ -54,6 +54,7 @@ using System.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -63,7 +64,7 @@ namespace MonoDevelop.Ide.Gui
 	public sealed class Workbench
 	{
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
-		readonly List<Document> documents = new List<Document> ();
+		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -144,8 +145,8 @@ namespace MonoDevelop.Ide.Gui
 			return workbench.Close();
 		}
 		
-		public ReadOnlyCollection<Document> Documents {
-			get { return documents.AsReadOnly (); }
+		public ImmutableList<Document> Documents {
+			get { return documents; }
 		}
 
 		public Document ActiveDocument {
@@ -775,7 +776,7 @@ namespace MonoDevelop.Ide.Gui
 			doc = new Document (window);
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;
-			documents.Add (doc);
+			documents = documents.Add (doc);
 			
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
@@ -832,7 +833,7 @@ namespace MonoDevelop.Ide.Gui
 			var doc = FindDocument (window);
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
-			documents.Remove (doc); 
+			documents = documents.Remove (doc); 
 			OnDocumentClosed (doc);
 			doc.DisposeDocument ();
 		}
@@ -1040,7 +1041,7 @@ namespace MonoDevelop.Ide.Gui
 			return dp;
 		}
 
-		async void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
+		async Task OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
 			WorkbenchUserPrefs prefs = args.Properties.GetValue<WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
 			if (prefs == null)
@@ -1161,8 +1162,7 @@ namespace MonoDevelop.Ide.Gui
 			workbench.InternalViewContentCollection.Insert (newPlacement, content);
 
 			Document doc = documents [oldPlacement];
-			documents.RemoveAt (oldPlacement);
-			documents.Insert (newPlacement, doc);
+			documents = documents.RemoveAt (oldPlacement).Insert (newPlacement, doc);
 		}
 
 		internal void LockActiveWindowChangeEvent ()
@@ -1189,6 +1189,8 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 //				t = DateTime.Now;
 				lock (fileStatusLock) {
+					if (fileStatus == null)
+						return;
 					foreach (FilePath file in files) {
 						try {
 							DateTime ft = File.GetLastWriteTimeUtc (file);

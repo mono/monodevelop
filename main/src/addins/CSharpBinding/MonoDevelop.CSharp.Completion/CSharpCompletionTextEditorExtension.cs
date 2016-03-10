@@ -26,9 +26,9 @@
 
 using System;
 using System.Linq;
+using MonoDevelop.Core;
 using System.Collections.Generic;
 
-using MonoDevelop.Core;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CodeGeneration;
@@ -55,8 +55,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide;
 using Mono.Addins;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
+using System.Runtime.ExceptionServices;   
 using MonoDevelop.Ide.TypeSystem;
+using RefactoringEssentials;
+using MonoDevelop.CSharp.Diagnostics.InconsistentNaming;
+using RefactoringEssentials.CSharp.Diagnostics;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -123,44 +126,52 @@ namespace MonoDevelop.CSharp.Completion
 
 		static CSharpCompletionTextEditorExtension ()
 		{
-			var methodInfo = typeof(Microsoft.CodeAnalysis.Document).GetMethod ("WithFrozenPartialSemanticsAsync", System.Reflection.BindingFlags.Instance  | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod);
-			if (methodInfo == null)
-				LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
-			
-			WithFrozenPartialSemanticsAsync = delegate (Microsoft.CodeAnalysis.Document doc, CancellationToken token) {
-				try {
-					return (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object [] { token });
-				} catch (TargetInvocationException ex) {
-					ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
-					return null;
-				}
-			};
+			try {
+				var methodInfo = typeof (Microsoft.CodeAnalysis.Document).GetMethod ("WithFrozenPartialSemanticsAsync", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod);
+				if (methodInfo == null)
+					LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
 
-			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
-				if (snippets != null)
-					return Task.FromResult((IEnumerable<CompletionData>)snippets);
-				var newSnippets = new List<CompletionData>();
-				foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
-					if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
-						continue;
-					newSnippets.Add (new RoslynCompletionData (null) {
-						CompletionText = ct.Shortcut,
-						DisplayText = ct.Shortcut,
-						Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
-						Icon = ct.Icon
-					});
-				}
-				snippets = newSnippets;
-				return Task.FromResult((IEnumerable<CompletionData>)newSnippets);
-			};
+				WithFrozenPartialSemanticsAsync = delegate (Microsoft.CodeAnalysis.Document doc, CancellationToken token) {
+					try {
+						return (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object [] { token });
+					} catch (TargetInvocationException ex) {
+						ExceptionDispatchInfo.Capture (ex.InnerException).Throw ();
+						return null;
+					}
+				};
 
+				CompletionEngine.SnippetCallback = delegate (CancellationToken arg) {
+					if (snippets != null)
+						return Task.FromResult ((IEnumerable<CompletionData>)snippets);
+					var newSnippets = new List<CompletionData> ();
+					foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
+						if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
+							continue;
+						newSnippets.Add (new RoslynCompletionData (null) {
+							CompletionText = ct.Shortcut,
+							DisplayText = ct.Shortcut,
+							Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
+							Icon = ct.Icon
+						});
+					}
+					snippets = newSnippets;
+					return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
+				};
+				NameProposalService.Replace (new NameConventionRule.NamePropsalStrategy ());
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
+			}
 		}
 
 		public CSharpCompletionTextEditorExtension ()
 		{
-			foreach (var node in AddinManager.GetExtensionNodes<InstanceExtensionNode> ("/MonoDevelop/CSharp/Completion/ContextHandler")) {
-				var handler = (CompletionContextHandler)node.CreateInstance ();
-				additionalContextHandlers.Add (handler);
+			try {
+				foreach (var node in AddinManager.GetExtensionNodes<InstanceExtensionNode> ("/MonoDevelop/CSharp/Completion/ContextHandler")) {
+					var handler = (CompletionContextHandler)node.CreateInstance ();
+					additionalContextHandlers.Add (handler);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while creating c# completion text editor extension.", e);
 			}
 		}
 
@@ -308,6 +319,10 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		static bool IsIdentifierPart (char ch)
+		{
+			return char.IsLetterOrDigit (ch) || ch == '_';
+		}
 
 		public override Task<ICompletionDataList> HandleBackspaceOrDeleteCodeCompletionAsync (CodeCompletionContext completionContext, SpecialKey key, char triggerCharacter, CancellationToken token = default(CancellationToken))
 		{
@@ -318,13 +333,15 @@ namespace MonoDevelop.CSharp.Completion
 			//char completionChar = Editor.GetCharAt (completionContext.TriggerOffset - 1);
 			//Console.WriteLine ("completion char: " + completionChar);
 			//	var timer = Counters.ResolveTime.BeginTiming ();
+
+			if (key == SpecialKey.BackSpace || key == SpecialKey.Delete) {
+				char ch  = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+				char ch2 = completionContext.TriggerOffset < Editor.Length ? Editor.GetCharAt (completionContext.TriggerOffset) : '\0';
+				if (!IsIdentifierPart (ch) && !IsIdentifierPart (ch2))
+					return null;
+			}
 			try {
 				int triggerWordLength = 0;
-				//if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
-				//	if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))
-				//		return null;
-				//	triggerWordLength = 1;
-				//}
 				return InternalHandleCodeCompletion (completionContext, triggerCharacter, true, triggerWordLength, token).ContinueWith ( t => {
 					var result = (CompletionDataList)t.Result;
 					if (result == null)
@@ -355,7 +372,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		void AddImportCompletionData (CSharpCompletionDataList result, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
+		void AddImportCompletionData (CompletionResult completionResult, CSharpCompletionDataList result, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (result.Count == 0)
 				return;
@@ -364,14 +381,29 @@ namespace MonoDevelop.CSharp.Completion
 			var syntaxTree = root.SyntaxTree;
 
 			if (syntaxTree.IsInNonUserCode(position, cancellationToken) || 
-				syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken) || 
 				syntaxTree.GetContainingTypeOrEnumDeclaration(position, cancellationToken) is EnumDeclarationSyntax ||
 				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
 				return;
 
+			var extensionMethodImport =  syntaxTree.IsRightOfDotOrArrowOrColonColon (position, cancellationToken);
+			ITypeSymbol extensionType = null;
+
+			if (extensionMethodImport) {
+				var memberAccess = completionResult.SyntaxContext.TargetToken.Parent as MemberAccessExpressionSyntax;
+				if (memberAccess != null) {
+					extensionType = completionResult.SyntaxContext.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
+					if (extensionType == null) {
+						return;
+					}
+				} else {
+					return;
+				}
+			}
+
 			var tokenLeftOfPosition = syntaxTree.FindTokenOnLeftOfPosition (position, cancellationToken);
 
-			if (syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
+			if (extensionMethodImport ||
+			    syntaxTree.IsGlobalStatementContext (position, cancellationToken) ||
 			    syntaxTree.IsExpressionContext (position, tokenLeftOfPosition, true, cancellationToken) ||
 			    syntaxTree.IsStatementContext (position, tokenLeftOfPosition, cancellationToken) ||
 			    syntaxTree.IsTypeContext (position, cancellationToken) ||
@@ -388,7 +420,7 @@ namespace MonoDevelop.CSharp.Completion
 				var stack = new Stack<INamespaceOrTypeSymbol>();
 				foreach (var member in semanticModel.Compilation.GlobalNamespace.GetNamespaceMembers ())
 					stack.Push (member);
-
+				var extMethodDict = extensionMethodImport ? new Dictionary<INamespaceSymbol, List<ImportSymbolCompletionData>> () : null;
 				while (stack.Count > 0) {
 					if (cancellationToken.IsCancellationRequested)
 						break;
@@ -398,7 +430,7 @@ namespace MonoDevelop.CSharp.Completion
 						var currentNsName = currentNs.GetFullName ();
 						if (usedNamespaces.Contains (currentNsName) ||
 							enclosingNamespaceName == currentNsName ||
-							(enclosingNamespaceName.StartsWith (currentNsName) &&
+							(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
 							enclosingNamespaceName [currentNsName.Length] == '.')) {
 							foreach (var member in currentNs.GetNamespaceMembers ())
 								stack.Push (member);
@@ -416,7 +448,29 @@ namespace MonoDevelop.CSharp.Completion
 							if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
 								continue;
 						}
-						result.Add (new ImportSymbolCompletionData (this, type, false));
+						if (extensionMethodImport) {
+							if (!type.MightContainExtensionMethods)
+								continue;
+							foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
+								var reducedMethod = extMethod.ReduceExtensionMethod (extensionType);
+								if (reducedMethod != null) {
+									List<ImportSymbolCompletionData> importSymbolList;
+									if (!extMethodDict.TryGetValue (type.ContainingNamespace, out importSymbolList)) {
+										extMethodDict.Add (type.ContainingNamespace, importSymbolList = new List<ImportSymbolCompletionData> ());
+									}
+									var newData = new ImportSymbolCompletionData (this, factory, reducedMethod, false);
+									var existingItem = importSymbolList.FirstOrDefault (data => data.Symbol.Name == extMethod.Name);
+									if (existingItem != null) {
+										existingItem.AddOverload (newData);
+									} else {
+										result.Add (newData);
+										importSymbolList.Add (newData);
+									}
+								}
+							}
+						} else {
+							result.Add (new ImportSymbolCompletionData (this, factory, type, false));
+						}
 					}
 				}
 			}
@@ -459,8 +513,8 @@ namespace MonoDevelop.CSharp.Completion
 						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
 					}
 
-					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol))) {
-						AddImportCompletionData (list, semanticModel, offset, token);
+					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => (cd.GetType () == typeof (RoslynSymbolCompletionData)) && (cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol)))) {
+						AddImportCompletionData (completionResult, list, roslynCodeCompletionFactory, semanticModel, offset, token);
 					}
 
 					list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
@@ -506,13 +560,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			return true;
 		}
-		
-		public override int GuessBestMethodOverload (MonoDevelop.Ide.CodeCompletion.ParameterHintingResult provider, int currentOverload)
+
+		public override async Task<int> GuessBestMethodOverload (MonoDevelop.Ide.CodeCompletion.ParameterHintingResult provider, int currentOverload, CancellationToken token)
 		{
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return -1;
-			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, provider.StartOffset, Editor.CaretOffset).Result;
+			var result = await ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, provider.StartOffset, Editor.CaretOffset);
 			var cparam = result.ParameterIndex;
 			var list = result.UsedNamespaceParameters;
 			if (cparam > provider[currentOverload].ParameterCount && !provider[currentOverload].IsParameterListAllowed || !HasAllUsedParameters (provider[currentOverload], list)) {

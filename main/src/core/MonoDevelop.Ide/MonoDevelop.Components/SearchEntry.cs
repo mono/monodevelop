@@ -30,6 +30,7 @@
 using System;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
@@ -86,8 +87,21 @@ namespace MonoDevelop.Components
 		}
 
 		public Menu Menu {
-			get { return menu; }
-			set { menu = value; menu.Deactivated += OnMenuDeactivated; }
+			get {
+				if (menu != null)
+					return menu;
+				return menu = new Menu ();
+			}
+			set {
+				if (menu != null) {
+					menu.Deactivated -= OnMenuDeactivated;
+					menu.Destroy ();
+				}
+				menu = value;
+				if (value != null) {
+					menu.Deactivated += OnMenuDeactivated;
+				}
+			}
 		}
 
 		public Entry Entry {
@@ -120,9 +134,9 @@ namespace MonoDevelop.Components
 			AppPaintable = true;
 
 			BuildWidget ();
-			BuildMenu ();
 
 			NoShowAll = true;
+			GtkWorkarounds.SetTransparentBgHint (this, true);
 		}
 
 		public Xwt.Drawing.Image FilterButtonPixbuf {
@@ -207,12 +221,6 @@ namespace MonoDevelop.Components
 				activated_event (this, EventArgs.Empty);
 		}
 
-		private void BuildMenu ()
-		{
-			menu = new Menu ();
-			menu.Deactivated += OnMenuDeactivated;
-		}
-
 		public void PopupFilterMenu ()
 		{
 			ShowMenu (0);
@@ -221,10 +229,15 @@ namespace MonoDevelop.Components
 		void ShowMenu (uint time)
 		{
 			OnRequestMenu (EventArgs.Empty);
-			if (menu.Children.Length > 0) {
-				menu.Popup (null, null, OnPositionMenu, 0, time);
-				menu.ShowAll ();
+			if (MenuHasChildren ()) {
+				Menu.Popup (null, null, OnPositionMenu, 0, time);
+				Menu.ShowAll ();
 			}
+		}
+
+		bool MenuHasChildren ()
+		{
+			return menu != null && Menu.Children.Length > 0;
 		}
 
 		private void ShowHideButtons ()
@@ -232,7 +245,7 @@ namespace MonoDevelop.Components
 			clear_button.Visible = entry.Text.Length > 0;
 			entryAlignment.RightPadding = (uint) (!clear_button.Visible && roundedShape ? 6 : 0);
 
-			filter_button.Visible = ForceFilterButtonVisible || (menu != null && menu.Children.Length > 0);
+			filter_button.Visible = ForceFilterButtonVisible || MenuHasChildren ();
 			entryAlignment.LeftPadding = (uint) (!filter_button.Visible && roundedShape ? 6 : 0);
 		}
 
@@ -264,7 +277,7 @@ namespace MonoDevelop.Components
 			toggling = true;
 			FilterMenuItem item = (FilterMenuItem)o;
 
-			foreach (MenuItem child_item in menu) {
+			foreach (MenuItem child_item in Menu) {
 				if (!(child_item is FilterMenuItem)) {
 					continue;
 				}
@@ -367,6 +380,7 @@ namespace MonoDevelop.Components
 		protected override void OnDestroyed ()
 		{
 			if (menu != null) {
+				menu.Deactivated -= OnMenuDeactivated;
 				menu.Destroy ();
 				menu = null;
 			}
@@ -389,7 +403,10 @@ namespace MonoDevelop.Components
 			var alloc = new Gdk.Rectangle (alignment.Allocation.X, box.Allocation.Y, alignment.Allocation.Width, box.Allocation.Height);
 
 			if (hasFrame && (!roundedShape || (roundedShape && !customRoundedShapeDrawing))) {
-				Style.PaintShadow (entry.Style, GdkWindow, StateType.Normal, ShadowType.In,
+				if (Platform.IsLinux)
+					Style.PaintFlatBox (Style, GdkWindow, entry.State, ShadowType.None,
+					                    evnt.Area, this, "entry_bg", alloc.X + 2, alloc.Y + 2, alloc.Width - 4, alloc.Height - 4);
+				Style.PaintShadow (entry.Style, GdkWindow, entry.State, entry.ShadowType,
 				                   evnt.Area, entry, "entry", alloc.X, alloc.Y, alloc.Width, alloc.Height);
 /*				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					ctx.LineWidth = 1;
@@ -418,7 +435,7 @@ namespace MonoDevelop.Components
 			if (hasFrame && roundedShape && customRoundedShapeDrawing) {
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					RoundBorder (ctx, alloc.X + 0.5, alloc.Y + 0.5, alloc.Width - 1, alloc.Height - 1);
-					ctx.SetSourceColor (Styles.WidgetBorderColor);
+					ctx.SetSourceColor (Styles.WidgetBorderColor.ToCairoColor ());
 					ctx.LineWidth = 1;
 					ctx.Stroke ();
 				}
@@ -478,7 +495,7 @@ namespace MonoDevelop.Components
 			FilterMenuItem item = new FilterMenuItem (id, label);
 
 			item.Toggled += OnMenuItemToggled;
-			menu.Append (item);
+			Menu.Append (item);
 
 			if (ActiveFilterID < 0) {
 				item.Toggle ();
@@ -491,20 +508,20 @@ namespace MonoDevelop.Components
 		public MenuItem AddMenuItem (string label)
 		{
 			var item = new MenuItem (label);
-			menu.Append (item);
+			Menu.Append (item);
 			return item;
 		}
 
 		public void AddFilterSeparator ()
 		{
-			menu.Append (new SeparatorMenuItem ());
+			Menu.Append (new SeparatorMenuItem ());
 		}
 
 		public void RemoveFilterOption (int id)
 		{
 			FilterMenuItem item = FindFilterMenuItem (id);
 			if (item != null) {
-				menu.Remove (item);
+				Menu.Remove (item);
 			}
 		}
 
@@ -518,7 +535,7 @@ namespace MonoDevelop.Components
 
 		private FilterMenuItem FindFilterMenuItem (int id)
 		{
-			foreach (MenuItem item in menu) {
+			foreach (MenuItem item in Menu) {
 				if (item is FilterMenuItem && ((FilterMenuItem)item).ID == id) {
 					return (FilterMenuItem)item;
 				}
@@ -647,6 +664,8 @@ namespace MonoDevelop.Components
 
 				parent.StyleSet += OnParentStyleSet;
 				WidthChars = 1;
+
+				GtkWorkarounds.SetTransparentBgHint (this, true);
 			}
 
 			private void OnParentStyleSet (object o, EventArgs args)
@@ -725,7 +744,7 @@ namespace MonoDevelop.Components
 
 				if (layout == null) {
 					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = PangoContext.FontDescription.Copy ();
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 
 				int width, height;

@@ -59,7 +59,7 @@ namespace MonoDevelop.Components
 		public MiniButton (string text, string icon): this ()
 		{
 			HBox box = new HBox (false, 3);
-			Image img = new Image (icon, IconSize.Menu);
+			ImageView img = new ImageView (icon, IconSize.Menu);
 			box.PackStart (img, false, false, 0);
 			Label label = new Label (text);
 			label.Xalign = 0;

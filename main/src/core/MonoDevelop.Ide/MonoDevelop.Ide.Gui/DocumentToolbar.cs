@@ -109,8 +109,8 @@ namespace MonoDevelop.Ide.Gui
 		void ChangeColor (Gtk.Widget w)
 		{
 			w.Realized += delegate {
-				w.ModifyText (StateType.Normal, Styles.BreadcrumbTextColor);
-				w.ModifyFg (StateType.Normal, Styles.BreadcrumbTextColor);
+				w.ModifyText (StateType.Normal, Styles.BreadcrumbTextColor.ToGdkColor ());
+				w.ModifyFg (StateType.Normal, Styles.BreadcrumbTextColor.ToGdkColor ());
 			};
 			if (w is Gtk.Container) {
 				foreach (var c in ((Gtk.Container)w).Children)
@@ -161,16 +161,12 @@ namespace MonoDevelop.Ide.Gui
 			{
 				using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 					ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-					using (Cairo.LinearGradient g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
-						g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
-						g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
-						ctx.SetSource (g);
-						ctx.Fill ();
-					}
+					ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor.ToCairoColor ());
+					ctx.Fill ();
 
 					ctx.MoveTo (0.5, Allocation.Height - 0.5);
 					ctx.RelLineTo (Allocation.Width, 0);
-					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor);
+					ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
 					ctx.LineWidth = 1;
 					ctx.Stroke ();
 				}
@@ -181,8 +177,8 @@ namespace MonoDevelop.Ide.Gui
 
 	public class DocumentToolButton : Control
 	{
-		public DocumentToolButtonImage Image {
-			get { return (Gtk.Image)button.Image; }
+		public ImageView Image {
+			get { return (ImageView)button.Image; }
 			set { button.Image = value; }
 		}
 
@@ -206,11 +202,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			button = new Button ();
 			Label = label;
-			Image = new Gtk.Image (stockId, IconSize.Menu);
-			button.Image.Show ();
+			Image = new ImageView (stockId, IconSize.Menu);
+			Image.Show ();
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return button;
 		}
@@ -226,13 +222,13 @@ namespace MonoDevelop.Ide.Gui
 
 		public class DocumentToolButtonImage : Control
 		{
-			Gtk.Image image;
-			internal DocumentToolButtonImage (Gtk.Image image)
+			ImageView image;
+			internal DocumentToolButtonImage (ImageView image)
 			{
 				this.image = image;
 			}
 
-			protected override object CreateNativeWidget ()
+			protected override object CreateNativeWidget<T> ()
 			{
 				return image;
 			}
@@ -242,7 +238,7 @@ namespace MonoDevelop.Ide.Gui
 				return d.GetNativeWidget<Gtk.Widget> ();
 			}
 
-			public static implicit operator DocumentToolButtonImage (Gtk.Image d)
+			public static implicit operator DocumentToolButtonImage (ImageView d)
 			{
 				return new DocumentToolButtonImage (d);
 			}

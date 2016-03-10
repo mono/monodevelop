@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public class CSharpSyntaxTriviaService : AbstractSyntaxTriviaService
+	class CSharpSyntaxTriviaService : AbstractSyntaxTriviaService
     {
         public CSharpSyntaxTriviaService()
 			: base((int)SyntaxKind.EndOfLineTrivia)

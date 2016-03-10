@@ -47,6 +47,56 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsTriggerAfterSpaceOrStartOfWordCharacter (text, position);
 		}
 
+		public override async Task<bool> IsExclusiveAsync (CompletionContext completionContext, SyntaxContext ctx, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		{
+			var document = completionContext.Document;
+			var semanticModel = ctx.SemanticModel;
+			var tree = ctx.SyntaxTree;
+			if (tree.IsInNonUserCode(completionContext.Position, cancellationToken))
+				return false;
+
+			var text = await document.GetTextAsync (cancellationToken).ConfigureAwait (false);
+
+			var startLineNumber = text.Lines.IndexOf (completionContext.Position);
+
+			// modifiers* override modifiers* type? |
+			Accessibility seenAccessibility;
+			//DeclarationModifiers modifiers;
+			var token = tree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken);
+			if (token.Parent == null)
+				return false;
+
+			var parentMember = token.Parent.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault (m => !m.IsKind (SyntaxKind.IncompleteMember));
+
+			if (!(parentMember is BaseTypeDeclarationSyntax) &&
+
+			    /* May happen in case: 
+				 * 
+				 * override $
+				 * public override string Foo () {} 
+				 */
+			    !(token.IsKind (SyntaxKind.OverrideKeyword) && token.Span.Start <= parentMember.Span.Start))
+				return false;
+
+			var position = completionContext.Position;
+			var startToken = token.GetPreviousTokenIfTouchingWord(position);
+			ITypeSymbol returnType;
+			SyntaxToken tokenBeforeReturnType;
+			TryDetermineReturnType (startToken, semanticModel, cancellationToken, out returnType, out tokenBeforeReturnType);
+			if (returnType == null) {
+				var enclosingType = semanticModel.GetEnclosingSymbol (position, cancellationToken) as INamedTypeSymbol;
+				if (enclosingType != null && (startToken.IsKind (SyntaxKind.OpenBraceToken) || startToken.IsKind (SyntaxKind.CloseBraceToken) || startToken.IsKind (SyntaxKind.SemicolonToken))) {
+					return false;
+				}
+			}
+
+			if (!TryDetermineModifiers(ref tokenBeforeReturnType, text, startLineNumber, out seenAccessibility/*, out modifiers*/) ||
+			    !TryCheckForTrailingTokens (tree, text, startLineNumber, position, cancellationToken)) {
+				return false;
+			}
+			return true;
+		}
+
 		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			// var ctx = await completionContext.GetSyntaxContextAsync (engine.Workspace, cancellationToken).ConfigureAwait (false);
@@ -198,7 +248,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return false;
 		}
 
-		static bool TryDetermineOverridableMembers(SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
+		internal static bool TryDetermineOverridableMembers(SemanticModel semanticModel, SyntaxToken startToken, Accessibility seenAccessibility, out ISet<ISymbol> overridableMembers, CancellationToken cancellationToken)
 		{
 			var result = new HashSet<ISymbol>();
 			var containingType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol>(startToken.SpanStart, cancellationToken);

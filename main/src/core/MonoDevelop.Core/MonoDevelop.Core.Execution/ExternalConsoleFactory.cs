@@ -44,7 +44,7 @@ namespace MonoDevelop.Core.Execution
 			return c;
 		}
 
-		protected override OperationConsole OnCreateConsole ()
+		protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 		{
 			return new ExternalConsole (true);
 		}

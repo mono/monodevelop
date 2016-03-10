@@ -29,6 +29,8 @@ using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
 using System.IO;
+using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -42,28 +44,21 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region implemented abstract members of TextLoader
-		async Task<TextAndVersion> GetTextAndVersion (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
+
+		public override async Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
-			if (!File.Exists (fileName)) {
-				var document = ((MonoDevelopWorkspace)workspace).GetDocument (documentId);
-				if (document == null)
-					return null;
-				return TextAndVersion.Create (await document.GetTextAsync (cancellationToken), VersionStamp.Create ());
-			}
+			cancellationToken.ThrowIfCancellationRequested ();
 			SourceText text;
-			if (workspace.IsDocumentOpen (documentId)) {
+			if (IdeApp.Workbench?.Documents.Any (doc => FilePath.PathComparer.Compare (doc.FileName, fileName) == 0) == true) {
 				text = new MonoDevelopSourceText (TextFileProvider.Instance.GetTextEditorData (fileName).CreateDocumentSnapshot ());
-			}
-			else {
-				text = SourceText.From (TextFileUtility.GetText (fileName));
+			} else {
+				if (!File.Exists (fileName))
+					return TextAndVersion.Create (SourceText.From (""), VersionStamp.Create ());
+				text = SourceText.From (await TextFileUtility.GetTextAsync (fileName, cancellationToken).ConfigureAwait(false));
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}
 
-		public override async Task<TextAndVersion> LoadTextAndVersionAsync (Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
-		{
-			return await GetTextAndVersion (workspace, documentId, cancellationToken);
-		}
 		#endregion
 
 		public static TextLoader CreateFromText (string text)

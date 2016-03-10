@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class MiscTests : CompletionTestBase
+	class MiscTests : CompletionTestBase
 	{
 		[Test]
 		public void TestSimple ()
@@ -139,6 +139,39 @@ namespace TestProject
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.IsNull (provider.Find ("TestProject.TestClass.FooBar.Bar"));
 			Assert.IsNotNull (provider.Find ("TestClass.FooBar.Bar"));
+		}
+
+		/// <summary>
+		/// Bug 39015 - New keyword missing from completion
+		/// </summary>
+		[Test]
+		public void TestBug39015 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+
+namespace Foo
+{
+	enum TestEnum { A, B }
+	public class Test
+	{
+		void FooBar (int i, ConsoleKey t)
+		{
+		}
+		void FooBar (int i, object o)
+		{
+		}
+
+		void TestMe ()
+		{
+			$this.FooBar (12, $
+			
+		}
+	}
+}", usePreviousCharAsTrigger: true);
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.IsNotNull (provider.Find ("new"));
 		}
 	}
 }

@@ -28,9 +28,12 @@ using Gdk;
 
 namespace MonoDevelop.Components
 {
-	public class ImageView: Gtk.DrawingArea
+	[System.ComponentModel.ToolboxItem (true)]
+	public class ImageView: Gtk.Misc
 	{
 		Xwt.Drawing.Image image;
+		string iconId;
+		Gtk.IconSize? size;
 
 		public ImageView ()
 		{
@@ -42,6 +45,13 @@ namespace MonoDevelop.Components
 			this.image = image;
 		}
 
+		public ImageView (string iconId, Gtk.IconSize size): this ()
+		{
+			this.iconId = iconId;
+			this.size = size;
+			image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size);
+		}
+
 		public Xwt.Drawing.Image Image {
 			get { return image; }
 			set {
@@ -51,21 +61,32 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		float xalign = 0.5f;
-		public float Xalign {
-			get { return xalign; }
+		public void SetIcon (string iconId, Gtk.IconSize size)
+		{
+			this.iconId = iconId;
+			this.size = size;
+			Image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size);
+		}
+
+		public Gtk.IconSize IconSize {
+			get {
+				return size.HasValue ? size.Value : Gtk.IconSize.Invalid;
+			}
 			set {
-				xalign = (float)(value * IconScale);
-				QueueDraw ();
+				size = value;
+				if (iconId != null)
+					Image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size.Value);
 			}
 		}
 
-		float yalign = 0.5f;
-		public float Yalign {
-			get { return yalign; }
+		public string IconId {
+			get {
+				return iconId;
+			}
 			set {
-				yalign = (float)(value * IconScale);
-				QueueDraw ();
+				iconId = value;
+				if (size.HasValue)
+					Image = MonoDevelop.Ide.ImageService.GetIcon (iconId, size.Value);
 			}
 		}
 
@@ -75,21 +96,40 @@ namespace MonoDevelop.Components
 
 		protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 		{
+			requisition.Width = Xpad * 2;
+			requisition.Height = Ypad * 2;
 			if (image != null) {
-				requisition.Width = (int)(image.Width * IconScale);
-				requisition.Height = (int)(image.Height * IconScale);
+				requisition.Width += (int)(image.Width * IconScale);
+				requisition.Height += (int)(image.Height * IconScale);
 			}
+		}
+
+		bool IsParentDisabled ()
+		{
+			var parent = Parent;
+			if (parent != null) {
+				if (!parent.Sensitive)
+					return true;
+				// special case: Buttons with image and label align children with HBox and Alignment
+				//               Button -> Alignment -> HBox -> [ImageView|Label]
+				parent = parent.Parent.Parent as Gtk.Button;
+				if (parent != null && !parent.Sensitive)
+					return true;
+			}
+			return false;
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			if (image != null) {
+				var alloc = Allocation;
+				alloc.Inflate (-Xpad, -Ypad);
 				using (var ctx = CairoHelper.Create (evnt.Window)) {
-					var x = Math.Round (Allocation.X + (Allocation.Width - image.Width * IconScale) * Xalign);
-					var y = Math.Round (Allocation.Y + (Allocation.Height - image.Height * IconScale) * Yalign);
+					var x = Math.Round (alloc.X + (alloc.Width - image.Width * IconScale) * Xalign);
+					var y = Math.Round (alloc.Y + (alloc.Height - image.Height * IconScale) * Yalign);
 					ctx.Save ();
 					ctx.Scale (IconScale, IconScale);
-					ctx.DrawImage (this, image, x / IconScale, y / IconScale);
+					ctx.DrawImage (this, IsParentDisabled () ? image.WithAlpha (0.4) : image, x / IconScale, y / IconScale);
 					ctx.Restore ();
 				}
 			}

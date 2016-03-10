@@ -331,7 +331,8 @@ namespace MonoDevelop.Components.Commands
 		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs e)
 		{
 			bool complete;
-			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
+			// KeyboardShortcut[] accels = 
+			KeyBindingManager.AccelsFromKey (e.Event, out complete);
 
 			if (!complete) {
 				// incomplete accel
@@ -637,6 +638,8 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterCommandTargetVisitor (ICommandTargetVisitor visitor)
 		{
 			visitors.Remove (visitor);
+
+			StopStatusUpdaterIfNeeded ();
 		}
 		
 		/// <summary>
@@ -906,7 +909,7 @@ namespace MonoDevelop.Components.Commands
 			object initialCommandTarget, EventHandler closeHandler)
 		{
 #if MAC
-			var menu = CreateNSMenu (entrySet, initialCommandTarget, closeHandler);
+			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent, closeHandler);
 			ContextMenuExtensionsMac.ShowContextMenu (parent, evt, menu);
 #else
 			var menu = CreateMenu (entrySet, closeHandler);
@@ -929,7 +932,7 @@ namespace MonoDevelop.Components.Commands
 			object initialCommandTarget = null)
 		{
 #if MAC
-			var menu = CreateNSMenu (entrySet, initialCommandTarget);
+			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent);
 			ContextMenuExtensionsMac.ShowContextMenu (parent, x, y, menu);
 #else
 			var menu = CreateMenu (entrySet);
@@ -1330,6 +1333,8 @@ namespace MonoDevelop.Components.Commands
 								info.Visible = true;
 							return info;
 						}
+						if (info.Enabled && !info.Bypass)
+							return info;
 						continue;
 					}
 					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
@@ -1690,7 +1695,7 @@ namespace MonoDevelop.Components.Commands
 				cmdTarget = null;
 			
 			if (cmdTarget == null || !visitedTargets.Add (cmdTarget)) {
-				if (delegatorStack.Count > 0) {
+				while (delegatorStack.Count > 0) {
 					var del = delegatorStack.Pop ();
 					if (del is ICommandDelegatorRouter)
 						cmdTarget = ((ICommandDelegatorRouter)del).GetNextCommandTarget ();
@@ -1884,6 +1889,14 @@ namespace MonoDevelop.Components.Commands
 				toolbarUpdaterRunning = true;
 			}
 		}
+
+		void StopStatusUpdaterIfNeeded ()
+		{
+			if (toolbars.Count != 0 || visitors.Count != 0)
+				return;
+
+			StopStatusUpdater ();
+		}
 		
 		void StopStatusUpdater ()
 		{
@@ -1954,6 +1967,8 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterCommandBar (ICommandBar commandBar)
 		{
 			toolbars.Remove (commandBar);
+
+			StopStatusUpdaterIfNeeded ();
 		}
 		
 		void UpdateToolbars ()

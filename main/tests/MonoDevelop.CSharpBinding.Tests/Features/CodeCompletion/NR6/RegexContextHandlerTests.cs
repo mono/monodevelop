@@ -33,7 +33,7 @@ using System.Text.RegularExpressions;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class RegexContextHandlerTests : CompletionTestBase
+	class RegexContextHandlerTests : CompletionTestBase
 	{
 		[Test]
 		public void Constructor_SimpleStringTest ()

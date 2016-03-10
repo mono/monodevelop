@@ -221,9 +221,6 @@ namespace MonoDevelop.Ide
 		
 			commandService.EnableIdleUpdate = true;
 
-			// Perser service initialization
-			TypeSystemService.TrackFileChanges = true;
-
 			if (Customizer != null)
 				Customizer.OnIdeInitialized ();
 			
@@ -454,7 +451,7 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Preferences.EnableInstrumentation) {
 				if (instrumentationStatusIcon == null) {
-					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Information));
+					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusInstrumentation));
 					instrumentationStatusIcon.ToolTip = "Instrumentation service enabled";
 					instrumentationStatusIcon.Clicked += delegate {
 						InstrumentationService.StartMonitor ();

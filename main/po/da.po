@@ -16267,7 +16267,7 @@ msgid "Print operation failed."
 msgstr "Det mislykkedes at gemme."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
-msgid "Press 'F2' for focus"
+msgid "Press F2 to focus"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185

@@ -315,13 +315,14 @@ src/core/MonoDevelop.TextEditor.Tests/Makefile
 src/tools/Makefile
 src/tools/mdhost/Makefile
 src/tools/mdtool/Makefile
-src/tools/SharpCoco/Makefile
 src/tools/mdmonitor/Makefile
 src/addins/Makefile
 src/addins/MonoDeveloperExtensions/Makefile
 src/addins/MonoDeveloperExtensions/NUnit/Makefile
-src/addins/NUnit/Makefile
-src/addins/NUnit/NUnitRunner/Makefile
+src/addins/MonoDevelop.UnitTesting/Makefile
+src/addins/MonoDevelop.UnitTesting.NUnit/Makefile
+src/addins/MonoDevelop.UnitTesting.NUnit/NUnitRunner/Makefile
+src/addins/MonoDevelop.UnitTesting.NUnit/NUnit3Runner/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile

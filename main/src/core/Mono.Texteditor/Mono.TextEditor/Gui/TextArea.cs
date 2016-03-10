@@ -840,6 +840,10 @@ namespace Mono.TextEditor
 					parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				}
 
+				// set additionally the real parent background for gtk themes that use the content background
+				// to draw the scrollbar slider trough.
+				this.Parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+
 				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				settingWidgetBg = false;
 			}
@@ -1374,9 +1378,9 @@ namespace Mono.TextEditor
 		Margin oldMargin = null;
 		bool overChildWidget;
 
-		public event EventHandler BeginHover;
+		public event EventHandler<Xwt.MouseMovedEventArgs> BeginHover;
 
-		protected virtual void OnBeginHover (EventArgs e)
+		protected virtual void OnBeginHover (Xwt.MouseMovedEventArgs e)
 		{
 			var handler = BeginHover;
 			if (handler != null)
@@ -1385,14 +1389,15 @@ namespace Mono.TextEditor
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			OnBeginHover (EventArgs.Empty);
+			OnBeginHover (new Xwt.MouseMovedEventArgs (e.Time, e.X, e.Y));
 			try {
 				// The coordinates have to be properly adjusted to the origin since
 				// the event may come from a child widget
 				int rx, ry;
 				GdkWindow.GetOrigin (out rx, out ry);
-				double x = (int)e.XRoot - rx;
-				double y = (int)e.YRoot - ry;
+				double x = (int) e.XRoot - rx;
+				double y = (int) e.YRoot - ry;
+
 				overChildWidget = containerChildren.Any (w => w.Child.Allocation.Contains ((int)x, (int)y));
 
 				RemoveScrollWindowTimer ();
@@ -2962,6 +2967,8 @@ namespace Mono.TextEditor
 
 				//draw the highlight rectangle
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+
+				// FIXME: VV: Remove gradient features
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
 						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),

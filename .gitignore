@@ -1,6 +1,10 @@
 #Autosave files
 *~
 
+#test stuff
+/TestResult_LoggingService.log
+/main/tests/TestResult*.xml
+
 #build stuff
 obj/
 /main/build/bin
@@ -21,7 +25,6 @@ obj/
 /local-libs
 /main/build/tests
 /main/monodevelop_version
-/main/tests/TestResult*.xml
 /main/tests/Ide.Tests/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi2/bin
@@ -130,8 +133,6 @@ Thumbs.db
 /main/src/addins/Xml/Makefile
 /main/src/addins/MonoDeveloperExtensions/Makefile
 /main/src/addins/MonoDeveloperExtensions/NUnit/Makefile
-/main/src/addins/NUnit/Makefile
-/main/src/addins/NUnit/NUnitRunner/Makefile
 /main/src/addins/TextTemplating/Makefile
 /main/src/addins/TextTemplating/Mono.TextTemplating/Makefile
 /main/src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
@@ -187,6 +188,10 @@ Thumbs.db
 /main/src/addins/MonoDevelop.PackageManagement/Makefile
 /main/src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/Makefile
 /main/src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Tests/Makefile
+/main/src/addins/MonoDevelop.UnitTesting.NUnit/Makefile
+/main/src/addins/MonoDevelop.UnitTesting.NUnit/NUnit3Runner/Makefile
+/main/src/addins/MonoDevelop.UnitTesting.NUnit/NUnitRunner/Makefile
+/main/src/addins/MonoDevelop.UnitTesting/Makefile
 
 # extras configure junk
 /extras/MonoDevelop.Database/INSTALL

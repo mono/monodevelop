@@ -35,6 +35,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.Docking
 {	
@@ -148,6 +150,8 @@ namespace MonoDevelop.Components.Docking
 				else
 					crossfade.ShowPrimary ();
 			};
+
+			Styles.Changed += UpdateStyle;
 		}
 
 		void IAnimatable.BatchBegin () { }
@@ -178,6 +182,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.OnDestroyed ();
 			bar.Frame.SizeAllocated -= HandleBarFrameSizeAllocated;
+			Ide.Gui.Styles.Changed -= UpdateStyle;
 		}
 		
 		
@@ -207,16 +212,16 @@ namespace MonoDevelop.Components.Docking
 			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
 				if (bar.AlignToEnd)
-					mainBox.SetPadding (3, 3, 11, 9);
+					mainBox.SetPadding (5, 5, 11, 9);
 				else
-					mainBox.SetPadding (3, 3, 9, 11);
+					mainBox.SetPadding (5, 5, 9, 11);
 			}
 			else {
 				box = new VBox ();
 				if (bar.AlignToEnd)
-					mainBox.SetPadding (11, 9, 3, 3);
+					mainBox.SetPadding (11, 9, 5, 5);
 				else
-					mainBox.SetPadding (9, 11, 3, 3);
+					mainBox.SetPadding (9, 11, 5, 5);
 			}
 			
 			if (it.Icon != null) {
@@ -227,10 +232,25 @@ namespace MonoDevelop.Components.Docking
 			}
 				
 			if (!string.IsNullOrEmpty (it.Label)) {
-				label = new Gtk.Label (it.Label);
+				label = new Label (it.Label);
 				label.UseMarkup = true;
-				if (bar.Orientation == Gtk.Orientation.Vertical)
+				label.ModifyFont (FontService.SansFont.CopyModified (Styles.FontScale11));
+
+				if (bar.Orientation == Orientation.Vertical)
 					label.Angle = 270;
+
+				// fine-tune label alignment issues
+				if (Platform.IsMac) {
+					if (bar.Orientation == Orientation.Horizontal)
+						label.SetAlignment (0, 0.5f);
+					else
+						label.SetAlignment (0.6f, 0);
+				} else {
+					if (bar.Orientation == Orientation.Vertical)
+						label.SetAlignment (1, 0);
+				}
+				// TODO: VV: Test Linux
+
 				box.PackStart (label, true, true, 0);
 			} else
 				label = null;
@@ -239,7 +259,14 @@ namespace MonoDevelop.Components.Docking
 			mainBox.Add (box);
 			mainBox.ShowAll ();
 			Add (mainBox);
+			UpdateStyle (this, null); 
 			QueueDraw ();
+		}
+
+		void UpdateStyle (object sender, EventArgs e)
+		{
+			if (label != null)
+				label.ModifyFg (StateType.Normal, Styles.DockBarLabelColor.ToGdkColor ());
 		}
 		
 		public MonoDevelop.Components.Docking.DockItem DockItem {
@@ -440,6 +467,8 @@ namespace MonoDevelop.Components.Docking
 			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
 				var alloc = Allocation;
 
+				// TODO: VV: Remove preflight gradient features and replace with a flat color
+
 				Cairo.LinearGradient lg;
 
 				if (bar.Orientation == Orientation.Horizontal) {
@@ -449,7 +478,7 @@ namespace MonoDevelop.Components.Docking
 				}
 
 				using (lg) {
-					Cairo.Color primaryColor = Styles.DockBarPrelightColor;
+					Cairo.Color primaryColor = Styles.DockBarPrelightColor.ToCairoColor ();
 					primaryColor.A = hoverProgress;
 
 					Cairo.Color transparent = primaryColor;

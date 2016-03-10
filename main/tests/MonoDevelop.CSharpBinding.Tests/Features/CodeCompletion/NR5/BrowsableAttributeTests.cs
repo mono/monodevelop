@@ -31,7 +31,7 @@ using System.Diagnostics;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class BrowsableAttributeTests : TestBase
+	class BrowsableAttributeTests : TestBase
 	{
 		[Test()]
 		public void TestEditorBrowsableAttributeClasses ()
@@ -43,10 +43,10 @@ using System;
 using System.ComponentModel;
 
 [EditorBrowsable(EditorBrowsableState.Always)]
-public class BrowsableTest {}
+class BrowsableTest {}
 
 [EditorBrowsable(EditorBrowsableState.Never)]
-public class NotBrowsableTest {}
+class NotBrowsableTest {}
 ", out cp);
 			var provider = CodeCompletionBugTests.CreateProvider (
 				@"class Test
@@ -70,10 +70,10 @@ using System;
 using System.ComponentModel;
 
 [EditorBrowsable(EditorBrowsableState.Always)]
-public class BrowsableTest {}
+class BrowsableTest {}
 
 [EditorBrowsable(EditorBrowsableState.Never)]
-public class NotBrowsableTest {}
+class NotBrowsableTest {}
 
 class Test
 {
@@ -95,7 +95,7 @@ class Test
 				@"
 using System;
 using System.ComponentModel;
-public class FooBar
+class FooBar
 {
 	[EditorBrowsable(EditorBrowsableState.Always)]
 	public int BrowsableTest { get; set; }
@@ -155,10 +155,10 @@ using System;
 using System.ComponentModel;
 
 [EditorBrowsable(EditorBrowsableState.Always)]
-public class BrowsableTest {}
+class BrowsableTest {}
 
 [EditorBrowsable(EditorBrowsableState.Never)]
-public class NotBrowsableTest {}
+class NotBrowsableTest {}
 ", out cp);
 
 			var provider = CodeCompletionBugTests.CreateProvider (
@@ -184,10 +184,10 @@ using System;
 using System.ComponentModel;
 
 [EditorBrowsable(EditorBrowsableState.Always)]
-public class BrowsableTest {}
+class BrowsableTest {}
 
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public class NotBrowsableTest {}
+class NotBrowsableTest {}
 ", out cp);
 
 			var provider = CodeCompletionBugTests.CreateProvider (

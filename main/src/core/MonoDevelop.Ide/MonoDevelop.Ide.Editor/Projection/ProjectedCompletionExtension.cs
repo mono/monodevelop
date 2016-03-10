@@ -202,11 +202,6 @@ namespace MonoDevelop.Ide.Editor.Projection
 				completionWidget.SetCompletionText (ImportContext (ctx, projection), partial_word, complete_word, completeWordOffset);
 			}
 
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
-				completionWidget.AddSkipChar (ProjectOffset (cursorPosition), c);
-			}
-
 			CodeCompletionContext ICompletionWidget.CurrentCodeCompletionContext {
 				get {
 					return ConvertContext (completionWidget.CurrentCodeCompletionContext, projection);
@@ -291,20 +286,20 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.GetCompletionCommandOffset (out cpos, out wlen);
 		}
 
-		public override int GetCurrentParameterIndex (int startOffset)
+		public override Task<int> GetCurrentParameterIndex (int startOffset, System.Threading.CancellationToken token)
 		{
 			var projectedExtension = GetExtensionAt (startOffset);
 			if (projectedExtension == null)
-				return -1;
-			return projectedExtension.GetCurrentParameterIndex (startOffset);
+				return Task.FromResult (-1);
+			return projectedExtension.GetCurrentParameterIndex (startOffset, token);
 		}
 
-		public override int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
+		public override Task<int> GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload, System.Threading.CancellationToken token)
 		{
 			var projectedExtension = GetCurrentExtension ();
 			if (projectedExtension == null)
-				return -1;
-			return projectedExtension.GuessBestMethodOverload (provider, currentOverload);
+				return Task.FromResult (-1);
+			return projectedExtension.GuessBestMethodOverload (provider, currentOverload, token);
 		}
 
 		public override System.Threading.Tasks.Task<MonoDevelop.Ide.CodeCompletion.ICompletionDataList> HandleCodeCompletionAsync (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, System.Threading.CancellationToken token)

@@ -30,9 +30,13 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		static ExpressionSyntaxExtensions ()
 		{
-			var typeInfo = Type.GetType ("Microsoft.CodeAnalysis.CSharp.Extensions.ExpressionSyntaxExtensions" + ReflectionNamespaces.CSWorkspacesAsmName, true);
-			castIfPossibleMethod = typeInfo.GetMethod ("CastIfPossible", BindingFlags.Static | BindingFlags.Public);
-			tryReduceOrSimplifyExplicitNameMethod = typeInfo.GetMethod ("TryReduceOrSimplifyExplicitName", BindingFlags.Static | BindingFlags.Public);
+			var typeInfo = Type.GetType("Microsoft.CodeAnalysis.CSharp.Extensions.ExpressionSyntaxExtensions" + ReflectionNamespaces.CSWorkspacesAsmName, true);
+			castIfPossibleMethod = typeInfo.GetMethod("CastIfPossible", BindingFlags.Static | BindingFlags.Public);
+			if (castIfPossibleMethod == null)
+				throw new Exception ("ExpressionSyntaxExtensions: CastIfPossible not found");
+			tryReduceOrSimplifyExplicitNameMethod = typeInfo.GetMethod("TryReduceOrSimplifyExplicitName", BindingFlags.Static | BindingFlags.Public);
+			if (tryReduceOrSimplifyExplicitNameMethod == null)
+				throw new Exception ("ExpressionSyntaxExtensions: TryReduceOrSimplifyExplicitName not found");
 		}
 
 		/// <summary>
@@ -43,13 +47,11 @@ namespace ICSharpCode.NRefactory6.CSharp
 			this ExpressionSyntax expression,
 			ITypeSymbol targetType,
 			int position,
-			SemanticModel semanticModel,
-			out bool wasCastAdded)
+			SemanticModel semanticModel)
 		{
 			try {
-				var args = new object [] { expression, targetType, position, semanticModel, false };
+				var args = new object [] { expression, targetType, position, semanticModel};
 				var result = (ExpressionSyntax)castIfPossibleMethod.Invoke (null, args);
-				wasCastAdded = (bool)args [4];
 				return result;
 			} catch (TargetInvocationException ex) {
 				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();

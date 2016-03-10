@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
@@ -39,9 +38,11 @@ namespace MonoDevelop.PackageManagement.Commands
 				return;
 
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-			var runner = new PackageRestoreRunner ();
+			var runner = new PackageRestoreRunner (GetPackageManagementSolution ());
 			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				runner.Run (project, progressMessage);
+				runner = null;
+				project = null;
 			});
 		}
 

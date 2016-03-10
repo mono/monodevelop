@@ -28,7 +28,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
-	public class VariableDeclarationStatementTests : TestBase
+	class VariableDeclarationStatementTests : TestBase
 	{
 		[Test()]
 		public void TestDefaultBehavior ()

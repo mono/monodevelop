@@ -69,7 +69,7 @@
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
-	
+
 <!-- 
 	<Span color="String" rule="String" stopateol="true" escape='\'>
 		<Begin>[]</Begin>
@@ -88,77 +88,31 @@
 	</Match> -->
 
 	<Match color="String" ignorecase="True">'(\w|\\['ntbrafv])'</Match>
-       
+<!--    <Match color="User Method Declaration">``(.*)``</Match>   -->
 
-
+	
 	<Match color="Number">CSharpNumber</Match>
-	<Match color="Keyword(Iteration)">(let|use|yield|return|do)(!)?\s</Match>
-	<Match color="Keyword(Iteration)">(let|use|yield|return|do)(!)?$</Match>
-
+	<Match color="Keyword(Iteration)" ignorecase="False">(do!|use!|yield!|return!|let!)</Match>
+	<Match color="Keyword(Iteration)" ignorecase="False">(do|use|yield|return)\b</Match>
 	<!-- reserved-ident-keyword F# spec v3.0 section 3.4 -->
-	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?\s</Match>
-	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?$</Match>
+	<Match color="Keyword(Other)" ignorecase="False">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?\s</Match>
+	<Match color="Keyword(Other)" ignorecase="False">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?$</Match>
 
 	<!-- It is really impossible to do some intelligent grouping here, because
 	     it looks weird no matter what we do... some things are context-sensitive,
 	     some things may appear in unexpected place.. so just use single color -->
-
-	<Keywords color="Keyword(Jump)">
-		<!-- expressions that create some value -->
-		<Word>fun</Word>
-		<Word>function</Word>
-		<Word>new</Word>
-	</Keywords>
 
 	<Keywords color="Keyword(Modifiers)">
 		<Word>inline</Word>
 		<Word>static</Word>
 		<Word>abstract</Word>
 		<Word>default</Word>
-		<Word>override</Word>
 		<Word>private</Word>
 		<Word>public</Word>
 		<Word>extern</Word>
 		<Word>internal</Word>
 		<Word>mutable</Word>
 		<Word>rec</Word>
-	</Keywords>
-
-	<Keywords color="Keyword(Iteration)">
-		<!-- control flow constructs -->
-		<Word>finally</Word>
-		<Word>try</Word>
-		<Word>with</Word>
-
-		<Word>val</Word>
-		<Word>while</Word>
-		<Word>for</Word>
-
-		<Word>begin</Word>
-		<Word>done</Word>
-		<Word>elif</Word>
-		<Word>else</Word>
-		<Word>end</Word>
-		<Word>if</Word>
-		<Word>match</Word>
-		<Word>then</Word>
-		<Word>when</Word>
-
-		<!-- object model things -->
-		<Word>void</Word>
-
-		<Word>global</Word>
-		<Word>base</Word>
-		<Word>inherit</Word>
-		<Word>member</Word>
-		<Word>type</Word>
-
-		<Word>of</Word>
-		<Word>class</Word>
-		<Word>delegate</Word>
-		<Word>exception</Word>
-		<Word>interface</Word>
-		<Word>struct</Word>
 	</Keywords>
 
 	<Keywords color="Keyword(Operator)">
@@ -173,16 +127,6 @@
 		<Word>and</Word>
 		<Word>downcast</Word>
 		<Word>select</Word>
-	</Keywords>
-
-	<Keywords color="Keyword(Constants)">
-		<Word>false</Word>
-		<Word>null</Word>
-		<Word>true</Word>
-		
-		<Word>__LINE__</Word>
-		<Word>__SOURCE_DIRECTORY__</Word>
-		<Word>__SOURCE_FILE__</Word>
 	</Keywords>
 
 	<Keywords color="Keyword(Type)">
@@ -222,21 +166,21 @@
 		<Word>sig</Word>
 	</Keywords>
 
-	<Rule name="text.preprocessor" ignorecase="True">
+<!--	<Rule name="text.preprocessor" ignorecase="True">-->
 		<Span color = "String" rule="String" stopateol = "true">
 			<Begin>"</Begin>
 			<End>"</End>
 		</Span>
 		
-		<Keywords color = "Keyword(Constants)">
+		<!--<Keywords color = "Keyword(Constants)">
 			<Word>true</Word>
 			<Word>false</Word>
-		</Keywords>
+		</Keywords>-->
 		
 		<Keywords color = "Punctuation">
 			<Word>==</Word>
 			<Word>!=</Word>
-			<Word>!</Word>
+<!--			<Word>!</Word>-->
 			<Word>&amp;&amp;</Word>
 			<Word>||</Word>
 		</Keywords>
@@ -244,12 +188,17 @@
 		<Keywords color = "Punctuation(Brackets)">
 			<Word>(</Word>
 			<Word>)</Word>
+			<Word>[</Word>
+			<Word>]</Word>
+			<Word>&lt;</Word>
+			<Word>&gt;</Word>
+			<Word>{</Word>
+			<Word>}</Word>
 		</Keywords>
-
 
 		<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
 		<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
-	</Rule>
+<!--	</Rule>-->
 	
 	<Rule name="Comment">
 		<Keywords color="Comment Tag" ignorecase="True">
@@ -304,5 +253,135 @@
 			<End>&gt;</End>
 		</Span>
 	</Rule>
+	<Match color="Plain Text">\b(get|set)\b</Match>
+	<Match color="User Types" ignorecase="False">\b(string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)\b</Match>
+	<Match expression="(override)(\s+)(\w+)(\.)(\w+)\s[^=:]" ignorecase="False">
+		<!-- override x.CanHandle y = -->
+		<Group color="Keyword(Modifiers)"/>
+		<Group color="Plain Text" />
+		<Group color="User Field Declaration" />
+		<Group color="Plain Text" />
+		<Group color="User Method Declaration"/>
+	</Match>
+	
+	<Match expression="(of)(\s)(\w+)">
+		<Group color="Keyword(Iteration)"/>
+		<Group color="Plain Text" />
+		<Group color="User Types"/>
+	</Match>
+	
+	<Match expression="(\|\s*:\?\s*)(\w+)">
+		<!-- | :? §string§ -->
+		<Group color="Plain Text" />
+		<Group color="User Types"/>
+	</Match>
+	
+
+	<Match expression="(let)(\s)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s)(\w+|``.*``)\s[^=:]" ignorecase="False">
+		<!-- let inline add x y = x + y -->
+		<Group color="Keyword(Iteration)"/>
+		<Group color="Plain Text" />
+		<Group color="Keyword(Modifiers)"/>
+		<Group color="Plain Text" />
+		<Group color="Keyword(Modifiers)"/>
+		<Group color="Plain Text" />
+		<Group color="User Method Declaration"/>
+	</Match>
+	
+	<Match expression="(let)(\s)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s)(\w+|``[^`]*``)\s[^=:]" ignorecase="False">
+		<!-- let inline add x y = x + y -->
+		<Group color="Keyword(Iteration)"/>
+		<Group color="Plain Text" />
+		<Group color="Keyword(Modifiers)"/>
+		<Group color="Plain Text" />
+		<Group color="User Method Declaration"/>
+	</Match>
+
+	<Match expression="(let)(\s)(?!(?:static|abstract|default|override|public|extern|internal|mutable|rec|inline|private))(\w+|``[^`]*``)\s[^=]" ignorecase="False">
+		<!-- let add x y = x + y -->
+		<Group color="Keyword(Iteration)"/>
+		<Group color="Plain Text" />
+		<Group color="User Method Declaration"/>
+	</Match>
+	
+	<Match color="Keyword(Modifiers)">(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)\b</Match>
+
+	<Match expression="([A-Z]{1}\w*)(\s?=)">
+		<Group color="User Field Declaration"/>
+		<Group color="Plain Text" />
+	</Match>
+	
+	<Match expression="\b([A-Z][\w]+)\b" ignorecase="False">
+		<Group color="User Types"/>
+	</Match>
+	
+	<Match expression="(:\s?)(['\w]+)\b">
+		<Group color="Plain Text"/>
+		<Group color="User Types"/>
+	</Match>
+
+	<!-- |> |< << >> <= >= <- -> :?> -->
+	<Match color="Punctuation(Brackets)">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
+	<Match expression="(\&lt;\-)">
+		<Group color="Punctuation(Brackets)"/>
+	</Match>
+	<Match expression="(&lt;)([^-_&lt;&gt;]\w*)">
+		<Group color="Punctuation(Brackets)"/>
+		<Group color="User Types"/>
+	</Match>
+	
+	<Match color="User Types">'\w+</Match>
+	
+	<Match expression="(namespace|open)\b(.*)$" ignorecase="False">
+		<Group color="Keyword(Namespace)"/>
+		<Group color="Plain Text"/>
+	</Match>
+	
+	<Match expression="(module|type)(\s+)(\w+|``[^`]*``)" ignorecase="False">
+		<Group color="Keyword(Namespace)"/>
+		<Group color="Plain Text"/>
+		<Group color="User Types"/>
+	</Match>
+	
+	<Match color="Keyword(Jump)" ignorecase="False">(function|fun|new)\b</Match>
+
+	<Match color="Keyword(Constants)" ignorecase="False">\b(false|null|true|__LINE__|__SOURCE_DIRECTORY__|__SOURCE_FILE__)\b</Match>
+	<Match color="Keyword(Iteration)" ignorecase="False">\b(async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in)\b</Match>
+
+    <Match expression="([a-z]{1}\w*|``[^`]*``)\s\&quot;">
+		<Group color="User Method Declaration"/>
+	</Match>
+
+	<Match expression="(\|>\s?)([a-z]{1}\w*|``[^`]*``)" ignorecase="False">
+		<Group color="Plain Text" />
+		<Group color="User Method Declaration"/>
+	</Match>
+	
+	<Match expression="(\.)(\w+|``[^`]*``)\s?[\(]{1}">
+		<Group color="Plain Text" />
+		<Group color="User Method Declaration"/>
+		<Group color="Plain Text" />
+		<Group color="Punctuation(Brackets)" />
+	</Match>
+
+	<Match expression="(\.)([a-z]{1}\w*)" ignorecase="False">
+		<Group color="Plain Text" />
+		<Group color="User Method Declaration"/>
+	</Match>	
+
+	<Match expression="([a-z]{1}\w*|``[^`]*``)\s?[\(]" ignorecase="False">
+		<Group color="User Method Declaration"/>
+	</Match>
+	
+	<Match expression="([a-z]{1}\w*|``[^`]*``)" ignorecase="False">
+		<Group color="User Field Declaration"/>
+	</Match>
+
+	
+	<Match expression="(\.)([A-Z]{1}\w*|``[^`]``)" ignorecase="False">
+		<Group color="Plain Text" />
+		<Group color="User Property Declaration"/>
+	</Match>
+	
 
 </SyntaxMode>

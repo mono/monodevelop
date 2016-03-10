@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp
 {
@@ -101,7 +102,7 @@ namespace MonoDevelop.CSharp
 				if (IsNavigatable (info)) {
 					result.Add (new NavigationSegment (node.Span.Start, node.Span.Length, delegate { 
 						GLib.Timeout.Add (50, delegate {
-							IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project);
+							RefactoringService.RoslynJumpToDeclaration (info.Symbol, documentContext.Project);
 							return false;
 						});
 					}));
@@ -119,7 +120,7 @@ namespace MonoDevelop.CSharp
 				if (IsNavigatable(info)) {
 					result.Add (new NavigationSegment (node.Name.Span.Start, node.Name.Span.Length, delegate {
 						GLib.Timeout.Add (50, delegate {
-							IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, documentContext.Project);
+							RefactoringService.RoslynJumpToDeclaration (info.Symbol, documentContext.Project);
 							return false;
 						});
 					})); 

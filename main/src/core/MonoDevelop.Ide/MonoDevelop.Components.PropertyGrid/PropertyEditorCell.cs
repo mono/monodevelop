@@ -30,6 +30,7 @@ using System;
 using System.ComponentModel;
 using Gdk;
 using Gtk;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -67,9 +68,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			
 			layout = new Pango.Layout (container.PangoContext);
 			layout.Width = -1;
-			
-			Pango.FontDescription des = container.Style.FontDescription.Copy();
-			layout.FontDescription = des;
+			layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 			
 			this.context = context;
 			Initialize ();

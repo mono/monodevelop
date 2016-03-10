@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.IndentationTests
 {
 	[TestFixture]
-	public class PreProcessorTests
+	class PreProcessorTests
 	{
 		[Test]
 		public void TestPreProcessor_Simple()

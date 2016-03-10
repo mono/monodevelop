@@ -8,12 +8,20 @@
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeGenerators" name = "Code Generators">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/ASTProvider" name = "ASTProviders">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/Refactoring/CodeDiagnosticProvider" name = "Code Diagnostic Provider">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/FindReferencesProvider">
+		<ExtensionNode name="Class"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler" defaultInsertAfter = "MidStep">
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
@@ -29,7 +37,7 @@
 		<Description>Analysis rules.</Description>
 		<ExtensionNodeSet id="MonoDevelop.AnalysisCore.Rules" />
 	</ExtensionPoint>
-	
+
 	<ExtensionPoint path = "/MonoDevelop/AnalysisCore/Types" name = "Analysis rule input/output types">
 		<Description>Analysis rule input/output types.</Description>
 		<ExtensionNode name="Type" type="MonoDevelop.AnalysisCore.Extensions.AnalysisTypeExtensionNode" />
@@ -114,7 +122,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
 		<Section id="Analysis" _label="Source Analysis" fill="true" class="MonoDevelop.AnalysisCore.Gui.AnalysisOptionsPanel" icon="md-prefs-code-analysis" >
-			<Section id="C#" _label="C#" icon="md-prefs-csharp">
+			<Section id="C#" _label="C#" icon="md-prefs-source">
 				<Panel id="CodeIssuePanel" _label="Code Rules" fill="true" class="MonoDevelop.CodeIssues.CodeIssuePanel" grouping="Tab" icon="md-prefs-code-rules" />
 				<Panel id="CodeActions" _label="Code Actions" fill="true" class="MonoDevelop.CodeActions.CodeActionPanel" grouping="Tab" icon="md-prefs-code-actions" />
 			</Section>
@@ -146,5 +154,9 @@
 		<StockIcon stockid="md-prefs-code-actions" resource="prefs-code-actions-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-code-rules" resource="prefs-code-rules-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-code-analysis" resource="prefs-code-analysis-16.png" size="Menu" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
+		<Class id="MidStep" class="MonoDevelop.Refactoring.DummyJumpToDeclarationHandler" />
 	</Extension>
 </ExtensionModel>

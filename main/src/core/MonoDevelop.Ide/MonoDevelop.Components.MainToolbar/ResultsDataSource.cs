@@ -123,7 +123,7 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (isSelected)
 				return GLib.Markup.EscapeText (this [item].PlainText);
-			return this [item].GetMarkupText ();
+			return this [item].GetMarkupText (isSelected);
 		}
 
 		string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)

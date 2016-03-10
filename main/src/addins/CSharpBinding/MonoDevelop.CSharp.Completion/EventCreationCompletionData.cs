@@ -140,6 +140,11 @@ namespace MonoDevelop.CSharp.Completion
 			editor.StartInsertionMode (options);
 
 		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
+		}
 	}
 	
 

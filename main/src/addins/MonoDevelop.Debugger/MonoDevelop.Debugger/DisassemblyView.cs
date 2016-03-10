@@ -387,7 +387,9 @@ namespace MonoDevelop.Debugger
 				InsertAssemblerLine (sb, editorLine++, li);
 				lineCount++;
 			}
+			editor.IsReadOnly = false;
 			editor.InsertText (offset, sb.ToString ());
+			editor.IsReadOnly = true;
 			if (offset == 0)
 				this.cachedLines.InsertRange (0, lines);
 			else

@@ -13,10 +13,11 @@ using Microsoft.CodeAnalysis.Editing;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.FindSymbols;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMember
 {
-	public abstract partial class AbstractGenerateParameterizedMemberService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax> :
+	abstract partial class AbstractGenerateParameterizedMemberService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax> :
 	AbstractGenerateMemberService<TSimpleNameSyntax, TExpressionSyntax>
 		where TService : AbstractGenerateParameterizedMemberService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax
@@ -236,7 +237,7 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 						cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode(_document.Project.Solution.GetDocument(result.Id), result);
 				}
 				else
 				{
@@ -250,8 +251,22 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMem
 						cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode(_document.Project.Solution.GetDocument(result.Id), result);
 				}
+			}
+
+			async Task<Document> AnnotateInsertionMode (Document oldDocument, Document result)
+			{
+				var newRoot = await result.GetSyntaxRootAsync ();
+				var changes = await oldDocument.GetTextChangesAsync (result);
+				foreach (var change in changes) {
+
+					var parent = newRoot.FindNode (change.Span);
+					if (parent == null || !(parent is MethodDeclarationSyntax || parent is PropertyDeclarationSyntax))
+						continue;
+					return result.WithSyntaxRoot (newRoot.ReplaceNode (parent, parent.WithAdditionalAnnotations (TypeSystemService.InsertionModeAnnotation)));
+				}
+				return result;
 			}
 
 			public override string Title

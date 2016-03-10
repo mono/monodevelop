@@ -107,11 +107,6 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\NUnit\MonoDevelop.NUnit.csproj">
-      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
-      <Name>MonoDevelop.NUnit</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj">
       <Project>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</Project>
       <Name>ICSharpCode.NRefactory.CSharp.Refactoring</Name>
@@ -124,6 +119,11 @@
     <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
       <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
       <Name>RefactoringEssentials</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Name>MonoDevelop.UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -163,10 +163,6 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
@@ -372,9 +368,6 @@
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFeaturesTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\RenameHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\FindReferencesHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\FindDerivedSymbolsHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\FindExtensionMethodHandler.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring\FindMemberOverloadsHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\GotoBaseDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp\CSharpBraceMatcher.cs" />
@@ -794,6 +787,47 @@
     <Compile Include="Util\AccessibilityUtilities.cs" />
     <Compile Include="Util\Glyph.cs" />
     <Compile Include="MonoDevelop.CSharp.Features\Completion\ContextHandler\RegexContextHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferencesProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpJumpToDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.UnitTests\CSharpNUnitSourceCodeLocationFinder.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\CSharpAutoInsertBracketHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\AbstractTokenBraceCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\BracketCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\CharLiteralCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\CurlyBraceCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\InterpolatedStringCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\LessAndGreaterThanCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\ParenthesisCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\StringLiteralCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\InterpolationCompletionSession.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AbstractAsyncHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncAnonymousMethodHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncMethodHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncParenthesizedLambdaHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AsyncSimpleLambdaHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\AwaitHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\CheckedExpressionHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\CheckedStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\ConditionalPreprocessorHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\IfStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\LockStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\LoopHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\RegionHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\ReturnStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\SwitchStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\TryStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\UnsafeStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\UsingStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\YieldStatementHighlighter.cs" />
+    <Compile Include="MonoDevelop.CSharp.Highlighting\AbstractKeywordHighlighter.cs" />
+    <Compile Include="Util\DirectiveSyntaxExtensions.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\OrganizeImportsCommandHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\SortImportsCodeRefactoringProvider.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindMemberOverloadsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindExtensionMethodsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindDerivedSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindBaseSymbolsHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Navigation\FindImplementingMembersHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -847,5 +881,10 @@
     <Folder Include="MonoDevelop.CSharp.Diagnostics\MonoTODO\" />
     <Folder Include="MonoDevelop.CSharp.CodeRefactorings\ConvertToEnum\" />
     <Folder Include="MonoDevelop.CSharp.CodeFixes\EncapsulateField\" />
+    <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\" />
+    <Folder Include="MonoDevelop.CSharp.Features\AutoInsertBracket\Sessions\" />
+    <Folder Include="MonoDevelop.CSharp.Highlighting\KeywordHighlighters\" />
+    <Folder Include="MonoDevelop.CSharp.CodeRefactorings\UsingRefactorings\" />
+    <Folder Include="MonoDevelop.CSharp.Navigation\" />
   </ItemGroup>
 </Project>

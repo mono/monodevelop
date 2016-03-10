@@ -387,12 +387,10 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			if (PrepareCommit != null) {
-				try {
-					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-				}
+			try {
+				PrepareCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, false));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		
@@ -405,12 +403,10 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			if (BeginCommit != null) {
-				try {
-					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-				}
+			try {
+				BeginCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, false));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		
@@ -423,14 +419,13 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			if (EndCommit != null) {
-				try {
-					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-					return;
-				}
+			try {
+				EndCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, success));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+				return;
 			}
+
 			if (success) {
 				foreach (ChangeSetItem it in changeSet.Items)
 					SetCommitComment (it.LocalPath, null, false);
@@ -452,8 +447,7 @@ namespace MonoDevelop.VersionControl
 					NotifyFileStatusChanged (args);
 				});
 			else {
-				if (FileStatusChanged != null)
-					FileStatusChanged (null, args);
+				FileStatusChanged?.Invoke (null, args);
 			}
 		}
 
@@ -715,55 +709,13 @@ namespace MonoDevelop.VersionControl
 		{
 			configuration = null;
 		}
-		
-		public static void StoreRepositoryReference (Repository repo, string path, string id)
-		{
-			repo.VersionControlSystem.StoreRepositoryReference (repo, path, id);
-		}
-		
+
 		public static bool CheckVersionControlInstalled ()
 		{
 			if (IsGloballyDisabled)
 				return false;
 
 			return GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
-		}
-		
-		internal static Repository InternalGetRepositoryReference (string path, string id)
-		{
-			string file = InternalGetRepositoryPath (path, id);
-			if (file == null)
-				return null;
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
-			try {
-				return (Repository) ser.Deserialize (reader, typeof(Repository));
-			} finally {
-				reader.Close ();
-			}
-		}
-
-		internal static string InternalGetRepositoryPath (string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			if (!File.Exists (file))
-				return null;
-
-			return file;
-		}
-		
-		internal static void InternalStoreRepositoryReference (Repository repo, string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextWriter tw = new XmlTextWriter (new StreamWriter (file));
-			try {
-				ser.Serialize (tw, repo, typeof(Repository));
-			} finally {
-				tw.Close ();
-			}
 		}
 		
 		public static CommitMessageFormat GetCommitMessageFormat (SolutionFolderItem item)
@@ -823,8 +775,7 @@ namespace MonoDevelop.VersionControl
 	
 	class InternalRepositoryReference: IDisposable
 	{
-		Repository repo;
-		
+		readonly Repository repo;
 		public InternalRepositoryReference (Repository repo)
 		{
 			this.repo = repo;

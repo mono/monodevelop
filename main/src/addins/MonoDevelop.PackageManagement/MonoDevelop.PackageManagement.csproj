@@ -288,6 +288,7 @@
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement.Gui\DialogExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageLoader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageLoadedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelChecker.cs" />
@@ -375,6 +376,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionProjectService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -387,11 +389,47 @@
     <EmbeddedResource Include="icons\package-source-32%402x.png">
       <LogicalName>package-source-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark.png">
+      <LogicalName>package-source-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark%402x.png">
+      <LogicalName>package-source-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~sel.png">
+      <LogicalName>package-source-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~sel%402x.png">
+      <LogicalName>package-source-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark~sel.png">
+      <LogicalName>package-source-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-source-32~dark~sel%402x.png">
+      <LogicalName>package-source-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-16.png">
       <LogicalName>prefs-package-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-16%402x.png">
       <LogicalName>prefs-package-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~dark.png">
+      <LogicalName>prefs-package-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~dark%402x.png">
+      <LogicalName>prefs-package-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~sel.png">
+      <LogicalName>prefs-package-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~sel%402x.png">
+      <LogicalName>prefs-package-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~dark~sel.png">
+      <LogicalName>prefs-package-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-16~dark~sel%402x.png">
+      <LogicalName>prefs-package-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-package-source-16.png">
       <LogicalName>prefs-package-source-16.png</LogicalName>
@@ -399,13 +437,49 @@
     <EmbeddedResource Include="icons\prefs-package-source-16%402x.png">
       <LogicalName>prefs-package-source-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~dark.png">
+      <LogicalName>prefs-package-source-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~dark%402x.png">
+      <LogicalName>prefs-package-source-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~sel.png">
+      <LogicalName>prefs-package-source-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~sel%402x.png">
+      <LogicalName>prefs-package-source-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~dark~sel.png">
+      <LogicalName>prefs-package-source-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-package-source-16~dark~sel%402x.png">
+      <LogicalName>prefs-package-source-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\reference-48.png">
-      <LogicalName>reference-48.png</LogicalName>
+    <EmbeddedResource Include="icons\package-48.png">
+      <LogicalName>package-48.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\reference-48%402x.png">
-      <LogicalName>reference-48@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\package-48%402x.png">
+      <LogicalName>package-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark.png">
+      <LogicalName>package-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark%402x.png">
+      <LogicalName>package-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel.png">
+      <LogicalName>package-48~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~sel%402x.png">
+      <LogicalName>package-48~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel.png">
+      <LogicalName>package-48~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-48~dark~sel%402x.png">
+      <LogicalName>package-48~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -86,18 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (file.IsLink && nodeInfo.Icon != null) {
 				var overlay = ImageService.GetIcon ("md-link-overlay").WithSize (Xwt.IconSize.Small);
-				var cached = Context.GetComposedIcon (nodeInfo.Icon, overlay);
-				if (cached != null)
-					nodeInfo.Icon = cached;
-				else {
-					var ib = new Xwt.Drawing.ImageBuilder (nodeInfo.Icon.Width, nodeInfo.Icon.Height);
-					ib.Context.DrawImage (nodeInfo.Icon, 0, 0);
-					ib.Context.DrawImage (overlay, 0, 0);
-					var res = ib.ToVectorImage ();
-					ib.Dispose ();
-					Context.CacheComposedIcon (nodeInfo.Icon, overlay, res);
-					nodeInfo.Icon = res;
-				}
+				nodeInfo.OverlayBottomRight = overlay;
 			}
 		}
 		

@@ -5,12 +5,19 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class AddMimeTypeDialog
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.Entry entry;
+		
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Image image;
+		
+		private global::MonoDevelop.Components.ImageView image;
+		
 		private global::Gtk.Label labelDesc;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -55,9 +62,10 @@ namespace MonoDevelop.Ide.Projects
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.image = new global::Gtk.Image ();
+			this.image = new global::MonoDevelop.Components.ImageView ();
 			this.image.Name = "image";
-			this.image.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-error", global::Gtk.IconSize.Menu);
+			this.image.IconId = "gtk-dialog-error";
+			this.image.IconSize = ((global::Gtk.IconSize)(1));
 			this.hbox1.Add (this.image);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image]));
 			w4.Position = 0;

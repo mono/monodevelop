@@ -316,6 +316,15 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public override bool EnableSelectionWrappingKeys {
+			get {
+				return optionsCore.EnableSelectionWrappingKeys;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
 		#endregion
 
 

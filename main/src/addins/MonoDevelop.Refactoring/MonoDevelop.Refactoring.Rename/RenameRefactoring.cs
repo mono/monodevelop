@@ -41,19 +41,21 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Rename;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameRefactoring
 	{
-		public static bool Rename (ISymbol symbol, string newName)
+		public static async Task<bool> Rename (ISymbol symbol, string newName)
 		{
 			if (symbol == null)
 				throw new ArgumentNullException ("symbol");
 			if (newName == null)
 				throw new ArgumentNullException ("newName");
 			try {
-				new RenameRefactoring ().PerformChanges (symbol, new RenameProperties () { NewName = newName });
+				await new RenameRefactoring ().PerformChangesAsync (symbol, new RenameProperties () { NewName = newName });
 				return true;
 			} catch (AggregateException ae) {
 				foreach (var inner in ae.Flatten ().InnerExceptions)
@@ -73,20 +75,22 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		public void Rename (ISymbol symbol)
+		public async Task Rename (ISymbol symbol)
 		{
-
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			var ws = TypeSystemService.GetWorkspace (solution);
 
 			var currentSolution = ws.CurrentSolution;
-			var newSolution = Renamer.RenameSymbolAsync (currentSolution, symbol, "_" + symbol.Name + "_", ws.Options).Result;
+			var cts = new CancellationTokenSource ();
+			var newSolution = await MessageService.ExecuteTaskAndShowWaitDialog (Task.Run (() => Renamer.RenameSymbolAsync (currentSolution, symbol, "_" + symbol.Name + "_", ws.Options, cts.Token)), GettextCatalog.GetString ("Looking for all references"), cts);
 			var projectChanges = currentSolution.GetChanges (newSolution).GetProjectChanges ().ToList ();
 			var changedDocuments = new HashSet<string> ();
-			foreach (var change in projectChanges)
+			foreach (var change in projectChanges) {
 				foreach (var changedDoc in change.GetChangedDocuments ()) {
 					changedDocuments.Add (ws.CurrentSolution.GetDocument (changedDoc).FilePath);
 				}
+			}
+
 			if (changedDocuments.Count > 1) {
 				using (var dlg = new RenameItemDialog (symbol, this))
 					MessageService.ShowCustomDialog (dlg);
@@ -110,7 +114,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var oldDoc = projectChange.OldProject.GetDocument (cd);
 			var newDoc = projectChange.NewProject.GetDocument (cd);
 			var oldVersion = editor.Version;
-			foreach (var textChange in oldDoc.GetTextChangesAsync (newDoc).Result) {
+			foreach (var textChange in await oldDoc.GetTextChangesAsync (newDoc)) {
 				var segment = new TextSegment (textChange.Span.Start, textChange.Span.Length);
 				if (segment.Offset <= editor.CaretOffset && editor.CaretOffset <= segment.EndOffset) {
 					link.Links.Insert (0, segment); 
@@ -149,14 +153,52 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 		
-		public void PerformChanges (ISymbol symbol, RenameProperties properties)
+		public async Task PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			var ws = TypeSystemService.GetWorkspace (solution);
 
-			var newSolution = Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options).Result;
+			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 
 			ws.TryApplyChanges (newSolution);
+
+
+			var changes = new List<Change> ();
+			if (properties.RenameFile && symbol is INamedTypeSymbol) {
+				var type = (INamedTypeSymbol)symbol;
+				int currentPart = 1;
+				var alreadyRenamed = new HashSet<string> ();
+				foreach (var part in type.Locations) {
+					if (!part.IsInSource)
+						continue;
+					var fileName = part?.SourceTree?.FilePath;
+					if (fileName == null || alreadyRenamed.Contains (fileName))
+						continue;
+					alreadyRenamed.Add (fileName);
+
+					string oldFileName = System.IO.Path.GetFileNameWithoutExtension (fileName);
+					string newFileName;
+					var newName = properties.NewName;
+					if (string.IsNullOrEmpty (oldFileName) || string.IsNullOrEmpty (newName))
+						continue;
+					if (oldFileName.ToUpper () == newName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + newName.ToUpper (), StringComparison.Ordinal))
+						continue;
+					int idx = oldFileName.IndexOf (type.Name, StringComparison.Ordinal);
+					if (idx >= 0) {
+						newFileName = oldFileName.Substring (0, idx) + newName + oldFileName.Substring (idx + type.Name.Length);
+					} else {
+						newFileName = currentPart != 1 ? newName + currentPart : newName;
+						currentPart++;
+					}
+
+					int t = 0;
+					while (System.IO.File.Exists (GetFullFileName (newFileName, fileName, t))) {
+						t++;
+					}
+					changes.Add (new RenameFileChange (fileName, GetFullFileName (newFileName, fileName, t)));
+				}
+			}
+			RefactoringService.AcceptChanges (new ProgressMonitor (), changes);
 		}
 		
 		static string GetFullFileName (string fileName, string oldFullFileName, int tryCount)

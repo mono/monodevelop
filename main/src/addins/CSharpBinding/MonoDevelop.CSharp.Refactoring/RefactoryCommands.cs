@@ -45,6 +45,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.CSharp.Navigation;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -60,22 +62,19 @@ namespace MonoDevelop.CSharp.Refactoring
 		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, CodeActionContainer container)
 		{
 			if (editor == null)
-				throw new ArgumentNullException ("editor");
+				throw new ArgumentNullException (nameof (editor));
 			if (ctx == null)
-				throw new ArgumentNullException ("ctx");
+				throw new ArgumentNullException (nameof (ctx));
 			if (container == null)
-				throw new ArgumentNullException ("container");
+				throw new ArgumentNullException (nameof (container));
 			var result = new CommandInfoSet ();
 			result.Text = GettextCatalog.GetString ("Fix");
 			foreach (var diagnostic in container.CodeFixActions) {
 				var info = new CommandInfo (diagnostic.CodeAction.Title);
-				result.CommandInfos.Add (info, new Action (new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run));
+				result.CommandInfos.Add (info, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run ()));
 			}
-			if (result.CommandInfos.Count == 0)
-				return result;
-			bool firstDiagnosticOption = true;
+			bool firstDiagnosticOption = result.CommandInfos.Count != 0;
 			foreach (var fix in container.DiagnosticsAtCaret) {
-
 				var inspector = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (fix.Id);
 				if (inspector == null)
 					continue;
@@ -171,7 +170,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			var semanticModel = doc.ParsedDocument.GetAst<SemanticModel> ();
 			if (semanticModel == null)
 				return;
-			var info = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset).Result;
+			var task = RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor);
+			if (!task.Wait (2000))
+				return;
+			var info = task.Result;
 			bool added = false;
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
@@ -188,8 +190,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			bool canRename = RenameHandler.CanRename (info.Symbol ?? info.DeclaredSymbol);
 			if (canRename) {
-				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (delegate {
-					new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
+				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (async delegate {
+					await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
 				}));
 				added = true;
 			}
@@ -199,7 +201,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					if (added & first && ciset.CommandInfos.Count > 0)
 						ciset.CommandInfos.AddSeparator ();
 					var info2 = new CommandInfo (fix.CodeAction.Title);
-					ciset.CommandInfos.Add (info2, new Action (new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run));
+					ciset.CommandInfos.Add (info2, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run ()));
 					added = true;
 					first = false;
 				}
@@ -238,33 +240,24 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (doc.HasProject && sym != null) {
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (sym)));
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => {
+
+					if (sym.Kind == SymbolKind.Local || sym.Kind == SymbolKind.Parameter || sym.Kind == SymbolKind.TypeParameter) {
+						FindReferencesHandler.FindRefs (sym);
+					} else {
+						RefactoringService.FindReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ());
+					}
+
+				}));
 				try {
 					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, semanticModel.Compilation).Count () > 1)
-						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => FindAllReferencesHandler.FindRefs (info.Symbol, semanticModel.Compilation)));
+						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => RefactoringService.FindAllReferencesAsync (FindReferencesHandler.FilterSymbolForFindReferences (sym).GetDocumentationCommentId ())));
 				} catch (Exception) {
 					// silently ignore roslyn bug.
 				}
 			}
 			added = true;
 
-			if (info.DeclaredSymbol != null) {
-				string description;
-				if (FindDerivedSymbolsHandler.CanFindDerivedSymbols (info.DeclaredSymbol, out description)) {
-					ainfo.Add (description, new Action (() => FindDerivedSymbolsHandler.FindDerivedSymbols (info.DeclaredSymbol)));
-					added = true;
-				}
-
-				if (FindMemberOverloadsHandler.CanFindMemberOverloads (info.DeclaredSymbol, out description)) {
-					ainfo.Add (description, new Action (() => FindMemberOverloadsHandler.FindOverloads (info.DeclaredSymbol)));
-					added = true;
-				}
-
-				if (FindExtensionMethodHandler.CanFindExtensionMethods (info.DeclaredSymbol, out description)) {
-					ainfo.Add (description, new Action (() => FindExtensionMethodHandler.FindExtensionMethods (info.DeclaredSymbol)));
-					added = true;
-				}
-			}
 		}
 
 		static string FormatFileName (string fileName)

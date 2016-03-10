@@ -149,7 +149,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 					var ad = new AnalysisDocument (Editor, DocumentContext);
 					Task.Run (() => {
 						try {
-							var result = CodeDiagnosticRunner.Check (ad, token);
+							var result = CodeDiagnosticRunner.Check (ad, token).Result;
 							if (token.IsCancellationRequested)
 								return;
 							var updater = new ResultsUpdater (this, result, token);

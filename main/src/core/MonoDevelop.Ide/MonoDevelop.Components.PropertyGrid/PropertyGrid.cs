@@ -44,6 +44,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -89,18 +90,20 @@ namespace MonoDevelop.Components.PropertyGrid
 			toolbar = tb;
 			
 			catButton = new RadioButton ((Gtk.RadioButton)null);
+			catButton.Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 			catButton.DrawIndicator = false;
 			catButton.Relief = ReliefStyle.None;
-			catButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
+			catButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.GroupByCategory, IconSize.Menu);
 			catButton.Image.Show ();
 			catButton.TooltipText = GettextCatalog.GetString ("Sort in categories");
 			catButton.Toggled += new EventHandler (toolbarClick);
 			toolbar.Insert (catButton, 0);
 			
 			alphButton = new RadioButton (catButton);
+			alphButton.Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 			alphButton.DrawIndicator = false;
 			alphButton.Relief = ReliefStyle.None;
-			alphButton.Image = new Gtk.Image (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
+			alphButton.Image = new ImageView (MonoDevelop.Ide.Gui.Stock.SortAlphabetically, IconSize.Menu);
 			alphButton.Image.Show ();
 			alphButton.TooltipText = GettextCatalog.GetString ("Sort alphabetically");
 			alphButton.Clicked += new EventHandler (toolbarClick);
@@ -377,10 +380,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			descTextView.Editable = false;
 			descTextView.LeftMargin = 5;
 			descTextView.RightMargin = 5;
-			
-			Pango.FontDescription font = Style.FontDescription.Copy ();
-			font.Size = (font.Size * 8) / 10;
-			descTextView.ModifyFont (font);
+			descTextView.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 			
 			textScroll.Add (descTextView);
 			
@@ -449,6 +449,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			DrawIndicator = false;
 			Relief = ReliefStyle.None;
 			NoShowAll = true;
+			Name = "MonoDevelop.PropertyGridToolbar.GtkRadioButton";
 		}
 		
 		public PropertyTab Tab;

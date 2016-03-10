@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 			out SyntaxList<UsingDirectiveSyntax> organizedUsingList)
 		{
 			try {
-				var args = new object[] { externAliasList, usingList, placeSystemNamespaceFirst, default(SyntaxList<ExternAliasDirectiveSyntax>), default(SyntaxList<ExternAliasDirectiveSyntax>), default(SyntaxList<UsingDirectiveSyntax>)};
+				var args = new object[] { externAliasList, usingList, placeSystemNamespaceFirst, default(SyntaxList<ExternAliasDirectiveSyntax>), default(SyntaxList<UsingDirectiveSyntax>)};
 				organizeMethod.Invoke (null, args);
 				organizedExternAliasList = (SyntaxList<ExternAliasDirectiveSyntax>)args [3];
 				organizedUsingList = (SyntaxList<UsingDirectiveSyntax>)args [4];

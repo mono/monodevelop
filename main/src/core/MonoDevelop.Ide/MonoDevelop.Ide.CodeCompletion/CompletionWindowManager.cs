@@ -66,8 +66,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		static CompletionWindowManager ()
 		{
-			if (IdeApp.Workbench != null)
+			if (IdeApp.Workbench != null) {
 				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+				IdeApp.Workbench.RootWindow.WindowStateEvent += (o, args) => HideWindow ();
+			}
 			
 			IdeApp.Preferences.ForceSuggestionMode.Changed += (s,a) => {
 				if (wnd != null)
@@ -116,25 +118,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var ext = wnd.Extension;
 
 			try {
-				try {
-					isShowing = false;
-					if (!wnd.ShowListWindow (list, completionContext)) {
-						if (list is IDisposable)
-							((IDisposable)list).Dispose ();
-						HideWindow ();
-						return false;
-					}
-					
-					if (IdeApp.Preferences.ForceSuggestionMode)
-						wnd.AutoSelect = false;
-					wnd.Show ();
-					DesktopService.RemoveWindowShadow (wnd);
-					OnWindowShown (EventArgs.Empty);
-					return true;
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
+				isShowing = false;
+				if (!wnd.ShowListWindow (list, completionContext)) {
+					if (list is IDisposable)
+						((IDisposable)list).Dispose ();
+					HideWindow ();
 					return false;
 				}
+				
+				if (IdeApp.Preferences.ForceSuggestionMode)
+					wnd.AutoSelect = false;
+				wnd.Show ();
+				DesktopService.RemoveWindowShadow (wnd);
+				OnWindowShown (EventArgs.Empty);
+				return true;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception while showing completion window.", ex);
+				return false;
 			} finally {
 				ParameterInformationWindowManager.UpdateWindow (ext, completionWidget);
 			}

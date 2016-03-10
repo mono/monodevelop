@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl.Views
 	{	
 	}
 	
-	internal class BlameView : BaseView, IBlameView, IUndoHandler, IClipboardHandler
+	internal class BlameView : BaseView, IBlameView, IClipboardHandler
 	{
 		BlameWidget widget;
 		VersionControlDocumentInfo info;
@@ -59,57 +59,33 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void OnSelected ()
 		{
 			info.Start ();
-			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (sourceEditor != null) {
-				widget.Editor.Caret.Location = sourceEditor.TextEditor.Caret.Location;
-				widget.Editor.VAdjustment.Value = sourceEditor.TextEditor.VAdjustment.Value;
+			BlameWidget widget = Control.GetNativeWidget<BlameWidget> ();
+			widget.Reset ();
+
+			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			if (buffer != null) {
+				var loc = buffer.CaretLocation;
+				int line = loc.Line < 1 ? 1 : loc.Line;
+				int column = loc.Column < 1 ? 1 : loc.Column;
+				widget.Editor.SetCaretTo (line, column, highlight: false, centerCaret: false);
 			}
 		}
 
 		protected override void OnDeselected ()
 		{
-			var sourceEditor = info.Document.GetContent <MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (sourceEditor != null) {
-				sourceEditor.TextEditor.Caret.Location = widget.Editor.Caret.Location;
-				sourceEditor.TextEditor.VAdjustment.Value = widget.Editor.VAdjustment.Value;
+			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
+			if (buffer != null) {
+				BlameWidget widget = Control.GetNativeWidget<BlameWidget> ();
+				buffer.SetCaretLocation (widget.Editor.Caret.Line, widget.Editor.Caret.Column, usePulseAnimation: false, centerCaret: false);
+				buffer.ScrollTo (new Ide.Editor.DocumentLocation (widget.Editor.YToLine (widget.Editor.VAdjustment.Value), 1));
 			}
 		}
 
-		#endregion
-		
-		#region IUndoHandler implementation
-		void IUndoHandler.Undo ()
-		{
-			this.widget.Editor.Document.Undo ();
-		}
-
-		void IUndoHandler.Redo ()
-		{
-			this.widget.Editor.Document.Redo ();
-		}
-		
-		IDisposable IUndoHandler.OpenUndoGroup ()
-		{
-			return this.widget.Editor.OpenUndoGroup ();
-		}
-
-		bool IUndoHandler.EnableUndo {
-			get {
-				return this.widget.Editor.Document.CanUndo;
-			}
-		}
-
-		bool IUndoHandler.EnableRedo {
-			get {
-				return this.widget.Editor.Document.CanRedo;
-			}
-		}
 		#endregion
 
 		#region IClipboardHandler implementation
 		void IClipboardHandler.Cut ()
 		{
-			this.widget.Editor.RunAction (ClipboardActions.Cut);
 		}
 
 		void IClipboardHandler.Copy ()
@@ -119,16 +95,10 @@ namespace MonoDevelop.VersionControl.Views
 
 		void IClipboardHandler.Paste ()
 		{
-			this.widget.Editor.RunAction (ClipboardActions.Paste);
 		}
 
 		void IClipboardHandler.Delete ()
 		{
-			if (this.widget.Editor.IsSomethingSelected) {
-				this.widget.Editor.DeleteSelectedText ();
-			} else {
-				this.widget.Editor.RunAction (DeleteActions.Delete);
-			}
 		}
 
 		void IClipboardHandler.SelectAll ()
@@ -138,7 +108,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		bool IClipboardHandler.EnableCut {
 			get {
-				return this.widget.Editor.IsSomethingSelected;
+				return false;
 			}
 		}
 
@@ -150,13 +120,13 @@ namespace MonoDevelop.VersionControl.Views
 
 		bool IClipboardHandler.EnablePaste {
 			get {
-				return true;
+				return false;
 			}
 		}
 
 		bool IClipboardHandler.EnableDelete {
 			get {
-				return true;
+				return false;
 			}
 		}
 

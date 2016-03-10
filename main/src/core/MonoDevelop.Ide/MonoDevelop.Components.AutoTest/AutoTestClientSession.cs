@@ -213,6 +213,11 @@ namespace MonoDevelop.Components.AutoTest
 			return session.ErrorCount (severity);
 		}
 
+		public List<TaskListEntryDTO> GetErrors (TaskSeverity severity)
+		{
+			return session.GetErrors (severity);
+		}
+
 		public void WaitForEvent (string name)
 		{
 			WaitForEvent (name, defaultEventWaitTimeout);

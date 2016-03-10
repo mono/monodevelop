@@ -30,6 +30,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.AutoTest;
+using MonoDevelop.Ide.Gui;
 using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Projects
@@ -53,9 +54,35 @@ namespace MonoDevelop.Ide.Projects
 
 		FinalProjectConfigurationPage projectConfiguration;
 
+		static GtkProjectFolderPreviewWidget ()
+		{
+			UpdateStyles ();
+			Styles.Changed += (sender, e) => UpdateStyles ();
+		}
+
+		static void UpdateStyles ()
+		{
+			var bgColorHex = Styles.ColorGetHex (Styles.NewProjectDialog.ProjectConfigurationRightHandBackgroundColor);
+
+			string rcstyle = "style \"projectFolderPreviewWidget\"\r\n{\r\n" +
+				"    base[NORMAL] = \"" + bgColorHex + "\"\r\n" +
+				"    GtkTreeView::even-row-color = \"" + bgColorHex + "\"\r\n" +
+				"}\r\n";
+			rcstyle += "widget \"*projectFolderPreviewWidget*\" style \"projectFolderPreviewWidget\"\r\n";
+
+			Rc.ParseString (rcstyle);
+		}
+
 		public GtkProjectFolderPreviewWidget ()
 		{
 			this.Build ();
+
+			folderTreeView.Name = "projectFolderPreviewWidget";
+
+			previewLabel.LabelProp = String.Format (
+				"<span weight='bold' foreground='{0}'>{1}</span>",
+				Styles.ColorGetHex (Styles.NewProjectDialog.ProjectConfigurationPreviewLabelColor),
+				global::Mono.Unix.Catalog.GetString ("PREVIEW"));
 
 			CreateFolderTreeViewColumns ();
 		}

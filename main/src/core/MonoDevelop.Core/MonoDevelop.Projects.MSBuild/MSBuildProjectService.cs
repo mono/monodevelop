@@ -260,7 +260,8 @@ namespace MonoDevelop.Projects.MSBuild
 					loadAsProject = projectInfo.LoadFiles;
 					unsupportedMessage = projectInfo.GetInstructions ();
 					LoggingService.LogWarning (string.Format ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
-					monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
+					if (!loadAsProject)
+						monitor.ReportWarning (GettextCatalog.GetString ("Could not load {0} project '{1}'. {2}", projectInfo.Name, relPath, projectInfo.GetInstructions ()));
 				} else {
 					unsupportedMessage = GettextCatalog.GetString ("Unknown project type: {0}", unknownTypeGuid);
 					LoggingService.LogWarning (string.Format ("Could not load project '{0}' with unknown item type '{1}'", relPath, unknownTypeGuid));
@@ -949,8 +950,11 @@ namespace MonoDevelop.Projects.MSBuild
 							string responseKey = "[MonoDevelop]";
 							string sref = null;
 							p.ErrorDataReceived += (sender, e) => {
-								if (e.Data == null)
+								if (e.Data == null) {
+									if (string.IsNullOrEmpty (sref))
+										LoggingService.LogError ("The MSBuild builder exited before initializing");
 									return;
+								}
 
 								if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
 									sref = e.Data.Substring (responseKey.Length);

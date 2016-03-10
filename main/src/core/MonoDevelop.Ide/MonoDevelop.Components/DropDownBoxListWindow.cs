@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Ide;
 using Gtk;
 using System.Text;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
 {
@@ -414,6 +415,8 @@ namespace MonoDevelop.Components
 								true, leftXAlignment, ypos, lineWidth, rowHeight);
 							GdkWindow.DrawLayout (Style.TextGC (StateType.Selected), 
 							                      xpos + iconWidth + iconTextDistance, typos, layout);
+							if (icon != null)
+								icon = icon.WithStyles ("sel");
 						} else {
 							GdkWindow.DrawRectangle (Style.BaseGC (StateType.Selected), 
 								false, leftXAlignment, ypos, lineWidth, rowHeight);
@@ -532,7 +535,7 @@ namespace MonoDevelop.Components
 					layout.Dispose ();
 				layout = new Pango.Layout (PangoContext);
 				layout.Wrap = Pango.WrapMode.Char;
-				layout.FontDescription = Style.FontDescription.Copy ();
+				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 				CalcRowHeight ();
 				CalcVisibleRows ();
 			}
