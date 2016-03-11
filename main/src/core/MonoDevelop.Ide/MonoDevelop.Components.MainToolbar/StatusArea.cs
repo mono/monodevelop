@@ -105,6 +105,8 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusBarContextHandler ctxHandler;
 		bool progressBarVisible;
 
+		string currentApplicationName = String.Empty;
+
 		Queue<Message> messageQueue;
 
 		public StatusBar MainContext {
@@ -345,9 +347,13 @@ namespace MonoDevelop.Components.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
+			currentApplicationName = BrandingService.ApplicationName;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
+			
 			box.Destroyed += delegate {
 				TaskService.Errors.TasksAdded -= updateHandler;
 				TaskService.Errors.TasksRemoved -= updateHandler;
+				BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			};
 
 			ebox.VisibleWindow = false;
@@ -364,6 +370,16 @@ namespace MonoDevelop.Components.MainToolbar
 			warningImage.Visible = false;
 
 			return ebox;
+		}
+
+		void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			if (renderArg.CurrentText == currentApplicationName) {
+				LoadText (BrandingService.ApplicationName, false);
+				LoadPixbuf (null);
+				QueueDraw ();
+			}
+			currentApplicationName = BrandingService.ApplicationName;
 		}
 
 		protected override void OnRealized ()
