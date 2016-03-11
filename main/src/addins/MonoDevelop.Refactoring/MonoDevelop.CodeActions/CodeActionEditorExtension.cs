@@ -448,11 +448,11 @@ namespace MonoDevelop.CodeActions
 				return _getProjectDiagnosticsAsync (project, false, _diagnosticIds, cancellationToken);
 			}
 		}
+
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
-
 			foreach (var fix_ in GetCurrentFixes ().CodeFixActions.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix (i.CodeAction), (int)0, GetUsage (i.CodeAction.EquivalenceKey)))) {
 				// filter out code actions that are already resolutions of a code issue
 				if (IsAnalysisOrErrorFix (fix_.CodeAction))
@@ -490,6 +490,31 @@ namespace MonoDevelop.CodeActions
 			}
 
 			first = false;
+
+			var warningsAtCaret = (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result)
+				.GetDiagnostics (new TextSpan (Editor.CaretOffset, 0))
+				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
+			
+			foreach (var warning in warningsAtCaret) {
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", warning.Descriptor.Title);
+				var subMenu = new FixMenuDescriptor (label);
+				if (first) {
+					menu.Add (FixMenuEntry.Separator);
+					first = false;
+				}
+				var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
+				 	async delegate {
+						var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
+					 	foreach (var f in fixes) {
+							CodeDiagnosticDescriptor.RunAction (DocumentContext, f.Action, default (CancellationToken));
+					 	}
+				 	}
+				);
+				subMenu.Add (menuItem);
+				menu.Add (subMenu);
+				items++;
+			}
+
 			foreach (var fix_ in GetCurrentFixes ().DiagnosticsAtCaret) {
 				var fix = fix_;
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.GetMessage ());
@@ -824,16 +849,6 @@ namespace MonoDevelop.CodeActions
 			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
-		[CommandUpdateHandler (RefactoryCommands.QuickFix)]
-		public void UpdateQuickFixCommand (CommandInfo ci)
-		{
-			if (AnalysisOptions.EnableFancyFeatures) {
-				ci.Enabled = currentSmartTag != null;
-			} else {
-				ci.Enabled = true;
-			}
-		}
-
 		void CurrentSmartTagPopup ()
 		{
 			CancelSmartTagPopupTimeout ();
@@ -847,15 +862,13 @@ namespace MonoDevelop.CodeActions
 		[CommandHandler (RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
-			if (!AnalysisOptions.EnableFancyFeatures) {
+			if (!AnalysisOptions.EnableFancyFeatures || currentSmartTag == null) {
 				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
 				currentSmartTagBegin = Editor.CaretOffset;
 				PopupQuickFixMenu (null, null);
-
 				return;
 			}
-			if (currentSmartTag == null)
-				return;
+
 			CurrentSmartTagPopup ();
 		}
 

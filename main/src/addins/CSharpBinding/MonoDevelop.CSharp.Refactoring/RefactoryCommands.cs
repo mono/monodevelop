@@ -47,6 +47,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.Navigation;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -59,7 +60,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				del ();
 		}
 
-		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, CodeActionContainer container)
+		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, SemanticModel semanticModel, CodeActionContainer container)
 		{
 			if (editor == null)
 				throw new ArgumentNullException (nameof (editor));
@@ -74,6 +75,33 @@ namespace MonoDevelop.CSharp.Refactoring
 				result.CommandInfos.Add (info, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run ()));
 			}
 			bool firstDiagnosticOption = result.CommandInfos.Count != 0;
+
+			var warningsAtCaret = semanticModel
+				.GetDiagnostics (new TextSpan (editor.CaretOffset, 0))
+				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
+			foreach (var warning in warningsAtCaret) {
+
+				if (firstDiagnosticOption) {
+					result.CommandInfos.AddSeparator ();
+					firstDiagnosticOption = false;
+				}
+
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", warning.Descriptor.Title);
+				var subMenu = new CommandInfoSet ();
+				subMenu.Text = label;
+
+				var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
+				subMenu.CommandInfos.Add (info, new Action (async delegate {
+
+					var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (ctx.AnalysisDocument, new TextSpan (editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
+					foreach (var f in fixes) {
+						CodeDiagnosticDescriptor.RunAction (ctx, f.Action, default (CancellationToken));
+					}
+				}));
+
+				result.CommandInfos.Add (subMenu);
+			}
+
 			foreach (var fix in container.DiagnosticsAtCaret) {
 				var inspector = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (fix.Id);
 				if (inspector == null)
@@ -88,14 +116,14 @@ namespace MonoDevelop.CSharp.Refactoring
 				var subMenu = new CommandInfoSet ();
 				subMenu.Text = label;
 
-//				if (inspector.CanSuppressWithAttribute) {
-//					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
-//						delegate {
-//							
-//							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
-//						});
-//					subMenu.Add (menuItem);
-//				}
+				//				if (inspector.CanSuppressWithAttribute) {
+				//					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
+				//						delegate {
+				//							
+				//							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
+				//						});
+				//					subMenu.Add (menuItem);
+				//				}
 
 				if (inspector.CanDisableWithPragma) {
 					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
@@ -130,7 +158,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 					var info = new CommandInfo (GettextCatalog.GetString ("In _Document"));
 					subMenu2.CommandInfos.Add (info, new Action (async delegate {
-						
+
 						var fixAllDiagnosticProvider = new CodeActionEditorExtension.FixAllDiagnosticProvider (diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id).ToImmutableHashSet (), async (Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token) => {
 
 							var model = await doc.GetSemanticModelAsync (token);
@@ -138,7 +166,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 							return await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token);
 						}, (arg1, arg2, arg3, arg4) => {
-							return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic[] { });
+							return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
 						});
 						var ctx2 = new FixAllContext (
 							ctx.AnalysisDocument,
@@ -178,8 +206,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
-			if (ext != null && !ext.GetCurrentFixes ().IsEmpty) {
-				var fixMenu = CreateFixMenu (doc.Editor, doc, ext.GetCurrentFixes ());
+			if (ext != null) {
+				var fixMenu = CreateFixMenu (doc.Editor, doc, semanticModel, ext.GetCurrentFixes ());
 				if (fixMenu.CommandInfos.Count > 0) {
 					ainfo.Add (fixMenu, null);
 					added = true;

@@ -182,7 +182,7 @@ namespace MonoDevelop.CodeIssues
 		{
 			var line = editor.GetLineByOffset (fix.Location.SourceSpan.Start);
 			var span = new TextSpan (line.Offset, line.Length);
-			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (context.AnalysisDocument, span, new [] { fix }, cancellationToken ).ConfigureAwait (false);
+			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (context.AnalysisDocument, span, new [] { fix }, cancellationToken).ConfigureAwait (false);
 			foreach (var f in fixes) {
 				RunAction (context, f.Action, cancellationToken);
 			}
