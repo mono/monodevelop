@@ -340,7 +340,6 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-		System.ComponentModel.BackgroundWorker highlightBracketWorker;
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 
