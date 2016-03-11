@@ -65,6 +65,17 @@ namespace MonoDevelop.MacIntegration
 
 		Lazy<Dictionary<string, string>> mimemap;
 
+		static string applicationMenuName;
+
+		public static string ApplicationMenuName {
+			get {
+				return applicationMenuName ?? BrandingService.ApplicationName;
+			}
+			set {
+				applicationMenuName = value;
+			}
+		}
+
 		public MacPlatformService ()
 		{
 			if (initedGlobal)
@@ -253,13 +264,14 @@ namespace MonoDevelop.MacIntegration
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
-			commandManager.GetCommand (HelpCommands.About).Text = GettextCatalog.GetString ("About {0}", BrandingService.ApplicationName);
-			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GettextCatalog.GetString ("Hide {0}", BrandingService.ApplicationName);
+			commandManager.GetCommand (HelpCommands.About).Text = GetAboutCommandText ();
+			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GetHideWindowCommandText ();
 			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
 
 			initedApp = true;
 
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
@@ -277,6 +289,29 @@ namespace MonoDevelop.MacIntegration
 			
 			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
+		}
+
+		static string GetAboutCommandText ()
+		{
+			return GettextCatalog.GetString ("About {0}", ApplicationMenuName);
+		}
+
+		static string GetHideWindowCommandText ()
+		{
+			return GettextCatalog.GetString ("Hide {0}", ApplicationMenuName);
+		}
+
+		static void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			Command aboutCommand = IdeApp.CommandService.GetCommand (HelpCommands.About);
+			if (aboutCommand != null)
+				aboutCommand.Text = GetAboutCommandText ();
+
+			Command hideCommand = IdeApp.CommandService.GetCommand (MacIntegrationCommands.HideWindow);
+			if (hideCommand != null)
+				hideCommand.Text = GetHideWindowCommandText ();
+
+			Carbon.SetProcessName (ApplicationMenuName);
 		}
 
 		// VV/VK: Disable tint based color generation
