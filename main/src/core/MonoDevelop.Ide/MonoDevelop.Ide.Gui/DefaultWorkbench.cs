@@ -214,6 +214,7 @@ namespace MonoDevelop.Ide.Gui
 			HeightRequest = normalBounds.Height;
 
 			DeleteEvent += new Gtk.DeleteEventHandler (OnClosing);
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 			
 			SetAppIcons ();
 
@@ -555,6 +556,11 @@ namespace MonoDevelop.Ide.Gui
 				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationName;
 			return BrandingService.ApplicationName;
 		}
+
+		void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			SetWorkbenchTitle ();
+		}
 		
 		public Properties GetStoredMemento (IViewContent content)
 		{
@@ -721,6 +727,8 @@ namespace MonoDevelop.Ide.Gui
 				return false;
 			
 			CloseAllViews ();
+
+			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			
 			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
 			IdeApp.OnExited ();

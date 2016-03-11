@@ -146,7 +146,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
 			textField.Cell.StringValue = "";
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
+			UpdateApplicationNamePlaceholderText ();
 			imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 
 			// Fixes a render glitch of a whiter bg than the others.
@@ -197,6 +197,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
+
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, notif => DispatchService.GuiDispatch (() => {
 				if (Window == null)
 					return;
@@ -216,6 +218,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			AddSubview (textField);
 		}
 
+		void UpdateApplicationNamePlaceholderText ()
+		{
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
+		}
+
+		void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			UpdateApplicationNamePlaceholderText ();
+		}
+
 		public override void DrawRect (CGRect dirtyRect)
 		{
 			if (imageView.Frame.Location == CGPoint.Empty)
@@ -230,6 +242,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			TaskService.Errors.TasksAdded -= updateHandler;
 			TaskService.Errors.TasksRemoved -= updateHandler;
+			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			base.Dispose (disposing);
 		}
 

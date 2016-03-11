@@ -47,6 +47,11 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
+	public static class AboutDialogImage
+	{
+		public static string Name =  "AboutImage.png";
+	}
+
 	internal class CommonAboutDialog : Dialog
 	{
 		public CommonAboutDialog ()

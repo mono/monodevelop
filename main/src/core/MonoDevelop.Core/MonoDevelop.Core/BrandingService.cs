@@ -42,7 +42,7 @@ namespace MonoDevelop.Core
 		static XDocument brandingDocument;
 		static XDocument localizedBrandingDocument;
 		
-		public static readonly string ApplicationName;
+		public static string ApplicationName;
 		public static readonly string SuiteName;
 		public static readonly string ProfileDirectoryName;
 		public static readonly string StatusSteadyIconId;
@@ -178,6 +178,22 @@ namespace MonoDevelop.Core
 		public static string BrandApplicationName (string s)
 		{
 			return s.Replace ("MonoDevelop", ApplicationName);
+		}
+
+		public static event EventHandler ApplicationNameChanged;
+
+		public static void UpdateApplicationName (string name)
+		{
+			if (string.IsNullOrEmpty (name))
+				name = "MonoDevelop";
+
+			if (ApplicationName != name) {
+				ApplicationName = name;
+
+				var handler = ApplicationNameChanged;
+				if (handler != null)
+					handler (null, new EventArgs ());
+			}
 		}
 	}
 }
