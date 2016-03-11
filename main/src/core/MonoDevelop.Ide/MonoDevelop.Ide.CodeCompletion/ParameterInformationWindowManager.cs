@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var actualMethodGroup = new MethodData ();
 			actualMethodGroup.CompletionContext = widget.CurrentCodeCompletionContext;
 			actualMethodGroup.MethodProvider = await ext.ParameterCompletionCommand (widget.CurrentCodeCompletionContext);
-			if (actualMethodGroup.MethodProvider != null && !actualMethodGroup.MethodProvider.Equals (currentMethodGroup.MethodProvider)) 
+			if (actualMethodGroup.MethodProvider != null && (currentMethodGroup == null || !actualMethodGroup.MethodProvider.Equals (currentMethodGroup.MethodProvider))) 
 				currentMethodGroup = actualMethodGroup;
 
 			int pos = await ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset, token);
