@@ -6,22 +6,23 @@ open System.IO
 open System.Diagnostics
 open MonoDevelop.Ide
 open MonoDevelop.Core
-
+open Nessos.FsPickler.Json
+open MonoDevelop.FSharpInteractive
 type InteractiveSession() =
-    let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
+    //let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
     // Turn off the console and add the remoting connection
-    let args = "--readline- --fsi-server:" + server + " "
+    //let args = "--readline- --fsi-server:" + server + " "
 
     // Get F# Interactive path and command line args from settings
-    let args = args + PropertyService.Get<_>("FSharpBinding.FsiArguments", "")
-    let path =
-        match PropertyService.Get<_>("FSharpBinding.FsiPath", "") with
-        | s when s <> "" -> s
-        | _ ->
-            match CompilerArguments.getDefaultInteractive() with
-            | Some(s) -> s
-            | None -> ""
-
+    //let args = args + PropertyService.Get<_>("FSharpBinding.FsiArguments", "")
+    //let path =
+    //    match PropertyService.Get<_>("FSharpBinding.FsiPath", "") with
+    //    | s when s <> "" -> s
+    //    | _ ->
+    //        match CompilerArguments.getDefaultInteractive() with
+    //        | Some(s) -> s
+    //        | None -> ""
+    let path = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe")
     let mutable waitingForResponse = false
 
     let _check =
@@ -31,12 +32,12 @@ type InteractiveSession() =
     let fsiProcess =
         let startInfo =
             new ProcessStartInfo
-              (FileName = path, UseShellExecute = false, Arguments = args,
+              (FileName = path, UseShellExecute = false, (*Arguments = args,*)
               RedirectStandardError = true, CreateNoWindow = true, RedirectStandardOutput = true,
               RedirectStandardInput = true, StandardErrorEncoding = Text.Encoding.UTF8, StandardOutputEncoding = Text.Encoding.UTF8)
 
         try
-            LoggingService.LogDebug (sprintf "Interactive: Starting file=%s, Args=%A" path args)
+            //LoggingService.LogDebug (sprintf "Interactive: Starting file=%s, Args=%A" path args)
             Process.Start(startInfo)
         with e ->
             LoggingService.LogDebug (sprintf "Interactive: Error %s" (e.ToString()))
@@ -45,21 +46,42 @@ type InteractiveSession() =
     let textReceived = Event<_>()
     let promptReady = Event<_>()
 
+    let sendCommand(str:string) =
+        waitingForResponse <- true
+        LoggingService.LogDebug (sprintf "Interactive: sending %s" str)
+        let stream = fsiProcess.StandardInput.BaseStream
+        let bytes = Text.Encoding.UTF8.GetBytes(str + "\n")
+        stream.Write(bytes,0,bytes.Length)
+        stream.Flush()
+
+    //let mutable completions = List.empty<CompletionData>
+    let completionsReceivedEvent = new Event<CompletionData list>()
     do
-        Event.merge fsiProcess.OutputDataReceived fsiProcess.ErrorDataReceived
+        fsiProcess.OutputDataReceived
           |> Event.filter (fun de -> de.Data <> null)
           |> Event.add (fun de ->
-              LoggingService.LogDebug (sprintf "Interactive: received %s" de.Data)
+              LoggingService.logDebug "Interactive: received %s" de.Data
               if de.Data.Trim() = "SERVER-PROMPT>" then
                   promptReady.Trigger()
               elif de.Data.Trim() <> "" then
                   //let str = (if waitingForResponse then waitingForResponse <- false; "\n" else "") + de.Data + "\n"
                   if waitingForResponse then waitingForResponse <- false
                   textReceived.Trigger(de.Data + "\n"))
+
+        let serializer =  FsPickler.CreateJsonSerializer()
+
+        fsiProcess.ErrorDataReceived.Subscribe(fun de -> 
+            if de.Data <> null then
+                let completions = serializer.UnPickleOfString<CompletionData list> de.Data
+                completionsReceivedEvent.Trigger completions
+                LoggingService.logDebug "%s" de.Data) |> ignore
+
         fsiProcess.EnableRaisingEvents <- true
 
     member x.Interrupt() =
-        LoggingService.LogDebug (sprintf "Interactive: Break!" )
+        LoggingService.logDebug "Interactive: Break!"
+
+    member x.CompletionsReceived = completionsReceivedEvent.Publish
 
     member x.StartReceiving() =
         fsiProcess.BeginOutputReadLine()
@@ -70,28 +92,26 @@ type InteractiveSession() =
 
     member x.Kill() =
         if not fsiProcess.HasExited then
-            x.SendCommand "#q"
+            sendCommand "#q"
             for i in 0 .. 10 do
                 if not fsiProcess.HasExited then
-                    LoggingService.LogDebug (sprintf "Interactive: waiting for process exit after #q... %d" (i*200))
+                    LoggingService.logDebug "Interactive: waiting for process exit after #q... %d" (i*200)
                     fsiProcess.WaitForExit(200) |> ignore
 
         if not fsiProcess.HasExited then
             fsiProcess.Kill()
             for i in 0 .. 10 do
                 if not fsiProcess.HasExited then
-                    LoggingService.LogDebug (sprintf "Interactive: waiting for process exit after kill... %d" (i*200))
+                    LoggingService.logDebug "Interactive: waiting for process exit after kill... %d" (i*200)
                     fsiProcess.WaitForExit(200) |> ignore
 
         if not fsiProcess.HasExited then
-            LoggingService.LogWarning (sprintf "Interactive: failed to get process exit after kill" )
+            LoggingService.logWarning "Interactive: failed to get process exit after kill"
 
-    member x.SendCommand(str:string) =
-        waitingForResponse <- true
-        LoggingService.LogDebug (sprintf "Interactive: sending %s" str)
-        let stream = fsiProcess.StandardInput.BaseStream
-        let bytes = Text.Encoding.UTF8.GetBytes(str + "\n")
-        stream.Write(bytes,0,bytes.Length)
-        stream.Flush()
+    member x.SendInput input =
+        sendCommand ("input " + input)
+    
+    member x.SendCompletionRequest input column =
+        sendCommand (sprintf "completion %d %s" column input)
 
     member x.Exited = fsiProcess.Exited

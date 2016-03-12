@@ -157,26 +157,32 @@ type FSharpInteractivePad2() =
                 promptReceived <- false)
             ses.StartReceiving()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
-            getCorrectDirectory() |> Option.iter (fun path -> ses.SendCommand("#silentCd @\"" + path + "\";;"))
+            getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
             Some(ses)
         with exn -> None
 
-    let session = setupSession()
+    let mutable session = setupSession()
     let prompt = "> "
+    let getLineWithoutPrompt (lineStr:string) =
+        if lineStr.[0..1] = prompt then
+            lineStr.[2..]
+        else
+            lineStr
     let getCaretLine() =
         let lineStr =
             editor.CaretLine 
             |> editor.GetLine 
             |> editor.GetLineText
-
-        if lineStr.[0..1] = prompt then
-            lineStr.[2..]
-        else
-            lineStr
+        getLineWithoutPrompt lineStr
 
     let setCaretLine (s:string) =
         let line = editor.GetLineByOffset editor.CaretOffset
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, prompt + s)
+
+    let resetFsi intent =
+        killIntent <- intent
+        session |> Option.iter (fun ses -> ses.Kill())
+        if intent = Restart then session <- setupSession()
 
     member x.Session = session
     member x.Shutdown()  =
@@ -187,7 +193,12 @@ type FSharpInteractivePad2() =
         session 
         |> Option.iter(fun ses ->
             commandHistoryPast.Push command
-            ses.SendCommand command)
+            ses.SendInput command)
+
+    member x.RequestCompletions lineStr column =
+        session 
+        |> Option.iter(fun ses ->
+            ses.SendCompletionRequest lineStr (column + 1))
 
     member x.ProcessCommandHistoryUp () =
         if commandHistoryPast.Count > 0 then
@@ -235,13 +246,29 @@ type FSharpInteractivePad2() =
     static member Fsi =
         FSharpInteractivePad2.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad2))
 
-    override x.Initialize(_container:MonoDevelop.Ide.Gui.IPadWindow) =
+    override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
         do 
             LoggingService.LogDebug ("InteractivePad: created!")
             editor.MimeType <- "text/x-fsharp"
             editor.InsertAtCaret ("\n")
             ctx.SourceEditorView <- editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
-        
+
+            let toolbar = container.GetToolbar(DockPositionType.Right)
+    
+            let buttonClear = new DockToolButton("gtk-clear")
+            buttonClear.Clicked.Add(fun _ -> editor.Text <- "")
+            buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
+            toolbar.Add(buttonClear)
+    
+            let buttonRestart = new DockToolButton("gtk-refresh")
+            buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
+            buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
+            toolbar.Add(buttonRestart)
+    
+            toolbar.ShowAll()
+    member x.RestartFsi() = resetFsi Restart
+    
+    member x.ClearFsi() = editor.Text <- ""
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
     inherit TextEditorExtension()
@@ -334,7 +361,7 @@ type FSharpInteractivePad() as this =
                 promptReceived <- false)
             ses.StartReceiving()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
-            getCorrectDirectory() |> Option.iter (fun path -> ses.SendCommand("#silentCd @\"" + path + "\";;"))
+            getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
             Some(ses)
         with exn -> None
 
@@ -344,7 +371,7 @@ type FSharpInteractivePad() as this =
         session := match !session with
                    | None -> setupSession()
                    | s -> s
-        !session |> Option.iter (fun s -> s.SendCommand(str))
+        !session |> Option.iter (fun s -> s.SendInput(str))
 
     let resetFsi intent =
         killIntent <- intent

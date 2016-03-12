@@ -5,9 +5,12 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.IO
+open System.Diagnostics
 open System.Collections.Generic
 open System.Text.RegularExpressions
 open System.Threading.Tasks
+open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Ide
@@ -17,28 +20,26 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.CodeCompletion
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
+open Nessos.FsPickler.Json
 
-open Microsoft.FSharp.Compiler.SourceCodeServices
+type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
+    inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
+                           DisplayText = name,
+                           DisplayFlags = DisplayFlags.DescriptionHasMarkup,
+                           Icon = icon)
 
-module Completion = 
-    type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
-        inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
-                               DisplayText = name,
-                               DisplayFlags = DisplayFlags.DescriptionHasMarkup,
-                               Icon = icon)
-    
-        /// Check if the datatip has multiple overloads
-        override x.HasOverloads = not (List.isEmpty overloads)
+    /// Check if the datatip has multiple overloads
+    override x.HasOverloads = not (List.isEmpty overloads)
 
-        /// Split apart the elements into separate overloads
-        override x.OverloadedData =
-            overloads
-            |> List.map (fun symbol -> FSharpMemberCompletionData(name, icon, symbol, []) :> CompletionData)
-            |> ResizeArray.ofList :> _
-    
-        // TODO: what does 'smartWrap' indicate?
-        override x.CreateTooltipInformation (_smartWrap, cancel) =
-            Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
+    /// Split apart the elements into separate overloads
+    override x.OverloadedData =
+        overloads
+        |> List.map (fun symbol -> FSharpMemberCompletionData(name, icon, symbol, []) :> CompletionData)
+        |> ResizeArray.ofList :> _
+
+    // TODO: what does 'smartWrap' indicate?
+    override x.CreateTooltipInformation (_smartWrap, cancel) =
+        Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
     
     type SimpleCategory(text) =
         inherit CompletionCategory(text, null)
@@ -75,7 +76,10 @@ module Completion =
                     comparisonResult
                 | a, b -> a.DisplayName.CompareTo(b.DisplayName)
             | _ -> -1
-    
+
+
+
+module Completion = 
     type Context = { 
         completionChar: char
         lineToCaret: string
@@ -176,6 +180,8 @@ module Completion =
             | ValueType _ -> Stock.Struct
             | SymbolUse.Entity _ -> IconId("md-type")
             | _ -> Stock.Event
+
+        
 
         let tryGetCategory (symbolUse : FSharpSymbolUse) =
             let category =
@@ -335,6 +341,70 @@ module Completion =
     let mutable parseCache = (Unchecked.defaultof<FilePath>, -1, None) 
 
     let parseLock = obj()
+    let getFsiCompletions context = 
+
+        let symbolStringToIcon icon =
+            match icon with
+            | "ActivePatternCase" -> Stock.Enum
+            | "Field" -> Stock.Field
+            | "UnionCase" -> IconId("md-type")
+            | "Class" -> Stock.Class
+            | "Delegate" -> Stock.Delegate
+            | "Constructor" -> Stock.Method
+            | "Event" -> Stock.Event
+            | "Property" -> Stock.Property
+            | "ExtensionMethod" -> IconId("md-extensionmethod")
+            | "Method" -> IconId("md-method")
+            | "Operator" -> IconId("md-fs-field")
+            | "ClosureOrNestedFunction" -> IconId("md-fs-field")
+            | "Val" -> Stock.Field
+            | "Enum" -> Stock.Enum
+            | "Interface" -> Stock.Interface
+            | "Module" -> IconId("md-module")
+            | "Namespace" -> Stock.NameSpace
+            | "Record" -> Stock.Class
+            | "Union" -> IconId("md-type")
+            | "ValueType" -> Stock.Struct
+            | "Entity" -> IconId("md-type")
+            | _ -> Stock.Event
+
+        async {
+            let { editor = editor
+                  line = line
+                  column = column
+                  documentContext = documentContext
+                  lineToCaret = lineToCaret
+                  completionChar = completionChar } = context
+            let result = CompletionDataList()
+            match FSharpInteractivePad2.Fsi with
+            | Some pad ->
+                match pad.Session with
+                | Some session ->              
+                    // get completions from remote fsi process
+                    pad.RequestCompletions lineToCaret column
+                    let completions = 
+                        Async.AwaitEvent (session.CompletionsReceived)
+                        |> Async.RunSynchronously
+                        |> List.map (fun c -> CompletionData(c.displayText, symbolStringToIcon c.icon, null, PrettyNaming.QuoteIdentifierIfNeeded c.displayText))
+
+                    result.AddRange completions
+                    if completionChar <> '.' && result.Count > 0 then
+                        let _idents, residue = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+                        LoggingService.logDebug "Completion: residue %s" residue
+                        result.DefaultCompletionString <- residue
+                        result.TriggerWordLength <- residue.Length
+
+                    //TODO Use previous token and pattern match to detect whitespace
+                    if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
+                        // Add the code templates and compiler generated identifiers if the completion char is not '.'
+                        CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
+                        result.AddRange compilerIdentifiers
+                                
+                        result.AddRange keywordCompletionData
+                    return result
+                | None -> return result
+            | None -> return result
+        }
 
     let getCompletions context  =
         async {
@@ -426,7 +496,7 @@ module Completion =
             result.AddRange filteredModifiers
         result
 
-    let codeCompletionCommandImpl(editor:TextEditor, documentContext, context:CodeCompletionContext, ctrlSpace) =
+    let codeCompletionCommandImpl(editor:TextEditor, documentContext:DocumentContext, context:CodeCompletionContext, ctrlSpace) =
         async {
             let line, col, lineStr = editor.GetLineInfoFromOffset context.TriggerOffset
             let completionContext = {
@@ -451,7 +521,11 @@ module Completion =
                 | LetIdentifier ->
                     return getModifiers completionContext
                 | _ ->
-                    return! getCompletions completionContext
+                    if documentContext :? FsiDocumentContext then
+                        //FSharpInteractivePad2.Fsi.Value.RequestCompletions lineStr col
+                        return! getFsiCompletions completionContext
+                    else
+                        return! getCompletions completionContext
             }
 
             results.IsSorted <- true

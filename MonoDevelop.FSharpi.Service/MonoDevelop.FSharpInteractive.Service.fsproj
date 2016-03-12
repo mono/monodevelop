@@ -7,14 +7,14 @@
     <ProjectGuid>{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>MonoDevelop.FSharpi.Service</RootNamespace>
-    <AssemblyName>MonoDevelop.FSharpi.Service</AssemblyName>
+    <AssemblyName>MonoDevelop.FSharpInteractive.Service</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\bin</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <ExternalConsole>true</ExternalConsole>
@@ -22,7 +22,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\bin</OutputPath>
     <DefineConstants></DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <ExternalConsole>true</ExternalConsole>
@@ -41,28 +41,17 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="MonoDevelop.Ide">
-      <HintPath>..\..\..\build\bin\MonoDevelop.Ide.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoDevelop.Core">
-      <HintPath>..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Lexer.fs" />
     <Compile Include="Parser.fs" />
+    <Compile Include="SymbolUse.fs" />
     <Compile Include="Completions.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.FSharpBinding\MonoDevelop.FSharp.fsproj">
-      <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
-      <Name>MonoDevelop.FSharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <Choose>

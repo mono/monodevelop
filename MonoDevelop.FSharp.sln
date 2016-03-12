@@ -12,7 +12,7 @@ Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp", "MonoD
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests", "MonoDevelop.FSharp.Tests\MonoDevelop.FSharp.Tests.fsproj", "{A1A45375-7FB8-4F2A-850F-FBCC67739927}"
 EndProject
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpi.Service", "MonoDevelop.FSharpi.Service\MonoDevelop.FSharpi.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpInteractive.Service", "MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

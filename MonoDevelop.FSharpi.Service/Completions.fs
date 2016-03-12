@@ -50,8 +50,8 @@ module Completion =
                                     name
                             Some 
                                 {
-                                displayText= name
-                                icon= ""
+                                displayText = name
+                                icon = symbolToIcon head
                                 category = ""
                                 overloads = []
                                 }
@@ -61,8 +61,8 @@ module Completion =
                     else
                         Some 
                             {
-                            displayText= head.Symbol.DisplayName
-                            icon= ""
+                            displayText = head.Symbol.DisplayName
+                            icon = symbolToIcon head
                             category = ""
                             overloads = []
                             }
