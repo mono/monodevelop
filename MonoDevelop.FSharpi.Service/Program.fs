@@ -53,50 +53,34 @@ module CompletionServer =
                 do! outStream.WriteLineAsync s |> Async.AwaitTask
             }
 
-        let rec main() = 
+        let rec main(currentInput) = 
             let parseInput() = 
                 async {
                     let! command = inStream.ReadLineAsync() |> Async.AwaitTask
-                    
                     match command with
                     | Input input ->
-                        let result, warnings = fsiSession.EvalInteractionNonThrowing input
-                        for w in warnings do
-                            do! writeLine (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
-                        do! writeLine "SERVER-PROMPT>"
-                        //match result with
-                        ////| Choice1Of2 (Some value) -> () // we're good
-                        ////| Choice1Of2 None -> printfn "null or no result"
-                        ////| Choice2Of2 ex -> printfn "exception %s" ex.Message
-                        //| Choice1Of2 () -> ()
-                          
-                                
-                        //        //printfn "%s" warning.Message
-                        //| Choice2Of2 exn ->
-                        //    do! outStream.WriteLineAsync exn.Message |> Async.AwaitTask
-                        //use errorReader = new StreamReader()
-                        //let rec readStdErr() =
-                        //    let line = errorReader.ReadLine()
-                        //    if line <> null then
-                        //        printfn "stderr %s" line
-                        //        readStdErr()
-                        //    else
-                        //        ()
-
-                        //readStdErr()
+                        if input.EndsWith(";;") then
+                            let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + input)
+                            for w in warnings do
+                                do! writeLine (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
+                            do! writeLine "SERVER-PROMPT>"
+                            return ""
+                        else
+                            return currentInput + "\n" + input
                     | Completion context ->
                         let col, lineStr = context
                         let! results = Completion.getCompletions(fsiSession, lineStr, col)
 
                         let json = pickler.PickleToString results
                         do! Console.Error.WriteLineAsync json |> Async.AwaitTask
-
+                        return currentInput
                     | _ -> printfn "Could not parse command - %s" command
+                           return currentInput
                 }
-            parseInput() |> Async.RunSynchronously
-            main()
+            let currentInput = parseInput() |> Async.RunSynchronously
+            main(currentInput)
         
-        main()
+        main("")
 
         0 // return an integer exit code
 

@@ -491,7 +491,7 @@ module Completion =
         // here -> `let mutab|`
         // but not here -> `let m|`
         let filteredModifiers = modifierCompletionData 
-                                |> Seq.filter (fun c -> c .DisplayText.StartsWith(residue))
+                                |> Seq.filter (fun c -> c.DisplayText.StartsWith(residue))
         if residue.Length > 1 || ctrlSpace then
             result.AddRange filteredModifiers
         result

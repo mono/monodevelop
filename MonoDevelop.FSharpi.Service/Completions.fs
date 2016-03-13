@@ -37,44 +37,33 @@ module Completion =
         | _ -> false
 
     let symbolToCompletionData (symbols : FSharpSymbolUse list) =
-            match symbols with
-            | head :: tail ->
-                let completion =
-                    if (*isInsideAttribute*) false then
-                        if isAttribute head then
-                            let name = head.Symbol.DisplayName
-                            let name =
-                                if name.EndsWith("Attribute") then
-                                    name.Remove(name.Length - 9)
-                                else
-                                    name
-                            Some 
-                                {
-                                displayText = name
-                                icon = symbolToIcon head
-                                category = ""
-                                overloads = []
-                                }
+        let getCompletion displayText symbol = 
+            Some  {
+                displayText = displayText
+                icon = symbolToIcon symbol
+                category = ""
+                overloads = []
+            }
+        match symbols with
+        | head :: tail ->
+            let completion =
+                if (*isInsideAttribute*) false then
+                    if isAttribute head then
+                        let name = head.Symbol.DisplayName
+                        let name =
+                            if name.EndsWith("Attribute") then
+                                name.Remove(name.Length - 9)
+                            else
+                                name
+                        getCompletion name head     
 
-                        else
-                            None
                     else
-                        Some 
-                            {
-                            displayText = head.Symbol.DisplayName
-                            icon = symbolToIcon head
-                            category = ""
-                            overloads = []
-                            }
+                        None
+                else
+                    getCompletion head.Symbol.DisplayName head
 
-                //match tryGetCategory head, completion with
-                //| Some (id, ent), Some comp -> 
-                //    let category = getOrAddCategory ent id
-                //    comp.CompletionCategory <- category
-                //| _, _ -> ()
-
-                completion
-            | _ -> None
+            completion
+        | _ -> None
 
     let getCompletions (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {

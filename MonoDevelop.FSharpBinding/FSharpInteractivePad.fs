@@ -128,7 +128,7 @@ type FSharpInteractivePad2() =
             if doc <> null then Path.GetDirectoryName(doc) |> Some else None
         else None
 
-    let nonBreakingSpace = "\u00A0" // used for the editor syntax highlighting
+    let nonBreakingSpace = "\u00A0" // used to disable editor syntax highlighting for output
     let fsiOutput t =
         editor.InsertAtCaret (nonBreakingSpace + t)
 
@@ -164,7 +164,7 @@ type FSharpInteractivePad2() =
     let mutable session = setupSession()
     let prompt = "> "
     let getLineWithoutPrompt (lineStr:string) =
-        if lineStr.[0..1] = prompt then
+        if lineStr.[0..1] = prompt || lineStr.[0..1] = "- " then
             lineStr.[2..]
         else
             lineStr
@@ -279,48 +279,53 @@ type FSharpFsiEditorCompletion() =
     override x.KeyPress (descriptor:KeyDescriptor) =
         match FSharpInteractivePad2.Fsi with
         | Some fsi -> 
-            match descriptor.SpecialKey with
-            | SpecialKey.Return -> 
-                if x.Editor.CaretLine = x.Editor.LineCount then
-                    let line =
-                        x.Editor.CaretLine
-                        |> x.Editor.GetLine 
-                    let lineStr = (line |> x.Editor.GetLineText)
-
-                    if lineStr.TrimStart().StartsWith("> ") then
-                        fsi.SendCommand lineStr.[2..]
+            let line =
+                x.Editor.CaretLine
+                |> x.Editor.GetLine 
+            let lineStr = (x.Editor.GetLineText line)
+            let result = 
+                match descriptor.SpecialKey with
+                | SpecialKey.Return -> 
+                    if x.Editor.CaretLine = x.Editor.LineCount then
+                        if lineStr.TrimStart().StartsWith("> ") || lineStr.TrimStart().StartsWith("- ") then
+                            fsi.SendCommand lineStr.[2..]
+                        else
+                            fsi.SendCommand lineStr
+                              
+                        x.Editor.CaretOffset <- line.EndOffset
+                        x.Editor.InsertAtCaret "\n"
+                        if not (lineStr.TrimEnd().EndsWith(";;")) then
+                            x.Editor.InsertAtCaret "- "
+                    false
+                | SpecialKey.Up -> 
+                    if x.Editor.CaretLine = x.Editor.LineCount then
+                        fsi.ProcessCommandHistoryUp()
+                        let topLine = x.Editor.VisibleLines |> Seq.head
+                        x.Editor.ScrollTo(x.Editor.OffsetToLocation topLine.Offset)
+                        false
                     else
-                        fsi.SendCommand lineStr
-                          
-                    x.Editor.CaretOffset <- line.EndOffset
-                    x.Editor.InsertAtCaret "\n"
-                    if not (lineStr.TrimEnd().EndsWith(";;")) then
-                        x.Editor.InsertAtCaret "- "
-                false
-            | SpecialKey.Up -> 
-                if x.Editor.CaretLine = x.Editor.LineCount then
-                    fsi.ProcessCommandHistoryUp()
-                    false
-                else
-                    base.KeyPress (descriptor)
-            | SpecialKey.Down -> 
-                if x.Editor.CaretLine = x.Editor.LineCount then
-                    fsi.ProcessCommandHistoryDown()
-                    false
-                else
-                    base.KeyPress (descriptor)
-            | SpecialKey.Left ->
-                if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > 3 then // 3 = prompt width
-                    base.KeyPress (descriptor)
-                else
-                    false
-            | SpecialKey.BackSpace
-            | SpecialKey.Delete ->
-                if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 3 then // 3 = prompt width
-                    base.KeyPress (descriptor)
-                else
-                    false
-            | _ -> base.KeyPress (descriptor)
+                        base.KeyPress (descriptor)
+                | SpecialKey.Down -> 
+                    if x.Editor.CaretLine = x.Editor.LineCount then
+                        fsi.ProcessCommandHistoryDown()
+                        false
+                    else
+                        base.KeyPress (descriptor)
+                | SpecialKey.Left ->
+                    if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > 3 then // 3 = prompt width
+                        base.KeyPress (descriptor)
+                    else
+                        false
+                | SpecialKey.BackSpace
+                | SpecialKey.Delete ->
+                    if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 3 then // 3 = prompt width
+                        base.KeyPress (descriptor)
+                    else
+                        false
+                | _ -> base.KeyPress (descriptor)
+            if lineStr.StartsWith "> " && x.Editor.CaretColumn < 3 then
+                x.Editor.CaretColumn <- 3
+            result
         | _ -> base.KeyPress (descriptor)
 
 type FSharpInteractivePad() as this =
