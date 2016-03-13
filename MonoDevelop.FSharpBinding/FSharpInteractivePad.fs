@@ -279,10 +279,18 @@ type FSharpFsiEditorCompletion() =
     override x.KeyPress (descriptor:KeyDescriptor) =
         match FSharpInteractivePad2.Fsi with
         | Some fsi -> 
+            let startLine = x.Editor.CaretLine
             let line =
                 x.Editor.CaretLine
-                |> x.Editor.GetLine 
-            let lineStr = (x.Editor.GetLineText line)
+                |> x.Editor.GetLine
+
+            let lineStr = 
+                if line.Length > 0 then
+                    (x.Editor.GetLineText line)
+                else
+                    ""
+
+            let lineHasPrompt = lineStr.[0..1] = "> "
             let result = 
                 match descriptor.SpecialKey with
                 | SpecialKey.Return -> 
@@ -323,8 +331,12 @@ type FSharpFsiEditorCompletion() =
                     else
                         false
                 | _ -> base.KeyPress (descriptor)
-            if lineStr.StartsWith "> " && x.Editor.CaretColumn < 3 then
+
+            if lineStr.StartsWith "> " && x.Editor.CaretColumn < 3 && x.Editor.CaretLine = startLine  then
+                if lineHasPrompt then
+                    x.Editor.InsertText (line.Offset, "> ")
                 x.Editor.CaretColumn <- 3
+
             result
         | _ -> base.KeyPress (descriptor)
 
