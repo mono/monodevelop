@@ -187,7 +187,7 @@ type FSharpInteractivePad2() =
     member x.Session = session
     member x.Shutdown()  =
         do LoggingService.LogDebug ("Interactive: Shutdown()!")
-        //resetFsi Kill
+        resetFsi Kill
 
     member x.SendCommand command =
         session 
@@ -346,22 +346,26 @@ type FSharpFsiEditorCompletion() =
         match FSharpInteractivePad2.Fsi with
         | Some fsi -> 
             let startLine = x.Editor.CaretLine
-            let line =
-                x.Editor.CaretLine
-                |> x.Editor.GetLine
 
-            let lineStr = 
+            let getCaretLine() =
+                let line =
+                    x.Editor.CaretLine
+                    |> x.Editor.GetLine
+
                 if line.Length > 0 then
-                    (x.Editor.GetLineText line)
+                    (x.Editor.GetLineText line), line
                 else
-                    ""
+                    "", line
 
-            let lineHadPrompt = lineStr.[0..1] = "> "
+            let lineStr, line = getCaretLine()
+            let lineHadPrompt = lineStr.StartsWith "> "
+            if lineHadPrompt && x.Editor.CaretColumn < 3 then
+                x.Editor.CaretColumn <- 3
             let result = 
                 match descriptor.SpecialKey with
                 | SpecialKey.Return -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
-                        if lineStr.TrimStart().StartsWith("> ") || lineStr.TrimStart().StartsWith("- ") then
+                        if lineHadPrompt || lineStr.TrimStart().StartsWith("- ") then
                             fsi.SendCommand lineStr.[2..]
                         else
                             fsi.SendCommand lineStr
@@ -399,8 +403,9 @@ type FSharpFsiEditorCompletion() =
                 | _ -> base.KeyPress (descriptor)
 
             if lineStr.StartsWith "> " && x.Editor.CaretColumn < 3 && x.Editor.CaretLine = startLine  then
+                let editedLine, _ = getCaretLine()
                 // Fixes ctrl-w and maybe other keystrokes that remove the prompt
-                if lineHadPrompt then
+                if lineHadPrompt && not (editedLine.StartsWith "> ") then
                     x.Editor.InsertText (line.Offset, "> ")
                 x.Editor.CaretColumn <- 3
 

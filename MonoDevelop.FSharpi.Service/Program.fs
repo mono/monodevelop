@@ -24,7 +24,7 @@ module CompletionServer =
         let pickler = FsPickler.CreateJsonSerializer()
 
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
-        let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, errorStream)
+        let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream)
 
         let (|Input|_|) (command: string) =
             if command.StartsWith("input ") then
@@ -60,10 +60,16 @@ module CompletionServer =
                     match command with
                     | Input input ->
                         if input.EndsWith(";;") then
-                            let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + input)
-                            for w in warnings do
-                                do! writeLine (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
-                            do! writeLine "SERVER-PROMPT>"
+                            try
+                                let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + input)
+                                match result with
+                                | Choice1Of2 () -> ()
+                                | Choice2Of2 exn -> do! writeLine (exn |> string)
+                                for w in warnings do
+                                    do! writeLine (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
+                                do! writeLine "SERVER-PROMPT>"
+                            with
+                            | exn -> do! writeLine (exn |> string)
                             return ""
                         else
                             return currentInput + "\n" + input
