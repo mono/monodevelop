@@ -138,7 +138,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TestOutput (
 				"\n\n\nlet x = 2",
-				"<span foreground=\"#009695\">let</span><span foreground=\"#222222\"> </span><span foreground=\"#222222\" style=\"Italic\">x</span><span foreground=\"#222222\"> = </span><span foreground=\"#F57D00\">2</span>",
+				"<span foreground=\"#009695\">let</span><span foreground=\"#222222\"> </span><span foreground=\"#222222\">x</span><span foreground=\"#222222\"> = </span><span foreground=\"#F57D00\">2</span>",
 				"text/x-fsharp");
 		}
 	}
