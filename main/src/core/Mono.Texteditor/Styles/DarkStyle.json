@@ -1,6 +1,6 @@
 ﻿{
 	"name": "Dark",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A dark scheme using colors from the Tango Project",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -196,8 +196,8 @@
 		{ "name": "User Types(Type parameters)", "fore": "#4ec9b0" },
 		{ "name": "User Types(Mutable)", "fore": "#ffd21c" },
 
-		{ "name": "User Field Usage", "fore": "aluminium1", "style": "italic" },
-		{ "name": "User Field Declaration", "fore": "aluminium1", "style": "italic" },
+		{ "name": "User Field Usage", "fore": "aluminium1" },
+		{ "name": "User Field Declaration", "fore": "aluminium1" },
 
 		{ "name": "User Property Usage", "fore": "aluminium1" },
 		{ "name": "User Property Declaration", "fore": "aluminium1" },

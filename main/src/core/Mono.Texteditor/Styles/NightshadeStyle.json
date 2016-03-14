@@ -1,6 +1,6 @@
 {
 	"name": "Nightshade",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"description": "An inky scheme with vibrant highlights",
 	"originator": "Anirudh Sanjeev <anirudh@anirudhsanjeev.org>",
 
@@ -204,8 +204,8 @@
 		{ "name": "User Types(Type parameters)", "fore": "IdentifierVim" },
 		{ "name": "User Types(Mutable)", "fore": "#ffd21c" },
 
-		{ "name": "User Field Usage", "fore": "NormalVim", "style": "italic" },
-		{ "name": "User Field Declaration", "fore": "NormalVim", "style": "italic" },
+		{ "name": "User Field Usage", "fore": "NormalVim" },
+		{ "name": "User Field Declaration", "fore": "NormalVim" },
 
 		{ "name": "User Property Usage", "fore": "NormalVim" },
 		{ "name": "User Property Declaration", "fore": "NormalVim" },

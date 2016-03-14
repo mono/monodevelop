@@ -1,6 +1,6 @@
 {
 	"name": "Light",
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"description": "Bright and friendly, just like Xamarin",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -193,8 +193,8 @@
 		{ "name": "User Types(Type parameters)", "fore": "skyblue2" },
 		{ "name": "User Types(Mutable)", "fore": "#a08000" },
 
-		{ "name": "User Field Usage", "fore": "text-black", "style": "italic" },
-		{ "name": "User Field Declaration", "fore": "text-black", "style": "italic" },
+		{ "name": "User Field Usage", "fore": "text-black" },
+		{ "name": "User Field Declaration", "fore": "text-black" },
 
 		{ "name": "User Property Usage", "fore": "text-black" },
 		{ "name": "User Property Declaration", "fore": "text-black" },
