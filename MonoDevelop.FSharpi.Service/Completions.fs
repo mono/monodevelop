@@ -44,7 +44,7 @@ module Completion =
                 icon = symbolToIcon symbol
                 category = ""
                 overloads = []
-                description = ""
+                description = null
             }
         match symbols with
         | head :: tail ->
@@ -81,8 +81,12 @@ module Completion =
         async {
             let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
             let longName,residue = Parsing.findLongIdentsAndResidue(column, input)
-            let! results = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
-            return results 
-                   |> List.choose symbolToCompletionData
-                   |> List.append getHashDirectives
+            let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
+            let results = symbols 
+                          |> List.choose symbolToCompletionData
+            if longName.Length = 0 && residue.Length = 0 then
+                return results
+                |> List.append getHashDirectives
+            else
+                return results
         }

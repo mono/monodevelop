@@ -250,7 +250,7 @@ type FSharpInteractivePad2() =
         do 
             LoggingService.LogDebug ("InteractivePad: created!")
             editor.MimeType <- "text/x-fsharp"
-            editor.InsertAtCaret ("\n")
+            //editor.InsertAtCaret ("\n")
             ctx.SourceEditorView <- editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
 
             let toolbar = container.GetToolbar(DockPositionType.Right)
@@ -264,7 +264,7 @@ type FSharpInteractivePad2() =
             buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
             buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
             toolbar.Add(buttonRestart)
-    
+
             toolbar.ShowAll()
     member x.RestartFsi() = resetFsi Restart
     

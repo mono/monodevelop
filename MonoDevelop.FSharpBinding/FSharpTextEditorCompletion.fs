@@ -99,7 +99,7 @@ module Completion =
             None
 
     let (|InvalidCompletionChar|_|) context =
-        if Char.IsLetter context.completionChar || context.ctrlSpace || context.completionChar = '.' then
+        if Char.IsLetter context.completionChar || context.ctrlSpace || context.completionChar = '.' || context.completionChar = '#' then
             None
         else
             Some InvalidCompletionChar
@@ -376,6 +376,11 @@ module Completion =
                   lineToCaret = lineToCaret
                   completionChar = completionChar } = context
             let result = CompletionDataList()
+
+            let quoteIdentifierIfNeeded (name:string) =
+                if name.[0] = '#' then name.[1..]
+                else PrettyNaming.QuoteIdentifierIfNeeded name
+
             match FSharpInteractivePad2.Fsi with
             | Some pad ->
                 match pad.Session with
@@ -385,7 +390,7 @@ module Completion =
                     let completions = 
                         Async.AwaitEvent (session.CompletionsReceived)
                         |> Async.RunSynchronously
-                        |> List.map (fun c -> CompletionData(c.displayText, symbolStringToIcon c.icon, null, PrettyNaming.QuoteIdentifierIfNeeded c.displayText))
+                        |> List.map (fun c -> CompletionData(c.displayText, symbolStringToIcon c.icon, c.description, quoteIdentifierIfNeeded c.displayText))
 
                     result.AddRange completions
                     if completionChar <> '.' && result.Count > 0 then
@@ -438,7 +443,7 @@ module Completion =
 
                 let result = CompletionDataList()                 
                 match typedParseResults with
-                | None       -> () //TODOresult.Add(FSharpTryAgainMemberCompletionData())
+                | None       -> ()
                 | Some tyRes ->
                     // Get declarations and generate list for MonoDevelop
                     let! symbols = tyRes.GetDeclarationSymbols(line, column, lineToCaret)
