@@ -46,7 +46,10 @@ namespace MonoDevelop.PackageManagement
 			w2.Expand = false;
 			w2.Fill = false;
 			// Container child packageIdVBox.Gtk.Box+BoxChild
-			this.licenseHyperlinkWidget = null;
+			this.licenseHyperlinkWidget = new global::MonoDevelop.PackageManagement.HyperlinkWidget ();
+			this.licenseHyperlinkWidget.Events = ((global::Gdk.EventMask)(256));
+			this.licenseHyperlinkWidget.Name = "licenseHyperlinkWidget";
+			this.licenseHyperlinkWidget.Label = global::Mono.Unix.Catalog.GetString ("View License");
 			this.packageIdVBox.Add (this.licenseHyperlinkWidget);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.packageIdVBox [this.licenseHyperlinkWidget]));
 			w3.Position = 1;
