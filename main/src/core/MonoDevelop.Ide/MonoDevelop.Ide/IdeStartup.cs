@@ -82,9 +82,6 @@ namespace MonoDevelop.Ide
 
 			LoggingService.LogInfo ("Operating System: {0}", SystemInformation.GetOperatingSystemDescription ());
 
-			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
-			IdeApp.Customizer.Initialize ();
-
 			Counters.Initialization.BeginTiming ();
 
 			if (options.PerfLog) {
@@ -97,7 +94,10 @@ namespace MonoDevelop.Ide
 			if (Platform.IsWindows && !CheckWindowsGtk ())
 				return 1;
 			SetupExceptionManager ();
-			
+
+			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
+			IdeApp.Customizer.Initialize ();
+
 			try {
 				GLibLogging.Enabled = true;
 			} catch (Exception ex) {
