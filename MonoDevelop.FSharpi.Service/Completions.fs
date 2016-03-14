@@ -8,6 +8,7 @@ type CompletionData = {
     category: string
     icon: string
     overloads: CompletionData list
+    description: string
 }
 
 module Completion =
@@ -43,6 +44,7 @@ module Completion =
                 icon = symbolToIcon symbol
                 category = ""
                 overloads = []
+                description = ""
             }
         match symbols with
         | head :: tail ->
@@ -65,6 +67,16 @@ module Completion =
             completion
         | _ -> None
 
+    let getHashDirectives =
+        [
+            { displayText = "#r"; category ="keywords"; icon = "md-keyword"; description = "Reference (dynamically load) the given DLL"; overloads = [] }
+            { displayText = "#I"; category ="keywords"; icon = "md-keyword"; description = "Add the given search path for referenced DLLs"; overloads = [] }
+            { displayText = "#load"; category ="keywords"; icon = "md-keyword"; description = "Load the given file(s) as if compiled and referenced"; overloads = [] }
+            { displayText = "#time"; category ="keywords"; icon = "md-keyword"; description = "Toggle timing on/off"; overloads = [] }
+            { displayText = "#help"; category ="keywords"; icon = "md-keyword"; description = "Display help"; overloads = [] }
+            { displayText = "#quit"; category ="keywords"; icon = "md-keyword"; description = "Exit"; overloads = [] }
+        ]
+
     let getCompletions (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
             let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
@@ -72,4 +84,5 @@ module Completion =
             let! results = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
             return results 
                    |> List.choose symbolToCompletionData
+                   |> List.append getHashDirectives
         }

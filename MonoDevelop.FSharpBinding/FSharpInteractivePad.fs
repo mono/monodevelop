@@ -290,7 +290,7 @@ type FSharpFsiEditorCompletion() =
                 else
                     ""
 
-            let lineHasPrompt = lineStr.[0..1] = "> "
+            let lineHadPrompt = lineStr.[0..1] = "> "
             let result = 
                 match descriptor.SpecialKey with
                 | SpecialKey.Return -> 
@@ -333,7 +333,8 @@ type FSharpFsiEditorCompletion() =
                 | _ -> base.KeyPress (descriptor)
 
             if lineStr.StartsWith "> " && x.Editor.CaretColumn < 3 && x.Editor.CaretLine = startLine  then
-                if lineHasPrompt then
+                // Fixes ctrl-w and maybe other keystrokes that remove the prompt
+                if lineHadPrompt then
                     x.Editor.InsertText (line.Offset, "> ")
                 x.Editor.CaretColumn <- 3
 
