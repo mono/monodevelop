@@ -43,7 +43,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 	{
 		static CompletionContextHandler[] handlers = {
 			new RoslynRecommendationsCompletionContextHandler (),
-			new KeywordContextHandler(),
 			new OverrideContextHandler(),
 			new PartialContextHandler(),
 			new EnumMemberContextHandler(),
@@ -61,7 +60,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			new SenderCompletionContextHandler(),
 			new CastCompletionContextHandler(),
 			new PreProcessorExpressionContextHandler(), 
-			new RegexContextHandler()
+			new RegexContextHandler(),
+			new KeywordContextHandler(),
 		};
 
 		readonly ICompletionDataFactory factory;
