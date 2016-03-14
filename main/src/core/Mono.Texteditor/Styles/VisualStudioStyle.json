@@ -1,6 +1,6 @@
 {
 	"name": "Visual Studio",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "Reminiscent of Microsoft Visual Studio's default colors",
 	"originator": "Jeffrey Stedfast <fejj@novell.com>",
 
@@ -90,9 +90,6 @@
 		{ "name": "User Types(Interfaces)", "fore": "semantic-type" },
 		{ "name": "User Types(Delegates)", "fore": "semantic-type" },
 		{ "name": "User Types(Value types)", "fore": "semantic-type" },
-
-		{ "name": "User Field Usage", "style": "italic" },
-		{ "name": "User Field Declaration", "style": "italic" },
 
 		{ "name": "Syntax Error", "fore": "#FF0000" },
 
