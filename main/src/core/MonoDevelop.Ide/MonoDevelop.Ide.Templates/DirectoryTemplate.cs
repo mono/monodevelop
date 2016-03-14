@@ -97,7 +97,8 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			foreach (FileDescriptionTemplate t in templates) {
-				addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
+				if (t.EvaluateCreateCondition ())
+					addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
 			}
 			return addedSomething;
 		}
