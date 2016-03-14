@@ -246,6 +246,72 @@ type FSharpInteractivePad2() =
     static member Fsi =
         FSharpInteractivePad2.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad2))
 
+    member x.SendSelection() =
+        if x.IsSelectionNonEmpty then
+            let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
+            getCorrectDirectory()
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+
+            x.SendCommand (sel + ";;")
+        else
+          //if nothing is selected send the whole line
+            x.SendLine()
+
+    member x.SendLine() =
+        if IdeApp.Workbench.ActiveDocument = null then ()
+        else
+            getCorrectDirectory()
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+
+            let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
+            let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
+            let file = IdeApp.Workbench.ActiveDocument.FileName
+            let sel = String.Format("# {0} \"{1}\"\ninput {2};;\n", line, file.FullPath, text)
+            x.SendCommand sel
+            //advance to the next line
+            if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
+            then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
+
+    member x.SendFile() =
+        let text = IdeApp.Workbench.ActiveDocument.Editor.Text
+        getCorrectDirectory()
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+
+        x.SendCommand (text + ";;")
+
+    member x.IsSelectionNonEmpty =
+        if IdeApp.Workbench.ActiveDocument = null ||
+            IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
+        else
+            let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
+            not(String.IsNullOrEmpty(sel))
+
+    member x.LoadReferences() =
+        LoggingService.LogDebug ("FSI:  #LoadReferences")
+        let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
+        
+        let references =
+            let args =
+                CompilerArguments.getReferencesFromProject project
+                |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
+                                          then None
+                                          else
+                                              let ref = ref |> String.replace "-r:" ""
+                                              if File.Exists ref then Some ref
+                                              else None )
+                |> Seq.distinct
+                |> Seq.toArray
+            args
+
+        let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
+        let orderedreferences = orderAssemblyReferences.Order references
+
+        getCorrectDirectory()
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+
+        orderedreferences
+        |> List.iter (fun a -> x.SendCommand (sprintf  """#r @"%s";;""" a.Path ))
+
     override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
         do 
             LoggingService.LogDebug ("InteractivePad: created!")
@@ -572,10 +638,10 @@ type FSharpInteractivePad() as this =
         with exn -> None
 
     static member BringToFront(grabfocus) =
-        FSharpInteractivePad.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
+        FSharpInteractivePad2.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
 
     static member Fsi =
-        FSharpInteractivePad.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad))
+        FSharpInteractivePad2.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad2))
 
   type InteractiveCommand(command) =
     inherit CommandHandler()
@@ -586,7 +652,7 @@ type FSharpInteractivePad() as this =
     override x.Run() =
         FSharpInteractivePad.Fsi
         |> Option.iter (fun fsi -> command fsi
-                                   FSharpInteractivePad.BringToFront(false))
+                                   FSharpInteractivePad2.BringToFront(false))
 
   type ShowFSharpInteractive() =
       inherit InteractiveCommand(ignore)

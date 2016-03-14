@@ -74,7 +74,7 @@ module CompletionServer =
                         let json = pickler.PickleToString results
                         do! Console.Error.WriteLineAsync json |> Async.AwaitTask
                         return currentInput
-                    | _ -> printfn "Could not parse command - %s" command
+                    | _ -> do! writeLine (sprintf "Could not parse command - %s" command)
                            return currentInput
                 }
             let currentInput = parseInput() |> Async.RunSynchronously

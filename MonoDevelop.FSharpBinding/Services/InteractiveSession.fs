@@ -6,6 +6,7 @@ open System.IO
 open System.Diagnostics
 open MonoDevelop.Ide
 open MonoDevelop.Core
+open Nessos.FsPickler
 open Nessos.FsPickler.Json
 open MonoDevelop.FSharpInteractive
 type InteractiveSession() =
@@ -71,10 +72,15 @@ type InteractiveSession() =
         let serializer =  FsPickler.CreateJsonSerializer()
 
         fsiProcess.ErrorDataReceived.Subscribe(fun de -> 
-            if de.Data <> null then
-                let completions = serializer.UnPickleOfString<CompletionData list> de.Data
-                completionsReceivedEvent.Trigger completions
-                LoggingService.logDebug "%s" de.Data) |> ignore
+            if not (String.isNullOrEmpty de.Data) then
+                try
+                    let completions = serializer.UnPickleOfString<CompletionData list> de.Data
+                    completionsReceivedEvent.Trigger completions
+                    LoggingService.logDebug "%s" de.Data
+                with 
+                | :? FsPicklerException ->
+                    LoggingService.logError "[fsharpi] - error deserializing error stream - %s" de.Data
+                    ) |> ignore
 
         fsiProcess.EnableRaisingEvents <- true
 
@@ -109,7 +115,8 @@ type InteractiveSession() =
             LoggingService.logWarning "Interactive: failed to get process exit after kill"
 
     member x.SendInput input =
-        sendCommand ("input " + input)
+        for line in String.getLines input do
+            sendCommand ("input " + line)
     
     member x.SendCompletionRequest input column =
         sendCommand (sprintf "completion %d %s" column input)
