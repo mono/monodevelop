@@ -64,6 +64,8 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 			var type = token.Parent as BaseTypeDeclarationSyntax;
 			if (type == null)
 				return;
+			if (type.Parent is BaseTypeDeclarationSyntax)
+				return;
 			
 			if (Path.GetFileNameWithoutExtension (document.FilePath) == type.Identifier.ToString ())
 				return;
