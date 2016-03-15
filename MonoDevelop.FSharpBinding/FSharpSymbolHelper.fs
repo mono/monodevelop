@@ -673,7 +673,8 @@ module SymbolTooltips =
             let basicName = modifier + asKeyword typeName ++ name
 
             if fse.IsFSharpAbbreviation then
-                basicName ++ asBrackets "=" ++ asKeyword (fse.AbbreviatedType.Format displayContext)
+                let unannotatedType = fse.UnAnnotate()
+                basicName ++ asBrackets "=" ++ asKeyword (escapeText unannotatedType.DisplayName)
             else
                 basicName
 
