@@ -29,7 +29,7 @@ type TestTooltipProvider() =
     let getTooltipSignature (source: string) =
         let signature =
             match getTooltip source with
-            | Some(tip, _signature, footer) -> tip
+            | Some(tip,_,_) -> tip
             | _ ->  ""
 
         signature |> stripHtml |> htmlDecode
@@ -37,10 +37,15 @@ type TestTooltipProvider() =
     let getTooltipFooter (source: string) =
         let footer =
             match getTooltip source with
-            | Some(tip, _signature, footer) -> footer
+            | Some(_,_,footer) -> footer
             | _ ->  ""
 
         footer |> stripHtml |> htmlDecode
+        
+    let getTooltipSummary (source: string) =
+        match getTooltip source with
+        | Some(_,summary,_) -> SymbolTooltips.formatSummary summary
+        | _ ->  ""
 
     [<Test>]
     member this.``ooltip arrows are right aligned``() =
@@ -380,5 +385,14 @@ type TestTooltipProvider() =
         let expected = "From type:\tString\nAssembly:\tFSharp.Core"
 
         footer |> shouldEqualIgnoringLineEndings expected
+        
+    [<Test>]
+    member this.``Xml summary should be escaped``() =
+        let input = """///<summary>This is the summary</summary>
+type myT§ype = class end"""
+        let summary = getTooltipSummary input
+        let expected = "This is the summary"
+
+        summary |> shouldEqual expected
 
  

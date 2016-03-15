@@ -367,8 +367,20 @@ module SymbolTooltips =
             | _ -> ResizeArray() :> IList<_>, ""
 
         if xmlDoc.Count > 0
-        then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
+        then Full (String.Join( "\n", xmlDoc))
         else Lookup(xmlDocSig, symbol.Assembly.FileName)
+    
+    let formatSummary (summary:XmlDoc) =
+        match summary with
+        | Full(summary) ->
+            TooltipsXml.getTooltipSummary Styles.simpleMarkup summary
+
+        | Lookup(key, potentialFilename) ->
+            maybe { let! filename = potentialFilename
+                    let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                    let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
+                    return summary } |> Option.fill ""
+        | EmptyDoc -> ""
 
     let getUnioncaseSignature displayContext (unionCase:FSharpUnionCase) =
         if unionCase.UnionCaseFields.Count > 0 then

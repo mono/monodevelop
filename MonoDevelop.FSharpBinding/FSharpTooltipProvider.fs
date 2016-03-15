@@ -103,16 +103,9 @@ type FSharpTooltipProvider() =
             let (signature, summary, footer) = unbox item.Item
             let result = new TooltipInformationWindow(ShowArrow = true)
             let toolTipInfo = new TooltipInformation(SignatureMarkup=signature, FooterMarkup=footer)
-            match summary with
-            | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
-            | Lookup(key, potentialFilename) ->
-                let summary =
-                    maybe { let! filename = potentialFilename
-                            let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-                            let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-                            return summary }
-                summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
-            | EmptyDoc -> ()
+            let formattedSummary = SymbolTooltips.formatSummary summary
+            if not (String.IsNullOrWhiteSpace formattedSummary) then
+                toolTipInfo.SummaryMarkup <- formattedSummary
             result.AddOverload(toolTipInfo)
             result.RepositionWindow ()
             Control.op_Implicit result
