@@ -126,6 +126,21 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			return DragOperation.Copy | DragOperation.Move;
 		}
+
+		[CommandHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWith (object ob)
+		{
+			var finfo = (SolutionFolderFileNode)CurrentNode.DataItem;
+			((FileViewer)ob).OpenFile (finfo.FileName);
+		}
+
+		[CommandUpdateHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWithUpdate (CommandArrayInfo info)
+		{
+			var pf = (SolutionFolderFileNode)CurrentNode.DataItem;
+			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, null, pf.FileName);
+		}
+
 	}
 	
 	class SolutionFolderFileNode: IFileItem
