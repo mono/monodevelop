@@ -1859,6 +1859,13 @@ namespace MonoDevelop.CSharp
 					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
 			}
 
+			var method = entity as IMethodSymbol;
+			if (method != null && (method.MethodKind == MethodKind.Constructor || method.MethodKind == MethodKind.StaticConstructor || method.MethodKind == MethodKind.Destructor)) {
+				return (method.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingNamespace.GetFullName ())) + "</small>" + Environment.NewLine) +
+					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingAssembly.Name)) + "</small>";
+			}
+
+
 			if (entity.ContainingType != null && entity.Locations.Any ()) {
 				var loc = entity.Locations.First ();
 				if (!loc.IsInSource) {
