@@ -84,6 +84,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			if (!ctx.CSharpSyntaxContext.IsAnyExpressionContext)
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var enclosingType = model.GetEnclosingNamedType (position, cancellationToken);
+			if (enclosingType == null)
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var memberMethods = enclosingType.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Ordinary).ToArray ();
 
 			var list = new List<CompletionData> ();

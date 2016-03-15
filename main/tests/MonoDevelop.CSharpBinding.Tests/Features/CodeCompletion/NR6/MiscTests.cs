@@ -173,5 +173,15 @@ namespace Foo
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.IsNotNull (provider.Find ("new"));
 		}
+
+		//Bug 39589 - No code completion in assembly attribute arguments
+		[Test]
+		public void TestBug39589 ()
+		{
+			VerifyItemExists (@"
+using System.Reflection;
+[assembly: AssemblyTitle(S$$)]
+", "System");
+		}
 	}
 }
