@@ -87,6 +87,8 @@
        <Group color="String"/>
 	</Match> -->
 
+	<!-- FSI text -->
+	<Match color="Plain Text" ignorecase="True">^\u00A0.*$</Match>
 	<Match color="String" ignorecase="True">'(\w|\\['ntbrafv])'</Match>
 <!--    <Match color="User Method Declaration">``(.*)``</Match>   -->
 
