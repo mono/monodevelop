@@ -269,9 +269,9 @@ type FSharpInteractivePad() =
 
             let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
             let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
-            let file = IdeApp.Workbench.ActiveDocument.FileName
-            let sel = String.Format("# {0} \"{1}\"\ninput {2};;\n", line, file.FullPath, text)
-            x.SendCommand sel
+            //let file = IdeApp.Workbench.ActiveDocument.FileName
+            //let sel = String.Format("{2};;", line, file.FullPath, text)
+            x.SendCommand (text + ";;")
             //advance to the next line
             if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
             then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
