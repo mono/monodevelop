@@ -381,7 +381,7 @@ module Completion =
                 if name.[0] = '#' then name.[1..]
                 else PrettyNaming.QuoteIdentifierIfNeeded name
 
-            match FSharpInteractivePad2.Fsi with
+            match FSharpInteractivePad.Fsi with
             | Some pad ->
                 match pad.Session with
                 | Some session ->              

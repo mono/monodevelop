@@ -52,7 +52,7 @@ type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultS
     interface Mono.TextEditor.ITextEditorOptions with
         member x.ColorScheme = options.ColorScheme
 
-type FsiDocumentContext() as this =
+type FsiDocumentContext() =
     inherit DocumentContext()
     let name = "__FSI__.fsx"
     let pd = new FSharpParsedDocument(name) :> ParsedDocument
@@ -105,7 +105,7 @@ type FsiDocumentContext() as this =
         [<CLIEvent>]
         member x.CompletionContextChanged = contextChanged.Publish
 
-type FSharpInteractivePad2() =
+type FSharpInteractivePad() =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
     let options = DefaultSourceEditorOptions.Instance
@@ -230,12 +230,12 @@ type FSharpInteractivePad2() =
     override x.Control = editor :> Control
 
     static member Pad =
-        try let pad = IdeApp.Workbench.GetPad<FSharpInteractivePad2>()
+        try let pad = IdeApp.Workbench.GetPad<FSharpInteractivePad>()
             
             if pad <> null then Some(pad)
             else
                 //*attempt* to add the pad manually this seems to fail sporadically on updates and reinstalls, returning null
-                let pad = IdeApp.Workbench.AddPad(new FSharpInteractivePad2(),
+                let pad = IdeApp.Workbench.AddPad(new FSharpInteractivePad(),
                                                   "FSharp.MonoDevelop.FSharpInteractivePad2",
                                                   "F# Interactive",
                                                   "Center Bottom",
@@ -245,10 +245,10 @@ type FSharpInteractivePad2() =
         with exn -> None
 
     static member BringToFront(grabfocus) =
-        FSharpInteractivePad2.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
+        FSharpInteractivePad.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
 
     static member Fsi =
-        FSharpInteractivePad2.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad2))
+        FSharpInteractivePad.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad))
 
     member x.SendSelection() =
         if x.IsSelectionNonEmpty then
@@ -320,7 +320,6 @@ type FSharpInteractivePad2() =
         do 
             LoggingService.LogDebug ("InteractivePad: created!")
             editor.MimeType <- "text/x-fsharp"
-            //editor.InsertAtCaret ("\n")
             ctx.SourceEditorView <- editor.GetContent<ICompletionWidget>()
             ctx.Editor <- editor
             let toolbar = container.GetToolbar(DockPositionType.Right)
@@ -347,7 +346,7 @@ type FSharpFsiEditorCompletion() =
         context :? FsiDocumentContext
 
     override x.KeyPress (descriptor:KeyDescriptor) =
-        match FSharpInteractivePad2.Fsi with
+        match FSharpInteractivePad.Fsi with
         | Some fsi -> 
             let startLine = x.Editor.CaretLine
 
@@ -416,242 +415,6 @@ type FSharpFsiEditorCompletion() =
             result
         | _ -> base.KeyPress (descriptor)
 
-type FSharpInteractivePad() as this =
-    inherit MonoDevelop.Ide.Gui.PadContent()
-    let view = new FSharpConsoleView()
-
-    do view.InitialiseEvents()
-    let mutable killIntent = NoIntent
-    let mutable promptReceived = false
-    let mutable activeDoc : IDisposable option = None
-
-    let getCorrectDirectory () =
-        if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
-            let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-            if doc <> null then Path.GetDirectoryName(doc) |> Some else None
-        else None
-
-    let setupSession() =
-        try
-            let ses = InteractiveSession()
-            let textReceived = 
-                ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> view.WriteOutput(t, promptReceived) ) |> ignore)
-            let promptReady = 
-                ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived<- true; view.Prompt(true, Prompt.Normal) ) |> ignore)
-            let colourSchemChanged =
-                IdeApp.Preferences.ColorScheme.Changed.Subscribe (fun _ -> this.UpdateColors ())
-            ses.Exited.Add(fun _ ->
-                textReceived.Dispose()
-                promptReady.Dispose()
-                colourSchemChanged.Dispose()
-                if killIntent = NoIntent then
-                    Runtime.RunInMainThread(fun () ->
-                        LoggingService.LogDebug ("Interactive: process stopped")
-                        view.WriteOutput("\nSession termination detected. Press Enter to restart.", false)) |> ignore
-                elif killIntent = Restart then
-                    Runtime.RunInMainThread view.Clear |> ignore
-                killIntent <- NoIntent
-                promptReceived <- false)
-            ses.StartReceiving()
-            // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
-            getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
-            Some(ses)
-        with exn -> None
-
-    let session = ref (setupSession())
-
-    let sendCommand (str:string) =
-        session := match !session with
-                   | None -> setupSession()
-                   | s -> s
-        !session |> Option.iter (fun s -> s.SendInput(str))
-
-    let resetFsi intent =
-        killIntent <- intent
-        !session |> Option.iter (fun ses -> ses.Kill())
-        if intent = Restart then session := setupSession()
-
-    let AddSourceToSelection selection =
-        let stap = IdeApp.Workbench.ActiveDocument.Editor.SelectionRange.Offset
-        let line = IdeApp.Workbench.ActiveDocument.Editor.OffsetToLineNumber(stap)
-        let file = IdeApp.Workbench.ActiveDocument.FileName
-        String.Format("# {0} \"{1}\"\n{2};;\n" ,line,file.FullPath,selection)
-
-    let ensureCorrectDirectory _ =
-        getCorrectDirectory()
-        |> Option.iter (fun path -> sendCommand ("#silentCd @\"" + path + "\";;") )
-
-    let consoleInputHandler (cie:string) =
-        sendCommand cie
-
-    /// Make path absolute using the specified 'root' path if it is not already
-    let makeAbsolute root (path:string) =
-        let path = path.Replace("\"","")
-        if Path.IsPathRooted(path) then path
-        else Path.Combine(root, path)
-
-    //let handler =
-    do LoggingService.LogDebug ("InteractivePad: created!")
-
-    member x.Shutdown()  =
-        do LoggingService.LogDebug ("Interactive: Shutdown()!")
-        resetFsi Kill
-
-    override x.Dispose() =
-        LoggingService.LogDebug ("Interactive: disposing pad...")
-        activeDoc |> Option.iter (fun ad -> ad.Dispose())
-        x.Shutdown()
-        view.Dispose()
-
-    override x.Control : Control = Control.op_Implicit view
-
-    override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
-        view.ConsoleInput.Add consoleInputHandler
-        view.Child.KeyPressEvent.Add(fun ea ->
-          if ea.Event.State &&& ModifierType.ControlMask = ModifierType.ControlMask && ea.Event.Key = Key.period then
-              !session |> Option.iter (fun s -> s.Interrupt()))
-        if x.IsValidSession then
-            activeDoc <- IdeApp.Workbench.ActiveDocumentChanged.Subscribe ensureCorrectDirectory |> Some
-
-        x.UpdateFont()
-
-        view.ShadowType <- Gtk.ShadowType.None
-        view.ShowAll()
-
-        match view.Child with
-        | :? Gtk.TextView as v ->
-            v.PopulatePopup.Add(fun args ->
-                                    let item = new Gtk.MenuItem(GettextCatalog.GetString("Reset"))
-                                    item.Activated.Add(fun _ -> x.RestartFsi())
-                                    item.Show()
-                                    args.Menu.Add(item))
-        | _ -> ()
-
-        x.UpdateColors()
-
-        let toolbar = container.GetToolbar(DockPositionType.Right)
-
-        let buttonClear = new DockToolButton("gtk-clear")
-        buttonClear.Clicked.Add(fun _ -> view.Clear())
-        buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
-        toolbar.Add(buttonClear)
-
-        let buttonRestart = new DockToolButton("gtk-refresh")
-        buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
-        buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
-        toolbar.Add(buttonRestart)
-
-        toolbar.ShowAll()
-
-    member x.RestartFsi() = resetFsi Restart
-
-    member x.ClearFsi() = view.Clear()
-
-    member x.UpdateColors() =
-        match view.Child with
-        | :? Gtk.TextView as v ->
-            let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme.Value)
-
-            let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", true)
-            let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
-            let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
-            if shouldMatch then
-                v.ModifyText(Gtk.StateType.Normal, themeTextColour)
-                v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
-            else
-                let textColour = PropertyService.Get ("FSharpBinding.TextColorPropName", "#000000") |> ColorHelpers.strToColor
-                let backColour = PropertyService.Get ("FSharpBinding.BaseColorPropName", "#FFFFFF") |> ColorHelpers.strToColor
-                v.ModifyText(Gtk.StateType.Normal, textColour)
-                v.ModifyBase(Gtk.StateType.Normal, backColour)
-        | _ -> ()
-
-    member x.UpdateFont() =
-        let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
-        let fontName = PropertyService.Get ("FSharpBinding.FsiFontName", fontName)
-        LoggingService.LogDebug ("Interactive: Loading font '{0}'", fontName)
-        let font = Pango.FontDescription.FromString(fontName)
-        view.SetFont(font)
-
-    member x.SendSelection() =
-        if x.IsSelectionNonEmpty then
-            let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
-            ensureCorrectDirectory()
-            sendCommand (AddSourceToSelection sel)
-        else
-          //if nothing is selected send the whole line
-            x.SendLine()
-
-    member x.SendLine() =
-        if IdeApp.Workbench.ActiveDocument = null then ()
-        else
-            ensureCorrectDirectory()
-            let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
-            let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
-            let file = IdeApp.Workbench.ActiveDocument.FileName
-            let sel = String.Format("# {0} \"{1}\"\n{2};;\n", line, file.FullPath, text)
-            sendCommand sel
-            //advance to the next line
-            if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
-            then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
-
-    member x.SendFile() =
-        let text = IdeApp.Workbench.ActiveDocument.Editor.Text
-        ensureCorrectDirectory()
-        sendCommand (AddSourceToSelection text)
-
-    member x.IsSelectionNonEmpty =
-        if IdeApp.Workbench.ActiveDocument = null ||
-            IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
-        else
-            let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
-            not(String.IsNullOrEmpty(sel))
-
-    member x.LoadReferences() =
-        LoggingService.LogDebug ("FSI:  #LoadReferences")
-        let project = IdeApp.Workbench.ActiveDocument.Project :?> DotNetProject
-        
-        let references =
-            let args =
-                CompilerArguments.getReferencesFromProject project
-                |> Seq.choose (fun ref -> if (ref.Contains "mscorlib.dll" || ref.Contains "FSharp.Core.dll")
-                                          then None
-                                          else
-                                              let ref = ref |> String.replace "-r:" ""
-                                              if File.Exists ref then Some ref
-                                              else None )
-                |> Seq.distinct
-                |> Seq.toArray
-            args
-
-        let orderAssemblyReferences = MonoDevelop.FSharp.OrderAssemblyReferences()
-        let orderedreferences = orderAssemblyReferences.Order references
-        ensureCorrectDirectory()
-        orderedreferences
-        |> List.iter (fun a -> sendCommand (sprintf  """#r @"%s";;""" a.Path ))
-
-
-    member x.IsValidSession = !session |> Option.isSome
-
-    static member private Pad =
-        try let pad = IdeApp.Workbench.GetPad<FSharpInteractivePad>()
-            if pad <> null then Some(pad)
-            else
-                //*attempt* to add the pad manually this seems to fail sporadically on updates and reinstalls, returning null
-                let pad = IdeApp.Workbench.AddPad(new FSharpInteractivePad(),
-                                                  "FSharp.MonoDevelop.FSharpInteractivePad",
-                                                  "F# Interactive",
-                                                  "Center Bottom",
-                                                  IconId("md-fs-project"))
-                if pad <> null then Some(pad)
-                else None
-        with exn -> None
-
-    static member BringToFront(grabfocus) =
-        FSharpInteractivePad2.Pad |> Option.iter (fun pad -> pad.BringToFront(grabfocus))
-
-    static member Fsi =
-        FSharpInteractivePad2.Pad |> Option.bind (fun pad -> Some(pad.Content :?> FSharpInteractivePad2))
-
   type InteractiveCommand(command) =
     inherit CommandHandler()
 
@@ -661,7 +424,7 @@ type FSharpInteractivePad() as this =
     override x.Run() =
         FSharpInteractivePad.Fsi
         |> Option.iter (fun fsi -> command fsi
-                                   FSharpInteractivePad2.BringToFront(false))
+                                   FSharpInteractivePad.BringToFront(false))
 
   type ShowFSharpInteractive() =
       inherit InteractiveCommand(ignore)
