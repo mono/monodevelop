@@ -179,14 +179,19 @@ type FSharpInteractivePad() =
             |> editor.GetLineText
         getLineWithoutPrompt lineStr
 
-    let setCaretLine (s:string) =
+    let setCaretLine s =
         let line = editor.GetLineByOffset editor.CaretOffset
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, prompt + s)
 
+    
     let resetFsi intent =
         killIntent <- intent
         session |> Option.iter (fun ses -> ses.Kill())
         if intent = Restart then session <- setupSession()
+
+    member x.SendText s = 
+        editor.InsertAtCaret s
+        x.SendCommand (s + ";;")
 
     member x.Session = session
     member x.Shutdown()  =
@@ -223,7 +228,7 @@ type FSharpInteractivePad() =
 
     override x.Dispose() =
         LoggingService.LogDebug ("Interactive: disposing pad...")
-        //activeDoc |> Option.iter (fun ad -> ad.Dispose())
+        activeDoc |> Option.iter (fun ad -> ad.Dispose())
         x.Shutdown()
         editor.Dispose()
 
@@ -236,7 +241,7 @@ type FSharpInteractivePad() =
             else
                 //*attempt* to add the pad manually this seems to fail sporadically on updates and reinstalls, returning null
                 let pad = IdeApp.Workbench.AddPad(new FSharpInteractivePad(),
-                                                  "FSharp.MonoDevelop.FSharpInteractivePad2",
+                                                  "FSharp.MonoDevelop.FSharpInteractivePad",
                                                   "F# Interactive",
                                                   "Center Bottom",
                                                   IconId("md-fs-project"))
@@ -256,7 +261,7 @@ type FSharpInteractivePad() =
             getCorrectDirectory()
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
 
-            x.SendCommand (sel + ";;")
+            x.SendText sel
         else
           //if nothing is selected send the whole line
             x.SendLine()
@@ -269,9 +274,7 @@ type FSharpInteractivePad() =
 
             let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
             let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
-            //let file = IdeApp.Workbench.ActiveDocument.FileName
-            //let sel = String.Format("{2};;", line, file.FullPath, text)
-            x.SendCommand (text + ";;")
+            x.SendText text
             //advance to the next line
             if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
             then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
@@ -345,6 +348,7 @@ type FSharpFsiEditorCompletion() =
     override x.IsValidInContext(context) =
         context :? FsiDocumentContext
 
+    /// hacks to work with fake prompt
     override x.KeyPress (descriptor:KeyDescriptor) =
         match FSharpInteractivePad.Fsi with
         | Some fsi -> 
@@ -381,8 +385,8 @@ type FSharpFsiEditorCompletion() =
                 | SpecialKey.Up -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         fsi.ProcessCommandHistoryUp()
-                        let topLine = x.Editor.VisibleLines |> Seq.head
-                        x.Editor.ScrollTo(x.Editor.OffsetToLocation topLine.Offset)
+                        //let topLine = x.Editor.VisibleLines |> Seq.head
+                        //x.Editor.ScrollTo(x.Editor.OffsetToLocation topLine.Offset)
                         false
                     else
                         base.KeyPress (descriptor)
