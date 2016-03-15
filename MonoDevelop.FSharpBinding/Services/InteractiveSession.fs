@@ -26,10 +26,10 @@ type InteractiveSession() =
     let path = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe")
     let mutable waitingForResponse = false
 
-    let _check =
-        if path = "" then
-              MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
-              raise (InvalidOperationException("No path to F# Interactive set, and default could not be located."))
+    //let _check =
+    //    if path = "" then
+    //          MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
+    //          raise (InvalidOperationException("No path to F# Interactive set, and default could not be located."))
     let fsiProcess =
         let processName = 
             if Environment.runningOnMono then Environment.getMonoPath() else path

@@ -58,7 +58,9 @@ type FsiDocumentContext() as this =
     let pd = new FSharpParsedDocument(name) :> ParsedDocument
     let project = Services.ProjectService.CreateDotNetProject ("F#")
 
-    let mutable view:MonoDevelop.SourceEditor.SourceEditorView = null
+    let mutable view:ICompletionWidget = null
+    let mutable editor:TextEditor = null
+
     let contextChanged = DelegateEvent<_>()
     do 
         project.FileName <- FilePath name
@@ -73,16 +75,18 @@ type FsiDocumentContext() as this =
 
     member x.SourceEditorView 
         with set (value) = view <- value
-
+    member x.Editor 
+            with set (value) = editor <- value
+    
     interface ICompletionWidget with
         member x.CaretOffset
             with get() = view.CaretOffset
             and set(offset) = view.CaretOffset <- offset
-        member x.TextLength = view.Length
+        member x.TextLength = editor.Length
         member x.SelectedLength = view.SelectedLength
         member x.GetText(startOffset, endOffset) =
             view.GetText(startOffset, endOffset)
-        member x.GetChar offset = view.GetCharAt offset
+        member x.GetChar offset = editor.GetCharAt offset
         member x.Replace(offset, count, text) =
             view.Replace(offset, count, text)
         member x.GtkStyle = view.GtkStyle
@@ -317,8 +321,8 @@ type FSharpInteractivePad2() =
             LoggingService.LogDebug ("InteractivePad: created!")
             editor.MimeType <- "text/x-fsharp"
             //editor.InsertAtCaret ("\n")
-            ctx.SourceEditorView <- editor.GetContent<MonoDevelop.SourceEditor.SourceEditorView>()
-
+            ctx.SourceEditorView <- editor.GetContent<ICompletionWidget>()
+            ctx.Editor <- editor
             let toolbar = container.GetToolbar(DockPositionType.Right)
     
             let buttonClear = new DockToolButton("gtk-clear")
