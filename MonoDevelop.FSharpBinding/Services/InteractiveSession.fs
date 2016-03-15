@@ -31,9 +31,15 @@ type InteractiveSession() =
               MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
               raise (InvalidOperationException("No path to F# Interactive set, and default could not be located."))
     let fsiProcess =
+        let processName = 
+            if Environment.runningOnMono then Environment.getMonoPath() else path
+
+        let arguments = 
+            if Environment.runningOnMono then path else null
+
         let startInfo =
             new ProcessStartInfo
-              (FileName = path, UseShellExecute = false, (*Arguments = args,*)
+              (FileName = processName, UseShellExecute = false, Arguments = arguments,
               RedirectStandardError = true, CreateNoWindow = true, RedirectStandardOutput = true,
               RedirectStandardInput = true, StandardErrorEncoding = Text.Encoding.UTF8, StandardOutputEncoding = Text.Encoding.UTF8)
 
