@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var res = base.OnGetContents (type);
 
-			if (type == typeof (TextEditor))
+			if (type.IsAssignableFrom (typeof (TextEditor)))
 				return res.Concat (textEditor);
 
 			var ext = textEditorImpl.EditorExtension;
