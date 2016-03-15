@@ -106,11 +106,9 @@ module TooltipsXml =
                           if i > 0 then summary.AppendLine() |> ignore
                           summary.AppendFormat( "{0}: {1}", exceptionType, element.Value) |> ignore)
 
-            summary.ToString()
-        //if the tooltip contains invalid xml return the str escaped
-        with exn ->
-            LoggingService.LogError("Error in Tooltip parsing:\n" + exn.ToString())
-            GLib.Markup.EscapeText str
+            summary.ToString().TrimEnd()
+        //if the summary cannot be parsed just escape the text
+        with exn -> GLib.Markup.EscapeText str
 
     let getParameterTip (addStyle: Style -> string) (str:String) (param:String) =
         let xdoc =
