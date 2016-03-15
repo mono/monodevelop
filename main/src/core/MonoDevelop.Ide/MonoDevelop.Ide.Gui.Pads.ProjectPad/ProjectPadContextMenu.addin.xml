@@ -26,7 +26,7 @@
 	<!-- Actions Section -->
 	
 	<SeparatorItem id = "ActionsSectionStart" />
-	<Condition id="ItemType" value="ProjectReference|ProjectFile|SystemFile">
+	<Condition id="ItemType" value="ProjectReference|ProjectFile|SystemFile|MonoDevelop.Ide.Gui.Pads.ProjectPad.SolutionFolderFileNode">
 		<ItemSet id = "OpenWith" _label = "Open _With" autohide="true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.OpenWithList" />
 		</ItemSet>
