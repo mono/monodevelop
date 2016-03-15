@@ -65,6 +65,25 @@ namespace MonoDevelop.CSharp
 					offset
 				);
 			};
+			MonoDevelopWorkspace.StartRenameSession = async (TextEditor editor, DocumentContext ctx, Core.Text.ITextSourceVersion version, SyntaxToken? token) => {
+				var latestDocument = ctx.AnalysisDocument;
+				var cancellationToken = default (CancellationToken);
+				var latestModel = await latestDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+				var latestRoot = await latestDocument.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+				await Runtime.RunInMainThread (async delegate {
+					try {
+						var node = latestRoot.FindNode (token.Value.Parent.Span, false, false);
+						if (node == null)
+							return;
+						var info = latestModel.GetSymbolInfo (node);
+						var sym = info.Symbol ?? latestModel.GetDeclaredSymbol (node);
+						if (sym != null)
+							await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym);
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while renaming " + token.Value.Parent, ex);
+					}
+				});
+			};
 		}
 
 		public override void Dispose ()

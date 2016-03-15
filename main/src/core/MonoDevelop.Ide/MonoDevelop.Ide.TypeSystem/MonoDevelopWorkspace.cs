@@ -768,6 +768,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
 				var root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
 				var annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (TypeSystemService.InsertionModeAnnotation));
+				SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (Microsoft.CodeAnalysis.CodeActions.RenameAnnotation.Kind)
+												  .Where (s => s.IsToken)
+												  .Select (s => s.AsToken ())
+												  .Cast<SyntaxToken?> ()
+												  .FirstOrDefault ();
 
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
@@ -794,7 +799,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 						if (annotatedNode != null && GetInsertionPoints != null) {
 							await Runtime.RunInMainThread (async () => {
-								IdeApp.Workbench.Documents.First(d => d.FileName == editor.FileName).Select();
+								IdeApp.Workbench.Documents.First (d => d.FileName == editor.FileName).Select ();
 								var formattedVersion = editor.Version;
 
 								int startOffset = versionBeforeFormat.MoveOffsetTo (editor.Version, annotatedNode.Span.Start);
@@ -834,7 +839,7 @@ namespace MonoDevelop.Ide.TypeSystem
 										editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
 									}
 								}
-									
+
 								switch (annotatedNode.RawKind) {
 								case 8873: // C# field
 									insertionModeOperation = GettextCatalog.GetString ("Insert Field");
@@ -876,6 +881,10 @@ namespace MonoDevelop.Ide.TypeSystem
 										break;
 									}
 								}
+								options.ModeExitedAction += delegate {
+									if (renameTokenOpt.HasValue)
+										StartRenameSession (editor, documentContext, versionBeforeFormat, renameTokenOpt.Value);
+								};
 								editor.StartInsertionMode (options);
 							});
 						}
@@ -895,6 +904,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
+		internal static Action<TextEditor, DocumentContext, ITextSourceVersion, SyntaxToken?> StartRenameSession;
 
 		async Task UpdateProjectionsDocuments (Document document, ITextDocument data)
 		{
