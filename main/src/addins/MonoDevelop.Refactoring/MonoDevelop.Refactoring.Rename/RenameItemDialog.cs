@@ -113,7 +113,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 
 
-			Init (title, symbol.Name, async prop => { await rename.PerformChangesAsync (symbol, prop); return new List<Change> (); });
+			Init (title, symbol.Name, async prop => { return await rename.PerformChangesAsync (symbol, prop); });
 
 		}
 
