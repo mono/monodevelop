@@ -61,13 +61,16 @@ module CompletionServer =
                     | Input input ->
                         if input.EndsWith(";;") then
                             try
+                                //do! writeLine (currentInput + input)
                                 let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + input)
                                 match result with
                                 | Choice1Of2 () -> ()
                                 | Choice2Of2 exn -> do! writeLine (exn |> string)
                                 for w in warnings do
                                     do! writeLine (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
-                                do! writeLine "SERVER-PROMPT>"
+
+                                if not (input.StartsWith "#silentCd") then
+                                    do! writeLine "SERVER-PROMPT>"
                             with
                             | exn -> do! writeLine (exn |> string)
                             return ""

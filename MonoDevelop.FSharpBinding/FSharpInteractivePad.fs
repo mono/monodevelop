@@ -20,7 +20,6 @@ open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.TypeSystem
-open MonoDevelop.SourceEditor
 open System.Threading.Tasks
 open System.Collections.Generic
 [<AutoOpen>]
@@ -119,6 +118,10 @@ type FSharpInteractivePad() =
         doc.FileName <- FilePath ctx.Name
 
     let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
+    do
+        editor.MimeType <- "text/x-fsharp"
+        ctx.SourceEditorView <- editor.GetContent<ICompletionWidget>()
+        ctx.Editor <- editor
 
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
@@ -133,18 +136,20 @@ type FSharpInteractivePad() =
         else None
 
     let nonBreakingSpace = "\u00A0" // used to disable editor syntax highlighting for output
+
+    let setPrompt() =
+        editor.InsertAtCaret ("\n> ")
+
     let fsiOutput t =
         editor.InsertAtCaret (nonBreakingSpace + t)
-
-    let prompt() =
-        editor.InsertAtCaret ("\n> ")
+        editor.ScrollTo editor.CaretLocation
 
     let setupSession() =
         try
             let ses = InteractiveSession()
 
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
-            let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; prompt() ) |> ignore)
+            let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
             //let colourSchemChanged =
             //    IdeApp.Preferences.ColorScheme.Changed.Subscribe (fun _ -> this.UpdateColors ())
             ses.Exited.Add(fun _ ->
@@ -189,9 +194,19 @@ type FSharpInteractivePad() =
         session |> Option.iter (fun ses -> ses.Kill())
         if intent = Restart then session <- setupSession()
 
-    member x.SendText s = 
-        editor.InsertAtCaret s
-        x.SendCommand (s + ";;")
+    member x.Text =
+        editor.Text
+
+    member x.SendAndEchoText s = 
+        editor.CaretOffset <- editor.Length
+        let lines = String.getLines s
+        editor.InsertAtCaret (lines.[0] + "\n") 
+        for line in lines.[1..] do
+            editor.InsertAtCaret ("- " + line + "\n") 
+        x.SendCommand (s)
+        //if not (s.EndsWith ";;") then
+        //    editor.InsertAtCaret "\n- "
+        editor.ScrollTo editor.CaretLocation
 
     member x.Session = session
     member x.Shutdown()  =
@@ -261,7 +276,8 @@ type FSharpInteractivePad() =
             getCorrectDirectory()
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
 
-            x.SendText sel
+            x.SendAndEchoText sel
+            x.SendCommand ";;"
         else
           //if nothing is selected send the whole line
             x.SendLine()
@@ -274,7 +290,8 @@ type FSharpInteractivePad() =
 
             let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
             let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
-            x.SendText text
+            x.SendAndEchoText text
+            x.SendCommand ";;"
             //advance to the next line
             if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
             then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
@@ -316,28 +333,31 @@ type FSharpInteractivePad() =
         getCorrectDirectory()
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
 
+        x.SendCommand ";;"
         orderedreferences
-        |> List.iter (fun a -> x.SendCommand (sprintf  """#r @"%s";;""" a.Path ))
+        |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path ))
+
+        x.SendCommand ";;"
 
     override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
-        do 
-            LoggingService.LogDebug ("InteractivePad: created!")
-            editor.MimeType <- "text/x-fsharp"
-            ctx.SourceEditorView <- editor.GetContent<ICompletionWidget>()
-            ctx.Editor <- editor
-            let toolbar = container.GetToolbar(DockPositionType.Right)
-    
-            let buttonClear = new DockToolButton("gtk-clear")
-            buttonClear.Clicked.Add(fun _ -> editor.Text <- "")
-            buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
-            toolbar.Add(buttonClear)
-    
-            let buttonRestart = new DockToolButton("gtk-refresh")
-            buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
-            buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
-            toolbar.Add(buttonRestart)
+        LoggingService.LogDebug ("InteractivePad: created!")
+        editor.MimeType <- "text/x-fsharp"
+        ctx.SourceEditorView <- editor.GetContent<ICompletionWidget>()
+        ctx.Editor <- editor
+        let toolbar = container.GetToolbar(DockPositionType.Right)
 
-            toolbar.ShowAll()
+        let buttonClear = new DockToolButton("gtk-clear")
+        buttonClear.Clicked.Add(fun _ -> editor.Text <- "")
+        buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
+        toolbar.Add(buttonClear)
+
+        let buttonRestart = new DockToolButton("gtk-refresh")
+        buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
+        buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
+        toolbar.Add(buttonRestart)
+
+        toolbar.ShowAll()
+
     member x.RestartFsi() = resetFsi Restart
     
     member x.ClearFsi() = editor.Text <- ""
@@ -365,17 +385,22 @@ type FSharpFsiEditorCompletion() =
                     "", line
 
             let lineStr, line = getCaretLine()
-            let lineHadPrompt = lineStr.StartsWith "> "
+
+            let lineStartsWithPrompt (s:string) =
+                s.StartsWith "> " || s.StartsWith "- "
+
+            let lineHadPrompt = lineStartsWithPrompt lineStr
             if lineHadPrompt && x.Editor.CaretColumn < 3 then
                 x.Editor.CaretColumn <- 3
+
             let result = 
                 match descriptor.SpecialKey with
                 | SpecialKey.Return -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
-                        if lineHadPrompt || lineStr.TrimStart().StartsWith("- ") then
-                            fsi.SendCommand lineStr.[2..]
+                        if lineStartsWithPrompt lineStr then
+                            fsi.SendCommand (lineStr.[2..] + "\n")
                         else
-                            fsi.SendCommand lineStr
+                            fsi.SendCommand (lineStr + "\n")
                               
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
