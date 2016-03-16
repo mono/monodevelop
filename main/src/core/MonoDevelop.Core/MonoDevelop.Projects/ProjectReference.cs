@@ -229,7 +229,7 @@ namespace MonoDevelop.Projects
 			else if (buildItem.Name == "ProjectReference")
 				ReadProjectReference (project, buildItem);
 
-			LocalCopy = buildItem.Metadata.GetValue ("Private", DefaultLocalCopy);
+			localCopy = buildItem.Metadata.GetValue<bool?> ("Private", null);
 			ReferenceOutputAssembly = buildItem.Metadata.GetValue ("ReferenceOutputAssembly", true);
 		}
 
