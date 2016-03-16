@@ -369,10 +369,7 @@ module Completion =
             | _ -> Stock.Event
 
         async {
-            let { editor = editor
-                  line = line
-                  column = column
-                  documentContext = documentContext
+            let { column = column
                   lineToCaret = lineToCaret
                   completionChar = completionChar } = context
             let result = CompletionDataList()

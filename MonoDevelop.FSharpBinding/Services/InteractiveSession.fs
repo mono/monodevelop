@@ -9,27 +9,12 @@ open MonoDevelop.Core
 open Nessos.FsPickler
 open Nessos.FsPickler.Json
 open MonoDevelop.FSharpInteractive
-type InteractiveSession() =
-    //let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
-    // Turn off the console and add the remoting connection
-    //let args = "--readline- --fsi-server:" + server + " "
 
-    // Get F# Interactive path and command line args from settings
-    //let args = args + PropertyService.Get<_>("FSharpBinding.FsiArguments", "")
-    //let path =
-    //    match PropertyService.Get<_>("FSharpBinding.FsiPath", "") with
-    //    | s when s <> "" -> s
-    //    | _ ->
-    //        match CompilerArguments.getDefaultInteractive() with
-    //        | Some(s) -> s
-    //        | None -> ""
+type InteractiveSession() =
+
     let path = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe")
     let mutable waitingForResponse = false
 
-    //let _check =
-    //    if path = "" then
-    //          MonoDevelop.Ide.MessageService.ShowError( "No path to F# Interactive set, and default could not be located.", "Have you got F# installed, see http://fsharp.org for details.")
-    //          raise (InvalidOperationException("No path to F# Interactive set, and default could not be located."))
     let fsiProcess =
         let processName = 
             if Environment.runningOnMono then Environment.getMonoPath() else path
@@ -44,7 +29,6 @@ type InteractiveSession() =
               RedirectStandardInput = true, StandardErrorEncoding = Text.Encoding.UTF8, StandardOutputEncoding = Text.Encoding.UTF8)
 
         try
-            //LoggingService.LogDebug (sprintf "Interactive: Starting file=%s, Args=%A" path args)
             Process.Start(startInfo)
         with e ->
             LoggingService.LogDebug (sprintf "Interactive: Error %s" (e.ToString()))
@@ -61,7 +45,6 @@ type InteractiveSession() =
         stream.Write(bytes,0,bytes.Length)
         stream.Flush()
 
-    //let mutable completions = List.empty<CompletionData>
     let completionsReceivedEvent = new Event<CompletionData list>()
     do
         fsiProcess.OutputDataReceived
@@ -71,7 +54,6 @@ type InteractiveSession() =
               if de.Data.Trim() = "SERVER-PROMPT>" then
                   promptReady.Trigger()
               elif de.Data.Trim() <> "" then
-                  //let str = (if waitingForResponse then waitingForResponse <- false; "\n" else "") + de.Data + "\n"
                   if waitingForResponse then waitingForResponse <- false
                   textReceived.Trigger(de.Data + "\n"))
 
