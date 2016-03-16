@@ -278,6 +278,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new BaseTypeFolderNodeBuilder (this),
 				new BaseTypeNodeBuilder (this)
 				}, new TreePadOption [0]);
+			TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
 			TreeView.AllowsMultipleSelection = false;
 			TreeView.SelectionChanged += HandleCursorChanged;
 
