@@ -301,7 +301,7 @@ namespace MonoDevelop.Debugger
 
 			Pango.FontDescription newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 
-			liveIcon = ImageService.GetIcon ("md-live-normal", IconSize.Menu);
+			liveIcon = ImageService.GetIcon ("md-live", IconSize.Menu);
 			noLiveIcon = liveIcon.WithAlpha (0.5);
 			
 			expCol = new TreeViewColumn ();
