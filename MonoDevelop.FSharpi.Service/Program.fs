@@ -13,8 +13,6 @@ module CompletionServer =
     let main argv = 
         let inStream = Console.In
         let outStream = Console.Out
-        let sbErr = new StringBuilder()
-        use errorStream = new StringWriter(sbErr)
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
         // This flag makes fsi send the SERVER-PROMPT> prompt
         // once it's output the header
@@ -27,7 +25,7 @@ module CompletionServer =
 
         let (|Input|_|) (command: string) =
             if command.StartsWith("input ") then
-                Some(command.Substring(6))
+                Some(command.[6..])
             else
                 None
 

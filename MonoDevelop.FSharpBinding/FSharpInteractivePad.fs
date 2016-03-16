@@ -202,21 +202,26 @@ type FSharpInteractivePad() =
         let lines = String.getLines s
         editor.InsertAtCaret (lines.[0] + "\n") 
         for line in lines.[1..] do
-            editor.InsertAtCaret ("- " + line + "\n") 
-        x.SendCommand (s)
-        //if not (s.EndsWith ";;") then
-        //    editor.InsertAtCaret "\n- "
+            editor.InsertAtCaret ("- " + line + "\n")
+            commandHistoryPast.Push line
+        x.SendCommand (s + "\n") 
         editor.ScrollTo editor.CaretLocation
 
     member x.Session = session
+
     member x.Shutdown()  =
         do LoggingService.LogDebug ("Interactive: Shutdown()!")
         resetFsi Kill
 
-    member x.SendCommand command =
+    member x.SendCommandAndStore command =
         session 
         |> Option.iter(fun ses ->
             commandHistoryPast.Push command
+            ses.SendInput (command + "\n"))
+
+    member x.SendCommand command =
+        session 
+        |> Option.iter(fun ses ->
             ses.SendInput command)
 
     member x.RequestCompletions lineStr column =
@@ -398,20 +403,19 @@ type FSharpFsiEditorCompletion() =
                 | SpecialKey.Return -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         if lineStartsWithPrompt lineStr then
-                            fsi.SendCommand (lineStr.[2..] + "\n")
+                            fsi.SendCommandAndStore lineStr.[2..]
                         else
-                            fsi.SendCommand (lineStr + "\n")
+                            fsi.SendCommandAndStore lineStr
                               
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
                             x.Editor.InsertAtCaret "- "
+                    
                     false
                 | SpecialKey.Up -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         fsi.ProcessCommandHistoryUp()
-                        //let topLine = x.Editor.VisibleLines |> Seq.head
-                        //x.Editor.ScrollTo(x.Editor.OffsetToLocation topLine.Offset)
                         false
                     else
                         base.KeyPress (descriptor)
@@ -432,7 +436,10 @@ type FSharpFsiEditorCompletion() =
                         base.KeyPress (descriptor)
                     else
                         false
-                | _ -> base.KeyPress (descriptor)
+                | _ -> 
+                    if not (x.Editor.CaretLine = x.Editor.LineCount) then
+                        x.Editor.CaretOffset <- x.Editor.Length
+                    base.KeyPress (descriptor)
 
             if lineStr.StartsWith "> " && x.Editor.CaretColumn < 3 && x.Editor.CaretLine = startLine  then
                 let editedLine, _ = getCaretLine()
