@@ -2,3 +2,5 @@ ExtCore
 Fantomas
 FSharp.Compiler.CodeDom
 Mono.Cecil
+FsPickler
+FsPickler.json

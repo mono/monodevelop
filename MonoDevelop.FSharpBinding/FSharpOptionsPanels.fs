@@ -136,8 +136,6 @@ type FSharpSettingsPanel() =
         PropertyService.Set (fsiAdvanceToNextLine, widget.AdvanceLine.Active)
 
         PropertyService.Set (fsHighlightMutables, widget.CheckHighlightMutables.Active)
-        FSharpInteractivePad.Fsi |> Option.iter (fun fsi -> fsi.UpdateFont()
-                                                            fsi.UpdateColors())
 
         IdeApp.Workbench.ReparseOpenDocuments()
 

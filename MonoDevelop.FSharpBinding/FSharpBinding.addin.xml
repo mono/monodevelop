@@ -7,7 +7,10 @@
     <Import assembly="FantomasLib.dll" />
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
     <Import assembly="ExtCore.dll" />
-
+    <Import file="MonoDevelop.FSharpInteractive.Service.exe" />
+    <Import assembly="FsPickler.Json.dll" />
+    <Import assembly="FsPickler.dll" />
+    <Import assembly="Newtonsoft.Json.dll" />
   <!--INSTALL_DEBUG
     <Import file = "FSharpBinding.dll.mdb" />
     <Import file = "FSharpBinding.Gui.dll.mdb" />
@@ -151,13 +154,14 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-    <Class fileExtensions=".fs,.fsi,.fsx,.fsscript" class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
+    <Class class="MonoDevelop.FSharp.FSharpTextEditorCompletion" />
     <Class fileExtensions = ".fs,.fsx" class = "MonoDevelop.FSharp.FSharpPathExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx" class = "MonoDevelop.FSharp.HighlightUsagesExtension" />
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpOutlineTextEditorExtension" />
     <Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpNavigationTextEditorExtension" />
 	<Class fileExtensions = ".fs,.fsi,.fsx,.fsscript" class = "MonoDevelop.FSharp.FSharpDebuggerExpressionResolver" />
+	<Class class = "MonoDevelop.FSharp.FSharpFsiEditorCompletion" />
     <Class class = "MonoDevelop.FSharp.FSharpCommandsTextEditorExtension" />
   </Extension>
 
