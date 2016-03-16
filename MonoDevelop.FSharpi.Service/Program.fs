@@ -13,7 +13,6 @@ module CompletionServer =
     let main argv = 
         let inStream = Console.In
         let outStream = Console.Out
-
         let sbErr = new StringBuilder()
         use errorStream = new StringWriter(sbErr)
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
@@ -23,7 +22,7 @@ module CompletionServer =
         let argv = [| "--readline-"; args  |]
         let pickler = FsPickler.CreateJsonSerializer()
 
-        let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration()
+        let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(Settings.fsi, true)
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream)
 
         let (|Input|_|) (command: string) =
