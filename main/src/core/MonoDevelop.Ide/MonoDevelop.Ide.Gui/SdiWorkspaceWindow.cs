@@ -457,7 +457,17 @@ namespace MonoDevelop.Ide.Gui
 
 			OnClosed (args);
 
+			// This may happen if the document contains an attached view that is shown by
+			// default. In that case the main view is not added to the notebook and won't
+			// be destroyed.
+			bool destroyMainPage = tabPage != null && tabPage.Parent == null;
+
 			Destroy ();
+
+			// Destroy after the document is destroyed, since attached views may have references to the main view
+			if (destroyMainPage)
+				tabPage.Destroy ();
+			
 			return true;
 		}
 
