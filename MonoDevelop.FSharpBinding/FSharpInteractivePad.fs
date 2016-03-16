@@ -2,26 +2,24 @@
 namespace MonoDevelop.FSharp
 
 open System
-open System.Diagnostics
 open System.IO
 
 open Gdk
+open Mono.TextEditor
 open MonoDevelop.Components
 open MonoDevelop.Components.Docking
 open MonoDevelop.Components.Commands
 open MonoDevelop.Core
-open MonoDevelop.Ide
-open MonoDevelop.Projects
 open MonoDevelop.FSharp
-
-open MonoDevelop
-open Mono.TextEditor
+open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.TypeSystem
+open MonoDevelop.Projects
 open System.Threading.Tasks
 open System.Collections.Generic
+
 [<AutoOpen>]
 module ColorHelpers =
     let strToColor s =
@@ -168,7 +166,7 @@ type FSharpInteractivePad() =
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
             getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
             Some(ses)
-        with exn -> None
+        with _exn -> None
 
     let mutable session = setupSession()
     let prompt = "> "
@@ -288,7 +286,7 @@ type FSharpInteractivePad() =
             x.SendLine()
 
     member x.SendLine() =
-        if IdeApp.Workbench.ActiveDocument = null then ()
+        if isNull IdeApp.Workbench.ActiveDocument then ()
         else
             getCorrectDirectory()
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
@@ -309,8 +307,8 @@ type FSharpInteractivePad() =
         x.SendCommand (text + ";;")
 
     member x.IsSelectionNonEmpty =
-        if IdeApp.Workbench.ActiveDocument = null ||
-            IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false
+        if isNull IdeApp.Workbench.ActiveDocument ||
+            isNull IdeApp.Workbench.ActiveDocument.FileName.FileName then false
         else
             let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
             not(String.IsNullOrEmpty(sel))
@@ -437,7 +435,7 @@ type FSharpFsiEditorCompletion() =
                     else
                         false
                 | _ -> 
-                    if not (x.Editor.CaretLine = x.Editor.LineCount) then
+                    if x.Editor.CaretLine <> x.Editor.LineCount then
                         x.Editor.CaretOffset <- x.Editor.Length
                     base.KeyPress (descriptor)
 
