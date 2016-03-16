@@ -449,6 +449,15 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
+		public static AssemblyArchitecture GetAssemblyArchitecture (string path)
+		{
+			var asm = Mono.Cecil.AssemblyDefinition.ReadAssembly (path);
+			if (asm.Modules.Any (m => m.Architecture == Mono.Cecil.TargetArchitecture.AMD64 || m.Architecture == Mono.Cecil.TargetArchitecture.IA64))
+				return AssemblyArchitecture.x86_64;
+			else
+				return AssemblyArchitecture.x86;
+		}
+
 		public class ManifestResource
 		{
 			public string Name {
@@ -487,5 +496,11 @@ namespace MonoDevelop.Core.Assemblies
 			}
 		}
 
+	}
+
+	public enum AssemblyArchitecture
+	{
+		x86,
+		x86_64
 	}
 }
