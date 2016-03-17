@@ -93,6 +93,10 @@ type SyntaxHighlighting() =
     [<TestCase("§|>§ Option.bind", "Punctuation(Brackets)")>]
     [<TestCase("§typeof§<int>", "User Field Declaration")>]
     [<TestCase("editor.CaretOffset §<-§ offset", "Punctuation(Brackets)")>]
+    [<TestCase("let x§  = §1", "Plain Text")>]
+    [<TestCase("let §x§     =", "User Field Declaration")>]
+    [<TestCase(@"type thing = TP<§""§32""", "String")>]
+    [<TestCase(@"type thing = TP<§MyParam§=""32"", MyOtherParam=42>", "User Field Declaration")>]
 
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
