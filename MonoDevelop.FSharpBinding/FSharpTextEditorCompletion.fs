@@ -20,7 +20,6 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.CodeCompletion
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
-open Nessos.FsPickler.Json
 
 type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,

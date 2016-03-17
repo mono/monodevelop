@@ -6,8 +6,7 @@ open System.IO
 open System.Diagnostics
 open MonoDevelop.Ide
 open MonoDevelop.Core
-open Nessos.FsPickler
-open Nessos.FsPickler.Json
+open Newtonsoft.Json
 open MonoDevelop.FSharpInteractive
 
 type InteractiveSession() =
@@ -46,6 +45,7 @@ type InteractiveSession() =
         stream.Flush()
 
     let completionsReceivedEvent = new Event<CompletionData list>()
+
     do
         fsiProcess.OutputDataReceived
           |> Event.filter (fun de -> de.Data <> null)
@@ -57,16 +57,14 @@ type InteractiveSession() =
                   if waitingForResponse then waitingForResponse <- false
                   textReceived.Trigger(de.Data + "\n"))
 
-        let serializer =  FsPickler.CreateJsonSerializer()
-
         fsiProcess.ErrorDataReceived.Subscribe(fun de -> 
             if not (String.isNullOrEmpty de.Data) then
                 try
-                    let completions = serializer.UnPickleOfString<CompletionData list> de.Data
+                    let completions = JsonConvert.DeserializeObject<CompletionData list> de.Data
                     completionsReceivedEvent.Trigger completions
                     LoggingService.logDebug "%s" de.Data
                 with 
-                | :? FsPicklerException ->
+                | :? JsonException ->
                     LoggingService.logError "[fsharpi] - error deserializing error stream - %s" de.Data
                     ) |> ignore
 

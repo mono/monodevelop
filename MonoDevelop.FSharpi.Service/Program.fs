@@ -2,15 +2,14 @@
 open System
 open System.IO
 open System.Text
-open Nessos.FsPickler
-open Nessos.FsPickler.Json
+open Newtonsoft.Json
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
 
 /// Wrapper for fsi with support for returning completions
 module CompletionServer =
     [<EntryPoint>]
-    let main argv = 
+    let main argv =
         let inStream = Console.In
         let outStream = Console.Out
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
@@ -18,8 +17,8 @@ module CompletionServer =
         // once it's output the header
         let args = "--fsi-server:" + server + " "
         let argv = [| "--readline-"; args  |]
-        let pickler = FsPickler.CreateJsonSerializer()
 
+        let serializer = JsonSerializer.Create()
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(Settings.fsi, true)
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream)
 
@@ -50,8 +49,8 @@ module CompletionServer =
                 do! outStream.WriteLineAsync s |> Async.AwaitTask
             }
 
-        let rec main(currentInput) = 
-            let parseInput() = 
+        let rec main(currentInput) =
+            let parseInput() =
                 async {
                     let! command = inStream.ReadLineAsync() |> Async.AwaitTask
                     match command with
@@ -77,7 +76,7 @@ module CompletionServer =
                         let col, lineStr = context
                         let! results = Completion.getCompletions(fsiSession, lineStr, col)
 
-                        let json = pickler.PickleToString results
+                        let json = JsonConvert.SerializeObject results
                         do! Console.Error.WriteLineAsync json |> Async.AwaitTask
                         return currentInput
                     | _ -> do! writeLine (sprintf "Could not parse command - %s" command)
@@ -85,7 +84,7 @@ module CompletionServer =
                 }
             let currentInput = parseInput() |> Async.RunSynchronously
             main(currentInput)
-        
+
         main("")
 
         0 // return an integer exit code
