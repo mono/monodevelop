@@ -139,7 +139,7 @@ namespace MonoDevelop.Debugger.Tests
 				return;
 			}
 
-			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version);
+			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version + " " + (IntPtr.Size == 8 ? "64bit" : "32bit"));
 
 			// main/build/tests
 			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
