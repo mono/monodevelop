@@ -29,6 +29,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using MonoDevelop.Core.Assemblies;
+using System.IO;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -50,9 +52,16 @@ namespace MonoDevelop.Core.Execution
 			DotNetExecutionCommand dotcmd = (DotNetExecutionCommand) command;
 			
 			string runtimeArgs = string.IsNullOrEmpty (dotcmd.RuntimeArguments) ? "--debug" : dotcmd.RuntimeArguments;
+
+			var monoRunner = monoPath;
+			if (System.IO.Path.GetFileName (monoPath) == "mono") {
+				// If the assembly was compiled as 64bit, use the 64bit runner
+				if (SystemAssemblyService.GetAssemblyArchitecture (dotcmd.Command) == AssemblyArchitecture.x86_64)
+					monoRunner = monoRunner += "64";
+			}
 			
 			string args = string.Format ("{2} \"{0}\" {1}", dotcmd.Command, dotcmd.Arguments, runtimeArgs);
-			NativeExecutionCommand cmd = new NativeExecutionCommand (monoPath, args, dotcmd.WorkingDirectory, dotcmd.EnvironmentVariables);
+			NativeExecutionCommand cmd = new NativeExecutionCommand (monoRunner, args, dotcmd.WorkingDirectory, dotcmd.EnvironmentVariables);
 			
 			return base.Execute (cmd, console);
 		}
