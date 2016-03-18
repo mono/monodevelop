@@ -92,11 +92,7 @@ namespace MonoDevelop.Debugger.Soft
 					ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), varsCopy);
 				return new ProcessAdapter (oper, Path.GetFileName (info.FileName));
 			};
-			if (runtime.MonoRuntimeInfo.Force64or32bit.HasValue)
-				startArgs.MonoExecutableFileName = runtime.MonoRuntimeInfo.Force64or32bit.Value ? "mono64" : "mono32";
-			else {
-				startArgs.MonoExecutableFileName = SystemAssemblyService.GetAssemblyArchitecture (cmd.Command) == AssemblyArchitecture.x86_64 ? "mono64" : "mono";
-			}
+
 			return dsi;
 		}
 		
