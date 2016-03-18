@@ -57,7 +57,7 @@ namespace MonoDevelop.VersionControl
 			public Color DiffHighlightColor { get; internal set; }
 			public Color DiffBoxBorderColor { get; internal set; }
 			public Color DiffBoxSplitterColor { get; internal set; }
-			public Color SearchSnippetTextColor { get; internal set; }
+			public string SearchSnippetTextColor { get; internal set; }
 		}
 
 		public class DiffViewStyle
@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl
 					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (0.1),
 					DiffHighlightColor = Color.FromName ("#000000").WithAlpha (0.05),
 					DiffBoxBorderColor = Color.FromName ("#eaeaea"),
-					SearchSnippetTextColor = Color.FromName ("#F1C40F"),
+					SearchSnippetTextColor = "#f1c40f",
 				};
 
 				DiffView = new DiffViewStyle {
@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl
 					DiffRemoveBackgroundColor = Color.FromName ("#c88c8c").AddLight (-0.1),
 					DiffHighlightColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.AddLight (0.1),
 					DiffBoxBorderColor = Color.FromName ("#4c4c4c"),
-					SearchSnippetTextColor = Color.FromName ("#F9D33C"),
+					SearchSnippetTextColor = "#f9d33c",
 				};
 
 				DiffView = new DiffViewStyle {
