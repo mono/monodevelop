@@ -57,6 +57,7 @@ namespace MonoDevelop.VersionControl
 			public Color DiffHighlightColor { get; internal set; }
 			public Color DiffBoxBorderColor { get; internal set; }
 			public Color DiffBoxSplitterColor { get; internal set; }
+			// TODO: End up having this as Color at some point or cache the string in Xwt.Color.
 			public string SearchSnippetTextColor { get; internal set; }
 		}
 
