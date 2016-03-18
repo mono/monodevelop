@@ -1,10 +1,10 @@
 ﻿//
-// ImportAndCondition.cs
+// NuGetPackageNewImportsHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using MonoDevelop.Projects.MSBuild;
 using NuGet;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class ImportAndCondition
+	public class NuGetPackageNewImportsHandler : INuGetPackageNewImportsHandler
 	{
-		public ImportAndCondition (string name, string condition)
-			: this (name, condition, ProjectImportLocation.Bottom)
+		string name;
+		string condition;
+		ProjectImportLocation location;
+
+		public NuGetPackageNewImportsHandler ()
 		{
+			PackageManagementMSBuildExtension.NewImportsHandler = this;
 		}
 
-		public ImportAndCondition (string name, string condition, ProjectImportLocation location)
+		public void Dispose ()
 		{
-			Name = name;
-			Condition = condition;
-			Location = location;
+			PackageManagementMSBuildExtension.NewImportsHandler = null;
 		}
 
-		public string Name { get; set; }
-		public string Condition { get; set; }
-		public ProjectImportLocation Location { get; set; }
+		public void AddImportIfMissing (string name, string condition, ProjectImportLocation location)
+		{
+			this.name = name;
+			this.condition = condition;
+			this.location = location;
+		}
+
+		public void UpdateProject (MSBuildProject project)
+		{
+			if (String.IsNullOrEmpty (name))
+				return;
+
+			project.AddImportIfMissing (name, location, condition);
+		}
 	}
 }
 

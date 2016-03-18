@@ -34,6 +34,7 @@ namespace MonoDevelop.PackageManagement
 	public class PackageManagementMSBuildExtension : ProjectExtension
 	{
 		public static EnsureNuGetPackageBuildImportsTargetUpdater Updater;
+		public static NuGetPackageNewImportsHandler NewImportsHandler;
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
@@ -46,6 +47,11 @@ namespace MonoDevelop.PackageManagement
 			EnsureNuGetPackageBuildImportsTargetUpdater currentUpdater = Updater;
 			if (currentUpdater != null) {
 				currentUpdater.UpdateProject (msproject);
+			}
+
+			NuGetPackageNewImportsHandler importsHandler = NewImportsHandler;
+			if (importsHandler != null) {
+				importsHandler.UpdateProject (msproject);
 			}
 		}
 	}

@@ -407,9 +407,16 @@ namespace MonoDevelop.PackageManagement
 			GuiSyncDispatch (async () => {
 				string relativeTargetPath = GetRelativePath (targetPath);
 				string condition = GetCondition (relativeTargetPath);
-				project.AddImportIfMissing (relativeTargetPath, condition);
-				await project.SaveAsync ();
+				using (var handler = CreateNewImportsHandler ()) {
+					handler.AddImportIfMissing (relativeTargetPath, condition, location);
+					await project.SaveAsync ();
+				}
 			});
+		}
+
+		protected virtual INuGetPackageNewImportsHandler CreateNewImportsHandler ()
+		{
+			return new NuGetPackageNewImportsHandler ();
 		}
 
 		static string GetCondition (string targetPath)

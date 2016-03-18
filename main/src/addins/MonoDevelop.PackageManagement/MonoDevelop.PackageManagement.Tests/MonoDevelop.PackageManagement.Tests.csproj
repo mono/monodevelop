@@ -213,6 +213,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableCheckForUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MinClientVersionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeLicenseAcceptanceService.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageNewImportsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

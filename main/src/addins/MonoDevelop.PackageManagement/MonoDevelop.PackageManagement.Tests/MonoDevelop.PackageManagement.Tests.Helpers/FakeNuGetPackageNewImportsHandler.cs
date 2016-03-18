@@ -1,10 +1,10 @@
 ﻿//
-// ImportAndCondition.cs
+// FakeNuGetPackageNewImportsHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class ImportAndCondition
+	public class FakeNuGetPackageNewImportsHandler : INuGetPackageNewImportsHandler
 	{
-		public ImportAndCondition (string name, string condition)
-			: this (name, condition, ProjectImportLocation.Bottom)
+		public bool IsDisposed;
+		public List<ImportAndCondition> ImportsAdded = new List<ImportAndCondition> ();
+
+		public void AddImportIfMissing (string name, string condition, ProjectImportLocation location)
 		{
+			ImportsAdded.Add (new ImportAndCondition (name, condition, location));
 		}
 
-		public ImportAndCondition (string name, string condition, ProjectImportLocation location)
+		public void Dispose ()
 		{
-			Name = name;
-			Condition = condition;
-			Location = location;
+			IsDisposed = true;
 		}
-
-		public string Name { get; set; }
-		public string Condition { get; set; }
-		public ProjectImportLocation Location { get; set; }
 	}
 }
 

@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogAddedReferenceToProject;
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject;
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
+		public FakeNuGetPackageNewImportsHandler NewImportsHandler;
 
 		public static Action<Action> GuiSyncDispatcher = handler => handler.Invoke ();
 		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
@@ -118,6 +119,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			FileNameAndProjectNamePassedToLogAddedFileToProject =
 				new FileNameAndProjectName (fileName, projectName);
+		}
+
+		protected override INuGetPackageNewImportsHandler CreateNewImportsHandler ()
+		{
+			NewImportsHandler = new FakeNuGetPackageNewImportsHandler ();
+			return NewImportsHandler;
 		}
 	}
 }
