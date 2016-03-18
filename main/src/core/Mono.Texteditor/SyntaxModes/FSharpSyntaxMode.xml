@@ -152,7 +152,17 @@
 	<Keywords color="Keyword(Parameter)">
 	</Keywords>
 
-
+	<Keywords color = "Punctuation(Brackets)">
+		<Word>(</Word>
+		<Word>)</Word>
+		<Word>[</Word>
+		<Word>]</Word>
+		<Word>&lt;</Word>
+		<Word>&gt;</Word>
+		<Word>{</Word>
+		<Word>}</Word>
+	</Keywords>
+	
 	<Keywords color="Keyword(Operator Declaration)">
 	</Keywords>
 
@@ -187,16 +197,7 @@
 			<Word>||</Word>
 		</Keywords>
 	
-		<Keywords color = "Punctuation(Brackets)">
-			<Word>(</Word>
-			<Word>)</Word>
-			<Word>[</Word>
-			<Word>]</Word>
-			<Word>&lt;</Word>
-			<Word>&gt;</Word>
-			<Word>{</Word>
-			<Word>}</Word>
-		</Keywords>
+	
 
 		<EolSpan color = "Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(DocTag)">///</EolSpan>
 		<EolSpan color = "Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
@@ -337,17 +338,16 @@
 		<Group color="User Types"/>
 	</Match>
 
-	<!-- |> |< << >> <= >= <- -> :?> -->
-	<Match color="Punctuation(Brackets)">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
+	<!-- ( ) [ ] < > { } |> |< << >> <= >= <- -> :?> -->
 	<Match expression="(\&lt;\-)">
 		<Group color="Punctuation(Brackets)"/>
 	</Match>
-	<Match expression="(&lt;)([A-Za-z]+)(&gt;)">
+	<Match expression="(&lt;)([A-Za-z]+)(?:&gt;)">
 		<Group color="Punctuation(Brackets)"/>
 		<Group color="User Types"/>
-		<Group color="Punctuation(Brackets)"/>
 	</Match>
 	
+	<Match color="Punctuation(Brackets)">(\|&gt;|\|&lt;|&lt;&lt;|&gt;&gt;|&lt;=|&gt;=|&lt;-|-&gt;|:\?&gt;)</Match>
 	<Match color="User Types">'\w+</Match>
 	
 	<Match expression="(namespace|open)\b(.*)$" ignorecase="False">
