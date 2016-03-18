@@ -306,7 +306,7 @@
 		<Group color="User Method Declaration"/>
 	</Match>
 
-	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s+)(\w+|``[^`]*``)(\s*=)" ignorecase="False">
+	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s+)(\w+|``[^`]*``)(?:\s*=)" ignorecase="False">
 		<!-- let mutable x = 1 -->
 		<Group color="Keyword(Iteration)"/>
 		<Group color="Plain Text" />
