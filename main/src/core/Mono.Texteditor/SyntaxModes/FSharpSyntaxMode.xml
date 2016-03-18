@@ -265,7 +265,13 @@
 		<Group color="Plain Text" />
 		<Group color="User Method Declaration"/>
 	</Match>
-
+<!--
+	<Match expression="(let)(\s+)(\w+)(\s*)=$" ignorecase="False">
+		<Group color="Keyword(Iteration)"/>
+		<Group color="Plain Text" />
+		<Group color="User Field Declaration"/>
+		<Group color="Plain Text" />
+	</Match>-->
 	
 	<Match expression="(of)(\s+)(\w+)">
 		<Group color="Keyword(Iteration)"/>
@@ -291,22 +297,18 @@
 		<Group color="User Method Declaration"/>
 	</Match>
 	
-	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s+)(\w+|``[^`]*``)\s[^=:]" ignorecase="False">
+	<Match expression="(let)(\s+)(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)(\s+)(\w+|``[^`]*``)(\s+)[^=:]" ignorecase="False">
 		<!-- let inline add x y = x + y -->
 		<Group color="Keyword(Iteration)"/>
 		<Group color="Plain Text" />
 		<Group color="Keyword(Modifiers)"/>
 		<Group color="Plain Text" />
 		<Group color="User Method Declaration"/>
+		<Group color="Plain Text" />
 	</Match>
 
-	<Match expression="(let)(\s+)(?!(?:static|abstract|default|override|public|extern|internal|mutable|rec|inline|private))(\w+|``[^`]*``)\s+[^=]" ignorecase="False">
-		<!-- let add x y = x + y -->
-		<Group color="Keyword(Iteration)"/>
-		<Group color="Plain Text" />
-		<Group color="User Method Declaration"/>
-	</Match>
-	
+
+
 	<Match color="Keyword(Modifiers)">(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)\b</Match>
 
 	<Match expression="([A-Z]{1}\w*)(\s*=)">
@@ -386,10 +388,4 @@
 		<Group color="User Property Declaration"/>
 	</Match>
 
-	<Match expression="(let)(\s+)(\w+)(\s+)=*$" ignorecase="False">
-		<Group color="Keyword(Iteration)"/>
-		<Group color="Plain Text" />
-		<Group color="User Field Declaration"/>
-		<Group color="Plain Text" />
-	</Match>
 </SyntaxMode>
