@@ -99,5 +99,6 @@ type SyntaxHighlighting() =
     [<TestCase(@"type thing = TP<§MyParam§=""32"", MyOtherParam=42>", "User Field Declaration")>]
     [<TestCase(@"let rec computeSomeFunction §x§ =", "User Field Declaration")>]
     [<TestCase(@"Option.tryCast<MonoTextEditor§>(§fun e", "Punctuation(Brackets)")>]
+    [<TestCase(@"let mutable session§ = §setupSession()", "Plain Text")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
