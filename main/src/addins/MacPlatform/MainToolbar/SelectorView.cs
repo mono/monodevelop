@@ -217,7 +217,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return menu;
 			}
 
-			void CreateMenuItem (NSMenu menu, IRuntimeModel runtime)
+			NSMenuItem CreateMenuItem (NSMenu menu, IRuntimeModel runtime)
 			{
 				NSMenuItem menuItem;
 				string runtimeFullDisplayString;
@@ -265,6 +265,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					};
 				}
 				menu.AddItem (menuItem);
+				return menuItem;
 			}
 
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
@@ -285,72 +286,101 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				BackgroundColor = NSColor.Clear;
 				FocusRingType = NSFocusRingType.None;
-				Activated += (sender, e) => {
-					var item = ClickedPathComponentCell;
-					if (item == null)
-						return;
-
-					var componentRect = ((NSPathCell)Cell).GetRect (item, Frame, this);
-					int idx = -1;
-					int i = 0;
-
-					var menu = new NSMenu {
-						AutoEnablesItems = false,
-						ShowsStateColumn = false,
-						Font = NSFont.MenuFontOfSize (12),
-					};
-					if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [ConfigurationIdx])) {
-						if (ActiveConfiguration == null)
-							return;
-						
-						foreach (var configuration in ConfigurationModel) {
-							if (idx == -1 && configuration.OriginalId == ActiveConfiguration.OriginalId)
-								idx = i;
-
-							var _configuration = configuration;
-							menu.AddItem (new NSMenuItem (configuration.DisplayString, (o2, e2) => {
-								ActiveConfiguration = configurationModel.First (c => c.OriginalId == _configuration.OriginalId);
-							}) {
-								Enabled = true,
-								IndentationLevel = 1,
-							});
-							++i;
-						}
-					} else if (object.ReferenceEquals (ClickedPathComponentCell, PathComponentCells [RuntimeIdx])) {
-						if (ActiveRuntime == null)
-							return;
-						
-						using (var activeMutableModel = ActiveRuntime.GetMutableModel ()) {
-							foreach (var runtime in RuntimeModel) {
-								using (var mutableModel = runtime.GetMutableModel ()) {
-									if (idx == -1 && mutableModel.DisplayString == activeMutableModel.DisplayString)
-										idx = i;
-								}
-
-								if (runtime.HasParent)
-									continue;
-
-								if (runtime.IsSeparator)
-									menu.AddItem (NSMenuItem.SeparatorItem);
-								else
-									CreateMenuItem (menu, runtime);
-								++i;
-							}
-						}
-					} else
-						throw new NotSupportedException ();
-
-					if (menu.Count > 1) {
-						var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
-
-						if (Window.Screen.BackingScaleFactor == 2)
-							offs.Y += 0.5f; // fine tune menu position on retinas
-
-						menu.PopUpMenu (null, offs, this);
-					}
-				};
 
 				Ide.Gui.Styles.Changed += UpdateStyle;
+			}
+
+			int IndexOfCellAtX (nfloat x)
+			{
+				nfloat rWidth, cWidth;
+				WidthsForPathCells (out cWidth, out rWidth);
+
+				if (x >= 0 && x <= cWidth) {
+					return ConfigurationIdx;
+				} else if (x > cWidth && x <= cWidth + 10) {
+					// The > in the middle
+					return -1;
+				} else {
+					return RuntimeIdx;
+				}
+			}
+
+			public override void MouseDown (NSEvent theEvent)
+			{
+				var locationInView = ConvertPointFromView (theEvent.LocationInWindow, null);
+
+				var cellIdx = IndexOfCellAtX (locationInView.X);
+				if (cellIdx == -1) {
+					return;
+				}
+
+				var item = PathComponentCells [cellIdx];
+				if (item == null)
+					return;
+
+				var componentRect = ((NSPathCell)Cell).GetRect (item, Frame, this);
+				int idx = -1;
+				int i = 0;
+
+				NSMenuItem selectedItem = null;
+				var menu = new NSMenu {
+					AutoEnablesItems = false,
+					ShowsStateColumn = false,
+					Font = NSFont.MenuFontOfSize (12),
+				};
+				if (cellIdx == ConfigurationIdx) {
+					if (ActiveConfiguration == null)
+						return;
+
+					foreach (var configuration in ConfigurationModel) {
+
+						var _configuration = configuration;
+						var menuitem = new NSMenuItem (configuration.DisplayString, (o2, e2) => {
+							ActiveConfiguration = configurationModel.First (c => c.OriginalId == _configuration.OriginalId);
+						}) {
+							Enabled = true,
+							IndentationLevel = 1,
+						};
+
+						menu.AddItem (menuitem);
+
+						if (selectedItem == null && configuration.OriginalId == ActiveConfiguration.OriginalId)
+							selectedItem = menuitem;
+					}
+				} else if (cellIdx == RuntimeIdx) {
+					if (ActiveRuntime == null)
+						return;
+
+					using (var activeMutableModel = ActiveRuntime.GetMutableModel ()) {
+						foreach (var runtime in RuntimeModel) {
+							if (runtime.HasParent)
+								continue;
+
+							NSMenuItem menuitem = null;
+							if (runtime.IsSeparator)
+								menu.AddItem (NSMenuItem.SeparatorItem);
+							else
+								menuitem = CreateMenuItem (menu, runtime);
+
+							using (var mutableModel = runtime.GetMutableModel ()) {
+								if (selectedItem == null && menuitem != null && mutableModel.DisplayString == activeMutableModel.DisplayString)
+									selectedItem = menuitem;
+							}
+
+							++i;
+						}
+					}
+				} else
+					throw new NotSupportedException ();
+
+				if (menu.Count > 1) {
+					var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
+
+					if (Window.Screen.BackingScaleFactor == 2)
+						offs.Y += 0.5f; // fine tune menu position on retinas
+
+					menu.PopUpMenu (selectedItem, offs, this);
+				}
 			}
 
 			public override void DidChangeBackingProperties ()
