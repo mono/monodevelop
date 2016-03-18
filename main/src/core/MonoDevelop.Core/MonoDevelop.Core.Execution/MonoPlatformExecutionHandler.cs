@@ -36,29 +36,20 @@ namespace MonoDevelop.Core.Execution
 {
 	public class MonoPlatformExecutionHandler: NativePlatformExecutionHandler
 	{
-		string monoPath = "mono";
-		
-		public MonoPlatformExecutionHandler ()
+		MonoTargetRuntime runtime;
+
+		internal MonoPlatformExecutionHandler (MonoTargetRuntime runtime) : base (runtime.EnvironmentVariables)
 		{
-		}
-		
-		public MonoPlatformExecutionHandler (string monoPath, IDictionary<string, string> defaultEnvironmentVariables): base (defaultEnvironmentVariables)
-		{
-			this.monoPath = monoPath;
+			this.runtime = runtime;
 		}
 		
 		public override ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
-			DotNetExecutionCommand dotcmd = (DotNetExecutionCommand) command;
+			var dotcmd = (DotNetExecutionCommand) command;
 			
 			string runtimeArgs = string.IsNullOrEmpty (dotcmd.RuntimeArguments) ? "--debug" : dotcmd.RuntimeArguments;
 
-			var monoRunner = monoPath;
-			if (System.IO.Path.GetFileName (monoPath) == "mono") {
-				// If the assembly was compiled as 64bit, use the 64bit runner
-				if (SystemAssemblyService.GetAssemblyArchitecture (dotcmd.Command) == AssemblyArchitecture.x86_64)
-					monoRunner = monoRunner += "64";
-			}
+			var monoRunner = runtime.GetMonoExecutableForAssembly (dotcmd.Command);
 			
 			string args = string.Format ("{2} \"{0}\" {1}", dotcmd.Command, dotcmd.Arguments, runtimeArgs);
 			NativeExecutionCommand cmd = new NativeExecutionCommand (monoRunner, args, dotcmd.WorkingDirectory, dotcmd.EnvironmentVariables);

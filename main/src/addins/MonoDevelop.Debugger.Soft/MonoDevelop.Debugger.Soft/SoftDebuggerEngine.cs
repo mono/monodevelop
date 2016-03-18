@@ -73,12 +73,13 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			var cmd = (DotNetExecutionCommand) c;
 			var runtime = (MonoTargetRuntime)cmd.TargetRuntime;
-			var dsi = new SoftDebuggerStartInfo (runtime.Prefix, runtime.EnvironmentVariables) {
+			var dsi = new SoftDebuggerStartInfo (null, runtime.EnvironmentVariables) {
 				Command = cmd.Command,
 				Arguments = cmd.Arguments,
 				WorkingDirectory = cmd.WorkingDirectory,
 			};
-			
+			((SoftDebuggerLaunchArgs)dsi.StartArgs).MonoExecutableFileName = runtime.GetMonoExecutableForAssembly (cmd.Command);
+
 			SetUserAssemblyNames (dsi, cmd.UserAssemblyPaths);
 			
 			foreach (KeyValuePair<string,string> var in cmd.EnvironmentVariables)
