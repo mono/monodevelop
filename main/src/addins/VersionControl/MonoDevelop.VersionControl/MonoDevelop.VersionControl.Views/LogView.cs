@@ -4,10 +4,8 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Linq;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {

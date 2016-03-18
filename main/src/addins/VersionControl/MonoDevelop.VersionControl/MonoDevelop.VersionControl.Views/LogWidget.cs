@@ -1,21 +1,21 @@
-// 
+//
 // LogWidget.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,6 +33,7 @@ using System.Text;
 using System.Threading;
 using MonoDevelop.Components;
 using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -360,7 +361,9 @@ namespace MonoDevelop.VersionControl.Views
 			int line = diffRenderer.GetSelectedLine (paths[0]);
 			if (line == -1)
 				line = 1;
-			var doc = await IdeApp.Workbench.OpenDocument (fileName, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+
+			var proj = IdeApp.Workspace.GetProjectsContainingFile (fileName).FirstOrDefault ();
+			var doc = await IdeApp.Workbench.OpenDocument (fileName, proj, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			int i = 1;
 			foreach (var content in doc.Window.SubViewContents) {
 				DiffView diffView = content as DiffView;

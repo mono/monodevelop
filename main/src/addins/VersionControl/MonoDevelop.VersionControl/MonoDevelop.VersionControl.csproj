@@ -18,6 +18,7 @@
     <OutputPath>..\..\..\..\build\AddIns\VersionControl\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>

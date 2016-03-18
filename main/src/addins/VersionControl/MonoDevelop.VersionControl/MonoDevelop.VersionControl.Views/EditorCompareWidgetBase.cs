@@ -37,7 +37,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
