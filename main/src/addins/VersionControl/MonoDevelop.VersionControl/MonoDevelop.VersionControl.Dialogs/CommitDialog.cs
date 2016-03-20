@@ -88,7 +88,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			foreach (object ob in exts) {
 				CommitDialogExtension ext = ob as CommitDialogExtension;
 				if (ext == null) {
-					MessageService.ShowError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
+					LoggingService.LogError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
 					continue;
 				}
 				if (ext.Initialize (changeSet)) {
