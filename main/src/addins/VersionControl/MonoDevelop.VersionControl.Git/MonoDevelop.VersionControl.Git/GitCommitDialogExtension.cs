@@ -145,11 +145,11 @@ namespace MonoDevelop.VersionControl.Git
 		static string GetDesc (string name, string email)
 		{
 			if (string.IsNullOrEmpty (name) && string.IsNullOrEmpty (email))
-				return "Not configured";
+				return GettextCatalog.GetString ("Not configured");
 			if (string.IsNullOrEmpty (name))
 				name = GettextCatalog.GetString ("Name not configured");
 			if (string.IsNullOrEmpty (email))
-				email = GettextCatalog.GetString ("e-mail not configured");
+				email = GettextCatalog.GetString ("Email not configured");
 			return name + ", " + email;
 		}
 
@@ -186,8 +186,8 @@ namespace MonoDevelop.VersionControl.Git
 			var lines = text.Split ('\n');
 			if (lines.Length > 0 && lines [0].Length > maxLengthConventionForFirstLineOfCommitMessage) {
 				if (!textView.HasTooltip) {
-					textView.TooltipText = String.Format (GettextCatalog.GetString (
-						"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
+					textView.TooltipText = GettextCatalog.GetString (
+						"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message",
 						maxLengthConventionForFirstLineOfCommitMessage);
 					textView.HasTooltip = true;
 				}

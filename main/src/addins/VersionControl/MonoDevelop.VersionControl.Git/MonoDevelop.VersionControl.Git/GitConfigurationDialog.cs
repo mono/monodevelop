@@ -85,8 +85,8 @@ namespace MonoDevelop.VersionControl.Git
 			SemanticModelAttribute remotesModelAttr = new SemanticModelAttribute ("storeRemotes__Remote", "storeRemotes__Name", "storeRemotes__Url", "storeRemotes__BranchName", "storeRemotes__FullName");
 			TypeDescriptor.AddAttributes (storeRemotes, remotesModelAttr);
 
-			treeRemotes.AppendColumn ("Remote Source / Branch", new CellRendererText (), "markup", 1);
-			treeRemotes.AppendColumn ("Url", new CellRendererText (), "text", 2);
+			treeRemotes.AppendColumn (GettextCatalog.GetString ("Remote Source / Branch"), new CellRendererText (), "markup", 1);
+			treeRemotes.AppendColumn (GettextCatalog.GetString ("Url"), new CellRendererText (), "text", 2);
 
 			treeRemotes.Selection.Changed += delegate {
 				TreeIter it;
@@ -369,7 +369,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (remoteName == null)
 				return;
 
-			repo.Fetch (VersionControlService.GetProgressMonitor ("Fetching remote..."), remoteName);
+			repo.Fetch (VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote...")), remoteName);
 			FillRemotes ();
 		}
 	}

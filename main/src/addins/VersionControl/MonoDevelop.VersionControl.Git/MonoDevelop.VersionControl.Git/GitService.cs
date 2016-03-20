@@ -114,7 +114,7 @@ namespace MonoDevelop.VersionControl.Git
 					try {
 						return repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
-						monitor.ReportError ("Branch switch failed", ex);
+						monitor.ReportError (GettextCatalog.GetString ("Branch switch failed"), ex);
 						return false;
 					} finally {
 						monitor.Dispose ();
