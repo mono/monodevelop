@@ -132,7 +132,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (toLock.Count == 0)
 				return true;
 
-			AlertButton but = new AlertButton ("Lock File");
+			AlertButton but = new AlertButton (GettextCatalog.GetString ("Lock File"));
 			if (!MessageService.Confirm (GettextCatalog.GetString ("The following files must be locked before editing."),
 				String.Join ("\n", toLock.Select (u => u.ToString ())), but))
 				return false;
@@ -554,7 +554,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			SvnRevision sinceRev = since != null ? (SvnRevision)since : null;
 			List<Annotation> annotations = new List<Annotation> (Svn.GetAnnotations (this, repositoryPath, SvnRevision.First, sinceRev ?? SvnRevision.Base));
-			Annotation nextRev = new Annotation (null, "<uncommitted>", DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+			Annotation nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
 			var baseDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (GetBaseText (repositoryPath));
 			var workingDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (File.ReadAllText (repositoryPath));
 

@@ -69,8 +69,13 @@ namespace SubversionAddinWindows
 			{
 				if (!errorShown && installError) {
 					errorShown = true;
-					var db = new AlertButton ("Go to Download Page");
-					AlertButton res = MessageService.AskQuestion ("The Subversion add-in could not be initialized", "This add-in requires the 'Microsoft Visual C++ 2010 Redistributable'. You may need to install it.", db, AlertButton.Ok);
+					var db = new AlertButton (GettextCatalog.GetString ("Go to Download Page"));
+					AlertButton res = MessageService.AskQuestion (
+						GettextCatalog.GetString ("The Subversion add-in could not be initialized"),
+						GettextCatalog.GetString ("This add-in requires the 'Microsoft Visual C++ 2010 Redistributable'. You may need to install it."),
+						db,
+						AlertButton.Ok);
+
 					if (res == db) {
 						DesktopService.ShowUrl ("https://www.microsoft.com/en-us/download/details.aspx?id=5555");
 					}
@@ -475,7 +480,7 @@ namespace SubversionAddinWindows
 			if (ent.IsRemoteUpdated) {
 				rs = ConvertStatus (SvnSchedule.Normal, ent.RemoteContentStatus);
 				rr = new SvnRevision (repo, (int) ent.RemoteUpdateRevision, ent.RemoteUpdateCommitTime,
-									  ent.RemoteUpdateCommitAuthor, "(unavailable)", null);
+				                      ent.RemoteUpdateCommitAuthor, GettextCatalog.GetString ("(unavailable)"), null);
 			}
 
 			VersionStatus status = ConvertStatus (SvnSchedule.Normal, ent.LocalContentStatus);
@@ -723,7 +728,7 @@ namespace SubversionAddinWindows
 			data.LogTimer.Interval = 1000;
 			data.LogTimer.Elapsed += delegate {
 				data.Seconds += 1;
-				monitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (data.KBytes), data.Seconds);
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds."), BytesToSize (data.KBytes), data.Seconds);
 			};
 			data.LogTimer.Start ();
 		}
