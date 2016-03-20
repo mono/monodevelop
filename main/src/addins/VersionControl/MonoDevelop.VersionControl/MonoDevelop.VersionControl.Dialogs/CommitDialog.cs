@@ -196,7 +196,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					GettextCatalog.GetString ("Do you want to save the changes before committing?"),
 					new AlertButton[] {
 						AlertButton.Cancel,
-						new AlertButton ("Don't Save"),
+						new AlertButton (GettextCatalog.GetString ("Don't Save")),
 						AlertButton.Save
 					}
 				);

@@ -329,7 +329,7 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertToRevision (info.Repository, info.Item.Path, d, false))
 				VersionControlService.SetCommitComment (info.Item.Path, 
-				  string.Format ("(Revert to revision {0})", d.ToString ()), true);
+				  GettextCatalog.GetString ("(Revert to revision {0})", d.ToString ()), true);
 		}
 		
 		void RevertRevisionClicked (object src, EventArgs args)
@@ -337,7 +337,7 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertRevision (info.Repository, info.Item.Path, d, false))
 				VersionControlService.SetCommitComment (info.Item.Path, 
-				  string.Format ("(Revert revision {0})", d.ToString ()), true);
+				  GettextCatalog.GetString ("(Revert revision {0})", d.ToString ()), true);
 		}
 
 		void RefreshClicked (object src, EventArgs args)
@@ -405,7 +405,10 @@ namespace MonoDevelop.VersionControl.Views
 					} catch (Exception e) {
 						Application.Invoke (delegate {
 							LoggingService.LogError ("Error while getting revision text", e);
-							MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+							MessageService.ShowError (
+								GettextCatalog.GetString ("Error while getting revision text."),
+								GettextCatalog.GetString ("The file may not be part of the working copy.")
+							);
 						});
 						return;
 					}
@@ -414,14 +417,14 @@ namespace MonoDevelop.VersionControl.Views
 						prevRev = rev.GetPrevious ();
 					} catch (Exception e) {
 						Application.Invoke (delegate {
-							MessageService.ShowError ("Error while getting previous revision.", e);
+							MessageService.ShowError (GettextCatalog.GetString ("Error while getting previous revision."), e);
 						});
 						return;
 					}
 					string[] lines;
 					// Indicator that the file was binary
 					if (text == null) {
-						lines = new [] { " Binary files differ" };
+						lines = new [] { GettextCatalog.GetString (" Binary files differ") };
 					} else {
 						var changedDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (text);
 						if (prevRev == null) {
@@ -436,7 +439,10 @@ namespace MonoDevelop.VersionControl.Views
 							} catch (Exception e) {
 								Application.Invoke (delegate {
 									LoggingService.LogError ("Error while getting revision text", e);
-									MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+									MessageService.ShowError (
+										GettextCatalog.GetString ("Error while getting revision text."),
+										GettextCatalog.GetString ("The file may not be part of the working copy.")
+									);
 								});
 								return;
 							}
@@ -451,8 +457,8 @@ namespace MonoDevelop.VersionControl.Views
 							}
 
 							var originalDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (prevRevisionText);
-							originalDocument.FileName = "Revision " + prevRev;
-							changedDocument.FileName = "Revision " + rev;
+							originalDocument.FileName = GettextCatalog.GetString ("Revision {0}", prevRev);
+							changedDocument.FileName = GettextCatalog.GetString ("Revision {0}", rev);
 							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 						}
 					}

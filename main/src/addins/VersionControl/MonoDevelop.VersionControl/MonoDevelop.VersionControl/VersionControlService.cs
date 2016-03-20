@@ -46,7 +46,7 @@ namespace MonoDevelop.VersionControl
 		static List<VersionControlSystem> handlers = new List<VersionControlSystem> ();
 		static VersionControlConfiguration configuration;
 		static DataContext dataContext = new DataContext ();
-		
+
 		public static event FileUpdateEventHandler FileStatusChanged;
 		public static event CommitEventHandler PrepareCommit;
 		public static event CommitEventHandler BeginCommit;
@@ -606,7 +606,7 @@ namespace MonoDevelop.VersionControl
 			default: icon = "md-version-control"; break;
 			}
 
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", "Version Control", "md-version-control", false, true);
+			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", GettextCatalog.GetString ("Version Control"), "md-version-control", false, true);
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);

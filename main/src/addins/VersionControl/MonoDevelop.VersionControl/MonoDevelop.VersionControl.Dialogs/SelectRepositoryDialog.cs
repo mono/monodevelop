@@ -68,7 +68,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				labelMessage.Visible = false;
 				defaultPath = VersionControlDefaultPath;
 				entryFolder.Text = defaultPath;
-				buttonOk.Label = "_Checkout";
+				buttonOk.Label = GettextCatalog.GetString ("_Checkout");
 			} else {
 				labelTargetDir.Visible = false;
 				boxFolder.Visible = false;

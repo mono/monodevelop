@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
 				do {
 					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
-						AlertButton publishButton = new AlertButton ("_Publish");					
+						AlertButton publishButton = new AlertButton (GettextCatalog.GetString ("_Publish"));
 						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project?"), GettextCatalog.GetString ("The project will be published to the repository '{0}', module '{1}'.", dlg.Repository.Name, dlg.ModuleName), AlertButton.Cancel, publishButton) == publishButton) {
 							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, files.ToArray (), dlg.Message);
 							w.Start ();

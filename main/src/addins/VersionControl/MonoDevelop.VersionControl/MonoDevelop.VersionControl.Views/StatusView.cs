@@ -276,7 +276,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		public StatusView (string filepath, Repository vc, VersionControlItemList list)
-			: base (Path.GetFileName (filepath) + " Status")
+			: base (GettextCatalog.GetString ("{0} Status", Path.GetFileName (filepath)))
 		{
 			this.vc = vc;
 			this.filepath = Directory.Exists (filepath) ? filepath : Path.GetDirectoryName (filepath);
