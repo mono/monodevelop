@@ -495,7 +495,7 @@
 	<Condition id="Platform" value="mac">
 		<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
 			_label = "Reveal in Finder"
-			_description = "Reveals the file in Finder."/>
+			_description = "Reveals the file in Finder"/>
 	</Condition>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction"
 			type="radio|array"
