@@ -22,7 +22,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				
 				editor = repo.VersionControlSystem.CreateRepositoryEditor (repo);
 				repoEditorContainer.Add (editor.Widget);
-				editor.Widget.Show ();
+				editor.Show ();
 			}
 			else {
 				foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
@@ -65,7 +65,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repo.NameChanged += OnNameChanged;
 			editor = vcs.CreateRepositoryEditor (repo);
 			repoEditorContainer.Add (editor.Widget);
-			editor.Widget.Show ();
+			editor.Show ();
 			entryName.Sensitive = true;
 		}
 

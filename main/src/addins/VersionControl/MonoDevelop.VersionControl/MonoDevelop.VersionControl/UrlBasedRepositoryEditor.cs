@@ -1,7 +1,8 @@
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl
 {
@@ -29,7 +30,7 @@ namespace MonoDevelop.VersionControl
 			updating = false;
 		}
 		
-		Gtk.Widget IRepositoryEditor.Widget {
+		Control IRepositoryEditor.Widget {
 			get { return this; }
 		}
 		

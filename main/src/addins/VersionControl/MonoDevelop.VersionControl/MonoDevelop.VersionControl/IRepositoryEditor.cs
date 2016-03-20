@@ -24,11 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Components;
+
 namespace MonoDevelop.VersionControl
 {
 	public interface IRepositoryEditor
 	{
-		Gtk.Widget Widget { get; }
+		Control Widget { get; }
+		void Show ();
 		bool Validate ();
 	}
 }

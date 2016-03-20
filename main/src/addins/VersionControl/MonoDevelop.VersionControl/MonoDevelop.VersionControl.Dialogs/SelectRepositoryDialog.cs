@@ -123,7 +123,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repo = vcs.CreateRepositoryInstance ();
 			currentEditor = vcs.CreateRepositoryEditor (repo);
 			repoContainer.Add (currentEditor.Widget);
-			currentEditor.Widget.Show ();
+			currentEditor.Show ();
 			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
 			if (edit != null)
 				edit.PathChanged += OnPathChanged;
