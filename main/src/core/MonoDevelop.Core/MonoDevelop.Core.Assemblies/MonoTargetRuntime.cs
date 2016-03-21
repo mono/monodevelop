@@ -99,7 +99,7 @@ namespace MonoDevelop.Core.Assemblies
 		public override string DisplayName {
 			get {
 				if (!IsRunning)
-					return base.DisplayName + " (" + Prefix + ")" + (monoRuntimeInfo.Force64or32bit.HasValue ? monoRuntimeInfo.Force64or32bit.Value ? " (64bit)" : " (32bit)" : "");
+					return base.DisplayName + " (" + Prefix + ")";
 				else
 					return base.DisplayName;
 			}
@@ -137,13 +137,11 @@ namespace MonoDevelop.Core.Assemblies
 			return new MonoFrameworkBackend ();
 		}
 
-
+		
 		public override IExecutionHandler GetExecutionHandler ()
 		{
 			if (execHandler == null) {
-				string monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin");
-				monoPath = Path.Combine (monoPath, MonoRuntimeInfo.Force64or32bit.HasValue ? (MonoRuntimeInfo.Force64or32bit.Value ? "mono64" : "mono32") : "mono");
-				execHandler = new MonoPlatformExecutionHandler (monoPath, environmentVariables);
+				execHandler = new MonoPlatformExecutionHandler (this);
 			}
 			return execHandler;
 		}
@@ -280,6 +278,43 @@ namespace MonoDevelop.Core.Assemblies
 		public override ExecutionEnvironment GetToolsExecutionEnvironment ()
 		{
 			return new ExecutionEnvironment (EnvironmentVariables);
+		}
+
+		/// <summary>
+		/// Get the Mono executable best matching the assembly architecture flags.
+		/// </summary>
+		/// <remarks>Returns a fallback Mono executable, if a match cannot be found.</remarks>
+		/// <returns>The Mono executable that should be used to execute the assembly.</returns>
+		/// <param name="assemblyPath">Assembly path.</param>
+		public string GetMonoExecutableForAssembly (string assemblyPath)
+		{
+			IKVM.Reflection.PortableExecutableKinds peKind;
+			IKVM.Reflection.ImageFileMachine machine;
+
+			using (var universe = new IKVM.Reflection.Universe ()) {
+				IKVM.Reflection.Assembly assembly;
+				try {
+					assembly = universe.LoadFile (assemblyPath);
+					assembly.ManifestModule.GetPEKind (out peKind, out machine);
+				} catch {
+					peKind = IKVM.Reflection.PortableExecutableKinds.ILOnly;
+					machine = IKVM.Reflection.ImageFileMachine.I386;
+				}
+			}
+
+			string monoPath;
+
+			if ((peKind & (IKVM.Reflection.PortableExecutableKinds.Required32Bit | IKVM.Reflection.PortableExecutableKinds.Preferred32Bit)) != 0) {
+				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono32");
+				if (File.Exists (monoPath))
+					return monoPath;
+			} else if ((peKind & IKVM.Reflection.PortableExecutableKinds.PE32Plus) != 0) {
+				monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono64");
+				if (File.Exists (monoPath))
+					return monoPath;
+			}
+
+			return monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin", "mono");
 		}
 	}
 	
