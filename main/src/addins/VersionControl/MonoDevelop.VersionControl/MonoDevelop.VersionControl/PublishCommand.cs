@@ -68,43 +68,44 @@ namespace MonoDevelop.VersionControl
 				return true;
 			return false;
 		}
-	}
-	
-	internal class PublishWorker : VersionControlTask {
-		Repository vc;
-		FilePath path;
-		string moduleName;
-		FilePath[] files;
-		string message;
 
-		public PublishWorker (Repository vc, string moduleName, FilePath localPath, FilePath[] files, string message) 
+		class PublishWorker : VersionControlTask
 		{
-			this.vc = vc;
-			this.path = localPath;
-			this.moduleName = moduleName;
-			this.files = files;
-			this.message = message;
-			OperationType = VersionControlOperationType.Push;
-		}
+			Repository vc;
+			FilePath path;
+			string moduleName;
+			FilePath [] files;
+			string message;
 
-		protected override string GetDescription ()
-		{
-			return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
-		}
-		
-		protected override void Run ()
-		{
-			try {
-				vc.Publish (moduleName, path, files, message, Monitor);
-			} catch (VersionControlException e) {
-				Monitor.ReportError (e.Message, null);
-				return;
+			public PublishWorker (Repository vc, string moduleName, FilePath localPath, FilePath [] files, string message)
+			{
+				this.vc = vc;
+				this.path = localPath;
+				this.moduleName = moduleName;
+				this.files = files;
+				this.message = message;
+				OperationType = VersionControlOperationType.Push;
 			}
 
-			Gtk.Application.Invoke (delegate {
-				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
-			});
-			Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
+			protected override string GetDescription ()
+			{
+				return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
+			}
+
+			protected override void Run ()
+			{
+				try {
+					vc.Publish (moduleName, path, files, message, Monitor);
+				} catch (VersionControlException e) {
+					Monitor.ReportError (e.Message, null);
+					return;
+				}
+
+				Gtk.Application.Invoke (delegate {
+					VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
+				});
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
+			}
 		}
 	}
 }

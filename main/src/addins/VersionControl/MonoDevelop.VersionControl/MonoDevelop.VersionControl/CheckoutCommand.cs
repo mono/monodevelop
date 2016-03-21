@@ -27,73 +27,73 @@ namespace MonoDevelop.VersionControl
 				del.Dispose ();
 			}
 		}
-	}
-	
-	class CheckoutWorker : VersionControlTask
-	{
-		Repository vc;
-		string path;
-					
-		public CheckoutWorker (Repository vc, string path)
+
+		class CheckoutWorker : VersionControlTask
 		{
-			this.vc = vc;
-			this.path = path;
-			OperationType = VersionControlOperationType.Pull;
-		}
-		
-		protected override string GetDescription ()
-		{
-			return GettextCatalog.GetString ("Checking out {0}...", path);
-		}
-		
-		protected override ProgressMonitor CreateProgressMonitor ()
-		{
-			return new MonoDevelop.Core.ProgressMonitoring.AggregatedProgressMonitor (
-				base.CreateProgressMonitor (),
-				new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, true, true, true)
-			);
-		}
-		
-		protected override void Run () 
-		{
-			if (System.IO.Directory.Exists (path) && System.IO.Directory.EnumerateFileSystemEntries (path).Any ()) {
-				if (MessageService.AskQuestion (GettextCatalog.GetString (
-					    "Checkout path is not empty. Do you want to delete its contents?"),
-					    path,
-					    AlertButton.Cancel,
-					    AlertButton.Ok) == AlertButton.Cancel)
-					return;
-				FileService.DeleteDirectory (path);
-				FileService.CreateDirectory (path);
+			Repository vc;
+			string path;
+
+			public CheckoutWorker (Repository vc, string path)
+			{
+				this.vc = vc;
+				this.path = path;
+				OperationType = VersionControlOperationType.Pull;
 			}
 
-			try {
-				vc.Checkout (path, null, true, Monitor);
-			} catch (VersionControlException e) {
-				Monitor.ReportError (e.Message, null);
-				return;
+			protected override string GetDescription ()
+			{
+				return GettextCatalog.GetString ("Checking out {0}...", path);
 			}
 
-			if (Monitor.CancellationToken.IsCancellationRequested) {
-				Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));
-				return;
+			protected override ProgressMonitor CreateProgressMonitor ()
+			{
+				return new MonoDevelop.Core.ProgressMonitoring.AggregatedProgressMonitor (
+					base.CreateProgressMonitor (),
+					new MonoDevelop.Ide.ProgressMonitoring.MessageDialogProgressMonitor (true, true, true, true)
+				);
 			}
 
-			if (!System.IO.Directory.Exists (path)) {
-				Monitor.ReportError (GettextCatalog.GetString ("Checkout folder does not exist"), null);
-				return;
-			}
-
-			foreach (string str in System.IO.Directory.EnumerateFiles (path, "*", System.IO.SearchOption.AllDirectories)) {
-				if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (str)) {
-					Runtime.RunInMainThread (delegate {
-						IdeApp.Workspace.OpenWorkspaceItem (str);
-					});
-					break;
+			protected override void Run ()
+			{
+				if (System.IO.Directory.Exists (path) && System.IO.Directory.EnumerateFileSystemEntries (path).Any ()) {
+					if (MessageService.AskQuestion (GettextCatalog.GetString (
+							"Checkout path is not empty. Do you want to delete its contents?"),
+							path,
+							AlertButton.Cancel,
+							AlertButton.Ok) == AlertButton.Cancel)
+						return;
+					FileService.DeleteDirectory (path);
+					FileService.CreateDirectory (path);
 				}
+
+				try {
+					vc.Checkout (path, null, true, Monitor);
+				} catch (VersionControlException e) {
+					Monitor.ReportError (e.Message, null);
+					return;
+				}
+
+				if (Monitor.CancellationToken.IsCancellationRequested) {
+					Monitor.ReportSuccess (GettextCatalog.GetString ("Checkout operation cancelled"));
+					return;
+				}
+
+				if (!System.IO.Directory.Exists (path)) {
+					Monitor.ReportError (GettextCatalog.GetString ("Checkout folder does not exist"), null);
+					return;
+				}
+
+				foreach (string str in System.IO.Directory.EnumerateFiles (path, "*", System.IO.SearchOption.AllDirectories)) {
+					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (str)) {
+						Runtime.RunInMainThread (delegate {
+							IdeApp.Workspace.OpenWorkspaceItem (str);
+						});
+						break;
+					}
+				}
+
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Solution checked out"));
 			}
-			
-			Monitor.ReportSuccess (GettextCatalog.GetString ("Solution checked out"));
 		}
 	}
 }
