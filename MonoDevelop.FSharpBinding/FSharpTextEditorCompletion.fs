@@ -136,11 +136,8 @@ module Completion =
 
              let chunkStyle = syntaxMode.GetChunks(getColourScheme(), documentLine, context.column, context.lineToCaret.Length)
                               |> Seq.map (fun c -> c.Style)   
-                              |> Seq.head
-             if chunkStyle <> "User Types" then
-                 Some LetIdentifier
-             else
-                 None
+                              |> Seq.tryHead
+             chunkStyle |> Option.bind (fun cs -> if cs <> "User Types" then Some LetIdentifier else None)
         else
             None
 
