@@ -65,6 +65,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
                 | (:? FSharpEntity as aa), (:? FSharpEntity as bb) ->
                     let comparisonResult =
                         let aaAllBases = ancestry aa
+
                         match (aaAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs bb)) with
                         | Some _ ->  -1
                         | _ ->
@@ -72,6 +73,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
                             match (bbAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs aa)) with
                             | Some _ ->  1
                             | _ -> aa.DisplayName.CompareTo(bb.DisplayName)
+
                     comparisonResult
                 | a, b -> a.DisplayName.CompareTo(b.DisplayName)
             | _ -> -1
@@ -92,6 +94,7 @@ module Completion =
 
     let (|InvalidToken|_|) context =
         let token = Tokens.getTokenAtPoint context.editor context.editor.DocumentContext context.triggerOffset
+
         if Tokens.isInvalidCompletionToken token then
             Some InvalidToken
         else
@@ -325,17 +328,6 @@ module Completion =
         [for keyValuePair in KeywordList.modifiers do
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
-    let getParseResults (documentContext:DocumentContext, text) =
-        async {
-            let filename = documentContext.Name
-            // Try to get typed information from LanguageService (with the specified timeout)
-            let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false))
-        }
-
-    // cache parse results for current filename/line number
-    let mutable parseCache = (Unchecked.defaultof<FilePath>, -1, None) 
-
     let parseLock = obj()
     let getFsiCompletions context = 
 
@@ -408,31 +400,33 @@ module Completion =
         async {
             try
                 let { 
-                    editor = editor
                     line = line
                     column = column
                     documentContext = documentContext
                     lineToCaret = lineToCaret
                     completionChar = completionChar
-                    ctrlSpace = ctrlSpace
                     } = context
+
+                let parsedDocument = documentContext.TryGetFSharpParsedDocument()
 
                 let! (typedParseResults: ParseAndCheckResults option) =
                     lock parseLock (fun() ->
                         async {
-                            match parseCache, ctrlSpace with
-                            | (filename, lastLine, parseResults), false when lastLine = context.line && filename = editor.FileName -> 
-                                LoggingService.logDebug "Completion: got parse results from cache"
-                                return parseResults
-                            | _ -> 
-                                let! (parseResults: ParseAndCheckResults option) = 
-                                    getParseResults(documentContext, editor.Text)
-                                match parseResults with
-                                | Some _ -> parseCache <- (editor.FileName, line, parseResults)
-                                            LoggingService.logDebug "Completion: got some parse results"
-                                            return parseResults
-                                | None -> LoggingService.logDebug "Completion: got no parse results"
-                                          return None
+                            match parsedDocument with
+                            | Some document -> 
+                                match document.ParsedLocation with
+                                | Some location ->
+                                    if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
+                                        LoggingService.logDebug "Completion: got parse results from cache"
+                                    else
+                                        LoggingService.logDebug "Completion: syncing parse results"
+                                        // force sync
+                                        documentContext.ReparseDocument()
+                                        document.GetAst()
+
+                                    return document.TryGetAst()
+                                | None -> return None
+                            | _ -> return None
                         })
 
                 let result = CompletionDataList()                 
@@ -455,7 +449,7 @@ module Completion =
                             LoggingService.logDebug "Completion: residue %s" residue
                             result.DefaultCompletionString <- residue
                             result.TriggerWordLength <- residue.Length
-
+                            
                         //TODO Use previous token and pattern match to detect whitespace
                         if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
                             // Add the code templates and compiler generated identifiers if the completion char is not '.'
@@ -521,7 +515,6 @@ module Completion =
                     return getModifiers completionContext
                 | _ ->
                     if documentContext :? FsiDocumentContext then
-                        //FSharpInteractivePad2.Fsi.Value.RequestCompletions lineStr col
                         return! getFsiCompletions completionContext
                     else
                         return! getCompletions completionContext
