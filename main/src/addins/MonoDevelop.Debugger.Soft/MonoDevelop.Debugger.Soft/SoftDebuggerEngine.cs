@@ -73,12 +73,13 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			var cmd = (DotNetExecutionCommand) c;
 			var runtime = (MonoTargetRuntime)cmd.TargetRuntime;
-			var dsi = new SoftDebuggerStartInfo (runtime.Prefix, runtime.EnvironmentVariables) {
+			var dsi = new SoftDebuggerStartInfo (null, runtime.EnvironmentVariables) {
 				Command = cmd.Command,
 				Arguments = cmd.Arguments,
 				WorkingDirectory = cmd.WorkingDirectory,
 			};
-			
+			((SoftDebuggerLaunchArgs)dsi.StartArgs).MonoExecutableFileName = runtime.GetMonoExecutableForAssembly (cmd.Command);
+
 			SetUserAssemblyNames (dsi, cmd.UserAssemblyPaths);
 			
 			foreach (KeyValuePair<string,string> var in cmd.EnvironmentVariables)
@@ -92,11 +93,7 @@ namespace MonoDevelop.Debugger.Soft
 					ExternalConsoleFactory.Instance.CreateConsole (dsi.CloseExternalConsoleOnExit), varsCopy);
 				return new ProcessAdapter (oper, Path.GetFileName (info.FileName));
 			};
-			if (runtime.MonoRuntimeInfo.Force64or32bit.HasValue)
-				startArgs.MonoExecutableFileName = runtime.MonoRuntimeInfo.Force64or32bit.Value ? "mono64" : "mono32";
-			else {
-				startArgs.MonoExecutableFileName = SystemAssemblyService.GetAssemblyArchitecture (cmd.Command) == AssemblyArchitecture.x86_64 ? "mono64" : "mono";
-			}
+
 			return dsi;
 		}
 		
