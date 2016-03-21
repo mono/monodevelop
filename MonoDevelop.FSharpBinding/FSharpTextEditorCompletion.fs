@@ -417,13 +417,14 @@ module Completion =
                     documentContext = documentContext
                     lineToCaret = lineToCaret
                     completionChar = completionChar
+                    ctrlSpace = ctrlSpace
                     } = context
 
                 let! (typedParseResults: ParseAndCheckResults option) =
                     lock parseLock (fun() ->
                         async {
-                            match parseCache with
-                            | (filename, lastLine, parseResults) when lastLine = context.line && filename = editor.FileName -> 
+                            match parseCache, ctrlSpace with
+                            | (filename, lastLine, parseResults), false when lastLine = context.line && filename = editor.FileName -> 
                                 LoggingService.logDebug "Completion: got parse results from cache"
                                 return parseResults
                             | _ -> 
