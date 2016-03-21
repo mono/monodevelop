@@ -1193,14 +1193,13 @@ namespace MonoDevelop.VersionControl.Views
 				return true;
 			}
 
-			if (evnt.Key == Gdk.Key.space && CommitSelectionToggled != null) {
-				CommitSelectionToggled (this, EventArgs.Empty);
+			if (evnt.Key == Gdk.Key.space) {
+				CommitSelectionToggled?.Invoke (this, EventArgs.Empty);
 				return true;
 			}
 
 			if (evnt.Key == Gdk.Key.Return || evnt.Key == Gdk.Key.KP_Enter) {
-				if (DiffLineActivated != null)
-					DiffLineActivated (this, EventArgs.Empty);
+				DiffLineActivated?.Invoke (this, EventArgs.Empty);
 				return true;
 			}
 
@@ -1222,8 +1221,8 @@ namespace MonoDevelop.VersionControl.Views
 					vpos = Vadjustment.Value;
 					keepPos = true;
 					if (Selection.PathIsSelected (path) && Selection.GetSelectedRows ().Length == 1 && evnt.Button == 1) {
-						if (evnt.Type == Gdk.EventType.TwoButtonPress && DiffLineActivated != null)
-							DiffLineActivated (this, EventArgs.Empty);
+						if (evnt.Type == Gdk.EventType.TwoButtonPress)
+							DiffLineActivated?.Invoke (this, EventArgs.Empty);
 						handled = true;
 					}
 				}
@@ -1259,8 +1258,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		protected override bool OnPopupMenu()
 		{
-			if (DoPopupMenu != null)
-				DoPopupMenu (null);
+			DoPopupMenu?.Invoke (null);
 			return true;
 		}
 

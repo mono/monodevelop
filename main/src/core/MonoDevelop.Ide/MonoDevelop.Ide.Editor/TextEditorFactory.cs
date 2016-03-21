@@ -98,6 +98,20 @@ namespace MonoDevelop.Ide.Editor
 			return result;
 		}
 
+		public static TextEditor CreateNewEditor (DocumentContext ctx, TextEditorType textEditorType = TextEditorType.Default)
+		{
+			var result = CreateNewEditor (textEditorType);
+			result.InitializeExtensionChain (ctx);
+			return result;
+		}
+
+		public static TextEditor CreateNewEditor (DocumentContext ctx, IReadonlyTextDocument document, TextEditorType textEditorType = TextEditorType.Default)
+		{
+			var result = CreateNewEditor (document, textEditorType);
+			result.InitializeExtensionChain (ctx);
+			return result;
+		}
+
 		public static string[] GetSyntaxProperties (string mimeType, string name)
 		{
 			if (mimeType == null)

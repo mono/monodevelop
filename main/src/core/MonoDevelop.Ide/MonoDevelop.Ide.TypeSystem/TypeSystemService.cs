@@ -50,16 +50,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		const string CurrentVersion = "1.1.9";
 		static IEnumerable<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
+		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
 		static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;
 			}
-		}
-
-		public static bool TrackFileChanges {
-			get;
-			set;
 		}
 
 		public static void RemoveSkippedfile (FilePath fileName)

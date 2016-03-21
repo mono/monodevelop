@@ -160,14 +160,101 @@
     <EmbeddedResource Include="MonoDevelop.Gettext.addin.xml">
       <LogicalName>MonoDevelop.Gettext.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale_22x22.png">
-      <LogicalName>locale_22x22.png</LogicalName>
+    <EmbeddedResource Include="icons\locale-16.png">
+      <LogicalName>locale-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale_16x16.png">
-      <LogicalName>locale_16x16.png</LogicalName>
+    <EmbeddedResource Include="icons\locale-16%402x.png">
+      <LogicalName>locale-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale_32x32.png">
-      <LogicalName>locale_32x32.png</LogicalName>
+    <EmbeddedResource Include="icons\locale-16~dark.png">
+      <LogicalName>locale-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale-16~dark%402x.png">
+      <LogicalName>locale-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale-16~sel.png">
+      <LogicalName>locale-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale-16~sel%402x.png">
+      <LogicalName>locale-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale-16~dark~sel.png">
+      <LogicalName>locale-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locale-16~dark~sel%402x.png">
+      <LogicalName>locale-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16.png">
+      <LogicalName>project-locale-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16%402x.png">
+      <LogicalName>project-locale-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16~dark.png">
+      <LogicalName>project-locale-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16~dark%402x.png">
+      <LogicalName>project-locale-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16~sel.png">
+      <LogicalName>project-locale-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16~sel%402x.png">
+      <LogicalName>project-locale-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16~dark~sel.png">
+      <LogicalName>project-locale-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-locale-16~dark~sel%402x.png">
+      <LogicalName>project-locale-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16.png">
+      <LogicalName>file-locale-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16%402x.png">
+      <LogicalName>file-locale-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16~dark.png">
+      <LogicalName>file-locale-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16~dark%402x.png">
+      <LogicalName>file-locale-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16~sel.png">
+      <LogicalName>file-locale-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16~sel%402x.png">
+      <LogicalName>file-locale-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16~dark~sel.png">
+      <LogicalName>file-locale-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-16~dark~sel%402x.png">
+      <LogicalName>file-locale-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32.png">
+      <LogicalName>file-locale-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32%402x.png">
+      <LogicalName>file-locale-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32~dark.png">
+      <LogicalName>file-locale-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32~dark%402x.png">
+      <LogicalName>file-locale-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32~sel.png">
+      <LogicalName>file-locale-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32~sel%402x.png">
+      <LogicalName>file-locale-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32~dark~sel.png">
+      <LogicalName>file-locale-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-locale-32~dark~sel%402x.png">
+      <LogicalName>file-locale-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="templates\TranslationProject.xpt.xml">
       <LogicalName>TranslationProject.xpt.xml</LogicalName>

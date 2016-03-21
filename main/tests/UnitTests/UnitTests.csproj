@@ -75,10 +75,6 @@
       <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
       <HintPath>..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
       <Private>False</Private>
@@ -204,13 +200,13 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\NUnit\MonoDevelop.NUnit.csproj">
-      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
-      <Name>MonoDevelop.NUnit</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
       <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\addins\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
+      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
+      <Name>MonoDevelop.UnitTesting</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +285,7 @@
     <Compile Include="MonoDevelop.Projects\TextFileTests.cs" />
     <Compile Include="MonoDevelop.Projects\GetSourceFilesAsyncTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\MonodevelopWorkspaceTests.cs" />
+    <Compile Include="MonoDevelop.Core\RemoteProcessConnectionTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

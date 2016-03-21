@@ -35,9 +35,6 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 {
-	#if NR6
-	public
-	#endif
 	class CSharpCodeGenerationService
 	{
 		readonly static Type typeInfo;

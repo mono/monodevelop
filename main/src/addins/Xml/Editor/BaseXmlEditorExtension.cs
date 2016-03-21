@@ -132,6 +132,9 @@ namespace MonoDevelop.Xml.Editor
 						DocumentContext.AttachToProject (pp);
 				}
 			}
+			if (DocumentContext == null) {
+				return;//This can happen if this object is disposed, which is likely to happen in DocumentContext.AttachToProject (pp);
+			}
 			if (DocumentContext.Project == null && ownerProjects.Count > 0)
 				DocumentContext.AttachToProject (ownerProjects[0]);
 			UpdatePath ();
@@ -633,6 +636,33 @@ namespace MonoDevelop.Xml.Editor
 			list.Add ("!--",  "md-literal", GettextCatalog.GetString ("Comment"));
 			list.AddKeyHandler (new IgnoreDashKeyHandler ());
 			list.Add ("![CDATA[", "md-literal", GettextCatalog.GetString ("Character data"));
+		}
+
+		public override bool GetCompletionCommandOffset (out int cpos, out int wlen)
+		{
+			cpos = wlen = 0;
+			int pos = Editor.CaretOffset - 1;
+			while (pos >= 0) {
+				char c = Editor.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_' && c != ':' && c != '.')
+					break;
+				pos--;
+			}
+			if (pos == -1)
+				return false;
+
+			pos++;
+			cpos = pos;
+			int len = Editor.Length;
+
+			while (pos < len) {
+				char c = Editor.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_' && c != ':' && c != '.')
+					break;
+				pos++;
+			}
+			wlen = pos - cpos;
+			return true;
 		}
 
 		#endregion

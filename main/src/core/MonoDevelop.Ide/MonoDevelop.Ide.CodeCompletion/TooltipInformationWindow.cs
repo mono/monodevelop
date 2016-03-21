@@ -83,22 +83,26 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public async Task AddOverload (CompletionData data, CancellationToken cancelToken)
 		{
-			var tooltipInformation = await data.CreateTooltipInformation (false, cancelToken);
-			if (tooltipInformation == null || tooltipInformation.IsEmpty || cancelToken.IsCancellationRequested)
-				return;
+			try {
+				var tooltipInformation = await data.CreateTooltipInformation (false, cancelToken);
+				if (tooltipInformation == null || tooltipInformation.IsEmpty || cancelToken.IsCancellationRequested)
+					return;
 
-			using (var layout = new Pango.Layout (PangoContext)) {
-				layout.FontDescription = Theme.Font;
-				layout.SetMarkup (tooltipInformation.SignatureMarkup);
-				int w, h;
-				layout.GetPixelSize (out w, out h);
-				if (w >= Allocation.Width - 10) {
-					tooltipInformation = await data.CreateTooltipInformation (true, cancelToken);
+				using (var layout = new Pango.Layout (PangoContext)) {
+					layout.FontDescription = Theme.Font;
+					layout.SetMarkup (tooltipInformation.SignatureMarkup);
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					if (w >= Allocation.Width - 10) {
+						tooltipInformation = await data.CreateTooltipInformation (true, cancelToken);
+					}
 				}
+				if (cancelToken.IsCancellationRequested)
+					return;
+				AddOverload (tooltipInformation);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while adding overload : " + data, e);
 			}
-			if (cancelToken.IsCancellationRequested)
-				return;
-			AddOverload (tooltipInformation);
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)

@@ -7,7 +7,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
 	[TestFixture]
-	public class AttributeNamedParameterCompletionProviderTests : CompletionTestBase
+	class AttributeNamedParameterCompletionProviderTests : CompletionTestBase
 	{
 //		internal override ICompletionProvider CreateCompletionProvider()
 //		{

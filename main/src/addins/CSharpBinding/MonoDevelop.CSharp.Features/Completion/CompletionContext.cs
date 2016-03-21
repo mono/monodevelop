@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public class CompletionContext
+	class CompletionContext
 	{
 		readonly Document document;
 

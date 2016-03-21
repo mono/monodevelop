@@ -415,6 +415,8 @@ namespace MonoDevelop.Components
 								true, leftXAlignment, ypos, lineWidth, rowHeight);
 							GdkWindow.DrawLayout (Style.TextGC (StateType.Selected), 
 							                      xpos + iconWidth + iconTextDistance, typos, layout);
+							if (icon != null)
+								icon = icon.WithStyles ("sel");
 						} else {
 							GdkWindow.DrawRectangle (Style.BaseGC (StateType.Selected), 
 								false, leftXAlignment, ypos, lineWidth, rowHeight);

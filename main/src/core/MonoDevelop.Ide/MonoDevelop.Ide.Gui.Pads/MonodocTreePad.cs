@@ -94,6 +94,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				return;
 			if (populated.ContainsKey (node))
 				return;
+#pragma warning disable 618
 			if (node.Nodes == null)
 				return;
 			TreeIter iter;
@@ -120,6 +121,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
+#pragma warning disable 618
 		void PopulateNode (TreeIter parent)
 		{
 			Node node = (Node)store.GetValue (parent, 1);

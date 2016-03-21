@@ -13,3 +13,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.Tests")]
 [assembly: InternalsVisibleTo("MonoDevelop.DocFood")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Addin")]
+[assembly: InternalsVisibleTo("MonoDevelop.GtkCore")]
+[assembly: InternalsVisibleTo("MonoDevelop.IPhone")]

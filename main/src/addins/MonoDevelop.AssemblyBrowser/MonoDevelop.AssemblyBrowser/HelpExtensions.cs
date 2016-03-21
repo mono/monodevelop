@@ -123,7 +123,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			return null;
 		}
-
+#pragma warning disable 618
 		public static XmlNode GetMonodocDocumentation (this IEntity member)
 		{
 			if (member.SymbolKind == SymbolKind.TypeDefinition) {

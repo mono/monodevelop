@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateEnumMember
 {
-	public partial class CSharpGenerateEnumMemberService :
+	partial class CSharpGenerateEnumMemberService :
 	AbstractGenerateEnumMemberService<CSharpGenerateEnumMemberService, SimpleNameSyntax, ExpressionSyntax>
 	{
 		protected override bool IsIdentifierNameGeneration(SyntaxNode node)

@@ -126,44 +126,52 @@ namespace MonoDevelop.CSharp.Completion
 
 		static CSharpCompletionTextEditorExtension ()
 		{
-			var methodInfo = typeof(Microsoft.CodeAnalysis.Document).GetMethod ("WithFrozenPartialSemanticsAsync", System.Reflection.BindingFlags.Instance  | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod);
-			if (methodInfo == null)
-				LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
-			
-			WithFrozenPartialSemanticsAsync = delegate (Microsoft.CodeAnalysis.Document doc, CancellationToken token) {
-				try {
-					return (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object [] { token });
-				} catch (TargetInvocationException ex) {
-					ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
-					return null;
-				}
-			};
+			try {
+				var methodInfo = typeof (Microsoft.CodeAnalysis.Document).GetMethod ("WithFrozenPartialSemanticsAsync", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.InvokeMethod);
+				if (methodInfo == null)
+					LoggingService.LogError ("Error in completion set up: Document.WithFrozenPartialSemanticsAsync not found!");
 
-			CompletionEngine.SnippetCallback = delegate(CancellationToken arg) {
-				if (snippets != null)
-					return Task.FromResult((IEnumerable<CompletionData>)snippets);
-				var newSnippets = new List<CompletionData>();
-				foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
-					if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
-						continue;
-					newSnippets.Add (new RoslynCompletionData (null) {
-						CompletionText = ct.Shortcut,
-						DisplayText = ct.Shortcut,
-						Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
-						Icon = ct.Icon
-					});
-				}
-				snippets = newSnippets;
-				return Task.FromResult((IEnumerable<CompletionData>)newSnippets);
-			};
-			NameProposalService.Replace (new NameConventionRule.NamePropsalStrategy ());
+				WithFrozenPartialSemanticsAsync = delegate (Microsoft.CodeAnalysis.Document doc, CancellationToken token) {
+					try {
+						return (Task<Microsoft.CodeAnalysis.Document>)methodInfo.Invoke (doc, new object [] { token });
+					} catch (TargetInvocationException ex) {
+						ExceptionDispatchInfo.Capture (ex.InnerException).Throw ();
+						return null;
+					}
+				};
+
+				CompletionEngine.SnippetCallback = delegate (CancellationToken arg) {
+					if (snippets != null)
+						return Task.FromResult ((IEnumerable<CompletionData>)snippets);
+					var newSnippets = new List<CompletionData> ();
+					foreach (var ct in MonoDevelop.Ide.CodeTemplates.CodeTemplateService.GetCodeTemplates ("text/x-csharp")) {
+						if (string.IsNullOrEmpty (ct.Shortcut) || ct.CodeTemplateContext != MonoDevelop.Ide.CodeTemplates.CodeTemplateContext.Standard)
+							continue;
+						newSnippets.Add (new RoslynCompletionData (null) {
+							CompletionText = ct.Shortcut,
+							DisplayText = ct.Shortcut,
+							Description = ct.Shortcut + Environment.NewLine + GettextCatalog.GetString (ct.Description),
+							Icon = ct.Icon
+						});
+					}
+					snippets = newSnippets;
+					return Task.FromResult ((IEnumerable<CompletionData>)newSnippets);
+				};
+				NameProposalService.Replace (new NameConventionRule.NamePropsalStrategy ());
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while loading c# completion text editor extension.", e);
+			}
 		}
 
 		public CSharpCompletionTextEditorExtension ()
 		{
-			foreach (var node in AddinManager.GetExtensionNodes<InstanceExtensionNode> ("/MonoDevelop/CSharp/Completion/ContextHandler")) {
-				var handler = (CompletionContextHandler)node.CreateInstance ();
-				additionalContextHandlers.Add (handler);
+			try {
+				foreach (var node in AddinManager.GetExtensionNodes<InstanceExtensionNode> ("/MonoDevelop/CSharp/Completion/ContextHandler")) {
+					var handler = (CompletionContextHandler)node.CreateInstance ();
+					additionalContextHandlers.Add (handler);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while creating c# completion text editor extension.", e);
 			}
 		}
 
@@ -505,7 +513,7 @@ namespace MonoDevelop.CSharp.Completion
 						list.Add ((Ide.CodeCompletion.CompletionData)symbol); 
 					}
 
-					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol))) {
+					if (forceSymbolCompletion || (IdeApp.Preferences.AddImportedItemsToCompletionList.Value && list.OfType<RoslynSymbolCompletionData> ().Any (cd => (cd.GetType () == typeof (RoslynSymbolCompletionData)) && (cd.Symbol is ITypeSymbol || cd.Symbol is IMethodSymbol)))) {
 						AddImportCompletionData (completionResult, list, roslynCodeCompletionFactory, semanticModel, offset, token);
 					}
 

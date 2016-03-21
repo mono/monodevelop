@@ -91,7 +91,7 @@ namespace Mono.TextEditor
 		}
 		
 		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.TextEditor"/> converts tabs to spaces.
+		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.MonoTextEditor"/> converts tabs to spaces.
 		/// It is possible to overwrite the default options value for certain languages (like F#).
 		/// </summary>
 		/// <value>

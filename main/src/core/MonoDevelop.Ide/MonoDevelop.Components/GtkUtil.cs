@@ -258,16 +258,30 @@ namespace MonoDevelop.Components
 		static void HandleLeaveNotifyEvent(object o, LeaveNotifyEventArgs args)
 		{
 			TreeView tree = (TreeView) o;
+			ScheduleHideTooltip (tree);
+		}
+
+		internal static void ScheduleHideTooltip (TreeView tree)
+		{
 			TreeViewTooltipsData data;
 			if (!treeData.TryGetValue (tree, out data))
 				return;
 			data.LeaveTimer = GLib.Timeout.Add (50, delegate {
 				data.LeaveTimer = 0;
-				if (data != null && data.Tooltip != null && data.Tooltip.MouseIsOver)
-					return false;
 				HideTooltip (tree);
 				return false;
 			});
+		}
+
+		internal static void UnscheduleHideTooltip (TreeView tree)
+		{
+			TreeViewTooltipsData data;
+			if (!treeData.TryGetValue (tree, out data))
+				return;
+			if (data.LeaveTimer != 0) {
+				GLib.Source.Remove (data.LeaveTimer);
+				data.LeaveTimer = 0;
+			}
 		}
 
 		internal static void HideTooltip (TreeView tree)
@@ -279,6 +293,10 @@ namespace MonoDevelop.Components
 				GLib.Source.Remove (data.ShowTimer);
 				data.ShowTimer = 0;
 				return;
+			}
+			if (data.LeaveTimer != 0) {
+				GLib.Source.Remove (data.LeaveTimer);
+				data.LeaveTimer = 0;
 			}
 			if (data.Tooltip != null) {
 				data.Tooltip.Destroy ();
@@ -778,8 +796,6 @@ namespace MonoDevelop.Components
 		TreeView tree;
 		TreeIter iter;
 
-		public bool MouseIsOver;
-		
 		public CellTooltipWindow (TreeView tree, TreeViewColumn col, TreePath path)
 		{
 			this.tree = tree;
@@ -927,14 +943,16 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			MouseIsOver = false;
-			GtkUtil.HideTooltip (tree);
+			// While showing a window, if the cursor is in the area of the new window, sometimes we get several Enter/Leave events
+			// in sequence, until the window is fully visible. To avoid hiding the window too early, we schedule here a tooltip
+			// hide, which will be canceled if we get a new Enter event.
+			GtkUtil.ScheduleHideTooltip (tree);
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			MouseIsOver = true;
+			GtkUtil.UnscheduleHideTooltip (tree);
 			return base.OnEnterNotifyEvent (evnt);
 		}
 	}

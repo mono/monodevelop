@@ -15,7 +15,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstructors
 {
-	public abstract partial class AbstractGenerateDefaultConstructorsService<TService>
+	abstract partial class AbstractGenerateDefaultConstructorsService<TService>
 		where TService : AbstractGenerateDefaultConstructorsService<TService>
 	{
 		protected AbstractGenerateDefaultConstructorsService()

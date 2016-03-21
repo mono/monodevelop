@@ -42,6 +42,7 @@ using System.Threading;
 using MonoDevelop.Ide.Editor.Projection;
 using Xwt;
 using System.Collections.Immutable;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -1046,6 +1047,11 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		protected override object GetNextCommandTarget ()
+		{
+			return commandRouter;
+		}
+
 		DocumentContext documentContext;
 		internal DocumentContext DocumentContext {
 			get {
@@ -1418,5 +1424,7 @@ namespace MonoDevelop.Ide.Editor
 		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }
 
 		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
+
+		public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
 	}
 }

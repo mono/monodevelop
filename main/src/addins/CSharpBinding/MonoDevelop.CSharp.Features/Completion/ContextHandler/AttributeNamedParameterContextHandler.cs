@@ -85,12 +85,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			return nameColonItems.Concat(nameEqualsItems);
 		}
-
-		public override async Task<bool> IsExclusiveAsync(Document document, int position, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
+		public override async Task<bool> IsExclusiveAsync(CompletionContext completionContext, SyntaxContext syntaxContext, CompletionTriggerInfo triggerInfo, CancellationToken cancellationToken)
 		{
-			var syntaxTree = await document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
-			var token = syntaxTree.FindTokenOnLeftOfPosition(position, cancellationToken)
-				.GetPreviousTokenIfTouchingWord(position);
+			var syntaxTree = await completionContext.Document.GetCSharpSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
+			var token = syntaxTree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken)
+			                      .GetPreviousTokenIfTouchingWord(completionContext.Position);
 
 			return IsAfterNameColonArgument(token) || IsAfterNameEqualsArgument(token);
 		}

@@ -239,7 +239,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		CompletionData ICompletionDataFactory.CreateAnonymousMethod(ICompletionDataKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret)
 		{
-			return new AnonymousMethodCompletionData (keyHandler) {
+			return new AnonymousMethodCompletionData (this, keyHandler) {
 				CompletionText = textBeforeCaret + "|" + textAfterCaret,
 				DisplayText = displayText,
 				Description = description

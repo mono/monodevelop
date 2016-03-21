@@ -16,7 +16,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementAbstractClass
 {
-	public partial class AbstractImplementAbstractClassService
+	partial class AbstractImplementAbstractClassService
 	{
 		private partial class Editor
 		{

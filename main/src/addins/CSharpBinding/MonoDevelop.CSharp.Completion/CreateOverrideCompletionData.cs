@@ -51,8 +51,12 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = Ambience.EscapeText (SafeMinimalDisplayString (base.Symbol, model, declarationBegin, Ambience.LabelFormat)) + " {...}";
+					if (factory == null) {
+						displayText = Symbol.Name;
+					} else {
+						var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+						displayText = Ambience.EscapeText (SafeMinimalDisplayString (base.Symbol, model, declarationBegin, Ambience.LabelFormat)) + " {...}";
+					}
 
 					if (!afterKeyword)
 						displayText = "override " + displayText;

@@ -79,6 +79,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				style.Save (fileName);
 				style.FileName = fileName;
 				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (style);
+				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			}

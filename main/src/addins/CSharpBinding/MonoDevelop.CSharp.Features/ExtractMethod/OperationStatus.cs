@@ -6,7 +6,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class OperationStatus
+	partial class OperationStatus
     {
         public OperationStatus(OperationStatusFlag flag, string reason)
         {

@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Completion
 		string text;
 		protected readonly RoslynCodeCompletionFactory factory;
 
-		protected CSharpCompletionTextEditorExtension ext { get { return factory.Ext; } }
+		protected CSharpCompletionTextEditorExtension ext { get { return factory?.Ext; } }
 
 		public RoslynSymbolCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ISymbol symbol, string text = null) : base (keyHandler)
 		{
@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharp.Completion
 				DisplayFlags |= DisplayFlags.Obsolete;
 			rightSideDescription = new Lazy<string> (delegate {
 				var returnType = symbol.GetReturnType ();
-				if (returnType == null)
+				if (returnType == null || factory == null)
 					return null;
 				try {
 					return "<span font='Sans 10'>" + GLib.Markup.EscapeText (SafeMinimalDisplayString (returnType, factory.SemanticModel, ext.Editor.CaretOffset)) + "</span>";

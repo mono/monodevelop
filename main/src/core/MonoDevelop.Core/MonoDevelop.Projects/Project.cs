@@ -153,8 +153,7 @@ namespace MonoDevelop.Projects
 
 				if (creationContext.Project != null) {
 					this.sourceProject = creationContext.Project;
-					IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
-					projectTypeGuids = globalGroup.GetValue ("ProjectTypeGuids");
+					projectTypeGuids = sourceProject.EvaluatedProperties.GetValue ("ProjectTypeGuids");
 					if (projectTypeGuids != null) {
 						var subtypeGuids = new List<string> ();
 						foreach (string guid in projectTypeGuids.Split (';')) {
@@ -430,7 +429,15 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
-		public async Task<ProjectFile[]> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		public Task<ProjectFile []> GetSourceFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetSourceFiles (monitor, configuration);
+		}
+
+		/// <summary>
+		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		protected virtual async Task<ProjectFile[]> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			// pre-load the results with the current list of files in the project
 			var results = new List<ProjectFile> ();
@@ -526,8 +533,16 @@ namespace MonoDevelop.Projects
 			await WriteProjectAsync (monitor);
 
 			// Doesn't save the file to disk if the content did not change
-			if (await sourceProject.SaveAsync (FileName) && projectBuilder != null)
-				await projectBuilder.Refresh ();
+			if (await sourceProject.SaveAsync (FileName)) {
+				var pb = GetCachedProjectBuilder ();
+				if (pb != null) {
+					try {
+						await pb.Refresh ();
+					} finally {
+						pb.ReleaseReference ();
+					}
+				}
+			}
 		}
 
 		protected override IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()
@@ -1014,9 +1029,14 @@ namespace MonoDevelop.Projects
 					var t1 = Counters.RunMSBuildTargetTimer.BeginTiming (GetProjectEventMetadata (configuration));
 					var t2 = buildTimer != null ? buildTimer.BeginTiming (GetProjectEventMetadata (configuration)) : null;
 
+					bool newBuilderRequested = false;
+
 					RemoteProjectBuilder builder = await GetProjectBuilder ();
-					if (builder.IsBusy)
+					if (builder.IsBusy) {
+						builder.ReleaseReference ();
+						newBuilderRequested = true;
 						builder = await RequestLockedBuilder ();
+					}
 					else
 						builder.Lock ();
 
@@ -1024,7 +1044,8 @@ namespace MonoDevelop.Projects
 						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new [] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
 						builder.Unlock ();
-						if (builder != this.projectBuilder) {
+						builder.ReleaseReference ();
+						if (newBuilderRequested) {
 							// Dispose the builder after a while, so that it can be reused
 							#pragma warning disable 4014
 							Task.Delay (10000).ContinueWith (t => builder.Dispose ());
@@ -1154,28 +1175,47 @@ namespace MonoDevelop.Projects
 			var sln = ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
+			RemoteProjectBuilder result = null;
+
 			using (await builderLock.EnterAsync ()) {
-				if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
-					if (projectBuilder != null) {
-						projectBuilder.Dispose ();
-						projectBuilder = null;
+				bool refAdded = false;
+				if (projectBuilder == null || !(refAdded = projectBuilder.AddReference ()) || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != FileName || lastSlnFileName != slnFile) {
+					if (projectBuilder != null && refAdded) {
+						projectBuilder.Shutdown ();
+						projectBuilder.ReleaseReference ();
 					}
-					projectBuilder = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0);
-					projectBuilder.Disconnected += delegate {
+					var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0);
+					pb.AddReference ();
+					pb.Disconnected += delegate {
 						CleanupProjectBuilder ();
 					};
+					projectBuilder = pb;
 					lastBuildToolsVersion = ToolsVersion;
 					lastBuildRuntime = runtime.Id;
 					lastFileName = FileName;
 					lastSlnFileName = slnFile;
 				}
 				if (modifiedInMemory) {
-					modifiedInMemory = false;
-					await WriteProjectAsync (new ProgressMonitor ());
-					await projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
+					try {
+						modifiedInMemory = false;
+						await WriteProjectAsync (new ProgressMonitor ());
+						await projectBuilder.RefreshWithContent (sourceProject.SaveToString ());
+					} catch {
+						projectBuilder.ReleaseReference ();
+						throw;
+					}
 				}
+				result = projectBuilder;
 			}
-			return projectBuilder;
+			return result;
+		}
+
+		RemoteProjectBuilder GetCachedProjectBuilder ()
+		{
+			var pb = projectBuilder;
+			if (pb != null && pb.AddReference ())
+				return pb;
+			return null;
 		}
 
 		async Task<RemoteProjectBuilder> RequestLockedBuilder ()
@@ -1188,27 +1228,34 @@ namespace MonoDevelop.Projects
 			var slnFile = sln != null ? sln.FileName : null;
 
 			var pb = await MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, FileName, slnFile, 0, true);
+			pb.AddReference ();
 			if (modifiedInMemory) {
-				await WriteProjectAsync (new ProgressMonitor ());
-				await pb.RefreshWithContent (sourceProject.SaveToString ());
+				try {
+					await WriteProjectAsync (new ProgressMonitor ());
+					await pb.RefreshWithContent (sourceProject.SaveToString ());
+				} catch {
+					pb.Dispose ();
+					throw;
+				}
 			}
 			return pb;
 		}
 
 		void CleanupProjectBuilder ()
 		{
-			if (projectBuilder != null) {
-				projectBuilder.Dispose ();
-				projectBuilder = null;
+			var pb = GetCachedProjectBuilder ();
+			if (pb != null) {
+				pb.Shutdown ();
+				pb.ReleaseReference ();
 			}
 		}
 
 		public Task RefreshProjectBuilder ()
 		{
-			if (projectBuilder != null)
-				return projectBuilder.Refresh ();
-			else
-				return Task.FromResult (true);
+			var pb = GetCachedProjectBuilder ();
+			if (pb != null)
+				return pb.Refresh ().ContinueWith (t => pb.ReleaseReference ());
+			return Task.FromResult (true);
 		}
 
 		public void ReloadProjectBuilder ()
@@ -1848,22 +1895,40 @@ namespace MonoDevelop.Projects
 			return baseFiles;
 		}
 
-		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		internal void NotifyItemsAdded (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemsAdded (objs);
+			ProjectExtension.OnItemsAdded (objs);
+		}
+
+		internal void NotifyItemsRemoved (IEnumerable<ProjectItem> objs)
+		{
+			ProjectExtension.OnItemsRemoved (objs);
+		}
+
+		protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
 			foreach (var it in objs) {
 				if (it.Project != null)
 					throw new InvalidOperationException (it.GetType ().Name + " already belongs to a project");
 				it.Project = this;
 			}
+		
+			NotifyModified ("Items");
+			if (ProjectItemAdded != null)
+				ProjectItemAdded (this, new ProjectItemEventArgs (objs.Select (pi => new ProjectItemEventInfo (this, pi))));
+		
 			NotifyFileAddedToProject (objs.OfType<ProjectFile> ());
 		}
 
-		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemsRemoved (objs);
 			foreach (var it in objs)
 				it.Project = null;
+		
+			NotifyModified ("Items");
+			if (ProjectItemRemoved != null)
+				ProjectItemRemoved (this, new ProjectItemEventArgs (objs.Select (pi => new ProjectItemEventInfo (this, pi))));
+		
 			NotifyFileRemovedFromProject (objs.OfType<ProjectFile> ());
 		}
 
@@ -2702,7 +2767,7 @@ namespace MonoDevelop.Projects
 				var p2 = evalItem.Metadata.GetProperty (p.Name);
 				if (p2 == null)
 					return false;
-				if (!p.ValueType.Equals (p.Value, p2.Value))
+				if (!p.ValueType.Equals (p.Value, p2.UnevaluatedValue))
 					return false;
 				n++;
 			}
@@ -2850,6 +2915,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
+
+		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
+	
 		/// <summary>
 		/// Occurs when a file is removed from this project.
 		/// </summary>
@@ -3012,6 +3081,21 @@ namespace MonoDevelop.Projects
 			internal protected override bool OnFastCheckNeedsBuild (ConfigurationSelector configuration)
 			{
 				return Project.OnFastCheckNeedsBuild (configuration);
+			}
+
+			internal protected override Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				return Project.OnGetSourceFiles (monitor, configuration);
+			}
+
+			internal protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+			{
+				Project.OnItemsAdded (objs);
+			}
+
+			internal protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+			{
+				Project.OnItemsRemoved (objs);
 			}
 		}
 	}

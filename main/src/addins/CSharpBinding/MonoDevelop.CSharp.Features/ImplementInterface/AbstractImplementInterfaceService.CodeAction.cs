@@ -19,7 +19,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
 {
-	public abstract partial class AbstractImplementInterfaceService
+	abstract partial class AbstractImplementInterfaceService
     {
         internal partial class ImplementInterfaceCodeAction : CodeAction
         {
@@ -443,7 +443,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
                     if ((interfaceBeingImplemented != null) && (!throughMemberType.Equals(interfaceBeingImplemented)))
                     {
                         through = factory.CastExpression(interfaceBeingImplemented,
-                            through.WithAdditionalAnnotations(Simplifier.Annotation));
+                            through.WithAdditionalAnnotations (Simplifier.Annotation));
 
 						through = through.Parenthesize();
                     }

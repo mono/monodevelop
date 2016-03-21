@@ -331,7 +331,8 @@ namespace MonoDevelop.Components.Commands
 		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs e)
 		{
 			bool complete;
-			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
+			// KeyboardShortcut[] accels = 
+			KeyBindingManager.AccelsFromKey (e.Event, out complete);
 
 			if (!complete) {
 				// incomplete accel
@@ -1332,6 +1333,8 @@ namespace MonoDevelop.Components.Commands
 								info.Visible = true;
 							return info;
 						}
+						if (info.Enabled && !info.Bypass)
+							return info;
 						continue;
 					}
 					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {

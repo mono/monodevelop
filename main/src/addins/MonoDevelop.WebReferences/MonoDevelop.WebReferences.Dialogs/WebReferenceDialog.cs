@@ -149,7 +149,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		#region Member Variables
-		const string homeUrl = "http://www.w3schools.com/WebServices/TempConvert.asmx";
+		const string homeUrl = "http://www.w3schools.com/xml/tempconvert.asmx";
 		WebServiceDiscoveryResult selectedService;
 //		protected Gtk.Alignment frmBrowserAlign;
 		#endregion

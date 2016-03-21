@@ -377,6 +377,9 @@ namespace MonoDevelop.CSharp.Parser
 						var first = regionStart.GetLocation ().GetLineSpan ();
 						var last = trivia.GetLocation ().GetLineSpan ();
 						var v = regionStart.ToString ();
+						v = v.Substring ("#region".Length).Trim ();
+						if (v.Length == 0)
+							v = "...";
 						Foldings.Add (new FoldingRegion(v, new DocumentRegion(first.StartLinePosition, last.EndLinePosition), FoldType.UserRegion, true));
 					} catch (ArgumentOutOfRangeException) { }
 				}

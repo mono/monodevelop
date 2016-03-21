@@ -36,7 +36,6 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Extensions;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {

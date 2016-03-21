@@ -104,10 +104,6 @@
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
-      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
       <Private>False</Private>
@@ -158,7 +154,6 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticRunner.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionContainer.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\IssueMarker.cs" />
-    <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\BuiltInCodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AnalyzersFromAssembly.cs" />
@@ -172,6 +167,7 @@
     <Compile Include="MonoDevelop.CodeIssues\CSharpSuppressionFixProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindReferencesProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring\JumpToDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

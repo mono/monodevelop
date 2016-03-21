@@ -31,7 +31,7 @@ using System.Diagnostics;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public abstract class TestBase 
+	abstract class TestBase : ICSharpCode.NRefactory6.TestBase
 	{
 		//class TestListener : TraceListener
 		//{
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			//System.Diagnostics.Debug.Listeners.Remove (listener);
 		}
 
-		public void AssertEmpty(ICSharpCode.NRefactory6.CSharp.Completion.CompletionResult provider)
+		internal void AssertEmpty(ICSharpCode.NRefactory6.CSharp.Completion.CompletionResult provider)
 		{
 			var isEmpty = provider == null || provider.Count == 0;
 			if (!isEmpty) {
@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 			Assert.IsTrue(isEmpty, "provider should be empty.");
 		}
 
-		protected static void AssertExists (ICSharpCode.NRefactory6.CSharp.Completion.CompletionResult provider, string testClass)
+		internal static void AssertExists (ICSharpCode.NRefactory6.CSharp.Completion.CompletionResult provider, string testClass)
 		{
 			var data = provider.Find (testClass);
 			if (data == null) {

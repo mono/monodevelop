@@ -150,6 +150,21 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			try {
 				error = false;
 				return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (styleName);
+			} catch (StyleImportException e) {
+				error = true;
+
+				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
+				style.Name = styleName;
+				switch (e.Reason) {
+				case StyleImportException.ImportFailReason.NoValidColorsFound:
+					style.Description = GettextCatalog.GetString ("No valid colors found inside the settings. (Maybe only theme is defined - check <FontsAndColors> node?)");
+					break;
+				default:
+					style.Description = GettextCatalog.GetString ("Loading error");
+					break;
+				}
+				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
+				return style;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading color style " + styleName, e);
 				error = true;
@@ -252,6 +267,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 			if (success) {
 				Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
+				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}

@@ -16,7 +16,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public abstract partial class MethodExtractor
+    abstract partial class MethodExtractor
     {
         protected abstract partial class CodeGenerator<TStatement, TExpression, TNodeUnderContainer>
             where TStatement : SyntaxNode
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 
                 this.MethodNameAnnotation = new SyntaxAnnotation();
                 this.CallSiteAnnotation = new SyntaxAnnotation();
-                this.MethodDefinitionAnnotation = new SyntaxAnnotation();
+				this.MethodDefinitionAnnotation = MonoDevelop.Ide.TypeSystem.TypeSystemService.InsertionModeAnnotation;
             }
 
             #region method to be implemented in sub classes

@@ -617,7 +617,7 @@
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Create New Localization</property>
-    <property name="Icon">resource:locale_16x16.png</property>
+    <property name="Icon">resource:locale-16.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>

@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 		public override bool Handle (TextEditor editor, DocumentContext ctx, KeyDescriptor descriptor)
 		{
 			char closingBrace;
-			if (!IsSupportedOpeningBrace (descriptor.KeyChar, out closingBrace)  || !CheckCodeContext (editor, ctx, editor.CaretOffset - 1, descriptor.KeyChar, default (CancellationToken)))
+			if (!IsSupportedOpeningBrace (descriptor.KeyChar, out closingBrace)  || !CheckCodeContext (editor, ctx, editor.CaretOffset - 1, descriptor.KeyChar, default (CancellationToken))  || ctx.AnalysisDocument == null)
 				return false;
 			
 			var session = CreateEditorSession (editor, ctx, editor.CaretOffset, descriptor.KeyChar, default (CancellationToken));
@@ -131,37 +131,37 @@ namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 			return false;
 		}
 
-		public static class CurlyBrace
+		static class CurlyBrace
 		{
 			public const char OpenCharacter = '{';
 			public const char CloseCharacter = '}';
 		}
 
-		public static class Parenthesis
+		static class Parenthesis
 		{
 			public const char OpenCharacter = '(';
 			public const char CloseCharacter = ')';
 		}
 
-		public static class Bracket
+		static class Bracket
 		{
 			public const char OpenCharacter = '[';
 			public const char CloseCharacter = ']';
 		}
 
-		public static class LessAndGreaterThan
+		static class LessAndGreaterThan
 		{
 			public const char OpenCharacter = '<';
 			public const char CloseCharacter = '>';
 		}
 
-		public static class DoubleQuote
+		static class DoubleQuote
 		{
 			public const char OpenCharacter = '"';
 			public const char CloseCharacter = '"';
 		}
 
-		public static class SingleQuote
+		static class SingleQuote
 		{
 			public const char OpenCharacter = '\'';
 			public const char CloseCharacter = '\'';

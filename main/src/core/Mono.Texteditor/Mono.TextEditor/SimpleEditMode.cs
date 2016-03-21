@@ -404,9 +404,16 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.o, Gdk.ModifierType.ControlMask), MiscActions.InsertNewLinePreserveCaretPosition);
 		}
 		
-		public void AddBinding (Gdk.Key key, Action<TextEditorData> action)
+		public void AddBinding (Gdk.Key key, Action<TextEditorData> action, bool force = false)
 		{
-			keyBindings.Add (GetKeyCode (key), action);
+			var code = GetKeyCode (key);
+			if (force) {
+				if (keyBindings.ContainsKey (code)) {
+					keyBindings [code] = action;
+					return;
+				}
+			}
+			keyBindings.Add (code, action);
 		}
 
 		public override void SelectValidShortcut (KeyboardShortcut[] accels, out Gdk.Key key, out ModifierType mod)

@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public class ExtractMethodResult
+	class ExtractMethodResult
 	{
 		/// <summary>
 		/// True if the extract method operation succeeded.

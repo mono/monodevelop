@@ -165,6 +165,13 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual (new SearchPopupSearchPattern ("foo", "bar", 12), pattern);
 		}
 
+		[Test]
+		public void TestIgnoreSpacesInCategory ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("file: MyClass.cs ");
+			Assert.AreEqual (new SearchPopupSearchPattern ("file", "MyClass.cs"), pattern);
+		}
+
 	}
 }
 

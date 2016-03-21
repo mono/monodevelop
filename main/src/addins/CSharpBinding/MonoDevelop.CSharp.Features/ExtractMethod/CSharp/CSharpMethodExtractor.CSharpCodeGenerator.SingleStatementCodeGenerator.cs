@@ -10,11 +10,11 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpMethodExtractor
+	partial class CSharpMethodExtractor
     {
         private partial class CSharpCodeGenerator
         {
-            public class SingleStatementCodeGenerator : CSharpCodeGenerator
+            class SingleStatementCodeGenerator : CSharpCodeGenerator
             {
                 public SingleStatementCodeGenerator(
                     InsertionPoint insertionPoint,

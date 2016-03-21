@@ -878,13 +878,17 @@ namespace MonoDevelop.Projects
 			if (CheckUseMSBuildEngine (configuration)) {
 				// Get the references list from the msbuild project
 				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				var configs = GetConfigurations (configuration, false);
+				try {
+					var configs = GetConfigurations (configuration, false);
 
-				string [] refs;
-				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-					refs = await builder.ResolveAssemblyReferences (configs, CancellationToken.None);
-				foreach (var r in refs)
-					result.Add (r);
+					string [] refs;
+					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+						refs = await builder.ResolveAssemblyReferences (configs, CancellationToken.None);
+					foreach (var r in refs)
+						result.Add (r);
+				} finally {
+					builder.ReleaseReference ();
+				}
 			} else {
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType != ReferenceType.Project) {
@@ -1423,7 +1427,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsAdded (objs);
 			foreach (var pref in objs.OfType<ProjectReference> ()) {
@@ -1432,7 +1436,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsRemoved (objs);
 			foreach (var pref in objs.OfType<ProjectReference> ()) {
@@ -1676,6 +1680,12 @@ namespace MonoDevelop.Projects
 			internal protected override Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 			{
 				return Project.OnExecuteCommand (monitor, context, configuration, executionCommand);
+			}
+
+			internal protected override string[] SupportedLanguages {
+				get {
+					return Project.OnGetSupportedLanguages ();
+				}
 			}
 
 			#region Framework management

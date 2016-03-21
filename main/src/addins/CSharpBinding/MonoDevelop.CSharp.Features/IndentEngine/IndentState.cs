@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	///     Each state defines the logic for indentation based on chars that
 	///     are pushed to it.
 	/// </summary>
-	public abstract class IndentState : ICloneable
+	abstract class IndentState : ICloneable
 	{
 		#region Properties
 
@@ -243,7 +243,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <remarks>
 	///     Doesn't define any transitions to new states.
 	/// </remarks>
-	public class NullState : IndentState
+	class NullState : IndentState
 	{
 		public NullState()
 		{ }
@@ -273,7 +273,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <remarks>
 	///     Represents a block of code between a pair of brackets.
 	/// </remarks>
-	public abstract class BracketsBodyBaseState : IndentState
+	abstract class BracketsBodyBaseState : IndentState
 	{
 	
 		/// <summary>
@@ -345,7 +345,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <remarks>
 	///     Represents a block of code between { and }.
 	/// </remarks>
-	public class BracesBodyState : BracketsBodyBaseState
+	class BracesBodyState : BracketsBodyBaseState
 	{
 		/// <summary>
 		///     Type of the current block body.
@@ -923,7 +923,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <remarks>
 	///     Represents the global space of the program.
 	/// </remarks>
-	public class GlobalBodyState : BracesBodyState
+	class GlobalBodyState : BracesBodyState
 	{
 		public override char ClosedBracket
 		{
@@ -965,7 +965,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <remarks>
 	///     Represents the block of code in one switch case (including default).
 	/// </remarks>
-	public class SwitchCaseState : BracesBodyState
+	class SwitchCaseState : BracesBodyState
 	{
 		public SwitchCaseState()
 		{ }
@@ -1068,7 +1068,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <remarks>
 	///     Represents a block of code between ( and ).
 	/// </remarks>
-	public class ParenthesesBodyState : BracketsBodyBaseState
+	class ParenthesesBodyState : BracketsBodyBaseState
 	{
 		/// <summary>
 		///     True if any char has been pushed.
@@ -1153,7 +1153,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <remarks>
 	///     Represents a block of code between [ and ].
 	/// </remarks>
-	public class SquareBracketsBodyState : BracketsBodyBaseState
+	class SquareBracketsBodyState : BracketsBodyBaseState
 	{
 		/// <summary>
 		///     True if any char has been pushed.
@@ -1241,7 +1241,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	///     Activated when the '#' char is pushed and the 
 	///     <see cref="CSharpIndentEngine.isLineStart"/> is true.
 	/// </remarks>
-	public class PreProcessorState : IndentState
+	class PreProcessorState : IndentState
 	{
 		/// <summary>
 		///     The type of the preprocessor directive.
@@ -1685,7 +1685,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	///     Activates when the #if or #elif directive is false and ignores
 	///     all pushed chars until the next '#'.
 	/// </remarks>
-	public class PreProcessorCommentState : IndentState
+	class PreProcessorCommentState : IndentState
 	{
 		public PreProcessorCommentState()
 		{ }
@@ -1733,7 +1733,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	///     Single-line comment state.
 	/// </summary>
-	public class LineCommentState : IndentState
+	class LineCommentState : IndentState
 	{
 		/// <summary>
 		///     It's possible that this should be the DocComment state:
@@ -1793,7 +1793,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	///     XML documentation comment state.
 	/// </summary>
-	public class DocCommentState : IndentState
+	class DocCommentState : IndentState
 	{
 		public DocCommentState()
 		{ }
@@ -1831,7 +1831,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	///     Multi-line comment state.
 	/// </summary>
-	public class MultiLineCommentState : IndentState
+	class MultiLineCommentState : IndentState
 	{
 		/// <summary>
 		///     True if any char has been pushed to this state.
@@ -1883,7 +1883,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	///     StringLiteral state.
 	/// </summary>
-	public class StringLiteralState : IndentState
+	class StringLiteralState : IndentState
 	{
 		/// <summary>
 		///     True if the next char is escaped with '\'.
@@ -1929,7 +1929,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	///     Verbatim string state.
 	/// </summary>
-	public class VerbatimStringState : IndentState
+	class VerbatimStringState : IndentState
 	{
 		/// <summary>
 		///     True if there is an odd number of '"' in a row.
@@ -1978,7 +1978,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	/// <summary>
 	///     Character state.
 	/// </summary>
-	public class CharacterState : IndentState
+	class CharacterState : IndentState
 	{
 		/// <summary>
 		///     True if the next char is escaped with '\'.

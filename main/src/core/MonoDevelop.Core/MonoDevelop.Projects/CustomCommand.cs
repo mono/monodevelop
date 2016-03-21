@@ -152,6 +152,11 @@ namespace MonoDevelop.Projects
 			cmd.externalConsole = externalConsole;
 			cmd.pauseExternalConsole = pauseExternalConsole;
 			cmd.type = type;
+
+			foreach (var variable in environmentVariables) {
+				cmd.environmentVariables.Add (variable.Key, variable.Value);
+			}
+
 			return cmd;
 		}
 		

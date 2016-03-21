@@ -29,7 +29,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class FormatItemTests : TestBase
+	class FormatItemTests : TestBase
 	{
 		[Test]
 		public void TestFormatItem ()

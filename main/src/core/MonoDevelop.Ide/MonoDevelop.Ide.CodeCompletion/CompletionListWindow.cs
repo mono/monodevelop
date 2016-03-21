@@ -416,7 +416,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if ((completionDataList.Count == 0) && !IsChanging)
 				return false;
-			
+
 			Style = CompletionWidget.GtkStyle;
 			
 			//sort, sinking obsolete items to the bottoms

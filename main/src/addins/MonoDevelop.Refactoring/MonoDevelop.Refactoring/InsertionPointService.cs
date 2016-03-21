@@ -52,16 +52,27 @@ namespace MonoDevelop.Refactoring
 
 			// update type from parsed document, since this is always newer.
 			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
-			List<InsertionPoint> result = new List<InsertionPoint> ();
 			//var realStartLocation = data.OffsetToLocation (offset);
 			var model = parsedDocument.GetAst<SemanticModel> ();
-			type = model.GetEnclosingNamedType (part, default(CancellationToken)) as ITypeSymbol ?? type;
+			return GetInsertionPoints (data, model, type, part);
+		}
+
+		internal static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, SemanticModel model, ITypeSymbol type, int part)
+		{
+			List<InsertionPoint> result = new List<InsertionPoint> ();
+
+			type = model.GetEnclosingNamedType (part, default (CancellationToken)) as ITypeSymbol ?? type;
 			var sourceSpan = new TextSpan (part, 0);
 
 			var filePath = data.FileName;
 			var declaringType = type.DeclaringSyntaxReferences.FirstOrDefault (dsr => dsr.SyntaxTree.FilePath == filePath && dsr.Span.Contains (sourceSpan)) ?? type.DeclaringSyntaxReferences.FirstOrDefault ();
 			if (declaringType == null)
 				return result;
+			return GetInsertionPoints (data, type, result, sourceSpan, declaringType);
+		}
+
+		static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ITypeSymbol type, List<InsertionPoint> result, TextSpan sourceSpan, SyntaxReference declaringType)
+		{
 			var openBraceToken = declaringType.GetSyntax ().ChildTokens ().FirstOrDefault (t => t.IsKind (SyntaxKind.OpenBraceToken));
 			if (!openBraceToken.IsMissing) {
 				var domLocation = data.OffsetToLocation (openBraceToken.SpanStart);
@@ -70,7 +81,7 @@ namespace MonoDevelop.Refactoring
 				result [0].LineBefore = NewLineInsertion.None;
 			}
 			foreach (var member in type.GetMembers ()) {
-				if (member.IsImplicitlyDeclared || !member.IsDefinedInSource())
+				if (member.IsImplicitlyDeclared || !member.IsDefinedInSource ())
 					continue;
 				//var domLocation = member.BodyRegion.End;
 				foreach (var loc in member.DeclaringSyntaxReferences) {

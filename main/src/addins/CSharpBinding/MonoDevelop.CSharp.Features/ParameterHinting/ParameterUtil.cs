@@ -35,7 +35,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public class ParameterIndexResult
+	class ParameterIndexResult
 	{
 		public readonly static ParameterIndexResult Invalid = new ParameterIndexResult (null, -1);
 		public readonly static ParameterIndexResult First   = new ParameterIndexResult (null, 0);
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		}
 	}
 		
-	public static class ParameterUtil
+	static class ParameterUtil
 	{
 		public static async Task<ParameterIndexResult> GetCurrentParameterIndex (Document document, int startOffset, int caretOffset, CancellationToken cancellationToken = default(CancellationToken))
 		{

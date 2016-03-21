@@ -27,8 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
@@ -54,28 +52,32 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public static void Restore (
+			IPackageManagementSolution solution,
 			IPackageManagementProject project,
 			Action afterRestore)
 		{
 			var runner = new RestoreBeforeUpdateAction ();
-			runner.RestoreProjectPackages (project.DotNetProject, afterRestore);
+			runner.RestoreProjectPackages (solution, project.DotNetProject, afterRestore);
 		}
 
 		public static void Restore (
+			IPackageManagementSolution solution,
 			IEnumerable<IPackageManagementProject> projects,
 			Action afterRestore)
 		{
 			var runner = new RestoreBeforeUpdateAction ();
 			runner.RestoreAllPackagesInSolution (
+				solution,
 				projects.Select (project => project.DotNetProject),
 				afterRestore);
 		}
 
 		public void RestoreAllPackagesInSolution (
+			IPackageManagementSolution solution,
 			IEnumerable<DotNetProject> projects,
 			Action afterRestore)
 		{
-			var restorer = new PackageRestorer (projects);
+			var restorer = new PackageRestorer (solution, projects);
 			Restore (restorer, afterRestore);
 		}
 
@@ -91,9 +93,12 @@ namespace MonoDevelop.PackageManagement
 			});
 		}
 
-		public void RestoreProjectPackages (DotNetProject project, Action afterRestore)
+		public void RestoreProjectPackages (
+			IPackageManagementSolution solution,
+			DotNetProject project,
+			Action afterRestore)
 		{
-			var restorer = new PackageRestorer (project);
+			var restorer = new PackageRestorer (solution, project);
 			Restore (restorer, afterRestore);
 		}
 	}

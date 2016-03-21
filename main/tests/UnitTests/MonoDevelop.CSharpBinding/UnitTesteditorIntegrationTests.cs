@@ -37,12 +37,30 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core;
 using System.Threading.Tasks;
+using MonoDevelop.UnitTesting;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
 	[TestFixture]
 	public class UnitTesteditorIntegrationTests : UnitTests.TestBase
 	{
+		class UnitTestMarkers: IUnitTestMarkers
+		{
+			public string TestMethodAttributeMarker { get; set; }
+			public string TestCaseMethodAttributeMarker { get; set; }
+			public string IgnoreTestMethodAttributeMarker { get; set; }
+			public string IgnoreTestClassAttributeMarker { get; set; }
+		}
+
+		IUnitTestMarkers [] unitTestMarkers = {
+			new UnitTestMarkers {
+				TestMethodAttributeMarker = "NUnit.Framework.TestAttribute",
+				TestCaseMethodAttributeMarker = "NUnit.Framework.TestCaseAttribute",
+				IgnoreTestMethodAttributeMarker = "NUnit.Framework.IgnoreAttribute",
+				IgnoreTestClassAttributeMarker = "NUnit.Framework.IgnoreAttribute"
+			}
+		};
+
 		static async Task<UnitTestTextEditorExtension> Setup (string input)
 		{
 			var tww = new TestWorkbenchWindow ();
@@ -102,7 +120,7 @@ class TestClass
 	public void MyTest () {}
 }
 ");
-			var tests = await ext.GatherUnitTests (default(CancellationToken));
+			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 		}
@@ -116,7 +134,7 @@ class TestClass
 	public void MyTest () {}
 }
 ");
-			var tests = await ext.GatherUnitTests (default(CancellationToken));
+			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (0, tests.Count);
 		}
@@ -141,7 +159,7 @@ public class Derived : MyBase
 	public void MyTest () {}
 }
 ");
-			var tests = await ext.GatherUnitTests (default(CancellationToken));
+			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 
@@ -163,7 +181,7 @@ class TestClass
 	public void MyTest () {}
 }
 ");
-			var tests = await ext.GatherUnitTests (default(CancellationToken));
+			var tests = await ext.GatherUnitTests (unitTestMarkers, default(CancellationToken));
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 		}

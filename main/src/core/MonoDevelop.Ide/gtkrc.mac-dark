@@ -98,8 +98,8 @@ style "default" {
     GtkComboBox::arrow-size = 12
 
     GtkMenu::vertical-padding = 4
-    GtkMenuItem::horizontal-padding = 9
-    GtkMenuItem::toggle-spacing = 0
+    GtkMenuItem::horizontal-padding = 3
+    GtkMenuItem::toggle-spacing = 6
     GtkSeparatorMenuItem::horizontal-padding = 2
 
     engine "xamarin" {
@@ -223,19 +223,7 @@ style "menu-separator" = "menu-item" {
 
 style "toolbar" = "default"
 {
-    bg[NORMAL] = "#ddd"
-
-    engine "xamarin" {
-        toolbarstyle = 2
-    }
-}
-
-style "toolbar-button"
-{
-    engine "xamarin" {
-        contrast = 1.0
-        focus_color = @bg_color
-    }
+    bg[NORMAL] = @base_color
 }
 
 style "tooltip"
@@ -285,22 +273,6 @@ style "icon-view" = "default"
     base[SELECTED] = "#f5f7fa"
     fg[SELECTED] = "#000"
     text[SELECTED] = "#000"
-}
-
-style "toolbar-combo-box" = "default"
-{
-    fg[NORMAL] = "#616161"
-    text[NORMAL] = @fg_color
-    bg[NORMAL] = @bg_color
-    base[NORMAL] = @bg_color
-
-    ythickness = 4
-    xthickness = 2
-
-    engine "xamarin" {
-        comboboxstyle = 0
-        arrowstyle = 2
-    }
 }
 
 style "combo-box" = "button"
@@ -497,7 +469,6 @@ widget_class "*<GtkSeparatorMenuItem>" style "menu-separator"
 widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 
 widget_class "*<GtkToolbar>*" style "toolbar"
-widget_class "*ToolButton*" style "toolbar-button"
 
 widget_class "*.<GtkTreeView>*" style "treeview"
 widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
@@ -510,10 +481,6 @@ widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
 widget_class "*.<GtkComboBoxEntry>.<GtkEntry>" style "entry"
 widget_class "*.<GtkComboBoxText>.<GtkToggleButton>" style "combo-box-entry-button"
 widget_class "*.<GtkComboBoxEntry>.<GtkButton>*" style "combo-box-entry-button"
-
-# Comboboxes within toolbars
-widget_class "*.<GtkToolbar>.*.<GtkComboBox>.*" style "toolbar-combo-box"
-widget "*MainToolbar*.GtkComboBox.*" style "toolbar-combo-box"
 
 widget "gtk-tooltip*" style "tooltip"
 

@@ -58,7 +58,8 @@ namespace MonoDevelop.PackageManagement.Tests
 				null,
 				false);
 
-			var node = new PackageReferenceNode (packageReference, true);
+			var parentNode = new TestableProjectPackagesFolderNode (project.FakeDotNetProject, null);
+			var node = new PackageReferenceNode (parentNode, packageReference, true);
 
 			reinstaller.Run (node);
 		}

@@ -27,7 +27,6 @@
 //
 
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Refactoring;
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components;
@@ -35,11 +34,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
-using System.Linq;
-using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MonoDevelop.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -124,13 +120,15 @@ namespace MonoDevelop.AssemblyBrowser
 		public void Open (Microsoft.CodeAnalysis.ISymbol element, bool expandNode = true)
 		{
 			var url = element.OriginalDefinition.GetDocumentationCommentId ();//AssemblyBrowserWidget.GetIdString (member); 
-			widget.PublicApiOnly = element.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public;
+			if (element.DeclaredAccessibility != Microsoft.CodeAnalysis.Accessibility.Public)
+				widget.PublicApiOnly = false;
 			widget.Open (url, expandNode: expandNode);
 		}
 
 		public void Open (string documentationCommentId, bool openInPublicOnlyMode = true, bool expandNode = true)
 		{
-			widget.PublicApiOnly = openInPublicOnlyMode;
+			if (!openInPublicOnlyMode)
+				widget.PublicApiOnly = false;
 			widget.Open (documentationCommentId, expandNode: expandNode);
 		}
 

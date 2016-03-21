@@ -1568,6 +1568,56 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
 			Assert.IsTrue (c.Properties.HasProperty ("TargetName"));
 		}
+
+		[Test()]
+		public async Task LoadSaveConsoleProjectWithEmptyGroup()
+		{
+			var fn = new CustomFlavorNode ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string solFile = Util.GetSampleProject ("console-project-empty-group", "ConsoleProject.sln");
+
+				Solution item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				Assert.IsTrue (item is Solution);
+
+				Solution sol = (Solution)item;
+				TestProjectsChecks.CheckBasicVsConsoleProject (sol);
+
+				var p = sol.GetAllProjects ().FirstOrDefault ();
+				Assert.NotNull (p);
+				Assert.NotNull (p.GetFlavor<CustomFlavor> ());
+
+				string projectFile = ((Project)sol.Items [0]).FileName;
+
+				string solXml = File.ReadAllText (solFile);
+				string projectXml = File.ReadAllText (projectFile);
+
+				await sol.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (solXml, File.ReadAllText (solFile));
+				Assert.AreEqual (projectXml, File.ReadAllText (projectFile));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task RemoveAndAddProperty ()
+		{
+			string solFile = Util.GetSampleProject ("msbuild-project-test", "test.csproj");
+
+			Project p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			string projectXml = File.ReadAllText (p.FileName);
+
+			p.ProjectProperties.RemoveProperty ("TestRewrite");
+			await p.SaveAsync (Util.GetMonitor ());
+			p.ProjectProperties.SetValue ("TestRewrite", "Val");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName));
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
@@ -1643,5 +1693,22 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty]
 		public string SomeMetadata { get; set; }
+	}
+
+	class CustomFlavorNode: SolutionItemExtensionNode
+	{
+		public CustomFlavorNode ()
+		{
+			Guid = "{57EDDE80-A1D8-43D5-8478-C17416DFC16F}";
+		}
+
+		public override object CreateInstance ()
+		{
+			return new CustomFlavor ();
+		}
+	}
+
+	class CustomFlavor: ProjectExtension
+	{
 	}
 }

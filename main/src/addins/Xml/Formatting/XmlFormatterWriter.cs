@@ -203,6 +203,8 @@ namespace MonoDevelop.Xml.Formatting
 			
 			switch (node.NodeType) {
 				case XmlNodeType.Document: {
+					if (!defaultFormatSettings.OmitXmlDeclaration)
+						WriteDeclarationIfMissing ((XmlDocument)node);
 					WriteContent (node);
 					break;
 				}
@@ -297,14 +299,15 @@ namespace MonoDevelop.Xml.Formatting
 					break;
 				}
 				case XmlNodeType.XmlDeclaration: {
-					XmlDeclaration dec = (XmlDeclaration) node;
-					WriteRaw (String.Format ("<?xml {0}?>", dec.Value));
+					if (!defaultFormatSettings.OmitXmlDeclaration) {
+						XmlDeclaration dec = (XmlDeclaration) node;
+						WriteRaw (String.Format ("<?xml {0}?>", dec.Value));
+					}
 					break;
 				}
 			}
 			formatSettings = oldFormat;
 		}
-		
 		string GetAttributeName (XmlAttribute at)
 		{
 			if (at.NamespaceURI.Length > 0)
@@ -317,6 +320,15 @@ namespace MonoDevelop.Xml.Formatting
 		{
 			for (XmlNode n = node.FirstChild; n != null; n = n.NextSibling)
 				WriteNode (n);
+		}
+
+		void WriteDeclarationIfMissing (XmlDocument doc)
+		{
+			var declaration = doc.FirstChild as XmlDeclaration;
+			if (declaration == null) {
+				declaration = doc.CreateXmlDeclaration ("1.0", "UTF-8", null);
+				WriteNode (declaration);
+			}
 		}
 		
 		void SetFormat (XmlNode node)

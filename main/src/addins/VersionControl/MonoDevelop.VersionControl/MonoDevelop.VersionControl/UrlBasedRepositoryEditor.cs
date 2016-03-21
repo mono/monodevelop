@@ -57,8 +57,7 @@ namespace MonoDevelop.VersionControl
 				repositoryPathEntry.Text = repo.Uri.PathAndQuery;
 				repositoryUserEntry.Text = repo.Uri.UserInfo;
 				comboProtocol.Active = protocols.IndexOf (repo.Uri.Scheme);
-				if (PathChanged != null)
-					PathChanged (this, new EventArgs ());
+				PathChanged?.Invoke (this, EventArgs.Empty);
 			} else {
 				// The url may have a scheme, but it may be an incomplete or incorrect url. Do the best to select
 				// the correct value in the protocol combo

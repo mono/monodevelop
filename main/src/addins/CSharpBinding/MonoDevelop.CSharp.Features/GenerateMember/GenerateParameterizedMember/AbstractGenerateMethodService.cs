@@ -15,7 +15,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMember
 {
-	public abstract partial class AbstractGenerateMethodService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax> :
+	abstract partial class AbstractGenerateMethodService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax> :
 	AbstractGenerateParameterizedMemberService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax>
 		where TService : AbstractGenerateMethodService<TService, TSimpleNameSyntax, TExpressionSyntax, TInvocationExpressionSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax

@@ -137,11 +137,12 @@ namespace MonoDevelop.Core.Assemblies
 			return new MonoFrameworkBackend ();
 		}
 
-		
+
 		public override IExecutionHandler GetExecutionHandler ()
 		{
 			if (execHandler == null) {
-				string monoPath = Path.Combine (Path.Combine (MonoRuntimeInfo.Prefix, "bin"), "mono");
+				string monoPath = Path.Combine (MonoRuntimeInfo.Prefix, "bin");
+				monoPath = Path.Combine (monoPath, MonoRuntimeInfo.Force64or32bit.HasValue ? (MonoRuntimeInfo.Force64or32bit.Value ? "mono64" : "mono32") : "mono");
 				execHandler = new MonoPlatformExecutionHandler (monoPath, environmentVariables);
 			}
 			return execHandler;

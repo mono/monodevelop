@@ -49,6 +49,13 @@ namespace MonoDevelop.Ide.Gui
 		public static Color ErrorForegroundColor { get; internal set; }
 		public static Color WarningForegroundColor { get; internal set; }
 		public static Color InformationForegroundColor { get; internal set; }
+
+		public static Color ErrorBoxForegroundColor { get; internal set; }
+		public static Color ErrorBoxBackgroundColor { get; internal set; }
+		public static Color WarningBoxForegroundColor { get; internal set; }
+		public static Color WarningBoxBackgroundColor { get; internal set; }
+		public static Color InformationBoxForegroundColor { get; internal set; }
+		public static Color InformationBoxBackgroundColor { get; internal set; }
 		
 		public static Pango.FontDescription DefaultFont { get; internal set; }
 		public static string DefaultFontName { get; internal set; }
@@ -400,21 +407,28 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#ebedf0");
 			PropertyPadDividerColor = Color.FromName ("#efefef");
 
-			ErrorForegroundColor = Color.FromName ("#db6246");
-			WarningForegroundColor = Color.FromName ("#a08000");
-			InformationForegroundColor = Color.FromName ("#5785bd");
-
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#87b6f0");
 			StatusInformationTextColor = BaseBackgroundColor;
+			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
+			InformationBoxForegroundColor = Color.FromName ("#000000");
+			InformationForegroundColor = Color.FromName ("#5785bd");
+
 			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
 			StatusWarningTextColor = BaseBackgroundColor;
+			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
+			WarningBoxForegroundColor = Color.FromName ("#000000");
+			WarningForegroundColor = Color.FromName ("#a08000");
+
 			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
 			StatusErrorTextColor = BaseBackgroundColor;
+			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
+			ErrorBoxForegroundColor = Color.FromName ("#000000");
+			ErrorForegroundColor = Color.FromName ("#db6246");
 
 			// Tabs
 
-			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO: VV
+			TabBarNotifyTextColor = Color.FromName ("#1FAECE");
 
 			// Breadcrumb
 
@@ -432,10 +446,10 @@ namespace MonoDevelop.Ide.Gui
 			// Status area (GTK)
 
 			StatusBarBorderColor = Color.FromName ("#919191");
-			StatusBarFill1Color = Color.FromName ("#fcfcfc"); // f5fafc
-			StatusBarFill2Color = Color.FromName ("#f2f2f2"); // e9f1f3
-			StatusBarFill3Color = Color.FromName ("#ebebeb"); // d8e7ea
-			StatusBarFill4Color = Color.FromName ("#e8e8e8"); // d1e3e7
+			StatusBarFill1Color = Color.FromName ("#fcfcfc");
+			StatusBarFill2Color = Color.FromName ("#f2f2f2");
+			StatusBarFill3Color = Color.FromName ("#ebebeb");
+			StatusBarFill4Color = Color.FromName ("#e8e8e8");
 			StatusBarErrorColor = ErrorForegroundColor;
 			StatusBarInnerColor = Color.FromName ("#000000").WithAlpha (.08);
 			StatusBarShadowColor1 = Color.FromName ("#000000").WithAlpha (.06);
@@ -499,21 +513,28 @@ namespace MonoDevelop.Ide.Gui
 			BrowserPadBackground = Color.FromName ("#484b55");
 			PropertyPadDividerColor = SeparatorColor;
 
-			ErrorForegroundColor = Color.FromName ("#ff866b");
-			WarningForegroundColor = Color.FromName ("#ffd21c");
-			InformationForegroundColor = Color.FromName ("#9cc8ff");
-
 			// these colors need to match colors from status icons
 			StatusInformationBackgroundColor = Color.FromName ("#8fc1ff");
 			StatusInformationTextColor = Color.FromName ("#394d66");
+			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
+			InformationBoxForegroundColor = Color.FromName ("#000000");
+			InformationForegroundColor = Color.FromName ("#9cc8ff");
+
 			StatusWarningBackgroundColor = Color.FromName ("#ffcf0f");
 			StatusWarningTextColor = Color.FromName ("#665206");
+			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
+			WarningBoxForegroundColor = Color.FromName ("#000000");
+			WarningForegroundColor = Color.FromName ("#ffd21c");
+
 			StatusErrorBackgroundColor = Color.FromName ("#ff7152");
 			StatusErrorTextColor = Color.FromName ("#662d20");
+			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
+			ErrorBoxForegroundColor = Color.FromName ("#000000");
+			ErrorForegroundColor = Color.FromName ("#ff866b");
 
 			// Tabs
 
-			TabBarNotifyTextColor = Color.FromName ("#ff00ff"); // TODO: VV
+			TabBarNotifyTextColor = Color.FromName ("#4FCAE6");
 
 			// Breadcrumb
 
@@ -530,9 +551,9 @@ namespace MonoDevelop.Ide.Gui
 
 			StatusBarBorderColor = Color.FromName ("#222222");
 			StatusBarFill1Color = Color.FromName ("#282828");
-			StatusBarFill2Color = Color.FromName ("#000000").WithAlpha (0); //e9f1f3 
-			StatusBarFill3Color = Color.FromName ("#000000").WithAlpha (0); // d8e7ea 
-			StatusBarFill4Color = Color.FromName ("#222222"); // d1e3e7
+			StatusBarFill2Color = Color.FromName ("#000000").WithAlpha (0); 
+			StatusBarFill3Color = Color.FromName ("#000000").WithAlpha (0); 
+			StatusBarFill4Color = Color.FromName ("#222222");
 			StatusBarErrorColor = ErrorForegroundColor;
 			StatusBarInnerColor = Color.FromName ("#000000").WithAlpha (.08);
 			StatusBarShadowColor1 = Color.FromName ("#000000").WithAlpha (.06);

@@ -39,7 +39,7 @@ using System.Linq;
 
 namespace MonoDevelop.CSharp.Parser
 {
-	public class McsParser : AbstractParser
+	class McsParser : AbstractParser
 	{
 		public override IExpressionFinder CreateExpressionFinder (ProjectDom dom)
 		{
@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Parser
 			return new NRefactoryResolver (dom, doc.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, doc.Editor, fileName);
 		}
 		
-		public class ErrorReportPrinter : ReportPrinter
+		class ErrorReportPrinter : ReportPrinter
 		{
 			public readonly List<Error> Errors = new List<Error> ();
 			

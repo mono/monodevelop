@@ -1,6 +1,6 @@
 ﻿{
 	"name": "Dark",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"description": "A dark scheme using colors from the Tango Project",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -43,8 +43,8 @@
 
 		{ "name": "Indentation Guide", "color": "#444a4d" },
 
-		{ "name": "Indicator Margin", "color": "aluminium6" },
-		{ "name": "Indicator Margin(Separator)", "color": "#2c2f30" },
+		{ "name": "Indicator Margin", "color": "#303030" },
+		{ "name": "Indicator Margin(Separator)", "color": "#303030" },
 
 		{ "name": "Tooltip Pager Top", "color": "aluminium5" },
 		{ "name": "Tooltip Pager Triangle", "color": "aluminium2" },
@@ -77,8 +77,8 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color": "#4d4d4d", "bordercolor": "#4d4d4d" },
 		{ "name": "Breakpoint Marker(Invalid)", "color": "#604343", "bordercolor": "#604343" },
 
-		{ "name": "Current Line Marker", "color": "#1a1f22", "secondcolor": "#1a1f22" },
-		{ "name": "Current Line Marker(Inactive)", "color": "#1a1f22", "secondcolor": "#1a1f22" },
+		{ "name": "Current Line Marker", "color": "#16191c", "secondcolor": "#16191c" },
+		{ "name": "Current Line Marker(Inactive)", "color": "#16191c", "secondcolor": "#16191c" },
 
 		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#69684c" },
 		{ "name": "Debugger Stack Line Marker", "color": "#5f7247", "bordercolor": "#5f7247" },
@@ -106,13 +106,13 @@
 	],
 
 	"text": [
-		{ "name": "Plain Text", "fore": "aluminium1", "back": "#2c2f30" },
+		{ "name": "Plain Text", "fore": "aluminium1", "back": "#1c1e1f" },
 		{ "name": "Selected Text", "back": "#245176" },
 		{ "name": "Selected Text(Inactive)", "back": "aluminium5" },
 
 		{ "name": "Collapsed Text", "fore": "aluminium4", "back": "aluminium6" },
 
-		{ "name": "Line Numbers", "fore": "aluminium5", "back": "#2c2f30" },
+		{ "name": "Line Numbers", "fore": "aluminium5", "back": "#242424" },
 
 		{ "name": "Punctuation", "fore": "aluminium1" },
 		{ "name": "Punctuation(Brackets)", "fore": "aluminium1" },
@@ -194,10 +194,10 @@
 		{ "name": "User Types(Delegates)", "fore": "#4ec9b0" },
 		{ "name": "User Types(Value types)", "fore": "#4ec9b0" },
 		{ "name": "User Types(Type parameters)", "fore": "#4ec9b0" },
-		{ "name": "User Types(Mutable)", "fore": "#2c2f30", "back": "#ffcf0f" },
+		{ "name": "User Types(Mutable)", "fore": "#ffd21c" },
 
-		{ "name": "User Field Usage", "fore": "aluminium1", "style": "italic" },
-		{ "name": "User Field Declaration", "fore": "aluminium1", "style": "italic" },
+		{ "name": "User Field Usage", "fore": "aluminium1" },
+		{ "name": "User Field Declaration", "fore": "aluminium1" },
 
 		{ "name": "User Property Usage", "fore": "aluminium1" },
 		{ "name": "User Property Declaration", "fore": "aluminium1" },

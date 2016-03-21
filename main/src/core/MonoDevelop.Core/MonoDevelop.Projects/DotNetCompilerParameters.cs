@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-		public virtual Microsoft.CodeAnalysis.ParseOptions CreateParseOptions ()
+		public virtual Microsoft.CodeAnalysis.ParseOptions CreateParseOptions (DotNetProjectConfiguration configuration)
 		{
 			return null;
 		}

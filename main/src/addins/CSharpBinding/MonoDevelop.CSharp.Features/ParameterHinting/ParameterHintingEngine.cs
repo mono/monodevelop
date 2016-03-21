@@ -37,7 +37,7 @@ using System.Security.Cryptography;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
-	public class ParameterHintingEngine
+	class ParameterHintingEngine
 	{
 		readonly IParameterHintingDataFactory factory;
 		readonly Workspace workspace;
@@ -72,13 +72,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var targetParent = context.TargetToken.Parent;
 			if (targetParent == null)
 				return ParameterHintingResult.Empty;
-			
+
 			if (context.TargetToken.IsKind (SyntaxKind.IdentifierName)) {
 				targetParent = targetParent.Parent;
 			}
 			
 			if (context.TargetToken.IsKind (SyntaxKind.CloseParenToken) || context.TargetToken.IsKind (SyntaxKind.CloseBracketToken) || context.TargetToken.IsKind (SyntaxKind.GreaterThanToken))
 				targetParent = targetParent.Parent;
+			if (targetParent == null)
+				return ParameterHintingResult.Empty;
 			var node = targetParent.Parent;
 
 			// case: identifier<arg1,|

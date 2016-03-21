@@ -113,6 +113,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		}
 		#endregion
 
+		public override int GetHashCode ()
+		{
+			return Line.GetHashCode () ^ 991;
+		}
+
 		public override bool Equals (object obj)
 		{
 			if (ReferenceEquals (obj, this))

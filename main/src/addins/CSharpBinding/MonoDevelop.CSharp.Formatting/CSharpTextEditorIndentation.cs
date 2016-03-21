@@ -815,12 +815,12 @@ namespace MonoDevelop.CSharp.Formatting
 			return false;
 		}
 		//does re-indenting and cursor positioning
-		void DoReSmartIndent ()
+		internal void DoReSmartIndent ()
 		{
 			DoReSmartIndent (Editor.CaretOffset);
 		}
 
-		void DoReSmartIndent (int cursor)
+		internal void DoReSmartIndent (int cursor)
 		{
 			SafeUpdateIndentEngine (cursor);
 			if (stateTracker.LineBeganInsideVerbatimString || stateTracker.LineBeganInsideMultiLineComment)

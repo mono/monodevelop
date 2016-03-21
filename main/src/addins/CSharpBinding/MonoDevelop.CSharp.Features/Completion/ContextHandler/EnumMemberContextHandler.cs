@@ -43,7 +43,7 @@ using MonoDevelop.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 
-//	public class CompletionEngineCache
+//	class CompletionEngineCache
 //	{
 //		public List<INamespace>  namespaces;
 //		public ICompletionData[] importCompletion;
@@ -118,8 +118,11 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				ISymbol alias = await type.FindApplicableAlias(completionContext.Position, model, cancellationToken).ConfigureAwait(false);
 
 				var displayString = RoslynCompletionData.SafeMinimalDisplayString (type, model, completionContext.Position, SymbolDisplayFormat.CSharpErrorMessageFormat);
-				if (string.IsNullOrEmpty(completionResult.DefaultCompletionString))
+				if (string.IsNullOrEmpty (completionResult.DefaultCompletionString)) {
 					completionResult.DefaultCompletionString = displayString;
+					completionResult.AutoCompleteEmptyMatch = true;
+
+				}
 				result.Add (engine.Factory.CreateSymbolCompletionData(this, type, displayString));
 				foreach (IFieldSymbol field in type.GetMembers().OfType<IFieldSymbol>()) {
 					if (field.DeclaredAccessibility == Accessibility.Public && (field.IsConst || field.IsStatic)) {

@@ -125,6 +125,8 @@ namespace Mono.TextEditor.Highlighting
 					styles [name] = ColorScheme.LoadFrom (stream);
 				}
 				styleLookup.Remove (name); 
+			} catch (StyleImportException)  {
+				throw;
 			} catch (Exception e) {
 				throw new IOException ("Error while loading style :" + name, e);
 			} finally {

@@ -206,7 +206,7 @@ namespace MonoDevelop.Components
 		internal static readonly int SpacerWidth = 8;
 		const int Padding = 6;
 		Pango.Layout layout;
-		Tabstrip parent;
+		//Tabstrip parent;
 		int w, h;
 		
 		public string Label {
@@ -260,7 +260,7 @@ namespace MonoDevelop.Components
 		
 		public Tab (Tabstrip parent, string label, TabPosition tabPosition)
 		{
-			this.parent = parent;
+			//this.parent = parent;
 			this.Label = label;
 
 			layout = PangoUtil.CreateLayout (parent);

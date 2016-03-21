@@ -26,12 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -43,6 +40,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementProject GetProject(PackageSource source, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
 		IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project);
+		IPackageManagementProject GetProject (IDotNetProject project);
 		IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository);
 		
 		IDotNetProject GetActiveDotNetProject ();

@@ -340,7 +340,6 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-		System.ComponentModel.BackgroundWorker highlightBracketWorker;
 		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 
@@ -1150,7 +1149,7 @@ namespace Mono.TextEditor
 		public static uint TranslateToUTF8Index (char[] charArray, uint textIndex, ref uint curIndex, ref uint byteIndex)
 		{
 			if (textIndex > charArray.Length)
-				throw new ArgumentOutOfRangeException ("textIndex", " must be <= charArrayLength (" + charArray.Length + ") was :" + textIndex);
+				throw new ArgumentOutOfRangeException (nameof (textIndex), " must be <= charArrayLength (" + charArray.Length + ") was :" + textIndex);
 			if (textIndex < curIndex) {
 				byteIndex = (uint)Encoding.UTF8.GetByteCount (charArray, 0, (int)textIndex);
 			} else {
@@ -1694,11 +1693,11 @@ namespace Mono.TextEditor
 						    BackgroundRenderer == null) {
 							DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
 						}
+
+						DrawIndent (cr, wrapper, line, position, y);
 					}
 				}
-				
 			}
-
 			if (lineNumber == Caret.Line) {
 				int caretOffset = Caret.Offset;
 				if (offset <= caretOffset && caretOffset <= offset + length) {
@@ -1714,8 +1713,10 @@ namespace Mono.TextEditor
 							// When drawing virtual space before the selection start paint it as unselected.
 							var virtualSpaceMod = selectionStartOffset < caretOffset ? 0 : wrapper.LineChars.Length;
 
-							if ((!textEditor.IsSomethingSelected || (selectionStartOffset >= offset && selectionStartOffset != selectionEndOffset)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+							if ((!textEditor.IsSomethingSelected || (selectionStartOffset >= offset && selectionStartOffset != selectionEndOffset)) && (HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber) {
 								DrawCaretLineMarker (cr, position, y, wrapper.Width, _lineHeight);
+								DrawIndent (cr, wrapper, line, position, y); // caret line marker overdrawn that
+							}
 
 							if (DecorateLineBg != null)
 								DecorateLineBg (cr, wrapper, offset, length, xPos, y, selectionStartOffset + virtualSpaceMod, selectionEndOffset + wrapper.LineChars.Length);
@@ -1723,6 +1724,8 @@ namespace Mono.TextEditor
 							if (textEditor.Options.ShowWhitespaces == ShowWhitespaces.Always) {
 								DecorateTabsAndSpaces (cr, wrapper, offset, xPos, y, selectionStartOffset, selectionEndOffset + wrapper.LineChars.Length);
 							}
+
+							position += System.Math.Floor (wrapper.Width);
 						}
 					} else if (index == length && string.IsNullOrEmpty (textEditor.preeditString)) {
 						var x = position + layout.Width;
@@ -2624,7 +2627,7 @@ namespace Mono.TextEditor
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
 			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
-
+			var startLineNr = lineNr;
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
 			if (BackgroundRenderer == null)
@@ -2657,14 +2660,13 @@ namespace Mono.TextEditor
 					continue;
 
 				if (folding.IsFolded) {
-					
 					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
-					
+
 					offset = folding.EndLine.Offset + folding.EndColumn - 1;
 					markerLayout.SetText (folding.Description);
 					int width, height;
 					markerLayout.GetPixelSize (out width, out height);
-					
+
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding.Segment);
 					double pixelX = 0.5 + System.Math.Floor (position);
 					double foldXMargin = foldMarkerXMargin * textEditor.Options.Zoom;
@@ -2695,7 +2697,7 @@ namespace Mono.TextEditor
 					                 System.Math.Floor (boundingRectangleHeight - cr.LineWidth),
 					                 LineHeight / 8, CairoCorners.All, false);
 					cr.Stroke ();
-					
+
 					cr.Save ();
 					cr.Translate (
 						position + foldXMargin,
@@ -2774,14 +2776,7 @@ namespace Mono.TextEditor
 					// prevent "gaps" in the selection drawing ('fuzzy' lines problem)
 					wrapper = GetLayout (line);
 					if (lineNr == textEditor.MainSelection.Start.Line && line.Length == 0 && textEditor.MainSelection.Start.Column > 1) {
-						using (var vwrapper = GetVirtualSpaceLayout (line, textEditor.MainSelection.Start)) {
-							lineArea = new Cairo.Rectangle (
-								lineArea.X + vwrapper.Width,
-								lineArea.Y + System.Math.Max (0, wrapper.Height - LineHeight),
-								textEditor.Allocation.Width - (lineArea.X + vwrapper.Width),
-								LineHeight
-							);
-						}
+						// position already skipped virtual space layout
 					} else  {
 						var eolStartX = System.Math.Floor (position);
 						lineArea = new Cairo.Rectangle (
@@ -2794,7 +2789,7 @@ namespace Mono.TextEditor
 						DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.Background, false);
 					if (line.Length == 0)
 						DrawIndent (cr, wrapper, line, lx, y);
-				} else if (!(HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) || Caret.Line != lineNr) {
+				} else if (!(HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) || Caret.Line != lineNr && Caret.Line != startLineNr) {
 					wrapper = GetLayout (line);
 					if (wrapper.EolSpanStack != null) {
 						foreach (var span in wrapper.EolSpanStack) {
@@ -2809,6 +2804,8 @@ namespace Mono.TextEditor
 					}
 				} else {
 					double xPos = position;
+					if (line.Length == 0 && Caret.Column > 1)
+						DrawIndent (cr, wrapper, line, lx, y);
 					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, _lineHeight);
 				}
 			}

@@ -40,7 +40,7 @@ using System;
 namespace ICSharpCode.NRefactory6.CSharp.ParameterHinting
 {
 	[TestFixture]
-	public class ParameterHintingTests : TestBase
+	class ParameterHintingTests : TestBase
 	{
 		internal class TestFactory : IParameterHintingDataFactory
 		{

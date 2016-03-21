@@ -23,7 +23,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 {
-	public abstract partial class AbstractGenerateTypeService<TService, TSimpleNameSyntax, TObjectCreationExpressionSyntax, TExpressionSyntax, TTypeDeclarationSyntax, TArgumentSyntax> 
+	abstract partial class AbstractGenerateTypeService<TService, TSimpleNameSyntax, TObjectCreationExpressionSyntax, TExpressionSyntax, TTypeDeclarationSyntax, TArgumentSyntax> 
 		where TService : AbstractGenerateTypeService<TService, TSimpleNameSyntax, TObjectCreationExpressionSyntax, TExpressionSyntax, TTypeDeclarationSyntax, TArgumentSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax
 		where TObjectCreationExpressionSyntax : TExpressionSyntax

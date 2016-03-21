@@ -42,7 +42,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace ICSharpCode.NRefactory6
 {
-	public class InspectionActionTestBase
+	class InspectionActionTestBase
     {
         static MetadataReference mscorlib;
         static MetadataReference systemAssembly;

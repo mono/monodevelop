@@ -83,7 +83,6 @@ namespace UnitTests
 			Runtime.Initialize (true);
 			Xwt.Application.Initialize ();
 			Gtk.Application.Init ();
-			TypeSystemService.TrackFileChanges = true;
 			DesktopService.Initialize ();
 			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
 				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);

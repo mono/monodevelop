@@ -119,11 +119,20 @@ namespace MonoDevelop.CSharp.Highlighting
 						editor.ReplaceText (anchorOffset, 1, start + text + end);
 						editor.SetSelection (anchorOffset + start.Length, leadOffset + start.Length + end.Length);
 					}
+					if (unicodeKey == '{') {
+						using (var undo = editor.OpenUndoGroup ()) {
+							OnTheFlyFormatter.Format (editor, context, anchorOffset + start.Length - 1, leadOffset + start.Length + end.Length);
+						}
+					}
 				} else {
 					using (var undo = editor.OpenUndoGroup ()) {
 						editor.InsertText (anchorOffset, start);
 						editor.InsertText (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
-						editor.SetSelection (anchorOffset + start.Length, leadOffset + start.Length + end.Length);
+						if (unicodeKey == '{') {
+							OnTheFlyFormatter.Format (editor, context, anchorOffset + start.Length, leadOffset + start.Length + end.Length);
+						} else {
+							editor.SetSelection (anchorOffset + start.Length, leadOffset + start.Length + end.Length);
+						}
 					}
 				}
 			}

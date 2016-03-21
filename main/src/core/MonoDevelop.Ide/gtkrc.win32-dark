@@ -84,9 +84,10 @@ style "default" {
     GtkScrolledWindow::scrollbars-within-bevel = 1
     GtkScale::slider-length = 14
 
-    GtkMenu::horizontal-padding = 1
-    GtkMenu::vertical-padding = 1
-    GtkMenuItem::horizontal-padding = 2
+    GtkMenu::horizontal-padding = 3
+    GtkMenu::vertical-padding = 3
+    GtkMenuItem::horizontal-padding = 3
+    GtkMenuItem::toggle-spacing = 6
     GtkSeparatorMenuItem::horizontal-padding = 0
 
     GtkTreeView::expander-size = 8
@@ -95,7 +96,7 @@ style "default" {
     GtkComboBox::appears-as-list = 0
 
     engine "xamarin" {
-        arrowstyle = 3
+        arrowstyle = 2
         rgba = TRUE
         roundness = 0
         glazestyle = 0
@@ -177,11 +178,11 @@ style "menubar" = "default" {
 }
 
 style "menu-item" = "menu" {
-    xthickness = 5
+    xthickness = 2
     ythickness = 3
 
     engine "xamarin" {
-        arrowstyle = 2
+        arrowstyle = 3
         contrast = 0.0
     }
 }
@@ -196,19 +197,7 @@ style "menu-separator" = "menu-item" {
 
 style "toolbar" = "default"
 {
-    bg[NORMAL] = "#ddd"
-
-    engine "xamarin" {
-        toolbarstyle = 2
-    }
-}
-
-style "toolbar-button"
-{
-    engine "xamarin" {
-        contrast = 1.0
-        focus_color = @bg_color
-    }
+    bg[NORMAL] = @base_color
 }
 
 style "tooltip"
@@ -254,28 +243,16 @@ style "icon-view" = "default"
     text[SELECTED] = "#000"
 }
 
-style "toolbar-combo-box" = "button"
-{
-    bg[NORMAL] = @bg_color
-    base[NORMAL] = @bg_color
-    fg[NORMAL] = @bg_color
-    text[NORMAL] = @bg_color
-
-    ythickness = 4
-    xthickness = 2
-    GtkWidget::focus-padding = 0
-
-    engine "xamarin" {
-        roundness = 3
-    }
-}
-
 style "combo-box" = "default"
  {
     bg[NORMAL] = @base_color
     bg[ACTIVE] = @base_color
     ythickness = 0
     xthickness = 0
+
+    engine "xamarin" {
+        arrowstyle = 3
+    }
 }
 
 style "combo-box-button" = "button"
@@ -442,7 +419,7 @@ class "GtkScale" style "scale"
 
 widget "*GtkEntry" style:highest "entry"
 widget "*search-entry*" style "search-entry"
-widget_class "*Toolbar*.*SearchEntry*" style:highest "search-entry-rounded"
+#widget_class "*Toolbar*.*SearchEntry*" style:highest "search-entry-rounded"
 
 widget "wizard_dialog" style "wizard-dialog"
 
@@ -454,7 +431,7 @@ widget_class "*<GtkSeparatorMenuItem>*" style "menu-separator"
 widget_class "*<GtkMenuBar>*" style "menubar"
 
 widget_class "*<GtkToolbar>*" style "toolbar"
-widget_class "*ToolButton*" style "toolbar-button"
+#widget_class "*ToolButton*" style "toolbar-button"
 
 widget_class "*.<GtkTreeView>*" style "treeview"
 widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
@@ -471,8 +448,8 @@ widget_class "*<GtkComboBoxEntry>*" style "combo-box-entry"
 widget_class "*.<GtkComboBoxEntry>*<GtkButton>*" style "combo-box-entry-button"
 
 # Comboboxes within toolbars
-widget_class "*.<GtkToolbar>.<GtkComboBox>.<GtkButton>" style "toolbar-combo-box"
-widget "*MainToolbar*.GtkComboBox.*" style:highest "toolbar-combo-box"
+#widget_class "*.<GtkToolbar>.<GtkComboBox>.<GtkButton>" style "toolbar-combo-box"
+#widget "*MainToolbar*.GtkComboBox.*" style:highest "toolbar-combo-box"
 
 widget "gtk-tooltip*" style "tooltip"
 

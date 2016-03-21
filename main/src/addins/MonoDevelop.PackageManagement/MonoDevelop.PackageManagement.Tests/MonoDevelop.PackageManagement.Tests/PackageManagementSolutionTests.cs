@@ -713,6 +713,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (fakeSolutionPackageRepositoryFactory.SolutionPassedToCreateSolutionPackageRepository, fakeSolution);
 			Assert.AreEqual (fakeSolutionPackageRepositoryFactory.FakeSolutionPackageRepository, repository);
 		}
+
+		[Test]
+		public void GetProject_NoRepositorySpecified_CreatesProjectUsingAggregateRepository ()
+		{
+			CreateSolution ();
+			var dotNetProject = new FakeDotNetProject ();
+			AggregateRepository expectedRepository = CreateAggregateRepositoryWithOneRepository ();
+			fakeRegisteredPackageRepositories.CreateAggregateRepositoryAction = () => expectedRepository;
+
+			IPackageManagementProject project = solution.GetProject (dotNetProject);
+
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
+			IPackageManagementProject expectedProject = fakeProjectFactory.FirstFakeProjectCreated;
+			Assert.AreEqual (expectedRepository, repository);
+			Assert.AreEqual (expectedProject, project);
+		}
 	}
 }
 

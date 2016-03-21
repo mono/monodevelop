@@ -20,7 +20,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateParameterizedMember
 {
-	public partial class CSharpGenerateMethodService :
+	partial class CSharpGenerateMethodService :
 	AbstractGenerateMethodService<CSharpGenerateMethodService, SimpleNameSyntax, ExpressionSyntax, InvocationExpressionSyntax>
 	{
 		protected override bool IsExplicitInterfaceGeneration(SyntaxNode node)

@@ -71,16 +71,24 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Text = GettextCatalog.GetString ("License"),
 				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
 			});
-			infoBox.PackStart (new Xwt.Label () {
-				Text = GettextCatalog.GetString ("Released under the GNU Lesser General Public License."),
+			var cbox = new Xwt.HBox () {
+				Spacing = 0,
 				MarginLeft = 12
+			};
+			cbox.PackStart (new Xwt.Label () {
+				Text = GettextCatalog.GetString ("License is available at ")
 			});
+			cbox.PackStart (new Xwt.LinkLabel () {
+				Text = string.Format ("http://xamarin.com/xamarin-studio-license"),
+				Uri = new Uri ("http://xamarin.com/xamarin-studio-license")
+			});
+			infoBox.PackStart (cbox);
 
 			infoBox.PackStart (new Xwt.Label () {
 				Text = GettextCatalog.GetString ("Copyright"),
 				Font = infoBox.Font.WithWeight (Xwt.Drawing.FontWeight.Bold)
 			});
-			var cbox = new Xwt.HBox () {
+			cbox = new Xwt.HBox () {
 				Spacing = 0,
 				MarginLeft = 12
 			};

@@ -835,7 +835,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		internal object GetNextCommandTarget ()
+		internal new object GetNextCommandTarget ()
 		{
 			return null;
 		}
@@ -2353,7 +2353,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			Pango.Layout layout;
 			Pango.FontDescription scaledFont, customFont;
 
-			bool bound;
 			ExtensibleTreeView parent;
 			Gdk.Rectangle buttonScreenRect;
 			Gdk.Rectangle buttonAllocation;

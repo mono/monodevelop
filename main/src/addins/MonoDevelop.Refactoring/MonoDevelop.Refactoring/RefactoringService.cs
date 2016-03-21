@@ -109,12 +109,6 @@ namespace MonoDevelop.Refactoring
 
 		public static async Task RoslynJumpToDeclaration (ISymbol symbol, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
 		{
-			if (symbol.Locations.Any (loc => loc.IsInSource)) { // all locals are in source.
-				await Runtime.RunInMainThread (delegate {
-					IdeApp.ProjectOperations.JumpToDeclaration (symbol, hintProject);
-				});
-				return;
-			}
 			var result = await TryJumpToDeclarationAsync (symbol.GetDocumentationCommentId (), hintProject, token).ConfigureAwait (false);
 			if (!result) {
 				await Runtime.RunInMainThread (delegate {
@@ -243,14 +237,14 @@ namespace MonoDevelop.Refactoring
 			return location;
 		}
 
-		public static async Task FindReferencesAsync (string documentIdString, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
+		public static async Task FindReferencesAsync (string documentIdString, Projects.Project hintProject = null)
 		{
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
 				foreach (var provider in findReferencesProvider) {
-					foreach (var result in await provider.FindReferences (documentIdString, hintProject, token)) {
+					foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 						monitor.ReportResult (result);
 					}
 				}
@@ -265,14 +259,14 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		public static async Task FindAllReferencesAsync (string documentIdString, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
+		public static async Task FindAllReferencesAsync (string documentIdString, Projects.Project hintProject = null)
 		{
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			try {
 				foreach (var provider in findReferencesProvider) {
-					foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, token)) {
+					foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 						monitor.ReportResult (result);
 					}
 				}

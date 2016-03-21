@@ -41,7 +41,7 @@ using MonoDevelop.Ide.CodeCompletion;
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 
-	//	public class CompletionEngineCache
+	//	class CompletionEngineCache
 	//	{
 	//		public List<INamespace>  namespaces;
 	//		public ICompletionData[] importCompletion;
@@ -131,7 +131,17 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					continue;
 
 				var newData = engine.Factory.CreateSymbolCompletionData (this, symbol, symbol.Name.EscapeIdentifier (isInQuery));
-				var categorySymbol = (ISymbol)symbol.ContainingType ?? symbol.ContainingNamespace;
+				ISymbol categorySymbol;
+				var method = symbol as IMethodSymbol;
+				if (method != null) {
+					if (method.IsReducedExtension ()) {
+						categorySymbol = method.ReceiverType;
+					} else {
+						categorySymbol = (ISymbol)symbol.ContainingType;
+					}
+				} else {
+					categorySymbol = (ISymbol)symbol.ContainingType ?? symbol.ContainingNamespace;
+				}
 				if (categorySymbol != null) {
 					CompletionCategory category;
 					var key = categorySymbol.ToDisplayString ();

@@ -56,9 +56,8 @@ namespace MonoDevelop.CSharp.Project
 	public class CSharpCompilerParameters: DotNetCompilerParameters
 	{
 		// Configuration parameters
-		
-		[ItemProperty ("WarningLevel")]
-		int  warninglevel = 4;
+
+		int? warninglevel = 4;
 		
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
@@ -100,6 +99,8 @@ namespace MonoDevelop.CSharp.Project
 
 			if (optimize.HasValue)
 				pset.SetValue ("Optimize", optimize.Value);
+			if (warninglevel.HasValue)
+				pset.SetValue ("WarningLevel", warninglevel.Value);
 		}
 
 		protected override void Read (IPropertySet pset)
@@ -115,6 +116,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 
 			optimize = pset.GetValue ("Optimize", (bool?)null);
+			warninglevel = pset.GetValue<int?> ("WarningLevel", null);
 		}
 
 		public override CompilationOptions CreateCompilationOptions ()
@@ -144,15 +146,17 @@ namespace MonoDevelop.CSharp.Project
 			);
 		}
 
-		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions ()
+		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions (DotNetProjectConfiguration configuration)
 		{
+			var symbols = GetDefineSymbols ();
+			if (configuration != null)
+				symbols = symbols.Concat (configuration.GetDefineSymbols ()).Distinct ();
 			return new Microsoft.CodeAnalysis.CSharp.CSharpParseOptions (
 				GetRoslynLanguageVersion (langVersion),
 				Microsoft.CodeAnalysis.DocumentationMode.Parse,
 				Microsoft.CodeAnalysis.SourceCodeKind.Regular,
-				ImmutableArray<string>.Empty.AddRange (GetDefineSymbols ())
+				ImmutableArray<string>.Empty.AddRange (symbols)
 			);
-
 		}
 
 
@@ -258,10 +262,15 @@ namespace MonoDevelop.CSharp.Project
 #region Errors and Warnings 
 		public int WarningLevel {
 			get {
-				return warninglevel;
+				return warninglevel ?? 4;
 			}
 			set {
-				warninglevel = value;
+				if (warninglevel.HasValue) {
+					warninglevel = value;
+				} else {
+					if (value != 4)
+						warninglevel = value; 
+				}
 			}
 		}
 		

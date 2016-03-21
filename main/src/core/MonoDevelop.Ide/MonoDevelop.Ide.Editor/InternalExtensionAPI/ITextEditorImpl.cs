@@ -212,6 +212,8 @@ namespace MonoDevelop.Ide.Editor
 		void UpdateBraceMatchingResult (BraceMatchingResult? result);
 
 		IEnumerable<IDocumentLine> VisibleLines { get; }
+
 		event EventHandler<LineEventArgs> LineShown;
+		event EventHandler FocusLost;
 	}
 }

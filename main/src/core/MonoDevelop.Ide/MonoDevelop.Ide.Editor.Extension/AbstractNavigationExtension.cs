@@ -38,6 +38,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	public abstract class AbstractNavigationExtension : TextEditorExtension
 	{
 		uint timerId;
+		CancellationTokenSource src = new CancellationTokenSource ();
 
 		#region Key handling
 		static bool linksShown;
@@ -61,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public static event EventHandler LinksShownChanged;
 
-		static uint snooperId;
+		//static uint snooperId;
 
 
 		public class NavigationSegment : ISegment
@@ -88,7 +89,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static AbstractNavigationExtension ()
 		{
-			snooperId = Gtk.Key.SnooperInstall (TooltipKeySnooper);
+			// snooperId =
+				Gtk.Key.SnooperInstall (TooltipKeySnooper);
 			//if (snooperId != 0)
 			//	Gtk.Key.SnooperRemove (snooperId);
 			IdeApp.Workbench.RootWindow.FocusOutEvent += RootWindow_FocusOutEvent;
@@ -175,6 +177,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				x = e.X;
 				y = e.Y;
 			}
+			CancelRequestLinks ();
+			var token = src.Token;
 			if (LinksShown) {
 				var lineNumber = Editor.PointToLocation (x, y).Line;
 				var line = Editor.GetLine (lineNumber);
@@ -182,16 +186,40 @@ namespace MonoDevelop.Ide.Editor.Extension
 					return;
 				}
 				visibleLines.Add (line);
-				var segments = await RequestLinksAsync (line.Offset, line.Length, default (CancellationToken));
+
+				IEnumerable<NavigationSegment> segments;
+				try {
+					segments = await RequestLinksAsync (line.Offset, line.Length, token).ConfigureAwait (false);
+				} catch (OperationCanceledException) {
+					return;
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while requestling navigation links", ex);
+					return;
+				}
+				if (segments == null)
+					return;
 				await Runtime.RunInMainThread (delegate {
-					foreach (var segment in segments) {
-						var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
-						marker.OnlyShowLinkOnHover = true;
-						Editor.AddMarker (marker);
-						markers.Add (marker);
+					try {
+						foreach (var segment in segments) {
+							if (token.IsCancellationRequested) {
+								return;
+							}
+							var marker = Editor.TextMarkerFactory.CreateLinkMarker (Editor, segment.Offset, segment.Length, delegate { segment.Activate (); });
+							marker.OnlyShowLinkOnHover = true;
+							Editor.AddMarker (marker);
+							markers.Add (marker);
+						}
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while creating navigation line markers", ex);
 					}
 				});
 			}
+		}
+
+		void CancelRequestLinks ()
+		{
+			src.Cancel ();
+			src = new CancellationTokenSource ();
 		}
 
 		void HideLinks ()
@@ -211,6 +239,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public override void Dispose ()
 		{
+			CancelRequestLinks ();
 			LinksShownChanged -= AbstractNavigationExtension_LinksShownChanged;
 			DocumentContext.DocumentParsed -= DocumentContext_DocumentParsed;
 			this.Editor.MouseMoved -= Editor_MouseMoved;

@@ -368,7 +368,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// suspend type service "check all file loop" since we have already a parsed document.
 			// Or at least one that updates "soon".
-			TypeSystemService.TrackFileChanges = false;
 			try {
 				// Freeze the file change events. There can be several such events, and sending them all together
 				// is more efficient
@@ -425,7 +424,6 @@ namespace MonoDevelop.Ide.Gui
 						LoggingService.LogWarning ("Exception while getting the write time from " + fileName, e); 
 					}
 				}
-				TypeSystemService.TrackFileChanges = true;
 			}
 		}
 
@@ -962,15 +960,6 @@ namespace MonoDevelop.Ide.Gui
 		public override void ReparseDocument ()
 		{
 			StartReparseThread ();
-		}
-		
-		internal object ExtendedCommandTargetChain {
-			get {
-				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent.GetContent (typeof(TextEditor)) != null)
-					return Editor.CommandRouter;
-				return null;
-			}
 		}
 
 		void OnEntryRemoved (object sender, SolutionItemEventArgs args)

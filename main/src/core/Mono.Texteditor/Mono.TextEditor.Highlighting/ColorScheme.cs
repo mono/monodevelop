@@ -37,6 +37,21 @@ using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor.Highlighting
 {
+	public class StyleImportException : Exception
+	{
+		public ImportFailReason Reason { get; private set; }
+
+		public StyleImportException (ImportFailReason reason)
+		{
+			Reason = reason;
+		}
+
+		public enum ImportFailReason {
+			Unknown,
+			NoValidColorsFound
+		}
+
+	}
 	public sealed class ColorScheme
 	{
 		public string Name { get; set; }
@@ -1045,6 +1060,9 @@ namespace Mono.TextEditor.Highlighting
 				if (!found && !importedAmbientColors.Contains (vsc.Name))
 					Console.WriteLine (vsc.Name + " not imported!");
 			}
+
+			if (result.PlainText == null)
+				throw new StyleImportException (StyleImportException.ImportFailReason.NoValidColorsFound);
 
 			result.IndentationGuide = new AmbientColor ();
 			result.IndentationGuide.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.3)));

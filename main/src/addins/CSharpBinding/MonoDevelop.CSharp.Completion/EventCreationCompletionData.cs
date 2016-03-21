@@ -58,7 +58,9 @@ namespace MonoDevelop.CSharp.Completion
 			return Task.FromResult (new TooltipInformation ());
 		}
 
-		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
+		public override int PriorityGroup { get { return 2; } }
+
+		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (factory, keyHandler)
 		{
 			this.DisplayText = varName;
 			this.delegateType = delegateType;

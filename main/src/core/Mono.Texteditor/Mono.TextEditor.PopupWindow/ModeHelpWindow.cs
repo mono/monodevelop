@@ -58,12 +58,12 @@ namespace Mono.TextEditor.PopupWindow
 
 		void CheckScreenColormap ()
 		{
-			SupportsAlpha = Screen.IsComposited;
-			if (SupportsAlpha) {
-				Colormap = Screen.RgbaColormap;
-			} else {
+			Colormap = Screen.RgbaColormap;
+			if (Colormap == null) {
 				Colormap = Screen.RgbColormap;
-			}
+				SupportsAlpha = false;
+			} else
+				SupportsAlpha = true;
 		}
 		
 		protected override void OnScreenChanged (Gdk.Screen previous_screen)
@@ -466,7 +466,7 @@ namespace Mono.TextEditor.PopupWindow
 				if (SupportsAlpha) {
 					FoldingScreenbackgroundRenderer.DrawRoundRectangle (g, true, true, tw + 0.5, 0.5, 12, Allocation.Width - 1 - tw, Allocation.Height);
 				} else {
-					g.Rectangle (0, 0, Allocation.Width, height + yTitleBorder * 2);
+					g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				}
 				g.SetSourceColor (Styles.InsertionCursorBackgroundColor.ToCairoColor ());
 				g.FillPreserve ();

@@ -32,12 +32,13 @@ using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class CastCompletionContextHandlerTests: CompletionTestBase
+	class CastCompletionContextHandlerTests: CompletionTestBase
 	{
 		internal override CompletionContextHandler CreateContextHandler ()
 		{
 			return new CastCompletionContextHandler ();
 		}
+
 		[Test]
 		public void TestSimple()
 		{
@@ -59,8 +60,6 @@ class FooBar
 }
 ", "Bar");
 		}
-
-
 
 		[Test]
 		public void TestNoUpcastAvailable()
@@ -89,8 +88,6 @@ class TestClass
 }
 }	");
 		}
-
-
 
 		[Test]
 		public void TestReturn()
@@ -164,6 +161,49 @@ class FooBar
 ", "Bar");
 		}
 
+		/// <summary>
+		/// Bug 38957 - Casting code completion(one based on if "is") offers wrong in case of "if else if" 
+		/// </summary>
+		[Test]
+		public void TestBug38957()
+		{
+			VerifyItemsAbsent (@"
+using System;
+
+class FooBar
+{
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		if (fb is FooBar) {
+		} else if (true) {
+			fb.$$
+		}
+	}
+}
+", "Bar");
+		}
+
+		[Test]
+		public void TestExpression()
+		{
+			VerifyItemExists (@"
+using System;
+
+class FooBar
+{
+	public event EventHandler Foo;
+
+	public int  Bar { get; set; }
+
+	public static void Test (object fb)
+	{	
+		if (fb is FooBar && fb.$$
+	}
+}
+", "Bar");
+		}
 
 	}
 }

@@ -30,7 +30,7 @@ using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.CSharp.Project
 {
-	public class PortableCSharpProjectFlavor: PortableDotNetProjectFlavor
+	class PortableCSharpProjectFlavor: PortableDotNetProjectFlavor
 	{
 		protected override void Initialize ()
 		{

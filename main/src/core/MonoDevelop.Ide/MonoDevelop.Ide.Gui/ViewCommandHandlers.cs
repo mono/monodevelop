@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class ViewCommandHandlers : ICommandRouter
+	public class ViewCommandHandlers
 	{
 		IWorkbenchWindow window;
 		Document doc;
@@ -53,11 +53,6 @@ namespace MonoDevelop.Ide.Gui
 		public T GetContent <T>() where T : class
 		{
 			return (T) window.ActiveViewContent.GetContent (typeof(T));
-		}
-		
-		object ICommandRouter.GetNextCommandTarget ()
-		{
-			return doc.ExtendedCommandTargetChain;
 		}
 		
 		[CommandHandler (FileCommands.Save)]

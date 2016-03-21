@@ -10,3 +10,4 @@ using System.Reflection;
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("FSharpBinding")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.CSharpBinding")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.PackageManagement")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MonoDevelop.MonoDroid")]

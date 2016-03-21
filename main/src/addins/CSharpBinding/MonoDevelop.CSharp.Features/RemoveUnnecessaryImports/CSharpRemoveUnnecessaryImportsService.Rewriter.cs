@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.RemoveUnnecessaryImports
 {
-	public partial class CSharpRemoveUnnecessaryImportsService
+	partial class CSharpRemoveUnnecessaryImportsService
 	{
 		private class Rewriter : CSharpSyntaxRewriter
 		{

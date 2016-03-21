@@ -68,15 +68,26 @@ namespace MonoDevelop.Components
 				UpdateGtkTheme ();
 
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
+
+			// Reset our environment after initialization on Mac
+			if (Platform.IsMac)
+				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 		}
 
 		internal static void SetupXwtTheme ()
 		{
 			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled");
 
-			#if MAC
-			Xwt.Drawing.Context.RegisterStyles ("sel");
-			#endif
+			if (Core.Platform.IsMac) {
+				Xwt.Drawing.Context.RegisterStyles ("mac", "sel");
+				Xwt.Drawing.Context.SetGlobalStyle ("mac");
+			} else if (Core.Platform.IsWindows) {
+				Xwt.Drawing.Context.RegisterStyles ("win");
+				Xwt.Drawing.Context.SetGlobalStyle ("win");
+			} else if (Core.Platform.IsLinux) {
+				Xwt.Drawing.Context.RegisterStyles ("linux");
+				Xwt.Drawing.Context.SetGlobalStyle ("linux");
+			}
 
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IWindowBackend, ThemedGtkWindowBackend>();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend <Xwt.Backends.IDialogBackend, ThemedGtkDialogBackend>();
@@ -185,6 +196,10 @@ namespace MonoDevelop.Components
 					Environment.SetEnvironmentVariable ("GTK2_RC_FILES", rcFile);
 
 					Gtk.Rc.ReparseAll ();
+
+					// reset the environment only after Gtk has been fully initialized. See SetupGtkTheme ().
+					if (Gtk.Settings.Default != null)
+						Environment.SetEnvironmentVariable ("GTK2_RC_FILES", DefaultGtk2RcFiles);
 				}
 
 			} else if (Gtk.Settings.Default != null && current_theme != Gtk.Settings.Default.ThemeName) {

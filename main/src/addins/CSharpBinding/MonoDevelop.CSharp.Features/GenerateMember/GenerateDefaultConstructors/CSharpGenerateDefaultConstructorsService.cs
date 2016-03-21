@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstructors
 {
-	public class CSharpGenerateDefaultConstructorsService : AbstractGenerateDefaultConstructorsService<CSharpGenerateDefaultConstructorsService>
+	class CSharpGenerateDefaultConstructorsService : AbstractGenerateDefaultConstructorsService<CSharpGenerateDefaultConstructorsService>
 	{
 		protected override bool TryInitializeState(
 			SemanticDocument document, TextSpan textSpan, CancellationToken cancellationToken,

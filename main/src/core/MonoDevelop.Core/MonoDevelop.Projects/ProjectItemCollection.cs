@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects
 	
 	public class ProjectItemCollection<T>: ItemCollection<T>, IItemListHandler where T: ProjectItem
 	{
-		SolutionItem parent;
+		Project parent;
 		IItemListHandler parentCollection;
 		List<IItemListHandler> subCollections;
 		
@@ -147,7 +147,7 @@ namespace MonoDevelop.Projects
 				if (parentCollection != null)
 					parentCollection.InternalAdd (items, false);
 				if (parent != null)
-					parent.OnItemsAdded (items);
+					parent.NotifyItemsAdded (items);
 			}
 		}
 		
@@ -162,7 +162,7 @@ namespace MonoDevelop.Projects
 				if (parentCollection != null)
 					parentCollection.InternalRemove (items, false);
 				if (parent != null)
-					parent.OnItemsRemoved (items);
+					parent.NotifyItemsRemoved (items);
 			}
 		}
 	}

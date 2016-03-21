@@ -150,7 +150,8 @@ namespace MonoDevelop.Components.Docking
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			}
 			if (IsRealized && labelWidget != null) {
-				var font = FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
+				var font = FontService.SansFont.CopyModified (null, Pango.Weight.Bold);
+				font.AbsoluteSize = Pango.Units.FromPixels (11);
 				labelWidget.ModifyFont (font);
 				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
@@ -187,12 +188,11 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.UseMarkup = true;
-				labelWidget.Yalign = 0.85f;
-				var alignLabel = new Alignment (0.0f, 1.0f, 1, 1);
+				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
-				box.PackStart (alignLabel, true, true, 0);
+				box.PackStart (alignLabel, false, false, 0);
 			} else {
 				labelWidget = null;
 			}
@@ -420,6 +420,9 @@ namespace MonoDevelop.Components.Docking
 			
 			rect.X += leftPadding;
 			rect.Width -= leftPadding + rightPadding;
+			if (rect.Width < 1) {
+				rect.Width = 1;
+			}
 
 			if (Child != null) {
 				var bottomPadding = active ? (int)TabActivePadding.Bottom : (int)TabPadding.Bottom;
@@ -445,13 +448,12 @@ namespace MonoDevelop.Components.Docking
 		{
 			bool first = true;
 			bool last = true;
-			TabStrip tabStrip = null;
+
 			if (Parent is TabStrip.TabStripBox) {
 				var tsb = (TabStrip.TabStripBox) Parent;
 				var cts = tsb.Children;
 				first = cts[0] == this;
 				last = cts[cts.Length - 1] == this;
-				tabStrip = tsb.TabStrip;
 			}
 
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {

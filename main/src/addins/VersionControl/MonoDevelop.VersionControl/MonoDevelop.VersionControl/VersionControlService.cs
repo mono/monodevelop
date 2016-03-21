@@ -387,12 +387,10 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			if (PrepareCommit != null) {
-				try {
-					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-				}
+			try {
+				PrepareCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, false));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		
@@ -405,12 +403,10 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			if (BeginCommit != null) {
-				try {
-					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-				}
+			try {
+				BeginCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, false));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		
@@ -423,14 +419,13 @@ namespace MonoDevelop.VersionControl
 				return;
 			}
 
-			if (EndCommit != null) {
-				try {
-					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-					return;
-				}
+			try {
+				EndCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, success));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+				return;
 			}
+
 			if (success) {
 				foreach (ChangeSetItem it in changeSet.Items)
 					SetCommitComment (it.LocalPath, null, false);
@@ -452,8 +447,7 @@ namespace MonoDevelop.VersionControl
 					NotifyFileStatusChanged (args);
 				});
 			else {
-				if (FileStatusChanged != null)
-					FileStatusChanged (null, args);
+				FileStatusChanged?.Invoke (null, args);
 			}
 		}
 
@@ -781,8 +775,7 @@ namespace MonoDevelop.VersionControl
 	
 	class InternalRepositoryReference: IDisposable
 	{
-		Repository repo;
-		
+		readonly Repository repo;
 		public InternalRepositoryReference (Repository repo)
 		{
 			this.repo = repo;

@@ -125,6 +125,11 @@ namespace MonoDevelop.Projects
 			next.OnWriteConfiguration (monitor, config, pset);
 		}
 
+		internal protected virtual Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return next.OnGetSourceFiles (monitor, configuration);
+		}
+
 		#region Building
 
 		internal protected virtual bool OnGetIsCompileable (string fileName)
@@ -174,7 +179,7 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual string[] SupportedLanguages {
 			get {
-				return next.SupportedLanguages;
+				return next?.SupportedLanguages;
 			}
 		}
 
@@ -186,6 +191,16 @@ namespace MonoDevelop.Projects
 		#endregion
 
 		#region Events
+
+		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
+			next.OnItemsAdded (objs);
+		}
+
+		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		{
+			next.OnItemsRemoved (objs);
+		}
 
 		internal protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{

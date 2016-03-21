@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class NameContextTests : TestBase
+	class NameContextTests : TestBase
 	{
 		[Test]
 		public void TestNamespaceName ()

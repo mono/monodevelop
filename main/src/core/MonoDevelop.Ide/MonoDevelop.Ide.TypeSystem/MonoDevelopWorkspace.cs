@@ -203,7 +203,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			await Task.WhenAll (allTasks.ToArray ());
 			if (token.IsCancellationRequested)
 				return null;
+			var modifiedWhileLoading = modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
 			var solutionInfo = SolutionInfo.Create (GetSolutionId (solution), VersionStamp.Create (), solution.FileName, projects);
+			foreach (var project in modifiedWhileLoading) {
+				if (solution.ContainsItem (project)) {
+					return await CreateSolutionInfo (solution, token).ConfigureAwait (false);
+				}
+			}
+
 			lock (addLock) {
 				if (!added) {
 					added = true;
@@ -408,7 +415,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					p.FileName,
 					fileName,
 					cp != null ? cp.CreateCompilationOptions () : null,
-					cp != null ? cp.CreateParseOptions () : null,
+					cp != null ? cp.CreateParseOptions (config) : null,
 					CreateDocuments (projectData, p, token, sourceFiles),
 					CreateProjectReferences (p, token),
 					references
@@ -618,6 +625,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		Dictionary<string, SourceText> changedFiles = new Dictionary<string, SourceText> ();
+		ProjectChanges projectChanges;
 
 		public override bool TryApplyChanges (Solution newSolution)
 		{
@@ -629,7 +637,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			try {
 				internalChanges = true;
-
+				this.projectChanges = projectChanges;
 				base.ApplyProjectChanges (projectChanges);
 			} finally {
 				internalChanges = false;
@@ -683,7 +691,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 
-		protected override void ApplyDocumentTextChanged (DocumentId id, SourceText text)
+		protected override async void ApplyDocumentTextChanged (DocumentId id, SourceText text)
 		{
 			var document = GetDocument (id);
 			if (document == null)
@@ -717,7 +725,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			SourceText oldFile;
 			if (!isOpen || !document.TryGetText (out oldFile)) {
-				oldFile = document.GetTextAsync ().Result;
+				oldFile = await document.GetTextAsync ();
 			}
 			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
 			int delta = 0;
@@ -750,7 +758,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				data.Save ();
 				if (projection != null) {
-					UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments (document, data);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
@@ -758,11 +766,21 @@ namespace MonoDevelop.Ide.TypeSystem
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var documentContext = IdeApp.Workbench.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0);
+				var root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
+				var annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (TypeSystemService.InsertionModeAnnotation));
+				SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (Microsoft.CodeAnalysis.CodeActions.RenameAnnotation.Kind)
+												  .Where (s => s.IsToken)
+												  .Select (s => s.AsToken ())
+												  .Cast<SyntaxToken?> ()
+												  .FirstOrDefault ();
+
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
 					using (var undo = editor.OpenUndoGroup ()) {
+						var oldVersion = editor.Version;
 						delta = ApplyChanges (projection, data, changes);
-
+						var versionBeforeFormat = editor.Version;
+							
 						if (formatter.SupportsOnTheFlyFormatting) {
 							foreach (var change in changes) {
 								delta -= change.Span.Length - change.NewText.Length;
@@ -779,22 +797,116 @@ namespace MonoDevelop.Ide.TypeSystem
 								}
 							}
 						}
+						if (annotatedNode != null && GetInsertionPoints != null) {
+							await Runtime.RunInMainThread (async () => {
+								IdeApp.Workbench.Documents.First (d => d.FileName == editor.FileName).Select ();
+								var formattedVersion = editor.Version;
+
+								int startOffset = versionBeforeFormat.MoveOffsetTo (editor.Version, annotatedNode.Span.Start);
+								int endOffset = versionBeforeFormat.MoveOffsetTo (editor.Version, annotatedNode.Span.End);
+
+								// alway whole line start & delimiter
+								var startLine = editor.GetLineByOffset (startOffset);
+								startOffset = startLine.Offset;
+
+								var endLine = editor.GetLineByOffset (endOffset);
+								endOffset = endLine.EndOffsetIncludingDelimiter + 1;
+
+								var insertionCursorSegment = TextSegment.FromBounds (startOffset, endOffset);
+								string textToInsert = editor.GetTextAt (insertionCursorSegment).TrimEnd ();
+								editor.RemoveText (insertionCursorSegment);
+								var insertionPoints = await GetInsertionPoints (editor, editor.CaretOffset);
+								if (insertionPoints.Count == 0) {
+									// Just to get sure if no insertion points -> go back to the formatted version.
+									var textChanges = editor.Version.GetChangesTo (formattedVersion).ToList ();
+									using (var undo2 = editor.OpenUndoGroup ()) {
+										foreach (var v in textChanges) {
+											editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+										}
+									}
+									return;
+								}
+								string insertionModeOperation;
+								const int CSharpMethodKind = 8875;
+
+
+								bool isMethod = annotatedNode.RawKind == CSharpMethodKind;
+
+								if (!isMethod) {
+									// atm only for generate field/property : remove all new lines generated & just insert the plain node.
+									// for methods it's not so easy because of "extract code" changes.
+									foreach (var v in editor.Version.GetChangesTo (oldVersion).ToList ()) {
+										editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+									}
+								}
+
+								switch (annotatedNode.RawKind) {
+								case 8873: // C# field
+									insertionModeOperation = GettextCatalog.GetString ("Insert Field");
+									break;
+								case CSharpMethodKind:
+									insertionModeOperation = GettextCatalog.GetString ("Insert Method");
+									break;
+								case 8892: // C# property 
+									insertionModeOperation = GettextCatalog.GetString ("Insert Property");
+									break;
+								default:
+									insertionModeOperation = GettextCatalog.GetString ("Insert Code");
+									break;
+								}
+
+								var options = new InsertionModeOptions (
+									insertionModeOperation,
+									insertionPoints,
+									point => {
+										if (!point.Success)
+											return;
+										point.InsertionPoint.Insert (editor, textToInsert);
+									}
+								);
+								options.ModeExitedAction += delegate (InsertionCursorEventArgs args) {
+									if (!args.Success) {
+										var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
+										using (var undo2 = editor.OpenUndoGroup ()) {
+											foreach (var v in textChanges) {
+												editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+											}
+										}
+									}
+								};
+								for (int i = 0; i < insertionPoints.Count; i++) {
+									if (insertionPoints [i].Location.Line < editor.CaretLine) {
+										options.FirstSelectedInsertionPoint = Math.Min (isMethod ? i + 1 : i, insertionPoints.Count - 1);
+									} else {
+										break;
+									}
+								}
+								options.ModeExitedAction += delegate {
+									if (renameTokenOpt.HasValue)
+										StartRenameSession (editor, documentContext, versionBeforeFormat, renameTokenOpt.Value);
+								};
+								editor.StartInsertionMode (options);
+							});
+						}
 					}
 				}
+
 				if (projection != null) {
-					UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments (document, data);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data.CreateDocumentSnapshot ()), PreservationMode.PreserveValue);
 				}
-				Runtime.RunInMainThread (() => {
-					if (IdeApp.Workbench != null)
+				await Runtime.RunInMainThread (() => {
+						if (IdeApp.Workbench != null)
 						foreach (var w in IdeApp.Workbench.Documents)
 							w.StartReparseThread ();
 				});
 			}
 		}
+		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
+		internal static Action<TextEditor, DocumentContext, ITextSourceVersion, SyntaxToken?> StartRenameSession;
 
-		void UpdateProjectionsDocuments (Document document, ITextDocument data)
+		async Task UpdateProjectionsDocuments (Document document, ITextDocument data)
 		{
 			var project = TypeSystemService.GetMonoProject (document.Project);
 			var file = project.Files.GetFile (data.FileName);
@@ -805,7 +917,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Project = project,
 					Content = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath),
 				};
-				var projections = node.Parser.GenerateProjections (options).Result;
+				var projections = await node.Parser.GenerateProjections (options);
 				UpdateProjectionEntry (file, projections);
 				var projectId = GetProjectId (project);
 				var projectdata = GetProjectData (projectId);
@@ -916,7 +1028,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetDocument (documentId);
 		}
 
-		public void UpdateFileContent (string fileName, string text)
+		public async void UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
 			foreach (var kv in this.projectDataMap) {
@@ -931,7 +1043,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (pf != null) {
 						var mimeType = DesktopService.GetMimeTypeForUri (fileName);
 						if (TypeSystemService.CanParseProjections (monoProject, mimeType, fileName))
-							TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType);
+							await TypeSystemService.ParseProjection (new ParseOptions { Project = monoProject, FileName = fileName, Content = new StringTextSource(text), BuildAction = pf.BuildAction }, mimeType).ConfigureAwait (false);
 					}
 				}
 
@@ -1056,6 +1168,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		List<MonoDevelop.Projects.DotNetProject> modifiedProjects = new List<MonoDevelop.Projects.DotNetProject> ();
+
 		async void OnProjectModified (object sender, MonoDevelop.Projects.SolutionItemModifiedEventArgs args)
 		{
 			if (internalChanges)
@@ -1068,6 +1182,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var projectId = GetProjectId (project);
 			if (CurrentSolution.ContainsProject (projectId)) {
 				OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));
+			} else {
+				modifiedProjects.Add (project);
 			}
 		}
 

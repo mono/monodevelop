@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp
 		static readonly IconId Property = "md-property";
 		static readonly IconId Struct = "md-struct";
 		static readonly IconId Delegate = "md-delegate";
-		static readonly IconId Constant = "md-literal";
+		// static readonly IconId Constant = "md-literal";
 		public static readonly IconId Namespace = "md-name-space";
 
 			
@@ -108,6 +108,11 @@ namespace MonoDevelop.CSharp
 				AdjustAccessibility (((BasePropertyDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
 			if (element is BaseMethodDeclarationSyntax)
 				AdjustAccessibility (((BaseMethodDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			if (element is EnumDeclarationSyntax)
+				AdjustAccessibility (((EnumDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			if (element is DelegateDeclarationSyntax)
+				AdjustAccessibility (((DelegateDeclarationSyntax)element).Modifiers, ref acc, ref isStatic, ref result);
+			
 			return result;
 		}
 

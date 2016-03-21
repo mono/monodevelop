@@ -56,7 +56,6 @@ namespace MonoDevelop.Ide.Commands
 		RemoveTrailingWhiteSpaces,
 		
 		JoinWithNextLine,
-		WordCount,
 		MonodevelopPreferences,
 		DefaultPolicies,
 		InsertStandardHeader,

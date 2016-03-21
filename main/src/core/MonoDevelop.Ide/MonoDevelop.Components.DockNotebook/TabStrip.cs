@@ -35,7 +35,6 @@ using Xwt.Motion;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -80,7 +79,7 @@ namespace MonoDevelop.Components.DockNotebook
 		const int LeftBarPadding = 44;
 		const int RightBarPadding = 22;
 		const int VerticalTextSize = 11;
-		const int ButtonSize = 16;
+		// static readonly int ButtonSize = 16;
 		const int TabSpacing = 0;
 		const int LeanWidth = 12;
 		const double CloseButtonMarginRight = 0;
@@ -837,7 +836,6 @@ namespace MonoDevelop.Components.DockNotebook
 					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 				}
 			}
-
 			la.Dispose ();
 		}
 

@@ -30,17 +30,18 @@ using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
-	public class CompletionTestBase
+	class CompletionTestBase : ICSharpCode.NRefactory6.TestBase
 	{
-		[TestFixtureSetUp]
-		public void Setup ()
-		{
-			Xwt.Application.Initialize ();
-			Gtk.Application.Init ();
-		}
+		//[TestFixtureSetUp]
+		//public void Setup ()
+		//{
+		//	Xwt.Application.Initialize ();
+		//	Gtk.Application.Init ();
+		//}
 
 		internal virtual CompletionContextHandler CreateContextHandler()
 		{
@@ -54,7 +55,7 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 			}
 		}
 
-		public CompletionResult CreateProvider(string input, SourceCodeKind? sourceCodeKind = null, bool usePreviousCharAsTrigger = false)
+		internal CompletionResult CreateProvider(string input, SourceCodeKind? sourceCodeKind = null, bool usePreviousCharAsTrigger = false)
 		{
 			int cursorPosition;
 			SemanticModel semanticModel;
@@ -83,11 +84,13 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 			var provider = CreateProvider (input, sourceCodeKind, usePreviousCharAsTrigger);
 
 			if (provider.Find (expectedItem) == null) {
+				Console.WriteLine ("Found items:");
 				foreach (var item in provider)
 					Console.WriteLine (item.DisplayText);
+				Console.WriteLine ("----- Expected: " + expectedItem);
+				Assert.Fail ("item '" + expectedItem + "' not found.");
 			}
 
-			Assert.IsNotNull(provider.Find(expectedItem), "item '" + expectedItem + "' not found.");	
 		}
 
 		protected void VerifyItemIsAbsent(string input, string expectedItem, string expectedDescriptionOrNull = null, SourceCodeKind? sourceCodeKind = null, bool usePreviousCharAsTrigger = false, bool experimental = false)
@@ -95,11 +98,14 @@ namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 			var provider = CreateProvider (input, sourceCodeKind, usePreviousCharAsTrigger);
 
 			if (provider.Find (expectedItem) != null) {
+				Console.WriteLine ("Found items:");
 				foreach (var item in provider)
 					Console.WriteLine (item.DisplayText);
+				Console.WriteLine ("----- Should be absent: " + expectedItem);
+				Assert.Fail ("item '" + expectedItem + "' found but shouldn't.");
 			}
-			Assert.IsNull(provider.Find(expectedItem), "item '" + expectedItem + "' found but shouldn't.");	
 		}
+
 
 		protected void VerifyItemsAbsent(string input, params string[] items)
 		{

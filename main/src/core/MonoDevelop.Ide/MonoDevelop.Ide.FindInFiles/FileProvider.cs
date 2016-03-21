@@ -101,6 +101,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				if (doc != null && doc.Editor != null) {
 					result = doc.Editor.Text;
+					encoding = doc.Editor.Encoding;
+					hadBom = doc.Editor.UseBOM;
 				} else {
 					try {
 						if (!File.Exists (FileName))
@@ -121,9 +123,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		async Task<Document> SearchDocument ()
 		{
-			Document result = null;
-			await Runtime.RunInMainThread (() => result = IdeApp.Workbench.Documents.FirstOrDefault(d => !string.IsNullOrEmpty (d.FileName) &&  Path.GetFullPath (d.FileName) == Path.GetFullPath (FileName)));
-			return result;
+			string fullPath = Path.GetFullPath (FileName);
+			return await Runtime.RunInMainThread (() => IdeApp.Workbench.Documents.FirstOrDefault (d => !string.IsNullOrEmpty (d.FileName) && Path.GetFullPath (d.FileName) == fullPath));
 		}
 
 		Document document;
@@ -173,7 +174,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			if (buffer != null && somethingReplaced) {
 				object attributes = DesktopService.GetFileAttributes (FileName);
-				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding, hadBom);
+				TextFileUtility.WriteText (FileName, buffer.ToString (), encoding ?? Encoding.UTF8, hadBom);
 				DesktopService.SetFileAttributes (FileName, attributes);
 			}
 			FileService.NotifyFileChanged (FileName);

@@ -578,11 +578,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 //			CompletionWindowManager.HideWindow ();
 //		}
 //
-//		void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
-//		{
-//			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-//			CompletionWindowManager.HideWindow ();
-//		}
+		void HandleFocusOutEvent (object sender, EventArgs args)
+		{
+			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+			CompletionWindowManager.HideWindow ();
+		}
 
 		protected override void Initialize ()
 		{
@@ -591,8 +591,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
-//			if (document.Editor.Parent != null)
-//				document.Editor.Parent.TextArea.FocusOutEvent += HandleFocusOutEvent;
+			Editor.FocusLost += HandleFocusOutEvent;
 		}
 
 		internal void InternalInitialize ()
@@ -624,8 +623,7 @@ namespace MonoDevelop.Ide.Editor.Extension
                 ParameterInformationWindowManager.HideWindow(this, CompletionWidget);
 
                 disposed = true;
-                //				if (document.Editor.Parent != null)
-                //					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
+                Editor.FocusLost -= HandleFocusOutEvent;
                 //				document.Editor.Paste -= HandlePaste;
 				Deinitialize();
             }

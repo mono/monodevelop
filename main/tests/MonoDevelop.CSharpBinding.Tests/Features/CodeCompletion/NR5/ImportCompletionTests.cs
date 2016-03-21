@@ -36,7 +36,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class ImportCompletionTests
+	class ImportCompletionTests
 	{
 		public static CompletionDataList CreateProvider(string text, params IUnresolvedAssembly[] references)
 		{
@@ -105,7 +105,7 @@ class Test
 			var provider = CreateProvider(@"using Foo;
 
 namespace Foo {
-	public class AppDomain {}
+	class AppDomain {}
 }
 
 class Test

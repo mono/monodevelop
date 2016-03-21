@@ -270,7 +270,8 @@ namespace Mono.TextEditor
 				throw new ArgumentOutOfRangeException (nameof (offset), "must be <= TextLength(" + TextLength +"), was: " + offset);
 			if (count < 0)
 				throw new ArgumentOutOfRangeException (nameof (count), "must be > 0, was: " + count);
-
+			if (ReadOnly)
+				return;
 			InterruptFoldWorker ();
 
 			//int oldLineCount = LineCount;
