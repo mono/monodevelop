@@ -65,6 +65,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
                 | (:? FSharpEntity as aa), (:? FSharpEntity as bb) ->
                     let comparisonResult =
                         let aaAllBases = ancestry aa
+
                         match (aaAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs bb)) with
                         | Some _ ->  -1
                         | _ ->
@@ -72,6 +73,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
                             match (bbAllBases |> Seq.tryFind (fun a -> a.IsEffectivelySameAs aa)) with
                             | Some _ ->  1
                             | _ -> aa.DisplayName.CompareTo(bb.DisplayName)
+
                     comparisonResult
                 | a, b -> a.DisplayName.CompareTo(b.DisplayName)
             | _ -> -1
@@ -92,6 +94,7 @@ module Completion =
 
     let (|InvalidToken|_|) context =
         let token = Tokens.getTokenAtPoint context.editor context.editor.DocumentContext context.triggerOffset
+
         if Tokens.isInvalidCompletionToken token then
             Some InvalidToken
         else
@@ -412,7 +415,6 @@ module Completion =
                     documentContext = documentContext
                     lineToCaret = lineToCaret
                     completionChar = completionChar
-                    ctrlSpace = ctrlSpace
                     } = context
 
                 let parsedDocument = documentContext.TryGetFSharpParsedDocument()
@@ -420,8 +422,8 @@ module Completion =
                 let! (typedParseResults: ParseAndCheckResults option) =
                     lock parseLock (fun() ->
                         async {
-                            match parsedDocument, ctrlSpace with
-                            | Some document, false  -> 
+                            match parsedDocument with
+                            | Some document -> 
                                 match document.ParsedLocation with
                                 | Some location ->
                                     if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
