@@ -118,13 +118,10 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		#region IAttachableViewContent implementation
 		protected override void OnSelected ()
 		{
 			Init ();
 		}
-
-		#endregion
 
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]
 		protected void OnCopy ()
