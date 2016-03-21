@@ -2610,6 +2610,8 @@ namespace MonoDevelop.Projects
 				if (i != null)
 					msproject.RemoveImport (i);
 			}
+			importsAdded.Clear ();
+			importsRemoved.Clear ();
 			msproject.WriteExternalProjectProperties (this, GetType (), true);
 		}
 
@@ -2831,11 +2833,6 @@ namespace MonoDevelop.Projects
 			get { return importsRemoved; }
 		}
 
-		void ImportsSaved ()
-		{
-			importsAdded.Clear ();
-			importsRemoved.Clear ();
-		}
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			NotifyModified ("Files");

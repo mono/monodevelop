@@ -805,6 +805,27 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (1, p.References.Count);
 			Assert.AreEqual ("System.Xml", p.References[0].Include);
 		}
+
+		[Test]
+		public async Task AddImportThenRemoveImportAndThenAddImportAgain ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject)sol.Items [0];
+			p.AddImportIfMissing ("MyImport.targets", null);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p.RemoveImport ("MyImport.targets");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			p.AddImportIfMissing ("MyImport.targets", null);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+
+			Assert.That (savedXml, Contains.Substring ("<Import Project=\"MyImport.targets\""));
+		}
 	}
 
 	class SerializedSaveTestExtension: SolutionItemExtension
