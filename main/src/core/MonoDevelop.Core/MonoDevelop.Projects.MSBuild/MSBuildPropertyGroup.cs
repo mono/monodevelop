@@ -106,7 +106,6 @@ namespace MonoDevelop.Projects.MSBuild
 					properties [cp.Name] = cp;
 					cp.ParentNode = PropertiesParent;
 					cp.Owner = this;
-					cp.ResetIndent (false);
 				} else
 					ChildNodes = ChildNodes.Add (node);
 			}
