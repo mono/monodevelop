@@ -1,6 +1,6 @@
 {
 	"name": "Visual Studio",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"description": "Reminiscent of Microsoft Visual Studio's default colors",
 	"originator": "Jeffrey Stedfast <fejj@novell.com>",
 
@@ -31,7 +31,7 @@
 		{ "name": "Selected Text", "fore": "white", "back": "#3298FF" },
 		{ "name": "Selected Text(Inactive)", "fore": "white", "back": "#BFCDDB" },
 
-		{ "name": "Collapsed Text", "fore": "#808080" },
+		{ "name": "Collapsed Text", "fore": "comment-green", "back": "white" },
 
 		{ "name": "Line Numbers", "fore": "semantic-type", "back": "#FFFFFF" },
 

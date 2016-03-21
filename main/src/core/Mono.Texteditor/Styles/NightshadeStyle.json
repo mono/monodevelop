@@ -1,6 +1,6 @@
 {
 	"name": "Nightshade",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"description": "An inky scheme with vibrant highlights",
 	"originator": "Anirudh Sanjeev <anirudh@anirudhsanjeev.org>",
 
@@ -44,7 +44,7 @@
 		{ "name": "Search result background", "color": "VisualBGVim" },
 		{ "name": "Search result background (highlighted)", "color": "VisualBGVim" },
 
-		{ "name": "Column Ruler", "color": "aluminium5" },
+		{ "name": "Column Ruler", "color": "#2a2a2a" },
 
 		{ "name": "Fold Square", "color": "#3d3d3b", "secondcolor": "BlackVim" },
 		{ "name": "Fold Cross", "color": "#6f706c", "secondcolor": "BlackVim" },
@@ -119,7 +119,7 @@
 		{ "name": "Selected Text", "back": "#2647DD" },
 		{ "name": "Selected Text(Inactive)", "back": "aluminium4" },
 
-		{ "name": "Collapsed Text", "fore": "aluminium3", "back": "BlackVim" },
+		{ "name": "Collapsed Text", "fore": "CommentVim", "back": "BlackVim" },
 
 		{ "name": "Line Numbers", "fore": "LineNrVim", "back": "BlackVim" },
 
