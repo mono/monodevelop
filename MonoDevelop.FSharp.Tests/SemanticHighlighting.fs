@@ -16,6 +16,7 @@ type SemanticHighlighting() =
         let doc = TestHelpers.createDoc fixedc "defined"
         let style = SyntaxModeService.GetColorStyle "Gruvbox"
         let tsc = SyntaxMode.tryGetTokensSymbolsAndColours doc
+
         let segments =
             doc.Editor.GetLines()
             |> Seq.map (fun line -> SyntaxMode.getColouredSegment tsc line.LineNumber line.Offset (doc.Editor.GetLineText line) style)

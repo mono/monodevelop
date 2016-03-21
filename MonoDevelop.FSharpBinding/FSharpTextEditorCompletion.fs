@@ -334,7 +334,6 @@ module Completion =
         }
 
     // cache parse results for current filename/line number
-    let mutable parseCache = (Unchecked.defaultof<FilePath>, -1, None) 
 
     let parseLock = obj()
     let getFsiCompletions context = 
@@ -408,7 +407,6 @@ module Completion =
         async {
             try
                 let { 
-                    editor = editor
                     line = line
                     column = column
                     documentContext = documentContext
@@ -417,22 +415,26 @@ module Completion =
                     ctrlSpace = ctrlSpace
                     } = context
 
+                let parsedDocument = documentContext.TryGetFSharpParsedDocument()
+
                 let! (typedParseResults: ParseAndCheckResults option) =
                     lock parseLock (fun() ->
                         async {
-                            match parseCache, ctrlSpace with
-                            | (filename, lastLine, parseResults), false when lastLine = context.line && filename = editor.FileName -> 
-                                LoggingService.logDebug "Completion: got parse results from cache"
-                                return parseResults
-                            | _ -> 
-                                let! (parseResults: ParseAndCheckResults option) = 
-                                    getParseResults(documentContext, editor.Text)
-                                match parseResults with
-                                | Some _ -> parseCache <- (editor.FileName, line, parseResults)
-                                            LoggingService.logDebug "Completion: got some parse results"
-                                            return parseResults
-                                | None -> LoggingService.logDebug "Completion: got no parse results"
-                                          return None
+                            match parsedDocument, ctrlSpace with
+                            | Some document, false  -> 
+                                match document.ParsedLocation with
+                                | Some location ->
+                                    if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
+                                        LoggingService.logDebug "Completion: got parse results from cache"
+                                        return document.TryGetAst()
+                                    else
+                                        // force sync
+                                        documentContext.ReparseDocument()
+                                        document.GetAst()
+
+                                        return document.TryGetAst()
+                                | None -> return None
+                            | _ -> return None
                         })
 
                 let result = CompletionDataList()                 
@@ -521,7 +523,6 @@ module Completion =
                     return getModifiers completionContext
                 | _ ->
                     if documentContext :? FsiDocumentContext then
-                        //FSharpInteractivePad2.Fsi.Value.RequestCompletions lineStr col
                         return! getFsiCompletions completionContext
                     else
                         return! getCompletions completionContext

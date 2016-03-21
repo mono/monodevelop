@@ -52,7 +52,7 @@ type FSharpInteractiveTextEditorOptions(options: MonoDevelop.Ide.Editor.DefaultS
 type FsiDocumentContext() =
     inherit DocumentContext()
     let name = "__FSI__.fsx"
-    let pd = new FSharpParsedDocument(name) :> ParsedDocument
+    let pd = new FSharpParsedDocument(name, None) :> ParsedDocument
     let project = Services.ProjectService.CreateDotNetProject ("F#")
 
     let mutable view:ICompletionWidget = null
