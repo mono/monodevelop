@@ -1415,7 +1415,10 @@ namespace MonoDevelop.VersionControl.Git
 					path = change.Path;
 					break;
 				}
-				diffs.Add (new DiffInfo (RootPath, RootRepository.FromGitPath (path), patch[path].Patch));
+
+				// Trim the header by taking out the first 2 lines.
+				int diffStart = patch[path].Patch.IndexOf ('\n', patch [path].Patch.IndexOf ('\n') + 1);
+				diffs.Add (new DiffInfo (RootPath, RootRepository.FromGitPath (path), patch[path].Patch.Substring (diffStart + 1)));
 			}
 			return diffs.ToArray ();
 		}
