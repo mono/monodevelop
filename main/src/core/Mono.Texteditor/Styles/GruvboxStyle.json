@@ -1,6 +1,6 @@
 {
 	"name": "Gruvbox",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "A retro groove color scheme",
 	"originator": "https://github.com/morhetz/gruvbox",
 
@@ -24,7 +24,7 @@
 		{ "name": "Search result background", "color": "#006060" },
 		{ "name": "Search result background (highlighted)", "color": "#008080" },
 
-		{ "name": "Column Ruler", "color": "#575852" },
+		{ "name": "Column Ruler", "color": "#323229" },
 
 		{ "name": "Fold Square", "color": "comment", "secondcolor": "background" },
 		{ "name": "Fold Cross", "color": "white", "secondcolor": "background" },
@@ -65,11 +65,11 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color": "#707070", "bordercolor": "#7b7b7b" },
 		{ "name": "Breakpoint Marker(Invalid)", "color": "#604343", "bordercolor": "#6a4a4a" },
 
-		{ "name": "Current Line Marker", "color": "#323229" },
-		{ "name": "Current Line Marker(Inactive)", "color": "#2F2F28" },
+		{ "name": "Current Line Marker", "color": "#323229", "secondcolor": "#323229" },
+		{ "name": "Current Line Marker(Inactive)", "color": "#2F2F28", "secondcolor": "#2F2F28" },
 
-		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#747354" },
-		{ "name": "Debugger Stack Line Marker", "color": "#5c6b4d", "bordercolor": "#657655" },
+		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#69684c" },
+		{ "name": "Debugger Stack Line Marker", "color": "#5c6b4d", "bordercolor": "#5c6b4d" },
 
 		{ "name": "Primary Link", "color": "foreground", "secondcolor": "#7f4a81" },
 		{ "name": "Primary Link(Highlighted)", "color": "foreground", "secondcolor": "#b167b3" },

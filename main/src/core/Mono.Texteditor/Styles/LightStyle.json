@@ -1,12 +1,12 @@
 {
 	"name": "Light",
-	"version": "1.4.2",
+	"version": "1.4.4",
 	"description": "Bright and friendly, just like Xamarin",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
 	"palette": [
 		{ "name": "text-black", "value": "#222222" },
-		{ "name": "comment-gray", "value": "#b0b0b0" },
+		{ "name": "comment-gray", "value": "#888a85" },
 		{ "name": "chameleon1", "value": "#8ae234" },
 		{ "name": "chameleon2", "value": "#73d216" },
 		{ "name": "chameleon3", "value": "#4e9a06" },
@@ -17,7 +17,7 @@
 		{ "name": "aluminium2", "value": "#d3d7cf" },
 		{ "name": "aluminium3", "value": "#babdb6" },
 		{ "name": "aluminium4", "value": "#888a85" },
-		{ "name": "literal-orange", "value": "#F57E00" },
+		{ "name": "literal-orange", "value": "#db7100" },
 		{ "name": "literal-escape", "value": "#A53E00" },
 		{ "name": "keyword-teal", "value": "#009695" },
 		{ "name": "selection-bg", "value": "#b5d5ff" },
@@ -107,7 +107,7 @@
 		{ "name": "Selected Text", "back": "selection-bg" },
 		{ "name": "Selected Text(Inactive)", "back": "aluminium2" },
 
-		{ "name": "Collapsed Text", "fore": "aluminium4", "back": "white" },
+		{ "name": "Collapsed Text", "fore": "comment-gray", "back": "white" },
 
 		{ "name": "Line Numbers", "fore": "aluminium4", "back": "white" },
 

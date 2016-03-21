@@ -1,6 +1,6 @@
 ﻿{
 	"name": "Dark",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "A dark scheme using colors from the Tango Project",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -36,10 +36,10 @@
 		{ "name": "Search result background", "color": "#006060" },
 		{ "name": "Search result background (highlighted)", "color": "#008080" },
 
-		{ "name": "Column Ruler", "color": "#444a4d" },
+		{ "name": "Column Ruler", "color": "#2a2c2f" },
 
-		{ "name": "Fold Square", "color": "aluminium5", "secondcolor": "aluminium6" },
-		{ "name": "Fold Cross", "color": "aluminium5", "secondcolor": "aluminium6" },
+		{ "name": "Fold Square", "color": "aluminium5", "secondcolor": "#1c1e1f" },
+		{ "name": "Fold Cross", "color": "aluminium5", "secondcolor": "#1c1e1f" },
 
 		{ "name": "Indentation Guide", "color": "#444a4d" },
 
@@ -77,8 +77,8 @@
 		{ "name": "Breakpoint Marker(Disabled)", "color": "#4d4d4d", "bordercolor": "#4d4d4d" },
 		{ "name": "Breakpoint Marker(Invalid)", "color": "#604343", "bordercolor": "#604343" },
 
-		{ "name": "Current Line Marker", "color": "#16191c", "secondcolor": "#16191c" },
-		{ "name": "Current Line Marker(Inactive)", "color": "#16191c", "secondcolor": "#16191c" },
+		{ "name": "Current Line Marker", "color": "#2a2c2f", "secondcolor": "#2a2c2f" },
+		{ "name": "Current Line Marker(Inactive)", "color": "#2a2c2f", "secondcolor": "#2a2c2f" },
 
 		{ "name": "Debugger Current Line Marker", "color": "#69684c", "bordercolor": "#69684c" },
 		{ "name": "Debugger Stack Line Marker", "color": "#5f7247", "bordercolor": "#5f7247" },
@@ -110,7 +110,7 @@
 		{ "name": "Selected Text", "back": "#245176" },
 		{ "name": "Selected Text(Inactive)", "back": "aluminium5" },
 
-		{ "name": "Collapsed Text", "fore": "aluminium4", "back": "aluminium6" },
+		{ "name": "Collapsed Text", "fore": "aluminium4", "back": "#1c1e1f" },
 
 		{ "name": "Line Numbers", "fore": "aluminium5", "back": "#242424" },
 

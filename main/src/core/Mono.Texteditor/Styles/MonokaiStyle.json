@@ -1,6 +1,6 @@
 {
 	"name": "Monokai",
-	"version": "1.3.2",
+	"version": "1.3.3",
 	"description": "A smooth, dusky scheme",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -32,7 +32,7 @@
 		{ "name": "Search result background", "color": "#006060" },
 		{ "name": "Search result background (highlighted)", "color": "#008080" },
 
-		{ "name": "Column Ruler", "color": "#575852" },
+		{ "name": "Column Ruler", "color": "#393933" },
 
 		{ "name": "Fold Square", "color": "monokai-comment", "secondcolor": "monokai-background" },
 		{ "name": "Fold Cross", "color": "#8f8c7e", "secondcolor": "monokai-background" },

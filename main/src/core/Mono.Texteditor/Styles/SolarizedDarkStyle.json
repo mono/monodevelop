@@ -1,6 +1,6 @@
 {
 	"name": "Solarized Dark",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"description": "An artful, dark scheme that's easy on the eyes",
 	"originator": "Xamarin Inc. (http://xamarin.com)",
 
@@ -30,10 +30,10 @@
 		{ "name": "Search result background", "color": "base02" },
 		{ "name": "Search result background (highlighted)", "color": "base02" },
 
-		{ "name": "Column Ruler", "color": "base1" },
+		{ "name": "Column Ruler", "color": "#183842" },
 
-		{ "name": "Fold Square", "color": "base01", "secondcolor": "base02" },
-		{ "name": "Fold Cross", "color": "base01", "secondcolor": "base02" },
+		{ "name": "Fold Square", "color": "base01", "secondcolor": "base03" },
+		{ "name": "Fold Cross", "color": "base01", "secondcolor": "base03" },
 
 		{ "name": "Indentation Guide", "color": "#354243" },
 
