@@ -255,7 +255,7 @@ namespace MonoDevelop.MacIntegration
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
 			commandManager.GetCommand (HelpCommands.About).Text = GettextCatalog.GetString ("About {0}", BrandingService.ApplicationName);
 			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GettextCatalog.GetString ("Hide {0}", BrandingService.ApplicationName);
-			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
+			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-ins...");
 
 			initedApp = true;
 
