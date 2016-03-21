@@ -68,28 +68,28 @@ namespace Mono.TextEditor.Tests
 		public void TestSpans ()
 		{
 			TestOutput ("/* TestMe */",
-			            "<span foreground=\"#B0B0B0\">/* TestMe */</span>");
+			            "<span foreground=\"#888A85\">/* TestMe */</span>");
 		}
 		
 		[Test]
 		public void TestStringEscapes ()
 		{
 			TestOutput ("\"Escape:\\\" \"outtext",
-			            "<span foreground=\"#F57D00\">\"Escape:</span><span foreground=\"#A53E00\">\\\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#222222\">outtext</span>");
+			            "<span foreground=\"#DB7100\">\"Escape:</span><span foreground=\"#A53E00\">\\\"</span><span foreground=\"#DB7100\"> \"</span><span foreground=\"#222222\">outtext</span>");
 		}
 		
 		[Test]
 		public void TestVerbatimStringEscapes ()
 		{
 			TestOutput ("@\"Escape:\"\" \"outtext",
-			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#222222\">outtext</span>");
+			            "<span foreground=\"#DB7100\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span><span foreground=\"#DB7100\"> \"</span><span foreground=\"#222222\">outtext</span>");
 		}
 
 		[Test]
 		public void TestDoubleVerbatimStringEscapes ()
 		{
 			TestOutput ("@\"Escape:\"\"\"\" \"outtext",
-			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#222222\">outtext</span>");
+			            "<span foreground=\"#DB7100\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"\"\"</span><span foreground=\"#DB7100\"> \"</span><span foreground=\"#222222\">outtext</span>");
 		}
 
 		[Test]
@@ -97,21 +97,21 @@ namespace Mono.TextEditor.Tests
 		public void TestVerbatimStringEscapeLineBreak ()
 		{
 			TestOutput ("@\"Escape:\"\"\ntext\"",
-			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span>\n<span foreground=\"#F57D00\">text\"</span>");
+			            "<span foreground=\"#DB7100\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span>\n<span foreground=\"#DB7100\">text\"</span>");
 		}
 
 		[Test]
 		public void TestHexDigit ()
 		{
 			TestOutput ("0x12345679AFFEuL",
-			            "<span foreground=\"#F57D00\">0x12345679AFFEuL</span>");
+			            "<span foreground=\"#DB7100\">0x12345679AFFEuL</span>");
 		}
 		
 		[Test]
 		public void TestDoubleDigit ()
 		{
 			TestOutput ("123.45678e-09d",
-			            "<span foreground=\"#F57D00\">123.45678e-09d</span>");
+			            "<span foreground=\"#DB7100\">123.45678e-09d</span>");
 		}
 		
 		[Test]
@@ -138,7 +138,7 @@ namespace Mono.TextEditor.Tests
 		{
 			TestOutput (
 				"\n\n\nlet x = 2",
-				"<span foreground=\"#009695\">let</span><span foreground=\"#222222\"> x = </span><span foreground=\"#F57D00\">2</span>",
+				"<span foreground=\"#009695\">let</span><span foreground=\"#222222\"> x = </span><span foreground=\"#DB7100\">2</span>",
 				"text/x-fsharp");
 		}
 	}
