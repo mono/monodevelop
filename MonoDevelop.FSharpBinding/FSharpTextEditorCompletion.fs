@@ -328,16 +328,6 @@ module Completion =
         [for keyValuePair in KeywordList.modifiers do
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
-    let getParseResults (documentContext:DocumentContext, text) =
-        async {
-            let filename = documentContext.Name
-            // Try to get typed information from LanguageService (with the specified timeout)
-            let projectFile = documentContext.Project |> function null -> filename | project -> project.FileName.ToString()
-            return! languageService.GetTypedParseResultWithTimeout(projectFile, filename, 0, text, AllowStaleResults.MatchingSource, ServiceSettings.maximumTimeout, IsResultObsolete(fun() -> false))
-        }
-
-    // cache parse results for current filename/line number
-
     let parseLock = obj()
     let getFsiCompletions context = 
 
@@ -428,13 +418,13 @@ module Completion =
                                 | Some location ->
                                     if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
                                         LoggingService.logDebug "Completion: got parse results from cache"
-                                        return document.TryGetAst()
                                     else
+                                        LoggingService.logDebug "Completion: syncing parse results"
                                         // force sync
                                         documentContext.ReparseDocument()
                                         document.GetAst()
 
-                                        return document.TryGetAst()
+                                    return document.TryGetAst()
                                 | None -> return None
                             | _ -> return None
                         })
@@ -459,7 +449,7 @@ module Completion =
                             LoggingService.logDebug "Completion: residue %s" residue
                             result.DefaultCompletionString <- residue
                             result.TriggerWordLength <- residue.Length
-
+                            
                         //TODO Use previous token and pattern match to detect whitespace
                         if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
                             // Add the code templates and compiler generated identifiers if the completion char is not '.'
