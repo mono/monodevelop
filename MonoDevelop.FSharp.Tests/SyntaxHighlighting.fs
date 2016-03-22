@@ -102,3 +102,10 @@ type SyntaxHighlighting() =
     [<TestCase(@"let mutable session§ = §setupSession()", "Plain Text")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
+
+    [<TestCase(@"static member §GetDefaultConfiguration§ :", "User Method Declaration")>]
+    [<TestCase(@"member §``Syntax Highlighting``§ :", "User Method Declaration")>]
+    [<TestCase(@"-> §^T§ :", "User Types")>]
+    [<TestCase(@"   §list§ :", "User Field Declaration")>]
+    member x.``Tooltip highlighting``(source, expectedStyle) =
+        assertStyle (source, expectedStyle)

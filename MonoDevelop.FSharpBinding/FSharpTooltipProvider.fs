@@ -69,9 +69,16 @@ type FSharpTooltipProvider() =
                         let! tip = SymbolTooltips.getTooltipFromSymbolUse symbol
                                    |> Choice.ofOptionWith (sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^"))
                       
+                        let highlightedTip = 
+                            match tip with
+                            | (signature, xmldoc, footer) ->
+                                syntaxHighlight signature, xmldoc, footer
+                            | _ -> tip
+
                         //get the TextSegment the the symbols range occupies
                         let textSeg = Symbols.getTextSegment editor symbol col lineStr
-                        let tooltipItem = TooltipItem(tip, textSeg)
+
+                        let tooltipItem = TooltipItem(highlightedTip, textSeg)
                         return tooltipItem
 
                     with
