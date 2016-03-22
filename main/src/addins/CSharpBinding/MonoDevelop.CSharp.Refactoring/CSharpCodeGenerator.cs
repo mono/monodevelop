@@ -715,7 +715,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					result.Append (" ");
 				}
 				result.Append (CSharpAmbience.FilterName (p.Name));
-				if (p.HasExplicitDefaultValue) {
+				if (asParameterList && p.HasExplicitDefaultValue) {
 					result.Append (" = ");
 					if (p.ExplicitDefaultValue is Enum) {
 						var name = Enum.GetName (p.ExplicitDefaultValue.GetType (), p.ExplicitDefaultValue);
@@ -733,6 +733,12 @@ namespace MonoDevelop.CSharp.Refactoring
 						result.Append ("\"" + CSharpTextEditorIndentation.ConvertToStringLiteral ((string)p.ExplicitDefaultValue) + "\"");
 					} else if (p.ExplicitDefaultValue is bool) {
 						result.Append ((bool)p.ExplicitDefaultValue ? "true" : "false");
+					} else if (p.ExplicitDefaultValue == null) {
+						if (p.Type.IsValueType && p.Type.SpecialType != SpecialType.System_String) {
+							result.Append ("default(" + p.Type.ToMinimalDisplayString (options.SemanticModel, options.Part.SourceSpan.Start) + ")");
+						} else {
+							result.Append ("null");
+						}
 					} else {
 						result.Append (p.ExplicitDefaultValue);
 					}
@@ -775,9 +781,9 @@ namespace MonoDevelop.CSharp.Refactoring
 			//if (options.ExplicitDeclaration || options.ImplementingType.Kind == TypeKind.Interface)
 			//	return;
 			result.Append (GetModifiers (options.ImplementingType, options.Part, member));
-			bool isFromInterface = false;
+			//bool isFromInterface = false;
 			if (member.ContainingType != null && member.ContainingType.TypeKind == TypeKind.Interface) {
-				isFromInterface = true;
+				//isFromInterface = true;
 				// TODO: Type system conversion.
 				//				if (options.ImplementingType != null) {
 				//					foreach (var type in options.ImplementingType.BaseTypes) {
@@ -791,7 +797,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				//				}
 			}
 			if (member is IMethodSymbol) {
-				var method = (IMethodSymbol)member;
 				if (!options.CreateProtocolMember)
 					result.Append ("override ");
 			}

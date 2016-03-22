@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Options;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpMethodExtractor : MethodExtractor
+	partial class CSharpMethodExtractor : MethodExtractor
     {
 //        private class FormattingRule : AbstractFormattingRule
 //        {

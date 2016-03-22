@@ -243,42 +243,42 @@ namespace MonoDevelop.Components.AutoTest
 
 		public AppQuery Button ()
 		{
-			return CheckType (typeof(Button), "Button");
+			return CheckType (typeof(Gtk.Button), "Button");
 		}
 
 		public AppQuery Textfield ()
 		{
-			return CheckType (typeof(Entry), "Textfield");
+			return CheckType (typeof(Gtk.Entry), "Textfield");
 		}
 
 		public AppQuery CheckButton ()
 		{
-			return CheckType (typeof(CheckButton), "CheckButton");
+			return CheckType (typeof(Gtk.CheckButton), "CheckButton");
 		}
 
 		public AppQuery RadioButton ()
 		{
-			return CheckType (typeof(RadioButton), "RadioButton");
+			return CheckType (typeof(Gtk.RadioButton), "RadioButton");
 		}
 
 		public AppQuery TreeView ()
 		{
-			return CheckType (typeof(TreeView), "TreeView");
+			return CheckType (typeof(Gtk.TreeView), "TreeView");
 		}
 
 		public AppQuery Window ()
 		{
-			return CheckType (typeof(Window), "Window");
+			return CheckType (typeof(Gtk.Window), "Window");
 		}
 
 		public AppQuery TextView ()
 		{
-			return CheckType (typeof(TextView), "TextView");
+			return CheckType (typeof(Gtk.TextView), "TextView");
 		}
 
 		public AppQuery Notebook ()
 		{
-			return CheckType (typeof(Notebook), "Notebook");
+			return CheckType (typeof(Gtk.Notebook), "Notebook");
 		}
 
 		public AppQuery Text (string text)

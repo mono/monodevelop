@@ -167,7 +167,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				return toolbarWidgets;
 			
 			var groupToggleButton = new ToggleButton {
-				Image = new Image (Ide.Gui.Stock.GroupByCategory, IconSize.Menu),
+				Image = new ImageView (Ide.Gui.Stock.GroupByCategory, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Group entries by type"),
 				Active = settings.IsGrouped,
 			};	
@@ -179,7 +179,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			};
 
 			var sortAlphabeticallyToggleButton = new ToggleButton {
-				Image = new Image (Ide.Gui.Stock.SortAlphabetically, IconSize.Menu),
+				Image = new ImageView (Ide.Gui.Stock.SortAlphabetically, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Sort entries alphabetically"),
 				Active = settings.IsSorted,
 			};	
@@ -239,7 +239,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			if (o is SyntaxNode) {
 				pixRenderer.Image = ImageService.GetIcon (((SyntaxNode)o).GetStockIcon (), IconSize.Menu);
 			} else if (o is SyntaxTrivia) {
-				pixRenderer.Image = ImageService.GetIcon (Ide.Gui.Stock.Add, IconSize.Menu);
+				pixRenderer.Image = ImageService.GetIcon (Ide.Gui.Stock.Region, IconSize.Menu);
 			}
 		}
 
@@ -249,7 +249,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			object o = model.GetValue (iter, 0);
 			var syntaxNode = o as SyntaxNode;
 			if (syntaxNode != null) {
-				txtRenderer.Text = astAmbience.GetEntityMarkup (syntaxNode);
+				txtRenderer.Markup = astAmbience.GetEntityMarkup (syntaxNode);
 			} else if (o is SyntaxTrivia) {
 				txtRenderer.Text = ((SyntaxTrivia)o).ToString ();
 			}

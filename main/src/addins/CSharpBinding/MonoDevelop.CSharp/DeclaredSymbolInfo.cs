@@ -32,7 +32,6 @@ using Roslyn.Utilities;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Linq;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Diagnostics;
@@ -45,6 +44,7 @@ using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.CSharp;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp
 {
@@ -480,14 +480,16 @@ namespace MonoDevelop.CSharp
 			return TypeSystemService.GetCodeAnalysisDocument (type.DocumentId, token);
 		}
 
-		public override async Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
+		public override Task<TooltipInformation> GetTooltipInformation (CancellationToken token)
 		{
-			var doc = GetDocument (token);
-			if (doc == null) {
-				return new TooltipInformation ();
-			}
-			var symbol = await type.GetSymbolAsync (doc, token);
-			return await Ambience.GetTooltip (token, symbol);
+			return Task.Run (async delegate {
+				var doc = GetDocument (token);
+				if (doc == null) {
+					return null;
+				}
+				var symbol = await type.GetSymbolAsync (doc, token);
+				return await Ambience.GetTooltip (token, symbol);
+			});
 		}
 
 		public override string Description {
@@ -526,9 +528,9 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public override string GetMarkupText (Widget widget)
+		public override string GetMarkupText (bool selected)
 		{
-			return HighlightMatch (widget, useFullName ? type.FullyQualifiedContainerName : type.Name, match);
+			return HighlightMatch (useFullName ? type.FullyQualifiedContainerName : type.Name, match, selected);
 		}
 
 		public DeclaredSymbolInfoResult (string match, string matchedString, int rank, DeclaredSymbolInfo type, bool useFullName)  : base (match, matchedString, rank)
@@ -551,7 +553,7 @@ namespace MonoDevelop.CSharp
 			if (doc != null) {
 				var symbol = await type.GetSymbolAsync (doc, token);
 				var project = TypeSystemService.GetMonoProject (doc.Id);
-				IdeApp.ProjectOperations.JumpToDeclaration (symbol, project);
+				await RefactoringService.RoslynJumpToDeclaration (symbol, project);
 			}
 		}
 	}

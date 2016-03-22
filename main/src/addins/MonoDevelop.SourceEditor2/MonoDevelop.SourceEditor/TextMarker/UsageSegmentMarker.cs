@@ -82,15 +82,17 @@ namespace MonoDevelop.SourceEditor
 				if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write ||
 					(usage.UsageType & ReferenceUsageType.Declariton) == ReferenceUsageType.Declariton) {
 					colorStyle = editor.ColorStyle.ChangingUsagesRectangle;
+					if (colorStyle.Color.A == 0.0)
+						colorStyle = editor.ColorStyle.UsagesRectangle;
 				} else {
 					colorStyle = editor.ColorStyle.UsagesRectangle;
 				}
 
-				using (var lg = new LinearGradient (@from + 1, y + 1, to , y + editor.LineHeight)) {
+				using (var lg = new LinearGradient (@from + 1, y + 1.5, to , y + editor.LineHeight - 1)) {
 					lg.AddColorStop (0, colorStyle.Color);
 					lg.AddColorStop (1, colorStyle.SecondColor);
 					cr.SetSource (lg);
-					cr.RoundedRectangle (@from + 0.5, y + 1.5, to - @from - 1, editor.LineHeight - 2, editor.LineHeight / 4);
+					cr.RoundedRectangle (@from - 0.5, y + 0.5, to - @from + 1, editor.LineHeight - 1, 2);
 					cr.FillPreserve ();
 				}
 

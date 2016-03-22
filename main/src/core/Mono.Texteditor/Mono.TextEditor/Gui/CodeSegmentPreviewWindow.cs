@@ -39,7 +39,7 @@ namespace Mono.TextEditor
 		const int DefaultPreviewWindowWidth = 320;
 		const int DefaultPreviewWindowHeight = 200;
 		MonoTextEditor editor;
-		Pango.FontDescription fontDescription;
+		Pango.FontDescription fontDescription, fontInform;
 		Pango.Layout layout;
 		Pango.Layout informLayout;
 		
@@ -78,6 +78,9 @@ namespace Mono.TextEditor
 			this.TypeHint = WindowTypeHint.Menu;
 			layout = PangoUtil.CreateLayout (this);
 			informLayout = PangoUtil.CreateLayout (this);
+			fontInform = Pango.FontDescription.FromString (editor.Options.FontName);
+			fontInform.Size = (int)(fontInform.Size * 0.7f);
+			informLayout.FontDescription = fontInform;
 			informLayout.SetText (CodeSegmentPreviewInformString);
 			
 			fontDescription = Pango.FontDescription.FromString (editor.Options.FontName);
@@ -122,8 +125,8 @@ namespace Mono.TextEditor
 				h += h2;
 			}
 			Gdk.Rectangle geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtWindow (editor.GdkWindow));
-			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 3, geometry.Width * 2 / 5)), 
-			                     System.Math.Max (1, System.Math.Min (h + 3, geometry.Height * 2 / 5)));
+			this.SetSizeRequest (System.Math.Max (1, System.Math.Min (w + 3, geometry.Width * 2 / 5) + 5), 
+			                     System.Math.Max (1, System.Math.Min (h + 3, geometry.Height * 2 / 5)) + 5);
 		}
 		
 		protected override void OnDestroyed ()
@@ -131,6 +134,7 @@ namespace Mono.TextEditor
 			layout = layout.Kill ();
 			informLayout = informLayout.Kill ();
 			fontDescription = fontDescription.Kill ();
+			fontInform = fontInform.Kill ();
 			if (textGC != null) {
 				textGC.Dispose ();
 				textBgGC.Dispose ();
@@ -160,7 +164,7 @@ namespace Mono.TextEditor
 			}
 			
 			ev.Window.DrawRectangle (textBgGC, true, ev.Area);
-			ev.Window.DrawLayout (textGC, 1, 1, layout);
+			ev.Window.DrawLayout (textGC, 5, 4, layout);
 			ev.Window.DrawRectangle (textBgGC, false, 1, 1, this.Allocation.Width - 3, this.Allocation.Height - 3);
 			ev.Window.DrawRectangle (foldGC, false, 0, 0, this.Allocation.Width - 1, this.Allocation.Height - 1);
 			
@@ -170,7 +174,7 @@ namespace Mono.TextEditor
 				informLayout.GetPixelSize (out w, out h); 
 				PreviewInformStringHeight = h;
 				ev.Window.DrawRectangle (foldBgGC, true, Allocation.Width - w - 3, Allocation.Height - h, w + 2, h - 1);
-				ev.Window.DrawLayout (foldGC, Allocation.Width - w - 3, Allocation.Height - h, informLayout);
+				ev.Window.DrawLayout (foldGC, Allocation.Width - w - 4, Allocation.Height - h - 3, informLayout);
 			}
 			return true;
 		}

@@ -30,6 +30,7 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
+using MonoDevelop.Components;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -42,7 +43,7 @@ namespace MonoDevelop.PackageManagement.Gui
 		PackageManagementViewModels viewModels;
 		PackageSourcesWidget packageSourcesWidget;
 
-		public override Gtk.Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			viewModels = new PackageManagementViewModels ();
 			viewModels.RegisteredPackageSourcesViewModel.Load ();

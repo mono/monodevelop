@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
-using Gtk;
 using MonoDevelop.Components;
 
 #pragma warning disable 612
@@ -54,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		LoadSavePanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new LoadSavePanelWidget ();
 		}

@@ -106,8 +106,11 @@ namespace MonoDevelop.Ide.Projects {
 			selection.Clear ();
 			store.Clear ();
 			this.configureProject = configureProject;
-			PopulateListView ();
-			Show ();
+
+			if (configureProject != null) {
+				PopulateListView ();
+				Show ();
+			}
 		}
 		
 		public void SetFilter (string filter)

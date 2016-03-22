@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public partial class CSharpSelectionResult
+    partial class CSharpSelectionResult
     {
         private class StatementResult : CSharpSelectionResult
         {
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
             public override bool ContainingScopeHasAsyncKeyword()
             {
                 var node = this.GetContainingScope();
-                var semanticModel = this.SemanticDocument.SemanticModel;
+                //var semanticModel = this.SemanticDocument.SemanticModel;
 
                 return node.TypeSwitch(
                     (AccessorDeclarationSyntax access) => false,

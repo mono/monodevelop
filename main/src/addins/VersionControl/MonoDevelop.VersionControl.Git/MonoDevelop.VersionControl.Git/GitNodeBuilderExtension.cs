@@ -63,8 +63,12 @@ namespace MonoDevelop.VersionControl.Git
 			if (rep != null) {
 				WorkspaceObject rob;
 				if (repos.TryGetValue (rep.RootPath, out rob)) {
-					if (ob == rob)
-						nodeInfo.Label += " (" + rep.GetCurrentBranch () + ")";
+					if (ob == rob) {
+						string branch = rep.GetCurrentBranch ();
+						if (branch == "(no branch)")
+							branch = rep.RootRepository.ObjectDatabase.ShortenObjectId (rep.RootRepository.Head.Tip);
+						nodeInfo.Label += " (" + branch + ")";
+					}
 				}
 			}
 		}

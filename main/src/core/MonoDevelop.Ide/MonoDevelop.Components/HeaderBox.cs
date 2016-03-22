@@ -170,6 +170,8 @@ namespace MonoDevelop.Components
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
+
+					// FIXME: VV: Remove gradient features
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Bottom)) {
 						pat.AddColorStop (0, gcol.ToCairoColor ());
 						gcol.Light -= 0.1;
@@ -213,6 +215,7 @@ namespace MonoDevelop.Components
 				GdkWindow.DrawLine (borderColor, rect.Right - n, rect.Y, rect.Right - n, rect.Bottom);
 
 			if (showTopShadow) {
+				// FIXME: VV: Remove gradient features
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (GdkWindow)) {
 					cr.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, shadowSize);
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, rect.Y + shadowSize)) {

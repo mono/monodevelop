@@ -64,6 +64,7 @@ namespace MonoDevelop.CSharp.Project
 		protected override void OnInitialize ()
 		{
 			base.OnInitialize ();
+			SupportsRoslyn = true;
 			StockIcon = "md-csharp-project";
 		}
 
@@ -109,7 +110,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 
-		protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection pset)
+		protected override void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			base.OnReadConfiguration (monitor, config, pset);
 

@@ -61,7 +61,7 @@ namespace Mono.TextEditor
 		bool removeTrailingWhitespaces = true;
 		bool allowTabsAfterNonTabs = true;
 		string fontName = DEFAULT_FONT;
-		public static string DefaultColorStyle = "Default";
+		public static string DefaultColorStyle = "Light";
 		string colorStyle = DefaultColorStyle;
 		Pango.FontDescription font, gutterFont;
 		
@@ -77,17 +77,34 @@ namespace Mono.TextEditor
 		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
 		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
 
+
+		double myZoom = 1d;
+		public bool ZoomOverride { get; private set; }
+
+
 		public double Zoom {
 			get {
+				if (ZoomOverride)
+					return myZoom;
 				return zoom;
 			}
 			set {
 				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
 				if (value > ZOOM_MAX || value < ZOOM_MIN)
 					return;
+				
 				//snap to one, if within 0.001d
 				if ((System.Math.Abs (value - 1d)) < 0.001d) {
 					value = 1d;
+				}
+				if (ZoomOverride) {
+					if (myZoom != value) {
+						myZoom = value;
+						DisposeFont ();
+						ZoomChanged?.Invoke (this, EventArgs.Empty);
+						OnChanged (EventArgs.Empty);
+					}
+					return;
 				}
 				if (zoom != value) {
 					zoom = value;
@@ -570,14 +587,17 @@ namespace Mono.TextEditor
 			OnChanged (EventArgs.Empty);
 		}
 
-		public TextEditorOptions ()
+		public TextEditorOptions (bool zoomOverride = false)
 		{
-			StaticZoomChanged += HandleStaticZoomChanged;
+			ZoomOverride = zoomOverride;
+			if (!ZoomOverride)
+				StaticZoomChanged += HandleStaticZoomChanged;
 		}
 
 		public virtual void Dispose ()
 		{
-			StaticZoomChanged -= HandleStaticZoomChanged;
+			if (!ZoomOverride)
+				StaticZoomChanged -= HandleStaticZoomChanged;
 		}
 
 		void HandleStaticZoomChanged (object sender, EventArgs e)

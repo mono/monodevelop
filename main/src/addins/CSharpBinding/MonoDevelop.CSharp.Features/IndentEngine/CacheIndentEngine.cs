@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	///     The decorator is based on periodical caching of the engine's state and
 	///     delegating all logic behind indentation to the currently active engine.
 	/// </remarks>
-	public class CacheIndentEngine : IStateMachineIndentEngine
+	class CacheIndentEngine : IStateMachineIndentEngine
 	{
 
 		#region Properties
@@ -299,7 +299,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 	///     The decorator is based on periodical caching of the engine's state and
 	///     delegating all logic behind indentation to the currently active engine.
 	/// </remarks>
-	public class CacheIndentEngine : IStateMachineIndentEngine
+	class CacheIndentEngine : IStateMachineIndentEngine
 	{
 		#region Properties
 		

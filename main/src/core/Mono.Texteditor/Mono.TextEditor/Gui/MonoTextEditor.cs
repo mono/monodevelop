@@ -173,6 +173,11 @@ namespace Mono.TextEditor
 			containerChildren.ForEach (c => c.Child.SizeRequest ());
 		}
 
+		internal protected virtual string GetIdeColorStyleName ()
+		{
+			return TextEditorOptions.DefaultColorStyle;
+		}
+
 		#region Container
 		public override ContainerChild this [Widget w] {
 			get {
@@ -274,7 +279,7 @@ namespace Mono.TextEditor
 		void ResizeChild (Rectangle allocation, EditorContainerChild child)
 		{
 			Requisition req = child.Child.SizeRequest ();
-			var childRectangle = new Gdk.Rectangle (Allocation.X + child.X, Allocation.Y + child.Y, req.Width, req.Height);
+			var childRectangle = new Gdk.Rectangle (Allocation.X + child.X, Allocation.Y + child.Y, System.Math.Max (1, req.Width), System.Math.Max (1, req.Height));
 			if (!child.FixedPosition) {
 				double zoom = Options.Zoom;
 				childRectangle.X = Allocation.X + (int)(child.X * zoom - HAdjustment.Value);
@@ -398,7 +403,7 @@ namespace Mono.TextEditor
 		}
 		
 		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.TextEditor"/> converts tabs to spaces.
+		/// Gets or sets a value indicating whether this <see cref="MonoTextEditor"/> converts tabs to spaces.
 		/// It is possible to overwrite the default options value for certain languages (like F#).
 		/// </summary>
 		/// <value>
@@ -1269,7 +1274,7 @@ namespace Mono.TextEditor
 		{
 			textArea.SetCaretTo (line, column, highlight, centerCaret);
 		}
-		public event EventHandler BeginHover {
+		public event EventHandler<Xwt.MouseMovedEventArgs> BeginHover {
 			add { textArea.BeginHover += value; }
 			remove { textArea.BeginHover -= value; }
 		}

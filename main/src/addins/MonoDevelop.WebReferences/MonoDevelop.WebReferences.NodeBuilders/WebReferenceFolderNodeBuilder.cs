@@ -45,8 +45,8 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		{
 			var folder = (WebReferenceFolder) dataObject;
 			nodeInfo.Label = folder.IsWCF ? GettextCatalog.GetString ("Web Services") : GettextCatalog.GetString ("Web References");
-			nodeInfo.Icon = Context.GetIcon (Stock.OpenReferenceFolder);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
+			nodeInfo.Icon = Context.GetIcon ("md-webreference-folder");
+			nodeInfo.ClosedIcon = Context.GetIcon ("md-webreference-folder");
 			
 		}
 		

@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory6.CSharp;
 namespace ICSharpCode.NRefactory6.IndentationTests
 {
 	[TestFixture]
-	public class AlignmentTests
+	class AlignmentTests
 	{
 		[Ignore("Not supported anymore")]
 		[Test]
@@ -734,7 +734,7 @@ class Foo
 			var indent = Helper.CreateEngine(@"
 using System;
 
-public class Test
+class Test
 {
 	public void TestCase(ConsoleKey k)
 	{

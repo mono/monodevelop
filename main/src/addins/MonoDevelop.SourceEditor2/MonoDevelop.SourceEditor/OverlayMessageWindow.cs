@@ -35,9 +35,20 @@ namespace MonoDevelop.SourceEditor
 	{
 		const int border = 8;
 
-		public Func<int> SizeFunc;
+		private Func<int> sizeFunc;
 
 		ExtensibleTextEditor textEditor;
+
+		public Func<int> SizeFunc {
+			get {
+				return sizeFunc;
+			}
+
+			set {
+				sizeFunc = value;
+				QueueResize ();
+			}
+		}
 
 		public OverlayMessageWindow ()
 		{
@@ -67,36 +78,24 @@ namespace MonoDevelop.SourceEditor
 		{
 			base.OnSizeRequested (ref requisition);
 
-			if (wRequest > 0) {
-				requisition.Width = wRequest;
+			if (SizeFunc != null) {
+				requisition.Width = Math.Min (SizeFunc (), textEditor.Allocation.Width - border * 2);
 			}
+
 		}
 
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 		{
 			base.OnSizeAllocated (allocation);
-			Resize (allocation);
-		}
-		int wRequest = -1;
-		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
-		{
-			if (SizeFunc != null) {
-				var req = Math.Min (SizeFunc (), textEditor.Allocation.Width - border * 2);
-				if (req != wRequest) {
-					wRequest = req;
-					QueueResize ();
-				}
-			} else {
-				if (Allocation.Width > textEditor.Allocation.Width - border * 2) {
-					if (textEditor.Allocation.Width - border * 2 > 0) {
-						QueueResize ();
-					}
-				}
-			}
-			Resize (Allocation);
+			AdjustPositionInEditor (allocation);
 		}
 
-		void Resize (Gdk.Rectangle alloc)
+		void HandleSizeAllocated (object o, Gtk.SizeAllocatedArgs args)
+		{
+			AdjustPositionInEditor (Allocation);
+		}
+
+		void AdjustPositionInEditor (Gdk.Rectangle alloc)
 		{
 			textEditor.MoveTopLevelWidget (this, (textEditor.Allocation.Width - alloc.Width) / 2, textEditor.Allocation.Height - alloc.Height - 8);
 		}

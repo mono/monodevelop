@@ -67,10 +67,6 @@ namespace MonoDevelop.MacIntegration
 
 		public MacPlatformService ()
 		{
-			string safe64 = Environment.GetEnvironmentVariable ("MONODEVELOP_64BIT_SAFE");
-			if (string.IsNullOrEmpty (safe64) && IntPtr.Size == 8)
-				throw new Exception ("Mac integration is not yet 64-bit safe");
-
 			if (initedGlobal)
 				throw new Exception ("Only one MacPlatformService instance allowed");
 			initedGlobal = true;
@@ -184,17 +180,8 @@ namespace MonoDevelop.MacIntegration
 
 			mimeTimer.BeginTiming ();
 			try {
-				using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
-					using (var reader = new StreamReader (file)) {
-						var mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
-						string line;
-						while ((line = reader.ReadLine ()) != null) {
-							Match m = mime.Match (line);
-							if (m.Success)
-								map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value;
-						}
-					}
-				}
+				var loader = new MimeMapLoader (map);
+				loader.LoadMimeMap ("/etc/apache2/mime.types");
 			} catch (Exception ex){
 				LoggingService.LogError ("Could not load Apache mime database", ex);
 			}
@@ -282,47 +269,54 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			PatchGtkTheme ();
+			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Runtime.RunInMainThread (
+				delegate {
+					Styles.LoadStyle();
+					PatchGtkTheme();
+				}));
+			
+			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
+			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
 		}
 
+		// VV/VK: Disable tint based color generation
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
 		void PatchGtkTheme ()
 		{
-			string color_hex, text_hex;
-
-			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
-				NSControlTint tint = NSColor.CurrentControlTint;
-				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
-				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
-
-				color_hex = ConvertColorToHex (color);
-				text_hex = ConvertColorToHex (text);
-			} else {
-				color_hex = "#c5d4e0";
-				text_hex = "#000";
-			}
-
-			string gtkrc = String.Format (@"
-				style ""treeview"" = ""default"" {{
-					GtkTreeView::odd-row-color = ""#f5f5f5""
-
-					base[SELECTED] = ""{0}""
-					base[ACTIVE] = ""{0}""
-					text[SELECTED] = ""{1}""
-					text[ACTIVE] = ""{1}""
-					engine ""xamarin"" {{
-						roundness = 0
-						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
-						glazestyle = 1
-					}}
-				}}
-
-				widget_class ""*.<GtkTreeView>*"" style ""treeview""
-				",
-				color_hex,
-				text_hex
-			);
-
-			Gtk.Rc.ParseString (gtkrc);
+//			string color_hex, text_hex;
+//
+//			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+//				NSControlTint tint = NSColor.CurrentControlTint;
+//				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+//				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+//
+//				color_hex = ConvertColorToHex (color);
+//				text_hex = ConvertColorToHex (text);
+//			} else {
+//				color_hex = "#c5d4e0";
+//				text_hex = "#000";
+//			}
+//
+//			string gtkrc = String.Format (@"
+//				style ""treeview"" = ""default"" {{
+//					base[SELECTED] = ""{0}""
+//					base[ACTIVE] = ""{0}""
+//					text[SELECTED] = ""{1}""
+//					text[ACTIVE] = ""{1}""
+//					engine ""xamarin"" {{
+//						roundness = 0
+//						gradient_shades = {{ 1.01, 1.01, 1.01, 1.01 }}
+//						glazestyle = 1
+//					}}
+//				}}
+//
+//				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+//				",
+//				color_hex,
+//				text_hex
+//			);
+//
+//			Gtk.Rc.ParseString (gtkrc);
 		}
 
 		void GlobalSetup ()
@@ -636,11 +630,12 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+		public override Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
-			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitorNumber);
 			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
-			NSScreen nss = NSScreen.Screens[monitor];
+			NSScreen nss = NSScreen.Screens[monitorNumber];
 			var visible = nss.VisibleFrame;
 			var frame = nss.Frame;
 
@@ -672,10 +667,10 @@ namespace MonoDevelop.MacIntegration
 			width = NMath.Min (visible.Width, frame.Width);
 			x = NMath.Max (visible.X, frame.X);
 
-			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
+			return new Xwt.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 
-		public override void GrabDesktopFocus (Gtk.Window window)
+		internal override void GrabDesktopFocus (Gtk.Window window)
 		{
 			window.Present ();
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
@@ -732,6 +727,7 @@ namespace MonoDevelop.MacIntegration
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = true;
 			w.StyleMask |= NSWindowStyle.UnifiedTitleAndToolbar;
+			IdeTheme.ApplyTheme (w);
 		}
 
 		internal override void RemoveWindowShadow (Gtk.Window window)
@@ -763,7 +759,7 @@ namespace MonoDevelop.MacIntegration
 			return new FdoRecentFiles (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"));
 		}
 
-		public override bool GetIsFullscreen (Gtk.Window window)
+		public override bool GetIsFullscreen (Window window)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				return base.GetIsFullscreen (window);
@@ -773,7 +769,7 @@ namespace MonoDevelop.MacIntegration
 			return (nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0;
 		}
 
-		public override void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		public override void SetIsFullscreen (Window window, bool isFullscreen)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				base.SetIsFullscreen (window, isFullscreen);
@@ -793,7 +789,7 @@ namespace MonoDevelop.MacIntegration
 			return toplevels.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible) || (t.Key.IsVisible && (t.Key is NSPanel)));
 		}
 
-		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		internal override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
 		{
 			NSWindow w = GtkQuartz.GetWindow (parent);
 			child.Realize ();
@@ -802,7 +798,7 @@ namespace MonoDevelop.MacIntegration
 			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
 		}
 
-		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		internal override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
 		{
 			if (window.GdkWindow == null)
 				return; // Not yet realized

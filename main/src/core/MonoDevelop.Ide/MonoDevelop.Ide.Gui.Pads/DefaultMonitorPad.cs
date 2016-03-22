@@ -41,12 +41,12 @@ using Pango;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {	
-	internal class DefaultMonitorPad : IPadContent
+	internal class DefaultMonitorPad : PadContent
 	{
-		IPadWindow window;
 		LogView logView;
 		Button buttonStop;
 		ToggleButton buttonPin;
@@ -56,7 +56,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		Pad statusSourcePad;
 		
 		string icon;
-		string id;
 		int instanceNum;
 		string typeTag;
 
@@ -72,28 +71,27 @@ namespace MonoDevelop.Ide.Gui.Pads
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
 
-			Control.ShowAll ();
+			logView.ShowAll ();
 		}
 
-		void IPadContent.Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
-			this.window = window;
 			window.Icon = icon;
 			
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Right);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Right);
 
-			buttonStop = new Button (new Gtk.Image (Stock.Stop, IconSize.Menu));
+			buttonStop = new Button (new ImageView (Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnButtonStopClick);
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Add (buttonStop);
 
-			buttonClear = new Button (new Gtk.Image (Stock.Broom, IconSize.Menu));
+			buttonClear = new Button (new ImageView (Stock.Broom, IconSize.Menu));
 			buttonClear.Clicked += new EventHandler (OnButtonClearClick);
 			buttonClear.TooltipText = GettextCatalog.GetString ("Clear console");
 			toolbar.Add (buttonClear);
 
 			buttonPin = new ToggleButton ();
-			buttonPin.Image = new Gtk.Image (Stock.PinUp, IconSize.Menu);
+			buttonPin.Image = new ImageView (Stock.PinUp, IconSize.Menu);
 			buttonPin.Image.ShowAll ();
 			buttonPin.Clicked += new EventHandler (OnButtonPinClick);
 			buttonPin.TooltipText = GettextCatalog.GetString ("Pin output pad");
@@ -103,10 +101,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public LogView LogView {
 			get { return logView; }
-		}
-		
-		public IPadWindow Window {
-			get { return this.window; }
 		}
 		
 		public Pad StatusSourcePad {
@@ -141,9 +135,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnButtonPinClick (object sender, EventArgs e)
 		{
 			if (buttonPin.Active)
-				((Gtk.Image)buttonPin.Image).Stock = (IconId) "md-pin-down";
+				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
 			else
-				((Gtk.Image)buttonPin.Image).Stock = (IconId) "md-pin-up";
+				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
 		}
 		
 		public bool AllowReuse {
@@ -158,9 +152,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 			monitor = (LogViewProgressMonitor) logView.GetProgressMonitor ();
 
 			Runtime.RunInMainThread (delegate {
-				window.HasNewData = false;
-				window.HasErrors = false;
-				window.IsWorking = true;
+				Window.HasNewData = false;
+				Window.HasErrors = false;
+				Window.IsWorking = true;
 				buttonStop.Sensitive = true;
 			});
 			
@@ -174,16 +168,16 @@ namespace MonoDevelop.Ide.Gui.Pads
 		public void EndProgress ()
 		{
 			Runtime.RunInMainThread (delegate {
-				if (window != null) {
-					window.IsWorking = false;
+				if (Window != null) {
+					Window.IsWorking = false;
 					if (monitor.Errors.Length > 0)
-						window.HasErrors = true;
+						Window.HasErrors = true;
 					else
-						window.HasNewData = true;
+						Window.HasNewData = true;
 				}
 				buttonStop.Sensitive = false;
 				progressStarted = false;
-				if (window == null)
+				if (Window == null)
 					buttonClear.Sensitive = false;
 				
 				if (monitor.Errors.Length > 0) {
@@ -199,13 +193,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			});
 		}
 	
-		public virtual Gtk.Widget Control {
+		public override Control Control {
 			get { return logView; }
-		}
-		
-		public string Id {
-			get { return id; }
-			set { id = value; }
 		}
 		
 		public string DefaultPlacement {
@@ -224,15 +213,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 		
-		public virtual void Dispose ()
+		public override void Dispose ()
 		{
 			logView.Clear ();
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
-		}
-	
-		public void RedrawContent()
-		{
 		}
 	}
 }

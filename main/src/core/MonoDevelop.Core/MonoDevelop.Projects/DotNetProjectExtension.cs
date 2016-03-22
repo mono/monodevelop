@@ -33,7 +33,7 @@ using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	public class DotNetProjectExtension: ProjectExtension
+	public class DotNetProjectExtension : ProjectExtension
 	{
 		#region Project properties
 
@@ -75,6 +75,11 @@ namespace MonoDevelop.Projects
 		internal protected virtual Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			return next.OnGetReferencedAssemblies (configuration);
+		}
+
+		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
+		{
+			return next.OnGetReferencedAssemblyProjects (configuration);
 		}
 
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)

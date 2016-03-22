@@ -15319,8 +15319,8 @@ msgstr "列印動作失敗。"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
 #, fuzzy
-msgid "Press 'F2' for focus"
-msgstr "按下 'Shift+Space' 以取得焦點"
+msgid "Press F2 to focus"
+msgstr "按下 F2 以取得焦點"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
 msgid "Clipboard ring"

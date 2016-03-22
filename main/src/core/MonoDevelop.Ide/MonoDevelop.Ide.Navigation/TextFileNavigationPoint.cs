@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -78,9 +79,9 @@ namespace MonoDevelop.Ide.Navigation
 			}
 		}
 		
-		protected override Document DoShow ()
+		protected override async Task<Document> DoShow ()
 		{
-			Document doc = base.DoShow ();
+			Document doc = await base.DoShow ();
 			if (doc != null) {
 				var buf = doc.Editor;
 				if (buf != null) {

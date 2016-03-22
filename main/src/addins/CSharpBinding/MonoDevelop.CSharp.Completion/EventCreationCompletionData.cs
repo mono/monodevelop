@@ -52,18 +52,16 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		readonly RoslynCodeCompletionFactory factory;
 		readonly ITypeSymbol delegateType;
-		readonly INamedTypeSymbol curType;
-		readonly string varName;
-		
+
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
 			return Task.FromResult (new TooltipInformation ());
 		}
 
-		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
+		public override int PriorityGroup { get { return 2; } }
+
+		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (factory, keyHandler)
 		{
-			this.curType = curType;
-			this.varName = varName;
 			this.DisplayText = varName;
 			this.delegateType = delegateType;
 			this.factory = factory;
@@ -97,7 +95,7 @@ namespace MonoDevelop.CSharp.Completion
 			var options = new InsertionModeOptions (
 				GettextCatalog.GetString ("Create new method"),
 				insertionPoints,
-				async point => {
+				point => {
 					if (!point.Success) 
 						return;
 					var indent = "\t";
@@ -143,6 +141,11 @@ namespace MonoDevelop.CSharp.Completion
 
 			editor.StartInsertionMode (options);
 
+		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
 		}
 	}
 	

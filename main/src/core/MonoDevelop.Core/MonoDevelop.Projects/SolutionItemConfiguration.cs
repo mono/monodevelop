@@ -39,10 +39,6 @@ namespace MonoDevelop.Projects
 	{
 		SolutionItem parentItem;
 		
-		public SolutionItemConfiguration ()
-		{
-		}
-		
 		public SolutionItemConfiguration (string id): base (id)
 		{
 		}

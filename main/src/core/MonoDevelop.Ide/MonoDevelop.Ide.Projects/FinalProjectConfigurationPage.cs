@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Templates;
 using ProjectCreateParameters = MonoDevelop.Projects.ProjectCreateParameters;
 using SolutionFolder = MonoDevelop.Projects.SolutionFolder;
@@ -228,7 +229,7 @@ namespace MonoDevelop.Ide.Projects
 		public void UpdateFromParameters ()
 		{
 			ProjectName = Parameters ["ProjectName"];
-			projectNameIsReadOnly = Parameters.GetBoolean ("IsProjectNameReadOnly", false);
+			projectNameIsReadOnly = Parameters.GetBoolValue ("IsProjectNameReadOnly", false);
 		}
 	}
 }

@@ -37,20 +37,8 @@ namespace MonoDevelop.AspNet.Projects
 {
 	public class AspNetAppProjectConfiguration : DotNetProjectConfiguration 
 	{
-		public AspNetAppProjectConfiguration (string name) : base (name)
+		public AspNetAppProjectConfiguration (string id) : base (id)
 		{
-		}
-		
-		public AspNetAppProjectConfiguration ()
-		{
-		}
-		
-		public override void CopyFrom (ItemConfiguration configuration)
-		{
-			base.CopyFrom (configuration);
-			var cfg = configuration as AspNetAppProjectConfiguration;
-			if (cfg == null)
-				return;
 		}
 	}
 }

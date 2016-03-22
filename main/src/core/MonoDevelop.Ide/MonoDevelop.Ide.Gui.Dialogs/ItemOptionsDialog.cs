@@ -27,6 +27,7 @@
 
 using System;
 using Mono.Addins;
+using MonoDevelop.Components;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -39,7 +40,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public ItemOptionsDialog (Gtk.Window parentWindow, object dataObject)
+		public ItemOptionsDialog (Window parentWindow, object dataObject)
 			: base (parentWindow, dataObject, "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels")
 		{
 		}

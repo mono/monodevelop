@@ -122,10 +122,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
-				// ignore
-			}
 			#endregion
 			public void AddChar (char ch)
 			{
@@ -954,6 +950,42 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("foo", output);
 		}
 
+		/// <summary>
+		/// Bug 37985 - Code completion is selecting 'int32' instead of letting me type '2' 
+		/// </summary>
+		[Test]
+		public void TestBug37985 ()
+		{
+			var output = RunSimulation ("", "3\t", false, false, false, new [] { "Int32" } );
+			Assert.AreEqual (null, output);
+		}
+
+		/// <summary>
+		/// Bug 38180 - Code completion should be case sensitive 
+		/// </summary>
+		[Test]
+		public void TestBug38180 ()
+		{
+			var settings = new SimulationSettings () {
+				AutoSelect = true,
+				CompleteWithSpaceOrPunctuation = true,
+				AutoCompleteEmptyMatch = true,
+				CompletionData = new [] { "Test", "test" }
+			};
+
+			var listWindow = CreateListWindow (settings);
+			var list = listWindow.CompletionDataList;
+			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
+
+			SimulateInput (listWindow, "test\t");
+			Assert.AreEqual ("test", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "t\t");
+			Assert.AreEqual ("test", testCompletionWidget.CompletedWord);
+
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "T\t");
+			Assert.AreEqual ("Test", testCompletionWidget.CompletedWord);
+		}
 
 		[TestFixtureSetUp] 
 		public void SetUp()

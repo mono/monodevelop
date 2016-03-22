@@ -65,6 +65,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				ProjectAdded (this, new DotNetProjectEventArgs (project));
 			}
 		}
+
+		public event EventHandler<DotNetProjectEventArgs> ProjectRemoved;
+
+		public void RaiseProjectRemovedEvent (IDotNetProject project)
+		{
+			if (ProjectRemoved != null) {
+				ProjectRemoved (this, new DotNetProjectEventArgs (project));
+			}
+		}
 	}
 }
 

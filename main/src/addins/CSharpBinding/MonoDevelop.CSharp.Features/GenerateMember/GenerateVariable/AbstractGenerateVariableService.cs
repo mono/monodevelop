@@ -19,7 +19,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 {
-	public abstract partial class AbstractGenerateVariableService<TService, TSimpleNameSyntax, TExpressionSyntax> :
+	abstract partial class AbstractGenerateVariableService<TService, TSimpleNameSyntax, TExpressionSyntax> :
 	AbstractGenerateMemberService<TSimpleNameSyntax, TExpressionSyntax>
 		where TService : AbstractGenerateVariableService<TService, TSimpleNameSyntax, TExpressionSyntax>
 		where TSimpleNameSyntax : TExpressionSyntax
@@ -143,7 +143,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 
 		private partial class GenerateVariableCodeAction : CodeAction
 		{
-			private readonly TService _service;
+			//private readonly TService _service;
 			private readonly State _state;
 			private readonly bool _generateProperty;
 			private readonly bool _isReadonly;
@@ -159,7 +159,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 				bool isReadonly,
 				bool isConstant)
 			{
-				_service = service;
+				//_service = service;
 				_document = document;
 				_state = state;
 				_generateProperty = generateProperty;
@@ -170,7 +170,6 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 
 			protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
 			{
-				var syntaxTree = await _document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
 				var generateUnsafe = _state.TypeMemberType.IsUnsafe() &&
 					!_state.IsContainedInUnsafeType;
 
@@ -203,7 +202,7 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode (_document.Project.Solution.GetDocument(result.Id), result);
 				}
 				else
 				{
@@ -222,8 +221,22 @@ namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 
-					return result;
+					return await AnnotateInsertionMode (_document.Project.Solution.GetDocument (result.Id), result);
 				}
+			}
+
+			async Task<Document> AnnotateInsertionMode (Document oldDocument, Document result)
+			{
+				var newRoot = await result.GetSyntaxRootAsync ();
+				var changes = await oldDocument.GetTextChangesAsync (result);
+				foreach (var change in changes) {
+
+					var parent = newRoot.FindNode (change.Span);
+					if (parent == null || !(parent is FieldDeclarationSyntax || parent is PropertyDeclarationSyntax))
+						continue;
+					return result.WithSyntaxRoot (newRoot.ReplaceNode (parent, parent.WithAdditionalAnnotations (TypeSystemService.InsertionModeAnnotation)));
+				}
+				return result;
 			}
 
 			private Accessibility DetermineMaximalAccessibility(State state)

@@ -30,6 +30,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -96,6 +98,21 @@ namespace MonoDevelop.Ide.Editor.Extension
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return Next;
+		}
+
+		internal protected virtual object OnGetContent (Type type)
+		{
+			if (type.IsInstanceOfType (this))
+				return this;
+			else
+				return null;
+		}
+
+		internal protected virtual IEnumerable<object> OnGetContents (Type type)
+		{
+			var c = OnGetContent (type);
+			if (c != null)
+				yield return c;
 		}
 	}
 

@@ -35,7 +35,7 @@ namespace MonoDevelop.VersionControl
 	{
 		Xwt.CheckBox disableVersionControl;
 
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			Xwt.VBox box = new Xwt.VBox ();
 			box.Spacing = 6;

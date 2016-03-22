@@ -19,7 +19,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
 {
-	public partial class CSharpIntroduceVariableService
+	partial class CSharpIntroduceVariableService
 	{
 		protected override Task<Document> IntroduceLocalAsync(
 			SemanticDocument document,

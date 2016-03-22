@@ -73,7 +73,7 @@ namespace MonoDevelop.Debugger
 		
 		static ExceptionCaughtMessage exceptionDialog;
 		
-		static BusyEvaluatorDialog busyDialog;
+		static BusyEvaluator busyEvaluator;
 		static StatusBarIcon busyStatusIcon;
 		static bool isBusy;
 
@@ -100,10 +100,7 @@ namespace MonoDevelop.Debugger
 				IdeApp.Workspace.StoringUserPreferences += OnStoreUserPrefs;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadUserPrefs;
 				IdeApp.Workspace.LastWorkspaceItemClosed += OnSolutionClosed;
-				busyDialog = new BusyEvaluatorDialog ();
-				busyDialog.Modal = true;
-				busyDialog.TransientFor = MessageService.RootWindow;
-				busyDialog.DestroyWithParent = true;
+				busyEvaluator = new BusyEvaluator ();
 			};
 			AddinManager.AddExtensionNodeHandler (FactoriesPath, delegate {
 				// Refresh the engines list
@@ -141,7 +138,8 @@ namespace MonoDevelop.Debugger
 			if (liveUpdate) {
 				var bp = new Breakpoint (watch.File, watch.Line);
 				bp.TraceExpression = "{" + watch.Expression + "}";
-				bp.HitAction |= HitAction.PrintExpression;
+				bp.HitAction = HitAction.PrintExpression;
+				bp.NonUserBreakpoint = true;
 				lock (breakpoints)
 					breakpoints.Add (bp);
 				pinnedWatches.Bind (watch, bp);
@@ -702,33 +700,37 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		static void OnBusyStateChanged (object s, BusyStateEventArgs args)
+		static async void OnBusyStateChanged (object s, BusyStateEventArgs args)
 		{
 			isBusy = args.IsBusy;
-			Runtime.RunInMainThread (delegate {
-				busyDialog.UpdateBusyState (args);
+			await Runtime.RunInMainThread (delegate {
+				busyEvaluator.UpdateBusyState (args);
 				if (args.IsBusy) {
 					if (busyStatusIcon == null) {
-						busyStatusIcon = StatusService.ShowStatusIcon (ImageService.GetIcon ("md-execute-debug", Gtk.IconSize.Menu));
+						busyStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon ("md-execute-debug", Gtk.IconSize.Menu));
 						busyStatusIcon.SetAlertMode (100);
 						busyStatusIcon.ToolTip = GettextCatalog.GetString ("The debugger runtime is not responding. You can wait for it to recover, or stop debugging.");
-						busyStatusIcon.Clicked += delegate {
-							MessageService.PlaceDialog (busyDialog, MessageService.RootWindow);
-						};
+						busyStatusIcon.Clicked += OnBusyStatusIconClicked;
 					}
 				} else {
 					if (busyStatusIcon != null) {
+						busyStatusIcon.Clicked -= OnBusyStatusIconClicked;
 						busyStatusIcon.Dispose ();
 						busyStatusIcon = null;
 					}
 				}
 			});
 		}
+
+		static void OnBusyStatusIconClicked (object sender, StatusBarIconClickedEventArgs args)
+		{
+			MessageService.PlaceDialog (busyEvaluator.Dialog, MessageService.RootWindow);
+		}
 		
 		static bool CheckIsBusy ()
 		{
-			if (isBusy && !busyDialog.Visible)
-				MessageService.PlaceDialog (busyDialog, MessageService.RootWindow);
+			if (isBusy && !busyEvaluator.Dialog.Visible)
+				MessageService.PlaceDialog (busyEvaluator.Dialog, MessageService.RootWindow);
 			return isBusy;
 		}
 		
@@ -947,25 +949,25 @@ namespace MonoDevelop.Debugger
 			});
 		}
 		
-		public static void ShowCurrentExecutionLine ()
+		public static async void ShowCurrentExecutionLine ()
 		{
 			Runtime.AssertMainThread ();
 			if (currentBacktrace != null) {
 				var sf = GetCurrentVisibleFrame ();
 				if (sf != null && !string.IsNullOrEmpty (sf.SourceLocation.FileName) && System.IO.File.Exists (sf.SourceLocation.FileName) && sf.SourceLocation.Line != -1) {
-					Document document = IdeApp.Workbench.OpenDocument (sf.SourceLocation.FileName, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
+					Document document = await IdeApp.Workbench.OpenDocument (sf.SourceLocation.FileName, null, sf.SourceLocation.Line, 1, OpenDocumentOptions.Debugger);
 					OnDisableConditionalCompilation (new DocumentEventArgs (document));
 				}
 			}
 		}
 
-		public static void ShowNextStatement ()
+		public static async void ShowNextStatement ()
 		{
 			Runtime.AssertMainThread ();
 			var location = NextStatementLocation;
 
 			if (location != null && System.IO.File.Exists (location.FileName)) {
-				Document document = IdeApp.Workbench.OpenDocument (location.FileName, null, location.Line, 1, OpenDocumentOptions.Debugger);
+				Document document = await IdeApp.Workbench.OpenDocument (location.FileName, null, location.Line, 1, OpenDocumentOptions.Debugger);
 				OnDisableConditionalCompilation (new DocumentEventArgs (document));
 			} else {
 				ShowCurrentExecutionLine ();
@@ -1046,7 +1048,7 @@ namespace MonoDevelop.Debugger
 			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.PinnedWatches", pinnedWatches);
 		}
 		
-		static void OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
+		static Task OnLoadUserPrefs (object s, UserPreferencesEventArgs args)
 		{
 			var elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints") ?? args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 
@@ -1061,6 +1063,8 @@ namespace MonoDevelop.Debugger
 
 			lock (breakpoints)
 				pinnedWatches.BindAll (breakpoints);
+			
+			return Task.FromResult (true);
 		}
 		
 		static void OnSolutionClosed (object s, EventArgs args)

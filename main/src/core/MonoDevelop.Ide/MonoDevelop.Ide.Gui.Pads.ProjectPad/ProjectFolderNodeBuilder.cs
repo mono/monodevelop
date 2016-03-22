@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (oldFoldername != newFoldername) {
 				try {
-					if (!FileService.IsValidPath (newFoldername)) {
+					if (!FileService.IsValidPath (newFoldername) || ContainsDirectorySeparator (newName)) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 						return;
 					} 
@@ -177,7 +177,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 		}
-		
+
 		public override void DeleteMultipleItems ()
 		{
 			var projects = new Set<SolutionItem> ();
@@ -370,6 +370,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					return true;
 			return false;
 		}
-		
+
+		internal static bool ContainsDirectorySeparator (string name)
+		{
+			return name.Contains (Path.DirectorySeparatorChar) || name.Contains (Path.AltDirectorySeparatorChar);
+		}
 	}
 }

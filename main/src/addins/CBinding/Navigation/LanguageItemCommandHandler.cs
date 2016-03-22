@@ -39,10 +39,10 @@ namespace CBinding.Navigation
 {
 	public class LanguageItemCommandHandler : NodeCommandHandler
 	{
-		public override void ActivateItem ()
+		public override async void ActivateItem ()
 		{
 			LanguageItem item = (LanguageItem)CurrentNode.DataItem;
-			Document doc = IdeApp.Workbench.OpenDocument (item.File);
+			Document doc = await IdeApp.Workbench.OpenDocument (item.File);
 			//bool isMacro = item is Macro;
 			
 			doc.Editor.CaretLocation = new DocumentLocation ((int)item.Line, 1); // TODO: get column?

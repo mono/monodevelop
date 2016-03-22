@@ -135,13 +135,13 @@ namespace MonoDevelop.Refactoring
 		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (TextEditor editor, DocumentContext doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (editor == null)
-				throw new System.ArgumentNullException ("editor");
+				throw new System.ArgumentNullException (nameof (editor));
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return ImmutableArray<string>.Empty;
 			var result = ImmutableArray<string>.Empty.ToBuilder ();
 			var sm = parsedDocument.GetAst<SemanticModel> (); 
-			var node = sm.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset)); 
+			var node = (await sm.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false)).FindNode (TextSpan.FromBounds (offset, offset)); 
 			
 			while (node != null) {
 				var cu = node as CompilationUnitSyntax;

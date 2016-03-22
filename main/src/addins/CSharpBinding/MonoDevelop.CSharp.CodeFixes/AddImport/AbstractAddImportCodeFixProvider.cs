@@ -53,6 +53,8 @@ namespace MonoDevelop.CSharp.CodeFixes
 			if (model.IsFromGeneratedCode (context.CancellationToken))
 				return;
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			if (root.FullSpan.Length < span.Start)
+				return;
 			var ancestors = root.FindToken(span.Start, findInsideTrivia: true).GetAncestors<SyntaxNode>();
 			if (!ancestors.Any())
 			{
@@ -72,8 +74,8 @@ namespace MonoDevelop.CSharp.CodeFixes
 				if (this.CanAddImport(node, cancellationToken))
 				{
 					var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-					var containingType = semanticModel.GetEnclosingNamedType(node.SpanStart, cancellationToken);
-					var containingTypeOrAssembly = containingType ?? (ISymbol)semanticModel.Compilation.Assembly;
+					//var containingType = semanticModel.GetEnclosingNamedType(node.SpanStart, cancellationToken);
+					//var containingTypeOrAssembly = containingType ?? (ISymbol)semanticModel.Compilation.Assembly;
 					var namespacesInScope = this.GetNamespacesInScope(semanticModel, node, cancellationToken);
 
 					var matchingTypesNamespaces = await this.GetNamespacesForMatchingTypesAsync(project, diagnostic, node, semanticModel, namespacesInScope,  cancellationToken).ConfigureAwait(false);

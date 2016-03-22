@@ -37,11 +37,10 @@ using MonoDevelop.Components;
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	
-	public partial class OptionsDialog : Gtk.Dialog
+	public partial class OptionsDialog : IdeDialog
 	{
 		Gtk.HBox mainHBox;
 		Gtk.TreeView tree;
-		Xwt.ImageView image;
 		Gtk.Label labelTitle;
 		Gtk.HBox pageFrame;
 		Gtk.Button buttonCancel;
@@ -82,10 +81,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath) : this (parentWindow, dataObject, extensionPath, true)
+		public OptionsDialog (MonoDevelop.Components.Window parentWindow, object dataObject, string extensionPath) : this (parentWindow, dataObject, extensionPath, true)
 		{}
 		
-		public OptionsDialog (Gtk.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
+		public OptionsDialog (MonoDevelop.Components.Window parentWindow, object dataObject, string extensionPath, bool removeEmptySections)
 		{
 			buttonCancel = new Gtk.Button (Gtk.Stock.Cancel);
 			AddActionWidget (this.buttonCancel, ResponseType.Cancel);
@@ -116,8 +115,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			var vbox = new VBox ();
 			mainHBox.PackStart (vbox, true, true, 0);
 			var headerBox = new HBox (false, 6);
-			image = new Xwt.ImageView ();
-		//	headerBox.PackStart (image, false, false, 0);
 
 			labelTitle = new Label ();
 			labelTitle.Xalign = 0;
@@ -139,6 +136,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				var c = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
 				c.Light += 0.09;
 				fboxHeader.BackgroundColor = c.ToGdkColor ();
+			};
+			StyleSet += delegate {
+				if (IsRealized) {
+					var c = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
+					c.Light += 0.09;
+					fboxHeader.BackgroundColor = c.ToGdkColor ();
+				}
 			};
 			vbox.PackStart (fboxHeader, false, false, 0);
 
@@ -192,10 +196,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ExpandCategories ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
 
+			buttonOk.CanDefault = true;
+			buttonOk.GrabDefault ();
+
 			DefaultWidth = 960;
 			DefaultHeight = 680;
 		}
-		
+
 		void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			TreeIter parent;
@@ -241,7 +248,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		protected Gtk.Widget MainBox {
+		protected Control MainBox {
 			get { return pageFrame; }
 		}
 		
@@ -275,10 +282,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (PanelInstance pi in panels.Values) {
 				if (pi.Widget != null)
 					pi.Widget.Destroy ();
+				else {
+					var widget = pi.Panel as Gtk.Widget;
+					if (widget != null) {
+						//TODO: Panels shouldn't inherit/implement view directly
+						//Mostly because it will constrcut some UI(in constrcutor calling this.Build())
+						//on Preferences opening that should be defereded until CreatePanelWidget call
+						widget.Destroy ();
+					}
+				}
 				IDisposable disp = pi.Panel as IDisposable;
 				if (disp != null)
 					disp.Dispose ();
 			}
+			store.Dispose ();
 			base.OnDestroyed ();
 		}
 
@@ -527,20 +544,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				imageHeader.SetImage (section.HeaderImage, section.HeaderFillerImageResource);
 				imageHeader.Show ();
 				textHeader.Hide ();
-			}
-			
-			//HACK: mimetype panels can't provide stock ID for mimetype images. Give this some awareness of mimetypes.
-			var mimeSection = section as MonoDevelop.Ide.Projects.OptionPanels.MimetypeOptionsDialogSection;
-			if (mimeSection != null && !string.IsNullOrEmpty (mimeSection.MimeType)) {
-				var pix = DesktopService.GetIconForType (mimeSection.MimeType, headerIconSize);
-				if (pix != null) {
-					image.Image = pix;
-				} else {
-					image.Image = ImageService.GetIcon (emptyCategoryIcon, headerIconSize);
-				}
-			} else {
-				string icon = section.Icon.IsNull? emptyCategoryIcon : section.Icon.ToString ();
-				image.Image = ImageService.GetIcon (icon, headerIconSize);
 			}
 
 /*			var algn = new HeaderBox ();

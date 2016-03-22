@@ -103,10 +103,10 @@ namespace MonoDevelop.CodeIssues
 		public bool IsEnabled {
 			get {
 				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {
-					if (!GetIsEnabled (diagnostic))
-						return false;
+					if (GetIsEnabled (diagnostic))
+						return true;
 				}
-				return true;
+				return false;
 			}
 			set {
 				foreach (var diagnostic in GetProvider ().SupportedDiagnostics) {
@@ -182,7 +182,7 @@ namespace MonoDevelop.CodeIssues
 		{
 			var line = editor.GetLineByOffset (fix.Location.SourceSpan.Start);
 			var span = new TextSpan (line.Offset, line.Length);
-			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (context.AnalysisDocument, span, new [] { fix }, cancellationToken ).ConfigureAwait (false);
+			var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (context.AnalysisDocument, span, new [] { fix }, cancellationToken).ConfigureAwait (false);
 			foreach (var f in fixes) {
 				RunAction (context, f.Action, cancellationToken);
 			}

@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
 	[TestFixture]
-	public partial class SymbolCompletionProviderTests : CompletionTestBase
+	partial class SymbolCompletionProviderTests : CompletionTestBase
 	{
 		internal override CompletionContextHandler CreateContextHandler ()
 		{

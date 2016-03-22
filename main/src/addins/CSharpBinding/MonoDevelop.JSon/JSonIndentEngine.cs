@@ -244,7 +244,6 @@ namespace MonoDevelop.JSon
 		}
 
 		SourceText sourceText;
-		JSonIndentEngine jSonIndentEngine;
 
 		public SourceText Document {
 			get {

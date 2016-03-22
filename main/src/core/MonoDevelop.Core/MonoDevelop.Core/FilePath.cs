@@ -184,6 +184,16 @@ namespace MonoDevelop.Core
 			return Path.ChangeExtension (fileName, ext);
 		}
 
+		/// <summary>
+		/// Returns a file path with the name changed to the provided name, but keeping the extension
+		/// </summary>
+		/// <returns>The new file path</returns>
+		/// <param name="newName">New file name</param>
+		public FilePath ChangeName (string newName)
+		{
+			return ParentDirectory.Combine (newName) + Extension;
+		}
+
 		public FilePath Combine (params FilePath[] paths)
 		{
 			string path = fileName;

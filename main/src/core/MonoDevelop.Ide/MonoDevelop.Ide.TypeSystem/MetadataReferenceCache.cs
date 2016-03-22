@@ -163,11 +163,15 @@ namespace MonoDevelop.Ide.TypeSystem
 				timeStamp = File.GetLastWriteTimeUtc (path);
 				if (timeStamp == NonExistentFile) {
 					Reference = null;
+					LoggingService.LogError ("Error while loading reference " + path + ": File doesn't exist"); 
 				} else {
-					Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly);
+					try {
+						Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while loading reference " + path + ": " + e.Message, e); 
+					}
 				}
 			}
 		}
 	}
 }
-

@@ -38,13 +38,15 @@ using Gtk;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Projects
 {
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	internal partial class NewFileDialog : Dialog
+	internal partial class NewFileDialog : Gtk.Dialog
 	{
 		List<TemplateItem> alltemplates = new List<TemplateItem> ();
 		List<Category> categories = new List<Category> ();
@@ -762,6 +764,9 @@ namespace MonoDevelop.Ide.Projects
 				HeadersVisible = false;
 				templateStore = new ListStore (typeof(string), typeof(string), typeof(TemplateItem));
 				Model = templateStore;
+
+				SemanticModelAttribute modelAttr = new SemanticModelAttribute ("templateStore__Icon", "templateStore__Name", "templateStore__Template");
+				TypeDescriptor.AddAttributes (templateStore, modelAttr);
 				
 				TreeViewColumn col = new TreeViewColumn ();
 				CellRendererImage crp = new CellRendererImage ();

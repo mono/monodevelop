@@ -40,7 +40,7 @@ namespace MonoDevelop.Components
 		MenuCreator creator;
 		ContextMenuCreator contextMenuCreator;
 		Label label;
-		Image image;
+		ImageView image;
 		Arrow arrow;
 		bool isOpen;
 		
@@ -51,7 +51,7 @@ namespace MonoDevelop.Components
 			box.Spacing = 6;
 			Add (box);
 			
-			image = new Image ();
+			image = new ImageView ();
 			image.NoShowAll = true;
 			box.PackStart (image, false, false, 0);
 			label = new Label ();
@@ -201,7 +201,7 @@ namespace MonoDevelop.Components
 		
 		public string StockImage {
 			set {
-				image.Pixbuf = RenderIcon (value, IconSize.Button, null);
+				image.SetIcon (value, IconSize.Button);
 				image.Show ();
 			}
 		}

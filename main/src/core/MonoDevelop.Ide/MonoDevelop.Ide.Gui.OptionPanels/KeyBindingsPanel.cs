@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			KeyBindingService.SaveCurrentBindings ();
 		}
 
-		public Gtk.Widget CreatePanelWidget ()
+		public Control CreatePanelWidget ()
 		{
 			SortedDictionary<string, Command> commands = new SortedDictionary<string, Command> ();
 			string translatedOther = GettextCatalog.GetString ("Other");
@@ -561,6 +561,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Initialize (OptionsDialog dialog, object dataObject)
 		{
+		}
+
+		protected override void OnDestroyed ()
+		{
+			keyStore.Dispose ();
+			filterModel.Dispose ();
+			base.OnDestroyed ();
 		}
 	}
 }

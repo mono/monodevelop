@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 {
-	public class GenerateTypeDialogOptions
+	class GenerateTypeDialogOptions
 	{
 		public bool IsPublicOnlyAccessibility { get; }
 		public TypeKindOptions TypeKindOptions { get; }

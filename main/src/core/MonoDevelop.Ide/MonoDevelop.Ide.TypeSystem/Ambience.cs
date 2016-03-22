@@ -457,9 +457,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 						result.Append ("<i>");
 						string name = (xml ["cref"] + xml ["langword"]).Trim ();
-						// if (options.Ambience != null)
-						// 	name = options.Ambience.GetIntrinsicTypeName (name);
-						result.Append (EscapeText (name));
+						result.Append (EscapeText (FormatCref(name)));
 						result.Append ("</i>");
 						wasWhiteSpace = false;
 						appendSpace = true;
@@ -501,7 +499,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		end:
 			return result.ToString ().Trim ();
 		}
-		
+
+		static string FormatCref (string cref)
+		{
+			if (cref.Length > 2 && cref [1] == ':')
+				return cref.Substring (2);
+			return cref;
+		}
+
 		public static string GetDocumentationMarkup (ISymbol member, string doc, DocumentationFormatOptions options)
 		{
 			if (string.IsNullOrEmpty (doc))

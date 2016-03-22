@@ -246,10 +246,10 @@ namespace MonoDevelop.Ide
 		{
 			PlatformService.SetFileAttributes (fileName, attributes);
 		}
-		
-		public static Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+
+		public static Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
-			return PlatformService.GetUsableMonitorGeometry (screen, monitor);
+			return PlatformService.GetUsableMonitorGeometry (screenNumber, monitorNumber);
 		}
 		
 		public static bool CanOpenTerminal {
@@ -319,13 +319,13 @@ namespace MonoDevelop.Ide
 			PlatformService.GrabDesktopFocus (window);
 		}
 
-		public static void RemoveWindowShadow (Gtk.Window window)
+		public static void RemoveWindowShadow (Window window)
 		{
 			PlatformService.RemoveWindowShadow (window);
 		}
 
 
-		public static void SetMainWindowDecorations (Gtk.Window window)
+		public static void SetMainWindowDecorations (Window window)
 		{
 			PlatformService.SetMainWindowDecorations (window);
 		}
@@ -341,12 +341,12 @@ namespace MonoDevelop.Ide
 			toolbar.Initialize ();
 		}
 
-		public static bool GetIsFullscreen (Gtk.Window window)
+		public static bool GetIsFullscreen (Window window)
 		{
 			return PlatformService.GetIsFullscreen (window);
 		}
 
-		public static void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		public static void SetIsFullscreen (Window window, bool isFullscreen)
 		{
 			PlatformService.SetIsFullscreen (window, isFullscreen);
 		}

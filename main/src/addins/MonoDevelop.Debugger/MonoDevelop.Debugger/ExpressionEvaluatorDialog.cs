@@ -260,11 +260,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-		{
-			// ignore
-		}
-
 		double ICompletionWidget.ZoomLevel {
 			get {
 				return 1;

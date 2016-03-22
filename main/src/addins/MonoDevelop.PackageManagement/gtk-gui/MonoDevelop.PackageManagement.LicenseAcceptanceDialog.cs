@@ -4,15 +4,26 @@ namespace MonoDevelop.PackageManagement
 {
 	public partial class LicenseAcceptanceDialog
 	{
+		private global::Gtk.VBox topVBox;
+		
 		private global::Gtk.HBox subTitleHBoxForSinglePackage;
+		
 		private global::Gtk.Label subTitleLabelForSinglePackage;
+		
 		private global::Gtk.HBox subTitleHBoxForMultiplePackages;
+		
 		private global::Gtk.Label subTitleLabelForMultiplePackages;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		
 		private global::Gtk.VBox packagesVBox;
+		
 		private global::Gtk.HBox bottomMessageHBox;
+		
 		private global::Gtk.Label mainMessageLabel;
+		
 		private global::Gtk.Button buttonCancel;
+		
 		private global::Gtk.Button buttonOk;
 
 		protected virtual void Build ()
@@ -20,7 +31,7 @@ namespace MonoDevelop.PackageManagement
 			global::Stetic.Gui.Initialize (this);
 			// Widget MonoDevelop.PackageManagement.LicenseAcceptanceDialog
 			this.Name = "MonoDevelop.PackageManagement.LicenseAcceptanceDialog";
-			this.Title = global::Mono.Unix.Catalog.GetString ("License Agreements");
+			this.Title = global::Mono.Unix.Catalog.GetString ("License Acceptance");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(1));
 			this.Modal = true;
 			// Internal child MonoDevelop.PackageManagement.LicenseAcceptanceDialog.VBox
@@ -28,42 +39,49 @@ namespace MonoDevelop.PackageManagement
 			w1.Name = "mainVBox";
 			w1.BorderWidth = ((uint)(2));
 			// Container child mainVBox.Gtk.Box+BoxChild
+			this.topVBox = new global::Gtk.VBox ();
+			this.topVBox.Name = "topVBox";
+			this.topVBox.Spacing = 6;
+			this.topVBox.BorderWidth = ((uint)(10));
+			// Container child topVBox.Gtk.Box+BoxChild
 			this.subTitleHBoxForSinglePackage = new global::Gtk.HBox ();
 			this.subTitleHBoxForSinglePackage.Name = "subTitleHBoxForSinglePackage";
 			this.subTitleHBoxForSinglePackage.Spacing = 6;
 			// Container child subTitleHBoxForSinglePackage.Gtk.Box+BoxChild
 			this.subTitleLabelForSinglePackage = new global::Gtk.Label ();
 			this.subTitleLabelForSinglePackage.Name = "subTitleLabelForSinglePackage";
-			this.subTitleLabelForSinglePackage.LabelProp = global::Mono.Unix.Catalog.GetString ("The following package requires a click-to-accept license:");
+			this.subTitleLabelForSinglePackage.LabelProp = global::Mono.Unix.Catalog.GetString ("The following package requires that you accept the license terms before installin" +
+			"g.");
 			this.subTitleHBoxForSinglePackage.Add (this.subTitleLabelForSinglePackage);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.subTitleHBoxForSinglePackage [this.subTitleLabelForSinglePackage]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
-			w1.Add (this.subTitleHBoxForSinglePackage);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(w1 [this.subTitleHBoxForSinglePackage]));
+			this.topVBox.Add (this.subTitleHBoxForSinglePackage);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.topVBox [this.subTitleHBoxForSinglePackage]));
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
-			// Container child mainVBox.Gtk.Box+BoxChild
+			// Container child topVBox.Gtk.Box+BoxChild
 			this.subTitleHBoxForMultiplePackages = new global::Gtk.HBox ();
 			this.subTitleHBoxForMultiplePackages.Name = "subTitleHBoxForMultiplePackages";
 			this.subTitleHBoxForMultiplePackages.Spacing = 6;
 			// Container child subTitleHBoxForMultiplePackages.Gtk.Box+BoxChild
 			this.subTitleLabelForMultiplePackages = new global::Gtk.Label ();
 			this.subTitleLabelForMultiplePackages.Name = "subTitleLabelForMultiplePackages";
-			this.subTitleLabelForMultiplePackages.LabelProp = global::Mono.Unix.Catalog.GetString ("The following packages require a click-to-accept license:");
+			this.subTitleLabelForMultiplePackages.LabelProp = global::Mono.Unix.Catalog.GetString ("The following packages require that you accept their license terms before install" +
+			"ing.");
 			this.subTitleHBoxForMultiplePackages.Add (this.subTitleLabelForMultiplePackages);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.subTitleHBoxForMultiplePackages [this.subTitleLabelForMultiplePackages]));
 			w4.Position = 0;
 			w4.Expand = false;
 			w4.Fill = false;
-			w1.Add (this.subTitleHBoxForMultiplePackages);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(w1 [this.subTitleHBoxForMultiplePackages]));
+			this.topVBox.Add (this.subTitleHBoxForMultiplePackages);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.topVBox [this.subTitleHBoxForMultiplePackages]));
 			w5.Position = 1;
 			w5.Expand = false;
 			w5.Fill = false;
-			// Container child mainVBox.Gtk.Box+BoxChild
+			// Container child topVBox.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
@@ -76,65 +94,65 @@ namespace MonoDevelop.PackageManagement
 			this.packagesVBox.Spacing = 6;
 			w6.Add (this.packagesVBox);
 			this.GtkScrolledWindow.Add (w6);
-			w1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(w1 [this.GtkScrolledWindow]));
+			this.topVBox.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.topVBox [this.GtkScrolledWindow]));
 			w9.Position = 2;
-			w9.Padding = ((uint)(3));
-			// Container child mainVBox.Gtk.Box+BoxChild
+			// Container child topVBox.Gtk.Box+BoxChild
 			this.bottomMessageHBox = new global::Gtk.HBox ();
 			this.bottomMessageHBox.Name = "bottomMessageHBox";
 			this.bottomMessageHBox.Spacing = 6;
 			// Container child bottomMessageHBox.Gtk.Box+BoxChild
 			this.mainMessageLabel = new global::Gtk.Label ();
 			this.mainMessageLabel.Name = "mainMessageLabel";
-			this.mainMessageLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("By clicking \"OK\" you agree to the license terms for the packages listed above.\nIf" +
-			" you do not agree to the license terms click \"Cancel\".");
+			this.mainMessageLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("By clicking Accept you agree to the license terms for the packages listed above.\n" +
+			"If you do not agree to the license terms click Decline.");
 			this.bottomMessageHBox.Add (this.mainMessageLabel);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.bottomMessageHBox [this.mainMessageLabel]));
 			w10.Position = 0;
 			w10.Expand = false;
 			w10.Fill = false;
-			w1.Add (this.bottomMessageHBox);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(w1 [this.bottomMessageHBox]));
+			this.topVBox.Add (this.bottomMessageHBox);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.topVBox [this.bottomMessageHBox]));
 			w11.Position = 3;
 			w11.Expand = false;
 			w11.Fill = false;
+			w1.Add (this.topVBox);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(w1 [this.topVBox]));
+			w12.Position = 0;
 			// Internal child MonoDevelop.PackageManagement.LicenseAcceptanceDialog.ActionArea
-			global::Gtk.HButtonBox w12 = this.ActionArea;
-			w12.Name = "mainButtonArea";
-			w12.Spacing = 10;
-			w12.BorderWidth = ((uint)(5));
-			w12.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
+			global::Gtk.HButtonBox w13 = this.ActionArea;
+			w13.Name = "mainButtonArea";
+			w13.Spacing = 10;
+			w13.BorderWidth = ((uint)(5));
+			w13.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
 			// Container child mainButtonArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonCancel = new global::Gtk.Button ();
 			this.buttonCancel.CanDefault = true;
 			this.buttonCancel.CanFocus = true;
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.UseStock = true;
 			this.buttonCancel.UseUnderline = true;
-			this.buttonCancel.Label = "gtk-cancel";
+			this.buttonCancel.Label = global::Mono.Unix.Catalog.GetString ("_Decline");
 			this.AddActionWidget (this.buttonCancel, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w13 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCancel]));
-			w13.Expand = false;
-			w13.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w13 [this.buttonCancel]));
+			w14.Expand = false;
+			w14.Fill = false;
 			// Container child mainButtonArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
 			this.buttonOk.CanDefault = true;
 			this.buttonOk.CanFocus = true;
 			this.buttonOk.Name = "buttonOk";
-			this.buttonOk.UseStock = true;
 			this.buttonOk.UseUnderline = true;
-			this.buttonOk.Label = "gtk-ok";
+			this.buttonOk.Label = global::Mono.Unix.Catalog.GetString ("_Accept");
 			this.AddActionWidget (this.buttonOk, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonOk]));
-			w14.Position = 1;
-			w14.Expand = false;
-			w14.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w15 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w13 [this.buttonOk]));
+			w15.Position = 1;
+			w15.Expand = false;
+			w15.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 447;
-			this.DefaultHeight = 300;
+			this.DefaultWidth = 494;
+			this.DefaultHeight = 365;
 			this.Show ();
 		}
 	}

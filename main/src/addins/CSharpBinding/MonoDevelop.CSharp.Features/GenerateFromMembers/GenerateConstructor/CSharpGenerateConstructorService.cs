@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers.GenerateConstructor
 {
-	public class CSharpGenerateConstructorService :
+	class CSharpGenerateConstructorService :
 	AbstractGenerateConstructorService<CSharpGenerateConstructorService, MemberDeclarationSyntax>
 	{
 		protected override Task<IList<MemberDeclarationSyntax>> GetSelectedMembersAsync(

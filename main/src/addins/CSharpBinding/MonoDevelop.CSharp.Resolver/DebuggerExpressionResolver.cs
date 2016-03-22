@@ -41,7 +41,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Resolver
 {
-	public static class DebuggerExpressionResolver
+	static class DebuggerExpressionResolver
 	{
 		public static async Task<DebugDataTipInfo> ResolveAsync (IReadonlyTextDocument editor, DocumentContext document, int offset, CancellationToken cancellationToken)
 		{

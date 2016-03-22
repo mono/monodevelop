@@ -42,6 +42,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighlighters;
+using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -49,6 +51,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		public RefactoringSymbolInfo SymbolInfo;
 		public Document Document;
+		public int Offset;
 
 		public ISymbol Symbol {
 			get { return SymbolInfo != null ? SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol : null; }
@@ -58,7 +61,15 @@ namespace MonoDevelop.CSharp.Highlighting
 	class HighlightUsagesExtension : AbstractUsagesExtension<UsageData>
 	{
 		CSharpSyntaxMode syntaxMode;
+		static IHighlighter [] highlighters;
 
+		static HighlightUsagesExtension ()
+		{
+			highlighters = typeof (HighlightUsagesExtension).Assembly
+				.GetTypes ()
+				.Where (t => !t.IsAbstract && typeof (IHighlighter).IsAssignableFrom (t))
+				.Select (t => (IHighlighter)Activator.CreateInstance (t)).ToArray ();
+		}
 		protected override void Initialize ()
 		{
 			base.Initialize ();
@@ -86,22 +97,46 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (analysisDocument == null)
 				return new UsageData ();
 
-			var symbolInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor.CaretOffset, token);
+			var symbolInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor, token);
 			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
+				return new UsageData {
+					Document = analysisDocument,
+					Offset = doc.Editor.CaretOffset
+				};
+			
+			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName) && !symbolInfo.Node.IsKind (SyntaxKind.GenericName)) 
 				return new UsageData ();
-			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName)) 
-				return new UsageData ();
+
 			return new UsageData {
 				Document = analysisDocument,
-				SymbolInfo = symbolInfo
+				SymbolInfo = symbolInfo,
+				Offset = doc.Editor.CaretOffset
 			};
 		}
 
 		protected override async Task<IEnumerable<MemberReference>> GetReferencesAsync (UsageData resolveResult, CancellationToken token)
 		{
 			var result = new List<MemberReference> ();
-			if (resolveResult.Symbol == null)
+			if (resolveResult.Symbol == null) {
+				if (resolveResult.Document == null)
+					return result;
+				var root = await resolveResult.Document.GetSyntaxRootAsync (token).ConfigureAwait (false);
+				var doc2 = resolveResult.Document;
+
+				foreach (var highlighter in highlighters) {
+					try {
+						foreach (var span in highlighter.GetHighlights (root, resolveResult.Offset, token)) {
+							result.Add (new MemberReference (span, doc2.FilePath, span.Start, span.Length) {
+								ReferenceUsageType = ReferenceUsageType.Keyword
+							});
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Highlighter " + highlighter + " threw exception.", e);
+					}
+				}
 				return result;
+			}
+
 			var doc = resolveResult.Document;
 			var documents = ImmutableHashSet.Create (doc); 
 			var symbol = resolveResult.Symbol;
@@ -111,14 +146,81 @@ namespace MonoDevelop.CSharp.Highlighting
 						ReferenceUsageType = ReferenceUsageType.Declariton	
 					});
 			}
+
 			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
 				foreach (var loc in mref.Locations) {
-					result.Add (new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
-						ReferenceUsageType = GetUsage (loc.Location.SourceTree.GetRoot ().FindNode (loc.Location.SourceSpan))
+					Microsoft.CodeAnalysis.Text.TextSpan span = loc.Location.SourceSpan;
+					var root = loc.Location.SourceTree.GetRoot ();
+					var node = root.FindNode (loc.Location.SourceSpan);
+					var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+					if (!trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+						span = node.Span;
+					}
+
+
+
+
+
+					if (span.Start != loc.Location.SourceSpan.Start) {
+						span = loc.Location.SourceSpan;
+					}
+					result.Add (new MemberReference (symbol, doc.FilePath, span.Start, span.Length) {
+						ReferenceUsageType = GetUsage (node)
 					});
 				}
 			}
+
+			foreach (var loc in await GetAdditionalReferencesAsync (doc, symbol, token)) {
+				result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
+					ReferenceUsageType = ReferenceUsageType.Write
+				});
+			}
+
 			return result;
+		}
+
+		async Task<IEnumerable<Location>> GetAdditionalReferencesAsync (Document document, ISymbol symbol, CancellationToken cancellationToken)
+		{
+			// The FindRefs engine won't find references through 'var' for performance reasons.
+			// Also, they are not needed for things like rename/sig change, and the normal find refs
+			// feature.  However, we would lke the results to be highlighted to get a good experience
+			// while editing (especially since highlighting may have been invoked off of 'var' in
+			// the first place).
+			//
+			// So we look for the references through 'var' directly in this file and add them to the
+			// results found by the engine.
+			List<Location> results = null;
+
+			if (symbol is INamedTypeSymbol && symbol.Name != "var") {
+				var originalSymbol = symbol.OriginalDefinition;
+				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+
+				var descendents = root.DescendantNodes ();
+				var semanticModel = default (SemanticModel);
+
+				foreach (var type in descendents.OfType<IdentifierNameSyntax> ()) {
+					cancellationToken.ThrowIfCancellationRequested ();
+
+					if (type.IsVar) {
+						if (semanticModel == null) {
+							semanticModel = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+						}
+
+						var boundSymbol = semanticModel.GetSymbolInfo (type, cancellationToken).Symbol;
+						boundSymbol = boundSymbol == null ? null : boundSymbol.OriginalDefinition;
+
+						if (originalSymbol.Equals (boundSymbol)) {
+							if (results == null) {
+								results = new List<Location> ();
+							}
+
+							results.Add (type.GetLocation ());
+						}
+					}
+				}
+			}
+
+			return results ?? SpecializedCollections.EmptyEnumerable<Location> ();
 		}
 
 		static ReferenceUsageType GetUsage (SyntaxNode node)

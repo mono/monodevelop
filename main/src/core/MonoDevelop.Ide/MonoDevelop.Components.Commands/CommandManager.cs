@@ -82,9 +82,10 @@ namespace MonoDevelop.Components.Commands
 		{
 		}
 		
-		public CommandManager (Gtk.Window root)
+		public CommandManager (Window root)
 		{
-			rootWidget = root;
+			if (root != null)
+				rootWidget = root;
 			bindings = new KeyBindingManager ();
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
@@ -131,35 +132,10 @@ namespace MonoDevelop.Components.Commands
 		/// <summary>
 		/// Creates a menu bar from the menu definition at the provided extension path
 		/// </summary>
-		public Gtk.MenuBar CreateMenuBar (string addinPath)
+		internal Gtk.MenuBar CreateMenuBar (string addinPath)
 		{
 			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
 			return CreateMenuBar (addinPath, cset);
-		}
-		
-		/// <summary>
-		/// Creates a set of toolbars from the provided extension path
-		/// </summary>
-		public Gtk.Toolbar[] CreateToolbarSet (string addinPath)
-		{
-			ArrayList bars = new ArrayList ();
-			
-			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
-			foreach (CommandEntry ce in cset) {
-				CommandEntrySet ces = ce as CommandEntrySet;
-				if (ces != null)
-					bars.Add (CreateToolbar (addinPath + "/" + ces.CommandId, ces));
-			}
-			return (Gtk.Toolbar[]) bars.ToArray (typeof(Gtk.Toolbar));
-		}
-		
-		/// <summary>
-		/// Creates a toolbar from the provided extension path
-		/// </summary>
-		public Gtk.Toolbar CreateToolbar (string addinPath)
-		{
-			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
-			return CreateToolbar (addinPath, cset);
 		}
 		
 		/// <summary>
@@ -183,7 +159,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='addinPath'>
 		/// Extension path to the definition of the menu
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, string addinPath)
+		public void ShowContextMenu (Control parent, Gdk.EventButton evt, string addinPath)
 		{
 			ShowContextMenu (parent, evt, CreateCommandEntrySet (addinPath));
 		}
@@ -203,7 +179,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='addinPath'>
 		/// Extension path to the definition of the menu
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt,
+		public void ShowContextMenu (Control parent, Gdk.EventButton evt,
 			ExtensionContext ctx, string addinPath)
 		{
 			ShowContextMenu (parent, evt, CreateCommandEntrySet (ctx, addinPath));
@@ -355,7 +331,8 @@ namespace MonoDevelop.Components.Commands
 		void OnKeyReleased (object o, Gtk.KeyReleaseEventArgs e)
 		{
 			bool complete;
-			KeyboardShortcut[] accels = KeyBindingManager.AccelsFromKey (e.Event, out complete);
+			// KeyboardShortcut[] accels = 
+			KeyBindingManager.AccelsFromKey (e.Event, out complete);
 
 			if (!complete) {
 				// incomplete accel
@@ -460,7 +437,7 @@ namespace MonoDevelop.Components.Commands
 		/// <summary>
 		/// Sets the root window. The manager will start the command route at this window, if no other is active.
 		/// </summary>
-		public void SetRootWindow (Gtk.Window root)
+		public void SetRootWindow (Window root)
 		{
 			if (rootWidget != null)
 				rootWidget.KeyPressEvent -= OnKeyPressed;
@@ -661,6 +638,8 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterCommandTargetVisitor (ICommandTargetVisitor visitor)
 		{
 			visitors.Remove (visitor);
+
+			StopStatusUpdaterIfNeeded ();
 		}
 		
 		/// <summary>
@@ -718,7 +697,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='entrySet'>
 		/// Entry set with the definition of the commands to be included in the menu bar
 		/// </param>
-		public Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
+		internal Gtk.MenuBar CreateMenuBar (string name, CommandEntrySet entrySet)
 		{
 			Gtk.MenuBar topMenu = new CommandMenuBar (this);
 			foreach (CommandEntry entry in entrySet) {
@@ -749,7 +728,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='menu'>
 		/// The menu where to add the commands
 		/// </param>
-		public Gtk.Menu CreateMenu (CommandEntrySet entrySet, CommandMenu menu)
+		internal Gtk.Menu CreateMenu (CommandEntrySet entrySet, CommandMenu menu)
 		{
 			foreach (CommandEntry entry in entrySet) {
 				Gtk.MenuItem mi = entry.CreateMenuItem (this);
@@ -902,7 +881,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='initialCommandTarget'>
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
-		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Control parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
 			return ShowContextMenu (parent, evt, entrySet, initialCommandTarget, null);
@@ -926,11 +905,11 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='closeHandler'>
 		/// An event handler which will be called when the menu closes
 		/// </param>
-		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Control parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget, EventHandler closeHandler)
 		{
 #if MAC
-			var menu = CreateNSMenu (entrySet, initialCommandTarget, closeHandler);
+			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent, closeHandler);
 			ContextMenuExtensionsMac.ShowContextMenu (parent, evt, menu);
 #else
 			var menu = CreateMenu (entrySet, closeHandler);
@@ -949,11 +928,11 @@ namespace MonoDevelop.Components.Commands
 		/// <param name="y">The y coordinate.</param>
 		/// <param name="entrySet">Entry set with the command definitions</param>
 		/// <param name="initialCommandTarget">Initial command target.</param>
-		public bool ShowContextMenu (Gtk.Widget parent, int x, int y, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Control parent, int x, int y, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
 #if MAC
-			var menu = CreateNSMenu (entrySet, initialCommandTarget);
+			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent);
 			ContextMenuExtensionsMac.ShowContextMenu (parent, x, y, menu);
 #else
 			var menu = CreateMenu (entrySet);
@@ -979,7 +958,7 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='initialCommandTarget'>
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu,
+		public void ShowContextMenu (Control parent, Gdk.EventButton evt, Gtk.Menu menu,
 			object initialCommandTarget = null)
 		{
 			if (menu is CommandMenu) {
@@ -989,7 +968,7 @@ namespace MonoDevelop.Components.Commands
 			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 
-		public void ShowContextMenu (Gtk.Widget parent, int x, int y, Gtk.Menu menu,
+		public void ShowContextMenu (Control parent, int x, int y, Gtk.Menu menu,
 			object initialCommandTarget = null)
 		{
 			if (menu is CommandMenu) {
@@ -999,86 +978,6 @@ namespace MonoDevelop.Components.Commands
 			MonoDevelop.Components.GtkWorkarounds.ShowContextMenu (menu, parent, x, y);
 		}
 
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet)
-		{
-			return CreateToolbar ("", entrySet, null);
-		}
-		
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		/// <param name='initialTarget'>
-		/// Initial command route target. The command handler will start looking for command handlers in this object.
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet, object initialTarget)
-		{
-			return CreateToolbar ("", entrySet, initialTarget);
-		}
-		
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='id'>
-		/// Identifier of the toolbar
-		/// </param>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet)
-		{
-			return CreateToolbar (id, entrySet, null);
-		}
-		
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='id'>
-		/// Identifier of the toolbar
-		/// </param>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		/// <param name='initialTarget'>
-		/// Initial command route target. The command handler will start looking for command handlers in this object.
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet, object initialTarget)
-		{
-			CommandToolbar toolbar = new CommandToolbar (this, id, entrySet.Name);
-			toolbar.InitialCommandTarget = initialTarget;
-			
-			foreach (CommandEntry entry in entrySet) {
-				Gtk.ToolItem ti = entry.CreateToolItem (this);
-				CustomItem ci = ti.Child as CustomItem;
-				if (ci != null)
-					ci.SetToolbarStyle (toolbar);
-				toolbar.Add (ti);
-			}
-			ToolbarTracker tt = new ToolbarTracker ();
-			tt.Track (toolbar);
-			return toolbar;
-		}
-		
 		/// <summary>
 		/// Dispatches a command.
 		/// </summary>
@@ -1434,6 +1333,8 @@ namespace MonoDevelop.Components.Commands
 								info.Visible = true;
 							return info;
 						}
+						if (info.Enabled && !info.Bypass)
+							return info;
 						continue;
 					}
 					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
@@ -1794,7 +1695,7 @@ namespace MonoDevelop.Components.Commands
 				cmdTarget = null;
 			
 			if (cmdTarget == null || !visitedTargets.Add (cmdTarget)) {
-				if (delegatorStack.Count > 0) {
+				while (delegatorStack.Count > 0) {
 					var del = delegatorStack.Pop ();
 					if (del is ICommandDelegatorRouter)
 						cmdTarget = ((ICommandDelegatorRouter)del).GetNextCommandTarget ();
@@ -1844,7 +1745,7 @@ namespace MonoDevelop.Components.Commands
 					}
 				}
 			}
-			
+
 			lastFocused = newFocused;
 			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
 			
@@ -1958,6 +1859,8 @@ namespace MonoDevelop.Components.Commands
 				newWait = 500;
 			else if (secs < 30)
 				newWait = 700;
+			else if (appHasFocus)
+				newWait = 2000;
 			else {
 				// The application seems to be idle. Stop the status updater and
 				// start a pasive wait for user interaction
@@ -1986,6 +1889,14 @@ namespace MonoDevelop.Components.Commands
 				toolbarUpdaterRunning = true;
 			}
 		}
+
+		void StopStatusUpdaterIfNeeded ()
+		{
+			if (toolbars.Count != 0 || visitors.Count != 0)
+				return;
+
+			StopStatusUpdater ();
+		}
 		
 		void StopStatusUpdater ()
 		{
@@ -2002,8 +1913,10 @@ namespace MonoDevelop.Components.Commands
 			
 			waitingForUserInteraction = true;
 			toolbarUpdaterRunning = false;
-			foreach (var win in topLevelWindows)
+			foreach (var win in topLevelWindows) {
 				win.MotionNotifyEvent += HandleWinMotionNotifyEvent;
+				win.FocusInEvent += HandleFocusInEventHandler;
+			}
 		}
 		
 		void EndWaitingForUserInteraction ()
@@ -2011,8 +1924,10 @@ namespace MonoDevelop.Components.Commands
 			if (!waitingForUserInteraction)
 				return;
 			waitingForUserInteraction = false;
-			foreach (var win in topLevelWindows)
+			foreach (var win in topLevelWindows) {
 				win.MotionNotifyEvent -= HandleWinMotionNotifyEvent;
+				win.FocusInEvent -= HandleFocusInEventHandler;
+			}
 
 			StartStatusUpdater ();
 		}
@@ -2023,6 +1938,11 @@ namespace MonoDevelop.Components.Commands
 				lastUserInteraction = DateTime.Now;
 				EndWaitingForUserInteraction ();
 			}
+		}
+
+		void HandleFocusInEventHandler (object o, Gtk.FocusInEventArgs args)
+		{
+			RegisterUserInteraction ();
 		}
 
 		void HandleWinMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
@@ -2047,6 +1967,8 @@ namespace MonoDevelop.Components.Commands
 		public void UnregisterCommandBar (ICommandBar commandBar)
 		{
 			toolbars.Remove (commandBar);
+
+			StopStatusUpdaterIfNeeded ();
 		}
 		
 		void UpdateToolbars ()
@@ -2187,8 +2109,8 @@ namespace MonoDevelop.Components.Commands
 
 	public class ActiveWidgetEventArgs: EventArgs
 	{
-		public Gtk.Widget OldActiveWidget { get; internal set; }
-		public Gtk.Widget NewActiveWidget { get; internal set; }
+		public Control OldActiveWidget { get; internal set; }
+		public Control NewActiveWidget { get; internal set; }
 	}
 
 	internal class HandlerTypeInfo

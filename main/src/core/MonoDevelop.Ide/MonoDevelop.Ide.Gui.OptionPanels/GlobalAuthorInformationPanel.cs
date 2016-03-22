@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -36,8 +37,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	class GlobalAuthorInformationPanel : OptionsPanel
 	{
 		GlobalAuthorInformationPanelWidget widget;
-		
-		public override Gtk.Widget CreatePanelWidget ()
+
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new GlobalAuthorInformationPanelWidget ();
 		}

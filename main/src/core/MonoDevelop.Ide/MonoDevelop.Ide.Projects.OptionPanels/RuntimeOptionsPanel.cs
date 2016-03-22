@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		RuntimeOptionsPanelWidget widget;
 
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return (widget = new RuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject, ItemConfigurations));
 		}

@@ -7,10 +7,8 @@
 
 <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
 	<Section id = "Preferences" _label = "Environment">
+		<Section id = "Style" _label = "Visual Style" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" />
 		<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" icon="md-prefs-author-information" />
-		<Section id = "Language" _label = "Language" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" icon="md-prefs-language">
-			<!-- <Panel _label = "Welcome Page" class = "MonoDevelop.Ide.WelcomePage.WelcomePageOptionPanel" />-->
-		</Section>
 		<Section id = "KeyBindings" _label = "Key Bindings" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" icon="md-prefs-key-bindings" />
 		<Section id = "Fonts" _label = "Fonts" fill="true" class = "MonoDevelop.Ide.Fonts.FontChooserPanel" icon = "md-prefs-fonts" />
 		<Section id = "Updates" _label = "Updates" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" icon="md-prefs-updates" />
@@ -38,7 +36,7 @@
 			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 		</Section>
 		<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
-		<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
+		<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-header" />
 	</Section>
 
 	<Section id = "VersionControl" _label = "Version Control" />

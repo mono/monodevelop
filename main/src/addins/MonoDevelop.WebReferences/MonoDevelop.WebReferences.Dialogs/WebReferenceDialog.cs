@@ -149,7 +149,7 @@ namespace MonoDevelop.WebReferences.Dialogs
 		#endregion
 		
 		#region Member Variables
-		const string homeUrl = "http://www.w3schools.com/WebServices/TempConvert.asmx";
+		const string homeUrl = "http://www.w3schools.com/xml/tempconvert.asmx";
 		WebServiceDiscoveryResult selectedService;
 //		protected Gtk.Alignment frmBrowserAlign;
 		#endregion
@@ -609,6 +609,17 @@ namespace MonoDevelop.WebReferences.Dialogs
 			}
 		}
 
+
+		protected override void OnDestroyed ()
+		{
+			btnNavBack.Activated -= Browser_BackButtonClicked;
+			btnNavNext.Activated -= Browser_NextButtonClicked;
+			btnRefresh.Activated -= Browser_RefreshButtonClicked;
+			btnStop.Activated -= Browser_StopButtonClicked;
+			btnHome.Activated -= Browser_HomeButtonClicked;
+
+			base.OnDestroyed ();
+		}
 	}
 	
 	class AskCredentials: GuiSyncObject, ICredentials

@@ -31,7 +31,7 @@ using Cairo;
 
 namespace MonoDevelop.Components.Theming
 {
-	public class ThemeContext
+	class ThemeContext
 	{
 		private double radius = 3.0;
 		public double Radius {

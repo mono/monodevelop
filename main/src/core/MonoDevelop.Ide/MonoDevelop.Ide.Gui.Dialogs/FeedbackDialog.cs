@@ -28,10 +28,11 @@ using MonoDevelop.Core;
 using System.Net;
 using System.IO;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	public class FeedbackDialog: Gtk.Window
+	class FeedbackDialog: Gtk.Window
 	{
 		Gtk.VBox mainBox;
 		EntryWithEmptyMessage mailEntry;
@@ -260,7 +261,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				if (layout == null) {
 					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = PangoContext.FontDescription.Copy ();
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 				
 				int width, height;
@@ -293,7 +294,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				
 				if (layout == null) {
 					layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = PangoContext.FontDescription.Copy ();
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 				
 				int width, height;

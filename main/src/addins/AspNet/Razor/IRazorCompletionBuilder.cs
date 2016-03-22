@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNet.Razor
 		Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
 	//	bool GetParameterCompletionCommandOffset (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, out int cpos);
-		int GetCurrentParameterIndex (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset);
+		Task<int> GetCurrentParameterIndex (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset);
 	}
 
 	public class UnderlyingDocument : Document

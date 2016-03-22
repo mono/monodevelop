@@ -39,13 +39,16 @@ using MonoDevelop.AnalysisCore.Gui;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
-		static List<CodeDiagnosticDescriptor> diagnostics;
-		public static IEnumerable<Result> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
+		static IEnumerable<CodeDiagnosticDescriptor> diagnostics;
+		static TraceListener consoleTraceListener = new ConsoleTraceListener ();
+
+		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
 		{
 			var input = analysisDocument.DocumentContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
@@ -60,20 +63,28 @@ namespace MonoDevelop.CodeIssues
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
 				if (diagnostics == null) {
-					diagnostics = CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken).Result.ToList ();
+					diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
 				}
+				var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
 				foreach (var diagnostic in diagnostics) {
 					if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
+						continue;
+					if (!diagnostic.IsEnabled)
 						continue;
 					alreadyAdded.Add (diagnostic.DiagnosticAnalyzerType);
 					var provider = diagnostic.GetProvider ();
 					if (provider == null)
 						continue;
+					foreach (var diag in provider.SupportedDiagnostics)
+						diagnosticTable [diag.Id] = diagnostic;
 					providers.Add (provider);
 				}
 
 				if (providers.Count == 0 || cancellationToken.IsCancellationRequested)
 					return Enumerable.Empty<Result> ();
+				#if DEBUG
+				Debug.Listeners.Add (consoleTraceListener); 
+				#endif
 
 				CompilationWithAnalyzers compilationWithAnalyzer;
 				var analyzers = System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
@@ -82,15 +93,21 @@ namespace MonoDevelop.CodeIssues
 					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, null, cancellationToken);
 					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
 						return Enumerable.Empty<Result> ();
-					diagnosticList.AddRange (compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).Result);
+					
+					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, cancellationToken).ConfigureAwait (false));
+					diagnosticList.AddRange (await compilationWithAnalyzer.GetAnalyzerSyntaxDiagnosticsAsync (model.SyntaxTree, cancellationToken).ConfigureAwait (false));
 				} catch (Exception) {
 					return Enumerable.Empty<Result> ();
 				} finally {
+					#if DEBUG
+					Debug.Listeners.Remove (consoleTraceListener); 
+					#endif
 					CompilationWithAnalyzers.ClearAnalyzerState (analyzers);
 				}
 
 				return diagnosticList
 					.Where (d => !d.Id.StartsWith("CS", StringComparison.Ordinal))
+					.Where (d => diagnosticTable[d.Id].GetIsEnabled (d.Descriptor))
 					.Select (diagnostic => {
 						var res = new DiagnosticResult(diagnostic);
 						// var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);

@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class OverrideCompletionContextHandlerTests : CompletionTestBase
+	class OverrideCompletionContextHandlerTests : CompletionTestBase
 	{
 		[Test]
 		public void InheritedVirtualPublicMethod()
@@ -81,5 +81,57 @@ public class b : a
 	// $$
 }");
 		}
+
+		/// <summary>
+		/// Bug 39642 - Incorrect completion suggestion in a wrong syntax context 
+		/// </summary>
+		[Test]
+		public void TestBug39642 ()
+		{
+			VerifyNoItemsExist (@"
+using System;
+namespace Foo
+	{
+		class Bar
+		{
+			public int { $$
+	}
+}
+");
+			VerifyNoItemsExist (@"
+using System;
+namespace Foo
+	{
+		class Bar
+		{
+			public int { o$$
+	}
+}
+");
+
+			VerifyNoItemsExist (@"
+using System;
+namespace Foo
+	{
+		class Bar
+		{
+			public int { get; $$
+	}
+}
+");
+			VerifyNoItemsExist (@"
+using System;
+namespace Foo
+	{
+		class Bar
+		{
+			public int { get; o$$
+	}
+}
+");
+		}
+
+
+
 	}
 }

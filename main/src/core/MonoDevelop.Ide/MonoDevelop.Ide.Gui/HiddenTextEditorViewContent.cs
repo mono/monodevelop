@@ -26,13 +26,15 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.AbstractViewContent, IServiceProvider
+	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.ViewContent, IServiceProvider
 	{
 		readonly TextEditor editor;
 
@@ -42,7 +44,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return null;
 			}
@@ -60,10 +62,6 @@ namespace MonoDevelop.Ide.Gui
 			Name = editor.FileName;
 		}
 
-		public override void Load (FileOpenInformation fileOpenInformation)
-		{
-		}
-		
 		public FilePath Name { 
 			get;
 			set;
@@ -227,11 +225,12 @@ namespace MonoDevelop.Ide.Gui
 				handler (this, e);
 		}
 
-		public override object GetContent (Type type)
+		protected override object OnGetContent (Type type)
 		{
 			if (type.IsAssignableFrom (typeof(TextEditor)))
 				return Editor;
-			return base.GetContent (type);
+			else
+				return base.OnGetContent (type);
 		}
 	}
 }

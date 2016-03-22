@@ -43,12 +43,15 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	internal sealed class RecommendedKeyword
 	{
+		public SyntaxKind Kind { get; private set; }
 		public string Keyword { get; private set; }
 		public bool IsIntrinsic { get; private set; }
 		public bool ShouldFormatOnCommit { get; private set; }
 
-		public RecommendedKeyword (string keyword, bool isIntrinsic = false, bool shouldFormatOnCommit = false)
+
+		public RecommendedKeyword (string keyword, SyntaxKind kind, bool isIntrinsic = false, bool shouldFormatOnCommit = false)
 		{
+			this.Kind = kind;
 			this.Keyword = keyword;
 			this.IsIntrinsic = isIntrinsic;
 			this.ShouldFormatOnCommit = shouldFormatOnCommit;
@@ -201,19 +204,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				IsStartingNewWord (text, position);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var model = ctx.SemanticModel;
 			if (ctx.CSharpSyntaxContext.IsInNonUserCode) {
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			}
 
 			if (ctx.TargetToken.IsKind (SyntaxKind.OverrideKeyword))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			if (info.CompletionTriggerReason == CompletionTriggerReason.CharTyped && info.TriggerCharacter == ' ') {
 				if (!ctx.CSharpSyntaxContext.IsEnumBaseListContext && !ctx.LeftToken.IsKind (SyntaxKind.EqualsToken) && !ctx.LeftToken.IsKind (SyntaxKind.EqualsEqualsToken))
-					return Enumerable.Empty<CompletionData> ();
+					return Task.FromResult (Enumerable.Empty<CompletionData> ());
 //				completionResult.AutoCompleteEmptyMatch = false;
 			}
 
@@ -224,7 +227,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (recommended == null)
 					continue;
 				foreach (var kw in recommended) {
-					result.Add (engine.Factory.CreateGenericData (this, kw.Keyword, GenericDataType.Keyword));
+					result.Add (engine.Factory.CreateKeywordCompletion (this, kw.Keyword, kw.Kind));
 				}
 			}
 		
@@ -237,7 +240,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 //			if (parent.IsKind(SyntaxKind.TypeParameterConstraintClause)) {
 //				result.Add(factory.CreateGenericData (this, "new()", GenericDataType.PreprocessorKeyword));
 //			}
-			return result;
+			return Task.FromResult ((IEnumerable<CompletionData>)result);
 		} 
 
 	}

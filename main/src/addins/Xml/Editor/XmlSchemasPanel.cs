@@ -24,7 +24,7 @@
 
 using System;
 
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.Xml.Editor
@@ -36,7 +36,7 @@ namespace MonoDevelop.Xml.Editor
 	{		
 		XmlSchemasPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			widget = new XmlSchemasPanelWidget ();
 			widget.LoadUserSchemas (XmlSchemaManager.UserSchemas);

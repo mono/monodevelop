@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -82,8 +83,7 @@ namespace MonoDevelop.Ide.Gui
 					fd = null;
 				}
 				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
-					fd = Style.FontDescription.Copy ();
-					fd.Size = (int) (fd.Size * Pango.Scale.Small);
+					fd = FontService.SansFont.CopyModified (Styles.FontScale11);
 				}
 				combo.ModifyLabelFont (fd);
 			}

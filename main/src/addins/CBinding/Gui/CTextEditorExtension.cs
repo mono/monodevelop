@@ -645,7 +645,7 @@ namespace CBinding
 		
 		public event EventHandler<DocumentPathChangedEventArgs> PathChanged;
 		
-		public Gtk.Widget CreatePathWidget (int index)
+		public Control CreatePathWidget (int index)
 		{
 			PathEntry[] path = CurrentPath;
 			if (null == path || 0 > index || path.Length <= index) {

@@ -40,6 +40,9 @@ using System.ComponentModel;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using MonoDevelop.Ide.Editor.Projection;
+using Xwt;
+using System.Collections.Immutable;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -112,9 +115,9 @@ namespace MonoDevelop.Ide.Editor
 			remove { ReadWriteTextDocument.TextChanged -= value; }
 		}
 
-		public event EventHandler BeginMouseHover {
-			add { textEditorImpl.BeginMouseHover += value; }
-			remove { textEditorImpl.BeginMouseHover -= value; }
+		public event EventHandler<MouseMovedEventArgs> MouseMoved {
+			add { textEditorImpl.MouseMoved += value; }
+			remove { textEditorImpl.MouseMoved -= value; }
 		}
 
 		internal event EventHandler VAdjustmentChanged {
@@ -891,21 +894,27 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}
 
-		public IList<SkipChar> SkipChars
-		{
-			get
-			{
-				return textEditorImpl.SkipChars;
+		public EditSession CurrentSession {
+			get {
+				return textEditorImpl.CurrentSession;
 			}
 		}
 
-		/// <summary>
-		/// Skip chars are 
-		/// </summary>
-		public void AddSkipChar (int offset, char ch)
+		public void StartSession (EditSession session)
 		{
+			if (session == null)
+				throw new ArgumentNullException (nameof (session));
 			Runtime.AssertMainThread ();
-			textEditorImpl.AddSkipChar (offset, ch);
+			session.SetEditor (this);
+			textEditorImpl.StartSession (session);
+		}
+
+		internal void EndSession ()
+		{
+			if (CurrentSession == null)
+				throw new InvalidOperationException ("No session started.");
+			Runtime.AssertMainThread ();
+			textEditorImpl.EndSession ();
 		}
 
 		bool isDisposed;
@@ -925,7 +934,7 @@ namespace MonoDevelop.Ide.Editor
 			base.Dispose (disposing);
 		}
 
-		protected override object CreateNativeWidget ()
+		protected override object CreateNativeWidget<T> ()
 		{
 			return textEditorImpl.CreateNativeControl ();
 		}
@@ -996,7 +1005,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		TextEditorViewContent viewContent;
-		internal IViewContent GetViewContent ()
+		internal ViewContent GetViewContent ()
 		{
 			if (viewContent == null) {
 				viewContent = new TextEditorViewContent (this, textEditorImpl);
@@ -1036,6 +1045,11 @@ namespace MonoDevelop.Ide.Editor
 			get {
 				return commandRouter;
 			}
+		}
+
+		protected override object GetNextCommandTarget ()
+		{
+			return commandRouter;
 		}
 
 		DocumentContext documentContext;
@@ -1130,17 +1144,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public T GetContent<T>() where T : class
 		{
-			T result = textEditorImpl as T;
-			if (result != null)
-				return result;
-			var ext = textEditorImpl.EditorExtension;
-			while (ext != null) {
-				result = ext as T;
-				if (result != null)
-					return result;
-				ext = ext.Next;
-			}
-			return null;
+			return GetContents<T> ().FirstOrDefault ();
 		}
 
 		public IEnumerable<T> GetContents<T>() where T : class
@@ -1156,18 +1160,33 @@ namespace MonoDevelop.Ide.Editor
 				ext = ext.Next;
 			}
 		}
-		#endregion
 
-		public string GetPangoMarkup (int offset, int length)
+		public IEnumerable<object> GetContents (Type type)
 		{
-			return textEditorImpl.GetPangoMarkup (offset, length);
+			var res = Enumerable.Empty<object> ();
+			if (type.IsInstanceOfType (textEditorImpl))
+				res = res.Concat (textEditorImpl);
+			
+			var ext = textEditorImpl.EditorExtension;
+			while (ext != null) {
+				res = res.Concat (ext.OnGetContents (type));
+				ext = ext.Next;
+			}
+			return res;
 		}
 
-		public string GetPangoMarkup (ISegment segment)
+		#endregion
+
+		public string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false)
+		{
+			return textEditorImpl.GetPangoMarkup (offset, length, fitIdeStyle);
+		}
+
+		public string GetPangoMarkup (ISegment segment, bool fitIdeStyle = false)
 		{
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
-			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length);
+			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length, fitIdeStyle);
 		}
 
 		public static implicit operator Microsoft.CodeAnalysis.Text.SourceText (TextEditor editor)
@@ -1329,7 +1348,7 @@ namespace MonoDevelop.Ide.Editor
 					foreach (var tp in projection.ProjectedEditor.allProviders) {
 						if (!tp.IsValidFor (projection.ProjectedEditor.MimeType))
 							continue;
-						var newProvider = new ProjectedTooltipProvider (this, ctx, projection, (TooltipProvider)tp.CreateInstance ());
+						var newProvider = new ProjectedTooltipProvider (projection, (TooltipProvider)tp.CreateInstance ());
 						projectedProviders.Add (newProvider);
 						textEditorImpl.AddTooltipProvider (newProvider);
 					}
@@ -1400,5 +1419,12 @@ namespace MonoDevelop.Ide.Editor
 			Runtime.AssertMainThread ();
 			textEditorImpl.UpdateBraceMatchingResult (result);
 		}
+
+		internal IEnumerable<IDocumentLine> VisibleLines { get { return textEditorImpl.VisibleLines; } }
+		internal event EventHandler<LineEventArgs> LineShown { add { textEditorImpl.LineShown += value; } remove { textEditorImpl.LineShown -= value; } }
+
+		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
+
+		public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
 	}
 }

@@ -5,16 +5,27 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	internal partial class TipOfTheDayWindow
 	{
 		private global::Gtk.VBox vbox2;
+		
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.HBox hbox7;
-		private global::Gtk.Image image5;
+		
+		private global::MonoDevelop.Components.ImageView iconInfo;
+		
 		private global::Gtk.Label categoryLabel;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow2;
+		
 		private global::Gtk.TextView tipTextview;
+		
 		private global::Gtk.HBox hbox5;
+		
 		private global::Gtk.CheckButton noshowCheckbutton;
+		
 		private global::Gtk.HButtonBox hbuttonbox1;
+		
 		private global::Gtk.Button nextButton;
+		
 		private global::Gtk.Button closeButton;
 
 		protected virtual void Build ()
@@ -39,13 +50,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.hbox7.Name = "hbox7";
 			this.hbox7.Spacing = 5;
 			// Container child hbox7.Gtk.Box+BoxChild
-			this.image5 = new global::Gtk.Image ();
-			this.image5.Name = "image5";
-			this.image5.Xalign = 0F;
-			this.image5.Yalign = 0F;
-			this.image5.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-info", global::Gtk.IconSize.Dialog);
-			this.hbox7.Add (this.image5);
-			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.image5]));
+			this.iconInfo = new global::MonoDevelop.Components.ImageView ();
+			this.iconInfo.Name = "iconInfo";
+			this.iconInfo.Xalign = 0F;
+			this.iconInfo.Yalign = 0F;
+			this.iconInfo.IconId = "gtk-dialog-info";
+			this.iconInfo.IconSize = ((global::Gtk.IconSize)(6));
+			this.hbox7.Add (this.iconInfo);
+			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.iconInfo]));
 			w1.Position = 0;
 			w1.Expand = false;
 			// Container child hbox7.Gtk.Box+BoxChild
@@ -107,13 +119,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.nextButton.Name = "nextButton";
 			this.nextButton.UseUnderline = true;
 			this.nextButton.Label = global::Mono.Unix.Catalog.GetString ("_Next Tip");
-			global::Gtk.Image w8 = new global::Gtk.Image ();
-			w8.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Button);
-			this.nextButton.Image = w8;
 			this.hbuttonbox1.Add (this.nextButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.nextButton]));
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w8 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.nextButton]));
+			w8.Expand = false;
+			w8.Fill = false;
 			// Container child hbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
 			this.closeButton = new global::Gtk.Button ();
 			this.closeButton.CanDefault = true;
@@ -122,17 +131,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.closeButton.UseUnderline = true;
 			this.closeButton.Label = "gtk-close";
 			this.hbuttonbox1.Add (this.closeButton);
-			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.closeButton]));
-			w10.Position = 1;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w9 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.hbuttonbox1 [this.closeButton]));
+			w9.Position = 1;
+			w9.Expand = false;
+			w9.Fill = false;
 			this.hbox5.Add (this.hbuttonbox1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.hbuttonbox1]));
-			w11.Position = 1;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.hbuttonbox1]));
+			w10.Position = 1;
 			this.vbox2.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox5]));
-			w12.Position = 1;
-			w12.Expand = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox5]));
+			w11.Position = 1;
+			w11.Expand = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

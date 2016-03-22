@@ -208,7 +208,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
 			if (evnt.Button == 3) {
-				IdeApp.CommandService.ShowContextMenu (this, evnt, "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar");
+				IdeApp.CommandService.ShowContextMenu (this, evnt, IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar"), this);
 			}
 			return base.OnButtonPressEvent (evnt);
 		}

@@ -170,7 +170,7 @@ namespace MonoDevelop.VersionControl.Git
 		static bool OnTransferProgress (TransferProgress tp, ProgressMonitor monitor, ref int progress)
 		{
 			if (progress == 0 && tp.ReceivedObjects == 0) {
-				monitor.BeginTask ("Receiving and indexing objects", 2 * tp.TotalObjects);
+				monitor.BeginTask (GettextCatalog.GetString ("Receiving and indexing objects"), 2 * tp.TotalObjects);
 				throttleWatch.Restart ();
 			}
 
@@ -193,7 +193,7 @@ namespace MonoDevelop.VersionControl.Git
 		static void OnCheckoutProgress (int completedSteps, int totalSteps, ProgressMonitor monitor, ref int progress)
 		{
 			if (progress == 0 && completedSteps == 0) {
-				monitor.BeginTask ("Checking out files", totalSteps);
+				monitor.BeginTask (GettextCatalog.GetString ("Checking out files"), totalSteps);
 				throttleWatch.Restart ();
 			}
 
@@ -225,7 +225,7 @@ namespace MonoDevelop.VersionControl.Git
 		public StashApplyStatus ApplyStash (ProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
-				monitor.BeginTask ("Applying stash", 1);
+				monitor.BeginTask (GettextCatalog.GetString ("Applying stash"), 1);
 
 			int progress = 0;
 			StashApplyStatus res = RootRepository.Stashes.Apply (stashIndex, new StashApplyOptions {
@@ -246,7 +246,7 @@ namespace MonoDevelop.VersionControl.Git
 		public StashApplyStatus PopStash (ProgressMonitor monitor, int stashIndex)
 		{
 			if (monitor != null)
-				monitor.BeginTask ("Applying stash", 1);
+				monitor.BeginTask (GettextCatalog.GetString ("Popping stash"), 1);
 
 			var stash = RootRepository.Stashes [stashIndex];
 			int progress = 0;
@@ -272,7 +272,7 @@ namespace MonoDevelop.VersionControl.Git
 				return false;
 
 			if (monitor != null)
-				monitor.BeginTask ("Stashing changes", 1);
+				monitor.BeginTask (GettextCatalog.GetString ("Stashing changes"), 1);
 
 			stash = RootRepository.Stashes.Add (sig, message, StashModifiers.Default | StashModifiers.IncludeUntracked);
 
@@ -335,9 +335,21 @@ namespace MonoDevelop.VersionControl.Git
 			IEnumerable<Commit> commits = repository.Commits;
 			if (localFile.CanonicalPath != RootPath.CanonicalPath.ResolveLinks ()) {
 				var localPath = repository.ToGitPath (localFile);
-				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
-					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
-					 c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
+				commits = commits.Where (c => {
+					int count = c.Parents.Count ();
+					if (count > 1)
+						return false;
+
+					var localTreeEntry = c.Tree [localPath];
+					if (localTreeEntry == null)
+						return false;
+
+					if (count == 0)
+						return true;
+
+					var parentTreeEntry = c.Parents.Single ().Tree [localPath];
+					return parentTreeEntry == null || localTreeEntry.Target.Id != parentTreeEntry.Target.Id;
+				});
 			}
 
 			return commits.TakeWhile (c => c != sinceRev).Select (commit => {
@@ -368,7 +380,7 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (var entry in changes.Deleted)
 				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.OldPath), RevisionAction.Delete, null));
 			foreach (var entry in changes.Renamed)
-				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), RevisionAction.Replace, null));
+				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), rev.GitRepository.FromGitPath (entry.OldPath), RevisionAction.Replace, null));
 			foreach (var entry in changes.Modified)
 				paths.Add (new RevisionPath (rev.GitRepository.FromGitPath (entry.Path), RevisionAction.Modify, null));
 			foreach (var entry in changes.TypeChanged)
@@ -590,7 +602,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			// TODO: Make it work differently for submodules.
-			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
+			monitor.BeginTask (GettextCatalog.GetString (GettextCatalog.GetString ("Updating")), 5);
 
 			if (RootRepository.Head.IsTracking) {
 				Fetch (monitor, RootRepository.Head.Remote.Name);
@@ -640,9 +652,9 @@ namespace MonoDevelop.VersionControl.Git
 						string message;
 						// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
 						if (string.Equals (e.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
-							message = "Unable to authorize credentials for the repository.";
+							message = GettextCatalog.GetString ("Unable to authorize credentials for the repository.");
 						else if (string.Equals (e.Message, "Received unexpected content-type", StringComparison.OrdinalIgnoreCase))
-							message = "Not a valid git repository.";
+							message = GettextCatalog.GetString ("Not a valid git repository.");
 						else
 							message = e.Message;
 
@@ -682,7 +694,7 @@ namespace MonoDevelop.VersionControl.Git
 						    GettextCatalog.GetString ("You have uncommitted changes"),
 						    GettextCatalog.GetString ("What do you want to do?"),
 						    AlertButton.Cancel,
-						    new AlertButton ("Stash")) == AlertButton.Cancel)
+						    new AlertButton (GettextCatalog.GetString ("Stash"))) == AlertButton.Cancel)
 						return false;
 
 					options |= GitUpdateOptions.SaveLocalChanges;
@@ -712,6 +724,9 @@ namespace MonoDevelop.VersionControl.Git
 				if (res == ConflictResult.Skip) {
 					Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 					break;
+				}
+				if (res == Git.ConflictResult.Continue) {
+					Add (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 				}
 			}
 			if (!string.IsNullOrEmpty (message)) {
@@ -765,7 +780,7 @@ namespace MonoDevelop.VersionControl.Git
 				int count = toApply.Length;
 				int i = 1;
 				foreach (var com in toApply) {
-					monitor.Log.WriteLine ("Cherry-picking {0} - {1}/{2}", com.Id, i, count);
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Cherry-picking {0} - {1}/{2}", com.Id, i, count));
 					CherryPickResult cherryRes = RootRepository.CherryPick (com, com.Author, new CherryPickOptions {
 						CheckoutNotifyFlags = refreshFlags,
 						OnCheckoutNotify = RefreshFile,
@@ -779,7 +794,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor)
+		public void Merge (string branch, GitUpdateOptions options, ProgressMonitor monitor, FastForwardStrategy strategy = FastForwardStrategy.Default)
 		{
 			int stashIndex = -1;
 			var oldHead = RootRepository.Head.Tip;
@@ -1308,8 +1323,7 @@ namespace MonoDevelop.VersionControl.Git
 			// Notify file changes
 			NotifyFileChanges (monitor, statusList);
 
-			if (BranchSelectionChanged != null)
-				BranchSelectionChanged (this, EventArgs.Empty);
+			BranchSelectionChanged?.Invoke (this, EventArgs.Empty);
 
 			monitor.EndTask ();
 			return true;
@@ -1401,7 +1415,10 @@ namespace MonoDevelop.VersionControl.Git
 					path = change.Path;
 					break;
 				}
-				diffs.Add (new DiffInfo (RootPath, RootRepository.FromGitPath (path), patch[path].Patch));
+
+				// Trim the header by taking out the first 2 lines.
+				int diffStart = patch[path].Patch.IndexOf ('\n', patch [path].Patch.IndexOf ('\n') + 1);
+				diffs.Add (new DiffInfo (RootPath, RootRepository.FromGitPath (path), patch[path].Patch.Substring (diffStart + 1)));
 			}
 			return diffs.ToArray ();
 		}
@@ -1435,7 +1452,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			VersionInfo[] versionedFiles = GetDirectoryVersionInfo (localSrcPath, false, true);
 			base.OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
-			monitor.BeginTask ("Moving files", versionedFiles.Length);
+			monitor.BeginTask (GettextCatalog.GetString ("Moving files"), versionedFiles.Length);
 			foreach (VersionInfo vif in versionedFiles) {
 				if (vif.IsDirectory)
 					continue;
@@ -1472,7 +1489,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 
 			if (sinceCommit == null) {
-				Annotation nextRev = new Annotation (null, "<uncommitted>", DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
+				Annotation nextRev = new Annotation (null, GettextCatalog.GetString ("<uncommitted>"), DateTime.MinValue, null, GettextCatalog.GetString ("working copy"));
 				foreach (var hunk in baseDocument.Diff (workingDocument, includeEol: false)) {
 					list.RemoveRange (hunk.RemoveStart - 1, hunk.Removed);
 					for (int i = 0; i < hunk.Inserted; ++i) {

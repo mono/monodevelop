@@ -143,8 +143,10 @@ namespace Mono.TextEditor
 			editor.SizeAllocated -= MoveHelpWindow;
 			editor.VScroll -= HandleVScroll;
 			editor.Destroyed -= HandleEditorDestroy;
+			HelpWindow.Hide ();
 			HelpWindow.Destroy ();
 			HelpWindow = null;
+			editor.QueueDraw ();
 		}
 		
 		void HandleEditorDestroy (object sender, EventArgs e)
@@ -294,7 +296,6 @@ namespace Mono.TextEditor
 		class CursorDrawer : MarginDrawer
 		{
 			InsertionCursorEditMode mode;
-			static readonly Cairo.Color LineColor = HslColor.Parse ("#666666");
 
 
 			public CursorDrawer (InsertionCursorEditMode mode)
@@ -359,12 +360,12 @@ namespace Mono.TextEditor
 				MonoTextEditor editor = mode.editor;
 				
 				double y = editor.LineToY (mode.CurrentInsertionPoint.Line) - editor.VAdjustment.Value; 
-				double x = GetLineIndentationStart ();
-				double x2 = editor.Allocation.Width - mode.HelpWindow.Allocation.Width - InsertionCursorEditMode.HelpWindowMargin * 2;
+				double x = GetLineIndentationStart () - 3;
+				double x2 = editor.Allocation.Width - mode.HelpWindow.Allocation.Width - InsertionCursorEditMode.HelpWindowMargin * 2 + 4;
 				cr.MoveTo (x, y);
 				cr.LineTo (x2, y);
 
-				cr.SetSourceColor (LineColor);
+				cr.SetSourceColor (Styles.InsertionCursorLineColor.ToCairoColor ());
 				cr.Stroke ();
 				
 //				DrawArrow (cr, x - 4, y);

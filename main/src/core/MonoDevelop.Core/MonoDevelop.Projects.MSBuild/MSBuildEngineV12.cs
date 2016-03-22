@@ -163,6 +163,11 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
+		public override IEnumerable<MSBuildTarget> GetTargetsIgnoringCondition (object projectInstance)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public override void SetGlobalProperty (object project, string property, string value)
 		{
 			var p = (MSProject)project;
@@ -175,10 +180,9 @@ namespace MonoDevelop.Projects.MSBuild
 			p.RemoveGlobalProperty (property);
 		}
 
-		public override IDictionary<string, List<string>> GetConditionedProperties (object project)
+		public override ConditionedPropertyCollection GetConditionedProperties (object project)
 		{
-			var p = (MSProject)project;
-			return p.ConditionedProperties;
+			throw new NotImplementedException ();
 		}
 	}
 

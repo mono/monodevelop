@@ -40,7 +40,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockFrame: HBox, IAnimatable
+	class DockFrame: HBox, IAnimatable
 	{
 		internal const double ItemDockCenterArea = 0.4;
 		internal const int GroupDockSeparatorSize = 40;
@@ -690,6 +690,11 @@ namespace MonoDevelop.Components.Docking
 			dockBarRight.UpdateTitle (item);
 		}
 		
+		internal void UpdateStyles ()
+		{
+			container.ReloadStyles ();
+		}
+
 		internal void UpdateStyle (DockItem item)
 		{
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
@@ -861,7 +866,7 @@ namespace MonoDevelop.Components.Docking
 			w.Y = y;
 
 			if (UseWindowsForTopLevelFrames) {
-				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
+				var win = new IdeWindow (Gtk.WindowType.Toplevel);
 				win.SkipTaskbarHint = true;
 				win.Decorated = false;
 				win.TypeHint = Gdk.WindowTypeHint.Toolbar;

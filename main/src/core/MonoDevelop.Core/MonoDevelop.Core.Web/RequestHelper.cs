@@ -19,6 +19,7 @@ using System;
 using System.Net;
 using System.Collections.Specialized;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core.Web
 {
@@ -61,6 +62,104 @@ namespace MonoDevelop.Core.Web
 		{
 			if (token.CanBeCanceled)
 				token.Register (request.Abort);
+		}
+
+		public async Task<HttpWebResponse> GetResponseAsync (CancellationToken token)
+		{
+			_previousRequest = null;
+			_previousResponse = null;
+			_previousStatusCode = null;
+			_usingSTSAuth = false;
+			_continueIfFailed = true;
+			_proxyCredentialsRetryCount = 0;
+			_credentialsRetryCount = 0;
+			int failureCount = 0;
+			const int MaxFailureCount = 10;
+
+			while (true)
+			{
+				// Create the request
+				var request = (HttpWebRequest)_createRequest();
+				MakeCancelable (request, token);
+				ConfigureRequest(request);
+
+				try
+				{
+					var auth = request.Headers["Authorization"];
+					_basicAuthIsUsedInPreviousRequest = (auth != null)
+						&& auth.StartsWith("Basic ", StringComparison.Ordinal);
+
+					// Prepare the request, we do something like write to the request stream
+					// which needs to happen last before the request goes out
+					_prepareRequest(request);
+
+					HttpWebResponse response = (HttpWebResponse) await request.GetResponseAsync ();
+
+					// Cache the proxy and credentials
+					_proxyCache.Add(request.Proxy);
+
+					ICredentials credentials = request.Credentials;
+					_credentialCache.Add(request.RequestUri, credentials);
+					_credentialCache.Add(response.ResponseUri, credentials);
+
+					return response;
+				}
+				catch (WebException ex)
+				{
+					++failureCount;
+					if (failureCount >= MaxFailureCount)
+					{
+						throw;
+					}
+
+					using (IHttpWebResponse response = GetResponse(ex.Response))
+					{
+						if (response == null &&
+						    ex.Status != WebExceptionStatus.SecureChannelFailure)
+						{
+							// No response, something went wrong so just rethrow
+							throw;
+						}
+
+						// Special case https connections that might require authentication
+						if (ex.Status == WebExceptionStatus.SecureChannelFailure)
+						{
+							if (_continueIfFailed)
+							{
+								// Act like we got a 401 so that we prompt for credentials on the next request
+								_previousStatusCode = HttpStatusCode.Unauthorized;
+								continue;
+							}
+							throw;
+						}
+
+						// If we were trying to authenticate the proxy or the request and succeeded, cache the result.
+						if (_previousStatusCode == HttpStatusCode.ProxyAuthenticationRequired &&
+						    response.StatusCode != HttpStatusCode.ProxyAuthenticationRequired)
+						{
+							_proxyCache.Add(request.Proxy);
+						}
+						else if (_previousStatusCode == HttpStatusCode.Unauthorized &&
+						         response.StatusCode != HttpStatusCode.Unauthorized)
+						{
+							_credentialCache.Add(request.RequestUri, request.Credentials);
+							_credentialCache.Add(response.ResponseUri, request.Credentials);
+						}
+
+						_usingSTSAuth = STSAuthHelper.TryRetrieveSTSToken(request.RequestUri, response);
+
+						if (!IsAuthenticationResponse(response) || !_continueIfFailed)
+						{
+							throw;
+						}
+
+						_previousRequest = request;
+						_previousResponse = response;
+						_previousStatusCode = _previousResponse.StatusCode;
+					}
+				}
+			}
+
 		}
 
 		public HttpWebResponse GetResponse(CancellationToken token)

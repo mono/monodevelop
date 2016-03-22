@@ -82,15 +82,15 @@ namespace MonoDevelop.Components.Commands
 		#region Platform-dependent selection modifiers
 		//FIXME: these should be named for what they do, not what they are
 		
-		public static Gdk.ModifierType SelectionModifierAlt {
+		internal static Gdk.ModifierType SelectionModifierAlt {
 			get; private set;
 		}
 		
-		public static Gdk.ModifierType SelectionModifierControl {
+		internal static Gdk.ModifierType SelectionModifierControl {
 			get; private set;
 		}
 		
-		public static Gdk.ModifierType SelectionModifierSuper {
+		internal static Gdk.ModifierType SelectionModifierSuper {
 			get; private set;
 		}
 		

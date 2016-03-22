@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Editor
 
 		#region Segment marker
 		ITextSegmentMarker CreateUsageMarker (TextEditor editor, Usage usage);
-		ITextSegmentMarker CreateLinkMarker (TextEditor editor, int offset, int length, Action<LinkRequest> activateLink);
+		ILinkTextMarker CreateLinkMarker (TextEditor editor, int offset, int length, Action<LinkRequest> activateLink);
 
 		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length);
 		ISmartTagMarker CreateSmartTagMarker (TextEditor editor, int offset, DocumentLocation realLocation);

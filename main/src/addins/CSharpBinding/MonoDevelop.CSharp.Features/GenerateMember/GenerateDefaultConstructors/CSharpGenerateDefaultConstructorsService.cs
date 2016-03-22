@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstructors
 {
-	public class CSharpGenerateDefaultConstructorsService : AbstractGenerateDefaultConstructorsService<CSharpGenerateDefaultConstructorsService>
+	class CSharpGenerateDefaultConstructorsService : AbstractGenerateDefaultConstructorsService<CSharpGenerateDefaultConstructorsService>
 	{
 		protected override bool TryInitializeState(
 			SemanticDocument document, TextSpan textSpan, CancellationToken cancellationToken,
@@ -21,7 +21,6 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstruct
 		{
 			if (!cancellationToken.IsCancellationRequested)
 			{
-				var syntaxTree = document.SyntaxTree;
 				var node = document.Root.FindToken(textSpan.Start).GetAncestor<TypeSyntax>();
 				if (node != null)
 				{

@@ -41,7 +41,6 @@ namespace MonoDevelop.Components
 		{
 			box = new EventBox ();
 			box.ButtonPressEvent += new ButtonPressEventHandler (OnClickBox);
-			box.ModifyBg (StateType.Normal, Style.White);
 			box.Add (child);
 			child.Show ();
 			Show ();
@@ -80,7 +79,12 @@ namespace MonoDevelop.Components
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			requisition = box.SizeRequest ();
+			if (box.Child != null) {
+				requisition = box.Child.SizeRequest ();
+				requisition.Height += 2 * box.Child.Style?.YThickness ?? 0;
+			}
+			else
+				requisition = box.SizeRequest ();
 		}
 		
 		protected override void OnSizeAllocated (Gdk.Rectangle allocation)

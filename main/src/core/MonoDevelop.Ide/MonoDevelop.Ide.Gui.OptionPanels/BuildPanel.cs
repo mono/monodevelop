@@ -27,7 +27,7 @@
 
 
 using System;
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects.MSBuild;
 
@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		BuildPanelWidget widget;
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return (widget = new  BuildPanelWidget ());
 		}

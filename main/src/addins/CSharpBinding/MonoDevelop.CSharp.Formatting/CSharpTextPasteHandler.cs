@@ -58,7 +58,10 @@ namespace MonoDevelop.CSharp.Formatting
 			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
 				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
-
+			if (DefaultSourceEditorOptions.Instance.OnTheFlyFormatting) {
+				OnTheFlyFormatter.Format (indent.Editor, indent.DocumentContext, insertionOffset, insertionOffset + insertedChars);
+				return;
+			}
 			// Just correct the start line of the paste operation - the text is already indented.
 			var curLine = indent.Editor.GetLineByOffset (insertionOffset);
 			var curLineOffset = curLine.Offset;
@@ -83,6 +86,7 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 			}
 			indent.Editor.FixVirtualIndentation ();
+
 		}
 
 	}

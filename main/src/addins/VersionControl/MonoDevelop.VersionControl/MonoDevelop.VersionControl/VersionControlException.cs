@@ -27,9 +27,13 @@ using System;
 
 namespace MonoDevelop.VersionControl
 {
-	public class VersionControlException : ApplicationException
+	public class VersionControlException : Exception
 	{
 		public VersionControlException (string message) : base (message)
+		{
+		}
+
+		public VersionControlException (string message, Exception native) : base (message, native)
 		{
 		}
 	}

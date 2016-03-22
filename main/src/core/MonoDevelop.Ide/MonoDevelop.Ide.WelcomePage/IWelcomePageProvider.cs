@@ -25,13 +25,14 @@
 // THE SOFTWARE.
 using System;
 using Mono.Addins;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
 	[TypeExtensionPoint]
 	public interface IWelcomePageProvider
 	{
-		Gtk.Widget CreateWidget ();
+		Control CreateWidget ();
 	}
 }
 

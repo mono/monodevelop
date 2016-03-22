@@ -55,7 +55,7 @@ using MonoDevelop.Ide.Editor.Projection;
 
 namespace MonoDevelop.AspNet.WebForms
 {
-	public class WebFormsEditorExtension : BaseHtmlEditorExtension
+	class WebFormsEditorExtension : BaseHtmlEditorExtension
 	{
 		static readonly System.Text.RegularExpressions.Regex DocTypeRegex = new System.Text.RegularExpressions.Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 
@@ -356,6 +356,8 @@ namespace MonoDevelop.AspNet.WebForms
 
 			INamedTypeSymbol controlClass = null;
 
+			await refman.CreateCompilation (token);
+
 			if (parentName.HasPrefix) {
 				controlClass = refman.GetControlType (parentName.Prefix, parentName.Name);
 			} else {
@@ -451,7 +453,7 @@ namespace MonoDevelop.AspNet.WebForms
 
 				if (meth != null) {
 					var argType = meth.Parameters [0].Type as INamedTypeSymbol;
-					INamedTypeSymbol type = refman.Compilation.GetTypeByMetadataName ("System.Web.UI.Control");
+					INamedTypeSymbol type = refman.GetTypeByMetadataName ("System.Web.UI.Control");
 					if (argType != null && type != null && argType.IsDerivedFromClass (type)) {
 						list.AddRange (refman.GetControlCompletionData (argType));
 						return list;
@@ -495,6 +497,7 @@ namespace MonoDevelop.AspNet.WebForms
 				
 				existingAtts["ID"] = "";
 				if (attributedOb.Name.HasPrefix) {
+					await refman.CreateCompilation (token);
 					AddAspAttributeCompletionData (list, attributedOb.Name, existingAtts);
 				}
 				
@@ -512,6 +515,7 @@ namespace MonoDevelop.AspNet.WebForms
 					string id = ob.GetId ();
 					if (string.IsNullOrEmpty (id) || string.IsNullOrEmpty (id.Trim ()))
 						id = null;
+					await refman.CreateCompilation (token);
 					AddAspAttributeValueCompletionData (list, ob.Name, att.Name, id);
 				}
 			} else if (ob is WebFormsDirective) {
@@ -548,7 +552,7 @@ namespace MonoDevelop.AspNet.WebForms
 		bool GetCodeBehind (out INamedTypeSymbol codeBehindClass)
 		{
 			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
-				codeBehindClass = refman.Compilation.GetTypeByMetadataName (aspDoc.Info.InheritedClass);
+				codeBehindClass = refman.GetTypeByMetadataName (aspDoc.Info.InheritedClass);
 				return codeBehindClass != null;
 			}
 
@@ -669,12 +673,12 @@ namespace MonoDevelop.AspNet.WebForms
 					continue;
 				
 				//boolean completion
-				if (prop.GetReturnType ().Equals (refman.Compilation.GetTypeByMetadataName ("System.Boolean"))) {
+				if (prop.GetReturnType ().Equals (refman.GetTypeByMetadataName ("System.Boolean"))) {
 					AddBooleanCompletionData (list);
 					return;
 				}
 				//color completion
-				if (prop.GetReturnType ().Equals (refman.Compilation.GetTypeByMetadataName ("System.Drawing.Color"))) {
+				if (prop.GetReturnType ().Equals (refman.GetTypeByMetadataName ("System.Drawing.Color"))) {
 					var conv = new System.Drawing.ColorConverter ();
 					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 						if (c.IsSystemColor)

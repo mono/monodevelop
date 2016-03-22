@@ -34,63 +34,64 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using Project = MonoDevelop.Projects.Project;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public abstract class NamespaceData
 	{
-		protected INamespace namesp;
-		
+		protected INamespaceSymbol namesp;
+
 		public string Name {
 			get {
 				return namesp.Name;
 			}
 		}
-		
+
 		public string FullName {
-			get { return namesp.FullName; }
+			get { return namesp.GetFullName (); }
 		}
-		
-		public NamespaceData (INamespace namesp)
+
+		public NamespaceData (INamespaceSymbol namesp)
 		{
 			this.namesp = namesp;
 		}
-		
+
 		public abstract void AddProjectContent (ITreeBuilder builder);
-		
+
 		public override bool Equals (object ob)
 		{
 			var other = ob as NamespaceData;
 			return (other != null && namesp == other.namesp);
 		}
-		
+
 		public override int GetHashCode ()
 		{
 			return namesp.GetHashCode ();
 		}
-		
+
 		public override string ToString ()
 		{
-			return base.ToString () + " [" + namesp.FullName + "]";
+			return base.ToString () + " [" + namesp.GetFullName () + "]";
 		}
 	}
-	
+
 	public class ProjectNamespaceData : NamespaceData
 	{
 		Project project;
-		
+
 		public Project Project {
 			get { return project; }
 		}
 
-		public ProjectNamespaceData (Project project, INamespace nspace) : base (nspace)
+		public ProjectNamespaceData (Project project, INamespaceSymbol nspace) : base (nspace)
 		{
 			this.project = project;
 		}
-		
+
 		public override void AddProjectContent (ITreeBuilder builder)
 		{
 			if (project != null) {
@@ -101,42 +102,41 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 				}
 			}
 		}
-		
+
 		void AddProjectContent (ITreeBuilder builder, Project p)
 		{
-			foreach (var ns in namesp.ChildNamespaces) {
-				if (!builder.HasChild (ns.Name, typeof(NamespaceData)))
+			foreach (var ns in namesp.GetNamespaceMembers ()) {
+				if (!builder.HasChild (ns.Name, typeof (NamespaceData)))
 					builder.AddChild (new ProjectNamespaceData (project, ns));
 			}
-//			bool nestedNs = builder.Options ["NestedNamespaces"];
+			//			bool nestedNs = builder.Options ["NestedNamespaces"];
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			
-			foreach (var type in namesp.Types) {
-				if (!publicOnly || type.IsPublic)
+
+			foreach (var type in namesp.GetAllTypes ()) {
+				if (!publicOnly || type.DeclaredAccessibility == Accessibility.Public)
 					builder.AddChild (new ClassData (project, type));
 			}
-			
 		}
-		
-		
+
+
 		public override bool Equals (object ob)
 		{
 			ProjectNamespaceData other = ob as ProjectNamespaceData;
 			return (other != null && namesp == other.namesp && project == other.project);
 		}
-		
+
 		public override int GetHashCode ()
 		{
 			if (project != null) return (namesp + project.Name).GetHashCode ();
 			else return namesp.GetHashCode ();
 		}
-		
+
 		public override string ToString ()
 		{
 			return base.ToString () + " [" + namesp + ", " + (project != null ? project.Name : "no project") + "]";
 		}
 	}
-	
+
 	/*
 	public class CompilationUnitNamespaceData : NamespaceData
 	{

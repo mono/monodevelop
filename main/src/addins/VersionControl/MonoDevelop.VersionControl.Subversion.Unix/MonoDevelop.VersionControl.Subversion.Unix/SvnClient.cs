@@ -136,7 +136,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string Version {
 			get {
-				return GetVersion ();
+				try {
+					return GetVersion ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Failed to query Subversion version info", e);
+					return base.Version;
+				}
 			}
 		}
 
@@ -401,7 +406,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (IntPtr.Zero);
 			var error = new LibSvnClient.svn_error_t {
 				apr_err = LibApr.APR_OS_START_USEERR,
-				message = "Operation cancelled.",
+				message = GettextCatalog.GetString ("Operation cancelled."),
 				pool = localpool,
 			};
 
@@ -929,7 +934,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 				CheckError (svn.client_unlock (array, breakLock, ctx, localpool));
 				if (paths.Length != lockFileList.Count)
-					throw new SubversionException ("Lock operation failed.");
+					throw new SubversionException ("Unlock operation failed.");
 			} finally {
 				lockFileList = null;
 				TryEndOperation (localpool);
@@ -1164,7 +1169,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (ent.RemoteTextStatus != LibSvnClient.svn_wc_status_kind.EMPTY) {
 				rs = ConvertStatus (LibSvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
 				rr = new SvnRevision (repo, ent.LastCommitRevision, ent.LastCommitDate,
-				                      ent.LastCommitAuthor, "(unavailable)", null);
+				                      ent.LastCommitAuthor, GettextCatalog.GetString ("(unavailable)"), null);
 			}
 
 			VersionStatus status = ConvertStatus (ent.Schedule, ent.TextStatus);
@@ -1228,7 +1233,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (IntPtr.Zero);
 			var err = new LibSvnClient.svn_error_t {
 				apr_err = 200015,
-				message = "The operation was interrupted",
+				message = GettextCatalog.GetString ("The operation was interrupted"),
 				pool = localpool
 			};
 
@@ -1286,7 +1291,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			progressData.LogTimer.Interval = 1000;
 			progressData.LogTimer.Elapsed += delegate {
 				progressData.Seconds += 1;
-				updatemonitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds);
+				updatemonitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds));
 			};
 			progressData.LogTimer.Start ();
 		}
@@ -1449,7 +1454,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 //				actiondesc = string.Format (GettextCatalog.GetString ("Path '{0}' is no longer a member of a changelist."), file);
 //				break;
 			default:
-				System.Console.WriteLine("untranslated action:" + data.action);
+				LoggingService.LogDebug ("untranslated action:" + data.action);
 				actiondesc = data.action.ToString () + " " + file;
 				break;
 				/*
@@ -1459,11 +1464,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			
 			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc)) {
-				if (skipEol) {
-					updatemonitor.Log.Write (actiondesc);
-				} else {
-					updatemonitor.Log.WriteLine (actiondesc);
-				}
+				Runtime.RunInMainThread (() => {
+					if (skipEol) {
+						updatemonitor.Log.Write (actiondesc);
+					} else {
+						updatemonitor.Log.WriteLine (actiondesc);
+					}
+				});
 			}
 			if (updateFileList != null && notifyChange && File.Exists (file))
 				updateFileList.Add (file);

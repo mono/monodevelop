@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.IntroduceVariable
                      {
-	public partial class CSharpIntroduceVariableService :
+	partial class CSharpIntroduceVariableService :
 	AbstractIntroduceVariableService<CSharpIntroduceVariableService, ExpressionSyntax, TypeSyntax, TypeDeclarationSyntax, QueryExpressionSyntax>
 	{
 		protected override bool IsInNonFirstQueryClause(ExpressionSyntax expression)

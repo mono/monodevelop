@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Templates
 
 		private string createdSolutionName;
 		IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
-		private ProjectCreateInformation createdProjectInformation = null;
 
 		internal string CreatedSolutionName {
 			get { return createdSolutionName; }
@@ -307,23 +306,11 @@ namespace MonoDevelop.Ide.Templates
 		{
 		}
 
-		//methods
-		public async Task<bool> OpenCreatedSolution ()
-		{
-			if (await IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName)) {
-				foreach (string action in actions)
-					IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action), project:null);
-				return true;
-			}
-			return false;
-		}
-
 		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)
 		{
 			WorkspaceItemCreatedInformation workspaceItemInfo = solutionDescriptor.CreateEntry (cInfo, this.languagename);
 
 			this.createdSolutionName = workspaceItemInfo.WorkspaceItem.FileName;
-			this.createdProjectInformation = cInfo;
 			this.packageReferencesForCreatedProjects = workspaceItemInfo.PackageReferencesForCreatedProjects;
 
 			var pDesc = this.solutionDescriptor.EntryDescriptors.OfType<ProjectDescriptor> ().ToList ();
@@ -367,8 +354,6 @@ namespace MonoDevelop.Ide.Templates
 			metadata ["Language"] = this.LanguageName;
 			metadata ["Platform"] = pDesc != null ? pDesc.ProjectType : "Unknown";
 			TemplateCounter.Inc (1, null, metadata);
-
-			createdProjectInformation = cInfo;
 
 			return solutionEntryItems;
 		}

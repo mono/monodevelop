@@ -218,6 +218,12 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 
+			bool ITextEditorOptions.EnableSelectionWrappingKeys {
+				get {
+					return DefaultSourceEditorOptions.Instance.EnableSelectionWrappingKeys;
+				}
+			}
+
 			ShowWhitespaces ITextEditorOptions.ShowWhitespaces {
 				get {
 					return ShowWhitespaces.Never;
@@ -252,6 +258,8 @@ namespace MonoDevelop.Ide.Editor
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
 			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
+
+			IdeApp.Preferences.ColorScheme.Changed += OnColorSchemeChanged;
 		}
 
 		void UpdateFont ()
@@ -385,7 +393,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.Ask);
+		ConfigurationProperty<LineEndingConversion> lineEndingConversion = ConfigurationProperty.Create("LineEndingConversion", LineEndingConversion.LeaveAsIs);
 		public LineEndingConversion LineEndingConversion {
 			get {
 				return lineEndingConversion;
@@ -684,9 +692,13 @@ namespace MonoDevelop.Ide.Editor
 				return colorScheme;
 			}
 			set {
-				if (colorScheme.Set (value))
-					OnChanged (EventArgs.Empty);
+				colorScheme.Set (value);
 			}
+		}
+
+		void OnColorSchemeChanged (object sender, EventArgs e)
+		{
+			OnChanged (EventArgs.Empty);
 		}
 		
 		ConfigurationProperty<bool> generateFormattingUndoStep = ConfigurationProperty.Create ("GenerateFormattingUndoStep", false);
@@ -699,7 +711,18 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
+
+		ConfigurationProperty<bool> enableSelectionWrappingKeys = ConfigurationProperty.Create ("EnableSelectionWrappingKeys", false);
+		public bool EnableSelectionWrappingKeys {
+			get {
+				return enableSelectionWrappingKeys;
+			}
+			set {
+				if (enableSelectionWrappingKeys.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
+
 		bool overrideDocumentEolMarker = false;
 		public bool OverrideDocumentEolMarker {
 			get {
@@ -739,6 +762,7 @@ namespace MonoDevelop.Ide.Editor
 		public void Dispose ()
 		{
 			FontService.RemoveCallback (UpdateFont);
+			IdeApp.Preferences.ColorScheme.Changed -= OnColorSchemeChanged;
 		}
 
 		protected void OnChanged (EventArgs args)

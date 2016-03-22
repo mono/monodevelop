@@ -42,7 +42,7 @@ namespace MonoDevelop.Components
 		/// Image to be used to represent "no image". This is necessary since GLib.Value can't hold
 		/// null values for object that are not of subclasses of GLib.Object
 		/// </summary>
-		public static readonly Xwt.Drawing.Image NullImage = ImageService.GetIcon ("md-empty");
+		public static readonly Xwt.Drawing.Image NullImage = ImageService.GetIcon ("md-empty", Gtk.IconSize.Menu);
 
 		public CellRendererImage ()
 		{
@@ -133,6 +133,11 @@ namespace MonoDevelop.Components
 			if (img == null)
 				return;
 
+			if ((flags & Gtk.CellRendererState.Selected) != 0)
+				img = img.WithStyles ("sel");
+			if (!img.HasFixedSize)
+				img = img.WithSize (Gtk.IconSize.Menu);
+			
 			using (var ctx = Gdk.CairoHelper.Create (window)) {
 				var x = cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2);
 				var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
@@ -156,8 +161,11 @@ namespace MonoDevelop.Components
 		{
 			var img = GetImage ();
 			if (img != null) {
-				width = (int)img.Width;
-				height = (int)img.Height;
+				if (img.HasFixedSize) {
+					width = (int)img.Width;
+					height = (int)img.Height;
+				} else
+					Gtk.IconSize.Menu.GetSize(out width, out height);
 			} else
 				width = height = 0;
 

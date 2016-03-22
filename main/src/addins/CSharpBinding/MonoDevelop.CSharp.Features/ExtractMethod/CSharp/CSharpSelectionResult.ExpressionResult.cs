@@ -16,7 +16,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public partial class CSharpSelectionResult
+    partial class CSharpSelectionResult
     {
         private class ExpressionResult : CSharpSelectionResult
         {

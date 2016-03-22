@@ -224,10 +224,10 @@ namespace MonoDevelop.Ide.Navigation
 			get { return closedHistory.Count != 0; }
 		}
 
-		public static void OpenLastClosedDocument () {
+		public static async void OpenLastClosedDocument () {
 			if (HasClosedDocuments) {
 				var tuple = closedHistory.Pop ();
-				var doc = tuple.Item1.ShowDocument ();
+				var doc = await tuple.Item1.ShowDocument ();
 				IdeApp.Workbench.ReorderTab (IdeApp.Workbench.Documents.IndexOf (doc), tuple.Item2);
 			}
 		}

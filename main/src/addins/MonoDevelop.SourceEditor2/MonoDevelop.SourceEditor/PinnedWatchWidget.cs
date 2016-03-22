@@ -158,7 +158,7 @@ namespace MonoDevelop.SourceEditor
 			TreeViewColumn col;
 			int cx, cy;
 			valueTree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy);
-			Gdk.Rectangle rect = valueTree.GetCellArea (path, col);
+			//Gdk.Rectangle rect = valueTree.GetCellArea (path, col);
 			if (!mousePressed && valueTree.Columns[0] == col) {
 				mousePressed = true;
 				Editor.TextArea.MoveToTop (this);

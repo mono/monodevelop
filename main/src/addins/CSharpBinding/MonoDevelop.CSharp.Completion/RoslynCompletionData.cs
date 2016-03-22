@@ -77,7 +77,7 @@ namespace MonoDevelop.CSharp.Completion
 				return symbol.ToMinimalDisplayString (semanticModel, position, format);
 			} catch (ArgumentOutOfRangeException) {
 				try {
-					return symbol.ToMinimalDisplayString (semanticModel, 0, format);
+					return symbol.ToMinimalDisplayString (semanticModel, semanticModel.SyntaxTree.Length / 2, format);
 				} catch (ArgumentOutOfRangeException) {
 					return symbol.Name;
 				}

@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.ExternalTools
 	{
 		ExternalToolPanelWidget widget;
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new ExternalToolPanelWidget ();
 		}

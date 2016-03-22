@@ -40,10 +40,7 @@ namespace MonoDevelop.CodeActions
 	/// </summary>
 	class ValidCodeDiagnosticAction : ValidCodeAction
 	{
-		CodeDiagnosticFixDescriptor cfp;
-		CodeAction ca;
 		ImmutableArray<Diagnostic> validDiagnostics;
-		TextSpan diagnosticSpan;
 
 		public CodeDiagnosticFixDescriptor Diagnostic {
 			get;

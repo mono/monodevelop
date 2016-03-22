@@ -47,7 +47,7 @@ namespace MonoDevelop.Projects.MSBuild
 		int changeStamp;
 		bool hadXmlDeclaration;
 		bool isShared;
-		IDictionary<string, List<string>> conditionedProperties = new Dictionary<string, List<string>> ();
+		ConditionedPropertyCollection conditionedProperties = new ConditionedPropertyCollection ();
 
 		MSBuildEngineManager engineManager;
 		bool engineManagerIsLocal;
@@ -249,7 +249,7 @@ namespace MonoDevelop.Projects.MSBuild
 			AssertCanModify ();
 			DisposeMainInstance ();
 			ChildNodes = ChildNodes.Clear ();
-			conditionedProperties.Clear ();
+			conditionedProperties = new ConditionedPropertyCollection ();
 			bestGroups = null;
 			hadXmlDeclaration = false;
 			initialWhitespace = null;
@@ -416,6 +416,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public void Evaluate ()
 		{
+			if (mainProjectInstance != null)
+				mainProjectInstance.Dispose ();
 			mainProjectInstance = new MSBuildProjectInstance (this);
 			mainProjectInstance.Evaluate ();
 			conditionedProperties = mainProjectInstance.GetConditionedProperties ();
@@ -423,6 +425,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public Task EvaluateAsync ()
 		{
+			if (mainProjectInstance != null)
+				mainProjectInstance.Dispose ();
 			mainProjectInstance = new MSBuildProjectInstance (this);
 			return mainProjectInstance.EvaluateAsync ().ContinueWith (t => {
 				conditionedProperties = mainProjectInstance.GetConditionedProperties ();
@@ -600,7 +604,7 @@ namespace MonoDevelop.Projects.MSBuild
 				((MSBuildImportGroup)import.ParentObject).RemoveImport (import);
 		}
 
-		public IDictionary<string, List<string>> ConditionedProperties {
+		public ConditionedPropertyCollection ConditionedProperties {
 			get {
 				return conditionedProperties;
 			}
@@ -621,18 +625,19 @@ namespace MonoDevelop.Projects.MSBuild
 			get { return mainProjectInstance.EvaluatedItemsIgnoringCondition; }
 		}
 
-		public IEnumerable<MSBuildTarget> EvaluatedTargets
+		public IEnumerable<IMSBuildTargetEvaluated> EvaluatedTargets
 		{
 			get { return mainProjectInstance.Targets; }
 		}
 
-		public IMSBuildPropertySet GetGlobalPropertyGroup ()
+		public IEnumerable<IMSBuildTargetEvaluated> EvaluatedTargetsIgnoringCondition
 		{
-			foreach (MSBuildPropertyGroup grp in PropertyGroups) {
-				if (grp.Condition.Length == 0)
-					return grp;
-			}
-			return null;
+			get { return mainProjectInstance.TargetsIgnoringCondition; }
+		}
+
+		public MSBuildPropertyGroup GetGlobalPropertyGroup ()
+		{
+			return PropertyGroups.FirstOrDefault (g => g.Condition.Length == 0);
 		}
 
 		public MSBuildPropertyGroup CreatePropertyGroup ()
@@ -640,14 +645,14 @@ namespace MonoDevelop.Projects.MSBuild
 			return new MSBuildPropertyGroup ();
 		}
 
-		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd)
+		public MSBuildPropertyGroup AddNewPropertyGroup (bool insertAtEnd = true, MSBuildObject beforeObject = null)
 		{
 			var group = new MSBuildPropertyGroup ();
 			AddPropertyGroup (group, insertAtEnd);
 			return group;
 		}
 
-		public void AddPropertyGroup (MSBuildPropertyGroup group, bool insertAtEnd)
+		public void AddPropertyGroup (MSBuildPropertyGroup group, bool insertAtEnd = true, MSBuildObject beforeObject = null)
 		{
 			AssertCanModify ();
 			if (group.ParentProject != null)
@@ -656,26 +661,34 @@ namespace MonoDevelop.Projects.MSBuild
 			group.ParentNode = this;
 
 			bool added = false;
-			if (insertAtEnd) {
-				var last = ChildNodes.FindLastIndex (g => g is MSBuildPropertyGroup);
-				if (last != -1) {
-					ChildNodes = ChildNodes.Insert (last + 1, group);
-					added = true;
-				}
-			} else {
-				var first = ChildNodes.FindIndex (g => g is MSBuildPropertyGroup);
-				if (first != -1) {
-					ChildNodes = ChildNodes.Insert (first, group);
+			if (beforeObject != null) {
+				var index = ChildNodes.IndexOf (beforeObject);
+				if (index != -1) {
+					ChildNodes = ChildNodes.Insert (index, group);
 					added = true;
 				}
 			}
-
 			if (!added) {
-				var first = ChildNodes.FindIndex (g => g is MSBuildItemGroup);
-				if (first != -1)
-					ChildNodes = ChildNodes.Insert (first, group);
-				else
-					ChildNodes = ChildNodes.Add (group);
+				if (insertAtEnd) {
+					var last = ChildNodes.FindLastIndex (g => g is MSBuildPropertyGroup);
+					if (last != -1) {
+						ChildNodes = ChildNodes.Insert (last + 1, group);
+						added = true;
+					}
+				} else {
+					var first = ChildNodes.FindIndex (g => g is MSBuildPropertyGroup);
+					if (first != -1) {
+						ChildNodes = ChildNodes.Insert (first, group);
+						added = true;
+					}
+				}
+				if (!added) {
+					var first = ChildNodes.FindIndex (g => g is MSBuildItemGroup);
+					if (first != -1)
+						ChildNodes = ChildNodes.Insert (first, group);
+					else
+						ChildNodes = ChildNodes.Add (group);
+				}
 			}
 
 			group.ResetIndent (true);
@@ -900,6 +913,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (ob.ParentObject == this) {
 				ob.RemoveIndent ();
 				ChildNodes = ChildNodes.Remove (ob);
+				ob.ParentNode = null;
 			}
 		}
 
@@ -910,7 +924,7 @@ namespace MonoDevelop.Projects.MSBuild
 				item.RemoveIndent ();
 				var g = item.ParentGroup;
 				g.RemoveItem (item);
-				if (removeEmptyParentGroup && !item.ParentGroup.Items.Any ()) {
+				if (removeEmptyParentGroup && !g.Items.Any ()) {
 					Remove (g);
 					if (bestGroups != null)
 						bestGroups.Remove (item.Name);

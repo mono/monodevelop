@@ -34,13 +34,14 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using MonoDevelop.Ide.Editor;
 using System.Text;
+using ICSharpCode.NRefactory.MonoCSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class ImportSymbolCompletionData : RoslynCompletionData
+	class ImportSymbolCompletionData : RoslynSymbolCompletionData
 	{
-		CSharpCompletionTextEditorExtension ext;
-		INamedTypeSymbol type;
+		CSharpCompletionTextEditorExtension completionExt;
+		ISymbol type;
 		bool useFullName;
 
 		public override IconId Icon {
@@ -51,9 +52,9 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int PriorityGroup { get { return int.MinValue; } }
 
-		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, INamedTypeSymbol type, bool useFullName) : base (null, type.Name)
+		public ImportSymbolCompletionData (CSharpCompletionTextEditorExtension ext, RoslynCodeCompletionFactory factory, ISymbol type, bool useFullName) : base (null, factory, type)
 		{
-			this.ext = ext;
+			this.completionExt = ext;
 			this.useFullName = useFullName;
 			this.type = type;
 			this.DisplayFlags |= DisplayFlags.IsImportCompletion;
@@ -99,17 +100,13 @@ namespace MonoDevelop.CSharp.Completion
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
 			Initialize ();
-			var doc = ext.DocumentContext;
-			using (var undo = ext.Editor.OpenUndoGroup ()) {
-				string text = insertNamespace ? type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + type.Name : type.Name;
-				if (text != GetCurrentWord (window, descriptor)) {
-					if (window.WasShiftPressed && generateUsing) 
-						text = type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) + "." + text;
-					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, GetCurrentWord (window, descriptor), text);
-				}
+			var doc = completionExt.DocumentContext;
 
+			base.InsertCompletionText (window, ref ka, descriptor);
+
+			using (var undo = completionExt.Editor.OpenUndoGroup ()) {
 				if (!window.WasShiftPressed && generateUsing) {
-					AddGlobalNamespaceImport (ext.Editor, doc, type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+					AddGlobalNamespaceImport (completionExt.Editor, doc, type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
 				}
 			}
 			ka |= KeyActions.Ignore;

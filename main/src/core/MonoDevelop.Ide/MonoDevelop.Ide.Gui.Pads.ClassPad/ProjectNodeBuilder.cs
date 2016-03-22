@@ -27,57 +27,58 @@
 //
 
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 
-using MonoDevelop.Projects;
+using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using System.Linq;
+using Project = MonoDevelop.Projects.Project;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
-	public class ProjectNodeBuilder: TypeNodeBuilder
+	public class ProjectNodeBuilder : TypeNodeBuilder
 	{
 		protected override void Initialize ()
 		{
-//			TypeSystemService.TypesUpdated += OnClassInformationChanged;
+			//			TypeSystemService.TypesUpdated += OnClassInformationChanged;
 		}
-		
+
 		public override void Dispose ()
 		{
-//			TypeSystemService.TypesUpdated -= OnClassInformationChanged;
+			//			TypeSystemService.TypesUpdated -= OnClassInformationChanged;
 		}
-		
+
 		public override Type NodeDataType {
-			get { return typeof(Project); }
+			get { return typeof (Project); }
 		}
-		
+
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/Ide/ContextMenu/ClassPad/Project"; }
 		}
-		
+
 		public override void OnNodeAdded (object dataObject)
 		{
-			Project project = (Project) dataObject;
+			Project project = (Project)dataObject;
 			project.NameChanged += OnProjectRenamed;
 		}
-		
+
 		public override void OnNodeRemoved (object dataObject)
 		{
-			Project project = (Project) dataObject;
+			Project project = (Project)dataObject;
 			project.NameChanged -= OnProjectRenamed;
 		}
-		
+
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			return ((Project)dataObject).Name;
 		}
-		
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Project p = dataObject as Project;
@@ -87,39 +88,40 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			Project project = (Project) dataObject;
+			Project project = (Project)dataObject;
 			BuildChildNodes (builder, project);
 		}
-		
+
 		public static void BuildChildNodes (ITreeBuilder builder, Project project)
 		{
 			if (project is DotNetProject) {
 				builder.AddChild (((DotNetProject)project).References);
 			}
 			bool publicOnly = builder.Options ["PublicApiOnly"];
-			// TODO: Roslyn port.
-//			var dom = TypeSystemService.GetCompilation (project);
-//			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
-//			HashSet<string> addedNames = new HashSet<string> ();
-//			foreach (var ns in dom.MainAssembly.RootNamespace.ChildNamespaces) {
-//				if (nestedNamespaces) {
-//					if (!addedNames.Contains (ns.Name)) {
-//						builder.AddChild (new ProjectNamespaceData (project, ns));
-//						addedNames.Add (ns.Name);
-//					}
-//				} else {
-//					FillNamespaces (builder, project, ns);
-//				}
-//			}
-//			foreach (var type in dom.MainAssembly.RootNamespace.Types) {
-//				if (!publicOnly || type.IsPublic)
-//					builder.AddChild (new ClassData (project, type));
-//			}
+			var dom = TypeSystemService.GetCompilationAsync (project).Result;
+			if (dom == null)
+				return;
+			bool nestedNamespaces = builder.Options ["NestedNamespaces"];
+			HashSet<string> addedNames = new HashSet<string> ();
+			foreach (var ns in dom.Assembly.GlobalNamespace.GetNamespaceMembers ()) {
+				if (nestedNamespaces) {
+					if (!addedNames.Contains (ns.Name)) {
+						builder.AddChild (new ProjectNamespaceData (project, ns));
+						addedNames.Add (ns.Name);
+					}
+				} else {
+					FillNamespaces (builder, project, ns);
+				}
+			}
+			foreach (var type in dom.Assembly.GlobalNamespace.GetTypeMembers ()) {
+				if (!publicOnly || type.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public)
+					builder.AddChild (new ClassData (project, type));
+			}
 		}
-		
-		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespace ns)
+
+		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespaceSymbol ns)
 		{
-			var members = ns.Types;
+			var members = ns.GetTypeMembers ();
 			//IParserContext ctx = IdeApp.Workspace.ParserDatabase.GetProjectParserContext (project);
 			if (members.Any ()) {
 				if (builder.Options ["ShowProjects"])
@@ -129,116 +131,116 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 						builder.AddChild (new ProjectNamespaceData (null, ns));
 				}
 			}
-			foreach (var nSpace in ns.ChildNamespaces) {
+			foreach (var nSpace in ns.GetNamespaceMembers ()) {
 				FillNamespaces (builder, project, nSpace);
 			}
 		}
-		
+
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;
 		}
-		
+
 		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder (e.SolutionItem);
 			if (tb != null) tb.Update ();
 		}
-		
-//		void OnClassInformationChanged (object sender, TypeUpdateInformationEventArgs e)
-//		{
-////			DateTime t = DateTime.Now;
-//			Dictionary<object,bool> oldStatus = new Dictionary<object,bool> ();
-//			List<string> namespacesToClean = new List<string> ();
-//			ITreeBuilder tb = Context.GetTreeBuilder ();
-//						
-//			foreach (IType cls in e.TypeUpdateInformation.Removed) {
-//				if (tb.MoveToObject (new ClassData (e.Project, cls))) {
-//					oldStatus [tb.DataItem] = tb.Expanded;
-//					
-//					ITreeNavigator np = tb.Clone ();
-//					np.MoveToParent ();
-//					oldStatus [np.DataItem] = np.Expanded;
-//					
-//					tb.Remove (true);
-//				}
-//				namespacesToClean.Add (cls.Namespace);
-//			}
-//			
-//			foreach (IType cls in e.TypeUpdateInformation.Modified) {
-//				ClassData ucd = new ClassData (e.Project, cls);
-//				if (tb.MoveToObject (ucd)) {
-//					ClassData cd = (ClassData) tb.DataItem;
-//					cd.UpdateFrom (ucd);
-//					tb.UpdateAll ();
-//				}
-//			}
-//			
-//			foreach (IType cls in e.TypeUpdateInformation.Added) {
-//				AddClass (e.Project, cls);
-//			}
-//			
-//			// Clean empty namespaces
-//			
-//			foreach (string ns in namespacesToClean) {
-//				string subns = ns;
-//				while (subns != null) {
-//					bool found = tb.MoveToObject (new ProjectNamespaceData (e.Project, subns));
-//					if (!found) found = tb.MoveToObject (new ProjectNamespaceData (null, subns));
-//					if (found) {
-//						while (tb.DataItem is NamespaceData && !tb.HasChildren())
-//							tb.Remove (true);
-//						break;
-//					}
-//					int i = subns.LastIndexOf ('.');
-//					if (i != -1) subns = subns.Substring (0,i);
-//					else subns = null;
-//				}
-//			}
-//			
-//			// Restore expand status
-//			
-//			foreach (KeyValuePair<object,bool> de in oldStatus) {
-//				if (de.Value && tb.MoveToObject (de.Key)) {
-//					tb.ExpandToNode ();
-//					tb.Expanded = true;
-//				}
-//			}
-//		}
 
-		void AddClass (Project project, ITypeDefinition cls)
+		//		void OnClassInformationChanged (object sender, TypeUpdateInformationEventArgs e)
+		//		{
+		////			DateTime t = DateTime.Now;
+		//			Dictionary<object,bool> oldStatus = new Dictionary<object,bool> ();
+		//			List<string> namespacesToClean = new List<string> ();
+		//			ITreeBuilder tb = Context.GetTreeBuilder ();
+		//						
+		//			foreach (IType cls in e.TypeUpdateInformation.Removed) {
+		//				if (tb.MoveToObject (new ClassData (e.Project, cls))) {
+		//					oldStatus [tb.DataItem] = tb.Expanded;
+		//					
+		//					ITreeNavigator np = tb.Clone ();
+		//					np.MoveToParent ();
+		//					oldStatus [np.DataItem] = np.Expanded;
+		//					
+		//					tb.Remove (true);
+		//				}
+		//				namespacesToClean.Add (cls.Namespace);
+		//			}
+		//			
+		//			foreach (IType cls in e.TypeUpdateInformation.Modified) {
+		//				ClassData ucd = new ClassData (e.Project, cls);
+		//				if (tb.MoveToObject (ucd)) {
+		//					ClassData cd = (ClassData) tb.DataItem;
+		//					cd.UpdateFrom (ucd);
+		//					tb.UpdateAll ();
+		//				}
+		//			}
+		//			
+		//			foreach (IType cls in e.TypeUpdateInformation.Added) {
+		//				AddClass (e.Project, cls);
+		//			}
+		//			
+		//			// Clean empty namespaces
+		//			
+		//			foreach (string ns in namespacesToClean) {
+		//				string subns = ns;
+		//				while (subns != null) {
+		//					bool found = tb.MoveToObject (new ProjectNamespaceData (e.Project, subns));
+		//					if (!found) found = tb.MoveToObject (new ProjectNamespaceData (null, subns));
+		//					if (found) {
+		//						while (tb.DataItem is NamespaceData && !tb.HasChildren())
+		//							tb.Remove (true);
+		//						break;
+		//					}
+		//					int i = subns.LastIndexOf ('.');
+		//					if (i != -1) subns = subns.Substring (0,i);
+		//					else subns = null;
+		//				}
+		//			}
+		//			
+		//			// Restore expand status
+		//			
+		//			foreach (KeyValuePair<object,bool> de in oldStatus) {
+		//				if (de.Value && tb.MoveToObject (de.Key)) {
+		//					tb.ExpandToNode ();
+		//					tb.Expanded = true;
+		//				}
+		//			}
+		//		}
+
+		void AddClass (Project project, ITypeSymbol cls)
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder ();
 			if (!builder.MoveToObject (project)) {
-				return;	// The project is not there or may not yet be expanded
+				return; // The project is not there or may not yet be expanded
 			}
-			
-			if (cls.Namespace == "") {
+
+			if (cls.ContainingNamespace == null) {
 				builder.AddChild (new ClassData (project, cls));
 			} else {
-// TODO: Type system conversion.
-/*				if (builder.Options ["NestedNamespaces"]) {
-					string[] nsparts = cls.Namespace.Split ('.');
-					string ns = "";
-					foreach (string nsp in nsparts) {
-						if (builder.Filled) {
-							if (ns.Length > 0) ns += ".";
-							ns += nsp;
-							if (!builder.MoveToChild (nsp, typeof(NamespaceData))) {
-								builder.AddChild (new ProjectNamespaceData (project, ns), true);
-								break;
-							}
-						} else
-							break;
-					}
-					builder.AddChild (new ClassData (project, cls));
-				} else {
-					if (builder.MoveToChild (cls.Namespace, typeof(NamespaceData)))
-						builder.AddChild (new ClassData (project, cls));
-					else
-						builder.AddChild (new ProjectNamespaceData (project, cls.Namespace));
-				}*/
+				// TODO: Type system conversion.
+				/*				if (builder.Options ["NestedNamespaces"]) {
+									string[] nsparts = cls.Namespace.Split ('.');
+									string ns = "";
+									foreach (string nsp in nsparts) {
+										if (builder.Filled) {
+											if (ns.Length > 0) ns += ".";
+											ns += nsp;
+											if (!builder.MoveToChild (nsp, typeof(NamespaceData))) {
+												builder.AddChild (new ProjectNamespaceData (project, ns), true);
+												break;
+											}
+										} else
+											break;
+									}
+									builder.AddChild (new ClassData (project, cls));
+								} else {
+									if (builder.MoveToChild (cls.Namespace, typeof(NamespaceData)))
+										builder.AddChild (new ClassData (project, cls));
+									else
+										builder.AddChild (new ProjectNamespaceData (project, cls.Namespace));
+								}*/
 			}
-		}		
+		}
 	}
 }

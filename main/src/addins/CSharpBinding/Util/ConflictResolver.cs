@@ -45,12 +45,12 @@ namespace ICSharpCode.NRefactory6.CSharp
 {
 	class ConflictResolution 
 	{
-		static Type typeInfo;
+		//static Type typeInfo;
 		internal object instance;
 
 		static ConflictResolution ()
 		{
-			typeInfo = Type.GetType ("Microsoft.CodeAnalysis.Rename.ConflictEngine.ConflictResolution" + ReflectionNamespaces.WorkspacesAsmName, true);
+			//typeInfo = Type.GetType ("Microsoft.CodeAnalysis.Rename.ConflictEngine.ConflictResolution" + ReflectionNamespaces.WorkspacesAsmName, true);
 
 		}
 
@@ -63,12 +63,12 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 	class RenameLocations
 	{
-		static Type typeInfo;
+		//static Type typeInfo;
 		internal object instance;
 
 		static RenameLocations ()
 		{
-			typeInfo = Type.GetType ("Microsoft.CodeAnalysis.Rename.RenameLocations" + ReflectionNamespaces.WorkspacesAsmName, true);
+			//typeInfo = Type.GetType ("Microsoft.CodeAnalysis.Rename.RenameLocations" + ReflectionNamespaces.WorkspacesAsmName, true);
 
 		}
 

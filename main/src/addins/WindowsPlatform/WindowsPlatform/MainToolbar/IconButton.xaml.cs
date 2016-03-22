@@ -26,81 +26,17 @@ namespace WindowsPlatform.MainToolbar
 	public partial class IconButtonControl : UserControl, INotifyPropertyChanged
 	{
 		public static DependencyProperty ImageProperty = DependencyProperty.Register (
-			"Image", typeof (ImageSource), typeof (IconButtonControl));
-		
-		ImageSource imageHovered, imagePressed, imageDisabled;
+			"Image", typeof (Xwt.Drawing.Image), typeof (IconButtonControl));
 
-		ImageSource currentImage;
-		public ImageSource CurrentImage
+		public Xwt.Drawing.Image Image
 		{
-			get { return currentImage; }
-			private set { currentImage = value; RaisePropertyChanged (); }
-		}
-
-		public ImageSource Image
-		{
-			get { return (ImageSource)GetValue(ImageProperty); }
+			get { return (Xwt.Drawing.Image)GetValue(ImageProperty); }
 			set { SetValue (ImageProperty, value); }
 		}
 
-		public ImageSource ImageHovered
-		{
-			get { return imageHovered; }
-			set { imageHovered = value; RaisePropertyChanged (); }
-		}
-
-		public ImageSource ImagePressed
-		{
-			get { return imagePressed; }
-			set { imagePressed = value; RaisePropertyChanged (); }
-		}
-
-		public ImageSource ImageDisabled
-		{
-			get { return imageDisabled; }
-			set { imageDisabled = value; RaisePropertyChanged (); }
-		}
-
-		public IconButtonControl (string imageResource) : this ()
-		{
-			SetImageFromResource (imageResource);
-		}
-
-		public void SetImageFromResource (string imageResource) {
-			if (!String.IsNullOrEmpty (imageResource)) {
-				var extension = System.IO.Path.GetExtension (imageResource);
-				var name = System.IO.Path.GetFileNameWithoutExtension (imageResource);
-				Image = CurrentImage = Xwt.Drawing.Image.FromResource (typeof(RunButtonControl), imageResource).WithSize (Xwt.IconSize.Medium).GetImageSource ();
-				try {
-					ImageHovered = Xwt.Drawing.Image.FromResource (typeof(RunButtonControl), name + "~hover" + extension).WithSize (Xwt.IconSize.Medium).GetImageSource ();
-				} catch {
-					ImageHovered = null;
-				}
-				try {
-					ImagePressed = Xwt.Drawing.Image.FromResource (typeof(RunButtonControl), name + "~pressed" + extension).WithSize (Xwt.IconSize.Medium).GetImageSource ();
-				} catch {
-					ImagePressed = null;
-				}
-				try {
-					ImageDisabled = Xwt.Drawing.Image.FromResource (typeof(RunButtonControl), name + "~disabled" + extension).WithSize (Xwt.IconSize.Medium).GetImageSource ();
-				} catch {
-					ImageDisabled = null;
-				}
-				CurrentImage = Image;
-			} else {
-				Image = CurrentImage = null;
-				ImageHovered = null;
-				ImagePressed = null;
-				ImageDisabled = null;
-			}
-		}
-
-		public IconButtonControl (ImageSource image, ImageSource imageHovered, ImageSource imagePressed, ImageSource imageDisabled) : this ()
+		public IconButtonControl (Xwt.Drawing.Image image) : this ()
 		{
 			Image = image;
-			ImageHovered = imageHovered;
-			ImagePressed = imagePressed;
-			ImageDisabled = imageDisabled;
 		}
 
 		public IconButtonControl ()
@@ -120,14 +56,17 @@ namespace WindowsPlatform.MainToolbar
 		protected override void OnPropertyChanged (DependencyPropertyChangedEventArgs e)
 		{
 			base.OnPropertyChanged (e);
-
-			if (e.Property == IsEnabledProperty && ImageDisabled != null)
-				CurrentImage = IsEnabled ? Image : ImageDisabled;
-			else if (e.Property == IsMouseOverProperty && IsEnabled && ImageHovered != null)
-				CurrentImage = IsMouseOver ? ImageHovered : Image;
-			else if (e.Property == ImageProperty)
-				CurrentImage = Image;
-			InvalidateMeasure ();
+			if (e.Property == ImageProperty) {
+				RunIcon.Image = Image;
+				if (Image != null)
+					InvalidateMeasure ();
+			}
+			if (Image == null)
+				return;
+			if (e.Property == IsMouseOverProperty && IsEnabled) {
+				RunIcon.Image = IsMouseOver ? Image.WithStyles ("hover") : Image;
+				InvalidateVisual ();
+			}
 		}
 
 		void OnMouseLeftButtonDown (object sender, MouseButtonEventArgs e)
@@ -137,9 +76,8 @@ namespace WindowsPlatform.MainToolbar
 
 		protected override void OnMouseLeftButtonDown (MouseButtonEventArgs e)
 		{
-			if (IsEnabled) {
-				if (ImagePressed != null)
-					CurrentImage = ImagePressed;
+			if (IsEnabled && Image != null) {
+				RunIcon.Image = Image.WithStyles ("pressed");
 				Background = Styles.MainToolbarButtonPressedBackgroundBrush;
 				BorderBrush = Styles.MainToolbarButtonPressedBorderBrush;
 			}
@@ -148,11 +86,13 @@ namespace WindowsPlatform.MainToolbar
 
 		protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e)
 		{
-			if (ImageHovered != null) {
-				if (CurrentImage != ImageHovered)
-					CurrentImage = ImageHovered;
-			} else if (CurrentImage != Image)
-				CurrentImage = Image;
+			if (Image != null) {
+				if (IsMouseOver)
+					RunIcon.Image = Image.WithStyles ("hover");
+				else
+					RunIcon.Image = Image;
+			}
+			
 			Background = Brushes.Transparent;
 			BorderBrush = Brushes.Transparent;
 			base.OnMouseLeftButtonUp (e);
@@ -160,8 +100,6 @@ namespace WindowsPlatform.MainToolbar
 
 		protected override void OnMouseLeave (MouseEventArgs e)
 		{
-			if (CurrentImage != Image)
-				CurrentImage = Image;
 			Background = Brushes.Transparent;
 			BorderBrush = Brushes.Transparent;
 			base.OnMouseLeave (e);
@@ -175,8 +113,8 @@ namespace WindowsPlatform.MainToolbar
 
 		protected override Size MeasureOverride (Size constraint)
 		{
-			if (CurrentImage != null)
-				return new Size (CurrentImage.Width, CurrentImage.Width);
+			if (Image != null)
+				return new Size (Image.Width, Image.Width);
 			return base.MeasureOverride (constraint);
 		}
 
@@ -186,7 +124,7 @@ namespace WindowsPlatform.MainToolbar
 
 	public class RunButtonControl : IconButtonControl
 	{
-		RunButtonControl (OperationIcon icon) : base(GetIconResource(icon))
+		RunButtonControl (OperationIcon icon) : base(GetIcon(icon))
 		{
 			this.icon = icon;
 			ToolTip = GetTooltip(icon);
@@ -205,7 +143,7 @@ namespace WindowsPlatform.MainToolbar
 					return;
 				icon = value;
 				ToolTip = GetTooltip (icon);
-				SetImageFromResource (GetIconResource (icon));
+				Image = GetIcon (icon);
 			}
 		}
 
@@ -224,18 +162,24 @@ namespace WindowsPlatform.MainToolbar
 			}
 		}
 
-		static string GetIconResource (OperationIcon icon)
+		static Xwt.Drawing.Image GetIcon (OperationIcon icon)
 		{
+			string img;
 			switch (icon) {
 				case OperationIcon.Stop:
-					return "stop.png";
+					img = "stop.png";
+					break;
 				case OperationIcon.Run:
-					return "execute.png";
+					img = "execute.png";
+					break;
 				case OperationIcon.Build:
-					return "build.png";
+					img = "build.png";
+					break;
 				default:
 					throw new InvalidOperationException ();
 			}
+
+			return Xwt.Drawing.Image.FromResource (typeof (RunButtonControl), img).WithSize (Xwt.IconSize.Medium);
 		}
 	}
 
@@ -243,15 +187,9 @@ namespace WindowsPlatform.MainToolbar
 	{
 		IButtonBarButton button;
 		public ButtonBarButton (IButtonBarButton button)
+			: base (button.Image.IsNull ? null : button.Image.GetStockIcon().WithSize(Xwt.IconSize.Medium))
 		{
 			this.button = button;
-			if (!button.Image.IsNull) {
-				try {
-					SetImageFromResource (button.Image + ".png");
-				} catch {
-					Image = button.Image.GetImageSource (Xwt.IconSize.Medium);
-				}
-			}
 
 			VerticalContentAlignment = VerticalAlignment.Center;
 			ToolTip = button.Tooltip;
@@ -292,13 +230,7 @@ namespace WindowsPlatform.MainToolbar
 
 		void OnButtonImageChanged (object sender, EventArgs args)
 		{
-			if (!button.Image.IsNull) {
-				try {
-					SetImageFromResource (button.Image + ".png");
-				} catch {
-					Image = button.Image.GetImageSource (Xwt.IconSize.Medium);
-				}
-			}
+			Image = button.Image.GetStockIcon ().WithSize (Xwt.IconSize.Medium);
         }
 
 		void OnButtonClicked (object sender, RoutedEventArgs args)

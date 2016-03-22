@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public static class CommonFormattingHelpers
+	static class CommonFormattingHelpers
 	{
 //		public static readonly Comparison<SuppressOperation> SuppressOperationComparer = (o1, o2) =>
 //		{
@@ -180,7 +180,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				return;
 			}
 
-			var token1PartOftoken2LeadingTrivia = token1.FullSpan.Start > token2.FullSpan.Start;
+			//var token1PartOftoken2LeadingTrivia = token1.FullSpan.Start > token2.FullSpan.Start;
 
 			if (token1.FullSpan.End == token2.FullSpan.Start)
 			{

@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public class UniqueNameGenerator
+    class UniqueNameGenerator
     {
         private readonly SemanticModel _semanticModel;
 

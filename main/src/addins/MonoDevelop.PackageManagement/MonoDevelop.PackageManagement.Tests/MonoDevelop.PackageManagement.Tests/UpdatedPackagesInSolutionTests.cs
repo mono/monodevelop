@@ -654,6 +654,37 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
 		}
+
+		[Test]
+		public void GetUpdatedPackages_UpdatingThreeOldAndroidPackagesInstallsOneAndUpdatesOneAndRemovesOneWithOneInstall_NoUpdatesRemain ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("Xamarin.Android.Support.v13", "20.0.0.4");
+			project.AddPackageReference ("Xamarin.Android.Support.v4", "20.0.0.4");
+			project.AddPackageReference ("Xamarin.Android.Support.v7.AppCompat", "20.0.0.2");
+			AddUpdatedPackageToAggregateSourceRepository ("Xamarin.Android.Support.v13", "23.1.1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("Xamarin.Android.Support.v4", "23.1.1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("Xamarin.Android.Support.v7.AppCompat", "23.1.1.0");
+			updatedPackagesInSolution.CheckForUpdates ();
+			int originalUpdatesAvailable = updatedPackagesInSolution
+				.GetUpdatedPackages (project.Project)
+				.GetPackages ()
+				.Count ();
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.ExecuteTaskButNotContinueWith ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference ("Xamarin.Android.Support.v4", "23.1.1.0");
+			project.AddPackageReference ("Xamarin.Android.Support.v7.AppCompat", "23.1.1.0");
+			var installedPackage = FakePackage.CreatePackageWithVersion ("Xamarin.Android.Support.v4", "23.1.1.0");
+			packageManagementEvents.OnParentPackageInstalled (installedPackage, project);
+			task.ExecuteContinueWith ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (3, originalUpdatesAvailable);
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
 	}
 }
 

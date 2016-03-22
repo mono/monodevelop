@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
@@ -54,8 +53,12 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			this.updatedPackagesInSolution = updatedPackagesInSolution;
 		}
 
-		public DotNetProject Project {
+		public DotNetProject DotNetProject {
 			get { return project.DotNetProject; }
+		}
+
+		internal IDotNetProject Project {
+			get { return project; }
 		}
 
 		public IconId Icon {
@@ -129,6 +132,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference, UpdatedPackagesInProject updatedPackages)
 		{
 			return new PackageReferenceNode (
+				this,
 				reference,
 				IsPackageInstalled (reference),
 				false,
@@ -138,6 +142,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		protected virtual bool IsPackageInstalled (PackageReference reference)
 		{
 			return reference.IsPackageInstalled (project.DotNetProject);
+		}
+
+		public void ClearPackageReferences ()
+		{
+			packageReferences = null;
 		}
 	}
 }

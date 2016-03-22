@@ -31,6 +31,8 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.Linq;
 
 namespace MonoDevelop.Ide
 {
@@ -111,7 +113,7 @@ namespace MonoDevelop.Ide
 		}
 
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
-		public readonly ConfigurationProperty<string> UserInterfaceTheme = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", "");
+		public readonly ConfigurationProperty<string> UserInterfaceTheme = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
 		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
 		public readonly ConfigurationProperty<bool> LoadPrevSolutionOnStartup = ConfigurationProperty.Create ("SharpDevelop.LoadPrevProjectOnStartup", false);
 		public readonly ConfigurationProperty<bool> CreateFileBackupCopies = ConfigurationProperty.Create ("SharpDevelop.CreateBackupCopy", false);
@@ -141,22 +143,98 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> AddOpeningOnly = ConfigurationProperty.Create ("AddOpeningOnly", false);
 		public readonly ConfigurationProperty<bool> FilterCompletionListByEditorBrowsable = ConfigurationProperty.Create ("FilterCompletionListByEditorBrowsable", true);
 		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
-		public readonly ConfigurationProperty<int> CompletionListRows = ConfigurationProperty.Create ("CompletionListRows", 7);
 
-		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
+		public Skin UserInterfaceSkin {
+			get { return MonoDevelop.Components.IdeTheme.UserInterfaceSkin; }
+		}
+
+		internal static readonly string DefaultLightColorScheme = "Light";
+		internal static readonly string DefaultDarkColorScheme = "Dark";
+
+		public readonly ConfigurationProperty<bool> EnableSourceAnalysis = ConfigurationProperty.Create ("MonoDevelop.AnalysisCore.AnalysisEnabled_V2", true);
 		public readonly ConfigurationProperty<bool> EnableUnitTestEditorIntegration = ConfigurationProperty.Create ("Testing.EnableUnitTestEditorIntegration", false);
 
-		public readonly ConfigurationProperty<string> ColorScheme = ConfigurationProperty.Create ("ColorScheme", "Default");
+		public readonly SchemeConfigurationProperty ColorScheme = new SchemeConfigurationProperty ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);
 
-		public readonly ConfigurationProperty<string> UserTasksHighPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksHighPrioColor", "");
-		public readonly ConfigurationProperty<string> UserTasksNormalPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksNormalPrioColor", "");
-		public readonly ConfigurationProperty<string> UserTasksLowPrioColor = ConfigurationProperty.Create ("Monodevelop.UserTasksLowPrioColor", "");
+		public readonly SkinConfigurationProperty<string> UserTasksHighPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksHighPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly SkinConfigurationProperty<string> UserTasksNormalPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksNormalPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly SkinConfigurationProperty<string> UserTasksLowPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksLowPrioColor", "", "rgb:ffff/ffff/ffff");
+
+		public class SkinConfigurationProperty<T>: ConfigurationProperty<T>
+		{
+			readonly ConfigurationProperty<T> lightConfiguration;
+			readonly ConfigurationProperty<T> darkConfiguration;
+
+			public SkinConfigurationProperty (string propertyName, T defaultLightValue, T defaultDarkValue, string oldName = null)
+			{
+				lightConfiguration = ConfigurationProperty.Create<T> (propertyName, defaultLightValue, oldName);
+				darkConfiguration = ConfigurationProperty.Create<T> (propertyName + "-Dark", defaultDarkValue, oldName + "-Dark");
+
+				lightConfiguration.Changed += (s,e) => OnChanged ();
+				darkConfiguration.Changed += (s,e) => OnChanged ();
+				MonoDevelop.Ide.Gui.Styles.Changed += (sender, e) => OnChanged ();
+			}
+
+			public T ValueForSkin (Skin skin)
+			{
+				switch (skin) {
+					case Skin.Light:
+						return lightConfiguration.Value;
+					case Skin.Dark:
+						return darkConfiguration.Value;
+					default:
+						throw new InvalidOperationException ();
+				}
+			}
+
+			protected override T OnGetValue ()
+			{
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+					return lightConfiguration;
+				else
+					return darkConfiguration;
+			}
+
+			protected override bool OnSetValue (T value)
+			{
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+					return lightConfiguration.Set (value);
+				else
+					return darkConfiguration.Set (value);
+			}
+		}
+
+		public class SchemeConfigurationProperty: SkinConfigurationProperty<string>
+		{
+			public SchemeConfigurationProperty (string propertyName, string defaultLightValue, string defaultDarkValue, string oldName = null)
+				: base (propertyName, defaultLightValue, defaultDarkValue, oldName)
+			{
+			}
+
+			protected override string OnGetValue ()
+			{
+				var style = base.OnGetValue ();
+				if (SyntaxModeService.Styles.Contains (style))
+					return style;
+
+				var defaultStyle = SyntaxModeService.GetDefaultColorStyleName ();
+				LoggingService.LogWarning ("Highlighting Theme \"{0}\" not found, using default \"{1}\" instead", style, defaultStyle);
+				Value = defaultStyle;
+				return SyntaxModeService.GetDefaultColorStyleName ();
+			}
+		}
 	}
 	
 	public enum BeforeCompileAction {
 		Nothing,
 		SaveAllFiles,
 		PromptForSave,
+	}
+
+	public enum Skin
+	{
+		Light,
+		Dark
 	}
 	
 }

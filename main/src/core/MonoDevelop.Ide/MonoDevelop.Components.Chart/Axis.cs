@@ -33,7 +33,7 @@ namespace MonoDevelop.Components.Chart
 	public abstract class Axis
 	{
 		int tickSize = 6;
-		internal BasicChart Owner;
+		internal ChartWidget Owner;
 		AxisPosition position;
 		AxisDimension dim;
 		bool showLabels = true;

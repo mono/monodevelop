@@ -47,8 +47,6 @@ namespace MonoDevelop.CSharp
 {
 	class ProjectSearchCategory : SearchCategory
 	{
-		static Components.PopoverWindow widget;
-
 		internal static void Init ()
 		{
 			MonoDevelopWorkspace.LoadingFinished += async delegate {
@@ -68,13 +66,11 @@ namespace MonoDevelop.CSharp
 
 		public override void Initialize (Components.PopoverWindow popupWindow)
 		{
-			widget = popupWindow;
-			lastResult = new WorkerResult (popupWindow);
+			lastResult = new WorkerResult ();
 		}
 
 		internal static Task<SymbolCache> SymbolInfoTask;
 
-		static TimerCounter getMembersTimer = InstrumentationService.CreateTimerCounter ("Time to get all members", "NavigateToDialog");
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
 		static CancellationTokenSource symbolInfoTokenSrc = new CancellationTokenSource();
@@ -95,14 +91,14 @@ namespace MonoDevelop.CSharp
 					var old = await SymbolInfoTask;
 					if (old != null)
 						old.Dispose ();
-				} catch (TaskCanceledException) {
+				} catch (OperationCanceledException) {
 					// Ignore
 				} catch (Exception ex) {
 					LoggingService.LogError ("UpdateSymbolInfos failed", ex);
 				}
 			}
 			symbolInfoTokenSrc = new CancellationTokenSource();
-			lastResult = new WorkerResult (widget);
+			lastResult = new WorkerResult ();
 			SymbolInfoTask = null;
 		}
 
@@ -133,17 +129,19 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			static void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
+			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
 			{
 				if (project == null)
 					throw new ArgumentNullException (nameof (project));
-				Parallel.ForEach (project.Documents, async delegate (Microsoft.CodeAnalysis.Document document) {
-					try {
+				try {
+					foreach (var document in project.Documents) {
 						cancellationToken.ThrowIfCancellationRequested ();
-						await UpdateDocument (result, document, cancellationToken).ConfigureAwait (false);
-					} catch (OperationCanceledException) {
+						await UpdateDocument (result, document, cancellationToken);
 					}
-				});
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ex => ex is OperationCanceledException);
+				} catch (OperationCanceledException) {
+				}
 			}
 
 			static async Task UpdateDocument (ConcurrentDictionary<DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Document document, CancellationToken cancellationToken)
@@ -211,12 +209,15 @@ namespace MonoDevelop.CSharp
 					case WorkspaceChangeKind.DocumentChanged:
 						var doc = currentSolution.GetDocument (e.DocumentId);
 						if (doc != null) {
-							Task.Run (async delegate {
+							await Task.Run (async delegate {
 								await UpdateDocument (documentInfos, doc, default (CancellationToken));
-							});
+							}).ConfigureAwait (false);
 						}
 						break;
 					}
+				} catch (AggregateException ae) {
+					ae.Flatten ().Handle (ex => ex is OperationCanceledException);
+				} catch (OperationCanceledException) {
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while updating navigation symbol cache.", ex);
 				}
@@ -233,9 +234,9 @@ namespace MonoDevelop.CSharp
 				}
 				return result;
 			} catch (AggregateException ae) {
-				ae.Flatten ().Handle (ex => ex is TaskCanceledException);
+				ae.Flatten ().Handle (ex => ex is OperationCanceledException);
 				return SymbolCache.Empty;
-			} catch (TaskCanceledException) {
+			} catch (OperationCanceledException) {
 				return SymbolCache.Empty;
 			} finally {
 				getTypesTimer.EndTiming ();
@@ -265,7 +266,7 @@ namespace MonoDevelop.CSharp
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return null;
 				try {
-					var newResult = new WorkerResult (widget);
+					var newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
 					newResult.Tag = searchPattern.Tag;
 					List<DeclaredSymbolInfo> allTypes;
@@ -278,7 +279,7 @@ namespace MonoDevelop.CSharp
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
-						oldLastResult = new WorkerResult (widget);
+						oldLastResult = new WorkerResult ();
 //					var now = DateTime.Now;
 
 					AllResults (searchResultCallback, oldLastResult, newResult, allTypes, token);
@@ -295,15 +296,12 @@ namespace MonoDevelop.CSharp
 
 		void AllResults (ISearchResultCallback searchResultCallback, WorkerResult lastResult, WorkerResult newResult, IReadOnlyList<DeclaredSymbolInfo> completeTypeList, CancellationToken token)
 		{
-			if (newResult.isGotoFilePattern)
-				return;
-			uint x = 0;
 			// Search Types
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
 			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
 			var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
 			foreach (var type in allTypes) {
-				if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested) {
+				if (token.IsCancellationRequested) {
 					newResult.filteredSymbols = null;
 					return;
 				}
@@ -377,14 +375,13 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public bool isGotoFilePattern;
 			public ResultsDataSource results;
 			public bool FullSearch;
 			public StringMatcher matcher;
 
-			public WorkerResult (Widget widget)
+			public WorkerResult ()
 			{
-				results = new ResultsDataSource (widget);
+				results = new ResultsDataSource ();
 			}
 
 			internal SearchResult CheckType (DeclaredSymbolInfo symbol)

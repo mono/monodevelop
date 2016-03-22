@@ -379,7 +379,8 @@ namespace MonoDevelop.Projects.MSBuild
 					parent.StartInnerWhitespace = project.TextFormat.NewLine;
 					parent.EndInnerWhitespace = parent.StartWhitespace;
 				}
-				StartWhitespace = parent.StartWhitespace + "  ";
+				object parentStartWhitespace = (parent != project) ? parent.StartWhitespace : "";
+				StartWhitespace = parentStartWhitespace + "  ";
 				if (closeInNewLine)
 					EndInnerWhitespace = StartWhitespace;
 			}

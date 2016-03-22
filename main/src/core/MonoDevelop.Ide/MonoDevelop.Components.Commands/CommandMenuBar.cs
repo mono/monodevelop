@@ -30,7 +30,7 @@ using Gtk;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandMenuBar: Gtk.MenuBar
+	class CommandMenuBar: Gtk.MenuBar
 	{
 		CommandManager manager;
 

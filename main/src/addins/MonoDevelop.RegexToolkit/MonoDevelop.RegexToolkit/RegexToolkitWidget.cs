@@ -42,7 +42,14 @@ namespace MonoDevelop.RegexToolkit
 		TreeStore resultStore;
 		
 		Thread regexThread;
-		
+		public string Regex { 
+			get {
+				return entryRegEx.Text;
+			}
+			set {
+				entryRegEx.Text = value;
+			}
+		}
 		public RegexToolkitWidget ()
 		{
 			this.Build ();
@@ -59,7 +66,7 @@ namespace MonoDevelop.RegexToolkit
 				if (regexThread != null && regexThread.IsAlive) {
 					regexThread.Abort ();
 					regexThread.Join ();
-					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-execute");
 					regexThread = null;
 					return;
 				}
@@ -171,16 +178,16 @@ namespace MonoDevelop.RegexToolkit
 			} finally {
 				regexThread = null;
 				Application.Invoke (delegate {
-					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-media-play");
+					SetButtonStart (GettextCatalog.GetString ("Start Regular E_xpression"), "gtk-execute");
 				});
 			}
 		}
 
 		void SetButtonStart (string text, string icon)
 		{
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).Text = text;
-			((Gtk.Label)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [1]).UseUnderline = true;
-			((Gtk.Image)((Gtk.HBox)((Gtk.Alignment)this.buttonStart.Child).Child).Children [0]).Pixbuf = global::Stetic.IconLoader.LoadIcon (this, icon, global::Gtk.IconSize.Menu);
+			buttonStartLabel.Text = text;
+			buttonStartLabel.UseUnderline = true;
+			buttonStartIcon.SetIcon (icon, IconSize.Menu);
 		}
 		
 		

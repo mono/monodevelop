@@ -57,93 +57,24 @@ namespace MonoDevelop.Ide.WelcomePage
 		public int LeftTextPadding { get; set; }
 		public int InternalPadding { get; set; }
 
+		public string SmallTitleColor { get; set; }
+		public string MediumTitleColor { get; set; }
 
-		string smallTitleColor = Styles.WelcomeScreen.Pad.SmallTitleColor;
-		public string SmallTitleColor {
-			get {
-				return smallTitleColor;
-			}
-			set {
-				smallTitleColor = value;
-			}
-		}
+		public string TitleFontFace { get; set; }
+		public string SmallTitleFontFace { get; set; }
 
-		string mediumTitleColor = Styles.WelcomeScreen.Pad.MediumTitleColor;
-		public string MediumTitleColor {
-			get {
-				return mediumTitleColor;
-			}
-			set {
-				mediumTitleColor = value;
-			}
-		}
+		public string HoverBackgroundColor { get; set; }
+		public string HoverBorderColor { get; set; }
 
-		string titleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
-		public string TitleFontFace {
-			get {
-				return titleFontFace;
-			}
-			set {
-				titleFontFace = value;
-			}
-		}
-
-		string smallTitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
-		public string SmallTitleFontFace {
-			get {
-				return smallTitleFontFace;
-			}
-			set {
-				smallTitleFontFace = value;
-			}
-		}
-
-		string hoverBackgroundColor = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor;
-		public string HoverBackgroundColor {
-			get {
-				return hoverBackgroundColor;
-			}
-			set {
-				hoverBackgroundColor = value;
-			}
-		}
-
-		string hoverBorderColor = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor;
-		public string HoverBorderColor {
-			get {
-				return hoverBorderColor;
-			}
-			set {
-				hoverBorderColor = value;
-			}
-		}
-
-		int titleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleFontSize;
-		public int TitleFontSize {
-			get {
-				return titleFontSize;
-			}
-			set {
-				titleFontSize = value;
-			}
-		}
-
-		int smallTitleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.PathFontSize;
-		public int SmallTitleFontSize {
-			get {
-				return smallTitleFontSize;
-			}
-			set {
-				smallTitleFontSize = value;
-			}
-		}
+		public int TitleFontSize { get; set; }
+		public int SmallTitleFontSize { get; set; }
 
 		static WelcomePageListButton ()
 		{
-			starNormal = Xwt.Drawing.Image.FromResource ("unstar-overlay-16.png");
-			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-overlay-hover-16.png");
-			starPinned = Xwt.Drawing.Image.FromResource ("star-overlay-16.png");
-			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-overlay-hover-16.png");
+			starNormal = Xwt.Drawing.Image.FromResource ("unstar-16.png");
+			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-hover-16.png");
+			starPinned = Xwt.Drawing.Image.FromResource ("star-16.png");
+			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-hover-16.png");
 		}
 
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
@@ -153,14 +84,37 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.subtitle = subtitle;
 			this.icon = icon;
 			this.actionUrl = actionUrl;
-			this.SmallTitleColor = smallTitleColor;
-			this.MediumTitleColor = mediumTitleColor;
+
 			WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width;
 			HeightRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Height + 2;
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask);
 
 			LeftTextPadding = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TextLeftPadding;
 			InternalPadding = Styles.WelcomeScreen.Pad.Padding;
+
+			Gui.Styles.Changed += UpdateStyle;
+			UpdateStyle ();
+		}
+
+		void UpdateStyle (object sender = null, EventArgs e = null)
+		{
+			OnUpdateStyle ();
+			QueueDraw ();
+		}
+
+		protected virtual void OnUpdateStyle ()
+		{
+			SmallTitleColor = Styles.WelcomeScreen.Pad.SmallTitleColor;
+			MediumTitleColor = Styles.WelcomeScreen.Pad.MediumTitleColor;
+
+			TitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
+			SmallTitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
+
+			HoverBackgroundColor = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBackgroundColor;
+			HoverBorderColor = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.HoverBorderColor;
+
+			TitleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleFontSize;
+			SmallTitleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.PathFontSize;
 		}
 
 		public bool AllowPinning { get; set; }
@@ -295,41 +249,53 @@ namespace MonoDevelop.Ide.WelcomePage
 
 				int textWidth = Allocation.Width - LeftTextPadding - InternalPadding * 2;
 
-				Pango.Layout titleLayout = new Pango.Layout (PangoContext);
-				titleLayout.Width = Pango.Units.FromPixels (textWidth);
-				titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-				titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, titleFontSize, TitleFontWeight, MediumTitleColor, title));
+				using (var titleLayout = new Pango.Layout (PangoContext))
+				{
+					titleLayout.Width = Pango.Units.FromPixels (textWidth);
+					titleLayout.Ellipsize = Pango.EllipsizeMode.End;
+					titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, title));
 
-				Pango.Layout subtitleLayout = null;
+					Pango.Layout subtitleLayout = null;
 
-				if (!string.IsNullOrEmpty (subtitle)) {
-					subtitleLayout = new Pango.Layout (PangoContext);
-					subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
-					subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-					subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
-				}
+					if (!string.IsNullOrEmpty (subtitle))
+					{
+						subtitleLayout = new Pango.Layout (PangoContext);
+						subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
+						subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
+						subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
+					}
 
-				int height = 0;
-				int w, h1, h2;
-				titleLayout.GetPixelSize (out w, out h1);
-				height += h1;
+					int height = 0;
+					int w, h1, h2;
+					titleLayout.GetPixelSize (out w, out h1);
+					height += h1;
 
-				if (subtitleLayout != null) {
-					height += Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-					subtitleLayout.GetPixelSize (out w, out h2);
-					height += h2;
-				}
+					if (subtitleLayout != null)
+					{
+						height += Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
+						subtitleLayout.GetPixelSize (out w, out h2);
+						height += h2;
+					}
 
-				int tx = Allocation.X + InternalPadding + LeftTextPadding;
-				int ty = Allocation.Y + (Allocation.Height - height) / 2;
-				DrawLayout (ctx, titleLayout, TitleFontFace, titleFontSize, TitleFontWeight, MediumTitleColor, tx, ty);
+					int tx = Allocation.X + InternalPadding + LeftTextPadding;
+					int ty = Allocation.Y + (Allocation.Height - height) / 2;
+					DrawLayout (ctx, titleLayout, TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, tx, ty);
 
-				if (subtitleLayout != null) {
-					ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-					DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, smallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
+					if (subtitleLayout != null)
+					{
+						ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
+						DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
+						subtitleLayout.Dispose ();
+					}
 				}
 			}
 			return true;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			Gui.Styles.Changed -= UpdateStyle;
+			base.OnDestroyed ();
 		}
 	}
 }

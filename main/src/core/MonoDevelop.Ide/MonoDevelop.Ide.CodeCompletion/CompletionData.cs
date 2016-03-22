@@ -100,8 +100,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return new CompletionData[] { this };
 
 				if (sorted == null) {
-					sorted = new List<CompletionData> (overloads);
+					sorted = new List<CompletionData> ();
 					sorted.Add (this);
+					sorted.AddRange (overloads);
 					// sorted.Sort (new OverloadSorter ());
 				}
 				return sorted;
@@ -189,6 +190,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string GetDisplayTextMarkup ()
 		{
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
+		}
+
+		public virtual bool IsOverload (CompletionData other)
+		{
+			return DisplayText == other.DisplayText;
 		}
 	}
 

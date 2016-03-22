@@ -38,7 +38,7 @@ namespace MonoDevelop.VersionControl.Views
 {
 	public class MergeWidget : EditorCompareWidgetBase
 	{
-		protected override MonoTextEditor MainEditor {
+		protected internal override MonoTextEditor MainEditor {
 			get {
 				return editors != null && editors.Length >= 2 ? editors[1] : null;
 			}

@@ -95,10 +95,63 @@ namespace MonoDevelop.Core.Execution
 			cancelReg = cancelToken.Register (CancellationSource.Cancel);
 		}
 
+		/// <summary>
+		/// Returns a console that wraps this console, but it overrides the cancel
+		/// operation, so instead of signaling the cancel token, it executes
+		/// the provided action.
+		/// </summary>
+		public OperationConsole WithCancelCallback (Action cancelAction)
+		{
+			return new OperationConsoleWrapper (this, cancelAction);
+		}
+
 		public virtual void Dispose ()
 		{
 			if (cancelReg != null)
 				cancelReg.Dispose ();
+		}
+	}
+
+	class OperationConsoleWrapper : OperationConsole
+	{
+		OperationConsole console;
+		Action cancelAction;
+
+		public OperationConsoleWrapper (OperationConsole console, Action cancelAction)
+		{
+			this.console = console;
+			this.cancelAction = cancelAction;
+			console.CancellationToken.Register (cancelAction);
+		}
+
+		public override TextWriter Error {
+			get {
+				return console.Error;
+			}
+		}
+
+		public override TextReader In {
+			get {
+				return console.In;
+			}
+		}
+
+		public override TextWriter Log {
+			get {
+				return console.Log;
+			}
+		}
+
+		public override TextWriter Out {
+			get {
+				return console.Out;
+			}
+		}
+
+		public override void Dispose ()
+		{
+			base.Dispose ();
+			console.Dispose ();
 		}
 	}
 }

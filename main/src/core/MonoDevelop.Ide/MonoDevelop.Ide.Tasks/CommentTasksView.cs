@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
@@ -135,7 +136,9 @@ namespace MonoDevelop.Ide.Tasks
 			comments.TasksAdded += GeneratedTaskAdded;
 			comments.TasksRemoved += GeneratedTaskRemoved;
 
-			PropertyService.PropertyChanged += OnPropertyUpdated;
+			IdeApp.Preferences.UserTasksHighPrioColor.Changed += OnPropertyUpdated;
+			IdeApp.Preferences.UserTasksNormalPrioColor.Changed += OnPropertyUpdated;
+			IdeApp.Preferences.UserTasksLowPrioColor.Changed += OnPropertyUpdated;
 			
 			// Initialize with existing tags.
 			foreach (TaskListEntry t in comments)
@@ -150,7 +153,9 @@ namespace MonoDevelop.Ide.Tasks
 				comments.TasksAdded -= GeneratedTaskAdded;
 				comments.TasksRemoved -= GeneratedTaskRemoved;
 
-				PropertyService.PropertyChanged -= OnPropertyUpdated;
+				IdeApp.Preferences.UserTasksHighPrioColor.Changed -= OnPropertyUpdated;
+				IdeApp.Preferences.UserTasksNormalPrioColor.Changed -= OnPropertyUpdated;
+				IdeApp.Preferences.UserTasksLowPrioColor.Changed -= OnPropertyUpdated;
 			};
 		}
 
@@ -539,11 +544,11 @@ namespace MonoDevelop.Ide.Tasks
 			OnGenTaskJumpto (null, null);
 		}
 
-		void OnGenTaskDelete (object o, EventArgs args)
+		async void OnGenTaskDelete (object o, EventArgs args)
 		{
 			TaskListEntry task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
-				var doc = IdeApp.Workbench.OpenDocument (task.FileName, null, Math.Max (1, task.Line), Math.Max (1, task.Column));
+				var doc = await IdeApp.Workbench.OpenDocument (task.FileName, null, Math.Max (1, task.Line), Math.Max (1, task.Column));
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
@@ -607,48 +612,32 @@ namespace MonoDevelop.Ide.Tasks
 			return color;
 		}
 		
-		void OnPropertyUpdated (object sender, PropertyChangedEventArgs e)
+		void OnPropertyUpdated (object sender, EventArgs e)
 		{
-			bool change = false;
-			if (e.Key == "Monodevelop.UserTasksHighPrioColor" && e.NewValue != e.OldValue)
+			highPrioColor = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
+			normalPrioColor = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
+			lowPrioColor = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
+
+			TreeIter iter;
+			if (store.GetIterFirst (out iter))
 			{
-				highPrioColor = StringToColor ((string)e.NewValue);
-				change = true;
-			}
-			if (e.Key == "Monodevelop.UserTasksNormalPrioColor" && e.NewValue != e.OldValue)
-			{
-				normalPrioColor = StringToColor ((string)e.NewValue);
-				change = true;
-			}
-			if (e.Key == "Monodevelop.UserTasksLowPrioColor" && e.NewValue != e.OldValue)
-			{
-				lowPrioColor = StringToColor ((string)e.NewValue);
-				change = true;
-			}
-			
-			if (change)
-			{
-				TreeIter iter;
-				if (store.GetIterFirst (out iter))
+				do
 				{
-					do
-					{
-						TaskListEntry task = (TaskListEntry) store.GetValue (iter, (int)Columns.Task);
-						store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
-					} while (store.IterNext (ref iter));
-				}
+					TaskListEntry task = (TaskListEntry) store.GetValue (iter, (int)Columns.Task);
+					store.SetValue (iter, (int)Columns.Foreground, GetColorByPriority (task.Priority));
+				} while (store.IterNext (ref iter));
 			}
 		}
 		
 		#region ITaskListView members
-		TreeView ITaskListView.Content {
+		Control ITaskListView.Content {
 			get {
 				CreateView ();
 				return view; 
 			} 
 		}
 		
-		Widget[] ITaskListView.ToolBarItems {
+		Control[] ITaskListView.ToolBarItems {
 			get { return null; } 
 		}
 		#endregion

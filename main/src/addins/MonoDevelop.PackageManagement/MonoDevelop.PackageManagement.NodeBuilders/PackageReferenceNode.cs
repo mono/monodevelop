@@ -36,11 +36,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 	public class PackageReferenceNode
 	{
 		public PackageReferenceNode (
+			ProjectPackagesFolderNode parentNode,
 			PackageReference packageReference,
 			bool installed,
 			bool pending = false,
 			IPackageName updatedPackage = null)
 		{
+			ParentNode = parentNode;
 			PackageReference = packageReference;
 			Installed = installed;
 			IsInstallPending = pending;
@@ -61,6 +63,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public bool Installed { get; private set; }
 		public bool IsInstallPending { get; private set; }
 		public bool IsReinstallNeeded { get; private set; }
+
+
+		ProjectPackagesFolderNode ParentNode { get; set; }
+
+		public IDotNetProject Project {
+			get { return ParentNode.Project; }
+		}
 
 		public string Name {
 			get { return PackageReference.Id; }

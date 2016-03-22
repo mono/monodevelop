@@ -24,13 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Cairo;
+using Gdk;
 
 namespace MonoDevelop.Components
 {
 	class ExtendedLabel: Gtk.Label
 	{
-		bool dropShadowVisible;
-
 		public ExtendedLabel ()
 		{
 		}
@@ -38,20 +38,9 @@ namespace MonoDevelop.Components
 		public ExtendedLabel (string text): base (text)
 		{
 		}
-
-		public bool DropShadowVisible {
-			get { return dropShadowVisible; }
-			set {
-				dropShadowVisible = value;
-				QueueDraw ();
-			}
-		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			if (!dropShadowVisible)
-				return base.OnExposeEvent (evnt);
-
 			Pango.Layout la = new Pango.Layout (PangoContext);
 			int w, h;
 			if (UseMarkup)
@@ -63,8 +52,31 @@ namespace MonoDevelop.Components
 
 			int tx = Allocation.X + (int) Xpad + (int) ((float)(Allocation.Width - (int)(Xpad*2) - w) * Xalign);
 			int ty = Allocation.Y + (int) Ypad + (int) ((float)(Allocation.Height - (int)(Ypad*2) - h) * Yalign);
-			
-			GdkWindow.DrawLayout (Style.TextGC (State), tx, ty, la);
+
+			using (var ctx = CairoHelper.Create (evnt.Window)) {
+				ctx.SetSourceColor (Style.Text (State).ToCairoColor ());
+				ctx.MoveTo (tx, ty);
+
+				// In order to get the same result as in MonoDevelop.Components.DockNotebook.TabStrip.DrawTab()
+				// (document tabs) we need to draw using a LinearGradient (because of issues below),
+				// but we don't want to mask the actual text here, like in the doc tabs.
+				// Therefore we use a LinearGradient and mask only the last vertical pixel line
+				// of the label with 0.99 alpha, which forces Cairo to render the whole layout
+				// in the desired way.
+
+				// Semi-transparent gradient disables sub-pixel rendering of the label (reverting to grayscale antialiasing).
+				// As Mac sub-pixel font rendering looks stronger than grayscale rendering, the label used in pad tabs
+				// looked different. We need to simulate same gradient treatment as we have in document tabs.
+
+				using (var lg = new LinearGradient (tx + w - 1, 0, tx + w, 0)) {
+					var color = Style.Text (State).ToCairoColor ();
+					lg.AddColorStop (0, color);
+					color.A = 0.99;
+					lg.AddColorStop (1, color);
+					ctx.SetSource (lg);
+					Pango.CairoHelper.ShowLayout (ctx, la);
+				}
+			}
 			
 			la.Dispose ();
 			return true;

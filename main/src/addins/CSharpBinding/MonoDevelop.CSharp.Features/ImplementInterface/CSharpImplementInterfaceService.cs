@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
 {
-	public class CSharpImplementInterfaceService : AbstractImplementInterfaceService
+	class CSharpImplementInterfaceService : AbstractImplementInterfaceService
 	{
 		protected override bool TryInitializeState(
 			Document document, SemanticModel model, SyntaxNode node, CancellationToken cancellationToken,

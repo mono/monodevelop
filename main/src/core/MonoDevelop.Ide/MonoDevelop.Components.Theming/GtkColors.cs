@@ -43,7 +43,7 @@ namespace MonoDevelop.Components.Theming
 		Foreground
 	}
 
-	public class GtkColors
+	class GtkColors
 	{
 		private Cairo.Color[] gtk_colors;
 		private Widget widget;

@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Xml.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Completion
 {
@@ -115,7 +116,9 @@ namespace MonoDevelop.Xml.Completion
 				//base.InsertCompletionText sets window.CompletionWidget to null
 				var completionWidget = window.CompletionWidget;
 				base.InsertCompletionText (window, ref ka, descriptor);
-				completionWidget.AddSkipChar (completionWidget.CaretOffset, '"');
+				if (completionWidget is ITextEditorImpl) {
+					((ITextEditorImpl)completionWidget).EditorExtension.Editor.StartSession (new SkipCharSession ('"'));
+				}
 
 				//Even if we are on UI thread call Application.Invoke to postpone calling command
 				//otherwise code calling InsertCompletionText will close completion window created by this command

@@ -35,6 +35,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Text.RegularExpressions;
 
+#if MAC
+using AppKit;
+using MonoDevelop.Components.Mac;
+#endif
+
 namespace MonoDevelop.Components
 {
 	public static class GtkWorkarounds
@@ -1259,6 +1264,59 @@ namespace MonoDevelop.Components
 			}
 			supportsHiResIcons = false;
 			return null;
+		}
+
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
+		static extern void gtk_object_set_data (IntPtr raw, IntPtr key, IntPtr data);
+
+		public static void SetData<T> (Gtk.Object gtkobject, string key, T data) where T: struct
+		{
+			IntPtr pkey = GLib.Marshaller.StringToPtrGStrdup (key);
+			IntPtr pdata = Marshal.AllocHGlobal(Marshal.SizeOf(data));
+			Marshal.StructureToPtr(data, pdata, false);
+			gtk_object_set_data (gtkobject.Handle, pkey, pdata);
+			Marshal.FreeHGlobal(pdata);
+			GLib.Marshaller.Free (pkey);
+			gtkobject.Data [key] = data;
+		}
+
+		public static void SetTransparentBgHint (this Widget widget, bool enable)
+		{
+			SetData (widget, "transparent-bg-hint", enable);
+		}
+
+#if MAC
+		static void OnMappedDisableButtons (object sender, EventArgs args)
+		{
+			var window = (Gtk.Window)sender;
+
+			DisableButtonsInternal (window);
+
+			window.Mapped -= OnMappedDisableButtons;
+		}
+
+		static void DisableButtonsInternal (Gtk.Window window)
+		{
+			// GtkQuartz appears to ignore any attempts to set the window's type hint or window functions to disable
+			// minimize/maximize buttons. This may be because on Cocoa these are set at window creation and can only
+			// be changed afterwards by directly accessing the window button and disabling it like so.
+			NSWindow nsWindow = GtkMacInterop.GetNSWindow (window);
+
+			nsWindow.StandardWindowButton (NSWindowButton.MiniaturizeButton).Enabled = false;
+			nsWindow.StandardWindowButton (NSWindowButton.ZoomButton).Enabled = false;
+		}
+#endif
+
+		public static void DisableMinimizeMaximizeButtons (Gtk.Window window)
+		{
+#if MAC
+			if (window.IsMapped) {
+				DisableButtonsInternal (window);
+				return;
+			}
+
+			window.Mapped += OnMappedDisableButtons;
+#endif
 		}
 	}
 

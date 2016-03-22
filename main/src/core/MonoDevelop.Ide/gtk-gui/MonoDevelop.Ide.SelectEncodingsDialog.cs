@@ -5,23 +5,45 @@ namespace MonoDevelop.Ide
 	internal partial class SelectEncodingsDialog
 	{
 		private global::Gtk.Table table5;
+		
 		private global::Gtk.Label label106;
+		
 		private global::Gtk.Label label107;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow10;
+		
 		private global::Gtk.TreeView listAvail;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow11;
+		
 		private global::Gtk.TreeView listSelected;
+		
 		private global::Gtk.VBox vbox74;
+		
 		private global::Gtk.Label label108;
+		
 		private global::Gtk.Button btnAdd;
+		
+		private global::MonoDevelop.Components.ImageView imageAdd;
+		
 		private global::Gtk.Button btnRemove;
+		
+		private global::MonoDevelop.Components.ImageView imageRemove;
+		
 		private global::Gtk.Label label109;
+		
 		private global::Gtk.VBox vbox75;
+		
 		private global::Gtk.Button btnUp;
-		private global::Gtk.Image image9;
+		
+		private global::MonoDevelop.Components.ImageView imageUp;
+		
 		private global::Gtk.Button btnDown;
-		private global::Gtk.Image image10;
+		
+		private global::MonoDevelop.Components.ImageView imageDown;
+		
 		private global::Gtk.Button cancelbutton1;
+		
 		private global::Gtk.Button okbutton1;
 
 		protected virtual void Build ()
@@ -111,27 +133,28 @@ namespace MonoDevelop.Ide
 			// Container child vbox74.Gtk.Box+BoxChild
 			this.btnAdd = new global::Gtk.Button ();
 			this.btnAdd.Name = "btnAdd";
-			this.btnAdd.UseUnderline = true;
-			this.btnAdd.Label = "";
-			global::Gtk.Image w9 = new global::Gtk.Image ();
-			w9.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-forward", global::Gtk.IconSize.Button);
-			this.btnAdd.Image = w9;
+			// Container child btnAdd.Gtk.Container+ContainerChild
+			this.imageAdd = new global::MonoDevelop.Components.ImageView ();
+			this.imageAdd.Name = "imageAdd";
+			this.imageAdd.IconSize = ((global::Gtk.IconSize)(4));
+			this.imageAdd.IconId = "gtk-add";
+			this.btnAdd.Add (this.imageAdd);
 			this.vbox74.Add (this.btnAdd);
 			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox74 [this.btnAdd]));
 			w10.Position = 1;
-			w10.Expand = false;
 			w10.Fill = false;
 			// Container child vbox74.Gtk.Box+BoxChild
 			this.btnRemove = new global::Gtk.Button ();
 			this.btnRemove.Name = "btnRemove";
-			this.btnRemove.Label = null;
-			global::Gtk.Image w11 = new global::Gtk.Image ();
-			w11.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-back", global::Gtk.IconSize.SmallToolbar);
-			this.btnRemove.Image = w11;
+			// Container child btnRemove.Gtk.Container+ContainerChild
+			this.imageRemove = new global::MonoDevelop.Components.ImageView ();
+			this.imageRemove.Name = "imageRemove";
+			this.imageRemove.IconSize = ((global::Gtk.IconSize)(4));
+			this.imageRemove.IconId = "gtk-remove";
+			this.btnRemove.Add (this.imageRemove);
 			this.vbox74.Add (this.btnRemove);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox74 [this.btnRemove]));
 			w12.Position = 2;
-			w12.Expand = false;
 			w12.Fill = false;
 			// Container child vbox74.Gtk.Box+BoxChild
 			this.label109 = new global::Gtk.Label ();
@@ -157,13 +180,11 @@ namespace MonoDevelop.Ide
 			this.btnUp = new global::Gtk.Button ();
 			this.btnUp.Name = "btnUp";
 			// Container child btnUp.Gtk.Container+ContainerChild
-			this.image9 = new global::Gtk.Image ();
-			this.image9.Name = "image9";
-			this.image9.Xalign = 0F;
-			this.image9.Yalign = 0F;
-			this.image9.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-up", global::Gtk.IconSize.Button);
-			this.btnUp.Add (this.image9);
-			this.btnUp.Label = null;
+			this.imageUp = new global::MonoDevelop.Components.ImageView ();
+			this.imageUp.Name = "imageUp";
+			this.imageUp.IconSize = ((global::Gtk.IconSize)(4));
+			this.imageUp.IconId = "gtk-go-up";
+			this.btnUp.Add (this.imageUp);
 			this.vbox75.Add (this.btnUp);
 			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.vbox75 [this.btnUp]));
 			w16.Position = 0;
@@ -173,13 +194,11 @@ namespace MonoDevelop.Ide
 			this.btnDown = new global::Gtk.Button ();
 			this.btnDown.Name = "btnDown";
 			// Container child btnDown.Gtk.Container+ContainerChild
-			this.image10 = new global::Gtk.Image ();
-			this.image10.Name = "image10";
-			this.image10.Xalign = 0F;
-			this.image10.Yalign = 0F;
-			this.image10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-go-down", global::Gtk.IconSize.Button);
-			this.btnDown.Add (this.image10);
-			this.btnDown.Label = null;
+			this.imageDown = new global::MonoDevelop.Components.ImageView ();
+			this.imageDown.Name = "imageDown";
+			this.imageDown.IconSize = ((global::Gtk.IconSize)(4));
+			this.imageDown.IconId = "gtk-go-down";
+			this.btnDown.Add (this.imageDown);
 			this.vbox75.Add (this.btnDown);
 			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox75 [this.btnDown]));
 			w18.Position = 1;

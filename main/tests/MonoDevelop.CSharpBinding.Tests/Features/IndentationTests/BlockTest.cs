@@ -31,7 +31,7 @@ using Microsoft.CodeAnalysis.CSharp.Formatting;
 namespace ICSharpCode.NRefactory6.IndentationTests
 {
 	[TestFixture]
-	public class BracketsTest
+	class BracketsTest
 	{
 		[Test]
 		public void TestBrackets_Simple()
@@ -1273,7 +1273,7 @@ class Foo
 			var indent = Helper.CreateEngine(@"
 namespace FooBar
 {
-	public class TestProject
+	class TestProject
 	{
 		public static int Main ()
 		{

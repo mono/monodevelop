@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.NodeBuilders;
 
 namespace MonoDevelop.PackageManagement
@@ -59,7 +58,7 @@ namespace MonoDevelop.PackageManagement
 		public void Run (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
 			try {
-				IPackageManagementProject project = solution.GetActiveProject ();
+				IPackageManagementProject project = solution.GetProject (packageReferenceNode.Project);
 				ReinstallPackageAction action = project.CreateReinstallPackageAction ();
 				action.PackageId = packageReferenceNode.Id;
 				action.PackageVersion = packageReferenceNode.Version;

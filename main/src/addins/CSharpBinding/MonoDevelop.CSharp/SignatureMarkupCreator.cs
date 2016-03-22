@@ -37,7 +37,6 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.CSharp.Formatting;
 using System.Collections.Immutable;
-using MonoDevelop.NUnit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.Editor;
@@ -46,6 +45,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.CSharp.Completion;
+using System.Threading;
 
 namespace MonoDevelop.CSharp
 {
@@ -77,12 +77,11 @@ namespace MonoDevelop.CSharp
 		public SignatureMarkupCreator (DocumentContext ctx, int offset)
 		{
 			this.offset = offset;
-			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
+			this.colorStyle = SyntaxModeService.GetColorStyle (Ide.IdeApp.Preferences.ColorScheme);
+			if (!this.colorStyle.FitsIdeSkin (Ide.IdeApp.Preferences.UserInterfaceSkin))
+				this.colorStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
 			this.ctx = ctx;
 			if (ctx != null) {
-				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null) {
-					LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
-				}
 				this.options = ctx.GetOptionSet ();
 			} else {
 				this.options = MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace.Options;
@@ -92,9 +91,27 @@ namespace MonoDevelop.CSharp
 		public string GetTypeReferenceString (ITypeSymbol type, bool highlight = true)
 		{
 			if (type == null)
-				throw new ArgumentNullException ("type");
-			if (type.TypeKind == TypeKind.Error)
-				return "?";
+				throw new ArgumentNullException (nameof (type));
+			if (type.TypeKind == TypeKind.Error) {
+				SemanticModel model = SemanticModel;
+				if (model == null) {
+					var parsedDocument = ctx.ParsedDocument;
+					if (parsedDocument != null) {
+						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument?.GetSemanticModelAsync ().Result;
+					}
+				}
+				var typeSyntax = type.GenerateTypeSyntax ();
+				string generatedTypeSyntaxString;
+				try {
+					var oldDoc = ctx.AnalysisDocument;
+					var newDoc = oldDoc.WithSyntaxRoot (SyntaxFactory.ParseCompilationUnit (typeSyntax.ToString ()).WithAdditionalAnnotations (Simplifier.Annotation));
+					var reducedDoc = Simplifier.ReduceAsync (newDoc, options);
+					generatedTypeSyntaxString = Ambience.EscapeText (reducedDoc.Result.GetSyntaxRootAsync ().Result.ToString ());
+				} catch {
+					generatedTypeSyntaxString = typeSyntax != null ? Ambience.EscapeText (typeSyntax.ToString ()) : "?";
+				}
+				return highlight ? HighlightSemantically (generatedTypeSyntaxString, colorStyle.UserTypes) : generatedTypeSyntaxString;
+			}
 			if (type.TypeKind == TypeKind.Array) {
 				var arrayType = (IArrayTypeSymbol)type;
 				return GetTypeReferenceString (arrayType.ElementType, highlight) + "[" + new string (',', arrayType.Rank - 1) + "]";
@@ -107,7 +124,7 @@ namespace MonoDevelop.CSharp
 				if (model == null) {
 					var parsedDocument = ctx.ParsedDocument;
 					if (parsedDocument != null) {
-						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument.GetSemanticModelAsync ().Result;
+						model = parsedDocument.GetAst<SemanticModel> () ?? ctx.AnalysisDocument?.GetSemanticModelAsync ().Result;
 					}
 				}
 				//Math.Min (model.SyntaxTree.Length, offset)) is needed in case parsedDocument.GetAst<SemanticModel> () is outdated
@@ -1015,8 +1032,12 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.ClassKeyword:
 				result.SignatureMarkup = Highlight ("class", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("class", colorStyle.KeywordDeclaration) + " identifier [:base-list] { class-body }[;]");
-				result.SummaryMarkup = "Classes are declared using the keyword " + Highlight ("class", colorStyle.KeywordDeclaration) + ".";
+				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
+					result.SummaryMarkup = "The " + Highlight ("class", colorStyle.KeywordDeclaration) + " constraint specifies that the type argument must be a reference type; this applies also to any class, interface, delegate, or array type.";
+				} else {
+					result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("class", colorStyle.KeywordDeclaration) + " identifier [:base-list] { class-body }[;]");
+					result.SummaryMarkup = "Classes are declared using the keyword " + Highlight ("class", colorStyle.KeywordDeclaration) + ".";
+				}
 				break;
 			case SyntaxKind.ConstKeyword:
 				result.SignatureMarkup = Highlight ("const", colorStyle.KeywordModifiers) + keywordSign;
@@ -1066,7 +1087,10 @@ namespace MonoDevelop.CSharp
 				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " result-type identifier ([formal-parameters]);");
 				result.SummaryMarkup = "A " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
 				break;
-			case SyntaxKind.IdentifierName:
+			case SyntaxKind.IdentifierToken:
+				if (node.ToFullString () == "nameof" && node.Parent?.Parent?.Kind () == SyntaxKind.InvocationExpression)
+					goto case SyntaxKind.NameOfKeyword;
+
 				if (node.ToFullString () == "dynamic") {
 					result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
 					result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
@@ -1244,7 +1268,11 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.NewKeyword:
 				result.SignatureMarkup = Highlight ("new", colorStyle.KeywordOperators) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.";
+				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
+					result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " constraint specifies that any type argument in a generic class declaration must have a public parameterless constructor. To use the new constraint, the type cannot be abstract.";
+				} else {
+					result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.";
+				}
 				break;
 			case SyntaxKind.NullKeyword:
 				result.SignatureMarkup = Highlight ("null", colorStyle.KeywordConstants) + keywordSign;
@@ -1372,8 +1400,12 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.StructKeyword:
 				result.SignatureMarkup = Highlight ("struct", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("struct", colorStyle.KeywordDeclaration) + " identifier [:interfaces] body [;]");
-				result.SummaryMarkup = "A " + Highlight ("struct", colorStyle.KeywordDeclaration) + " type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types. ";
+				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
+					result.SummaryMarkup = "The " + Highlight ("struct", colorStyle.KeywordDeclaration) + " constraint specifies that the type argument must be a value type. Any value type except Nullable can be specified.";
+				} else {
+					result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("struct", colorStyle.KeywordDeclaration) + " identifier [:interfaces] body [;]");
+					result.SummaryMarkup = "A " + Highlight ("struct", colorStyle.KeywordDeclaration) + " type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types. ";
+				}
 				break;
 			case SyntaxKind.SwitchKeyword:
 				result.SignatureMarkup = Highlight ("switch", colorStyle.KeywordSelection) + keywordSign;
@@ -1469,6 +1501,11 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("while", colorStyle.KeywordIteration) + keywordSign;
 				result.AddCategory ("Form", Highlight ("while", colorStyle.KeywordIteration) + " (expression) statement");
 				result.SummaryMarkup = "The " + Highlight ("while", colorStyle.KeywordIteration) + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
+				break;
+				case SyntaxKind.NameOfKeyword:
+				result.SignatureMarkup = Highlight ("nameof", colorStyle.KeywordDeclaration) + keywordSign;
+				result.AddCategory ("Form", Highlight ("nameof", colorStyle.KeywordDeclaration) + "(identifier)");
+				result.SummaryMarkup = "Used to obtain the simple (unqualified) string name of a variable, type, or member.";
 				break;
 			default:
 				return null;
@@ -1821,6 +1858,13 @@ namespace MonoDevelop.CSharp
 				return (type.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingNamespace.GetFullName ())) + "</small>" + Environment.NewLine) +
 					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (type.ContainingAssembly.Name)) + "</small>";
 			}
+
+			var method = entity as IMethodSymbol;
+			if (method != null && (method.MethodKind == MethodKind.Constructor || method.MethodKind == MethodKind.StaticConstructor || method.MethodKind == MethodKind.Destructor)) {
+				return (method.ContainingNamespace.IsGlobalNamespace ? "" : "<small>" + GettextCatalog.GetString ("Namespace:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingNamespace.GetFullName ())) + "</small>" + Environment.NewLine) +
+					"<small>" + GettextCatalog.GetString ("Assembly:\t{0}", MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (method.ContainingAssembly.Name)) + "</small>";
+			}
+
 
 			if (entity.ContainingType != null && entity.Locations.Any ()) {
 				var loc = entity.Locations.First ();

@@ -69,20 +69,19 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			try {
 				Templates = LoadTemplates ();
+				AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CodeTemplates", delegate (object sender, ExtensionNodeEventArgs args) {
+					var codon = (CodeTemplateCodon)args.ExtensionNode;
+					switch (args.Change) {
+					case ExtensionChange.Add:
+						using (XmlReader reader = codon.Open ()) {
+							LoadTemplates (reader).ForEach (t => templates.Add (t));
+						}
+						break;
+					}
+				});
 			} catch (Exception e) {
 				LoggingService.LogError ("CodeTemplateService: Exception while loading templates.", e);
 			}
-			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/CodeTemplates", delegate(object sender, ExtensionNodeEventArgs args) {
-				var codon = (CodeTemplateCodon)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					using (XmlReader reader = codon.Open ()) {
-						LoadTemplates (reader).ForEach (t => templates.Add (t));
-					}
-					break;
-				}
-			});
 		}
 		
 		public static IEnumerable<CodeTemplate> GetCodeTemplates (string mimeType)

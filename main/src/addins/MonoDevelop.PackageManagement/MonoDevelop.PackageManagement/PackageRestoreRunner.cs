@@ -52,6 +52,15 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
+		internal PackageRestoreRunner (IPackageManagementSolution solution)
+			: this (
+				solution,
+				PackageManagementServices.ProgressMonitorFactory,
+				PackageManagementServices.PackageManagementEvents,
+				PackageManagementServices.ProgressProvider)
+		{
+		}
+
 		public PackageRestoreRunner(
 			IPackageManagementSolution solution,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,

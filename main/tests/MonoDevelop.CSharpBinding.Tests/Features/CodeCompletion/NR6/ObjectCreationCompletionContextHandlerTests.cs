@@ -32,7 +32,7 @@ using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
 	[TestFixture]
-	public class ObjectCreationCompletionContextHandlerTests : CompletionTestBase
+	class ObjectCreationCompletionContextHandlerTests : CompletionTestBase
 	{
 		[Test]
 		public void SimpleTest()

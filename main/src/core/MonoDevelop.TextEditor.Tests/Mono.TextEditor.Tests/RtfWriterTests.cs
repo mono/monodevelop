@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Tests
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;\red51\green100\blue164;\red0\green0\blue0;}\viewkind4\uc1\pard
+{\colortbl ;\red51\green100\blue164;\red34\green34\blue34;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
 \cf1 class\cf2  Foo \{\}\line
@@ -70,7 +70,7 @@ namespace Mono.TextEditor.Tests
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;\red0\green0\blue0;}\viewkind4\uc1\pard
+{\colortbl ;\red34\green34\blue34;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
 \cf1 class Foo \{\}\line
@@ -93,7 +93,7 @@ namespace Mono.TextEditor.Tests
 {\fonttbl
 {\f0\fnil\fprq1\fcharset128 Mono;}
 }
-{\colortbl ;\red0\green0\blue0;}\viewkind4\uc1\pard
+{\colortbl ;\red34\green34\blue34;}\viewkind4\uc1\pard
 \f0
 \fs20\cf1
 \cf1 \uc1\u10004*\line

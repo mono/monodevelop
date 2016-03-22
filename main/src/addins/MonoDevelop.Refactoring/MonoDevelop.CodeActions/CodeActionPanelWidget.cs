@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,7 @@ namespace MonoDevelop.CodeActions
 	{
 		ContextActionPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new ContextActionPanelWidget ("text/x-csharp");
 		}

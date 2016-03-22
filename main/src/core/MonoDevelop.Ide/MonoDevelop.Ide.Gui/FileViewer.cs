@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Ide.Desktop;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -84,18 +85,18 @@ namespace MonoDevelop.Ide.Gui
 				return app.GetHashCode ();
 		}
 		
-		public Document OpenFile (string filePath)
+		public Task<Document> OpenFile (string filePath)
 		{
 			return OpenFile (filePath, null);
 		}
 		
-		public Document OpenFile (string filePath, Encoding encoding)
+		public Task<Document> OpenFile (string filePath, Encoding encoding)
 		{
 			if (binding != null)
 				return IdeApp.Workbench.OpenDocument (filePath, null, -1, -1, OpenDocumentOptions.Default, encoding, binding);
 			else {
 				app.Launch (filePath);
-				return null;
+				return Task.FromResult<Document> (null);
 			}
 		}
 	}

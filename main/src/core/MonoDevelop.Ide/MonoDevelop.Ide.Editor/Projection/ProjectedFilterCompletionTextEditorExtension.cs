@@ -81,11 +81,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return completionTextEditorExtension.IsValidInContext (context);
 		}
 
-		public override int GetCurrentParameterIndex (int startOffset)
+		public override Task<int> GetCurrentParameterIndex (int startOffset, System.Threading.CancellationToken token)
 		{
 			if (!IsActiveExtension())
-				return -1;
-			return completionTextEditorExtension.GetCurrentParameterIndex (startOffset);
+				return Task.FromResult (-1);
+			return completionTextEditorExtension.GetCurrentParameterIndex (startOffset, token);
 		}
 
 		public override string CompletionLanguage {
@@ -172,10 +172,10 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return completionTextEditorExtension.ParameterCompletionCommand (completionContext);
 		}
 
-		public override int GuessBestMethodOverload (CodeCompletion.ParameterHintingResult provider, int currentOverload)
+		public override Task<int> GuessBestMethodOverload (CodeCompletion.ParameterHintingResult provider, int currentOverload, System.Threading.CancellationToken token)
 		{
-			if (!IsActiveExtension()) return -1;
-			return completionTextEditorExtension.GuessBestMethodOverload (provider, currentOverload);
+			if (!IsActiveExtension()) return Task.FromResult (-1);
+			return completionTextEditorExtension.GuessBestMethodOverload (provider, currentOverload, token);
 		}
 
 		internal protected override void OnCompletionContextChanged (object o, EventArgs a)

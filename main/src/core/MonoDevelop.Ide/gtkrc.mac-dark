@@ -1,0 +1,504 @@
+# Xamarin Studio Dark Mac GTK Theme
+# Copyright 2012-2016 Xamarin Inc.
+# Authors:
+#   Christian Kellner <christian.kellner@lanedo.com>
+#   Carlos Garnacho <carlos.garnacho@lanedo.com>
+#   Cody Russell <cody@xamarin.com>
+#   Vsevolod Kukol <vsevolod.kukol@xamarin.com>
+#   Vaclav Vancura <vaclav@xamarin.com>
+
+
+gtk-color-scheme =
+"bg_color: #333
+fg_color: #d7d7d7
+base_color: #404040
+text_color: #d7d7d7
+link_color: #56bbf0
+dim_color: #777777
+selected_bg_color: #5189ed
+selected_fg_color: #fff
+tooltip_bg_color: #5a5a5a
+tooltip_fg_color: #d2d5cd
+tooltip_border_color: #b2b2b2"
+
+gtk-button-images = 0
+gtk-menu-images = 0
+gtk-toolbar-style = 0
+gtk-enable-mnemonics = 0
+gtk-icon-sizes = "gtk-small-toolbar=16,16:gtk-large-toolbar=22,22"
+gtk-toolbar-icon-size = large-toolbar
+gtk-auto-mnemonics = 1
+gtk-error-bell = 0
+gtk-show-input-method-menu = 0
+gtk-font-name = "Helvetica Neue 12"
+
+
+style "default" {
+    xthickness = 1
+    ythickness = 1
+
+    font_name = "Helvetica Neue 12"
+
+    ### colours
+
+    bg[NORMAL] = @bg_color
+    bg[PRELIGHT] = @bg_color
+    bg[SELECTED] = @selected_bg_color
+    bg[INSENSITIVE] = @bg_color
+    bg[ACTIVE] = @bg_color
+
+    fg[NORMAL] = @fg_color
+    fg[PRELIGHT] = @fg_color
+    fg[SELECTED] = @selected_fg_color
+    fg[INSENSITIVE] = @dim_color
+    fg[ACTIVE] = @fg_color
+
+    text[NORMAL] = @fg_color
+    text[PRELIGHT] = @fg_color
+    text[SELECTED] = @selected_fg_color
+    text[INSENSITIVE] = @dim_color
+    text[ACTIVE] = @fg_color
+
+    base[NORMAL] = @base_color
+    base[PRELIGHT] = @selected_bg_color
+    base[SELECTED] = @selected_bg_color
+    base[INSENSITIVE] = @bg_color
+    base[ACTIVE] = shade (0.7, @selected_bg_color)
+
+    ### style properties
+
+    GtkWidget::new-tooltip-style = 1
+    GtkWidget::link-color = @link_color
+    GtkWidget::visited-link-color = @link_color
+
+    GtkEntry::honors-transparent-bg-hint = 1
+    GtkEntry::inner-border = { 2, 2, 2, 2 }
+
+    GtkButton::child-displacement-x = 0
+    GtkButton::child-displacement-y = 0
+    GtkButton::default-border = { 0, 0, 0, 0 }
+    GtkButton::inner-border = { 2, 2, 4, 4 }
+
+    GtkButtonBox::child-min-width = 70
+    GtkButtonBox::child-min-height = 22
+
+    GtkCheckButton::indicator-size = 14
+    GtkCheckButton::indicator-spacing = 4
+
+    GtkTreeView::odd-row-color = "#3b3b3b"
+
+    GtkScrolledWindow::scrollbar-spacing = 0
+    GtkScrolledWindow::scrollbars-within-bevel = 1
+    GtkScrolledWindow::draw-child-bg = 1
+    GtkScale::slider-length = 14
+    GtkRange::trough-side-details = 1
+
+    GtkTreeView::expander-size = 8
+    GtkExpander::expander-size = 8
+    GtkComboBox::arrow-size = 12
+
+    GtkMenu::vertical-padding = 4
+    GtkMenuItem::horizontal-padding = 3
+    GtkMenuItem::toggle-spacing = 6
+    GtkSeparatorMenuItem::horizontal-padding = 2
+
+    engine "xamarin" {
+        arrowstyle = 2
+        rgba = TRUE
+        roundness = 3
+        glazestyle = 0
+
+        menustyle = 0
+        menuitemstyle = 0
+        menubaritemstyle = 0
+        comboboxstyle = 1
+        spinbuttonstyle = 1
+        colorize_scrollbar = FALSE
+        progressbarstyle = 0
+        trough_shades = { 0.842, 0.886 }
+        gradient_shades = { 1.0, 1.0, 1.0, 1.0 }
+        fill_shade = 1.0
+
+        focusstyle = 0
+    }
+}
+
+style "wide" = "default" {
+    xthickness = 2
+    ythickness = 2
+}
+
+style "wider" = "default" {
+    xthickness = 3
+    ythickness = 3
+}
+
+style "button" = "default" {
+    xthickness = 2
+    ythickness = 4
+
+    font_name = "Helvetica Neue 12"
+
+    bg[NORMAL] = "#595959"
+    bg[PRELIGHT] = "#595959" # Mac buttons have no hover state
+    bg[ACTIVE] = shade(1.2, "#595959")
+    bg[INSENSITIVE] = "#595959"
+
+    fg[NORMAL] = "#fff"
+    fg[PRELIGHT] = "#fff"
+    fg[ACTIVE] = "#fff"
+    fg[INSENSITIVE] = lighter ("#595959")
+
+    GtkWidget::draw-border = { 1, 1, 1, 1 }
+    GtkWidget::focus-padding = 0
+    GtkWidget::focus-line-width = 1
+
+    engine "xamarin" {
+        rgba = FALSE
+        contrast = 1.0
+        focus_color = shade(1.4, @bg_color)
+        focusstyle = 3
+        border_colors = { @bg_color, @bg_color }
+        textstyle = 0
+        highlight_shade = 1.0
+        lightborder_shade = 1.0
+        default_button_color = lighter ("#595959")
+    }
+}
+
+style "dialog-button" = "button" {
+    GtkButton::inner-border = { 7, 7, 3, 4 }
+
+    engine "xamarin" {
+        default_button_color = "#51ADF3"
+    }
+}
+
+style "toggle-button" = "button" {
+    bg[NORMAL] = @bg_color
+    bg[ACTIVE] = shade(0.98, @base_color)
+    bg[PRELIGHT] = shade(0.98, @base_color)
+
+    engine "xamarin" {
+        rgba = FALSE
+        contrast = 1.0
+        gradient_shades = {0.96, 0.918, 0.926, 0.858}
+        focus_color = shade(0.6, @bg_color)
+        textstyle = 1
+    }
+}
+
+style "menu" {
+    xthickness = 1
+    # ythickness = 0
+
+    font_name = "Helvetica Neue 12"
+
+    bg[PRELIGHT] = @selected_fg_color
+    fg[PRELIGHT] = @selected_fg_color
+    text[PRELIGHT] = @selected_fg_color
+
+    # engine "quartz" {
+    # }
+}
+
+style "menu-item" = "menu" {
+    ythickness = 2
+
+    GtkWidget::draw-border = { 0, 0, 0, 2 }
+
+    engine "xamarin" {
+        gradient_shades = {1.0, 1.0, 1.0, 1.0}
+        contrast = 0.0
+        roundness = 0
+    }
+}
+
+style "menu-separator" = "menu-item" {
+    ythickness = 3
+    engine "xamarin" {
+        contrast = 1.0
+    }
+}
+
+style "toolbar" = "default"
+{
+    bg[NORMAL] = @base_color
+}
+
+style "tooltip"
+{
+    xthickness = 5
+    ythickness = 5
+
+    fg[NORMAL] = @tooltip_fg_color
+    bg[NORMAL] = @tooltip_bg_color
+    bg[SELECTED] = @tooltip_border_color
+
+    font_name = "Helvetica Neue 12"
+
+    engine "xamarin" {
+        roundness = 0
+    }
+}
+
+style "treeview" = "default"
+{
+    base[SELECTED] = @selected_bg_color
+    base[ACTIVE] = @selected_bg_color
+    text[SELECTED] = @selected_fg_color
+    text[ACTIVE] = @selected_fg_color
+
+    engine "xamarin" {
+        roundness = 0
+        gradient_shades = { 1.01, 1.01, 1.01, 1.01 }
+        glazestyle = 1
+        focusstyle = 3
+    }
+}
+
+style "tree-header"
+{
+    bg[NORMAL] = @bg_color
+    bg[INSENSITIVE] = @bg_color
+
+    engine "xamarin" {
+        border_colors = { @base_color, @base_color }
+    }
+}
+
+style "icon-view" = "default"
+{
+    bg[SELECTED] = "#f5f7fa"
+    base[SELECTED] = "#f5f7fa"
+    fg[SELECTED] = "#000"
+    text[SELECTED] = "#000"
+}
+
+style "combo-box" = "button"
+{
+    #bg[PRELIGHT] = @base_color
+    #fg[NORMAL] = @base_color
+    #fg[PRELIGHT] = @base_color
+
+    engine "xamarin" {
+        arrowstyle = 3
+    }
+}
+
+style "combo-box-entry-button" = "combo-box"
+{
+}
+
+style "wizard-dialog"
+{
+    GtkDialog::content-area-border = 0
+}
+
+style "combo-box-menu" = "menu" {
+    font_name = "Helvetica Neue 12"
+}
+
+style "notebook" = "default"
+{
+    GtkNotebook::tab-overlap = 1
+    GtkNotebook::tab-curvature = 3
+
+    bg[ACTIVE] = "#3b3b3b"		# inactive tab color
+    bg[NORMAL] = @base_color	# active tab and notebook bg color
+
+    engine "xamarin" {
+    	roundness = 0
+    }
+}
+
+style "quartz-radio-or-check-box" = "default"
+{
+    ythickness = 6
+
+    engine "quartz" {
+    }
+}
+
+style "propertygrid-radio-or-check-box" = "default"
+{
+    GtkCheckButton::indicator-spacing = 0
+
+    base[NORMAL] = "#fff"
+    base[ACTIVE] = "#fff"
+    base[SELECTED] = "#fff"
+    base[PRELIGHT] = "#fff"
+    text[SELECTED] = @base_color
+
+    engine "xamarin" {
+        border_shades = { 1.33, 1.33 }
+    }
+}
+
+style "entry" = "default"
+{
+    xthickness = 4
+    ythickness = 4
+
+    GtkEntry::inner-border = { 2, 2, 2, 2 }
+
+    base[INSENSITIVE] = shade(1.02, @bg_color)
+    bg[SELECTED] = @selected_bg_color
+
+    engine "xamarin" {
+        rgba = FALSE
+        roundness = 0
+        focusstyle = 2
+    }
+}
+
+style "search-entry" = "wider"
+{
+    xthickness = 6
+    ythickness = 4
+
+    bg[NORMAL] = @base_color
+}
+
+style "scrollbar" = "default"
+{
+    GtkScrollbar::has-forward-stepper = 0
+    GtkScrollbar::has-backward-stepper = 0
+    GtkRange::slider-width = 7
+    GtkRange::trough-border = 2
+    GtkRange::trough-side-details = 0
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
+
+    bg[NORMAL] = @fg_color
+    bg[PRELIGHT] = @fg_color
+
+    engine "xamarin"
+    {
+        roundness = 1
+        contrast = 0.0
+        trough_shades = { 0.975, 0.975 }
+        stepperstyle = 1
+    }
+}
+
+style "completion_scrollbar" = "scrollbar"
+{
+    bg[NORMAL] = @base_color
+}
+
+style "progressbar" = "default"
+{
+    bg[SELECTED] = "#62b3ec"
+    fg[SELECTED] = "#3a67a6"
+
+    xthickness = 0
+    ythickness = 0
+}
+
+style "scrolled-window" = "default"
+{
+    xthickness = 1
+    ythickness = 1
+}
+
+style "scale" = "default"
+{
+    bg[SELECTED] = @selected_bg_color
+
+    engine "xamarin" {
+        roundness = 7
+    }
+}
+
+style "spin-button" = "wider"
+{
+    fg[NORMAL] = "#616161"
+
+    ythickness = 4
+
+    GtkEntry::inner-border = { 2, 2, 1, 1 }
+
+    engine "xamarin" {
+        arrowstyle = 3
+    }
+}
+
+style "link-label-fix"
+{
+    base[PRELIGHT] = @bg_color # disable link hover background
+}
+
+
+### Apply the styles
+
+class "GtkWidget" style "default"
+
+class "GtkEntry" style "entry"
+class "GtkSpinButton" style "spin-button"
+class "GtkFrame" style "wider"
+class "GtkRange" style "wide"
+class "GtkSeparator" style "wide"
+class "GtkScrollbar" style "scrollbar"
+class "GtkProgressBar" style "progressbar"
+class "GtkScrolledWindow" style "scrolled-window"
+class "GtkNotebook" style "notebook"
+class "GtkButton" style "button"
+class "GtkToggleButton" style "toggle-button"
+class "GtkCheckButton" style "quartz-radio-or-check-box"
+class "GtkComboBox" style "combo-box"
+
+class "GtkScale" style "scale"
+
+#widget "*GtkEntry" style "entry"
+widget "*search-entry*" style "search-entry"
+widget "*GtkTextView" style "entry"
+
+widget_class "*.GtkButton.*" style "button"
+widget_class "<GtkDialog>.*.<GtkButton>" style "dialog-button"
+widget_class "<GtkDialog>*<GtkCheckButton>" style "quartz-radio-or-check-box"
+widget_class "<GtkDialog>.*.<GtkButtonBox>.*.<GtkButton>.*" style "dialog-button"
+widget "*.toggleFindInFiles" style "toggle-button"
+widget "*.toggleReplaceInFiles" style "toggle-button"
+widget "wizard_dialog" style "wizard-dialog"
+
+widget "*CompletionScrolledWindow*" style "completion_scrollbar"
+
+widget_class "*<GtkMenu>*" style "menu"
+widget_class "*<GtkMenuItem>*" style "menu-item"
+widget_class "*<GtkSeparatorMenuItem>" style "menu-separator"
+widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
+
+widget_class "*<GtkToolbar>*" style "toolbar"
+
+widget_class "*.<GtkTreeView>*" style "treeview"
+widget_class "*.<GtkTreeView>.<GtkButton>" style "tree-header"
+widget_class "*.<GtkList>.<GtkButton>" style "tree-header"
+
+widget_class "*<GtkIconView>" style "icon-view"
+
+widget_class "*.<GtkComboBox>.*" style "combo-box"
+widget_class "*.<GtkComboBoxText>.<GtkEntry>" style "entry"
+widget_class "*.<GtkComboBoxEntry>.<GtkEntry>" style "entry"
+widget_class "*.<GtkComboBoxText>.<GtkToggleButton>" style "combo-box-entry-button"
+widget_class "*.<GtkComboBoxEntry>.<GtkButton>*" style "combo-box-entry-button"
+
+widget "gtk-tooltip*" style "tooltip"
+
+binding "gtk-mac-expand-collapse-cursor-row"
+{
+    unbind "Left"
+    unbind "Right"
+    bind "Left" { "expand-collapse-cursor-row" (0, 0, 0) }
+    bind "Right" { "expand-collapse-cursor-row" (0, 1, 0) }
+}
+
+class "GtkTreeView" binding "gtk-mac-expand-collapse-cursor-row"
+
+# HACK: PropertyGrid toolbar option buttons must have murrine style
+widget "*MonoDevelop.PropertyGridToolbar.GtkRadioButton" style "toggle-button"
+
+# BooleanEditorCell must always have murrine style
+widget_class "*BooleanEditor*" style "propertygrid-radio-or-check-box"
+
+# disable hover background on link labels
+class "GtkLabel" style "link-label-fix"

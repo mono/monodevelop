@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Codons
 			options = (TreePadOption[]) ops.ToArray (typeof(TreePadOption));
 		}
 		
-		protected override IPadContent CreatePad ()
+		protected override PadContent CreatePad ()
 		{
 			if (builders == null)
 				BuildChildren ();

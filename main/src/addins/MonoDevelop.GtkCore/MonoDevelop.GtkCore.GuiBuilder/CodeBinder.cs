@@ -47,6 +47,7 @@ using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Refactoring;
 using System.Xml.XPath;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -134,7 +135,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
 		}
 
-		public void UpdateField (Stetic.Component obj, string oldName)
+		public async Task UpdateField (Stetic.Component obj, string oldName)
 		{
 			if (targetObject == null)
 				return;
@@ -151,7 +152,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (cls != null) {
 				var f = ClassUtils.FindWidgetField (cls, oldName);
 				if (f != null) {
-					MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (f, newName);
+					await MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (f, newName);
 				}
 			}
 		}
@@ -194,7 +195,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			return cls.Locations.First ();
 		}
 
-		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
+		public async Task UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
 		{
 			if (targetObject == null)
 				return;
@@ -208,11 +209,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var met = FindSignalHandler (cls, oldSignal);
 			if (met == null)
 				return;
-			MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (met, newSignal.Handler);
+			await MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (met, newSignal.Handler);
 		}
 
 		/// Adds a field to the class
-		public void BindToField (Stetic.Component obj)
+		public async Task BindToField (Stetic.Component obj)
 		{
 			if (targetObject == null)
 				return;
@@ -224,11 +225,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 
 			var location = GetSourceLocation(cls);
-			var doc = IdeApp.Workbench.OpenDocument (location.SourceTree.FilePath, project, true);
+			var doc = await IdeApp.Workbench.OpenDocument (location.SourceTree.FilePath, project, true);
 			
 			var editor = doc.Editor;
 			if (editor != null) {
-				CodeGenerationService.AddNewMember (project, cls, cls.Locations.First (), GetFieldCode (cls, obj, name));
+				await CodeGenerationService.AddNewMember (project, cls, cls.Locations.First (), GetFieldCode (cls, obj, name));
 			}
 		}
 		

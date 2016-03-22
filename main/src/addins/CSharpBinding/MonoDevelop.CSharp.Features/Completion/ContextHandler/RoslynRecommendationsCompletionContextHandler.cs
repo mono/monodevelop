@@ -41,7 +41,7 @@ using MonoDevelop.Ide.CodeCompletion;
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 
-	//	public class CompletionEngineCache
+	//	class CompletionEngineCache
 	//	{
 	//		public List<INamespace>  namespaces;
 	//		public ICompletionData[] importCompletion;
@@ -69,14 +69,14 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return IsException (type.BaseType);
 		}
 
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var semanticModel = ctx.SemanticModel;
 			var result = new List<CompletionData> ();
 			if (info.TriggerCharacter == ' ') {
 				var newExpression = ObjectCreationContextHandler.GetObjectCreationNewExpression (ctx.SyntaxTree, completionContext.Position, cancellationToken);
 				if (newExpression == null && info.CompletionTriggerReason == CompletionTriggerReason.CharTyped  && !ctx.LeftToken.IsKind (SyntaxKind.EqualsToken) && !ctx.LeftToken.IsKind (SyntaxKind.EqualsEqualsToken))
-					return Enumerable.Empty<CompletionData> ();
+					return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 				completionResult.AutoCompleteEmptyMatch = false;
 			}
@@ -131,7 +131,17 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					continue;
 
 				var newData = engine.Factory.CreateSymbolCompletionData (this, symbol, symbol.Name.EscapeIdentifier (isInQuery));
-				var categorySymbol = (ISymbol)symbol.ContainingType ?? symbol.ContainingNamespace;
+				ISymbol categorySymbol;
+				var method = symbol as IMethodSymbol;
+				if (method != null) {
+					if (method.IsReducedExtension ()) {
+						categorySymbol = method.ReceiverType;
+					} else {
+						categorySymbol = (ISymbol)symbol.ContainingType;
+					}
+				} else {
+					categorySymbol = (ISymbol)symbol.ContainingType ?? symbol.ContainingNamespace;
+				}
 				if (categorySymbol != null) {
 					CompletionCategory category;
 					var key = categorySymbol.ToDisplayString ();
@@ -142,7 +152,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				}
 				addData (newData);
 			}
-			return result;
+			return Task.FromResult ((IEnumerable<CompletionData>)result);
 		}
 
 		protected override async Task<bool> IsSemanticTriggerCharacterAsync(Document document, int characterPosition, CancellationToken cancellationToken)

@@ -37,6 +37,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Web.SessionState;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -141,7 +142,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		ITypeSymbol GetElementType (Compilation compilation, ITypeSymbol type)
 		{
-			ITypeSymbol tmp = type;
+			ITypeSymbol tmp = null;
 			foreach (var baseType in type.AllInterfaces) {
 				if (baseType != null && baseType.Name == "IEnumerable") {
 					if (baseType.TypeArguments.Length > 0) {
@@ -188,7 +189,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext).Result;
 				
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
-					if (GetElementType (compilation, data.Symbol.GetReturnType ()).TypeKind != TypeKind.Error) {
+					if (data.Symbol == null)
+						continue;
+					var type = data.Symbol.GetReturnType ();
+					if (type == null)
+						continue;
+					if (GetElementType (compilation, type) != null) {
 						var method = data as IMethodSymbol;
 						if (method != null) {
 							if (method.Parameters.Length == 0)
@@ -203,7 +209,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
 					var m = data.Symbol as IParameterSymbol;
 					if (m != null) {
-						if (GetElementType (compilation, m.Type).TypeKind != TypeKind.Error)
+						if (GetElementType (compilation, m.Type) != null)
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
@@ -212,8 +218,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 					var m = sym.Symbol as ILocalSymbol;
 					if (m == null)
 						continue;
-					if (GetElementType (compilation, m.Type).TypeKind != TypeKind.Error)
-						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)m).Icon));
+					if (GetElementType (compilation, m.Type) != null)
+						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)sym).Icon));
 				}
 			}
 			return new CodeTemplateListDataProvider (result);

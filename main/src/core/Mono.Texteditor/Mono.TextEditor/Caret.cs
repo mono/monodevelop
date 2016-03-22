@@ -105,6 +105,10 @@ namespace Mono.TextEditor
 			set {
 				if (caretOffset == value)
 					return;
+				if (caretOffset < 0)
+					throw new InvalidOperationException ($"Caret offset must be >= 0 tried to set {value}");
+				if (caretOffset > TextEditorData.Length)
+					throw new InvalidOperationException ($"Caret offset must be < Length {TextEditorData.Length} but was {value}");
 				DocumentLocation old = Location;
 				caretOffset = value;
 				offsetVersion = TextEditorData.Document.Version;
@@ -347,7 +351,7 @@ namespace Mono.TextEditor
 					result += System.Math.Min (Column - 1, line.Length);
 				}
 			}
-			caretOffset = result;
+			caretOffset = System.Math.Max(0, result);
 			offsetVersion = doc.Version;
 		}
 

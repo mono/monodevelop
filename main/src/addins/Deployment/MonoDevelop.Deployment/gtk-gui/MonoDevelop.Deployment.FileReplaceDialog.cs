@@ -5,44 +5,81 @@ namespace MonoDevelop.Deployment
 	public partial class FileReplaceDialog
 	{
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Label label7;
-		private global::Gtk.Image image1;
-		private global::Gtk.Label label5;
-		private global::Gtk.Label label6;
-		private global::Gtk.Label label2;
-		private global::Gtk.HBox hbox2;
-		private global::Gtk.Label label8;
-		private global::Gtk.VBox vbox4;
-		private global::Gtk.HBox hbox3;
-		private global::Gtk.RadioButton radioReplace;
-		private global::Gtk.VBox vbox5;
-		private global::Gtk.Label replaceLabel;
-		private global::Gtk.HBox hbox6;
-		private global::Gtk.Label label25;
-		private global::Gtk.Label sourceName;
-		private global::Gtk.HBox hbox7;
-		private global::Gtk.Label label26;
-		private global::Gtk.Label sourceModified;
-		private global::Gtk.HBox hbox4;
-		private global::Gtk.RadioButton radioKeep;
-		private global::Gtk.VBox vbox6;
-		private global::Gtk.Label keepLabel;
-		private global::Gtk.HBox hbox8;
-		private global::Gtk.Label label27;
-		private global::Gtk.Label targetName;
-		private global::Gtk.HBox hbox9;
-		private global::Gtk.Label label28;
-		private global::Gtk.Label targetModified;
-		private global::Gtk.HBox hbox5;
-		private global::Gtk.RadioButton radioNewest;
-		private global::Gtk.VBox vbox7;
-		private global::Gtk.Label newestLabel;
-		private global::Gtk.Label label20;
-		private global::Gtk.CheckButton applyAll;
-		private global::Gtk.Label label11;
-		private global::Gtk.Button cancelButton;
-		private global::Gtk.Button okButton;
 		
+		private global::Gtk.Label label7;
+		
+		private global::MonoDevelop.Components.ImageView image1;
+		
+		private global::Gtk.Label label5;
+		
+		private global::Gtk.Label label6;
+		
+		private global::Gtk.Label label2;
+		
+		private global::Gtk.HBox hbox2;
+		
+		private global::Gtk.Label label8;
+		
+		private global::Gtk.VBox vbox4;
+		
+		private global::Gtk.HBox hbox3;
+		
+		private global::Gtk.RadioButton radioReplace;
+		
+		private global::Gtk.VBox vbox5;
+		
+		private global::Gtk.Label replaceLabel;
+		
+		private global::Gtk.HBox hbox6;
+		
+		private global::Gtk.Label label25;
+		
+		private global::Gtk.Label sourceName;
+		
+		private global::Gtk.HBox hbox7;
+		
+		private global::Gtk.Label label26;
+		
+		private global::Gtk.Label sourceModified;
+		
+		private global::Gtk.HBox hbox4;
+		
+		private global::Gtk.RadioButton radioKeep;
+		
+		private global::Gtk.VBox vbox6;
+		
+		private global::Gtk.Label keepLabel;
+		
+		private global::Gtk.HBox hbox8;
+		
+		private global::Gtk.Label label27;
+		
+		private global::Gtk.Label targetName;
+		
+		private global::Gtk.HBox hbox9;
+		
+		private global::Gtk.Label label28;
+		
+		private global::Gtk.Label targetModified;
+		
+		private global::Gtk.HBox hbox5;
+		
+		private global::Gtk.RadioButton radioNewest;
+		
+		private global::Gtk.VBox vbox7;
+		
+		private global::Gtk.Label newestLabel;
+		
+		private global::Gtk.Label label20;
+		
+		private global::Gtk.CheckButton applyAll;
+		
+		private global::Gtk.Label label11;
+		
+		private global::Gtk.Button cancelButton;
+		
+		private global::Gtk.Button okButton;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -70,9 +107,10 @@ namespace MonoDevelop.Deployment
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label7]));
 			w2.Position = 0;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.image1 = new global::Gtk.Image ();
+			this.image1 = new global::MonoDevelop.Components.ImageView ();
 			this.image1.Name = "image1";
-			this.image1.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-warning", global::Gtk.IconSize.Dialog);
+			this.image1.IconId = "gtk-dialog-warning";
+			this.image1.IconSize = ((global::Gtk.IconSize)(6));
 			this.hbox1.Add (this.image1);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.image1]));
 			w3.Position = 1;
@@ -390,26 +428,11 @@ namespace MonoDevelop.Deployment
 			this.cancelButton.CanFocus = true;
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.UseUnderline = true;
-			// Container child cancelButton.Gtk.Container+ContainerChild
-			global::Gtk.Alignment w39 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
-			// Container child GtkAlignment.Gtk.Container+ContainerChild
-			global::Gtk.HBox w40 = new global::Gtk.HBox ();
-			w40.Spacing = 2;
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Image w41 = new global::Gtk.Image ();
-			w41.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-cancel", global::Gtk.IconSize.Button);
-			w40.Add (w41);
-			// Container child GtkHBox.Gtk.Container+ContainerChild
-			global::Gtk.Label w43 = new global::Gtk.Label ();
-			w43.LabelProp = global::Mono.Unix.Catalog.GetString ("_Cancel deployment");
-			w43.UseUnderline = true;
-			w40.Add (w43);
-			w39.Add (w40);
-			this.cancelButton.Add (w39);
+			this.cancelButton.Label = global::Mono.Unix.Catalog.GetString ("_Cancel deployment");
 			this.AddActionWidget (this.cancelButton, -6);
-			global::Gtk.ButtonBox.ButtonBoxChild w47 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w38 [this.cancelButton]));
-			w47.Expand = false;
-			w47.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w39 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w38 [this.cancelButton]));
+			w39.Expand = false;
+			w39.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.okButton = new global::Gtk.Button ();
 			this.okButton.CanDefault = true;
@@ -419,10 +442,10 @@ namespace MonoDevelop.Deployment
 			this.okButton.UseUnderline = true;
 			this.okButton.Label = "gtk-ok";
 			this.AddActionWidget (this.okButton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w48 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w38 [this.okButton]));
-			w48.Position = 1;
-			w48.Expand = false;
-			w48.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w40 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w38 [this.okButton]));
+			w40.Position = 1;
+			w40.Expand = false;
+			w40.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

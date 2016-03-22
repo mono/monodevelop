@@ -117,11 +117,11 @@ namespace Mono.TextEditor
 
 			HideMouseCursor ();
 
+			if (textEditorData.IsSomethingSelected && textEditorData.Options.EnableSelectionWrappingKeys && IsSpecialKeyForSelection (unicodeKey)) {
+				textEditorData.SelectionSurroundingProvider.HandleSpecialSelectionKey (textEditorData, unicodeKey);
+				return;
+			}
 			using (var undo = Document.OpenUndoGroup ()) {
-				if (textEditorData.IsSomethingSelected && textEditorData.Options.EnableSelectionWrappingKeys && IsSpecialKeyForSelection (unicodeKey)) {
-					textEditorData.SelectionSurroundingProvider.HandleSpecialSelectionKey (textEditorData, unicodeKey);
-					return;
-				}
 
 				textEditorData.DeleteSelectedText (
 					textEditorData.IsSomethingSelected ? textEditorData.MainSelection.SelectionMode != SelectionMode.Block : true);

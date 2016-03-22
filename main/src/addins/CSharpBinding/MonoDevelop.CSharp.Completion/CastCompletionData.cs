@@ -35,22 +35,17 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class CastCompletionData : RoslynCompletionData
+	class CastCompletionData : RoslynSymbolCompletionData
 	{
-		readonly RoslynCodeCompletionFactory factory;
 		readonly SemanticModel semanticModel;
-		readonly ISymbol member;
 		readonly SyntaxNode nodeToCast;
 		readonly ITypeSymbol targetType;
 
-		public CastCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, ISymbol member, SyntaxNode nodeToCast, ITypeSymbol targetType) : base(keyHandler)
+		public CastCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, ISymbol symbol, SyntaxNode nodeToCast, ITypeSymbol targetType) : base(keyHandler, factory, symbol)
 		{
 			this.targetType = targetType;
 			this.nodeToCast = nodeToCast;
-			this.member = member;
 			this.semanticModel = semanticModel;
-			this.factory = factory;
-			this.DisplayText = member.Name;
 		}
 
 		public override string GetDisplayDescription (bool isSelected)
@@ -61,17 +56,21 @@ namespace MonoDevelop.CSharp.Completion
 			return "<span foreground=\"darkgray\">" + description + "</span>";
 		}
 
-
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var editor = factory.Ext.Editor;
 			var offset = window.CodeCompletionContext.TriggerOffset;
 			using (var undo = editor.OpenUndoGroup ()) {
-				editor.ReplaceText (offset, editor.CaretOffset - offset, member.Name);
+				base.InsertCompletionText (window, ref ka, descriptor);
 				var span = nodeToCast.Span;
 				var type = SafeMinimalDisplayString (targetType, semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat);
 				editor.ReplaceText (span.Start, span.Length, "((" + type + ")" + nodeToCast + ")");
 			}
+		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
 		}
 	}
 }

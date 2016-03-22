@@ -91,7 +91,7 @@ namespace Mono.TextEditor
 		}
 		
 		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.TextEditor"/> converts tabs to spaces.
+		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.MonoTextEditor"/> converts tabs to spaces.
 		/// It is possible to overwrite the default options value for certain languages (like F#).
 		/// </summary>
 		/// <value>
@@ -313,7 +313,7 @@ namespace Mono.TextEditor
 					nextTipOffset = tipOffset;
 					nextTipScheduledTime = DateTime.FromBinary (0);
 					tipItem = null;
-                    TooltipTimer ();
+					TooltipTimer ();
 				}
 			}
 			return 0; //FALSE
@@ -650,6 +650,7 @@ namespace Mono.TextEditor
 		{
 			var result = base.OnFocusOutEvent (evnt);
 			imContextNeedsReset = true;
+			mouseButtonPressed = 0;
 			imContext.FocusOut ();
 			RemoveFocusOutTimerId ();
 
@@ -756,7 +757,11 @@ namespace Mono.TextEditor
 				if (parent != null) {
 					parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				}
-				
+
+				// set additionally the real parent background for gtk themes that use the content background
+				// to draw the scrollbar slider trough.
+				this.Parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+
 				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				settingWidgetBg = false;
 			}
@@ -1287,9 +1292,9 @@ namespace Mono.TextEditor
 		Margin oldMargin = null;
 		bool overChildWidget;
 
-		public event EventHandler BeginHover;
+		public event EventHandler<Xwt.MouseMovedEventArgs> BeginHover;
 
-		protected virtual void OnBeginHover (EventArgs e)
+		protected virtual void OnBeginHover (Xwt.MouseMovedEventArgs e)
 		{
 			var handler = BeginHover;
 			if (handler != null)
@@ -1298,7 +1303,7 @@ namespace Mono.TextEditor
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			OnBeginHover (EventArgs.Empty);
+			OnBeginHover (new Xwt.MouseMovedEventArgs (e.Time, e.X, e.Y));
 			try {
 				// The coordinates have to be properly adjusted to the origin since
 				// the event may come from a child widget
@@ -1306,6 +1311,7 @@ namespace Mono.TextEditor
 				GdkWindow.GetOrigin (out rx, out ry);
 				double x = (int) e.XRoot - rx;
 				double y = (int) e.YRoot - ry;
+
 				overChildWidget = containerChildren.Any (w => w.Child.Allocation.Contains ((int)x, (int)y));
 
 				RemoveScrollWindowTimer ();
@@ -2666,6 +2672,8 @@ namespace Mono.TextEditor
 
 				//draw the highlight rectangle
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+
+				// FIXME: VV: Remove gradient features
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
 						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),

@@ -34,11 +34,13 @@ using System.Globalization;
 namespace MonoDevelop.Projects.MSBuild
 {
 
-	class MSBuildPropertyEvaluated: MSBuildPropertyCore, IMSBuildPropertyEvaluated
+	class MSBuildPropertyEvaluated: MSBuildPropertyCore, IMSBuildPropertyEvaluated, IMetadataProperty
 	{
 		string value;
 		string evaluatedValue;
 		string name;
+		MSBuildProperty linkedProperty;
+		LinkedPropertyFlags flags;
 
 		internal MSBuildPropertyEvaluated (MSBuildProject project, string name, string value, string evaluatedValue)
 		{
@@ -56,13 +58,74 @@ namespace MonoDevelop.Projects.MSBuild
 		public bool IsImported { get; set; }
 
 		public override string UnevaluatedValue {
-			get { return value; }
+			get {
+				if (linkedProperty != null)
+					return linkedProperty.UnevaluatedValue;
+				return value; 
+			}
+		}
+
+		internal bool IsNew {
+			get { return (flags & LinkedPropertyFlags.IsNew) != 0; }
+			set {
+				if (value)
+					flags |= LinkedPropertyFlags.IsNew;
+				else
+					flags &= ~LinkedPropertyFlags.IsNew; 
+			}
+		}
+
+		public MSBuildProperty LinkedProperty {
+			get {
+				return linkedProperty;
+			}
 		}
 
 		internal override string GetPropertyValue ()
 		{
+			if (linkedProperty != null)
+				return linkedProperty.Value;
 			return evaluatedValue;
 		}
+
+		public void LinkToProperty (MSBuildProperty property)
+		{
+			linkedProperty = property;
+			if (linkedProperty != null && !linkedProperty.Modified && !IsNew)
+				linkedProperty.InitEvaluatedValue (evaluatedValue);
+		}
+
+		void IMetadataProperty.SetValue (string value, bool preserveCase, bool mergeToMainGroup, MSBuildValueType valueType)
+		{
+			if (linkedProperty == null)
+				throw new InvalidOperationException ("Evaluated property can't be modified");
+			linkedProperty.SetValue (value, preserveCase, mergeToMainGroup, valueType);
+		}
+
+		void IMetadataProperty.SetValue (FilePath value, bool relativeToProject, FilePath relativeToPath, bool mergeToMainGroup)
+		{
+			if (linkedProperty == null)
+				throw new InvalidOperationException ("Evaluated property can't be modified");
+			linkedProperty.SetValue (value, relativeToProject, relativeToPath, mergeToMainGroup);
+		}
+
+		void IMetadataProperty.SetValue (object value, bool mergeToMainGroup)
+		{
+			if (linkedProperty == null)
+				throw new InvalidOperationException ("Evaluated property can't be modified");
+			linkedProperty.SetValue (value, mergeToMainGroup);
+		}
 	}
-	
+
+	[Flags]
+	public enum LinkedPropertyFlags: byte
+	{
+		Modified = 1,
+		IsNew = 2,
+		HasDefaultValue = 4,
+		Overwritten = 8,
+		MergeToMainGroup = 16,
+		Imported = 32,
+		EvaluatedValueModified = 64
+	}
 }

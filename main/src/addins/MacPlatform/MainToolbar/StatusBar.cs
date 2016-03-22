@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 using AppKit;
 using Foundation;
 using CoreAnimation;
@@ -37,19 +38,34 @@ using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
-	class StatusIcon : StatusBarIcon
+	class StatusIcon : NSView, StatusBarIcon
 	{
 		StatusBar bar;
-		CALayer layer;
+		NSImageView imageView;
 
-		public StatusIcon (StatusBar bar, CALayer layer, NSTrackingArea trackingArea)
+		public StatusIcon (StatusBar bar) : base (CGRect.Empty)
 		{
+			imageView = new NSImageView (CGRect.Empty);
+			AddSubview (imageView);
+
+			var trackingArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect | NSTrackingAreaOptions.MouseEnteredAndExited, this, null);
+			AddTrackingArea (trackingArea);
+
 			this.bar = bar;
-			this.layer = layer;
-			TrackingArea = trackingArea;
+		}
+
+		public override CGRect Frame {
+			get {
+				return base.Frame;
+			}
+			set {
+				base.Frame = value;
+				imageView.Frame = new CGRect (0, 0, value.Width, value.Height);
+			}
 		}
 
 		public void SetAlertMode (int seconds)
@@ -57,18 +73,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			// Create fade-out fade-in animation.
 		}
 
-		public void Dispose ()
+		public new void Dispose ()
 		{
-			layer.RemoveFromSuperLayer ();
-			bar.RemoveStatusLayer (layer);
+			bar.RemoveStatusIcon (this);
+			RemoveFromSuperview ();
+			base.Dispose ();
 		}
 
-		public string ToolTip {
-			get;
-			set;
-		}
-
-		internal NSTrackingArea TrackingArea {
+		public new string ToolTip {
 			get;
 			set;
 		}
@@ -78,8 +90,28 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return image; }
 			set {
 				image = value;
-				layer.SetImage (value, bar.Window.BackingScaleFactor);
+				imageView.Image = value.ToNSImage ();
+				SetFrameSize (new CGSize (image.Width, image.Height));
 			}
+		}
+
+		public override void MouseEntered (NSEvent theEvent)
+		{
+			if (Entered != null) {
+				Entered (this, EventArgs.Empty);
+			}
+		}
+
+		public override void MouseExited (NSEvent theEvent)
+		{
+			if (Exited != null) {
+				Exited (this, EventArgs.Empty);
+			}
+		}
+
+		public override void MouseUp (NSEvent theEvent)
+		{
+			NotifyClicked (StatusBar.NSEventButtonToXwt (theEvent));
 		}
 
 		internal void NotifyClicked (Xwt.PointerButton button)
@@ -91,37 +123,247 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
+		public event EventHandler<EventArgs> Entered;
+		public event EventHandler<EventArgs> Exited;
+	}
+
+	class BuildResultsView : NSView
+	{
+		NSAttributedString resultString;
+		int resultCount;
+		public int ResultCount { 
+			get {
+				return resultCount;
+			}
+			set {
+				resultCount = value;
+				resultString = new NSAttributedString (value.ToString (), foregroundColor: Styles.BaseForegroundColor.ToNSColor (),
+					font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
+				ResizeToFit ();
+			}
+		}
+
+		NSImage iconImage;
+		public NSImage IconImage {
+			get {
+				return iconImage;
+			}
+			set {
+				iconImage = value;
+				ResizeToFit ();
+			}
+		}
+
+		public BuildResultsView () : base (new CGRect (0, 0, 0, 0))
+		{
+		}
+
+		public override void DrawRect (CGRect dirtyRect)
+		{
+			if (iconImage == null || resultString == null) {
+				return;
+			}
+
+			iconImage.Draw (new CGRect (0, (Frame.Size.Height - iconImage.Size.Height) / 2, iconImage.Size.Width, iconImage.Size.Height));
+			resultString.DrawAtPoint (new CGPoint (iconImage.Size.Width, (Frame.Size.Height - resultString.Size.Height) / 2));
+		}
+
+		void ResizeToFit ()
+		{
+			if (iconImage == null || resultString == null) {
+				return;
+			}
+
+			var stringSize = resultString.GetSize ();
+			Frame = new CGRect (Frame.X, Frame.Y, iconImage.Size.Width + stringSize.Width, Frame.Height);
+			NeedsDisplay = true;
+		}
+
+		public override void MouseDown (NSEvent theEvent)
+		{
+			IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
+		}
+	}
+
+	// We need a separate layer backed view to put over the NSTextFields because the NSTextField draws itself differently
+	// if it is layer backed so we can't make it or its superview layer backed.
+	class ProgressView : NSView
+	{
+		const string ProgressLayerFadingId = "ProgressLayerFading";
+		const string growthAnimationKey = "bounds";
+
+		CALayer progressLayer;
+		Stack<double> progressMarks = new Stack<double> ();
+		bool inProgress;
+		double oldFraction;
+
+		const int barHeight = 2;
+
+		public ProgressView ()
+		{
+			WantsLayer = true;
+			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 3 : 4;
+
+			progressLayer = new CALayer ();
+			Layer.AddSublayer (progressLayer);
+			Layer.BorderWidth = 0;
+
+			var xamBlue = NSColor.FromRgba (52f / 255, 152f / 255, 219f / 255, 1f);
+			progressLayer.BackgroundColor = xamBlue.CGColor;
+			progressLayer.BorderWidth = 0;
+			progressLayer.FillMode = CAFillMode.Forwards;
+			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
+			progressLayer.AnchorPoint = new CGPoint (0, 0);
+		}
+
+		public void BeginProgress ()
+		{
+			oldFraction = 0.0;
+			progressLayer.Hidden = false;
+			progressLayer.Opacity = 1;
+			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
+		}
+
+		public void SetProgressFraction (double work)
+		{
+			progressMarks.Push (work);
+			if (!inProgress) {
+				inProgress = true;
+				StartProgress (progressMarks.Peek ());
+			}
+		}
+
+		public void EndProgress ()
+		{
+			progressMarks.Clear ();
+			if (progressLayer != null) {
+				progressLayer.RemoveAnimation (growthAnimationKey);
+				progressLayer.Hidden = true;
+			}
+			inProgress = false;
+		}
+
+		CAAnimation CreateMoveAndGrowAnimation (CALayer progress, double growToFraction)
+		{
+			CAAnimationGroup grp = CAAnimationGroup.CreateAnimation ();
+			grp.Duration = 0.2;
+			grp.FillMode = CAFillMode.Forwards;
+			grp.RemovedOnCompletion = false;
+
+			CABasicAnimation grow = CABasicAnimation.FromKeyPath ("bounds");
+			grow.From = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)oldFraction, barHeight));
+			grow.To = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)growToFraction, barHeight));
+			grp.Animations = new [] {
+				grow,
+			};
+			return grp;
+		}
+
+		CAAnimation CreateAutoPulseAnimation ()
+		{
+			CABasicAnimation move = CABasicAnimation.FromKeyPath ("position.x");
+			move.From = NSNumber.FromDouble (-frameAutoPulseWidth);
+			move.To = NSNumber.FromDouble (Frame.Width + frameAutoPulseWidth);
+			move.RepeatCount = float.PositiveInfinity;
+			move.RemovedOnCompletion = false;
+			move.Duration = 4;
+			return move;
+		}
+
+		void AttachFadeoutAnimation (CALayer progress, CAAnimation animation, Func<bool> fadeoutVerifier)
+		{
+			animation.AnimationStopped += (sender, e) => {
+				if (!fadeoutVerifier ())
+					return;
+
+				CABasicAnimation fadeout = CABasicAnimation.FromKeyPath ("opacity");
+				fadeout.From = NSNumber.FromDouble (1);
+				fadeout.To = NSNumber.FromDouble (0);
+				fadeout.Duration = 0.5;
+				fadeout.FillMode = CAFillMode.Forwards;
+				fadeout.RemovedOnCompletion = false;
+				fadeout.AnimationStopped += (sender2, e2) => {
+					if (!e2.Finished)
+						return;
+
+					inProgress = false;
+					progress.Opacity = 0;
+					progress.RemoveAllAnimations ();
+				};
+				progress.Name = ProgressLayerFadingId;
+				progress.AddAnimation (fadeout, "opacity");
+			};
+			progress.AddAnimation (animation, growthAnimationKey);
+		}
+
+		public void StartProgress (double newFraction)
+		{
+			progressMarks.Clear ();
+			var grp = CreateMoveAndGrowAnimation (progressLayer, newFraction);
+			oldFraction = newFraction;
+
+			AttachFadeoutAnimation (progressLayer, grp, () => {
+				if (oldFraction < 1 && inProgress) {
+					if (progressMarks.Count != 0) {
+						StartProgress (progressMarks.Peek ());
+					} else {
+						inProgress = false;
+					}
+					return false;
+				}
+				return true;
+			});
+		}
+
+		const double frameAutoPulseWidth = 100;
+		public void StartProgressAutoPulse ()
+		{
+			var move = CreateAutoPulseAnimation ();
+			AttachFadeoutAnimation (progressLayer, move, () => true);
+		}
 	}
 
 	[Register]
-	class StatusBar : NSTextField, IStatusBar
+	class StatusBar : NSButton, IStatusBar
 	{
-		const string ProgressLayerId = "ProgressLayer";
+		public enum MessageType
+		{
+			Ready,
+			Information,
+			Warning,
+			Error,
+		}
+
 		const string ProgressLayerFadingId = "ProgressLayerFading";
-		const string StatusIconPrefixId = "StatusLayer";
-		const string BuildIconLayerId = "BuildIconLayer";
-		const string BuildTextLayerId = "BuildTextLayer";
-		const string SeparatorLayerId = "SeparatorLayer";
 		const string growthAnimationKey = "bounds";
 		StatusBarContextHandler ctxHandler;
 		Stack<double> progressMarks = new Stack<double> ();
 		bool currentTextIsMarkup;
 		string text;
+		MessageType messageType;
 		NSColor textColor;
 		NSImage image;
 		IconId icon;
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
+		readonly BuildResultsView buildResults;
 
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
+			nfloat fontSize = NSFont.SystemFontSize;
+			if (Window != null) {
+				fontSize -= Window.Screen.BackingScaleFactor == 2 ? 2 : 1;
+			} else {
+				fontSize -= 1;
+			}
+
 			return new NSAttributedString (text, new NSStringAttributes {
 				ForegroundColor = color,
 				ParagraphStyle = new NSMutableParagraphStyle {
 					HeadIndent = imageView.Frame.Width,
 					LineBreakMode = NSLineBreakMode.TruncatingMiddle,
 				},
-				Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize - 2),
+				Font = NSFont.SystemFontOfSize (fontSize),
 			});
 		}
 
@@ -138,23 +380,36 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Editable = false,
 			Selectable = false,
 		};
+		NSTrackingArea textFieldArea;
+		ProgressView progressView;
 
 		TaskEventHandler updateHandler;
 		public StatusBar ()
 		{
-			AllowsEditingTextAttributes = Selectable = Editable = false;
+			Cell = new ColoredButtonCell ();
+			BezelStyle = NSBezelStyle.TexturedRounded;
+			Title = "";
+			Enabled = false;
 
-			textField.Cell = new VerticallyCenteredTextFieldCell (yOffset: -0.5f);
+			LoadStyles ();
+
+			// We don't need to resize the Statusbar here as a style change will trigger a complete relayout of the Awesomebar
+			Ide.Gui.Styles.Changed += LoadStyles;
+
+			textField.Cell = new VerticallyCenteredTextFieldCell (0f);
 			textField.Cell.StringValue = "";
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, NSColor.DisabledControlText);
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+
+			// The rect is empty because we use InVisibleRect to track the whole of the view.
+			textFieldArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect, this, null);
+			textField.AddTrackingArea (textFieldArea);
+
+			imageView.Frame = new CGRect (0.5, 0, 0, 0);
 			imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 
-			// Fixes a render glitch of a whiter bg than the others.
-			if (MacSystemInformation.OsVersion >= MacSystemInformation.Yosemite)
-				BezelStyle = NSTextFieldBezelStyle.Rounded;
+			buildResults = new BuildResultsView ();
+			buildResults.Hidden = true;
 
-			WantsLayer = true;
-			Layer.CornerRadius = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 4;
 			ctxHandler = new StatusBarContextHandler ();
 			ctxHandler.MessageChanged += (object sender, StatusMessageContextMessageChangedArgs e) => {
 				if (e.Context != null) {
@@ -183,7 +438,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			};
 
 			updateHandler = delegate {
-				int ec=0, wc=0;
+				int ec = 0, wc = 0;
 
 				foreach (var t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
@@ -193,27 +448,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 
 				Runtime.RunInMainThread (delegate {
-					if (ec > 0) {
-						buildResultVisible = true;
-						buildResultText.AttributedString = new NSAttributedString (ec.ToString (), foregroundColor: NSColor.Text,
-							font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-						buildResultText.ContentsScale = Window.BackingScaleFactor;
-						buildResultIcon.SetImage (buildImageId = "md-status-error-count", Window.BackingScaleFactor);
-					} else if (wc > 0) {
-						buildResultVisible = true;
-						buildResultText.AttributedString = new NSAttributedString (wc.ToString (), foregroundColor: NSColor.Text,
-							font: NSFont.SystemFontOfSize (NSFont.SmallSystemFontSize - 1));
-						buildResultText.ContentsScale = Window.BackingScaleFactor;
-						buildResultIcon.SetImage (buildImageId = "md-status-warning-count", Window.BackingScaleFactor);
-					} else
-						buildResultVisible = false;
+					buildResults.Hidden = (ec == 0 && wc == 0);
+					buildResults.ResultCount = ec > 0 ? ec : wc;
 
-					CATransaction.DisableActions = true;
-					nfloat buildResultPosition = DrawBuildResults ();
-					CATransaction.DisableActions = false;
-					if (buildResultPosition == nfloat.PositiveInfinity)
-						return;
-					textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
+					buildImageId = ec > 0 ? "md-status-error-count" : "md-status-warning-count";
+					buildResults.IconImage = ImageService.GetIcon (buildImageId, Gtk.IconSize.Menu).ToNSImage ();
+
+					RepositionStatusIcons ();
 				});
 			};
 
@@ -222,207 +463,155 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
-			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification, notif => Runtime.RunInMainThread (() => {
-				if (Window == null)
-					return;
-
-				ReconstructString (updateTrackingAreas: true);
-				foreach (var layer in Layer.Sublayers) {
-					if (layer.Name != null && layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
-						layer.SetImage (layerToStatus [layer.Name].Image, Window.BackingScaleFactor);
-				}
-				if (buildResultVisible) {
-					buildResultIcon.SetImage (buildImageId, Window.BackingScaleFactor);
-					buildResultText.ContentsScale = Window.BackingScaleFactor;
-				}
-			}));
-
+			AddSubview (buildResults);
 			AddSubview (imageView);
 			AddSubview (textField);
+
+			progressView = new ProgressView ();
+			AddSubview (progressView);
 		}
 
-		public override void DrawRect (CGRect dirtyRect)
+		public override void DidChangeBackingProperties ()
 		{
-			if (imageView.Frame.Location == CGPoint.Empty)
-				imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
-			if (textField.Frame.Location == CGPoint.Empty)
-				textField.Frame = new CGRect (imageView.Frame.Right, 0, Frame.Width - 16, Frame.Height);
+			base.DidChangeBackingProperties ();
+			ReconstructString ();
+			RepositionContents ();
+		}
 
-			base.DrawRect (dirtyRect);
+		void LoadStyles (object sender = null, EventArgs args = null)
+		{
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
+			} else {
+				Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
+			}
+
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+			textColor = ColorForType (messageType);
+			ReconstructString ();
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			TaskService.Errors.TasksAdded -= updateHandler;
 			TaskService.Errors.TasksRemoved -= updateHandler;
+			Ide.Gui.Styles.Changed -= LoadStyles;
 			base.Dispose (disposing);
 		}
 
-		NSTrackingArea textFieldArea;
-		void ReconstructString (bool updateTrackingAreas)
+		public override void DrawRect (CGRect dirtyRect)
+		{
+			base.DrawRect (dirtyRect);
+
+			if (statusIcons.Count == 0 || buildResults.Hidden) {
+				return;
+			}
+
+			var x = LeftMostStatusItemX ();
+			var sepRect = new CGRect (x - 6.5, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
+			if (!sepRect.IntersectsWith (dirtyRect)) {
+				return;
+			}
+
+			NSColor.LightGray.SetFill ();
+			NSBezierPath.FillRect (sepRect);
+		}
+
+		public override void ViewDidMoveToWindow ()
+		{
+			base.ViewDidMoveToWindow ();
+			ReconstructString ();
+			RepositionContents ();
+		}
+
+		void ReconstructString ()
 		{
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
+				textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
 				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 			} else {
 				textField.AttributedStringValue = GetStatusString (text, textColor);
 				imageView.Image = image;
 			}
-
-			var width = textField.AttributedStringValue.BoundingRectWithSize (new CGSize (nfloat.MaxValue, textField.Frame.Height),
-				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Width;
-
-			if (!updateTrackingAreas)
-				return;
-			
-			if (textFieldArea != null) {
-				RemoveTrackingArea (textFieldArea);
-				DestroyPopover ();
-			}
-
-			if (width > textField.Frame.Width) {
-				textFieldArea = new NSTrackingArea (textField.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
-				AddTrackingArea (textFieldArea);
-			} else
-				textFieldArea = null;
 		}
 
-		CALayer ProgressLayer {
-			get { return Layer.Sublayers.FirstOrDefault (l => l.Name == ProgressLayerId); }
-		}
+		readonly List<StatusIcon> statusIcons = new List<StatusIcon> ();
 
-		readonly Dictionary<string, StatusIcon> layerToStatus = new Dictionary<string, StatusIcon> ();
-		internal void RemoveStatusLayer (CALayer statusLayer)
+		internal void RemoveStatusIcon (StatusIcon icon)
 		{
-			RemoveTrackingArea (layerToStatus [statusLayer.Name].TrackingArea);
-			layerToStatus.Remove (statusLayer.Name);
-			RepositionStatusLayers ();
+			statusIcons.Remove (icon);
+
+			icon.Entered -= ShowPopoverForIcon;
+			icon.Exited -= DestroyPopover;
+			icon.Clicked -= DestroyPopover;
+
+			RepositionStatusIcons ();
 		}
 
 		nfloat LeftMostStatusItemX ()
 		{
-			if (Layer.Sublayers == null)
-				return Layer.Frame.Width;
+			if (statusIcons.Count == 0) {
+				return Frame.Width;
+			}
 
-			var left = Layer.Sublayers.Min<CALayer, nfloat> (layer => {
-				if (layer.Name == null)
-					return nfloat.PositiveInfinity;
-
-				if (layer.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal))
-					return layer.Frame.Left;
-				return nfloat.PositiveInfinity;
-			});
-			return left == nfloat.PositiveInfinity ? Layer.Frame.Width : left;
+			return statusIcons.Last ().Frame.X;
 		}
 
 		nfloat DrawSeparatorIfNeeded (nfloat right)
 		{
-			CALayer layer = Layer.Sublayers.FirstOrDefault (l => l.Name == SeparatorLayerId);
-			if (layerToStatus.Count == 0) {
-				if (layer != null)
-					layer.RemoveFromSuperLayer ();
+			NeedsDisplay = true;
+
+			if (statusIcons.Count == 0) {
 				return right;
 			}
 
-			right -= 9;
-			if (layer != null) {
-				layer.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
-				layer.SetNeedsDisplay ();
-			} else {
-				layer = CALayer.Create ();
-				layer.Name = SeparatorLayerId;
-				layer.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, 1, 16);
-				layer.BackgroundColor = NSColor.LightGray.CGColor;
-				Layer.AddSublayer (layer);
-			}
-			return right - 3;
+			return right - 12;
 		}
 
-		bool buildResultVisible;
-		readonly CATextLayer buildResultText = new CATextLayer {
-			Name = BuildTextLayerId,
-		};
 		IconId buildImageId;
-		readonly CALayer buildResultIcon = new CALayer {
-			Name = BuildIconLayerId,
-		};
-		nfloat DrawBuildResults ()
+
+		void PositionBuildResults (nfloat right)
 		{
-			if (!buildResultVisible) {
-				if (Layer.Sublayers != null) {
-					CALayer layer;
-					layer = Layer.Sublayers.FirstOrDefault (l => l.Name != null && l.Name.StartsWith (BuildIconLayerId, StringComparison.Ordinal));
-					if (layer != null)
-						layer.RemoveFromSuperLayer ();
-
-					layer = Layer.Sublayers.FirstOrDefault (l => l.Name != null && l.Name.StartsWith (BuildTextLayerId, StringComparison.Ordinal));
-					if (layer != null)
-						layer.RemoveFromSuperLayer ();
-
-					layer = Layer.Sublayers.FirstOrDefault (l => l.Name != null && l.Name.StartsWith (SeparatorLayerId, StringComparison.Ordinal));
-					if (layer != null)
-						layer.RemoveFromSuperLayer ();
-				}
-				return nfloat.PositiveInfinity;
-			}
-
-			nfloat right = DrawSeparatorIfNeeded (LeftMostStatusItemX ());
-			CGSize size = buildResultText.AttributedString.Size;
-			right = right - 6 - size.Width;
-			buildResultText.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 6 : 5, size.Width, size.Height);
-			if (buildResultText.SuperLayer == null)
-				Layer.AddSublayer (buildResultText);
-			buildResultText.SetNeedsDisplay ();
-			right -= buildResultIcon.Bounds.Width;
-			buildResultIcon.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, buildResultIcon.Bounds.Width, buildResultIcon.Bounds.Height);
-			if (buildResultIcon.SuperLayer == null)
-				Layer.AddSublayer (buildResultIcon);
-
-			return right;
+			right = DrawSeparatorIfNeeded (right);
+			right -= buildResults.Frame.Width;
+			buildResults.SetFrameOrigin (new CGPoint (right, buildResults.Frame.Y));
 		}
 
-		internal void RepositionStatusLayers ()
+		internal void RepositionStatusIcons ()
 		{
-			nfloat right = Layer.Frame.Width;
-			CATransaction.DisableActions = true;
-			foreach (var item in Layer.Sublayers) {
-				if (item.Name != null && item.Name.StartsWith (StatusIconPrefixId, StringComparison.Ordinal)) {
-					var icon = layerToStatus [item.Name];
-					if (icon.TrackingArea != null)
-						RemoveTrackingArea (icon.TrackingArea);
+			nfloat right = Frame.Width - 6;
 
-					right -= item.Bounds.Width + 6;
-					item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, item.Bounds.Width, item.Bounds.Height);
-
-					var area = new NSTrackingArea (item.Frame, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow, this, null);
-					AddTrackingArea (area);
-
-					icon.TrackingArea = area;
-				}
+			foreach (var item in statusIcons) {
+				right -= item.Bounds.Width + 1;
+				item.Frame = new CGRect (right, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 4 : 3, item.Bounds.Width, item.Bounds.Height);
 			}
 
-			nfloat buildResultPosition = DrawBuildResults ();
-			CATransaction.DisableActions = false;
-			if (buildResultPosition < right) { // We have a build result layer.
-				textField.SetFrameSize (new CGSize (buildResultPosition - 6 - textField.Frame.Left, Frame.Height));
+			PositionBuildResults (right);
+
+			right -= 2;
+
+			if (!buildResults.Hidden) { // We have a build result layer.
+				textField.SetFrameSize (new CGSize (buildResults.Frame.X - 3 - textField.Frame.Left, Frame.Height));
 			} else
-				textField.SetFrameSize (new CGSize (right - 6 - textField.Frame.Left, Frame.Height));
+				textField.SetFrameSize (new CGSize (right - 3 - textField.Frame.Left, Frame.Height));
 		}
 
-		long statusCounter;
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			var layer = CALayer.Create ();
-			layer.Name = StatusIconPrefixId + (++statusCounter);
-			layer.Bounds = new CGRect (0, 0, (nfloat)pixbuf.Width, (nfloat)pixbuf.Height);
-			var statusIcon = new StatusIcon (this, layer, null) {
+			var statusIcon = new StatusIcon (this) {
 				Image = pixbuf,
 			};
-			layerToStatus [layer.Name] = statusIcon;
+			statusIcons.Add (statusIcon);
 
-			Layer.AddSublayer (layer);
+			statusIcon.Entered += ShowPopoverForIcon;
+			statusIcon.Exited += DestroyPopover;
 
-			RepositionStatusLayers ();
+			// We need to destroy the popover otherwise the window doesn't come up correctly
+			statusIcon.Clicked += DestroyPopover;
+
+			AddSubview (statusIcon);
+			RepositionStatusIcons ();
 
 			return statusIcon;
 		}
@@ -435,45 +624,46 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void ShowError (string error)
 		{
-			ShowMessage (Stock.StatusError, error, false, NSColor.FromDeviceRgba (228f / 255, 84f / 255, 55f / 255, 1));
+			ShowMessage (Stock.StatusError, error, false, MessageType.Error);
+
 		}
 
 		public void ShowWarning (string warning)
 		{
-			ShowMessage (Stock.StatusWarning, warning, false, NSColor.FromDeviceRgba (235f / 255, 161f / 255, 7f / 255, 1));
+			ShowMessage (Stock.StatusWarning, warning, false, MessageType.Warning);
 		}
 
 		public void ShowMessage (string message)
 		{
-			ShowMessage (null, message, false, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (null, message, false, MessageType.Information);
 		}
 
 		public void ShowMessage (string message, bool isMarkup)
 		{
-			ShowMessage (null, message, true, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (null, message, true, MessageType.Information);
 		}
 
 		public void ShowMessage (IconId image, string message)
 		{
-			ShowMessage (image, message, false, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (image, message, false, MessageType.Information);
 		}
 
 		public void ShowMessage (IconId image, string message, bool isMarkup)
 		{
-			ShowMessage (image, message, isMarkup, NSColor.FromRgba (0.34f, 0.34f, 0.34f, 1));
+			ShowMessage (image, message, isMarkup, MessageType.Information);
 		}
 
-		public void ShowMessage (IconId image, string message, bool isMarkup, NSColor color)
+		public void ShowMessage (IconId image, string message, bool isMarkup, MessageType statusType)
 		{
 			Runtime.AssertMainThread ();
 
-			bool changed = LoadText (message, isMarkup, color);
+			bool changed = LoadText (message, isMarkup, statusType);
 			LoadPixbuf (image);
 			if (changed)
-				ReconstructString (updateTrackingAreas: true);
+				ReconstructString ();
 		}
 
-		bool LoadText (string message, bool isMarkup, NSColor color)
+		bool LoadText (string message, bool isMarkup, MessageType statusType)
 		{
 			message = message ?? "";
 			message = message.Replace (Environment.NewLine, " ").Replace ("\n", " ").Trim ();
@@ -483,9 +673,24 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			text = message;
 			currentTextIsMarkup = isMarkup;
-			textColor = color;
+			messageType = statusType;
+			textColor = ColorForType (statusType);
 
 			return true;
+		}
+
+		NSColor ColorForType (MessageType messageType)
+		{
+			switch (messageType) {
+				case MessageType.Error:
+					return Styles.StatusErrorTextColor.ToNSColor ();
+				case MessageType.Warning:
+					return Styles.StatusWarningTextColor.ToNSColor ();
+				case MessageType.Ready:
+					return Styles.StatusReadyTextColor.ToNSColor ();
+				default:
+					return Styles.BaseForegroundColor.ToNSColor ();
+			}
 		}
 
 		static bool iconLoaded;
@@ -514,7 +719,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				image = iconAnimation.FirstFrame.ToNSImage ();
 				xwtAnimation = iconAnimation.StartAnimation (p => {
 					image = p.ToNSImage ();
-					ReconstructString (updateTrackingAreas: false);
+					ReconstructString ();
 				});
 			} else {
 				image = ImageService.GetIcon (iconId).ToNSImage ();
@@ -526,148 +731,27 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void BeginProgress (bool autoPulse = false)
 		{
 			EndProgress ();
-			oldFraction = 0;
 
-			if (autoPulse)
-				StartProgressAutoPulse ();
+			if (AutoPulse)
+				progressView.StartProgressAutoPulse ();
+			else
+				progressView.BeginProgress ();
 		}
 
-		bool inProgress;
-		double oldFraction;
+
 		public void SetProgressFraction (double work)
 		{
-			progressMarks.Push (work);
-			if (!inProgress) {
-				inProgress = true;
-				StartProgress (progressMarks.Peek ());
-			}
+			progressView.SetProgressFraction (work);
 		}
 
 		public void EndProgress ()
 		{
-			progressMarks.Clear ();
-			if (ProgressLayer != null) {
-				ProgressLayer.RemoveAnimation (growthAnimationKey);
-				if (inProgress == false)
-					ProgressLayer.RemoveFromSuperLayer ();
-			}
-			inProgress = false;
+			progressView.EndProgress ();
 		}
 
 		public void Pulse ()
 		{
 			// Nothing to do here.
-		}
-
-		static CGColor xamBlue = new CGColor (52f / 255, 152f / 255, 219f / 255);
-		static nfloat verticalOffset = MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 2 : 0;
-		CALayer CreateProgressBarLayer (double width)
-		{
-			CALayer progress = ProgressLayer;
-			if (progress == null) {
-				progress = CALayer.Create ();
-				progress.Name = ProgressLayerId;
-				progress.BackgroundColor = xamBlue;
-				progress.BorderColor = xamBlue;
-				progress.FillMode = CAFillMode.Forwards;
-				progress.Frame = new CGRect (0, Frame.Height - barHeight - verticalOffset, (nfloat)width, barHeight);
-			}
-			return progress;
-		}
-
-		CAAnimation CreateMoveAndGrowAnimation (CALayer progress, double growToFraction)
-		{
-			CAAnimationGroup grp = CAAnimationGroup.CreateAnimation ();
-			grp.Duration = 0.2;
-			grp.FillMode = CAFillMode.Forwards;
-			grp.RemovedOnCompletion = false;
-
-			CABasicAnimation move = CABasicAnimation.FromKeyPath ("position.x");
-			double oldOffset = (progress.Frame.Width / 2) * oldFraction;
-			double newOffset = (progress.Frame.Width / 2) * growToFraction;
-			move.From = NSNumber.FromDouble (oldOffset);
-			move.To = NSNumber.FromDouble (newOffset);
-
-			CABasicAnimation grow = CABasicAnimation.FromKeyPath ("bounds");
-			grow.From = NSValue.FromCGRect (new CGRect (0, 0, progress.Frame.Width * (nfloat)oldFraction, barHeight));
-			grow.To = NSValue.FromCGRect (new CGRect (0, 0, progress.Frame.Width * (nfloat)growToFraction, barHeight));
-			grp.Animations = new [] {
-				move,
-				grow,
-			};
-			return grp;
-		}
-
-		CAAnimation CreateAutoPulseAnimation ()
-		{
-			CABasicAnimation move = CABasicAnimation.FromKeyPath ("position.x");
-			move.From = NSNumber.FromDouble (-frameAutoPulseWidth);
-			move.To = NSNumber.FromDouble (Layer.Frame.Width + frameAutoPulseWidth);
-			move.RepeatCount = float.PositiveInfinity;
-			move.RemovedOnCompletion = false;
-			move.Duration = 4;
-			return move;
-		}
-
-		void AttachFadeoutAnimation (CALayer progress, CAAnimation animation, Func<bool> fadeoutVerifier)
-		{
-			animation.AnimationStopped += (sender, e) => {
-				if (!fadeoutVerifier ())
-					return;
-
-				CABasicAnimation fadeout = CABasicAnimation.FromKeyPath ("opacity");
-				fadeout.From = NSNumber.FromDouble (1);
-				fadeout.To = NSNumber.FromDouble (0);
-				fadeout.Duration = 0.5;
-				fadeout.FillMode = CAFillMode.Forwards;
-				fadeout.RemovedOnCompletion = false;
-				fadeout.AnimationStopped += (sender2, e2) => {
-					if (!e2.Finished)
-						return;
-
-					inProgress = false;
-					progress.Opacity = 0;
-					progress.RemoveAllAnimations ();
-					progress.RemoveFromSuperLayer ();
-				};
-				progress.Name = ProgressLayerFadingId;
-				progress.AddAnimation (fadeout, "opacity");
-			};
-			progress.AddAnimation (animation, growthAnimationKey);
-			var oldLayer = ProgressLayer;
-			if (oldLayer == null)
-				Layer.AddSublayer (progress);
-
-			UpdateLayer ();
-		}
-
-		const int barHeight = 2;
-		void StartProgress (double newFraction)
-		{
-			progressMarks.Clear ();
-			var progress = CreateProgressBarLayer (Layer.Frame.Width);
-			var grp = CreateMoveAndGrowAnimation (progress, newFraction);
-			oldFraction = newFraction;
-
-			AttachFadeoutAnimation (progress, grp, () => {
-				if (oldFraction < 1 && inProgress) {
-					if (progressMarks.Count != 0) {
-						StartProgress (progressMarks.Peek ());
-					} else {
-						inProgress = false;
-					}
-					return false;
-				}
-				return true;
-			});
-		}
-
-		const double frameAutoPulseWidth = 100;
-		void StartProgressAutoPulse ()
-		{
-			var progress = CreateProgressBarLayer (frameAutoPulseWidth);
-			var move = CreateAutoPulseAnimation ();
-			AttachFadeoutAnimation (progress, move, () => true);
 		}
 
 		static NSAttributedString GetPopoverString (string text)
@@ -704,9 +788,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			((NSTextField)popover.ContentViewController.View).AttributedStringValue = attrString;
 		}
 
-		bool CreatePopoverForLayer (CALayer layer)
+		bool CreatePopoverForIcon (StatusBarIcon icon)
 		{
-			string tooltip = layerToStatus [layer.Name].ToolTip;
+			string tooltip = icon.ToolTip;
 			if (tooltip == null)
 				return false;
 
@@ -719,18 +803,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			CreatePopoverCommon (Frame.Width, textField.AttributedStringValue.Value);
 		}
 
-		void ShowPopoverForLayer (CALayer layer)
+		void ShowPopoverForIcon (object sender, EventArgs args)
 		{
 			if (popover != null)
 				return;
 
-			if (!layerToStatus.ContainsKey (layer.Name))
+			var icon = (StatusIcon) sender;
+
+			if (!CreatePopoverForIcon (icon))
 				return;
 
-			if (!CreatePopoverForLayer (layer))
-				return;
-
-			popover.Show (layer.Frame, this, NSRectEdge.MinYEdge);
+			popover.Show (icon.Frame, this, NSRectEdge.MinYEdge);
 		}
 
 		void ShowPopoverForStatusBar ()
@@ -742,59 +825,46 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			popover.Show (textField.Frame, this, NSRectEdge.MinYEdge);
 		}
 
-		void DestroyPopover ()
+		void DestroyPopover (object sender, EventArgs args)
 		{
-			oldLayer = null;
 			if (popover != null)
 				popover.Close ();
 			popover = null;
 		}
-
-		bool InTextField (CGPoint location)
-		{
-			return textField.IsMouseInRect (location, textField.Frame);
-		}
-
-		CALayer LayerForPoint (CGPoint location)
-		{
-			CALayer layer = Layer.PresentationLayer.HitTest (location);
-			return layer != null ? layer.ModelLayer : null;
-		}
-
-		string oldLayer;
+			
 		public override void MouseEntered (NSEvent theEvent)
 		{
 			base.MouseEntered (theEvent);
 
-			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
-
-			if (InTextField (location)) {
+			var width = textField.AttributedStringValue.BoundingRectWithSize (new CGSize (nfloat.MaxValue, textField.Frame.Height),
+				NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Width;
+			if (width > textField.Frame.Width) {
 				ShowPopoverForStatusBar ();
-				return;
 			}
-
-			var layer = LayerForPoint (location);
-			if (layer == null)
-				return;
-
-			if (layer.Name == oldLayer) {
-				StatusIcon icon;
-				if (!layerToStatus.TryGetValue (layer.Name, out icon))
-					return;
-
-				if (string.IsNullOrEmpty (icon.ToolTip))
-					return;
-			}
-
-			oldLayer = layer.Name;
-			ShowPopoverForLayer (layer);
 		}
 
 		public override void MouseExited (NSEvent theEvent)
 		{
 			base.MouseExited (theEvent);
+			DestroyPopover (null, null);
+		}
 
-			DestroyPopover ();
+		internal static Xwt.PointerButton NSEventButtonToXwt (NSEvent theEvent)
+		{
+			Xwt.PointerButton button = Xwt.PointerButton.Left;
+			switch ((NSEventType)(long)theEvent.ButtonNumber) {
+			case NSEventType.LeftMouseDown:
+				button = Xwt.PointerButton.Left;
+				break;
+			case NSEventType.RightMouseDown:
+				button = Xwt.PointerButton.Right;
+				break;
+			case NSEventType.OtherMouseDown:
+				button = Xwt.PointerButton.Middle;
+				break;
+			}
+
+			return button;
 		}
 
 		public override void MouseDown (NSEvent theEvent)
@@ -802,41 +872,35 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			base.MouseDown (theEvent);
 
 			CGPoint location = ConvertPointFromView (theEvent.LocationInWindow, null);
-			var layer = LayerForPoint (location);
-			if (layer != null && layer.Name != null) {
-				Xwt.PointerButton button = Xwt.PointerButton.Left;
-				switch ((NSEventType)(long)theEvent.ButtonNumber) {
-				case NSEventType.LeftMouseDown:
-					button = Xwt.PointerButton.Left;
-					break;
-				case NSEventType.RightMouseDown:
-					button = Xwt.PointerButton.Right;
-					break;
-				case NSEventType.OtherMouseDown:
-					button = Xwt.PointerButton.Middle;
-					break;
-				}
-
-				if (layerToStatus.ContainsKey (layer.Name)) {
-					DestroyPopover ();
-					layerToStatus [layer.Name].NotifyClicked (button);
-					return;
-				}
-
-				if (layer.Name == BuildIconLayerId || layer.Name == BuildTextLayerId) { // We clicked error icon.
-					IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
-					return;
-				}
-			}
-
-			if (sourcePad != null)
+			if (textField.IsMouseInRect (location, textField.Frame) && sourcePad != null) {
 				sourcePad.BringToFront (true);
+			}
 		}
 
-		public override void ViewDidEndLiveResize ()
+		public override CGRect Frame {
+			get {
+				return base.Frame;
+			}
+			set {
+				base.Frame = value;
+				RepositionContents ();
+			}
+		}
+
+		void RepositionContents ()
 		{
-			base.ViewDidEndLiveResize ();
-			RepositionStatusLayers ();
+			nfloat yOffset = 0f;
+			if (Window != null && Window.Screen != null && Window.Screen.BackingScaleFactor == 2) {
+				yOffset = 0.5f;
+			}
+
+			imageView.Frame = new CGRect (6, 0, 16, Frame.Height);
+			textField.Frame = new CGRect (imageView.Frame.Right, yOffset, Frame.Width - 16, Frame.Height);
+
+			buildResults.Frame = new CGRect (buildResults.Frame.X, buildResults.Frame.Y, buildResults.Frame.Width, Frame.Height);
+			RepositionStatusIcons ();
+
+			progressView.Frame = new CGRect (0.5f, MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 1f : 2f, Frame.Width - 2, Frame.Height - 2);
 		}
 	}
 }

@@ -287,9 +287,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			DiffInfo item = diff [0];
 			Assert.IsNotNull (item);
 			Assert.AreEqual ("file1", item.FileName.FileName);
-			string text = @"diff --git a/file1 b/file1
-new file mode 100644
-index 0000000..f3a3485
+			string text = @"index 0000000..f3a3485
 --- /dev/null
 +++ b/file1
 @@ -0,0 +1 @@
@@ -304,9 +302,7 @@ index 0000000..f3a3485
 			item = diff [1];
 			Assert.IsNotNull (item);
 			Assert.AreEqual ("file2", item.FileName.FileName);
-			text = @"diff --git a/file2 b/file2
-new file mode 100644
-index 0000000..009b64b
+			text = @"index 0000000..009b64b
 --- /dev/null
 +++ b/file2
 @@ -0,0 +1 @@

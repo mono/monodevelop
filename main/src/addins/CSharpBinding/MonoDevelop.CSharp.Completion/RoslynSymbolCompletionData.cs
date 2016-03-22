@@ -37,6 +37,9 @@ using Xwt;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Editor;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -75,13 +78,26 @@ namespace MonoDevelop.CSharp.Completion
 		string text;
 		protected readonly RoslynCodeCompletionFactory factory;
 
-		protected CSharpCompletionTextEditorExtension ext { get { return factory.Ext; } }
+		protected CSharpCompletionTextEditorExtension ext { get { return factory?.Ext; } }
 
 		public RoslynSymbolCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ISymbol symbol, string text = null) : base (keyHandler)
 		{
 			this.factory = factory;
 			this.text = text;
 			Symbol = symbol;
+			if (IsObsolete (Symbol))
+				DisplayFlags |= DisplayFlags.Obsolete;
+			rightSideDescription = new Lazy<string> (delegate {
+				var returnType = symbol.GetReturnType ();
+				if (returnType == null || factory == null)
+					return null;
+				try {
+					return "<span font='Sans 10'>" + GLib.Markup.EscapeText (SafeMinimalDisplayString (returnType, factory.SemanticModel, ext.Editor.CaretOffset)) + "</span>";
+				} catch (Exception e) {
+					LoggingService.LogError ("Format error.", e);
+				}
+				return null;
+			});
 		}
 
 		static readonly SymbolDisplayFormat nameOnlyFormat =
@@ -104,6 +120,13 @@ namespace MonoDevelop.CSharp.Completion
 			return Symbol.ToDisplayString (nameOnlyFormat);
 		}
 
+		Lazy<string> rightSideDescription;
+		public override string GetRightSideDescription (bool isSelected)
+		{
+			return rightSideDescription.Value;
+		}
+
+
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken ctoken)
 		{
 			return CreateTooltipInformation (ctoken, ext.Editor, ext.DocumentContext, Symbol, smartWrap, model: factory.SemanticModel);
@@ -111,11 +134,6 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public static Task<TooltipInformation> CreateTooltipInformation (CancellationToken ctoken, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol entity, bool smartWrap, bool createFooter = false, SemanticModel model = null)
 		{
-			if (ctx != null) {
-				if (ctx.ParsedDocument == null || ctx.AnalysisDocument == null)
-					LoggingService.LogError ("Signature markup creator created with invalid context." + Environment.NewLine + Environment.StackTrace);
-			}
-
 			var tooltipInfo = new TooltipInformation ();
 //			if (resolver == null)
 //				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
@@ -171,7 +189,7 @@ namespace MonoDevelop.CSharp.Completion
 			var Policy = ext.FormattingPolicy;
 			string insertionText = this.GetInsertionText();
 
-			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (Symbol) && !IsBracketAlreadyInserted (ext, method)) {
+			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName (window, Symbol) && !IsBracketAlreadyInserted (ext, method)) {
 				var line = Editor.GetLine (Editor.CaretLine);
 				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				//var end = line.Offset + line.Length;
@@ -232,9 +250,9 @@ namespace MonoDevelop.CSharp.Completion
 						} else {
 							if (descriptor.KeyChar == '.') {
 								if (RequireGenerics (method)) {
-									insertionText += addSpace ? "<> ().|" : "<>().|";
+									insertionText += addSpace ? "<> ()" : "<>()";
 								} else {
-									insertionText += addSpace ? " ().|" : "().|";
+									insertionText += addSpace ? " ()" : "()";
 								}
 								skipChars = 0;
 							} else {
@@ -254,14 +272,6 @@ namespace MonoDevelop.CSharp.Completion
 
 								}
 							}
-						}
-					}
-					if (descriptor.KeyChar == '(') {
-						var skipCharList = Editor.SkipChars;
-						if (skipCharList.Count > 0) {
-							var lastSkipChar = skipCharList[skipCharList.Count - 1];
-							if (lastSkipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && lastSkipChar.Char == ')')
-								Editor.RemoveText (lastSkipChar.Offset, 1);
 						}
 					}
 				}
@@ -285,8 +295,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, insertionText);
 			int offset = Editor.CaretOffset;
-			for (int i = 0; i < skipChars; i++) {
-				Editor.AddSkipChar (offset, Editor.GetCharAt (offset));
+			for (int i = skipChars - 1; i --> 0;) {
+				Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset)));
 				offset++;
 			}
 
@@ -367,16 +377,31 @@ namespace MonoDevelop.CSharp.Completion
 				.Any (m => m.Name == method.Name && m.Parameters.Length > 0);
 		}
 
-		static bool HasNonMethodMembersWithSameName (ISymbol member)
+		bool HasNonMethodMembersWithSameName (CompletionListWindow window, ISymbol member)
 		{
 			var method = member as IMethodSymbol;
-			if (method != null && method.MethodKind == MethodKind.Constructor)
+			if (method == null)
+				return true;
+			if (method == null || method.MethodKind == MethodKind.Constructor)
 				return false;
-			if (member.ContainingType == null)
+
+			ITypeSymbol type = null;
+			var model = ext.DocumentContext.AnalysisDocument?.GetSemanticModelAsync ().WaitAndGetResult(default(CancellationToken));
+			if (model == null)
 				return false;
-			return member.ContainingType
-				.GetMembers ()
-				.Any (e => e.Kind != SymbolKind.Method && e.Name == member.Name);
+			var token = model.SyntaxTree.FindTokenOnLeftOfPosition (window.StartOffset, default (CancellationToken));
+			var node = token.Parent as MemberAccessExpressionSyntax;
+			if (node != null) {
+				type = model.GetTypeInfo (node.Expression, default (CancellationToken)).Type;
+			}
+
+			if (type == null)
+				type = method.ReceiverType ?? method.ContainingType;
+			foreach (var m in type.GetMembers ().Where (m => m.Kind != SymbolKind.Method)) {
+				if (m.Name == member.Name)
+					return true;
+			}
+			return false;
 		}
 
 		static bool RequireGenerics (IMethodSymbol method)
@@ -437,35 +462,51 @@ namespace MonoDevelop.CSharp.Completion
 			return ret;
 		}
 
+		static bool IsObsolete (ISymbol symbol)
+		{
+			return symbol.GetAttributes ().Any (attr => attr.AttributeClass.Name == "ObsoleteAttribute" && attr.AttributeClass.ContainingNamespace.GetFullName () == "System");
+		}
 
-//		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
-//		{
-//			var tooltipInfo = new TooltipInformation ();
-//			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
-//			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
-//			sig.BreakLineAfterReturnType = smartWrap;
-//			try {
-//				tooltipInfo.SignatureMarkup = sig.GetMarkup (type.IsParameterized ? type.GetDefinition () : type);
-//			} catch (Exception e) {
-//				LoggingService.LogError ("Got exception while creating markup for :" + type, e);
-//				return new TooltipInformation ();
-//			}
-//			if (type.IsParameterized) {
-//				var typeInfo = new StringBuilder ();
-//				for (int i = 0; i < type.TypeParameterCount; i++) {
-//					typeInfo.AppendLine (type.GetDefinition ().TypeParameters [i].Name + " is " + sig.GetTypeReferenceString (type.TypeArguments [i]));
-//				}
-//				tooltipInfo.AddCategory ("Type Parameters", typeInfo.ToString ());
-//			}
-//
-//			var def = type.GetDefinition ();
-//			if (def != null) {
-//				if (createFooter)
-//					tooltipInfo.FooterMarkup = sig.CreateFooter (def);
-//				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (def) ?? "";
-//			}
-//			return tooltipInfo;
-//		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			var os = other as RoslynSymbolCompletionData;
+			if (os != null) {
+				return Symbol.Kind == os.Symbol.Kind && 
+					   Symbol.Name == os.Symbol.Name;
+			}
+
+			return false;
+		}
+
+		//		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
+		//		{
+		//			var tooltipInfo = new TooltipInformation ();
+		//			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
+		//			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
+		//			sig.BreakLineAfterReturnType = smartWrap;
+		//			try {
+		//				tooltipInfo.SignatureMarkup = sig.GetMarkup (type.IsParameterized ? type.GetDefinition () : type);
+		//			} catch (Exception e) {
+		//				LoggingService.LogError ("Got exception while creating markup for :" + type, e);
+		//				return new TooltipInformation ();
+		//			}
+		//			if (type.IsParameterized) {
+		//				var typeInfo = new StringBuilder ();
+		//				for (int i = 0; i < type.TypeParameterCount; i++) {
+		//					typeInfo.AppendLine (type.GetDefinition ().TypeParameters [i].Name + " is " + sig.GetTypeReferenceString (type.TypeArguments [i]));
+		//				}
+		//				tooltipInfo.AddCategory ("Type Parameters", typeInfo.ToString ());
+		//			}
+		//
+		//			var def = type.GetDefinition ();
+		//			if (def != null) {
+		//				if (createFooter)
+		//					tooltipInfo.FooterMarkup = sig.CreateFooter (def);
+		//				tooltipInfo.SummaryMarkup = AmbienceService.GetSummaryMarkup (def) ?? "";
+		//			}
+		//			return tooltipInfo;
+		//		}
 	}
 
 }

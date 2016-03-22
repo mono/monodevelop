@@ -80,10 +80,13 @@ namespace MonoDevelop.Ide.Editor
 	{
 		bool IsInsideSmartTag (double x, double y);
 
-		bool IsInsideWindow (Gtk.MotionNotifyEventArgs args);
-
 		event EventHandler ShowPopup;
 		event EventHandler CancelPopup;
+	}
+
+	public interface ILinkTextMarker : ITextSegmentMarker
+	{
+		bool OnlyShowLinkOnHover { get; set; }
 	}
 }
 

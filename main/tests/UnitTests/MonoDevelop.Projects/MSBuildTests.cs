@@ -79,10 +79,17 @@ namespace MonoDevelop.Projects
 			// Ensure the project is buildable
 			var result = await sol.Build (Util.GetMonitor (), "Debug");
 			Assert.AreEqual (0, result.ErrorCount, "#1");
+		}
+
+		[Test]
+		public async Task BuildConsoleProjectAfterRename ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			await sol.SaveAsync (Util.GetMonitor ());
 
 			// Ensure the project is still buildable with xbuild after a rename
 			ProjectOptionsDialog.RenameItem (sol.GetAllProjects ().First (), "Test");
-			result = await sol.Build (Util.GetMonitor (), "Release");
+			var result = await sol.Build (Util.GetMonitor (), "Release");
 			Assert.AreEqual (0, result.ErrorCount, "#2");
 		}
 
@@ -117,6 +124,7 @@ namespace MonoDevelop.Projects
 			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
 			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
 			Project p = sol.Items [0] as Project;
+			await p.WriteProjectAsync (Util.GetMonitor ());
 			p.ProjectProperties.SetValue ("TestProperty", "TestValue");
 
 			await sol.SaveAsync (Util.GetMonitor ());
@@ -212,12 +220,12 @@ namespace MonoDevelop.Projects
 
 			Assert.IsNotNull (p.Configurations ["Debug|x86"]);
 			Assert.IsNotNull (p.Configurations ["Debug|x86-64"]);
-			Assert.IsNotNull (p.Configurations ["Debug|Other"]);
-
 			Assert.IsNotNull (p.Configurations ["Release|x86"]);
 			Assert.IsNotNull (p.Configurations ["Release|x86-64"]);
 			Assert.IsNotNull (p.Configurations ["Release|Other"]);
-			
+			Assert.IsNotNull (p.Configurations ["Test|More"]);
+			Assert.AreEqual (6, p.Configurations.Count);
+
 			string originalContent = File.ReadAllText (p.FileName);
 			
 			await p.SaveAsync (Util.GetMonitor ());
@@ -395,6 +403,22 @@ namespace MonoDevelop.Projects
 			conf = ((DotNetProjectConfiguration)p.Configurations [0]);
 
 			Assert.AreEqual (value, conf.OutputAssembly);
+		}
+
+
+
+		[Test]
+		public async Task RoundtripPropertyWithWhitespaceCharacters ()
+		{
+			var projectFile = Util.GetSampleProject ("test-whitespace-roundtrip", "project.csproj");
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+			var configuration = p.Configurations [0];
+			configuration.CopyFrom (p.Configurations[0]);
+			p.Configurations.Remove (p.Configurations[0]);
+			p.Configurations.Insert (0, configuration);
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
 		}
 
 		[Test]
@@ -1173,8 +1197,7 @@ namespace MonoDevelop.Projects
 			savedXml = File.ReadAllText (projFile);
 			Assert.AreEqual (refXml, savedXml);
 
-			c = p.Configurations.FirstOrDefault<SolutionItemConfiguration> (co => co.Id == "Debug");
-			p.Configurations.Remove (c);
+			p.Configurations.RemoveRange (p.Configurations.Where<SolutionItemConfiguration> (co => co.Name == "Debug"));
 
 			await p.SaveAsync (Util.GetMonitor ());
 
@@ -1250,8 +1273,10 @@ namespace MonoDevelop.Projects
 			var p = (Project) sol.Items [0];
 
 			var conf = p.Configurations.OfType<ProjectConfiguration> ().FirstOrDefault (c => c.Name == "Debug");
-			conf.Name = "Test";
-			conf.IntermediateOutputDirectory = p.BaseDirectory.Combine ("obj","Test");
+			var newConf = p.CreateConfiguration ("Test");
+			newConf.CopyFrom (conf);
+			p.Configurations [p.Configurations.IndexOf (conf)] = newConf;
+			newConf.IntermediateOutputDirectory = p.BaseDirectory.Combine ("obj","Test");
 
 			await p.SaveAsync (Util.GetMonitor ());
 
@@ -1473,6 +1498,142 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (sol.ItemDirectory.ToString (), p.MSBuildProject.EvaluatedProperties.GetValue ("SolutionDir"));
 		}
 
+		[Test]
+		public async Task RenameConfiguration ()
+		{
+			// When renaming a configuration, paths that use the configuration name should also be renamed
+
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var p = (DotNetProject) sol.Items [0];
+			var c = p.GetConfiguration (new ItemConfigurationSelector ("Release"));
+			var renamed = p.CreateConfiguration ("Test");
+			renamed.CopyFrom (c, true);
+			p.Configurations.Remove (c);
+			p.Configurations.Add (renamed);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			var compXml = Util.ToSystemEndings (File.ReadAllText (p.FileName.ChangeName ("ConsoleProject-conf-renamed")));
+			Assert.AreEqual (compXml, savedXml);
+		}
+
+		[Test]
+		public async Task ProjectWithDuplicateConfigGroup ()
+		{
+			// The project has two property groups with Debug|AnyCPU. This has to result in a single
+			// Debug configuration. If a change is done in the configuration, it has to be applied
+			// to the last group.
+
+			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-duplicated-conf.csproj");
+			var p = (Project)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.AreEqual (2, p.Configurations.Count);
+
+			var c = p.GetConfiguration (new ItemConfigurationSelector ("Debug")) as DotNetProjectConfiguration;
+			Assert.IsNotNull (c);
+			Assert.IsTrue (c.DebugSymbols);
+
+			c.Properties.SetValue ("Test","foo");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			var refXml = File.ReadAllText (p.FileName.ChangeName ("project-with-duplicated-conf-saved"));
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public async Task ConditionedHintPath ()
+		{
+			// A reference with several hint paths with conditions. Only the hint path with the true condition
+			// will be used
+
+			string projFile = Util.GetSampleProject ("msbuild-tests", "conditioned-hintpath.csproj");
+			var p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+
+			Assert.AreEqual (2, p.References.Count);
+
+			Assert.AreEqual (p.ItemDirectory.Combine ("a.dll").ToString (), p.References[0].HintPath.ToString ());
+			Assert.AreEqual (p.ItemDirectory.Combine ("b.dll").ToString (), p.References[1].HintPath.ToString ());
+
+			var refXml = File.ReadAllText (p.FileName);
+			await p.SaveAsync (Util.GetMonitor ());
+
+			var savedXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (refXml, savedXml);
+		}
+
+		[Test]
+		public async Task MSBuildPropertiesSetWhenSaving ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			sol.ConvertToFormat (MSBuildFileFormat.VS2010);
+
+			var p = sol.GetAllProjects ().First ();
+			var c = (ProjectConfiguration) p.Configurations [0];
+			Assert.IsFalse (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsFalse (c.Properties.HasProperty ("TargetName"));
+
+			await sol.SaveAsync (Util.GetMonitor ());
+
+			// MSBuild properties defined in imported targets are loaded after saving a project for the first time
+
+			Assert.IsTrue (p.ProjectProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (p.MSBuildProject.EvaluatedProperties.HasProperty ("TargetName"));
+			Assert.IsTrue (c.Properties.HasProperty ("TargetName"));
+		}
+
+		[Test()]
+		public async Task LoadSaveConsoleProjectWithEmptyGroup()
+		{
+			var fn = new CustomFlavorNode ();
+			WorkspaceObject.RegisterCustomExtension (fn);
+
+			try {
+				string solFile = Util.GetSampleProject ("console-project-empty-group", "ConsoleProject.sln");
+
+				Solution item = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+				Assert.IsTrue (item is Solution);
+
+				Solution sol = (Solution)item;
+				TestProjectsChecks.CheckBasicVsConsoleProject (sol);
+
+				var p = sol.GetAllProjects ().FirstOrDefault ();
+				Assert.NotNull (p);
+				Assert.NotNull (p.GetFlavor<CustomFlavor> ());
+
+				string projectFile = ((Project)sol.Items [0]).FileName;
+
+				string solXml = File.ReadAllText (solFile);
+				string projectXml = File.ReadAllText (projectFile);
+
+				await sol.SaveAsync (Util.GetMonitor ());
+
+				Assert.AreEqual (solXml, File.ReadAllText (solFile));
+				Assert.AreEqual (projectXml, File.ReadAllText (projectFile));
+			} finally {
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task RemoveAndAddProperty ()
+		{
+			string solFile = Util.GetSampleProject ("msbuild-project-test", "test.csproj");
+
+			Project p = (Project) await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			string projectXml = File.ReadAllText (p.FileName);
+
+			p.ProjectProperties.RemoveProperty ("TestRewrite");
+			await p.SaveAsync (Util.GetMonitor ());
+			p.ProjectProperties.SetValue ("TestRewrite", "Val");
+			await p.SaveAsync (Util.GetMonitor ());
+
+			Assert.AreEqual (projectXml, File.ReadAllText (p.FileName));
+		}
 	}
 
 	class MyProjectTypeNode: ProjectTypeNode
@@ -1548,5 +1709,22 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty]
 		public string SomeMetadata { get; set; }
+	}
+
+	class CustomFlavorNode: SolutionItemExtensionNode
+	{
+		public CustomFlavorNode ()
+		{
+			Guid = "{57EDDE80-A1D8-43D5-8478-C17416DFC16F}";
+		}
+
+		public override object CreateInstance ()
+		{
+			return new CustomFlavor ();
+		}
+	}
+
+	class CustomFlavor: ProjectExtension
+	{
 	}
 }

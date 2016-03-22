@@ -6,7 +6,7 @@ using RefactoringEssentials;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers
 {
-	public abstract class AbstractCodeRefactoringResult
+	abstract class AbstractCodeRefactoringResult
 	{
 		private readonly CodeRefactoring _codeRefactoring;
 

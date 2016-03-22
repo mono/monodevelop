@@ -48,10 +48,6 @@ namespace MonoDevelop.Projects
 		
 		List<SolutionConfigurationEntry> configurations = new List<SolutionConfigurationEntry> ();
 		
-		public SolutionConfiguration ()
-		{
-		}
-		
 		public SolutionConfiguration (string id): base (id)
 		{
 		}
@@ -184,9 +180,9 @@ namespace MonoDevelop.Projects
 				parentSolution.UpdateDefaultConfigurations ();
 		}
 		
-		public override void CopyFrom (ItemConfiguration configuration)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (configuration);
+			base.OnCopyFrom (configuration, isRename);
 			
 			SolutionConfiguration conf = (SolutionConfiguration) configuration;
 			if (parentSolution == null)

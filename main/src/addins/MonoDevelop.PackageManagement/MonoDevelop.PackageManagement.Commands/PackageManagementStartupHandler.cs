@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -36,27 +35,20 @@ namespace MonoDevelop.PackageManagement.Commands
 {
 	public class PackageManagementStartupHandler : CommandHandler
 	{
-		IPackageManagementProjectService projectService;
-
-		public PackageManagementStartupHandler ()
-		{
-			projectService = PackageManagementServices.ProjectService;
-		}
-
 		protected override void Run ()
 		{
-			projectService.SolutionLoaded += SolutionLoaded;
-			projectService.SolutionUnloaded += SolutionUnloaded;
+			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
+			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 			IdeApp.Workspace.ItemUnloading += WorkspaceItemUnloading;
 		}
 
-		void SolutionLoaded (object sender, EventArgs e)
+		void SolutionLoaded (object sender, SolutionEventArgs e)
 		{
 			ClearUpdatedPackagesInSolution ();
 
 			if (ShouldRestorePackages) {
-				RestoreAndCheckForUpdates ();
-			} else if (ShouldCheckForUpdates && AnyProjectHasPackages ()) {
+				RestoreAndCheckForUpdates (e.Solution);
+			} else if (ShouldCheckForUpdates && AnyProjectHasPackages (e.Solution)) {
 				// Use background dispatch even though the check is not done on the
 				// background dispatcher thread so that the solution load completes before
 				// the check for updates starts. Otherwise the check for updates finishes
@@ -81,29 +73,29 @@ namespace MonoDevelop.PackageManagement.Commands
 			PackageManagementServices.UpdatedPackagesInSolution.Clear ();
 		}
 
-		void SolutionUnloaded (object sender, EventArgs e)
+		void SolutionUnloaded (object sender, SolutionEventArgs e)
 		{
 			ClearUpdatedPackagesInSolution ();
 		}
 
-		void RestoreAndCheckForUpdates ()
+		void RestoreAndCheckForUpdates (Solution solution)
 		{
-			bool checkUpdatesAfterRestore = ShouldCheckForUpdates && AnyProjectHasPackages ();
+			bool checkUpdatesAfterRestore = ShouldCheckForUpdates && AnyProjectHasPackages (solution);
 
-			var restorer = new PackageRestorer (projectService.OpenSolution.Solution);
+			var packageManagementSolution = new PackageManagementSolution (new PackageManagementSolutionProjectService (solution));
+			var restorer = new PackageRestorer (packageManagementSolution);
 			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				restorer.Restore ();
 				if (checkUpdatesAfterRestore && !restorer.RestoreFailed) {
 					CheckForUpdates ();
 				}
+				restorer = null;
 			});
 		}
 
-		bool AnyProjectHasPackages ()
+		bool AnyProjectHasPackages (Solution solution)
 		{
-			return projectService
-				.OpenSolution
-				.Solution
+			return solution
 				.GetAllProjectsWithPackages ()
 				.Any ();
 		}

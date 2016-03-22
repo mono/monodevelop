@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 	{
 		CharTyped,
 		CompletionCommand,
-		BackspaceOrDeleteCommand
+		BackspaceOrDeleteCommand,
+		RetriggerCommand
 	}
 }
 

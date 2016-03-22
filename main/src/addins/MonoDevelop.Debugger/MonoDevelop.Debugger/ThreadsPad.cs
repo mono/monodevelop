@@ -41,7 +41,24 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
-	public class ThreadsPad : Gtk.ScrolledWindow, IPadContent
+	public class ThreadsPad: PadContent
+	{
+		ThreadsPadWidget control = new ThreadsPadWidget ();
+
+		protected override void Initialize (IPadWindow window)
+		{
+			Id = "MonoDevelop.Debugger.ThreadsPad";
+			control.Initialize (window);
+		}
+
+		public override Control Control {
+			get {
+				return control;
+			}
+		}
+	}
+
+	public class ThreadsPadWidget : Gtk.ScrolledWindow
 	{
 		TreeViewState treeViewState;
 		PadTreeView tree;
@@ -59,7 +76,7 @@ namespace MonoDevelop.Debugger
 			Location
 		}
 		
-		public ThreadsPad ()
+		public ThreadsPadWidget ()
 		{
 			this.ShadowType = ShadowType.None;
 
@@ -127,7 +144,7 @@ namespace MonoDevelop.Debugger
 			UpdateDisplay ();
 		}
 		
-		void IPadContent.Initialize (IPadWindow window)
+		public void Initialize (IPadWindow window)
 		{
 			this.window = window;
 			window.PadContentShown += delegate {
@@ -254,23 +271,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public Widget Control {
-			get { return this; }
-		}
-
-		public string Id {
-			get { return "MonoDevelop.Debugger.ThreadsPad"; }
-		}
-
-		public string DefaultPlacement {
-			get { return "Bottom"; }
-		}
-
-		public void RedrawContent ()
-		{
-			UpdateDisplay ();
-		}
-		
 		void OnDebuggerPaused (object s, EventArgs a)
 		{
 			UpdateDisplay ();

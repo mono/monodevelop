@@ -223,6 +223,7 @@
     <Compile Include="Mono.TextEditor\Document\LazyLineSplitter.cs" />
     <Compile Include="Mono.TextEditor.Utils\ImmutableText.cs" />
     <Compile Include="Mono.TextEditor.Utils\ImmutableTextTextReader.cs" />
+    <Compile Include="Mono.TextEditor\Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">
@@ -314,8 +315,8 @@
     <EmbeddedResource Include="SyntaxModes\AspNetAshxSyntaxMode.xml">
       <LogicalName>AspNetAshxSyntaxMode.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Styles\DefaultStyle.json">
-      <LogicalName>DefaultStyle.json</LogicalName>
+    <EmbeddedResource Include="Styles\LightStyle.json">
+      <LogicalName>LightStyle.json</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\HtmlSyntaxMode.xml">
       <LogicalName>HtmlSyntaxMode.xml</LogicalName>
@@ -346,6 +347,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SyntaxModes\LessSyntaxMode.xml">
       <LogicalName>LessSyntaxMode.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\DarkStyle.json">
+      <LogicalName>DarkStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Styles\GruvboxStyle.json">
+      <LogicalName>GruvboxStyle.json</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

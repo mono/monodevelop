@@ -1,21 +1,21 @@
-// 
+//
 // LogWidget.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
-// 
+//
 // Copyright (c) 2010 Novell, Inc (http://www.novell.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,6 +32,8 @@ using MonoDevelop.Ide;
 using System.Text;
 using System.Threading;
 using MonoDevelop.Components;
+using Mono.TextEditor;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -52,7 +54,7 @@ namespace MonoDevelop.VersionControl.Views
 		ListStore logstore = new ListStore (typeof (Revision), typeof(string));
 		FileTreeView treeviewFiles;
 		TreeStore changedpathstore;
-		Gtk.Button revertButton, revertToButton, refreshButton;
+		DocumentToolButton revertButton, revertToButton, refreshButton;
 		SearchEntry searchEntry;
 		string currentFilter;
 		
@@ -91,7 +93,21 @@ namespace MonoDevelop.VersionControl.Views
 					double center_x = cell_area.X + Math.Round ((double) (cell_area.Width / 2d));
 					double center_y = cell_area.Y + Math.Round ((double) (cell_area.Height / 2d));
 					cr.Arc (center_x, center_y, 5, 0, 2 * Math.PI);
-					cr.SetSourceRGBA (0, 0, 0, 1);
+					var state = StateType.Normal;
+					if (!base.Sensitive)
+						state = StateType.Insensitive;
+					else if (flags.HasFlag (CellRendererState.Selected)) {
+						if (widget.HasFocus)
+							state = StateType.Selected;
+						else
+							state = StateType.Active;
+					}
+					else if (flags.HasFlag (CellRendererState.Prelit))
+						state = StateType.Prelight;
+					else if (widget.State == StateType.Insensitive)
+						state = StateType.Insensitive;
+
+					cr.SetSourceColor (widget.Style.Text (state).ToCairoColor ());
 					cr.Stroke ();
 					if (!FirstNode) {
 						cr.MoveTo (center_x, cell_area.Y - 2);
@@ -124,11 +140,11 @@ namespace MonoDevelop.VersionControl.Views
 			vpaned1 = vpaned1.ReplaceWithWidget (new VPanedThin () { HandleWidget = separator }, true);
 
 			revertButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert changes from this revision"));
-			revertButton.Sensitive = false;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 			revertButton.Clicked += new EventHandler (RevertRevisionClicked);
 
 			revertToButton = new DocumentToolButton ("vc-revert-command", GettextCatalog.GetString ("Revert to this revision"));
-			revertToButton.Sensitive = false;
+			revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 			revertToButton.Clicked += new EventHandler (RevertToRevisionClicked);
 
 			refreshButton = new DocumentToolButton (Gtk.Stock.Refresh, GettextCatalog.GetString ("Refresh"));
@@ -237,16 +253,29 @@ namespace MonoDevelop.VersionControl.Views
 			tb.UseChildBackgroundColor = true;
 			tb.Add (scrolledwindow1);
 			vbox2.PackStart (tb, true, true, 0);
+
+			UpdateStyle ();
+			Ide.Gui.Styles.Changed += HandleStylesChanged;
 		}
 
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
+			UpdateStyle ();
+		}
+
+		void HandleStylesChanged (object sender, EventArgs e)
+		{
+			UpdateStyle ();
+		}
+
+		void UpdateStyle ()
+		{
 			var c = Style.Base (StateType.Normal).ToXwtColor ();
 			c.Light *= 0.8;
 			commitBox.ModifyBg (StateType.Normal, c.ToGdkColor ());
 
-			var tcol = new Gdk.Color (255, 251, 242);
+			var tcol = Styles.LogView.CommitDescBackgroundColor.ToGdkColor ();
 			textviewDetails.ModifyBase (StateType.Normal, tcol);
 			scrolledwindow1.ModifyBase (StateType.Normal, tcol);
 		}
@@ -300,7 +329,7 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertToRevision (info.Repository, info.Item.Path, d, false))
 				VersionControlService.SetCommitComment (info.Item.Path, 
-				  string.Format ("(Revert to revision {0})", d.ToString ()), true);
+				  GettextCatalog.GetString ("(Revert to revision {0})", d.ToString ()), true);
 		}
 		
 		void RevertRevisionClicked (object src, EventArgs args)
@@ -308,17 +337,17 @@ namespace MonoDevelop.VersionControl.Views
 			Revision d = SelectedRevision;
 			if (RevertRevisionsCommands.RevertRevision (info.Repository, info.Item.Path, d, false))
 				VersionControlService.SetCommitComment (info.Item.Path, 
-				  string.Format ("(Revert revision {0})", d.ToString ()), true);
+				  GettextCatalog.GetString ("(Revert revision {0})", d.ToString ()), true);
 		}
 
 		void RefreshClicked (object src, EventArgs args)
 		{
 			ShowLoading ();
 			info.Start (true);
-			revertButton.Sensitive = revertToButton.Sensitive = false;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = false;
 		}
 
-		void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
+		async void HandleTreeviewFilesDiffLineActivated (object sender, EventArgs e)
 		{
 			TreePath[] paths = treeviewFiles.Selection.GetSelectedRows ();
 			
@@ -332,7 +361,9 @@ namespace MonoDevelop.VersionControl.Views
 			int line = diffRenderer.GetSelectedLine (paths[0]);
 			if (line == -1)
 				line = 1;
-			var doc = IdeApp.Workbench.OpenDocument (fileName, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+
+			var proj = IdeApp.Workspace.GetProjectsContainingFile (fileName).FirstOrDefault ();
+			var doc = await IdeApp.Workbench.OpenDocument (fileName, proj, line, 0, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			int i = 1;
 			foreach (var content in doc.Window.SubViewContents) {
 				DiffView diffView = content as DiffView;
@@ -374,7 +405,10 @@ namespace MonoDevelop.VersionControl.Views
 					} catch (Exception e) {
 						Application.Invoke (delegate {
 							LoggingService.LogError ("Error while getting revision text", e);
-							MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+							MessageService.ShowError (
+								GettextCatalog.GetString ("Error while getting revision text."),
+								GettextCatalog.GetString ("The file may not be part of the working copy.")
+							);
 						});
 						return;
 					}
@@ -383,14 +417,14 @@ namespace MonoDevelop.VersionControl.Views
 						prevRev = rev.GetPrevious ();
 					} catch (Exception e) {
 						Application.Invoke (delegate {
-							MessageService.ShowError ("Error while getting previous revision.", e);
+							MessageService.ShowError (GettextCatalog.GetString ("Error while getting previous revision."), e);
 						});
 						return;
 					}
 					string[] lines;
 					// Indicator that the file was binary
 					if (text == null) {
-						lines = new [] { " Binary files differ" };
+						lines = new [] { GettextCatalog.GetString (" Binary files differ") };
 					} else {
 						var changedDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (text);
 						if (prevRev == null) {
@@ -405,7 +439,10 @@ namespace MonoDevelop.VersionControl.Views
 							} catch (Exception e) {
 								Application.Invoke (delegate {
 									LoggingService.LogError ("Error while getting revision text", e);
-									MessageService.ShowError ("Error while getting revision text.", "The file may not be part of the working copy.");
+									MessageService.ShowError (
+										GettextCatalog.GetString ("Error while getting revision text."),
+										GettextCatalog.GetString ("The file may not be part of the working copy.")
+									);
 								});
 								return;
 							}
@@ -420,8 +457,8 @@ namespace MonoDevelop.VersionControl.Views
 							}
 
 							var originalDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (prevRevisionText);
-							originalDocument.FileName = "Revision " + prevRev;
-							changedDocument.FileName = "Revision " + rev;
+							originalDocument.FileName = GettextCatalog.GetString ("Revision {0}", prevRev);
+							changedDocument.FileName = GettextCatalog.GetString ("Revision {0}", rev);
 							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
 						}
 					}
@@ -456,17 +493,23 @@ namespace MonoDevelop.VersionControl.Views
 				});
 			});
 		}*/
-		
-		public override void Destroy ()
+
+		protected override void OnDestroyed ()
 		{
-			base.Destroy ();
+			revertButton.Clicked -= RevertRevisionClicked;
+			revertToButton.Clicked -= RevertToRevisionClicked;
+			refreshButton.Clicked -= RefreshClicked;
+			Ide.Gui.Styles.Changed -= HandleStylesChanged;
+
 			logstore.Dispose ();
 			changedpathstore.Dispose ();
-			
+
 			diffRenderer.Dispose ();
 			messageRenderer.Dispose ();
 			textRenderer.Dispose ();
 			treeviewFiles.Dispose ();
+
+			base.OnDestroyed ();
 		}
 		
 		static void DateFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
@@ -630,7 +673,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (d == null)
 				return;
 
-			revertButton.Sensitive = revertToButton.Sensitive = true;
+			revertButton.GetNativeWidget<Gtk.Widget> ().Sensitive = revertToButton.GetNativeWidget<Gtk.Widget> ().Sensitive = true;
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {
@@ -689,6 +732,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			scrolledLoading.Hide ();
 			scrolledLog.Show ();
+			treeviewLog.FreezeChildNotify ();
 			logstore.Clear ();
 			var h = History;
 			if (h == null)
@@ -698,6 +742,7 @@ namespace MonoDevelop.VersionControl.Views
 					logstore.AppendValues (rev, string.Empty);
 			}
 			SetLogSearchFilter (logstore, currentFilter);
+			treeviewLog.ThawChildNotify ();
 		}
 		
 		bool MatchesFilter (Revision rev)
@@ -730,7 +775,7 @@ namespace MonoDevelop.VersionControl.Views
 			int last = 0;
 			while (i != -1) {
 				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, i - last)));
-				sb.Append ("<span color='blue'>").Append (txt.Substring (i, filter.Length)).Append ("</span>");
+				sb.Append ("<span color='" + Styles.LogView.SearchSnippetTextColor + "'>").Append (txt.Substring (i, filter.Length)).Append ("</span>");
 				last = i + filter.Length;
 				i = txt.IndexOf (filter, last, StringComparison.CurrentCultureIgnoreCase);
 			}
