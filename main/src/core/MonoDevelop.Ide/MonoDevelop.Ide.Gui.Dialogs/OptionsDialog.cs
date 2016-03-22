@@ -199,6 +199,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			FillTree ();
 			ExpandCategories ();
+			RestoreLastPanel ();
 			this.DefaultResponse = Gtk.ResponseType.Ok;
 
 			buttonOk.CanDefault = true;
@@ -772,13 +773,38 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			// Now save
 			ApplyChanges ();
-			
+
+			StoreLastPanel ();
+
 			if (DataObject != null)
 				modifiedObjects.Add (DataObject);
 			
 			this.Respond (ResponseType.Ok);
 		}
-		
+
+		#region Restore
+
+		void RestoreLastPanel ()
+		{
+			string id = PropertyService.Get<string> (extensionPath + "-lastPanel");
+			if (string.IsNullOrEmpty (id)) {
+				return;
+			}
+
+			SelectPanel (id);
+		}
+
+		void StoreLastPanel ()
+		{
+			TreeIter it;
+			if (tree.Selection.GetSelected (out it)) {
+				OptionsDialogSection section = (OptionsDialogSection)store.GetValue (it, 0);
+				PropertyService.Set (extensionPath + "-lastPanel", section.Id);
+			}
+		}
+
+		#endregion
+
 		class PanelInstance
 		{
 			public IOptionsPanel Panel;
