@@ -156,15 +156,14 @@ module TooltipXmlDoc =
     
     ///check helpxml exist
     let tryGetDoc key =
-      let helpTree = MonoDevelop.Projects.HelpService.HelpTree
-      if helpTree = null then None else
-      try
-
-          let helpxml = helpTree.GetHelpXml(key)
-          if helpxml = null then None else Some(helpxml)
-      with ex ->
-          LoggingService.LogError ("GetHelpXml failed for key {0}", key, ex)
-          None
+        try
+            let helpTree = MonoDevelop.Projects.HelpService.HelpTree
+            if helpTree = null then None else
+            let helpxml = helpTree.GetHelpXml(key)
+            if helpxml = null then None else Some(helpxml)
+        with ex ->
+            LoggingService.LogError ("GetHelpXml failed for key {0}", key, ex)
+            None
     
     let (|MemberName|_|) (name:string) =
         let dotRight = name.LastIndexOf '.'
