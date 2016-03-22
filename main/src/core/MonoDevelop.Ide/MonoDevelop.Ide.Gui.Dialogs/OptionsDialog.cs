@@ -34,11 +34,6 @@ using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components;
 
-#if MAC
-using AppKit;
-using MonoDevelop.Components.Mac;
-#endif
-
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
 	
@@ -206,21 +201,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			DefaultWidth = 960;
 			DefaultHeight = 680;
-		}
-
-		protected override void OnMapped ()
-		{
-			base.OnMapped ();
-
-#if MAC
-			// GtkQuartz appears to ignore any attempts to set the window's type hint or window functions to disable
-			// minimize/maximize buttons. This may be because on Cocoa these are set at window creation and can only
-			// be changed afterwards by directly accessing the window button and disabling it like so.
-			NSWindow nsWindow = GtkMacInterop.GetNSWindow (this);
-
-			nsWindow.StandardWindowButton (NSWindowButton.MiniaturizeButton).Enabled = false;
-			nsWindow.StandardWindowButton (NSWindowButton.ZoomButton).Enabled = false;
-#endif
 		}
 
 		void PixbufCellDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
