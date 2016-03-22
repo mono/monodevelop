@@ -325,8 +325,6 @@ module SymbolTooltips =
     | TupleParam of IList<FSharpType>
     | NamedType of FSharpType
 
-    let internal escapeText = GLib.Markup.EscapeText
-
     /// Concat two strings with a space between if both a and b are not IsNullOrWhiteSpace
     let internal (++) (a:string) (b:string) =
         match String.IsNullOrEmpty a, String.IsNullOrEmpty b with
@@ -334,9 +332,9 @@ module SymbolTooltips =
         | false, true -> a
         | true, false -> b
         | false, false -> a + " " + b
-
+         
     let getKeywordTooltip (keyword:string) =
-        let signatureline = escapeText keyword ++ "(keyword)"
+        let signatureline = keyword ++ "(keyword)"
         let summary =
             match KeywordList.keywordDescriptions.TryGetValue keyword with
             | true, description -> Full description
@@ -374,7 +372,7 @@ module SymbolTooltips =
         if unionCase.UnionCaseFields.Count > 0 then
             let typeList =
                 unionCase.UnionCaseFields
-                |> Seq.map (fun unionField -> unionField.Name ++ ":" ++ (escapeText (unionField.FieldType.Format displayContext)))
+                |> Seq.map (fun unionField -> unionField.Name ++ ":" ++ ((unionField.FieldType.Format displayContext)))
                 |> String.concat " * "
             unionCase.DisplayName ++ "of" ++ typeList
          else unionCase.DisplayName
@@ -459,20 +457,20 @@ module SymbolTooltips =
                 seq {
                     yield " : "
                     yield "enum"
-                    yield escapeText "<"
+                    yield "<"
                     yield ec.Format displayContext
-                    yield escapeText ">"
+                    yield ">"
                 }
 
             let delegateConstraint (tc: FSharpGenericParameterDelegateConstraint) =
                 seq {
                     yield " : "
                     yield "delegate"
-                    yield escapeText "<"
+                    yield "<"
                     yield tc.DelegateTupledArgumentType.Format displayContext
                     yield ", "
                     yield tc.DelegateReturnType.Format displayContext
-                    yield escapeText ">"
+                    yield ">"
                 }
 
             let symbols =
@@ -520,7 +518,7 @@ module SymbolTooltips =
                 elif func.IsOperatorOrActivePattern then func.DisplayName
                 elif func.DisplayName.StartsWith "( " then PrettyNaming.QuoteIdentifierIfNeeded func.LogicalName
                 else func.DisplayName
-            name |> escapeText
+            name
 
         let modifiers =
             let accessibility =
@@ -557,12 +555,12 @@ module SymbolTooltips =
         let retType =
             //This try block will be removed when FCS updates
             try
-                escapeText(func.ReturnParameter.Type.Format displayContext)
+                func.ReturnParameter.Type.Format displayContext
             with _ex ->
                 try
                     if func.FullType.GenericArguments.Count > 0 then
                         let lastArg = func.FullType.GenericArguments |> Seq.last
-                        escapeText(lastArg.Format displayContext)
+                        lastArg.Format displayContext
                     else "Unknown"
                 with _ -> "Unknown"
 
@@ -607,7 +605,7 @@ module SymbolTooltips =
               let maxLength = (allParamsLengths |> List.maxUnderThreshold maxPadding)+1
 
               let parameterTypeWithPadding (p: FSharpParameter) length =
-                  escapeText (p.Type.Format displayContext) + (String.replicate (if length >= maxLength then 1 else maxLength - length) " ")
+                  (p.Type.Format displayContext) + (String.replicate (if length >= maxLength then 1 else maxLength - length) " ")
 
               let allParams =
                   List.zip many allParamsLengths
@@ -667,20 +665,20 @@ module SymbolTooltips =
             let name =
                 if fse.GenericParameters.Count > 0 then
                     let p = fse.GenericParameters |> Seq.map (formatGenericParameter displayContext) |> String.concat ","
-                    fse.DisplayName + (escapeText "<") + p + (escapeText ">")
+                    fse.DisplayName + ("<") + p + (">")
                 else fse.DisplayName
 
             let basicName = modifier + typeName ++ name
 
             if fse.IsFSharpAbbreviation then
                 let unannotatedType = fse.UnAnnotate()
-                basicName ++ "=" ++ (escapeText unannotatedType.DisplayName)
+                basicName ++ "=" ++ (unannotatedType.DisplayName)
             else
                 basicName
 
         let fullName =
             match fse.TryGetFullNameWithUnderScoreTypes() with
-            | Some fullname -> "\n\n<small>Full name: " + escapeText fullname + "</small>"
+            | Some fullname -> "\n\n<small>Full name: " + fullname + "</small>"
             | None -> "\n\n<small>Full name: " + fse.QualifiedName + "</small>"
 
         if fse.IsFSharpUnion then typeDisplay + uniontip () + fullName
@@ -689,7 +687,7 @@ module SymbolTooltips =
         else typeDisplay + fullName
 
     let getValSignature displayContext (v:FSharpMemberOrFunctionOrValue) =
-        let retType = (escapeText(v.FullType.Format(displayContext)))
+        let retType = v.FullType.Format displayContext
         let prefix =
             if v.IsMutable then "val" ++ "mutable"
             else "val"
@@ -700,7 +698,7 @@ module SymbolTooltips =
         prefix ++ name ++ ":" ++ retType
 
     let getFieldSignature displayContext (field: FSharpField) =
-        let retType = (escapeText(field.FieldType.Format displayContext))
+        let retType = field.FieldType.Format displayContext
         match field.LiteralValue with
         | Some lv -> field.DisplayName ++ ":" ++ retType ++ "=" ++ (string lv)
         | None ->
@@ -726,7 +724,7 @@ module SymbolTooltips =
             if m.FullType.HasTypeDefinition then
                 let ent = m.FullType.TypeDefinition
                 let parent = ent.UnAnnotate()
-                let parentType = parent.DisplayName |> escapeText
+                let parentType = parent.DisplayName
                 let parentDesc = if parent.IsFSharpModule then "module" else "type"
                 sprintf "<small>From %s:\t%s</small>%s<small>Assembly:\t%s</small>" parentDesc parentType Environment.NewLine ent.Assembly.SimpleName
             else
@@ -743,12 +741,12 @@ module SymbolTooltips =
         | ActivePatternCase ap ->
           let parent =
               ap.Group.EnclosingEntity
-              |> Option.map (fun enclosing -> enclosing.UnAnnotate().DisplayName |> escapeText)
+              |> Option.map (fun enclosing -> enclosing.UnAnnotate().DisplayName)
               |> Option.fill "None"
           sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine ap.Assembly.SimpleName
       
         |  UnionCase uc ->
-            let parent = uc.ReturnType.TypeDefinition.UnAnnotate().DisplayName |> escapeText
+            let parent = uc.ReturnType.TypeDefinition.UnAnnotate().DisplayName
             sprintf "<small>From type:\t%s</small>%s<small>Assembly:\t%s</small>" parent Environment.NewLine uc.Assembly.SimpleName
         | _ -> ""
 
@@ -826,7 +824,7 @@ module SymbolTooltips =
             None
 
     let getTooltipFromParameter (p:FSharpParameter) context =
-      let typ = (escapeText(p.Type.Format(context)))
+      let typ = p.Type.Format context
       let signature =
           match p.Name with
           | Some name -> name ++ ":" ++ typ

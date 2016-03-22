@@ -224,12 +224,12 @@ module Completion =
                         if ap.Group.Names.Count > 1 then
                             ap.Group.EnclosingEntity
                             |> Option.map (fun enclosing -> let un = enclosing.UnAnnotate()
-                                                            SymbolTooltips.escapeText un.DisplayName, un)
+                                                            un.DisplayName, un)
                         else None
                     | UnionCase uc ->
                         if uc.UnionCaseFields.Count > 1 then
                             let ent = uc.ReturnType.TypeDefinition.UnAnnotate()
-                            Some(SymbolTooltips.escapeText ent.DisplayName, ent)
+                            Some(ent.DisplayName, ent)
                         else None
                     | Function f ->
                         if f.IsExtensionMember then
