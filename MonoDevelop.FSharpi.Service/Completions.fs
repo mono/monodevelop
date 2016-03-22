@@ -99,6 +99,11 @@ module Completion =
     let getCompletionTooltip filter =
         async {
             let symbol = 
-                symbolList |> List.find (fun sym -> sym.Symbol.DisplayName = filter)
-            return! SymbolTooltips.getTooltipInformation symbol
+                symbolList |> List.tryFind (fun sym -> sym.Symbol.DisplayName = filter)
+            
+            match symbol with
+            | Some sym ->
+                return! SymbolTooltips.getTooltipInformation symbol.Value false
+            | None -> 
+                return MonoDevelop.Ide.CodeCompletion.TooltipInformation()
         }

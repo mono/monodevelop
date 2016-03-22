@@ -37,7 +37,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
         |> ResizeArray.ofList :> _
 
     override x.CreateTooltipInformation (_smartWrap, cancel) =
-        Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
+        Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol true, cancellationToken = cancel)
     
     type SimpleCategory(text) =
         inherit CompletionCategory(text, null)
@@ -91,8 +91,13 @@ type FsiMemberCompletionData(name, icon) =
             | Some session ->              
                 // get completions from remote fsi process
                 pad.RequestTooltip name
+
                 let computation =
-                    Async.AwaitEvent (session.TooltipReceived)
+                    async {
+                        let! tooltip = Async.AwaitEvent (session.TooltipReceived)
+                        tooltip.SignatureMarkup <- syntaxHighlight tooltip.SignatureMarkup
+                        return tooltip
+                    }
                 Async.StartAsTask(computation, cancellationToken = cancel)
             | _ -> Task.FromResult (TooltipInformation())
         | _ -> Task.FromResult (TooltipInformation())

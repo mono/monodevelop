@@ -5,6 +5,7 @@ open System.Text
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Mono.TextEditor
+open Mono.TextEditor.Highlighting
 open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
@@ -298,33 +299,19 @@ module internal Highlight =
     | Symbol | Brackets | Keyword | UserType | Number
 
     let getColourScheme () =
-        //Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
-        Highlighting.SyntaxModeService.GetColorStyle ("Gruvbox")
+        Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
     let getColourPart x = round(x * 255.0) |> int
 
     let argbToHex (c : Cairo.Color) =
         sprintf "#%02X%02X%02X" (getColourPart c.R) (getColourPart c.G) (getColourPart c.B)
 
-    //let hl str (style: Highlighting.ChunkStyle) =
-    //    rethl
-    //    let color = getColourScheme().GetForeground (style) |> argbToHex
-    //    String.Format ("""<span foreground="{0}">{1}</span>""", color, str)
+    let syntaxHighlight s =
+        let data = new TextEditorData (new TextDocument (s))
+        data.Document.SyntaxMode <- SyntaxModeService.GetSyntaxMode (data.Document, "text/x-fsharp")
+        data.ColorStyle <- getColourScheme()
+        data.GetMarkup (0, data.Length, false)
 
-    //let asType t s =
-    //    let cs = getColourScheme ()
-    //    match t with
-    //    | Symbol -> s cs.KeywordOperators
-    //    | Brackets -> s cs.PunctuationForBrackets
-    //    | Keyword -> s cs.KeywordTypes
-    //    | UserType -> s cs.UserTypes
-    //    | Number -> s cs.Number
-
-    //let asSymbol = asType Symbol
-    //let asKeyword = asType Keyword
-    //let asBrackets = asType Brackets
-    //let asUserType = asType UserType
     let asUnderline = sprintf "<u>%s</u>"
-
 
 [<AutoOpen>]
 module PrintParameter =
@@ -835,7 +822,7 @@ module SymbolTooltips =
             Some(signature, getSummaryFromSymbol gp, footerForType symbol)
             
         | other ->
-            MonoDevelop.Core.LoggingService.LogWarning (sprintf "F# Tooltip not rendered for: %A" other.Symbol)
+            LoggingService.logWarning "F# Tooltip not rendered for: %A" other.Symbol
             None
 
     let getTooltipFromParameter (p:FSharpParameter) context =
@@ -847,12 +834,17 @@ module SymbolTooltips =
 
       signature, getSummaryFromSymbol p
 
-    let getTooltipInformation symbol =
+    let getTooltipInformation symbol highlight =
       async {
           try
             let tip = getTooltipFromSymbolUse symbol
             match tip  with
             | Some (signature, xmldoc, footer) ->
+                let signature = 
+                    if highlight then
+                        syntaxHighlight signature
+                    else
+                        signature
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
                 let result =
                   match xmldoc with
@@ -870,7 +862,7 @@ module SymbolTooltips =
                 return result
             | _ -> return TooltipInformation()
           with ex ->
-              MonoDevelop.Core.LoggingService.LogError ("F# Tooltip error", ex)
+              LoggingService.LogError ("F# Tooltip error", ex)
               return TooltipInformation() }
 
     let getParameterTooltipInformation symbol parameterIndex =
