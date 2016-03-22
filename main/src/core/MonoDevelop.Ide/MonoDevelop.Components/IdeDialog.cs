@@ -34,6 +34,7 @@ namespace MonoDevelop.Components
 		public IdeDialog ()
 		{
 			IdeTheme.ApplyTheme (this);
+			GtkWorkarounds.DisableMinimizeMaximizeButtons (this);
 		}
 
 		public IdeDialog (string title, Gtk.Window parentWindow, DialogFlags flags): base (title, parentWindow, flags)
