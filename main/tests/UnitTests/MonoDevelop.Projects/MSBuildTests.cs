@@ -405,6 +405,22 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (value, conf.OutputAssembly);
 		}
 
+
+
+		[Test]
+		public async Task RoundtripPropertyWithWhitespaceCharacters ()
+		{
+			var projectFile = Util.GetSampleProject ("test-whitespace-roundtrip", "project.csproj");
+			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFile) as DotNetProject;
+			Assert.IsNotNull (p);
+			var configuration = p.Configurations [0];
+			configuration.CopyFrom (p.Configurations[0]);
+			p.Configurations.Remove (p.Configurations[0]);
+			p.Configurations.Insert (0, configuration);
+			await p.SaveAsync (Util.GetMonitor ());
+			Assert.AreEqual (Util.ToSystemEndings (File.ReadAllText (p.FileName + ".saved")), File.ReadAllText (p.FileName));
+		}
+
 		[Test]
 		//[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
 		public async Task SaveItemsWithProperties ()
