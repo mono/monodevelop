@@ -1288,11 +1288,7 @@ namespace MonoDevelop.Components
 #if MAC
 		static void OnMappedDisableButtons (object sender, EventArgs args)
 		{
-			var window = sender as Gtk.Window;
-
-			if (window == null) {
-				return;
-			}
+			var window = (Gtk.Window)sender;
 
 			DisableButtonsInternal (window);
 
