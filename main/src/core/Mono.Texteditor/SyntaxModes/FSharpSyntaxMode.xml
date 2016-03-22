@@ -256,8 +256,17 @@
 			<End>&gt;</End>
 		</Span>
 	</Rule>
+	
 	<Match color="Plain Text">\b(get|set)\b</Match>
+	
+	<Match expression="(\s{3})(string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)(?:\s*:)" ignorecase="False">
+		<!-- tooltip -->
+		<Group color="Plain Text" />
+		<Group color="User Field Declaration" />
+	</Match>
+	
 	<Match color="User Types" ignorecase="False">\b(string|unit|bool|option|list|int|uint|int16|int32|int64|uint32|uint64|byte|sbyte|double|float|nint|single|float32|bigint|decimal|Char)\b</Match>
+	
 	<Match expression="(override)(\s+)(\w+)(\.)(\w+)(?:\s[^=:])" ignorecase="False">
 		<!-- override x.CanHandle y = -->
 		<Group color="Keyword(Modifiers)"/>
@@ -321,6 +330,11 @@
 		<Group color="Keyword(Iteration)"/>
 		<Group color="User Method Declaration"/>
 	</Match>
+
+	<Match expression="(\w+|``[^`]*``)(?:\s:$)" ignorecase="False">
+		<!-- tooltip  -->
+		<Group color="User Method Declaration"/>
+	</Match>
 	
 	<Match color="Keyword(Modifiers)">(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)\b</Match>
 
@@ -338,6 +352,10 @@
 		<Group color="User Types"/>
 	</Match>
 
+	<Match expression="(\^[\w]+)\b">
+		<Group color="User Types"/>
+	</Match>
+	
 	<!-- ( ) [ ] < > { } |> |< << >> <= >= <- -> :?> -->
 	<Match expression="(\&lt;\-)">
 		<Group color="Punctuation(Brackets)"/>
