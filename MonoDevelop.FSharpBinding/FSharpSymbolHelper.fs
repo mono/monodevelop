@@ -298,8 +298,8 @@ module internal Highlight =
     | Symbol | Brackets | Keyword | UserType | Number
 
     let getColourScheme () =
-        Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
-
+        //Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme.Value)
+        Highlighting.SyntaxModeService.GetColorStyle ("Gruvbox")
     let getColourPart x = round(x * 255.0) |> int
 
     let argbToHex (c : Cairo.Color) =

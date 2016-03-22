@@ -36,7 +36,6 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
         |> List.map (fun symbol -> FSharpMemberCompletionData(name, icon, symbol, []) :> CompletionData)
         |> ResizeArray.ofList :> _
 
-    // TODO: what does 'smartWrap' indicate?
     override x.CreateTooltipInformation (_smartWrap, cancel) =
         Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
     
@@ -79,6 +78,24 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
             | _ -> -1
 
 
+type FsiMemberCompletionData(name, icon) =
+    inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
+                           DisplayText = name,
+                           DisplayFlags = DisplayFlags.DescriptionHasMarkup,
+                           Icon = icon)
+
+    override x.CreateTooltipInformation (_smartWrap, cancel) =
+        match FSharpInteractivePad.Fsi with
+        | Some pad ->
+            match pad.Session with
+            | Some session ->              
+                // get completions from remote fsi process
+                pad.RequestTooltip name
+                let computation =
+                    Async.AwaitEvent (session.TooltipReceived)
+                Async.StartAsTask(computation, cancellationToken = cancel)
+            | _ -> Task.FromResult (TooltipInformation())
+        | _ -> Task.FromResult (TooltipInformation())
 
 module Completion = 
     type Context = { 
@@ -362,9 +379,6 @@ module Completion =
                   completionChar = completionChar } = context
             let result = CompletionDataList()
 
-            let quoteIdentifierIfNeeded (name:string) =
-                if name.[0] = '#' then name.[1..]
-                else PrettyNaming.QuoteIdentifierIfNeeded name
 
             match FSharpInteractivePad.Fsi with
             | Some pad ->
@@ -375,7 +389,8 @@ module Completion =
                     let completions = 
                         Async.AwaitEvent (session.CompletionsReceived)
                         |> Async.RunSynchronously
-                        |> List.map (fun c -> CompletionData(c.displayText, symbolStringToIcon c.icon, c.description, quoteIdentifierIfNeeded c.displayText))
+                        |> List.map (fun c -> FsiMemberCompletionData(c.displayText, symbolStringToIcon c.icon))
+                        |> Seq.cast<CompletionData>
 
                     result.AddRange completions
                     if completionChar <> '.' && result.Count > 0 then

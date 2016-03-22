@@ -5,11 +5,32 @@ open System.Reflection
 open System.IO
 open System.Diagnostics
 open MonoDevelop.Ide
+open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Core
 open Newtonsoft.Json
-open MonoDevelop.FSharpInteractive
+
+type CompletionData = {
+    displayText: string
+    category: string
+    icon: string
+    overloads: CompletionData list
+    description: string
+}
 
 type InteractiveSession() =
+    let (|Completion|_|) (command: string) =
+        if command.StartsWith("completion ") then
+            let payload = command.[11..]
+            Some (JsonConvert.DeserializeObject<CompletionData list> payload)
+        else
+            None
+
+    let (|Tooltip|_|) (command: string) =
+        if command.StartsWith("tooltip ") then
+            let payload = command.[8..]
+            Some (JsonConvert.DeserializeObject<TooltipInformation> payload)
+        else
+            None
 
     let path = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe")
     let mutable waitingForResponse = false
@@ -45,8 +66,9 @@ type InteractiveSession() =
         stream.Flush()
 
     let completionsReceivedEvent = new Event<CompletionData list>()
-
+    let tooltipReceivedEvent = new Event<TooltipInformation>()
     do
+        sendCommand ("colorscheme " + IdeApp.Preferences.ColorScheme.Value)
         fsiProcess.OutputDataReceived
           |> Event.filter (fun de -> de.Data <> null)
           |> Event.add (fun de ->
@@ -60,9 +82,13 @@ type InteractiveSession() =
         fsiProcess.ErrorDataReceived.Subscribe(fun de -> 
             if not (String.isNullOrEmpty de.Data) then
                 try
-                    let completions = JsonConvert.DeserializeObject<CompletionData list> de.Data
-                    completionsReceivedEvent.Trigger completions
-                    LoggingService.logDebug "%s" de.Data
+                    match de.Data with
+                    | Completion completions ->
+                        completionsReceivedEvent.Trigger completions
+                    | Tooltip tooltip ->
+                        tooltipReceivedEvent.Trigger tooltip
+                    | _ -> LoggingService.logDebug "[fsharpi] don't know how to process command %s" de.Data
+                    
                 with 
                 | :? JsonException ->
                     LoggingService.logError "[fsharpi] - error deserializing error stream - %s" de.Data
@@ -74,6 +100,7 @@ type InteractiveSession() =
         LoggingService.logDebug "Interactive: Break!"
 
     member x.CompletionsReceived = completionsReceivedEvent.Publish
+    member x.TooltipReceived = tooltipReceivedEvent.Publish
 
     member x.StartReceiving() =
         fsiProcess.BeginOutputReadLine()
@@ -106,5 +133,8 @@ type InteractiveSession() =
     
     member x.SendCompletionRequest input column =
         sendCommand (sprintf "completion %d %s" column input)
+
+    member x.SendTooltipRequest input  =
+        sendCommand (sprintf "tooltip %s" input)
 
     member x.Exited = fsiProcess.Exited

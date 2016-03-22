@@ -205,10 +205,6 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <ProjectReference Include="..\MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj">
-      <Project>{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}</Project>
-      <Name>MonoDevelop.FSharpInteractive.Service</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

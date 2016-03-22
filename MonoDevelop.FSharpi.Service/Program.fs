@@ -2,6 +2,7 @@
 open System
 open System.IO
 open System.Text
+open MonoDevelop.Ide
 open Newtonsoft.Json
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
@@ -28,6 +29,17 @@ module CompletionServer =
             else
                 None
 
+        let (|Tooltip|_|) (command: string) =
+            if command.StartsWith("tooltip ") then
+                Some(command.[8..])
+            else
+                None
+
+        let (|ColorScheme|_|) (command: string) =
+            if command.StartsWith("colorscheme ") then
+                Some(command.[12..])
+            else
+                None
         let (|Completion|_|) (command: string) =
             if command.StartsWith("completion ") then
                 let input = command.[11..]
@@ -53,11 +65,11 @@ module CompletionServer =
             let parseInput() =
                 async {
                     let! command = inStream.ReadLineAsync() |> Async.AwaitTask
+
                     match command with
                     | Input input ->
                         if input.EndsWith(";;") then
                             try
-                                //do! writeLine (currentInput + input)
                                 let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + input)
                                 match result with
                                 | Choice1Of2 () -> ()
@@ -72,12 +84,20 @@ module CompletionServer =
                             return ""
                         else
                             return currentInput + "\n" + input
+                    | ColorScheme colorScheme ->
+                        //IdeApp.Preferences.ColorScheme.Value <- colorScheme
+                        return currentInput
+                    | Tooltip filter ->
+                        let! tooltip = Completion.getCompletionTooltip filter
+                        let json = JsonConvert.SerializeObject tooltip
+                        do! Console.Error.WriteLineAsync ("tooltip " + json) |> Async.AwaitTask
+                        return currentInput
                     | Completion context ->
                         let col, lineStr = context
                         let! results = Completion.getCompletions(fsiSession, lineStr, col)
 
                         let json = JsonConvert.SerializeObject results
-                        do! Console.Error.WriteLineAsync json |> Async.AwaitTask
+                        do! Console.Error.WriteLineAsync ("completion " + json) |> Async.AwaitTask
                         return currentInput
                     | _ -> do! writeLine (sprintf "Could not parse command - %s" command)
                            return currentInput

@@ -2,6 +2,7 @@
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
+open MonoDevelop.FSharp
 
 type CompletionData = {
     displayText: string
@@ -39,13 +40,13 @@ module Completion =
 
     let symbolToCompletionData (symbols : FSharpSymbolUse list) =
         let getCompletion displayText symbol = 
-            Some  {
-                displayText = displayText
-                icon = symbolToIcon symbol
-                category = ""
-                overloads = []
-                description = null
-            }
+            Some  ({
+                    displayText = displayText
+                    icon = symbolToIcon symbol
+                    category = ""
+                    overloads = []
+                    description = null
+                }, symbol)
         match symbols with
         | head :: tail ->
             let completion =
@@ -57,7 +58,7 @@ module Completion =
                                 name.Remove(name.Length - 9)
                             else
                                 name
-                        getCompletion name head     
+                        getCompletion name head    
 
                     else
                         None
@@ -76,7 +77,8 @@ module Completion =
             { displayText = "#help"; category ="keywords"; icon = "md-keyword"; description = "Display help"; overloads = [] }
             { displayText = "#quit"; category ="keywords"; icon = "md-keyword"; description = "Exit"; overloads = [] }
         ]
-
+         
+    let mutable symbolList: FSharpSymbolUse list = List.empty
     let getCompletions (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
             let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
@@ -84,9 +86,19 @@ module Completion =
             let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
             let results = symbols 
                           |> List.choose symbolToCompletionData
+
+            let completions = results |> List.map (fun f -> fst f)
+            symbolList <- results |> List.map (fun f -> snd f)
             if longName.Length = 0 && residue.Length = 0 then
-                return results
+                return completions
                 |> List.append getHashDirectives
             else
-                return results
+                return completions
+        }
+
+    let getCompletionTooltip filter =
+        async {
+            let symbol = 
+                symbolList |> List.find (fun sym -> sym.Symbol.DisplayName = filter)
+            return! SymbolTooltips.getTooltipInformation symbol
         }
