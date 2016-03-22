@@ -21,7 +21,7 @@ module CompletionServer =
 
         let serializer = JsonSerializer.Create()
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(Settings.fsi, true)
-        let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream)
+        let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream, true)
 
         let (|Input|_|) (command: string) =
             if command.StartsWith("input ") then
@@ -35,11 +35,6 @@ module CompletionServer =
             else
                 None
 
-        let (|ColorScheme|_|) (command: string) =
-            if command.StartsWith("colorscheme ") then
-                Some(command.[12..])
-            else
-                None
         let (|Completion|_|) (command: string) =
             if command.StartsWith("completion ") then
                 let input = command.[11..]
@@ -84,9 +79,6 @@ module CompletionServer =
                             return ""
                         else
                             return currentInput + "\n" + input
-                    | ColorScheme colorScheme ->
-                        //IdeApp.Preferences.ColorScheme.Value <- colorScheme
-                        return currentInput
                     | Tooltip filter ->
                         let! tooltip = Completion.getCompletionTooltip filter
                         let json = JsonConvert.SerializeObject tooltip

@@ -68,7 +68,6 @@ type InteractiveSession() =
     let completionsReceivedEvent = new Event<CompletionData list>()
     let tooltipReceivedEvent = new Event<TooltipInformation>()
     do
-        sendCommand ("colorscheme " + IdeApp.Preferences.ColorScheme.Value)
         fsiProcess.OutputDataReceived
           |> Event.filter (fun de -> de.Data <> null)
           |> Event.add (fun de ->
