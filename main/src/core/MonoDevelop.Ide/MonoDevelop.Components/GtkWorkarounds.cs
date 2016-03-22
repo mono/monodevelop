@@ -1285,6 +1285,7 @@ namespace MonoDevelop.Components
 			SetData (widget, "transparent-bg-hint", enable);
 		}
 
+#if MAC
 		static void OnMappedDisableButtons (object sender, EventArgs args)
 		{
 			var window = sender as Gtk.Window;
@@ -1308,6 +1309,7 @@ namespace MonoDevelop.Components
 			nsWindow.StandardWindowButton (NSWindowButton.MiniaturizeButton).Enabled = false;
 			nsWindow.StandardWindowButton (NSWindowButton.ZoomButton).Enabled = false;
 		}
+#endif
 
 		public static void DisableMinimizeMaximizeButtons (Gtk.Window window)
 		{
