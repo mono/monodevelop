@@ -1,10 +1,10 @@
 ﻿//
-// ImportAndCondition.cs
+// INuGetPackageNewImportsHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using NuGet;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class ImportAndCondition
+	public interface INuGetPackageNewImportsHandler : IDisposable
 	{
-		public ImportAndCondition (string name, string condition)
-			: this (name, condition, ProjectImportLocation.Bottom)
-		{
-		}
-
-		public ImportAndCondition (string name, string condition, ProjectImportLocation location)
-		{
-			Name = name;
-			Condition = condition;
-			Location = location;
-		}
-
-		public string Name { get; set; }
-		public string Condition { get; set; }
-		public ProjectImportLocation Location { get; set; }
+		void AddImportIfMissing (string name, string condition, ProjectImportLocation location);
 	}
 }
 
