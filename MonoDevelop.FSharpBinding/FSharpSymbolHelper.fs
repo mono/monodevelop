@@ -676,15 +676,12 @@ module SymbolTooltips =
             else
                 basicName
 
-        let fullName =
-            match fse.TryGetFullNameWithUnderScoreTypes() with
-            | Some fullname -> "\n\n<small>Full name: " + fullname + "</small>"
-            | None -> "\n\n<small>Full name: " + fse.QualifiedName + "</small>"
+        
 
-        if fse.IsFSharpUnion then typeDisplay + uniontip () + fullName
-        elif fse.IsEnum then typeDisplay + enumtip () + fullName
-        elif fse.IsDelegate then typeDisplay + delegateTip () + fullName
-        else typeDisplay + fullName
+        if fse.IsFSharpUnion then typeDisplay + uniontip ()
+        elif fse.IsEnum then typeDisplay + enumtip ()
+        elif fse.IsDelegate then typeDisplay + delegateTip ()
+        else typeDisplay
 
     let getValSignature displayContext (v:FSharpMemberOrFunctionOrValue) =
         let retType = v.FullType.Format displayContext
@@ -732,7 +729,12 @@ module SymbolTooltips =
       
         | Entity c ->
             let ns = c.Namespace |> Option.getOrElse (fun () -> c.AccessPath)
-            sprintf "<small>Namespace:\t%s</small>%s<small>Assembly:\t%s</small>" ns Environment.NewLine c.Assembly.SimpleName
+            let fullName =
+                match c.TryGetFullNameWithUnderScoreTypes() with
+                | Some fullname -> "<small>Full name: " + fullname + "</small>"
+                | None -> "<small>Full name: " + c.QualifiedName + "</small>"
+
+            sprintf "%s%s<small>Namespace:\t%s</small>%s<small>Assembly:\t%s</small>" fullName Environment.NewLine ns Environment.NewLine c.Assembly.SimpleName
       
         | Field f ->
             let parent = f.DeclaringEntity.UnAnnotate().DisplayName
