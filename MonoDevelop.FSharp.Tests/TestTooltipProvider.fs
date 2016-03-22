@@ -27,12 +27,9 @@ type TestTooltipProvider() =
         symbolUse |> Option.bind SymbolTooltips.getTooltipFromSymbolUse
 
     let getTooltipSignature (source: string) =
-        let signature =
-            match getTooltip source with
-            | Some(tip,_,_) -> tip
-            | _ ->  ""
-
-        signature |> stripHtml |> htmlDecode
+        match getTooltip source with
+        | Some(tip,_,_) -> tip
+        | _ ->  ""
 
     let getTooltipFooter (source: string) =
         let footer =
@@ -48,7 +45,7 @@ type TestTooltipProvider() =
         | _ ->  ""
 
     [<Test>]
-    member this.``ooltip arrows are right aligned``() =
+    member this.``Tooltip arrows are right aligned``() =
         let input =
             """
             open System
