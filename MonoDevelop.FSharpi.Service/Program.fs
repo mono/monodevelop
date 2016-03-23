@@ -13,6 +13,11 @@ module CompletionServer =
     let main argv =
         let inStream = Console.In
         let outStream = Console.Out
+
+        Console.SetOut TextWriter.Null
+
+        MonoDevelop.Projects.HelpService.AsyncInitialize()
+
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
         // This flag makes fsi send the SERVER-PROMPT> prompt
         // once it's output the header
@@ -51,11 +56,18 @@ module CompletionServer =
             else
                 None
 
-        let writeLine (s:string) =
+        let writeOutput (s:string) =
             async {
                 do! outStream.WriteLineAsync s |> Async.AwaitTask
             }
 
+        let writeData commandType obj =
+            async {
+                let json = JsonConvert.SerializeObject obj
+                do! Console.Error.WriteLineAsync (commandType + " " + json) |> Async.AwaitTask
+            }
+
+        
         let rec main(currentInput) =
             let parseInput() =
                 async {
@@ -68,30 +80,27 @@ module CompletionServer =
                                 let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + input)
                                 match result with
                                 | Choice1Of2 () -> ()
-                                | Choice2Of2 exn -> do! writeLine (exn |> string)
+                                | Choice2Of2 exn -> do! writeOutput (exn |> string)
                                 for w in warnings do
-                                    do! writeLine (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
+                                    do! writeOutput (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)
 
                                 if not (input.StartsWith "#silentCd") then
-                                    do! writeLine "SERVER-PROMPT>"
+                                    do! writeOutput "SERVER-PROMPT>"
                             with
-                            | exn -> do! writeLine (exn |> string)
+                            | exn -> do! writeOutput (exn |> string)
                             return ""
                         else
                             return currentInput + "\n" + input
                     | Tooltip filter ->
                         let! tooltip = Completion.getCompletionTooltip filter
-                        let json = JsonConvert.SerializeObject tooltip
-                        do! Console.Error.WriteLineAsync ("tooltip " + json) |> Async.AwaitTask
+                        do! writeData "tooltip" tooltip
                         return currentInput
                     | Completion context ->
                         let col, lineStr = context
                         let! results = Completion.getCompletions(fsiSession, lineStr, col)
-
-                        let json = JsonConvert.SerializeObject results
-                        do! Console.Error.WriteLineAsync ("completion " + json) |> Async.AwaitTask
+                        do! writeData "completion" results
                         return currentInput
-                    | _ -> do! writeLine (sprintf "Could not parse command - %s" command)
+                    | _ -> do! writeOutput (sprintf "Could not parse command - %s" command)
                            return currentInput
                 }
             let currentInput = parseInput() |> Async.RunSynchronously
