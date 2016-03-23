@@ -334,7 +334,7 @@ module SymbolTooltips =
         | false, false -> a + " " + b
          
     let getKeywordTooltip (keyword:string) =
-        let signatureline = keyword ++ "(keyword)"
+        let signatureline = syntaxHighlight keyword ++ "(keyword)"
         let summary =
             match KeywordList.keywordDescriptions.TryGetValue keyword with
             | true, description -> Full description
