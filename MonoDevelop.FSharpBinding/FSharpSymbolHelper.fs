@@ -311,7 +311,7 @@ module internal Highlight =
         data.ColorStyle <- getColourScheme()
         data.GetMarkup (0, data.Length, false)
 
-    let asUnderline = sprintf "<u>%s</u>"
+    let asUnderline = sprintf "_STARTUNDERLINE_%s_ENDUNDERLINE_" // we replace with real markup after highlighting
 
 [<AutoOpen>]
 module PrintParameter =
@@ -876,7 +876,8 @@ module SymbolTooltips =
                 | Some n -> n
                 | _ -> param.DisplayName
             | _ -> ""
-          let signature = getFuncSignatureWithFormat symbol.DisplayContext m {Indent=3;Highlight=Some(parameterName)}
+          let signature = syntaxHighlight (getFuncSignatureWithFormat symbol.DisplayContext m {Indent=3;Highlight=Some(parameterName)})
+          let signature = signature.Replace("_STARTUNDERLINE_", "<u>").Replace("_ENDUNDERLINE_", "</u>")
           let summary = getSummaryFromSymbol m
 
           let summary, parameterInfo =
