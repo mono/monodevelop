@@ -6,6 +6,7 @@ open System.IO
 open System.Text.RegularExpressions
 open System.Threading
 open System.Threading.Tasks
+open ExtCore
 open MonoDevelop.Core
 open MonoDevelop.Core.Text
 open MonoDevelop.Components
@@ -19,20 +20,6 @@ type FakePad() =
 
     do view.InitialiseEvents()
 
-    static member private Pad =
-
-        try let pad = IdeApp.Workbench.GetPad<FakePad>()
-            if pad <> null then Some(pad)
-            else
-                //*attempt* to add the pad manually this seems to fail sporadically on updates and reinstalls, returning null
-                let pad = IdeApp.Workbench.AddPad(new FakePad(),
-                                                  "MonoDevelop.FSharp.FakePad",
-                                                  "FAKE",
-                                                  "Center Bottom",
-                                                  IconId("md-command"))
-                if pad <> null then Some(pad)
-                else None
-        with exn -> None
 
     member x.Run (baseDirectory, task, buildScript) =
         let fsiProcess =
@@ -60,7 +47,7 @@ type FakePad() =
             fsiProcess.BeginOutputReadLine()
             fsiProcess.BeginErrorReadLine()
 
-    override x.Control : Control = Control.op_Implicit view
+    override x.Control = Control.op_Implicit view
     override x.Initialize(_container:MonoDevelop.Ide.Gui.IPadWindow) =
         x.UpdateColors()
         x.UpdateFont()
@@ -93,6 +80,14 @@ type FakePad() =
 
 type FakeSearchResult(solution: Solution, match', matchedString, rank, scriptPath) =
     inherit SearchResult(match', matchedString, rank)
+    static let fakePad = new FakePad()
+
+    let addPad() =
+        IdeApp.Workbench.AddPad(fakePad,
+                                "MonoDevelop.FSharp.FakePad",
+                                "FAKE",
+                                "Center Bottom",
+                                IconId("md-command"))
 
     override x.SearchResultType =
         SearchResultType.Type
@@ -108,12 +103,16 @@ type FakeSearchResult(solution: Solution, match', matchedString, rank, scriptPat
     override x.CanActivate = true
 
     override x.Activate() =
-        let pad = IdeApp.Workbench.GetPad<FakePad>()
+        let pad = IdeApp.Workbench.FindPad(fakePad) |> Option.ofNull
+        let pad = 
+            match pad with
+            | Some pad -> Some pad
+            | None -> addPad() |> Option.ofNull
 
-        pad.BringToFront()
-        let padContent = pad.Content :?> FakePad
-
-        padContent.Run (string solution.BaseDirectory, matchedString, scriptPath)
+        pad |> Option.iter (fun p ->
+            p.BringToFront()
+            let padContent = p.Content :?> FakePad
+            padContent.Run (string solution.BaseDirectory, matchedString, scriptPath))
 
 type FakeSearchCategory() =
     inherit SearchCategory("FAKE", sortOrder = SearchCategory.FirstCategory)
