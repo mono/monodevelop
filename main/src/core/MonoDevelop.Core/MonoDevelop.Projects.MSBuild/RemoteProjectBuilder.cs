@@ -278,8 +278,8 @@ namespace MonoDevelop.Projects.MSBuild
 			var taskId = Interlocked.Increment (ref lastTaskId);
 			IDisposable cr = null;
 
-			refs = await Task.Run (() => {
-				using (referenceCacheLock.Enter ()) {
+			refs = await Task.Run (async () => {
+				using (await referenceCacheLock.EnterAsync ()) {
 					// Check again the cache, maybe the value was set while the task was starting
 					if (referenceCache.TryGetValue (id, out refs))
 						return refs;
