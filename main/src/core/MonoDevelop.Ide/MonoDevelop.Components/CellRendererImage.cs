@@ -171,7 +171,8 @@ namespace MonoDevelop.Components
 
 			width += (int)Xpad * 2;
 			height += (int)Ypad * 2;
-			x_offset = y_offset = 0;
+			x_offset = (int)(cell_area.Width / 2 - (width / 2));
+			y_offset = (int)(cell_area.Height / 2 - (height / 2));
 		}
 
 		Image GetImage ()
