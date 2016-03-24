@@ -409,9 +409,10 @@ style "completion_scrollbar" = "scrollbar"
 
 style "progressbar" = "default"
 {
-    bg[SELECTED] = "#62b3ec"
-    fg[SELECTED] = "#3a67a6"
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
     bg[ACTIVE] = @base_color
+    fg[SELECTED] = @selected_bg_color
+    fg[PRELIGHT] = @selected_fg_color
     xthickness = 0
     ythickness = 0
 }
