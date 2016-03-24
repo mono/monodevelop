@@ -100,12 +100,16 @@ type SyntaxHighlighting() =
     [<TestCase(@"let rec computeSomeFunction §x§ =", "User Field Declaration")>]
     [<TestCase(@"Option.tryCast<MonoTextEditor§>(§fun e", "Punctuation(Brackets)")>]
     [<TestCase(@"let mutable session§ = §setupSession()", "Plain Text")>]
+    [<TestCase(@"§0b010101§", "Number")>]
+    [<TestCase(@"w11.Position <- §0§", "Number")>]
+    [<TestCase(@" §-1§", "Number")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
     [<TestCase(@"static member §GetDefaultConfiguration§ :", "User Method Declaration")>]
     [<TestCase(@"member §``Syntax Highlighting``§ :", "User Method Declaration")>]
     [<TestCase(@"-> §^T§ :", "User Types")>]
+    [<TestCase(@"   -> §seq§<'T>", "User Types")>]
     [<TestCase(@"   §list§ :", "User Field Declaration")>]
     member x.``Tooltip highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
