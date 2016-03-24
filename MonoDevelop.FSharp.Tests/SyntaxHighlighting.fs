@@ -103,6 +103,7 @@ type SyntaxHighlighting() =
     [<TestCase(@"§0b010101§", "Number")>]
     [<TestCase(@"w11.Position <- §0§", "Number")>]
     [<TestCase(@" §-1§", "Number")>]
+    [<TestCase(@"[0§..§1]", "Plain Text")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
