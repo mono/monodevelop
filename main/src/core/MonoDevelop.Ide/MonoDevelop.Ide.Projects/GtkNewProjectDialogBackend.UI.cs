@@ -99,8 +99,8 @@ namespace MonoDevelop.Ide.Projects
 		void Build ()
 		{
 			BorderWidth = 0;
-			WidthRequest = GtkWorkarounds.ConvertToPixelScale (901);
-			HeightRequest = GtkWorkarounds.ConvertToPixelScale (632);
+			WidthRequest = 901;
+			HeightRequest = 632;
 
 			Name = "wizard_dialog";
 			Title = GettextCatalog.GetString ("New Project");
@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Projects
 			// Top banner of dialog.
 			var topLabelEventBox = new EventBox ();
 			topLabelEventBox.Name = "topLabelEventBox";
-			topLabelEventBox.HeightRequest = GtkWorkarounds.ConvertToPixelScale (52);
+			topLabelEventBox.HeightRequest = 52;
 			topLabelEventBox.ModifyBg (StateType.Normal, bannerBackgroundColor);
 			topLabelEventBox.ModifyFg (StateType.Normal, whiteColor);
 			topLabelEventBox.BorderWidth = 0;
@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesBgBox.Name = "templateCategoriesVBox";
 			templateCategoriesBgBox.BorderWidth = 0;
 			templateCategoriesBgBox.ModifyBg (StateType.Normal, categoriesBackgroundColor);
-			templateCategoriesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (220);
+			templateCategoriesBgBox.WidthRequest = 220;
 			var templateCategoriesScrolledWindow = new ScrolledWindow ();
 			templateCategoriesScrolledWindow.Name = "templateCategoriesScrolledWindow";
 			templateCategoriesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Projects
 			var templatesBgBox = new EventBox ();
 			templatesBgBox.ModifyBg (StateType.Normal, templateListBackgroundColor);
 			templatesBgBox.Name = "templatesVBox";
-			templatesBgBox.WidthRequest = GtkWorkarounds.ConvertToPixelScale (400);
+			templatesBgBox.WidthRequest = 400;
 			templatesHBox.PackStart (templatesBgBox, false, false, 0);
 			var templatesScrolledWindow = new ScrolledWindow ();
 			templatesScrolledWindow.Name = "templatesScrolledWindow";
@@ -207,21 +207,21 @@ namespace MonoDevelop.Ide.Projects
 			// Template large image.
 			templateImage = new ImageView ();
 			templateImage.Name = "templateImage";
-			templateImage.HeightRequest = GtkWorkarounds.ConvertToPixelScale (140);
-			templateImage.WidthRequest = GtkWorkarounds.ConvertToPixelScale (240);
+			templateImage.HeightRequest = 140;
+			templateImage.WidthRequest = 240;
 			templateVBox.PackStart (templateImage, false, false, 10);
 
 			// Template description.
 			templateNameLabel = new Label ();
 			templateNameLabel.Name = "templateNameLabel";
-			templateNameLabel.WidthRequest = GtkWorkarounds.ConvertToPixelScale (240);
+			templateNameLabel.WidthRequest = 240;
 			templateNameLabel.Wrap = true;
 			templateNameLabel.Xalign = 0;
 			templateNameLabel.Markup = MarkupTemplateName ("TemplateName");
 			templateVBox.PackStart (templateNameLabel, false, false, 0);
 			templateDescriptionLabel = new Label ();
 			templateDescriptionLabel.Name = "templateDescriptionLabel";
-			templateDescriptionLabel.WidthRequest = GtkWorkarounds.ConvertToPixelScale (240);
+			templateDescriptionLabel.WidthRequest = 240;
 			templateDescriptionLabel.Wrap = true;
 			templateDescriptionLabel.Xalign = 0;
 			templateVBox.PackStart (templateDescriptionLabel, false, false, 0);
