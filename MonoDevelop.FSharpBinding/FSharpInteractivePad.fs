@@ -139,6 +139,8 @@ type FSharpInteractivePad() =
         editor.InsertAtCaret ("\n> ")
 
     let fsiOutput t =
+        if editor.CaretColumn <> 1 then
+            editor.InsertAtCaret ("\n")
         editor.InsertAtCaret (nonBreakingSpace + t)
         editor.ScrollTo editor.CaretLocation
 
@@ -341,6 +343,7 @@ type FSharpInteractivePad() =
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
 
         x.SendCommand ";;"
+
         orderedreferences
         |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path ))
 
