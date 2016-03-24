@@ -376,7 +376,7 @@ style "scrollbar" = "default"
     {
         roundness = 1
         contrast = 0.0
-        trough_shades = { 0.975, 0.975 }
+        trough_shades = { 1.0, 1.0 }
         stepperstyle = 1
     }
 }
