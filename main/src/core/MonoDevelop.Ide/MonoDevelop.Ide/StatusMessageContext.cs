@@ -145,9 +145,9 @@ namespace MonoDevelop.Ide
 		public void SetProgressFraction (double work)
 		{
 			// Do nothing if autopulse...
-			if (!AutoPulse)
+			if (AutoPulse)
 				return;
-			
+
 			var args = new StatusMessageContextProgressChangedArgs (this, StatusMessageContextProgressChangedArgs.ProgressChangedType.Fraction, work);
 			OnProgressChanged (args);
 		}

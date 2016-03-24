@@ -732,7 +732,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			EndProgress ();
 
-			if (AutoPulse)
+			if (autoPulse)
 				progressView.StartProgressAutoPulse ();
 			else
 				progressView.BeginProgress ();
