@@ -60,6 +60,7 @@ type ``Completion Tests``() =
     [<TestCase("override x|")>]
     [<TestCase("1|")>]
     [<TestCase("fun c|")>]
+    [<TestCase("0uy|")>]
     [<TestCase("let x = [1..|")>]
     [<TestCase("[ for i in 0 .|. 99")>]
     member x.``Empty completions``(input: string) =

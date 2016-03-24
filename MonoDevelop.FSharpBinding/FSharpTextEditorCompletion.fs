@@ -128,6 +128,12 @@ module Completion =
         else
             Some InvalidCompletionChar
 
+    let (|LiteralNumber|_|) context =
+        if Regex.IsMatch(context.lineToCaret, "\s?[0-9]+[\w.]*$", RegexOptions.Compiled) then
+            Some LiteralNumber
+        else
+            None
+
     let (|FunctionIdentifier|_|) context =
         if Regex.IsMatch(context.lineToCaret, "\s?(fun)\s+[^-]+$", RegexOptions.Compiled) then
             Some FunctionIdentifier
@@ -528,6 +534,7 @@ module Completion =
                 | InvalidToken 
                 | InvalidCompletionChar
                 | DoubleDot
+                | LiteralNumber
                 | FunctionIdentifier -> 
                     return CompletionDataList()
                 | ModuleOrTypeIdentifier
