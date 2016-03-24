@@ -11521,7 +11521,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                       <widget class="Gtk.CheckButton" id="createProjectWithinSolutionDirectoryCheckBox">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Label" translatable="yes">Create a project within the solution directory.</property>
+                        <property name="Label" translatable="yes">Create a project directory within the solution directory.</property>
                         <property name="Active">True</property>
                         <property name="DrawIndicator">True</property>
                         <property name="HasLabel">True</property>
