@@ -285,8 +285,7 @@ type FSharpInteractivePad() =
             getCorrectDirectory()
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
 
-            x.SendAndEchoText sel
-            x.SendCommand ";;"
+            x.SendCommand (sel + ";;")
         else
           //if nothing is selected send the whole line
             x.SendLine()
@@ -299,8 +298,7 @@ type FSharpInteractivePad() =
 
             let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
             let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
-            x.SendAndEchoText text
-            x.SendCommand ";;"
+            x.SendCommand (text + ";;")
             //advance to the next line
             if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
             then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
