@@ -93,7 +93,7 @@
 <!--    <Match color="User Method Declaration">``(.*)``</Match>   -->
 
 	
-	<Match color="Number">CSharpNumber</Match>
+	<Match color="Number">(-*[0-9]+[\w]*)</Match>
 	<Match color="Keyword(Iteration)" ignorecase="False">(do!|use!|yield!|return!|let!)</Match>
 	<Match color="Keyword(Iteration)" ignorecase="False">(do|use|yield|return)\b</Match>
 	<!-- reserved-ident-keyword F# spec v3.0 section 3.4 -->
@@ -335,7 +335,7 @@
 		<!-- tooltip  -->
 		<Group color="User Method Declaration"/>
 	</Match>
-	
+
 	<Match color="Keyword(Modifiers)">(static|abstract|default|override|public|extern|internal|mutable|rec|inline|private)\b</Match>
 
 	<Match expression="([A-Z]{1}\w*)(\s*=)">
@@ -384,7 +384,15 @@
 	<Match color="Keyword(Constants)" ignorecase="False">\b(false|null|true|__LINE__|__SOURCE_DIRECTORY__|__SOURCE_FILE__)\b</Match>
 	<Match color="Keyword(Iteration)" ignorecase="False">\b(async|maybe|asyncMaybe|asyncSeq|asyncChoice|seq|query|let|finally|try|with|val|while|for|begin|done|elif|else|end|if|match|then|when|void|global|base|inherit|member|type|module|of|class|delegate|exception|interface|struct|as|in)\b</Match>
 
-    <Match expression="([a-z]{1}\w*|``[^`]*``)(?:\s*\&quot;)">
+	<Match expression="^(\s+)(-&gt;)(\s+)(\w+)" ignorecase="False">
+		<!-- tooltip  -->
+		<Group color="Plain Text"/>
+		<Group color="Punctuation(Brackets)"/>
+		<Group color="Plain Text"/>
+		<Group color="User Types"/>
+	</Match>
+
+	<Match expression="([a-z]{1}\w*|``[^`]*``)(?:\s*\&quot;)">
 		<Group color="User Method Declaration"/>
 	</Match>
 
