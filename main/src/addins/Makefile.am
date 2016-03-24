@@ -25,7 +25,6 @@ SUBDIRS = \
 	ChangeLogAddIn \
 	MonoDevelop.WebReferences \
 	MonoDevelop.RegexToolkit \
-	CBinding \
 	MonoDevelop.AssemblyBrowser \
 	MonoDevelop.Debugger.Soft \
 	WindowsPlatform \
