@@ -415,17 +415,23 @@ namespace MonoDevelop.VersionControl
 					// new queries to the queue while long-running VCS operations are being performed
 					var groups = fileQueryQueueClone.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var group in groups) {
+						if (Disposed)
+							break;
 						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
 						infoCache.SetStatus (status);
 					}
 
 					foreach (var item in directoryQueryQueueClone) {
+						if (Disposed)
+							break;
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
 						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
 
 					foreach (var item in recursiveDirectoryQueryQueueClone) {
 						try {
+							if (Disposed)
+								continue;
 							item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
 						} finally {
 							item.ResetEvent.Set ();
