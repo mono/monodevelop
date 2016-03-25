@@ -354,9 +354,14 @@ namespace MonoDevelop.VersionControl.Git
 
 			return commits.TakeWhile (c => c != sinceRev).Select (commit => {
 				var author = commit.Author;
+				var shortMessage = commit.MessageShort;
+				if (shortMessage.Length > 50) {
+					shortMessage = shortMessage.Substring (0, 50) + "…";
+				}
+
 				var rev = new GitRevision (this, repository, commit, author.When.LocalDateTime, author.Name, commit.Message) {
 					Email = author.Email,
-					ShortMessage = commit.MessageShort,
+					ShortMessage = shortMessage,
 					FileForChanges = localFile,
 				};
 				return rev;
