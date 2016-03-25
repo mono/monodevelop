@@ -165,6 +165,7 @@ style "menubar" = "default" {
 style "menu-item" = "menu" {
     xthickness = 2
     ythickness = 3
+    GtkMenuItem::arrow-scaling = 0.35
 
     engine "xamarin" {
         arrowstyle = 3
