@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Projects
 							if (!configureProject.CanReferenceProject (netProject, out reason))
 								continue;
 						}
-						store.AppendValues (name, "", null, selected, projectEntry.FileName.ToString (), "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
+						store.InsertWithValues(-1, name, "", null, selected, projectEntry.FileName.ToString (), "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
 					}
 
 					foreach (FilePath file in selectDialog.GetRecentFileReferences ()) {
@@ -240,7 +240,7 @@ namespace MonoDevelop.Ide.Projects
 						} else {
 							name = GLib.Markup.EscapeText (fname);
 						}
-						store.AppendValues (name, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
+						store.InsertWithValues (-1, name, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
 					}
 				}
 			} finally {
