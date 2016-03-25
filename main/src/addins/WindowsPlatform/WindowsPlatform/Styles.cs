@@ -68,6 +68,10 @@ namespace WindowsPlatform
 		static Brush searchBarBackgroundBrush;
 		static Brush searchBarTextBrush;
 
+		static Brush tooltipBackgroundBrush;
+		static Brush tooltipBorderBrush;
+		static Brush tooltipTextBrush;
+
 		public static Brush MainToolbarBackgroundBrush {
 			get { return mainToolbarBackgroundBrush; }
 			private set { mainToolbarBackgroundBrush = value; RaisePropertyChanged (); }
@@ -224,6 +228,21 @@ namespace WindowsPlatform
 			private set { searchBarTextBrush = value; RaisePropertyChanged (); }
 		}
 
+		public static Brush TooltipBackgroundBrush {
+			get { return tooltipBackgroundBrush; }
+			private set { tooltipBackgroundBrush = value; RaisePropertyChanged (); }
+		}
+
+		public static Brush TooltipBorderBrush {
+			get { return tooltipBorderBrush; }
+			private set { tooltipBorderBrush = value; RaisePropertyChanged (); }
+		}
+
+		public static Brush TooltipTextBrush {
+			get { return tooltipTextBrush; }
+			private set { tooltipTextBrush = value; RaisePropertyChanged (); }
+		}
+
 		static Styles ()
 		{
 			Xwt.Drawing.Context.RegisterStyles ("hover", "pressed", "disabled");
@@ -287,6 +306,10 @@ namespace WindowsPlatform
 				SearchBarBorderBrush = new SolidColorBrush (ColorFromHex("D3D3D3"));
 				SearchBarBackgroundBrush = new SolidColorBrush (ColorFromHex("FFFFFF"));
 				SearchBarTextBrush = MainToolbarForegroundBrush;
+
+				TooltipBackgroundBrush = new SolidColorBrush (ColorFromHex("f2f2f2"));
+				TooltipBorderBrush = new SolidColorBrush (ColorFromHex("b2b2b2"));
+				TooltipTextBrush = new SolidColorBrush (ColorFromHex("222222"));
 			} else {
 				MainToolbarBackgroundBrush = new SolidColorBrush (ColorFromHex("303030"));
 				MainToolbarForegroundBrush = new SolidColorBrush (ColorFromHex("bfbfbf"));
@@ -322,6 +345,10 @@ namespace WindowsPlatform
 				SearchBarBorderBrush = new SolidColorBrush (ColorFromHex("1A1A1A"));
 				SearchBarBackgroundBrush = new SolidColorBrush (ColorFromHex("222222"));
 				SearchBarTextBrush = MainToolbarForegroundBrush;
+
+				TooltipBackgroundBrush = new SolidColorBrush (ColorFromHex("5a5a5a"));
+				TooltipBorderBrush = new SolidColorBrush (ColorFromHex("b2b2b2"));
+				TooltipTextBrush = new SolidColorBrush (ColorFromHex("d2d5cd"));
 			}
 		}
 
