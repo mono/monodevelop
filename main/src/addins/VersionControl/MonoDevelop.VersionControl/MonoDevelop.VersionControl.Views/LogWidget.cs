@@ -730,7 +730,7 @@ namespace MonoDevelop.VersionControl.Views
 				return;
 			foreach (var rev in h) {
 				if (MatchesFilter (rev))
-					logstore.AppendValues (rev, string.Empty);
+					logstore.InsertWithValues (-1, rev, string.Empty);
 			}
 			SetLogSearchFilter (logstore, currentFilter);
 			treeviewLog.ThawChildNotify ();
