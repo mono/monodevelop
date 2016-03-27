@@ -94,36 +94,31 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			if (classData.Class.TypeKind == TypeKind.Delegate)
 				return;
 
-			foreach (var innerClass in classData.Class.GetTypeMembers ())
-				if (innerClass.DeclaredAccessibility == Accessibility.Public
-					|| (innerClass.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly)
-					|| !publicOnly)
-					builder.AddChild (new ClassData (classData.Project, innerClass));
+			builder.AddChildren (classData.Class.GetTypeMembers ()
+								 .Where (innerClass => innerClass.DeclaredAccessibility == Accessibility.Public ||
+													   (innerClass.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
+													   !publicOnly)
+								 .Select (innerClass => new ClassData (classData.Project, innerClass)));
 
-			foreach (var method in classData.Class.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind != MethodKind.PropertyGet && m.MethodKind != MethodKind.PropertySet)) {
-				if (method.DeclaredAccessibility == Accessibility.Public
-					|| (method.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly)
-					|| !publicOnly)
-					builder.AddChild (method);
-			}
+			builder.AddChildren (classData.Class.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind != MethodKind.PropertyGet && m.MethodKind != MethodKind.PropertySet)
+								 .Where (method => method.DeclaredAccessibility == Accessibility.Public ||
+												   (method.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
+												   !publicOnly));
 
-			foreach (var property in classData.Class.GetMembers ().OfType<IPropertySymbol> ())
-				if (property.DeclaredAccessibility == Accessibility.Public
-					|| (property.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly)
-					|| !publicOnly)
-					builder.AddChild (property);
+			builder.AddChildren (classData.Class.GetMembers ().OfType<IPropertySymbol> ()
+								 .Where (property => property.DeclaredAccessibility == Accessibility.Public ||
+										 (property.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
+			                             !publicOnly));
 
-			foreach (var field in classData.Class.GetMembers ().OfType<IFieldSymbol> ())
-				if (field.DeclaredAccessibility == Accessibility.Public
-					|| (field.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly)
-					|| !publicOnly)
-					builder.AddChild (field);
+			builder.AddChildren (classData.Class.GetMembers ().OfType<IFieldSymbol> ()
+								 .Where (field => field.DeclaredAccessibility == Accessibility.Public ||
+										 (field.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
+										 !publicOnly));
 
-			foreach (var e in classData.Class.GetMembers ().OfType<IEventSymbol> ())
-				if (e.DeclaredAccessibility == Accessibility.Public
-					|| (e.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly)
-					|| !publicOnly)
-					builder.AddChild (e);
+			builder.AddChildren (classData.Class.GetMembers ().OfType<IEventSymbol> ()
+								 .Where (e => e.DeclaredAccessibility == Accessibility.Public ||
+										 (e.DeclaredAccessibility == Accessibility.Protected && publicProtectedOnly) ||
+										 !publicOnly));
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
