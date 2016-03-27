@@ -89,12 +89,8 @@ namespace MonoDevelop.AssemblyBrowser
 				var ns = namespaces [namespaceName];
 				ns.Types.Add (type);
 			}
-			
-			foreach (var ns in namespaces.Values) {
-				if (publicOnly && !ns.Types.Any (t => t.IsPublic))
-					continue;
-				treeBuilder.AddChild (ns);
-			}
+
+			treeBuilder.AddChildren (namespaces.Values.Where (ns => !publicOnly || ns.Types.Any (t => t.IsPublic)));
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

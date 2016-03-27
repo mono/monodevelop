@@ -99,9 +99,8 @@ namespace MonoDevelop.UnitTesting
 			UnitTestGroup test = dataObject as UnitTestGroup;
 			if (test == null)
 				return;
-				
-			foreach (UnitTest t in test.Tests)
-				builder.AddChild (t);
+
+			builder.AddChildren (test.Tests);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

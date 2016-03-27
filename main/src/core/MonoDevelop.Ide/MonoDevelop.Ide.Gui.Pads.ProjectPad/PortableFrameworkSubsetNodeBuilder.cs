@@ -29,6 +29,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using Gdk;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -79,9 +80,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				treeBuilder.AddChild (new TreeViewItem (msg, Stock.Warning));
 			}
 
-			foreach (var asm in project.TargetRuntime.AssemblyContext.GetAssemblies (project.TargetFramework))
-				if (asm.Package.IsFrameworkPackage && asm.Name != "mscorlib")
-					treeBuilder.AddChild (new ImplicitFrameworkAssemblyReference (asm));
+			treeBuilder.AddChildren (project.TargetRuntime.AssemblyContext.GetAssemblies (project.TargetFramework)
+									 .Where (asm => asm.Package.IsFrameworkPackage && asm.Name != "mscorlib")
+									 .Select (asm => new ImplicitFrameworkAssemblyReference (asm)));
 		}
 	}
 }

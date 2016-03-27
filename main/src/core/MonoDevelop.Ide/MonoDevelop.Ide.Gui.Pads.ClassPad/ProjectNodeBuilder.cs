@@ -113,10 +113,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 					FillNamespaces (builder, project, ns);
 				}
 			}
-			foreach (var type in dom.Assembly.GlobalNamespace.GetTypeMembers ()) {
-				if (!publicOnly || type.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public)
-					builder.AddChild (new ClassData (project, type));
-			}
+			builder.AddChildren (dom.Assembly.GlobalNamespace.GetTypeMembers ()
+								 .Where (type => !publicOnly || type.DeclaredAccessibility == Accessibility.Public)
+								 .Select (type => new ClassData (project, type)));
 		}
 
 		public static void FillNamespaces (ITreeBuilder builder, Project project, INamespaceSymbol ns)

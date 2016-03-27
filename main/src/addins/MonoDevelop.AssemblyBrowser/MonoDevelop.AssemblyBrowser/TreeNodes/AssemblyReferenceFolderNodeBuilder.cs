@@ -72,10 +72,8 @@ namespace MonoDevelop.AssemblyBrowser
 					//	ctx.AddChild (new Error (MonoDevelop.Core.GettextCatalog.GetString ("Error while loading:") + assemblyNameReference.FullName + "/" + e.Message));
 				}
 			}
-			
-			foreach (ModuleReference moduleRef in referenceFolder.ModuleReferences) {
-				ctx.AddChild (moduleRef);
-			}
+
+			ctx.AddChildren (referenceFolder.ModuleReferences);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

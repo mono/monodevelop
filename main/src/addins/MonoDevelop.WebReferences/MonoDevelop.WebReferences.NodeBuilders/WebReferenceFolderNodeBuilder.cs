@@ -65,11 +65,9 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		{
 			var folder = (WebReferenceFolder) dataObject;
 			if (folder.IsWCF)
-				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWCF (folder.Project))
-					treeBuilder.AddChild(item);
+				treeBuilder.AddChildren (WebReferencesService.GetWebReferenceItemsWCF (folder.Project));
 			else
-				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWS (folder.Project))
-					treeBuilder.AddChild(item);
+				treeBuilder.AddChildren (WebReferencesService.GetWebReferenceItemsWS (folder.Project));
 		}
 		
 		/// <summary>Compare two object with one another and returns a number based on their sort order.</summary>
