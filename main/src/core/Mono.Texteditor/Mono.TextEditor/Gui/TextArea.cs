@@ -1062,7 +1062,7 @@ namespace Mono.TextEditor
 			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
 			if (await editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
 				return;
-			args.RetVal = false;
+			args.RetVal = base.OnKeyPressEvent (evt);
 		}
 
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
