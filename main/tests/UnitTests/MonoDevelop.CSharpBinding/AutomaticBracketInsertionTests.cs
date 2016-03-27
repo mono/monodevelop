@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharpBinding
 			var data = new RoslynSymbolCompletionData (null, factory, method);
 			data.IsDelegateExpected = isDelegateExpected;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
+			ka = await data.InsertCompletionText (listWindow, ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
 
 			return widget.CompletedWord;
 		}

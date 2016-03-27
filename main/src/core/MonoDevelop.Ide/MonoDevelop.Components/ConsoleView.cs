@@ -28,7 +28,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using Gtk;
 
 using MonoDevelop.Core;
@@ -105,9 +105,9 @@ namespace MonoDevelop.Components
 		public string PromptMultiLineString { get; set; }
 		
 		[GLib.ConnectBeforeAttribute]
-		void TextViewKeyPressEvent (object o, KeyPressEventArgs args)
+		async void TextViewKeyPressEvent (object o, KeyPressEventArgs args)
 		{
-			if (ProcessKeyPressEvent (args))
+			if (await ProcessKeyPressEvent (args))
 				args.RetVal = true;
 		}
 
@@ -198,12 +198,12 @@ namespace MonoDevelop.Components
 			return true;
 		}
 		
-		protected virtual bool ProcessKeyPressEvent (KeyPressEventArgs args)
+		protected virtual Task<bool> ProcessKeyPressEvent (KeyPressEventArgs args)
 		{
 			// Short circuit to avoid getting moved back to the input line
 			// when paging up and down in the shell output
 			if (args.Event.Key == Gdk.Key.Page_Up || args.Event.Key == Gdk.Key.Page_Down)
-				return false;
+				return Task.FromResult (false);
 			
 			// Needed so people can copy and paste, but always end up
 			// typing in the prompt.
@@ -213,7 +213,7 @@ namespace MonoDevelop.Components
 			}
 
 			if (!TextView.Editable) {
-				return false;
+				return Task.FromResult (false);
 			}
 
 //			if (ev.State == Gdk.ModifierType.ControlMask && ev.Key == Gdk.Key.space)
@@ -222,13 +222,13 @@ namespace MonoDevelop.Components
 			switch (args.Event.Key) {
 			case Gdk.Key.KP_Enter:
 			case Gdk.Key.Return:
-				return ProcessReturn ();
+				return Task.FromResult (ProcessReturn ());
 			case Gdk.Key.KP_Up:
 			case Gdk.Key.Up:
-				return ProcessCommandHistoryUp ();
+				return Task.FromResult (ProcessCommandHistoryUp ());
 			case Gdk.Key.KP_Down:
 			case Gdk.Key.Down:
-				return ProcessCommandHistoryDown ();
+				return Task.FromResult (ProcessCommandHistoryDown ());
 			case Gdk.Key.KP_Left:
 			case Gdk.Key.Left:
 				// On Mac, when using a small keyboard, Home is Command+Left
@@ -239,12 +239,12 @@ namespace MonoDevelop.Components
 					if (!args.Event.State.HasFlag (Gdk.ModifierType.ShiftMask))
 						Buffer.MoveMark (Buffer.SelectionBound, InputLineBegin);
 
-					return true;
+					return Task.FromResult (true);
 				}
 
 				// Keep our cursor inside the prompt area
 				if (Cursor.Compare (InputLineBegin) <= 0)
-					return true;
+					return Task.FromResult (true);
 
 				break;
 			case Gdk.Key.KP_Home:
@@ -255,7 +255,7 @@ namespace MonoDevelop.Components
 				if (!args.Event.State.HasFlag (Gdk.ModifierType.ShiftMask))
 					Buffer.MoveMark (Buffer.SelectionBound, InputLineBegin);
 
-				return true;
+				return Task.FromResult (true);
 			case Gdk.Key.a:
 				if (args.Event.State.HasFlag (Gdk.ModifierType.ControlMask)) {
 					Buffer.MoveMark (Buffer.InsertMark, InputLineBegin);
@@ -264,16 +264,16 @@ namespace MonoDevelop.Components
 					if (!args.Event.State.HasFlag (Gdk.ModifierType.ShiftMask))
 						Buffer.MoveMark (Buffer.SelectionBound, InputLineBegin);
 
-					return true;
+					return Task.FromResult (true);
 				}
 				break;
 			case Gdk.Key.period:
-				return false;
+				return Task.FromResult (false);
 			default:
-				return false;
+				return Task.FromResult (false);
 			}
 			
-			return false;
+			return Task.FromResult (false);
 		}
 
 		public TextIter InputLineBegin {

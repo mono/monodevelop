@@ -278,9 +278,9 @@ namespace MonoDevelop.CSharp.Completion
 			HandleDocumentParsed (null, null);
 		}
 		
-		public override bool KeyPress (KeyDescriptor descriptor)
+		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
-			bool result = base.KeyPress (descriptor);
+			var result = await base.KeyPress (descriptor);
 			
 			if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
 				base.RunParameterCompletionCommand ();

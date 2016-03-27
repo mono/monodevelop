@@ -40,6 +40,7 @@ using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Fonts;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -771,14 +772,14 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtTextEditorExtension: TextEditorExtension
 	{
-		public override bool KeyPress (KeyDescriptor descriptor)
+		public override Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
 			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
 			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
 				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
-				return true;
+				return Task.FromResult (true);
 			}
 
 			return base.KeyPress (descriptor);

@@ -242,11 +242,11 @@ namespace MonoDevelop.AspNet.Razor
 		XObject prevNode;
 		bool updateNeeded;
 
-		public override bool KeyPress (KeyDescriptor descriptor)
+		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
 			Tracker.UpdateEngine ();
 			if (razorDocument == null)
-				return NonCSharpCompletion (descriptor);
+				return await NonCSharpCompletion (descriptor);
 
 			var n = Tracker.Engine.Nodes.Peek ();
 			if (prevNode is RazorExpression && !(n is RazorExpression))
@@ -263,20 +263,20 @@ namespace MonoDevelop.AspNet.Razor
 			// Rule out Razor comments, html, transition sign (@) and e-mail addresses
 			if (state is RazorCommentState || (previousChar != '@' && !(state is RazorState))  || descriptor.KeyChar == '@'
 				|| (previousChar == '@' && Char.IsLetterOrDigit (beforePrevious)))
-				return NonCSharpCompletion (descriptor);
+				return await NonCSharpCompletion (descriptor);
 
 			// Determine if we are inside generics
 			if (previousChar == '<') {
 				var codeState = state as RazorCodeFragmentState;
 				if (codeState == null || !codeState.IsInsideGenerics)
-					return NonCSharpCompletion (descriptor);
+					return await NonCSharpCompletion (descriptor);
 			}
 			// Determine whether we begin an html tag or generics
 			else if (descriptor.KeyChar == '<' && (n is XElement || !Char.IsLetterOrDigit (previousChar)))
-				return NonCSharpCompletion (descriptor);
+				return await NonCSharpCompletion (descriptor);
 			// Determine whether we are inside html text or in code
 			else if (previousChar != '@' && n is XElement && !(state is RazorSpeculativeState) && !(state is RazorExpressionState))
-				return NonCSharpCompletion (descriptor);
+				return await NonCSharpCompletion (descriptor);
 
 			// We're in C# context
 			InitializeCodeCompletion ();
@@ -284,7 +284,7 @@ namespace MonoDevelop.AspNet.Razor
 
 			bool result;
 			try {
-				result = base.KeyPress (descriptor);
+				result = await base.KeyPress (descriptor);
 				if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
 				    base.RunParameterCompletionCommand ();
 			} finally {
@@ -310,7 +310,7 @@ namespace MonoDevelop.AspNet.Razor
 			CompletionWidget = defaultCompletionWidget;
 		}
 
-		bool NonCSharpCompletion (KeyDescriptor descriptor)
+		Task<bool> NonCSharpCompletion (KeyDescriptor descriptor)
 		{
 			isInCSharpContext = false;
 			return base.KeyPress (descriptor);

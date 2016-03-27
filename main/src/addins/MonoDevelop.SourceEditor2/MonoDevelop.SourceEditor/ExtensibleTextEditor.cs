@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.SourceEditor.Wrappers;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -109,13 +110,13 @@ namespace MonoDevelop.SourceEditor
 				this.ext = ext;
 			}
 			
-			public override bool KeyPress (KeyDescriptor descriptor)
+			public override Task<bool> KeyPress (KeyDescriptor descriptor)
 			{
 				var native =(Tuple<Gdk.Key, Gdk.ModifierType>)descriptor.NativeKeyChar;
 				ext.SimulateKeyPress (native.Item1, (uint)descriptor.KeyChar, native.Item2);
 				if (descriptor.SpecialKey == SpecialKey.Escape)
-					return true;
-				return false;
+					return Task.FromResult (true);
+				return Task.FromResult (false);
 			}
 		}
 
@@ -254,7 +255,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		bool ExtensionKeyPress (Gdk.Key key, uint ch, Gdk.ModifierType state)
+		Task<bool> ExtensionKeyPress (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			isInKeyStroke = true;
 			try {
@@ -271,7 +272,7 @@ namespace MonoDevelop.SourceEditor
 			} finally {
 				isInKeyStroke = false;
 			}
-			return false;
+			return Task.FromResult (false);
 		}
 		
 		void ReportExtensionError (Exception ex) 
@@ -328,11 +329,11 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		protected override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
+		protected override async Task<bool> OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			bool result = true;
 			if (key == Gdk.Key.Escape) {
-				bool b = EditorExtension != null ? ExtensionKeyPress (key, ch, state) : base.OnIMProcessedKeyPressEvent (key, ch, state);
+				bool b = EditorExtension != null ? await ExtensionKeyPress (key, ch, state) : await base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
@@ -369,15 +370,15 @@ namespace MonoDevelop.SourceEditor
 				if (EditorExtension != null) {
 					if (!DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
 						using (var undo = Document.OpenUndoGroup ()) {
-							if (ExtensionKeyPress (key, ch, state))
-								result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+							if (await ExtensionKeyPress (key, ch, state))
+								result = await base.OnIMProcessedKeyPressEvent (key, ch, state);
 						}
 					} else {
-						if (ExtensionKeyPress (key, ch, state))
-							result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+						if (await ExtensionKeyPress (key, ch, state))
+							result = await base.OnIMProcessedKeyPressEvent (key, ch, state);
 					}
 				} else {
-					result = base.OnIMProcessedKeyPressEvent (key, ch, state);
+					result = await base.OnIMProcessedKeyPressEvent (key, ch, state);
 				}
 
 				if (currentSession != null) {

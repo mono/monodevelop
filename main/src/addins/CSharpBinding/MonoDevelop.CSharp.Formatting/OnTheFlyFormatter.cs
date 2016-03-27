@@ -39,32 +39,33 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Gui.Content;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Options;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	static class OnTheFlyFormatter
 	{
-		public static void Format (TextEditor editor, DocumentContext context)
+		public static Task Format (TextEditor editor, DocumentContext context)
 		{
-			Format (editor, context, 0, editor.Length);
+			return Format (editor, context, 0, editor.Length);
 		}
 
-		public static void Format (TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact = true, OptionSet optionSet = null)
+		public static Task Format (TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact = true, OptionSet optionSet = null)
 		{
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, editor, context, startOffset, endOffset, exact, optionSet: optionSet);
+			return Format (policyParent, mimeTypeChain, editor, context, startOffset, endOffset, exact, optionSet: optionSet);
 		}
 
-		public static void FormatStatmentAt (TextEditor editor, DocumentContext context, MonoDevelop.Ide.Editor.DocumentLocation location, OptionSet optionSet = null)
+		public static Task FormatStatmentAt (TextEditor editor, DocumentContext context, MonoDevelop.Ide.Editor.DocumentLocation location, OptionSet optionSet = null)
 		{
 			var offset = editor.LocationToOffset (location);
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
-			Format (policyParent, mimeTypeChain, editor, context, offset, offset, false, true, optionSet: optionSet);
+			return Format (policyParent, mimeTypeChain, editor, context, offset, offset, false, true, optionSet: optionSet);
 		}
 
-		static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false, OptionSet optionSet = null)
+		static async Task Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false, OptionSet optionSet = null)
 		{
 			TextSpan span;
 			if (exact) {
@@ -99,8 +100,8 @@ namespace MonoDevelop.CSharp.Formatting
 						optionSet = policy.CreateOptions (textPolicy);
 					}
 
-					var doc = Formatter.FormatAsync (analysisDocument, span, optionSet).Result;
-					var newTree = doc.GetSyntaxTreeAsync ().Result;
+					var doc = await Formatter.FormatAsync (analysisDocument, span, optionSet);
+					var newTree = await doc.GetSyntaxTreeAsync ();
 					var caretOffset = editor.CaretOffset;
 
 					int delta = 0;

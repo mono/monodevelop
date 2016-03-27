@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor.Extension;
@@ -62,7 +63,7 @@ namespace MonoDevelop.AspNet.Html
 			get { return name; }
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 		{
 			var buf = window.CompletionWidget;
 			if (buf != null) {
@@ -78,6 +79,7 @@ namespace MonoDevelop.AspNet.Html
 				
 				buf.Replace (deleteStartOffset, buf.CaretOffset - deleteStartOffset, text);
 			}
+			return Task.FromResult (ka);
 		}
 	}
 }

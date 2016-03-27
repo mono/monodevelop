@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Xml.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Completion
 {
@@ -109,13 +110,13 @@ namespace MonoDevelop.Xml.Completion
 			}
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (XmlEditorOptions.AutoInsertFragments && dataType == DataType.XmlAttribute) {
 				//This temporary variable is needed because
 				//base.InsertCompletionText sets window.CompletionWidget to null
 				var completionWidget = window.CompletionWidget;
-				base.InsertCompletionText (window, ref ka, descriptor);
+				ka = await base.InsertCompletionText (window, ka, descriptor);
 				if (completionWidget is ITextEditorImpl) {
 					((ITextEditorImpl)completionWidget).EditorExtension.Editor.StartSession (new SkipCharSession ('"'));
 				}
@@ -124,8 +125,9 @@ namespace MonoDevelop.Xml.Completion
 				//otherwise code calling InsertCompletionText will close completion window created by this command
 				Application.Invoke ((s,e) => IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow));
 				ka &= ~KeyActions.CloseWindow;
+				return ka;
 			} else {
-				base.InsertCompletionText (window, ref ka, descriptor);
+				return await base.InsertCompletionText (window, ka, descriptor);
 			}
 		}
 		

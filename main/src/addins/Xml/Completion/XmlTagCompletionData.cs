@@ -32,6 +32,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Xml.Completion
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Xml.Completion
 			get { return element; }
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 		{
 			var buf = window.CompletionWidget;
 			if (buf != null) {
@@ -79,6 +80,7 @@ namespace MonoDevelop.Xml.Completion
 				// Move caret into the middle of the tags
 				buf.CaretOffset = codeCompletionContext.TriggerOffset + cursorOffset;
 			}
+			return Task.FromResult (ka);
 		}
 	}
 }

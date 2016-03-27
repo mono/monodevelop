@@ -35,6 +35,7 @@ using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using MonoDevelop.Ide.Editor;
 using System.Text;
 using ICSharpCode.NRefactory.MonoCSharp;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -97,19 +98,19 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IActionCompletionData implementation
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
+		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
 			Initialize ();
 			var doc = completionExt.DocumentContext;
 
-			base.InsertCompletionText (window, ref ka, descriptor);
-
+			ka = await base.InsertCompletionText (window, ka, descriptor);
 			using (var undo = completionExt.Editor.OpenUndoGroup ()) {
 				if (!window.WasShiftPressed && generateUsing) {
-					AddGlobalNamespaceImport (completionExt.Editor, doc, type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+					AddGlobalNamespaceImport (completionExt.Editor, doc, type.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat));
 				}
 			}
 			ka |= KeyActions.Ignore;
+			return ka;
 		}
 
 		static void AddGlobalNamespaceImport (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, string nsName)
