@@ -351,7 +351,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
 			nfloat fontSize = NSFont.SystemFontSize;
-			if (Window != null) {
+			if (Window != null && Window.Screen != null) {
 				fontSize -= Window.Screen.BackingScaleFactor == 2 ? 2 : 1;
 			} else {
 				fontSize -= 1;
