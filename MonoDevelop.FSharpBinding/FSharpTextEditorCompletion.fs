@@ -172,6 +172,94 @@ module Completion =
         else
             None
 
+    let symbolToIcon (symbolUse:FSharpSymbolUse) =
+        match symbolUse with
+        | ActivePatternCase _ -> Stock.Enum
+        | Field _ -> Stock.Field
+        | UnionCase _ -> IconId("md-type")
+        | Class _ -> Stock.Class
+        | Delegate _ -> Stock.Delegate
+        | Constructor _  -> Stock.Method
+        | Event _ -> Stock.Event
+        | Property _ -> Stock.Property
+        | Function f ->
+            if f.IsExtensionMember then IconId("md-extensionmethod")
+            elif f.IsMember then IconId("md-method")
+            else IconId("md-fs-field")
+        | Operator _ -> IconId("md-fs-field")
+        | ClosureOrNestedFunction _ -> IconId("md-fs-field")
+        | Val _ -> Stock.Field
+        | Enum _ -> Stock.Enum
+        | Interface _ -> Stock.Interface
+        | Module _ -> IconId("md-module")
+        | Namespace _ -> Stock.NameSpace
+        | Record _ -> Stock.Class
+        | Union _ -> IconId("md-type")
+        | ValueType _ -> Stock.Struct
+        | SymbolUse.Entity _ -> IconId("md-type")
+        | _ -> Stock.Event
+        
+    let tryGetCategory (symbolUse : FSharpSymbolUse) =
+        let category =
+            try
+                match symbolUse with
+                | Constructor c ->
+                    c.EnclosingEntitySafe
+                    |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                              un.DisplayName, un)
+                | Event ev ->
+                    ev.EnclosingEntitySafe
+                    |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                              un.DisplayName, un)
+                | Property pr ->
+                    pr.EnclosingEntitySafe
+                    |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                              un.DisplayName, un)
+                | ActivePatternCase ap ->
+                    if ap.Group.Names.Count > 1 then
+                        ap.Group.EnclosingEntity
+                        |> Option.map (fun enclosing -> let un = enclosing.UnAnnotate()
+                                                        un.DisplayName, un)
+                    else None
+                | UnionCase uc ->
+                    if uc.UnionCaseFields.Count > 1 then
+                        let ent = uc.ReturnType.TypeDefinition.UnAnnotate()
+                        Some(ent.DisplayName, ent)
+                    else None
+                | Function f ->
+                    if f.IsExtensionMember then
+                        let real = f.LogicalEnclosingEntity.UnAnnotate()
+                        Some(real.DisplayName, real)
+                    else
+                        f.EnclosingEntitySafe
+                        |> Option.map (fun real -> let un = real.UnAnnotate()
+                                                   un.DisplayName, un)
+                | Operator o ->
+                    o.EnclosingEntitySafe
+                    |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                              un.DisplayName, un)
+                | Pattern p ->
+                    p.EnclosingEntitySafe
+                    |> Option.map (fun ent -> let un = ent.UnAnnotate()
+                                              un.DisplayName, ent)
+                | Val v ->
+                    v.EnclosingEntitySafe
+                    |> Option.map (fun ent -> let un  = ent.UnAnnotate()
+                                              un.DisplayName, un)
+                | TypeAbbreviation ta ->
+                    //TODO:  Check this is correct, I suspect we should return None here
+                    let ent = ta.UnAnnotate()
+                    Some (ent.DisplayName, ent)
+                //The following have no logical parent to display
+                //Theres no link to a parent type for a closure (FCS limitation)
+                | ClosureOrNestedFunction _cl -> None
+                //The F# compiler does not currently expose an Entitys parent, only children
+                //| Class _ | Delegate _ | Enum _ | Interface _ | Module _
+                //| Namespace _ | Record _ | Union _ | ValueType _  -> None
+                | _ -> None
+            with exn -> None
+        category
+        
     let getCompletionData (symbols:FSharpSymbolUse list list) isInsideAttribute =
         let categories = Dictionary<string, Category>()
         let getOrAddCategory symbol id =
@@ -180,103 +268,6 @@ module Completion =
             | _ -> let cat = Category(id, symbol)
                    categories.Add (id, cat)
                    cat
-
-        let symbolToIcon (symbolUse:FSharpSymbolUse) =
-            match symbolUse with
-            | ActivePatternCase _ -> Stock.Enum
-            | Field _ -> Stock.Field
-            | UnionCase _ -> IconId("md-type")
-            | Class _ -> Stock.Class
-            | Delegate _ -> Stock.Delegate
-            | Constructor _  -> Stock.Method
-            | Event _ -> Stock.Event
-            | Property _ -> Stock.Property
-            | Function f ->
-                if f.IsExtensionMember then IconId("md-extensionmethod")
-                elif f.IsMember then IconId("md-method")
-                else IconId("md-fs-field")
-            | Operator _ -> IconId("md-fs-field")
-            | ClosureOrNestedFunction _ -> IconId("md-fs-field")
-            | Val _ -> Stock.Field
-            | Enum _ -> Stock.Enum
-            | Interface _ -> Stock.Interface
-            | Module _ -> IconId("md-module")
-            | Namespace _ -> Stock.NameSpace
-            | Record _ -> Stock.Class
-            | Union _ -> IconId("md-type")
-            | ValueType _ -> Stock.Struct
-            | SymbolUse.Entity _ -> IconId("md-type")
-            | _ -> Stock.Event
-
-        
-
-        let tryGetCategory (symbolUse : FSharpSymbolUse) =
-            let category =
-                try
-                    match symbolUse with
-                    | Constructor c ->
-                        c.EnclosingEntitySafe
-                        |> Option.map (fun ent -> let un = ent.UnAnnotate()
-                                                  un.DisplayName, un)
-                    | Event ev ->
-                        ev.EnclosingEntitySafe
-                        |> Option.map (fun ent -> let un = ent.UnAnnotate()
-                                                  un.DisplayName, un)
-                    | Property pr ->
-                        pr.EnclosingEntitySafe
-                        |> Option.map (fun ent -> let un = ent.UnAnnotate()
-                                                  un.DisplayName, un)
-                    | ActivePatternCase ap ->
-                        if ap.Group.Names.Count > 1 then
-                            ap.Group.EnclosingEntity
-                            |> Option.map (fun enclosing -> let un = enclosing.UnAnnotate()
-                                                            un.DisplayName, un)
-                        else None
-                    | UnionCase uc ->
-                        if uc.UnionCaseFields.Count > 1 then
-                            let ent = uc.ReturnType.TypeDefinition.UnAnnotate()
-                            Some(ent.DisplayName, ent)
-                        else None
-                    | Function f ->
-                        if f.IsExtensionMember then
-                            let real = f.LogicalEnclosingEntity.UnAnnotate()
-                            Some(real.DisplayName, real)
-                        else
-                            f.EnclosingEntitySafe
-                            |> Option.map (fun real -> let un = real.UnAnnotate()
-                                                       un.DisplayName, un)
-                    | Operator o ->
-                        o.EnclosingEntitySafe
-                        |> Option.map (fun ent -> let un = ent.UnAnnotate()
-                                                  un.DisplayName, un)
-                    | Pattern p ->
-                        p.EnclosingEntitySafe
-                        |> Option.map (fun ent -> let un = ent.UnAnnotate()
-                                                  un.DisplayName, ent)
-                    | Val v ->
-                        v.EnclosingEntitySafe
-                        |> Option.map (fun ent -> let un  = ent.UnAnnotate()
-                                                  un.DisplayName, un)
-                    | TypeAbbreviation ta ->
-                        //TODO:  Check this is correct, I suspect we should return None here
-                        let ent = ta.UnAnnotate()
-                        Some (ent.DisplayName, ent)
-                    //The following have no logical parent to display
-                    //Theres no link to a parent type for a closure (FCS limitation)
-                    | ClosureOrNestedFunction _cl -> None
-                    //The F# compiler does not currently expose an Entitys parent, only children
-                    | Class _cl -> None
-                    | Delegate _dl -> None
-                    | Enum _en  -> None
-                    | Interface _  -> None
-                    | Module _  -> None
-                    | Namespace _  -> None
-                    | Record _  -> None
-                    | Union _  -> None
-                    | ValueType _  -> None
-                    | _ -> None
-                with exn -> None
-            category
 
         let symbolToCompletionData (symbols : FSharpSymbolUse list) =
             match symbols with
