@@ -277,6 +277,19 @@ module SymbolUse =
     let (|ComputationExpression|_|) (symbol:FSharpSymbolUse) =
         if symbol.IsFromComputationExpression then Some symbol
         else None
+        
+    let (|Attribute|_|) = function
+        | Entity ent ->
+            if ent.AllBaseTypes
+               |> Seq.exists (fun t ->
+                                  if t.HasTypeDefinition then
+                                      match t.TypeDefinition.TryFullName with
+                                      | Some name when name = "System.Attribute" -> true
+                                      | _ -> false
+                                  else false)
+            then Some ent
+            else None
+        | _ -> None
 
 type XmlDoc =
   ///A full xmldoc tooltip

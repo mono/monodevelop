@@ -278,46 +278,21 @@ module Completion =
                 with exn -> None
             category
 
-        let rec allBaseTypes (entity:FSharpEntity) =
-            seq {
-                match entity.TryFullName with
-                | Some _ ->
-                    match entity.BaseType with
-                    | Some t ->
-                        yield t
-                        if t.HasTypeDefinition then
-                            yield! allBaseTypes t.TypeDefinition
-                    | _ -> ()
-                | _ -> ()
-            }
-
-        let isAttribute (symbolUse: FSharpSymbolUse) =
-            match symbolUse.Symbol with
-            | :? FSharpEntity as ent ->
-                allBaseTypes ent
-                |> Seq.exists (fun t -> if t.HasTypeDefinition then
-                                            match t.TypeDefinition.TryFullName with
-                                            | Some name -> name = "System.Attribute"
-                                            | _ -> false
-                                        else
-                                            false)
-            | _ -> false
-
         let symbolToCompletionData (symbols : FSharpSymbolUse list) =
             match symbols with
             | head :: tail ->
                 let completion =
                     if isInsideAttribute then
-                        if isAttribute head then
-                            let name = head.Symbol.DisplayName
+                        match head with
+                        | SymbolUse.Attribute ent ->
+                            let name = ent.DisplayName
                             let name =
                                 if name.EndsWith("Attribute") then
                                     name.Remove(name.Length - 9)
                                 else
                                     name
                             Some (FSharpMemberCompletionData(name, symbolToIcon head, head, tail) :> CompletionData)
-                        else
-                            None
+                        | _ -> None
                     else
                         Some (FSharpMemberCompletionData(head.Symbol.DisplayName, symbolToIcon head, head, tail) :> CompletionData)
 

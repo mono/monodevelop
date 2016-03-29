@@ -168,6 +168,22 @@ module FSharpSymbolExt =
                 | Some bt -> loop (bt.TypeDefinition.UnAnnotate()) l + 1
                 | None -> l
             loop x 0
+         
+        //TODO: Do we need to unannotate like above?   
+        member x.AllBaseTypes =
+            let rec allBaseTypes (entity:FSharpEntity) =
+                [
+                    match entity.TryFullName with
+                    | Some _ ->
+                        match entity.BaseType with
+                        | Some bt ->
+                            yield bt
+                            if bt.HasTypeDefinition then
+                                yield! allBaseTypes bt.TypeDefinition
+                        | _ -> ()
+                    | _ -> ()
+                ]
+            allBaseTypes x
 
 [<AutoOpen>]
 module FrameworkExt =
