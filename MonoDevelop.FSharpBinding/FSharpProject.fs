@@ -44,9 +44,8 @@ type FSharpProject() as self =
     let invalidateProjectFile() =
         try
             if File.Exists (self.FileName.ToString()) then
-                let options = languageService.GetProjectCheckerOptions(self.FileName.ToString(), [("Configuration", IdeApp.Workspace.ActiveConfigurationId)])
+                let options = languageService.GetProjectCheckerOptions (self.FileName.ToString())
                 languageService.InvalidateConfiguration(options)
-                languageService.ClearProjectInfoCache()
         with ex -> LoggingService.LogError ("Could not invalidate configuration", ex)
 
     let invalidateFiles (args:#ProjectFileEventInfo seq) =
