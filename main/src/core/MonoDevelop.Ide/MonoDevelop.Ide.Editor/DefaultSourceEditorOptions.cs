@@ -587,7 +587,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		ConfigurationProperty<bool> highlightMatchingBracket = ConfigurationProperty.Create ("HighlightMatchingBracket", true);
+		internal ConfigurationProperty<bool> highlightMatchingBracket = ConfigurationProperty.Create ("HighlightMatchingBracket", true);
 		public bool HighlightMatchingBracket {
 			get {
 				return highlightMatchingBracket;
