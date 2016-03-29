@@ -400,12 +400,10 @@ module Completion =
                     completionChar = completionChar
                     } = context
 
-                let parsedDocument = documentContext.TryGetFSharpParsedDocument()
-
                 let typedParseResults =
                     lock parseLock (fun() ->
                         maybe {
-                            let! document = parsedDocument
+                            let! document = documentContext.TryGetFSharpParsedDocument()
                             let! location = document.ParsedLocation
 
                             if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
