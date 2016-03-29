@@ -67,11 +67,11 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return false;
 		}
 
-		public override bool KeyPress (KeyDescriptor descriptor)
+		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
 			if (!IsActiveExtension())
-				return Next == null || Next.KeyPress (descriptor);
-			return completionTextEditorExtension.KeyPress (descriptor);
+				return Next == null || await Next.KeyPress (descriptor);
+			return await completionTextEditorExtension.KeyPress (descriptor);
 		}
 
 		public override bool IsValidInContext (DocumentContext context)

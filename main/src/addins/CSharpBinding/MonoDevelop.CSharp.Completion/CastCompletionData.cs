@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -56,16 +57,18 @@ namespace MonoDevelop.CSharp.Completion
 			return "<span foreground=\"darkgray\">" + description + "</span>";
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 		{
 			var editor = factory.Ext.Editor;
 			var offset = window.CodeCompletionContext.TriggerOffset;
 			using (var undo = editor.OpenUndoGroup ()) {
-				base.InsertCompletionText (window, ref ka, descriptor);
+				ka = await base.InsertCompletionText (window, ka, descriptor);
+
 				var span = nodeToCast.Span;
 				var type = SafeMinimalDisplayString (targetType, semanticModel, nodeToCast.SpanStart, Ambience.LabelFormat);
 				editor.ReplaceText (span.Start, span.Length, "((" + type + ")" + nodeToCast + ")");
 			}
+			return ka;
 		}
 
 		public override bool IsOverload (CompletionData other)

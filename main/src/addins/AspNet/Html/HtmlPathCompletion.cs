@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using System.Text.RegularExpressions;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -117,13 +118,13 @@ namespace MonoDevelop.AspNet.Html
 				get { throw new InvalidOperationException (); }
 			}
 			
-			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+			public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 			{
 				string text;
 				var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (proj, "", pattern);
 				try {
 					if (MessageService.RunCustomDialog (dialog) != (int)Gtk.ResponseType.Ok || dialog.SelectedFile == null)
-						return;
+						return Task.FromResult (ka);
 					text = pathFunc (dialog.SelectedFile);
 				}
 				finally {
@@ -131,6 +132,7 @@ namespace MonoDevelop.AspNet.Html
 					dialog.Dispose ();
 				}
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, "", text);
+				return Task.FromResult (ka);
 			}
 		}
 	}

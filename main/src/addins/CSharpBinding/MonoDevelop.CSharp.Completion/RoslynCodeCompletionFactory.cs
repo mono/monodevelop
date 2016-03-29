@@ -194,7 +194,7 @@ namespace MonoDevelop.CSharp.Completion
 //				return sig.GetKeywordTooltip (title, null);
 //			}
 
-			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
+			public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 			{
 				var currentWord = GetCurrentWord (window, descriptor);
 				var text = CompletionText;
@@ -204,6 +204,7 @@ namespace MonoDevelop.CSharp.Completion
 					text = text.Substring (1);
 				
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
+				return Task.FromResult (ka);
 			}
 		}
 

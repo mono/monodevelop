@@ -611,17 +611,16 @@ namespace MonoDevelop.Xml.Editor
 		
 		#region Smart indent
 		
-		public override bool KeyPress (KeyDescriptor descriptor)
+		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
 			bool result;
-			
 
 			if (Editor.Options.IndentStyle == IndentStyle.Smart && descriptor.SpecialKey == SpecialKey.Return) {
-				result = base.KeyPress (descriptor);
+				result = await base.KeyPress (descriptor);
 				SmartIndentLine (Editor.CaretLine);
 				return result;
 			}
-			return base.KeyPress (descriptor);
+			return await base.KeyPress (descriptor);
 		}
 		
 		void SmartIndentLine (int line)
