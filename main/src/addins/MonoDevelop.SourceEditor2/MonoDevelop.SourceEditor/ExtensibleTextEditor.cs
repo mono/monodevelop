@@ -498,16 +498,29 @@ namespace MonoDevelop.SourceEditor
 			ParameterInformationWindowManager.HideWindow (null, view);
 			return base.OnFocusOutEvent (evnt); 
 		}
-		
+
+		string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
+
+		internal string ContextMenuPath {
+			get {
+				return menuPath;
+			}
+
+			set {
+				menuPath = value;
+			}
+		}
+
+
 		void ShowPopup (Gdk.EventButton evt)
 		{
 			view.FireCompletionContextChanged ();
 			CompletionWindowManager.HideWindow ();
 			ParameterInformationWindowManager.HideWindow (null, view);
 			HideTooltip ();
-			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
+			if (string.IsNullOrEmpty (menuPath))
+				return;
 			var ctx = view.WorkbenchWindow?.ExtensionContext ?? AddinManager.AddinEngine;
-
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 
 			if (Platform.IsMac) {

@@ -48,6 +48,8 @@ namespace MonoDevelop.Ide.Editor
 
 		string ContentName { get; set; }
 
+		string ContextMenuPath { get; set; }
+
 		EditMode EditMode { get; }
 
 		ITextEditorOptions Options { get; set; }

@@ -429,6 +429,15 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public string ContextMenuPath {
+			get {
+				return textEditorImpl.ContextMenuPath;
+			}
+			set {
+				textEditorImpl.ContextMenuPath = value;
+			}
+		}
+
 		public IDisposable OpenUndoGroup ()
 		{
 			Runtime.AssertMainThread ();

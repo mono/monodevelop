@@ -131,6 +131,12 @@ namespace MonoDevelop.SourceEditor
 				return Document.LineCount;
 			}
 		}
+
+
+		string ITextEditorImpl.ContextMenuPath {
+			get { return TextEditor.ContextMenuPath; }
+			set { TextEditor.ContextMenuPath = value; }
+		}
 			
 		public override string TabPageLabel {
 			get { return GettextCatalog.GetString ("Source"); }
