@@ -2,6 +2,7 @@
 open System
 open System.IO
 open System.Text
+open MonoDevelop.Core
 open MonoDevelop.Ide
 open Newtonsoft.Json
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -15,6 +16,7 @@ module CompletionServer =
         let outStream = Console.Out
 
         Console.SetOut TextWriter.Null
+        Runtime.Initialize false
 
         MonoDevelop.Projects.HelpService.AsyncInitialize()
 
@@ -67,7 +69,6 @@ module CompletionServer =
                 do! Console.Error.WriteLineAsync (commandType + " " + json) |> Async.AwaitTask
             }
 
-        
         let rec main(currentInput) =
             let parseInput() =
                 async {
@@ -106,6 +107,7 @@ module CompletionServer =
             let currentInput = parseInput() |> Async.RunSynchronously
             main(currentInput)
 
+        Console.SetOut outStream
         main("")
 
         0 // return an integer exit code
