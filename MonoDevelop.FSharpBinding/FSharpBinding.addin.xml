@@ -269,6 +269,24 @@
             id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
             macShortcut="Meta|Control|C"
             shortcut="Ctrl|Alt|C" />
+
+	    <Command id="MonoDevelop.FSharp.InteractiveCut"
+            _label = "Cut"
+            shortcut="Control|X"
+            macShortcut="Meta|X"
+            defaultHandler="MonoDevelop.FSharp.InteractiveCut" />
+				
+		<Command id="MonoDevelop.FSharp.InteractiveCopy"
+            _label = "Copy"
+            shortcut="Control|C"
+            macShortcut="Meta|C"
+            defaultHandler="MonoDevelop.FSharp.InteractiveCopy" />
+				
+		<Command id="MonoDevelop.FSharp.InteractivePaste"
+            _label = "Paste"
+            shortcut="Control|V"
+            macShortcut="Meta|V"
+            defaultHandler="MonoDevelop.FSharp.InteractivePaste" />
       </Category>
     </ComplexCondition>
   </Extension>
@@ -287,7 +305,21 @@
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
     </ComplexCondition>
   </Extension>
-
+	
+  <ExtensionPoint path = "/MonoDevelop/SourceEditor2/ContextMenu/Fsi" name = "Editor context menu for fsi">
+    <Description>Context menu for fsi</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+  </ExtensionPoint>
+	
+  <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Fsi">
+    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.ClearFsi" />
+    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.RestartFsi" />
+    <SeparatorItem id = "Separator1" />
+    <CommandItem id = "MonoDevelop.FSharp.InteractiveCut" />
+    <CommandItem id = "MonoDevelop.FSharp.InteractiveCopy" />
+    <CommandItem id = "MonoDevelop.FSharp.InteractivePaste" />
+  </Extension>
+	
   <Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
     <ComplexCondition>
       <Or>

@@ -15,6 +15,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
+open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Projects
 open System.Threading.Tasks
@@ -55,7 +56,7 @@ type FsiDocumentContext() =
     let pd = new FSharpParsedDocument(name, None) :> ParsedDocument
     let project = Services.ProjectService.CreateDotNetProject ("F#")
 
-    let mutable view:ICompletionWidget = null
+    let mutable completionWidget:ICompletionWidget = null
     let mutable editor:TextEditor = null
 
     let contextChanged = DelegateEvent<_>()
@@ -70,35 +71,33 @@ type FsiDocumentContext() =
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
 
-    member x.SourceEditorView 
-        with set (value) = view <- value
-    member x.Editor 
-            with set (value) = editor <- value
-    
+    member x.CompletionWidget with set (value) = completionWidget <- value
+    member x.Editor with set (value) = editor <- value
+
     interface ICompletionWidget with
         member x.CaretOffset
-            with get() = view.CaretOffset
-            and set(offset) = view.CaretOffset <- offset
+            with get() = completionWidget.CaretOffset
+            and set(offset) = completionWidget.CaretOffset <- offset
         member x.TextLength = editor.Length
-        member x.SelectedLength = view.SelectedLength
+        member x.SelectedLength = completionWidget.SelectedLength
         member x.GetText(startOffset, endOffset) =
-            view.GetText(startOffset, endOffset)
+            completionWidget.GetText(startOffset, endOffset)
         member x.GetChar offset = editor.GetCharAt offset
         member x.Replace(offset, count, text) =
-            view.Replace(offset, count, text)
-        member x.GtkStyle = view.GtkStyle
-        member x.ZoomLevel = view.ZoomLevel
+            completionWidget.Replace(offset, count, text)
+        member x.GtkStyle = completionWidget.GtkStyle
+        member x.ZoomLevel = completionWidget.ZoomLevel
         member x.CreateCodeCompletionContext triggerOffset =
-            view.CreateCodeCompletionContext triggerOffset
+            completionWidget.CreateCodeCompletionContext triggerOffset
         member x.CurrentCodeCompletionContext 
-            with get() = view.CurrentCodeCompletionContext
+            with get() = completionWidget.CurrentCodeCompletionContext
 
-        member x.GetCompletionText ctx = view.GetCompletionText ctx
+        member x.GetCompletionText ctx = completionWidget.GetCompletionText ctx
 
         member x.SetCompletionText (ctx, partialWord, completeWord) =
-            view.SetCompletionText (ctx, partialWord, completeWord)
+            completionWidget.SetCompletionText (ctx, partialWord, completeWord)
         member x.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset) =
-            view.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset)
+            completionWidget.SetCompletionText (ctx, partialWord, completeWord, completeWordOffset)
         [<CLIEvent>]
         member x.CompletionContextChanged = contextChanged.Publish
 
@@ -118,9 +117,12 @@ type FSharpInteractivePad() =
     let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
     do
         editor.MimeType <- "text/x-fsharp"
-        ctx.SourceEditorView <- editor.GetContent<ICompletionWidget>()
+        editor.ContextMenuPath <- "/MonoDevelop/SourceEditor2/ContextMenu/Fsi"
+
+        ctx.CompletionWidget <- editor.GetContent<ICompletionWidget>()
         ctx.Editor <- editor
 
+    let clipboardHandler = editor.GetContent<IClipboardHandler>()
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
     let mutable activeDoc : IDisposable option = None
@@ -350,7 +352,7 @@ type FSharpInteractivePad() =
     override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
         LoggingService.LogDebug ("InteractivePad: created!")
         editor.MimeType <- "text/x-fsharp"
-        ctx.SourceEditorView <- editor.GetContent<ICompletionWidget>()
+        ctx.CompletionWidget <- editor.GetContent<ICompletionWidget>()
         ctx.Editor <- editor
         let toolbar = container.GetToolbar(DockPositionType.Right)
 
@@ -367,8 +369,16 @@ type FSharpInteractivePad() =
         toolbar.ShowAll()
 
     member x.RestartFsi() = resetFsi Restart
-    
+
     member x.ClearFsi() = editor.Text <- ""
+
+    member x.Cut() = clipboardHandler.Cut()
+
+    member x.Copy() = clipboardHandler.Copy()
+
+    member x.Paste() = clipboardHandler.Paste()
+
+
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
     inherit TextEditorExtension()
@@ -459,6 +469,7 @@ type FSharpFsiEditorCompletion() =
     override x.Update(info:CommandInfo) =
         info.Enabled <- true
         info.Visible <- FileService.isInsideFSharpFile()
+
     override x.Run() =
         FSharpInteractivePad.Fsi
         |> Option.iter (fun fsi -> command fsi
@@ -469,6 +480,15 @@ type FSharpFsiEditorCompletion() =
       override x.Update(info:CommandInfo) =
           info.Enabled <- true
           info.Visible <- true
+
+  type InteractiveCut() =
+      inherit InteractiveCommand(fun fsi -> fsi.Cut())
+
+  type InteractiveCopy() =
+      inherit InteractiveCommand(fun fsi -> fsi.Copy())
+
+  type InteractivePaste() =
+      inherit InteractiveCommand(fun fsi -> fsi.Paste())
 
   type SendSelection() =
       inherit InteractiveCommand(fun fsi -> fsi.SendSelection())

@@ -21,12 +21,14 @@ module CompletionServer =
         MonoDevelop.Projects.HelpService.AsyncInitialize()
 
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
+
         // This flag makes fsi send the SERVER-PROMPT> prompt
         // once it's output the header
         let args = "--fsi-server:" + server + " "
         let argv = [| "--readline-"; args  |]
 
         let serializer = JsonSerializer.Create()
+
         let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(Settings.fsi, true)
         let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream, true)
 
@@ -91,7 +93,7 @@ module CompletionServer =
                             | exn -> do! writeOutput (exn |> string)
                             return ""
                         else
-                            return currentInput + "\n" + input
+                           return currentInput + "\n" + input
                     | Tooltip filter ->
                         let! tooltip = Completion.getCompletionTooltip filter
                         do! writeData "tooltip" tooltip
