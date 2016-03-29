@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ITask<TResult>
+	internal interface ITask<TResult>
 	{
 		void Start();
 		void Cancel();

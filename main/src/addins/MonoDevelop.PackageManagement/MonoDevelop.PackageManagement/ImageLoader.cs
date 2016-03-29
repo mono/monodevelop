@@ -36,7 +36,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ImageLoader
+	internal class ImageLoader
 	{
 		public event EventHandler<ImageLoadedEventArgs> Loaded;
 

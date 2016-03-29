@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableInstallPackageAction : InstallPackageAction
+	class TestableInstallPackageAction : InstallPackageAction
 	{
 		public TestableInstallPackageAction (
 			IPackageManagementProject project,

@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageViewModelParent
+	internal interface IPackageViewModelParent
 	{
 		bool IncludePrerelease { get; }
 		void OnPackageCheckedChanged (PackageViewModel packageViewModel);

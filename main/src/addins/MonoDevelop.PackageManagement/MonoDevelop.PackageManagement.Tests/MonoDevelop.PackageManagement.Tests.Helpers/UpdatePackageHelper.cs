@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class UpdatePackageHelper
+	class UpdatePackageHelper
 	{
 		UpdatePackageAction action;
 

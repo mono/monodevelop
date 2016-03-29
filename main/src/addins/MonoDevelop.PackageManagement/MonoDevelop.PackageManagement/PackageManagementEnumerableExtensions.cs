@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class PackageManagementEnumerableExtensions
+	internal static class PackageManagementEnumerableExtensions
 	{
 		public static IEnumerable<TSource> DistinctLast<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
 		{

@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 	/// This is only used when creating an AggregateRepository so it does not prevent packages
 	/// being returned from other valid package repositories.
 	/// </summary>
-	public class FailingPackageRepository : IPackageRepository
+	internal class FailingPackageRepository : IPackageRepository
 	{
 		string source;
 		Exception exception;

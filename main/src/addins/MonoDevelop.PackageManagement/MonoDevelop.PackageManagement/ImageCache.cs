@@ -30,7 +30,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ImageCache
+	internal class ImageCache
 	{
 		const int MaxImageCount = 50;
 

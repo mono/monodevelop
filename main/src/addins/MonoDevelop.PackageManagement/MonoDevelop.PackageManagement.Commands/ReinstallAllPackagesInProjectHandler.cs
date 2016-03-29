@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class ReinstallAllPackagesInProjectHandler : PackagesCommandHandler
+	internal class ReinstallAllPackagesInProjectHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{

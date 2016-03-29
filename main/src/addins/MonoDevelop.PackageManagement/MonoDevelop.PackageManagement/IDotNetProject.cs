@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IDotNetProject : IProject
+	internal interface IDotNetProject : IProject
 	{
 		event EventHandler<ProjectModifiedEventArgs> Modified;
 

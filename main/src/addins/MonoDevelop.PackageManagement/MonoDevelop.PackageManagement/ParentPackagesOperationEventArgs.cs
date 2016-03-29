@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ParentPackagesOperationEventArgs : EventArgs
+	internal class ParentPackagesOperationEventArgs : EventArgs
 	{
 		public ParentPackagesOperationEventArgs(IEnumerable<IPackage> packages)
 		{

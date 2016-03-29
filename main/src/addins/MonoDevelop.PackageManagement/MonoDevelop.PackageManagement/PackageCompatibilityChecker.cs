@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCompatibilityChecker
+	internal class PackageCompatibilityChecker
 	{
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredRepositories;

@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IProjectBrowserUpdater : IDisposable
+	internal interface IProjectBrowserUpdater : IDisposable
 	{
 	}
 }

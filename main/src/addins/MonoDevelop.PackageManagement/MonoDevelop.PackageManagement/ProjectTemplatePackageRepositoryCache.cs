@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 	/// Supports a configurable set of package repositories for project templates that can be
 	/// different to the registered package repositories used with the Add Package Reference dialog.
 	/// </summary>
-	public class ProjectTemplatePackageRepositoryCache : IPackageRepositoryCache
+	internal class ProjectTemplatePackageRepositoryCache : IPackageRepositoryCache
 	{
 		IPackageRepositoryCache packageRepositoryCache;
 		RegisteredProjectTemplatePackageSources registeredPackageSources;

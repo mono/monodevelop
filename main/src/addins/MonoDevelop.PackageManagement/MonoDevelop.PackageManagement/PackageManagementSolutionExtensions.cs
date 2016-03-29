@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class PackageManagementSolutionExtensions
+	internal static class PackageManagementSolutionExtensions
 	{
 		public static IPackageManagementProject GetProject (this IPackageManagementSolution solution, DotNetProject project)
 		{

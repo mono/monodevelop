@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageRepositoryFactory : IPackageRepositoryCache
+	class FakePackageRepositoryFactory : IPackageRepositoryCache
 	{
 		public List<string> PackageSourcesPassedToCreateRepository
 			= new List<string> ();

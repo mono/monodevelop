@@ -40,7 +40,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MonoDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
+	internal class MonoDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
 	{
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
@@ -485,7 +485,7 @@ namespace MonoDevelop.PackageManagement
 			return Runtime.RunInMainThread (func);
 		}
 
-		internal static void DefaultGuiSyncDispatcher (Action action)
+		public static void DefaultGuiSyncDispatcher (Action action)
 		{
 			Runtime.RunInMainThread (action).Wait ();
 		}

@@ -33,7 +33,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SelectProjectsService : ISelectProjectsService
+	internal class SelectProjectsService : ISelectProjectsService
 	{
 		public bool SelectProjects(IEnumerable<IPackageManagementSelectedProject> projects)
 		{

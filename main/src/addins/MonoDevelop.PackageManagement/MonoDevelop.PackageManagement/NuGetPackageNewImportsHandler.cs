@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class NuGetPackageNewImportsHandler : INuGetPackageNewImportsHandler
+	internal class NuGetPackageNewImportsHandler : INuGetPackageNewImportsHandler
 	{
 		string name;
 		string condition;

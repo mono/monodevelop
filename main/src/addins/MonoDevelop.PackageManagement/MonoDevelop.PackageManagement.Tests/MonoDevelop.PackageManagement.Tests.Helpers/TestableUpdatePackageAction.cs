@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableUpdatePackageAction : UpdatePackageAction
+	class TestableUpdatePackageAction : UpdatePackageAction
 	{
 		public TestableUpdatePackageAction (
 			IPackageManagementProject project,

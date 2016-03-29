@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageSourceViewModelCheckedEventArgs : EventArgs
+	internal class PackageSourceViewModelCheckedEventArgs : EventArgs
 	{
 		public PackageSourceViewModelCheckedEventArgs (PackageSourceViewModel packageSource)
 			: this (packageSource, "")

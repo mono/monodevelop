@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class BackgroundPackageActionRunner : IBackgroundPackageActionRunner
+	internal class BackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
 		static MonoDevelop.Core.Instrumentation.Counter InstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Installed", "Package Management", id:"PackageManagement.Package.Installed");
 		static MonoDevelop.Core.Instrumentation.Counter UninstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Uninstalled", "Package Management", id:"PackageManagement.Package.Uninstalled");

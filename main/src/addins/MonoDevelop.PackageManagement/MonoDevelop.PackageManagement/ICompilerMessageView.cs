@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ICompilerMessageView
+	internal interface ICompilerMessageView
 	{
 		IMessageViewCategory Create(string categoryName, string categoryDisplayName);
 		

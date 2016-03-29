@@ -32,7 +32,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectReferencesFromPackagesFolderNode
+	internal class ProjectReferencesFromPackagesFolderNode
 	{
 		public ProjectReferencesFromPackagesFolderNode (
 			DotNetProject project,

@@ -34,7 +34,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class AddPackagesDialog : ExtendedTitleBarDialog
+	internal partial class AddPackagesDialog : ExtendedTitleBarDialog
 	{
 		ComboBox packageSourceComboBox;
 		SearchTextEntry packageSearchEntry;

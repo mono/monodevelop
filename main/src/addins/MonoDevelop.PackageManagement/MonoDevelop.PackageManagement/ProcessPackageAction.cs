@@ -36,7 +36,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public abstract class ProcessPackageAction : IPackageAction
+	internal abstract class ProcessPackageAction : IPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
 		bool hasBeforeExecuteBeenRun;

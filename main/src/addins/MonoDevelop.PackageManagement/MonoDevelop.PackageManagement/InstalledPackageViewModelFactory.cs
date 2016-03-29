@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class InstalledPackageViewModelFactory : PackageViewModelFactory
+	internal class InstalledPackageViewModelFactory : PackageViewModelFactory
 	{
 		SelectedProjectsForInstalledPackages selectedProjectsForInstalledPackages;
 		

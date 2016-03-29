@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public abstract class PackagesCommandHandler : CommandHandler
+	internal abstract class PackagesCommandHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{

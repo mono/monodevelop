@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackages
+	internal class UpdatedPackages
 	{
 		IPackageRepository sourceRepository;
 		List<IPackageName> installedPackages;

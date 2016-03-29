@@ -35,7 +35,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectProxy : IProject
+	internal class ProjectProxy : IProject
 	{
 		Project project;
 

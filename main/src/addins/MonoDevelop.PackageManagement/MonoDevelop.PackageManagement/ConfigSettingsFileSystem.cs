@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ConfigSettingsFileSystem : PhysicalFileSystem
+	internal class ConfigSettingsFileSystem : PhysicalFileSystem
 	{
 		ConfigSettingsFileSystem(string root)
 			: base(root)

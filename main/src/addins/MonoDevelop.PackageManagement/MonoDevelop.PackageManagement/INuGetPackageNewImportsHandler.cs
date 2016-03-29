@@ -29,7 +29,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface INuGetPackageNewImportsHandler : IDisposable
+	internal interface INuGetPackageNewImportsHandler : IDisposable
 	{
 		void AddImportIfMissing (string name, string condition, ProjectImportLocation location);
 	}

@@ -30,7 +30,7 @@ using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class RestorePackagesHandler : PackagesCommandHandler
+	internal class RestorePackagesHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{

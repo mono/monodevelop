@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class DotNetSolutionEventArgs : EventArgs
+	internal class DotNetSolutionEventArgs : EventArgs
 	{
 		public DotNetSolutionEventArgs (ISolution solution)
 		{

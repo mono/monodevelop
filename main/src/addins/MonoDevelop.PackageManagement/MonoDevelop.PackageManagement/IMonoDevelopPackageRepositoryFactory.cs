@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IMonoDevelopPackageRepositoryFactory : IPackageRepositoryFactory
+	internal interface IMonoDevelopPackageRepositoryFactory : IPackageRepositoryFactory
 	{
 		ISharedPackageRepository CreateSharedRepository(
 			IPackagePathResolver pathResolver,

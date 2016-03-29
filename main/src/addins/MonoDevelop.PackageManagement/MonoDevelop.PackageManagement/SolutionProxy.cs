@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SolutionProxy : ISolution
+	internal class SolutionProxy : ISolution
 	{
 		Solution solution;
 		EventHandler<DotNetProjectEventArgs> projectAdded;

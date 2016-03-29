@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageRepositoryCache : IMonoDevelopPackageRepositoryFactory
+	internal interface IPackageRepositoryCache : IMonoDevelopPackageRepositoryFactory
 	{
 		IRecentPackageRepository RecentPackageRepository { get; }
 		IPackageRepository CreateAggregateRepository();

@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class UninstallPackageHelper
+	class UninstallPackageHelper
 	{
 		UninstallPackageAction action;
 

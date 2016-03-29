@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatePackageAction : ProcessPackageOperationsAction, IUpdatePackageSettings
+	internal class UpdatePackageAction : ProcessPackageOperationsAction, IUpdatePackageSettings
 	{
 		IFileRemover fileRemover;
 

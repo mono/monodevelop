@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageLicenseViewModel : ViewModelBase<PackageLicenseViewModel>
+	internal class PackageLicenseViewModel : ViewModelBase<PackageLicenseViewModel>
 	{
 		IPackage package;
 		

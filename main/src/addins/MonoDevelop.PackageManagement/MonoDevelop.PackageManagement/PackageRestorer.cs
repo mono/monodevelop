@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageRestorer
+	internal class PackageRestorer
 	{
 		List<ProjectPackageReferenceFile> packageReferenceFiles;
 		IDotNetProject singleProject;

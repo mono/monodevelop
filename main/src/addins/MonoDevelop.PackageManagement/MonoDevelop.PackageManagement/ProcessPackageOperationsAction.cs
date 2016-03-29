@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public abstract class ProcessPackageOperationsAction : ProcessPackageAction
+	internal abstract class ProcessPackageOperationsAction : ProcessPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
 		ILicenseAcceptanceService licenseAcceptanceService;

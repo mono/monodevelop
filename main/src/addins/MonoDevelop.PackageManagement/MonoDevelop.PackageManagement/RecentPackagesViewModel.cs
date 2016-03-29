@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RecentPackagesViewModel : PackagesViewModel
+	internal class RecentPackagesViewModel : PackagesViewModel
 	{
 		IPackageManagementEvents packageManagementEvents;
 		IPackageRepository recentPackageRepository;

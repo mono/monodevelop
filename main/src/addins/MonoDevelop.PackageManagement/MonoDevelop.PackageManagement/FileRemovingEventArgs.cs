@@ -29,7 +29,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class FileRemovingEventArgs : EventArgs
+	internal class FileRemovingEventArgs : EventArgs
 	{
 		public FileRemovingEventArgs (string fileName)
 		{

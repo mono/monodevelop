@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ISolutionPackageRepositoryFactory
+	internal interface ISolutionPackageRepositoryFactory
 	{
 		ISolutionPackageRepository CreateSolutionPackageRepository (ISolution solution);
 	}

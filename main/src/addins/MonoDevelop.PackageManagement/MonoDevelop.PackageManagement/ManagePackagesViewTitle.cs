@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ManagePackagesViewTitle
+	internal class ManagePackagesViewTitle
 	{
 		public ManagePackagesViewTitle(IPackageManagementSolution solution)
 		{

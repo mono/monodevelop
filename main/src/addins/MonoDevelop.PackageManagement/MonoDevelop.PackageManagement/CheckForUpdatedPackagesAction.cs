@@ -30,7 +30,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class CheckForUpdatedPackagesAction : IPackageAction
+	internal class CheckForUpdatedPackagesAction : IPackageAction
 	{
 		IUpdatedPackagesInSolution updatedPackagesInSolution;
 

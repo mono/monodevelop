@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class InstalledPackagesViewModel : PackagesViewModel
+	internal class InstalledPackagesViewModel : PackagesViewModel
 	{
 		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;

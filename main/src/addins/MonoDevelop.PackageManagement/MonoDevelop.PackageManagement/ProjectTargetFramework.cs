@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTargetFramework
+	internal class ProjectTargetFramework
 	{
 		IDotNetProject project;
 		FrameworkName targetFramework;

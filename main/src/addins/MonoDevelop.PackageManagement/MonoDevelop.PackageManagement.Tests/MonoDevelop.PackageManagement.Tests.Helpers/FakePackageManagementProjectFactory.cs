@@ -27,12 +27,11 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.PackageManagement;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementProjectFactory : IPackageManagementProjectFactory
+	class FakePackageManagementProjectFactory : IPackageManagementProjectFactory
 	{
 		public FakePackageManagementProjectFactory ()
 		{

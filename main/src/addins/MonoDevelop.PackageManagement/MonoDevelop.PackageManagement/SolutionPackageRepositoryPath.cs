@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SolutionPackageRepositoryPath
+	internal class SolutionPackageRepositoryPath
 	{
 		ISolution solution;
 		DefaultPackagePathResolver pathResolver;

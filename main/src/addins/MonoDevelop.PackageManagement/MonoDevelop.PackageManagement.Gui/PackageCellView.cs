@@ -31,7 +31,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCellView : CanvasCellView
+	internal class PackageCellView : CanvasCellView
 	{
 		int packageIdFontSize;
 		int packageDescriptionFontSize;

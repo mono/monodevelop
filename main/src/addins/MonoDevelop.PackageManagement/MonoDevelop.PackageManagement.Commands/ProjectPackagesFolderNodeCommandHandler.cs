@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class ProjectPackagesFolderNodeCommandHandler : NodeCommandHandler
+	internal class ProjectPackagesFolderNodeCommandHandler : NodeCommandHandler
 	{
 		public override void ActivateItem ()
 		{

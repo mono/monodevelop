@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementSelectedProject
+	internal interface IPackageManagementSelectedProject
 	{
 		string Name { get; }
 		bool IsSelected { get; set; }

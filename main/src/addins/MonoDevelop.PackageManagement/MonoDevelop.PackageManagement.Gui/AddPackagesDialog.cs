@@ -42,7 +42,7 @@ using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class AddPackagesDialog
+	internal partial class AddPackagesDialog
 	{
 		IBackgroundPackageActionRunner backgroundActionRunner;
 		IRecentPackageRepository recentPackageRepository;

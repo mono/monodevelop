@@ -28,7 +28,6 @@
 
 using System;
 using NuGet;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -84,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 			PackageManagementBackgroundDispatcher.Initialize ();
 		}
 		
-		public static void InitializeCredentialProvider()
+		internal static void InitializeCredentialProvider()
 		{
 			HttpClient.DefaultCredentialProvider = CreateSettingsCredentialProvider (new MonoDevelopCredentialProvider ());
 		}
@@ -106,63 +105,63 @@ namespace MonoDevelop.PackageManagement
 			return NullSettings.Instance;
 		}
 
-		public static PackageManagementOptions Options {
+		internal static PackageManagementOptions Options {
 			get { return options; }
 		}
 		
-		public static IPackageManagementSolution Solution {
+		internal static IPackageManagementSolution Solution {
 			get { return solution; }
 		}
 		
-		public static IRegisteredPackageRepositories RegisteredPackageRepositories {
+		internal static IRegisteredPackageRepositories RegisteredPackageRepositories {
 			get { return registeredPackageRepositories; }
 		}
 		
-		public static IPackageRepositoryCache PackageRepositoryCache {
+		internal static IPackageRepositoryCache PackageRepositoryCache {
 			get { return packageRepositoryCache; }
 		}
 		
-		public static IPackageManagementEvents PackageManagementEvents {
+		internal static IPackageManagementEvents PackageManagementEvents {
 			get { return packageManagementEvents; }
 		}
 		
-		public static IPackageManagementOutputMessagesView OutputMessagesView {
+		internal static IPackageManagementOutputMessagesView OutputMessagesView {
 			get { return outputMessagesView; }
 		}
 		
-		public static IPackageManagementProjectService ProjectService {
+		internal static IPackageManagementProjectService ProjectService {
 			get { return projectService; }
 		}
 		
-		public static IPackageActionRunner PackageActionRunner {
+		internal static IPackageActionRunner PackageActionRunner {
 			get { return packageActionRunner; }
 		}
 		
-		public static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
+		internal static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
 			get { return projectTemplatePackageRepositoryCache; }
 		}
 		
-		public static RegisteredPackageSources ProjectTemplatePackageSources {
+		internal static RegisteredPackageSources ProjectTemplatePackageSources {
 			get { return projectTemplatePackageSources.PackageSources; }
 		}
 
-		public static IBackgroundPackageActionRunner BackgroundPackageActionRunner {
+		internal static IBackgroundPackageActionRunner BackgroundPackageActionRunner {
 			get { return backgroundPackageActionRunner; }
 		}
 
-		public static IPackageManagementProgressMonitorFactory ProgressMonitorFactory {
+		internal static IPackageManagementProgressMonitorFactory ProgressMonitorFactory {
 			get { return progressMonitorFactory; }
 		}
 
-		public static IRecentPackageRepository RecentPackageRepository {
+		internal static IRecentPackageRepository RecentPackageRepository {
 			get { return packageRepositoryCache.RecentPackageRepository; }
 		}
 
-		public static IProgressProvider ProgressProvider {
+		internal static IProgressProvider ProgressProvider {
 			get { return progressProvider; }
 		}
 
-		public static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
+		internal static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
 			get { return updatedPackagesInSolution; }
 		}
 

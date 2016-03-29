@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class AddPackagesHandler : PackagesCommandHandler
+	internal class AddPackagesHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{
