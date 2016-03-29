@@ -199,6 +199,31 @@ module Completion =
         | SymbolUse.Entity _ -> IconId("md-type")
         | _ -> Stock.Event
         
+    let symbolStringToIcon icon =
+        match icon with
+        | "ActivePatternCase" -> Stock.Enum
+        | "Field" -> Stock.Field
+        | "UnionCase" -> IconId("md-type")
+        | "Class" -> Stock.Class
+        | "Delegate" -> Stock.Delegate
+        | "Constructor" -> Stock.Method
+        | "Event" -> Stock.Event
+        | "Property" -> Stock.Property
+        | "ExtensionMethod" -> IconId("md-extensionmethod")
+        | "Method" -> IconId("md-method")
+        | "Operator" -> IconId("md-fs-field")
+        | "ClosureOrNestedFunction" -> IconId("md-fs-field")
+        | "Val" -> Stock.Field
+        | "Enum" -> Stock.Enum
+        | "Interface" -> Stock.Interface
+        | "Module" -> IconId("md-module")
+        | "Namespace" -> Stock.NameSpace
+        | "Record" -> Stock.Class
+        | "Union" -> IconId("md-type")
+        | "ValueType" -> Stock.Struct
+        | "Entity" -> IconId("md-type")
+        | _ -> Stock.Event
+        
     let tryGetCategory (symbolUse : FSharpSymbolUse) =
         let category =
             try
@@ -324,31 +349,6 @@ module Completion =
 
     let parseLock = obj()
     let getFsiCompletions context = 
-
-        let symbolStringToIcon icon =
-            match icon with
-            | "ActivePatternCase" -> Stock.Enum
-            | "Field" -> Stock.Field
-            | "UnionCase" -> IconId("md-type")
-            | "Class" -> Stock.Class
-            | "Delegate" -> Stock.Delegate
-            | "Constructor" -> Stock.Method
-            | "Event" -> Stock.Event
-            | "Property" -> Stock.Property
-            | "ExtensionMethod" -> IconId("md-extensionmethod")
-            | "Method" -> IconId("md-method")
-            | "Operator" -> IconId("md-fs-field")
-            | "ClosureOrNestedFunction" -> IconId("md-fs-field")
-            | "Val" -> Stock.Field
-            | "Enum" -> Stock.Enum
-            | "Interface" -> Stock.Interface
-            | "Module" -> IconId("md-module")
-            | "Namespace" -> Stock.NameSpace
-            | "Record" -> Stock.Class
-            | "Union" -> IconId("md-type")
-            | "ValueType" -> Stock.Struct
-            | "Entity" -> IconId("md-type")
-            | _ -> Stock.Event
 
         async {
             let { column = column
