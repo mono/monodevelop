@@ -372,7 +372,21 @@ type FSharpInteractivePad() =
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
     inherit TextEditorExtension()
+    let promptWidth = 3
+    let promptStart = "> "
+    let promptExt = "- "
+    let getCaretLine (editor:TextEditor) =
+        let line =
+            editor.CaretLine
+            |> editor.GetLine
 
+        if line.Length > 0 then
+            (editor.GetLineText line), line
+        else
+            "", line
+    
+    let lineStartsWithPrompt (s:string) = s.StartsWith promptStart || s.StartsWith promptExt
+            
     override x.IsValidInContext(context) =
         context :? FsiDocumentContext
 
@@ -381,25 +395,10 @@ type FSharpFsiEditorCompletion() =
         match FSharpInteractivePad.Fsi with
         | Some fsi -> 
             let startLine = x.Editor.CaretLine
-
-            let getCaretLine() =
-                let line =
-                    x.Editor.CaretLine
-                    |> x.Editor.GetLine
-
-                if line.Length > 0 then
-                    (x.Editor.GetLineText line), line
-                else
-                    "", line
-
-            let lineStr, line = getCaretLine()
-
-            let lineStartsWithPrompt (s:string) =
-                s.StartsWith "> " || s.StartsWith "- "
-
+            let lineStr, line = getCaretLine x.Editor
             let lineHadPrompt = lineStartsWithPrompt lineStr
-            if lineHadPrompt && x.Editor.CaretColumn < 3 then
-                x.Editor.CaretColumn <- 3
+            if lineHadPrompt && x.Editor.CaretColumn < promptWidth then
+                x.Editor.CaretColumn <- promptWidth
 
             let result = 
                 match descriptor.SpecialKey with
@@ -413,43 +412,43 @@ type FSharpFsiEditorCompletion() =
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
-                            x.Editor.InsertAtCaret "- "
+                            x.Editor.InsertAtCaret promptExt
                     
-                    false
+                    Task.FromResult false
                 | SpecialKey.Up -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         fsi.ProcessCommandHistoryUp()
-                        false
+                        Task.FromResult false
                     else
                         base.KeyPress (descriptor)
                 | SpecialKey.Down -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         fsi.ProcessCommandHistoryDown()
-                        false
+                        Task.FromResult false
                     else
                         base.KeyPress (descriptor)
                 | SpecialKey.Left ->
-                    if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > 3 then // 3 = prompt width
+                    if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > promptWidth then
                         base.KeyPress (descriptor)
                     else
-                        false
+                        Task.FromResult false
                 | SpecialKey.BackSpace
                 | SpecialKey.Delete ->
-                    if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 3 then // 3 = prompt width
+                    if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > promptWidth then
                         base.KeyPress (descriptor)
                     else
-                        false
+                        Task.FromResult false
                 | _ -> 
                     if x.Editor.CaretLine <> x.Editor.LineCount then
                         x.Editor.CaretOffset <- x.Editor.Length
                     base.KeyPress (descriptor)
 
-            if lineStr.StartsWith "> " && x.Editor.CaretColumn < 3 && x.Editor.CaretLine = startLine  then
-                let editedLine, _ = getCaretLine()
+            if lineStr.StartsWith promptStart && x.Editor.CaretColumn < promptWidth && x.Editor.CaretLine = startLine  then
+                let editedLine, _ = getCaretLine x.Editor
                 // Fixes ctrl-w and maybe other keystrokes that remove the prompt
-                if lineHadPrompt && not (editedLine.StartsWith "> ") then
-                    x.Editor.InsertText (line.Offset, "> ")
-                x.Editor.CaretColumn <- 3
+                if lineHadPrompt && not (editedLine.StartsWith promptStart) then
+                    x.Editor.InsertText (line.Offset, promptStart)
+                x.Editor.CaretColumn <- promptWidth
 
             result
         | _ -> base.KeyPress (descriptor)
