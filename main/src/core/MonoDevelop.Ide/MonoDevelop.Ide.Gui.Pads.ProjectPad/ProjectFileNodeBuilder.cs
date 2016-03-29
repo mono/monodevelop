@@ -143,8 +143,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.BuildChildNodes (treeBuilder, dataObject);
 			ProjectFile file = (ProjectFile) dataObject;
 			if (file.HasChildren)
-				foreach (ProjectFile pf in file.DependentChildren)
-					treeBuilder.AddChild (pf);
+				treeBuilder.AddChildren (file.DependentChildren);
 		}
 	}
 	

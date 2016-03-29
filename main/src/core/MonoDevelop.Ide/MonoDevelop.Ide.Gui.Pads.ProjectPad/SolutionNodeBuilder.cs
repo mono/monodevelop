@@ -85,10 +85,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			Solution solution = (Solution) dataObject;
-			foreach (SolutionFolderItem entry in solution.RootFolder.Items)
-				ctx.AddChild (entry);
-			foreach (FilePath file in solution.RootFolder.Files)
-				ctx.AddChild (new SolutionFolderFileNode (file, solution.RootFolder));
+			ctx.AddChildren (solution.RootFolder.Items);
+			ctx.AddChildren (solution.RootFolder.Files.Select (f => new SolutionFolderFileNode (f, solution.RootFolder)));
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

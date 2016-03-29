@@ -93,9 +93,8 @@ namespace MonoDevelop.Gettext.NodeBuilders
 			TranslationProject project = dataObject as TranslationProject;
 			if (project == null)
 				return;
-				
-			foreach (Translation translation in project.Translations)
-				builder.AddChild (translation);
+
+			builder.AddChildren (project.Translations);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

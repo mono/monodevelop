@@ -107,9 +107,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			foreach (PackageReferenceNode packageReference in GetPackageReferencesNodes (dataObject)) {
-				treeBuilder.AddChild (packageReference);
-			}
+			treeBuilder.AddChildren (GetPackageReferencesNodes (dataObject));
 		}
 	}
 }

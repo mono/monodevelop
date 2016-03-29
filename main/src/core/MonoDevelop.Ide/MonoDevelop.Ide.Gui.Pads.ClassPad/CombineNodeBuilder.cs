@@ -62,8 +62,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		{
 			SolutionFolder combine = (SolutionFolder) dataObject;
 			if (builder.Options ["ShowProjects"]) {
-				foreach (SolutionFolderItem entry in combine.Items)
-					builder.AddChild (entry);
+				builder.AddChildren (combine.Items);
 			} else {
 				AddClasses (builder, combine);
 			}

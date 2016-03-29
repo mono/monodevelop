@@ -35,6 +35,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -135,15 +136,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					folderFiles = ((Solution)dataObject).RootFolder.Files;
 				else if (dataObject is SolutionFolder)
 					folderFiles = ((SolutionFolder)dataObject).Files;
-				
-				foreach (string file in Directory.GetFiles (path)) {
-					if ((project == null || project.Files.GetFile (file) == null) && (folderFiles == null || !folderFiles.Contains (file)))
-						builder.AddChild (new SystemFile (file, project));
-				}
-				
-				foreach (string folder in Directory.GetDirectories (path))
-					if (!builder.HasChild (Path.GetFileName (folder), typeof(ProjectFolder)))
-						builder.AddChild (new ProjectFolder (folder, project));
+
+				builder.AddChildren (Directory.EnumerateFiles (path)
+									 .Where (file => (project == null || project.Files.GetFile (file) == null) && (folderFiles == null || !folderFiles.Contains (file)))
+									 .Select (file => new SystemFile (file, project)));
+
+				builder.AddChildren (Directory.EnumerateDirectories (path)
+									 .Where (folder => !builder.HasChild (Path.GetFileName (folder), typeof (ProjectFolder)))
+									 .Select (folder => new ProjectFolder (folder, project)));
 			}
 		}
 		

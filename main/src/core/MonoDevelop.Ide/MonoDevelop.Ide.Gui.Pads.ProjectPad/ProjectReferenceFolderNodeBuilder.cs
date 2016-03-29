@@ -75,8 +75,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			ProjectReferenceCollection refs = (ProjectReferenceCollection) dataObject;
-			foreach (ProjectReference pref in refs)
-				ctx.AddChild (pref);
+			ctx.AddChildren (refs);
 
 			// For portable libraries, add node that represents all framework assemblies
 			var project = (DotNetProject) ctx.GetParentDataItem (typeof(DotNetProject), false);

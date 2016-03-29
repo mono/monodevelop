@@ -65,9 +65,7 @@ namespace MonoDevelop.Deployment.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			PackagingProject project = dataObject as PackagingProject;
-				
-			foreach (Package p in project.Packages)
-				builder.AddChild (p);
+			builder.AddChildren (project.Packages);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
