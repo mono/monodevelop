@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementEvents : IPackageManagementEvents
+	internal class PackageManagementEvents : IPackageManagementEvents
 	{
 		public event EventHandler PackageOperationsStarting;
 		

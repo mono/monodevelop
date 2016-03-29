@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RemovedPackageReferenceMonitor : IDisposable
+	internal class RemovedPackageReferenceMonitor : IDisposable
 	{
 		IMonoDevelopProjectManager projectManager;
 		List<IPackage> packagesRemoved = new List<IPackage>();

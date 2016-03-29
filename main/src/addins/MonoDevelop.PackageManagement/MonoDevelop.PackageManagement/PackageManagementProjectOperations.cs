@@ -35,7 +35,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProjectOperations : IPackageManagementProjectOperations
+	internal class PackageManagementProjectOperations : IPackageManagementProjectOperations
 	{
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;

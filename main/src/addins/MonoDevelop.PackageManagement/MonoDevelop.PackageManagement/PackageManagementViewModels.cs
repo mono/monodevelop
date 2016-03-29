@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementViewModels
+	internal class PackageManagementViewModels
 	{
 		ManagePackagesViewModel managePackagesViewModel;
 		RegisteredPackageSourcesViewModel registeredPackageSourcesViewModel;

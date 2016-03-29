@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementFileService
+	internal interface IPackageManagementFileService
 	{
 		void RemoveFile(string path);
 		void RemoveDirectory(string path);

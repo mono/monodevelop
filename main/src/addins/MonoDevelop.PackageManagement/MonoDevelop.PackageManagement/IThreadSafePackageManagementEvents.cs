@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IThreadSafePackageManagementEvents : IPackageManagementEvents, IDisposable
+	internal interface IThreadSafePackageManagementEvents : IPackageManagementEvents, IDisposable
 	{
 	}
 }

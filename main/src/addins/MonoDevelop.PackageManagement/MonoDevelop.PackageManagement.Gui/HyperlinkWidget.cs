@@ -33,7 +33,7 @@ using MonoDevelop.Ide;
 namespace MonoDevelop.PackageManagement
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class HyperlinkWidget : Gtk.Bin
+	internal partial class HyperlinkWidget : Gtk.Bin
 	{
 		LinkButton linkButton;
 

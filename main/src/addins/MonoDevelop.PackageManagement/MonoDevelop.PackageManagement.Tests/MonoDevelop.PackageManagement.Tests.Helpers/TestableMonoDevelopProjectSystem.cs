@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableMonoDevelopProjectSystem : MonoDevelopProjectSystem
+	class TestableMonoDevelopProjectSystem : MonoDevelopProjectSystem
 	{
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;

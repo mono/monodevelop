@@ -30,7 +30,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatePackagesProgressMonitorStatusMessage : ProgressMonitorStatusMessage
+	internal class UpdatePackagesProgressMonitorStatusMessage : ProgressMonitorStatusMessage
 	{
 		UpdatedPackagesMonitor monitor;
 		string packagesUpToDateMessage;

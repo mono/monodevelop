@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageOperationExceptionEventArgs : EventArgs
+	internal class PackageOperationExceptionEventArgs : EventArgs
 	{
 		public PackageOperationExceptionEventArgs(Exception ex)
 		{

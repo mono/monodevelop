@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IOpenPackageReadMeMonitor : IDisposable
+	internal interface IOpenPackageReadMeMonitor : IDisposable
 	{
 		void OpenReadMeFile ();
 	}

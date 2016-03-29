@@ -37,7 +37,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredPackageSourceSettings
+	internal class RegisteredPackageSourceSettings
 	{
 		public static readonly string PackageSourcesSectionName = "packageSources";
 		public static readonly string ActivePackageSourceSectionName = "activePackageSource";

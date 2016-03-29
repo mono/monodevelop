@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class OneRegisteredPackageSourceHelper
+	class OneRegisteredPackageSourceHelper
 	{
 		public TestablePackageManagementOptions Options;
 		public FakeSettings FakeSettings;

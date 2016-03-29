@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectPackagesProjectNodeBuilderExtension : NodeBuilderExtension
+	internal class ProjectPackagesProjectNodeBuilderExtension : NodeBuilderExtension
 	{
 		IPackageManagementEvents packageManagementEvents;
 

@@ -38,7 +38,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectPackagesFolderNodeBuilder : TypeNodeBuilder
+	internal class ProjectPackagesFolderNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ProjectPackagesFolderNode); }

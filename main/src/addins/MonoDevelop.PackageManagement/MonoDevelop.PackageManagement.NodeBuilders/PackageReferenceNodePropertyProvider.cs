@@ -29,7 +29,7 @@ using MonoDevelop.DesignerSupport;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class PackageReferenceNodePropertyProvider : IPropertyProvider
+	internal class PackageReferenceNodePropertyProvider : IPropertyProvider
 	{
 		public bool SupportsObject (object obj)
 		{

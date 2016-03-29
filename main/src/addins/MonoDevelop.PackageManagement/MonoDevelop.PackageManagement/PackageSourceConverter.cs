@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class PackageSourceConverter
+	internal static class PackageSourceConverter
 	{
 		public static IEnumerable<PackageSource> ConvertFromSettings(IEnumerable<SettingValue> packageSources)
 		{

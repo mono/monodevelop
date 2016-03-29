@@ -37,7 +37,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SearchPackagesSearchCategory : SearchCategory
+	internal class SearchPackagesSearchCategory : SearchCategory
 	{
 		public SearchPackagesSearchCategory ()
 			: base (GettextCatalog.GetString("Search"))

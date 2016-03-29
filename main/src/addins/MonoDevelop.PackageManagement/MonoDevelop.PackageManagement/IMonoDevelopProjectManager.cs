@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IMonoDevelopProjectManager : IProjectManager
+	internal interface IMonoDevelopProjectManager : IProjectManager
 	{
 		IPackagePathResolver PathResolver { get; }
 		bool IsInstalled(string packageId);

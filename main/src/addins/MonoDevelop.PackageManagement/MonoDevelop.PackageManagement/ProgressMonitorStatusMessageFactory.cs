@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class ProgressMonitorStatusMessageFactory
+	internal static class ProgressMonitorStatusMessageFactory
 	{
 		public static ProgressMonitorStatusMessage CreateInstallingSinglePackageMessage (string packageId)
 		{

@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageOperationMessageLoggedEventArgs : EventArgs
+	internal class PackageOperationMessageLoggedEventArgs : EventArgs
 	{
 		public PackageOperationMessageLoggedEventArgs(
 			MessageLevel level,

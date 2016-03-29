@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageOperationMessage
+	internal class PackageOperationMessage
 	{
 		string message;
 		object[] args;

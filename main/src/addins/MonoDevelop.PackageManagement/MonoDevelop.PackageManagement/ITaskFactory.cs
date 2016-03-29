@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ITaskFactory
+	internal interface ITaskFactory
 	{
 		ITask<TResult> CreateTask<TResult>(
 			Func<TResult> function,

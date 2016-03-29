@@ -32,7 +32,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class LocalCopyReferenceMaintainer : IDisposable
+	internal class LocalCopyReferenceMaintainer : IDisposable
 	{
 		readonly IPackageManagementEvents packageManagementEvents;
 		List<ProjectReference> referencesRemovedWithLocalCopyFalse = new List<ProjectReference> ();

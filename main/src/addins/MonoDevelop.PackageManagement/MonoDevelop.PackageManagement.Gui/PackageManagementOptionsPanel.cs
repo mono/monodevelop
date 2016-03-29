@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.PackageManagement.Gui
 {
-	public class PackageManagementOptionsPanel : OptionsPanel
+	internal class PackageManagementOptionsPanel : OptionsPanel
 	{
 		PackageManagementOptionsViewModel optionsViewModel;
 

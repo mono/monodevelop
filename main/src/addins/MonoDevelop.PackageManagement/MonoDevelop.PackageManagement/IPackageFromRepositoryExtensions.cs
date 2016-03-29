@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class IPackageFromRepositoryExtensions
+	internal static class IPackageFromRepositoryExtensions
 	{
 		public static IDisposable StartInstallOperation(this IPackageFromRepository package)
 		{

@@ -29,7 +29,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdateAllPackagesInSolution : UpdatePackageActions
+	internal class UpdateAllPackagesInSolution : UpdatePackageActions
 	{
 		IPackageManagementSolution solution;
 		IPackageRepository sourceRepository;

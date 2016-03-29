@@ -31,7 +31,7 @@ using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementMSBuildExtension : ProjectExtension
+	internal class PackageManagementMSBuildExtension : ProjectExtension
 	{
 		public static EnsureNuGetPackageBuildImportsTargetUpdater Updater;
 		public static NuGetPackageNewImportsHandler NewImportsHandler;

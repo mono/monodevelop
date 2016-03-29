@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageViewModelFactory
+	internal interface IPackageViewModelFactory
 	{
 		PackageViewModel CreatePackageViewModel(IPackageViewModelParent parent, IPackageFromRepository package);
 		

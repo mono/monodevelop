@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredPackageSource
+	internal class RegisteredPackageSource
 	{
 		public string Source { get; set; }
 		public string Name { get; set; }

@@ -30,7 +30,7 @@ using Xwt;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class AddPackageSourceDialog : Dialog
+	internal partial class AddPackageSourceDialog : Dialog
 	{
 		TextEntry packageSourceNameTextEntry;
 		TextEntry packageSourceUrlTextEntry;

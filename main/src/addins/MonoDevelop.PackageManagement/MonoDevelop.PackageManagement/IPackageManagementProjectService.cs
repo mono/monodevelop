@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementProjectService
+	internal interface IPackageManagementProjectService
 	{
 		event EventHandler SolutionLoaded;
 		event EventHandler SolutionUnloaded;

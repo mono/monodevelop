@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MonoDevelopHttpUserAgent
+	internal class MonoDevelopHttpUserAgent
 	{
 		public MonoDevelopHttpUserAgent()
 		{

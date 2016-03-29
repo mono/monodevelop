@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProgressProvider : IProgressProvider
+	internal class PackageManagementProgressProvider : IProgressProvider
 	{
 		Action<Action> guiDispatcher;
 

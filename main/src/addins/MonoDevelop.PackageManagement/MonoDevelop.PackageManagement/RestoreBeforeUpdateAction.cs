@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RestoreBeforeUpdateAction
+	internal class RestoreBeforeUpdateAction
 	{
 		IPackageManagementProjectService projectService;
 		IBackgroundPackageActionRunner backgroundRunner;

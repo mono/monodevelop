@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UninstallPackageAction : ProcessPackageAction
+	internal class UninstallPackageAction : ProcessPackageAction
 	{
 		public UninstallPackageAction(
 			IPackageManagementProject project,

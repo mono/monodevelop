@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IRegisteredPackageRepositories
+	internal interface IRegisteredPackageRepositories
 	{
 		IPackageRepository ActiveRepository { get; }
 		IRecentPackageRepository RecentPackageRepository { get; }

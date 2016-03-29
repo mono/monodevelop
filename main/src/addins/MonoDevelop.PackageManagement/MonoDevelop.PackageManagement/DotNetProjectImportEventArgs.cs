@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class DotNetProjectImportEventArgs : EventArgs
+	internal class DotNetProjectImportEventArgs : EventArgs
 	{
 		public DotNetProjectImportEventArgs (IDotNetProject project, string import)
 		{

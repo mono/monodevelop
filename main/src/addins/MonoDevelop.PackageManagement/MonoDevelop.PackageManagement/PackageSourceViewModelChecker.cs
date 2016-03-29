@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageSourceViewModelChecker : IDisposable
+	internal class PackageSourceViewModelChecker : IDisposable
 	{
 		PackageManagementTaskFactory taskFactory = new PackageManagementTaskFactory ();
 		List<ITask<PackageSourceViewModelCheckedEventArgs>> tasks = new List<ITask<PackageSourceViewModelCheckedEventArgs>>();

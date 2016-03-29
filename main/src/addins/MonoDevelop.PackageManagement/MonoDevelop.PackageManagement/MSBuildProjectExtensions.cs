@@ -36,7 +36,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class MSBuildProjectExtensions
+	internal static class MSBuildProjectExtensions
 	{
 		static readonly XmlNamespaceManager namespaceManager =
 			new XmlNamespaceManager (new NameTable ());
