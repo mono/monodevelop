@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementTask<TResult> : ITask<TResult>
+	internal class PackageManagementTask<TResult> : ITask<TResult>
 	{
 		Task<TResult> task;
 		Action<ITask<TResult>> continueWith;

@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCompatibilityRunner
+	internal class PackageCompatibilityRunner
 	{
 		IDotNetProject project;
 		IPackageManagementSolution solution;

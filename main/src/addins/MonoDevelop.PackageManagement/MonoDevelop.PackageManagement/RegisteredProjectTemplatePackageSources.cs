@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredProjectTemplatePackageSources
+	internal class RegisteredProjectTemplatePackageSources
 	{
 		RegisteredPackageSources packageSources = new RegisteredPackageSources();
 

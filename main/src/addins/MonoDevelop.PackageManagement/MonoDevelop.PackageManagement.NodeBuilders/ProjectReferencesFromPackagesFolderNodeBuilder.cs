@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectReferencesFromPackagesFolderNodeBuilder : TypeNodeBuilder
+	internal class ProjectReferencesFromPackagesFolderNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ProjectReferencesFromPackagesFolderNode); }

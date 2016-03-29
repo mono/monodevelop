@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeProject : IProject
+	class FakeProject : IProject
 	{
 		public string Name { get; set; }
 		public FilePath FileName { get; set; }

@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class InstalledPackageViewModel : PackageViewModel
+	internal class InstalledPackageViewModel : PackageViewModel
 	{
 		public InstalledPackageViewModel(
 			IPackageViewModelParent parent,

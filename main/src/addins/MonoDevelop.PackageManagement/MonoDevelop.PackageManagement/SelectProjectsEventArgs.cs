@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SelectProjectsEventArgs : EventArgs
+	internal class SelectProjectsEventArgs : EventArgs
 	{
 		public SelectProjectsEventArgs(IEnumerable<IPackageManagementSelectedProject> selectedProjects)
 		{

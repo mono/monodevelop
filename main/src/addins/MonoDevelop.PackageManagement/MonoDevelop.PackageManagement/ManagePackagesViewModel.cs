@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
+	internal class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
 	{
 		IThreadSafePackageManagementEvents packageManagementEvents;
 		PackagesViewModels packagesViewModels;

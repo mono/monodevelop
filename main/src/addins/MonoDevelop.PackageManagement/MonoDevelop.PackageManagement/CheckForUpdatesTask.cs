@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class CheckForUpdatesTask : IDisposable
+	internal class CheckForUpdatesTask : IDisposable
 	{
 		UpdatedPackagesInSolution updatedPackagesInSolution;
 		List<IPackageManagementProject> projects;

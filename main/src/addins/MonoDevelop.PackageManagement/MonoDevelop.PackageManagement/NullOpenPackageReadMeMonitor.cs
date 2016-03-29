@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.PackageManagement
 {
-	public class NullOpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
+	internal class NullOpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
 		public static readonly IOpenPackageReadMeMonitor Null = new NullOpenPackageReadMeMonitor ();
 

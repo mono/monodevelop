@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageFromRepository : IPackage
+	internal interface IPackageFromRepository : IPackage
 	{
 		IPackageRepository Repository { get; }
 		bool HasDependencies { get; }

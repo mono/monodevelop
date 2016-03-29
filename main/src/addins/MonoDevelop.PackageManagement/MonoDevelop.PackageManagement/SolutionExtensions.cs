@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class SolutionExtensions
+	internal static class SolutionExtensions
 	{
 		public static IEnumerable<DotNetProject> GetAllDotNetProjects (this Solution solution)
 		{

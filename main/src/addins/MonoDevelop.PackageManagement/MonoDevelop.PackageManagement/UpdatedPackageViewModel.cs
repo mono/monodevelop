@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackageViewModel : PackageViewModel
+	internal class UpdatedPackageViewModel : PackageViewModel
 	{
 		public UpdatedPackageViewModel(
 			IPackageViewModelParent parent,

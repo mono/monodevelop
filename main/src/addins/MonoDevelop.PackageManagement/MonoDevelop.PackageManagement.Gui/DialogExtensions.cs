@@ -30,7 +30,7 @@ using Xwt;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class DialogExtensions
+	internal static class DialogExtensions
 	{
 		public static Command ShowWithParent (this Dialog dialog)
 		{

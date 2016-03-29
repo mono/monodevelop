@@ -44,7 +44,7 @@ namespace MonoDevelop.PackageManagement
 	/// EnsureNuGetPackageBuildImports target element then the 
 	/// EnsureNuGetPackageBuildImports is removed.
 	/// </summary>
-	public class EnsureNuGetPackageBuildImportsTargetUpdater : IDisposable
+	internal class EnsureNuGetPackageBuildImportsTargetUpdater : IDisposable
 	{
 		static readonly string NuGetTargetName = "EnsureNuGetPackageBuildImports";
 

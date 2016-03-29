@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class LicenseAcceptanceService : ILicenseAcceptanceService
+	internal class LicenseAcceptanceService : ILicenseAcceptanceService
 	{
 		public bool AcceptLicenses (IEnumerable<IPackage> packages)
 		{

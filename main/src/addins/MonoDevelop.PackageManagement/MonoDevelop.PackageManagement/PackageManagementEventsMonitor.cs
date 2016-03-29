@@ -35,7 +35,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementEventsMonitor : IDisposable
+	internal class PackageManagementEventsMonitor : IDisposable
 	{
 		ProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;

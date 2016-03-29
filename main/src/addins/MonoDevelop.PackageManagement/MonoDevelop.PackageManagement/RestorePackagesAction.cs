@@ -33,7 +33,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RestorePackagesAction : IPackageAction
+	internal class RestorePackagesAction : IPackageAction
 	{
 		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;

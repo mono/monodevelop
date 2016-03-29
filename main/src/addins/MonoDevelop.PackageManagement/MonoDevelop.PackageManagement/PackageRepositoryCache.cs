@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageRepositoryCache : IPackageRepositoryCache, IPackageRepositoryFactoryEvents
+	internal class PackageRepositoryCache : IPackageRepositoryCache, IPackageRepositoryFactoryEvents
 	{
 		IMonoDevelopPackageRepositoryFactory factory;
 		RegisteredPackageSources packageSources;

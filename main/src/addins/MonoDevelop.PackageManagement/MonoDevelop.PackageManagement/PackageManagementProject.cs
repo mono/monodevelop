@@ -37,7 +37,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProject : IPackageManagementProject
+	internal class PackageManagementProject : IPackageManagementProject
 	{
 		IMonoDevelopPackageManager packageManager;
 		IMonoDevelopProjectManager projectManager;

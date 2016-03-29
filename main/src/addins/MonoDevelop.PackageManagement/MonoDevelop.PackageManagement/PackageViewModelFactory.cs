@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageViewModelFactory : IPackageViewModelFactory
+	internal class PackageViewModelFactory : IPackageViewModelFactory
 	{
 		public PackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
 			: this(

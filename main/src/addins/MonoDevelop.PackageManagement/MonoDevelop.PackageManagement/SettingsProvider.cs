@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SettingsProvider : ISettingsProvider
+	internal class SettingsProvider : ISettingsProvider
 	{
 		public static Func<IFileSystem, string, IMachineWideSettings, ISettings> LoadDefaultSettings
 			= Settings.LoadDefaultSettings;

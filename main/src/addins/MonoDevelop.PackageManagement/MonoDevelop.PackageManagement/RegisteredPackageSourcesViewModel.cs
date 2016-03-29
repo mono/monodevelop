@@ -37,7 +37,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredPackageSourcesViewModel : ViewModelBase<RegisteredPackageSourcesViewModel>, IDisposable, IPackageSourceProvider
+	internal class RegisteredPackageSourcesViewModel : ViewModelBase<RegisteredPackageSourcesViewModel>, IDisposable, IPackageSourceProvider
 	{
 		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
 			new ObservableCollection<PackageSourceViewModel>();

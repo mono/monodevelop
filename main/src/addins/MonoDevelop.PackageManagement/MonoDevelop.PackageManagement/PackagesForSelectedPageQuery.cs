@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackagesForSelectedPageQuery
+	internal class PackagesForSelectedPageQuery
 	{
 		public PackagesForSelectedPageQuery (
 			PackagesViewModel viewModel,

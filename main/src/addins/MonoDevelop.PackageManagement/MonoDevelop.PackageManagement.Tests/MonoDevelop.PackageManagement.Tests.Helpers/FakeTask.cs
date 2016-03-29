@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeTask<TResult> : ITask<TResult>
+	class FakeTask<TResult> : ITask<TResult>
 	{
 		public bool IsStartCalled;
 		public bool IsCancelCalled;

@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeUpdatePackageAction : UpdatePackageAction
+	class FakeUpdatePackageAction : UpdatePackageAction
 	{
 		public bool IsExecuted;
 

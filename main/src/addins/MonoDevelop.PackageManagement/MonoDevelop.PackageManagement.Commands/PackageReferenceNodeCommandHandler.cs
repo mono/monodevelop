@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class PackageReferenceNodeCommandHandler : NodeCommandHandler
+	internal class PackageReferenceNodeCommandHandler : NodeCommandHandler
 	{
 		public override void DeleteItem ()
 		{

@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackageManagementOptions : PackageManagementOptions
+	class TestablePackageManagementOptions : PackageManagementOptions
 	{
 		public Properties Properties;
 		public FakeSettings FakeSettings;

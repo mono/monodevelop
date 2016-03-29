@@ -32,7 +32,7 @@ using System.Text;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class AggregateExceptionErrorMessage
+	internal class AggregateExceptionErrorMessage
 	{
 		AggregateException ex;
 		StringBuilder errorMessage = new StringBuilder();

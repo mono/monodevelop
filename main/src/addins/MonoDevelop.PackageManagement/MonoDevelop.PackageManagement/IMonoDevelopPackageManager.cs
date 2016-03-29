@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IMonoDevelopPackageManager : IPackageManager
+	internal interface IMonoDevelopPackageManager : IPackageManager
 	{
 		IMonoDevelopProjectManager ProjectManager { get; }
 		

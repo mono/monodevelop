@@ -36,7 +36,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class AvailablePackagesViewModel : PackagesViewModel
+	internal class AvailablePackagesViewModel : PackagesViewModel
 	{
 		ISolutionPackageRepository solutionPackageRepository;
 		IPackageRepository repository;

@@ -38,7 +38,7 @@ namespace MonoDevelop.PackageManagement
 	/// 1.2.3 => 1.2.3.*
 	/// 1.2.3.4 => 1.2.3.4
 	/// </summary>
-	public class WildcardVersionSpec
+	internal class WildcardVersionSpec
 	{
 		string[] parts;
 		int wildcardPart = -1;

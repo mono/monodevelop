@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeTaskFactory : ITaskFactory
+	class FakeTaskFactory : ITaskFactory
 	{
 		public bool IsCreateTaskCalled;
 		public bool RunTasksSynchronously;

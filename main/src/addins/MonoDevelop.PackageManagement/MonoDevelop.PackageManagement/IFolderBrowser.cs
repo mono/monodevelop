@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IFolderBrowser
+	internal interface IFolderBrowser
 	{
 		string SelectFolder();
 	}

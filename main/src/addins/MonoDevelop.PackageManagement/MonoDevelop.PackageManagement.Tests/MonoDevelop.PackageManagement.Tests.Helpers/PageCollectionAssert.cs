@@ -31,7 +31,7 @@ using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public static class PageCollectionAssert
+	static class PageCollectionAssert
 	{
 		public static void AreEqual (IEnumerable<Page> expectedPages, IEnumerable<Page> actualPages)
 		{

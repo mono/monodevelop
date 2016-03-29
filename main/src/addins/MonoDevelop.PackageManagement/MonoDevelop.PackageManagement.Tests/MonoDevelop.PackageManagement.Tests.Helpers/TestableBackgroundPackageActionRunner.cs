@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableBackgroundPackageActionRunner : BackgroundPackageActionRunner
+	class TestableBackgroundPackageActionRunner : BackgroundPackageActionRunner
 	{
 		public List<Action> BackgroundActionsQueued = new List<Action> ();
 

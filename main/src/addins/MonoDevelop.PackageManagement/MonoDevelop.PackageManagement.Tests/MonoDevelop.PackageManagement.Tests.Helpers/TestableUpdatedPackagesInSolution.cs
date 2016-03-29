@@ -30,7 +30,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableUpdatedPackagesInSolution : UpdatedPackagesInSolution
+	class TestableUpdatedPackagesInSolution : UpdatedPackagesInSolution
 	{
 		public TestableUpdatedPackagesInSolution (
 			IPackageManagementSolution solution,

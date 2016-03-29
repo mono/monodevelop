@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class PackageReferenceNode
+	internal class PackageReferenceNode
 	{
 		public PackageReferenceNode (
 			ProjectPackagesFolderNode parentNode,

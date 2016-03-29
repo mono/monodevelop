@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageViewModelFactory : IPackageViewModelFactory
+	class FakePackageViewModelFactory : IPackageViewModelFactory
 	{
 		public FakePackageManagementSolution FakeSolution = new FakePackageManagementSolution ();
 		PackageManagementEvents packageManagementEvents = new PackageManagementEvents ();

@@ -27,7 +27,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class Styles
+	internal static class Styles
 	{
 		public static Xwt.Drawing.Color LineBorderColor { get; internal set; }
 		public static Xwt.Drawing.Color BackgroundColor { get; internal set; }

@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SelectedProjectsForUpdatedPackages : PackageManagementSelectedProjects
+	internal class SelectedProjectsForUpdatedPackages : PackageManagementSelectedProjects
 	{
 		public SelectedProjectsForUpdatedPackages(IPackageManagementSolution solution)
 			: base(solution)

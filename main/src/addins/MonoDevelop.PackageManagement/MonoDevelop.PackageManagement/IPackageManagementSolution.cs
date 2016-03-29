@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementSolution
+	internal interface IPackageManagementSolution
 	{
 		IPackageManagementProject GetActiveProject();
 		IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository);

@@ -34,7 +34,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class LicenseAcceptanceDialog : Gtk.Dialog
+	internal partial class LicenseAcceptanceDialog : Gtk.Dialog
 	{
 		LicenseAcceptanceViewModel viewModel;
 

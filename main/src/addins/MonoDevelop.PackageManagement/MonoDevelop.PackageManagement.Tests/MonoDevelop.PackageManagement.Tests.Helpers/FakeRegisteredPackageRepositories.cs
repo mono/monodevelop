@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeRegisteredPackageRepositories : IRegisteredPackageRepositories
+	class FakeRegisteredPackageRepositories : IRegisteredPackageRepositories
 	{
 		public FakeRegisteredPackageRepositories ()
 		{

@@ -30,7 +30,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCompatibilityHandler
+	internal class PackageCompatibilityHandler
 	{
 		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
 		{

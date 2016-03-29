@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdateSolutionPackagesAction : IUpdatePackagesAction
+	internal class UpdateSolutionPackagesAction : IUpdatePackagesAction
 	{
 		List<IPackageFromRepository> packages = new List<IPackageFromRepository>();
 		List<PackageOperation> operations = new List<PackageOperation>();

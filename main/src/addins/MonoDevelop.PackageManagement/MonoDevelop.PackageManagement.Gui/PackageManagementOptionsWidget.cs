@@ -32,7 +32,7 @@ using MonoDevelop.PackageManagement;
 namespace MonoDevelop.PackageManagement
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PackageManagementOptionsWidget : Gtk.Bin
+	internal partial class PackageManagementOptionsWidget : Gtk.Bin
 	{
 		PackageManagementOptionsViewModel viewModel;
 

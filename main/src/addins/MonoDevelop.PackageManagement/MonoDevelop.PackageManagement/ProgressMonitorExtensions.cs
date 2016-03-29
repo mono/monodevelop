@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class ProgressMonitorExtensions
+	internal static class ProgressMonitorExtensions
 	{
 		public static void ShowPackageConsole (this ProgressMonitor monitor)
 		{

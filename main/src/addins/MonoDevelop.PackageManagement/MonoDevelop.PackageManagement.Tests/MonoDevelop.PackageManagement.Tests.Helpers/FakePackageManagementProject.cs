@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementProject : IPackageManagementProject
+	class FakePackageManagementProject : IPackageManagementProject
 	{
 		public FakePackageManagementProject ()
 			: this ("Test")

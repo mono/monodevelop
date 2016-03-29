@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectPackagesCompatibilityReport
+	internal class ProjectPackagesCompatibilityReport
 	{
 		FrameworkName projectTargetFramework;
 		List<PackageCompatibility> packageCompatibilities = new List<PackageCompatibility> ();
