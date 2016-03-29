@@ -20,6 +20,7 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.CodeCompletion
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
+open ExtCore.Control
 
 type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FSharpSymbolUse list) =
     inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
@@ -401,24 +402,19 @@ module Completion =
 
                 let parsedDocument = documentContext.TryGetFSharpParsedDocument()
 
-                let! (typedParseResults: ParseAndCheckResults option) =
+                let typedParseResults =
                     lock parseLock (fun() ->
-                        async {
-                            match parsedDocument with
-                            | Some document -> 
-                                match document.ParsedLocation with
-                                | Some location ->
-                                    if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
-                                        LoggingService.logDebug "Completion: got parse results from cache"
-                                    else
-                                        LoggingService.logDebug "Completion: syncing parse results"
-                                        // force sync
-                                        documentContext.ReparseDocument()
-                                        document.GetAst()
+                        maybe {
+                            let! document = parsedDocument
+                            let! location = document.ParsedLocation
 
-                                    return document.TryGetAst()
-                                | None -> return None
-                            | _ -> return None
+                            if location.Line = context.line && location.Column > lineToCaret.LastIndexOf("->") then
+                                LoggingService.logDebug "Completion: got parse results from cache"
+                            else
+                                LoggingService.logDebug "Completion: syncing parse results"
+                                // force sync
+                                documentContext.ReparseDocument()
+                            return! document.TryGetAst()
                         })
 
                 let result = CompletionDataList()                 
