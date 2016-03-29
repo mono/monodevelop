@@ -283,9 +283,8 @@ module SymbolUse =
             if ent.AllBaseTypes
                |> Seq.exists (fun t ->
                                   if t.HasTypeDefinition then
-                                      match t.TypeDefinition.TryFullName with
-                                      | Some name when name = "System.Attribute" -> true
-                                      | _ -> false
+                                      t.TypeDefinition.TryFullName
+                                      |> Option.exists ((=) "System.Attribute" )
                                   else false)
             then Some ent
             else None
