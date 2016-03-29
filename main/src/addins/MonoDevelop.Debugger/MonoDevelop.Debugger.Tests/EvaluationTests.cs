@@ -1961,6 +1961,9 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("43", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
+			if (soft != null && soft.ProtocolVersion < new Version (2, 40))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("b.Prop");
 			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
@@ -2096,9 +2099,6 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
-
-			if (soft != null && soft.ProtocolVersion < new Version (2, 40))
-				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("b.TestMethod (\"23\")");
 			if (!AllowTargetInvokes) {
