@@ -1475,14 +1475,14 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public virtual void Assignment ()
 		{
-			//AssertAssignment ("n = 6", "n", "6", "int");
-			//AssertAssignment ("n = 32", "n", "32", "int");
+			AssertAssignment ("n = 6", "n", "6", "int");
+			AssertAssignment ("n = 32", "n", "32", "int");
 
-			//AssertAssignment ("someString = \"test\"", "someString", "\"test\"", "string");
-			//AssertAssignment ("someString = \"hi\"", "someString", "\"hi\"", "string");
+			AssertAssignment ("someString = \"test\"", "someString", "\"test\"", "string");
+			AssertAssignment ("someString = \"hi\"", "someString", "\"hi\"", "string");
 
-			//AssertAssignment ("numbers[0] = \"test\"", "numbers[0]", "\"test\"", "string");
-			//AssertAssignment ("numbers[0] = \"one\"", "numbers[0]", "\"one\"", "string");
+			AssertAssignment ("numbers[0] = \"test\"", "numbers[0]", "\"test\"", "string");
+			AssertAssignment ("numbers[0] = \"one\"", "numbers[0]", "\"one\"", "string");
 
 			AssertAssignment ("alist[0] = 6", "alist[0]", "6", "int");
 			AssertAssignment ("alist[0] = 1", "alist[0]", "1", "int");
