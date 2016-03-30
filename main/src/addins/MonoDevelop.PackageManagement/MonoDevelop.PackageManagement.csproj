@@ -465,6 +465,28 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageNewImportsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageNewImportsHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AllPackagesViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryProvider.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageLoader.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageLoaderOption.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\LoadResult.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\SearchResult.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResource.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UIPackageMetadata.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UISearchMetadata.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\VersionInfo.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV3Provider.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV2Provider.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV2.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV3.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResource.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV2.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV3.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageItemListViewModel.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageStatus.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\JObjectExtensions.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\DisplayVersion.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -610,6 +632,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
+    <Folder Include="NuGet.PackageManagement.UI\" />
+    <Folder Include="NuGet.Protocol.VisualStudio\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">

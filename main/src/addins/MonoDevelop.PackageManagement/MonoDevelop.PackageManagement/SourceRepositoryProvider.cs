@@ -1,10 +1,10 @@
 ﻿//
-// PackageCellViewEventArgs.cs
+// SourceRepositoryProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,17 +25,37 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using NuGet.Configuration;
+using NuGet.Protocol.Core.Types;
+using NuGet.Protocol.Core.v2;
+using NuGet.Protocol.Core.v3;
+using NuGet.Protocol.VisualStudio;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class PackageCellViewEventArgs : EventArgs
+	internal static class SourceRepositoryProviderFactory
 	{
-		public PackageCellViewEventArgs (PackageSearchResultViewModel packageViewModel)
+		public static ISourceRepositoryProvider CreateSourceRepositoryProvider ()
 		{
-			PackageViewModel = packageViewModel;
+			// TODO - Needs to handle different settings for a solution.
+			var settings = Settings.LoadDefaultSettings (null, null, null);
+			return new SourceRepositoryProvider (settings, GetResourceProviders ());
 		}
 
-		public PackageSearchResultViewModel PackageViewModel { get; private set; }
+		static IEnumerable<Lazy<INuGetResourceProvider>> GetResourceProviders ()
+		{
+			yield return new Lazy<INuGetResourceProvider> (() => new UISearchResourceV2Provider ()); 
+			yield return new Lazy<INuGetResourceProvider> (() => new UISearchResourceV3Provider ()); 
+
+			foreach (var provider in Repository.Provider.GetCoreV2 ()) {
+				yield return provider;
+			}
+
+			foreach (var provider in Repository.Provider.GetCoreV3 ()) {
+				yield return provider;
+			}
+		}
 	}
 }
 

@@ -25,9 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
-using Xwt;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -37,7 +35,6 @@ namespace MonoDevelop.PackageManagement
 		public void Run (string initialSearch = null)
 		{
 			try {
-
 				bool configurePackageSources = false;
 				do {
 					using (AddPackagesDialog dialog = CreateDialog (initialSearch)) {
@@ -57,9 +54,9 @@ namespace MonoDevelop.PackageManagement
 
 		AddPackagesDialog CreateDialog (string initialSearch)
 		{
-			var viewModels = new PackageManagementViewModels ();
+			var viewModel = new AllPackagesViewModel ();
 			return new AddPackagesDialog (
-				viewModels.ManagePackagesViewModel,
+				viewModel,
 				initialSearch);
 		}
 
