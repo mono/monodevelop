@@ -258,7 +258,7 @@ module CompilerArguments =
                 |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
                 |> Seq.map(fun f -> f.Name)
 
-    let defines = fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
+    let defines = fsconfig.GetDefineSymbols() // fsconfig.DefineConstants.Split([| ';'; ','; ' ' |], StringSplitOptions.RemoveEmptyEntries)
     [  
        yield "--simpleresolution"
        yield "--noframework"
