@@ -62,29 +62,6 @@ namespace MonoDevelop.Ide.Editor
 
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
 
-		List<TooltipExtensionNode> allProviders = new List<TooltipExtensionNode> ();
-
-		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
-		{
-			TooltipProvider provider;
-			try {
-				var extensionNode = a.ExtensionNode as TooltipExtensionNode;
-				allProviders.Add (extensionNode);
-				if (extensionNode.IsValidFor (MimeType))
-					return;
-				provider = (TooltipProvider)extensionNode.CreateInstance ();
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't create tooltip provider:" + a.ExtensionNode, e);
-				return;
-			}
-			if (a.Change == ExtensionChange.Add) {
-				textEditorImpl.AddTooltipProvider (provider);
-			} else {
-				textEditorImpl.RemoveTooltipProvider (provider);
-				provider.Dispose ();
-			}
-		}
-
 		public event EventHandler SelectionChanged {
 			add { textEditorImpl.SelectionChanged += value; }
 			remove { textEditorImpl.SelectionChanged -= value; }
@@ -956,13 +933,7 @@ namespace MonoDevelop.Ide.Editor
 				return extensionContext;
 			}
 			set {
-				if (extensionContext != null) {
-					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-					//					textEditorImpl.ClearTooltipProviders ();
-				}
 				extensionContext = value;
-				if (extensionContext != null)
-					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 			}
 		}
 
@@ -982,6 +953,23 @@ namespace MonoDevelop.Ide.Editor
 			get {
 				return textEditorImpl.TextMarkerFactory;
 			}
+		}
+
+		static List<TooltipExtensionNode> allProviders = new List<TooltipExtensionNode> ();
+
+		static TextEditor ()
+		{
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/TooltipProviders", delegate (object sender, ExtensionNodeEventArgs args) {
+				var extNode = (TooltipExtensionNode)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					allProviders.Add (extNode);
+					break;
+				case ExtensionChange.Remove:
+					allProviders.Remove (extNode);
+					break;
+				}
+			});
 		}
 
 		internal TextEditor (ITextEditorImpl textEditorImpl, TextEditorType textEditorType)
@@ -1354,7 +1342,7 @@ namespace MonoDevelop.Ide.Editor
 
 				projectedProviders = new List<ProjectedTooltipProvider> ();
 				foreach (var projection in projections) {
-					foreach (var tp in projection.ProjectedEditor.allProviders) {
+					foreach (var tp in allProviders) {
 						if (!tp.IsValidFor (projection.ProjectedEditor.MimeType))
 							continue;
 						var newProvider = new ProjectedTooltipProvider (projection, (TooltipProvider)tp.CreateInstance ());
