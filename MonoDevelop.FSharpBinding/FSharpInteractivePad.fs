@@ -206,9 +206,13 @@ type FSharpInteractivePad() =
     let mutable session = setupSession()
 
     let getCaretLine() =
-        editor.CaretLine 
-        |> editor.GetLine 
-        |> editor.GetLineText
+        let line = 
+            editor.CaretLine 
+            |> editor.GetLine 
+        if line.Length > 0 then 
+            editor.GetLineText line
+        else
+            ""
 
     let setCaretLine (s: string) =
         let line = editor.GetLineByOffset editor.CaretOffset
@@ -267,13 +271,13 @@ type FSharpInteractivePad() =
             if commandHistoryFuture.Count = 0 then
                 commandHistoryFuture.Push (getCaretLine())
             else
-                if commandHistoryPast.Count = 1 then ()
+                if commandHistoryPast.Count = 0 then ()
                 else commandHistoryFuture.Push (commandHistoryPast.Pop ())
             setCaretLine (commandHistoryPast.Peek ())
 
     member x.ProcessCommandHistoryDown () =
         if commandHistoryFuture.Count > 0 then
-            if commandHistoryFuture.Count = 1 then
+            if commandHistoryFuture.Count = 0 then
                 setCaretLine (commandHistoryFuture.Pop ())
             else
                 commandHistoryPast.Push (commandHistoryFuture.Pop ())
@@ -407,9 +411,6 @@ type FSharpInteractivePad() =
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
     inherit TextEditorExtension()
-    //let promptWidth = 3
-    //let promptStart = "> "
-    //let promptExt = "- "
     let getCaretLine (editor:TextEditor) =
         let line =
             editor.CaretLine
@@ -420,19 +421,13 @@ type FSharpFsiEditorCompletion() =
         else
             "", line
     
-    //let lineStartsWithPrompt (s:string) = s.StartsWith promptStart || s.StartsWith promptExt
-            
     override x.IsValidInContext(context) =
         context :? FsiDocumentContext
 
     override x.KeyPress (descriptor:KeyDescriptor) =
         match FSharpInteractivePad.Fsi with
         | Some fsi -> 
-            //let startLine = x.Editor.CaretLine
             let lineStr, line = getCaretLine x.Editor
-            //let lineHadPrompt = lineStartsWithPrompt lineStr
-            //if lineHadPrompt && x.Editor.CaretColumn < promptWidth then
-            //    x.Editor.CaretColumn <- promptWidth
 
             let result = 
                 match descriptor.SpecialKey with
@@ -444,7 +439,6 @@ type FSharpFsiEditorCompletion() =
                         x.Editor.InsertAtCaret "\n"
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
                             fsi.AddMorePrompt()
-                            //x.Editor.InsertAtCaret promptExt
                     
                     Task.FromResult false
                 | SpecialKey.Up -> 
@@ -465,7 +459,6 @@ type FSharpFsiEditorCompletion() =
                     else
                         Task.FromResult false
                 | SpecialKey.BackSpace ->
-                //| SpecialKey.Delete ->
                     if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 1 then
                         base.KeyPress (descriptor)
                     else
@@ -474,13 +467,6 @@ type FSharpFsiEditorCompletion() =
                     if x.Editor.CaretLine <> x.Editor.LineCount then
                         x.Editor.CaretOffset <- x.Editor.Length
                     base.KeyPress (descriptor)
-
-            //if lineStr.StartsWith promptStart && x.Editor.CaretColumn < promptWidth && x.Editor.CaretLine = startLine  then
-            //    let editedLine, _ = getCaretLine x.Editor
-            //    // Fixes ctrl-w and maybe other keystrokes that remove the prompt
-            //    if lineHadPrompt && not (editedLine.StartsWith promptStart) then
-            //        x.Editor.InsertText (line.Offset, promptStart)
-            //    x.Editor.CaretColumn <- promptWidth
 
             result
         | _ -> base.KeyPress (descriptor)
