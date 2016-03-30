@@ -58,11 +58,97 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix" />
-    <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Security" />
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Versioning">
+      <HintPath>..\..\..\packages\NuGet.Versioning.3.3.0\lib\net45\NuGet.Versioning.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NuGet.LibraryModel">
+      <HintPath>..\..\..\packages\NuGet.LibraryModel.3.3.0\lib\net45\NuGet.LibraryModel.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Frameworks">
+      <HintPath>..\..\..\packages\NuGet.Frameworks.3.3.0\lib\net45\NuGet.Frameworks.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Logging">
+      <HintPath>..\..\..\packages\NuGet.Logging.3.3.0\lib\net45\NuGet.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core.Types">
+      <HintPath>..\..\..\packages\NuGet.Packaging.Core.Types.3.3.0\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core">
+      <HintPath>..\..\..\packages\NuGet.Packaging.Core.3.3.0\lib\net45\NuGet.Packaging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="NuGet.Packaging">
+      <HintPath>..\..\..\packages\NuGet.Packaging.3.3.0\lib\net45\NuGet.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Configuration">
+      <HintPath>..\..\..\packages\NuGet.Configuration.3.3.0\lib\net45\NuGet.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization" />
+    <Reference Include="NuGet.Protocol.Core.Types">
+      <HintPath>..\..\..\packages\NuGet.Protocol.Core.Types.3.3.0\lib\net45\NuGet.Protocol.Core.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="NuGet.Protocol.Core.v3">
+      <HintPath>..\..\..\packages\NuGet.Protocol.Core.v3.3.3.0\lib\net45\NuGet.Protocol.Core.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Concurrent" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="NuGet.Repositories">
+      <HintPath>..\..\..\packages\NuGet.Repositories.3.3.0\lib\net45\NuGet.Repositories.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.RuntimeModel">
+      <HintPath>..\..\..\packages\NuGet.RuntimeModel.3.3.0\lib\net45\NuGet.RuntimeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections" />
+    <Reference Include="NuGet.DependencyResolver.Core">
+      <HintPath>..\..\..\packages\NuGet.DependencyResolver.Core.3.3.0\lib\net45\NuGet.DependencyResolver.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.ProjectModel">
+      <HintPath>..\..\..\packages\NuGet.ProjectModel.3.3.0\lib\net45\NuGet.ProjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.ProjectManagement">
+      <HintPath>..\..\..\packages\NuGet.ProjectManagement.3.3.0\lib\net45\NuGet.ProjectManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="NuGet.ContentModel">
+      <HintPath>..\..\..\packages\NuGet.ContentModel.3.3.0\lib\net45\NuGet.ContentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Client">
+      <HintPath>..\..\..\packages\NuGet.Client.3.3.0\lib\net45\NuGet.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.DependencyResolver">
+      <HintPath>..\..\..\packages\NuGet.DependencyResolver.3.3.0\lib\net45\NuGet.DependencyResolver.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Commands">
+      <HintPath>..\..\..\packages\NuGet.Commands.3.3.0\lib\net45\NuGet.Commands.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\..\..\packages\NuGet.Core.2.10.1\lib\net40-Client\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Protocol.Core.v2">
+      <HintPath>..\..\..\packages\NuGet.Protocol.Core.v2.3.3.0\lib\net45\NuGet.Protocol.Core.v2.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="NuGet.Resolver">
+      <HintPath>..\..\..\packages\NuGet.Resolver.3.3.0\lib\net45\NuGet.Resolver.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.PackageManagement">
+      <HintPath>..\..\..\packages\NuGet.PackageManagement.3.3.0\lib\net45\NuGet.PackageManagement.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -530,5 +616,6 @@
       <Link>NuGet-LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

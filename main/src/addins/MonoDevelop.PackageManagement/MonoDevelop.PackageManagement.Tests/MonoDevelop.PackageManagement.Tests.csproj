@@ -48,13 +48,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.XmlTransform">
-      <HintPath>..\..\..\..\external\nuget-binary\Microsoft.Web.XmlTransform.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\..\..\..\packages\NuGet.Core.2.10.1\lib\net40-Client\NuGet.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -239,5 +239,8 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.PackageManagement.Tests\" />
     <Folder Include="MonoDevelop.PackageManagement.Tests.Helpers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
