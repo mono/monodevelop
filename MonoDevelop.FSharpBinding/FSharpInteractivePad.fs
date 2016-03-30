@@ -3,6 +3,8 @@ namespace MonoDevelop.FSharp
 
 open System
 open System.IO
+open System.Threading.Tasks
+open System.Collections.Generic
 
 open Gdk
 open Mono.TextEditor
@@ -18,8 +20,7 @@ open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Projects
-open System.Threading.Tasks
-open System.Collections.Generic
+
 
 [<AutoOpen>]
 module ColorHelpers =
@@ -101,6 +102,24 @@ type FsiDocumentContext() =
         [<CLIEvent>]
         member x.CompletionContextChanged = contextChanged.Publish
 
+type FsiPrompt(icon: Xwt.Drawing.Image) =
+    inherit MarginMarker()
+
+    override x.CanDrawForeground margin = 
+        margin :? IconMargin
+
+    override x.DrawForeground (editor, cairoContext, metrics) =
+        let size = metrics.Margin.Width
+        let borderLineWidth = cairoContext.LineWidth
+
+        let x = Math.Floor (metrics.Margin.XOffset - borderLineWidth / 2.0)
+        let y = Math.Floor (metrics.Y + (metrics.Height - size) / 2.0)
+
+        let deltaX = size / 2.0 - icon.Width / 2.0 + 0.5
+        let deltaY = size / 2.0 - icon.Height / 2.0 + 0.5
+
+        cairoContext.DrawImage (editor, icon, Math.Round (x + deltaX), Math.Round (y + deltaY));
+    
 type FSharpInteractivePad() =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
@@ -129,6 +148,9 @@ type FSharpInteractivePad() =
     let commandHistoryPast = new Stack<string> ()
     let commandHistoryFuture = new Stack<string> ()
 
+    let promptIcon = ImageService.GetIcon("md-breadcrumb-next")
+    let newLineIcon = ImageService.GetIcon("md-template")
+
     let getCorrectDirectory () =
         if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
             let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
@@ -137,8 +159,17 @@ type FSharpInteractivePad() =
 
     let nonBreakingSpace = "\u00A0" // used to disable editor syntax highlighting for output
 
+    let addMarker image =
+        let data = editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
+        let textDocument = data.Document
+
+        let line = data.GetLine editor.CaretLine
+        let prompt = FsiPrompt image
+        textDocument.AddMarker(line, prompt)
+
     let setPrompt() =
-        editor.InsertAtCaret ("\n> ")
+        editor.InsertAtCaret ("\n")
+        addMarker promptIcon
 
     let fsiOutput t =
         if editor.CaretColumn <> 1 then
@@ -173,23 +204,15 @@ type FSharpInteractivePad() =
         with _exn -> None
 
     let mutable session = setupSession()
-    let prompt = "> "
-    let getLineWithoutPrompt (lineStr:string) =
-        if lineStr.[0..1] = prompt || lineStr.[0..1] = "- " then
-            lineStr.[2..]
-        else
-            lineStr
+
     let getCaretLine() =
-        let lineStr =
-            editor.CaretLine 
-            |> editor.GetLine 
-            |> editor.GetLineText
-        getLineWithoutPrompt lineStr
+        editor.CaretLine 
+        |> editor.GetLine 
+        |> editor.GetLineText
 
-    let setCaretLine s =
+    let setCaretLine (s: string) =
         let line = editor.GetLineByOffset editor.CaretOffset
-        editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, prompt + s)
-
+        editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
     
     let resetFsi intent =
         killIntent <- intent
@@ -199,12 +222,16 @@ type FSharpInteractivePad() =
     member x.Text =
         editor.Text
 
+    member x.AddMorePrompt() =
+        addMarker newLineIcon
+
     member x.SendAndEchoText s = 
         editor.CaretOffset <- editor.Length
         let lines = String.getLines s
         editor.InsertAtCaret (lines.[0] + "\n") 
         for line in lines.[1..] do
-            editor.InsertAtCaret ("- " + line + "\n")
+            addMarker newLineIcon
+            editor.InsertAtCaret (line + "\n")
             commandHistoryPast.Push line
         x.SendCommand (s + "\n") 
         editor.ScrollTo editor.CaretLocation
@@ -342,8 +369,6 @@ type FSharpInteractivePad() =
         getCorrectDirectory()
             |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
 
-        x.SendCommand ";;"
-
         orderedreferences
         |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path ))
 
@@ -382,9 +407,9 @@ type FSharpInteractivePad() =
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
     inherit TextEditorExtension()
-    let promptWidth = 3
-    let promptStart = "> "
-    let promptExt = "- "
+    //let promptWidth = 3
+    //let promptStart = "> "
+    //let promptExt = "- "
     let getCaretLine (editor:TextEditor) =
         let line =
             editor.CaretLine
@@ -395,34 +420,31 @@ type FSharpFsiEditorCompletion() =
         else
             "", line
     
-    let lineStartsWithPrompt (s:string) = s.StartsWith promptStart || s.StartsWith promptExt
+    //let lineStartsWithPrompt (s:string) = s.StartsWith promptStart || s.StartsWith promptExt
             
     override x.IsValidInContext(context) =
         context :? FsiDocumentContext
 
-    /// hacks to work with fake prompt
     override x.KeyPress (descriptor:KeyDescriptor) =
         match FSharpInteractivePad.Fsi with
         | Some fsi -> 
-            let startLine = x.Editor.CaretLine
+            //let startLine = x.Editor.CaretLine
             let lineStr, line = getCaretLine x.Editor
-            let lineHadPrompt = lineStartsWithPrompt lineStr
-            if lineHadPrompt && x.Editor.CaretColumn < promptWidth then
-                x.Editor.CaretColumn <- promptWidth
+            //let lineHadPrompt = lineStartsWithPrompt lineStr
+            //if lineHadPrompt && x.Editor.CaretColumn < promptWidth then
+            //    x.Editor.CaretColumn <- promptWidth
 
             let result = 
                 match descriptor.SpecialKey with
                 | SpecialKey.Return -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
-                        if lineStartsWithPrompt lineStr then
-                            fsi.SendCommandAndStore lineStr.[2..]
-                        else
-                            fsi.SendCommandAndStore lineStr
+                        fsi.SendCommandAndStore lineStr
                               
                         x.Editor.CaretOffset <- line.EndOffset
                         x.Editor.InsertAtCaret "\n"
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
-                            x.Editor.InsertAtCaret promptExt
+                            fsi.AddMorePrompt()
+                            //x.Editor.InsertAtCaret promptExt
                     
                     Task.FromResult false
                 | SpecialKey.Up -> 
@@ -438,13 +460,13 @@ type FSharpFsiEditorCompletion() =
                     else
                         base.KeyPress (descriptor)
                 | SpecialKey.Left ->
-                    if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > promptWidth then
+                    if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > 1 then
                         base.KeyPress (descriptor)
                     else
                         Task.FromResult false
-                | SpecialKey.BackSpace
-                | SpecialKey.Delete ->
-                    if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > promptWidth then
+                | SpecialKey.BackSpace ->
+                //| SpecialKey.Delete ->
+                    if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 1 then
                         base.KeyPress (descriptor)
                     else
                         Task.FromResult false
@@ -453,12 +475,12 @@ type FSharpFsiEditorCompletion() =
                         x.Editor.CaretOffset <- x.Editor.Length
                     base.KeyPress (descriptor)
 
-            if lineStr.StartsWith promptStart && x.Editor.CaretColumn < promptWidth && x.Editor.CaretLine = startLine  then
-                let editedLine, _ = getCaretLine x.Editor
-                // Fixes ctrl-w and maybe other keystrokes that remove the prompt
-                if lineHadPrompt && not (editedLine.StartsWith promptStart) then
-                    x.Editor.InsertText (line.Offset, promptStart)
-                x.Editor.CaretColumn <- promptWidth
+            //if lineStr.StartsWith promptStart && x.Editor.CaretColumn < promptWidth && x.Editor.CaretLine = startLine  then
+            //    let editedLine, _ = getCaretLine x.Editor
+            //    // Fixes ctrl-w and maybe other keystrokes that remove the prompt
+            //    if lineHadPrompt && not (editedLine.StartsWith promptStart) then
+            //        x.Editor.InsertText (line.Offset, promptStart)
+            //    x.Editor.CaretColumn <- promptWidth
 
             result
         | _ -> base.KeyPress (descriptor)

@@ -205,6 +205,9 @@
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MonoDevelop.SourceEditor">
+      <HintPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor\MonoDevelop.SourceEditor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
