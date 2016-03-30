@@ -374,12 +374,6 @@ namespace MonoDevelop.Projects.MSBuild
 				builder = null;
 			}
 		}
-		
-		~RemoteProjectBuilder ()
-		{
-			// Using the logging service when shutting down MD can cause exceptions
-			Console.WriteLine ("RemoteProjectBuilder not disposed");
-		}
 
 		void BeginOperation ()
 		{
