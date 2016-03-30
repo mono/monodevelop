@@ -109,19 +109,11 @@ type InteractiveSession() =
     member x.PromptReady = promptReady.Publish
 
     member x.Kill() =
-        if not fsiProcess.HasExited then
-            sendCommand "#q"
-            for i in 0 .. 10 do
-                if not fsiProcess.HasExited then
-                    LoggingService.logDebug "Interactive: waiting for process exit after #q... %d" (i*200)
-                    fsiProcess.WaitForExit(200) |> ignore
-
-        if not fsiProcess.HasExited then
-            fsiProcess.Kill()
-            for i in 0 .. 10 do
-                if not fsiProcess.HasExited then
-                    LoggingService.logDebug "Interactive: waiting for process exit after kill... %d" (i*200)
-                    fsiProcess.WaitForExit(200) |> ignore
+        fsiProcess.Kill()
+        for i in 0 .. 10 do
+            if not fsiProcess.HasExited then
+                LoggingService.logDebug "Interactive: waiting for process exit after kill... %d" (i*200)
+                fsiProcess.WaitForExit(200) |> ignore
 
         if not fsiProcess.HasExited then
             LoggingService.logWarning "Interactive: failed to get process exit after kill"
