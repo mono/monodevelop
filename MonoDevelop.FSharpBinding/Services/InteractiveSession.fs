@@ -32,7 +32,7 @@ type InteractiveSession() =
         else
             None
 
-    let path = Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe")
+    let path = "\"" + Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe") + "\""
     let mutable waitingForResponse = false
 
     let fsiProcess =
