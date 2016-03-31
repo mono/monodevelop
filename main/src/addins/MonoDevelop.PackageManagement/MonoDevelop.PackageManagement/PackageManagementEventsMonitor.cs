@@ -193,10 +193,20 @@ namespace MonoDevelop.PackageManagement
 		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex)
 		{
 			LoggingService.LogError (progressMessage.Error, ex);
-			progressMonitor.Log.WriteLine (ex.Message);
+			progressMonitor.Log.WriteLine (GetErrorMessageForPackageConsole (ex));
 			progressMonitor.ReportError (progressMessage.Error, null);
 			ShowPackageConsole (progressMonitor);
 			packageManagementEvents.OnPackageOperationError (ex);
+		}
+
+		static string GetErrorMessageForPackageConsole (Exception ex)
+		{
+			var aggregateEx = ex as AggregateException;
+			if (aggregateEx != null) {
+				var message = new AggregateExceptionErrorMessage (aggregateEx);
+				return message.ToString ();
+			}
+			return ex.Message;
 		}
 
 		protected virtual void ShowPackageConsole (ProgressMonitor progressMonitor)

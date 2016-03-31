@@ -31,6 +31,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement.UI;
 using NuGet.ProjectManagement;
@@ -48,12 +50,20 @@ namespace MonoDevelop.PackageManagement
 		int currentIndex;
 		bool includePrerelease;
 		bool ignorePackageCheckedChanged;
+		MonoDevelopSolutionManager solutionManager;
+		NuGetProject project;
+		NuGetProjectContext projectContext;
 
 		public AllPackagesViewModel ()
 		{
 			PackageViewModels = new ObservableCollection<PackageSearchResultViewModel> ();
 			CheckedPackageViewModels = new ObservableCollection<PackageSearchResultViewModel> ();
 			ErrorMessage = String.Empty;
+
+			solutionManager = new MonoDevelopSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			projectContext = new NuGetProjectContext ();
+			var dotNetProject = (DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject;
+			project = new MonoDevelopNuGetProjectFactory ().CreateNuGetProject (dotNetProject, projectContext);
 		}
 
 		public string SearchTerms { get; set; }
@@ -336,6 +346,19 @@ namespace MonoDevelop.PackageManagement
 				CheckedPackageViewModels.Remove (existingPackageViewModel);
 				existingPackageViewModel.IsChecked = false;
 			}
+		}
+
+		public IPackageAction CreateInstallPackageAction (PackageSearchResultViewModel packageViewModel)
+		{
+			return new InstallNuGetPackageAction (
+				SelectedPackageSource.SourceRepository,
+				solutionManager,
+				project
+			) {
+				IncludePrerelease = IncludePrerelease,
+				PackageId = packageViewModel.Id,
+				Version = packageViewModel.Version
+			};
 		}
 	}
 }

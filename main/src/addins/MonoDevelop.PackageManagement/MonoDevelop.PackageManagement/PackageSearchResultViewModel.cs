@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
 using NuGet.PackageManagement.UI;
 using NuGet.Versioning;
 

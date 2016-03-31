@@ -490,6 +490,16 @@
     <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryViewModel.cs" />
     <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV2Provider.cs" />
     <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV3Provider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\InstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopSolutionManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DeleteOnRestartManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetProjectContext.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCommonOperations.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetProjectFactory.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\ProjectJsonPathUtilties.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\BuildIntegrationProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

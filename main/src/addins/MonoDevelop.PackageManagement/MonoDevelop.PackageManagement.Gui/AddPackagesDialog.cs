@@ -514,7 +514,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			List<PackageSearchResultViewModel> packageViewModels = GetSelectedPackageViewModels ();
 			if (packageViewModels.Count > 0) {
-				//return CreateInstallPackageActions (packageViewModels);
+				return CreateInstallPackageActions (packageViewModels);
 			}
 			return new List<IPackageAction> ();
 		}
@@ -522,7 +522,7 @@ namespace MonoDevelop.PackageManagement
 		ProgressMonitorStatusMessage GetProgressMonitorStatusMessages (List<IPackageAction> packageActions)
 		{
 			if (packageActions.Count == 1) {
-				string packageId = packageActions.OfType<ProcessPackageAction> ().First ().Package.Id;
+				string packageId = packageActions.OfType<INuGetPackageAction> ().First ().PackageId;
 				if (OlderPackageInstalledThanPackageSelected ()) {
 					return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageId);
 				}
@@ -547,8 +547,7 @@ namespace MonoDevelop.PackageManagement
 
 		List<IPackageAction> CreateInstallPackageActions (IEnumerable<PackageSearchResultViewModel> packageViewModels)
 		{
-			return new List<IPackageAction> ();
-			//return packageViewModels.Select (viewModel => viewModel.CreateInstallPackageAction ()).ToList ();
+			return packageViewModels.Select (packageViewModel => viewModel.CreateInstallPackageAction (packageViewModel)).ToList ();
 		}
 
 		void PackageSearchEntryChanged (object sender, EventArgs e)
@@ -594,8 +593,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			try {
 				if (packageViewModel != null) {
-					//List<IPackageAction> packageActions = CreateInstallPackageActions (new PackageViewModel [] { packageViewModel });
-					//InstallPackages (packageActions);
+					List<IPackageAction> packageActions = CreateInstallPackageActions (
+						new PackageSearchResultViewModel [] { packageViewModel });
+					InstallPackages (packageActions);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Installing package failed.", ex);
