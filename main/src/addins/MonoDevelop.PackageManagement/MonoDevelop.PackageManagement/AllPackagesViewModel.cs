@@ -140,7 +140,7 @@ namespace MonoDevelop.PackageManagement
 
 			HasNextPage = false;
 			IsLoadingNextPage = false;
-			//currentIndex = 0;
+			currentIndex = 0;
 			StartReadPackagesTask ();
 		}
 
