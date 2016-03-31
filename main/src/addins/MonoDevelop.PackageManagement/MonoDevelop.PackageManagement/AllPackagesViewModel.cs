@@ -79,7 +79,9 @@ namespace MonoDevelop.PackageManagement
 		public SourceRepositoryViewModel SelectedPackageSource {
 			get {
 				if (selectedPackageSource == null) {
-					selectedPackageSource = packageSources.FirstOrDefault ();
+					if (packageSources != null) {
+						selectedPackageSource = packageSources.FirstOrDefault ();
+					}
 				}
 				return selectedPackageSource;
 			}
