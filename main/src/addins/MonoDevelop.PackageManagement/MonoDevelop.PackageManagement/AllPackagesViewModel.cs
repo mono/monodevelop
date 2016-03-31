@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Configuration;
 using NuGet.PackageManagement.UI;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
@@ -40,6 +41,7 @@ namespace MonoDevelop.PackageManagement
 	internal class AllPackagesViewModel : ViewModelBase<AllPackagesViewModel>
 	{
 		SourceRepositoryViewModel selectedPackageSource;
+		IPackageSourceProvider packageSourceProvider;
 		PackageLoader currentLoader;
 		CancellationTokenSource cancellationTokenSource;
 		List<SourceRepositoryViewModel> packageSources;
@@ -71,6 +73,7 @@ namespace MonoDevelop.PackageManagement
 			//	yield return RegisteredPackageSourceSettings.AggregatePackageSource;
 			//}
 			ISourceRepositoryProvider provider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			packageSourceProvider = provider.PackageSourceProvider;
 			foreach (SourceRepository repository in provider.GetRepositories ()) {
 				yield return new SourceRepositoryViewModel (repository);
 			}
@@ -79,19 +82,42 @@ namespace MonoDevelop.PackageManagement
 		public SourceRepositoryViewModel SelectedPackageSource {
 			get {
 				if (selectedPackageSource == null) {
-					if (packageSources != null) {
-						selectedPackageSource = packageSources.FirstOrDefault ();
-					}
+					selectedPackageSource = GetActivePackageSource ();
 				}
 				return selectedPackageSource;
 			}
 			set {
 				if (selectedPackageSource != value) {
 					selectedPackageSource = value;
+					SaveActivePackageSource ();
 					ReadPackages ();
 					OnPropertyChanged (null);
 				}
 			}
+		}
+
+		SourceRepositoryViewModel GetActivePackageSource ()
+		{
+			if (packageSources == null)
+				return null;
+
+			if (!String.IsNullOrEmpty (packageSourceProvider.ActivePackageSourceName)) {
+				SourceRepositoryViewModel packageSource = packageSources
+					.FirstOrDefault (viewModel => String.Equals (viewModel.Name, packageSourceProvider.ActivePackageSourceName, StringComparison.CurrentCultureIgnoreCase));
+				if (packageSource != null) {
+					return packageSource;
+				}
+			}
+
+			return packageSources.FirstOrDefault ();
+		}
+
+		void SaveActivePackageSource ()
+		{
+			if (selectedPackageSource == null || packageSourceProvider == null)
+				return;
+
+			packageSourceProvider.SaveActivePackageSource (selectedPackageSource.SourceRepository.PackageSource);
 		}
 
 		public ObservableCollection<PackageSearchResultViewModel> PackageViewModels { get; private set; }
