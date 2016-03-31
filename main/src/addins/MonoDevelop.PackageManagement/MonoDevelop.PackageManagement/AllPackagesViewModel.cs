@@ -180,7 +180,7 @@ namespace MonoDevelop.PackageManagement
 			currentLoader = loader;
 			cancellationTokenSource = new CancellationTokenSource ();
 			loader.LoadItemsAsync (currentIndex, cancellationTokenSource.Token)
-				.ContinueWith (t => OnPackagesRead (t, loader));
+				.ContinueWith (t => OnPackagesRead (t, loader), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
 		void ClearError ()
