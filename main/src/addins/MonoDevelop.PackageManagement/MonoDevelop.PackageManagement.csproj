@@ -488,6 +488,8 @@
     <Compile Include="NuGet.PackageManagement.UI\DisplayVersion.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryViewModel.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV2Provider.cs" />
+    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV3Provider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
