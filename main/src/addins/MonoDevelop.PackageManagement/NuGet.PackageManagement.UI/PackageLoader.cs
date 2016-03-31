@@ -649,6 +649,10 @@ namespace NuGet.PackageManagement.UI
 				searchResultPackage.IconUrl = package.IconUrl;
 				searchResultPackage.Author = package.Author;
 				searchResultPackage.DownloadCount = package.DownloadCount;
+				searchResultPackage.Title = package.Title;
+				searchResultPackage.LicenseUrl = package.LatestPackageMetadata?.LicenseUrl;
+				searchResultPackage.ProjectUrl = package.LatestPackageMetadata?.ProjectUrl;
+				searchResultPackage.Published = package.LatestPackageMetadata?.Published;
 				/*
 				if (!_isSolution && _installedPackageIds.Contains(searchResultPackage.Id))
 				{

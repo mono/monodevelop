@@ -50,6 +50,7 @@ namespace MonoDevelop.PackageManagement
 		LinkLabel packageLicenseLink;
 		LinkLabel packageProjectPageLink;
 		Label packageDependenciesList;
+		HBox packageDependenciesHBox;
 		HBox packageDependenciesListHBox;
 		Label packageDependenciesNoneLabel;
 		CheckBox showPrereleaseCheckBox;
@@ -297,7 +298,7 @@ namespace MonoDevelop.PackageManagement
 			packageProjectPageHBox.PackEnd (packageProjectPageLink);
 
 			// Package dependencies
-			var packageDependenciesHBox = new HBox ();
+			packageDependenciesHBox = new HBox ();
 			packageInfoVBox.PackStart (packageDependenciesHBox);
 
 			var packageDependenciesLabel = new Label ();

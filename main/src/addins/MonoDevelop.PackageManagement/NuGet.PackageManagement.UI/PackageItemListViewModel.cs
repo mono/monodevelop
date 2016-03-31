@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
+using NuGet.Packaging;
 using NuGet.Protocol.VisualStudio;
 using NuGet.Versioning;
 
@@ -279,5 +280,10 @@ namespace NuGet.PackageManagement.UI
 		{
 			return Id;
 		}
+
+		public string Title { get; set; }
+		public Uri LicenseUrl { get; set; }
+		public Uri ProjectUrl { get; set; }
+		public DateTimeOffset? Published { get; set; }
 	}
 }

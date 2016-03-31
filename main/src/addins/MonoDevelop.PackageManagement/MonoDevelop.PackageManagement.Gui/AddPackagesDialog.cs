@@ -307,7 +307,7 @@ namespace MonoDevelop.PackageManagement
 			this.packageNameLabel.Markup = packageViewModel.GetNameMarkup ();
 			this.packageVersionLabel.Text = packageViewModel.Version.ToString ();
 			this.packageAuthor.Text = packageViewModel.Author;
-			//this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
+			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
 			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
 			this.packageDescription.Text = packageViewModel.Summary;
 			this.packageId.Text = packageViewModel.Id;
@@ -315,6 +315,7 @@ namespace MonoDevelop.PackageManagement
 			ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);
 			ShowUri (this.packageProjectPageLink, packageViewModel.ProjectUrl);
 			ShowUri (this.packageLicenseLink, packageViewModel.LicenseUrl);
+			this.packageDependenciesHBox.Visible = false;
 			//this.packageDependenciesListHBox.Visible = packageViewModel.HasDependencies;
 			//this.packageDependenciesNoneLabel.Visible = !packageViewModel.HasDependencies;
 			//this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();

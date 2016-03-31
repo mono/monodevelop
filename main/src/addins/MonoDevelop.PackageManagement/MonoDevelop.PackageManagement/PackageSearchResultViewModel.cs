@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using NuGet.PackageManagement.UI;
 using NuGet.Versioning;
 
@@ -52,9 +53,17 @@ namespace MonoDevelop.PackageManagement
 			get { return viewModel.Version; }
 		}
 
-		// TODO: This should return package Title if it is available.
+		public string Title {
+			get { return viewModel.Title; }
+		}
+
 		public string Name {
-			get { return Id; }
+			get {
+				if (String.IsNullOrEmpty (Title))
+					return Id;
+
+				return Title;
+			}
 		}
 
 		public bool IsChecked {
@@ -72,8 +81,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public Uri LicenseUrl {
-			get { return null; }
-		//	get { return viewModel.LicenseUrl; }
+			get { return viewModel.LicenseUrl; }
 		}
 
 		public bool HasProjectUrl {
@@ -81,8 +89,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public Uri ProjectUrl {
-			get { return null; }
-		//	get { return viewModel.ProjectUrl; }
+			get { return viewModel.ProjectUrl; }
 		}
 
 		public bool HasGalleryUrl {
@@ -115,7 +122,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public bool HasDownloadCount {
-			get { return viewModel.DownloadCount.HasValue; }
+			get { return viewModel.DownloadCount >= 0; }
 		}
 
 		public string GetNameMarkup ()
@@ -146,6 +153,22 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public bool ShowVersionInsteadOfDownloadCount { get; set; }
+
+		public DateTimeOffset? LastPublished {
+			get { return viewModel.Published; }
+		}
+
+		public bool HasLastPublished {
+			get { return viewModel.Published.HasValue; }
+		}
+
+		public string GetLastPublishedDisplayText()
+		{
+			if (HasLastPublished) {
+				return LastPublished.Value.Date.ToShortDateString ();
+			}
+			return String.Empty;
+		}
 	}
 }
 
