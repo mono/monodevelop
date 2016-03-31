@@ -31,16 +31,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
-using NuGet.Configuration;
 using NuGet.PackageManagement.UI;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class AllPackagesViewModel : ViewModelBase<AllPackagesViewModel>
 	{
+		SourceRepositoryViewModel selectedPackageSource;
 		PackageLoader currentLoader;
 		CancellationTokenSource cancellationTokenSource;
+		List<SourceRepositoryViewModel> packageSources;
 		int currentIndex;
 		bool includePrerelease;
 		bool ignorePackageCheckedChanged;
@@ -54,22 +56,36 @@ namespace MonoDevelop.PackageManagement
 
 		public string SearchTerms { get; set; }
 
-		public IEnumerable<NuGet.PackageSource> PackageSources {
+		public IEnumerable<SourceRepositoryViewModel> PackageSources {
 			get {
-				//if (PackageManagementServices.RegisteredPackageRepositories.PackageSources.HasMultipleEnabledPackageSources) {
-				//	yield return RegisteredPackageSourceSettings.AggregatePackageSource;
-				//}
-				foreach (NuGet.PackageSource packageSource in PackageManagementServices.RegisteredPackageRepositories.PackageSources.GetEnabledPackageSources()) {
-					yield return packageSource;
+				if (packageSources == null) {
+					packageSources = GetPackageSources ().ToList ();
 				}
+				return packageSources;
 			}
 		}
 
-		public NuGet.PackageSource SelectedPackageSource {
-			get { return PackageManagementServices.RegisteredPackageRepositories.ActivePackageSource; }
+		IEnumerable<SourceRepositoryViewModel> GetPackageSources ()
+		{
+			//if (PackageManagementServices.RegisteredPackageRepositories.PackageSources.HasMultipleEnabledPackageSources) {
+			//	yield return RegisteredPackageSourceSettings.AggregatePackageSource;
+			//}
+			ISourceRepositoryProvider provider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			foreach (SourceRepository repository in provider.GetRepositories ()) {
+				yield return new SourceRepositoryViewModel (repository);
+			}
+		}
+
+		public SourceRepositoryViewModel SelectedPackageSource {
+			get {
+				if (selectedPackageSource == null) {
+					selectedPackageSource = packageSources.FirstOrDefault ();
+				}
+				return selectedPackageSource;
+			}
 			set {
-				if (PackageManagementServices.RegisteredPackageRepositories.ActivePackageSource != value) {
-					PackageManagementServices.RegisteredPackageRepositories.ActivePackageSource = value;
+				if (selectedPackageSource != value) {
+					selectedPackageSource = value;
 					ReadPackages ();
 					OnPropertyChanged (null);
 				}
@@ -110,7 +126,7 @@ namespace MonoDevelop.PackageManagement
 
 		public bool IsDisposed { get; private set; }
 
-		public void Search()
+		public void Search ()
 		{
 			ReadPackages ();
 			OnPropertyChanged (null);
@@ -124,7 +140,7 @@ namespace MonoDevelop.PackageManagement
 
 			HasNextPage = false;
 			IsLoadingNextPage = false;
-			//UpdateRepositoryBeforeReadPackagesTaskStarts ();
+			//currentIndex = 0;
 			StartReadPackagesTask ();
 		}
 
@@ -150,17 +166,13 @@ namespace MonoDevelop.PackageManagement
 
 		void CreateReadPackagesTask()
 		{
-			var repositories = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
-			var all = repositories.GetRepositories ().ToList ();
-
-			var repo = all[0];
 			var option = new PackageLoaderOption (IncludePrerelease, Pages.DefaultPageSize);
 			var loader = new PackageLoader (
 				option,
 				false,
 				null,
 				new NuGetProject [0],
-				repo,
+				selectedPackageSource.SourceRepository,
 				SearchTerms
 			);
 			currentLoader = loader;

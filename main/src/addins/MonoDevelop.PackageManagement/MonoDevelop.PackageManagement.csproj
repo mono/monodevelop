@@ -487,6 +487,7 @@
     <Compile Include="NuGet.Protocol.VisualStudio\JObjectExtensions.cs" />
     <Compile Include="NuGet.PackageManagement.UI\DisplayVersion.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

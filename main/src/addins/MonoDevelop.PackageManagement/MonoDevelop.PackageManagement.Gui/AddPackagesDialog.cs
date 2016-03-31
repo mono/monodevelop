@@ -44,7 +44,7 @@ namespace MonoDevelop.PackageManagement
 		IBackgroundPackageActionRunner backgroundActionRunner;
 		IRecentPackageRepository recentPackageRepository;
 		AllPackagesViewModel viewModel;
-		List<PackageSource> packageSources;
+		List<SourceRepositoryViewModel> packageSources;
 		DataField<bool> packageHasBackgroundColorField = new DataField<bool> ();
 		DataField<PackageSearchResultViewModel> packageViewModelField = new DataField<PackageSearchResultViewModel> ();
 		DataField<Image> packageImageField = new DataField<Image> ();
@@ -54,8 +54,8 @@ namespace MonoDevelop.PackageManagement
 		PackageCellView packageCellView;
 		TimeSpan searchDelayTimeSpan = TimeSpan.FromMilliseconds (500);
 		IDisposable searchTimer;
-		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
-			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
+		SourceRepositoryViewModel dummyPackageSourceRepresentingConfigureSettingsItem =
+			new SourceRepositoryViewModel (Catalog.GetString ("Configure Sources..."));
 		ImageLoader imageLoader = new ImageLoader ();
 		bool loadingMessageVisible;
 		const string IncludePrereleaseUserPreferenceName = "NuGet.AddPackagesDialog.IncludePrerelease";
@@ -237,7 +237,7 @@ namespace MonoDevelop.PackageManagement
 			this.packageInfoVBox.Visible = false;
 		}
 
-		List<PackageSource> PackageSources {
+		List<SourceRepositoryViewModel> PackageSources {
 			get {
 				if (packageSources == null) {
 					packageSources = viewModel.PackageSources.ToList ();
@@ -248,7 +248,7 @@ namespace MonoDevelop.PackageManagement
 
 		void PopulatePackageSources ()
 		{
-			foreach (PackageSource packageSource in PackageSources) {
+			foreach (SourceRepositoryViewModel packageSource in PackageSources) {
 				AddPackageSourceToComboBox (packageSource);
 			}
 
@@ -257,22 +257,14 @@ namespace MonoDevelop.PackageManagement
 			packageSourceComboBox.SelectedItem = viewModel.SelectedPackageSource;
 		}
 
-		void AddPackageSourceToComboBox (PackageSource packageSource)
+		void AddPackageSourceToComboBox (SourceRepositoryViewModel packageSource)
 		{
-			packageSourceComboBox.Items.Add (packageSource, GetPackageSourceName (packageSource));
-		}
-
-		string GetPackageSourceName (PackageSource packageSource)
-		{
-			if (packageSource.IsAggregate ()) {
-				return Catalog.GetString ("All Sources");
-			}
-			return packageSource.Name;
+			packageSourceComboBox.Items.Add (packageSource, packageSource.Name);
 		}
 
 		void PackageSourceChanged (object sender, EventArgs e)
 		{
-			var selectedPackageSource = (PackageSource)packageSourceComboBox.SelectedItem;
+			var selectedPackageSource = (SourceRepositoryViewModel)packageSourceComboBox.SelectedItem;
 			if (selectedPackageSource == dummyPackageSourceRepresentingConfigureSettingsItem) {
 				ShowPreferencesForPackageSources = true;
 				Close ();
