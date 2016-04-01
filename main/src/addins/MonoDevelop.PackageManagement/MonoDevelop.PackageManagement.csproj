@@ -504,6 +504,9 @@
     <Compile Include="MonoDevelop.PackageManagement\UpdateNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateAllNuGetPackagesInProjectAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateAllNuGetPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInProjectAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreAndCheckForUpdatesAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

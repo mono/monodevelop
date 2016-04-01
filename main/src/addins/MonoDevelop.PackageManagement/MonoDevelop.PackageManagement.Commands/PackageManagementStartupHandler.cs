@@ -26,6 +26,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -37,26 +38,31 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
+			ClearUpdatedPackagesInSolution ();
 			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
 			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 			IdeApp.Workspace.ItemUnloading += WorkspaceItemUnloading;
 		}
 
-		void SolutionLoaded (object sender, SolutionEventArgs e)
+		async void SolutionLoaded (object sender, SolutionEventArgs e)
 		{
-			ClearUpdatedPackagesInSolution ();
+			try {
+				ClearUpdatedPackagesInSolution ();
 
-			if (ShouldRestorePackages) {
-				RestoreAndCheckForUpdates (e.Solution);
-			} else if (ShouldCheckForUpdates && AnyProjectHasPackages (e.Solution)) {
-				// Use background dispatch even though the check is not done on the
-				// background dispatcher thread so that the solution load completes before
-				// the check for updates starts. Otherwise the check for updates finishes
-				// before the solution loads and the status bar never reports that
-				// package updates were being checked.
-				PackageManagementBackgroundDispatcher.Dispatch (() => {
-					CheckForUpdates ();
-				});
+				if (ShouldRestorePackages) {
+					await RestoreAndCheckForUpdates (e.Solution);
+				} else if (ShouldCheckForUpdates && AnyProjectHasPackages (e.Solution)) {
+					// Use background dispatch even though the check is not done on the
+					// background dispatcher thread so that the solution load completes before
+					// the check for updates starts. Otherwise the check for updates finishes
+					// before the solution loads and the status bar never reports that
+					// package updates were being checked.
+					PackageManagementBackgroundDispatcher.Dispatch (() => {
+						CheckForUpdates ();
+					});
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("PackageManagementStartupHandler error", ex);
 			}
 		}
 
@@ -78,19 +84,20 @@ namespace MonoDevelop.PackageManagement.Commands
 			ClearUpdatedPackagesInSolution ();
 		}
 
-		void RestoreAndCheckForUpdates (Solution solution)
+		async Task RestoreAndCheckForUpdates (Solution solution)
 		{
 			bool checkUpdatesAfterRestore = ShouldCheckForUpdates && AnyProjectHasPackages (solution);
 
-			var packageManagementSolution = new PackageManagementSolution (new PackageManagementSolutionProjectService (solution));
-			var restorer = new PackageRestorer (packageManagementSolution);
-			PackageManagementBackgroundDispatcher.Dispatch (() => {
-				restorer.Restore ();
-				if (checkUpdatesAfterRestore && !restorer.RestoreFailed) {
-					CheckForUpdates ();
-				}
-				restorer = null;
-			});
+			var action = new RestoreAndCheckForUpdatesAction (solution) {
+				CheckForUpdatesAfterRestore = checkUpdatesAfterRestore
+			};
+			bool packagesToRestore = await action.HasMissingPackages ();
+			if (packagesToRestore) {
+				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
+				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+			} else if (checkUpdatesAfterRestore) {
+				CheckForUpdates ();
+			}
 		}
 
 		bool AnyProjectHasPackages (Solution solution)
