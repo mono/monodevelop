@@ -39,6 +39,11 @@ namespace MonoDevelop.PackageManagement
 		Solution solution;
 		List<NuGetProject> projects;
 
+		public MonoDevelopSolutionManager (ISolution solution)
+			: this (solution.Solution)
+		{
+		}
+
 		public MonoDevelopSolutionManager (Solution solution)
 		{
 			this.solution = solution;

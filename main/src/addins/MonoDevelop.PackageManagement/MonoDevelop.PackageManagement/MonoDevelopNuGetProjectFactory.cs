@@ -43,9 +43,19 @@ namespace MonoDevelop.PackageManagement
 			settings = Settings.LoadDefaultSettings (null, null, null);
 		}
 
+		public NuGetProject CreateNuGetProject (IDotNetProject project)
+		{
+			return CreateNuGetProject (project.DotNetProject);
+		}
+
 		public NuGetProject CreateNuGetProject (DotNetProject project)
 		{
 			return CreateNuGetProject (project, new EmptyNuGetProjectContext ());
+		}
+
+		public NuGetProject CreateNuGetProject (IDotNetProject project, INuGetProjectContext context)
+		{
+			return CreateNuGetProject (project.DotNetProject, context);
 		}
 
 		public NuGetProject CreateNuGetProject (DotNetProject project, INuGetProjectContext context)
