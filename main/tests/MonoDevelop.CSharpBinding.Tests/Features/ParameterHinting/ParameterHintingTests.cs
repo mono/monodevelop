@@ -1246,7 +1246,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual (2, provider.Count);
 		}
 
 		/// <summary>
@@ -1322,6 +1322,45 @@ class TestClass
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.Count);
 			Assert.AreEqual ("M:TestClass.SS(System.String)", provider[0].Symbol.GetDocumentationCommentId ());
+		}
+
+		/// <summary>
+		/// Bug 40018 - Autocomplete shows different list before and after typing "("
+		/// </summary>
+		[Test]
+		public void TestBug40018 ()
+		{
+			var provider = CreateProvider (
+				@"
+namespace Test40018
+{
+    static class ExtMethods
+    {
+        public static void Foo(this MyClass c, int i)
+        {
+
+        }
+    }
+	
+    class MyClass
+    {
+        public void Foo(string str)
+        {
+        }
+
+        public void Foo()
+        {
+        }
+
+        public void Test()
+        {
+            this.Foo($$);
+        }
+    }
+}				
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (3, provider.Count);
 		}
 	}
 }
