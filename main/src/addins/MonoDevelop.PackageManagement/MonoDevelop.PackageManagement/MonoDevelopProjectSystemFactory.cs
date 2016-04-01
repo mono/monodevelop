@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MonoDevelopProjectSystemFactory : IMonoDevelopProjectSystemFactory
+	internal class MonoDevelopProjectSystemFactory : IMonoDevelopProjectSystemFactory
 	{
 		public IProjectSystem CreateProjectSystem(DotNetProject project)
 		{

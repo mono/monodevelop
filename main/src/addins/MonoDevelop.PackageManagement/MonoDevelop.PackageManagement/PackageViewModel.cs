@@ -36,7 +36,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageViewModel : ViewModelBase<PackageViewModel>
+	internal class PackageViewModel : ViewModelBase<PackageViewModel>
 	{
 		DelegateCommand addPackageCommand;
 		DelegateCommand removePackageCommand;

@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ISolution
+	internal interface ISolution
 	{
 		Solution Solution { get; }
 

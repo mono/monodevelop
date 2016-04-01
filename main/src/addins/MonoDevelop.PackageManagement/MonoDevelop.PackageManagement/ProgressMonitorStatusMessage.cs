@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProgressMonitorStatusMessage
+	internal class ProgressMonitorStatusMessage
 	{
 		string success;
 		string error;

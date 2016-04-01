@@ -153,17 +153,28 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 		
-		public async Task PerformChangesAsync (ISymbol symbol, RenameProperties properties)
+		public async Task<List<Change>> PerformChangesAsync (ISymbol symbol, RenameProperties properties)
 		{
 			var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			var ws = TypeSystemService.GetWorkspace (solution);
 
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
-
-			ws.TryApplyChanges (newSolution);
-
-
 			var changes = new List<Change> ();
+
+			foreach (var projectChange in newSolution.GetChanges (ws.CurrentSolution).GetProjectChanges ()) {
+				foreach (var changedDoc in projectChange.GetChangedDocuments ()) {
+					var newDoc = newSolution.GetDocument (changedDoc);
+					foreach (var textChange in await newDoc.GetTextChangesAsync (ws.CurrentSolution.GetDocument (changedDoc))) {
+						changes.Add (new TextReplaceChange () {
+							FileName = newDoc.FilePath,
+							Offset = textChange.Span.Start,
+							RemovedChars = textChange.Span.Length,
+							InsertedText = textChange.NewText
+						});
+					}
+				}
+			}
+
 			if (properties.RenameFile && symbol is INamedTypeSymbol) {
 				var type = (INamedTypeSymbol)symbol;
 				int currentPart = 1;
@@ -198,7 +209,7 @@ namespace MonoDevelop.Refactoring.Rename
 					changes.Add (new RenameFileChange (fileName, GetFullFileName (newFileName, fileName, t)));
 				}
 			}
-			RefactoringService.AcceptChanges (new ProgressMonitor (), changes);
+			return changes;
 		}
 		
 		static string GetFullFileName (string fileName, string oldFullFileName, int tryCount)

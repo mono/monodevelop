@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class FolderBrowser : IFolderBrowser
+	internal class FolderBrowser : IFolderBrowser
 	{
 		public string SelectFolder ()
 		{

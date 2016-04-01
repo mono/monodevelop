@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UserAgentGeneratorForRepositoryRequests
+	internal class UserAgentGeneratorForRepositoryRequests
 	{
 		MonoDevelopHttpUserAgent userAgent = new MonoDevelopHttpUserAgent();
 

@@ -1,6 +1,6 @@
 {
 	"name": "Visual Studio",
-	"version": "1.2.0",
+	"version": "1.2.2",
 	"description": "Reminiscent of Microsoft Visual Studio's default colors",
 	"originator": "Jeffrey Stedfast <fejj@novell.com>",
 
@@ -31,7 +31,7 @@
 		{ "name": "Selected Text", "fore": "white", "back": "#3298FF" },
 		{ "name": "Selected Text(Inactive)", "fore": "white", "back": "#BFCDDB" },
 
-		{ "name": "Collapsed Text", "fore": "#808080" },
+		{ "name": "Collapsed Text", "fore": "comment-green", "back": "white" },
 
 		{ "name": "Line Numbers", "fore": "semantic-type", "back": "#FFFFFF" },
 
@@ -90,9 +90,6 @@
 		{ "name": "User Types(Interfaces)", "fore": "semantic-type" },
 		{ "name": "User Types(Delegates)", "fore": "semantic-type" },
 		{ "name": "User Types(Value types)", "fore": "semantic-type" },
-
-		{ "name": "User Field Usage", "style": "italic" },
-		{ "name": "User Field Declaration", "style": "italic" },
 
 		{ "name": "Syntax Error", "fore": "#FF0000" },
 

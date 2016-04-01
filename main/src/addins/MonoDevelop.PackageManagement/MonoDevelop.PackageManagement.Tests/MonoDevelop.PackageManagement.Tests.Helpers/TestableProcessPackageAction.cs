@@ -28,7 +28,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableProcessPackageAction : ProcessPackageAction
+	class TestableProcessPackageAction : ProcessPackageAction
 	{
 		public FakePackageManagementProject FakeProject;
 		public PackageManagementEvents PackageManagementEvents;

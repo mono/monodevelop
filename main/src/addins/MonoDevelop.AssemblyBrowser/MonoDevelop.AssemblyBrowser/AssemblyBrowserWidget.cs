@@ -278,6 +278,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new BaseTypeFolderNodeBuilder (this),
 				new BaseTypeNodeBuilder (this)
 				}, new TreePadOption [0]);
+			TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
 			TreeView.AllowsMultipleSelection = false;
 			TreeView.SelectionChanged += HandleCursorChanged;
 
@@ -497,9 +498,9 @@ namespace MonoDevelop.AssemblyBrowser
 					if (p == null)
 						continue;
 					AppendTypeReference (result, p.Type);
-					if (p.IsRef)
+					if (p.IsOut)
 						result.Append ("&");
-					if (p.IsOut) {
+					if (p.IsRef) {
 						result.Append ("@");
 					}
 				}

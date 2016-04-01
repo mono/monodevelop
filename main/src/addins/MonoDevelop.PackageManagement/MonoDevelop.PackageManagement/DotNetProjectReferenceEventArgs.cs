@@ -29,7 +29,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class DotNetProjectReferenceEventArgs : EventArgs
+	internal class DotNetProjectReferenceEventArgs : EventArgs
 	{
 		public DotNetProjectReferenceEventArgs (ProjectReference reference)
 		{

@@ -923,7 +923,7 @@ namespace MonoDevelop.Projects.MSBuild
 					return new RemoteProjectBuilder (file, builder);
 				}
 
-				return await Task.Run (() => {
+				return await Task.Run (async () => {
 					//always start the remote process explicitly, even if it's using the current runtime and fx
 					//else it won't pick up the assembly redirects from the builder exe
 					var exe = GetExeLocation (runtime, toolsVersion);
@@ -946,7 +946,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 							// The builder app will write the build engine reference
 							// after reading the process id from the standard input
-							ManualResetEvent ev = new ManualResetEvent (false);
+							var processStartedSignal = new TaskCompletionSource<bool> ();
 							string responseKey = "[MonoDevelop]";
 							string sref = null;
 							p.ErrorDataReceived += (sender, e) => {
@@ -958,13 +958,13 @@ namespace MonoDevelop.Projects.MSBuild
 
 								if (e.Data.StartsWith (responseKey, StringComparison.Ordinal)) {
 									sref = e.Data.Substring (responseKey.Length);
-									ev.Set ();
+									processStartedSignal.SetResult (true);
 								} else
 									Console.WriteLine (e.Data);
 							};
 							p.BeginErrorReadLine ();
 							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-							if (!ev.WaitOne (TimeSpan.FromSeconds (5)))
+							if (await Task.WhenAny (processStartedSignal.Task, Task.Delay (5000)) != processStartedSignal.Task)
 								throw new Exception ("MSBuild process could not be started");
 
 							byte [] data = Convert.FromBase64String (sref);

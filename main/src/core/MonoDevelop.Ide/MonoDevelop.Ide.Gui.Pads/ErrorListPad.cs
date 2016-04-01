@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		TreeModelFilter filter;
 		TreeModelSort sort;
 		ToggleButton errorBtn, warnBtn, msgBtn, logBtn;
+		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
 		Hashtable tasks = new Hashtable ();
@@ -125,40 +126,55 @@ namespace MonoDevelop.Ide.Gui.Pads
 			window.Title = GettextCatalog.GetString ("Errors");
 
 			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
-			
+
+			var btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView (Stock.Error, Gtk.IconSize.Menu));
+			errorBtnLbl = new Label ();
+			btnBox.PackStart (errorBtnLbl);
+
 			errorBtn = new ToggleButton { Name = "toggleErrors" };
 			errorBtn.Active = ShowErrors;
-			errorBtn.Image = new ImageView (Stock.Error, Gtk.IconSize.Menu);
-			errorBtn.Image.Show ();
+			errorBtn.Child = btnBox;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
 			UpdateErrorsNum();
 			toolbar.Add (errorBtn);
-			
+
+			btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView (Stock.Warning, Gtk.IconSize.Menu));
+			warnBtnLbl = new Label ();
+			btnBox.PackStart (warnBtnLbl);
+
 			warnBtn = new ToggleButton  { Name = "toggleWarnings" };
 			warnBtn.Active = ShowWarnings;
-			warnBtn.Image = new ImageView (Stock.Warning, Gtk.IconSize.Menu);
-			warnBtn.Image.Show ();
+			warnBtn.Child = btnBox;
 			warnBtn.Toggled += new EventHandler (FilterChanged);
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum();
 			toolbar.Add (warnBtn);
 
+			btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView (Stock.Information, Gtk.IconSize.Menu));
+			msgBtnLbl = new Label ();
+			btnBox.PackStart (msgBtnLbl);
+
 			msgBtn = new ToggleButton  { Name = "toggleMessages" };
 			msgBtn.Active = ShowMessages;
-			msgBtn.Image = new ImageView (Stock.Information, Gtk.IconSize.Menu);
-			msgBtn.Image.Show ();
+			msgBtn.Child = btnBox;
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
 			UpdateMessagesNum();
 			toolbar.Add (msgBtn);
 			
 			toolbar.Add (new SeparatorToolItem ());
-			
+
+			btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView ("md-message-log", Gtk.IconSize.Menu));
+			logBtnLbl = new Label (GettextCatalog.GetString ("Build Output"));
+			btnBox.PackStart (logBtnLbl);
+
 			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
-			logBtn.Label = GettextCatalog.GetString ("Build Output");
-			logBtn.Image = new ImageView ("md-message-log", Gtk.IconSize.Menu);
-			logBtn.Image.Show ();
+			logBtn.Child = btnBox;
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
 			logBtn.Toggled += HandleLogBtnToggled;
 			toolbar.Add (logBtn);
@@ -873,20 +889,17 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void UpdateErrorsNum () 
 		{
-			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
-			errorBtn.Image.Show ();
+			errorBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
 		}
 
 		void UpdateWarningsNum ()
 		{
-			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount); 
-			warnBtn.Image.Show ();
+			warnBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount);
 		}
 
 		void UpdateMessagesNum ()
 		{
-			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
-			msgBtn.Image.Show ();
+			msgBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
 		}
 
 		void UpdatePadIcon ()

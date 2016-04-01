@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementPropertyService : IPropertyService
+	internal class PackageManagementPropertyService : IPropertyService
 	{
 		public string DataDirectory {
 			get { return UserProfile.Current.ConfigDir; }

@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackagesViewModel : PackagesViewModel
+	class TestablePackagesViewModel : PackagesViewModel
 	{
 		public FakeRegisteredPackageRepositories FakeRegisteredPackageRepositories;
 		public FakeTaskFactory FakeTaskFactory;

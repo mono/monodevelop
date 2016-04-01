@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IProject
+	internal interface IProject
 	{
 		string Name { get; }
 		FilePath FileName { get; }

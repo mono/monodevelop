@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.PackageManagement.Gui
 {
-	public class PackageSourcesOptionsPanel : OptionsPanel
+	internal class PackageSourcesOptionsPanel : OptionsPanel
 	{
 		PackageManagementViewModels viewModels;
 		PackageSourcesWidget packageSourcesWidget;

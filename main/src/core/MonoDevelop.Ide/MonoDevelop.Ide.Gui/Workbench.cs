@@ -800,7 +800,7 @@ namespace MonoDevelop.Ide.Gui
 			return pad;
 		}
 		
-		void OnWindowClosing (object sender, WorkbenchWindowEventArgs args)
+		async void OnWindowClosing (object sender, WorkbenchWindowEventArgs args)
 		{
 			var window = (IWorkbenchWindow) sender;
 			var viewContent = window.ViewContent;
@@ -812,9 +812,8 @@ namespace MonoDevelop.Ide.Gui
 							: System.IO.Path.GetFileName (viewContent.ContentName)),
 					GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 					AlertButton.CloseWithoutSave, AlertButton.Cancel, viewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
-
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
-					FindDocument (window).Save ();
+					await FindDocument (window).Save ();
 					args.Cancel = viewContent.IsDirty;
 					if (args.Cancel)
 						FindDocument (window).Select ();

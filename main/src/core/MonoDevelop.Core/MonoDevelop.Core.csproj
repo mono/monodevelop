@@ -563,7 +563,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.Projects.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="BuildVariables.cs.in" />
     <None Include="packages.config" />
     <None Include="MSBuild\CodeSharing.Common.props">

@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (base.Equals (ob1, ob2))
 				return true;
 			if (ob1 == null || ob2 == null)
-				return false;
+				return string.IsNullOrEmpty (ob1) && string.IsNullOrEmpty (ob2);//Empty or null path is same thing
 			return ob1.TrimEnd ('\\') == ob2.TrimEnd ('\\');
 		}
 	}

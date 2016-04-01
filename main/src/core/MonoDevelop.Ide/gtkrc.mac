@@ -286,26 +286,31 @@ style "toolbar-combo-box" = "default"
 style "combo-box" = "button"
 {
     bg[PRELIGHT] = @base_color
-    base[NORMAL] = "#6cb2f7"
+    base[NORMAL] = "#cccccc"
     base[ACTIVE] = "#6cb2f7"
-    base[PRELIGHT] = "#6cb2f7"
+    base[PRELIGHT] = "#cccccc"
     fg[NORMAL] = @base_color
     fg[PRELIGHT] = @base_color
 
     engine "xamarin" {
         arrowstyle = 3
-        fill_shade = 0.7
+        fill_shade = 0.85
     }
 }
 
 style "combo-box-entry-button" = "combo-box"
 {
-    bg[NORMAL] = "#6cb2f7"
+    bg[NORMAL] = "#cccccc"
     bg[ACTIVE] = "#6cb2f7"
-    bg[PRELIGHT] = "#6cb2f7"
+    bg[PRELIGHT] = "#cccccc"
     fg[NORMAL] = @base_color
     fg[ACTIVE] = @fg_color
     fg[PRELIGHT] = @base_color
+
+    engine "xamarin" {
+        arrowstyle = 3
+        fill_shade = 0.85
+    }
 }
 
 style "wizard-dialog"
@@ -392,7 +397,7 @@ style "scrollbar" = "default"
         roundness = 1
         contrast = 0.0
         border_colors = { "#C0C0C0", "#C0C0C0" }
-        trough_shades = { 1.026, 1.026 }
+        trough_shades = { 1.0, 1.0 }
         stepperstyle = 1
     }
 }
@@ -404,9 +409,10 @@ style "completion_scrollbar" = "scrollbar"
 
 style "progressbar" = "default"
 {
-    bg[SELECTED] = "#62b3ec"
-    fg[SELECTED] = "#3a67a6"
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
     bg[ACTIVE] = @base_color
+    fg[SELECTED] = @selected_bg_color
+    fg[PRELIGHT] = @selected_fg_color
     xthickness = 0
     ythickness = 0
 }

@@ -1362,7 +1362,7 @@ namespace Mono.TextEditor
 			AddMarker (line, marker, true);
 		}
 
-		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate)
+		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate, int idx = -1)
 		{
 			if (line == null || marker == null)
 				return;
@@ -1373,7 +1373,7 @@ namespace Mono.TextEditor
 					extendingTextMarkers.Sort (CompareMarkers);
 				}
 			}
-			line.AddMarker (marker);
+			line.AddMarker (marker, idx);
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (commitUpdate)
 				this.CommitLineUpdate (line);

@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class UpdateAllPackagesInSolutionHandler : PackagesCommandHandler
+	internal class UpdateAllPackagesInSolutionHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{

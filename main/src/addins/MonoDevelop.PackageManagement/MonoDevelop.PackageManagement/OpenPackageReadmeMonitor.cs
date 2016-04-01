@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class OpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
+	internal class OpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
 		IPackageManagementProject project;
 		IPackageManagementFileService fileService;

@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class PackageManagementStartupHandler : CommandHandler
+	internal class PackageManagementStartupHandler : CommandHandler
 	{
 		protected override void Run ()
 		{

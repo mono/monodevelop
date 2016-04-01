@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class UpdateAllPackagesInProjectHandler : PackagesCommandHandler
+	internal class UpdateAllPackagesInProjectHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{

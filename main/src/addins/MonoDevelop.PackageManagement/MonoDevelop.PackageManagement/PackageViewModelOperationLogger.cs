@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageViewModelOperationLogger : ILogger
+	internal class PackageViewModelOperationLogger : ILogger
 	{
 		ILogger logger;
 		IPackage package;

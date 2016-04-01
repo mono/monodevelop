@@ -48,6 +48,11 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
+	public static class AboutDialogImage
+	{
+		public static string Name =  "AboutImage.png";
+	}
+
 	internal class CommonAboutDialog : IdeDialog
 	{
 		public CommonAboutDialog ()

@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ReinstallPackageOperations
+	internal class ReinstallPackageOperations
 	{
 		List<PackageOperation> operations;
 		List<IPackage> packagesInDependencyOrder;

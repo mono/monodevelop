@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageRepositoryFactoryEventArgs : EventArgs
+	internal class PackageRepositoryFactoryEventArgs : EventArgs
 	{
 		public PackageRepositoryFactoryEventArgs(IPackageRepository repository)
 		{

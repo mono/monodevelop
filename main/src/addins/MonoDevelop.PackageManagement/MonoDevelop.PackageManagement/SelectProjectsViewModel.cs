@@ -32,7 +32,7 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SelectProjectsViewModel
+	internal class SelectProjectsViewModel
 	{
 		ObservableCollection<IPackageManagementSelectedProject> projects = 
 			new ObservableCollection<IPackageManagementSelectedProject>();

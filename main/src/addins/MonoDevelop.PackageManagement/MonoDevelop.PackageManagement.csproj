@@ -377,6 +377,8 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionProjectService.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageNewImportsHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\INuGetPackageNewImportsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MachinePackageCache : IMachinePackageCache
+	internal class MachinePackageCache : IMachinePackageCache
 	{
 		public IQueryable<IPackage> GetPackages()
 		{

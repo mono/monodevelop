@@ -283,6 +283,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		//just update that
 		public void Refresh ()
 		{
+			Update (); 
 			QueueDraw ();
 		}
 		

@@ -65,6 +65,17 @@ namespace MonoDevelop.MacIntegration
 
 		Lazy<Dictionary<string, string>> mimemap;
 
+		static string applicationMenuName;
+
+		public static string ApplicationMenuName {
+			get {
+				return applicationMenuName ?? BrandingService.ApplicationName;
+			}
+			set {
+				applicationMenuName = value;
+			}
+		}
+
 		public MacPlatformService ()
 		{
 			if (initedGlobal)
@@ -253,13 +264,12 @@ namespace MonoDevelop.MacIntegration
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
-			commandManager.GetCommand (HelpCommands.About).Text = GettextCatalog.GetString ("About {0}", BrandingService.ApplicationName);
-			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GettextCatalog.GetString ("Hide {0}", BrandingService.ApplicationName);
-			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
+			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-ins...");
 
 			initedApp = true;
 
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
@@ -277,6 +287,29 @@ namespace MonoDevelop.MacIntegration
 			
 			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
+		}
+
+		static string GetAboutCommandText ()
+		{
+			return GettextCatalog.GetString ("About {0}", ApplicationMenuName);
+		}
+
+		static string GetHideWindowCommandText ()
+		{
+			return GettextCatalog.GetString ("Hide {0}", ApplicationMenuName);
+		}
+
+		static void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			Command aboutCommand = IdeApp.CommandService.GetCommand (HelpCommands.About);
+			if (aboutCommand != null)
+				aboutCommand.Text = GetAboutCommandText ();
+
+			Command hideCommand = IdeApp.CommandService.GetCommand (MacIntegrationCommands.HideWindow);
+			if (hideCommand != null)
+				hideCommand.Text = GetHideWindowCommandText ();
+
+			Carbon.SetProcessName (ApplicationMenuName);
 		}
 
 		// VV/VK: Disable tint based color generation
@@ -401,6 +434,8 @@ namespace MonoDevelop.MacIntegration
 				//if not running inside an app bundle (at dev time), need to do some additional setup
 				if (NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] == null) {
 					SetupWithoutBundle ();
+				} else {
+					SetupDockIcon ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not install app event handlers", ex);
@@ -408,22 +443,37 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		static void SetupWithoutBundle ()
+		static void SetupDockIcon ()
 		{
-			// set a bundle IDE to prevent NSProgress crash
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=8850
-			NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] = new NSString ("com.xamarin.monodevelop");
-
 			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
-			string iconFile;
-			iconFile = BrandingService.GetString ("ApplicationIcon");
-			if (iconFile != null) {
-				iconFile = BrandingService.GetFile (iconFile);
+			NSObject initialBundleIconFileValue;
+			string iconFile = null;
+
+			// Try setting a dark variant of the application dock icon if one exists in the app bundle.
+			if (NSBundle.MainBundle.InfoDictionary.TryGetValue (new NSString ("CFBundleIconFile"), out initialBundleIconFileValue)) {
+				FilePath bundleIconRoot = GetAppBundleRoot (exePath).Combine ("Contents", "Resources");
+				NSString initialBundleIconFile = (NSString)initialBundleIconFileValue;
+
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+					iconFile = bundleIconRoot.Combine (Path.GetFileNameWithoutExtension (initialBundleIconFile) + "~dark" + Path.GetExtension (initialBundleIconFile));
+				}
+
+				// There is no monodevelop~dark.icns, fallback to monodevelop.icns
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null || !File.Exists (iconFile)) {
+					iconFile = bundleIconRoot.Combine (initialBundleIconFile);
+				}
 			} else {
-				var bundleRoot = GetAppBundleRoot (exePath);
-				if (bundleRoot.IsNotNull) {
-					//running from inside an app bundle, use its icon
-					iconFile = bundleRoot.Combine ("Contents", "Resources", "monodevelop.icns");
+				// Setup without bundle.
+				string iconName = BrandingService.GetString ("ApplicationIcon");
+				if (iconName != null) {
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+						string darkIconName = Path.GetFileNameWithoutExtension (iconName) + "~dark" + Path.GetExtension (iconName);
+						iconFile = BrandingService.GetFile (darkIconName);
+					}
+
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null) {
+						iconFile = BrandingService.GetFile (iconName);
+					}
 				} else {
 					// assume running from build directory
 					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
@@ -434,6 +484,15 @@ namespace MonoDevelop.MacIntegration
 			if (File.Exists (iconFile)) {
 				NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
 			}
+		}
+
+		static void SetupWithoutBundle ()
+		{
+			// set a bundle IDE to prevent NSProgress crash
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=8850
+			NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] = new NSString ("com.xamarin.monodevelop");
+
+			SetupDockIcon ();
 		}
 
 		static FilePath GetAppBundleRoot (FilePath path)

@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var token = tree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken);
 			if (token.Parent == null)
 				return false;
-
+			
 			var parentMember = token.Parent.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault (m => !m.IsKind (SyntaxKind.IncompleteMember));
 
 			if (!(parentMember is BaseTypeDeclarationSyntax) &&
@@ -113,9 +113,19 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			// modifiers* override modifiers* type? |
 			Accessibility seenAccessibility;
 			//DeclarationModifiers modifiers;
-			var token = tree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken);
+			var token = tree.FindTokenOnLeftOfPosition (completionContext.Position, cancellationToken);
 			if (token.Parent == null)
 				return Enumerable.Empty<CompletionData> ();
+
+			// don't show up in that case: int { $$
+			if (token.Parent.IsKind (SyntaxKind.SkippedTokensTrivia))
+				return Enumerable.Empty<CompletionData> ();
+			var im = token.Parent.Ancestors ().OfType<IncompleteMemberSyntax> ().FirstOrDefault ();
+			if (im != null) {
+				var token2 = tree.FindTokenOnLeftOfPosition (im.Span.Start, cancellationToken);
+				if (token2.Parent.IsKind (SyntaxKind.SkippedTokensTrivia))
+					return Enumerable.Empty<CompletionData> ();
+			}
 
 			var parentMember = token.Parent.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault (m => !m.IsKind (SyntaxKind.IncompleteMember));
 

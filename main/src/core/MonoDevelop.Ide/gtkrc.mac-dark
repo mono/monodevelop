@@ -376,7 +376,7 @@ style "scrollbar" = "default"
     {
         roundness = 1
         contrast = 0.0
-        trough_shades = { 0.975, 0.975 }
+        trough_shades = { 1.0, 1.0 }
         stepperstyle = 1
     }
 }
@@ -388,9 +388,10 @@ style "completion_scrollbar" = "scrollbar"
 
 style "progressbar" = "default"
 {
-    bg[SELECTED] = "#62b3ec"
-    fg[SELECTED] = "#3a67a6"
-
+    GtkWidget::draw-border = { 0, 0, 0, 0 }
+    bg[ACTIVE] = @base_color
+    fg[SELECTED] = @selected_bg_color
+    fg[PRELIGHT] = @selected_fg_color
     xthickness = 0
     ythickness = 0
 }

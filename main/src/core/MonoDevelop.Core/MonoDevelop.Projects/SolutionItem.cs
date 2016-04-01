@@ -72,8 +72,6 @@ namespace MonoDevelop.Projects
 		public event ConfigurationEventHandler DefaultConfigurationChanged;
 		public event ConfigurationEventHandler ConfigurationAdded;
 		public event ConfigurationEventHandler ConfigurationRemoved;
-		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
-		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
 
 		// When set, it means this item is saved as part of a global solution save operation
 		internal bool SavingSolution { get; set; }
@@ -1193,34 +1191,6 @@ namespace MonoDevelop.Projects
 			return base.OnGetLastBuildTime (configuration);
 		}
 
-		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
-		{
-			ItemExtension.OnItemsAdded (objs);
-		}
-		
-		void DoOnItemsAdded (IEnumerable<ProjectItem> objs)
-		{
-			NotifyModified ("Items");
-			var args = new ProjectItemEventArgs ();
-			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
-			if (ProjectItemAdded != null)
-				ProjectItemAdded (this, args);
-		}
-
-		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
-		{
-			ItemExtension.OnItemsRemoved (objs);
-		}
-		
-		void DoOnItemsRemoved (IEnumerable<ProjectItem> objs)
-		{
-			NotifyModified ("Items");
-			var args = new ProjectItemEventArgs ();
-			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
-			if (ProjectItemRemoved != null)
-				ProjectItemRemoved (this, args);
-		}
-
 		protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)
 		{
 			ItemExtension.OnDefaultConfigurationChanged (args);
@@ -1416,16 +1386,6 @@ namespace MonoDevelop.Projects
 			internal protected override void OnReloadRequired (SolutionItemEventArgs args)
 			{
 				Item.DoOnReloadRequired (args);
-			}
-
-			internal protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
-			{
-				Item.DoOnItemsAdded (objs);
-			}
-
-			internal protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
-			{
-				Item.DoOnItemsRemoved (objs);
 			}
 
 			internal protected override void OnDefaultConfigurationChanged (ConfigurationEventArgs args)

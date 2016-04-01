@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var addedMethods = new List<IMethodSymbol> ();
 			var filterMethod = new HashSet<IMethodSymbol> ();
 			for (;type != null; type = type.BaseType) {
-				foreach (var method in type.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.Name == name)) {
+				foreach (var method in type.GetMembers ().OfType<IMethodSymbol> ().Concat (GetExtensionMethods(semanticModel, type, node, cancellationToken)).Where (m => m.Name == name)) {
 					if (staticLookup && !method.IsStatic)
 						continue;
 					if (method.OverriddenMethod != null)
@@ -174,14 +174,60 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				if (!staticLookup || info.Symbol.IsStatic)
 					result.AddData (factory.CreateMethodDataProvider ((IMethodSymbol)info.Symbol));
 			}
-			foreach (var candidate in info.CandidateSymbols) {
-				if (staticLookup && !candidate.IsStatic)
-					continue;
-				
-				if (!addedMethods.Contains (candidate) && candidate.IsAccessibleWithin (within))
-					result.AddData (factory.CreateMethodDataProvider ((IMethodSymbol)candidate));
-			}
 			return result;
+		}
+
+		IEnumerable<IMethodSymbol> GetExtensionMethods (SemanticModel semanticModel, ITypeSymbol typeToExtend, InvocationExpressionSyntax node, CancellationToken cancellationToken)
+		{
+			var usedNamespaces = new HashSet<string> ();
+			foreach (var un in semanticModel.GetUsingNamespacesInScope (node)) {
+				usedNamespaces.Add (un.GetFullName ());
+			}
+			var enclosingNamespaceName = semanticModel.GetEnclosingNamespace (node.SpanStart, cancellationToken).GetFullName ();
+
+			var stack = new Stack<INamespaceOrTypeSymbol> ();
+			stack.Push (semanticModel.Compilation.GlobalNamespace);
+
+			while (stack.Count > 0) {
+				if (cancellationToken.IsCancellationRequested)
+					break;
+				var current = stack.Pop ();
+				var currentNs = current as INamespaceSymbol;
+				if (currentNs != null) {
+
+					foreach (var member in currentNs.GetNamespaceMembers ()) {
+						var currentNsName = member.GetFullName ();
+						if (usedNamespaces.Contains (currentNsName) ||
+							enclosingNamespaceName == currentNsName ||
+							(enclosingNamespaceName.StartsWith (currentNsName, StringComparison.Ordinal) &&
+							enclosingNamespaceName [currentNsName.Length] == '.')) {
+							stack.Push (member);
+						}
+					}
+
+					foreach (var member in currentNs.GetTypeMembers ())
+						stack.Push (member);
+
+				} else {
+					var type = (INamedTypeSymbol)current;
+					if (type.IsImplicitClass || type.IsScriptClass)
+						continue;
+					if (type.DeclaredAccessibility != Accessibility.Public) {
+						if (type.DeclaredAccessibility != Accessibility.Internal)
+							continue;
+						if (!type.IsAccessibleWithin (semanticModel.Compilation.Assembly))
+							continue;
+					}
+					if (!type.MightContainExtensionMethods)
+						continue;
+					foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
+						var reducedMethod = extMethod.ReduceExtensionMethod (typeToExtend);
+						if (reducedMethod != null) {
+							yield return reducedMethod;
+						}
+					}
+				}
+			}
 		}
 
 		ParameterHintingResult HandleTypeParameterCase(SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellationToken)

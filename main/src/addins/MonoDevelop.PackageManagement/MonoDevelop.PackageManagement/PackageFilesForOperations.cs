@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageFilesForOperations
+	internal class PackageFilesForOperations
 	{
 		IEnumerable<PackageOperation> operations;
 		

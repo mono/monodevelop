@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageOperationResolverFactory
+	internal interface IPackageOperationResolverFactory
 	{
 		IPackageOperationResolver CreateInstallPackageOperationResolver(
 			IPackageRepository localRepository,

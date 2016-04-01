@@ -691,8 +691,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 			}
 			filteredItems.Sort (delegate (int left, int right) {
-				if (string.IsNullOrEmpty (CompletionString))
-					return win.DataProvider.CompareTo (left, right);
 				int rank1, rank2;
 				var data1 = win.DataProvider.GetCompletionData (left);
 				var data2 = win.DataProvider.GetCompletionData (right);
@@ -700,6 +698,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return 0;
 				if (data1.PriorityGroup != data2.PriorityGroup)
 					return data2.PriorityGroup.CompareTo (data1.PriorityGroup);
+				if (string.IsNullOrEmpty (CompletionString))
+					return win.DataProvider.CompareTo (left, right);
 
 				if (!matcher.CalcMatchRank (data1.CompletionText, out rank1))
 					return 0;

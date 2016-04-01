@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeSolution : ISolution
+	class FakeSolution : ISolution
 	{
 		public FilePath BaseDirectory { get; set; }
 		public FilePath FileName { get; set; }

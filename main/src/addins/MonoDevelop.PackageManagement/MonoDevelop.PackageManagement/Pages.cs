@@ -31,7 +31,7 @@ using System.Collections.ObjectModel;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class Pages : ObservableCollection<Page>
+	internal class Pages : ObservableCollection<Page>
 	{
 		public const int DefaultPageSize = 29;
 		public const int DefaultMaximumSelectablePages = 5;

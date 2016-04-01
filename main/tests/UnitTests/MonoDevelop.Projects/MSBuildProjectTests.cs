@@ -331,6 +331,51 @@ namespace MonoDevelop.Projects
 				new ValueSet (new [] { "cond1", "cond2" }, new [] { "val14_5", "val14_6" }),
 			}, Is.EquivalentTo (p.ConditionedProperties.GetCombinedPropertyValues ("cond1", "cond2").ToArray ()));
 		}
+
+		[Test]
+		public void StartWhitespaceForImportInsertedAsLastImport ()
+		{
+			string projectFile = Util.GetSampleProject ("ConsoleApp-VS2013", "ConsoleApplication.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+
+			MSBuildImport import = p.AddNewImport ("MyImport.targets", beforeObject: null);
+
+			Assert.AreEqual (p.TextFormat.NewLine, p.StartWhitespace);
+			Assert.AreEqual ("  ", import.StartWhitespace);
+		}
+
+		/// <summary>
+		/// Inserting an import at the start as the first child was inserting an extra
+		/// new line between the Project start element and the Import element.
+		/// </summary>
+		[Test]
+		public void StartWhitespaceForImportInsertedAsFirstChild ()
+		{
+			string projectFile = Util.GetSampleProject ("ConsoleApp-VS2013", "ConsoleApplication.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			var firstChild = p.GetAllObjects ().First ();
+
+			MSBuildImport import = p.AddNewImport ("MyImport.targets", beforeObject: firstChild);
+
+			Assert.AreEqual (p.TextFormat.NewLine, p.StartWhitespace);
+			Assert.AreEqual ("  ", import.StartWhitespace);
+		}
+
+		[Test]
+		public void ParseConditionWithMethodInvoke ()
+		{
+			// XBC 40008
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "condition-parse.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			Assert.AreEqual ("Foo", p.EvaluatedProperties.GetValue ("Test1"));
+			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("Test2"));
+		}
 	}
 }
 

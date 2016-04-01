@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectModifiedEventArgs : EventArgs
+	internal class ProjectModifiedEventArgs : EventArgs
 	{
 		public ProjectModifiedEventArgs (IDotNetProject project, string propertyName)
 		{

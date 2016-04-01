@@ -152,7 +152,8 @@ namespace MonoDevelop.Components.Docking
 				tabIcon.Visible = visualStyle.ShowPadTitleIcon.Value;
 			}
 			if (IsRealized && labelWidget != null) {
-				var font = FontService.SansFont.CopyModified (Styles.FontScale11, Pango.Weight.Bold);
+				var font = FontService.SansFont.CopyModified (null, Pango.Weight.Bold);
+				font.AbsoluteSize = Pango.Units.FromPixels (11);
 				labelWidget.ModifyFont (font);
 				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
@@ -189,8 +190,7 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.UseMarkup = true;
-				labelWidget.Yalign = 0.85f;
-				var alignLabel = new Alignment (0.0f, 1.0f, 1, 1);
+				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);

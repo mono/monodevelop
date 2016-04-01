@@ -29,7 +29,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectReloadedEventArgs : EventArgs
+	internal class ProjectReloadedEventArgs : EventArgs
 	{
 		public static ProjectReloadedEventArgs Create (SolutionItemChangeEventArgs eventArgs)
 		{

@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackagesMonitor : IDisposable
+	internal class UpdatedPackagesMonitor : IDisposable
 	{
 		List<IPackageManagementProject> projects;
 		bool packagesUpdated;

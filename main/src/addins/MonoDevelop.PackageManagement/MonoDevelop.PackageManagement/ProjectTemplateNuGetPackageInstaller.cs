@@ -34,7 +34,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTemplateNuGetPackageInstaller : ProjectTemplatePackageInstaller
+	internal class ProjectTemplateNuGetPackageInstaller : ProjectTemplatePackageInstaller
 	{
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;

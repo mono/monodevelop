@@ -40,7 +40,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MonoDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
+	internal class MonoDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
 	{
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
@@ -407,9 +407,16 @@ namespace MonoDevelop.PackageManagement
 			GuiSyncDispatch (async () => {
 				string relativeTargetPath = GetRelativePath (targetPath);
 				string condition = GetCondition (relativeTargetPath);
-				project.AddImportIfMissing (relativeTargetPath, condition);
-				await project.SaveAsync ();
+				using (var handler = CreateNewImportsHandler ()) {
+					handler.AddImportIfMissing (relativeTargetPath, condition, location);
+					await project.SaveAsync ();
+				}
 			});
+		}
+
+		protected virtual INuGetPackageNewImportsHandler CreateNewImportsHandler ()
+		{
+			return new NuGetPackageNewImportsHandler ();
 		}
 
 		static string GetCondition (string targetPath)
@@ -478,7 +485,7 @@ namespace MonoDevelop.PackageManagement
 			return Runtime.RunInMainThread (func);
 		}
 
-		internal static void DefaultGuiSyncDispatcher (Action action)
+		public static void DefaultGuiSyncDispatcher (Action action)
 		{
 			Runtime.RunInMainThread (action).Wait ();
 		}
