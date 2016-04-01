@@ -25,12 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -39,34 +34,26 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			try {
-				IPackageManagementSolution solution = GetPackageManagementSolution ();
-				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-				RestoreBeforeUpdateAction.Restore (solution, project, () => {
-					Runtime.RunInMainThread (() => Update (project)).Wait ();
-				});
+				// TODO - Restore before update.
+				//RestoreBeforeUpdateAction.Restore (solution, project, () => {
+				//	Runtime.RunInMainThread (() => Update (project)).Wait ();
+				//});
+				Update ();
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
 			}
 		}
 
-		void Update (IPackageManagementProject project)
+		void Update ()
 		{
-			try {
-				var updateAllPackages = new UpdateAllPackagesInProject (project);
-				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions, project);
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
-			} catch (Exception ex) {
-				ShowStatusBarError (ex);
-			}
-		}
+			var solutionManager = new MonoDevelopSolutionManager (GetSelectedSolution ());
+			var project = new MonoDevelopNuGetProjectFactory ()
+				.CreateNuGetProject (GetSelectedDotNetProject ());
+			var action = new UpdateAllNuGetPackagesInProjectAction (solutionManager, project);
 
-		ProgressMonitorStatusMessage CreateProgressMessage (List<UpdatePackageAction> updateActions, IPackageManagementProject project)
-		{
-			if (updateActions.Count == 1) {
-				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (updateActions.First ().PackageId, project);
-			}
-			return ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count, project);
+			//TODO: No updates available message.
+			var progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 		}
 
 		void ShowStatusBarError (Exception ex)
