@@ -89,23 +89,28 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 
 			try {
-				IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
-				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
-				UpdatePackageAction action = project.CreateUpdatePackageAction ();
-				action.PackageId = packageReferenceNode.Id;
-				action.AllowPrereleaseVersions = !packageReferenceNode.IsReleaseVersion ();
+				var solutionManager = new MonoDevelopSolutionManager (packageReferenceNode.Project.ParentSolution);
+				var project = new MonoDevelopNuGetProjectFactory ()
+					.CreateNuGetProject (packageReferenceNode.Project);
+				var action = new UpdateNuGetPackageAction (solutionManager, project) {
+					PackageId = packageReferenceNode.Id,
+					IncludePrerelease = !packageReferenceNode.IsReleaseVersion ()
+				};
 
-				IPackageManagementSolution solution = GetPackageManagementSolution ();
-				RestoreBeforeUpdateAction.Restore (solution, project, () => {
+				// TODO - No updates available status bar message.
+				//ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
+				// TODO - Restore before update.
+				//RestoreBeforeUpdateAction.Restore (solution, project, () => {
 					UpdatePackage (progressMessage, action);
-				});
+				//});
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
 		}
 
-		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, UpdatePackageAction action)
+		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
 		{
 			try {
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);

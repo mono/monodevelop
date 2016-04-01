@@ -501,6 +501,7 @@
     <Compile Include="MonoDevelop.PackageManagement\BuildIntegrationProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdateNuGetPackageAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
