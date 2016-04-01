@@ -26,6 +26,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
@@ -35,6 +37,7 @@ namespace MonoDevelop.PackageManagement
 	internal class MonoDevelopSolutionManager : ISolutionManager
 	{
 		Solution solution;
+		List<NuGetProject> projects;
 
 		public MonoDevelopSolutionManager (Solution solution)
 		{
@@ -87,7 +90,20 @@ namespace MonoDevelop.PackageManagement
 
 		public IEnumerable<NuGetProject> GetNuGetProjects ()
 		{
-			throw new NotImplementedException ();
+			if (projects == null) {
+				Runtime.RunInMainThread (() => {
+					projects = GetNuGetProjects (solution).ToList ();
+				}).Wait ();
+			}
+			return projects;
+		}
+
+		static IEnumerable<NuGetProject> GetNuGetProjects (Solution solution)
+		{
+			var factory = new MonoDevelopNuGetProjectFactory ();
+			foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
+				yield return factory.CreateNuGetProject (project);
+			}
 		}
 
 		public string GetNuGetProjectSafeName (NuGetProject nuGetProject)
