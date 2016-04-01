@@ -590,7 +590,7 @@ namespace MonoDevelop.SourceEditor
 							oldMarker.AddError (marker.Task, marker.Task.Severity == TaskSeverity.Error, marker.Task.Description);
 						} else {
 							marker.LineSegment = lineSegment;
-							widget.Document.AddMarker (lineSegment, marker, false);
+							widget.Document.AddMarker (lineSegment, marker, false, 0);
 							newErrorMarkers.Add (marker);
 						}
 					}
