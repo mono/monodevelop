@@ -26,9 +26,12 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
@@ -40,18 +43,31 @@ namespace MonoDevelop.PackageManagement
 	internal class UpdateAllNuGetPackagesInProjectAction : IPackageAction
 	{
 		NuGetPackageManager packageManager;
+		PackageRestoreManager restoreManager;
+		ISolutionManager solutionManager;
+		IPackageManagementEvents packageManagementEvents;
+		DotNetProject dotNetProject;
 		NuGetProject project;
 		CancellationToken cancellationToken;
 		ISourceRepositoryProvider sourceRepositoryProvider;
 		bool includePrerelease;
+		string projectName;
 
 		public UpdateAllNuGetPackagesInProjectAction (
 			ISolutionManager solutionManager,
-			NuGetProject project,
+			DotNetProject dotNetProject,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.project = project;
+			this.solutionManager = solutionManager;
+			this.dotNetProject = dotNetProject;
 			this.cancellationToken = cancellationToken;
+
+			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
+
+			project = new MonoDevelopNuGetProjectFactory ()
+				.CreateNuGetProject (dotNetProject);
+			
+			projectName = dotNetProject.Name;
 
 			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
@@ -63,6 +79,12 @@ namespace MonoDevelop.PackageManagement
 				settings,
 				solutionManager,
 				restartManager
+			);
+
+			restoreManager = new PackageRestoreManager (
+				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+				Settings.LoadDefaultSettings (null, null, null),
+				solutionManager
 			);
 		}
 
@@ -76,6 +98,8 @@ namespace MonoDevelop.PackageManagement
 			INuGetProjectContext context = CreateProjectContext ();
 
 			includePrerelease = await ProjectHasPrereleasePackages ();
+
+			await RestoreAnyMissingPackages (context);
 
 			var actions = await packageManager.PreviewUpdatePackagesAsync (
 				project,
@@ -116,6 +140,31 @@ namespace MonoDevelop.PackageManagement
 		INuGetProjectContext CreateProjectContext ()
 		{
 			return new NuGetProjectContext (); 
+		}
+
+		async Task RestoreAnyMissingPackages (INuGetProjectContext context)
+		{
+			var packages = await restoreManager.GetPackagesInSolutionAsync (
+				solutionManager.SolutionDirectory,
+				cancellationToken);
+
+			var missingPackages = packages.Select (package => IsMissingForCurrentProject (package)).ToList ();
+			if (missingPackages.Any ()) {
+				await restoreManager.RestoreMissingPackagesAsync (
+					solutionManager.SolutionDirectory,
+					project,
+					context,
+					cancellationToken);
+
+				await Runtime.RunInMainThread (() => dotNetProject.RefreshReferenceStatus ());
+
+				packageManagementEvents.OnPackagesRestored ();
+			}
+		}
+
+		bool IsMissingForCurrentProject (PackageRestoreData package)
+		{
+			return package.IsMissing && package.ProjectNames.Any (name => name == projectName);
 		}
 	}
 }

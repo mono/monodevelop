@@ -100,10 +100,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				// TODO - No updates available status bar message.
 				//ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
-				// TODO - Restore before update.
-				//RestoreBeforeUpdateAction.Restore (solution, project, () => {
-					UpdatePackage (progressMessage, action);
-				//});
+				UpdatePackage (progressMessage, action);
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);

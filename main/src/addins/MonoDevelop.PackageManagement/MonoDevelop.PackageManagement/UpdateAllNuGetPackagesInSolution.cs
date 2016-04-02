@@ -26,27 +26,28 @@
 
 using System.Collections.Generic;
 using System.Threading;
-using NuGet.PackageManagement;
-using NuGet.ProjectManagement;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class UpdateAllNuGetPackagesInSolution
 	{
-		ISolutionManager solutionManager;
+		Solution solution;
 		CancellationToken cancellationToken;
 
 		public UpdateAllNuGetPackagesInSolution (
-			ISolutionManager solutionManager,
+			Solution solution,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.solutionManager = solutionManager;
+			this.solution = solution;
 			this.cancellationToken = cancellationToken;
 		}
 
 		public IEnumerable<IPackageAction> CreateActions ()
 		{
-			foreach (NuGetProject project in solutionManager.GetNuGetProjects ()) {
+			var solutionManager = new MonoDevelopSolutionManager (solution);
+
+			foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
 				yield return new UpdateAllNuGetPackagesInProjectAction (
 					solutionManager,
 					project,

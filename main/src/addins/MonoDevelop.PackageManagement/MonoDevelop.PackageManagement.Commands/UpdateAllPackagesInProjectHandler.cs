@@ -34,10 +34,6 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			try {
-				// TODO - Restore before update.
-				//RestoreBeforeUpdateAction.Restore (solution, project, () => {
-				//	Runtime.RunInMainThread (() => Update (project)).Wait ();
-				//});
 				Update ();
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
@@ -47,9 +43,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void Update ()
 		{
 			var solutionManager = new MonoDevelopSolutionManager (GetSelectedSolution ());
-			var project = new MonoDevelopNuGetProjectFactory ()
-				.CreateNuGetProject (GetSelectedDotNetProject ());
-			var action = new UpdateAllNuGetPackagesInProjectAction (solutionManager, project);
+			var action = new UpdateAllNuGetPackagesInProjectAction (solutionManager, GetSelectedDotNetProject ());
 
 			//TODO: No updates available message.
 			var progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage ();
