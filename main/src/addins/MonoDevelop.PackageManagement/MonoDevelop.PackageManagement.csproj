@@ -134,6 +134,7 @@
     </Reference>
     <Reference Include="NuGet.Commands">
       <HintPath>..\..\..\packages\NuGet.Commands.3.3.0\lib\net45\NuGet.Commands.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Core">
       <HintPath>..\..\..\packages\NuGet.Core.2.10.1\lib\net40-Client\NuGet.Core.dll</HintPath>
@@ -206,7 +207,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ITask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITaskFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IThreadSafePackageManagementEvents.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IUpdatePackageActions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatePackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatePackageSettings.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
@@ -345,19 +345,14 @@
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageReferenceNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageReferenceNodeCommands.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\UpdateAllPackagesInProjectHandler.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdateAllPackagesInProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatePackageActions.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodePropertyProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodeDescriptor.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdateAllPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\UpdateAllPackagesInSolutionHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IBackgroundPackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessageFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessage.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReferenceFile.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SearchPackagesSearchCategory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialogRunner.cs" />
@@ -421,9 +416,7 @@
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesProgressMonitorStatusMessage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatedPackagesAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RestoreBeforeUpdateAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopAggregateRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RestorePackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesInProjectHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FailingPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FileRemovingEventArgs.cs" />
