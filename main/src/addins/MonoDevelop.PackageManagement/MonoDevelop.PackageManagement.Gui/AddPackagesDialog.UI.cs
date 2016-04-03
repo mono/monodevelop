@@ -61,6 +61,8 @@ namespace MonoDevelop.PackageManagement
 		Label errorMessageLabel;
 		Label loadingSpinnerLabel;
 		FrameBox noPackagesFoundFrame;
+		ComboBox packageVersionComboBox;
+		HBox packageVersionsHBox;
 		int packageInfoFontSize = 11;
 
 		void Build ()
@@ -183,7 +185,6 @@ namespace MonoDevelop.PackageManagement
 			packageInfoScrollViewFrame.BorderWidth = new WidgetSpacing (1, 0, 0, 0);
 			packageInfoScrollViewFrame.BorderColor = Styles.LineBorderColor;
 			packageInfoScrollViewFrame.Content = packageInfoScrollView;
-			middleHBox.PackEnd (packageInfoScrollViewFrame);
 
 			// Package name and version.
 			var packageNameHBox = new HBox ();
@@ -321,6 +322,27 @@ namespace MonoDevelop.PackageManagement
 			packageDependenciesList.Margin = new WidgetSpacing (5);
 			packageDependenciesList.Font = packageInfoSmallFont;
 			packageDependenciesListHBox.PackStart (packageDependenciesList, true);
+
+			// Package versions.
+			packageVersionsHBox = new HBox ();
+			packageVersionsHBox.Visible = false;
+			packageVersionsHBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
+			packageVersionsHBox.Margin = new WidgetSpacing (15, 0, 15, 12);
+			var packageVersionsLabel = new Label ();
+			packageVersionsLabel.Font = packageInfoSmallFont;
+			packageVersionsLabel.Markup = Catalog.GetString ("<b>Version</b>");
+			packageVersionsHBox.PackStart (packageVersionsLabel);
+
+			packageVersionComboBox = new ComboBox ();
+			packageVersionsHBox.Spacing = 15;
+			packageVersionsHBox.PackStart (packageVersionComboBox, true, true);
+
+			var packageInfoAndVersionsVBox = new VBox ();
+			packageInfoAndVersionsVBox.Margin = new WidgetSpacing ();
+			packageInfoAndVersionsVBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
+			packageInfoAndVersionsVBox.PackStart (packageInfoScrollViewFrame, true, true);
+			packageInfoAndVersionsVBox.PackStart (packageVersionsHBox, false, false);
+			middleHBox.PackEnd (packageInfoAndVersionsVBox);
 
 			// Bottom part of dialog:
 			// Show pre-release packages and Close/Add to Project buttons.

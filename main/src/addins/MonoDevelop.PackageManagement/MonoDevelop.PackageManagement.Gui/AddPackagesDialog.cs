@@ -32,7 +32,7 @@ using Mono.Unix;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using NuGet;
+using NuGet.Versioning;
 using Xwt;
 using Xwt.Drawing;
 using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
@@ -58,6 +58,7 @@ namespace MonoDevelop.PackageManagement
 			new SourceRepositoryViewModel (Catalog.GetString ("Configure Sources..."));
 		ImageLoader imageLoader = new ImageLoader ();
 		bool loadingMessageVisible;
+		bool ignorePackageVersionChanges;
 		const string IncludePrereleaseUserPreferenceName = "NuGet.AddPackagesDialog.IncludePrerelease";
 
 		public AddPackagesDialog (AllPackagesViewModel viewModel, string initialSearch = null)
@@ -93,6 +94,7 @@ namespace MonoDevelop.PackageManagement
 			this.addPackagesButton.Clicked += AddPackagesButtonClicked;
 			this.packageSearchEntry.Changed += PackageSearchEntryChanged;
 			this.packageSearchEntry.Activated += PackageSearchEntryActivated;
+			this.packageVersionComboBox.SelectionChanged += PackageVersionChanged;
 			imageLoader.Loaded += ImageLoaded;
 		}
 
@@ -235,6 +237,12 @@ namespace MonoDevelop.PackageManagement
 		void ClearSelectedPackageInformation ()
 		{
 			this.packageInfoVBox.Visible = false;
+			this.packageVersionsHBox.Visible = false;
+
+			if (viewModel.SelectedPackage != null) {
+				viewModel.SelectedPackage.PropertyChanged -= SelectedPackageViewModelChanged;
+				viewModel.SelectedPackage = null;
+			}
 		}
 
 		List<SourceRepositoryViewModel> PackageSources {
@@ -291,6 +299,7 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				ClearSelectedPackageInformation ();
 			}
+			viewModel.SelectedPackage = packageViewModel;
 			UpdateAddPackagesButton ();
 		}
 
@@ -320,7 +329,13 @@ namespace MonoDevelop.PackageManagement
 			//this.packageDependenciesNoneLabel.Visible = !packageViewModel.HasDependencies;
 			//this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();
 
+			PopulatePackageVersions (packageViewModel);
+
 			this.packageInfoVBox.Visible = true;
+			this.packageVersionsHBox.Visible = true;
+
+			packageViewModel.PropertyChanged += SelectedPackageViewModelChanged;
+			packageViewModel.ReadVersions ();
 		}
 
 		void ShowUri (LinkLabel linkLabel, Uri uri, string label)
@@ -700,6 +715,46 @@ namespace MonoDevelop.PackageManagement
 
 		int PackagesCheckedCount {
 			get { return viewModel.CheckedPackageViewModels.Count; }
+		}
+
+		void SelectedPackageViewModelChanged (object sender, PropertyChangedEventArgs e)
+		{
+			try {
+				PopulatePackageVersions (viewModel.SelectedPackage);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error loading package versions.", ex);
+			}
+		}
+
+		void PopulatePackageVersions (PackageSearchResultViewModel packageViewModel)
+		{
+			ignorePackageVersionChanges = true;
+			try {
+				packageVersionComboBox.Items.Clear ();
+				if (packageViewModel.Versions.Any ()) {
+					foreach (NuGetVersion version in packageViewModel.Versions) {
+						AddPackageVersionToComboBox (version);
+					}
+				} else {
+					AddPackageVersionToComboBox (packageViewModel.Version);
+				}
+				packageVersionComboBox.SelectedItem = packageViewModel.SelectedVersion;
+			} finally {
+				ignorePackageVersionChanges = false;
+			}
+		}
+
+		void AddPackageVersionToComboBox (NuGetVersion version)
+		{
+			packageVersionComboBox.Items.Add (version, version.ToString ());
+		}
+
+		void PackageVersionChanged (object sender, EventArgs e)
+		{
+			if (ignorePackageVersionChanges || viewModel.SelectedPackage == null)
+				return;
+
+			viewModel.SelectedPackage.SelectedVersion = (NuGetVersion)packageVersionComboBox.SelectedItem;
 		}
 	}
 }

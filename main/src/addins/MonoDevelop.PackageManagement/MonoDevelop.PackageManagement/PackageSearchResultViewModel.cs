@@ -25,7 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
 using NuGet.PackageManagement.UI;
+using NuGet.Protocol.VisualStudio;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
@@ -42,6 +48,9 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.parent = parent;
 			this.viewModel = viewModel;
+
+			Versions = new ObservableCollection<NuGetVersion> ();
+			SelectedVersion = Version;
 		}
 
 		public string Id {
@@ -167,6 +176,38 @@ namespace MonoDevelop.PackageManagement
 				return LastPublished.Value.Date.ToShortDateString ();
 			}
 			return String.Empty;
+		}
+
+		public NuGetVersion SelectedVersion { get; set; }
+		public ObservableCollection<NuGetVersion> Versions { get; private set; }
+
+		public void ReadVersions ()
+		{
+			try {
+				if (!viewModel.Versions.IsValueCreated) {
+					viewModel.Versions.Value.ContinueWith (
+						task => OnVersionsRead (task),
+						TaskScheduler.FromCurrentSynchronizationContext ());
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("ReadVersions error.", ex);
+			}
+		}
+
+		void OnVersionsRead (Task<IEnumerable<VersionInfo>> task)
+		{
+			try {
+				if (task.IsFaulted) {
+					LoggingService.LogError ("Failed to read package versions.", task.Exception);
+				} else {
+					foreach (VersionInfo versionInfo in task.Result.OrderByDescending (v => v.Version)) {
+						Versions.Add (versionInfo.Version);
+					}
+					OnPropertyChanged (viewModel => viewModel.Versions);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to read package versions.", ex);
+			}
 		}
 	}
 }

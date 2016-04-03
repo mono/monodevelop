@@ -357,9 +357,11 @@ namespace MonoDevelop.PackageManagement
 			) {
 				IncludePrerelease = IncludePrerelease,
 				PackageId = packageViewModel.Id,
-				Version = packageViewModel.Version
+				Version = packageViewModel.SelectedVersion
 			};
 		}
+
+		public PackageSearchResultViewModel SelectedPackage { get; set; }
 	}
 }
 
