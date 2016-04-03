@@ -14,6 +14,8 @@ Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Tests", 
 EndProject
 Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharpInteractive.Service", "MonoDevelop.FSharpi.Service\MonoDevelop.FSharpInteractive.Service.fsproj", "{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}"
 EndProject
+Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "MonoDevelop.FSharp.Shared", "MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj", "{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20D6EC2C-B62E-49D1-B685-90D8967A5B5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

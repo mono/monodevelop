@@ -96,8 +96,12 @@ type FsiMemberCompletionData(name, icon) =
                 let computation =
                     async {
                         let! tooltip = Async.AwaitEvent (session.TooltipReceived)
-                        tooltip.SignatureMarkup <- syntaxHighlight tooltip.SignatureMarkup
-                        return tooltip
+                        match tooltip with
+                        | MonoDevelop.FSharp.Shared.ToolTip (signature, xmldoc, footer) ->
+                            let! tooltipInfo = SymbolTooltips.getTooltipInformationFromTip (signature, xmldoc, footer)
+                            return tooltipInfo
+                        | MonoDevelop.FSharp.Shared.EmptyTip ->
+                            return TooltipInformation()
                     }
                 Async.StartAsTask(computation, cancellationToken = cancel)
             | _ -> Task.FromResult (TooltipInformation())
