@@ -127,6 +127,8 @@ namespace MonoDevelop.UnitTesting
 			col.AddAttribute (tr, "markup", 1);
 			failuresTreeView.AppendColumn (col);
 			failuresTreeView.Model = failuresStore;
+			failuresTreeView.StyleSet += (o, args) => 
+				tr.Foreground = Styles.BaseForegroundColor.ToHexString (false);
 		
 			var sw = new MonoDevelop.Components.CompactScrolledWindow ();
 			sw.ShadowType = ShadowType.None;
