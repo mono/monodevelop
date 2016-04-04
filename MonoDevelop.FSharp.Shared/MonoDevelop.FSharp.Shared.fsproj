@@ -29,6 +29,7 @@
     <GenerateTailCalls>true</GenerateTailCalls>
     <PlatformTarget></PlatformTarget>
   </PropertyGroup>
+  <Import Project="..\.paket\paket.targets" />
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
