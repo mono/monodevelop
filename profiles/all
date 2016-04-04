@@ -1,6 +1,2 @@
 main
-extras/JavaBinding
-extras/ValaBinding
 extras/MonoDevelop.Database
-extras/PyBinding
-extras/MonoDevelop.MeeGo
