@@ -42,6 +42,8 @@ namespace MonoDevelop.Components.Docking
 {
 	class DockFrame: HBox, IAnimatable
 	{
+		public event EventHandler<EventArgs> LayoutChanged;
+
 		internal const double ItemDockCenterArea = 0.4;
 		internal const int GroupDockSeparatorSize = 40;
 		
@@ -667,6 +669,7 @@ namespace MonoDevelop.Components.Docking
 			while (reader.NodeType != XmlNodeType.EndElement) {
 				if (reader.NodeType == XmlNodeType.Element) {
 					DockLayout layout = DockLayout.Read (this, reader);
+					layout.AllocationChanged += LayoutAllocationChanged;
 					layouts.Add (layout.Name, layout);
 				}
 				else
@@ -675,6 +678,11 @@ namespace MonoDevelop.Components.Docking
 			}
 			reader.ReadEndElement ();
 			container.RelayoutWidgets ();
+		}
+
+		void LayoutAllocationChanged (object sender, EventArgs e)
+		{
+			LayoutChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		internal void UpdateTitle (DockItem item)

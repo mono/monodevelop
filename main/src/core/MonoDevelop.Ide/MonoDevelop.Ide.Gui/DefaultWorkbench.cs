@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 
 using MonoDevelop.Projects;
 using Mono.Addins;
@@ -89,6 +90,8 @@ namespace MonoDevelop.Ide.Gui
 		MainToolbarController toolbar;
 		MonoDevelopStatusBar bottomBar;
 
+		Timer saveTimer;
+
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
 		private void DoNotCompile ()
 		{
@@ -98,6 +101,7 @@ namespace MonoDevelop.Ide.Gui
 #endif
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
+		public event EventHandler WorkbenchTabsChanged;
 		
 		public MonoDevelop.Ide.StatusBar StatusBar {
 			get {
@@ -216,8 +220,14 @@ namespace MonoDevelop.Ide.Gui
 			SetAppIcons ();
 
 			IdeApp.CommandService.SetRootWindow (this);
+			DockNotebook.NotebookChanged += NotebookPagesChanged;
 		}
-		
+
+		void NotebookPagesChanged (object sender, EventArgs e)
+		{
+			WorkbenchTabsChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		void SetAppIcons ()
 		{
 			//first try to get the icon from the GTK icon theme
@@ -832,7 +842,24 @@ namespace MonoDevelop.Ide.Gui
 
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
-			
+			dock.LayoutChanged += (o, e) => {
+				if (saveTimer != null) {
+					saveTimer.Stop ();
+					saveTimer.Dispose ();
+				}
+
+				// Save the layout changes after 10 seconds.
+				saveTimer = new Timer (10000);
+				saveTimer.Elapsed += (s, ev) => {
+					Runtime.RunInMainThread (() => {
+						dock.SaveLayouts (configFile);
+						saveTimer.Dispose ();
+						saveTimer = null;
+					});
+				};
+				saveTimer.Start ();
+			};
+
 			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
 			IdeApp.Preferences.WorkbenchCompactness.Changed += delegate {
 				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
