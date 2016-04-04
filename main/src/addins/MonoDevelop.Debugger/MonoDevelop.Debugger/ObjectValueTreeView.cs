@@ -188,7 +188,7 @@ namespace MonoDevelop.Debugger
 					Uri uri;
 					if (value != null && Uri.TryCreate (value.Trim ('"', '{', '}'), UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
 						Underline = Pango.Underline.Single;
-						Foreground = "#197CEF";
+						Foreground = Ide.Gui.Styles.LinkForegroundColor.ToHexString (false);
 					} else {
 						Underline = Pango.Underline.None;
 					}
