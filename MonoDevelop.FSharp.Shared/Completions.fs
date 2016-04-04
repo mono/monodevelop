@@ -1,4 +1,4 @@
-﻿namespace MonoDevelop.FSharpInteractive
+﻿namespace MonoDevelop.FSharp.Shared
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
@@ -10,12 +10,6 @@ type CompletionData = {
     icon: string
     overloads: CompletionData list
     description: string
-}
-
-type Tooltip = {
-    signature: string
-    summary: string
-    footer: string
 }
 
 module Completion =
@@ -43,6 +37,33 @@ module Completion =
                                     else
                                         false)
         | _ -> false
+
+    let symbolToIcon (symbolUse:FSharpSymbolUse) =
+        match symbolUse with
+        | ActivePatternCase _ -> "ActivePatternCase"
+        | Field _ -> "Field"
+        | UnionCase _ -> "UnionCase"
+        | Class _ -> "Class"
+        | Delegate _ -> "Delegate"
+        | Constructor _  -> "Constructor"
+        | Event _ -> "Event"
+        | Property _ -> "Property"
+        | Function f ->
+            if f.IsExtensionMember then "ExtensionMethod"
+            elif f.IsMember then "Method"
+            else "Field"
+        | Operator _ -> "Operator"
+        | ClosureOrNestedFunction _ -> "ClosureOrNestedFunction"
+        | Val _ -> "Val"
+        | Enum _ -> "Enum"
+        | Interface _ -> "Interface"
+        | Module _ -> "Module"
+        | Namespace _ -> "Namespace"
+        | Record _ -> "Record"
+        | Union _ -> "Union"
+        | ValueType _ -> "ValueType"
+        | SymbolUse.Entity _ -> "Entity"
+        | _ -> "Event"
 
     let symbolToCompletionData (symbols : FSharpSymbolUse list) =
         let getCompletion displayText symbol = 
@@ -74,7 +95,7 @@ module Completion =
             completion
         | _ -> None
 
-    let getHashDirectives =
+    let hashDirectives =
         [
             { displayText = "#r"; category ="keywords"; icon = "md-keyword"; description = "Reference (dynamically load) the given DLL"; overloads = [] }
             { displayText = "#I"; category ="keywords"; icon = "md-keyword"; description = "Add the given search path for referenced DLLs"; overloads = [] }
@@ -84,7 +105,7 @@ module Completion =
             { displayText = "#quit"; category ="keywords"; icon = "md-keyword"; description = "Exit"; overloads = [] }
         ]
          
-    let mutable symbolList: FSharpSymbolUse list = List.empty
+    let mutable symbolList = List.empty
     let getCompletions (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
             let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
@@ -93,23 +114,27 @@ module Completion =
             let results = symbols 
                           |> List.choose symbolToCompletionData
 
-            let completions = results |> List.map (fun f -> fst f)
-            symbolList <- results |> List.map (fun f -> snd f)
+            let completions, symbols = results |> List.unzip
+            symbolList <- symbols
             if longName.Length = 0 && residue.Length = 0 then
                 return completions
-                |> List.append getHashDirectives
+                |> List.append hashDirectives
             else
                 return completions
         }
 
     let getCompletionTooltip filter =
         async {
-            let symbol = 
-                symbolList |> List.tryFind (fun sym -> sym.Symbol.DisplayName = filter)
-            
-            match symbol with
-            | Some sym ->
-                return! SymbolTooltips.getTooltipInformation symbol.Value false
-            | None -> 
-                return MonoDevelop.Ide.CodeCompletion.TooltipInformation()
+            let symbol =
+                symbolList 
+                |> List.tryFind (fun sym -> sym.Symbol.DisplayName = filter)
+
+            return
+                match symbol with 
+                | Some symbol' ->
+                    match SymbolTooltips.getTooltipFromSymbolUse symbol' with
+                    | Some tooltip -> ToolTip tooltip
+                    | None -> EmptyTip
+                | None ->
+                    EmptyTip
         }

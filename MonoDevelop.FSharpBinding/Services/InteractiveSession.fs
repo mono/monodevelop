@@ -28,7 +28,7 @@ type InteractiveSession() =
     let (|Tooltip|_|) (command: string) =
         if command.StartsWith("tooltip ") then
             let payload = command.[8..]
-            Some (JsonConvert.DeserializeObject<TooltipInformation> payload)
+            Some (JsonConvert.DeserializeObject<MonoDevelop.FSharp.Shared.ToolTips> payload)
         else
             None
 
@@ -66,7 +66,7 @@ type InteractiveSession() =
         stream.Flush()
 
     let completionsReceivedEvent = new Event<CompletionData list>()
-    let tooltipReceivedEvent = new Event<TooltipInformation>()
+    let tooltipReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ToolTips>()
     do
         fsiProcess.OutputDataReceived
           |> Event.filter (fun de -> de.Data <> null)

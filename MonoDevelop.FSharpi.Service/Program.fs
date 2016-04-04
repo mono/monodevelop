@@ -2,12 +2,10 @@
 open System
 open System.IO
 open System.Text
-open MonoDevelop.Core
-open MonoDevelop.Ide
 open Newtonsoft.Json
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
-
+open MonoDevelop.FSharp.Shared
 /// Wrapper for fsi with support for returning completions
 module CompletionServer =
     [<EntryPoint>]
@@ -15,10 +13,7 @@ module CompletionServer =
         let inStream = Console.In
         let outStream = Console.Out
 
-        Console.SetOut TextWriter.Null
-        Runtime.Initialize false
 
-        MonoDevelop.Projects.HelpService.AsyncInitialize()
 
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
 

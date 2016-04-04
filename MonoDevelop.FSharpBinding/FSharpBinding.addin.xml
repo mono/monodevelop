@@ -3,6 +3,7 @@
     <Import file="FSharp.Core.dll" />
     <Import assembly="FSharpBinding.dll" />
     <Import assembly="FSharpBinding.Gui.dll" />
+    <Import assembly="MonoDevelop.FSharp.Shared.dll" />
     <Import file="FSharp.Compiler.Service.dll" />
     <Import assembly="FantomasLib.dll" />
     <Import assembly="FSharp.Compiler.CodeDom.dll" />
