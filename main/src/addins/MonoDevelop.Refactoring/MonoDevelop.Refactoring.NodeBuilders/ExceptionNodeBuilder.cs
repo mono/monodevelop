@@ -1,5 +1,5 @@
 ﻿//
-// AnalyzerFolderNodeBuilder.cs
+// ExceptionNodeBuilder.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,54 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.IO;
 using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.Refactoring.NodeBuilders
 {
-	class AnalyzerFolderNodeBuilder : TypeNodeBuilder
+	class ExceptionNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
-			get { return typeof(AnalyzerFolderNode); }
+			get { return typeof (Exception); }
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "Analyzers";
+			return "Exception";
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			nodeInfo.Label = GettextCatalog.GetString ("Analyzers");
-			nodeInfo.Icon = Context.GetIcon ("md-reference-package");
-		}
-
-		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
-		{
-			return true;
-		}
-
-		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
-		{
-			var folderNode = (AnalyzerFolderNode)dataObject;
-			var shadowLoader = new ShadowCopyAnalyzerAssemblyLoader ();
-			foreach (var item in folderNode.Analyzers) {
-				if (File.Exists (item.FilePath)) {
-					var assembly = shadowLoader.LoadCore (item.FilePath);
-					var loader = new AnalyzersFromAssembly ();
-					try {
-						loader.AddAssembly (assembly, true);
-						treeBuilder.AddChild (loader);
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while getting analyzers from assembly", e);
-						treeBuilder.AddChild (e);
-					}
-				}
-			}
+			var e = (Exception)dataObject;
+			nodeInfo.Label = string.Format (GettextCatalog.GetString ("Error: {0}"), e.Message);
+			nodeInfo.Icon = Context.GetIcon ("md-error");
 		}
 	}
 }
+

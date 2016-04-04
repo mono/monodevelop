@@ -167,6 +167,7 @@
 		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.AnalyzerFolderNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.AnalyzerNodeBuilder" />
 		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.AnalyzersFromAssemblyNodeBuilder" />
+		<NodeBuilder class="MonoDevelop.Refactoring.NodeBuilders.ExceptionNodeBuilder" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
