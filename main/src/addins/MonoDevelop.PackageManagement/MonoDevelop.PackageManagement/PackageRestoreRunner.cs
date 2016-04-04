@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageRestoreRunner
+	internal class PackageRestoreRunner
 	{
 		IPackageManagementSolution solution;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
@@ -46,6 +46,15 @@ namespace MonoDevelop.PackageManagement
 		public PackageRestoreRunner()
 			: this(
 				PackageManagementServices.Solution,
+				PackageManagementServices.ProgressMonitorFactory,
+				PackageManagementServices.PackageManagementEvents,
+				PackageManagementServices.ProgressProvider)
+		{
+		}
+
+		internal PackageRestoreRunner (IPackageManagementSolution solution)
+			: this (
+				solution,
 				PackageManagementServices.ProgressMonitorFactory,
 				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.ProgressProvider)

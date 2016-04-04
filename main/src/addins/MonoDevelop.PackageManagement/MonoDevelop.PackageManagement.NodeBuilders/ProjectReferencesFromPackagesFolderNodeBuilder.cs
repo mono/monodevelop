@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectReferencesFromPackagesFolderNodeBuilder : TypeNodeBuilder
+	internal class ProjectReferencesFromPackagesFolderNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(ProjectReferencesFromPackagesFolderNode); }
@@ -65,9 +65,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			foreach (ProjectReference projectReference in GetReferencesFromPackages (dataObject)) {
-				treeBuilder.AddChild (projectReference);
-			}
+			treeBuilder.AddChildren (GetReferencesFromPackages (dataObject));
 		}
 
 		IEnumerable<ProjectReference> GetReferencesFromPackages (object dataObject)

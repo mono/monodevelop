@@ -1,5 +1,5 @@
 //
-// WrapperDesignView.cs: base class for wrapping an IViewContent. Heavily based on 
+// WrapperDesignView.cs: base class for wrapping an ViewContent. Heavily based on 
 //         MonoDevelop.GtkCore.GuiBuilder.CombinedDesignView
 //
 // Author:
@@ -31,28 +31,30 @@
 
 using System;
 
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.DesignerSupport
 {
 	
-	public class WrapperDesignView : AbstractViewContent
+	public class WrapperDesignView : ViewContent
 	{
-		IViewContent content;
+		ViewContent content;
 		Gtk.VBox contentBox;
 		Gtk.Widget topBar;
 		
-		public WrapperDesignView  (IViewContent content)
+		public WrapperDesignView  (ViewContent content)
 		{
 			this.content = content;
 			this.contentBox = new Gtk.VBox ();
 			this.contentBox.PackEnd (content.Control, true, true, 0);
 			this.contentBox.ShowAll ();
 			
-			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
-			
+
 			IdeApp.Workbench.ActiveDocumentChanged += new EventHandler (OnActiveDocumentChanged);
 		}
 		
@@ -76,50 +78,53 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		protected IViewContent Content {
+		protected ViewContent Content {
 			get { return content; }
 		}
 		
-		public override MonoDevelop.Projects.Project Project {
-			get { return base.Project; }
-			set { 
-				base.Project = value; 
-				content.Project = value; 
+		protected override void OnSetProject (MonoDevelop.Projects.Project project)
+		{
+			base.OnSetProject (project);
+			content.Project = project;
+		}
+
+		public override ProjectReloadCapability ProjectReloadCapability {
+			get {
+				return content.ProjectReloadCapability;
 			}
 		}
 		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			content.WorkbenchWindow = WorkbenchWindow;
 		}
 		
 		public override void Dispose ()
 		{
-			content.ContentChanged -= new EventHandler (OnTextContentChanged);
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			base.Dispose ();
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = fileOpenInformation.FileName;
-			content.Load (ContentName);
+			return content.Load (ContentName);
 		}
 		
-		public override void LoadNew (System.IO.Stream content, string mimeType)
+		public override Task LoadNew (System.IO.Stream content, string mimeType)
 		{
-			this.content.LoadNew (content, mimeType);
+			return this.content.LoadNew (content, mimeType);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return contentBox; }
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save (fileSaveInformation);
+			return content.Save (fileSaveInformation);
 		}
 		
 		public override bool IsDirty {
@@ -138,19 +143,15 @@ namespace MonoDevelop.DesignerSupport
 			}
 		}
 		
-		public override string ContentName {
-			get { return content.ContentName; }
-			set { content.ContentName = value; }
-		}
-				
-		void OnTextContentChanged (object s, EventArgs args)
+		protected override void OnContentNameChanged ()
 		{
-			OnContentChanged (args);
+			base.OnContentNameChanged ();
+			content.ContentName = ContentName;
 		}
-		
+
 		void OnTextDirtyChanged (object s, EventArgs args)
 		{
-			OnDirtyChanged (args);
+			OnDirtyChanged ();
 		}
 		
 		void OnActiveDocumentChanged (object s, EventArgs args)
@@ -163,10 +164,10 @@ namespace MonoDevelop.DesignerSupport
 		protected virtual void OnDocumentActivated ()
 		{
 		}
-		
-		public override object GetContent (Type type)
+
+		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return base.GetContent (type) ?? content.GetContent (type);
+			return base.OnGetContents (type).Concat (content.GetContents (type));
 		}
 	}
 }

@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MSBuildTargetsRestoredMonitor : IDisposable
+	internal class MSBuildTargetsRestoredMonitor : IDisposable
 	{
 		IPackageManagementEvents packageManagementEvents;
 

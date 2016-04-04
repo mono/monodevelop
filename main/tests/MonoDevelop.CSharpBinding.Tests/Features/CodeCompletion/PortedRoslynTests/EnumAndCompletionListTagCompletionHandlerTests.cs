@@ -7,7 +7,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn
 {
 	[TestFixture]
-	public class EnumAndCompletionListTagCompletionProviderTests : CompletionTestBase
+	class EnumAndCompletionListTagCompletionProviderTests : CompletionTestBase
 	{
 		[Test]
 		public void NullableEnum()

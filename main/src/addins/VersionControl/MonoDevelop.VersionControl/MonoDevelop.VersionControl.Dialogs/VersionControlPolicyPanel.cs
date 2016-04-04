@@ -25,7 +25,7 @@
 //
 //
 
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl
 		CommitMessageStylePanelWidget widget;
 		CommitMessageFormat format;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			format = new CommitMessageFormat ();
 			widget = new CommitMessageStylePanelWidget ();

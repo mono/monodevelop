@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementOutputMessagesView : IPackageManagementOutputMessagesView
+	internal class PackageManagementOutputMessagesView : IPackageManagementOutputMessagesView
 	{
 		public static readonly string CategoryName = "PackageManagement";
 		

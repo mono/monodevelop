@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageRepositoryFactoryEvents
+	internal interface IPackageRepositoryFactoryEvents
 	{
 		event EventHandler<PackageRepositoryFactoryEventArgs> RepositoryCreated;
 	}

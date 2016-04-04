@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class AcceptLicensesEventArgs : EventArgs
+	internal class AcceptLicensesEventArgs : EventArgs
 	{
 		public AcceptLicensesEventArgs(IEnumerable<IPackage> packages)
 		{

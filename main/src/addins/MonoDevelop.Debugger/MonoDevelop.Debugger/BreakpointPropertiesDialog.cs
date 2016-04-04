@@ -36,6 +36,7 @@ using Xwt;
 using Xwt.Drawing;
 using System.Linq;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -203,7 +204,7 @@ namespace MonoDevelop.Debugger
 		public BreakpointPropertiesDialog (BreakEvent be, BreakpointType breakpointType)
 		{
 			this.be = be;
-			LoadExceptionList ();
+			Task.Run (LoadExceptionList);
 			Initialize ();
 			SetInitialData ();
 			SetLayout ();
@@ -441,7 +442,7 @@ namespace MonoDevelop.Debugger
 			public void Update (string location)
 			{
 				if (string.IsNullOrWhiteSpace (location)) {
-					Warning = GettextCatalog.GetString ("Enter location");
+					Warning = GettextCatalog.GetString ("Enter location.");
 					return;
 				}
 				var splitted = location.Split (':');
@@ -455,22 +456,22 @@ namespace MonoDevelop.Debugger
 						}
 						splitted = newSplitted;
 					} else {
-						Warning = GettextCatalog.GetString ("File does not exist");
+						Warning = GettextCatalog.GetString ("File does not exist.");
 						return;
 					}
 				}
 				if (splitted.Length < 2) {
-					Warning = GettextCatalog.GetString ("Missing ':' for line declaration");
+					Warning = GettextCatalog.GetString ("Missing ':' for line declaration.");
 					return;
 				}
 				FileName = splitted [0];
 				if (!int.TryParse (splitted [1], out line)) {
-					Warning = GettextCatalog.GetString ("Line is not a number");
+					Warning = GettextCatalog.GetString ("Line is not a number.");
 					return;
 				}
 
 				if (splitted.Length > 2 && !int.TryParse (splitted [2], out column)) {
-					Warning = GettextCatalog.GetString ("Column is not a number");
+					Warning = GettextCatalog.GetString ("Column is not a number.");
 					return;
 				} else {
 					column = 1;
@@ -486,7 +487,7 @@ namespace MonoDevelop.Debugger
 			public void Update (string filePath, int line, int column)
 			{
 				if (!System.IO.File.Exists (filePath)) {
-					Warning = GettextCatalog.GetString ("File does not exist");
+					Warning = GettextCatalog.GetString ("File does not exist.");
 				} else {
 					Warning = "";
 				}
@@ -617,7 +618,7 @@ namespace MonoDevelop.Debugger
 
 			if (breakpointActionPrint.Active && string.IsNullOrWhiteSpace (entryPrintExpression.Text)) {
 				warningPrintExpression.Show ();
-				warningPrintExpression.ToolTip = GettextCatalog.GetString ("Trace expression not specified");
+				warningPrintExpression.ToolTip = GettextCatalog.GetString ("Enter trace expression.");
 				result = false;
 			}
 
@@ -627,13 +628,13 @@ namespace MonoDevelop.Debugger
 				if (stopOnFunction.Active) {
 					if (text.Length == 0) {
 						warningFunction.Show ();
-						warningFunction.ToolTip = GettextCatalog.GetString ("Function name not specified");
+						warningFunction.ToolTip = GettextCatalog.GetString ("Enter function name.");
 						result = false;
 					}
 
 					if (!TryParseFunction (text, out parsedFunction, out parsedParamTypes)) {
 						warningFunction.Show ();
-						warningFunction.ToolTip = GettextCatalog.GetString ("Invalid function syntax");
+						warningFunction.ToolTip = GettextCatalog.GetString ("Invalid function syntax.");
 						result = false;
 					}
 				}
@@ -645,10 +646,16 @@ namespace MonoDevelop.Debugger
 					result = false;
 				}
 			} else if (stopOnException.Active) {
-				if (!classes.Contains (entryExceptionType.Text)) {
+				if (string.IsNullOrWhiteSpace (entryExceptionType.Text)) {
 					warningException.Show ();
-					warningException.ToolTip = GettextCatalog.GetString ("Exception not identified");
+					warningException.ToolTip = GettextCatalog.GetString ("Enter exception type.");
 					result = false;
+				} else if (!classes.Contains (entryExceptionType.Text)) {
+					warningException.Show ();
+					warningException.ToolTip = GettextCatalog.GetString ("Exception not identified in exception list generated from currently selected project.");
+					//We might be missing some exceptions that are loaded at runtime from outside our project
+					//or we don't have project at all, hence show warning but still allow user to close window
+					result = true;
 				}
 			}
 			return result;
@@ -684,29 +691,35 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		void LoadExceptionList ()
+		async Task LoadExceptionList ()
 		{
 			classes.Add ("System.Exception");
-			if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
-				var compilation = TypeSystemService.GetCompilationAsync (IdeApp.ProjectOperations.CurrentSelectedProject).Result;
+			try {
+				Microsoft.CodeAnalysis.Compilation compilation = null;
+				Microsoft.CodeAnalysis.ProjectId dummyProjectId = null;
+				if (IdeApp.ProjectOperations.CurrentSelectedProject != null) {
+					compilation = await TypeSystemService.GetCompilationAsync (IdeApp.ProjectOperations.CurrentSelectedProject);
+				}
+				if (compilation == null) {
+					//no need to unload this assembly context, it's not cached.
+					dummyProjectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("GetExceptionsProject");
+					compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create ("GetExceptions")
+											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (object)).Location))//corlib
+											   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof (Uri)).Location));//System.dll
+				}
 				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
 				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
 					classes.Add (t.GetFullMetadataName ());
 				}
-			} else {
-				//no need to unload this assembly context, it's not cached.
-				var dummyProjectId = Microsoft.CodeAnalysis.ProjectId.CreateNewId ("GetExceptionsProject");
-				var compilation = Microsoft.CodeAnalysis.CSharp.CSharpCompilation.Create ("GetExceptions")
-										   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof(object)).Location))//corlib
-										   .AddReferences (MetadataReferenceCache.LoadReference (dummyProjectId, System.Reflection.Assembly.GetAssembly (typeof(Uri)).Location));//System.dll
-
-				var exceptionClass = compilation.GetTypeByMetadataName ("System.Exception");
-				foreach (var t in compilation.GlobalNamespace.GetAllTypes ().Where ((arg) => arg.IsDerivedFromClass (exceptionClass))) {
-					classes.Add (t.GetFullMetadataName ());
+				if (dummyProjectId != null) {
+					MetadataReferenceCache.RemoveReferences (dummyProjectId);
 				}
-				MetadataReferenceCache.RemoveReferences (dummyProjectId);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to obtain exceptions list in breakpoint dialog.", e);
 			}
-			entryExceptionType.SetCodeCompletionList (classes.ToList ());
+			await Runtime.RunInMainThread (() => {
+				entryExceptionType.SetCodeCompletionList (classes.ToList ());
+			});
 		}
 
 		public BreakEvent GetBreakEvent ()

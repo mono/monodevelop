@@ -171,7 +171,7 @@ namespace WindowsPlatform.MainToolbar
 			set	{
 				toolbar.SearchBar.SearchText = value;
 				FocusSearchBar ();
-				toolbar.SearchBar.SearchBar.SelectAll ();
+				toolbar.SearchBar.SearchBar.Select (value.Length, 0);
 			}
 		}
 

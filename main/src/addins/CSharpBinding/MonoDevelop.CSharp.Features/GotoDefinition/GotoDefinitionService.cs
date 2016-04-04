@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.GotoDefinition
 {
-	public static class GoToDefinitionService
+	static class GoToDefinitionService
 	{
 		/// <summary>
 		/// Navigate to the first source location of a given symbol.

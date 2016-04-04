@@ -5,7 +5,7 @@ using RefactoringEssentials;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateMember.GenerateDefaultConstructors
 {
-	public class GenerateDefaultConstructorsResult : AbstractCodeRefactoringResult
+	class GenerateDefaultConstructorsResult : AbstractCodeRefactoringResult
 	{
 		public static readonly GenerateDefaultConstructorsResult Failure = new GenerateDefaultConstructorsResult(null);
 

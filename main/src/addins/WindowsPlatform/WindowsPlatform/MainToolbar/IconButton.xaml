@@ -19,7 +19,7 @@
                 </Border>
             </ControlTemplate>
         </Button.Template>
-        <Image x:Name="RunIcon" Source="{Binding CurrentImage}" UseLayoutRounding="True"
+        <platform:ImageBox x:Name="RunIcon" UseLayoutRounding="True"
     		MouseLeftButtonDown="OnMouseLeftButtonDown" Width="24" Height="24" Margin="-1" />
     </Button>
 </UserControl>

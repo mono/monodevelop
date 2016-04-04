@@ -15305,8 +15305,8 @@ msgid "Print operation failed."
 msgstr "Druckoperation fehlgeschlagen."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
-msgid "Press 'F2' for focus"
-msgstr "'F2' für Fokus"
+msgid "Press F2 to focus"
+msgstr "F2 für Fokus"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:185
 msgid "Clipboard ring"

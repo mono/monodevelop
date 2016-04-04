@@ -45,8 +45,8 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		{
 			var folder = (WebReferenceFolder) dataObject;
 			nodeInfo.Label = folder.IsWCF ? GettextCatalog.GetString ("Web Services") : GettextCatalog.GetString ("Web References");
-			nodeInfo.Icon = Context.GetIcon (Stock.OpenReferenceFolder);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
+			nodeInfo.Icon = Context.GetIcon ("md-webreference-folder");
+			nodeInfo.ClosedIcon = Context.GetIcon ("md-webreference-folder");
 			
 		}
 		
@@ -65,11 +65,9 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		{
 			var folder = (WebReferenceFolder) dataObject;
 			if (folder.IsWCF)
-				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWCF (folder.Project))
-					treeBuilder.AddChild(item);
+				treeBuilder.AddChildren (WebReferencesService.GetWebReferenceItemsWCF (folder.Project));
 			else
-				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWS (folder.Project))
-					treeBuilder.AddChild(item);
+				treeBuilder.AddChildren (WebReferencesService.GetWebReferenceItemsWS (folder.Project));
 		}
 		
 		/// <summary>Compare two object with one another and returns a number based on their sort order.</summary>

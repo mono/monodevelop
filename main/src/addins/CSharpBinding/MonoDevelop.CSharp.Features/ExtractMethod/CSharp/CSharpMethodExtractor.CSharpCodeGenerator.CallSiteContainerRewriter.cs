@@ -10,7 +10,7 @@ using Roslyn.Utilities;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpMethodExtractor
+	partial class CSharpMethodExtractor
     {
         private abstract partial class CSharpCodeGenerator
         {

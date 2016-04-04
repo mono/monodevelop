@@ -434,9 +434,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 		}
 	}
 
-	#if NR6
-	public
-	#endif
 	class CSharpTypeInferenceService
 	{
 		readonly static Type typeInfo;

@@ -26,6 +26,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		protected virtual void Build()
 		{
+#pragma warning disable 436
 			global::Stetic.Gui.Initialize(this);
 			// Widget MonoDevelop.AssemblyBrowser.AssemblyBrowserWidget
 			Stetic.BinContainer w1 = global::Stetic.BinContainer.Attach(this);

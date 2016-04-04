@@ -11,7 +11,7 @@ using MonoDevelop.Components;
 namespace MonoDevelop.PackageManagement
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PackageSourcesWidget : Gtk.Bin
+	internal partial class PackageSourcesWidget : Gtk.Bin
 	{
 		RegisteredPackageSourcesViewModel viewModel;
 		ListStore packageSourcesStore;

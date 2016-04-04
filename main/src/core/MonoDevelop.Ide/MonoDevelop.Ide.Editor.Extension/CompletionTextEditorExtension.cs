@@ -57,7 +57,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			get { return completionWidget; }
 			set
 			{
+				if (completionWidget != null)
+					completionWidget.CompletionContextChanged -= OnCompletionContextChanged;
 				completionWidget = value;
+				if (completionWidget != null)
+					completionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			}
 		}
 
@@ -89,12 +93,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
-		public override bool KeyPress (KeyDescriptor descriptor)
+		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
 			bool res;
 			if (CurrentCompletionContext != null) {
-				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
-					CompletionWindowManager.PostProcessKeyEvent (descriptor);
+				if (await CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
+					await CompletionWindowManager.PostProcessKeyEvent (descriptor);
 					autoHideCompletionWindow = true;
 					// in named parameter case leave the parameter window open.
 					autoHideParameterWindow = descriptor.KeyChar != ':';
@@ -120,9 +124,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (descriptor.SpecialKey == SpecialKey.BackSpace && Editor.CaretOffset > 0)
 				deleteOrBackspaceTriggerChar = Editor.GetCharAt (Editor.CaretOffset - 1);
 			
-			res = base.KeyPress (descriptor);
+			res = await base.KeyPress (descriptor);
 
-			CompletionWindowManager.PostProcessKeyEvent (descriptor);
+			await CompletionWindowManager.PostProcessKeyEvent (descriptor);
 
 			var ignoreMods = ModifierKeys.Control | ModifierKeys.Alt
 				| ModifierKeys.Command;
@@ -155,16 +159,14 @@ namespace MonoDevelop.Ide.Editor.Extension
 						};
 						CompletionWindowManager.WindowClosed += windowClosed;
 
-						task.ContinueWith (t => {
-							CompletionWindowManager.WindowClosed -= windowClosed;
-							if (token.IsCancellationRequested)
-								return;
-							var result = t.Result;
+						var result = await task;
+						CompletionWindowManager.WindowClosed -= windowClosed;
+						if (!token.IsCancellationRequested) {
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
 
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+															  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
@@ -175,7 +177,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								CompletionWindowManager.HideWindow ();
 								CurrentCompletionContext = null;
 							}
-						}, Runtime.MainTaskScheduler);
+						}
 					} else {
 						CurrentCompletionContext = null;
 					}
@@ -212,11 +214,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 						};
 						CompletionWindowManager.WindowClosed += windowClosed;
 
-						task.ContinueWith (t => {
-							CompletionWindowManager.WindowClosed -= windowClosed;
-							if (token.IsCancellationRequested)
-								return;
-							var result = t.Result;
+						var result = await task;
+						CompletionWindowManager.WindowClosed -= windowClosed;
+						if (!token.IsCancellationRequested) {
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
 
@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								CompletionWindowManager.HideWindow ();
 								CurrentCompletionContext = null;
 							}
-						}, Runtime.MainTaskScheduler);
+						}
 					} else {
 						CurrentCompletionContext = null;
 					}
@@ -255,10 +255,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				try {
 					var task = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token);
 					if (task != null) {
-						task.ContinueWith (t => {
-							if (!token.IsCancellationRequested && t.Result != null)
-								ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, t.Result);
-						}, Runtime.MainTaskScheduler);
+						var result = await task;
+						if (!token.IsCancellationRequested && result != null)
+							ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, result);
 					}
 				} catch (TaskCanceledException) {
 				} catch (AggregateException) {
@@ -289,15 +288,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			autoHideCompletionWindow = autoHideParameterWindow = true;
 		}
 
-		public virtual Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token)
+		public virtual Task<int> GetCurrentParameterIndex (int startOffset, CancellationToken token = default(CancellationToken))
 		{
 			return Task.FromResult (-1);
-		}
-
-		[Obsolete("Use GetCurrentParameterIndex (int startOffset, CancellationToken token)")]
-		public virtual int GetCurrentParameterIndex (int startOffset)
-		{
-			return GetCurrentParameterIndex (startOffset, default(CancellationToken)).Result;
 		}
 
 		internal protected virtual void OnCompletionContextChanged (object o, EventArgs a)
@@ -546,11 +539,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			return null;
 		}
 
-		public virtual int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
+		public virtual async Task<int> GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload, System.Threading.CancellationToken token)
 		{
-			int cparam = GetCurrentParameterIndex (provider.StartOffset, default(CancellationToken)).Result;
-
 			var currentHintingData = provider [currentOverload];
+			int cparam = await GetCurrentParameterIndex (provider.StartOffset, token).ConfigureAwait (false);
 			if (cparam > currentHintingData.ParameterCount && !currentHintingData.IsParameterListAllowed) {
 				// Look for an overload which has more parameters
 				int bestOverload = -1;
@@ -581,23 +573,20 @@ namespace MonoDevelop.Ide.Editor.Extension
 //			CompletionWindowManager.HideWindow ();
 //		}
 //
-//		void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
-//		{
-//			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
-//			CompletionWindowManager.HideWindow ();
-//		}
+		void HandleFocusOutEvent (object sender, EventArgs args)
+		{
+			ParameterInformationWindowManager.HideWindow (this, CompletionWidget);
+			CompletionWindowManager.HideWindow ();
+		}
 
 		protected override void Initialize ()
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 			CompletionWidget = DocumentContext.GetContent <ICompletionWidget> () ?? CompletionWidget;
-			if (CompletionWidget != null)
-				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
 			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
-//			if (document.Editor.Parent != null)
-//				document.Editor.Parent.TextArea.FocusOutEvent += HandleFocusOutEvent;
+			Editor.FocusLost += HandleFocusOutEvent;
 		}
 
 		internal void InternalInitialize ()
@@ -629,8 +618,7 @@ namespace MonoDevelop.Ide.Editor.Extension
                 ParameterInformationWindowManager.HideWindow(this, CompletionWidget);
 
                 disposed = true;
-                //				if (document.Editor.Parent != null)
-                //					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
+                Editor.FocusLost -= HandleFocusOutEvent;
                 //				document.Editor.Paste -= HandlePaste;
 				Deinitialize();
             }
@@ -641,8 +629,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			Editor.CaretPositionChanged -= HandlePositionChanged;
 			CompletionWindowManager.WindowClosed -= HandleWindowClosed;
-			if (CompletionWidget != null)
-				CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;
+			CompletionWidget = null;
 		}
 	}
 

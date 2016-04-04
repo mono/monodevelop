@@ -28,7 +28,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
-	public class DelegateContextTests : TestBase
+	class DelegateContextTests : TestBase
 	{
 		/// <summary>
 		/// Bug 4483 - Completion too aggressive for anonymous methods

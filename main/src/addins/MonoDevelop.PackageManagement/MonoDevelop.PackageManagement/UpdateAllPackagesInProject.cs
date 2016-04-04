@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdateAllPackagesInProject : UpdatePackageActions
+	internal class UpdateAllPackagesInProject : UpdatePackageActions
 	{
 		IPackageManagementProject project;
 		

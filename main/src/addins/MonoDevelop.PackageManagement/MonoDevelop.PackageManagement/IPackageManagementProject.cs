@@ -37,7 +37,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementProject
+	internal interface IPackageManagementProject
 	{
 		event EventHandler<PackageOperationEventArgs> PackageInstalled;
 		event EventHandler<PackageOperationEventArgs> PackageUninstalled;

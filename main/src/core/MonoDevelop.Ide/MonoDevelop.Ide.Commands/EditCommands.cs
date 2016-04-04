@@ -56,7 +56,6 @@ namespace MonoDevelop.Ide.Commands
 		RemoveTrailingWhiteSpaces,
 		
 		JoinWithNextLine,
-		WordCount,
 		MonodevelopPreferences,
 		DefaultPolicies,
 		InsertStandardHeader,
@@ -157,6 +156,15 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
+			#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			var cmd = System.Windows.Input.ApplicationCommands.Copy;
+			if (wintv != null && cmd.CanExecute (null, wintv)) {
+				cmd.Execute (null, wintv);
+				return;
+			}
+			#endif
+
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
 				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
 				if (editable != null) {
@@ -177,14 +185,6 @@ namespace MonoDevelop.Ide.Commands
 				}
 #endif
 			}
-#if WIN32
-			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			var cmd = System.Windows.Input.ApplicationCommands.Copy;
-			if (wintv != null && cmd.CanExecute (null, wintv)) {
-				cmd.Execute (null, wintv);
-				return;
-			}
-#endif
 		}
 
 		protected override void Update (CommandInfo info)
@@ -207,6 +207,15 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
+			#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			var cmd = System.Windows.Input.ApplicationCommands.Cut;
+			if (wintv != null && cmd.CanExecute(null, wintv)) {
+				cmd.Execute(null, wintv);
+				return;
+			}
+			#endif
+
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
 				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
 				if (editable != null) {
@@ -227,14 +236,6 @@ namespace MonoDevelop.Ide.Commands
 				}
 #endif
 			}
-#if WIN32
-			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			var cmd = System.Windows.Input.ApplicationCommands.Cut;
-			if (wintv != null && cmd.CanExecute(null, wintv)) {
-				cmd.Execute(null, wintv);
-				return;
-			}
-#endif
 		}
 
 		protected override void Update (CommandInfo info)
@@ -265,6 +266,14 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
+			#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			var cmd = System.Windows.Input.ApplicationCommands.Paste;
+			if (wintv != null && cmd.CanExecute (null, wintv)) {
+				cmd.Execute (null, wintv);
+				return;
+			}
+			#endif
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
 				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
 				if (editable != null) {
@@ -285,14 +294,6 @@ namespace MonoDevelop.Ide.Commands
 				}
 #endif
 			}
-#if WIN32
-			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			var cmd = System.Windows.Input.ApplicationCommands.Paste;
-			if (wintv != null && cmd.CanExecute (null, wintv)) {
-				cmd.Execute (null, wintv);
-				return;
-			}
-#endif
 		}
 
 		protected override void Update (CommandInfo info)
@@ -342,6 +343,14 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Run ()
 		{
+			#if WIN32
+			var wintv = System.Windows.Input.Keyboard.FocusedElement;
+			var cmd = System.Windows.Input.ApplicationCommands.SelectAll;
+			if (wintv != null && cmd.CanExecute (null, wintv)) {
+				cmd.Execute (null, wintv);
+				return;
+			}
+			#endif
 			if (IdeApp.Workbench.RootWindow.HasToplevelFocus) {
 				Gtk.Editable editable = IdeApp.Workbench.RootWindow.Focus as Gtk.Editable;
 				if (editable != null) {
@@ -361,14 +370,6 @@ namespace MonoDevelop.Ide.Commands
 				}
 #endif
 			}
-#if WIN32
-			var wintv = System.Windows.Input.Keyboard.FocusedElement;
-			var cmd = System.Windows.Input.ApplicationCommands.SelectAll;
-            if (wintv != null && cmd.CanExecute (null, wintv)) {
-				cmd.Execute (null, wintv);
-				return;
-			}
-#endif
 		}
 
 		protected override void Update (CommandInfo info)

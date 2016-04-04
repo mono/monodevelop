@@ -44,10 +44,16 @@ using Pango;
 using System.IO;
 using Mono.Addins;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	internal class CommonAboutDialog : Dialog
+	public static class AboutDialogImage
+	{
+		public static string Name =  "AboutImage.png";
+	}
+
+	internal class CommonAboutDialog : IdeDialog
 	{
 		public CommonAboutDialog ()
 		{

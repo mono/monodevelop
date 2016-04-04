@@ -278,8 +278,8 @@ namespace MonoDevelop.Projects.MSBuild
 			var taskId = Interlocked.Increment (ref lastTaskId);
 			IDisposable cr = null;
 
-			refs = await Task.Run (() => {
-				using (referenceCacheLock.Enter ()) {
+			refs = await Task.Run (async () => {
+				using (await referenceCacheLock.EnterAsync ()) {
 					// Check again the cache, maybe the value was set while the task was starting
 					if (referenceCache.TryGetValue (id, out refs))
 						return refs;
@@ -374,11 +374,6 @@ namespace MonoDevelop.Projects.MSBuild
 				builder = null;
 			}
 		}
-		
-		~RemoteProjectBuilder ()
-		{
-			Dispose ();
-		}
 
 		void BeginOperation ()
 		{
@@ -404,6 +399,39 @@ namespace MonoDevelop.Projects.MSBuild
 		public bool IsBusy {
 			get {
 				return engine.IsBusy;
+			}
+		}
+
+		object usageLock = new object ();
+		public int references;
+		bool shuttingDown;
+
+		public bool AddReference ()
+		{
+			lock (usageLock) {
+				if (shuttingDown)
+					return false;
+				references++;
+				return true;
+			}
+		}
+
+		public void ReleaseReference ()
+		{
+			lock (usageLock) {
+				if (--references == 0 && shuttingDown)
+					Dispose ();
+			}
+		}
+
+		public void Shutdown ()
+		{
+			lock (usageLock) {
+				if (!shuttingDown) {
+					shuttingDown = true;
+					if (references == 0)
+						Dispose ();
+				}
 			}
 		}
 	}

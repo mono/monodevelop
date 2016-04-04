@@ -34,7 +34,7 @@ using MonoDevelop.CodeActions;
 namespace MonoDevelop.CodeIssues
 {
 	/// <summary>
-	/// The code diagnostic provider gives a list of code diagnostic & fix providers from an arbitrary source.
+	/// The code diagnostic provider gives a list of code diagnostic and fix providers from an arbitrary source.
 	/// </summary>
 	abstract class CodeDiagnosticProvider 
 	{

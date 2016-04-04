@@ -92,12 +92,12 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Interface providing the content widget
 		/// </summary>
-		IPadContent Content { get; }
+		PadContent Content { get; }
 		
 		/// <summary>
 		/// Returns a toolbar for the pad.
 		/// </summary>
-		DockItemToolbar GetToolbar (Gtk.PositionType position);
+		DockItemToolbar GetToolbar (DockPositionType position);
 		
 		/// <summary>
 		/// Brings the pad to the front.
@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Gui
 		bool isWorking;
 		bool hasErrors;
 		bool hasNewData;
-		IPadContent content;
+		PadContent content;
 		PadCodon codon;
 		DefaultWorkbench workbench;
 		
@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Gui
 			this.icon = codon.Icon;
 		}
 		
-		public IPadContent Content {
+		public PadContent Content {
 			get {
 				CreateContent ();
 				return content; 
@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public DockItemToolbar GetToolbar (Gtk.PositionType position)
+		public DockItemToolbar GetToolbar (DockPositionType position)
 		{
 			return Item.GetToolbar (position);
 		}

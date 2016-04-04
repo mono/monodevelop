@@ -12,7 +12,7 @@ namespace RefactoringEssentials
 	/// <summary>
 	/// Represents a set of transformations that can be applied to a piece of code.
 	/// </summary>
-	public class CodeRefactoring  //: ICodeRefactoring
+	class CodeRefactoring  //: ICodeRefactoring
 	{
 		private readonly CodeRefactoringProvider _provider;
 		private readonly IReadOnlyList<CodeAction> _actions;

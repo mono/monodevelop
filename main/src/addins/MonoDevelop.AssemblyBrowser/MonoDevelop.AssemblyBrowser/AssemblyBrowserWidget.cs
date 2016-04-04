@@ -256,7 +256,7 @@ namespace MonoDevelop.AssemblyBrowser
 			languageCombobox.AppendText (GettextCatalog.GetString ("C#"));
 			languageCombobox.Active = Math.Min (2, Math.Max (0, PropertyService.Get ("AssemblyBrowser.Language", 0)));
 			languageCombobox.Changed += LanguageComboboxhandleChanged;
-
+#pragma warning disable 618
 			loader = new CecilLoader (true);
 			loader.InterningProvider = new FastNonInterningProvider ();
 			loader.IncludeInternalMembers = true;
@@ -278,6 +278,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new BaseTypeFolderNodeBuilder (this),
 				new BaseTypeNodeBuilder (this)
 				}, new TreePadOption [0]);
+			TreeView.PublicApiOnly = comboboxVisibilty.Active == 0;
 			TreeView.AllowsMultipleSelection = false;
 			TreeView.SelectionChanged += HandleCursorChanged;
 
@@ -497,9 +498,9 @@ namespace MonoDevelop.AssemblyBrowser
 					if (p == null)
 						continue;
 					AppendTypeReference (result, p.Type);
-					if (p.IsRef)
+					if (p.IsOut)
 						result.Append ("&");
-					if (p.IsOut) {
+					if (p.IsRef) {
 						result.Append ("@");
 					}
 				}
@@ -1266,6 +1267,7 @@ namespace MonoDevelop.AssemblyBrowser
 						this.Open (link, loader);
 					}
 				});
+				marker.OnlyShowLinkOnHover = true;
 				underlineMarkers.Add (marker);
 				inspectEditor.AddMarker (marker);
 			}

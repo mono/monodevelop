@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
+	class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
 	{
 		public List<string> LoggedErrorMessages = new List<string> ();
 		public List<Exception> LoggedExceptions = new List<Exception> ();

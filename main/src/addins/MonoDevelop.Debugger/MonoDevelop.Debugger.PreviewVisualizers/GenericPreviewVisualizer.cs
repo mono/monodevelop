@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using Gtk;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
@@ -42,23 +43,16 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		public override Control GetVisualizerWidget (ObjectValue val)
 		{
 			string value = val.Value;
-			Gdk.Color col = new Gdk.Color (85, 85, 85);
+			Gdk.Color col = Styles.PreviewVisualizerTextColor.ToGdkColor ();
 
 			if (!val.IsNull && (val.TypeName == "string" || val.TypeName == "char[]"))
 				value = '"' + GetString (val) + '"';
 			if (DebuggingService.HasInlineVisualizer (val))
 				value = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
 
-			var label = new Gtk.Label (value);
-			var font = label.Style.FontDescription.Copy ();
-
-			if (font.SizeIsAbsolute) {
-				font.AbsoluteSize = font.Size - 1;
-			} else {
-				font.Size -= (int)(Pango.Scale.PangoScale);
-			}
-
-			label.ModifyFont (font);
+			var label = new Gtk.Label ();
+			label.Text = value;
+			label.ModifyFont (FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11));
 			label.ModifyFg (StateType.Normal, col);
 			label.SetPadding (4, 4);
 

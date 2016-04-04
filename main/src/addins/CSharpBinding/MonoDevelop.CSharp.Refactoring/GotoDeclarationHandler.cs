@@ -75,9 +75,9 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, RefactoringSymbolInfo info)
 		{
 			if (info.Symbol != null)
-				IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, doc.Project);
+				RefactoringService.RoslynJumpToDeclaration (info.Symbol, doc.Project);
 			if (info.CandidateSymbols.Length > 0)
-				IdeApp.ProjectOperations.JumpToDeclaration (info.CandidateSymbols[0], doc.Project);
+				RefactoringService.RoslynJumpToDeclaration (info.CandidateSymbols[0], doc.Project);
 		}
 	}
 }

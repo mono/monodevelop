@@ -53,7 +53,6 @@ namespace MonoDevelop.Components
 				return Gtk.FileChooserAction.Save;
 			else
 				throw new NotSupportedException ();
-
 		}
 	}
 }

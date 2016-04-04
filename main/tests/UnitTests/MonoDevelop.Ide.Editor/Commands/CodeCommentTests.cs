@@ -27,6 +27,9 @@ using System;
 using System.Text;
 using NUnit.Framework;
 using UnitTests;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.CSharpBinding;
+using MonoDevelop.CSharpBinding.Tests;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -132,7 +135,7 @@ namespace MonoDevelop.Ide.Editor
 
 	}->
 }");
-			((TextEditorViewContent)editor.GetViewContent ()).AddCodeComment ();
+			GetExtension (editor).AddCodeComment ();
 			AssertEditorState (editor, @"class Foo
 {
 	//<-void Bar ()
@@ -140,6 +143,14 @@ namespace MonoDevelop.Ide.Editor
 
 	//}->
 }");
+		}
+
+		static DefaultCommandTextEditorExtension GetExtension (TextEditor editor)
+		{
+			var ext = new DefaultCommandTextEditorExtension ();
+			var tww = new TestWorkbenchWindow { ViewContent = new TestViewContent () };
+			ext.Initialize (editor, new TestDocument (tww)); 
+			return ext;
 		}
 
 		[Test]
@@ -152,7 +163,7 @@ namespace MonoDevelop.Ide.Editor
 
 	//}->
 }");
-			((TextEditorViewContent)editor.GetViewContent ()).RemoveCodeComment ();
+			GetExtension (editor).RemoveCodeComment ();
 			AssertEditorState (editor,@"class Foo
 {
 	<-void Bar ()
@@ -172,7 +183,7 @@ namespace MonoDevelop.Ide.Editor
 
 	}->
 }");
-			((TextEditorViewContent)editor.GetViewContent ()).ToggleCodeComment ();
+			GetExtension (editor).ToggleCodeComment ();
 			AssertEditorState (editor, @"class Foo
 {
 	//<-void Bar ()
@@ -192,7 +203,7 @@ namespace MonoDevelop.Ide.Editor
 
 	//}->
 }");
-			((TextEditorViewContent)editor.GetViewContent ()).ToggleCodeComment ();
+			GetExtension (editor).ToggleCodeComment ();
 			AssertEditorState (editor,@"class Foo
 {
 	<-void Bar ()
@@ -214,7 +225,7 @@ namespace MonoDevelop.Ide.Editor
 	}
 }
 ->");
-			((TextEditorViewContent)editor.GetViewContent ()).ToggleCodeComment ();
+			GetExtension (editor).ToggleCodeComment ();
 			AssertEditorState (editor, @"//class Foo
 //{
 //	void Bar ()
@@ -234,11 +245,35 @@ namespace MonoDevelop.Ide.Editor
 	{
 	}
 }");
-			((TextEditorViewContent)editor.GetViewContent ()).ToggleCodeComment ();
+			GetExtension (editor).ToggleCodeComment ();
 			AssertEditorState (editor,@"class Foo
 {
 	//void Bar ()
 	{
+	}
+}");
+		}
+
+
+		/// <summary>
+		/// Bug 38355 - comment selected lines puts a comment on too many lines! 
+		/// </summary>
+		[Test]
+		public void TestBug38355()
+		{
+			var editor = CreateTextEditor (@"class Foo
+{
+<-	void Bar ()
+	{
+->		Bar();
+	}
+}");
+			GetExtension (editor).ToggleCodeComment ();
+			AssertEditorState (editor, @"class Foo
+{
+	//void Bar ()
+	//{
+		Bar();
 	}
 }");
 		}

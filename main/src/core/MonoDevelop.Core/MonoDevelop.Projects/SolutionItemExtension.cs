@@ -135,9 +135,9 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal protected virtual SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+		internal protected virtual SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			return next.OnCreateConfiguration (name, kind);
+			return next.OnCreateConfiguration (id, kind);
 		}
 
 		internal protected virtual ProjectFeatures OnGetSupportedFeatures ()
@@ -242,16 +242,6 @@ namespace MonoDevelop.Projects
 		internal protected virtual void OnReloadRequired (SolutionItemEventArgs args)
 		{
 			next.OnReloadRequired (args);
-		}
-
-		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
-		{
-			next.OnItemsAdded (objs);
-		}
-
-		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
-		{
-			next.OnItemsRemoved (objs);
 		}
 
 		internal protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)

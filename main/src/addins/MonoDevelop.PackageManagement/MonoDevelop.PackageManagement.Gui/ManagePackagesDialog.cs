@@ -32,7 +32,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class ManagePackagesDialog : Gtk.Dialog
+	internal partial class ManagePackagesDialog : Gtk.Dialog
 	{
 		ManagePackagesViewModel viewModel;
 		IPackageManagementEvents packageManagementEvents;

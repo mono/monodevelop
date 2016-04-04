@@ -2,18 +2,18 @@ using System;
 using System.IO;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
 using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
-	public interface ILogView : IAttachableViewContent
+	public interface ILogView
 	{
 	}
 	
-	public class LogView : BaseView, ILogView
+	class LogView : BaseView, ILogView
 	{
 		LogWidget widget;
 		VersionInfo vinfo;
@@ -78,7 +78,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		
-		public override Gtk.Widget Control { 
+		public override Control Control { 
 			get {
 				if (widget == null)
 					CreateControlFromInfo ();
@@ -86,9 +86,9 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
+			base.OnWorkbenchWindowChanged ();
 			if (WorkbenchWindow != null && widget != null)
 				widget.SetToolbar (WorkbenchWindow.GetToolbar (this));
 		}
@@ -110,8 +110,7 @@ namespace MonoDevelop.VersionControl.Views
 			base.Dispose ();
 		}
 
-		#region IAttachableViewContent implementation
-		public void Selected ()
+		public void Init ()
 		{
 			if (info != null && !info.Started) {
 				widget.ShowLoading ();
@@ -119,18 +118,10 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public void Deselected ()
+		protected override void OnSelected ()
 		{
+			Init ();
 		}
-
-		public void BeforeSave ()
-		{
-		}
-
-		public void BaseContentChanged ()
-		{
-		}
-		#endregion
 
 		[CommandHandler (MonoDevelop.Ide.Commands.EditCommands.Copy)]
 		protected void OnCopy ()

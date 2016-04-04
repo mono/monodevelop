@@ -41,7 +41,7 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         Padding="{TemplateBinding Padding}" 
                         SnapsToDevicePixels="true"
-            			TextElement.Foreground="{Binding Path=(platform:Styles.MenuBarForegroundBrush), Mode=OneWay}">
+                        TextElement.Foreground="{Binding Path=(platform:Styles.MenuBarForegroundBrush), Mode=OneWay}">
                         <ItemsPresenter 
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </Border>
@@ -287,8 +287,8 @@
                 <Setter TargetName="Icon" Property="Visibility" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter TargetName="templateRoot" Property="Background" Value="{Binding Path=(platform:Styles.MenuHighlightBackgroundBrush), Mode=OneWay}" />
-                <Setter TargetName="templateRoot" Property="BorderBrush" Value="{Binding Path=(platform:Styles.MenuHighlightBorderBrush), Mode=OneWay}" />
+                <Setter TargetName="templateRoot" Property="Background" Value="{Binding Path=(platform:Styles.MenuBarHighlightBackgroundBrush), Mode=OneWay}" />
+                <Setter TargetName="templateRoot" Property="BorderBrush" Value="{Binding Path=(platform:Styles.MenuBarHighlightBorderBrush), Mode=OneWay}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter TargetName="templateRoot" Property="TextElement.Foreground" Value="{Binding Path=(platform:Styles.MenuDisabledForegroundBrush), Mode=OneWay}" />
@@ -355,7 +355,7 @@
                 <TextBlock x:Name="menuGestureText"
                     Grid.Column="4"
                     Text="{TemplateBinding InputGestureText}"
-                    Margin="0,0,0,1"
+                    Margin="{TemplateBinding MenuItem.Padding}"
                     VerticalAlignment="Center"
                     Opacity="0.7" />
             </Grid>
@@ -599,6 +599,40 @@
                                     Value="{Binding ElementName=ContextMenuScrollViewer, Path=HorizontalOffset}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Type ToolTip}" TargetType="ToolTip">
+        <Setter Property="Background" Value="{Binding Path=(platform:Styles.TooltipBackgroundBrush), Mode=OneWay}" />
+        <Setter Property="BorderBrush" Value="{Binding Path=(platform:Styles.TooltipBorderBrush), Mode=OneWay}" />
+        <Setter Property="Foreground" Value="{Binding Path=(platform:Styles.TooltipTextBrush), Mode=OneWay}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.StatusFontFamilyKey}}"/>
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.StatusFontSizeKey}}"/>
+        <Setter Property="FontStyle" Value="{DynamicResource {x:Static SystemFonts.StatusFontStyleKey}}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static SystemFonts.StatusFontWeightKey}}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HasDropShadow" Value="False" />
+        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled" />
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border Name="Border" 
+                        Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}" 
+                        SnapsToDevicePixels="True">
+                        <ContentPresenter 
+                            Margin="{TemplateBinding Padding}" 
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

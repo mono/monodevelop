@@ -37,17 +37,40 @@ namespace MonoDevelop.Projects.Extensions
 {
 	public abstract class ProjectMigrationHandler
 	{
+		/// <summary>
+		/// Returns a list of files that should be backed up during migration.
+		/// </summary>
+		/// <returns>Files to backup.</returns>
+		/// <param name="filename">Project path</param>
 		public virtual IEnumerable<string> FilesToBackup (string filename)
 		{
 			yield break;
 		}
 
+		/// <summary>
+		/// Executes the proejct migration
+		/// </summary>
+		/// <param name="monitor">Progress monitor</param>
+		/// <param name="project">MSBuild project instance, if available</param>
+		/// <param name="fileName">Project path</param>
+		/// <param name="language">Language name (for .NET projects).</param>
 		public abstract Task<bool> Migrate (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language);
 
+		/// <summary>
+		/// If it returns true, PromptForMigration will be called to confirm the migration.
+		/// </summary>
 		public virtual bool CanPromptForMigration {
 			get { return false; }
 		}
 
+		/// <summary>
+		/// Ask the use for confirmation of the migration
+		/// </summary>
+		/// <returns>Use answer</returns>
+		/// <param name="monitor">Progress monitor</param>
+		/// <param name="project">MSBuild project instance, if available</param>
+		/// <param name="fileName">Project path</param>
+		/// <param name="language">Language name (for .NET projects).</param>
 		public virtual Task<MigrationType> PromptForMigration (ProjectLoadProgressMonitor monitor, MSBuildProject project, string fileName, string language)
 		{
 			throw new NotImplementedException ();

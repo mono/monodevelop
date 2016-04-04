@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class LicenseAcceptanceViewModel : ViewModelBase<LicenseAcceptanceViewModel>
+	internal class LicenseAcceptanceViewModel : ViewModelBase<LicenseAcceptanceViewModel>
 	{
 		IList<PackageLicenseViewModel> packages;
 		

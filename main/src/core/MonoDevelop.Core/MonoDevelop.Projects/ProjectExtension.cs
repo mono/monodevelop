@@ -108,7 +108,7 @@ namespace MonoDevelop.Projects
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
 		}
 
-		internal protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildEvaluatedPropertyCollection pset)
+		internal protected virtual void OnReadConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			next.OnReadConfiguration (monitor, config, pset);
 		}
@@ -120,9 +120,14 @@ namespace MonoDevelop.Projects
 			msproject.WriteExternalProjectProperties (this, GetType (), true);
 		}
 
-		internal protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		internal protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			next.OnWriteConfiguration (monitor, config, pset);
+		}
+
+		internal protected virtual Task<ProjectFile []> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return next.OnGetSourceFiles (monitor, configuration);
 		}
 
 		#region Building
@@ -174,7 +179,7 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual string[] SupportedLanguages {
 			get {
-				return next.SupportedLanguages;
+				return next?.SupportedLanguages;
 			}
 		}
 
@@ -186,6 +191,16 @@ namespace MonoDevelop.Projects
 		#endregion
 
 		#region Events
+
+		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		{
+			next.OnItemsAdded (objs);
+		}
+
+		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		{
+			next.OnItemsRemoved (objs);
+		}
 
 		internal protected virtual void OnFileRemovedFromProject (ProjectFileEventArgs e)
 		{

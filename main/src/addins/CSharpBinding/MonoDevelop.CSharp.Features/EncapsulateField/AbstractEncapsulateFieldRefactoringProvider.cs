@@ -7,7 +7,7 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeRefactorings.EncapsulateField
 {
-	public abstract class AbstractEncapsulateFieldRefactoringProvider : CodeRefactoringProvider
+	abstract class AbstractEncapsulateFieldRefactoringProvider : CodeRefactoringProvider
 	{
 		CSharpEncapsulateFieldService service = new CSharpEncapsulateFieldService ();
 

@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 				if (symbol is INamespaceOrTypeSymbol)
 				{
-					var namespaceOrTypeSymbol = (INamespaceOrTypeSymbol)symbol;
+					//var namespaceOrTypeSymbol = (INamespaceOrTypeSymbol)symbol;
 
 					// 1. Check for Predefined Types
 					if (symbol is INamedTypeSymbol)

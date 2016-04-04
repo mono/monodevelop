@@ -64,6 +64,11 @@ namespace MonoDevelop.MacInterop
 			return runningApp.Terminate ();
 		}
 
+		public static bool IsRunning (int pid)
+		{
+			return NSRunningApplication.GetRunningApplication (pid) != null;
+		}
+
 		enum OSStatus
 		{
 			Ok = 0

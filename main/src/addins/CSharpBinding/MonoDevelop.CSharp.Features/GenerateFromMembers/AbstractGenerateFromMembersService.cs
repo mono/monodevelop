@@ -15,7 +15,7 @@ using RefactoringEssentials;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateFromMembers
 {
-	public abstract class AbstractGenerateFromMembersService<TMemberDeclarationSyntax>
+	abstract class AbstractGenerateFromMembersService<TMemberDeclarationSyntax>
 		where TMemberDeclarationSyntax : SyntaxNode
 	{
 		protected AbstractGenerateFromMembersService()

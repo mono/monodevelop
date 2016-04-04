@@ -74,10 +74,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
-			FontFamily = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;
-			HoverColor = Styles.WelcomeScreen.Links.HoverColor;
-			Color = Styles.WelcomeScreen.Links.Color;
-			FontSize = Styles.WelcomeScreen.Links.FontSize;
+			UpdateStyle ();
 
 			VisibleWindow = false;
 			this.Text = GettextCatalog.GetString (title);
@@ -98,9 +95,31 @@ namespace MonoDevelop.Ide.WelcomePage
 			box.ShowAll ();
 			Add (box);
 
+			Gui.Styles.Changed += UpdateStyle;
 			Update ();
 
 			Events |= (Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask);
+		}
+
+		void UpdateStyle (object sender = null, EventArgs e = null)
+		{
+			OnUpdateStyle ();
+			if (label != null) {
+				box.Remove (label);
+				box.PackStart (label = CreateLabel ());
+				box.ShowAll ();
+				Update ();
+			}
+			QueueResize ();
+		}
+
+		protected virtual void OnUpdateStyle ()
+		{
+			FontFamily = Platform.IsMac ? Styles.WelcomeScreen.FontFamilyMac : Styles.WelcomeScreen.FontFamilyWindows;
+			HoverColor = Styles.WelcomeScreen.Links.HoverColor;
+			Color = Styles.WelcomeScreen.Links.Color;
+			FontSize = Styles.WelcomeScreen.Links.FontSize;
+			FontWeight = Pango.Weight.Bold;
 		}
 
 		protected virtual Label CreateLabel ()
@@ -160,6 +179,12 @@ namespace MonoDevelop.Ide.WelcomePage
 				image.Image = mouseOver ? imageHover : imageNormal;
 			var color = mouseOver ? HoverColor : Color;
 			label.Markup = WelcomePageSection.FormatText (FontFamily, FontSize, FontWeight, color, Text);
+		}
+
+		protected override void OnDestroyed ()
+		{
+			Gui.Styles.Changed -= UpdateStyle;
+			base.OnDestroyed ();
 		}
 	}
 }

@@ -28,6 +28,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
+using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
@@ -41,7 +42,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		PortableRuntimeOptionsPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return (widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject) ConfiguredProject, ItemConfigurations));
 		}
@@ -53,7 +54,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	}
 	
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
+	partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
 	{
 		readonly TargetFramework missingFramework;
 		readonly List<TargetFramework> targetFrameworks;
@@ -64,8 +65,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		TargetFramework target;
 		HBox warningHBox;
 		Label warning;
-		Image warningImage;
-		Image infoImage;
+		ImageView warningImage;
+		ImageView infoImage;
 		ComboBox selectorCombo;
 		bool disableEvents;
 
@@ -413,8 +414,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			warning.SetAlignment (0.0f, 0.5f);
 			warning.Show ();
 
-			infoImage = new Image (GetType ().Assembly, "warning-16.png");
-			warningImage = new Image (GetType ().Assembly, "error-16.png");
+			infoImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "warning-16.png"));
+			warningImage = new ImageView (Xwt.Drawing.Image.FromResource (GetType ().Assembly, "error-16.png"));
 
 			warningHBox = new HBox (false, 6);
 			warningHBox.PackStart (infoImage, false, false, 0);

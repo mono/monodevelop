@@ -39,9 +39,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void ApplyChanges ()
 		{
-			GitService.UseRebaseOptionWhenPulling = checkRebase.Active;
-			GitService.StashUnstashWhenUpdating = checkStashUpdate.Active;
-			GitService.StashUnstashWhenSwitchingBranches = checkStashBranch.Active;
+			GitService.UseRebaseOptionWhenPulling.Value = checkRebase.Active;
+			GitService.StashUnstashWhenUpdating.Value = checkStashUpdate.Active;
+			GitService.StashUnstashWhenSwitchingBranches.Value = checkStashBranch.Active;
 		}
 	}
 }

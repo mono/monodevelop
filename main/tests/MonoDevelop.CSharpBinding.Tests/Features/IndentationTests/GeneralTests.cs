@@ -28,7 +28,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory6.IndentationTests
 {
 	[TestFixture]
-	public class GeneralTests
+	class GeneralTests
 	{
 		[Test]
 		public void UsingDeclarationTests()

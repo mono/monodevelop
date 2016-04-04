@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-    public abstract partial class MethodExtractor
+    abstract partial class MethodExtractor
     {
         protected abstract class TriviaResult
         {

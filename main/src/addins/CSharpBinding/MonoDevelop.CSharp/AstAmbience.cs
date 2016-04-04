@@ -169,6 +169,12 @@ namespace MonoDevelop.CSharp
 				sb.Append ("operator ");
 				AppendEscaped (sb, op.OperatorToken.ToString ());
 				AppendParameter (sb, op.ParameterList);
+			} else if (e is ConversionOperatorDeclarationSyntax) {
+				var op = (ConversionOperatorDeclarationSyntax)e;
+				sb.Append (op.ImplicitOrExplicitKeyword.IsKind (SyntaxKind.ImplicitKeyword) ? "implicit " : "explicit ");
+				sb.Append ("operator ");
+				AppendEscaped (sb, op.Type.ToString ());
+				AppendParameter (sb, op.ParameterList);
 			} else if (e is MethodDeclarationSyntax) {
 				var method = (MethodDeclarationSyntax)e;
 				if (method.ExplicitInterfaceSpecifier != null)

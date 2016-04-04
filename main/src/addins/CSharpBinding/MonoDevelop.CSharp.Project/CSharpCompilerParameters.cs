@@ -56,9 +56,8 @@ namespace MonoDevelop.CSharp.Project
 	public class CSharpCompilerParameters: DotNetCompilerParameters
 	{
 		// Configuration parameters
-		
-		[ItemProperty ("WarningLevel")]
-		int  warninglevel = 4;
+
+		int? warninglevel = 4;
 		
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
@@ -92,19 +91,21 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
 		string warningsNotAsErrors = "";
 
-		protected override void Write (IPropertySet pset, string toolsVersion)
+		protected override void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
 
-			base.Write (pset, toolsVersion);
+			base.Write (pset);
 
 			if (optimize.HasValue)
 				pset.SetValue ("Optimize", optimize.Value);
+			if (warninglevel.HasValue)
+				pset.SetValue ("WarningLevel", warninglevel.Value);
 		}
 
-		protected override void Read (IMSBuildEvaluatedPropertyCollection pset, string toolsVersion)
+		protected override void Read (IPropertySet pset)
 		{
-			base.Read (pset, toolsVersion);
+			base.Read (pset);
 
 			var prop = pset.GetProperty ("GenerateDocumentation");
 			if (prop != null && documentationFile != null) {
@@ -115,13 +116,13 @@ namespace MonoDevelop.CSharp.Project
 			}
 
 			optimize = pset.GetValue ("Optimize", (bool?)null);
+			warninglevel = pset.GetValue<int?> ("WarningLevel", null);
 		}
 
-		public override Microsoft.CodeAnalysis.CompilationOptions CreateCompilationOptions ()
+		public override CompilationOptions CreateCompilationOptions ()
 		{
 			var project = (CSharpProject) ParentProject;
-
-			return new Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions (
+			return new CSharpCompilationOptions (
 				OutputKind.ConsoleApplication,
 				false,
 				null,
@@ -132,7 +133,7 @@ namespace MonoDevelop.CSharp.Project
 				GenerateOverflowChecks,
 				UnsafeCode,
 				null,
-				null,
+				ParentConfiguration.SignAssembly ? ParentConfiguration.AssemblyKeyFile : null,
 				ImmutableArray<byte>.Empty,
 				null,
 				Microsoft.CodeAnalysis.Platform.AnyCpu,
@@ -140,19 +141,22 @@ namespace MonoDevelop.CSharp.Project
 				WarningLevel,
 				null,
 				false,
-				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default
+				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
+				strongNameProvider: new DesktopStrongNameProvider ()
 			);
 		}
 
-		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions ()
+		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions (DotNetProjectConfiguration configuration)
 		{
+			var symbols = GetDefineSymbols ();
+			if (configuration != null)
+				symbols = symbols.Concat (configuration.GetDefineSymbols ()).Distinct ();
 			return new Microsoft.CodeAnalysis.CSharp.CSharpParseOptions (
 				GetRoslynLanguageVersion (langVersion),
 				Microsoft.CodeAnalysis.DocumentationMode.Parse,
 				Microsoft.CodeAnalysis.SourceCodeKind.Regular,
-				ImmutableArray<string>.Empty.AddRange (GetDefineSymbols ())
+				ImmutableArray<string>.Empty.AddRange (symbols)
 			);
-
 		}
 
 
@@ -212,7 +216,8 @@ namespace MonoDevelop.CSharp.Project
 				return optimize ?? false;
 			}
 			set {
-				optimize = value;
+				if (value != Optimize)
+					optimize = value;
 			}
 		}
 		
@@ -257,10 +262,15 @@ namespace MonoDevelop.CSharp.Project
 #region Errors and Warnings 
 		public int WarningLevel {
 			get {
-				return warninglevel;
+				return warninglevel ?? 4;
 			}
 			set {
-				warninglevel = value;
+				if (warninglevel.HasValue) {
+					warninglevel = value;
+				} else {
+					if (value != 4)
+						warninglevel = value; 
+				}
 			}
 		}
 		

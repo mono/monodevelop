@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			obj = dataObject as WorkspaceObject;
 		}
 
-		public Gtk.Widget CreatePanelWidget ()
+		public Control CreatePanelWidget ()
 		{
 			widget = new BaseDirectoryPanelWidget ();
 			widget.BaseDirectory = System.IO.Path.GetFullPath (obj.BaseDirectory);

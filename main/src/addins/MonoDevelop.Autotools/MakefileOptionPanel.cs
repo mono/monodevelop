@@ -1,5 +1,5 @@
 
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
 
@@ -13,7 +13,7 @@ namespace MonoDevelop.Autotools
 		{
 		}
 
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			Project project = ConfiguredProject;
 			MakefileData data = project.GetMakefileData ();

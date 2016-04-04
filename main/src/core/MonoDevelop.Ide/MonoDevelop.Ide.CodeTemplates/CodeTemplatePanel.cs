@@ -218,12 +218,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return templateStore.AppendValues (iter, template, template.Shortcut, null);
 		}
 	}
-	
+
 	internal class CodeTemplatePane : OptionsPanel
 	{
 		CodeTemplatePanelWidget codeTemplatePanelWidget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			
 			return codeTemplatePanelWidget = new CodeTemplatePanelWidget (this.ParentDialog);

@@ -454,7 +454,8 @@ namespace MonoDevelop.Components.Docking
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
 
-				int ins = (int) Math.Truncate (ob.Size);
+				double obSize = double.IsNaN (ob.Size) ? 10.0 : ob.Size;
+				int ins = (int) Math.Truncate (obSize);
 				
 				if (n == VisibleObjects.Count - 1)
 					ins = realSize - ts;
@@ -872,7 +873,7 @@ namespace MonoDevelop.Components.Docking
 
 			if (areasList == null && oper == DrawSeparatorOperation.Draw) {
 				hgc = new Gdk.GC (Frame.Container.GdkWindow);
-				hgc.RgbFgColor = Styles.DockFrameBackground;
+				hgc.RgbFgColor = Styles.DockFrameBackground.ToGdkColor ();
 			}
 
 			for (int n=0; n<VisibleObjects.Count; n++) {

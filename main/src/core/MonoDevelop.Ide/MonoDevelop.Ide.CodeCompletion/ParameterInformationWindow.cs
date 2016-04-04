@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -79,8 +80,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
-
-			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (1.1);
 			
 			headlabel.Wrap = Pango.WrapMode.WordChar;
 			headlabel.BreakOnCamelCasing = false;
@@ -96,22 +95,48 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
+
+			UpdateStyle ();
+			Styles.Changed += HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
+
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
 		}
 
-		protected override void OnShown ()
+		void UpdateStyle ()
 		{
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+			
 			Theme.SetSchemeColors (scheme);
-			foreColor = scheme.PlainText.Foreground;
-			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
+			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 
-			base.OnShown ();
+			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
+
+			if (this.Visible)
+				QueueDraw ();
+		}
+
+		void HandleSkinChanged (object sender, EventArgs e)
+		{
+			UpdateStyle ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			Styles.Changed -= HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 
 		int lastParam = -2;
 		TooltipInformation currentTooltipInformation;
+		ParameterHintingResult lastProvider;
 		CancellationTokenSource cancellationTokenSource;
 
 		public async void ShowParameterInfo (ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
@@ -122,9 +147,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
 			if (numParams > 0 && currentParam < 0)
 				currentParam = 0;
-			if (lastParam == currentParam && (currentTooltipInformation != null)) {
+			if (lastParam == currentParam && (currentTooltipInformation != null) && lastProvider == provider) {
 				return;
 			}
+			lastProvider = provider;
 
 			lastParam = currentParam;
 			var parameterHintingData = (ParameterHintingData)provider [overload];
@@ -207,13 +233,27 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		VBox CreateCategory (string categoryName, string categoryContentMarkup)
 		{
-			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor);
+			return TooltipInformationWindow.CreateCategory (categoryName, categoryContentMarkup, foreColor, Theme.Font);
 		}
 
 		public void ChangeOverload ()
 		{
 			lastParam = -2;
 			ResetTooltipInformation ();
+		}
+
+		protected override void OnPagerLeftClicked ()
+		{
+			if (Ext != null && Widget != null)
+				ParameterInformationWindowManager.OverloadUp (Ext, Widget);
+			base.OnPagerRightClicked ();
+		}
+
+		protected override void OnPagerRightClicked ()
+		{
+			if (Ext != null && Widget != null)
+				ParameterInformationWindowManager.OverloadDown (Ext, Widget);
+			base.OnPagerRightClicked ();
 		}
 		
 		public void HideParameterInfo ()

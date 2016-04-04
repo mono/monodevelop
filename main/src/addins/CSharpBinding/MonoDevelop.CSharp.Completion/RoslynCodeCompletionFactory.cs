@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp.Completion;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -64,6 +66,35 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region ICompletionDataFactory implementation
 
+
+		class KeywordCompletionData : RoslynCompletionData
+		{
+			static SignatureMarkupCreator creator = new SignatureMarkupCreator (null, 0);
+
+			SyntaxKind kind;
+
+			public KeywordCompletionData (ICompletionDataKeyHandler keyHandler, SyntaxKind kind) : base (keyHandler)
+			{
+				this.kind = kind;
+			}
+
+			public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, System.Threading.CancellationToken cancelToken)
+			{
+				if (kind == SyntaxKind.IdentifierToken)
+					return Task.FromResult (creator.GetKeywordTooltip (SyntaxFactory.Identifier (this.DisplayText)));
+				return Task.FromResult (creator.GetKeywordTooltip (SyntaxFactory.Token (kind)));
+			}
+		}
+
+		CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind)
+		{
+			return new KeywordCompletionData (keyHandler, syntaxKind) {
+				CompletionText = data,
+				DisplayText = data,
+				Icon = "md-keyword"
+			};
+		}
+
 		CompletionData ICompletionDataFactory.CreateGenericData (ICompletionDataKeyHandler keyHandler, string data, GenericDataType genericDataType)
 		{
 			return new RoslynCompletionData (keyHandler) {
@@ -75,8 +106,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ISymbolCompletionData ICompletionDataFactory.CreateEnumMemberCompletionData (ICompletionDataKeyHandler keyHandler, ISymbol alias, IFieldSymbol field)
 		{
-			var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-			return new RoslynSymbolCompletionData (keyHandler, this, field, RoslynCompletionData.SafeMinimalDisplayString (alias ?? field.Type, model, ext.Editor.CaretOffset, Ambience.NameFormat) + "." + field.Name);
+			return new RoslynSymbolCompletionData (keyHandler, this, field, RoslynCompletionData.SafeMinimalDisplayString (alias ?? field.Type, semanticModel, ext.Editor.CaretOffset, Ambience.NameFormat) + "." + field.Name);
 		}
 		
 		class FormatItemCompletionData : RoslynCompletionData
@@ -137,7 +167,6 @@ namespace MonoDevelop.CSharp.Completion
 		class XmlDocCompletionData : RoslynCompletionData
 		{
 			//readonly CSharpCompletionTextEditorExtension ext;
-			readonly string title;
 			/*
 			#region IListData implementation
 
@@ -156,7 +185,7 @@ namespace MonoDevelop.CSharp.Completion
 			public XmlDocCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory ext, string title, string description, string insertText) : base (keyHandler, title, "md-keyword", description, insertText ?? title)
 			{
 				// this.ext = ext;
-				this.title = title;
+				//this.title = title;
 			}
 //			public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 //			{
@@ -165,7 +194,7 @@ namespace MonoDevelop.CSharp.Completion
 //				return sig.GetKeywordTooltip (title, null);
 //			}
 
-			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
+			public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 			{
 				var currentWord = GetCurrentWord (window, descriptor);
 				var text = CompletionText;
@@ -175,6 +204,7 @@ namespace MonoDevelop.CSharp.Completion
 					text = text.Substring (1);
 				
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
+				return Task.FromResult (ka);
 			}
 		}
 
@@ -210,7 +240,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		CompletionData ICompletionDataFactory.CreateAnonymousMethod(ICompletionDataKeyHandler keyHandler, string displayText, string description, string textBeforeCaret, string textAfterCaret)
 		{
-			return new AnonymousMethodCompletionData (keyHandler) {
+			return new AnonymousMethodCompletionData (this, keyHandler) {
 				CompletionText = textBeforeCaret + "|" + textAfterCaret,
 				DisplayText = displayText,
 				Description = description

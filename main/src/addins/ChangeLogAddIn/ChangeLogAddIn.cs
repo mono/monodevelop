@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -46,9 +47,9 @@ namespace MonoDevelop.ChangeLogAddIn
 
 	public class InsertEntryHandler : CommandHandler
 	{
-		protected override void Run()
+		protected override async void Run()
 		{
-			Document document = GetActiveChangeLogDocument();
+			Document document = await GetActiveChangeLogDocument();
 			if (document == null) return;
 			
 			if (InsertHeader(document))
@@ -145,7 +146,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			return text.IndexOf (eol + eol, StringComparison.Ordinal);
 		}
         
-		static Document GetActiveChangeLogDocument()
+		static async Task<Document> GetActiveChangeLogDocument()
 		{
 			string file = GetSelectedFile ();
 			if (file == null)
@@ -160,7 +161,7 @@ namespace MonoDevelop.ChangeLogAddIn
 				return null;
 			
 			if (File.Exists (clog))
-				return IdeApp.Workbench.OpenDocument (clog, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
+				return await IdeApp.Workbench.OpenDocument (clog, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 			
 			Document document = IdeApp.Workbench.NewDocument (clog, "text/plain", "");
 			document.Save();

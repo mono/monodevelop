@@ -258,6 +258,8 @@ namespace MonoDevelop.Projects
 			get { return (flags & DotNetProjectFlags.GeneratesDebugInfoFile) != 0; }
 		}
 
+		public bool SupportsRoslyn { get; protected set; }
+
 		protected virtual DotNetProjectFlags OnGetDotNetProjectFlags ()
 		{
 			return DotNetProjectFlags.GeneratesDebugInfoFile;
@@ -860,19 +862,33 @@ namespace MonoDevelop.Projects
 			});
 		}
 
+		/// <summary>
+		/// Gets the referenced assembly projects, but only projects which output are actually referenced
+		/// for example references with ReferenceOutputAssembly=false are excluded
+		/// </summary>
+		/// <param name="configuration">Configuration.</param>
+		public IEnumerable<DotNetProject> GetReferencedAssemblyProjects (ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetReferencedAssemblyProjects (configuration);
+		}
+
 		internal protected virtual async Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			List<string> result = new List<string> ();
 			if (CheckUseMSBuildEngine (configuration)) {
 				// Get the references list from the msbuild project
 				RemoteProjectBuilder builder = await GetProjectBuilder ();
-				var configs = GetConfigurations (configuration, false);
+				try {
+					var configs = GetConfigurations (configuration, false);
 
-				string[] refs;
-				using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
-					refs = await builder.ResolveAssemblyReferences (configs, CancellationToken.None);
-				foreach (var r in refs)
-					result.Add (r);
+					string [] refs;
+					using (Counters.ResolveMSBuildReferencesTimer.BeginTiming (GetProjectEventMetadata (configuration)))
+						refs = await builder.ResolveAssemblyReferences (configs, CancellationToken.None);
+					foreach (var r in refs)
+						result.Add (r);
+				} finally {
+					builder.ReleaseReference ();
+				}
 			} else {
 				foreach (ProjectReference pref in References) {
 					if (pref.ReferenceType != ReferenceType.Project) {
@@ -904,7 +920,55 @@ namespace MonoDevelop.Projects
 				if (sa != null)
 					result.Add (sa.Location);
 			}
+			var addFacadeAssemblies = false;
+			foreach (var r in GetReferencedAssemblyProjects (configuration)) {
+				if (r.IsPortableLibrary) {
+					addFacadeAssemblies = true;
+					break;
+				}
+			}
+			if (!addFacadeAssemblies) {
+				foreach (var refFilename in result) {
+					string fullPath = null;
+					if (!Path.IsPathRooted (refFilename)) {
+						fullPath = Path.Combine (Path.GetDirectoryName (FileName), refFilename);
+					} else {
+						fullPath = Path.GetFullPath (refFilename);
+					}
+					if (SystemAssemblyService.ContainsReferenceToSystemRuntime (fullPath)) {
+						addFacadeAssemblies = true;
+						break;
+					}
+				}
+			}
+
+			if (addFacadeAssemblies) {
+				var runtime = TargetRuntime ?? MonoDevelop.Core.Runtime.SystemAssemblyService.DefaultRuntime;
+				var facades = runtime.FindFacadeAssembliesForPCL (TargetFramework);
+				foreach (var facade in facades) {
+					if (!File.Exists (facade))
+						continue;
+					result.Add (facade);
+				}
+			}
 			return result;
+		}
+
+		internal protected virtual IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
+		{
+			if (ParentSolution == null) {
+				yield break;
+			}
+			foreach (ProjectReference pref in References) {
+				if (pref.ReferenceType == ReferenceType.Project &&
+							(string.IsNullOrEmpty (pref.Condition) || ConditionParser.ParseAndEvaluate (pref.Condition, new ProjectParserContext (this, (DotNetProjectConfiguration)GetConfiguration (configuration))))) {
+					if (!pref.ReferenceOutputAssembly)
+						continue;
+					var rp = pref.ResolveProject (ParentSolution) as DotNetProject;
+					if (rp != null)
+						yield return rp;
+				}
+			}
 		}
 
 		protected override Task<BuildResult> DoBuild (ProgressMonitor monitor, ConfigurationSelector configuration)
@@ -1053,7 +1117,6 @@ namespace MonoDevelop.Projects
 			cmd.WorkingDirectory = Path.GetDirectoryName (configuration.CompiledOutputName);
 			cmd.EnvironmentVariables = configuration.GetParsedEnvironmentVariables ();
 			cmd.TargetRuntime = TargetRuntime;
-			cmd.UserAssemblyPaths = GetUserAssemblyPaths (configSel);
 			return cmd;
 		}
 
@@ -1364,7 +1427,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemsAdded (IEnumerable<ProjectItem> objs)
+		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsAdded (objs);
 			foreach (var pref in objs.OfType<ProjectReference> ()) {
@@ -1373,7 +1436,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected internal override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
+		protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
 			base.OnItemsRemoved (objs);
 			foreach (var pref in objs.OfType<ProjectReference> ()) {
@@ -1466,6 +1529,11 @@ namespace MonoDevelop.Projects
 
 		protected virtual async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 		{
+			var dotNetExecutionCommand = executionCommand as DotNetExecutionCommand;
+			if (dotNetExecutionCommand != null) {
+				dotNetExecutionCommand.UserAssemblyPaths = GetUserAssemblyPaths (configuration);
+			}
+
 			var dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			var console = dotNetProjectConfig.ExternalConsole
 			                                                  ? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken)
@@ -1544,10 +1612,10 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet pset)
+		protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)
 		{
 			base.OnWriteConfiguration (monitor, config, pset);
-			if (pset.ParentProject.IsNewProject)
+			if (MSBuildProject.IsNewProject)
 				pset.SetValue ("ErrorReport", "prompt");
 			
 		}
@@ -1572,6 +1640,11 @@ namespace MonoDevelop.Projects
 			internal protected override Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 			{
 				return Project.OnGetReferencedAssemblies (configuration);
+			}
+
+			internal protected override IEnumerable<DotNetProject> OnGetReferencedAssemblyProjects (ConfigurationSelector configuration)
+			{
+				return Project.OnGetReferencedAssemblyProjects (configuration);
 			}
 
 			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
@@ -1607,6 +1680,12 @@ namespace MonoDevelop.Projects
 			internal protected override Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 			{
 				return Project.OnExecuteCommand (monitor, context, configuration, executionCommand);
+			}
+
+			internal protected override string[] SupportedLanguages {
+				get {
+					return Project.OnGetSupportedLanguages ();
+				}
 			}
 
 			#region Framework management

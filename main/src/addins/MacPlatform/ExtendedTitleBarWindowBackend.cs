@@ -33,7 +33,7 @@ using Xwt.GtkBackend;
 
 namespace MonoDevelop.MacIntegration
 {
-	class ExtendedTitleBarWindowBackend: Xwt.GtkBackend.WindowBackend, IExtendedTitleBarWindowBackend
+	class ExtendedTitleBarWindowBackend: ThemedGtkWindowBackend, IExtendedTitleBarWindowBackend
 	{
 		CustomToolbar toolbar;
 
@@ -44,7 +44,7 @@ namespace MonoDevelop.MacIntegration
 				WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			}
 
-			public Cairo.ImageSurface Background {
+			public Gdk.Pixbuf Background {
 				get;
 				set;
 			}
@@ -67,10 +67,13 @@ namespace MonoDevelop.MacIntegration
 					context.LineWidth = 1;
 					if (Background != null && Background.Width > 0) {
 						for (int x=0; x < Allocation.Width; x += Background.Width) {
-							Background.Show (context, x, -TitleBarHeight);
+							Gdk.CairoHelper.SetSourcePixbuf (context, Background, x, -TitleBarHeight);
+							context.Paint ();
 						}
 					} else {
 						context.Rectangle (0, 0, Allocation.Width, Allocation.Height);
+
+						// FIXME: VV: Remove gradient features
 						using (var lg = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
 							lg.AddColorStop (0, Style.Light (Gtk.StateType.Normal).ToCairoColor ());
 							lg.AddColorStop (1, Style.Mid (Gtk.StateType.Normal).ToCairoColor ());
@@ -79,14 +82,10 @@ namespace MonoDevelop.MacIntegration
 						context.Fill ();
 
 					}
+
 					context.MoveTo (0, Allocation.Height - 0.5);
 					context.RelLineTo (Allocation.Width, 0);
-					context.SetSourceColor (MonoDevelop.Ide.Gui.Styles.ToolbarBottomBorderColor);
-					context.Stroke ();
-
-					context.MoveTo (0, Allocation.Height - 1.5);
-					context.RelLineTo (Allocation.Width, 0);
-					context.SetSourceColor (MonoDevelop.Ide.Gui.Styles.ToolbarBottomGlowColor);
+					context.SetSourceColor (Ide.Gui.Styles.ToolbarBottomBorderColor.ToCairoColor ());
 					context.Stroke ();
 
 				}
@@ -102,18 +101,17 @@ namespace MonoDevelop.MacIntegration
 		{
 			base.Initialize ();
 
-			var resource = "maintoolbarbg.png";
+			var image = Xwt.Drawing.Image.FromResource (typeof(MacPlatformService).Assembly, "maintoolbarbg.png");
 
 			Window.Realized += delegate {
 				NSWindow w = GtkQuartz.GetWindow (Window);
 				w.IsOpaque = false;
-				NSImage img = MacPlatformService.LoadImage (resource);
-				w.BackgroundColor = NSColor.FromPatternImage (img);
+				w.BackgroundColor = NSColor.FromPatternImage (image.ToBitmap().ToNSImage());
 				w.StyleMask |= NSWindowStyle.TexturedBackground;
 			};
 
 			toolbar = new CustomToolbar ();
-			toolbar.Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof(MacPlatformService).Assembly, resource);
+			toolbar.Background = (Gdk.Pixbuf)Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk).GetNativeImage (image);
 			toolbar.TitleBarHeight = MacPlatformService.GetTitleBarHeight ();
 			MainBox.PackStart (toolbar, false, false, 0);
 			((Gtk.Box.BoxChild)MainBox [toolbar]).Position = 0;

@@ -1254,15 +1254,6 @@ namespace ICSharpCode.NRefactory6.CSharp
 		private static readonly Func<SyntaxTriviaList, int, SyntaxToken> s_findSkippedTokenForward =
 			(l, p) => FindTokenHelper.FindSkippedTokenForward(GetSkippedTokens(l), p);
 
-		/// <summary>
-		/// Look inside a trivia list for a skipped token that contains the given position.
-		/// </summary>
-		private static readonly Func<SyntaxTriviaList, int, SyntaxToken> s_findSkippedTokenBackward =
-			(l, p) => FindTokenHelper.FindSkippedTokenBackward(GetSkippedTokens(l), p);
-
-		/// <summary>
-		/// return only skipped tokens
-		/// </summary>
 		private static IEnumerable<SyntaxToken> GetSkippedTokens(SyntaxTriviaList list)
 		{
 			return list.Where(trivia => trivia.RawKind == (int)SyntaxKind.SkippedTokensTrivia)
@@ -1711,5 +1702,20 @@ namespace ICSharpCode.NRefactory6.CSharp
 				node.IsParentKind(SyntaxKind.DelegateDeclaration);
 		}
 
+		public static ConditionalAccessExpressionSyntax GetInnerMostConditionalAccessExpression(this SyntaxNode node)
+		{
+			if (!(node is ConditionalAccessExpressionSyntax))
+			{
+				return null;
+			}
+
+			var result = (ConditionalAccessExpressionSyntax)node;
+			while (result.WhenNotNull is ConditionalAccessExpressionSyntax)
+			{
+				result = (ConditionalAccessExpressionSyntax)result.WhenNotNull;
+			}
+
+			return result;
+		}
 	}
 }

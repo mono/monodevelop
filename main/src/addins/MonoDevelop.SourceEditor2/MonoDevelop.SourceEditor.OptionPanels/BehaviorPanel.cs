@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Mono.TextEditor;
@@ -47,7 +48,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			autoInsertBraceCheckbutton.Toggled += HandleAutoInsertBraceCheckbuttonToggled;
 		}
 		
-		public virtual Gtk.Widget CreatePanelWidget ()
+		public virtual Control CreatePanelWidget ()
 		{
 			//			this.autoInsertTemplateCheckbutton.Active  = DefaultSourceEditorOptions.Options.AutoInsertTemplates;
 			autoInsertBraceCheckbutton.Active = DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
@@ -62,6 +63,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			checkbuttonFormatOnSave.Active = PropertyService.Get ("AutoFormatDocumentOnSave", false);
 			checkbuttonAutoSetSearchPatternCasing.Active = PropertyService.Get ("AutoSetPatternCasing", false);
+			checkbuttonEnableSelectionSurrounding.Active = DefaultSourceEditorOptions.Instance.EnableSelectionWrappingKeys;
 			HandleAutoInsertBraceCheckbuttonToggled (null, null);
 			return this;
 		}
@@ -83,6 +85,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = checkbuttonGenerateFormattingUndoStep.Active;
 			PropertyService.Set ("AutoSetPatternCasing", checkbuttonAutoSetSearchPatternCasing.Active);
 			PropertyService.Set ("AutoFormatDocumentOnSave", checkbuttonFormatOnSave.Active);
+			DefaultSourceEditorOptions.Instance.EnableSelectionWrappingKeys = checkbuttonEnableSelectionSurrounding.Active;
 		}
 
 		public void Initialize (OptionsDialog dialog, object dataObject)

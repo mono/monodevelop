@@ -197,6 +197,8 @@ namespace Mono.TextEditor
 		{
 			if (!data.CanEditSelection)
 				return;
+			DocumentLine line;
+			bool smartBackspace = false;
 			using (var undo = data.OpenUndoGroup ()) {
 				if (data.IsSomethingSelected) {
 					var visualAnchorLocation = data.LogicalToVisualLocation (data.MainSelection.Anchor);
@@ -238,29 +240,17 @@ namespace Mono.TextEditor
 				// if it's there or not (otherwise user has to press multiple backspaces in some cases)
 				data.EnsureCaretIsNotVirtual ();
 
-				var line = data.Document.GetLine (data.Caret.Line);
+				line = data.Document.GetLine (data.Caret.Line);
 				// smart backspace (delete indentation)
 				if (data.HasIndentationTracker && (data.IndentationTracker.SupportedFeatures & IndentatitonTrackerFeatures.SmartBackspace) != 0 && (data.Options.IndentStyle == IndentStyle.Smart || data.Options.IndentStyle == IndentStyle.Virtual)) {
 					if (data.Caret.Column == data.GetVirtualIndentationColumn (data.Caret.Location)) {
 						bool isAllIndent = line.GetIndentation (data.Document).Length == data.Caret.Column - 1;
-
 						if (isAllIndent) {
-							var prevLine = line.PreviousLine;
-							var prevLineIsEmpty = prevLine != null && prevLine.Length == 0;
-
-							var startOffset = prevLine != null ? prevLine.EndOffset : 0;
-							data.Remove (startOffset, data.Caret.Offset - startOffset);
-							if (prevLine != null) {
-								if (prevLineIsEmpty) {
-									if (line.Length - data.Caret.Column - 1 > 0 && data.HasIndentationTracker) {
-										data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Offset));
-									} else {
-										data.Caret.Column = data.GetVirtualIndentationColumn (prevLine.Offset);
-									}
-								}
-								data.FixVirtualIndentation ();
+							if (!data.Options.GenerateFormattingUndoStep) {
+								SmartBackspace (data, line);
+								return;
 							}
-							return;
+							smartBackspace = true;
 						}
 					}
 				}
@@ -283,8 +273,37 @@ namespace Mono.TextEditor
 				// Needs to be fixed after, the line may just contain the indentation
 				data.FixVirtualIndentation ();
 			}
+
+			if (data.Options.GenerateFormattingUndoStep && smartBackspace) {
+				using (var undo = data.OpenUndoGroup ()) {
+					data.EnsureCaretIsNotVirtual ();
+					SmartBackspace (data, line);
+				}
+			}
 		}
-		
+
+		static void SmartBackspace (TextEditorData data, DocumentLine line)
+		{
+			var prevLine = line.PreviousLine;
+			var prevLineIsEmpty = prevLine != null && prevLine.Length == 0;
+
+			var startOffset = prevLine != null ? prevLine.EndOffset : 0;
+			var count = data.Caret.Offset - startOffset;
+			if (count < 0)
+				return;
+			data.Remove (startOffset, count);
+			if (prevLine != null) {
+				if (prevLineIsEmpty) {
+					if (line.Length - data.Caret.Column - 1 > 0 && data.HasIndentationTracker) {
+						data.InsertAtCaret (data.IndentationTracker.GetIndentationString (data.Caret.Offset));
+					} else {
+						data.Caret.Column = data.GetVirtualIndentationColumn (prevLine.Offset);
+					}
+				}
+				data.FixVirtualIndentation ();
+			}
+		}
+
 		static void RemoveCharBeforeCaret (TextEditorData data)
 		{
 			int offset = data.Caret.Offset;

@@ -31,6 +31,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -268,18 +269,18 @@ namespace MonoDevelop.Debugger
 			Buffer.MoveMark (tokenBeginMark, iter);
 		}
 
-		void OnEditKeyRelease (object sender, Gtk.KeyReleaseEventArgs args)
+		async void OnEditKeyRelease (object sender, Gtk.KeyReleaseEventArgs args)
 		{
 			UpdateTokenBeginMarker ();
 
 			if (keyHandled)
 				return;
 
-			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+			await CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 
-		protected override bool ProcessKeyPressEvent (Gtk.KeyPressEventArgs args)
+		protected override async Task<bool> ProcessKeyPressEvent (Gtk.KeyPressEventArgs args)
 		{
 			keyHandled = false;
 
@@ -293,11 +294,11 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (currentCompletionData != null) {
-				if ((keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier))))
+				if ((keyHandled = await CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier))))
 					return true;
 			}
 
-			return base.ProcessKeyPressEvent (args);
+			return await base.ProcessKeyPressEvent (args);
 		}
 
 		protected override void UpdateInputLineBegin ()
@@ -461,10 +462,6 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-		{
-			// ignore
-		}
 		#endregion
 
 		void OnCustomOutputPadFontChanged (object sender, EventArgs e)

@@ -168,7 +168,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		public static ActionGroupView OpenActionGroup (Project project, Stetic.ActionGroupInfo group)
+		public static async Task<ActionGroupView> OpenActionGroup (Project project, Stetic.ActionGroupInfo group)
 		{
 			GuiBuilderProject p = GtkDesignInfo.FromProject (project).GuiBuilderProject ;
 			string file = p != null ? p.GetSourceCodeFile (group) : null;
@@ -176,7 +176,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				file = ActionGroupDisplayBinding.BindToClass (project, group);
 			}
 			
-			Document doc = IdeApp.Workbench.OpenDocument (file, true);
+			Document doc = await IdeApp.Workbench.OpenDocument (file, true);
 			if (doc != null) {
 				ActionGroupView view = doc.GetContent<ActionGroupView> ();
 				if (view != null) {

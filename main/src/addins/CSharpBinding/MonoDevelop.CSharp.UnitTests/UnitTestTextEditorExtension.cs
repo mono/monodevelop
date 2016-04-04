@@ -24,9 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using MonoDevelop.NUnit;
+using MonoDevelop.UnitTesting;
 using MonoDevelop.Core;
 using System.Text;
 using System.Threading;
@@ -43,7 +44,7 @@ namespace MonoDevelop.CSharp
 	class UnitTestTextEditorExtension : AbstractUnitTestTextEditorExtension
 	{
 		static readonly IList<UnitTestLocation> emptyList = new UnitTestLocation[0];
-		public override Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token)
+		public override Task<IList<UnitTestLocation>> GatherUnitTests (IUnitTestMarkers[] unitTestMarkers, CancellationToken token)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
@@ -53,7 +54,7 @@ namespace MonoDevelop.CSharp
 			if (semanticModel == null)
 				return Task.FromResult (emptyList);
 
-			var visitor = new NUnitVisitor (semanticModel, token);
+			var visitor = new NUnitVisitor (semanticModel, unitTestMarkers, token);
 			try {
 				visitor.Visit (semanticModel.SyntaxTree.GetRoot (token));
 			} catch (OperationCanceledException) {
@@ -69,6 +70,7 @@ namespace MonoDevelop.CSharp
 		{
 			readonly SemanticModel semanticModel;
 			readonly CancellationToken token;
+			readonly IUnitTestMarkers [] unitTestMarkers;
 			List<UnitTestLocation> foundTests = new List<UnitTestLocation> ();
 			HashSet<ClassDeclarationSyntax> unitTestClasses = new HashSet<ClassDeclarationSyntax> ();
 			public IList<UnitTestLocation> FoundTests {
@@ -77,10 +79,11 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public NUnitVisitor (SemanticModel semanticModel, CancellationToken token)
+			public NUnitVisitor (SemanticModel semanticModel, IUnitTestMarkers[] unitTestMarkers, CancellationToken token)
 			{
 				this.semanticModel = semanticModel;
 				this.token = token;
+				this.unitTestMarkers = unitTestMarkers;
 			}
 
 			static string GetFullName (ClassDeclarationSyntax typeDeclaration)
@@ -141,10 +144,13 @@ namespace MonoDevelop.CSharp
 				if (parentClass == null)
 					return;
 				UnitTestLocation test = null;
+				IUnitTestMarkers markers = null;
 				foreach (var attr in method.GetAttributes ()) {
-					if (attr.AttributeClass.GetFullName () == "NUnit.Framework.TestAttribute") {
+					var cname = attr.AttributeClass.GetFullName ();
+					markers = unitTestMarkers.FirstOrDefault (m => m.TestMethodAttributeMarker == cname);
+					if (markers != null) {
 						if (test == null) {
-							TagClass (parentClass);
+							TagClass (parentClass, markers);
 							test = new UnitTestLocation (node.Identifier.SpanStart);
 							test.UnitTestIdentifier = GetFullName (parentClass) + "." + method.Name;
 							foundTests.Add (test);
@@ -153,15 +159,15 @@ namespace MonoDevelop.CSharp
 				}
 				if (test != null) {
 					foreach (var attr in method.GetAttributes ()) {
-						if (attr.AttributeClass.GetFullName () == "NUnit.Framework.TestCaseAttribute") {
+						if (attr.AttributeClass.GetFullName () == markers.TestCaseMethodAttributeMarker) {
 							test.TestCases.Add ("(" + BuildArguments (attr) + ")");
 						} else
-							test.IsIgnored |= attr.AttributeClass.GetFullName () == "NUnit.Framework.IgnoreAttribute";
+							test.IsIgnored |= attr.AttributeClass.GetFullName () == markers.IgnoreTestMethodAttributeMarker;
 					}
 				}
 			}
 
-			void TagClass (ClassDeclarationSyntax c)
+			void TagClass (ClassDeclarationSyntax c, IUnitTestMarkers markers)
 			{
 				if (unitTestClasses.Contains (c))
 					return;
@@ -175,7 +181,7 @@ namespace MonoDevelop.CSharp
 
 				if (test != null) {
 					foreach (var attr in type.GetAttributes ()) {
-							test.IsIgnored |= attr.AttributeClass.GetFullName () == "NUnit.Framework.IgnoreAttribute";
+						test.IsIgnored |= attr.AttributeClass.GetFullName () == markers.IgnoreTestClassAttributeMarker;
 					}
 				}
 			}

@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeDotNetProject : FakeProject, IDotNetProject
+	class FakeDotNetProject : FakeProject, IDotNetProject
 	{
 		public FakeDotNetProject ()
 		{
@@ -105,11 +105,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return buildAction;
 		}
 
-		public List<ImportAndCondition> ImportsAdded = new List<ImportAndCondition> ();
-
 		public void AddImportIfMissing (string name, string condition)
 		{
-			ImportsAdded.Add (new ImportAndCondition (name, condition));
+			throw new ApplicationException ("Obsolete should not be called.");
 		}
 
 		public List<string> ImportsRemoved = new List <string> ();

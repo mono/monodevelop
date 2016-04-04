@@ -145,6 +145,11 @@ namespace MonoDevelop.CSharp.Completion
 				.Where(m => m.MethodKind == MethodKind.Constructor)
 				.Any (m => m.Parameters.Length > 0);
 		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
+		}
 	}
 
 }

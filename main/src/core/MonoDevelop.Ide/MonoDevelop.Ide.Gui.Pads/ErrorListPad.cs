@@ -50,10 +50,12 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components;
 using System.Linq;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	class ErrorListPad : IPadContent
+	class ErrorListPad : PadContent
 	{
 		HPaned control;
 		ScrolledWindow sw;
@@ -63,6 +65,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 		TreeModelFilter filter;
 		TreeModelSort sort;
 		ToggleButton errorBtn, warnBtn, msgBtn, logBtn;
+		Label errorBtnLbl, warnBtnLbl, msgBtnLbl, logBtnLbl;
 		SearchEntry searchEntry;
 		string currentSearchPattern = null;
 		Hashtable tasks = new Hashtable ();
@@ -70,7 +73,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		int warningCount;
 		int infoCount;
 		bool initialLogShow = true;
-		IPadWindow window;
 
 		Menu menu;
 		Dictionary<ToggleAction, int> columnsActions = new Dictionary<ToggleAction, int> ();
@@ -107,7 +109,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			internal const int Category    = 7;
 		}
 
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				if (control == null)
 					CreateControl ();
@@ -115,50 +117,64 @@ namespace MonoDevelop.Ide.Gui.Pads
 			}
 		}
 
-		public string Id {
+		public override string Id {
 			get { return "MonoDevelop.Ide.Gui.Pads.ErrorListPad"; }
 		}
 
-		void IPadContent.Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
-			this.window = window;
 			window.Title = GettextCatalog.GetString ("Errors");
 
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
-			
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
+
+			var btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView (Stock.Error, Gtk.IconSize.Menu));
+			errorBtnLbl = new Label ();
+			btnBox.PackStart (errorBtnLbl);
+
 			errorBtn = new ToggleButton { Name = "toggleErrors" };
 			errorBtn.Active = ShowErrors;
-			errorBtn.Image = new Gtk.Image (Stock.Error, Gtk.IconSize.Menu);
-			errorBtn.Image.Show ();
+			errorBtn.Child = btnBox;
 			errorBtn.Toggled += new EventHandler (FilterChanged);
 			errorBtn.TooltipText = GettextCatalog.GetString ("Show Errors");
 			UpdateErrorsNum();
 			toolbar.Add (errorBtn);
-			
+
+			btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView (Stock.Warning, Gtk.IconSize.Menu));
+			warnBtnLbl = new Label ();
+			btnBox.PackStart (warnBtnLbl);
+
 			warnBtn = new ToggleButton  { Name = "toggleWarnings" };
 			warnBtn.Active = ShowWarnings;
-			warnBtn.Image = new Gtk.Image (Stock.Warning, Gtk.IconSize.Menu);
-			warnBtn.Image.Show ();
+			warnBtn.Child = btnBox;
 			warnBtn.Toggled += new EventHandler (FilterChanged);
 			warnBtn.TooltipText = GettextCatalog.GetString ("Show Warnings");
 			UpdateWarningsNum();
 			toolbar.Add (warnBtn);
 
+			btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView (Stock.Information, Gtk.IconSize.Menu));
+			msgBtnLbl = new Label ();
+			btnBox.PackStart (msgBtnLbl);
+
 			msgBtn = new ToggleButton  { Name = "toggleMessages" };
 			msgBtn.Active = ShowMessages;
-			msgBtn.Image = new Gtk.Image (Stock.Information, Gtk.IconSize.Menu);
-			msgBtn.Image.Show ();
+			msgBtn.Child = btnBox;
 			msgBtn.Toggled += new EventHandler (FilterChanged);
 			msgBtn.TooltipText = GettextCatalog.GetString ("Show Messages");
 			UpdateMessagesNum();
 			toolbar.Add (msgBtn);
 			
 			toolbar.Add (new SeparatorToolItem ());
-			
+
+			btnBox = new HBox (false, 2);
+			btnBox.PackStart (new ImageView ("md-message-log", Gtk.IconSize.Menu));
+			logBtnLbl = new Label (GettextCatalog.GetString ("Build Output"));
+			btnBox.PackStart (logBtnLbl);
+
 			logBtn = new ToggleButton { Name = "toggleBuildOutput" };
-			logBtn.Label = GettextCatalog.GetString ("Build Output");
-			logBtn.Image = ImageService.GetImage ("md-message-log", Gtk.IconSize.Menu);
-			logBtn.Image.Show ();
+			logBtn.Child = btnBox;
 			logBtn.TooltipText = GettextCatalog.GetString ("Show build output");
 			logBtn.Toggled += HandleLogBtnToggled;
 			toolbar.Add (logBtn);
@@ -191,6 +207,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 									   typeof (bool),       // read?
 									   typeof (TaskListEntry),       // read? -- use Pango weight
 									   typeof (string));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Type", "store__Read", "store__Task", "store__Description");
+			TypeDescriptor.AddAttributes (store, modelAttr);
 
 			TreeModelFilterVisibleFunc filterFunct = new TreeModelFilterVisibleFunc (FilterTasks);
 			filter = new TreeModelFilter (store, null);
@@ -234,7 +252,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			outputView = new LogView { Name = "buildOutput" };
 			control.Add2 (outputView);
 			
-			Control.ShowAll ();
+			control.ShowAll ();
 			
 			control.SizeAllocated += HandleControlSizeAllocated;
 			
@@ -300,6 +318,21 @@ namespace MonoDevelop.Ide.Gui.Pads
 				}
 			} while (view.Model.IterNext (ref it));
 		}
+
+		internal void SelectTaskListEntry (TaskListEntry taskListEntry)
+		{
+			TreeIter iter;
+			if (!view.Model.GetIterFirst (out iter))
+				return;
+			do {
+				var t = (TaskListEntry) view.Model.GetValue (iter, DataColumns.Task);
+				if (t == taskListEntry) {
+					view.Selection.SelectIter (iter);
+					view.ScrollToCell (view.Model.GetPath (iter), view.Columns[0], false, 0, 0);
+					return;
+				}
+			} while (view.Model.IterNext (ref iter));
+		}
 		
 		void LoadColumnsVisibility ()
 		{
@@ -317,10 +350,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void StoreColumnsVisibility ()
 		{
 			PropertyService.Set ("Monodevelop.ErrorListColumns", string.Join (";", view.Columns.Select (c => c.Visible ? "TRUE" : "FALSE")));
-		}
-		
-		public void RedrawContent()
-		{
 		}
 
 		Gtk.Menu CreateMenu ()
@@ -727,10 +756,6 @@ namespace MonoDevelop.Ide.Gui.Pads
 			Clear();
 		}
 		
-		public void Dispose ()
-		{
-		}
-		
 		void OnRowActivated (object o, RowActivatedArgs args)
 		{
 			OnTaskJumpto (null, null);
@@ -864,30 +889,27 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void UpdateErrorsNum () 
 		{
-			errorBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
-			errorBtn.Image.Show ();
+			errorBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Error", "{0} Errors", errorCount), errorCount);
 		}
 
 		void UpdateWarningsNum ()
 		{
-			warnBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount); 
-			warnBtn.Image.Show ();
+			warnBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Warning", "{0} Warnings", warningCount), warningCount);
 		}
 
 		void UpdateMessagesNum ()
 		{
-			msgBtn.Label = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
-			msgBtn.Image.Show ();
+			msgBtnLbl.Text = " " + string.Format(GettextCatalog.GetPluralString("{0} Message", "{0} Messages", infoCount), infoCount);
 		}
 
 		void UpdatePadIcon ()
 		{
 			if (errorCount > 0)
-				window.Icon = "md-errors-list-has-errors";
+				Window.Icon = "md-errors-list-has-errors";
 			else if (warningCount > 0)
-				window.Icon = "md-errors-list-has-warnings";
+				Window.Icon = "md-errors-list-has-warnings";
 			else
-				window.Icon = "md-errors-list";
+				Window.Icon = "md-errors-list";
 		}
 		
 		private void ItemToggled (object o, ToggledArgs args)

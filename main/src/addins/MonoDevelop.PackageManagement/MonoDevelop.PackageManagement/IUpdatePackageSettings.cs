@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IUpdatePackageSettings
+	internal interface IUpdatePackageSettings
 	{
 		bool UpdateDependencies { get; set; }
 		bool AllowPrereleaseVersions { get; set; }

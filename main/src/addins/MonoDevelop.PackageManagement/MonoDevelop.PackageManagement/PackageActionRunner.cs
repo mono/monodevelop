@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageActionRunner : IPackageActionRunner
+	internal class PackageActionRunner : IPackageActionRunner
 	{
 		IPackageManagementEvents packageManagementEvents;
 		

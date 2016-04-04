@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		AssemblyFoldersPanelWidget widget;
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new AssemblyFoldersPanelWidget ();
 		}

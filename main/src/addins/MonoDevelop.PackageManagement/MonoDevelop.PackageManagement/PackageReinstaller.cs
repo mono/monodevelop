@@ -25,12 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.NodeBuilders;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageReinstaller
+	internal class PackageReinstaller
 	{
 		IPackageManagementSolution solution;
 		IBackgroundPackageActionRunner runner;
@@ -59,7 +58,7 @@ namespace MonoDevelop.PackageManagement
 		public void Run (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
 			try {
-				IPackageManagementProject project = solution.GetActiveProject ();
+				IPackageManagementProject project = solution.GetProject (packageReferenceNode.Project);
 				ReinstallPackageAction action = project.CreateReinstallPackageAction ();
 				action.PackageId = packageReferenceNode.Id;
 				action.PackageVersion = packageReferenceNode.Version;

@@ -8,7 +8,7 @@
 	<TemplateConfiguration>
 		<_Name>Assembly Information</_Name>
 		<_Category>Misc</_Category>
-		<Icon>md-file-source</Icon>
+		<Icon>md-file-information</Icon>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename IsFixed="True">AssemblyInfo.cs</DefaultFilename>
 		<_Description>A file defining assembly information attributes.</_Description>

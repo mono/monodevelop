@@ -617,7 +617,7 @@
     <property name="Events">ButtonPressMask</property>
     <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Create New Localization</property>
-    <property name="Icon">resource:locale_16x16.png</property>
+    <property name="Icon">resource:locale-16.png</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -1320,10 +1320,39 @@
                       <widget class="Gtk.ToggleButton" id="togglebuttonOk">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:silk_accept.png</property>
-                        <property name="Label" translatable="yes">Valid</property>
-                        <property name="UseUnderline">True</property>
+                        <property name="Type">Custom</property>
+                        <child>
+                          <widget class="Gtk.HBox" id="togglebuttonOkHbox">
+                            <property name="MemberName" />
+                            <property name="Spacing">2</property>
+                            <child>
+                              <widget class="MonoDevelop.Components.ImageView" id="togglebuttonOkIcon">
+                                <property name="MemberName" />
+                                <property name="IconId">md-done</property>
+                                <property name="IconSize">Menu</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">0</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="Gtk.Label" id="togglebuttonOkLabel">
+                                <property name="MemberName" />
+                                <property name="LabelProp" translatable="yes">Valid</property>
+                                <property name="UseUnderline">True</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">1</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
                       </widget>
                       <packing>
                         <property name="Position">2</property>
@@ -1336,10 +1365,39 @@
                       <widget class="Gtk.ToggleButton" id="togglebuttonMissing">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:silk_exclamation.png</property>
-                        <property name="Label" translatable="yes">Missing</property>
-                        <property name="UseUnderline">True</property>
+                        <property name="Type">Custom</property>
+                        <child>
+                          <widget class="Gtk.HBox" id="togglebuttonMissingHbox">
+                            <property name="MemberName" />
+                            <property name="Spacing">2</property>
+                            <child>
+                              <widget class="MonoDevelop.Components.ImageView" id="togglebuttonMissingIcon">
+                                <property name="MemberName" />
+                                <property name="IconId">md-warning</property>
+                                <property name="IconSize">Menu</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">0</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="Gtk.Label" id="togglebuttonMissingLabel">
+                                <property name="MemberName" />
+                                <property name="LabelProp" translatable="yes">Missing</property>
+                                <property name="UseUnderline">True</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">1</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
                       </widget>
                       <packing>
                         <property name="Position">3</property>
@@ -1352,10 +1410,39 @@
                       <widget class="Gtk.ToggleButton" id="togglebuttonFuzzy">
                         <property name="MemberName" />
                         <property name="CanFocus">True</property>
-                        <property name="Type">TextAndIcon</property>
-                        <property name="Icon">resource:silk_error.png</property>
-                        <property name="Label" translatable="yes">Fuzzy</property>
-                        <property name="UseUnderline">True</property>
+                        <property name="Type">Custom</property>
+                        <child>
+                          <widget class="Gtk.HBox" id="togglebuttonFuzzyHbox">
+                            <property name="MemberName" />
+                            <property name="Spacing">2</property>
+                            <child>
+                              <widget class="MonoDevelop.Components.ImageView" id="togglebuttonFuzzyIcon">
+                                <property name="MemberName" />
+                                <property name="IconId">md-error</property>
+                                <property name="IconSize">Menu</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">0</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="Gtk.Label" id="togglebuttonFuzzyLabel">
+                                <property name="MemberName" />
+                                <property name="LabelProp" translatable="yes">Fuzzy</property>
+                                <property name="UseUnderline">True</property>
+                              </widget>
+                              <packing>
+                                <property name="Position">1</property>
+                                <property name="AutoSize">True</property>
+                                <property name="Expand">False</property>
+                                <property name="Fill">False</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
                       </widget>
                       <packing>
                         <property name="Position">4</property>

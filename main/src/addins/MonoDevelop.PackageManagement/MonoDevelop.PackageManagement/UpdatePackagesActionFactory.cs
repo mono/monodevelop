@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatePackagesActionFactory
+	internal class UpdatePackagesActionFactory
 	{
 		ILogger logger;
 		IPackageManagementEvents packageManagementEvents;

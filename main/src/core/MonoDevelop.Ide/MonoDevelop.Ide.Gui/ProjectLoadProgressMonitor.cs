@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Extensions;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class GtkProjectLoadProgressMonitor : ProjectLoadProgressMonitor
+	class GtkProjectLoadProgressMonitor : ProjectLoadProgressMonitor
 	{
 		MigrationType? Migration {
 			get; set;

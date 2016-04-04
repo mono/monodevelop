@@ -86,18 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (file.IsLink && nodeInfo.Icon != null) {
 				var overlay = ImageService.GetIcon ("md-link-overlay").WithSize (Xwt.IconSize.Small);
-				var cached = Context.GetComposedIcon (nodeInfo.Icon, overlay);
-				if (cached != null)
-					nodeInfo.Icon = cached;
-				else {
-					var ib = new Xwt.Drawing.ImageBuilder (nodeInfo.Icon.Width, nodeInfo.Icon.Height);
-					ib.Context.DrawImage (nodeInfo.Icon, 0, 0);
-					ib.Context.DrawImage (overlay, 0, 0);
-					var res = ib.ToVectorImage ();
-					ib.Dispose ();
-					Context.CacheComposedIcon (nodeInfo.Icon, overlay, res);
-					nodeInfo.Icon = res;
-				}
+				nodeInfo.OverlayBottomRight = overlay;
 			}
 		}
 		
@@ -154,8 +143,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.BuildChildNodes (treeBuilder, dataObject);
 			ProjectFile file = (ProjectFile) dataObject;
 			if (file.HasChildren)
-				foreach (ProjectFile pf in file.DependentChildren)
-					treeBuilder.AddChild (pf);
+				treeBuilder.AddChildren (file.DependentChildren);
 		}
 	}
 	
@@ -191,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (file.Project != null)
 					newProjectFile = file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory));
 
-				if (!FileService.IsValidPath (newPath)) {
+				if (!FileService.IsValidPath (newPath) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 				} else if ((newProjectFile != null && newProjectFile != file) || File.Exists (file.FilePath.ParentDirectory.Combine (newName))) {
 					// If there is already a file under the newPath which is *different*, then throw an exception

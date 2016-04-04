@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 
@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			}
 		}
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			panel = new NameConventionPanelWidget ();
 			panel.PolicyChanged += delegate {

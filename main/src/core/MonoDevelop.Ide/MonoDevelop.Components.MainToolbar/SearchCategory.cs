@@ -38,33 +38,15 @@ namespace MonoDevelop.Components.MainToolbar
 
 		internal class DataItemComparer : IComparer<SearchResult>
 		{
-			CancellationToken Token {
-				get; set;
-			}
-
-			public DataItemComparer ()
-			{
-			}
-
-			public DataItemComparer (CancellationToken token)
-			{
-				Token = token;
-			}
-
-			static uint compareTick;
 			public int Compare (SearchResult o1, SearchResult o2)
 			{
-				if (unchecked(compareTick++) % 100 == 0)
-					Token.ThrowIfCancellationRequested ();
-
 				var r = o2.Rank.CompareTo (o1.Rank);
 				if (r == 0)
 					r = o1.SearchResultType.CompareTo (o2.SearchResultType);
 				if (r == 0)
-					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
+					return string.CompareOrdinal (o1.MatchedString, o2.MatchedString);
 				return r;
 			}
-
 		}
 
 		protected struct MatchResult

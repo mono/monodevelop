@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCompatibility
+	internal class PackageCompatibility
 	{
 		IDotNetProject project;
 		IPackage package;

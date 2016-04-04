@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 		Empty
 	}
 
-	public class Indent
+	class Indent
 	{
 		readonly CloneableStack<IndentType> indentStack = new CloneableStack<IndentType>();
 		readonly OptionSet options;

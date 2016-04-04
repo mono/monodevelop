@@ -2,7 +2,7 @@
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class OperationStatus
+	partial class OperationStatus
     {
         public static readonly OperationStatus Succeeded = new OperationStatus(OperationStatusFlag.Succeeded, reason: null);
 		public static readonly OperationStatus FailedWithUnknownReason = new OperationStatus(OperationStatusFlag.None, reason: "FeaturesResources.ExtractMethodFailedWithUnknownReasons");

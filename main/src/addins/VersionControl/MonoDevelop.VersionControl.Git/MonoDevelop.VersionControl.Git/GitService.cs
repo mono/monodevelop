@@ -36,23 +36,9 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public static class GitService
 	{
-		public static bool UseRebaseOptionWhenPulling
-		{
-			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", true); }
-			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", value); }
-		}
-
-		public static bool StashUnstashWhenUpdating
-		{
-			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", true); }
-			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", value); }
-		}
-
-		public static bool StashUnstashWhenSwitchingBranches
-		{
-			get { return PropertyService.Get ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", true); }
-			set { PropertyService.Set ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", value); }
-		}
+		public static ConfigurationProperty<bool> UseRebaseOptionWhenPulling = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.UseRebaseOptionWhenPulling", true);
+		public static ConfigurationProperty<bool> StashUnstashWhenUpdating = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenUpdating", true);
+		public static ConfigurationProperty<bool> StashUnstashWhenSwitchingBranches = ConfigurationProperty.Create ("MonoDevelop.VersionControl.Git.StashUnstashWhenSwitchingBranches", true);
 
 		public static void Push (GitRepository repo)
 		{
@@ -102,7 +88,7 @@ namespace MonoDevelop.VersionControl.Git
 						using (ProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
 								repo.Fetch (monitor, dlg.RemoteName);
-							repo.Merge (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
+							repo.Merge (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor, FastForwardStrategy.NoFastForward);
 						}
 					}
 				}
@@ -128,7 +114,7 @@ namespace MonoDevelop.VersionControl.Git
 					try {
 						return repo.SwitchToBranch (monitor, branch);
 					} catch (Exception ex) {
-						monitor.ReportError ("Branch switch failed", ex);
+						monitor.ReportError (GettextCatalog.GetString ("Branch switch failed"), ex);
 						return false;
 					} finally {
 						monitor.Dispose ();

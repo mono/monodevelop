@@ -104,14 +104,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			this.newButton.Name = "newButton";
 			this.newButton.UseUnderline = true;
 			this.newButton.Label = global::Mono.Unix.Catalog.GetString ("Create _Layout");
-			global::Gtk.Image w10 = new global::Gtk.Image ();
-			w10.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-new", global::Gtk.IconSize.Menu);
-			this.newButton.Image = w10;
 			this.AddActionWidget (this.newButton, -5);
-			global::Gtk.ButtonBox.ButtonBoxChild w11 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.newButton]));
-			w11.Position = 1;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.ButtonBox.ButtonBoxChild w10 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w8 [this.newButton]));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}

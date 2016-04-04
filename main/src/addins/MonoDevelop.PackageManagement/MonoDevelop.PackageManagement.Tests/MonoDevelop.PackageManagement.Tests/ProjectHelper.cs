@@ -28,13 +28,12 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using System.Linq;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public static class ProjectHelper
+	static class ProjectHelper
 	{
 		public static ISolution CreateSolution ()
 		{

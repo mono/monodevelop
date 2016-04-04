@@ -38,7 +38,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementSelectedProjects
+	internal class PackageManagementSelectedProjects
 	{
 		bool? singleProjectSelected;
 		IDotNetProject singleDotNetProjectSelected;

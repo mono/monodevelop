@@ -374,12 +374,12 @@ namespace MonoDevelop.Projects
 			return new SolutionConfiguration (name);
 		}
 
-		public SolutionConfiguration AddConfiguration (string name, bool createConfigForItems)
+		public SolutionConfiguration AddConfiguration (string id, bool createConfigForItems)
 		{
-			SolutionConfiguration conf = new SolutionConfiguration (name);
+			SolutionConfiguration conf = new SolutionConfiguration (id);
 			foreach (SolutionItem item in Items.Where (it => it.SupportsBuild())) {
-				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (name)) == null) {
-					SolutionItemConfiguration newc = item.CreateConfiguration (name);
+				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (id)) == null) {
+					SolutionItemConfiguration newc = item.CreateConfiguration (id);
 					if (item.DefaultConfiguration != null)
 						newc.CopyFrom (item.DefaultConfiguration);
 					item.Configurations.Add (newc);

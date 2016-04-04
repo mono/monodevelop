@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -66,8 +67,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		static CompletionWindowManager ()
 		{
-			if (IdeApp.Workbench != null)
+			if (IdeApp.Workbench != null) {
 				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
+				IdeApp.Workbench.RootWindow.WindowStateEvent += (o, args) => HideWindow ();
+			}
 			
 			IdeApp.Preferences.ForceSuggestionMode.Changed += (s,a) => {
 				if (wnd != null)
@@ -116,25 +119,23 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var ext = wnd.Extension;
 
 			try {
-				try {
-					isShowing = false;
-					if (!wnd.ShowListWindow (list, completionContext)) {
-						if (list is IDisposable)
-							((IDisposable)list).Dispose ();
-						HideWindow ();
-						return false;
-					}
-					
-					if (IdeApp.Preferences.ForceSuggestionMode)
-						wnd.AutoSelect = false;
-					wnd.Show ();
-					DesktopService.RemoveWindowShadow (wnd);
-					OnWindowShown (EventArgs.Empty);
-					return true;
-				} catch (Exception ex) {
-					LoggingService.LogError (ex.ToString ());
+				isShowing = false;
+				if (!wnd.ShowListWindow (list, completionContext)) {
+					if (list is IDisposable)
+						((IDisposable)list).Dispose ();
+					HideWindow ();
 					return false;
 				}
+				
+				if (IdeApp.Preferences.ForceSuggestionMode)
+					wnd.AutoSelect = false;
+				wnd.Show ();
+				DesktopService.RemoveWindowShadow (wnd);
+				OnWindowShown (EventArgs.Empty);
+				return true;
+			} catch (Exception ex) {
+				LoggingService.LogError ("Exception while showing completion window.", ex);
+				return false;
 			} finally {
 				ParameterInformationWindowManager.UpdateWindow (ext, completionWidget);
 			}
@@ -158,10 +159,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			OnWindowClosed (EventArgs.Empty);
 		}
 		
-		public static bool PreProcessKeyEvent (KeyDescriptor descriptor)
+		public static Task<bool> PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
-				return false;
+				return Task.FromResult (false);
 			if (descriptor.KeyChar != '\0') {
 				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
 			}
@@ -188,11 +189,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public static void PostProcessKeyEvent (KeyDescriptor descriptor)
+		public static Task PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
-				return;
-			wnd.PostProcessKeyEvent (descriptor);
+				return TaskUtil.Default<object> ();
+			return wnd.PostProcessKeyEvent (descriptor);
 		}
 
 		public static void RepositionWindow ()

@@ -20,7 +20,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.Refactoring")]
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding")]
 [assembly: InternalsVisibleTo("FSharpBinding")]
-[assembly: InternalsVisibleTo("MonoDevelop.CBinding")]
 [assembly: InternalsVisibleTo("MonoDevelop.Xml")]
 [assembly: InternalsVisibleTo("MonoDevelop.AspNet")]
 [assembly: InternalsVisibleTo("Xamarin.Ide")]
@@ -32,3 +31,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.CSharpBinding.AspNet")]
 [assembly: InternalsVisibleTo("MonoDevelop.GtkCore")]
 [assembly: InternalsVisibleTo("MonoDevelop.PackageManagement")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Addin.Tests")]

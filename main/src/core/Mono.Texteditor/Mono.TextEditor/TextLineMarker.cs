@@ -41,7 +41,8 @@ namespace Mono.TextEditor
 		/// true, if the mouse press was handled - false otherwise.
 		/// </returns>
 		bool MousePressed (MonoTextEditor editor, MarginMouseEventArgs args);
-		
+		bool MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args);
+
 		void MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result);
 	}
 	
@@ -150,7 +151,6 @@ namespace Mono.TextEditor
 		/// <returns><c>true</c>, if background was drawn, <c>false</c> otherwise.</returns>
 		/// <param name="editor">The editor.</param>
 		/// <param name="cr">The cairo context.</param>
-		/// <param name="y">The y coordinate.</param>
 		/// <param name="metrics">The line metrics.</param>
 		public virtual bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{

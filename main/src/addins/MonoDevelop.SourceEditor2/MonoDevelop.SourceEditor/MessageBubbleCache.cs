@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 							w += (int)cache.warningPixbuf.Width + iconTextSpacing;
 
 						requisition.Width = Math.Max (w + textBorder * 2, requisition.Width);
-						y += h + verticalTextSpace;
+						y += h + verticalTextSpace - 3;
 					}
 				}
 
@@ -147,7 +147,6 @@ namespace MonoDevelop.SourceEditor
 
 			protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
 			{
-				Theme.BorderColor = marker.TooltipColor.Color;
 				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				g.SetSourceColor (marker.TooltipColor.Color);
 				g.Fill ();

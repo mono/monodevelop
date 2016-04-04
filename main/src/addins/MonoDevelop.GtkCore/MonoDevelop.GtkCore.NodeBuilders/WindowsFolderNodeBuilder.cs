@@ -75,10 +75,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			GtkDesignInfo info = GtkDesignInfo.FromProject (p);
 			if (!info.GuiBuilderProject.HasError) {
 				builder.AddChild (new StockIconsNode (p));
-				foreach (GuiBuilderWindow fi in info.GuiBuilderProject.Windows)
-					builder.AddChild (fi);
-				foreach (Stetic.ActionGroupInfo group in info.GuiBuilderProject.SteticProject.ActionGroups)
-					builder.AddChild (group);
+				builder.AddChildren (info.GuiBuilderProject.Windows);
+				builder.AddChildren (info.GuiBuilderProject.SteticProject.ActionGroups);
 			}
 		}
 

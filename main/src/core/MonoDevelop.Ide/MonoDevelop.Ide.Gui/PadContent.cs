@@ -1,4 +1,4 @@
-﻿// IPadContent.cs
+// IPadContent.cs
 //
 // Author:
 //   Viktoria Dudka (viktoriad@remobjects.com)
@@ -27,13 +27,54 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
-    public interface IPadContent : IDisposable
+	public abstract class PadContent : IDisposable
 	{
-        Widget Control { get; }
+		IPadWindow window;
+		string icon;
+		string title;
 
-        void Initialize (IPadWindow window);
+		protected PadContent (string title, string icon = null): this()
+		{
+			this.icon = icon;
+			this.title = title;
+		}
+
+		protected PadContent ()
+		{
+			Id = GetType ().FullName;
+		}
+
+		public virtual string Id { get; set; }
+
+		public IPadWindow Window {
+			get { return window; }
+		}
+
+		public abstract Control Control { get; }
+
+		internal void Init (IPadWindow window)
+		{
+			this.window = window;
+
+			if (title != null)
+				window.Title = title;
+
+			if (icon != null)
+				window.Icon = icon;
+			
+			Initialize (window);
+		}
+
+		protected virtual void Initialize (IPadWindow window)
+		{
+		}
+
+		public virtual void Dispose ()
+		{
+		}
 	}
 }

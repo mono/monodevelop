@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackagesRequiringLicenseAcceptance
+	internal class PackagesRequiringLicenseAcceptance
 	{
 		IPackageManagementProject project;
 

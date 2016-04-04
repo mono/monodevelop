@@ -34,19 +34,56 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
+	interface IFoo
+	{
+		int this[int index] { get; }
+		int Prop { get; }
+	}
+	interface IBar
+	{
+		int this[int index] { get; }
+		int Prop { get; }
+	}
+	class Bo
+	{
+		public int Prop { get { return 4; } }
+	}
+	class FooBar : Bo, IFoo, IBar
+	{
+		int IBar.Prop { get { return 1; } }
+		int IFoo.Prop { get { return 2; } }
+		public int Prop { get { return 3; } }
+
+		int IFoo.this[int index]
+		{
+			get
+			{
+				return index;
+			}
+		}
+
+		int IBar.this[int index]
+		{
+			get
+			{
+				return -index;
+			}
+		}
+	}
+
 	class TestEvaluationParent
 	{
 		public int TestMethodBase ()
 		{
 			float c = 4;
-			return 1;
+			return 2;
 		}
 
 		protected string ProtectedStringProperty{ get; set; }
 
 		public virtual int TestMethodBase (string a)
 		{
-			return int.Parse (a) + 1;
+			return int.Parse (a) + 2;
 		}
 
 		protected int TestMethodBase (int a)
@@ -188,10 +225,18 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				}
 			}
 
+			FooBar = new FooBar ();
+			Foo = new FooBar ();
+			Bar = new FooBar ();
+
 			var testEvaluationChild = new TestEvaluationChild ();
 
 			Console.WriteLine (n); /*break*/
 		}
+
+		public FooBar FooBar { get; set; }
+		public IBar Bar { get; set; }
+		public IFoo Foo { get; set; }
 
 		public string TestCastingArgument (myNint nint)
 		{

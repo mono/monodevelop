@@ -34,7 +34,7 @@ namespace MonoDevelop.Components
 
 		public ContextMenu ()
 		{
-			items = new ContextMenuItemCollection (this);
+			items = new ContextMenuItemCollection ();
 		}
 
 		public ContextMenuItemCollection Items {
@@ -77,7 +77,7 @@ namespace MonoDevelop.Components
 			ContextMenuExtensionsGtk.ShowContextMenu (parent, evt, this, closeHandler);
 		}
 
-		public void Show (Gtk.Widget parent, int x, int y, Action closeHandler)
+		public void Show (Gtk.Widget parent, int x, int y, Action closeHandler, bool selectFirstItem = false)
 		{
 			#if MAC
 			if (Platform.IsMac) {
@@ -85,18 +85,21 @@ namespace MonoDevelop.Components
 
 				// x, y are in gtk coordinates, so they need to be translated for Cocoa.
 				parent.TranslateCoordinates (parent.Toplevel, x, y, out tx, out ty);
-				ContextMenuExtensionsMac.ShowContextMenu (parent, tx, ty, this, closeHandler);
+				ContextMenuExtensionsMac.ShowContextMenu (parent, tx, ty, this, closeHandler, selectFirstItem);
 				return;
 			}
 			#endif
 
-			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this, closeHandler);
+			ContextMenuExtensionsGtk.ShowContextMenu (parent, x, y, this, closeHandler, selectFirstItem);
 		}
+
 
 		public void Show (Gtk.Widget parent, int x, int y)
 		{
 			Show (parent, x, y, null);
 		}
+
+
 
 		public void Add (ContextMenuItem menuItem)
 		{

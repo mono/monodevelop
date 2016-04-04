@@ -14,6 +14,7 @@
 [submodule "main/external/mono-addins"]
 	path = main/external/mono-addins
 	url = git://github.com/mono/mono-addins.git
+	branch = master
 [submodule "main/external/ikvm"]
 	path = main/external/ikvm
 	url = git://github.com/mono/ikvm-fork.git
@@ -26,7 +27,7 @@
 	url = git://github.com/mono/guiunit.git
 [submodule "main/external/fsharpbinding"]
 	path = main/external/fsharpbinding
-	url = https://github.com/fsharp/xamarin-monodevelop-fsharp-addin.git
+	url = git://github.com/fsharp/xamarin-monodevelop-fsharp-addin.git
 	branch = master
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary

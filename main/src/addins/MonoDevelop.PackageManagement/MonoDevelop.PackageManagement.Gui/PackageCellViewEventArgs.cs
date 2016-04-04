@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCellViewEventArgs : EventArgs
+	internal class PackageCellViewEventArgs : EventArgs
 	{
 		public PackageCellViewEventArgs (PackageViewModel packageViewModel)
 		{

@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			ShowScrollbars = true;
 			VisibleWindow = false;
 
-			BackgroundColor = "white";
+			UpdateTeme (null, null);
 			LogoHeight = 90;
 
 			var background = new WelcomePageWidgetBackground ();
@@ -104,6 +104,12 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			IdeApp.Workbench.GuiLocked += OnLock;
 			IdeApp.Workbench.GuiUnlocked += OnUnlock;
+			MonoDevelop.Ide.Gui.Styles.Changed += UpdateTeme;
+		}
+
+		void UpdateTeme (object sender, EventArgs e)
+		{
+			BackgroundColor = Styles.WelcomeScreen.BackgroundColor;
 		}
 
 		void OnLock (object s, EventArgs a)
@@ -126,6 +132,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			base.OnDestroyed ();
 			IdeApp.Workbench.GuiLocked -= OnLock;
 			IdeApp.Workbench.GuiUnlocked -= OnUnlock;
+			MonoDevelop.Ide.Gui.Styles.Changed -= UpdateTeme;
 		}
 
 		public class WelcomePageWidgetBackground : Gtk.EventBox
@@ -135,13 +142,23 @@ namespace MonoDevelop.Ide.WelcomePage
 			public double OverdrawOpacity { get; set; }
 			public int OverdrawOffset { get; set; }
 
+			Gdk.Color backgroundColor = Gdk.Color.Zero;
+
+			public WelcomePageWidgetBackground ()
+			{
+				MonoDevelop.Ide.Gui.Styles.Changed += UpdateTeme;
+			}
+
+			void UpdateTeme (object sender, EventArgs e)
+			{
+				if (!Gdk.Color.Parse (Owner.BackgroundColor, ref backgroundColor) || !Gdk.Color.Parse (Styles.WelcomeScreen.BackgroundColor, ref backgroundColor))
+					backgroundColor = Style.White;
+				ModifyBg (StateType.Normal, backgroundColor);
+			}
+
 			protected override void OnRealized ()
 			{
-				Gdk.Color color = Gdk.Color.Zero;
-				if (!Gdk.Color.Parse (Owner.BackgroundColor, ref color))
-					color = Style.White;
-				ModifyBg (StateType.Normal, color);
-
+				UpdateTeme (null, null);
 				base.OnRealized ();
 			}
 
@@ -164,7 +181,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
 				using (var context = CairoHelper.Create (evnt.Window)) {
-					context.SetSourceRGB (1, 1, 1);
+					context.SetSourceRGB (backgroundColor.Red, backgroundColor.Green, backgroundColor.Blue);
 					context.Operator = Cairo.Operator.Source;
 					context.Paint ();
 					context.Operator = Cairo.Operator.Over;
@@ -192,6 +209,12 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 				
 				return true;
+			}
+
+			protected override void OnDestroyed ()
+			{
+				MonoDevelop.Ide.Gui.Styles.Changed -= UpdateTeme;
+				base.OnDestroyed ();
 			}
 		}
 	}

@@ -151,10 +151,6 @@ namespace MonoDevelop.CSharpBinding
 				}
 			}
 
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
-				// ignore
-			}
 			#endregion
 		}
 
@@ -217,7 +213,7 @@ namespace MonoDevelop.CSharpBinding
 			var data = new RoslynSymbolCompletionData (null, factory, foundMember);
 			data.DisplayFlags |= DisplayFlags.NamedArgument;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
+			ka = await data.InsertCompletionText (listWindow, ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None)); 
 
 			return widget.CompletedWord;
 		}

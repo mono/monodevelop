@@ -10,11 +10,11 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpMethodExtractor
+	partial class CSharpMethodExtractor
     {
         private partial class CSharpCodeGenerator
         {
-            public class MultipleStatementsCodeGenerator : CSharpCodeGenerator
+            class MultipleStatementsCodeGenerator : CSharpCodeGenerator
             {
                 public MultipleStatementsCodeGenerator(
                     InsertionPoint insertionPoint,
@@ -32,8 +32,8 @@ namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 
                     if (first != last)
                     {
-                        var firstUnderContainer = result.GetFirstStatementUnderContainer();
-                        var lastUnderContainer = result.GetLastStatementUnderContainer();
+                        //var firstUnderContainer = result.GetFirstStatementUnderContainer();
+                        //var lastUnderContainer = result.GetLastStatementUnderContainer();
                         //Contract.ThrowIfFalse(firstUnderContainer.Parent == lastUnderContainer.Parent);
                         return true;
                     }

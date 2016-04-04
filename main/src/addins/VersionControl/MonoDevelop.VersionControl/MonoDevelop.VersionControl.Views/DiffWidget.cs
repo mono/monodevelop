@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -35,8 +36,8 @@ namespace MonoDevelop.VersionControl.Views
 		VersionControlDocumentInfo info;
 		Mono.TextEditor.MonoTextEditor diffTextEditor;
 		ComparisonWidget comparisonWidget;
-		Gtk.Button buttonNext;
-		Gtk.Button buttonPrev;
+		DocumentToolButton buttonNext;
+		DocumentToolButton buttonPrev;
 		Gtk.Button buttonDiff;
 		Gtk.Label labelOverview;
 
@@ -48,7 +49,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		string LabelText {
 			get {
-				if (comparisonWidget.Diff.Count == 0)
+				if (!comparisonWidget.Diff.Any ())
 					return GettextCatalog.GetString ("Both files are equal");
 				int added=0, removed=0;
 				foreach (var h in comparisonWidget.Diff) {
@@ -114,7 +115,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void SetButtonSensitivity ()
 		{
-			this.buttonNext.Sensitive = this.buttonPrev.Sensitive = notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
+			this.buttonNext.GetNativeWidget<Gtk.Widget> ().Sensitive = this.buttonPrev.GetNativeWidget<Gtk.Widget> ().Sensitive =
+				notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
 		}
 		
 		void HandleButtonDiffhandleClicked (object sender, EventArgs e)

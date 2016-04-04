@@ -5,11 +5,17 @@ namespace MonoDevelop.Ide.Projects
 	internal partial class DeleteConfigDialog
 	{
 		private global::Gtk.HBox hbox64;
-		private global::Gtk.Image image6;
+		
+		private global::MonoDevelop.Components.ImageView imageQuestion;
+		
 		private global::Gtk.VBox vbox80;
+		
 		private global::Gtk.Label label107;
+		
 		private global::Gtk.CheckButton deleteChildrenCheck;
+		
 		private global::Gtk.Button button11;
+		
 		private global::Gtk.Button button12;
 
 		protected virtual void Build ()
@@ -28,12 +34,13 @@ namespace MonoDevelop.Ide.Projects
 			this.hbox64.Spacing = 12;
 			this.hbox64.BorderWidth = ((uint)(12));
 			// Container child hbox64.Gtk.Box+BoxChild
-			this.image6 = new global::Gtk.Image ();
-			this.image6.Name = "image6";
-			this.image6.Yalign = 0F;
-			this.image6.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-dialog-question", global::Gtk.IconSize.Dialog);
-			this.hbox64.Add (this.image6);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox64 [this.image6]));
+			this.imageQuestion = new global::MonoDevelop.Components.ImageView ();
+			this.imageQuestion.Name = "imageQuestion";
+			this.imageQuestion.Yalign = 0F;
+			this.imageQuestion.IconSize = ((global::Gtk.IconSize)(6));
+			this.imageQuestion.IconId = "gtk-dialog-question";
+			this.hbox64.Add (this.imageQuestion);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox64 [this.imageQuestion]));
 			w2.Position = 0;
 			w2.Expand = false;
 			w2.Fill = false;
@@ -68,7 +75,7 @@ namespace MonoDevelop.Ide.Projects
 			w5.Position = 1;
 			w1.Add (this.hbox64);
 			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(w1 [this.hbox64]));
-			w6.Position = 2;
+			w6.Position = 0;
 			// Internal child MonoDevelop.Ide.Projects.DeleteConfigDialog.ActionArea
 			global::Gtk.HButtonBox w7 = this.ActionArea;
 			w7.Name = "dialog-action_area7";

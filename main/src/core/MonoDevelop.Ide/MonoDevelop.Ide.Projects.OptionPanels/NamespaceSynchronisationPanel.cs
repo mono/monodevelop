@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return !(item is WorkspaceObject);
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			widget = new NamespaceSynchronisationPanelWidget (this);
 			widget.Show ();

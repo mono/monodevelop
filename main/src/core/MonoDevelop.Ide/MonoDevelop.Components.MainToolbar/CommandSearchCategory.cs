@@ -52,7 +52,7 @@ namespace MonoDevelop.Components.MainToolbar
 			).ToList();
 		}
 
-		public CommandSearchCategory (Widget widget) : base (GettextCatalog.GetString("Commands"))
+		public CommandSearchCategory () : base (GettextCatalog.GetString("Commands"))
 		{
 		}
 

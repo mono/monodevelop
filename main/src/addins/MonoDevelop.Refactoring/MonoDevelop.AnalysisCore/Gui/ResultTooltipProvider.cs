@@ -51,7 +51,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 		}
 
-		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Gdk.ModifierType modifierState)
+		public override Control CreateTooltipWindow (TextEditor editor, DocumentContext ctx, TooltipItem item, int offset, Xwt.ModifierKeys modifierState)
 		{
 			var result = item.Item as Result;
 
@@ -64,7 +64,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		public override void GetRequiredPosition (TextEditor editor, Control tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (LanguageItemWindow) tipWindow;
-			requiredWidth = win.SetMaxWidth (win.Screen.Width);
+			requiredWidth = win.SetMaxWidth (win.Screen.Width / 4);
 			xalign = 0.5;
 		}
 		#endregion
@@ -72,4 +72,3 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 	}
 }
-

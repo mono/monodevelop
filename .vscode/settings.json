@@ -1,0 +1,7 @@
+// Local Monodevelop VS Code settings
+// Prevents trailing spaces removal and other formatting issues which VSCode usually does.
+{
+    "editor.insertSpaces": false,
+	"files.trimTrailingWhitespace": false,
+	"files.insertFinalNewline": false
+}

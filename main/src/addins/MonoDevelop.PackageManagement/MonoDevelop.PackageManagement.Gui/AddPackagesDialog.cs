@@ -42,7 +42,7 @@ using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class AddPackagesDialog
+	internal partial class AddPackagesDialog
 	{
 		IBackgroundPackageActionRunner backgroundActionRunner;
 		IRecentPackageRepository recentPackageRepository;
@@ -111,6 +111,9 @@ namespace MonoDevelop.PackageManagement
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
 			parentViewModel.Dispose ();
 			DisposeExistingTimer ();
+			packageStore.Clear ();
+			viewModel = null;
+			parentViewModel = null;
 			base.Dispose (disposing);
 		}
 

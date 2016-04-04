@@ -71,12 +71,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			List<string> folders;
 
 			GetFolderContent (project, path, out files, out folders);
-			
-			foreach (ProjectFile file in files)
-				builder.AddChild (file);
-			
-			foreach (string folder in folders)
-				builder.AddChild (new ProjectFolder (folder, project, dataObject));
+
+			builder.AddChildren (files);
+			builder.AddChildren (folders.Select (f => new ProjectFolder (f, project, dataObject)));
 		}
 				
 		void GetFolderContent (Project project, string folder, out ProjectFileCollection files, out List<string> folders)

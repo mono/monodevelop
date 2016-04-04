@@ -401,6 +401,15 @@ namespace MonoDevelop.Components.MainToolbar
 						}
 						UpdateBuildConfiguration ();
 					}
+
+					if (currentStartupProject == null) {
+						return;
+					}
+
+					var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
+					if (runtime != null && runtime.Command == null) {
+						currentStartupProject.UserProperties.SetValue<string> ("PreferredExecutionTarget", runtime.TargetId);
+					}
 				}
 			} finally {
 				ignoreRuntimeChangedCount--;
@@ -444,9 +453,6 @@ namespace MonoDevelop.Components.MainToolbar
 		void TrackStartupProject ()
 		{
 			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
-				var runtime = (RuntimeModel)ToolbarView.ActiveRuntime;
-				if (runtime != null && runtime.Command == null)
-					currentStartupProject.UserProperties.SetValue<string> ("PreferredExecutionTarget", runtime.TargetId);
 				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
 				currentStartupProject.Saved -= HandleUpdateCombos;
 			}

@@ -31,6 +31,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		CancellationTokenSource src = new CancellationTokenSource();
 		static List<AbstractBraceMatcher> braceMatcher = new List<AbstractBraceMatcher> ();
-
+		bool isSubscribed;
 		static BraceMatcherTextEditorExtension()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/BraceMatcher", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -63,15 +64,36 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			if ((Editor.TextEditorType & TextEditorType.Invisible) != 0)
 				return;
-			Editor.CaretPositionChanged += Editor_CaretPositionChanged;
-			DocumentContext.DocumentParsed += HandleDocumentParsed;
+			DefaultSourceEditorOptions.Instance.highlightMatchingBracket.Changed += HighlightMatchingBracket_Changed;
+		}
+
+		void HighlightMatchingBracket_Changed (object sender, EventArgs e)
+		{
+			if (DefaultSourceEditorOptions.Instance.HighlightMatchingBracket) {
+				if (isSubscribed)
+					return;
+				Editor.CaretPositionChanged += Editor_CaretPositionChanged;
+				DocumentContext.DocumentParsed += HandleDocumentParsed;
+				isSubscribed = true;
+				Editor_CaretPositionChanged (null, null);
+			} else {
+				if (!isSubscribed)
+					return;
+				Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+				DocumentContext.DocumentParsed -= HandleDocumentParsed;
+				Editor.UpdateBraceMatchingResult (null);
+				isSubscribed = false;
+			}
 		}
 
 		public override void Dispose ()
 		{
 			src.Cancel ();
-			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
-			DocumentContext.DocumentParsed -= HandleDocumentParsed;
+			if (isSubscribed) {
+				Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+				DocumentContext.DocumentParsed -= HandleDocumentParsed;
+				isSubscribed = false;
+			}
 		}
 
 		void HandleDocumentParsed (object sender, EventArgs e)
@@ -94,11 +116,23 @@ namespace MonoDevelop.Ide.Editor.Extension
 			Task.Run (async delegate() {
 				BraceMatchingResult? result;
 				try {
-					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
+					result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
 					if (result == null && caretOffset > 0)
-						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset - 1, token).ConfigureAwait (false);
+						result = await matcher.GetMatchingBracesAsync (snapshot, ctx, caretOffset, token).ConfigureAwait (false);
 					if (result == null)
 						return;
+					if (result.HasValue) {
+						if (result.Value.LeftSegment.Offset < 0 || 
+						    result.Value.LeftSegment.EndOffset > snapshot.Length) {
+							LoggingService.LogError ("bracket matcher left segment invalid:" + result.Value.LeftSegment);
+							return;
+						}
+						if (result.Value.RightSegment.Offset < 0 ||
+						    result.Value.RightSegment.EndOffset > snapshot.Length) {
+							LoggingService.LogError ("bracket matcher right segment invalid:" + result.Value.RightSegment);
+							return;
+						}
+					}
 				} catch (OperationCanceledException) {
 					return;
 				} catch (AggregateException ae) {

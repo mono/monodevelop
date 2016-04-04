@@ -13,7 +13,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
 {
-	public abstract partial class AbstractImplementInterfaceService
+	abstract partial class AbstractImplementInterfaceService
     {
 		internal partial class ImplementInterfaceCodeAction
         {
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Features.ImplementInterface
                 string memberName,
                 CancellationToken cancellationToken)
             {
-                var factory = this.Document.GetLanguageService<SyntaxGenerator>();
+                //var factory = this.Document.GetLanguageService<SyntaxGenerator>();
                 var comAliasNameAttribute = compilation.ComAliasNameAttributeType();
 
                 var getAccessor = property.GetMethod == null

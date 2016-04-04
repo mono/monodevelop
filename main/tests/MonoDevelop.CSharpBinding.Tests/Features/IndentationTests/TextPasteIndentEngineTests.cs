@@ -30,13 +30,15 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis;
+using System.IO;
+using System;
 
 namespace ICSharpCode.NRefactory6.IndentationTests
 {
 	[TestFixture]
-	public class TextPasteIndentEngineTests
+	class TextPasteIndentEngineTests : TestBase
 	{
-		public static CacheIndentEngine CreateEngine(string text, out SourceText sourceText, OptionSet options = null)
+		internal static CacheIndentEngine CreateEngine(string text, out SourceText sourceText, OptionSet options = null)
 		{
 			if (options == null) {
 				options = FormattingOptionsFactory.CreateMono();
@@ -303,8 +305,8 @@ class Foo
 			var options = FormattingOptionsFactory.CreateMono();
 			options = options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, "\r\n");
 			ITextPasteHandler handler = new TextPasteIndentEngine(indent, options);
-			var text = handler.FormatPlainText(sourceText, indent.Offset, "namespace Foo\n{\n\tpublic static class FooExtensions\n\t{\n\t\tpublic static int ObjectExtension (this object value)\n\t\t{\n\t\t\treturn 0;\n\t\t}\n\n\t\tpublic static int IntExtension (this int value)\n\t\t{\n\t\t\treturn 0;\n\t\t}\n\t}\n\n\tpublic class Client\n\t{\n\t\tpublic void Method ()\n\t\t{\n\t\t\t0.ToString ();\n\t\t}\n\t}\n}", null);
-			Assert.AreEqual("namespace Foo\r\n{\r\n\tpublic static class FooExtensions\r\n\t{\r\n\t\tpublic static int ObjectExtension (this object value)\r\n\t\t{\r\n\t\t\treturn 0;\r\n\t\t}\r\n\r\n\t\tpublic static int IntExtension (this int value)\r\n\t\t{\r\n\t\t\treturn 0;\r\n\t\t}\r\n\t}\r\n\r\n\tpublic class Client\r\n\t{\r\n\t\tpublic void Method ()\r\n\t\t{\r\n\t\t\t0.ToString ();\r\n\t\t}\r\n\t}\r\n}", text);
+			var text = handler.FormatPlainText(sourceText, indent.Offset, "namespace Foo\n{\n\tpublic static class FooExtensions\n\t{\n\t\tpublic static int ObjectExtension (this object value)\n\t\t{\n\t\t\treturn 0;\n\t\t}\n\n\t\tpublic static int IntExtension (this int value)\n\t\t{\n\t\t\treturn 0;\n\t\t}\n\t}\n\n\tclass Client\n\t{\n\t\tpublic void Method ()\n\t\t{\n\t\t\t0.ToString ();\n\t\t}\n\t}\n}", null);
+			Assert.AreEqual("namespace Foo\r\n{\r\n\tpublic static class FooExtensions\r\n\t{\r\n\t\tpublic static int ObjectExtension (this object value)\r\n\t\t{\r\n\t\t\treturn 0;\r\n\t\t}\r\n\r\n\t\tpublic static int IntExtension (this int value)\r\n\t\t{\r\n\t\t\treturn 0;\r\n\t\t}\r\n\t}\r\n\r\n\tclass Client\r\n\t{\r\n\t\tpublic void Method ()\r\n\t\t{\r\n\t\t\t0.ToString ();\r\n\t\t}\r\n\t}\r\n}", text);
 		}
 
 		[Ignore("This option isn't part of the roslyn option set")]

@@ -69,8 +69,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			Workspace ws = (Workspace) dataObject;
-			foreach (WorkspaceItem entry in ws.Items)
-				ctx.AddChild (entry);
+			ctx.AddChildren (ws.Items);
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

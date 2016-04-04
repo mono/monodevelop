@@ -65,12 +65,19 @@ namespace MonoDevelop.MacIntegration
 
 		Lazy<Dictionary<string, string>> mimemap;
 
+		static string applicationMenuName;
+
+		public static string ApplicationMenuName {
+			get {
+				return applicationMenuName ?? BrandingService.ApplicationName;
+			}
+			set {
+				applicationMenuName = value;
+			}
+		}
+
 		public MacPlatformService ()
 		{
-			string safe64 = Environment.GetEnvironmentVariable ("MONODEVELOP_64BIT_SAFE");
-			if (string.IsNullOrEmpty (safe64) && IntPtr.Size == 8)
-				throw new Exception ("Mac integration is not yet 64-bit safe");
-
 			if (initedGlobal)
 				throw new Exception ("Only one MacPlatformService instance allowed");
 			initedGlobal = true;
@@ -184,17 +191,8 @@ namespace MonoDevelop.MacIntegration
 
 			mimeTimer.BeginTiming ();
 			try {
-				using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
-					using (var reader = new StreamReader (file)) {
-						var mime = new Regex ("([a-zA-Z]+/[a-zA-z0-9+-_.]+)\t+([a-zA-Z]+)", RegexOptions.Compiled);
-						string line;
-						while ((line = reader.ReadLine ()) != null) {
-							Match m = mime.Match (line);
-							if (m.Success)
-								map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value;
-						}
-					}
-				}
+				var loader = new MimeMapLoader (map);
+				loader.LoadMimeMap ("/etc/apache2/mime.types");
 			} catch (Exception ex){
 				LoggingService.LogError ("Could not load Apache mime database", ex);
 			}
@@ -266,13 +264,14 @@ namespace MonoDevelop.MacIntegration
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
 			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
-			commandManager.GetCommand (HelpCommands.About).Text = GettextCatalog.GetString ("About {0}", BrandingService.ApplicationName);
-			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GettextCatalog.GetString ("Hide {0}", BrandingService.ApplicationName);
-			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
+			commandManager.GetCommand (HelpCommands.About).Text = GetAboutCommandText ();
+			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GetHideWindowCommandText ();
+			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-ins...");
 
 			initedApp = true;
 
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
@@ -282,47 +281,77 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			PatchGtkTheme ();
+			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Runtime.RunInMainThread (
+				delegate {
+					Styles.LoadStyle();
+					PatchGtkTheme();
+				}));
+			
+			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
+			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
 		}
 
+		static string GetAboutCommandText ()
+		{
+			return GettextCatalog.GetString ("About {0}", ApplicationMenuName);
+		}
+
+		static string GetHideWindowCommandText ()
+		{
+			return GettextCatalog.GetString ("Hide {0}", ApplicationMenuName);
+		}
+
+		static void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			Command aboutCommand = IdeApp.CommandService.GetCommand (HelpCommands.About);
+			if (aboutCommand != null)
+				aboutCommand.Text = GetAboutCommandText ();
+
+			Command hideCommand = IdeApp.CommandService.GetCommand (MacIntegrationCommands.HideWindow);
+			if (hideCommand != null)
+				hideCommand.Text = GetHideWindowCommandText ();
+
+			Carbon.SetProcessName (ApplicationMenuName);
+		}
+
+		// VV/VK: Disable tint based color generation
 		// This will dynamically generate a gtkrc for certain widgets using system control colors.
 		void PatchGtkTheme ()
 		{
-			string color_hex, text_hex;
-
-			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
-				NSControlTint tint = NSColor.CurrentControlTint;
-				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
-				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
-
-				color_hex = ConvertColorToHex (color);
-				text_hex = ConvertColorToHex (text);
-			} else {
-				color_hex = "#c5d4e0";
-				text_hex = "#000";
-			}
-
-			string gtkrc = String.Format (@"
-				style ""treeview"" = ""default"" {{
-					GtkTreeView::odd-row-color = ""#f5f5f5""
-
-					base[SELECTED] = ""{0}""
-					base[ACTIVE] = ""{0}""
-					text[SELECTED] = ""{1}""
-					text[ACTIVE] = ""{1}""
-					engine ""xamarin"" {{
-						roundness = 0
-						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
-						glazestyle = 1
-					}}
-				}}
-
-				widget_class ""*.<GtkTreeView>*"" style ""treeview""
-				",
-				color_hex,
-				text_hex
-			);
-
-			Gtk.Rc.ParseString (gtkrc);
+//			string color_hex, text_hex;
+//
+//			if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+//				NSControlTint tint = NSColor.CurrentControlTint;
+//				NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+//				NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+//
+//				color_hex = ConvertColorToHex (color);
+//				text_hex = ConvertColorToHex (text);
+//			} else {
+//				color_hex = "#c5d4e0";
+//				text_hex = "#000";
+//			}
+//
+//			string gtkrc = String.Format (@"
+//				style ""treeview"" = ""default"" {{
+//					base[SELECTED] = ""{0}""
+//					base[ACTIVE] = ""{0}""
+//					text[SELECTED] = ""{1}""
+//					text[ACTIVE] = ""{1}""
+//					engine ""xamarin"" {{
+//						roundness = 0
+//						gradient_shades = {{ 1.01, 1.01, 1.01, 1.01 }}
+//						glazestyle = 1
+//					}}
+//				}}
+//
+//				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+//				",
+//				color_hex,
+//				text_hex
+//			);
+//
+//			Gtk.Rc.ParseString (gtkrc);
 		}
 
 		void GlobalSetup ()
@@ -407,6 +436,8 @@ namespace MonoDevelop.MacIntegration
 				//if not running inside an app bundle (at dev time), need to do some additional setup
 				if (NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] == null) {
 					SetupWithoutBundle ();
+				} else {
+					SetupDockIcon ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not install app event handlers", ex);
@@ -414,22 +445,37 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		static void SetupWithoutBundle ()
+		static void SetupDockIcon ()
 		{
-			// set a bundle IDE to prevent NSProgress crash
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=8850
-			NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] = new NSString ("com.xamarin.monodevelop");
-
 			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
-			string iconFile;
-			iconFile = BrandingService.GetString ("ApplicationIcon");
-			if (iconFile != null) {
-				iconFile = BrandingService.GetFile (iconFile);
+			NSObject initialBundleIconFileValue;
+			string iconFile = null;
+
+			// Try setting a dark variant of the application dock icon if one exists in the app bundle.
+			if (NSBundle.MainBundle.InfoDictionary.TryGetValue (new NSString ("CFBundleIconFile"), out initialBundleIconFileValue)) {
+				FilePath bundleIconRoot = GetAppBundleRoot (exePath).Combine ("Contents", "Resources");
+				NSString initialBundleIconFile = (NSString)initialBundleIconFileValue;
+
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+					iconFile = bundleIconRoot.Combine (Path.GetFileNameWithoutExtension (initialBundleIconFile) + "~dark" + Path.GetExtension (initialBundleIconFile));
+				}
+
+				// There is no monodevelop~dark.icns, fallback to monodevelop.icns
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null || !File.Exists (iconFile)) {
+					iconFile = bundleIconRoot.Combine (initialBundleIconFile);
+				}
 			} else {
-				var bundleRoot = GetAppBundleRoot (exePath);
-				if (bundleRoot.IsNotNull) {
-					//running from inside an app bundle, use its icon
-					iconFile = bundleRoot.Combine ("Contents", "Resources", "monodevelop.icns");
+				// Setup without bundle.
+				string iconName = BrandingService.GetString ("ApplicationIcon");
+				if (iconName != null) {
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+						string darkIconName = Path.GetFileNameWithoutExtension (iconName) + "~dark" + Path.GetExtension (iconName);
+						iconFile = BrandingService.GetFile (darkIconName);
+					}
+
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null) {
+						iconFile = BrandingService.GetFile (iconName);
+					}
 				} else {
 					// assume running from build directory
 					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
@@ -440,6 +486,15 @@ namespace MonoDevelop.MacIntegration
 			if (File.Exists (iconFile)) {
 				NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
 			}
+		}
+
+		static void SetupWithoutBundle ()
+		{
+			// set a bundle IDE to prevent NSProgress crash
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=8850
+			NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] = new NSString ("com.xamarin.monodevelop");
+
+			SetupDockIcon ();
 		}
 
 		static FilePath GetAppBundleRoot (FilePath path)
@@ -636,11 +691,12 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
+		public override Xwt.Rectangle GetUsableMonitorGeometry (int screenNumber, int monitorNumber)
 		{
-			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
+			var screen = Gdk.Display.Default.GetScreen (screenNumber);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitorNumber);
 			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
-			NSScreen nss = NSScreen.Screens[monitor];
+			NSScreen nss = NSScreen.Screens[monitorNumber];
 			var visible = nss.VisibleFrame;
 			var frame = nss.Frame;
 
@@ -672,10 +728,10 @@ namespace MonoDevelop.MacIntegration
 			width = NMath.Min (visible.Width, frame.Width);
 			x = NMath.Max (visible.X, frame.X);
 
-			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
+			return new Xwt.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
 
-		public override void GrabDesktopFocus (Gtk.Window window)
+		internal override void GrabDesktopFocus (Gtk.Window window)
 		{
 			window.Present ();
 			NSApplication.SharedApplication.ActivateIgnoringOtherApps (true);
@@ -732,6 +788,7 @@ namespace MonoDevelop.MacIntegration
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = true;
 			w.StyleMask |= NSWindowStyle.UnifiedTitleAndToolbar;
+			IdeTheme.ApplyTheme (w);
 		}
 
 		internal override void RemoveWindowShadow (Gtk.Window window)
@@ -763,7 +820,7 @@ namespace MonoDevelop.MacIntegration
 			return new FdoRecentFiles (UserProfile.Current.LocalConfigDir.Combine ("RecentlyUsed.xml"));
 		}
 
-		public override bool GetIsFullscreen (Gtk.Window window)
+		public override bool GetIsFullscreen (Window window)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				return base.GetIsFullscreen (window);
@@ -773,7 +830,7 @@ namespace MonoDevelop.MacIntegration
 			return (nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0;
 		}
 
-		public override void SetIsFullscreen (Gtk.Window window, bool isFullscreen)
+		public override void SetIsFullscreen (Window window, bool isFullscreen)
 		{
 			if (MacSystemInformation.OsVersion < MacSystemInformation.Lion) {
 				base.SetIsFullscreen (window, isFullscreen);
@@ -793,7 +850,7 @@ namespace MonoDevelop.MacIntegration
 			return toplevels.Any (t => (t.Value != null && t.Value.Modal && t.Value.Visible) || (t.Key.IsVisible && (t.Key is NSPanel)));
 		}
 
-		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		internal override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
 		{
 			NSWindow w = GtkQuartz.GetWindow (parent);
 			child.Realize ();
@@ -802,7 +859,7 @@ namespace MonoDevelop.MacIntegration
 			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
 		}
 
-		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		internal override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
 		{
 			if (window.GdkWindow == null)
 				return; // Not yet realized

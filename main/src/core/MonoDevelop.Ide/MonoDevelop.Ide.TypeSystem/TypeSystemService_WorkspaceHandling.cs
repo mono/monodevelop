@@ -126,21 +126,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				ws.UpdateFileContent (fileName, text);
 		}
 
-		internal static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor)
+		internal static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			using (Counters.ParserService.WorkspaceItemLoaded.BeginTiming ()) {
 				var wsList = new List<MonoDevelopWorkspace> ();
-				return InternalLoad (wsList, item, progressMonitor).ContinueWith (t => { t.Wait (); return wsList; });
+				return InternalLoad (wsList, item, progressMonitor, cancellationToken).ContinueWith (t => { t.Wait (); return wsList; });
 			}
 		}
 
-		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor)
+		static Task InternalLoad (List<MonoDevelopWorkspace> list, MonoDevelop.Projects.WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return Task.Run (async () => {
 				var ws = item as MonoDevelop.Projects.Workspace;
 				if (ws != null) {
 					foreach (var it in ws.Items) {
-						await InternalLoad (list, it, progressMonitor);
+						await InternalLoad (list, it, progressMonitor, cancellationToken);
 					}
 					ws.ItemAdded += OnWorkspaceItemAdded;
 					ws.ItemRemoved += OnWorkspaceItemRemoved;
@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						workspace.ShowStatusIcon ();
 						lock (workspaceLock)
 							workspaces = workspaces.Add (workspace);
-						await workspace.TryLoadSolution (solution/*, progressMonitor*/);
+						await workspace.TryLoadSolution (solution, cancellationToken);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 						workspace.HideStatusIcon ();
@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return null;
 		}
 
-		public static async Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
@@ -269,9 +269,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				var roslynProject = w.CurrentSolution.GetProject (projectId);
 				if (roslynProject == null)
 					continue;
-				return await roslynProject.GetCompilationAsync (cancellationToken).ConfigureAwait (false);
+				return roslynProject.GetCompilationAsync (cancellationToken);
 			}
-			return null;
+			return Task.FromResult<Compilation> (null);
 		}
 
 		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)

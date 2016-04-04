@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.UnitTesting</AssemblyName>
+    <RootNamespace>MonoDevelop.UnitTesting</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DefineConstants>DEBUG</DefineConstants>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.UnitTesting\MonoDevelop.NUnit.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Gui\icons\unit-running-16.png">
+      <LogicalName>unit-running-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-running-16%402x.png">
+      <LogicalName>unit-running-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-running-16~dark.png">
+      <LogicalName>unit-running-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-running-16~dark%402x.png">
+      <LogicalName>unit-running-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-failed-16.png">
+      <LogicalName>unit-failed-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-failed-16%402x.png">
+      <LogicalName>unit-failed-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-failed-16~dark.png">
+      <LogicalName>unit-failed-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-failed-16~dark%402x.png">
+      <LogicalName>unit-failed-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16.png">
+      <LogicalName>unit-mixed-results-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16%402x.png">
+      <LogicalName>unit-mixed-results-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16~dark.png">
+      <LogicalName>unit-mixed-results-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-mixed-results-16~dark%402x.png">
+      <LogicalName>unit-mixed-results-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16.png">
+      <LogicalName>unit-not-yet-run-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16%402x.png">
+      <LogicalName>unit-not-yet-run-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16~dark.png">
+      <LogicalName>unit-not-yet-run-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-not-yet-run-16~dark%402x.png">
+      <LogicalName>unit-not-yet-run-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-skipped-16.png">
+      <LogicalName>unit-skipped-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-skipped-16%402x.png">
+      <LogicalName>unit-skipped-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-skipped-16~dark.png">
+      <LogicalName>unit-skipped-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-skipped-16~dark%402x.png">
+      <LogicalName>unit-skipped-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-loading-16.png">
+      <LogicalName>unit-loading-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-loading-16%402x.png">
+      <LogicalName>unit-loading-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-loading-16~dark.png">
+      <LogicalName>unit-loading-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-loading-16~dark%402x.png">
+      <LogicalName>unit-loading-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-success-16.png">
+      <LogicalName>unit-success-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-success-16%402x.png">
+      <LogicalName>unit-success-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelopNUnit.addin.xml">
+      <LogicalName>MonoDevelopNUnit.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32.png">
+      <LogicalName>project-nunit-overlay-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32%402x.png">
+      <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~dark.png">
+      <LogicalName>project-nunit-overlay-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~dark%402x.png">
+      <LogicalName>project-nunit-overlay-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~sel.png">
+      <LogicalName>project-nunit-overlay-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~sel%402x.png">
+      <LogicalName>project-nunit-overlay-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~dark~sel.png">
+      <LogicalName>project-nunit-overlay-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\project-nunit-overlay-32~dark~sel%402x.png">
+      <LogicalName>project-nunit-overlay-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16.png">
+      <LogicalName>pad-unit-test-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16%402x.png">
+      <LogicalName>pad-unit-test-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~dark.png">
+      <LogicalName>pad-unit-test-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~dark%402x.png">
+      <LogicalName>pad-unit-test-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~sel.png">
+      <LogicalName>pad-unit-test-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~sel%402x.png">
+      <LogicalName>pad-unit-test-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~dark~sel.png">
+      <LogicalName>pad-unit-test-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\pad-unit-test-16~dark~sel%402x.png">
+      <LogicalName>pad-unit-test-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16.png">
+      <LogicalName>unit-inconclusive-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16%402x.png">
+      <LogicalName>unit-inconclusive-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~dark.png">
+      <LogicalName>unit-inconclusive-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\unit-inconclusive-16~dark%402x.png">
+      <LogicalName>unit-inconclusive-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Commands\NUnitCommands.cs" />
+    <Compile Include="Gui\TestPad.cs" />
+    <Compile Include="Gui\TestResultsPad.cs" />
+    <Compile Include="Gui\TestNodeBuilder.cs" />
+    <Compile Include="Gui\TestChart.cs" />
+    <Compile Include="Services\SolutionFolderTestGroup.cs" />
+    <Compile Include="Services\ITestProvider.cs" />
+    <Compile Include="Services\UnitTestService.cs" />
+    <Compile Include="Services\SystemTestProvider.cs" />
+    <Compile Include="Services\ITestProgressMonitor.cs" />
+    <Compile Include="Services\TestContext.cs" />
+    <Compile Include="Services\UnitTestCollection.cs" />
+    <Compile Include="Services\UnitTest.cs" />
+    <Compile Include="Services\UnitTestGroup.cs" />
+    <Compile Include="Services\GeneralTestOptions.cs" />
+    <Compile Include="Services\IResultsStore.cs" />
+    <Compile Include="Services\UnitTestResultsStore.cs" />
+    <Compile Include="Services\WorkspaceTestGroup.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Services\UnitTestResult.cs" />
+    <Compile Include="Services\UnitTestStatus.cs" />
+    <Compile Include="Services\UnitTestProjectServiceExtension.cs" />
+    <Compile Include="Gui\TestStatusIcon.cs" />
+    <Compile Include="AddinInfo.cs" />
+    <Compile Include="Services\AbstractResultsStore.cs" />
+    <Compile Include="Services\BinaryResultsStore.cs" />
+    <Compile Include="Services\NUnitSourceCodeLocationFinder.cs" />
+    <Compile Include="Services\RemoteUnhandledException.cs" />
+    <Compile Include="Services\AbstractUnitTestEditorExtension.cs" />
+    <Compile Include="Services\UnitTestMarkersExtension.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Core;
 using System.Text;
 using LibGit2Sharp;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -48,6 +50,7 @@ namespace MonoDevelop.VersionControl.Git
 		readonly Xwt.ListViewColumn shaColumn;
 		readonly Xwt.DataField<Revision> revisionField;
 		readonly Xwt.DialogButton buttonOk;
+		CancellationTokenSource cts = new CancellationTokenSource ();
 
 		public GitSelectRevisionDialog (GitRepository repo)
 		{
@@ -102,19 +105,30 @@ namespace MonoDevelop.VersionControl.Git
 			};
 			revisionList.Columns.Add (shaColumn);
 
-			var history = repo.GetHistory (repo.RootPath, null);
-			var min = Math.Min (history.Length, 150);
-			for (int i = 0; i < min; ++i) {
-				var rev = history [i];
+			Task.Factory.StartNew (async () => {
+				const int sliceSize = 150;
 
-				// Convert to foreach and use i = AddRow ();
-				revisionStore.AddRow ();
-				revisionStore.SetValue (i, messageField, rev.ShortMessage);
-				revisionStore.SetValue (i, dateField, ParseDate (rev.Time));
-				revisionStore.SetValue (i, authorField, rev.Author);
-				revisionStore.SetValue (i, shaField, ((GitRevision)rev).ShortName);
-				revisionStore.SetValue (i, revisionField, rev);
-			}
+				var history = repo.GetHistory (repo.RootPath, null);
+
+				int slices = history.Length / sliceSize;
+				for (int i = 0; i < slices; ++i) {
+					await Runtime.RunInMainThread (() => {
+						for (int n = 0; n < sliceSize; ++n) {
+							if (cts.IsCancellationRequested)
+								return;
+
+							int row = revisionStore.AddRow ();
+							var rev = history [row];
+
+							revisionStore.SetValue (row, messageField, rev.ShortMessage);
+							revisionStore.SetValue (row, dateField, ParseDate (rev.Time));
+							revisionStore.SetValue (row, authorField, rev.Author);
+							revisionStore.SetValue (row, shaField, ((GitRevision)rev).ShortName);
+							revisionStore.SetValue (row, revisionField, rev);
+						}
+					});
+				}
+			}, cts.Token);
 
 			revisionList.SelectionChanged += delegate {
 				CheckSensitive ();
@@ -129,6 +143,16 @@ namespace MonoDevelop.VersionControl.Git
 			};
 			Buttons.Add (buttonOk);
 			Buttons.Add (new Xwt.DialogButton (Xwt.Command.Cancel));
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (cts != null) {
+				cts.Cancel ();
+				cts.Dispose ();
+				cts = null;
+			}
+			base.Dispose (disposing);
 		}
 
 		void CheckSensitive ()

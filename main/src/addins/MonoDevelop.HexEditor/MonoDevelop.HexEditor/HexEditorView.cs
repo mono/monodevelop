@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui.Content;
 using Xwt;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.HexEditor
 {
@@ -78,18 +79,19 @@ namespace MonoDevelop.HexEditor
 			hexEditor.Repaint ();
 		}
 		
-		public override void Save (FileSaveInformation fileSaveInformation)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
 			File.WriteAllBytes (fileSaveInformation.FileName, hexEditor.HexEditorData.Bytes);
 			ContentName = fileSaveInformation.FileName;
 			this.IsDirty = false;
+			return Task.FromResult (true);
 		}
 		
-		public override void Load (FileOpenInformation fileOpenInformation)
+		public override async Task Load (FileOpenInformation fileOpenInformation)
 		{
 			var fileName = fileOpenInformation.FileName;
 			using (Stream stream = File.OpenRead (fileName)) { 
-				hexEditor.HexEditorData.Buffer = ArrayBuffer.Load (stream);
+				hexEditor.HexEditorData.Buffer = await ArrayBuffer.LoadAsync (stream);
 			}
 			
 			ContentName = fileName;

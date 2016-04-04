@@ -26,7 +26,7 @@
 
 using System;
 using MonoDevelop.GtkCore.GuiBuilder;
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.GtkCore.Dialogs
@@ -35,7 +35,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 	{
 		GtkDesignerOptionsPanelWidget widget;
 
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			widget = new GtkDesignerOptionsPanelWidget ();
 			widget.AutoSwitchLayout = GuiBuilderService.AutoSwitchGuiLayout;

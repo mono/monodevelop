@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Editor
 
 			var markup = editor.GetPangoMarkup (0, editor.Length);
 			var color = "#75507B";
-			Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#000000\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#000000\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#000000\">0</span>", markup);
+			Assert.AreEqual ("<span foreground=\"" + color + "\">1</span><span foreground=\"#222222\">234</span><span foreground=\"" + color + "\">5</span><span foreground=\"#222222\">678</span><span foreground=\"" + color + "\">9</span><span foreground=\"#222222\">0</span>", markup);
 		}
 
 		class TestSemanticHighlighting : SemanticHighlighting
@@ -275,10 +275,6 @@ namespace MonoDevelop.Ide.Editor
 				remove
 				{
 				}
-			}
-
-			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
-			{
 			}
 
 			CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)

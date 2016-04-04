@@ -33,6 +33,7 @@ using System.ComponentModel;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -43,7 +44,7 @@ namespace MonoDevelop.Ide.Projects
 	/// </summary>
 	public class ProjectOptionsDialog : MultiConfigItemOptionsDialog
 	{
-		public ProjectOptionsDialog (Gtk.Window parentWindow, SolutionItem project) : base (parentWindow, project)
+		public ProjectOptionsDialog (Window parentWindow, SolutionItem project) : base (parentWindow, project)
 		{
 			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
 			this.DefaultWidth = 960;

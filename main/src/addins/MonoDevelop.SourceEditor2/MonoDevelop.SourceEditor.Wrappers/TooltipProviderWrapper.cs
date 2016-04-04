@@ -28,6 +28,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
+using Xwt.GtkBackend;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.Wrappers
@@ -102,7 +103,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			var wrappedEditor = WrapEditor (editor);
 			if (wrappedEditor == null)
 				return null;
-			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState);
+			var control = provider.CreateTooltipWindow (wrappedEditor, IdeApp.Workbench.ActiveDocument, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), offset, modifierState.ToXwtValue ());
 			if (control == null)
 				return null;
 			return (Gtk.Window)control;
@@ -125,7 +126,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (wrappedEditor == null) {
 				return tipWindow;
 			}
-			provider.ShowTooltipWindow (wrappedEditor, tipWindow, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), modifierState, mouseX, mouseY);
+			provider.ShowTooltipWindow (wrappedEditor, tipWindow, new MonoDevelop.Ide.Editor.TooltipItem (item.Item, item.ItemSegment.Offset, item.ItemSegment.Length), modifierState.ToXwtValue (), mouseX, mouseY);
 			return tipWindow;
 		}
 

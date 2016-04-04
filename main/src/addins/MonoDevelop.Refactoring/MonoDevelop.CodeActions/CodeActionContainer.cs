@@ -40,7 +40,7 @@ namespace MonoDevelop.CodeActions
 
 		public bool IsEmpty {
 			get {
-				return CodeFixActions.Count + CodeRefactoringActions.Count == 0;
+				return CodeFixActions.Count + DiagnosticsAtCaret.Count + CodeRefactoringActions.Count == 0;
 			}
 		}
 

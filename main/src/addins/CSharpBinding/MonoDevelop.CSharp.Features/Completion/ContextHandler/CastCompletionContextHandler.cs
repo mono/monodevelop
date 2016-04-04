@@ -40,52 +40,115 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 	class CastCompletionContextHandler : CompletionContextHandler
 	{
-		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
+		protected override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var position = completionContext.Position;
 			var document = completionContext.Document;
 			var syntaxTree = ctx.SyntaxTree;
 			if (syntaxTree.IsInNonUserCode(position, cancellationToken) ||
 				syntaxTree.IsPreProcessorDirectiveContext(position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			if (!syntaxTree.IsRightOfDotOrArrowOrColonColon(position, cancellationToken))
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 			var ma = ctx.LeftToken.Parent as MemberAccessExpressionSyntax;
 			if (ma == null)
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			var model = ctx.CSharpSyntaxContext.SemanticModel;
 
 			var symbolInfo = model.GetSymbolInfo (ma.Expression);
 			if (symbolInfo.Symbol == null)
-				return Enumerable.Empty<CompletionData> ();
+				return Task.FromResult (Enumerable.Empty<CompletionData> ());
 
 			var list = new List<CompletionData> ();
 			var within = model.GetEnclosingNamedTypeOrAssembly(position, cancellationToken);
 			var addedSymbols = new HashSet<string> ();
-			foreach (var ifStmSyntax in ma.Expression.AncestorsAndSelf ().OfType<IfStatementSyntax> ()) {
-				var condition = ifStmSyntax.Condition.SkipParens ();
-				if (condition == null || !condition.IsKind (SyntaxKind.IsExpression))
-					continue;
-				var isExpr = ((BinaryExpressionSyntax)condition);
-				var leftSymbol = model.GetSymbolInfo (isExpr.Left);
+			SyntaxNode ancestor = ma.Expression;
+			while (ancestor != null) {
+				// check parent if for direct type check
+				var ifStmSyntax = ancestor as IfStatementSyntax;
+				if (ifStmSyntax != null) {
+					var condition = ifStmSyntax.Condition.SkipParens ();
+					if (condition != null && condition.IsKind (SyntaxKind.IsExpression)) {
+						var isExpr = ((BinaryExpressionSyntax)condition);
+						var leftSymbol = model.GetSymbolInfo (isExpr.Left);
 
-				if (leftSymbol.Symbol == symbolInfo.Symbol) {
-					var type = model.GetTypeInfo (isExpr.Right).Type;
-					if (type != null) {
-						Analyze (engine, ma.Expression, type, within, list, addedSymbols, cancellationToken);
+						if (leftSymbol.Symbol == symbolInfo.Symbol) {
+							var type = model.GetTypeInfo (isExpr.Right).Type;
+							if (type != null) {
+								Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
+							}
+						}
+					}
+					// skip if else ... if else
+					if (ancestor.Parent is ElseClauseSyntax) {
+						while (ancestor is IfStatementSyntax || ancestor is ElseClauseSyntax)
+							ancestor = ancestor.Parent;
+						continue;
+					}
+					goto loop;
+				}
+
+				// check parent block if an if is there that checks the type
+				var blockSyntax = ancestor as BlockSyntax;
+				if (blockSyntax != null) {
+					foreach (var ifStmt in blockSyntax.Statements.OfType<IfStatementSyntax> ()) {
+						if (ifStmt.Span.End >= ma.Span.Start)
+							break;
+						var condition = ifStmt.Condition.SkipParens ();
+						bool wasNegated = false;
+						if (condition.IsKind (SyntaxKind.LogicalNotExpression)) {
+							condition = ((PrefixUnaryExpressionSyntax)condition).Operand.SkipParens ();
+							wasNegated = true;
+						}
+						if (condition == null || !condition.IsKind (SyntaxKind.IsExpression))
+							goto loop;
+						var stmt = ifStmt.Statement;
+						if (stmt is BlockSyntax) {
+							stmt = ((BlockSyntax)stmt).Statements.LastOrDefault ();
+						}
+						if (!wasNegated || 
+						    stmt == null ||
+							!stmt.IsKind (SyntaxKind.ReturnStatement) && !stmt.IsKind (SyntaxKind.ContinueStatement) && !stmt.IsKind (SyntaxKind.BreakStatement) && !stmt.IsKind (SyntaxKind.ThrowStatement))
+							goto loop;
+
+						var isExpr = ((BinaryExpressionSyntax)condition);
+						var leftSymbol = model.GetSymbolInfo (isExpr.Left);
+						if (leftSymbol.Symbol == symbolInfo.Symbol) {
+							var type = model.GetTypeInfo (isExpr.Right).Type;
+							if (type != null) {
+								Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
+							}
+						}
 					}
 				}
+
+				var binOp = ancestor as BinaryExpressionSyntax;
+				if (binOp != null && binOp.IsKind (SyntaxKind.LogicalAndExpression)) {
+					if (binOp.Left.SkipParens ().IsKind (SyntaxKind.IsExpression)) {
+						var isExpr = ((BinaryExpressionSyntax)binOp.Left.SkipParens ());
+						var leftSymbol = model.GetSymbolInfo (isExpr.Left);
+
+						if (leftSymbol.Symbol == symbolInfo.Symbol) {
+							var type = model.GetTypeInfo (isExpr.Right).Type;
+							if (type != null) {
+								Analyze (engine, ma.Expression, type, model.GetTypeInfo (isExpr.Left).Type, within, list, addedSymbols, cancellationToken);
+							}
+						}
+					}
+				}
+
+				loop: ancestor = ancestor.Parent;
 			}
 
-			return list;
+			return Task.FromResult ((IEnumerable<CompletionData>)list);
 		}
 
-		void Analyze (CompletionEngine engine, SyntaxNode node, ITypeSymbol type, ISymbol within, List<CompletionData> list, HashSet<string> addedSymbols, CancellationToken cancellationToken)
+		void Analyze (CompletionEngine engine, SyntaxNode node, ITypeSymbol type, ITypeSymbol stopAt, ISymbol within, List<CompletionData> list, HashSet<string> addedSymbols, CancellationToken cancellationToken)
 		{
 			var startType = type;
 
-			while (type != null && type.SpecialType != SpecialType.System_Object) {
+			while (type != null && type.SpecialType != SpecialType.System_Object && type != stopAt) {
 				foreach (var member in type.GetMembers ()) {
 					cancellationToken.ThrowIfCancellationRequested ();
 					if (member.IsImplicitlyDeclared || member.IsStatic)

@@ -52,6 +52,12 @@ namespace MonoDevelop.Debugger
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 		}
 
+		protected override void Dispose (bool disposing)
+		{
+			CompletionWindowManager.WindowClosed -= HandleWindowClosed;
+			base.Dispose (disposing);
+		}
+
 		void HandleWindowClosed (object sender, EventArgs e)
 		{
 			ctx = null;
@@ -60,7 +66,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		[GLib.ConnectBeforeAttribute]
-		void HandleKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		async void HandleKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
 		{
 			keyHandled = false;
 
@@ -74,17 +80,17 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (list != null)
-				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+				args.RetVal = keyHandled = await CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 		}
 
-		void HandleKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
+		async void HandleKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
 		{
 			if (keyHandled)
 				return;
 
 			string text = ctx == null ? Text : Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, Text.Length)));
 			CompletionWindowManager.UpdateWordSelection (text);
-			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+			await CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 

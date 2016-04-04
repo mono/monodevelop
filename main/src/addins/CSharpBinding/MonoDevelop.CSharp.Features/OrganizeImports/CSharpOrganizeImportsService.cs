@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.Features.OrganizeImports
 {
-	public partial class CSharpOrganizeImportsService
+	partial class CSharpOrganizeImportsService
 	{
 		public async Task<Document> OrganizeImportsAsync(Document document, bool placeSystemNamespaceFirst, CancellationToken cancellationToken)
 		{

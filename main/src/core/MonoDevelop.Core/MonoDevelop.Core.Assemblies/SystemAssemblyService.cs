@@ -486,6 +486,5 @@ namespace MonoDevelop.Core.Assemblies
 				}
 			}
 		}
-
 	}
 }

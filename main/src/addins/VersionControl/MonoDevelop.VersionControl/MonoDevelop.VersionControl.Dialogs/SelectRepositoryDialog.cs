@@ -68,7 +68,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				labelMessage.Visible = false;
 				defaultPath = VersionControlDefaultPath;
 				entryFolder.Text = defaultPath;
-				buttonOk.Label = "_Checkout";
+				buttonOk.Label = GettextCatalog.GetString ("_Checkout");
 			} else {
 				labelTargetDir.Visible = false;
 				boxFolder.Visible = false;
@@ -123,7 +123,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			repo = vcs.CreateRepositoryInstance ();
 			currentEditor = vcs.CreateRepositoryEditor (repo);
 			repoContainer.Add (currentEditor.Widget);
-			currentEditor.Widget.Show ();
+			currentEditor.Show ();
 			UrlBasedRepositoryEditor edit = currentEditor as UrlBasedRepositoryEditor;
 			if (edit != null)
 				edit.PathChanged += OnPathChanged;

@@ -158,8 +158,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 					.Concat(method.Name)
 					.Concat(containingType.Name);
 
-			var unusableNames = parameterNames.Concat(outerTypeParameterNames).ToSet(
-				true ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
+			var unusableNames = parameterNames.Concat(outerTypeParameterNames).ToSet(StringComparer.Ordinal);
 
 			var newTypeParameterNames = NameGenerator.EnsureUniqueness(
 				method.TypeParameters.Select(tp => tp.Name).ToList(),

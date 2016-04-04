@@ -296,7 +296,6 @@ namespace MonoDevelop.CSharp.CodeFixes.FullyQualify
 
 		private static readonly ConditionalWeakTable<INamespaceOrTypeSymbol, IList<string>> s_symbolToNameMap =
 			new ConditionalWeakTable<INamespaceOrTypeSymbol, IList<string>>();
-		private static readonly ConditionalWeakTable<INamespaceOrTypeSymbol, IList<string>>.CreateValueCallback s_getNameParts = GetNameParts;
 
 		private static IList<string> GetNameParts(INamespaceOrTypeSymbol symbol)
 		{

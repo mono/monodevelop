@@ -37,7 +37,7 @@ namespace WindowsPlatform
 	{
 		static Dictionary<string, Image> cachedIcons = new Dictionary<string, Image> ();
 
-		static Image GetStockIcon (this IconId stockId)
+		public static Image GetStockIcon (this IconId stockId)
 		{
 			if (stockId.IsNull)
 				return null;

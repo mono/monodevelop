@@ -297,7 +297,7 @@ namespace MonoDevelop.SourceEditor
 			TabSize = DefaultSourceEditorOptions.Instance.TabSize;
 			HeaderFormat = "%F";
 			FooterFormat = GettextCatalog.GetString ("Page %N of %Q");
-			ColorScheme = "default";
+			ColorScheme = MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle;
 			HeaderSeparatorWeight = FooterSeparatorWeight = 0.5;
 			HeaderPadding = FooterPadding = 6;
 			UseHighlighting = true;

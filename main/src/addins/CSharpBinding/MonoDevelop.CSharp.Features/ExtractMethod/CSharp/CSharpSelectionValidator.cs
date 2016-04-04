@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpSelectionValidator : SelectionValidator
+	partial class CSharpSelectionValidator : SelectionValidator
     {
         public CSharpSelectionValidator(
             SemanticDocument document,

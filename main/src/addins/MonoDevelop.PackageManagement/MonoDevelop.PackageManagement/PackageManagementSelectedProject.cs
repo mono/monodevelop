@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementSelectedProject : IPackageManagementSelectedProject
+	internal class PackageManagementSelectedProject : IPackageManagementSelectedProject
 	{
 		public PackageManagementSelectedProject(IPackageManagementProject project)
 			: this(project, selected: false)

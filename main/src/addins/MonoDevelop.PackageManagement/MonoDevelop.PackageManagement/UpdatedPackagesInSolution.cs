@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackagesInSolution : IUpdatedPackagesInSolution
+	internal class UpdatedPackagesInSolution : IUpdatedPackagesInSolution
 	{
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
@@ -132,9 +132,9 @@ namespace MonoDevelop.PackageManagement
 			});
 		}
 
-		public void CheckForUpdatesCompleted (CheckForUpdatesTask task)
+		public void CheckForUpdatesCompleted (IEnumerable<UpdatedPackagesInProject> projects)
 		{
-			projectsWithUpdatedPackages = task.ProjectsWithUpdatedPackages.ToList ();
+			projectsWithUpdatedPackages = projects.ToList ();
 
 			RemovePackagesUpdatedDuringCheckForUpdates ();
 

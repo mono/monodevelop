@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ISettingsFactory
+	internal interface ISettingsFactory
 	{
 		ISettings CreateSettings(string directory);
 	}

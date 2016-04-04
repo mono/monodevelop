@@ -31,7 +31,7 @@ using System.IO;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTemplatePackagesSettingsFileName
+	internal class ProjectTemplatePackagesSettingsFileName
 	{
 		string directory;
 		

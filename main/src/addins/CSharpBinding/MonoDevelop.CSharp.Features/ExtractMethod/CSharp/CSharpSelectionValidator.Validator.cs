@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public partial class CSharpSelectionValidator
+	partial class CSharpSelectionValidator
     {
         public bool Check(SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellationToken)
         {

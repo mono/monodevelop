@@ -36,7 +36,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public abstract class ProcessPackageAction : IPackageAction
+	internal abstract class ProcessPackageAction : IPackageAction
 	{
 		IPackageManagementEvents packageManagementEvents;
 		bool hasBeforeExecuteBeenRun;
@@ -149,7 +149,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Info, message);
 		}
 
-		void CheckLicenses ()
+		protected virtual void CheckLicenses ()
 		{
 			if (!AcceptLicenses ()) {
 				string message = GettextCatalog.GetString ("Licenses not accepted.");
@@ -163,12 +163,12 @@ namespace MonoDevelop.PackageManagement
 			var actions = new IPackageAction [] { this };
 			List<IPackage> packages = packagesWithLicenses.GetPackagesRequiringLicenseAcceptance (actions).ToList ();
 			if (packages.Any ()) {
-				return packageManagementEvents.OnAcceptLicenses (packages);
+				return OnAcceptLicenses (packages);
 			}
 
 			return true;
 		}
-		
+
 		void ExecuteWithScriptRunner()
 		{
 //			using (RunPackageScriptsAction runScriptsAction = CreateRunPackageScriptsAction()) {
@@ -269,6 +269,11 @@ namespace MonoDevelop.PackageManagement
 		protected LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
 		{
 			return new LocalCopyReferenceMaintainer (packageManagementEvents);
+		}
+
+		protected virtual bool OnAcceptLicenses (IEnumerable<IPackage> packages)
+		{
+			return packageManagementEvents.OnAcceptLicenses (packages);
 		}
 	}
 }

@@ -19,7 +19,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Microsoft.CodeAnalysis.GenerateMember.GenerateVariable
 {
-	public partial class CSharpGenerateVariableService :
+	partial class CSharpGenerateVariableService :
 	AbstractGenerateVariableService<CSharpGenerateVariableService, SimpleNameSyntax, ExpressionSyntax>
 	{
 		protected override bool IsExplicitInterfaceGeneration(SyntaxNode node)

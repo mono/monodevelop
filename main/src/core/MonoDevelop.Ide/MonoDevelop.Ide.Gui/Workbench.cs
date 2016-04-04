@@ -52,6 +52,9 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Components.DockNotebook;
 using System.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
+using System.Threading.Tasks;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -61,8 +64,7 @@ namespace MonoDevelop.Ide.Gui
 	public sealed class Workbench
 	{
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
-		readonly List<Document> documents = new List<Document> ();
-		// readonly List<Split> splits = new List<Split> ();
+		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -143,8 +145,8 @@ namespace MonoDevelop.Ide.Gui
 			return workbench.Close();
 		}
 		
-		public ReadOnlyCollection<Document> Documents {
-			get { return documents.AsReadOnly (); }
+		public ImmutableList<Document> Documents {
+			get { return documents; }
 		}
 
 		public Document ActiveDocument {
@@ -179,7 +181,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public WorkbenchWindow RootWindow {
+		public Gtk.Window RootWindow {
 			get { return workbench; }
 		}
 		
@@ -345,11 +347,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return MessageService.GenericAlert (MonoDevelop.Ide.Gui.Stock.Warning,
 				GettextCatalog.GetString ("Save the changes to document '{0}' before creating a new solution?",
-					doc.Window.ViewContent.IsUntitled
+				(object)(doc.Window.ViewContent.IsUntitled
 					? doc.Window.ViewContent.UntitledName
-					: System.IO.Path.GetFileName (doc.Window.ViewContent.ContentName)),
+					: System.IO.Path.GetFileName (doc.Window.ViewContent.ContentName))),
 				"",
-				AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
+			 	 AlertButton.Cancel, doc.Window.ViewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 		}
 		
 		public void CloseAllDocuments (bool leaveActiveDocumentOpen)
@@ -380,58 +382,58 @@ namespace MonoDevelop.Ide.Gui
 			return WrapPad (content);
 		}
 
-		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
+		public Pad AddPad (PadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
-		public Pad AddPad (IPadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
+		public Pad AddPad (PadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
 		{
 			return AddPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
 		}
 		
-		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, IconId icon)
+		public Pad ShowPad (PadContent padContent, string id, string label, string defaultPlacement, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, icon));
 		}
 		
-		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
+		public Pad ShowPad (PadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, bool bringToFront)")]
-		public Document OpenDocument (FilePath fileName, bool bringToFront)
+		public Task<Document> OpenDocument (FilePath fileName, bool bringToFront)
 		{
 			return OpenDocument (fileName, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, null, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, encoding, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, null, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
-		public Document OpenDocument (FilePath fileName, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, encoding, null);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)")]
-		internal Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		internal Task<Document> OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, null) {
 				Options = options,
@@ -444,32 +446,32 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 
-		public Document OpenDocument (FilePath fileName, Project project, bool bringToFront)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, bool bringToFront)
 		{
 			return OpenDocument (fileName, project, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, -1, -1, options, null, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, -1, -1, options, encoding, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, line, column, options, null, null);
 		}
 
-		public Document OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
+		public Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, project, line, column, options, encoding, null);
 		}
 
-		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
+		internal Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding encoding, IViewDisplayBinding binding)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, project) {
 				Options = options,
@@ -498,7 +500,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockNotebook dockNotebook)
+		internal Task<Document> OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockNotebook dockNotebook)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, project) {
 				Options = options,
@@ -512,7 +514,7 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
-		public Document OpenDocument (FileOpenInformation info)
+		public async Task<Document> OpenDocument (FileOpenInformation info)
 		{
 			if (string.IsNullOrEmpty (info.FileName))
 				return null;
@@ -522,7 +524,7 @@ namespace MonoDevelop.Ide.Gui
 				if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer)) {
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					foreach (Document doc in Documents) {
-						IBaseViewContent vcFound = null;
+						BaseViewContent vcFound = null;
 
 						//search all ViewContents to see if they can "re-use" this filename
 						if (doc.Window.ViewContent.CanReuseView (info.FileName))
@@ -557,7 +559,7 @@ namespace MonoDevelop.Ide.Gui
 					true
 				);
 
-				RealOpenFile (pm, info);
+				await RealOpenFile (pm, info);
 				pm.Dispose ();
 				
 				if (info.NewContent != null) {
@@ -578,7 +580,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		IViewContent BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
+		async Task<ViewContent> BatchOpenDocument (ProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -591,13 +593,13 @@ namespace MonoDevelop.Ide.Gui
 					DockNotebook = dockNotebook
 				};
 				
-				RealOpenFile (monitor, openFileInfo);
+				await RealOpenFile (monitor, openFileInfo);
 				
 				return openFileInfo.NewContent;
 			}
 		}
 		
-		public Document OpenDocument (IViewContent content, bool bringToFront)
+		public Document OpenDocument (ViewContent content, bool bringToFront)
 		{
 			workbench.ShowView (content, bringToFront);
 			if (bringToFront)
@@ -625,7 +627,7 @@ namespace MonoDevelop.Ide.Gui
 			if (binding == null)
 				throw new ApplicationException("Can't create display binding for mime type: " + mimeType);				
 			
-			IViewContent newContent = binding.CreateContent (defaultName, mimeType, null);
+			ViewContent newContent = binding.CreateContent (defaultName, mimeType, null);
 			using (content) {
 				newContent.LoadNew (content, mimeType);
 			}
@@ -652,7 +654,7 @@ namespace MonoDevelop.Ide.Gui
 			"MonoDevelop.TextEditor.Document.Document.DefaultDocumentAggregatorProperties",
 			new Properties()));
 
-		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
+		public void ShowGlobalPreferencesDialog (Window parentWindow, string panelId, Action<OptionsDialog> configurationAction = null)
 		{
 			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
@@ -681,12 +683,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow)
+		public void ShowDefaultPoliciesDialog (Window parentWindow)
 		{
 			ShowDefaultPoliciesDialog (parentWindow, null);
 		}
 		
-		public void ShowDefaultPoliciesDialog (Gtk.Window parentWindow, string panelId)
+		public void ShowDefaultPoliciesDialog (Window parentWindow, string panelId)
 		{
 			if (parentWindow == null)
 				parentWindow = IdeApp.Workbench.RootWindow;
@@ -774,7 +776,7 @@ namespace MonoDevelop.Ide.Gui
 			doc = new Document (window);
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;
-			documents.Add (doc);
+			documents = documents.Add (doc);
 			
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
@@ -798,7 +800,7 @@ namespace MonoDevelop.Ide.Gui
 			return pad;
 		}
 		
-		void OnWindowClosing (object sender, WorkbenchWindowEventArgs args)
+		async void OnWindowClosing (object sender, WorkbenchWindowEventArgs args)
 		{
 			var window = (IWorkbenchWindow) sender;
 			var viewContent = window.ViewContent;
@@ -811,7 +813,7 @@ namespace MonoDevelop.Ide.Gui
 					GettextCatalog.GetString ("If you don't save, all changes will be permanently lost."),
 					AlertButton.CloseWithoutSave, AlertButton.Cancel, viewContent.IsUntitled ? AlertButton.SaveAs : AlertButton.Save);
 				if (result == AlertButton.Save || result == AlertButton.SaveAs) {
-					FindDocument (window).Save ();
+					await FindDocument (window).Save ();
 					args.Cancel = viewContent.IsDirty;
 					if (args.Cancel)
 						FindDocument (window).Select ();
@@ -830,7 +832,7 @@ namespace MonoDevelop.Ide.Gui
 			var doc = FindDocument (window);
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
-			documents.Remove (doc); 
+			documents = documents.Remove (doc); 
 			OnDocumentClosed (doc);
 			doc.DisposeDocument ();
 		}
@@ -862,7 +864,7 @@ namespace MonoDevelop.Ide.Gui
 			return project;
 		}
 		
-		void RealOpenFile (ProgressMonitor monitor, FileOpenInformation openFileInfo)
+		async Task<bool> RealOpenFile (ProgressMonitor monitor, FileOpenInformation openFileInfo)
 		{
 			FilePath fileName;
 			
@@ -872,7 +874,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			if (origName == null) {
 				monitor.ReportError (GettextCatalog.GetString ("Invalid file name"), null);
-				return;
+				return false;
 			}
 
 			fileName = openFileInfo.FileName;
@@ -882,7 +884,7 @@ namespace MonoDevelop.Ide.Gui
 			//Debug.Assert(FileService.IsValidPath(fileName));
 			if (FileService.IsDirectory (fileName)) {
 				monitor.ReportError (GettextCatalog.GetString ("{0} is a directory", fileName), null);
-				return;
+				return false;
 			}
 			
 			// test, if file fileName exists
@@ -893,14 +895,14 @@ namespace MonoDevelop.Ide.Gui
 						if (doc.Window.ViewContent.IsUntitled && doc.Window.ViewContent.UntitledName == origName) {
 							doc.Select ();
 							openFileInfo.NewContent = doc.Window.ViewContent;
-							return;
+							return true;
 						}
 					}
 				}
 				
 				if (!File.Exists (fileName)) {
 					monitor.ReportError (GettextCatalog.GetString ("File not found: {0}", fileName), null);
-					return;
+					return false;
 				}
 			}
 			
@@ -933,7 +935,7 @@ namespace MonoDevelop.Ide.Gui
 				if (binding != null) {
 					if (viewBinding != null)  {
 						var fw = new LoadFileWrapper (monitor, workbench, viewBinding, project, openFileInfo);
-						fw.Invoke (fileName);
+						await fw.Invoke (fileName);
 					} else {
 						var extBinding = (IExternalDisplayBinding)binding;
 						var app = extBinding.GetApplication (fileName, null, project);
@@ -949,11 +951,14 @@ namespace MonoDevelop.Ide.Gui
 					} catch (Exception ex) {
 						LoggingService.LogError ("Error opening file: " + fileName, ex);
 						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' could not be opened", fileName));
+						return false;
 					}
 				}
 			} catch (Exception ex) {
 				monitor.ReportError ("", ex);
+				return false;
 			}
+			return true;
 		}
 
 		void OnStoringWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
@@ -1035,7 +1040,7 @@ namespace MonoDevelop.Ide.Gui
 			return dp;
 		}
 
-		void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
+		async Task OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
 			WorkbenchUserPrefs prefs = args.Properties.GetValue<WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
 			if (prefs == null)
@@ -1045,21 +1050,21 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workbench.LockActiveWindowChangeEvent ();
 				NavigationHistoryService.LogActiveDocument ();
 				
-				List<Tuple<IViewContent,string>> docViews = new List<Tuple<IViewContent,string>> ();
+				List<Tuple<ViewContent,string>> docViews = new List<Tuple<ViewContent,string>> ();
 				FilePath baseDir = args.Item.BaseDirectory;
 				var floatingWindows = new List<DockWindow> ();
 
 				using (ProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
 
 					var docList = prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId).ToList ();
-					OpenDocumentsInContainer (pm, baseDir, docViews, docList, workbench.TabControl.Container);
+					await OpenDocumentsInContainer (pm, baseDir, docViews, docList, workbench.TabControl.Container);
 
 					foreach (var fw in prefs.FloatingWindows) {
 						var dockWindow = new DockWindow ();
 						dockWindow.Move (fw.X, fw.Y);
 						dockWindow.Resize (fw.Width, fw.Height);
 						docList = fw.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId).ToList ();
-						OpenDocumentsInContainer (pm, baseDir, docViews, docList, dockWindow.Container);
+						await OpenDocumentsInContainer (pm, baseDir, docViews, docList, dockWindow.Container);
 						floatingWindows.Add (dockWindow);
 					}
 
@@ -1103,7 +1108,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void OpenDocumentsInContainer (ProgressMonitor pm, FilePath baseDir, List<Tuple<IViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
+		async Task<bool> OpenDocumentsInContainer (ProgressMonitor pm, FilePath baseDir, List<Tuple<ViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
 		{
 			int currentNotebook = -1;
 			DockNotebook nb = container.GetFirstNotebook ();
@@ -1117,14 +1122,15 @@ namespace MonoDevelop.Ide.Gui
 						currentNotebook = doc.NotebookId;
 					}
 					// TODO: Get the correct project.
-					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, nb);
+					var view = await IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, nb);
 
 					if (view != null) {
-						var t = new Tuple<IViewContent,string> (view, fileName);
+						var t = new Tuple<ViewContent,string> (view, fileName);
 						docViews.Add (t);
 					}
 				}
 			}
+			return true;
 		}
 		
 		internal Document FindDocument (IWorkbenchWindow window)
@@ -1135,7 +1141,7 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		internal Pad FindPad (IPadContent padContent)
+		internal Pad FindPad (PadContent padContent)
 		{
 			foreach (Pad pad in Pads)
 				if (pad.Content == padContent)
@@ -1150,20 +1156,13 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void ReorderDocuments (int oldPlacement, int newPlacement)
 		{
-			IViewContent content = workbench.InternalViewContentCollection[oldPlacement];
+			ViewContent content = workbench.InternalViewContentCollection[oldPlacement];
 			workbench.InternalViewContentCollection.RemoveAt (oldPlacement);
 			workbench.InternalViewContentCollection.Insert (newPlacement, content);
 
 			Document doc = documents [oldPlacement];
-			documents.RemoveAt (oldPlacement);
-			documents.Insert (newPlacement, doc);
+			documents = documents.RemoveAt (oldPlacement).Insert (newPlacement, doc);
 		}
-		
-		internal void ResetToolbars ()
-		{
-			workbench.ResetToolbars ();
-		}
-
 
 		internal void LockActiveWindowChangeEvent ()
 		{
@@ -1189,6 +1188,8 @@ namespace MonoDevelop.Ide.Gui
 			ThreadPool.QueueUserWorkItem (delegate {
 //				t = DateTime.Now;
 				lock (fileStatusLock) {
+					if (fileStatus == null)
+						return;
 					foreach (FilePath file in files) {
 						try {
 							DateTime ft = File.GetLastWriteTimeUtc (file);
@@ -1264,9 +1265,7 @@ namespace MonoDevelop.Ide.Gui
 		void OnDocumentOpened (DocumentEventArgs e)
 		{
 			try {
-				EventHandler<DocumentEventArgs> handler = this.DocumentOpened;
-				if (handler != null)
-					handler (this, e);
+				DocumentOpened?.Invoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while opening documents", ex);
 			}
@@ -1276,9 +1275,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				var e = new DocumentEventArgs (doc);
-				EventHandler<DocumentEventArgs> handler = this.DocumentClosed;
-				if (handler != null)
-					handler (this, e);
+				DocumentClosed?.Invoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while closing documents", ex);
 			}
@@ -1288,9 +1285,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			try {
 				var e = new DocumentEventArgs (doc);
-				EventHandler<DocumentEventArgs> handler = this.DocumentClosing;
-				if (handler != null)
-					handler (this, e);
+				DocumentClosing?.Invoke (this, e);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception before closing documents", ex);
 			}
@@ -1347,6 +1342,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public OpenDocumentOptions Options { get; set; }
+
 		int offset = -1;
 		public int Offset {
 			get {
@@ -1359,7 +1355,7 @@ namespace MonoDevelop.Ide.Gui
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public IViewDisplayBinding DisplayBinding { get; set; }
-		public IViewContent NewContent { get; set; }
+		public ViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
 
@@ -1446,7 +1442,7 @@ namespace MonoDevelop.Ide.Gui
 		FileOpenInformation fileInfo;
 		DefaultWorkbench workbench;
 		ProgressMonitor monitor;
-		IViewContent newContent;
+		ViewContent newContent;
 		
 		public LoadFileWrapper (ProgressMonitor monitor, DefaultWorkbench workbench, IViewDisplayBinding binding, FileOpenInformation fileInfo)
 		{
@@ -1462,7 +1458,7 @@ namespace MonoDevelop.Ide.Gui
 			this.project = project;
 		}
 		
-		public void Invoke (string fileName)
+		public async Task<bool> Invoke (string fileName)
 		{
 			try {
 				Counters.OpenDocumentTimer.Trace ("Creating content");
@@ -1474,7 +1470,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 				if (newContent == null) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
-					return;
+					return false;
 				}
 				
 				if (project != null)
@@ -1483,24 +1479,24 @@ namespace MonoDevelop.Ide.Gui
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
 				try {
-					newContent.Load (fileInfo);
+					await newContent.Load (fileInfo);
 				} catch (InvalidEncodingException iex) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
-					return;
+					return false;
 				} catch (OverflowException) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. File too large.", fileName), null);
-					return;
+					return false;
 				}
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), ex);
-				return;
+				return false;
 			}
 			
 			// content got re-used
 			if (newContent.WorkbenchWindow != null) {
 				newContent.WorkbenchWindow.SelectWindow ();
 				fileInfo.NewContent = newContent;
-				return;
+				return true;
 			}
 
 			Counters.OpenDocumentTimer.Trace ("Showing view");
@@ -1517,6 +1513,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			fileInfo.NewContent = newContent;
+			return true;
 		}
 		
 		void JumpToLine ()

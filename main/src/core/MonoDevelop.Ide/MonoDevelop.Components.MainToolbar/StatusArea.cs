@@ -105,6 +105,8 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusBarContextHandler ctxHandler;
 		bool progressBarVisible;
 
+		string currentApplicationName = String.Empty;
+
 		Queue<Message> messageQueue;
 
 		public StatusBar MainContext {
@@ -323,7 +325,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 
-				using (var font = FontService.SansFont.CopyModified (0.8d)) {
+				using (var font = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11)) {
 					errors.Visible = ec > 0;
 					errors.ModifyFont (font);
 					errors.Text = ec.ToString ();
@@ -345,9 +347,13 @@ namespace MonoDevelop.Components.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
+			currentApplicationName = BrandingService.ApplicationName;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
+			
 			box.Destroyed += delegate {
 				TaskService.Errors.TasksAdded -= updateHandler;
 				TaskService.Errors.TasksRemoved -= updateHandler;
+				BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			};
 
 			ebox.VisibleWindow = false;
@@ -364,6 +370,16 @@ namespace MonoDevelop.Components.MainToolbar
 			warningImage.Visible = false;
 
 			return ebox;
+		}
+
+		void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			if (renderArg.CurrentText == currentApplicationName) {
+				LoadText (BrandingService.ApplicationName, false);
+				LoadPixbuf (null);
+				QueueDraw ();
+			}
+			currentApplicationName = BrandingService.ApplicationName;
 		}
 
 		protected override void OnRealized ()
@@ -865,6 +881,8 @@ namespace MonoDevelop.Components.MainToolbar
 				var alloc = Allocation;
 				//alloc.Inflate (0, -2);
 				ctx.Rectangle (alloc.X, alloc.Y, 1, alloc.Height);
+
+				// FIXME: VV: Remove gradient features
 				using (Cairo.LinearGradient gr = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height)) {
 					gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
 					gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));

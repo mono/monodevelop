@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -68,10 +69,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			SolutionFolder folder = (SolutionFolder) dataObject;
-			foreach (SolutionFolderItem entry in folder.Items)
-				ctx.AddChild (entry);
-			foreach (FilePath file in folder.Files)
-				ctx.AddChild (new SolutionFolderFileNode (file, folder));
+			ctx.AddChildren (folder.Items);
+			ctx.AddChildren (folder.Files.Select (file => new SolutionFolderFileNode (file, folder)));
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

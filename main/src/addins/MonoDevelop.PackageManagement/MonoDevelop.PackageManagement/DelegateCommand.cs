@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class DelegateCommand : ICommand
+	internal class DelegateCommand : ICommand
 	{
 		Action<object> execute;
 		Predicate<object> canExecute;

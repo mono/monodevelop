@@ -30,9 +30,6 @@ using System.Runtime.ExceptionServices;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeGeneration
 {
-	#if NR6
-	public
-	#endif
 	static class SyntaxAnnotationExtensions
 	{
 		readonly static Type typeInfo;

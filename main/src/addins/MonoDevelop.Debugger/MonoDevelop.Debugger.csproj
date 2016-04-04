@@ -200,6 +200,7 @@
     <Compile Include="MonoDevelop.Debugger\SourceCodeLookup.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.DebugApplicationDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugApplicationDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger\Styles.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -208,35 +209,53 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-16.png">
-      <LogicalName>debug-overlay-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-16%402x.png">
-      <LogicalName>debug-overlay-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-22.png">
-      <LogicalName>debug-overlay-22.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-22%402x.png">
-      <LogicalName>debug-overlay-22@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-24.png">
-      <LogicalName>debug-overlay-24.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-24%402x.png">
-      <LogicalName>debug-overlay-24@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-32.png">
-      <LogicalName>debug-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\debug-overlay-32%402x.png">
-      <LogicalName>debug-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-16.png">
       <LogicalName>breakpoint-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\breakpoint-16%402x.png">
       <LogicalName>breakpoint-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark.png">
+      <LogicalName>breakpoint-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark%402x.png">
+      <LogicalName>breakpoint-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~disabled.png">
+      <LogicalName>breakpoint-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~disabled%402x.png">
+      <LogicalName>breakpoint-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark~disabled.png">
+      <LogicalName>breakpoint-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\breakpoint-16~dark~disabled%402x.png">
+      <LogicalName>breakpoint-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16.png">
+      <LogicalName>pad-breakpoints-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16%402x.png">
+      <LogicalName>pad-breakpoints-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~dark.png">
+      <LogicalName>pad-breakpoints-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~dark%402x.png">
+      <LogicalName>pad-breakpoints-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~sel.png">
+      <LogicalName>pad-breakpoints-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~sel%402x.png">
+      <LogicalName>pad-breakpoints-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~dark~sel.png">
+      <LogicalName>pad-breakpoints-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-breakpoints-16~dark~sel%402x.png">
+      <LogicalName>pad-breakpoints-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-call-stack-16.png">
       <LogicalName>pad-call-stack-16.png</LogicalName>
@@ -244,11 +263,47 @@
     <EmbeddedResource Include="icons\pad-call-stack-16%402x.png">
       <LogicalName>pad-call-stack-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~dark.png">
+      <LogicalName>pad-call-stack-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~dark%402x.png">
+      <LogicalName>pad-call-stack-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~sel.png">
+      <LogicalName>pad-call-stack-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~sel%402x.png">
+      <LogicalName>pad-call-stack-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~dark~sel.png">
+      <LogicalName>pad-call-stack-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-call-stack-16~dark~sel%402x.png">
+      <LogicalName>pad-call-stack-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-locals-16.png">
       <LogicalName>pad-locals-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-locals-16%402x.png">
       <LogicalName>pad-locals-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~dark.png">
+      <LogicalName>pad-locals-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~dark%402x.png">
+      <LogicalName>pad-locals-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~sel.png">
+      <LogicalName>pad-locals-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~sel%402x.png">
+      <LogicalName>pad-locals-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~dark~sel.png">
+      <LogicalName>pad-locals-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-locals-16~dark~sel%402x.png">
+      <LogicalName>pad-locals-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-threads-16.png">
       <LogicalName>pad-threads-16.png</LogicalName>
@@ -256,11 +311,47 @@
     <EmbeddedResource Include="icons\pad-threads-16%402x.png">
       <LogicalName>pad-threads-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~dark.png">
+      <LogicalName>pad-threads-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~dark%402x.png">
+      <LogicalName>pad-threads-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~sel.png">
+      <LogicalName>pad-threads-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~sel%402x.png">
+      <LogicalName>pad-threads-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~dark~sel.png">
+      <LogicalName>pad-threads-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-threads-16~dark~sel%402x.png">
+      <LogicalName>pad-threads-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-watch-16.png">
       <LogicalName>pad-watch-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-watch-16%402x.png">
       <LogicalName>pad-watch-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~dark.png">
+      <LogicalName>pad-watch-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~dark%402x.png">
+      <LogicalName>pad-watch-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~sel.png">
+      <LogicalName>pad-watch-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~sel%402x.png">
+      <LogicalName>pad-watch-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~dark~sel.png">
+      <LogicalName>pad-watch-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-watch-16~dark~sel%402x.png">
+      <LogicalName>pad-watch-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-debugger-16.png">
       <LogicalName>prefs-debugger-16.png</LogicalName>
@@ -268,11 +359,47 @@
     <EmbeddedResource Include="icons\prefs-debugger-16%402x.png">
       <LogicalName>prefs-debugger-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~dark.png">
+      <LogicalName>prefs-debugger-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~dark%402x.png">
+      <LogicalName>prefs-debugger-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~sel.png">
+      <LogicalName>prefs-debugger-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~sel%402x.png">
+      <LogicalName>prefs-debugger-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~dark~sel.png">
+      <LogicalName>prefs-debugger-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-debugger-16~dark~sel%402x.png">
+      <LogicalName>prefs-debugger-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\lightning-16.png">
       <LogicalName>lightning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\lightning-16%402x.png">
       <LogicalName>lightning-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~dark.png">
+      <LogicalName>lightning-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~dark%402x.png">
+      <LogicalName>lightning-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~disabled.png">
+      <LogicalName>lightning-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~disabled%402x.png">
+      <LogicalName>lightning-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~dark~disabled.png">
+      <LogicalName>lightning-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lightning-16~dark~disabled%402x.png">
+      <LogicalName>lightning-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\exception-48.png">
       <LogicalName>exception-48.png</LogicalName>
@@ -280,11 +407,23 @@
     <EmbeddedResource Include="icons\exception-48%402x.png">
       <LogicalName>exception-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-48~dark.png">
+      <LogicalName>exception-48~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-48~dark%402x.png">
+      <LogicalName>exception-48~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-breakpoint-15.png">
       <LogicalName>gutter-breakpoint-15.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-breakpoint-15%402x.png">
       <LogicalName>gutter-breakpoint-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-breakpoint-15~dark.png">
+      <LogicalName>gutter-breakpoint-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-breakpoint-15~dark%402x.png">
+      <LogicalName>gutter-breakpoint-15~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-breakpoint-disabled-15.png">
       <LogicalName>gutter-breakpoint-disabled-15.png</LogicalName>
@@ -292,11 +431,23 @@
     <EmbeddedResource Include="icons\gutter-breakpoint-disabled-15%402x.png">
       <LogicalName>gutter-breakpoint-disabled-15@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-breakpoint-disabled-15~dark.png">
+      <LogicalName>gutter-breakpoint-disabled-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-breakpoint-disabled-15~dark%402x.png">
+      <LogicalName>gutter-breakpoint-disabled-15~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-breakpoint-invalid-15.png">
       <LogicalName>gutter-breakpoint-invalid-15.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-breakpoint-invalid-15%402x.png">
       <LogicalName>gutter-breakpoint-invalid-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-breakpoint-invalid-15~dark.png">
+      <LogicalName>gutter-breakpoint-invalid-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-breakpoint-invalid-15~dark%402x.png">
+      <LogicalName>gutter-breakpoint-invalid-15~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-execution-15.png">
       <LogicalName>gutter-execution-15.png</LogicalName>
@@ -304,11 +455,23 @@
     <EmbeddedResource Include="icons\gutter-execution-15%402x.png">
       <LogicalName>gutter-execution-15@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-execution-15~dark.png">
+      <LogicalName>gutter-execution-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-execution-15~dark%402x.png">
+      <LogicalName>gutter-execution-15~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-stack-15.png">
       <LogicalName>gutter-stack-15.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-stack-15%402x.png">
       <LogicalName>gutter-stack-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-stack-15~dark.png">
+      <LogicalName>gutter-stack-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-stack-15~dark%402x.png">
+      <LogicalName>gutter-stack-15~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-tracepoint-15.png">
       <LogicalName>gutter-tracepoint-15.png</LogicalName>
@@ -316,11 +479,23 @@
     <EmbeddedResource Include="icons\gutter-tracepoint-15%402x.png">
       <LogicalName>gutter-tracepoint-15@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-tracepoint-15~dark.png">
+      <LogicalName>gutter-tracepoint-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-tracepoint-15~dark%402x.png">
+      <LogicalName>gutter-tracepoint-15~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-tracepoint-disabled-15.png">
       <LogicalName>gutter-tracepoint-disabled-15.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-tracepoint-disabled-15%402x.png">
       <LogicalName>gutter-tracepoint-disabled-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-tracepoint-disabled-15~dark.png">
+      <LogicalName>gutter-tracepoint-disabled-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-tracepoint-disabled-15~dark%402x.png">
+      <LogicalName>gutter-tracepoint-disabled-15~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-tracepoint-invalid-15.png">
       <LogicalName>gutter-tracepoint-invalid-15.png</LogicalName>
@@ -328,11 +503,35 @@
     <EmbeddedResource Include="icons\gutter-tracepoint-invalid-15%402x.png">
       <LogicalName>gutter-tracepoint-invalid-15@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-tracepoint-invalid-15~dark.png">
+      <LogicalName>gutter-tracepoint-invalid-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-tracepoint-invalid-15~dark%402x.png">
+      <LogicalName>gutter-tracepoint-invalid-15~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\stack-pointer-16.png">
       <LogicalName>stack-pointer-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stack-pointer-16%402x.png">
       <LogicalName>stack-pointer-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~dark.png">
+      <LogicalName>stack-pointer-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~dark%402x.png">
+      <LogicalName>stack-pointer-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~disabled.png">
+      <LogicalName>stack-pointer-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~disabled%402x.png">
+      <LogicalName>stack-pointer-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled.png">
+      <LogicalName>stack-pointer-16~dark~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled%402x.png">
+      <LogicalName>stack-pointer-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
@@ -342,11 +541,23 @@
     <EmbeddedResource Include="icons\pause-16%402x.png">
       <LogicalName>pause-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pause-16~dark.png">
+      <LogicalName>pause-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pause-16~dark%402x.png">
+      <LogicalName>pause-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\step-in-16.png">
       <LogicalName>step-in-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\step-in-16%402x.png">
       <LogicalName>step-in-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-in-16~dark.png">
+      <LogicalName>step-in-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-in-16~dark%402x.png">
+      <LogicalName>step-in-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\step-out-16.png">
       <LogicalName>step-out-16.png</LogicalName>
@@ -354,11 +565,23 @@
     <EmbeddedResource Include="icons\step-out-16%402x.png">
       <LogicalName>step-out-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-16~dark.png">
+      <LogicalName>step-out-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-out-16~dark%402x.png">
+      <LogicalName>step-out-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\step-over-16.png">
       <LogicalName>step-over-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\step-over-16%402x.png">
       <LogicalName>step-over-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-16~dark.png">
+      <LogicalName>step-over-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\step-over-16~dark%402x.png">
+      <LogicalName>step-over-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\continue-16.png">
       <LogicalName>continue-16.png</LogicalName>
@@ -366,13 +589,25 @@
     <EmbeddedResource Include="icons\continue-16%402x.png">
       <LogicalName>continue-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue-16~dark.png">
+      <LogicalName>continue-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\continue-16~dark%402x.png">
+      <LogicalName>continue-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
-    <EmbeddedResource Include="icons\mac\pause.png">
+    <EmbeddedResource Include="icons\mac\pause-16.png">
       <LogicalName>pause-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\mac\pause%402x.png">
+    <EmbeddedResource Include="icons\mac\pause-16%402x.png">
       <LogicalName>pause-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\pause-16~dark.png">
+      <LogicalName>pause-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\pause-16~dark%402x.png">
+      <LogicalName>pause-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\continue-16.png">
       <LogicalName>continue-16.png</LogicalName>
@@ -380,11 +615,35 @@
     <EmbeddedResource Include="icons\mac\continue-16%402x.png">
       <LogicalName>continue-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\continue-16~dark.png">
+      <LogicalName>continue-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\continue-16~dark%402x.png">
+      <LogicalName>continue-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-in-16%402x.png">
       <LogicalName>step-in-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-in-16.png">
       <LogicalName>step-in-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16~disabled.png">
+      <LogicalName>step-in-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16~disabled%402x.png">
+      <LogicalName>step-in-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16~dark.png">
+      <LogicalName>step-in-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16~dark%402x.png">
+      <LogicalName>step-in-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16~disabled~dark.png">
+      <LogicalName>step-in-16~disabled~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-in-16~disabled~dark%402x.png">
+      <LogicalName>step-in-16~disabled~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-out-16.png">
       <LogicalName>step-out-16.png</LogicalName>
@@ -392,11 +651,47 @@
     <EmbeddedResource Include="icons\mac\step-out-16%402x.png">
       <LogicalName>step-out-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16~disabled.png">
+      <LogicalName>step-out-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16~disabled%402x.png">
+      <LogicalName>step-out-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16~dark.png">
+      <LogicalName>step-out-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16~dark%402x.png">
+      <LogicalName>step-out-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16~disabled~dark.png">
+      <LogicalName>step-out-16~disabled~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-out-16~disabled~dark%402x.png">
+      <LogicalName>step-out-16~disabled~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-over-16.png">
       <LogicalName>step-over-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\mac\step-over-16%402x.png">
       <LogicalName>step-over-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16~disabled.png">
+      <LogicalName>step-over-16~disabled.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16~disabled%402x.png">
+      <LogicalName>step-over-16~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16~dark.png">
+      <LogicalName>step-over-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16~dark%402x.png">
+      <LogicalName>step-over-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16~disabled~dark.png">
+      <LogicalName>step-over-16~disabled~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\mac\step-over-16~disabled~dark%402x.png">
+      <LogicalName>step-over-16~disabled~dark@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

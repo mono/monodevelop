@@ -52,25 +52,23 @@ namespace MonoDevelop.CSharp.Completion
 	{
 		readonly RoslynCodeCompletionFactory factory;
 		readonly ITypeSymbol delegateType;
-		readonly INamedTypeSymbol curType;
-		readonly string varName;
-		
+
 		public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, CancellationToken token)
 		{
 			return Task.FromResult (new TooltipInformation ());
 		}
 
-		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (keyHandler)
+		public override int PriorityGroup { get { return 2; } }
+
+		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (factory, keyHandler)
 		{
-			this.curType = curType;
-			this.varName = varName;
 			this.DisplayText = varName;
 			this.delegateType = delegateType;
 			this.factory = factory;
 			this.Icon = "md-newmethod";
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 		{
 			// insert add/remove event handler code after +=/-=
 			var editor = factory.Ext.Editor;
@@ -82,7 +80,7 @@ namespace MonoDevelop.CSharp.Completion
 
 
 			var document = IdeApp.Workbench.ActiveDocument;
-			var parsedDocument = document.UpdateParseDocument ().Result;
+			var parsedDocument = await document.UpdateParseDocument ();
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 
 			var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, default(CancellationToken));
@@ -97,7 +95,7 @@ namespace MonoDevelop.CSharp.Completion
 			var options = new InsertionModeOptions (
 				GettextCatalog.GetString ("Create new method"),
 				insertionPoints,
-				async point => {
+				point => {
 					if (!point.Success) 
 						return;
 					var indent = "\t";
@@ -142,7 +140,12 @@ namespace MonoDevelop.CSharp.Completion
 			);
 
 			editor.StartInsertionMode (options);
+			return ka;
+		}
 
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
 		}
 	}
 	

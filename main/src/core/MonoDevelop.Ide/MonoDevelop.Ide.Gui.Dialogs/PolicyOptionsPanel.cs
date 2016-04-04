@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gtk;
 using System.Linq;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -56,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		Widget IOptionsPanel.CreatePanelWidget ()
+		Control IOptionsPanel.CreatePanelWidget ()
 		{
 			HBox hbox = new HBox (false, 6);
 			Label label = new Label ();
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			warningMessage = new HBox ();
 			warningMessage.Spacing = 6;
-			Image img = new Image (Stock.Warning, IconSize.LargeToolbar);
+			var img = new ImageView (Stock.Warning, IconSize.LargeToolbar);
 			warningMessage.PackStart (img, false, false, 0);
 			Label wl = new Label (GettextCatalog.GetString ("Changes done in this section will only be applied to new projects. " +
 				"Settings for existing projects can be modified in the project (or solution) options dialog."));

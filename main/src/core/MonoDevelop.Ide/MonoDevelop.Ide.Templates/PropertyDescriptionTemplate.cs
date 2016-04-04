@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class PropertyDescriptionTemplate : FileDescriptionTemplate
+	class PropertyDescriptionTemplate : FileDescriptionTemplate
 	{
 		XmlAttribute typeAtt;
 		string propertyInnerText;

@@ -30,15 +30,16 @@ using MonoDevelop.Core;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using MonoDevelop.Components;
+using System.Text;
 
 namespace MonoDevelop.Ide.WelcomePage
 {
 	class WelcomePageFeedItem : Gtk.EventBox
 	{
-		static readonly string linkUnderlinedFormat;
-		static readonly string linkFormat;
-		static readonly string descFormat;
-		static readonly string subtitleFormat;
+		static string linkUnderlinedFormat;
+		static string linkFormat;
+		static string descFormat;
+		static string subtitleFormat;
 
 		Label titleLabel;
 		Label subtitleLabel;
@@ -55,9 +56,15 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		static WelcomePageFeedItem ()
 		{
+			UpdateStyle ();
+			Gui.Styles.Changed += (sender, e) => UpdateStyle();
+		}
+
+		static void UpdateStyle ()
+		{
 			var face = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
-			linkUnderlinedFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.News.Item.TitleHoverColor);
-			linkFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.MediumTitleColor);
+			linkUnderlinedFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.News.Item.TitleHoverColor, Pango.Weight.Bold);
+			linkFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.MediumTitleFontSize, Styles.WelcomeScreen.Pad.MediumTitleColor, Pango.Weight.Bold);
 			descFormat = Styles.GetFormatString (Styles.WelcomeScreen.Pad.SummaryFontFamily, Styles.WelcomeScreen.Pad.SummaryFontSize, Styles.WelcomeScreen.Pad.TextColor);
 			subtitleFormat = Styles.GetFormatString (face, Styles.WelcomeScreen.Pad.SmallTitleFontSize, Styles.WelcomeScreen.Pad.SmallTitleColor);
 		}
@@ -170,6 +177,13 @@ namespace MonoDevelop.Ide.WelcomePage
 			summaryLabel.Attributes.Insert (rise);
 
 			Add (box);
+
+			Gui.Styles.Changed += UpdateStyle;
+		}
+
+		void UpdateStyle (object sender, EventArgs args)
+		{
+			UpdateLabel (false);
 		}
 
 		int allocWidth;
@@ -265,7 +279,39 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			titleLabel.Markup = string.Format (underlined? linkUnderlinedFormat : linkFormat, GLib.Markup.EscapeText (text));
 			subtitleLabel.Markup = string.Format (subtitleFormat, GLib.Markup.EscapeText (subtitle ?? ""));
-			summaryLabel.Markup = string.Format (descFormat, (desc ?? "").Replace ("\n"," "));
+			summaryLabel.Markup = string.Format (descFormat, SummaryHtmlToPango(desc ?? ""));
+		}
+
+		public static string SummaryHtmlToPango(string summaryHtml)
+		{
+			var result = new StringBuilder ();
+			bool inTag =  false;
+			for (int i = 0; i < summaryHtml.Length; i++) {
+				char ch = summaryHtml [i];
+				if (inTag) {
+					if (ch == '>')
+						inTag = false;
+					continue;
+				}
+				switch (ch) {
+				case '\n':
+					result.Append (" ");
+					break;
+				case '<':
+					inTag = true;
+					break;
+				case '\'':
+					result.Append ("&apos;");
+					break;
+				case '"':
+					result.Append ("&quot;");
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
+			return result.ToString ();
 		}
 		
 		void UpdateImage ()
@@ -331,6 +377,12 @@ namespace MonoDevelop.Ide.WelcomePage
 			} else {
 				return GettextCatalog.GetString ("Open {0}", link);
 			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			Gui.Styles.Changed -= UpdateStyle;
+			base.OnDestroyed ();
 		}
 	}
 }

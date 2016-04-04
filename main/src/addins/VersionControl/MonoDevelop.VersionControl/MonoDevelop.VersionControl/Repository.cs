@@ -115,8 +115,7 @@ namespace MonoDevelop.VersionControl
 			get { return name ?? string.Empty; }
 			set {
 				name = value;
-				if (NameChanged != null)
-					NameChanged (this, EventArgs.Empty);
+				NameChanged?.Invoke (this, EventArgs.Empty);
 			}		
 		}
 		
@@ -416,17 +415,23 @@ namespace MonoDevelop.VersionControl
 					// new queries to the queue while long-running VCS operations are being performed
 					var groups = fileQueryQueueClone.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var group in groups) {
+						if (Disposed)
+							break;
 						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
 						infoCache.SetStatus (status);
 					}
 
 					foreach (var item in directoryQueryQueueClone) {
+						if (Disposed)
+							break;
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
 						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
 
 					foreach (var item in recursiveDirectoryQueryQueueClone) {
 						try {
+							if (Disposed)
+								continue;
 							item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
 						} finally {
 							item.ResetEvent.Set ();
@@ -543,7 +548,8 @@ namespace MonoDevelop.VersionControl
 			
 			if (null != diffs) {
 				foreach (DiffInfo diff in diffs) {
-					patch.AppendLine (diff.Content);
+					if (!string.IsNullOrWhiteSpace (diff.Content))
+						patch.AppendLine (diff.Content);
 				}
 			}
 			
@@ -912,7 +918,7 @@ namespace MonoDevelop.VersionControl
 
 		string text;
 		public string Text {
-			get { return text != null ? text : Revision?.ToString (); }
+			get { return text ?? Revision?.ToString (); }
 		}
 
 		public string Author {
@@ -938,33 +944,26 @@ namespace MonoDevelop.VersionControl
 			get { return Date != DateTime.MinValue; }
 		}
 
-		public Annotation (Revision revision, string author, DateTime date)
+		public Annotation (Revision revision, string author, DateTime date) : this (revision, author, date, null)
 		{
-			this.Revision = revision;
-			this.Author = author;
-			this.Date = date;
 		}
 
-		public Annotation (Revision revision, string author, DateTime date, string email)
+		public Annotation (Revision revision, string author, DateTime date, string email) : this (revision, author, date, email, null)
 		{
-			this.Revision = revision;
-			this.Author = author;
-			this.Date = date;
-			this.Email = email;
 		}
 
 		public Annotation (Revision revision, string author, DateTime date, string email, string text)
 		{
-			this.Revision = revision;
-			this.Author = author;
-			this.Date = date;
-			this.Email = email;
+			Revision = revision;
+			Author = author;
+			Date = date;
+			Email = email;
 			this.text = text;
 		}
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}, Email={4}, HasEmail={5}]",
+			return string.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}, Email={4}, HasEmail={5}]",
 									Revision, Author, Date, HasDate, Email, HasEmail);
 		}
 	}

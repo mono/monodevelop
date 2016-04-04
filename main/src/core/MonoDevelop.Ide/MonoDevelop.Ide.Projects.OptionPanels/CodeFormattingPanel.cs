@@ -186,7 +186,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				data.UseParentPolicy = useParentPolicy;
 		}
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new CodeFormattingPanelWidget (this, ParentDialog);
 		}
@@ -422,6 +422,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				}
 			}
 			buttonRemove.Sensitive = buttonEdit.Sensitive = false;
+		}
+
+		public override void Destroy ()
+		{
+			store.Clear ();
+			base.Destroy ();
 		}
 	}
 }

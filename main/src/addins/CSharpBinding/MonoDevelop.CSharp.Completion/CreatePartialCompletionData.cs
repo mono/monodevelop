@@ -32,6 +32,7 @@ using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
 using System;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -48,9 +49,12 @@ namespace MonoDevelop.CSharp.Completion
 		public override string DisplayText {
 			get {
 				if (displayText == null) {
-					var model = ext.ParsedDocument.GetAst<SemanticModel> ();
-					displayText = Ambience.EscapeText (SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
-
+					if (factory == null) {
+						displayText = Symbol.Name;
+					} else {
+						var model = ext.ParsedDocument.GetAst<SemanticModel> ();
+						displayText = Ambience.EscapeText (SafeMinimalDisplayString (base.Symbol, model, ext.Editor.CaretOffset, Ambience.LabelFormat)) + " {...}";
+					}
 					if (!afterKeyword)
 						displayText = "partial " + displayText;
 				}
@@ -86,7 +90,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.GenerateBody = true;
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 		{
 			var editor = ext.Editor;
 			bool isExplicit = false;
@@ -128,8 +132,15 @@ namespace MonoDevelop.CSharp.Completion
 				editor.CaretOffset = targetCaretPosition;
 			}
 
-			OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
+			await OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
 			editor.CaretLine--;
+			return ka;
 		}
+
+		public override bool IsOverload (CompletionData other)
+		{
+			return false;
+		}
+
 	}
 }

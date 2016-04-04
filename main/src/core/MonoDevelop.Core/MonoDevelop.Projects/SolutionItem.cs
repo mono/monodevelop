@@ -72,8 +72,6 @@ namespace MonoDevelop.Projects
 		public event ConfigurationEventHandler DefaultConfigurationChanged;
 		public event ConfigurationEventHandler ConfigurationAdded;
 		public event ConfigurationEventHandler ConfigurationRemoved;
-		public event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
-		public event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
 
 		// When set, it means this item is saved as part of a global solution save operation
 		internal bool SavingSolution { get; set; }
@@ -1107,19 +1105,36 @@ namespace MonoDevelop.Projects
 			return config;
 		}
 		
-		ItemConfiguration IConfigurationTarget.CreateConfiguration (string name, ConfigurationKind kind)
+		ItemConfiguration IConfigurationTarget.CreateConfiguration (string id, ConfigurationKind kind)
 		{
-			return CreateConfiguration (name, kind);
+			return CreateConfiguration (id, kind);
 		}
 
-		public SolutionItemConfiguration CreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		public SolutionItemConfiguration CreateConfiguration (string name, string platform, ConfigurationKind kind = ConfigurationKind.Blank)
 		{
-			return ItemExtension.OnCreateConfiguration (name, kind);
+			return ItemExtension.OnCreateConfiguration (name + "|" + platform, kind);
+		}
+
+		public SolutionItemConfiguration CreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return ItemExtension.OnCreateConfiguration (id, kind);
 		}
 		
-		protected virtual SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind = ConfigurationKind.Blank)
+		public SolutionItemConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newName, string newPlatform)
 		{
-			return new SolutionItemConfiguration (name);
+			return CloneConfiguration (configuration, newName + "|" + newPlatform);
+		}
+
+		public SolutionItemConfiguration CloneConfiguration (SolutionItemConfiguration configuration, string newId)
+		{
+			var clone = CreateConfiguration (newId);
+			clone.CopyFrom (configuration, true);
+			return clone;
+		}
+
+		protected virtual SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind = ConfigurationKind.Blank)
+		{
+			return new SolutionItemConfiguration (id);
 		}
 
 		void OnConfigurationAddedToCollection (object ob, ConfigurationEventArgs args)
@@ -1174,34 +1189,6 @@ namespace MonoDevelop.Projects
 		DateTime DoGetLastBuildTime (ConfigurationSelector configuration)
 		{
 			return base.OnGetLastBuildTime (configuration);
-		}
-
-		internal protected virtual void OnItemsAdded (IEnumerable<ProjectItem> objs)
-		{
-			ItemExtension.OnItemsAdded (objs);
-		}
-		
-		void DoOnItemsAdded (IEnumerable<ProjectItem> objs)
-		{
-			NotifyModified ("Items");
-			var args = new ProjectItemEventArgs ();
-			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
-			if (ProjectItemAdded != null)
-				ProjectItemAdded (this, args);
-		}
-
-		internal protected virtual void OnItemsRemoved (IEnumerable<ProjectItem> objs)
-		{
-			ItemExtension.OnItemsRemoved (objs);
-		}
-		
-		void DoOnItemsRemoved (IEnumerable<ProjectItem> objs)
-		{
-			NotifyModified ("Items");
-			var args = new ProjectItemEventArgs ();
-			args.AddRange (objs.Select (pi => new ProjectItemEventInfo (this, pi)));
-			if (ProjectItemRemoved != null)
-				ProjectItemRemoved (this, args);
 		}
 
 		protected virtual void OnDefaultConfigurationChanged (ConfigurationEventArgs args)
@@ -1346,9 +1333,9 @@ namespace MonoDevelop.Projects
 				return Item.OnGetItemFiles (includeReferencedFiles);
 			}
 
-			internal protected override SolutionItemConfiguration OnCreateConfiguration (string name, ConfigurationKind kind)
+			internal protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 			{
-				return Item.OnCreateConfiguration (name, kind);
+				return Item.OnCreateConfiguration (id, kind);
 			}
 
 			internal protected override DateTime OnGetLastBuildTime (ConfigurationSelector configuration)
@@ -1399,16 +1386,6 @@ namespace MonoDevelop.Projects
 			internal protected override void OnReloadRequired (SolutionItemEventArgs args)
 			{
 				Item.DoOnReloadRequired (args);
-			}
-
-			internal protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
-			{
-				Item.DoOnItemsAdded (objs);
-			}
-
-			internal protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
-			{
-				Item.DoOnItemsRemoved (objs);
 			}
 
 			internal protected override void OnDefaultConfigurationChanged (ConfigurationEventArgs args)

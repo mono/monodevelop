@@ -100,8 +100,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 					return new CompletionData[] { this };
 
 				if (sorted == null) {
-					sorted = new List<CompletionData> (overloads);
+					sorted = new List<CompletionData> ();
 					sorted.Add (this);
+					sorted.AddRange (overloads);
 					// sorted.Sort (new OverloadSorter ());
 				}
 				return sorted;
@@ -134,10 +135,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return result;
 		}
 
-		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
+		public virtual Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
 		{
 			var currentWord = GetCurrentWord (window, descriptor);
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
+			return Task.FromResult (ka);
 		}
 		
 		public override string ToString ()
@@ -189,6 +191,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public virtual string GetDisplayTextMarkup ()
 		{
 			return ApplyDiplayFlagsFormatting (GLib.Markup.EscapeText (DisplayText));
+		}
+
+		public virtual bool IsOverload (CompletionData other)
+		{
+			return DisplayText == other.DisplayText;
 		}
 	}
 

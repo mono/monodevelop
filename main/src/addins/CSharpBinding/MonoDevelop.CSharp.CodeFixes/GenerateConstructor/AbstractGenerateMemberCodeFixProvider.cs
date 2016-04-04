@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.CodeFixes.GenerateConstructor
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			// NOTE(DustinCa): Not supported in REPL for now.
-			if (context.Document.SourceCodeKind == SourceCodeKind.Interactive)
+			if (context.Document.SourceCodeKind == SourceCodeKind.Script)
 			{
 				return;
 			}

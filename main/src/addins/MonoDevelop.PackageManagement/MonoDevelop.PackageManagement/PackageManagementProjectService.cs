@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProjectService : IPackageManagementProjectService
+	internal class PackageManagementProjectService : IPackageManagementProjectService
 	{
 		public PackageManagementProjectService ()
 		{

@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class Page
+	internal class Page
 	{
 		public int Number { get; set; }
 		public bool IsSelected { get; set; }

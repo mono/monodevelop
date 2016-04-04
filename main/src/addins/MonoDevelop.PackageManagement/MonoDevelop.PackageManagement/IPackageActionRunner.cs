@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageActionRunner
+	internal interface IPackageActionRunner
 	{
 		void Run(IPackageAction action);
 		void Run(IEnumerable<IPackageAction> actions);

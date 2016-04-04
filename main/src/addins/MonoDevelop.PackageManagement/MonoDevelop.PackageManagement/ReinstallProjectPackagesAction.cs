@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ReinstallProjectPackagesAction : IPackageAction
+	internal class ReinstallProjectPackagesAction : IPackageAction
 	{
 		IPackageManagementProject project;
 		IPackageManagementEvents packageManagementEvents;

@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode ("Pad", "Registers a pad to be shown in the workbench.")]
 	public class PadCodon : ExtensionNode
 	{
-		IPadContent content;
+		PadContent content;
 		string id;
 		
 		[NodeAttribute("_label", "Display name of the pad.", Localizable=true)]
@@ -75,20 +75,20 @@ namespace MonoDevelop.Ide.Codons
 		
 		bool initializeCalled;
 		
-		public IPadContent PadContent {
+		public PadContent PadContent {
 			get {
 				return content; 
 			}
 		}
 		
-		public IPadContent InitializePadContent (IPadWindow window)
+		public PadContent InitializePadContent (IPadWindow window)
 		{
 			if (content == null) {
 				content = CreatePad ();
-				content.Initialize (window);
+				content.Init (window);
 				ApplyPreferences ();
 			} else if (!initializeCalled) {
-				content.Initialize (window);
+				content.Init (window);
 				ApplyPreferences ();
 			}
 			initializeCalled = true;
@@ -142,12 +142,12 @@ namespace MonoDevelop.Ide.Codons
 		{
 		}
 		
-		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, string icon)
+		public PadCodon (PadContent content, string id, string label, string defaultPlacement, string icon)
 			: this (content, id, label, defaultPlacement, DockItemStatus.Dockable, icon)
 		{
 		}
 		
-		public PadCodon (IPadContent content, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, string icon)
+		public PadCodon (PadContent content, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, string icon)
 		{
 			this.id               = id;
 			this.content          = content;
@@ -157,10 +157,10 @@ namespace MonoDevelop.Ide.Codons
 			this.defaultStatus    = defaultStatus;
 		}
 		
-		protected virtual IPadContent CreatePad ()
+		protected virtual PadContent CreatePad ()
 		{
 			Counters.PadsLoaded++;
-			return (IPadContent) Addin.CreateInstance (className, true);
+			return (PadContent) Addin.CreateInstance (className, true);
 		}
 		
 		PadUserPrefs preferences = null;

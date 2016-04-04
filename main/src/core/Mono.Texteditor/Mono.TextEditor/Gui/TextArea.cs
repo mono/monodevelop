@@ -91,7 +91,7 @@ namespace Mono.TextEditor
 		}
 		
 		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.TextEditor"/> converts tabs to spaces.
+		/// Gets or sets a value indicating whether this <see cref="Mono.TextEditor.MonoTextEditor"/> converts tabs to spaces.
 		/// It is possible to overwrite the default options value for certain languages (like F#).
 		/// </summary>
 		/// <value>
@@ -299,6 +299,8 @@ namespace Mono.TextEditor
 			// This is required to properly handle resizing and rendering of children
 			ResizeMode = ResizeMode.Queue;
 			snooperID = Gtk.Key.SnooperInstall (TooltipKeySnooper);
+
+			KeyPressEvent += OnKeyPress;
 		}
 
 		uint snooperID;
@@ -313,7 +315,7 @@ namespace Mono.TextEditor
 					nextTipOffset = tipOffset;
 					nextTipScheduledTime = DateTime.FromBinary (0);
 					tipItem = null;
-                    TooltipTimer ();
+					TooltipTimer ();
 				}
 			}
 			return 0; //FALSE
@@ -597,7 +599,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void IMCommit (object sender, Gtk.CommitArgs ca)
+		async void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
 			if (!IsRealized || !IsFocus)
 				return;
@@ -614,9 +616,9 @@ namespace Mono.TextEditor
 				
 				//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
 				 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
-					editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
+					await editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
 				} else {
-					editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
+					await editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 				}
 			}
 			
@@ -650,6 +652,7 @@ namespace Mono.TextEditor
 		{
 			var result = base.OnFocusOutEvent (evnt);
 			imContextNeedsReset = true;
+			mouseButtonPressed = 0;
 			imContext.FocusOut ();
 			RemoveFocusOutTimerId ();
 
@@ -756,7 +759,11 @@ namespace Mono.TextEditor
 				if (parent != null) {
 					parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				}
-				
+
+				// set additionally the real parent background for gtk themes that use the content background
+				// to draw the scrollbar slider trough.
+				this.Parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+
 				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
 				settingWidgetBg = false;
 			}
@@ -1010,52 +1017,53 @@ namespace Mono.TextEditor
 			GdkWindow.Cursor = currentCursor = cursor;
 		}
 
-		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
+		async void OnKeyPress (object sender, Gtk.KeyPressEventArgs args)
 		{
+			Gdk.EventKey evt = args.Event;
+			args.RetVal = true;
+
 			Gdk.Key key;
 			Gdk.ModifierType mod;
-			KeyboardShortcut[] accels;
+			KeyboardShortcut [] accels;
 			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
 			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
 			if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
 				OnPopupMenu ();
-				return true;
+				return;
 			}
 			uint keyVal = (uint)key;
 			CurrentMode.SelectValidShortcut (accels, out key, out mod);
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
-				return true;
+				return;
 			}
 			if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
 				textViewMargin.OpenCodeSegmentEditor ();
-				return true;
+				return;
 			}
-			
+
 			//FIXME: why are we doing this?
 			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
 				mod = Gdk.ModifierType.None;
-			
+
 			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
-			
+
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
 				ResetIMContext ();
 				//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
 				SimulateKeyPress (key, unicodeChar, mod);
-				return true;
+				return;
 			}
 			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
 			if (filter)
-				return true;
-			
+				return;
+
 			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
-			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
-				return true;
-			
-			return base.OnKeyPressEvent (evt);
+			if (await editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+				return;
+			args.RetVal = base.OnKeyPressEvent (evt);
 		}
-		
 
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
 		{
@@ -1287,9 +1295,9 @@ namespace Mono.TextEditor
 		Margin oldMargin = null;
 		bool overChildWidget;
 
-		public event EventHandler BeginHover;
+		public event EventHandler<Xwt.MouseMovedEventArgs> BeginHover;
 
-		protected virtual void OnBeginHover (EventArgs e)
+		protected virtual void OnBeginHover (Xwt.MouseMovedEventArgs e)
 		{
 			var handler = BeginHover;
 			if (handler != null)
@@ -1298,7 +1306,7 @@ namespace Mono.TextEditor
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
 		{
-			OnBeginHover (EventArgs.Empty);
+			OnBeginHover (new Xwt.MouseMovedEventArgs (e.Time, e.X, e.Y));
 			try {
 				// The coordinates have to be properly adjusted to the origin since
 				// the event may come from a child widget
@@ -1306,6 +1314,7 @@ namespace Mono.TextEditor
 				GdkWindow.GetOrigin (out rx, out ry);
 				double x = (int) e.XRoot - rx;
 				double y = (int) e.YRoot - ry;
+
 				overChildWidget = containerChildren.Any (w => w.Child.Allocation.Contains ((int)x, (int)y));
 
 				RemoveScrollWindowTimer ();
@@ -2666,6 +2675,8 @@ namespace Mono.TextEditor
 
 				//draw the highlight rectangle
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, 0, 0, corner, width, height);
+
+				// FIXME: VV: Remove gradient features
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
 						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),

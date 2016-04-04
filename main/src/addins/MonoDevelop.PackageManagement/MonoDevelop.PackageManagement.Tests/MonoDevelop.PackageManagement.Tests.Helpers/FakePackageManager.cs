@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManager : IMonoDevelopPackageManager
+	class FakePackageManager : IMonoDevelopPackageManager
 	{
 		public FakeProjectManager FakeProjectManager = new FakeProjectManager ();
 		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService ();

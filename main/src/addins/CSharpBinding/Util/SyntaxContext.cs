@@ -34,7 +34,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ICSharpCode.NRefactory6.CSharp
 {
-	public class SyntaxContext
+	class SyntaxContext
 	{
 		readonly CSharpSyntaxContext ctx;
 		readonly List<ITypeSymbol> inferredTypes;

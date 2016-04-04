@@ -138,11 +138,40 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		[Test]
+		public void TestLineStyle ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("cat:foo:line 1337");
+			Assert.AreEqual (new SearchPopupSearchPattern ("cat", "foo", 1337, -1), pattern);
+		}
+
+		[Test]
+		public void TestGithub ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("ExceptionCaughtDialog.cs#L510");
+			Assert.AreEqual (new SearchPopupSearchPattern (null, "ExceptionCaughtDialog.cs", 510, -1), pattern);
+		}
+
+		[Test]
 		public void TestOriginalSearchPatternStored ()
 		{
 			var pattern = SearchPopupSearchPattern.ParsePattern ("id:json");
 			Assert.AreEqual ("id:json", pattern.UnparsedPattern);
 		}
+
+		[Test]
+		public void TestIgnoreSpaces ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("foo : bar : 12");
+			Assert.AreEqual (new SearchPopupSearchPattern ("foo", "bar", 12), pattern);
+		}
+
+		[Test]
+		public void TestIgnoreSpacesInCategory ()
+		{
+			var pattern = SearchPopupSearchPattern.ParsePattern ("file: MyClass.cs ");
+			Assert.AreEqual (new SearchPopupSearchPattern ("file", "MyClass.cs"), pattern);
+		}
+
 	}
 }
 

@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class CheckForUpdatesTaskRunner : IDisposable
+	internal class CheckForUpdatesTaskRunner : IDisposable
 	{
 		ITaskFactory taskFactory;
 		CheckForUpdatesTask currentCheckForUpdatesTask;

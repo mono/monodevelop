@@ -42,7 +42,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
-using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.NRefactory.CSharp;
 
@@ -60,21 +59,6 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public DomTypeNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
-			
-		}
-		
-		static SyntaxMode mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
-
-		internal static string MarkupKeyword (string text)
-		{
-			foreach (Keywords words in mode.Keywords) {
-				foreach (string word in words.Words) {
-					if (word == text) {
-						return "<span style=\"" + words.Color +  "\">" + text + "</span>";
-					}
-				}
-			}
-			return text;
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)

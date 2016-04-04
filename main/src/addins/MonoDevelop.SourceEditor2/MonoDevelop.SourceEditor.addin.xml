@@ -142,10 +142,10 @@
 		<Section id="General" insertbefore="Formatting" _label="General" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" icon="md-prefs-text-editor-general" />
 		<Section id="Markers" _label="Markers and Rulers" class="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" icon="md-prefs-markers-rulers" />
 		<Section id="Behavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" icon="md-prefs-text-editor-behavior" />
-		<Section id="CodeCompletion" _label="Code Completion" icon="md-prefs-completion-behavior">
-			<Panel id="CompletionBehavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel" icon="md-prefs-completion-behavior" />
+		<Section id="CodeCompletion" _label="Code Completion" icon="md-prefs-completion">
+			<Panel id="CompletionBehavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel" icon="md-prefs-completion" />
 			<!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel" /> -->
-			<Panel id="CompletionAppearance" _label="Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion-appearance" />
+			<Panel id="CompletionAppearance" _label="Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion" />
 		</Section>
 		<Section id="SyntaxHighlighting" _label="Syntax Highlighting" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
 	</Extension>
@@ -162,7 +162,11 @@
 	<Extension path = "/MonoDevelop/SourceEditor2/EditorFactory">
 		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/Ide/AutoInsertBracketHandler">
+		<Class id = "Default" class="MonoDevelop.SourceEditor.DefaultAutoInsertBracketHandler" />
+	</Extension>
+
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->
 		<Migration sourceVersion="2.4" kind="UserData" path="syntaxmodes" targetPath="HighlightingSchemes" isDirectory="true" />
@@ -175,8 +179,7 @@
 		<StockIcon stockid="md-prefs-syntax-highlighting" resource="prefs-syntax-highlighting-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-text-editor-general" resource="prefs-text-editor-general-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-text-editor-behavior" resource="prefs-text-editor-behavior-16.png" size="Menu" />
-		<StockIcon stockid="md-prefs-completion-appearance" resource="prefs-completion-appearance-16.png" size="Menu" />
-		<StockIcon stockid="md-prefs-completion-behavior" resource="prefs-completion-behavior-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-completion" resource="prefs-completion-16.png" size="Menu" />
 	</Extension>
 	
 </ExtensionModel>

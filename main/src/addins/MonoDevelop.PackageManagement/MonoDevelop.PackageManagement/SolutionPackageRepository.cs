@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SolutionPackageRepository : ISolutionPackageRepository
+	internal class SolutionPackageRepository : ISolutionPackageRepository
 	{
 		SolutionPackageRepositoryPath repositoryPath;
 		IMonoDevelopPackageRepositoryFactory repositoryFactory;

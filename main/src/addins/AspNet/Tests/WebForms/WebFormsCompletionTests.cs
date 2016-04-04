@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace MonoDevelop.AspNet.Tests.WebForms
@@ -33,50 +34,50 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 	class WebFormsCompletionTests : UnitTests.TestBase
 	{
 		[Test]
-		public void DirectiveCompletion ()
+		public async Task DirectiveCompletion ()
 		{
-			var provider = WebFormsTesting.CreateProvider (@"<%@ $ %>", ".aspx");
+			var provider = await WebFormsTesting.CreateProvider (@"<%@ $ %>", ".aspx");
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (9, provider.Count);
 			Assert.IsNotNull (provider.Find ("Page"));
 			Assert.IsNotNull (provider.Find ("Register"));
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@ $ %>", ".master");
+			provider = await WebFormsTesting.CreateProvider (@"<%@ $ %>", ".master");
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (7, provider.Count);
 			Assert.IsNotNull (provider.Find ("Master"));
 			Assert.IsNotNull (provider.Find ("Register"));
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@ $ %>", ".ascx");
+			provider = await WebFormsTesting.CreateProvider (@"<%@ $ %>", ".ascx");
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (7, provider.Count);
 			Assert.IsNotNull (provider.Find ("Control"));
 			Assert.IsNotNull (provider.Find ("Register"));
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@$ %>", ".aspx");
+			provider = await WebFormsTesting.CreateProvider (@"<%@$ %>", ".aspx");
 			Assert.IsNull (provider);
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@   $ %>", ".aspx");
+			provider = await WebFormsTesting.CreateProvider (@"<%@   $ %>", ".aspx");
 			Assert.IsNull (provider);
 		}
 		
 		[Test]
-		public void DirectiveAttributeCompletion ()
+		public async Task DirectiveAttributeCompletion ()
 		{
-			var provider = WebFormsTesting.CreateProvider (@"<%@ Page A$ %>", ".aspx");
+			var provider = await WebFormsTesting.CreateProvider (@"<%@ Page A$ %>", ".aspx");
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (41, provider.Count);
 			Assert.IsNotNull (provider.Find ("StyleSheetTheme"));
 			Assert.IsNotNull (provider.Find ("Inherits"));
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@ Master A$ %>", ".master");
+			provider = await WebFormsTesting.CreateProvider (@"<%@ Master A$ %>", ".master");
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (18, provider.Count);
 			Assert.IsNull (provider.Find ("StyleSheetTheme"));
 			Assert.IsNotNull (provider.Find ("MasterPageFile"));
 			Assert.IsNotNull (provider.Find ("Inherits"));
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@ Control A$ %>", ".ascx");
+			provider = await WebFormsTesting.CreateProvider (@"<%@ Control A$ %>", ".ascx");
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (17, provider.Count);
 			Assert.IsNull (provider.Find ("StyleSheetTheme"));
@@ -85,22 +86,22 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 		
 		[Test]
 		[Ignore ("Not working")]
-		public void DirectiveAttributeCtrlSpaceCompletion ()
+		public async Task DirectiveAttributeCtrlSpaceCompletion ()
 		{
-			var provider = WebFormsTesting.CreateProvider (@"<%@ Page $ %>", ".aspx", true);
+			var provider = await WebFormsTesting.CreateProvider (@"<%@ Page $ %>", ".aspx", true);
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (41, provider.Count);
 			Assert.IsNotNull (provider.Find ("StyleSheetTheme"));
 			Assert.IsNotNull (provider.Find ("Inherits"));
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@ Master $ %>", ".master", true);
+			provider = await WebFormsTesting.CreateProvider (@"<%@ Master $ %>", ".master", true);
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (18, provider.Count);
 			Assert.IsNull (provider.Find ("StyleSheetTheme"));
 			Assert.IsNotNull (provider.Find ("MasterPageFile"));
 			Assert.IsNotNull (provider.Find ("Inherits"));
 			
-			provider = WebFormsTesting.CreateProvider (@"<%@ Control $ %>", ".ascx", true);
+			provider = await WebFormsTesting.CreateProvider (@"<%@ Control $ %>", ".ascx", true);
 			Assert.IsNotNull (provider);
 			Assert.AreEqual (17, provider.Count);
 			Assert.IsNull (provider.Find ("StyleSheetTheme"));
@@ -111,9 +112,9 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 <!DOCTYPE html>
 <html>
 ";
-		void HeadBodyCompletion (bool ctrlSpace)
+		async Task HeadBodyCompletion (bool ctrlSpace)
 		{
-			var provider = WebFormsTesting.CreateProvider (pageStart + "<$", ".aspx", ctrlSpace);
+			var provider = await WebFormsTesting.CreateProvider (pageStart + "<$", ".aspx", ctrlSpace);
 			Assert.IsNotNull (provider);
 			Assert.IsNotNull (provider.Find ("head"));
 			Assert.IsNotNull (provider.Find ("body"));
@@ -123,29 +124,29 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 		}
 
 		[Test]
-		public void HeadBodyCompletionAuto ()
+		public async Task HeadBodyCompletionAuto ()
 		{
-			HeadBodyCompletion (false);
+			await HeadBodyCompletion (false);
 		}
 
 		[Test]
-		public void HeadBodyCompletionCtrlSpace ()
+		public async Task HeadBodyCompletionCtrlSpace ()
 		{
-			HeadBodyCompletion (true);
+			await HeadBodyCompletion (true);
 		}
 
 		[Test]
-		public void TagPropertiesAuto ()
+		public async Task TagPropertiesAuto ()
 		{
-			var provider = WebFormsTesting.CreateProvider (pageStart + "<asp:Button r$", ".aspx");
+			var provider = await WebFormsTesting.CreateProvider (pageStart + "<asp:Button r$", ".aspx");
 			Assert.IsNotNull (provider.Find ("runat=\"server\""));
 			Assert.IsNotNull (provider.Find ("BorderStyle"));
 		}
 
 		[Test]
-		public void TagPropertiesCtrlSpace ()
+		public async Task TagPropertiesCtrlSpace ()
 		{
-			var provider = WebFormsTesting.CreateProvider (pageStart + "<asp:Button $", ".aspx", true);
+			var provider = await WebFormsTesting.CreateProvider (pageStart + "<asp:Button $", ".aspx", true);
 			Assert.IsNotNull (provider.Find ("runat=\"server\""));
 			Assert.IsNotNull (provider.Find ("id"));
 			Assert.IsNotNull (provider.Find ("BorderStyle"));

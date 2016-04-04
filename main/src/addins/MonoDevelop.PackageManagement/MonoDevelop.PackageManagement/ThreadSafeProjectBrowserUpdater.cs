@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ThreadSafeProjectBrowserUpdater : ProjectBrowserUpdater
+	internal class ThreadSafeProjectBrowserUpdater : ProjectBrowserUpdater
 	{
 //		public ThreadSafeProjectBrowserUpdater()
 //			: base(GetProjectBrowserControl())

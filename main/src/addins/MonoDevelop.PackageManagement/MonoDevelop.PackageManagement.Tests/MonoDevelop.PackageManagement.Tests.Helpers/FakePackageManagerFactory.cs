@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagerFactory : IPackageManagerFactory
+	class FakePackageManagerFactory : IPackageManagerFactory
 	{
 		public FakePackageManager FakePackageManager = new FakePackageManager ();
 		public IPackageRepository PackageRepositoryPassedToCreatePackageManager;

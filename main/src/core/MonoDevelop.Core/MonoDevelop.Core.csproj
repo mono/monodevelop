@@ -94,7 +94,6 @@
     <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
@@ -468,7 +467,6 @@
     <Compile Include="MonoDevelop.Projects\WorkspaceObjectExtension.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ProcessAsyncOperation.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProperty.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildPropertyGroupMerged.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildPropertyGroup.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItem.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildItemGroup.cs" />
@@ -554,12 +552,17 @@
     <Compile Include="MonoDevelop.Projects.MSBuild\IMSBuildProjectObject.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\EscapingUtilities.cs" />
-    <Compile Include="MonoDevelop.Projects.MSBuild.Conditions\ConditionedPropertyCollection.cs" />
+    <Compile Include="CoreExtensions.cs" />
     <Compile Include="MonoDevelop.Core\FileWriteableState.cs" />
+    <Compile Include="MonoDevelop.Projects\ConditionedPropertyCollection.cs" />
+    <Compile Include="MonoDevelop.Core\AsyncEventHandler.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\MultipleOperationConsoles.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\BinaryMessage.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\RemoteProcessConnection.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\RemoteProcessServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
-    <None Include="MonoDevelop.Projects.MSBuild.Conditions\InvalidProjectFileException.cs" />
     <None Include="BuildVariables.cs.in" />
     <None Include="packages.config" />
     <None Include="MSBuild\CodeSharing.Common.props">

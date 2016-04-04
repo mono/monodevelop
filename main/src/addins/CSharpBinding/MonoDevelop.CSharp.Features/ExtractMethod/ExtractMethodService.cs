@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis;
 
 namespace ICSharpCode.NRefactory6.CSharp.ExtractMethod
 {
-	public static class ExtractMethodService
+	static class ExtractMethodService
     {
 		readonly static CSharpExtractMethodService service = new CSharpExtractMethodService ();
 

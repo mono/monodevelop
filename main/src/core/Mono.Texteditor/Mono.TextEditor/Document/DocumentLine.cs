@@ -190,12 +190,16 @@ namespace Mono.TextEditor
 			UnicodeNewline = unicodeNewline;
 		}
 
-		internal void AddMarker (TextLineMarker marker)
+		internal void AddMarker (TextLineMarker marker, int idx = -1)
 		{
 			if (markers == null)
 				markers = new List<TextLineMarker> ();
 			marker.LineSegment = this;
-			markers.Add (marker);
+			if (idx < 0) {
+				markers.Add (marker);
+			} else  {
+				markers.Insert (idx, marker);
+			}
 		}
 
 		public void ClearMarker ()

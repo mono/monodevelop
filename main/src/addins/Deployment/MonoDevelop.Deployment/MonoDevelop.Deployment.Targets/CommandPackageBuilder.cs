@@ -50,7 +50,7 @@ namespace MonoDevelop.Deployment.Targets
 		}
 		
 		public override string Icon {
-			get { return "gtk-execute"; }
+			get { return MonoDevelop.Ide.Gui.Stock.RunProgramIcon; }
 		}
 		
 		[ItemProperty]

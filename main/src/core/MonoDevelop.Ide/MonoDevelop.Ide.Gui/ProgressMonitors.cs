@@ -114,9 +114,9 @@ namespace MonoDevelop.Ide.Gui
 
 		class CustomConsoleFactory: OperationConsoleFactory
 		{
-			protected override OperationConsole OnCreateConsole ()
+			protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 			{
-				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, true, true)).Console;
+				return ((OutputProgressMonitor)IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.Ide.ApplicationOutput", GettextCatalog.GetString ("Application Output"), Stock.MessageLog, options.BringToFront, true)).Console;
 			}
 		}
 
@@ -277,14 +277,18 @@ namespace MonoDevelop.Ide.Gui
 			
 			pad = IdeApp.Workbench.ShowPad (monitorPad, newPadId, title, basePadId + "/Center Bottom", Stock.FindIcon);
 			pad.Sticky = true;
-			searchMonitors.Add (pad);
+			lock (searchMonitors) {
+				searchMonitors.Add (pad);
 
-			if (searchMonitors.Count > 1) {
-				// Additional search pads will be destroyed when hidden
-				pad.Window.PadHidden += delegate {
-					searchMonitors.Remove (pad);
-					pad.Destroy ();
-				};
+				if (searchMonitors.Count > 1) {
+					// Additional search pads will be destroyed when hidden
+					pad.Window.PadHidden += delegate {
+						lock (searchMonitors) {
+							searchMonitors.Remove (pad);
+						}
+						pad.Destroy ();
+					};
+				}
 			}
 			
 			if (bringToFront)

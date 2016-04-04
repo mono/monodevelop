@@ -112,5 +112,20 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 		#endregion
+
+		public override int GetHashCode ()
+		{
+			return Line.GetHashCode () ^ 991;
+		}
+
+		public override bool Equals (object obj)
+		{
+			if (ReferenceEquals (obj, this))
+				return true;
+			var other = obj as MonoDevelop.Ide.Editor.IDocumentLine;
+			if (other == null)
+				return false;
+			return Line.Offset == other.Offset && Line.Length == other.Length;
+		}
 	}
 }

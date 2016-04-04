@@ -35,6 +35,7 @@ using System.Linq;
 using MonoDevelop.Ide.Editor.Extension;
 using System.ComponentModel;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -157,6 +158,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			CodeCompletionContext = null;
 			currentData = null;
 			Extension = null;
+			List.ResetState ();
 		}
 
 		protected override void OnDestroyed ()
@@ -190,7 +192,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.OnDestroyed ();
 		}
 
-		public void PostProcessKeyEvent (KeyDescriptor descriptor)
+		public async Task PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
@@ -205,8 +207,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			if (!keyHandled)
 				ka = PostProcessKey (descriptor);
-			if ((ka & KeyActions.Complete) != 0) 
-				CompleteWord (ref ka, descriptor);
+			if ((ka & KeyActions.Complete) != 0) {
+				var res = await CompleteWord (ka, descriptor);
+				ka = res.Item1;
+			}
 			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
 				OnWindowClosed (EventArgs.Empty);
@@ -234,7 +238,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			List.QueueDraw ();
 		}
 		
-		public bool PreProcessKeyEvent (KeyDescriptor descriptor)
+		public async Task<bool> PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (descriptor.SpecialKey == SpecialKey.Escape) {
 				CompletionWindowManager.HideWindow ();
@@ -253,8 +257,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			if (!keyHandled)
 				ka = PreProcessKey (descriptor);
-			if ((ka & KeyActions.Complete) != 0)
-				CompleteWord (ref ka, descriptor);
+			if ((ka & KeyActions.Complete) != 0) {
+				var res = await CompleteWord (ka, descriptor);
+				ka = res.Item1;
+			}
 
 			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
@@ -284,7 +290,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 							declarationviewwindow.OverloadLeft ();
 						else
 							declarationviewwindow.OverloadRight ();
-						UpdateDeclarationView ();
 					} else {
 						CompletionWindowManager.HideWindow ();
 						OnWindowClosed (EventArgs.Empty);
@@ -416,7 +421,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			if ((completionDataList.Count == 0) && !IsChanging)
 				return false;
-			
+
 			Style = CompletionWidget.GtkStyle;
 			
 			//sort, sinking obsolete items to the bottoms
@@ -448,15 +453,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			
 			// Note: we add back the TextOffset here in case X and X+TextOffset are on different monitors.
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (X + TextOffset, Y));
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (X + TextOffset, Y));
 			
 			previousHeight = h;
 			previousWidth = w;
 			
 			if (X + w > geometry.Right)
-				X = geometry.Right - w;
+				X = (int)geometry.Right - w;
 			else if (X < geometry.Left)
-				X = geometry.Left;
+				X = (int)geometry.Left;
 			
 			if (Y + h > geometry.Bottom || yPosition == WindowPositonY.Top) {
 				// Put the completion-list window *above* the cursor
@@ -480,21 +485,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Reposition (true);
 		}
 		
-		public bool CompleteWord ()
+		public async Task<bool> CompleteWord ()
 		{
-			KeyActions ka = KeyActions.None;
-			return CompleteWord (ref ka, KeyDescriptor.Empty);
+			var res = await CompleteWord (KeyActions.None, KeyDescriptor.Empty);
+			return res.Item2;
 		}
 
 		internal bool IsInCompletion { get; set;  }
 
-		public bool CompleteWord (ref KeyActions ka, KeyDescriptor descriptor)
+		public async Task<Tuple<KeyActions, bool>> CompleteWord (KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (SelectedItem == -1 || completionDataList == null)
-				return false;
+				return Tuple.Create (ka, false);
 			var item = completionDataList [SelectedItem];
 			if (item == null)
-				return false;
+				return Tuple.Create (ka, false);
 			IsInCompletion = true; 
 			try {
 				// first close the completion list, then insert the text.
@@ -506,9 +511,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
 				if (item.HasOverloads && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
-					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (this, ref ka, descriptor);
+					ka = await item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (this, ka, descriptor);
 				} else {
-					item.InsertCompletionText (this, ref ka, descriptor);
+					ka = await item.InsertCompletionText (this, ka, descriptor);
 				}
 				cache.CommitCompletionData (item);
 				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
@@ -516,7 +521,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				IsInCompletion = false;
 				CompletionWindowManager.HideWindow ();
 			}
-            return true;
+            return Tuple.Create (ka, true);
 		}
 		
 		protected virtual void OnWordCompleted (CodeCompletionContextEventArgs e)
@@ -536,6 +541,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnHidden ()
 		{
 			HideDeclarationView ();
+			ReleaseObjects ();
 			base.OnHidden ();
 		}
 
@@ -543,7 +549,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			Hide ();
 			HideDeclarationView ();
-			ReleaseObjects ();
 		}
 
 		protected override void DoubleClick ()
@@ -617,10 +622,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			} else {
 				declarationviewwindow.SetDefaultScheme ();
 			}
-			var style = Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			declarationviewwindow.Theme.SetFlatColor (style.CompletionTooltipWindow.Color);
-			if (style.CompletionWindow.HasBorderColor)
-				declarationviewwindow.Theme.BorderColor = style.CompletionTooltipWindow.BorderColor;
+			declarationviewwindow.CaretSpacing = Gui.Styles.TooltipInfoSpacing;
+			declarationviewwindow.Theme.SetBackgroundColor (Gui.Styles.CodeCompletion.BackgroundColor.ToCairoColor ());
 		}
 
 		void RepositionDeclarationViewWindow ()
@@ -641,7 +644,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.GdkWindow.GetOrigin (out ox, out oy);
 			declarationviewwindow.MaximumYTopBound = oy;
 			int y = rect.Y + Theme.Padding - (int)List.vadj.Value;
-			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (Gui.Styles.TooltipInfoSpacing, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
+			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
 			declarationViewHidden = false;
 		}
 
@@ -796,7 +799,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				box.PackStart (new HSeparator (), false, false, 0);
 				var hbox = new HBox ();
 				hbox.BorderWidth = 3;
-				hbox.PackStart (new Image ("md-parser", IconSize.Menu), false, false, 0);
+				hbox.PackStart (new ImageView ("md-parser", IconSize.Menu), false, false, 0);
 				var lab = new Label (GettextCatalog.GetString ("Gathering class information..."));
 				lab.Xalign = 0;
 				hbox.PackStart (lab, true, true, 3);

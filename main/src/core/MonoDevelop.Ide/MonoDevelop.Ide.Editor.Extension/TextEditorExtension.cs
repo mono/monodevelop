@@ -30,6 +30,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -76,9 +79,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 		/// Return true if the key press should be processed by the editor.
 		/// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		/// </summary>
-		public virtual bool KeyPress (KeyDescriptor descriptor)
+		public virtual async Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
-			return Next == null || Next.KeyPress (descriptor);
+			return Next == null || await Next.KeyPress (descriptor);
 		}
 
 		public virtual void Dispose ()
@@ -96,6 +99,21 @@ namespace MonoDevelop.Ide.Editor.Extension
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return Next;
+		}
+
+		internal protected virtual object OnGetContent (Type type)
+		{
+			if (type.IsInstanceOfType (this))
+				return this;
+			else
+				return null;
+		}
+
+		internal protected virtual IEnumerable<object> OnGetContents (Type type)
+		{
+			var c = OnGetContent (type);
+			if (c != null)
+				yield return c;
 		}
 	}
 

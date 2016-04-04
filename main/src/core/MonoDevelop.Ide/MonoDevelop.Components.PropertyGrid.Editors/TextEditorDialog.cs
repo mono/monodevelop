@@ -48,6 +48,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			sc.Add (textview);
 			
 			dialog = new Gtk.Dialog ();
+			IdeTheme.ApplyTheme (dialog);
 			dialog.AddButton (Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 			dialog.AddButton (Gtk.Stock.Ok, Gtk.ResponseType.Ok);
 			dialog.VBox.Add (sc);

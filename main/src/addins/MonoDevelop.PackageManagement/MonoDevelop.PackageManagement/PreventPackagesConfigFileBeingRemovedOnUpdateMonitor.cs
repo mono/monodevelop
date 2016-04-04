@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement
 	/// being removed, cancels the standard file deletion call to FileService.RemoveFile, and
 	/// removes the file itself.
 	/// </summary>
-	public class PreventPackagesConfigFileBeingRemovedOnUpdateMonitor : IDisposable
+	internal class PreventPackagesConfigFileBeingRemovedOnUpdateMonitor : IDisposable
 	{
 		IPackageManagementEvents packageManagementEvents;
 		IFileRemover fileRemover;

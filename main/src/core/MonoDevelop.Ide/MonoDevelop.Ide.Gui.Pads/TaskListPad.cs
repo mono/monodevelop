@@ -41,10 +41,11 @@ using MonoDevelop.Projects;
 using Gtk;
 using Gdk;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads
 {
-	class TaskListPad : IPadContent
+	class TaskListPad : PadContent
 	{
 		Widget control;
 		ITaskListView activeView;
@@ -58,31 +59,20 @@ namespace MonoDevelop.Ide.Gui.Pads
 		//content view
 		ScrolledWindow sw;
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return control;
 			}
 		}
 
-		public string Id {
-			get { return "MonoDevelop.Ide.Gui.Pads.TaskListPad"; }
-		}
-		
 		public string DefaultPlacement {
 			get { return "Bottom"; }
 		}
 		
-		public void RedrawContent()
-		{
-			control.QueueDraw ();
-		}
-		
-		public void Dispose ()
-		{
-		}
-		
 		public TaskListPad ()
-		{	
+		{
+			Id = "MonoDevelop.Ide.Gui.Pads.TaskListPad";
+
 			VBox vbox = new VBox ();
 			
 			switcherComboList = new ListStore (typeof (string), typeof (ITaskListView), typeof (string));
@@ -127,15 +117,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			switcherCombo.Active = pos; 
 		}
 		
-		void IPadContent.Initialize (IPadWindow window)
+		override protected void Initialize (IPadWindow window)
 		{
-			toolbar = window.GetToolbar (PositionType.Top);
+			separator = new VSeparator ();
+			toolbar = window.GetToolbar (DockPositionType.Top);
 			toolbar.Add (switcherCombo);
 			toolbar.ShowAll ();
 			switcherCombo.Changed += new EventHandler (OnContentSwitched);
 			OnContentSwitched (null, null);
-			
-			separator = new VSeparator ();
 		}
 		
 		void OnContentSwitched (object obj, EventArgs e)

@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ISelectProjectsService
+	internal interface ISelectProjectsService
 	{
 		bool SelectProjects(IEnumerable<IPackageManagementSelectedProject> projects);
 	}

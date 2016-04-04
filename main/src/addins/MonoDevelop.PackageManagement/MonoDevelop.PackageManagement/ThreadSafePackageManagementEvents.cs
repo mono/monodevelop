@@ -36,7 +36,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ThreadSafePackageManagementEvents : IThreadSafePackageManagementEvents
+	internal class ThreadSafePackageManagementEvents : IThreadSafePackageManagementEvents
 	{
 		Action<Action> guiSyncDispatcher;
 		IPackageManagementEvents unsafeEvents;

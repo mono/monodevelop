@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture()]
-	public class CodeCompletionOperatorTests : TestBase
+	class CodeCompletionOperatorTests : TestBase
 	{
 
 		[Test()]

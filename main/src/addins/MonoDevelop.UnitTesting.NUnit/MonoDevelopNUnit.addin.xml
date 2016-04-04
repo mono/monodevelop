@@ -1,0 +1,31 @@
+<ExtensionModel>
+
+	<!-- Extensions -->
+	
+	<Extension path = "/MonoDevelop/UnitTesting/TestProviders">
+		<Class id="SystemTestProvider" class="MonoDevelop.UnitTesting.NUnit.SystemTestProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id = "NUnitProject" resource = "NUnitProject.xpt.xml"/>
+		<ProjectTemplate id = "NUnitProjectVBNet" resource = "NUnitProjectVBNet.xpt.xml"/>
+	</Extension>
+
+  	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id = "NUnitTestClass" resource = "NUnitTestClass.xft.xml"/>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="md-nunit-library-project" resource="nunit-library-project.png" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/UnitTesting/UnitTestMarkers">
+		<TestMarkers
+				testMethodAttributeMarker="NUnit.Framework.TestAttribute"
+				testCaseMethodAttributeMarker="NUnit.Framework.TestCaseAttribute"
+				ignoreTestMethodAttributeMarker="NUnit.Framework.IgnoreAttribute"
+				ignoreTestClassAttributeMarker="NUnit.Framework.IgnoreAttribute"
+			/>
+	</Extension>
+	
+</ExtensionModel>

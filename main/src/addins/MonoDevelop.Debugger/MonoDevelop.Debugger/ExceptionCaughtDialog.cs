@@ -40,10 +40,11 @@ using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Fonts;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
-	class ExceptionCaughtDialog : Dialog
+	class ExceptionCaughtDialog : Gtk.Dialog
 	{
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-48.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
@@ -64,6 +65,7 @@ namespace MonoDevelop.Debugger
 
 		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
 		{
+			this.ApplyTheme ();
 			selected = exception = ex;
 			message = msg;
 
@@ -114,7 +116,7 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionValueTreeView = new ObjectValueTreeView ();
 			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
-			ExceptionValueTreeView.ModifyBase (StateType.Normal, new Gdk.Color (223, 228, 235));
+			ExceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ());
 			ExceptionValueTreeView.AllowPopupMenu = false;
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
@@ -408,7 +410,7 @@ namespace MonoDevelop.Debugger
 
 	class StackFrameCellRenderer : CellRenderer
 	{
-		static readonly Pango.FontDescription LineNumberFont = FontService.MonospaceFont.CopyModified (0.9d);
+		static readonly Pango.FontDescription LineNumberFont = FontService.MonospaceFont.CopyModified (Ide.Gui.Styles.FontScale11);
 		const int RoundedRectangleRadius = 2;
 		const int RoundedRectangleHeight = 14;
 		const int RoundedRectangleWidth = 28;
@@ -439,7 +441,7 @@ namespace MonoDevelop.Debugger
 				Pango.Rectangle ink, logical;
 
 				layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
-				layout.SetMarkup (GetMarkup (false));
+				layout.SetMarkup (GetMarkup (false, widget));
 
 				layout.GetPixelExtents (out ink, out logical);
 
@@ -470,17 +472,12 @@ namespace MonoDevelop.Debugger
 			cr.Clip ();
 
 			if (IsUserCode)
-				cr.SetSourceRGBA (0.90, 0.60, 0.87, 1.0); // 230, 152, 223
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor.ToCairoColor ()); // 230, 152, 223
 			else
-				cr.SetSourceRGBA (0.77, 0.77, 0.77, 1.0); // 197, 197, 197
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberBackgroundColor.ToCairoColor ()); // 197, 197, 197
 
 			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
 			cr.Fill ();
-
-			cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.11);
-			cr.RoundedRectangle (0.0, 0.0, RoundedRectangleWidth, RoundedRectangleHeight, RoundedRectangleRadius);
-			cr.LineWidth = 2;
-			cr.Stroke ();
 
 			var lineNumber = !string.IsNullOrEmpty (Frame.File) ? Frame.Line : -1;
 
@@ -494,14 +491,7 @@ namespace MonoDevelop.Debugger
 				double y_offset = (RoundedRectangleHeight - height) / 2.0;
 				double x_offset = (RoundedRectangleWidth - width) / 2.0;
 
-				// render the text shadow
-				cr.Save ();
-				cr.SetSourceRGBA (0.0, 0.0, 0.0, 0.34);
-				cr.Translate (x_offset, y_offset + 1);
-				cr.ShowLayout (layout);
-				cr.Restore ();
-
-				cr.SetSourceRGBA (1.0, 1.0, 1.0, 1.0);
+				cr.SetSourceColor (Styles.ExceptionCaughtDialog.LineNumberTextColor.ToCairoColor ());
 				cr.Translate (x_offset, y_offset);
 				cr.ShowLayout (layout);
 			}
@@ -509,18 +499,17 @@ namespace MonoDevelop.Debugger
 			cr.Restore ();
 		}
 
-		string GetMarkup (bool selected)
+		string GetMarkup (bool selected, Gtk.Widget parent)
 		{
+			string text_color = selected ? parent.Style.Text (StateType.Selected).GetHex () : parent.Style.Text (StateType.Normal).GetHex ();
+
 			if (Markup != null)
-				return Markup;
+				return "<span foreground='" + text_color + "'>" + Markup + "</span>";
 
-			var markup = string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (Frame.DisplayText));
-
-			if (selected)
-				markup = "<span foreground='#FFFFFF'>" + markup + "</span>";
+			var markup = string.Format ("<span foreground='{0}'><b>{1}</b></span>", text_color, GLib.Markup.EscapeText (Frame.DisplayText));
 
 			if (!string.IsNullOrEmpty (Frame.File)) {
-				markup += string.Format ("\n<span size='smaller' foreground='{0}'>{1}", selected ? "#FFFFFF" : "#777777", GLib.Markup.EscapeText (Frame.File));
+				markup += string.Format ("<span size='4096'>\n\n</span><span size='small' foreground='{0}'>{1}", text_color, GLib.Markup.EscapeText (Frame.File));
 				if (Frame.Line > 0) {
 					markup += ":" + Frame.Line;
 					if (Frame.Column > 0)
@@ -539,7 +528,7 @@ namespace MonoDevelop.Debugger
 					Pango.Rectangle ink, logical;
 
 					layout.Width = (int) (MaxMarkupWidth * Pango.Scale.PangoScale);
-					layout.SetMarkup (GetMarkup ((flags & CellRendererState.Selected) != 0));
+					layout.SetMarkup (GetMarkup ((flags & CellRendererState.Selected) != 0, widget));
 
 					layout.GetPixelExtents (out ink, out logical);
 
@@ -675,7 +664,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			var image = new Xwt.ImageView (icon).ToGtkWidget ();
@@ -763,7 +752,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var box = new EventBox ();
 			box.VisibleWindow = false;
@@ -783,14 +772,14 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtTextEditorExtension: TextEditorExtension
 	{
-		public override bool KeyPress (KeyDescriptor descriptor)
+		public override Task<bool> KeyPress (KeyDescriptor descriptor)
 		{
 			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
 			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
 				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
-				return true;
+				return Task.FromResult (true);
 			}
 
 			return base.KeyPress (descriptor);

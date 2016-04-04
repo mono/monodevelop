@@ -41,7 +41,7 @@ namespace MonoDevelop.Components.Theming
 		Descending
 	}
 
-	public abstract class Theme
+	abstract class Theme
 	{
 		private static Cairo.Color black = new Cairo.Color (0, 0, 0);
 		private Stack<ThemeContext> contexts = new Stack<ThemeContext> ();

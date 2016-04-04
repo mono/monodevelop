@@ -50,16 +50,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		const string CurrentVersion = "1.1.9";
 		static IEnumerable<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
+		public static Microsoft.CodeAnalysis.SyntaxAnnotation InsertionModeAnnotation = new Microsoft.CodeAnalysis.SyntaxAnnotation();
 
 		static IEnumerable<TypeSystemParserNode> Parsers {
 			get {
 				return parsers;
 			}
-		}
-
-		public static bool TrackFileChanges {
-			get;
-			set;
 		}
 
 		public static void RemoveSkippedfile (FilePath fileName)
@@ -76,6 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static TypeSystemService ()
 		{
+			CleanupCache ();
 			parsers = AddinManager.GetExtensionNodes<TypeSystemParserNode> ("/MonoDevelop/TypeSystem/Parser");
 			bool initialLoad = true;
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/Parser", delegate (object sender, ExtensionNodeEventArgs args) {
@@ -242,7 +239,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, data.FileName, data.MimeType, data, cancellationToken);
 		}
 
-		internal static Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
+		internal static async Task<ParsedDocumentProjection> ParseProjection (ParseOptions options, string mimeType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (options == null)
 				throw new ArgumentNullException ("options");
@@ -251,18 +248,18 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var parser = GetParser (mimeType, options.BuildAction);
 			if (parser == null || !parser.CanGenerateProjection (mimeType, options.BuildAction, options.Project?.SupportedLanguages))
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (options.FileName);
 			try {
-				var result = parser.GenerateParsedDocumentProjection (options, cancellationToken);
+				var result = await parser.GenerateParsedDocumentProjection (options, cancellationToken);
 				if (options.Project != null) {
 					var ws = workspaces.First () ;
 					var projectId = ws.GetProjectId (options.Project);
 
 					if (projectId != null) {
-						ws.UpdateProjectionEnntry (options.Project.GetProjectFile (options.FileName), result.Result.Projections);
-						foreach (var projection in result.Result.Projections) {
+						ws.UpdateProjectionEntry (options.Project.GetProjectFile (options.FileName), result.Projections);
+						foreach (var projection in result.Projections) {
 							var docId = ws.GetDocumentId (projectId, projection.Document.FileName);
 							if (docId != null) {
 								ws.InformDocumentTextChange (docId, new MonoDevelopSourceText (projection.Document));
@@ -273,12 +270,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				return result;
 			} catch (AggregateException ae) {
 				ae.Flatten ().Handle (x => x is OperationCanceledException);
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 			} catch (OperationCanceledException) {
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while parsing: " + e);
-				return Task.FromResult ((ParsedDocumentProjection)null);
+				return null;
 			} finally {
 				t.Dispose ();
 			}
@@ -515,7 +512,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static IEnumerable<string> GetPossibleCacheDirNames (string baseName)
 		{
 			int i = 0;
-			while (i < 4096) {
+			while (i < 999999) {
 				yield return Path.Combine (baseName, i.ToString ());
 				i++;
 			}
@@ -598,24 +595,30 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void CleanupCache ()
 		{
 			string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
-			string[] subDirs;
+			string[] cacheDirectories;
 			
 			try {
 				if (!Directory.Exists (derivedDataPath))
 					return;
-				subDirs = Directory.GetDirectories (derivedDataPath);
+				cacheDirectories = Directory.GetDirectories (derivedDataPath);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting derived data directories.", e);
 				return;
 			}
-			
-			foreach (var subDir in subDirs) {
+			var now = DateTime.Now;
+			foreach (var cacheDirectory in cacheDirectories) {
 				try {
-					var days = Math.Abs ((DateTime.Now - Directory.GetLastWriteTime (subDir)).TotalDays);
-					if (days > 30)
-						Directory.Delete (subDir, true);
+					foreach (var subDir in Directory.GetDirectories (cacheDirectory)) {
+						try {
+							var days = Math.Abs ((now - Directory.GetLastWriteTime (subDir)).TotalDays);
+							if (days > 30)
+								Directory.Delete (subDir, true);
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while removing outdated cache " + subDir, e);
+						}
+					}
 				} catch (Exception e) {
-					LoggingService.LogError ("Error while removing outdated cache " + subDir, e);
+					LoggingService.LogError ("Error while getting cache directories " + cacheDirectory, e);
 				}
 			}
 		}
