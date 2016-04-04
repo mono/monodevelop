@@ -161,6 +161,8 @@ namespace MonoDevelop.Components
 
 			box = new HBox ();
 			entry = new FramelessEntry (this);
+			entry.UseNativeContextMenus ();
+
 			filter_button = new HoverImageButton (IconSize.Menu, "md-searchbox-search");
 			clear_button = new HoverImageButton (IconSize.Menu, "md-searchbox-clear");
 
