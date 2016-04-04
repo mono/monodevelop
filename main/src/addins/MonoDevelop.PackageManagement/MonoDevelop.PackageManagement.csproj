@@ -501,6 +501,11 @@
     <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInProjectAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RestoreAndCheckForUpdatesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IInstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedNuGetPackagesProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedNuGetPackagesInProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedNuGetPackagesInWorkspace.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForNuGetPackageUpdatesTaskRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IUpdatedNuGetPackagesInWorkspace.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

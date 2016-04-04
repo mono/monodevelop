@@ -30,6 +30,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
 using NuGet;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -40,7 +42,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			PackageReference packageReference,
 			bool installed,
 			bool pending = false,
-			IPackageName updatedPackage = null)
+			PackageIdentity updatedPackage = null)
 		{
 			ParentNode = parentNode;
 			PackageReference = packageReference;
@@ -51,7 +53,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			IsReinstallNeeded = packageReference.RequireReinstallation;
 		}
 
-		SemanticVersion GetUpdatedPackageVersion (IPackageName updatedPackage)
+		NuGetVersion GetUpdatedPackageVersion (PackageIdentity updatedPackage)
 		{
 			if (updatedPackage != null) {
 				return updatedPackage.Version;
@@ -63,7 +65,6 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public bool Installed { get; private set; }
 		public bool IsInstallPending { get; private set; }
 		public bool IsReinstallNeeded { get; private set; }
-
 
 		ProjectPackagesFolderNode ParentNode { get; set; }
 
@@ -79,11 +80,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			get { return PackageReference.Id; }
 		}
 
-		public SemanticVersion Version {
+		public NuGet.SemanticVersion Version {
 			get { return PackageReference.Version; }
 		}
 
-		public SemanticVersion UpdatedVersion { get; private set; }
+		public NuGetVersion UpdatedVersion { get; private set; }
 
 		public bool IsDevelopmentDependency {
 			get { return PackageReference.IsDevelopmentDependency; }

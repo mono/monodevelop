@@ -1,5 +1,5 @@
 ﻿//
-// UpdatedPackagesInSolution.cs
+// FakeUpdatedPackagesInWorkspace.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,20 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using NuGet;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class FakeUpdatedPackagesInSolution : IUpdatedPackagesInSolution
+	class FakeUpdatedPackagesInWorkspace : IUpdatedNuGetPackagesInWorkspace
 	{
-		public List<UpdatedPackagesInProject> ProjectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
+		public List<UpdatedNuGetPackagesInProject> ProjectsWithUpdatedPackages = new List<UpdatedNuGetPackagesInProject> ();
 
-		public void AddUpdatedPackages (FakeDotNetProject project, params PackageName[] packageNames)
+		public void AddUpdatedPackages (FakeDotNetProject project, params PackageIdentity[] packages)
 		{
-			var updatedPackages = new UpdatedPackagesInProject (project, packageNames);
+			var updatedPackages = new UpdatedNuGetPackagesInProject (project, packages);
 			ProjectsWithUpdatedPackages.Add (updatedPackages);
 		}
 
@@ -50,7 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		public UpdatedPackagesInProject GetUpdatedPackages (IDotNetProject project)
+		public UpdatedNuGetPackagesInProject GetUpdatedPackages (IDotNetProject project)
 		{
 			return ProjectsWithUpdatedPackages.FirstOrDefault (item => item.Project == project);
 		}

@@ -24,25 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
-
 namespace MonoDevelop.PackageManagement
 {
 	internal class CheckForUpdatedPackagesAction : IPackageAction
 	{
-		IUpdatedPackagesInSolution updatedPackagesInSolution;
+		IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 
 		public CheckForUpdatedPackagesAction ()
-			: this (PackageManagementServices.UpdatedPackagesInSolution)
+			: this (PackageManagementServices.UpdatedPackagesInWorkspace)
 		{
 		}
 
 		public CheckForUpdatedPackagesAction (
-			IUpdatedPackagesInSolution updatedPackagesInSolution)
+			IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
 		{
-			this.updatedPackagesInSolution = updatedPackagesInSolution;
+			this.updatedPackagesInWorkspace = updatedPackagesInWorkspace;
 		}
 
 		public bool HasPackageScriptsToRun ()
@@ -55,7 +51,7 @@ namespace MonoDevelop.PackageManagement
 			// Queue the check for updates with the background dispatcher so
 			// the NuGet addin does not create another separate Package Console.
 			PackageManagementBackgroundDispatcher.Dispatch (() => {
-				updatedPackagesInSolution.CheckForUpdates ();
+				updatedPackagesInWorkspace.CheckForUpdates ();
 			});
 		}
 	}

@@ -1,10 +1,10 @@
 ﻿//
-// TestableProjectPackagesFolderNode.cs
+// IUpdatedNuGetPackagesInWorkspace.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,35 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using MonoDevelop.PackageManagement.NodeBuilders;
-using NuGet;
-
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	class TestableProjectPackagesFolderNode : ProjectPackagesFolderNode
+	internal interface IUpdatedNuGetPackagesInWorkspace
 	{
-		public TestableProjectPackagesFolderNode (
-			IDotNetProject project,
-			IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
-			: base (project, updatedPackagesInWorkspace)
-		{
-		}
-
-		public List<PackageReference> PackageReferences = new List<PackageReference> ();
-
-		protected override IEnumerable<PackageReference> GetPackageReferences ()
-		{
-			return PackageReferences;
-		}
-
-		public List<PackageReference> PackageReferencesWithPackageInstalled = new List<PackageReference> ();
-
-		protected override bool IsPackageInstalled (PackageReference reference)
-		{
-			return PackageReferencesWithPackageInstalled.Contains (reference);
-		}
+		void Clear ();
+		void CheckForUpdates ();
+		UpdatedNuGetPackagesInProject GetUpdatedPackages (IDotNetProject project);
+		bool AnyUpdates ();
 	}
 }
 

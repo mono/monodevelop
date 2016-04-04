@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
@@ -32,6 +31,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -40,12 +41,12 @@ namespace MonoDevelop.PackageManagement.Tests
 	public class ProjectPackagesFolderNodeTests
 	{
 		TestableProjectPackagesFolderNode packagesFolderNode;
-		FakeUpdatedPackagesInSolution updatedPackagesInSolution;
+		FakeUpdatedPackagesInWorkspace updatedPackagesInSolution;
 		FakeDotNetProject project;
 
 		void CreateNode ()
 		{
-			updatedPackagesInSolution = new FakeUpdatedPackagesInSolution ();
+			updatedPackagesInSolution = new FakeUpdatedPackagesInWorkspace ();
 			project = new FakeDotNetProject ();
 			packagesFolderNode = new TestableProjectPackagesFolderNode (project, updatedPackagesInSolution);
 		}
@@ -54,7 +55,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string packageId = "Id",
 			string version = "1.2.3")
 		{
-			var semanticVersion = new SemanticVersion (version);
+			var semanticVersion = new NuGet.SemanticVersion (version);
 			var packageReference = new PackageReference (packageId, semanticVersion, null, null, false, false);
 			packagesFolderNode.PackageReferences.Add (packageReference);
 			return packageReference;
@@ -62,14 +63,14 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AddUpdatedPackageForProject (string packageId, string version)
 		{
-			var packageName = new PackageName (packageId, new SemanticVersion (version));
+			var packageName = new PackageIdentity (packageId, new NuGetVersion (version));
 			updatedPackagesInSolution.AddUpdatedPackages (project, packageName);
 		}
 
 		void AddUpdatedPackagesForProject (string packageId1, string version1, string packageId2, string version2)
 		{
-			var packageName1 = new PackageName (packageId1, new SemanticVersion (version1));
-			var packageName2 = new PackageName (packageId2, new SemanticVersion (version2));
+			var packageName1 = new PackageIdentity (packageId1, new NuGetVersion (version1));
+			var packageName2 = new PackageIdentity (packageId2, new NuGetVersion (version2));
 			updatedPackagesInSolution.AddUpdatedPackages (project, packageName1, packageName2);
 		}
 

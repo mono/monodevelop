@@ -90,7 +90,7 @@ namespace MonoDevelop.PackageManagement
 		void CheckForUpdates ()
 		{
 			try {
-				PackageManagementServices.UpdatedPackagesInSolution.CheckForUpdates ();
+				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Check for NuGet package updates error.", ex);
 			}

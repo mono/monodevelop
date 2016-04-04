@@ -56,6 +56,16 @@
       <HintPath>..\..\..\..\packages\NuGet.Core.2.10.1\lib\net40-Client\NuGet.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="NuGet.Versioning">
+      <HintPath>..\..\..\..\packages\NuGet.Versioning.3.3.0\lib\net45\NuGet.Versioning.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="NuGet.Frameworks">
+      <HintPath>..\..\..\..\packages\NuGet.Frameworks.3.3.0\lib\net45\NuGet.Frameworks.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core.Types">
+      <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.Types.3.3.0\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -189,7 +199,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackagesFolderNodeTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackagesFolderNode.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatedPackagesInWorkspace.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PageCollectionAssert.cs" />

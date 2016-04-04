@@ -37,20 +37,20 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 	internal class ProjectPackagesFolderNode
 	{
 		IDotNetProject project;
-		IUpdatedPackagesInSolution updatedPackagesInSolution;
+		IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		List<PackageReference> packageReferences;
 
 		public ProjectPackagesFolderNode (DotNetProject project)
-			: this (new DotNetProjectProxy (project), PackageManagementServices.UpdatedPackagesInSolution)
+			: this (new DotNetProjectProxy (project), PackageManagementServices.UpdatedPackagesInWorkspace)
 		{
 		}
 
 		public ProjectPackagesFolderNode (
 			IDotNetProject project,
-			IUpdatedPackagesInSolution updatedPackagesInSolution)
+			IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
 		{
 			this.project = project;
-			this.updatedPackagesInSolution = updatedPackagesInSolution;
+			this.updatedPackagesInWorkspace = updatedPackagesInWorkspace;
 		}
 
 		public DotNetProject DotNetProject {
@@ -99,7 +99,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		int GetUpdatedPackagesCount ()
 		{
-			return updatedPackagesInSolution
+			return updatedPackagesInWorkspace
 				.GetUpdatedPackages (project)
 				.GetPackages ()
 				.Count ();
@@ -125,11 +125,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
 		{
-			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project);
+			UpdatedNuGetPackagesInProject updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (project);
 			return PackageReferences.Select (reference => CreatePackageReferenceNode (reference, updatedPackages));
 		}
 
-		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference, UpdatedPackagesInProject updatedPackages)
+		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference, UpdatedNuGetPackagesInProject updatedPackages)
 		{
 			return new PackageReferenceNode (
 				this,

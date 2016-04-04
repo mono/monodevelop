@@ -76,7 +76,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void ClearUpdatedPackagesInSolution ()
 		{
-			PackageManagementServices.UpdatedPackagesInSolution.Clear ();
+			PackageManagementServices.UpdatedPackagesInWorkspace.Clear ();
 		}
 
 		void SolutionUnloaded (object sender, SolutionEventArgs e)
@@ -110,7 +110,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void CheckForUpdates ()
 		{
 			try {
-				PackageManagementServices.UpdatedPackagesInSolution.CheckForUpdates ();
+				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Check for NuGet package updates error.", ex);
 			}

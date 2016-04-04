@@ -50,7 +50,7 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementProgressProvider progressProvider;
 		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
 		static readonly PackageCompatibilityHandler packageCompatibilityHandler;
-		static readonly UpdatedPackagesInSolution updatedPackagesInSolution;
+		static readonly UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		static readonly PackageManagementProjectOperations projectOperations;
 
 		static PackageManagementServices()
@@ -75,7 +75,7 @@ namespace MonoDevelop.PackageManagement
 			packageCompatibilityHandler = new PackageCompatibilityHandler ();
 			packageCompatibilityHandler.MonitorTargetFrameworkChanges (projectTargetFrameworkMonitor);
 
-			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
+			updatedPackagesInWorkspace = new UpdatedNuGetPackagesInWorkspace (packageManagementEvents);
 
 			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
 
@@ -161,8 +161,8 @@ namespace MonoDevelop.PackageManagement
 			get { return progressProvider; }
 		}
 
-		internal static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
-			get { return updatedPackagesInSolution; }
+		internal static IUpdatedNuGetPackagesInWorkspace UpdatedPackagesInWorkspace {
+			get { return updatedPackagesInWorkspace; }
 		}
 
 		public static IPackageManagementProjectOperations ProjectOperations {
