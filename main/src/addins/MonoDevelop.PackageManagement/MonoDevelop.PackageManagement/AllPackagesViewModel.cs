@@ -52,6 +52,7 @@ namespace MonoDevelop.PackageManagement
 		bool ignorePackageCheckedChanged;
 		MonoDevelopSolutionManager solutionManager;
 		NuGetProject project;
+		IDotNetProject dotNetProject;
 		NuGetProjectContext projectContext;
 
 		public AllPackagesViewModel ()
@@ -62,8 +63,7 @@ namespace MonoDevelop.PackageManagement
 
 			solutionManager = new MonoDevelopSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			projectContext = new NuGetProjectContext ();
-			var dotNetProject = (DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject;
-			project = new MonoDevelopNuGetProjectFactory ().CreateNuGetProject (dotNetProject, projectContext);
+			dotNetProject = new DotNetProjectProxy ((DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject);
 		}
 
 		public string SearchTerms { get; set; }
@@ -353,7 +353,8 @@ namespace MonoDevelop.PackageManagement
 			return new InstallNuGetPackageAction (
 				SelectedPackageSource.SourceRepository,
 				solutionManager,
-				project
+				dotNetProject,
+				projectContext
 			) {
 				IncludePrerelease = IncludePrerelease,
 				PackageId = packageViewModel.Id,

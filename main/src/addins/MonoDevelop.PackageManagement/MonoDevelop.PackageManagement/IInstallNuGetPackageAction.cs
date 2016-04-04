@@ -1,10 +1,10 @@
 ﻿//
-// IBackgroundPackageActionRunner.cs
+// IInstallNuGetPackageAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,24 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using MonoDevelop.Projects;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal interface IBackgroundPackageActionRunner
+	internal interface IInstallNuGetPackageAction
 	{
-		IEnumerable<IInstallNuGetPackageAction> PendingInstallActions { get; }
-		IEnumerable<IInstallNuGetPackageAction> PendingInstallActionsForProject (DotNetProject project);
+		//string PackageId { get; }
+		//NuGetVersion Version { get; }
+		bool IsForProject (DotNetProject project);
+	}
 
-		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action);
-		void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
+	internal static class IInstallNuGetPackageActionExtensions
+	{
+		public static string GetPackageId (this IInstallNuGetPackageAction action)
+		{
+			var installPackageAction = action as InstallPackageAction;
+			if (installPackageAction != null) {
+				return installPackageAction.GetPackageId ();
+			}
+			var installNuGetPackageAction = (InstallNuGetPackageAction)action;
+			return installNuGetPackageAction.PackageId;
+		}
 
-		void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception);
-		void ShowError (ProgressMonitorStatusMessage progressMessage, string message);
-
-		bool IsRunning { get; }
+		public static NuGet.SemanticVersion GetPackageVersion (this IInstallNuGetPackageAction action)
+		{
+			var installPackageAction = action as InstallPackageAction;
+			if (installPackageAction != null) {
+				return installPackageAction.GetPackageVersion ();
+			}
+			var installNuGetPackageAction = (InstallNuGetPackageAction)action;
+			return new NuGet.SemanticVersion (installNuGetPackageAction.Version.ToString ());
+		}
 	}
 }
 

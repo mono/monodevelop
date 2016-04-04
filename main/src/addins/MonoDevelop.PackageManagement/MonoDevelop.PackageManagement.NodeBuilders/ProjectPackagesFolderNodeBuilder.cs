@@ -80,7 +80,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 			List<PackageReferenceNode> nodes = projectPackagesNode.GetPackageReferencesNodes ().ToList ();
 
-			foreach (InstallPackageAction installAction in GetPendingInstallActions (projectPackagesNode.DotNetProject)) {
+			foreach (IInstallNuGetPackageAction installAction in GetPendingInstallActions (projectPackagesNode.DotNetProject)) {
 				if (!nodes.Any (node => node.Id == installAction.GetPackageId ())) {
 					nodes.Add (CreatePackageReferenceNode (projectPackagesNode, installAction));
 				}
@@ -91,12 +91,12 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			}
 		}
 
-		IEnumerable<InstallPackageAction> GetPendingInstallActions (DotNetProject project)
+		IEnumerable<IInstallNuGetPackageAction> GetPendingInstallActions (DotNetProject project)
 		{
 			return PackageManagementServices.BackgroundPackageActionRunner.PendingInstallActionsForProject (project);
 		}
 
-		PackageReferenceNode CreatePackageReferenceNode (ProjectPackagesFolderNode parentNode, InstallPackageAction installAction)
+		PackageReferenceNode CreatePackageReferenceNode (ProjectPackagesFolderNode parentNode, IInstallNuGetPackageAction installAction)
 		{
 			return new PackageReferenceNode (
 				parentNode,

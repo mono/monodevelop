@@ -163,7 +163,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			InstallPackageAction expectedAction = AddInstallAction ();
-			List<InstallPackageAction> actions = null;
+			List<IInstallNuGetPackageAction> actions = null;
 			packageManagementEvents.PackageOperationsStarting += (sender, e) => {
 				actions = runner.PendingInstallActions.ToList ();
 			};
@@ -189,7 +189,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			AddInstallAction ();
-			List<InstallPackageAction> actions = null;
+			List<IInstallNuGetPackageAction> actions = null;
 			packageManagementEvents.PackageOperationsFinished += (sender, e) => {
 				actions = runner.PendingInstallActions.ToList ();
 			};

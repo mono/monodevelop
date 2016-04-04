@@ -27,9 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -43,7 +41,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
-		List<InstallPackageAction> pendingInstallActions = new List<InstallPackageAction> ();
+		List<IInstallNuGetPackageAction> pendingInstallActions = new List<IInstallNuGetPackageAction> ();
 		int runCount;
 
 		public BackgroundPackageActionRunner (
@@ -60,13 +58,13 @@ namespace MonoDevelop.PackageManagement
 			get { return runCount > 0; }
 		}
 
-		public IEnumerable<InstallPackageAction> PendingInstallActions {
+		public IEnumerable<IInstallNuGetPackageAction> PendingInstallActions {
 			get { return pendingInstallActions; }
 		}
 
-		public IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project)
+		public IEnumerable<IInstallNuGetPackageAction> PendingInstallActionsForProject (DotNetProject project)
 		{
-			return pendingInstallActions.Where (action => action.Project.DotNetProject == project);
+			return pendingInstallActions.Where (action => action.IsForProject (project));
 		}
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
@@ -90,7 +88,7 @@ namespace MonoDevelop.PackageManagement
 
 		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
 		{
-			foreach (InstallPackageAction action in actions.OfType<InstallPackageAction> ()) {
+			foreach (IInstallNuGetPackageAction action in actions.OfType<IInstallNuGetPackageAction> ()) {
 				pendingInstallActions.Add (action);
 			}
 		}
@@ -201,7 +199,7 @@ namespace MonoDevelop.PackageManagement
 
 		void RemoveInstallActions (IList<IPackageAction> installPackageActions)
 		{
-			foreach (InstallPackageAction action in installPackageActions.OfType <InstallPackageAction> ()) {
+			foreach (IInstallNuGetPackageAction action in installPackageActions.OfType<IInstallNuGetPackageAction> ()) {
 				pendingInstallActions.Remove (action);
 			}
 		}

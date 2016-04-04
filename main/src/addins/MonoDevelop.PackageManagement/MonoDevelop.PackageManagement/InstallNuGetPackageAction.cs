@@ -24,8 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
@@ -36,22 +38,27 @@ using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class InstallNuGetPackageAction : INuGetPackageAction
+	internal class InstallNuGetPackageAction : INuGetPackageAction, IInstallNuGetPackageAction
 	{
 		SourceRepository sourceRepository;
 		NuGetPackageManager packageManager;
 		NuGetProject project;
+		IDotNetProject dotNetProject;
 		CancellationToken cancellationToken;
 
 		public InstallNuGetPackageAction (
 			SourceRepository sourceRepository,
 			ISolutionManager solutionManager,
-			NuGetProject project,
+			IDotNetProject dotNetProject,
+			NuGetProjectContext projectContext,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.sourceRepository = sourceRepository;
-			this.project = project;
 			this.cancellationToken = cancellationToken;
+			this.dotNetProject = dotNetProject;
+
+			project = new MonoDevelopNuGetProjectFactory ()
+				.CreateNuGetProject (dotNetProject, projectContext);
 
 			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
@@ -116,6 +123,11 @@ namespace MonoDevelop.PackageManagement
 		INuGetProjectContext CreateProjectContext ()
 		{
 			return new NuGetProjectContext (); 
+		}
+
+		public bool IsForProject (DotNetProject project)
+		{
+			return dotNetProject.DotNetProject == project;
 		}
 	}
 }
