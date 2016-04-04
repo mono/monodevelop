@@ -2731,15 +2731,25 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (image == null)
 					return;
 
+				bool selected = (flags & Gtk.CellRendererState.Selected) != 0;
+
 				using (var ctx = Gdk.CairoHelper.Create (window)) {
-					if (overlayBottomLeft != null && overlayBottomLeft != NullImage)
-						ctx.DrawImage (widget, overlayBottomLeft, x - overlayOverflow, y + image.Height - overlayBottomLeft.Height + overlayOverflow);
-					if (overlayBottomRight != null && overlayBottomRight != NullImage)
-						ctx.DrawImage (widget, overlayBottomRight, x + image.Width - overlayBottomRight.Width + overlayOverflow, y + image.Height - overlayBottomRight.Height + overlayOverflow);
-					if (overlayTopLeft != null && overlayTopLeft != NullImage)
-						ctx.DrawImage (widget, overlayTopLeft, x - overlayOverflow, y - overlayOverflow);
-					if (overlayTopRight != null && overlayTopRight != NullImage)
-						ctx.DrawImage (widget, overlayTopRight, x + image.Width - overlayTopRight.Width + overlayOverflow, y - overlayOverflow);
+					if (overlayBottomLeft != null && overlayBottomLeft != NullImage) {
+						var img = selected ? overlayBottomLeft.WithStyles ("sel") : overlayBottomLeft;
+						ctx.DrawImage (widget, img, x - overlayOverflow, y + image.Height - img.Height + overlayOverflow);
+					}
+					if (overlayBottomRight != null && overlayBottomRight != NullImage) {
+						var img = selected ? overlayBottomRight.WithStyles ("sel") : overlayBottomRight;
+						ctx.DrawImage (widget, img, x + image.Width - img.Width + overlayOverflow, y + image.Height - img.Height + overlayOverflow);
+					}
+					if (overlayTopLeft != null && overlayTopLeft != NullImage) {
+						var img = selected ? overlayTopLeft.WithStyles ("sel") : overlayTopLeft;
+						ctx.DrawImage (widget, img, x - overlayOverflow, y - overlayOverflow);
+					}
+					if (overlayTopRight != null && overlayTopRight != NullImage) {
+						var img = selected ? overlayTopRight.WithStyles ("sel") : overlayTopRight;
+						ctx.DrawImage (widget, img, x + image.Width - img.Width + overlayOverflow, y - overlayOverflow);
+					}
 				}
 			}
 		}
