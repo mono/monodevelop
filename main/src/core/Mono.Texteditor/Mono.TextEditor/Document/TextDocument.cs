@@ -969,7 +969,7 @@ namespace Mono.TextEditor
 		internal void BeginAtomicUndo (OperationType operationType = OperationType.Undefined)
 		{
 			currentAtomicUndoOperationType.Push (operationType);
-			if (currentAtomicOperation == null) {
+ 			if (currentAtomicOperation == null) {
 				Debug.Assert (atomicUndoLevel == 0); 
 				currentAtomicOperation = new AtomicUndoOperation (operationType);
 				OnBeginUndo ();

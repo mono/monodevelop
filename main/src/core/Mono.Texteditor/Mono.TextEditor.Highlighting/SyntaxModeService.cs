@@ -65,19 +65,20 @@ namespace Mono.TextEditor.Highlighting
 				syntaxModeLookup.Remove (mimeType);
 			syntaxModes[mimeType] = modeProvider;
 		}
-		
+
+
 		public static ColorScheme GetColorStyle (string name)
 		{
-			if (styles.ContainsKey (name)) {
-				return styles [name];
-			}
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
-				return GetColorStyle (name);
 			}
-			return GetColorStyle (TextEditorOptions.DefaultColorStyle);
+			if (!styles.ContainsKey (name))
+				name = TextEditorOptions.DefaultColorStyle;
+			if (!styles.ContainsKey (name))
+				return null;
+			return styles [name];
 		}
-		
+
 		public static IStreamProvider GetProvider (SyntaxMode mode)
 		{
 			foreach (string mimeType in mode.MimeType.Split (';')) {
