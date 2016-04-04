@@ -6,9 +6,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>MonoDevelop.FSharp.Shared</RootNamespace>
-    <AssemblyName>MonoDevelop.FSharp.Shared</AssemblyName>
+    <RootNamespace>MonoDevelop.Sharp.Shared</RootNamespace>
+    <AssemblyName>MonoDevelop.Sharp.Shared</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,10 +30,11 @@
     <GenerateTailCalls>true</GenerateTailCalls>
     <PlatformTarget></PlatformTarget>
   </PropertyGroup>
-  <Import Project="..\.paket\paket.targets" />
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion)">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -50,7 +52,14 @@
     <Compile Include="Completions.fs" />
     <None Include="paket.references" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <PropertyGroup>
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(FSharpTargetsPath)" />
+  <Import Project="..\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0')">
       <ItemGroup>
