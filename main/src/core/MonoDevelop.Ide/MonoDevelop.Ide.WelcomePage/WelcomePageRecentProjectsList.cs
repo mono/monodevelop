@@ -95,8 +95,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			//TODO: pinned files
 			foreach (var recent in DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
 				var filename = recent.FileName;
-				if (!System.IO.File.Exists (filename))
-					continue;
 
 				var accessed = recent.TimeStamp;
 				var pixbuf = ImageService.GetIcon (GetIcon (filename), IconSize.Dnd);
