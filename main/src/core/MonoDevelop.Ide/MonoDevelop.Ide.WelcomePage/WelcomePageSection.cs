@@ -150,8 +150,12 @@ namespace MonoDevelop.Ide.WelcomePage
 					// Possible other solution would be to check the recent projects list on focus in
 					// and update them accordingly.
 					if (!System.IO.File.Exists (file)) {
-						MessageService.ShowError (GettextCatalog.GetString ("File not found {0}", file));
-						FileService.NotifyFileRemoved (file);
+						var res = MessageService.AskQuestion (
+							GettextCatalog.GetString ("{0} could not be opened", file),
+							GettextCatalog.GetString ("Do you want to remove the reference to it from the Recent list?"),
+							AlertButton.No, AlertButton.Yes);
+						if (res == AlertButton.Yes)
+							FileService.NotifyFileRemoved (file);
 						return;
 					}
 
