@@ -6,8 +6,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>MonoDevelop.Sharp.Shared</RootNamespace>
-    <AssemblyName>MonoDevelop.Sharp.Shared</AssemblyName>
+    <RootNamespace>MonoDevelop.FSharp.Shared</RootNamespace>
+    <AssemblyName>MonoDevelop.FSharp.Shared</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
   </PropertyGroup>
