@@ -71,7 +71,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void AttachToolbarEvents (SearchBar bar)
 		{
 			bar.Changed += (o, e) => {
-				bar.LogMessage("Text changed");
 				if (SearchEntryChanged != null)
 					SearchEntryChanged (o, e);
 			};
@@ -267,7 +266,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public string SearchCategory {
 			set {
 				var entry = searchEntry;
-				entry.LogMessage ("Selecting text '${value}'");
 				entry.SelectText (entry);
 				entry.StringValue = value;
 				entry.CurrentEditor.SelectedRange = new Foundation.NSRange (value.Length, 0);
@@ -279,7 +277,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return searchEntry.StringValue;
 			}
 			set {
-				searchEntry.LogMessage ($"Setting text to '{value}'");
 				searchEntry.StringValue = value;
 			}
 		}
