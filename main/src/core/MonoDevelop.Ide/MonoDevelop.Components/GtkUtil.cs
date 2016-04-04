@@ -564,8 +564,15 @@ namespace MonoDevelop.Components
 			#if MAC
 			var entries = window.FindAllChildWidgets ().OfType<Gtk.Entry> ();
 			foreach (var entry in entries) {
-				entry.ButtonPressEvent += EntryButtonPressHandler;
+				entry.UseNativeContextMenus ();
 			}
+			#endif
+		}
+
+		public static void UseNativeContextMenus (this Gtk.Entry entry)
+		{
+			#if MAC
+			entry.ButtonPressEvent += EntryButtonPressHandler;
 			#endif
 		}
 
