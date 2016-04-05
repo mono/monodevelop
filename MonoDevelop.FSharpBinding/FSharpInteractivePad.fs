@@ -266,6 +266,11 @@ type FSharpInteractivePad() =
         session 
         |> Option.iter(fun ses -> ses.SendTooltipRequest symbol)
 
+    member x.RequestParameterHint lineStr column =
+        session 
+        |> Option.iter(fun ses ->
+            ses.SendParameterHintRequest lineStr (column + 1))
+
     member x.ProcessCommandHistoryUp () =
         if commandHistoryPast.Count > 0 then
             if commandHistoryFuture.Count = 0 then

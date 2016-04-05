@@ -38,7 +38,7 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
         |> ResizeArray.ofList :> _
 
     override x.CreateTooltipInformation (_smartWrap, cancel) =
-        Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol true, cancellationToken = cancel)
+        Async.StartAsTask(SymbolTooltips.getTooltipInformation symbol, cancellationToken = cancel)
     
     type SimpleCategory(text) =
         inherit CompletionCategory(text, null)
@@ -525,48 +525,71 @@ type FSharpParameterHintingData (symbol:FSharpSymbolUse) =
         async {
             match symbol with
             | MemberFunctionOrValue _f ->
-                let tooltipInfo = SymbolTooltips.getParameterTooltipInformation symbol paramIndex
+                let tooltipInfo = MonoDevelop.FSharp.SymbolTooltips.getParameterTooltipInformation symbol paramIndex
                 return tooltipInfo
             | symbol ->
                 LoggingService.LogDebug(sprintf "FSharpParameterHintingData - CreateTooltipInformation could not create tooltip for %A" symbol.Symbol)
                 return null }
 
     override x.ParameterCount =
-        match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm ->
-            let cpg = fsm.CurriedParameterGroups
-            cpg.[0].Count
-        | _ -> 0
+        MonoDevelop.FSharp.Shared.ParameterHinting.parameterCount symbol.Symbol
 
     override x.IsParameterListAllowed =
-        match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm 
-            when fsm.CurriedParameterGroups.Count > 0 ->
-                //TODO: How do we handle non tupled arguments?
-                let group = fsm.CurriedParameterGroups.[0] 
-                if group.Count > 0 then
-                    let last = group |> Seq.last
-                    last.IsParamArrayArg
-                else
-                    false
-        | _ -> false
+        MonoDevelop.FSharp.Shared.ParameterHinting.isParameterListAllowed symbol.Symbol
 
     override x.GetParameterName i =
-        match symbol.Symbol with
-        | :? FSharpMemberOrFunctionOrValue as fsm 
-            when fsm.CurriedParameterGroups.Count > 0 &&
-                 fsm.CurriedParameterGroups.[0].Count > 0 ->
-                //TODO: How do we handle non tupled arguments?
-                let group = fsm.CurriedParameterGroups.[0]
-                let param = group.[i]
-                match param.Name with
-                | Some n -> n
-                | None -> param.DisplayName
-        | _ -> ""
+        MonoDevelop.FSharp.Shared.ParameterHinting.getParameterName symbol.Symbol i
 
     /// Returns the markup to use to represent the method overload in the parameter information window.
     override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
         Async.StartAsTask(getTooltipInformation symbol (Math.Max(paramIndex, 0)), cancellationToken = cancel)
+
+type FsiParameterHintingData (tooltip:MonoDevelop.FSharp.Shared.ParameterTooltip) =
+    inherit ParameterHintingData (null)
+
+    override x.ParameterCount =
+       match tooltip with
+       | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (_, _, parameters) -> parameters.Length
+       | _ -> 0
+
+    override x.IsParameterListAllowed =
+        match tooltip with
+        | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (_, _, parameters) -> parameters.Length > 0
+        | _ -> false
+
+    override x.GetParameterName i =
+        match tooltip with
+        | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (_, _, parameters) -> parameters.[i]
+        | _ -> null
+
+    /// Returns the markup to use to represent the method overload in the parameter information window.
+    override x.CreateTooltipInformation (_editor, _context, paramIndex: int, _smartWrap:bool, cancel) =
+        let computation =
+            async {
+                match tooltip with
+                | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (signature, doc, parameters) -> 
+                    let signature, parameterName = 
+                        if paramIndex = -1 then
+                            Highlight.syntaxHighlight signature, null
+                        else
+                            let paramName = parameters.[paramIndex]
+                            let lines =
+                                String.getLines signature
+                                |> Array.mapi (fun i line -> 
+                                                if i = paramIndex + 1 then
+                                                    let regex = new System.Text.RegularExpressions.Regex(paramName)
+                                                    regex.Replace(line, sprintf "_STARTUNDERLINE_%s_ENDUNDERLINE_" paramName, 1)
+                                                else
+                                                    line)
+                            let signature = Highlight.syntaxHighlight (String.concat "\n" lines)
+                            let signature = signature.Replace("_STARTUNDERLINE_", "<u>").Replace("_ENDUNDERLINE_", "</u>")
+                                             
+                            signature, parameters.[paramIndex]
+                    
+                    return SymbolTooltips.getTooltipInformationFromSignature doc signature parameterName
+                | _ -> return TooltipInformation()
+            }
+        Async.StartAsTask(computation, cancellationToken = cancel)
 
 module ParameterHinting =
 
@@ -580,7 +603,6 @@ module ParameterHinting =
         try
             let docText = editor.Text
             let offset = context.TriggerOffset
-
             // Parse backwards, skipping (...) and { ... } and [ ... ] to determine the parameter index.
             // This is an approximation.
             let startOffset =
@@ -598,6 +620,26 @@ module ParameterHinting =
             else
             LoggingService.LogDebug("FSharpTextEditorCompletion - HandleParameterCompletionAsync: Getting Parameter Info, startOffset = {0}", startOffset)
 
+            if documentContext :? FsiDocumentContext then
+            
+                match FSharpInteractivePad.Fsi with
+                | Some pad ->
+                    match pad.Session with
+                    | Some session ->
+                        let _line, col, lineStr = editor.GetLineInfoFromOffset (startOffset)
+                        pad.RequestParameterHint lineStr col
+                        let tooltips = 
+                            Async.AwaitEvent (session.ParameterHintReceived)
+                            |> Async.RunSynchronously
+
+                        let hintingData =
+                            tooltips
+                            |> List.map (fun meth -> FsiParameterHintingData (meth) :> ParameterHintingData)
+                            |> ResizeArray.ofList
+                        return ParameterHintingResult(hintingData, startOffset)
+                    | _ -> return ParameterHintingResult.Empty
+                | _ -> return ParameterHintingResult.Empty
+            else
             let filename = documentContext.Name
 
             // Try to get typed result - within the specified timeout

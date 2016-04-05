@@ -2,7 +2,6 @@
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
-open MonoDevelop.FSharp
 
 type CompletionData = {
     displayText: string
@@ -137,4 +136,27 @@ module Completion =
                     | None -> EmptyTip
                 | None ->
                     EmptyTip
+        }
+
+    let getParameterHints (fsiSession: FsiEvaluationSession, input:string, column: int) =
+        async {
+            let _parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
+
+            let lineToCaret = input.[0..column-1]
+            let column = lineToCaret |> Seq.tryFindIndexBack (fun c -> c <> '(' && c <> ' ')
+            match column with
+            | Some col ->
+                match Parsing.findIdents (col-1) lineToCaret SymbolLookupKind.ByLongIdent with
+                | None -> return []
+                | Some(colu, identIsland) ->
+                    let! symbols = 
+                        checkResults.GetMethodsAsSymbols(1, colu, lineToCaret, identIsland)
+
+                    match symbols with
+                    | Some symbols' when symbols'.Length > 0 ->
+                        return
+                            symbols'
+                            |> List.map ParameterHinting.getTooltipInformation
+                    | _ -> return []
+            | _ -> return []
         }

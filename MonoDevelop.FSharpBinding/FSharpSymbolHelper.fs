@@ -877,14 +877,8 @@ module SymbolTooltips =
     let getTooltipInformationFromTip tip =
       async {
             try
-            //match tip  with
-            //| Some (signature, xmldoc, footer) ->
                 let signature, xmldoc, footer = tip
-                let signature = 
-                    //if highlight then
-                    syntaxHighlight signature
-                    //else
-                    //    signature
+                let signature = syntaxHighlight signature
                 let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
                 let result =
                   match xmldoc with
@@ -900,46 +894,44 @@ module SymbolTooltips =
                       toolTipInfo
                   | EmptyDoc -> toolTipInfo
                 return result
-            //| _ -> return TooltipInformation()
             with ex ->
                 LoggingService.LogError ("F# Tooltip error", ex)
                 return TooltipInformation() }
 
-    let getTooltipInformation symbol highlight =
+    let getTooltipInformation symbol =
         async {
             let tip = getTooltipFromSymbolUse symbol
             match tip with
             | Some tip' -> return! getTooltipInformationFromTip tip'
             | _ -> return TooltipInformation()
         }
-          //try
-          //  let tip = getTooltipFromSymbolUse symbol
-          //  match tip  with
-          //  | Some (signature, xmldoc, footer) ->
-          //      let signature = 
-          //          if highlight then
-          //              syntaxHighlight signature
-          //          else
-          //              signature
-          //      let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
-          //      let result =
-          //        match xmldoc with
-          //        | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
-          //                           toolTipInfo
-          //        | Lookup(key, potentialFilename) ->
-          //            let summary =
-          //              maybe { let! filename = potentialFilename
-          //                      let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-          //                      let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-          //                      return summary }
-          //            summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
-          //            toolTipInfo
-          //        | EmptyDoc -> toolTipInfo
-          //      return result
-          //  | _ -> return TooltipInformation()
-          //with ex ->
-          //    LoggingService.LogError ("F# Tooltip error", ex)
-          //    return TooltipInformation() }
+
+    let getTooltipInformationFromSignature summary signature parameterName =
+        let summary, parameterInfo =
+            match summary with
+            | Full(summary) ->
+              let parameterMarkup =
+                match TooltipsXml.getParameterTip Styles.simpleMarkup summary parameterName with
+                | Some p -> parameterName ++ ":" ++ p
+                | None -> ""
+              summary, parameterMarkup
+            | Lookup(key, filename) ->
+                let summaryAndparameterInfo =
+                  maybe { let! filename = filename
+                          let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
+                          let parameterMarkup =
+                              match TooltipsXml.getParameterTip Styles.simpleMarkup markup parameterName with
+                              | Some p -> parameterName ++ ":" ++ p
+                              | None -> ""
+                          let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
+                          return (summary, parameterMarkup) }
+
+                summaryAndparameterInfo |> Option.getOrElse (fun () -> "", "")
+            | EmptyDoc -> "", ""
+        let toolTipInfo = TooltipInformation(SignatureMarkup = signature, SummaryMarkup=summary)
+        if not (String.isNullOrEmpty parameterInfo) then
+            toolTipInfo.AddCategory("Parameter", parameterInfo)
+        toolTipInfo
 
     let getParameterTooltipInformation symbol parameterIndex =
         match symbol with
@@ -956,29 +948,5 @@ module SymbolTooltips =
           let signature = signature.Replace("_STARTUNDERLINE_", "<u>").Replace("_ENDUNDERLINE_", "</u>")
           let summary = getSummaryFromSymbol m
 
-          let summary, parameterInfo =
-              match summary with
-              | Full(summary) ->
-                let parameterMarkup =
-                  match TooltipsXml.getParameterTip Styles.simpleMarkup summary parameterName with
-                  | Some p -> parameterName ++ ":" ++ p
-                  | None -> ""
-                summary, parameterMarkup
-              | Lookup(key, filename) ->
-                  let summaryAndparameterInfo =
-                    maybe { let! filename = filename
-                            let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-                            let parameterMarkup =
-                                match TooltipsXml.getParameterTip Styles.simpleMarkup markup parameterName with
-                                | Some p -> parameterName ++ ":" ++ p
-                                | None -> ""
-                            let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-                            return (summary, parameterMarkup) }
-
-                  summaryAndparameterInfo |> Option.getOrElse (fun () -> "", "")
-              | EmptyDoc -> "", ""
-          let toolTipInfo = TooltipInformation(SignatureMarkup = signature, SummaryMarkup=summary)
-          if not (String.isNullOrEmpty parameterInfo) then
-              toolTipInfo.AddCategory("Parameter", parameterInfo)
-          toolTipInfo
+          getTooltipInformationFromSignature summary signature parameterName
         | _ -> TooltipInformation()

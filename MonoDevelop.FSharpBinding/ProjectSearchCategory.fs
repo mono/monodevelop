@@ -176,7 +176,7 @@ type SymbolSearchResult(match', matchedString, rank, symbol:FSharpSymbolUse) =
         | _ -> getImage Stock.Event.Name
 
     override x.GetTooltipInformation(_token) = 
-        SymbolTooltips.getTooltipInformation symbol true |> Async.StartAsTask
+        SymbolTooltips.getTooltipInformation symbol |> Async.StartAsTask
         
     override x.Offset = fst (offsetAndLength.Force())
     override x.Length = snd (offsetAndLength.Force())
