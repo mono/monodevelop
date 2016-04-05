@@ -117,7 +117,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "PackagingProject" resource = "PackagingProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.PackagingProject" resource = "PackagingProject.xpt.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
