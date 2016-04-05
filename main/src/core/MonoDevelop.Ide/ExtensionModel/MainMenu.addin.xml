@@ -282,8 +282,6 @@
 			<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />
 			<LinkItem id = "Mono" _label = "Mono Project" description = "A free .NET implementation effort, worth visiting" link = "http://www.mono-project.com" />
 			<ItemSet id = "C#" _label = "C#">
-				<LinkItem id = "C# Help" _label = "C# Help" link = "http://www.csharphelp.com" />
-				<LinkItem id = "C# Corner" _label = "C# Corner" link = "http://www.c-sharpcorner.com" />
 				<LinkItem id = "CodePlex" _label = "CodePlex" description = "Open Source Project Community." link = "http://www.codeplex.com" />
 				<LinkItem id = "MsCodeGallery" _label = "MSDN Code Gallery" description = "Download and share sample applications, code snippets, and other resources with the developer community." link = "http://code.msdn.microsoft.com" />
 			</ItemSet>
