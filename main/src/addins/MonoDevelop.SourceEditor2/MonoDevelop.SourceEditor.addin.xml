@@ -152,10 +152,11 @@
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">
 		<ItemSet id = "Inspect" _label = "Inspect" insertafter="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" insertbefore="Separator3">
-			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" />
-			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" />
-			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" />
 			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" />
+			<SeparatorItem id = "InspectIssueSeparator" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" />
+			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" />
 		</ItemSet>
 	</Extension>
 
