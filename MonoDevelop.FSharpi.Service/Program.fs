@@ -12,9 +12,6 @@ module CompletionServer =
     let main argv =
         let inStream = Console.In
         let outStream = Console.Out
-
-
-
         let server = "MonoDevelop" + Guid.NewGuid().ToString("n")
 
         // This flag makes fsi send the SERVER-PROMPT> prompt
@@ -42,6 +39,22 @@ module CompletionServer =
         let (|Completion|_|) (command: string) =
             if command.StartsWith("completion ") then
                 let input = command.[11..]
+                let splitIndex = input.IndexOf(" ")
+                if (splitIndex = -1) then
+                    None
+                else
+                    let colStr = input.[0..splitIndex]
+                    let success, col = Int32.TryParse colStr
+                    if success then
+                        Some (col, input.[splitIndex..])
+                    else
+                        None
+            else
+                None
+
+        let (|ParameterHints|_|) (command: string) =
+            if command.StartsWith("parameter-hints ") then
+                let input = command.[16..]
                 let splitIndex = input.IndexOf(" ")
                 if (splitIndex = -1) then
                     None
@@ -97,6 +110,11 @@ module CompletionServer =
                         let col, lineStr = context
                         let! results = Completion.getCompletions(fsiSession, lineStr, col)
                         do! writeData "completion" results
+                        return currentInput
+                    | ParameterHints context ->
+                        let col, lineStr = context
+                        let! results = Completion.getParameterHints(fsiSession, lineStr, col)
+                        do! writeData "parameter-hints" results
                         return currentInput
                     | _ -> do! writeOutput (sprintf "Could not parse command - %s" command)
                            return currentInput

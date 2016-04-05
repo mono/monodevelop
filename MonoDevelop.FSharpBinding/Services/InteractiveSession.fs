@@ -32,6 +32,13 @@ type InteractiveSession() =
         else
             None
 
+    let (|ParameterHints|_|) (command: string) =
+        if command.StartsWith("parameter-hints ") then
+            let payload = command.[16..]
+            Some (JsonConvert.DeserializeObject<MonoDevelop.FSharp.Shared.ParameterTooltip list> payload)
+        else
+            None
+
     let path = "\"" + Path.Combine(Reflection.Assembly.GetExecutingAssembly().Location |> Path.GetDirectoryName, "MonoDevelop.FSharpInteractive.Service.exe") + "\""
     let mutable waitingForResponse = false
 
@@ -67,6 +74,7 @@ type InteractiveSession() =
 
     let completionsReceivedEvent = new Event<CompletionData list>()
     let tooltipReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ToolTips>()
+    let parameterHintReceivedEvent = new Event<MonoDevelop.FSharp.Shared.ParameterTooltip list>()
     do
         fsiProcess.OutputDataReceived
           |> Event.filter (fun de -> de.Data <> null)
@@ -86,6 +94,8 @@ type InteractiveSession() =
                         completionsReceivedEvent.Trigger completions
                     | Tooltip tooltip ->
                         tooltipReceivedEvent.Trigger tooltip
+                    | ParameterHints hints ->
+                        parameterHintReceivedEvent.Trigger hints
                     | _ -> LoggingService.logDebug "[fsharpi] don't know how to process command %s" de.Data
                     
                 with 
@@ -100,6 +110,7 @@ type InteractiveSession() =
 
     member x.CompletionsReceived = completionsReceivedEvent.Publish
     member x.TooltipReceived = tooltipReceivedEvent.Publish
+    member x.ParameterHintReceived = parameterHintReceivedEvent.Publish
 
     member x.StartReceiving() =
         fsiProcess.BeginOutputReadLine()
@@ -129,6 +140,9 @@ type InteractiveSession() =
     
     member x.SendCompletionRequest input column =
         sendCommand (sprintf "completion %d %s" column input)
+
+    member x.SendParameterHintRequest input column =
+        sendCommand (sprintf "parameter-hints %d %s" column input)
 
     member x.SendTooltipRequest input  =
         sendCommand (sprintf "tooltip %s" input)

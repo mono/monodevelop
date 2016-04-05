@@ -4,12 +4,6 @@ open System.Collections.Generic
 open System.Text
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-//open Mono.TextEditor
-//open Mono.TextEditor.Highlighting
-//open MonoDevelop.Core
-//open MonoDevelop.Ide
-//open MonoDevelop.Ide.CodeCompletion
-//open MonoDevelop.Components
 open ExtCore.Control
 
 module Symbols =
@@ -22,88 +16,6 @@ module Symbols =
         [s.DeclarationLocation; s.SignatureLocation]
         |> List.choose id
         |> List.distinctBy (fun r -> r.FileName)
-
-    /////Given a column and line string returns the identifier portion of the string
-    //let lastIdent column lineString =
-    //    match Parsing.findIdents column lineString SymbolLookupKind.ByLongIdent with
-    //    | Some (_col, identIsland) -> Seq.last identIsland
-    //    | None -> ""
-
-    /////Returns a TextSegment that is trimmed to only include the identifier
-    //let getTextSegment (doc:Editor.TextEditor) (symbolUse:FSharpSymbolUse) column line =
-    //    let lastIdent = lastIdent column line
-    //    let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
-
-    //    let startOffset = doc.LocationToOffset(start.Line, start.Column+1)
-    //    let endOffset = doc.LocationToOffset(finish.Line, finish.Column+1)
-    //    MonoDevelop.Core.Text.TextSegment.FromBounds(startOffset, endOffset)
-
-    //let getEditorDataForFileName (fileName:string) =
-    //    match IdeApp.Workbench.GetDocument (fileName) with
-    //    | null ->
-    //        let doc = Editor.TextEditorFactory.LoadDocument (fileName)
-    //        let editor = new TextEditorData()
-    //        editor.Text <- doc.Text
-    //        editor
-    //    | doc -> doc.Editor.GetContent<ITextEditorDataProvider>().GetTextEditorData()
-
-    //let getOffsets (range:Range.range) (editor:Editor.IReadonlyTextDocument) =
-    //    let startOffset = editor.LocationToOffset (range.StartLine, range.StartColumn+1)
-    //    let endOffset = editor.LocationToOffset (range.EndLine, range.EndColumn+1)
-    //    startOffset, endOffset
-
-    //let getTextSpan (range:Range.range) (editor:Editor.IReadonlyTextDocument) =
-    //    let startOffset, endOffset = getOffsets range editor
-    //    Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
-
-    //let getTrimmedRangesForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
-    //    symbolUse
-    //    |> getLocationFromSymbolUse
-    //    |> Seq.map (fun range ->
-    //        let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
-    //        range.FileName, start, finish)
-
-    //let getTrimmedOffsetsForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
-    //    let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
-    //    trimmedSymbols
-    //    |> Seq.map (fun (fileName, start, finish) ->
-    //        let editor = getEditorDataForFileName fileName
-    //        let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
-    //        let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
-    //        //if startOffset < 0 then argOutOfRange "startOffset" "broken"
-    //        //if endOffset < 0  then argOutOfRange "endOffset" "broken"
-    //        fileName, startOffset, endOffset)
-
-    //let getTrimmedTextSpanForDeclarations lastIdent (symbolUse:FSharpSymbolUse) =
-    //    let trimmedSymbols = getTrimmedRangesForDeclarations lastIdent symbolUse
-    //    trimmedSymbols
-    //    |> Seq.map (fun (fileName, start, finish) ->
-    //        let editor = getEditorDataForFileName fileName
-    //        let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
-    //        let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
-    //        let ts = Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (startOffset, endOffset)
-    //        let ls = Microsoft.CodeAnalysis.Text.LinePositionSpan(Microsoft.CodeAnalysis.Text.LinePosition(start.Line, start.Column),
-    //                                                              Microsoft.CodeAnalysis.Text.LinePosition(finish.Line, finish.Column))
-    //        fileName, ts, ls)
-
-    //let getOffsetsTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
-    //    let filename = symbolUse.RangeAlternate.FileName
-    //    let editor = getEditorDataForFileName filename
-    //    let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
-    //    let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
-    //    let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
-    //    filename, startOffset, endOffset
-
-    //let getOffsetAndLength lastIdent (symbolUse:FSharpSymbolUse) =
-    //    let editor = getEditorDataForFileName symbolUse.RangeAlternate.FileName
-    //    let start, finish = Symbol.trimSymbolRegion symbolUse lastIdent
-    //    let startOffset = editor.LocationToOffset (start.Line, start.Column+1)
-    //    let endOffset = editor.LocationToOffset (finish.Line, finish.Column+1)
-    //    startOffset, endOffset - startOffset
-
-    //let getTextSpanTrimmed lastIdent (symbolUse:FSharpSymbolUse) =
-    //    let filename, start, finish = getOffsetsTrimmed lastIdent symbolUse
-    //    filename, Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (start, finish)
 
 [<AutoOpen>]
 module SymbolUse =
@@ -298,12 +210,17 @@ type XmlDoc =
   ///No xmldoc
 | EmptyDoc
 
+type ParameterTooltip =
+  ///A ToolTip of signature, summary
+  | ToolTip of signature:string * doc:XmlDoc * parameters: string list
+    ///A empty tip
+  | EmptyTip
+
 type ToolTips =
   ///A ToolTip of signature, summary
   | ToolTip of signature:string * doc:XmlDoc * footer:string
     ///A empty tip
   | EmptyTip
-
 
 [<AutoOpen>]
 module PrintParameter =
@@ -816,73 +733,4 @@ module SymbolTooltips =
           | None -> typ
 
       signature, getSummaryFromSymbol p
-
-    //let getTooltipInformation symbol highlight =
-    //  async {
-    //      try
-    //        let tip = getTooltipFromSymbolUse symbol
-    //        match tip  with
-    //        | Some (signature, xmldoc, footer) ->
-
-    //            let toolTipInfo = new TooltipInformation(SignatureMarkup = signature, FooterMarkup=footer)
-    //            let result =
-    //              match xmldoc with
-    //              | Full(summary) -> toolTipInfo.SummaryMarkup <- summary
-    //                                 toolTipInfo
-    //              | Lookup(key, potentialFilename) ->
-    //                  let summary =
-    //                    maybe { let! filename = potentialFilename
-    //                            let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-    //                            let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-    //                            return summary }
-    //                  summary |> Option.iter (fun summary -> toolTipInfo.SummaryMarkup <- summary)
-    //                  toolTipInfo
-    //              | EmptyDoc -> toolTipInfo
-    //            return result
-    //        | _ -> return TooltipInformation()
-    //      with ex ->
-    //          LoggingService.LogError ("F# Tooltip error", ex)
-    //          return TooltipInformation() }
-
-    //let getParameterTooltipInformation symbol parameterIndex =
-    //    match symbol with
-    //    | MemberFunctionOrValue m ->
-    //      let parameterName =
-    //        match m.CurriedParameterGroups |> Seq.toList with
-    //        | [single] when parameterIndex < single.Count ->
-    //            let param = single.[parameterIndex]
-    //            match param.Name with
-    //            | Some n -> n
-    //            | _ -> param.DisplayName
-    //        | _ -> ""
-    //      let signature = getFuncSignatureWithFormat symbol.DisplayContext m {Indent=3;Highlight=Some(parameterName)}
-    //      //let signature = signature.Replace("_STARTUNDERLINE_", "<u>").Replace("_ENDUNDERLINE_", "</u>")
-    //      let summary = getSummaryFromSymbol m
-
-    //      let summary, parameterInfo =
-    //          match summary with
-    //          | Full(summary) ->
-    //            let parameterMarkup =
-    //              match TooltipsXml.getParameterTip Styles.simpleMarkup summary parameterName with
-    //              | Some p -> parameterName ++ ":" ++ p
-    //              | None -> ""
-    //            summary, parameterMarkup
-    //          | Lookup(key, filename) ->
-    //              let summaryAndparameterInfo =
-    //                maybe { let! filename = filename
-    //                        let! markup = TooltipXmlDoc.findDocForEntity(filename, key)
-    //                        let parameterMarkup =
-    //                            match TooltipsXml.getParameterTip Styles.simpleMarkup markup parameterName with
-    //                            | Some p -> parameterName ++ ":" ++ p
-    //                            | None -> ""
-    //                        let summary = TooltipsXml.getTooltipSummary Styles.simpleMarkup markup
-    //                        return (summary, parameterMarkup) }
-
-    //              summaryAndparameterInfo |> Option.getOrElse (fun () -> "", "")
-    //          | EmptyDoc -> "", ""
-    //      let toolTipInfo = TooltipInformation(SignatureMarkup = signature, SummaryMarkup=summary)
-    //      if not (String.isNullOrEmpty parameterInfo) then
-    //          toolTipInfo.AddCategory("Parameter", parameterInfo)
-    //      toolTipInfo
-    //    | _ -> TooltipInformation()
 

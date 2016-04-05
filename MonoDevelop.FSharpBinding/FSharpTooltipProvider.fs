@@ -66,14 +66,11 @@ type FSharpTooltipProvider() =
                             languageService.GetTypedParseResultIfAvailable (projectFile, file, source, AllowStaleResults.MatchingSource)
                             |> Choice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
                         let! symbol = parseAndCheckResults.GetSymbolAtLocation(line, col, lineStr) |> AsyncChoice.ofOptionWith "TooltipProvider: ParseAndCheckResults not found"
-                        let! tip = SymbolTooltips.getTooltipFromSymbolUse symbol
-                                   |> Choice.ofOptionWith (sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^"))
-                      
-                        let highlightedTip = 
-                            match tip with
-                            | (signature, xmldoc, footer) ->
-                                syntaxHighlight signature, xmldoc, footer
-                            | _ -> tip
+                        let! signature, xmldoc, footer = 
+                            SymbolTooltips.getTooltipFromSymbolUse symbol
+                            |> Choice.ofOptionWith (sprintf "TooltipProvider: TootipText not returned\n   %s\n   %s" lineStr (String.replicate col "-" + "^"))
+                        
+                        let highlightedTip = syntaxHighlight signature, xmldoc, footer
 
                         //get the TextSegment the the symbols range occupies
                         let textSeg = Symbols.getTextSegment editor symbol col lineStr
