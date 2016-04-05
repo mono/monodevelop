@@ -88,7 +88,7 @@ module CompletionServer =
                     | Input input ->
                         if input.EndsWith(";;") then
                             try
-                                let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + input)
+                                let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + "\n" + input)
                                 match result with
                                 | Choice1Of2 () -> ()
                                 | Choice2Of2 exn -> do! writeOutput (exn |> string)
