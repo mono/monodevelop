@@ -390,6 +390,16 @@ type FSharpInteractivePad() =
         ctx.Editor <- editor
         let toolbar = container.GetToolbar(DockPositionType.Right)
 
+        let buttonClear = new DockToolButton("gtk-save")
+        buttonClear.Clicked.Add(fun _ -> editor.Text <- "")
+        buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
+        toolbar.Add(buttonClear)
+
+        let buttonRestart = new DockToolButton("gtk-open")
+        buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
+        buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
+        toolbar.Add(buttonRestart)
+
         let buttonClear = new DockToolButton("gtk-clear")
         buttonClear.Clicked.Add(fun _ -> editor.Text <- "")
         buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
