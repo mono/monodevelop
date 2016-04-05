@@ -22,8 +22,8 @@
 		<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.FindDerivedClasses" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/MainMenu/View">
-		<CommandItem id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser" insertbefore="ViewSeparator3" />
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
+		<CommandItem id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser" insertafter="ToolsSection" />
 	</Extension>
 
 </ExtensionModel>
