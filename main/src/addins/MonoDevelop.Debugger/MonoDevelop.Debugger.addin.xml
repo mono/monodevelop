@@ -190,10 +190,6 @@
 		</Category>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/MainMenu/View">
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowDisassembly" insertafter="MonoDevelop.Ide.Commands.ViewCommands.ViewList"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Run">
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Debug" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Run"/>
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.Pause" insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Stop"/>
@@ -217,6 +213,7 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
 		<SeparatorItem id = "MonoDevelop.Debugger.ToolsSection" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowDisassembly"/>
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
 	</Extension>
 
