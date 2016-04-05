@@ -138,7 +138,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 		<SeparatorItem id = "ViewItemsSeparator4" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 	
 	</ItemSet>
@@ -266,7 +265,8 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenWindowList" />
 		<SeparatorItem id = "windowDocSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList" />
-		<SeparatorItem id = "docMinimizeSep" />
+		<SeparatorItem id = "welcomePageSep" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 	</ItemSet> 
 
 	<ItemSet id = "Help" _label = "_Help">
