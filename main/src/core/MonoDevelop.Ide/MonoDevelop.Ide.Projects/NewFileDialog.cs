@@ -493,7 +493,7 @@ namespace MonoDevelop.Ide.Projects
 						return;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error creating file", ex);
-					MessageService.ShowException (ex);
+					MessageService.ShowError ("Error creating file", ex);
 					return;
 				}
 
