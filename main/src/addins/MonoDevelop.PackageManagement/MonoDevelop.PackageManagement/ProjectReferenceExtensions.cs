@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.IO;
@@ -34,23 +33,31 @@ namespace MonoDevelop.PackageManagement
 {
 	internal static class ProjectReferenceExtensions
 	{
-		public static bool IsReferenceFromPackage (this ProjectReference projectReference)
+		public static bool IsReferenceFromPackage (this ProjectReference projectReference, FilePath packagesFilePath)
 		{
 			if (!projectReference.IsAssemblyReference ())
 				return false;
 
 			var project = projectReference.OwnerProject as DotNetProject;
-			if ((project == null) || !project.HasPackages ())
+			if (project == null)
 				return false;
 
 			var assemblyFilePath = new FilePath (projectReference.GetFullAssemblyPath ());
 			if (assemblyFilePath.IsNullOrEmpty)
 				return false;
 
-			var packagesPath = new SolutionPackageRepositoryPath (project);
-			var packagesFilePath = new FilePath (packagesPath.PackageRepositoryPath);
-
 			return assemblyFilePath.IsChildPathOf (packagesFilePath);
+		}
+
+		// TODO: packages path is not configurable.
+		public static bool IsReferenceFromPackage (this ProjectReference projectReference)
+		{
+			FilePath? solutionDirectory = projectReference.OwnerProject?.ParentSolution?.BaseDirectory;
+			if (solutionDirectory != null) {
+				string packagesFolderPath = solutionDirectory.Value.Combine ("packages");
+				return projectReference.IsReferenceFromPackage (packagesFolderPath);
+			}
+			return false;
 		}
 
 		static bool IsAssemblyReference (this ProjectReference reference)

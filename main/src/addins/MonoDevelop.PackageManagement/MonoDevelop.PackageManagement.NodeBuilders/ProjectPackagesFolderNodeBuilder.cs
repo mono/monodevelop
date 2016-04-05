@@ -43,7 +43,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "Packages";
+			return ProjectPackagesFolderNode.NodeName;
 		}
 
 		public override Type CommandHandlerType {
@@ -124,6 +124,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			var projectPackagesNode = (ProjectPackagesFolderNode)sender;
 			ITreeBuilder builder = Context.GetTreeBuilder (projectPackagesNode);
 			if (builder != null) {
+				builder.UpdateAll ();
+				builder.MoveToParent ();
+			}
+
+			if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
 				builder.UpdateAll ();
 			}
 		}

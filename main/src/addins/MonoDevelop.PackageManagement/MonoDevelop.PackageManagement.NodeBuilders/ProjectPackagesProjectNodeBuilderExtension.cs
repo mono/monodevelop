@@ -82,12 +82,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder (project);
 			if (builder != null) {
-				if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
-					builder.UpdateAll ();
-					builder.MoveToParent ();
-				}
-
-				if (builder.MoveToChild ("Packages", typeof (ProjectPackagesFolderNode))) {
+				if (builder.MoveToChild (ProjectPackagesFolderNode.NodeName, typeof (ProjectPackagesFolderNode))) {
 					var packagesFolder = (ProjectPackagesFolderNode)builder.DataItem;
 					packagesFolder.RefreshPackages ();
 					builder.MoveToParent ();

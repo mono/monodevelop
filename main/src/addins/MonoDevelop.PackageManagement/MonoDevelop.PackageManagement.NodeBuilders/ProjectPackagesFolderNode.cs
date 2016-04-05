@@ -46,7 +46,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		FolderNuGetProject folder;
 		IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		List<PackageReference> packageReferences = new List<PackageReference> ();
+
 		CancellationTokenSource cancellationTokenSource;
+
+		public static readonly string NodeName = "Packages";
 
 		public ProjectPackagesFolderNode (DotNetProject project)
 			: this (new DotNetProjectProxy (project), PackageManagementServices.UpdatedPackagesInWorkspace)
@@ -80,7 +83,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			var settings = Settings.LoadDefaultSettings (null, null, null);
 			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionDirectory, settings);
 			folder = new FolderNuGetProject (path);
+
+			PackagesFolderPath = new FilePath (path);
 		}
+
+		public FilePath PackagesFolderPath { get; private set; }
 
 		public DotNetProject DotNetProject {
 			get { return project.DotNetProject; }
@@ -132,6 +139,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				.GetUpdatedPackages (project)
 				.GetPackages ()
 				.Count ();
+		}
+
+		public bool AnyPackageReferences ()
+		{
+			return packageReferences.Any ();
 		}
 
 		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
