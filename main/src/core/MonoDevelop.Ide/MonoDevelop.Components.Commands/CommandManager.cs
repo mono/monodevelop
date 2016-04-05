@@ -2249,7 +2249,7 @@ namespace MonoDevelop.Components.Commands
 				customHandlerChain.CommandUpdate (cmdTarget, info);
 				var time = DateTime.Now - t;
 				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
-					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, CustomUpdater:{2}", (int)time.TotalMilliseconds, CommandId, customHandlerChain);
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, CustomUpdater:{2}, CommandTargetType:{3}", (int)time.TotalMilliseconds, CommandId, customHandlerChain, cmdTarget.GetType ());
 			} else {
 				if (Method == null)
 					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandUpdateHandler was expected.");
@@ -2262,7 +2262,7 @@ namespace MonoDevelop.Components.Commands
 
 				var time = DateTime.Now - t;
 				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
-					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name);
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			}
 		}
 		
@@ -2283,7 +2283,7 @@ namespace MonoDevelop.Components.Commands
 				
 				var time = DateTime.Now - t;
 				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
-					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name);
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			}
 		}
 	}
