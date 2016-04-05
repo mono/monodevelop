@@ -200,20 +200,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			PlaceholderAttributedString = MakePlaceholderString (PlaceholderText);
 		}
 
-		internal void LogMessage (string message)
-		{
-			if (!debugSearchbar)
-				return;
-
-			LoggingService.LogInfo (message);
-		}
-
 		void Initialize ()
 		{
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 
-				LogMessage ($"Lost focus from resign key: {other.DebugDescription}.");
 				if (notification.Object == Window) {
 					if (LostFocus != null)
 						LostFocus (this, null);
@@ -221,7 +212,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}));
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
-				LogMessage ($"Lost focus from resize: {other.DebugDescription}.");
 				if (notification.Object == Window) {
 					if (LostFocus != null)
 						LostFocus (this, null);
@@ -234,30 +224,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (KeyPressed != null)
 				KeyPressed (this, kargs);
 
-			LogMessage ($"KeyPressed with Handled {kargs.Handled}");
 			return kargs.Handled;
 		}
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
 			var popupHandled = SendKeyPressed (theEvent.ToXwtKeyEventArgs ());
-			LogMessage ($"Popup handled {popupHandled}");
 			if (popupHandled)
 				return true;
-			var baseHandled = base.PerformKeyEquivalent (theEvent);;
-			LogMessage ($"Base handled {baseHandled}");
-			LogMessage ($"First Reponder {NSApplication.SharedApplication?.KeyWindow?.FirstResponder}");
-			LogMessage ($"Refuses First Responder {RefusesFirstResponder}");
-			LogMessage ($"Editor chain {CurrentEditor}");
-			return baseHandled;
+			return base.PerformKeyEquivalent (theEvent);;
 		}
 
 		bool ignoreEndEditing = false;
 		public override void DidEndEditing (NSNotification notification)
 		{
 			base.DidEndEditing (notification);
-
-			LogMessage ("Did end editing");
 
 			if (ignoreEndEditing) {
 				ignoreEndEditing = false;
@@ -268,25 +249,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
 			if (value == (nint)(long)NSTextMovement.Tab) {
-				LogMessage ("Tab movement");
 				SelectText (this);
 				return;
 			}
 
 			if (value == (nint)(long)NSTextMovement.Return) {
-				LogMessage ("Activated by enter");
 				if (SelectionActivated != null)
 					SelectionActivated (this, null);
 				return;
 			}
 
-			LogMessage ($"Got NSTextMovement: {value}");
-
 			// This means we've reached a focus loss event.
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
 			if (replacedWith != this && LostFocus != null) {
-				if (replacedWith != null)
-					LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
 				LostFocus (this, null);
 			}
 		}
@@ -295,14 +270,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.ViewDidMoveToWindow ();
 
-			LogMessage ("View moved to parent window");
 			// Needs to be grabbed after it's parented.
 			gtkWidget = Components.Mac.GtkMacInterop.NSViewToGtkWidget (this);
 		}
 
 		public override bool BecomeFirstResponder ()
 		{
-			LogMessage ("Becoming first responder");
 			bool firstResponder = base.BecomeFirstResponder ();
 			if (firstResponder) {
 				ignoreEndEditing = true;
@@ -317,7 +290,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void Focus ()
 		{
-			LogMessage ("Focused");
 			Window.MakeFirstResponder (this);
 		}
 	}

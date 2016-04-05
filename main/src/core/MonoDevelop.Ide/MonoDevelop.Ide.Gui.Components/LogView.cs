@@ -217,16 +217,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			buffer.TagTable.Add (bold);
 			
 			errorTag = new TextTag ("error");
-			errorTag.Foreground = "#dc3122";
+			errorTag.Foreground = Styles.ErrorForegroundColor.ToHexString (false);
 			errorTag.Weight = Weight.Bold;
 			buffer.TagTable.Add (errorTag);
 
 			debugTag = new TextTag ("debug");
-			debugTag.Foreground = "#256ada";
+			debugTag.Foreground = Styles.InformationForegroundColor.ToHexString (false);
 			buffer.TagTable.Add (debugTag);
 
 			consoleLogTag = new TextTag ("consoleLog");
-			consoleLogTag.Foreground = "darkgrey";
+			consoleLogTag.Foreground = Styles.DimTextColor.ToHexString (false);
 			buffer.TagTable.Add (consoleLogTag);
 			
 			tag = new TextTag ("0");
