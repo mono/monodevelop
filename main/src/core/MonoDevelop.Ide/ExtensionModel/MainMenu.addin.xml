@@ -23,8 +23,20 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" />
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
-
 		<SeparatorItem id = "OpenSep" />
+
+		<ItemSet id = "RecentFiles" _label = "Recent _Files">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList" />
+			<SeparatorItem id = "RecentFilesSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" />
+		</ItemSet>
+		<ItemSet id = "RecentProjects" _label = "Recent Solu_tions">
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" />
+			<SeparatorItem id = "RecentProjectsSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects" />
+		</ItemSet>
+		<SeparatorItem id = "RecentSeparator" />
+
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Save" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAs" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll" />
@@ -33,18 +45,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument" />
-		<SeparatorItem id = "RecentSeparator" />
-		<ItemSet id = "RecentFiles" _label = "Recent _Files">
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList" />
-			<SeparatorItem id = "RecentFilesSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" />
-		</ItemSet>
-                
-		<ItemSet id = "RecentProjects" _label = "Recent Solu_tions">
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList" />
-			<SeparatorItem id = "RecentProjectsSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects" />
-		</ItemSet>
 		
 		<SeparatorItem id = "ExitSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace" />
