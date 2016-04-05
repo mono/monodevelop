@@ -1,10 +1,10 @@
 //
-// MyClass.cs
+// ProjectTemplateTests.cs
 //
 // Author:
-//       alan <>
+//       Alan McGovern <alan@xamarin.com>
 //
-// Copyright (c) 2013 alan
+// Copyright (c) 2016 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
-using System.Text;
 using UnitTests;
 using System.Linq;
 
@@ -37,9 +35,14 @@ namespace MonoDevelop.Ide
 	[TestFixture]
 	public class ProjectTemplateTests : TestBase
 	{
-		static IEnumerable<string> Templates {
+		public ProjectTemplateTests ()
+		{
+			Simulate ();
+		}
+
+		IEnumerable<string> Templates {
 			get {
-				return ProjectTemplate.ProjectTemplates.Select (t => $"[{ t.Category}] [{t.Id}] [{t.Name}] [{t.LanguageName}]");
+				return ProjectTemplate.ProjectTemplates.Select (t => t.Id);
 			}
 		}
 
@@ -47,24 +50,24 @@ namespace MonoDevelop.Ide
 		[TestCaseSource ("Templates")]
 		public void CreateEveryProjectTemplate (string tt)
 		{
-			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => $"[{ t.Category}] [{t.Id}] [{t.Name}] [{t.LanguageName}]" == tt);
-				if (template.Name.Contains ("Gtk#"))
-					return;
-					var dir = Util.CreateTmpDir (template.Id);
-					var cinfo = new ProjectCreateInformation {
-						ProjectBasePath = dir,
-						ProjectName = "ProjectName",
-						SolutionName = "SolutionName",
-						SolutionPath = dir
-					};
-					cinfo.Parameters ["CreateSharedAssetsProject"] = "False";
-					cinfo.Parameters ["UseUniversal"] = "True";
-					cinfo.Parameters ["UseIPad"] = "False";
-					cinfo.Parameters ["UseIPhone"] = "False";
-					cinfo.Parameters ["CreateiOSUITest"] = "False";
-					cinfo.Parameters ["CreateAndroidUITest"] = "False";
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == tt);
+			if (template.Name.Contains ("Gtk#"))
+				return;
+			var dir = Util.CreateTmpDir (template.Id);
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = dir,
+				ProjectName = "ProjectName",
+				SolutionName = "SolutionName",
+				SolutionPath = dir
+			};
+			cinfo.Parameters ["CreateSharedAssetsProject"] = "False";
+			cinfo.Parameters ["UseUniversal"] = "True";
+			cinfo.Parameters ["UseIPad"] = "False";
+			cinfo.Parameters ["UseIPhone"] = "False";
+			cinfo.Parameters ["CreateiOSUITest"] = "False";
+			cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
-					template.CreateWorkspaceItem (cinfo);
+			template.CreateWorkspaceItem (cinfo);
 		}
 	}
 }
