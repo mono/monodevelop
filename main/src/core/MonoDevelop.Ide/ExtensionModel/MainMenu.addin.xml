@@ -238,7 +238,6 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
 		</Condition>
 		<SeparatorItem id ="ToolsSection" /> 
-		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		<ItemSet id = "SessionRecorder" _label = "Session Recorder" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
@@ -285,6 +284,7 @@
 		<ItemSet id = "Diagnostics">
 			<LinkItem id = "ReportBug" _label = "Report a Bug" link = "http://xamar.in/r/file_studio_bug" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		</ItemSet>
 		<Condition id = "Platform" value = "!mac">
 			<SeparatorItem id = "SeparatorAbout" />
