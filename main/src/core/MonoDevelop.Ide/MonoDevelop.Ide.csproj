@@ -7814,7 +7814,6 @@
     <Compile Include="MonoDevelop.Components.Extensions\AlertDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkAlertDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\TextQuestionDialog.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\ErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
