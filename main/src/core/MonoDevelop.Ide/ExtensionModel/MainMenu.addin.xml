@@ -138,7 +138,6 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 		<SeparatorItem id = "ViewItemsSeparator4" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
 	
@@ -147,40 +146,47 @@
 	<ItemSet id = "Search" _label = "_Search">
 	
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
+		<SeparatorItem id = "SearchSeparator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
 	
-		<SeparatorItem id = "SearchSeparator" />
+		<SeparatorItem id = "SearchSeparator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" />
 		
 		<SeparatorItem id = "SearchInFilesSeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
+		<ItemSet id = "Bookmarks" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" />
+			<SeparatorItem id = "BookmarksNavigationSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.PrevBookmark" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark" />
+			<SeparatorItem id = "BookmarksClearSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks" />
+		</ItemSet>
+		<ItemSet id = "Go To" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
+			<SeparatorItem id = "GoToSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" />
+		</ItemSet>
 		<SeparatorItem id = "Separator2" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
-		<CommandItem id = "MonoDevelop.Components.MainToolbar.Commands.NavigateTo" />
-		
-		<SeparatorItem id = "ViewItemsSeparator3" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />
+		<SeparatorItem id = "Separator3" />
 		<ItemSet id = "NavigationList" _label = "Navigation _History"
 		         _description = "Select a point from the navigation history" >
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateForward" />
+			<SeparatorItem id = "NavigationHistorySeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory" />
 			<SeparatorItem id = "NavigationHistoryClearSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.NavigationCommands.ClearNavigationHistory" />
 		</ItemSet>
-		<SeparatorItem id = "ViewItemsSeparator4" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext" />
-		<SeparatorItem id = "Separator3" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" />
+		<CommandItem id = "MonoDevelop.Components.MainToolbar.Commands.NavigateTo" />
 	</ItemSet>
 
 	<ItemSet id = "Project" _label = "_Project">
