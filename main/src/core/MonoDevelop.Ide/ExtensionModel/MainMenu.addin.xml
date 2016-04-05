@@ -111,10 +111,15 @@
 	<ItemSet id = "View" _label = "_View">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />
 		<SeparatorItem id = "ViewSeparator1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+		<SeparatorItem id = "ViewSeparator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
-		<SeparatorItem id = "ViewSeparator2" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+		<SeparatorItem id = "ViewSeparator3" />
+		<ItemSet id = "Editor Layout">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" />
+		</ItemSet>
 		<ItemSet id = "MessageBubbles" _label = "_Message Bubbles">
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues" />
@@ -127,16 +132,12 @@
 			<SeparatorItem id = "FoldDefinitionsSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" />
 		</ItemSet>
-		<SeparatorItem id = "ViewSeparator3" />
+		<SeparatorItem id = "ViewSeparator4" />
 		<SeparatorItem id = "ViewItemsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 		<SeparatorItem id = "ViewItemsSeparator4" />
-		<ItemSet id = "Editor Layout">
-			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" />
-		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
