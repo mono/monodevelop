@@ -66,39 +66,45 @@
 
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
 		
 		<SeparatorItem id = "Separator4" />
 		
 		<ItemSet id = "Format" _label = "_Format">
 			<CommandItem id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" />
-			<SeparatorItem id ="FormatSeparator" /> 
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
-			<SeparatorItem id = "Separator1" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
+			<SeparatorItem id ="FormatSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" />
 			<SeparatorItem id = "Separator2" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" />
+			<SeparatorItem id = "Separator3" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SortSelectedLines" />
+			<SeparatorItem id = "Separator4" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces" />
 		</ItemSet>
-
+		
+		<ItemSet id = "Insert" _label = "_Insert">
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
+			<SeparatorItem id = "InsertSeparator" />
+		</ItemSet>
 		<ItemSet id = "Folding" _label = "F_olding">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" />
 		</ItemSet>
-		
-		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode" />
-		
-		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 		<SeparatorItem id = "Separator5" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
-		<SeparatorItem id = "Separator6" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
+		
+		<ItemSet id = "CodeCompletion" _label = "Code Completion">
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
+		</ItemSet>
 		<SeparatorItem id = "optionssep5" />
 		<Condition id="Platform" value="linux">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
