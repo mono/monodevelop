@@ -37,19 +37,9 @@ namespace MonoDevelop.Ide
 	[TestFixture]
 	public class ProjectTemplateTests : TestBase
 	{
-		[Test]
-		[Ignore]
-		public void CreateGtkSharpProjectTemplate ()
-		{
-			// This test is a placeholder to remind us that Gtk# project creation is untested.
-			//
-			// The GTK# template uses stetic which depends on the IdeApp being initialized, but we cannot
-			// reliably start/shutdown XS as part of the test suite.
-		}
-
 		static IEnumerable<string> Templates {
 			get {
-				return ProjectTemplate.ProjectTemplates.Select (t => t.Category + t.Name + t.LanguageName);
+				return ProjectTemplate.ProjectTemplates.Select (t => $"[{ t.Category}] [{t.Id}] [{t.Name}] [{t.LanguageName}]");
 			}
 		}
 
@@ -57,12 +47,9 @@ namespace MonoDevelop.Ide
 		[TestCaseSource ("Templates")]
 		public void CreateEveryProjectTemplate (string tt)
 		{
-//			var builder = new StringBuilder ();
-//			foreach (var template in ProjectTemplate.ProjectTemplates) {
-			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Category + t.Name + t.LanguageName == tt);
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => $"[{ t.Category}] [{t.Id}] [{t.Name}] [{t.LanguageName}]" == tt);
 				if (template.Name.Contains ("Gtk#"))
 					return;
-//				try {
 					var dir = Util.CreateTmpDir (template.Id);
 					var cinfo = new ProjectCreateInformation {
 						ProjectBasePath = dir,
@@ -78,20 +65,6 @@ namespace MonoDevelop.Ide
 					cinfo.Parameters ["CreateAndroidUITest"] = "False";
 
 					template.CreateWorkspaceItem (cinfo);
-/*				} catch (Exception ex) {
-					builder.AppendFormat (
-						"Could not create a project from the template '{0} / {1} ({2})': {3}",
-						template.Category, template.Name, template.LanguageName, ex
-					);
-					builder.AppendLine ();
-					builder.AppendLine ();
-					builder.AppendLine (ex.ToString ());
-					builder.AppendLine ();
-				}*/
-			//}
-
-//			if (builder.Length > 0)
-//				Assert.Fail (builder.ToString ());
 		}
 	}
 }
