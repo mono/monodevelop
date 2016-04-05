@@ -91,7 +91,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
 			<SeparatorItem id = "InsertSeparator" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 		</ItemSet>
 		<SeparatorItem id = "Separator5" />
 		
@@ -274,22 +274,21 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.Help" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.SendFeedback" />
-		<Condition id = "Platform" value = "!mac">
-			<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
-		</Condition>
-		<SeparatorItem id = "Separator2" />
+		<SeparatorItem id = "LinksSeparator" />
 		<ItemSet id = "Web" _label = "_Web">
 			<LinkItem id = "MonoDevelop" _label = "MonoDevelop" link = "http://www.monodevelop.com" />
 			<LinkItem id = "Mono" _label = "Mono Project" description = "A free .NET implementation effort, worth visiting" link = "http://www.mono-project.com" />
-			<ItemSet id = "C#" _label = "C#">
-				<LinkItem id = "CodePlex" _label = "CodePlex" description = "Open Source Project Community." link = "http://www.codeplex.com" />
-				<LinkItem id = "MsCodeGallery" _label = "MSDN Code Gallery" description = "Download and share sample applications, code snippets, and other resources with the developer community." link = "http://code.msdn.microsoft.com" />
-			</ItemSet>
+			<LinkItem id = "CodePlex" _label = "CodePlex" description = "Open Source Project Community." link = "http://www.codeplex.com" />
+			<LinkItem id = "MsCodeGallery" _label = "MSDN Code Gallery" description = "Download and share sample applications, code snippets, and other resources with the developer community." link = "http://code.msdn.microsoft.com" />
 		</ItemSet>
 		<SeparatorItem id = "Separator3" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
-		<LinkItem id = "ReportBug" _label = "Report a Bug" link = "http://xamar.in/r/file_studio_bug" />
+		<ItemSet id = "Diagnostics">
+			<LinkItem id = "ReportBug" _label = "Report a Bug" link = "http://xamar.in/r/file_studio_bug" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
+		</ItemSet>
 		<Condition id = "Platform" value = "!mac">
+			<SeparatorItem id = "SeparatorAbout" />
+			<CommandItem id = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.About" />
 		</Condition>
 	</ItemSet>
