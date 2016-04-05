@@ -45,6 +45,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
 			packageManagementEvents.PackageOperationError += PackageOperationError;
 			packageManagementEvents.UpdatedPackagesAvailable += UpdatedPackagesAvailable;
+			packageManagementEvents.ProjectFileRemoved += FileChanged;
 
 			FileService.FileChanged += FileChanged;
 		}

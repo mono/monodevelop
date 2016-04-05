@@ -327,5 +327,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			unsafeEvents.OnImportRemoved (project, import);
 		}
+
+		public event EventHandler<FileEventArgs> ProjectFileRemoved {
+			add { unsafeEvents.ProjectFileRemoved += value; }
+			remove { unsafeEvents.ProjectFileRemoved -= value; }
+		}
+
+		public void OnProjectFileRemoved (string path)
+		{
+			unsafeEvents.OnProjectFileRemoved (path);
+		}
 	}
 }

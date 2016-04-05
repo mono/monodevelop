@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Projects;
 
@@ -49,6 +48,7 @@ namespace MonoDevelop.PackageManagement
 		event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		event EventHandler PackagesRestored;
 		event EventHandler<FileEventArgs> FileChanged;
+		event EventHandler<FileEventArgs> ProjectFileRemoved;
 		event EventHandler<FileRemovingEventArgs> FileRemoving;
 		event EventHandler UpdatedPackagesAvailable;
 		event EventHandler<PackageRestoredEventArgs> PackageRestored;
@@ -74,6 +74,7 @@ namespace MonoDevelop.PackageManagement
 		void OnReferenceAdding (ProjectReference reference);
 		void OnReferenceRemoving (ProjectReference reference);
 		void OnImportRemoved (IDotNetProject project, string import);
+		void OnProjectFileRemoved (string path);
 
 		[Obsolete]
 		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);
