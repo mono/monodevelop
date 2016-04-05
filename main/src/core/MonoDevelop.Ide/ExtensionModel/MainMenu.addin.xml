@@ -237,13 +237,14 @@
 		<Condition id="Platform" value="!mac">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager" />
 		</Condition>
-		<SeparatorItem id ="AddinManagerSeparator" /> 
-		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
+		<SeparatorItem id ="ToolsSection" /> 
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		<ItemSet id = "SessionRecorder" _label = "Session Recorder" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
 		</ItemSet>
+		<SeparatorItem id = "CustomToolsSection" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<SeparatorItem id = "OptionsSection" />
 		<Condition id="Platform" value="windows">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />

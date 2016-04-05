@@ -9,7 +9,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
-		<CommandItem id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit" insertbefore="OptionsSection" />
+		<CommandItem id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit" insertafter= "ToolsSection" />
 	</Extension>
 
 </ExtensionModel>
