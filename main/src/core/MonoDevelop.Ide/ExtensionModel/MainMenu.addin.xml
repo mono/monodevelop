@@ -91,6 +91,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
 			<SeparatorItem id = "InsertSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 		</ItemSet>
 		<SeparatorItem id = "Separator5" />
 		
@@ -233,7 +234,6 @@
 		<SeparatorItem id ="AddinManagerSeparator" /> 
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 		<ItemSet id = "SessionRecorder" _label = "Session Recorder" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
