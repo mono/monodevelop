@@ -92,11 +92,6 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader" />
 			<SeparatorItem id = "InsertSeparator" />
 		</ItemSet>
-		<ItemSet id = "Folding" _label = "F_olding">
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" />
-		</ItemSet>
 		<SeparatorItem id = "Separator5" />
 		
 		<ItemSet id = "CodeCompletion" _label = "Code Completion">
@@ -124,6 +119,12 @@
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues" />
 			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues" />
+		</ItemSet>
+		<ItemSet id = "Folding" _label = "F_olding">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" />
+			<SeparatorItem id = "FoldDefinitionsSeparator" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" />
 		</ItemSet>
 		<SeparatorItem id = "ViewSeparator3" />
 		<SeparatorItem id = "ViewItemsSeparator" />
