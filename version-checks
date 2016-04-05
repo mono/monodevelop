@@ -18,7 +18,7 @@ DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
 DEP_NEEDED_VERSION[0]=d2dfc53f5406b959b4d9637353a3bd4779130440
-DEP_BRANCH_AND_REMOTE[0]="master origin/main-menu-redesign"
+DEP_BRANCH_AND_REMOTE[0]="main-menu-redesign origin/main-menu-redesign"
 
 # heap-shot
 DEP[1]=heap-shot
