@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using System.Runtime.Versioning;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
-using NuGet;
+using NuGet.Frameworks;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
 
@@ -73,15 +73,15 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		public string Name {
-			get { return PackageReference.Id; }
+			get { return Id; }
 		}
 
 		public string Id {
-			get { return PackageReference.Id; }
+			get { return PackageReference.PackageIdentity.Id; }
 		}
 
-		public NuGet.SemanticVersion Version {
-			get { return PackageReference.Version; }
+		public NuGetVersion Version {
+			get { return PackageReference.PackageIdentity.Version; }
 		}
 
 		public NuGetVersion UpdatedVersion { get; private set; }
@@ -90,12 +90,12 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			get { return PackageReference.IsDevelopmentDependency; }
 		}
 
-		public FrameworkName TargetFramework {
+		public NuGetFramework TargetFramework {
 			get { return PackageReference.TargetFramework; }
 		}
 
-		public IVersionSpec VersionConstraint {
-			get { return PackageReference.VersionConstraint; }
+		public VersionRange VersionConstraint {
+			get { return PackageReference.AllowedVersions; }
 		}
 
 		public string GetLabel ()
@@ -161,7 +161,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public bool IsReleaseVersion ()
 		{
-			return PackageReference.IsReleaseVersion ();
+			return !PackageReference.PackageIdentity.Version.IsPrerelease;
 		}
 	}
 }

@@ -26,7 +26,7 @@
 
 using MonoDevelop.PackageManagement.NodeBuilders;
 using NUnit.Framework;
-using NuGet;
+using NuGet.Packaging;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
@@ -53,8 +53,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			string packageId = "Id",
 			bool requireReinstallation = false)
 		{
-			var version = new NuGet.SemanticVersion ("1.2.3");
-			packageReference = new PackageReference (packageId, version, null, null, false, requireReinstallation);
+			var version = new NuGetVersion ("1.2.3");
+			var identity = new PackageIdentity (packageId, version);
+			packageReference = new PackageReference (identity, null, true, false, requireReinstallation);
 		}
 
 		[Test]

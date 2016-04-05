@@ -61,7 +61,7 @@ namespace MonoDevelop.PackageManagement
 				IPackageManagementProject project = solution.GetProject (packageReferenceNode.Project);
 				ReinstallPackageAction action = project.CreateReinstallPackageAction ();
 				action.PackageId = packageReferenceNode.Id;
-				action.PackageVersion = packageReferenceNode.Version;
+				action.PackageVersion = new NuGet.SemanticVersion (packageReferenceNode.Version.ToString ());
 
 				runner.Run (progressMessage, action);
 			} catch (Exception ex) {

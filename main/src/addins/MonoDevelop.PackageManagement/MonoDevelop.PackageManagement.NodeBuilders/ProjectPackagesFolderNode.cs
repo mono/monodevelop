@@ -27,18 +27,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
-using NuGet;
+using NuGet.Configuration;
+using NuGet.PackageManagement;
+using NuGet.Packaging;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	internal class ProjectPackagesFolderNode
 	{
 		IDotNetProject project;
+		NuGetProject nugetProject;
+		FolderNuGetProject folder;
 		IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
-		List<PackageReference> packageReferences;
+		List<PackageReference> packageReferences = new List<PackageReference> ();
+		CancellationTokenSource cancellationTokenSource;
 
 		public ProjectPackagesFolderNode (DotNetProject project)
 			: this (new DotNetProjectProxy (project), PackageManagementServices.UpdatedPackagesInWorkspace)
@@ -48,9 +56,30 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public ProjectPackagesFolderNode (
 			IDotNetProject project,
 			IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
+			: this (project, updatedPackagesInWorkspace, true)
+		{
+		}
+
+		protected ProjectPackagesFolderNode (
+			IDotNetProject project,
+			IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace,
+			bool createNuGetProject)
 		{
 			this.project = project;
 			this.updatedPackagesInWorkspace = updatedPackagesInWorkspace;
+
+			if (createNuGetProject)
+				CreateInitNuGetProject ();
+		}
+
+		protected void CreateInitNuGetProject ()
+		{
+			nugetProject = new MonoDevelopNuGetProjectFactory ().CreateNuGetProject(project);
+
+			string solutionDirectory = project.ParentSolution.BaseDirectory;
+			var settings = Settings.LoadDefaultSettings (null, null, null);
+			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionDirectory, settings);
+			folder = new FolderNuGetProject (path);
 		}
 
 		public DotNetProject DotNetProject {
@@ -105,28 +134,15 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				.Count ();
 		}
 
-		IEnumerable<PackageReference> PackageReferences {
-			get {
-				if (packageReferences == null) {
-					packageReferences = GetPackageReferences ().ToList ();
-				}
-				return packageReferences;
-			}
+		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
+		{
+			UpdatedNuGetPackagesInProject updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (project);
+			return GetPackageReferences ().Select (reference => CreatePackageReferenceNode (reference, updatedPackages));
 		}
 
 		protected virtual IEnumerable<PackageReference> GetPackageReferences ()
 		{
-			if (project.HasPackages ()) {
-				var packageReferenceFile = new PackageReferenceFile (project.GetPackagesConfigFilePath ());
-				return packageReferenceFile.GetPackageReferences ();
-			}
-			return new PackageReference [0];
-		}
-
-		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
-		{
-			UpdatedNuGetPackagesInProject updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (project);
-			return PackageReferences.Select (reference => CreatePackageReferenceNode (reference, updatedPackages));
+			return packageReferences;
 		}
 
 		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference, UpdatedNuGetPackagesInProject updatedPackages)
@@ -136,17 +152,64 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				reference,
 				IsPackageInstalled (reference),
 				false,
-				updatedPackages.GetUpdatedPackage (reference.Id));
+				updatedPackages.GetUpdatedPackage (reference.PackageIdentity.Id));
 		}
 
 		protected virtual bool IsPackageInstalled (PackageReference reference)
 		{
-			return reference.IsPackageInstalled (project.DotNetProject);
+			return folder.PackageExists (reference.PackageIdentity);
 		}
 
-		public void ClearPackageReferences ()
+		public event EventHandler PackageReferencesChanged;
+
+		void OnPackageReferencesChanged ()
 		{
-			packageReferences = null;
+			var handler = PackageReferencesChanged;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		public void RefreshPackages ()
+		{
+			try {
+				CancelCurrentRefresh ();
+				GetInstalledPackages ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Refresh packages folder error.", ex);
+			}
+		}
+
+		void CancelCurrentRefresh ()
+		{
+			if (cancellationTokenSource != null) {
+				cancellationTokenSource.Cancel ();
+				cancellationTokenSource.Dispose ();
+				cancellationTokenSource = null;
+			}
+		}
+
+		void GetInstalledPackages ()
+		{
+			var tokenSource = new CancellationTokenSource ();
+			cancellationTokenSource = tokenSource;
+			nugetProject
+				.GetInstalledPackagesAsync (cancellationTokenSource.Token)
+				.ContinueWith (task => OnInstalledPackagesRead (task, tokenSource), TaskScheduler.FromCurrentSynchronizationContext ());
+		}
+
+		void OnInstalledPackagesRead (Task<IEnumerable<PackageReference>> task, CancellationTokenSource tokenSource)
+		{
+			try {
+				if (task.IsFaulted) {
+					LoggingService.LogError ("OnInstalledPackagesRead error.", task.Exception);
+				} else if (!tokenSource.IsCancellationRequested) {
+					packageReferences = task.Result.ToList ();
+					OnPackageReferencesChanged ();
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("OnInstalledPackagesRead error.", ex);
+			}
 		}
 	}
 }

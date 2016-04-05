@@ -24,10 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using MonoDevelop.PackageManagement.NodeBuilders;
-using NuGet;
+using NuGet.Packaging;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -36,7 +35,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableProjectPackagesFolderNode (
 			IDotNetProject project,
 			IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
-			: base (project, updatedPackagesInWorkspace)
+			: base (project, updatedPackagesInWorkspace, false)
 		{
 		}
 

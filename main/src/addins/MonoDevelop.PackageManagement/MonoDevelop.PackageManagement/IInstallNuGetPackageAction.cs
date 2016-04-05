@@ -48,14 +48,14 @@ namespace MonoDevelop.PackageManagement
 			return installNuGetPackageAction.PackageId;
 		}
 
-		public static NuGet.SemanticVersion GetPackageVersion (this IInstallNuGetPackageAction action)
+		public static NuGetVersion GetPackageVersion (this IInstallNuGetPackageAction action)
 		{
-			var installPackageAction = action as InstallPackageAction;
-			if (installPackageAction != null) {
-				return installPackageAction.GetPackageVersion ();
+			var installNuGetPackageAction = action as InstallNuGetPackageAction;
+			if (installNuGetPackageAction != null) {
+				return installNuGetPackageAction.Version;
 			}
-			var installNuGetPackageAction = (InstallNuGetPackageAction)action;
-			return new NuGet.SemanticVersion (installNuGetPackageAction.Version.ToString ());
+			var installPackageAction = action as InstallPackageAction;
+			return new NuGetVersion (installNuGetPackageAction.Version.ToString ());
 		}
 	}
 }

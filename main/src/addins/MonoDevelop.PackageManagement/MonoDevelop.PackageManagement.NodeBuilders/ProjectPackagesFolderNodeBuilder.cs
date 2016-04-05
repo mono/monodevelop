@@ -27,14 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gdk;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
-using NuGet;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -100,7 +97,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			return new PackageReferenceNode (
 				parentNode,
-				new PackageReference (installAction.GetPackageId (), installAction.GetPackageVersion (), null, null, false),
+				new PackageReference (new PackageIdentity (installAction.GetPackageId (), installAction.GetPackageVersion ()), null),
 				false,
 				true);
 		}
@@ -108,6 +105,27 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			treeBuilder.AddChildren (GetPackageReferencesNodes (dataObject));
+		}
+
+		public override void OnNodeAdded (object dataObject)
+		{
+			var projectPackagesNode = (ProjectPackagesFolderNode)dataObject;
+			projectPackagesNode.PackageReferencesChanged += OnPackageReferencesChanged;
+		}
+
+		public override void OnNodeRemoved (object dataObject)
+		{
+			var projectPackagesNode = (ProjectPackagesFolderNode)dataObject;
+			projectPackagesNode.PackageReferencesChanged -= OnPackageReferencesChanged;
+		}
+
+		void OnPackageReferencesChanged (object sender, EventArgs e)
+		{
+			var projectPackagesNode = (ProjectPackagesFolderNode)sender;
+			ITreeBuilder builder = Context.GetTreeBuilder (projectPackagesNode);
+			if (builder != null) {
+				builder.UpdateAll ();
+			}
 		}
 	}
 }

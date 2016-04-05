@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
@@ -90,8 +89,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 				if (builder.MoveToChild ("Packages", typeof (ProjectPackagesFolderNode))) {
 					var packagesFolder = (ProjectPackagesFolderNode)builder.DataItem;
-					packagesFolder.ClearPackageReferences ();
-					builder.UpdateAll ();
+					packagesFolder.RefreshPackages ();
 					builder.MoveToParent ();
 				}
 			}
@@ -120,7 +118,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var project = (DotNetProject)dataObject;
-			treeBuilder.AddChild (new ProjectPackagesFolderNode (project));
+			var folderNode = new ProjectPackagesFolderNode (project);
+			folderNode.RefreshPackages ();
+			treeBuilder.AddChild (folderNode);
 		}
 
 		void FileChanged (object sender, FileEventArgs e)

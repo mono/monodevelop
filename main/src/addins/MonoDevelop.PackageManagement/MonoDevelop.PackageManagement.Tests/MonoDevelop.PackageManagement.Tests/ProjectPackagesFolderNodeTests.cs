@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using MonoDevelop.PackageManagement.Tests.Helpers;
-using NuGet;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using NUnit.Framework;
@@ -55,8 +55,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			string packageId = "Id",
 			string version = "1.2.3")
 		{
-			var semanticVersion = new NuGet.SemanticVersion (version);
-			var packageReference = new PackageReference (packageId, semanticVersion, null, null, false, false);
+			var semanticVersion = new NuGetVersion (version);
+			var identity = new PackageIdentity (packageId, semanticVersion);
+			var packageReference = new PackageReference (identity, null);
 			packagesFolderNode.PackageReferences.Add (packageReference);
 			return packageReference;
 		}

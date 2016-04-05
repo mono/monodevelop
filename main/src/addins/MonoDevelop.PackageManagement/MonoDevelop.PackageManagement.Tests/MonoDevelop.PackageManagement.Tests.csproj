@@ -66,6 +66,17 @@
     <Reference Include="NuGet.Packaging.Core.Types">
       <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.Types.3.3.0\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Packaging.Core">
+      <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.3.3.0\lib\net45\NuGet.Packaging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="NuGet.Logging">
+      <HintPath>..\..\..\..\packages\NuGet.Logging.3.3.0\lib\net45\NuGet.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging">
+      <HintPath>..\..\..\..\packages\NuGet.Packaging.3.3.0\lib\net45\NuGet.Packaging.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

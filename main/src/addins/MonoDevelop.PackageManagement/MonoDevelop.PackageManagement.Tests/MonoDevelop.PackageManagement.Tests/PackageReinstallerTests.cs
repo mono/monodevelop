@@ -27,8 +27,10 @@
 using System;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
-using NuGet;
+using NuGet.Packaging;
 using MonoDevelop.PackageManagement.NodeBuilders;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -51,12 +53,8 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void Run (string packageId, string packageVersion)
 		{
-			var packageReference = new PackageReference (
-				packageId,
-				new SemanticVersion (packageVersion),
-				null,
-				null,
-				false);
+			var identity = new PackageIdentity (packageId, new NuGetVersion (packageVersion));
+			var packageReference = new PackageReference (identity, null);
 
 			var parentNode = new TestableProjectPackagesFolderNode (project.FakeDotNetProject, null);
 			var node = new PackageReferenceNode (parentNode, packageReference, true);
@@ -84,7 +82,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			var reinstallAction = backgroundRunner.ActionRun as ReinstallPackageAction;
 			Assert.AreEqual ("MyPackage", reinstallAction.PackageId);
-			Assert.AreEqual (new SemanticVersion ("1.2.3.4"), reinstallAction.PackageVersion);
+			Assert.AreEqual (new NuGet.SemanticVersion ("1.2.3.4"), reinstallAction.PackageVersion);
 		}
 
 		[Test]
