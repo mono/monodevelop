@@ -2245,9 +2245,9 @@ namespace MonoDevelop.Components.Commands
 			if (customHandlerChain != null) {
 				info.UpdateHandlerData = Method;
 
-				DateTime t = DateTime.Now;
+				DateTime t = DateTime.UtcNow;
 				customHandlerChain.CommandUpdate (cmdTarget, info);
-				var time = DateTime.Now - t;
+				var time = DateTime.UtcNow - t;
 				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
 					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, CustomUpdater:{2}, CommandTargetType:{3}", (int)time.TotalMilliseconds, CommandId, customHandlerChain, cmdTarget.GetType ());
 			} else {
@@ -2256,11 +2256,11 @@ namespace MonoDevelop.Components.Commands
 				if (isArray)
 					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
 
-				DateTime t = DateTime.Now;
+				DateTime t = DateTime.UtcNow;
 
 				Method.Invoke (cmdTarget, new object[] {info} );
 
-				var time = DateTime.Now - t;
+				var time = DateTime.UtcNow - t;
 				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
 					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			}
@@ -2277,11 +2277,11 @@ namespace MonoDevelop.Components.Commands
 				if (!isArray)
 					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
 
-				DateTime t = DateTime.Now;
+				DateTime t = DateTime.UtcNow;
 
 				Method.Invoke (cmdTarget, new object[] {info} );
 				
-				var time = DateTime.Now - t;
+				var time = DateTime.UtcNow - t;
 				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
 					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			}
