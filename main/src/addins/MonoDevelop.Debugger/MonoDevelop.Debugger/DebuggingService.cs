@@ -574,8 +574,8 @@ namespace MonoDevelop.Debugger
 			session.TargetExited += delegate {
 				monitor.Dispose ();
 			};
-			SetDebugLayout ();
 			session.AttachToProcess (proc, GetUserOptions ());
+			SetDebugLayout ();
 			return currentDebugOperation;
 		}
 		
@@ -649,10 +649,9 @@ namespace MonoDevelop.Debugger
 			
 			SetupSession ();
 			
-			SetDebugLayout ();
-			
 			try {
 				session.Run (startInfo, GetUserOptions ());
+				SetDebugLayout ();
 			} catch {
 				Cleanup ();
 				throw;
