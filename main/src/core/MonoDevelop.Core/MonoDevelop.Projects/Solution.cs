@@ -750,7 +750,7 @@ namespace MonoDevelop.Projects
 					if (!it.CanExecute (context, configuration))
 						continue;
 					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
-					mon.AddSlaveMonitor (monitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.SlaveCancel);
+					mon.AddFollowerMonitor (monitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.FollowerCancel);
 					monitors.Add (mon);
 					tasks.Add (it.Execute (mon, context, configuration));
 				}

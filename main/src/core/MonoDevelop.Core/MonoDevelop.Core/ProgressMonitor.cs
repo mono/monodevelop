@@ -65,7 +65,7 @@ namespace MonoDevelop.Core
 		List<string> warnings = new List<string> ();
 		List<string> messages = new List<string> ();
 
-		List<ProgressMonitor> slaveMonitors;
+		List<ProgressMonitor> followerMonitors;
 		List<Action> disposeCallbacks;
 		object localLock = new object ();
 
@@ -143,8 +143,8 @@ namespace MonoDevelop.Core
 			else
 				OnCompleted ();
 
-			if (slaveMonitors != null) {
-				foreach (var m in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var m in followerMonitors)
 					m.Dispose ();
 			}
 			if (disposeCallbacks != null) {
@@ -154,20 +154,20 @@ namespace MonoDevelop.Core
 			}
 		}
 
-		protected void AddSlaveMonitor (ProgressMonitor monitor)
+		protected void AddFollowerMonitor (ProgressMonitor monitor)
 		{
-			if (slaveMonitors == null)
-				slaveMonitors = new List<ProgressMonitor> ();
-			slaveMonitors.Add (monitor);
+			if (followerMonitors == null)
+				followerMonitors = new List<ProgressMonitor> ();
+			followerMonitors.Add (monitor);
 			logWriter.ChainWriter (monitor.Log);
 			errorLogWriter.ChainWriter (monitor.ErrorLog);
 		}
 
-		protected void RemoveSlaveMonitor (ProgressMonitor monitor)
+		protected void RemoveFollowerMonitor (ProgressMonitor monitor)
 		{
-			if (slaveMonitors == null)
+			if (followerMonitors == null)
 				return;
-			slaveMonitors.Remove (monitor);
+			followerMonitors.Remove (monitor);
 			logWriter.UnchainWriter (monitor.Log);
 			errorLogWriter.UnchainWriter (monitor.ErrorLog);
 		}
@@ -219,8 +219,8 @@ namespace MonoDevelop.Core
 
 			ReportProgressChanged ();
 
-			if (slaveMonitors != null) {
-				foreach (var m in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var m in followerMonitors)
 					m.BeginTask (name, totalWork);
 			}
 			return t;
@@ -251,8 +251,8 @@ namespace MonoDevelop.Core
 
 			ReportProgressChanged ();
 
-			if (slaveMonitors != null) {
-				foreach (var m in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var m in followerMonitors)
 					m.EndTask ();
 			}
 		}
@@ -291,8 +291,8 @@ namespace MonoDevelop.Core
 				ReportProgressChanged ();
 			}
 
-			if (slaveMonitors != null) {
-				foreach (var m in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var m in followerMonitors)
 					m.Step (message, work);
 			}
 		}
@@ -325,8 +325,8 @@ namespace MonoDevelop.Core
 				ReportProgressChanged ();
 			}
 
-			if (slaveMonitors != null) {
-				foreach (var m in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var m in followerMonitors)
 					m.BeginStep (message, work);
 			}
 		}
@@ -335,8 +335,8 @@ namespace MonoDevelop.Core
 		{
 			ConsumePendingWork ();
 
-			if (slaveMonitors != null) {
-				foreach (var m in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var m in followerMonitors)
 					m.EndStep ();
 			}
 		}
@@ -383,9 +383,9 @@ namespace MonoDevelop.Core
 				ReportProgressChanged ();
 			}
 
-			if (slaveMonitors != null) {
-				foreach (var sm in slaveMonitors)
-					m.AddSlaveMonitor (sm.BeginAsyncStep (message, work));
+			if (followerMonitors != null) {
+				foreach (var sm in followerMonitors)
+					m.AddFollowerMonitor (sm.BeginAsyncStep (message, work));
 			}
 			return m;
 		}
@@ -402,8 +402,8 @@ namespace MonoDevelop.Core
 			else
 				OnWarningReported (message);
 
-			if (slaveMonitors != null) {
-				foreach (var sm in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var sm in followerMonitors)
 					sm.ReportWarning (message);
 			}
 		}
@@ -420,8 +420,8 @@ namespace MonoDevelop.Core
 			else
 				OnSuccessReported (message);
 
-			if (slaveMonitors != null) {
-				foreach (var sm in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var sm in followerMonitors)
 					sm.ReportSuccess (message);
 			}
 		}
@@ -445,8 +445,8 @@ namespace MonoDevelop.Core
 			else
 				OnErrorReported (msg, exception);
 
-			if (slaveMonitors != null) {
-				foreach (var sm in slaveMonitors)
+			if (followerMonitors != null) {
+				foreach (var sm in followerMonitors)
 					sm.ReportError (message, exception);
 			}
 		}

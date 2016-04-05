@@ -69,7 +69,7 @@ namespace MonoDevelop.Deployment.Targets
 				sourceFile = ((SolutionItem)entry).FileName;
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
-			mon.AddSlaveMonitor (monitor, MonitorAction.WriteLog|MonitorAction.ReportError|MonitorAction.ReportWarning|MonitorAction.ReportSuccess);
+			mon.AddFollowerMonitor (monitor, MonitorAction.WriteLog|MonitorAction.ReportError|MonitorAction.ReportWarning|MonitorAction.ReportSuccess);
 			
 			string tmpFolder = FileService.CreateTempDirectory ();
 			

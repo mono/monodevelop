@@ -31,7 +31,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	{
 		public ConsoleProjectLoadProgressMonitor (ConsoleProgressMonitor monitor)
 		{
-			AddSlaveMonitor (monitor);
+			AddFollowerMonitor (monitor);
 		}
 
 		public override MonoDevelop.Projects.Extensions.MigrationType ShouldMigrateProject ()
