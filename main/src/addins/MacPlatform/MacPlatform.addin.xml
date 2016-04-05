@@ -43,7 +43,8 @@
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<Condition id = "Platform" value = "mac">
 			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
-			             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+			             insertafter = "NxtPrvSeparator" />
+			<SeparatorItem id = "winMinimizeSep" />
 		</Condition>
 	</Extension>
 	
