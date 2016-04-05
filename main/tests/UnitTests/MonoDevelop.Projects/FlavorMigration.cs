@@ -274,7 +274,7 @@ namespace MonoDevelop.Projects
 
 		public CustomProjectLoadProgressMonitor ()
 		{
-			AddSlaveMonitor (new ConsoleProgressMonitor ());
+			AddFollowerMonitor (new ConsoleProgressMonitor ());
 		}
 
 		public override MigrationType ShouldMigrateProject ()

@@ -46,13 +46,13 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		Dispose = 0x10,
 		Tasks = 0x20,
 		Cancel = 0x40,
-		SlaveCancel = 0x80,	// when the slave is cancelled, the whole aggregated monitor is cancelled.
+		FollowerCancel = 0x80,	// when the follower is cancelled, the whole aggregated monitor is cancelled.
 		All =  0xff
 	}
 	
 	public class AggregatedProgressMonitor: ProgressMonitor
 	{
-		ProgressMonitor masterMonitor;
+		ProgressMonitor leaderMonitor;
 		List<MonitorInfo> monitors = new List<MonitorInfo> ();
 
 		class MonitorInfo {
@@ -61,8 +61,8 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			public CancellationTokenRegistration CancellationTokenRegistration;
 		}
 		
-		public ProgressMonitor MasterMonitor {
-			get { return this.masterMonitor; }
+		public ProgressMonitor LeaderMonitor {
+			get { return this.leaderMonitor; }
 		}
 		
 		
@@ -70,32 +70,32 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 		}
 		
-		public AggregatedProgressMonitor (ProgressMonitor masterMonitor, params ProgressMonitor[] slaveMonitors): this (masterMonitor, null, slaveMonitors)
+		public AggregatedProgressMonitor (ProgressMonitor leaderMonitor, params ProgressMonitor[] followerMonitors): this (leaderMonitor, null, followerMonitors)
 		{
 		}
 
-		internal AggregatedProgressMonitor (ProgressMonitor masterMonitor, CancellationTokenSource cancelSource, params ProgressMonitor[] slaveMonitors)
+		internal AggregatedProgressMonitor (ProgressMonitor leaderMonitor, CancellationTokenSource cancelSource, params ProgressMonitor[] followerMonitors)
 		{
 			CancellationTokenSource = cancelSource ?? new CancellationTokenSource ();
-			this.masterMonitor = masterMonitor;
-			AddSlaveMonitor (masterMonitor, MonitorAction.All);
-			foreach (ProgressMonitor mon in slaveMonitors)
-				AddSlaveMonitor (mon);
+			this.leaderMonitor = leaderMonitor;
+			AddFollowerMonitor (leaderMonitor, MonitorAction.All);
+			foreach (ProgressMonitor mon in followerMonitors)
+				AddFollowerMonitor (mon);
 		}
 		
-		public new void AddSlaveMonitor (ProgressMonitor slaveMonitor)
+		public new void AddFollowerMonitor (ProgressMonitor followerMonitor)
 		{
-			AddSlaveMonitor (slaveMonitor, MonitorAction.All);
+			AddFollowerMonitor (followerMonitor, MonitorAction.All);
 		}
 		
-		public void AddSlaveMonitor (ProgressMonitor slaveMonitor, MonitorAction actionMask)
+		public void AddFollowerMonitor (ProgressMonitor followerMonitor, MonitorAction actionMask)
 		{
 			MonitorInfo smon = new MonitorInfo ();
 			smon.ActionMask = actionMask;
-			smon.Monitor = slaveMonitor;
+			smon.Monitor = followerMonitor;
 			monitors.Add (smon);
-			if ((actionMask & MonitorAction.SlaveCancel) != 0)
-				smon.CancellationTokenRegistration = slaveMonitor.CancellationToken.Register (OnSlaveCancelRequested);
+			if ((actionMask & MonitorAction.FollowerCancel) != 0)
+				smon.CancellationTokenRegistration = followerMonitor.CancellationToken.Register (OnFollowerCancelRequested);
 		}
 
 		protected override void OnBeginTask (string name, int totalWork, int stepWork)
@@ -138,7 +138,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				if ((info.ActionMask & MonitorAction.Tasks) != 0) {
 					var sm = info.Monitor.BeginAsyncStep (message, work);
 					sm.ReportGlobalDataToParent = false;
-					am.AddSlaveMonitor (sm);
+					am.AddFollowerMonitor (sm);
 				}
 		}
 
@@ -183,12 +183,12 @@ namespace MonoDevelop.Core.ProgressMonitoring
             foreach (MonitorInfo info in monitors) {
 				if ((info.ActionMask & MonitorAction.Dispose) != 0)
 					info.Monitor.Dispose ();
-				if ((info.ActionMask & MonitorAction.SlaveCancel) != 0)
+				if ((info.ActionMask & MonitorAction.FollowerCancel) != 0)
 					info.CancellationTokenRegistration.Dispose ();
 			}
 		}
 
-		void OnSlaveCancelRequested ()
+		void OnFollowerCancelRequested ()
 		{
 			CancellationTokenSource.Cancel ();
 		}
