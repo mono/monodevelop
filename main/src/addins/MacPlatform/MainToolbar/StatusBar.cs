@@ -449,7 +449,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void UpdateApplicationNamePlaceholderText ()
 		{
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationLongName, ColorForType (MessageType.Ready));
 		}
 
 		void ApplicationNameChanged (object sender, EventArgs e)
@@ -472,7 +472,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
 			}
 
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+			UpdateApplicationNamePlaceholderText ();
 			textColor = ColorForType (messageType);
 			ReconstructString ();
 		}
@@ -515,7 +515,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
-				textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+				UpdateApplicationNamePlaceholderText ();
 				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 			} else {
 				textField.AttributedStringValue = GetStatusString (text, textColor);
