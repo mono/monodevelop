@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.ProjectManagement;
+using NuGet.ProjectManagement.Projects;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -44,6 +46,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		IDotNetProject project;
 		NuGetProject nugetProject;
 		FolderNuGetProject folder;
+		VersionFolderPathResolver packagePathResolver; 
 		IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		List<PackageReference> packageReferences = new List<PackageReference> ();
 
@@ -83,6 +86,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			var settings = Settings.LoadDefaultSettings (null, null, null);
 			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionDirectory, settings);
 			folder = new FolderNuGetProject (path);
+
+			if (nugetProject is INuGetIntegratedProject) {
+				string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder (settings); 
+				packagePathResolver = new VersionFolderPathResolver ( 
+					globalPackagesFolder, 
+					normalizePackageId: false); 
+			}
 
 			PackagesFolderPath = new FilePath (path);
 		}
@@ -169,6 +179,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		protected virtual bool IsPackageInstalled (PackageReference reference)
 		{
+			if (nugetProject is INuGetIntegratedProject) {
+				string path = packagePathResolver.GetHashPath (reference.PackageIdentity.Id, reference.PackageIdentity.Version);
+				return File.Exists (path);
+			}
+
 			return folder.PackageExists (reference.PackageIdentity);
 		}
 
