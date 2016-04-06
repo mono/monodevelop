@@ -124,7 +124,7 @@
 			_label = "_Lowercase"
 			_displayName = "Lowercase Selection" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces"
-			description = "Remove trailing whitespace"
+			_description = "Remove trailing whitespace"
 			_label = "_Remove Trailing Whitespace" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"
 			shortcut = "Control|Shift|J"
@@ -136,7 +136,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid"
 			_label = "_GUID (Globally Unique Identifier)"
 			_displayName = "Insert GUID (Globally Unique Identifier)"
-			description = "Inserts a Guid at caret position"/>
+			_description = "Inserts a Guid at caret position"/>
 	<Condition id="Platform" value="windows">
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
 				defaultHandler = "MonoDevelop.Ide.Commands.MonodevelopPreferencesHandler"
@@ -984,7 +984,7 @@
 			_label = "Matching _Brace"
 			_displayName = "Go to Matching Brace"
 			icon = "md-go-to-matching-brace"
-			description = "Go to Matching Brace"
+			_description = "Go to Matching Brace"
 			shortcut = "Control|B" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft"
 			_label = "Expand selection to the left" />
@@ -1022,7 +1022,7 @@
 			_label = "Expand selection to line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchCaretMode"
 			_label = "Switch caret mode"
-			description = "Switch between insert and overwrite caret modes"/>
+			_description = "Switch between insert and overwrite caret modes"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertTab"
 			_label = "Insert tab" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.RemoveTab"
