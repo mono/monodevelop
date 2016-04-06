@@ -2435,7 +2435,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (layout != null)
 						layout.Dispose ();
 					layout = new Pango.Layout (widget.PangoContext);
-					layout.FontDescription = scaledFont;
+					widget.PangoContext.FontDescription = layout.FontDescription = scaledFont;
 				}
 
 				layout.SetMarkup (TextMarkup);
