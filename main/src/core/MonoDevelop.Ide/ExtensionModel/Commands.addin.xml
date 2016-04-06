@@ -104,21 +104,25 @@
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection"
 			shortcut = "Control|Alt|End"
 			_description = "Indent selected lines of code"
-			_label = "_Indent Selection"
+			_label = "_Indent"
+			_displayName = "Indent Selection"
 			macShortcut = "Meta|]"
 			icon = "gtk-indent" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection"
 			shortcut = "Control|Alt|Home"
 			_description = "Unindent selected lines of code"
 			macShortcut = "Meta|["
-			_label = "_Unindent Selection"
+			_label = "_Unindent"
+			_displayName = "Unindent Selection"
 			icon = "gtk-unindent" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection"
 			_description = "Convert the selected text to uppercase"
-			_label = "_Uppercase Selection" />
+			_label = "Upper_case"
+			_displayName = "Uppercase Selection" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection"
 			_description = "Convert the selected text to lowercase"
-			_label = "_Lowercase Selection" />
+			_label = "_Lowercase"
+			_displayName = "Lowercase Selection" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces"
 			description = "Remove trailing whitespace"
 			_label = "_Remove Trailing Whitespace" />
@@ -130,7 +134,8 @@
 			_description = "Sort the selected lines"
 			_label = "_Sort Lines" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid"
-			_label = "_Insert Guid"
+			_label = "_GUID (Globally Unique Identifier)"
+			_displayName = "Insert GUID (Globally Unique Identifier)"
 			description = "Inserts a Guid at caret position"/>
 	<Condition id="Platform" value="windows">
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
@@ -153,7 +158,8 @@
 			_label = "Po_licies..."
 			_description = "Edit custom sets of policies which can be applied to solutions" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
-			_label = "_Insert Standard Header"
+			_label = "Standard _Header"
+			_displayName = "Insert Standard Header"
 			defaultHandler = "MonoDevelop.Ide.Commands.InsertStandardHeaderHandler"
 			_description = "Add the user defined header to the top of the file"/>
 
@@ -846,13 +852,15 @@
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
 			defaultHandler = "MonoDevelop.Components.MainToolbar.GotoTypeHandler"
-	         _label = "Go to Type..."
+	         _label = "_Type..."
+	         _displayName = "Go to Type..."
 			_description = "Jump to the declaration of type in the current workspace"
 	         shortcut = "Control|Shift|T"
 	         macShortcut = "Meta|Shift|T" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
 			defaultHandler = "MonoDevelop.Components.MainToolbar.GotoFileHandler"
-			_label = "Go to File..."
+			_label = "_File..."
+			_displayName = "Go to File..."
 			shortcut = "Alt|Shift|O"
 			macShortcut = "Meta|Shift|D"
 			_description = "Jump to a file in the current workspace" />
@@ -872,18 +880,21 @@
 			icon = "md-bookmark-prev"
 			shortcut = "Shift|F2"
 			_description = "Go to previous bookmark"
-			_label = "Pre_vious Bookmark" />
+			_label = "Pre_vious"
+			_displayName = "Go to Previous Bookmark" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.NextBookmark"
 			icon = "md-bookmark-next"
 			shortcut = "F2"
 			_description = "Go to next bookmark"
-			_label = "Ne_xt Bookmark" />
+			_label = "Ne_xt"
+			_displayName = "Go to Next Bookmark" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ClearBookmarks"
 			icon = "md-bookmark-clear-all"
 			_description = "Clear bookmarks"
 			_label = "_Clear Bookmarks" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
-			_label = "_Go to Line..."
+			_label = "_Line..."
+			_displayName = "Go to Line..."
 			icon = "md-go-to-line"
 			_description = "Go to a specific line"
 			shortcut = "Control|I"
@@ -902,7 +913,8 @@
 	<Category _name = "Text Editor" id = "TextEditor">
 
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
-			_label = "Show Completion Window"
+			_label = "Completion List..."
+			_displayName = "Show Completion List..."
 			macShortcut="Control|space"
 			shortcut = "Control|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
@@ -910,7 +922,8 @@
 			_label = "Toggle Completion Suggestion Mode" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
 			_description="Inserts a template or when something is selected surrounds selection with a template"
-			_label = "I_nsert Template..."/>
+			_label = "_Template..."
+			_displayName = "Insert Template..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
 			_label = "Go to end of line" macShortcut = "Meta+Right"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineStart"
@@ -963,11 +976,13 @@
 			shortcut="Alt|Down"
 			macShortcut="Alt|Down" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow"
-			_label = "Show Parameter List"
+			_label = "Parameter List..."
+			_displayName = "Show Parameter List..."
 			macShortcut = "Control|Shift|space"
 			shortcut = "Control|Shift|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace"
-			_label = "Go to Matching _Brace"
+			_label = "Matching _Brace"
+			_displayName = "Go to Matching Brace"
 			icon = "md-go-to-matching-brace"
 			description = "Go to Matching Brace"
 			shortcut = "Control|B" />
