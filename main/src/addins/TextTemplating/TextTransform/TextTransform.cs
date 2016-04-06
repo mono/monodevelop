@@ -100,35 +100,47 @@ namespace Mono.TextTemplating
 			//FIXME: implement quoting and escaping for values
 			foreach (var par in parameters) {
 				var split = par.Split ('!');
+
 				if (split.Length < 2) {
-					Console.Error.WriteLine ("Parameter does not have enough values: {0}", par);
+					Console.Error.WriteLine ("Parameter must have name and value: {0}", par);
 					return -1;
 				}
-				if (split.Length > 2) {
-					Console.Error.WriteLine ("Parameter has too many values: {0}", par);
+
+				if (split.Length > 4) {
+					Console.Error.WriteLine ("Parameter has too many arguments: {0}", par);
 					return -1;
 				}
-				string name = split[split.Length-2];
-				string val  = split[split.Length-1];
-				if (string.IsNullOrEmpty (name)) {
+
+				string parName = split[split.Length-2];
+				string parVal  = split[split.Length-1];
+				var directiveName = split.Length > 2 ? split [split.Length - 3] : null;
+				var processorName = split.Length > 3 ? split [0] : null;
+
+				if (string.IsNullOrEmpty (parName)) {
 					Console.Error.WriteLine ("Parameter has no name: {0}", par);
 					return -1;
 				}
-				generator.AddParameter (split.Length > 3? split[0] : null, split.Length > 2? split[split.Length-3] : null, name, val);
+
+				generator.AddParameter (processorName, directiveName, parName, parVal);
 			}
 			
 			foreach (var dir in directives) {
 				var split = dir.Split ('!');
+
 				if (split.Length != 3) {
-					Console.Error.WriteLine ("Directive does not have correct number of values: {0}", dir);
+					Console.Error.WriteLine ("Directive must have 3 values: {0}", dir);
 					return -1;
 				}
-				foreach (var s in split) {
+
+				for (int i = 0; i < 3; i++) {
+					string s = split [i];
 					if (string.IsNullOrEmpty (s)) {
-						Console.Error.WriteLine ("Directive has missing value: {0}", dir);
+						string kind = i == 0? "name" : (i == 1 ? "class" : "assembly");
+						Console.Error.WriteLine ("Directive has missing {0} value: {1}", kind, dir);
 						return -1;
 					}
 				}
+
 				generator.AddDirectiveProcessor (split[0], split[1], split[2]);
 			}
 			
