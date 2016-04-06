@@ -35,10 +35,12 @@ using System.Collections.Generic;
 using MonoDevelop.CSharp.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.CSharp.Completion;
+using System.Threading;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
-	class CSharpCodeGenerator // : CodeGenerator
+	class CSharpCodeGenerator : CodeGenerator
 	{
 		//		static CSharpAmbience ambience = new CSharpAmbience ();
 		//		
@@ -121,19 +123,19 @@ namespace MonoDevelop.CSharp.Refactoring
 			sb.AppendLine();
 		}
 
-		//		public override string WrapInRegions (string regionName, string text)
-		//		{
-		//			StringBuilder result = new StringBuilder ();
-		//			AppendIndent (result);
-		//			result.Append ("#region ");
-		//			result.Append (regionName);
-		//			AppendLine (result);
-		//			result.Append (text);
-		//			AppendLine (result);
-		//			AppendIndent (result);
-		//			result.Append ("#endregion");
-		//			return result.ToString ();
-		//		}
+		public override string WrapInRegions (string regionName, string text)
+		{
+			StringBuilder result = new StringBuilder ();
+			AppendIndent (result);
+			result.Append ("#region ");
+			result.Append (regionName);
+			AppendLine (result);
+			result.Append (text);
+			AppendLine (result);
+			AppendIndent (result);
+			result.Append ("#endregion");
+			return result.ToString ();
+		}
 
 		static void AppendObsoleteAttribute(StringBuilder result, CodeGenerationOptions options, ISymbol entity)
 		{
@@ -1000,19 +1002,16 @@ namespace MonoDevelop.CSharp.Refactoring
 		//			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 		//			return builder.ConvertType (fullType);			
 		//		}
-		//		
-		//		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
-		//		{
-		//			//  TODO: BROKEN DUE ROSLYN PORT - needs to be ported to NR6
-		////			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
-		////			int newOffset;
-		////			if (fixer.TryFix (new DocumentWrapper (doc.Editor), doc.Editor.CaretOffset, out newOffset)) {
-		////				doc.Editor.CaretOffset = newOffset;
-		////			}
-		//		}
+		//
 
-
-
+		public override async void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
+		{
+			var fixer = new ConstructFixer (doc.GetFormattingOptions ());
+			int newOffset = await fixer.TryFix (doc, doc.Editor.CaretOffset, default(CancellationToken));
+			if (newOffset != -1) {
+				doc.Editor.CaretOffset = newOffset;
+			}
+		}
 
 		static CodeGeneratorMemberResult GenerateProtocolCode(IMethodSymbol method, CodeGenerationOptions options)
 		{
@@ -1061,5 +1060,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			return new CodeGeneratorMemberResult(result.ToString (), bodyStartOffset, bodyEndOffset);
 		}
 
+		public override void AddGlobalNamespaceImport (TextEditor editor, DocumentContext context, string nsName)
+		{
+			// not used anymore
+		}
+
+		public override void AddLocalNamespaceImport (TextEditor editor, DocumentContext context, string nsName, TextLocation caretLocation)
+		{
+			// not used anymore
+		}
 	}
 }

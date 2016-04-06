@@ -828,6 +828,7 @@
     <Compile Include="MonoDevelop.CSharp.Navigation\FindDerivedSymbolsHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Navigation\FindBaseSymbolsHandler.cs" />
     <Compile Include="MonoDevelop.CSharp.Navigation\FindImplementingMembersHandler.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring\ConstructFixer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
