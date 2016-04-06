@@ -249,8 +249,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				int catCompare = cat1.CompareTo (cat2);
 				if (catCompare != 0)
 					return catCompare;
-				string t1 = c1.Text.Replace ("_", String.Empty);
-				string t2 = c2.Text.Replace ("_", String.Empty);
+				string t1 = c1.DisplayName;
+				string t2 = c2.DisplayName;
 				return t1.CompareTo (t2);
 			});
 			
@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					string name = currentCat.Length == 0? translatedOther : currentCat;
 					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false, true);
 				}
-				string label = cmd.Text.Replace ("_", String.Empty);
+				string label = cmd.DisplayName;
 				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, (string)cmd.Icon, true, true);
 			}
 			UpdateGlobalWarningLabel ();
@@ -443,7 +443,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					}
 
 					foreach (Command cmd in conf.Commands) {
-						string txt = currentBindings.GetBinding (cmd) + " - " + cmd.Text;
+						string txt = currentBindings.GetBinding (cmd) + " - " + cmd.DisplayName;
 						ContextMenuItem item = new ContextMenuItem (txt);
 						Command localCmd = cmd;
 
@@ -503,7 +503,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			bindings.Remove (cmd);
 			
 			if (bindings.Count > 0) {
-				labelMessage.Markup = "<b>" + GettextCatalog.GetString ("This key combination is already bound to command '{0}'", bindings [0].Text.Replace ("_","")) + "</b>";
+				labelMessage.Markup = "<b>" + GettextCatalog.GetString ("This key combination is already bound to command '{0}'", bindings [0].DisplayName) + "</b>";
 				labelMessage.Visible = true;
 			}
 			else
