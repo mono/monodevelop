@@ -529,7 +529,7 @@ namespace MonoDevelop.Ide.Gui
 				post = "*";
 			}
 			if (window.ViewContent.Project != null) {
-				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationName;
+				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationLongName;
 			}
 			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationLongName;
 		}
