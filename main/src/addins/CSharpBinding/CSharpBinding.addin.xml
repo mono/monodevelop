@@ -9,7 +9,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
-				_label = "S_how Code Generation Window"
+				_label = "_Generate Code..."
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
 		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
