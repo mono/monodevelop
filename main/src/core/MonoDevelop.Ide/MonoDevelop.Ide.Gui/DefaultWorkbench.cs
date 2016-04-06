@@ -208,7 +208,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public DefaultWorkbench()
 		{
-			Title = BrandingService.ApplicationName;
+			Title = BrandingService.ApplicationLongName;
 			LoggingService.LogInfo ("Creating DefaultWorkbench");
 			
 			WidthRequest = normalBounds.Width;
@@ -541,7 +541,7 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null) {
 				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationName;
 			}
-			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationName;
+			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationLongName;
 		}
 		
 		void SetWorkbenchTitle ()
@@ -564,8 +564,8 @@ namespace MonoDevelop.Ide.Gui
 		static string GetDefaultTitle ()
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationName;
-			return BrandingService.ApplicationName;
+				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationLongName;
+			return BrandingService.ApplicationLongName;
 		}
 
 		void ApplicationNameChanged (object sender, EventArgs e)

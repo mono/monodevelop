@@ -223,7 +223,7 @@ namespace WindowsPlatform.MainToolbar
 		public void ShowReady ()
 		{
 			Status = StatusBarStatus.Ready;
-			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationName);
+			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationLongName);
 		}
 
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
