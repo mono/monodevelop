@@ -6023,7 +6023,7 @@ msgid "Project directory can't be deleted since it contains files from other pro
 msgstr "프로젝트 디렉토리는 다른 프로젝트 또는 솔루션에 포함된 파일이므로 삭제할 수 없습니다."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "사용자 정의 정책"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2

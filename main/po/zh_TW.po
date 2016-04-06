@@ -6546,7 +6546,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
 #, fuzzy
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "自訂方針"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2

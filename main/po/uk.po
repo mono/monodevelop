@@ -6392,7 +6392,7 @@ msgstr ""
 "рішень"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "Власні політики"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2

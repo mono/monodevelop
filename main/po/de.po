@@ -6578,7 +6578,7 @@ msgstr ""
 "Projektes oder einer Projektmappe enthält."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "Benutzerdefinierte Richtlinie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
