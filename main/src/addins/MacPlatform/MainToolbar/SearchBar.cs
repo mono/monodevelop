@@ -79,7 +79,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						CancelButtonCell.DrawWithFrame (CancelButtonRectForBounds (inset), inView);
 					}
 				} else {
-					if (inView.Window.Screen.BackingScaleFactor == 2) {
+					if (inView.Window?.Screen?.BackingScaleFactor == 2) {
 						nfloat yOffset = 0f;
 						nfloat hOffset = 0f;
 
