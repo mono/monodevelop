@@ -1715,7 +1715,7 @@ msgstr "MonoDevelop Tercihleri"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Ön_tanımlı sabit genişlikli yazıtipi"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18654,7 +18654,7 @@ msgstr "Tercihler"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Ön_tanımlı sabit genişlikli yazıtipi"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

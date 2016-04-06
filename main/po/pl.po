@@ -1721,7 +1721,7 @@ msgstr "Preferencje MonoDevelopa"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Kompilator:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18818,7 +18818,7 @@ msgstr "Referencje"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Kompilator:"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

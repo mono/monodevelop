@@ -1610,7 +1610,7 @@ msgid "Show MonoDevelop preferences window"
 msgstr "Показати вікно уподобань MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Власні по_літики..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -17196,7 +17196,7 @@ msgid "Preferences..."
 msgstr "Уподобання..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Власні політики..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

@@ -1640,7 +1640,7 @@ msgstr "Zobrazit okno nastavení MnoDevelopu"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Implicitní pravidla..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -17954,7 +17954,7 @@ msgstr "Nastavení..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Implicitní pravidla..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

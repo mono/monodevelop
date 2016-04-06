@@ -1620,7 +1620,7 @@ msgstr "顯示 MonoDevelop 偏好設定視窗"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "預設方針..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -17782,7 +17782,7 @@ msgstr "偏好設定..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "預設方針..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

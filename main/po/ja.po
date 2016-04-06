@@ -1649,7 +1649,7 @@ msgstr "MonoDevelopの設定ウィンドウを表示"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "デフォルト ポリシー"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18179,7 +18179,7 @@ msgstr "設定"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "デフォルト ポリシー"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

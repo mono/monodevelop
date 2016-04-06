@@ -150,7 +150,7 @@
 	</Condition>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.DefaultPolicies"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultPoliciesHandler"
-			_label = "Custom Po_licies..."
+			_label = "Po_licies..."
 			_description = "Edit custom sets of policies which can be applied to solutions" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
 			_label = "_Insert Standard Header"

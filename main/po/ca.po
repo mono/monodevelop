@@ -1676,7 +1676,7 @@ msgstr "Mostra la finestra de preferències del MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Polítiques per defecte..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18233,7 +18233,7 @@ msgstr "Preferències..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Polítiques per defecte..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

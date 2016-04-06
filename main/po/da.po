@@ -1731,7 +1731,7 @@ msgstr "MonoDevelop-pakke"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Oversætter:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18903,7 +18903,7 @@ msgstr "Referencer"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Oversætter:"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

@@ -1471,7 +1471,7 @@ msgid "Show MonoDevelop preferences window"
 msgstr "MonoDevelop 설정 창을 표시"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "사용자 정의 정책... (_l)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -16463,7 +16463,7 @@ msgid "Preferences..."
 msgstr "환경 설정..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "사용자 정의 정책..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

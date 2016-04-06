@@ -1726,7 +1726,7 @@ msgstr "MonoDevelop nastavitve"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Prevajalnik:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18837,7 +18837,7 @@ msgstr "Reference"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Prevajalnik:"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

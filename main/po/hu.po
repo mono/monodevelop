@@ -1702,7 +1702,7 @@ msgstr "MonoDevelop beállítása"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Alapértelmezett irányelvek"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18271,7 +18271,7 @@ msgstr "Tulajdonságok"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Alapértelmezett irányelvek"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

@@ -1692,7 +1692,7 @@ msgstr "显示 MonoDevelop 首选项窗口"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "编译器："
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -18735,7 +18735,7 @@ msgstr "选项"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "编译器："
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41

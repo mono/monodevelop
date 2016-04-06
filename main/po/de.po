@@ -1620,7 +1620,7 @@ msgid "Show MonoDevelop preferences window"
 msgstr "MonoDevelop-Einstellungsfenster anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "_Benutzerrichtlinien..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -17740,7 +17740,7 @@ msgid "Preferences..."
 msgstr "Einstellungen..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Benutzerrichtlinien..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:41
