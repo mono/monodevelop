@@ -134,7 +134,6 @@
     </Reference>
     <Reference Include="NuGet.Commands">
       <HintPath>..\..\..\packages\NuGet.Commands.3.3.0\lib\net45\NuGet.Commands.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Core">
       <HintPath>..\..\..\packages\NuGet.Core.2.10.1\lib\net40-Client\NuGet.Core.dll</HintPath>
