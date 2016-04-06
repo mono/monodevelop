@@ -453,14 +453,12 @@ namespace MonoDevelop.MacIntegration
 			NSObject initialBundleIconFileValue;
 			string iconFile = null;
 
-			string appleTheme = NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle");
-
 			// Try setting a dark variant of the application dock icon if one exists in the app bundle.
 			if (NSBundle.MainBundle.InfoDictionary.TryGetValue (new NSString ("CFBundleIconFile"), out initialBundleIconFileValue)) {
 				FilePath bundleIconRoot = GetAppBundleRoot (exePath).Combine ("Contents", "Resources");
 				NSString initialBundleIconFile = (NSString)initialBundleIconFileValue;
 
-				if (appleTheme == "Dark") {
+				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 					iconFile = bundleIconRoot.Combine (Path.GetFileNameWithoutExtension (initialBundleIconFile) + "~dark" + Path.GetExtension (initialBundleIconFile));
 				}
 
@@ -472,12 +470,12 @@ namespace MonoDevelop.MacIntegration
 				// Setup without bundle.
 				string iconName = BrandingService.GetString ("ApplicationIcon");
 				if (iconName != null) {
-					if (appleTheme == "Dark") {
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
 						string darkIconName = Path.GetFileNameWithoutExtension (iconName) + "~dark" + Path.GetExtension (iconName);
 						iconFile = BrandingService.GetFile (darkIconName);
 					}
 
-					if (appleTheme == "Light" || iconFile == null) {
+					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null) {
 						iconFile = BrandingService.GetFile (iconName);
 					}
 				} else {
