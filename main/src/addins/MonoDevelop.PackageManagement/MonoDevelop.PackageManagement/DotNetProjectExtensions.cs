@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
+using NuGet.Common;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -94,12 +94,12 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasPackages (this IDotNetProject project)
 		{
-			return AnyFileExists (GetPossiblePackagesConfigFilePaths (project.BaseDirectory, project.Name));
+			return AnyFileExists (GetPossiblePackagesConfigOrProjectJsonFilePaths (project.BaseDirectory, project.Name));
 		}
 
 		static bool HasPackages (string projectDirectory, string projectName)
 		{
-			return AnyFileExists (GetPossiblePackagesConfigFilePaths (projectDirectory, projectName));
+			return AnyFileExists (GetPossiblePackagesConfigOrProjectJsonFilePaths (projectDirectory, projectName));
 		}
 
 		static bool AnyFileExists (IEnumerable<string> files)
@@ -107,10 +107,11 @@ namespace MonoDevelop.PackageManagement
 			return files.Any (FileExists);
 		}
 
-		static IEnumerable<string> GetPossiblePackagesConfigFilePaths (string projectDirectory, string projectName)
+		static IEnumerable<string> GetPossiblePackagesConfigOrProjectJsonFilePaths (string projectDirectory, string projectName)
 		{
 			yield return GetNonDefaultProjectPackagesConfigFilePath (projectDirectory, projectName);
 			yield return GetDefaultPackagesConfigFilePath (projectDirectory);
+			yield return ProjectJsonPathUtilities.GetProjectConfigPath (projectDirectory, projectName);
 		}
 
 		static string GetNonDefaultProjectPackagesConfigFilePath (string projectDirectory, string projectName)
