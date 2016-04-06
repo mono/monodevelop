@@ -1305,21 +1305,29 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		System.Timers.Timer tabsChangedTimer = null;
-		void WorkbenchTabsChanged (object sender, EventArgs ev)
-		{
-			if (tabsChangedTimer != null) {
-				tabsChangedTimer.Stop ();
-				tabsChangedTimer.Dispose ();
-			}
+		AsyncCriticalSection tabsChangedLock = new AsyncCriticalSection ();
 
-			tabsChangedTimer = new System.Timers.Timer (10000);
-			tabsChangedTimer.Elapsed += async (s, e) => {
-				await IdeApp.Workspace.SaveAsync ();
-				tabsChangedTimer.Stop ();
-				tabsChangedTimer.Dispose ();
-				tabsChangedTimer = null;
-			};
-			tabsChangedTimer.Start ();
+		async void WorkbenchTabsChanged (object sender, EventArgs ev)
+		{
+			using (await tabsChangedLock.EnterAsync ()) {
+				if (tabsChangedTimer != null) {
+					tabsChangedTimer.Stop ();
+					tabsChangedTimer.Dispose ();
+				}
+
+				tabsChangedTimer = new System.Timers.Timer (10000);
+				tabsChangedTimer.AutoReset = false;
+				tabsChangedTimer.Elapsed += (s, e) => {
+					using (tabsChangedLock.Enter ()) {
+						tabsChangedTimer.Stop ();
+						tabsChangedTimer.Dispose ();
+						tabsChangedTimer = null;
+					}
+
+					IdeApp.Workspace.SavePreferences ();
+				};
+				tabsChangedTimer.Start ();
+			}
 		}
 	}
 	
