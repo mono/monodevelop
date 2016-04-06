@@ -135,11 +135,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return result;
 		}
 
-		public virtual Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
+		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var currentWord = GetCurrentWord (window, descriptor);
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
-			return Task.FromResult (ka);
 		}
 		
 		public override string ToString ()

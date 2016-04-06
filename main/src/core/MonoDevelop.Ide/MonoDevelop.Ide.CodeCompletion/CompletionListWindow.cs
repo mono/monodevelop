@@ -35,7 +35,6 @@ using System.Linq;
 using MonoDevelop.Ide.Editor.Extension;
 using System.ComponentModel;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -192,7 +191,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.OnDestroyed ();
 		}
 
-		public async Task PostProcessKeyEvent (KeyDescriptor descriptor)
+		public void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
@@ -207,10 +206,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			if (!keyHandled)
 				ka = PostProcessKey (descriptor);
-			if ((ka & KeyActions.Complete) != 0) {
-				var res = await CompleteWord (ka, descriptor);
-				ka = res.Item1;
-			}
+			if ((ka & KeyActions.Complete) != 0) 
+				CompleteWord (ref ka, descriptor);
 			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
 				OnWindowClosed (EventArgs.Empty);
@@ -238,7 +235,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			List.QueueDraw ();
 		}
 		
-		public async Task<bool> PreProcessKeyEvent (KeyDescriptor descriptor)
+		public bool PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (descriptor.SpecialKey == SpecialKey.Escape) {
 				CompletionWindowManager.HideWindow ();
@@ -257,10 +254,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 			if (!keyHandled)
 				ka = PreProcessKey (descriptor);
-			if ((ka & KeyActions.Complete) != 0) {
-				var res = await CompleteWord (ka, descriptor);
-				ka = res.Item1;
-			}
+			if ((ka & KeyActions.Complete) != 0)
+				CompleteWord (ref ka, descriptor);
 
 			if ((ka & KeyActions.CloseWindow) != 0) {
 				CompletionWindowManager.HideWindow ();
@@ -485,21 +480,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Reposition (true);
 		}
 		
-		public async Task<bool> CompleteWord ()
+		public bool CompleteWord ()
 		{
-			var res = await CompleteWord (KeyActions.None, KeyDescriptor.Empty);
-			return res.Item2;
+			KeyActions ka = KeyActions.None;
+			return CompleteWord (ref ka, KeyDescriptor.Empty);
 		}
 
 		internal bool IsInCompletion { get; set;  }
 
-		public async Task<Tuple<KeyActions, bool>> CompleteWord (KeyActions ka, KeyDescriptor descriptor)
+		public bool CompleteWord (ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (SelectedItem == -1 || completionDataList == null)
-				return Tuple.Create (ka, false);
+				return false;
 			var item = completionDataList [SelectedItem];
 			if (item == null)
-				return Tuple.Create (ka, false);
+				return false;
 			IsInCompletion = true; 
 			try {
 				// first close the completion list, then insert the text.
@@ -511,9 +506,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 							OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 							*/
 				if (item.HasOverloads && declarationviewwindow.CurrentOverload >= 0 && declarationviewwindow.CurrentOverload < item.OverloadedData.Count) {
-					ka = await item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (this, ka, descriptor);
+					item.OverloadedData[declarationviewwindow.CurrentOverload].InsertCompletionText (this, ref ka, descriptor);
 				} else {
-					ka = await item.InsertCompletionText (this, ka, descriptor);
+					item.InsertCompletionText (this, ref ka, descriptor);
 				}
 				cache.CommitCompletionData (item);
 				OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
@@ -521,7 +516,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				IsInCompletion = false;
 				CompletionWindowManager.HideWindow ();
 			}
-            return Tuple.Create (ka, true);
+            return true;
 		}
 		
 		protected virtual void OnWordCompleted (CodeCompletionContextEventArgs e)

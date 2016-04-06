@@ -35,7 +35,6 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.CSharp.Formatting;
 using System;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -94,7 +93,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.GenerateBody = true;
 		}
 
-		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var editor = ext.Editor;
 			bool isExplicit = false;
@@ -143,8 +142,7 @@ namespace MonoDevelop.CSharp.Completion
 				editor.CaretOffset = targetCaretPosition;
 			}
 
-			await OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
-			return ka;
+			OnTheFlyFormatter.Format (editor, ext.DocumentContext, declarationBegin, declarationBegin + sb.Length);
 		}
 
 		public override bool IsOverload (CompletionData other)

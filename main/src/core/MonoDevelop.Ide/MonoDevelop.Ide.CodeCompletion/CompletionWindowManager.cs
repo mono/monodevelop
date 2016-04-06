@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -159,10 +158,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			OnWindowClosed (EventArgs.Empty);
 		}
 		
-		public static Task<bool> PreProcessKeyEvent (KeyDescriptor descriptor)
+		public static bool PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
-				return Task.FromResult (false);
+				return false;
 			if (descriptor.KeyChar != '\0') {
 				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
 			}
@@ -189,11 +188,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public static Task PostProcessKeyEvent (KeyDescriptor descriptor)
+		public static void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
-				return TaskUtil.Default<object> ();
-			return wnd.PostProcessKeyEvent (descriptor);
+				return;
+			wnd.PostProcessKeyEvent (descriptor);
 		}
 
 		public static void RepositionWindow ()

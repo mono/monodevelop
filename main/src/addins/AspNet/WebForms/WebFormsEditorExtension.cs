@@ -297,19 +297,19 @@ namespace MonoDevelop.AspNet.WebForms
 //			return documentBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
 //		}
 
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			Tracker.UpdateEngine ();
 			bool isAspExprState = Tracker.Engine.CurrentState is WebFormsExpressionState;
 			if (documentBuilder == null || !isAspExprState)
-				return await base.KeyPress (descriptor);
+				return base.KeyPress (descriptor);
 			InitializeCodeCompletion ('\0');
 //			DocumentContext = localDocumentInfo.HiddenDocument;
 //			Editor = localDocumentInfo.HiddenDocument.Editor;
 //			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
 			bool result;
 			try {
-				result = await base.KeyPress (descriptor);
+				result = base.KeyPress (descriptor);
 				if (PropertyService.Get ("EnableParameterInsight", true) && (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ()) {
 					RunParameterCompletionCommand ();
 				}

@@ -1515,10 +1515,10 @@ namespace MonoDevelop.Debugger
 				EndEditing (this, EventArgs.Empty);
 		}
 
-		async void OnEditKeyRelease (object sender, EventArgs e)
+		void OnEditKeyRelease (object sender, EventArgs e)
 		{
 			if (!wasHandled) {
-				await CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
+				CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				PopupCompletion ((Entry) sender);
 			}
 		}
@@ -1531,7 +1531,7 @@ namespace MonoDevelop.Debugger
 		uint keyValue;
 
 		[GLib.ConnectBeforeAttribute]
-		async void OnEditKeyPress (object s, KeyPressEventArgs args)
+		void OnEditKeyPress (object s, KeyPressEventArgs args)
 		{
 			wasHandled = false;
 			key = args.Event.Key;
@@ -1540,7 +1540,7 @@ namespace MonoDevelop.Debugger
 			keyValue = args.Event.KeyValue;
 
 			if (currentCompletionData != null) {
-				wasHandled  = await CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
+				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				args.RetVal = wasHandled;
 			}
 		}
