@@ -376,7 +376,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (menu.Count > 1) {
 					var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
 
-					if (Window.Screen.BackingScaleFactor == 2)
+					if (Window?.Screen?.BackingScaleFactor == 2)
 						offs.Y += 0.5f; // fine tune menu position on retinas
 
 					menu.PopUpMenu (selectedItem, offs, this);
