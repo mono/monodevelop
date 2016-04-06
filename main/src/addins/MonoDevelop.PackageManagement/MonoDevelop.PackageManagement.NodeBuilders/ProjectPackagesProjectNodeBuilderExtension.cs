@@ -121,14 +121,14 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		void FileChanged (object sender, FileEventArgs e)
 		{
-			if (IsPackagesConfigFileChanged (e)) {
+			if (IsPackagesConfigOrProjectJsonFileChanged (e)) {
 				RefreshAllChildNodes ();
 			}
 		}
 
-		bool IsPackagesConfigFileChanged (FileEventArgs fileEventArgs)
+		bool IsPackagesConfigOrProjectJsonFileChanged (FileEventArgs fileEventArgs)
 		{
-			return fileEventArgs.Any (file => file.FileName.IsPackagesConfigFileName ());
+			return fileEventArgs.Any (file => file.FileName.IsPackagesConfigOrProjectJsonFileName ());
 		}
 	}
 }
