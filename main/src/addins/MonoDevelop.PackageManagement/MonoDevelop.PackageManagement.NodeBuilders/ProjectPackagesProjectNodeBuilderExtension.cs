@@ -43,9 +43,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 			packageManagementEvents.PackagesRestored += PackagesRestored;
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
+			packageManagementEvents.PackageOperationsFinished += PackageOperationsFinished;
 			packageManagementEvents.PackageOperationError += PackageOperationError;
 			packageManagementEvents.UpdatedPackagesAvailable += UpdatedPackagesAvailable;
-			packageManagementEvents.ProjectFileRemoved += FileChanged;
 
 			FileService.FileChanged += FileChanged;
 		}
@@ -56,6 +56,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		void PackageOperationsStarting (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
+		}
+
+		void PackageOperationsFinished (object sender, EventArgs e)
 		{
 			RefreshAllChildNodes ();
 		}

@@ -218,14 +218,5 @@ namespace MonoDevelop.PackageManagement
 				ImportRemoved (this, new DotNetProjectImportEventArgs (project, import));
 			}
 		}
-
-		public event EventHandler<FileEventArgs> ProjectFileRemoved;
-
-		public void OnProjectFileRemoved (string path)
-		{
-			if (ProjectFileRemoved != null) {
-				ProjectFileRemoved (this, new FileEventArgs (new FilePath (path), false));
-			}
-		}
 	}
 }

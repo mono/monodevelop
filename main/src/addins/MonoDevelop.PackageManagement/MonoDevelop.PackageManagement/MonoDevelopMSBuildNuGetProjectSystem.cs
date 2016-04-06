@@ -408,7 +408,6 @@ namespace MonoDevelop.PackageManagement
 			GuiSyncDispatch (async () => {
 				string fileName = GetFullPath (path);
 				project.Files.Remove (fileName);
-				packageManagementEvents.OnProjectFileRemoved (fileName);
 				await SaveAsync (project);
 				LogDeletedFileInfo (path);
 			});
