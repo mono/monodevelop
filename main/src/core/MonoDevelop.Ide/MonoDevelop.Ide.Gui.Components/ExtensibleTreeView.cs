@@ -2419,7 +2419,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				return icon.WithSize (size);
 			}
 
-
 			void SetupLayout (Gtk.Widget widget)
 			{
 				if (scaledFont == null) {
@@ -2493,7 +2492,13 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				SetupLayout (widget);
+
+				x_offset = y_offset = 0;
+
+				layout.GetPixelSize (out width, out height);
+				width += (int)Xpad * 2;
+
 				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null) {
 					var iconSize = GetZoomedIconSize (StatusIcon, zoom);
 					width += (int)iconSize.Width + StatusIconSpacing;
