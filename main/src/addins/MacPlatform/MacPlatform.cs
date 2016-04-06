@@ -72,7 +72,10 @@ namespace MonoDevelop.MacIntegration
 				return applicationMenuName ?? BrandingService.ApplicationName;
 			}
 			set {
-				applicationMenuName = value;
+				if (applicationMenuName != value) {
+					applicationMenuName = value;
+					OnApplicationMenuNameChanged ();
+				}
 			}
 		}
 
@@ -269,7 +272,6 @@ namespace MonoDevelop.MacIntegration
 			initedApp = true;
 
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
-			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
@@ -299,7 +301,7 @@ namespace MonoDevelop.MacIntegration
 			return GettextCatalog.GetString ("Hide {0}", ApplicationMenuName);
 		}
 
-		static void ApplicationNameChanged (object sender, EventArgs e)
+		static void OnApplicationMenuNameChanged ()
 		{
 			Command aboutCommand = IdeApp.CommandService.GetCommand (HelpCommands.About);
 			if (aboutCommand != null)
