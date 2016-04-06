@@ -445,29 +445,29 @@ type FSharpFsiEditorCompletion() =
                         if not (lineStr.TrimEnd().EndsWith(";;")) then
                             fsi.AddMorePrompt()
                     
-                    Task.FromResult false
+                    false
                 | SpecialKey.Up -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         fsi.ProcessCommandHistoryUp()
-                        Task.FromResult false
+                        false
                     else
                         base.KeyPress (descriptor)
                 | SpecialKey.Down -> 
                     if x.Editor.CaretLine = x.Editor.LineCount then
                         fsi.ProcessCommandHistoryDown()
-                        Task.FromResult false
+                        false
                     else
                         base.KeyPress (descriptor)
                 | SpecialKey.Left ->
                     if (x.Editor.CaretLine <> x.Editor.LineCount) || x.Editor.CaretColumn > 1 then
                         base.KeyPress (descriptor)
                     else
-                        Task.FromResult false
+                        false
                 | SpecialKey.BackSpace ->
                     if x.Editor.CaretLine = x.Editor.LineCount && x.Editor.CaretColumn > 1 then
                         base.KeyPress (descriptor)
                     else
-                        Task.FromResult false
+                        false
                 | _ -> 
                     if x.Editor.CaretLine <> x.Editor.LineCount then
                         x.Editor.CaretOffset <- x.Editor.Length
