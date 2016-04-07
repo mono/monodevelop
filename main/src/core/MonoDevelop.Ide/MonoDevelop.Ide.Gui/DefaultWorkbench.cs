@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Gui
 		public event EventHandler ActiveWorkbenchWindowChanged;
 		public event EventHandler WorkbenchTabsChanged;
 		
-		public MonoDevelop.Ide.StatusBar StatusBar {
+		public IStatusBar StatusBar {
 			get {
 				return toolbar.StatusBar;
 			}

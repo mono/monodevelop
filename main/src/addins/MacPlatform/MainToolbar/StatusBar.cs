@@ -324,7 +324,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	}
 
 	[Register]
-	class StatusBar : NSButton, MonoDevelop.Ide.StatusBar
+	class StatusBar : NSButton, IStatusBar
 	{
 		public enum MessageType
 		{
@@ -410,7 +410,32 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			buildResults = new BuildResultsView ();
 			buildResults.Hidden = true;
 
-			ctxHandler = new StatusBarContextHandler (this);
+			ctxHandler = new StatusBarContextHandler ();
+			ctxHandler.MessageChanged += (object sender, StatusMessageContextMessageChangedArgs e) => {
+				if (e.Context != null) {
+					SetMessageSourcePad (e.Context.StatusSourcePad);
+				}
+				ShowMessage (e.Image, e.Message, e.IsMarkup);
+			};
+			ctxHandler.ProgressChanged += (object sender, StatusMessageContextProgressChangedArgs e) => {
+				switch (e.EventType) {
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Begin:
+					BeginProgress (e.Context.AutoPulse);
+					break;
+
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Finish:
+					EndProgress ();
+					break;
+
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Fraction:
+					SetProgressFraction (e.Work);
+					break;
+
+				case StatusMessageContextProgressChangedArgs.ProgressChangedType.Pulse:
+					// Nothing
+					break;
+				}
+			};
 
 			updateHandler = delegate {
 				int ec = 0, wc = 0;
@@ -603,17 +628,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			return statusIcon;
 		}
 
-		public StatusBarContext CreateContext ()
-		{
-			return ctxHandler.CreateContext ();
-		}
-
-		public void ShowReady ()
-		{
-			ShowMessage (null, "", false, MessageType.Ready);
-		}
-
-		static Pad sourcePad;
+		Pad sourcePad;
 		public void SetMessageSourcePad (Pad pad)
 		{
 			sourcePad = pad;
@@ -725,17 +740,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			iconLoaded = true;
 		}
 
-		public void BeginProgress (string name)
-		{
-			BeginProgress (null, name);
-		}
-
-		public void BeginProgress (IconId image, string name)
+		void BeginProgress (bool autoPulse = false)
 		{
 			EndProgress ();
-			ShowMessage (image, name);
 
-			if (AutoPulse)
+			if (autoPulse)
 				progressView.StartProgressAutoPulse ();
 			else
 				progressView.BeginProgress ();
@@ -755,17 +764,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void Pulse ()
 		{
 			// Nothing to do here.
-		}
-
-		public MonoDevelop.Ide.StatusBar MainContext {
-			get {
-				return ctxHandler.MainContext;
-			}
-		}
-
-		public bool AutoPulse {
-			get;
-			set;
 		}
 
 		static NSAttributedString GetPopoverString (string text)

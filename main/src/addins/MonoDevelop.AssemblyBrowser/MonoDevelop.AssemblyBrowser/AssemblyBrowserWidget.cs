@@ -789,19 +789,19 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			switch (searchMode) {
 			case SearchMode.Member:
-				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching member..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching member..."));
 				break;
 			case SearchMode.Disassembler:
-				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 				break;
 			case SearchMode.Decompiler:
-				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in decompiled code..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in decompiled code..."));
 				break;
 			case SearchMode.Type:
-				IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching type..."));
+				StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching type..."));
 				break;
-				case SearchMode.TypeAndMembers:
-		       	IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
+			case SearchMode.TypeAndMembers:
+		       		StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching types and members..."));
 				break;
 			}
 			memberListStore.Clear ();
@@ -852,7 +852,7 @@ namespace MonoDevelop.AssemblyBrowser
 						memberDict [unit] = members;
 					}
 					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						StatusService.MainContext.SetProgressFraction ((double)curType / types);
 						foreach (var kv in memberDict) {
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
@@ -869,7 +869,7 @@ namespace MonoDevelop.AssemblyBrowser
 					break;
 				case SearchMode.Disassembler:
 					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
+						StatusService.MainContext.BeginProgress (GettextCatalog.GetString ("Searching string in disassembled code..."));
 					}
 					);
 					foreach (var unit in this.definitions) {
@@ -887,7 +887,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						StatusService.MainContext.SetProgressFraction ((double)curType / types);
 						foreach (var kv in memberDict) {
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
@@ -917,7 +917,7 @@ namespace MonoDevelop.AssemblyBrowser
 						}
 					}
 					Gtk.Application.Invoke (delegate {
-						IdeApp.Workbench.StatusBar.SetProgressFraction ((double)curType / types);
+						StatusService.MainContext.SetProgressFraction ((double)curType / types);
 						foreach (var kv in memberDict) {
 							foreach (var member in kv.Value) {
 								if (worker.CancellationPending)
@@ -1007,8 +1007,8 @@ namespace MonoDevelop.AssemblyBrowser
 				}
 			} finally {
 				Gtk.Application.Invoke (delegate {
-					IdeApp.Workbench.StatusBar.EndProgress ();
-					IdeApp.Workbench.StatusBar.ShowReady ();
+					StatusService.MainContext.EndProgress ();
+					StatusService.MainContext.ShowReady ();
 				});
 			}
 		}

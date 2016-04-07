@@ -320,7 +320,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
-		public MonoDevelop.Ide.StatusBar StatusBar {
+		public IStatusBar StatusBar {
 			get { return statusBar; }
 		}
 		#endregion

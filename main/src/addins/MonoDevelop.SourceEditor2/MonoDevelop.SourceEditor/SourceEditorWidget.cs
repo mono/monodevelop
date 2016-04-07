@@ -1108,7 +1108,7 @@ namespace MonoDevelop.SourceEditor
 				searchAndReplaceWidget = null;
 				result = true;
 				//clears any message it may have set
-				IdeApp.Workbench.StatusBar.ShowReady ();
+				StatusService.MainContext.ShowMessage (null, "", false);
 			}
 			
 			if (gotoLineNumberWidgetFrame != null) {

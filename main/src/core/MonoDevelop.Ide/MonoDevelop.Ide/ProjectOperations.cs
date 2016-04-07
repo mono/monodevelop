@@ -1033,7 +1033,7 @@ namespace MonoDevelop.Ide
 
 			var error = monitor.Errors.FirstOrDefault ();
 			if (error != null)
-				IdeApp.Workbench.StatusBar.ShowError (error.Message);
+				StatusService.MainContext.ShowError (error.Message);
 			currentRunOperationOwner = null;
 		}
 		

@@ -7965,12 +7965,7 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageTipOfTheDaySection.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItemTitleTab.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageFirstRun.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBar.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextBase.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContext.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusBarIcon.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextImpl.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\MainStatusBarContextImpl.cs" />
     <Compile Include="MonoDevelop.Components.Commands\ICommandDelegator.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\ResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\CellRendererImage.cs" />
@@ -8225,6 +8220,9 @@
     <Compile Include="MonoDevelop.Components\Windows\GtkWin32Interop.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractNavigationExtension.cs" />
     <Compile Include="MonoDevelop.Components\FileChooserAction.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\IStatusBar.cs" />
+    <Compile Include="MonoDevelop.Ide\StatusService.cs" />
+    <Compile Include="MonoDevelop.Ide\StatusMessageContext.cs" />
     <Compile Include="MonoDevelop.Components\IdeDialog.cs" />
     <Compile Include="MonoDevelop.Components\IdeWindow.cs" />
     <Compile Include="MonoDevelop.Components\IdeTheme.cs" />

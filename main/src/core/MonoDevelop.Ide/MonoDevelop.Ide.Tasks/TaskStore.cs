@@ -433,7 +433,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
+				StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}
@@ -507,7 +507,7 @@ namespace MonoDevelop.Ide.Tasks
 				return new TaskNavigationPoint (currentLocationTask);
 			}
 			else {
-				IdeApp.Workbench.StatusBar.ShowMessage (GettextCatalog.GetString ("End of list"));
+				StatusService.MainContext.ShowMessage (GettextCatalog.GetString ("End of list"));
 				return null;
 			}
 		}

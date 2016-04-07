@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
 		{
-			Ide.IdeApp.Workbench.StatusBar.ShowMessage (e.Message);
+			StatusService.MainContext.ShowWarning (e.Message);
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
@@ -451,7 +451,7 @@ namespace MonoDevelop.Ide
 		{
 			if (IdeApp.Preferences.EnableInstrumentation) {
 				if (instrumentationStatusIcon == null) {
-					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusInstrumentation));
+					instrumentationStatusIcon = StatusService.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusInstrumentation));
 					instrumentationStatusIcon.ToolTip = "Instrumentation service enabled";
 					instrumentationStatusIcon.Clicked += delegate {
 						InstrumentationService.StartMonitor ();

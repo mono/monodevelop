@@ -1,5 +1,5 @@
 //
-// StatusBarContextBase.cs
+// StatusBar.cs
 //
 // Author:
 //       Lluis Sanchez <lluis@xamarin.com>
@@ -40,72 +40,16 @@ using StockIcons = MonoDevelop.Ide.Gui.Stock;
 
 namespace MonoDevelop.Ide
 {
-	
 	/// <summary>
 	/// The MonoDevelop status bar.
 	/// </summary>
-	
-	public interface StatusBarContextBase: IDisposable
+	public interface IStatusBar
 	{
+		//StatusBar MainContext { get; }
 		/// <summary>
-		/// Shows a message with an error icon
+		/// Shows a status icon in the toolbar. The icon can be removed by disposing
+		/// the StatusBarIcon instance.
 		/// </summary>
-		void ShowError (string error);
-		
-		/// <summary>
-		/// Shows a message with a warning icon
-		/// </summary>
-		void ShowWarning (string warning);
-		
-		/// <summary>
-		/// Shows a message in the status bar
-		/// </summary>
-		void ShowMessage (string message);
-		
-		/// <summary>
-		/// Shows a message in the status bar
-		/// </summary>
-		void ShowMessage (string message, bool isMarkup);
-		
-		/// <summary>
-		/// Shows a message in the status bar
-		/// </summary>
-		void ShowMessage (IconId image, string message);
-
-		/// <summary>
-		/// Shows a message in the status bar
-		/// </summary>
-		void ShowMessage (IconId image, string message, bool isMarkup);
-		
-		/// <summary>
-		/// Shows a progress bar, with the provided label next to it
-		/// </summary>
-		void BeginProgress (string name);
-		
-		/// <summary>
-		/// Shows a progress bar, with the provided label and icon next to it
-		/// </summary>
-		void BeginProgress (IconId image, string name);
-		
-		/// <summary>
-		/// Sets the progress fraction. It can only be used after calling BeginProgress.
-		/// </summary>
-		void SetProgressFraction (double work);
-
-		/// <summary>
-		/// Hides the progress bar shown with BeginProgress
-		/// </summary>
-		void EndProgress ();
-		
-		/// <summary>
-		/// Pulses the progress bar shown with BeginProgress
-		/// </summary>
-		void Pulse ();
-		
-		/// <summary>
-		/// When set, the status bar progress will be automatically pulsed at short intervals
-		/// </summary>
-		bool AutoPulse { get; set; }
+		StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf);
 	}
-	
 }
