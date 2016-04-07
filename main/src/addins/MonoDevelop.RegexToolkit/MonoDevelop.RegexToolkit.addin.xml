@@ -5,7 +5,7 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit"
 		         defaultHandler = "MonoDevelop.RegexToolkit.ShowRegexToolkitHandler"
-		         _label = "_Regex Toolkit..." />
+		         _label = "_Regular Expressions Toolkit" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
