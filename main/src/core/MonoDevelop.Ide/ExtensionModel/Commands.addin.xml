@@ -1074,11 +1074,15 @@
 			macShortcut = "Meta||" />
 			
 	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle"
-			_label = "Toggle message bubble"
-			_description = "Toggles message bubble on/off"/>
+			disabledVisible = "false"
+			_label = "Hide Current Message"
+			_displayName = "Show/Hide current Inline Message"
+			_description = "Toggles the visibility of the current Inline Message"/>
 	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues"
 			defaultHandler = "MonoDevelop.Ide.Editor.HideIssuesHandler"
-			_label = "_Hide Issues"/>
+			_label = "_None"
+			_displayName = "Show/Hide Inline Messages"
+			_description = "Toggles the visibility of Inline Messages"/>
 	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues"
 			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
 			_label = "Toggle Issues"

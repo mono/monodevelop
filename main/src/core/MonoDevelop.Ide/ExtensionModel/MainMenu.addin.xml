@@ -120,11 +120,11 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" />
 		</ItemSet>
-		<ItemSet id = "MessageBubbles" _label = "_Message Bubbles">
-			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
+		<ItemSet id = "MessageBubbles" _label = "Inline _Messages">
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues" />
-			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
 		</ItemSet>
 		<ItemSet id = "Folding" _label = "F_olding">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
