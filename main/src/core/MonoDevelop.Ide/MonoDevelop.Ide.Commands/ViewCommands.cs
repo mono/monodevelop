@@ -290,7 +290,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.TabCount > 1 && DockNotebook.ActiveNotebook.Container.AllowRightInsert;
+			info.Checked = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.Container.SplitCount > 0;
+			info.Enabled = DockNotebook.ActiveNotebook != null && 
+				DockNotebook.ActiveNotebook.TabCount > 1 && 
+				DockNotebook.ActiveNotebook.Container.AllowRightInsert || DockNotebook.ActiveNotebook.Container.SplitCount > 0;
 		}
 
 		protected override void Run ()
@@ -310,7 +313,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.Container.SplitCount > 0;
+			info.Checked = DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.Container.SplitCount < 1;
+			info.Enabled = DockNotebook.ActiveNotebook != null &&
+				DockNotebook.ActiveNotebook.TabCount > 1 &&
+				DockNotebook.ActiveNotebook.Container.AllowRightInsert || DockNotebook.ActiveNotebook.Container.SplitCount > 0;
 		}
 
 		protected override void Run ()

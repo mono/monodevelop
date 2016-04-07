@@ -116,7 +116,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
 		<SeparatorItem id = "ViewSeparator3" />
-		<ItemSet id = "Editor Layout">
+		<ItemSet id = "Editor Columns">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" />
 		</ItemSet>

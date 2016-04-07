@@ -641,13 +641,15 @@
 			_description = "Resets zoom to default" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.SideBySideModeHandler"
-			_label = "2 Columns"
+			_label = "Two Columns"
+			_displayName = "Two Editor Columns"
 			shortcut = "Control|Shift|2"
 			macShortcut = "Alt|Meta|2"
 			icon = "md-columns-two" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.SingleModeHandler"
-			_label = "1 Column"
+			_label = "One Column"
+			_displayName = "One Editor Column"
 			shortcut = "Control|Shift|1"
 			macShortcut = "Alt|Meta|1"
 			icon = "md-columns-one" />
