@@ -2419,8 +2419,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				return icon.WithSize (size);
 			}
 
-
-			void SetupLayout (Gtk.Widget widget)
+			void SetupScaledFont ()
 			{
 				if (scaledFont == null) {
 					if (scaledFont != null)
@@ -2430,6 +2429,12 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (layout != null)
 						layout.FontDescription = scaledFont;
 				}
+			}
+
+
+			void SetupLayout (Gtk.Widget widget)
+			{
+				SetupScaledFont ();
 
 				if (layout == null || layout.Context != widget.PangoContext) {
 					if (layout != null)
@@ -2494,6 +2499,19 @@ namespace MonoDevelop.Ide.Gui.Components
 			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+
+				int w, h;
+				using (var oldLayout = new Pango.Layout (widget.PangoContext)) {
+					oldLayout.SetMarkup (TextMarkup);
+					oldLayout.GetPixelSize (out w, out h);
+					width -= w;
+
+					SetupScaledFont ();
+
+					oldLayout.FontDescription = scaledFont;
+					oldLayout.GetPixelSize (out w, out h);
+					width += w;
+				}
 				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null) {
 					var iconSize = GetZoomedIconSize (StatusIcon, zoom);
 					width += (int)iconSize.Width + StatusIconSpacing;
