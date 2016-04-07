@@ -1305,20 +1305,31 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		System.Timers.Timer tabsChangedTimer = null;
+
+		void DisposeTimerAndSave (object o, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				tabsChangedTimer.Stop ();
+				tabsChangedTimer.Elapsed -= DisposeTimerAndSave;
+				tabsChangedTimer.Dispose ();
+				tabsChangedTimer = null;
+
+				IdeApp.Workspace.SavePreferences ();
+			});
+		}
+
 		void WorkbenchTabsChanged (object sender, EventArgs ev)
 		{
 			if (tabsChangedTimer != null) {
-				tabsChangedTimer.Stop ();
-				tabsChangedTimer.Dispose ();
+				// Timer already started, and we want to allow it to complete
+				// so it can't be interrupted by triggering WorkbenchTabsChanged
+				// every few seconds.
+				return;
 			}
 
 			tabsChangedTimer = new System.Timers.Timer (10000);
-			tabsChangedTimer.Elapsed += async (s, e) => {
-				await IdeApp.Workspace.SaveAsync ();
-				tabsChangedTimer.Stop ();
-				tabsChangedTimer.Dispose ();
-				tabsChangedTimer = null;
-			};
+			tabsChangedTimer.AutoReset = false;
+			tabsChangedTimer.Elapsed += DisposeTimerAndSave;
 			tabsChangedTimer.Start ();
 		}
 	}
