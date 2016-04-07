@@ -162,10 +162,11 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = !String.Equals ("Solution", IdeApp.Workbench.CurrentLayout, StringComparison.OrdinalIgnoreCase);
+			info.Text = GettextCatalog.GetString ("_Delete \"{0}\" Layout", IdeApp.Workbench.CurrentLayout);
 		}
 		protected override void Run ()
 		{
-			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the active layout?"), AlertButton.Delete)) {
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the \"{0}\" layout?", IdeApp.Workbench.CurrentLayout), AlertButton.Delete)) {
 				string clayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Solution";
 				IdeApp.Workbench.DeleteLayout (clayout);

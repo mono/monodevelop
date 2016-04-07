@@ -546,7 +546,7 @@
 			_label = "Layout List" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.NewLayout"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewLayoutHandler"
-			_label = "_New Layout..."
+			_label = "Save Curre_nt Layout..."
 			icon = "gtk-add"
 			_description = "Create new layout" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout"
