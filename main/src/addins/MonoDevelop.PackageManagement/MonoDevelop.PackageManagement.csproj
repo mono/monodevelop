@@ -506,6 +506,7 @@
     <Compile Include="MonoDevelop.PackageManagement\CheckForNuGetPackageUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatedNuGetPackagesInWorkspace.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetIntegratedProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopBuildIntegratedRestorer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
