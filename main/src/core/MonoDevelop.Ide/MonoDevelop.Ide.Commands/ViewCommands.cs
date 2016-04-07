@@ -121,10 +121,24 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.ViewCommands.LayoutList
 	public class LayoutListHandler : CommandHandler
 	{
+		static readonly Dictionary<string, string> nameMapping;
+
+		static LayoutListHandler ()
+		{
+			nameMapping = new Dictionary<string, string> ();
+			nameMapping ["Solution"] = "Code";
+			nameMapping ["Visual Design"] = "Design";
+			nameMapping ["Debug"] = "Debug";
+			nameMapping ["Unit Testing"] = "Test";
+		}
+
 		protected override void Update (CommandArrayInfo info)
 		{
+			string text;
 			foreach (var name in IdeApp.Workbench.Layouts) {
-				CommandInfo item = new CommandInfo(GettextCatalog.GetString (name));
+				if (!nameMapping.TryGetValue (name, out text))
+					text = name;
+				CommandInfo item = new CommandInfo(GettextCatalog.GetString (text));
 				item.Checked = IdeApp.Workbench.CurrentLayout == name;
 				item.Description = GettextCatalog.GetString ("Switch to layout '{0}'", name);
 				info.Add (item, name);
