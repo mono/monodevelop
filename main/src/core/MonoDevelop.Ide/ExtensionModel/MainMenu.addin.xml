@@ -282,8 +282,9 @@
 		</Condition>
 		<SeparatorItem id = "Separator3" />
 		<ItemSet id = "Diagnostics">
-			<LinkItem id = "ReportBug" _label = "Report a Bug" link = "http://xamar.in/r/file_studio_bug" />
+			<LinkItem id = "ReportBug" _label = "Report Problem..." link = "http://xamar.in/r/file_studio_bug" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
+			<SeparatorItem id = "InstrumentationSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		</ItemSet>
 		<Condition id = "Platform" value = "!mac">
