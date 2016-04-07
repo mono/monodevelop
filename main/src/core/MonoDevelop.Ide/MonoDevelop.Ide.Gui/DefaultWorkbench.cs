@@ -539,9 +539,9 @@ namespace MonoDevelop.Ide.Gui
 				post = "*";
 			}
 			if (window.ViewContent.Project != null) {
-				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationName;
+				return window.ViewContent.Project.Name + " – " + window.ViewContent.PathRelativeToProject + post + " – " + BrandingService.ApplicationName;
 			}
-			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationName;
+			return window.ViewContent.ContentName + post + " – " + BrandingService.ApplicationName;
 		}
 		
 		void SetWorkbenchTitle ()
@@ -564,7 +564,7 @@ namespace MonoDevelop.Ide.Gui
 		static string GetDefaultTitle ()
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationName;
+				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " – " + BrandingService.ApplicationName;
 			return BrandingService.ApplicationName;
 		}
 
