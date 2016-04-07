@@ -32,6 +32,7 @@ using System.Text;
 using Foundation;
 using ObjCRuntime;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.MacIntegration.MacMenu
 {
@@ -161,6 +162,23 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 			item.Enabled = enabled;
 			item.Hidden = !visible;
+
+			string fileName = null;
+			var doc = info.DataItem as Ide.Gui.Document;
+			if (doc != null)
+				fileName = doc.FileName;
+			else {
+				var str = info.DataItem as string;
+				if (str != null && System.IO.Path.IsPathRooted (str) && System.IO.File.Exists (str))
+					fileName = str;
+			}
+
+			if (!String.IsNullOrWhiteSpace (fileName)) {
+				item.ToolTip = fileName;
+				var icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
+				if (icon != null)
+					item.Image = icon.ToNSImage ();
+			}
 
 			SetAccel (item, info.AccelKey);
 
