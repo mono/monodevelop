@@ -621,9 +621,23 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 		[CommandHandler (TextEditorCommands.ToggleBlockSelectionMode)]
-		void OnToggleBlockSelectionMode ()
+		void OnToggleBlockSelectionMode (string optionId)
 		{
-			EditActions.ToggleBlockSelectionMode (Editor);
+			SelectionMode newMode;
+			if (Enum.TryParse (optionId, out newMode) && Editor.SelectionMode != newMode)
+				EditActions.ToggleBlockSelectionMode (Editor);
+		}
+
+		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]
+		void OnUpdateBlockSelectionMode (CommandArrayInfo ainfo)
+		{
+			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Normal"), SelectionMode.Normal.ToString ());
+			info.Checked = Editor.SelectionMode == SelectionMode.Normal;
+			info.Enabled = Editor.IsSomethingSelected;
+
+			info = ainfo.Add (GettextCatalog.GetString ("_Block"), SelectionMode.Block.ToString ());
+			info.Checked = Editor.SelectionMode == SelectionMode.Block;
+			info.Enabled = Editor.IsSomethingSelected;
 		}
 
 		[CommandHandler (EditCommands.IndentSelection)]

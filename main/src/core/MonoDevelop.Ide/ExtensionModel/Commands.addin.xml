@@ -1060,7 +1060,8 @@
 			_description = "Scrolls the editor so that the caret is centered"
 			macShortcut = "Control|L" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
-			_label = "Toggle Block Selection Mode"/>
+			_label = "Toggle Block Selection Mode"
+			type="radio|array"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DynamicAbbrev"
