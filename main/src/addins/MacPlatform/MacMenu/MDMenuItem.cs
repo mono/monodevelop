@@ -155,8 +155,6 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible)
 		{
 			item.SetTitleWithMnemonic (GetCleanCommandText (info));
-			if (!string.IsNullOrEmpty (info.Description) && item.ToolTip != info.Description)
-				item.ToolTip = info.Description;
 
 			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
 			bool visible = info.Visible && (disabledVisible || info.Enabled);
