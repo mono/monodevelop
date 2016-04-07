@@ -272,7 +272,7 @@ namespace MonoDevelop.Debugger
 					batchChanged.Add (watch);
 				return;
 			}
-			DispatchService.GuiDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				if (WatchChanged != null)
 					WatchChanged (this, new PinnedWatchEventArgs (watch));
 			});

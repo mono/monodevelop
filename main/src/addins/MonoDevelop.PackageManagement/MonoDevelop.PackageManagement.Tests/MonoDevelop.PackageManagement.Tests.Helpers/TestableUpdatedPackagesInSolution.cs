@@ -25,12 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableUpdatedPackagesInSolution : UpdatedPackagesInSolution
+	class TestableUpdatedPackagesInSolution : UpdatedPackagesInSolution
 	{
 		public TestableUpdatedPackagesInSolution (
 			IPackageManagementSolution solution,
@@ -48,9 +48,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			};
 		}
 
-		protected override void GuiDispatch (MessageHandler handler)
+		protected override void GuiDispatch (Action action)
 		{
-			handler.Invoke ();
+			action.Invoke ();
 		}
 
 		public Func<string, bool> FileExistsAction;

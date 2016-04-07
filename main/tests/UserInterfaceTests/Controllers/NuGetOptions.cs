@@ -85,24 +85,29 @@ namespace UserInterfaceTests
 				Operation, PackageName, WaitForSuccess, WaitForWarning, WaitForError, TimeOutSeconds, PollStepSeconds);
 		}
 
-		public static void UpdateSuccess (string packageName, bool waitForWarning = true)
+		public static void UpdateSuccess (string packageName, bool waitForWarning = true, UITestBase testContext = null)
 		{
-			Success (packageName, NuGetOperations.Update, waitForWarning);
+			Success (packageName, NuGetOperations.Update, waitForWarning, testContext);
 		}
 
-		public static void AddSuccess (string packageName, bool waitForWarning = true)
+		public static void AddSuccess (string packageName, bool waitForWarning = true, UITestBase testContext = null)
 		{
-			Success (packageName, NuGetOperations.Add, waitForWarning);
+			Success (packageName, NuGetOperations.Add, waitForWarning, testContext);
 		}
 
-		public static void Success (string packageName, NuGetOperations operation, bool waitForWarning = true)
+		public static void Success (string packageName, NuGetOperations operation, bool waitForWarning = true, UITestBase testContext = null)
 		{
-			new WaitForNuGet {
+			var waitPackage = new WaitForNuGet {
 				Operation = operation,
 				PackageName = packageName,
 				WaitForSuccess = true,
 				WaitForWarning = waitForWarning
-			}.Wait ();
+			};
+			if (testContext != null) {
+				testContext.ReproStep (string.Format ("Wait for one of these messages:\n\t{0}",
+					string.Join ("\t\n", waitPackage.ToMessages ())));
+			}
+			waitPackage.Wait ();
 		}
 
 		public void Wait ()

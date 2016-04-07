@@ -29,12 +29,10 @@ using System.Linq;
 using NUnit.Framework;
 
 using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using System.Text;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -45,21 +43,21 @@ namespace MonoDevelop.CSharpBinding
 		{
 			var parser = new CSharpFoldingParser ();
 			var sb = new StringBuilder ();
-			var openStack = new Stack<TextLocation>();
+			var openStack = new Stack<DocumentLocation>();
 			
 			int line = 1;
 			int col = 1;
 			
-			var foldingList = new List<DomRegion> ();
+			var foldingList = new List<DocumentRegion> ();
 			
 			for (int i = 0; i < code.Length; i++) {
 				char ch = code [i];
 				switch (ch) {
 				case '[':
-					openStack.Push (new TextLocation (line, col));
+					openStack.Push (new DocumentLocation (line, col));
 					break;
 				case ']':
-					foldingList.Add (new DomRegion (openStack.Pop (), new TextLocation (line, col)));
+					foldingList.Add (new DocumentRegion (openStack.Pop (), new DocumentLocation (line, col)));
 					break;
 				default:
 					if (ch =='\n') {
@@ -74,7 +72,7 @@ namespace MonoDevelop.CSharpBinding
 			}
 			
 			var doc = parser.Parse ("a.cs", sb.ToString ());
-			var generatedFoldings = new List<FoldingRegion> (doc.Foldings);
+			var generatedFoldings = doc.GetFoldingsAsync().Result;
 			Assert.AreEqual (foldingList.Count, generatedFoldings.Count, "Folding count differs.");
 			foreach (var generated in generatedFoldings) {
 				Assert.IsTrue (foldingList.Any (f => f == generated.Region), "fold not found:" + generated.Region);
@@ -140,7 +138,7 @@ class SomeNew {
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.]
 using System;");
-			foreach (var cmt in doc.Comments) {
+			foreach (var cmt in doc.GetCommentsAsync().Result) {
 				Assert.IsFalse (cmt.Text.StartsWith ("//"));
 			}
 
@@ -157,8 +155,8 @@ using System;");
 	}
 	#endregion]
 }");
-			Assert.AreEqual (1, doc.Foldings.Count ());
-			Assert.AreEqual ("TestRegion", doc.Foldings.First ().Name);
+			Assert.AreEqual (1, doc.GetFoldingsAsync().Result.Count ());
+			Assert.AreEqual ("TestRegion", doc.GetFoldingsAsync().Result.First ().Name);
 		}
 		
 		[Test]
@@ -178,9 +176,9 @@ using System;");
 	}
 	#endregion]
 }");
-			Assert.AreEqual (2, doc.Foldings.Count ());
-			Assert.AreEqual ("TestRegion", doc.Foldings.First ().Name);
-			Assert.AreEqual ("TestRegion2", doc.Foldings.Skip (1).First ().Name);
+			Assert.AreEqual (2, doc.GetFoldingsAsync().Result.Count ());
+			Assert.AreEqual ("TestRegion", doc.GetFoldingsAsync().Result.First ().Name);
+			Assert.AreEqual ("TestRegion2", doc.GetFoldingsAsync().Result.Skip (1).First ().Name);
 		}
 		
 
@@ -196,7 +194,7 @@ using System;");
 	{
 	}
 }");
-			foreach (var cmt in doc.Comments) {
+			foreach (var cmt in doc.GetCommentsAsync().Result) {
 				Assert.IsFalse (cmt.Text.StartsWith ("///"));
 				Assert.IsTrue (cmt.IsDocumentation);
 			}
@@ -235,7 +233,7 @@ using System;");
 	{ // not be 
 	} // folded
 }");
-			Assert.AreEqual (0, doc.Foldings.Count ());
+			Assert.AreEqual (0, doc.GetFoldingsAsync().Result.Count ());
 		}
 
 		

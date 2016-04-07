@@ -1,4 +1,4 @@
-﻿//
+//
 // CreateBuildTemplatesTestBase.cs
 //
 // Author:
@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
+using MonoDevelop.Components.AutoTest;
 using NUnit.Framework;
 
 namespace UserInterfaceTests
@@ -91,8 +92,7 @@ namespace UserInterfaceTests
 					TakeScreenShot ("BeforeBuildActionFailed");
 					Assert.Fail (e.ToString ());
 				}
-
-				OnBuildTemplate ();
+				OnBuildTemplate ((int)projectDetails.BuildTimeout.TotalSeconds);
 			} catch (Exception e) {
 				TakeScreenShot ("TestFailedWithGenericException");
 				Assert.Fail (e.ToString ());
@@ -105,6 +105,7 @@ namespace UserInterfaceTests
 			ProjectDetails projectDetails, GitOptions gitOptions = null, object miscOptions = null)
 		{
 			PrintToTestRunner (templateOptions, projectDetails, gitOptions, miscOptions);
+			ReproStep ("Create a new project", templateOptions, projectDetails, gitOptions, miscOptions);
 			var newProject = new NewProjectController ();
 
 			if (projectDetails.AddProjectToExistingSolution)
@@ -188,10 +189,13 @@ namespace UserInterfaceTests
 
 		protected virtual void OnBuildTemplate (int buildTimeoutInSecs = 180)
 		{
+			ReproStep ("Build solution");
 			try {
 				Assert.IsTrue (Ide.BuildSolution (timeoutInSecs : buildTimeoutInSecs), "Build Failed");
 				TakeScreenShot ("AfterBuildFinishedSuccessfully");
 			} catch (TimeoutException e) {
+				Session.DebugObject.Debug ("Build Failed");
+				ReproStep (string.Format ("Expected: Build should finish within '{0}' seconds\nActual: Build timed out", buildTimeoutInSecs));
 				TakeScreenShot ("AfterBuildFailed");
 				Assert.Fail (e.ToString ());
 			}
@@ -209,6 +213,26 @@ namespace UserInterfaceTests
 //					newProject.Open ();
 //			}
 //			newProject.IsSelected (templateOptions);
+		}
+
+		protected void WaitForElement (Func<AppQuery, AppQuery> query, string expected, string actual, int timeoutInSecs = 5)
+		{
+			try {
+				Session.WaitForElement (query, timeoutInSecs * 1000);
+			} catch (TimeoutException) {
+				ReproStep (expected, actual);
+				throw;
+			}
+		}
+
+		protected void WaitForElement (Action action, string expected, string actual)
+		{
+			try {
+				action ();
+			} catch (TimeoutException) {
+				ReproStep (string.Format ("Expected: {0}\nActual:{1}", expected, actual));
+				throw;
+			}
 		}
 
 		void PrintToTestRunner (TemplateSelectionOptions templateOptions,

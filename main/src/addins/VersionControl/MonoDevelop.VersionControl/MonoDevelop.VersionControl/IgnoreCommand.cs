@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		private class IgnoreWorker : Task
+		private class IgnoreWorker : VersionControlTask
 		{
 			VersionControlItemList items;
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 
-		private class UnignoreWorker : Task
+		private class UnignoreWorker : VersionControlTask
 		{
 			VersionControlItemList items;
 

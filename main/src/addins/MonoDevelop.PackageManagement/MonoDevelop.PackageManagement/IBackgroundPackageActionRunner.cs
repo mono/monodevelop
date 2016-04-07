@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IBackgroundPackageActionRunner
+	internal interface IBackgroundPackageActionRunner
 	{
 		IEnumerable<InstallPackageAction> PendingInstallActions { get; }
 		IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project);

@@ -28,9 +28,9 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Text;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using Microsoft.CodeAnalysis;
+using System.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DocFood
 {
@@ -45,7 +45,7 @@ namespace MonoDevelop.DocFood
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 				IdeApp.Workbench.ActiveDocument.Editor != null &&
-				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
@@ -61,77 +61,78 @@ namespace MonoDevelop.DocFood
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 				IdeApp.Workbench.ActiveDocument.Editor != null &&
-				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
 		protected override void Run ()
 		{
-			var document = IdeApp.Workbench.ActiveDocument;
-			if (document == null)
-				return;
-			var unit = document.ParsedDocument;
-			if (unit == null)
-				return;
-			TextEditorData data = IdeApp.Workbench.ActiveDocument.Editor;
-			var types = new Stack<IUnresolvedTypeDefinition> (unit.TopLevelTypeDefinitions);
-			var docs = new List<KeyValuePair<int, string>> ();
-			while (types.Count > 0) {
-				var curType = types.Pop ();
-				foreach (var member in curType.Members) {
-					if (member is IUnresolvedTypeDefinition) {
-						types.Push ((IUnresolvedTypeDefinition)member);
-						continue;
-					}
-					if (!member.IsPublic) {
-						if (member.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.Kind != TypeKind.Interface)
-							continue;
-					}
-					if (!NeedsDocumentation (data, member))
-						continue;
-					int offset;
-					var ctx = (unit.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (document.Compilation, member.Region.Begin);
-					var resolvedMember = member.CreateResolved (ctx);
-					string indent = GetIndent (data, resolvedMember, out offset);
-					string documentation = GenerateDocumentation (data, resolvedMember, indent);
-					if (documentation.Trim ().Length == 0)
-						continue;
-					docs.Add (new KeyValuePair <int, string> (offset, documentation));
-				}
-			}
-			docs.Sort ((a, b) => b.Key.CompareTo (a.Key));
-			using (var undo = data.OpenUndoGroup ()) {
-				docs.ForEach (doc => data.Insert (doc.Key, doc.Value));
-			}
+//			var document = IdeApp.Workbench.ActiveDocument;
+//			if (document == null)
+//				return;
+//			var unit = document.ParsedDocument;
+//			if (unit == null)
+//				return;
+//			TextEditorData data = IdeApp.Workbench.ActiveDocument.Editor;
+//			var types = new Stack<IUnresolvedTypeDefinition> (unit.TopLevelTypeDefinitions);
+//			var docs = new List<KeyValuePair<int, string>> ();
+//			while (types.Count > 0) {
+//				var curType = types.Pop ();
+//				foreach (var member in curType.Members) {
+//					if (member is IUnresolvedTypeDefinition) {
+//						types.Push ((IUnresolvedTypeDefinition)member);
+//						continue;
+//					}
+//					if (!member.IsPublic) {
+//						if (member.DeclaringTypeDefinition != null && member.DeclaringTypeDefinition.Kind != TypeKind.Interface)
+//							continue;
+//					}
+//					if (!NeedsDocumentation (data, member))
+//						continue;
+//					int offset;
+//					var ctx = (unit.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (document.Compilation, member.Region.Begin);
+//					var resolvedMember = member.CreateResolved (ctx);
+//					string indent = GetIndent (data, resolvedMember, out offset);
+//					string documentation = GenerateDocumentation (data, resolvedMember, indent);
+//					if (documentation.Trim ().Length == 0)
+//						continue;
+//					docs.Add (new KeyValuePair <int, string> (offset, documentation));
+//				}
+//			}
+//			docs.Sort ((a, b) => b.Key.CompareTo (a.Key));
+//			using (var undo = data.OpenUndoGroup ()) {
+//				docs.ForEach (doc => data.Insert (doc.Key, doc.Value));
+//			}
 		}
 		
-		static bool NeedsDocumentation (TextEditorData data, IUnresolvedEntity member)
+		static bool NeedsDocumentation (IReadonlyTextDocument data, ISymbol member)
 		{
-			int lineNr = member.Region.BeginLine - 1;
-			DocumentLine line;
+			int lineNr = data.OffsetToLineNumber (member.Locations.First().SourceSpan.Start) - 1;
+			IDocumentLine line;
+
 			do {
-				line = data.Document.GetLine (lineNr--);
-			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.Length);
-			return !data.Document.GetTextAt (line).TrimStart ().StartsWith ("///", StringComparison.Ordinal);
+				line = data.GetLine (lineNr--);
+			} while (lineNr > 0 && data.GetLineIndent (line).Length == line.Length);
+			return !data.GetTextAt (line).TrimStart ().StartsWith ("///", StringComparison.Ordinal);
 		}
 		
-		static string GetIndent (TextEditorData data, IEntity member, out int offset)
+		static string GetIndent (IReadonlyTextDocument data, ISymbol member, out int offset)
 		{
-			DocumentLine line = data.Document.GetLine (member.Region.BeginLine);
+			var line = data.GetLineByOffset (member.Locations.First().SourceSpan.Start);
 			offset = line.Offset;
-			return data.Document.GetLineIndent (line);
+			return data.GetLineIndent (line);
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IEntity member, string indent)
+		internal static string GenerateDocumentation (IReadonlyTextDocument data, ISymbol member, string indent)
 		{
 			return GenerateDocumentation (data, member, indent, "/// ");
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IEntity member, string indent, string prefix)
+		internal static string GenerateDocumentation (IReadonlyTextDocument data, ISymbol member, string indent, string prefix)
 		{
 			StringBuilder result = new StringBuilder ();
 			
-			DocGenerator generator = new DocGenerator (data);
+			var generator = new DocGenerator (data);
 			generator.GenerateDoc (member);
 			
 			bool first = true;
@@ -217,7 +218,7 @@ namespace MonoDevelop.DocFood
 			return result.ToString ();
 		}
 		
-		internal static string GenerateEmptyDocumentation (TextEditorData data, IEntity member, string indent)
+		internal static string GenerateEmptyDocumentation (IReadonlyTextDocument data, ISymbol member, string indent)
 		{
 			StringBuilder result = new StringBuilder ();
 			

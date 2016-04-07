@@ -81,7 +81,10 @@ namespace MonoDevelop.Ide
 			HasResizeGrip = true;
 
 			HeaderBox hb = new HeaderBox (1, 0, 0, 0);
-			hb.BorderColor = Styles.DockSeparatorColor;
+			hb.StyleSet += (o, args) => {
+				hb.BorderColor = Styles.DockSeparatorColor.ToGdkColor ();
+				hb.BackgroundColor = Styles.DockBarBackground.ToGdkColor ();
+			};
 			var mainBox = new HBox ();
 			mainBox.PackStart (new Label (""), true, true, 0);
 			hb.Add (mainBox);
@@ -124,6 +127,9 @@ namespace MonoDevelop.Ide
 			// Dock area
 			
 			CustomFrame dfr = new CustomFrame (0, 0, 1, 0);
+			dfr.StyleSet += (o, args) => {
+				dfr.BorderColor = Styles.DockSeparatorColor.ToGdkColor ();
+			};
 			dfr.ShowAll ();
 			DefaultWorkbench wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
 			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
@@ -224,7 +230,7 @@ namespace MonoDevelop.Ide
 
 		public void ShowCaretState (int line, int column, int selectedChars, bool isInInsertMode)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			string cursorText = selectedChars > 0 ? String.Format ("{0,3} : {1,-3} - {2}", line, column, selectedChars) : String.Format ("{0,3} : {1,-3}", line, column);
 			if (cursorLabel.Text != cursorText)
 				cursorLabel.Text = cursorText;

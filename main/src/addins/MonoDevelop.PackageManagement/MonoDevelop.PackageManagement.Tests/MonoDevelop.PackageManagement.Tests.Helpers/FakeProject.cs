@@ -27,10 +27,12 @@
 using System;
 using System.Collections;
 using MonoDevelop.Core;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeProject : IProject
+	class FakeProject : IProject
 	{
 		public string Name { get; set; }
 		public FilePath FileName { get; set; }
@@ -57,9 +59,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool IsSaved;
 
-		public virtual void Save ()
+		public virtual Task SaveAsync ()
 		{
 			IsSaved = true;
+			return Task.FromResult (0);
+		}
+
+		public IEnumerable<string> FlavorGuids {
+			get { yield break; }
 		}
 	}
 }

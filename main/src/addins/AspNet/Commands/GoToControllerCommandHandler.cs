@@ -26,22 +26,28 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.AspNet.Projects;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.AspNet.Projects;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.AspNet.Commands
 {
-
 	class GoToControllerCommandHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			AspNetAppProject project;
-			if (doc == null || (project = doc.Project as AspNetAppProject) == null || !project.IsAspMvcProject) {
+			if (doc == null || doc.Project == null) {
+				info.Enabled = info.Visible = false;
+				return;
+			}
+			var aspFlavor = doc.Project.GetService<AspNetAppProjectFlavor> ();
+			if (aspFlavor == null || !aspFlavor.IsAspMvcProject) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
@@ -50,17 +56,26 @@ namespace MonoDevelop.AspNet.Commands
 				info.Enabled = info.Visible = false;
 		}
 
-		protected override void Run ()
+		protected override async void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var name = doc.FileName.ParentDirectory.FileName;
-			var controller = doc.ProjectContent.GetAllTypeDefinitions ().FirstOrDefault (t => t.Name == name + "Controller");
+			var controller = await FindController (doc.Project, name);
 
 			if (controller != null)
-				IdeApp.Workbench.OpenDocument (controller.UnresolvedFile.FileName, doc.Project);
+				await RefactoringService.RoslynJumpToDeclaration (controller, doc.Project);
 			else
 				MessageService.ShowError ("Matching controller cannot be found.");
 		}
+
+		async Task<INamedTypeSymbol> FindController (MonoDevelop.Projects.Project project, string name)
+		{
+			var compilation = await TypeSystemService.GetCompilationAsync (project);
+			if (compilation == null)
+				return null;
+
+			return compilation.GetAllTypesInMainAssembly ()
+				.FirstOrDefault (symbol => symbol.Name == name + "Controller");
+		}
 	}
-	
 }

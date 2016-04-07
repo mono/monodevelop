@@ -27,7 +27,6 @@ using MonoDevelop.Components;
 using Cairo;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {

@@ -32,11 +32,11 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class ProgressMonitorExtensions
+	internal static class ProgressMonitorExtensions
 	{
-		public static void ShowPackageConsole (this IProgressMonitor monitor)
+		public static void ShowPackageConsole (this ProgressMonitor monitor)
 		{
-			DispatchService.GuiDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				var aggregatedMonitor = (PackageManagementProgressMonitor)monitor;
 				Pad pad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (aggregatedMonitor.ConsoleMonitor);
 				if (pad != null) {

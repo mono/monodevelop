@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageSourceViewModel : ViewModelBase<PackageSourceViewModel>
+	internal class PackageSourceViewModel : ViewModelBase<PackageSourceViewModel>
 	{
 		RegisteredPackageSource packageSource;
 		

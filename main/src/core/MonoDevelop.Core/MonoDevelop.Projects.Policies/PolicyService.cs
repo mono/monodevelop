@@ -1192,7 +1192,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		static string GetPolicyFile (PolicySet set)
 		{
-			return PoliciesFolder.Combine ((set.Name ?? set.Id) + ".mdpolicy.xml");
+			return PoliciesFolder.Combine ((set.Id ?? set.Name) + ".mdpolicy.xml");
 		}
 		
 		static void LoadPolicies ()
@@ -1240,6 +1240,11 @@ namespace MonoDevelop.Projects.Policies
 						if (pset.Id == "Default") {
 							defaultPolicies = pset;
 						} else {
+							// if the policy file does not have a name, use the file name as one
+							if (!string.IsNullOrEmpty (pset.Name)) {
+								pset.Name = file.FileNameWithoutExtension;
+							}
+
 							AddUserPolicySet (pset);
 						}
 						xr.MoveToContent ();

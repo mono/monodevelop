@@ -27,7 +27,7 @@
 using System;
 using System.Text;
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	[Serializable]
 	public class MSBuildTargetResult

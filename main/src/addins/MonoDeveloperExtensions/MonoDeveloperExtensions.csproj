@@ -75,10 +75,11 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoMakefile.cs" />
-    <Compile Include="MonoMakefileFormat.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="MonoSolutionItemHandler.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoMakefileSolutionExtension.cs" />
+    <Compile Include="MonoMakefileProjectExtension.cs" />
+    <Compile Include="MonoMakefileProjectReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDeveloperExtensions.addin.xml">

@@ -30,12 +30,13 @@ using System;
 using Gtk;
 
 using Mono.TextEditor;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
 	public partial class GotoLineNumberWidget : Gtk.Bin
 	{
-		readonly TextEditor textEditor;
+		readonly MonoTextEditor textEditor;
 		readonly Widget frame;
 
 		double vSave, hSave;
@@ -45,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 		void HandleViewTextEditorhandleSizeAllocated (object o, SizeAllocatedArgs args)
 		{
 			int newX = textEditor.Allocation.Width - this.Allocation.Width - 8;
-			var containerChild = ((TextEditor.EditorContainerChild)textEditor [frame]);
+			var containerChild = ((MonoTextEditor.EditorContainerChild)textEditor [frame]);
 			if (newX != containerChild.X) {
 				this.entryLineNumber.WidthRequest = textEditor.Allocation.Width / 4;
 				containerChild.X = newX;
@@ -58,7 +59,7 @@ namespace MonoDevelop.SourceEditor
 			Destroy ();
 		}
 
-		public GotoLineNumberWidget (TextEditor textEditor, Widget frame)
+		public GotoLineNumberWidget (MonoTextEditor textEditor, Widget frame)
 		{
 			this.textEditor = textEditor;
 			this.frame = frame;
@@ -66,14 +67,7 @@ namespace MonoDevelop.SourceEditor
 			
 			StoreWidgetState ();
 			textEditor.Parent.SizeAllocated += HandleViewTextEditorhandleSizeAllocated;
-			
-			//HACK: GTK rendering issue on Mac, images don't repaint unless we put them in visible eventboxes
-			if (MonoDevelop.Core.Platform.IsMac) {
-				foreach (var eb in new [] { eventbox1, eventbox2 }) {
-					eb.VisibleWindow = true;
-					eb.ModifyBg (StateType.Normal, new Gdk.Color (230, 230, 230));
-				}
-			}
+
 			this.closeButton.Clicked += delegate {
 				RestoreWidgetState ();
 				CloseWidget ();
@@ -175,17 +169,15 @@ namespace MonoDevelop.SourceEditor
 				if (col > 0)
 					textEditor.Caret.Column = col;
 				textEditor.CenterToCaret ();
-			} catch (System.Exception) { 
+			} catch (System.Exception) { 
 			}
 		}
-		
-		internal static readonly Gdk.Color warningColor = new Gdk.Color (210, 210, 32);
-		internal static readonly Gdk.Color errorColor   = new Gdk.Color (255, 102, 102);
-		
+
 		void PreviewLine ()
 		{
 			if (String.IsNullOrEmpty (entryLineNumber.Text) || entryLineNumber.Text == "+" || entryLineNumber.Text == "-") {
 				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+				this.entryLineNumber.ModifyText (Gtk.StateType.Normal, Style.Foreground (Gtk.StateType.Normal));
 				RestoreWidgetState ();
 				return;
 			}
@@ -196,11 +188,12 @@ namespace MonoDevelop.SourceEditor
 					
 				} else {
 					this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+					this.entryLineNumber.ModifyText (Gtk.StateType.Normal, Style.Foreground (Gtk.StateType.Normal));
 				}
 				textEditor.Caret.Line = targetLine;
 				textEditor.CenterToCaret ();
-			} catch (System.Exception) { 
-				this.entryLineNumber.ModifyBase (Gtk.StateType.Normal, errorColor);
+			} catch (System.Exception) {
+				this.entryLineNumber.ModifyText (Gtk.StateType.Normal, Ide.Gui.Styles.Editor.SearchErrorForegroundColor.ToGdkColor ());
 			}
 		}
 		

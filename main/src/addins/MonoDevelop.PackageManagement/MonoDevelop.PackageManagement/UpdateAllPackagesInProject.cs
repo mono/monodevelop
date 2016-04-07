@@ -25,12 +25,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdateAllPackagesInProject : UpdatePackageActions
+	internal class UpdateAllPackagesInProject : UpdatePackageActions
 	{
 		IPackageManagementProject project;
 		
@@ -56,6 +56,9 @@ namespace ICSharpCode.PackageManagement
 		{
 			UpdatePackageAction action = CreateDefaultUpdatePackageAction(project);
 			action.PackageId = package.Id;
+			if (!action.AllowPrereleaseVersions && !package.IsReleaseVersion ()) {
+				action.AllowPrereleaseVersions = true;
+			}
 			return action;
 		}
 	}

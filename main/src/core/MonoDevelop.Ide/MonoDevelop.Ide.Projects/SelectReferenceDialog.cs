@@ -30,15 +30,12 @@ using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using System.IO;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -99,8 +96,11 @@ namespace MonoDevelop.Ide.Projects
 			this.configureProject = configureProject;
 			foreach (var p in panels)
 				p.SetProject (configureProject);
-			
+
 			((ListStore) ReferencesTreeView.Model).Clear ();
+
+			if (configureProject == null)
+				return;
 
 			foreach (ProjectReference refInfo in configureProject.References)
 				AppendReference (refInfo);
@@ -136,8 +136,8 @@ namespace MonoDevelop.Ide.Projects
 		{
 			Solution c = configureProject.ParentSolution;
 			if (c == null) return TreeIter.Zero;
-			
-			Project p = c.FindProjectByName (refInfo.Reference);
+
+			Project p = refInfo.ResolveProject (c);
 			if (p == null) return TreeIter.Zero;
 			
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";

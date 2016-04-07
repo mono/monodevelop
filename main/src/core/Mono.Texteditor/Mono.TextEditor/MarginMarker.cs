@@ -128,7 +128,7 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Draws the foreground of the specified margin.
 		/// </summary>
-		public virtual void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public virtual void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 		}
 
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 		/// Draws the background of the specified margin.
 		/// </summary>
 		/// <returns>true, if the background is drawn. false if the margin should fallback to the default background renderer. </returns>
-		public virtual bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public virtual bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			return false;
 		}
@@ -147,7 +147,7 @@ namespace Mono.TextEditor
 		/// <param name="editor">The text editor in which the event press occured.</param>
 		/// <param name="margin">The margin in which the event occured.</param>
 		/// <param name="args">The event arguments.</param>
-		public virtual void InformMousePress (TextEditor editor, Margin margin, MarginMouseEventArgs args)
+		public virtual void InformMousePress (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 		}
 
@@ -157,7 +157,7 @@ namespace Mono.TextEditor
 		/// <param name="editor">The text editor in which the event press occured.</param>
 		/// <param name="margin">The margin in which the event occured.</param>
 		/// <param name="args">The event arguments.</param>
-		public virtual void InformMouseRelease (TextEditor editor, Margin margin, MarginMouseEventArgs args)
+		public virtual void InformMouseRelease (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 		}
 
@@ -167,7 +167,7 @@ namespace Mono.TextEditor
 		/// <param name="editor">The text editor in which the event press occured.</param>
 		/// <param name="margin">The margin in which the event occured.</param>
 		/// <param name="args">The event arguments.</param>
-		public virtual void InformMouseHover (TextEditor editor, Margin margin, MarginMouseEventArgs args)
+		public virtual void InformMouseHover (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
 		{
 		}
 	}

@@ -24,15 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
 	public class XCData : XNode
 	{
-		public XCData (TextLocation start) : base (start) {}
-		public XCData (DomRegion region) : base (region) {}
+		public XCData (DocumentLocation start) : base (start) {}
+		public XCData (DocumentRegion region) : base (region) {}
 
 		protected XCData () {}
 		protected override XObject NewInstance () { return new XCData (); }

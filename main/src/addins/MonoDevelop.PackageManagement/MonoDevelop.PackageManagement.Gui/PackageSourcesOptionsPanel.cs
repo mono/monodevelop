@@ -30,19 +30,20 @@ using System;
 using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.Components;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.PackageManagement.Gui
 {
-	public class PackageSourcesOptionsPanel : OptionsPanel
+	internal class PackageSourcesOptionsPanel : OptionsPanel
 	{
 		PackageManagementViewModels viewModels;
 		PackageSourcesWidget packageSourcesWidget;
 
-		public override Gtk.Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			viewModels = new PackageManagementViewModels ();
 			viewModels.RegisteredPackageSourcesViewModel.Load ();

@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Serialization
 {
@@ -64,6 +65,30 @@ namespace MonoDevelop.Core.Serialization
 		{
 			if (data == null) return null;
 			return data.Extract (name);
+		}
+
+		internal void UpdateFromItem (DataItem item, HashSet<DataItem> removedItems)
+		{
+			foreach (var d in item.ItemData) {
+				var current = ItemData[d.Name];
+				if (current != null) {
+					if (d.IsDefaultValue || d is DataDeletedNode) {
+						if (current is DataItem)
+							removedItems.Add ((DataItem)current);
+						ItemData.Remove (current);
+					}
+					else if (current.GetType () != d.GetType () || current is DataValue) {
+						var i = ItemData.IndexOf (current);
+						ItemData [i] = d;
+						if (current is DataItem)
+							removedItems.Add ((DataItem)current);
+					} else if (current is DataItem) {
+						((DataItem)current).UpdateFromItem ((DataItem)d, removedItems);
+					}
+				} else if (!d.IsDefaultValue && !(d is DataDeletedNode)) {
+					ItemData.Add (d);
+				}
+			}
 		}
 		
 		public override string ToString ()

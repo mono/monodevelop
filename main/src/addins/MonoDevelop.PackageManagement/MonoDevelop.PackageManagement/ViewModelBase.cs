@@ -30,9 +30,9 @@ using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public abstract class ViewModelBase<TModel> : INotifyPropertyChanged
+	internal abstract class ViewModelBase<TModel> : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
 		

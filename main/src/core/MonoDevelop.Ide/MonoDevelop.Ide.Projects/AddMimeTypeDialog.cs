@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Projects
 				desc = mt;
 			buttonOk.Sensitive = mimeType != null;
 			labelDesc.Text = desc ?? string.Empty;
-			image.Pixbuf = img.ToPixbuf (Gtk.IconSize.Menu);
+			image.Image = img;
 		}
 		
 		string TryGetFileType (string name)

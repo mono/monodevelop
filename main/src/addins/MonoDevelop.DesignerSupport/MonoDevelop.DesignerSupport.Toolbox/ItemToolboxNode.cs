@@ -59,6 +59,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		[ItemProperty ("description")]
 		string description = "";
+
+		[ItemProperty ("source")]
+		string source = "";
 		
 		List <ToolboxItemFilterAttribute> itemFilters = new List <ToolboxItemFilterAttribute> ();
 		
@@ -95,6 +98,11 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get { return description; }
 			set { description = value; }
 		}
+
+		public virtual string Source {
+			get { return source; }
+			set { source = value; }
+		}
 		
 		[Browsable(false)]
 		public virtual IList<ToolboxItemFilterAttribute> ItemFilters {
@@ -113,13 +121,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public virtual bool Filter (string keyword)
 		{
 			return ((Name != null) && (Name.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0))
-			    || ((Description != null) && (Description.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
+			    || ((Description != null) && (Description.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0))
+			    || ((Source != null) && (Source.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
 		}
 		
 		public override bool Equals (object o)
 		{
 			ItemToolboxNode node = o as ItemToolboxNode;
-			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description);
+			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description) && (node.Source == this.Source);
 		}
 		
 		public override int GetHashCode ()
@@ -131,6 +140,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				code ^= Category.GetHashCode ();
 			if (Description != null)
 				code ^= Description.GetHashCode ();
+			if (Source != null)
+				code ^= Source.GetHashCode ();
 			return code;
 		}
 		

@@ -30,9 +30,6 @@
 
 using System;
 using Gtk;
-using Mono.Unix;
-using Mono.TextEditor;
-using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -56,21 +53,21 @@ namespace MonoDevelop.Components.Docking
 			
 			ShowAll ();
 			
-			mainBox.PackStart (item.GetToolbar (PositionType.Top).Container, false, false, 0);
+			mainBox.PackStart (item.GetToolbar (DockPositionType.Top).Container, false, false, 0);
 			
 			HBox hbox = new HBox ();
 			hbox.Show ();
-			hbox.PackStart (item.GetToolbar (PositionType.Left).Container, false, false, 0);
+			hbox.PackStart (item.GetToolbar (DockPositionType.Left).Container, false, false, 0);
 			
 			contentBox = new HBox ();
 			contentBox.Show ();
 			hbox.PackStart (contentBox, true, true, 0);
 			
-			hbox.PackStart (item.GetToolbar (PositionType.Right).Container, false, false, 0);
+			hbox.PackStart (item.GetToolbar (DockPositionType.Right).Container, false, false, 0);
 			
 			mainBox.PackStart (hbox, true, true, 0);
 			
-			mainBox.PackStart (item.GetToolbar (PositionType.Bottom).Container, false, false, 0);
+			mainBox.PackStart (item.GetToolbar (DockPositionType.Bottom).Container, false, false, 0);
 		}
 
 		DockVisualStyle visualStyle;
@@ -122,10 +119,15 @@ namespace MonoDevelop.Components.Docking
 				if (widget != null)
 					SetTreeStyle (widget);
 
-				item.GetToolbar (PositionType.Top).SetStyle (VisualStyle);
-				item.GetToolbar (PositionType.Left).SetStyle (VisualStyle);
-				item.GetToolbar (PositionType.Right).SetStyle (VisualStyle);
-				item.GetToolbar (PositionType.Bottom).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Top).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Left).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Right).SetStyle (VisualStyle);
+				item.GetToolbar (DockPositionType.Bottom).SetStyle (VisualStyle);
+
+				if (VisualStyle.TabStyle == DockTabStyle.Normal)
+					ModifyBg (StateType.Normal, VisualStyle.PadBackgroundColor.Value.ToGdkColor ());
+				else 
+					ModifyBg (StateType.Normal, Style.Background(StateType.Normal));
 			}
 		}
 
@@ -150,8 +152,8 @@ namespace MonoDevelop.Components.Docking
 		{
 			var w = (Gtk.TreeView)sender;
 			if (VisualStyle.TreeBackgroundColor != null) {
-				w.ModifyBase (StateType.Normal, VisualStyle.TreeBackgroundColor.Value);
-				w.ModifyBase (StateType.Insensitive, VisualStyle.TreeBackgroundColor.Value);
+				w.ModifyBase (StateType.Normal, VisualStyle.TreeBackgroundColor.Value.ToGdkColor ());
+				w.ModifyBase (StateType.Insensitive, VisualStyle.TreeBackgroundColor.Value.ToGdkColor ());
 			} else {
 				w.ModifyBase (StateType.Normal, Parent.Style.Base (StateType.Normal));
 				w.ModifyBase (StateType.Insensitive, Parent.Style.Base (StateType.Insensitive));
@@ -162,7 +164,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (VisualStyle.TabStyle == DockTabStyle.Normal) {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
+				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value.ToGdkColor ();
 				evnt.Window.DrawRectangle (gc, true, Allocation);
 				gc.Dispose ();
 			}
@@ -184,7 +186,8 @@ namespace MonoDevelop.Components.Docking
 		int rightPadding;
 
 		Gdk.Color backgroundColor;
-		bool backgroundColorSet;
+		Gdk.Color borderColor;
+		bool backgroundColorSet, borderColorSet;
 		
 		public CustomFrame ()
 		{
@@ -193,6 +196,13 @@ namespace MonoDevelop.Components.Docking
 		public CustomFrame (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
 		{
 			SetMargins (topMargin, bottomMargin, leftMargin, rightMargin);
+		}
+
+		protected override void OnStyleSet (Style previous_style)
+		{
+			base.OnStyleSet (previous_style);
+			if (!borderColorSet)
+				borderColor = Style.Dark (Gtk.StateType.Normal);
 		}
 		
 		public void SetMargins (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
@@ -216,6 +226,11 @@ namespace MonoDevelop.Components.Docking
 		public Gdk.Color BackgroundColor {
 			get { return backgroundColor; }
 			set { backgroundColor = value; backgroundColorSet = true; }
+		}
+
+		public Gdk.Color BorderColor {
+			get { return borderColor; }
+			set { borderColor = value; borderColorSet = true; }
 		}
 
 		protected override void OnAdded (Widget widget)
@@ -275,6 +290,8 @@ namespace MonoDevelop.Components.Docking
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
+
+					// FIXME: VV: Remove gradient features
 					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom)) {
 						pat.AddColorStop (0, bcolor.ToCairoColor ());
 						Xwt.Drawing.Color gcol = bcolor.ToXwtColor ();
@@ -298,7 +315,7 @@ namespace MonoDevelop.Components.Docking
 			base.OnExposeEvent (evnt);
 
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.SetSourceColor (Style.Dark (Gtk.StateType.Normal).ToCairoColor ());
+				cr.SetSourceColor (BorderColor.ToCairoColor ());
 				
 				double y = rect.Y + topMargin / 2d;
 				cr.LineWidth = topMargin;

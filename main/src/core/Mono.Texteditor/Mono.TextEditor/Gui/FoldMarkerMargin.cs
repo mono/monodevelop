@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 {
 	public class FoldMarkerMargin : Margin
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		DocumentLine lineHover;
 		Pango.Layout layout;
 		
@@ -63,13 +63,13 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public FoldMarkerMargin (TextEditor editor)
+		public FoldMarkerMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
 			layout = PangoUtil.CreateLayout (editor);
 			editor.Caret.PositionChanged += HandleEditorCaretPositionChanged;
 			editor.Document.FoldTreeUpdated += HandleEditorDocumentFoldTreeUpdated;
-			this.editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
+			editor.Caret.PositionChanged += EditorCarethandlePositionChanged;
 		}
 
 		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
@@ -125,8 +125,9 @@ namespace Mono.TextEditor
 		internal protected override void MousePressed (MarginMouseEventArgs args)
 		{
 			base.MousePressed (args);
-			if (args.LineSegment == null)
+			if (args.LineSegment == null || !editor.Options.ShowFoldMargin)
 				return;
+
 			foreach (FoldSegment segment in editor.Document.GetStartFoldings (args.LineSegment)) {
 				segment.IsFolded = !segment.IsFolded; 
 			}
@@ -137,7 +138,9 @@ namespace Mono.TextEditor
 		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
-			
+			if (!editor.Options.ShowFoldMargin)
+				return;
+
 			DocumentLine lineSegment = null;
 			if (args.LineSegment != null) {
 				lineSegment = args.LineSegment;
@@ -246,7 +249,7 @@ namespace Mono.TextEditor
 			lineStateChangedGC = editor.ColorStyle.QuickDiffChanged.Color;
 			lineStateDirtyGC = editor.ColorStyle.QuickDiffDirty.Color;
 			
-			marginWidth = editor.LineHeight;
+			marginWidth = editor.LineHeight  * 3 / 4;
 		}
 		
 		Cairo.Color foldBgGC, foldLineGC, foldLineHighlightedGC, foldLineHighlightedGCBg, foldToggleMarkerGC, foldToggleMarkerBackground;
@@ -256,6 +259,8 @@ namespace Mono.TextEditor
 		{
 			base.Dispose ();
 			StopTimer ();
+			editor.Caret.PositionChanged -= HandleEditorCaretPositionChanged;
+			editor.Caret.PositionChanged -= EditorCarethandlePositionChanged;
 			editor.Document.FoldTreeUpdated -= HandleEditorDocumentFoldTreeUpdated;
 			layout = layout.Kill ();
 			foldings = null;
@@ -309,7 +314,7 @@ namespace Mono.TextEditor
 			
 			Cairo.Rectangle drawArea = new Cairo.Rectangle (x, y, marginWidth, lineHeight);
 			var state = editor.Document.GetLineState (lineSegment);
-			
+
 			bool isFoldStart = false;
 			bool isContaining = false;
 			bool isFoldEnd = false;
@@ -360,16 +365,32 @@ namespace Mono.TextEditor
 				}
 			}
 
-			if (editor.Options.EnableQuickDiff) {
+			if (editor.Options.EnableQuickDiff && state != TextDocument.LineState.Unchanged) {
+				var prevState = lineSegment?.PreviousLine != null ? editor.Document.GetLineState (lineSegment.PreviousLine) : TextDocument.LineState.Unchanged;
+				var nextState = lineSegment?.NextLine != null ? editor.Document.GetLineState (lineSegment.NextLine) : TextDocument.LineState.Unchanged;
+
 				if (state == TextDocument.LineState.Changed) {
 					cr.SetSourceColor (lineStateChangedGC);
-					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
-					cr.Fill ();
 				} else if (state == TextDocument.LineState.Dirty) {
 					cr.SetSourceColor (lineStateDirtyGC);
-					cr.Rectangle (x + 1, y, marginWidth / 3, lineHeight);
-					cr.Fill ();
 				}
+
+				if ((prevState == TextDocument.LineState.Unchanged  && prevState != state ||
+				     nextState == TextDocument.LineState.Unchanged  && nextState != state)) {
+					FoldingScreenbackgroundRenderer.DrawRoundRectangle (
+						cr, 
+						prevState == TextDocument.LineState.Unchanged, 
+						nextState == TextDocument.LineState.Unchanged,
+						x + 1, 
+						y, 
+						lineHeight / 4,
+						marginWidth / 4, 
+						lineHeight
+					);
+				} else {
+					cr.Rectangle (x + 1, y, marginWidth / 4, lineHeight);
+				}
+				cr.Fill ();
 			}
 
 			if (editor.Options.ShowFoldMargin && line <= editor.Document.LineCount) {

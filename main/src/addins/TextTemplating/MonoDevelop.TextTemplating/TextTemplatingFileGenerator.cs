@@ -28,15 +28,16 @@ using System;
 using MonoDevelop.Ide.CustomTools;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.TextTemplating
 {
 	public class TextTemplatingFileGenerator : ISingleFileCustomTool
 	{
-		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new ThreadAsyncOperation (delegate {
+			return Task.Run (delegate {
 				using (var host = new ProjectFileTemplatingHost (file, IdeApp.Workspace.ActiveConfiguration)) {
 					host.AddMonoDevelopHostImport ();
 					var defaultOutputName = file.FilePath.ChangeExtension (".cs"); //cs extension for VS compat
@@ -51,7 +52,7 @@ namespace MonoDevelop.TextTemplating
 					foreach (var err in host.Errors)
 						monitor.Log.WriteLine (err);
 				}
-			}, result);
+			});
 		}
 
 		static bool warningLogged;

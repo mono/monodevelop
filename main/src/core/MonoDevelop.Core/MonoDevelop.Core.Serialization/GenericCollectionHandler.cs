@@ -37,7 +37,6 @@ namespace MonoDevelop.Core.Serialization
 		protected Type type;
 		protected Type elementType;
 		protected MethodInfo addMethod;
-		protected object[] itemParam = new object [1];
 		bool hasPublicConstructor;
 		
 		protected GenericCollectionHandler (Type type, Type elemType, MethodInfo addMethod)
@@ -111,9 +110,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		public void AddItem (ref object collection, ref object position, object item)
 		{
-			itemParam [0] = item;
-			addMethod.Invoke (collection, itemParam);
-			itemParam [0] = null;
+			addMethod.Invoke (collection, new [] { item });
 			position = (int)position + 1;
 		}
 		
@@ -143,9 +140,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		public override void SetItem (object collection, object position, object item)
 		{
-			itemParam [0] = position;
-			indexer.SetValue (collection, item, itemParam);
-			itemParam [0] = null;
+			indexer.SetValue (collection, item, new [] { position });
 		}
 		
 		public override object GetInitialPosition (object collection)
@@ -162,10 +157,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		public override object GetCurrentItem (object collection, object position)
 		{
-			itemParam [0] = position;
-			object res = indexer.GetValue (collection, itemParam);
-			itemParam [0] = null;
-			return res;
+			return indexer.GetValue (collection, new [] { position });
 		}
 		
 		public override bool IsEmpty (object collection)

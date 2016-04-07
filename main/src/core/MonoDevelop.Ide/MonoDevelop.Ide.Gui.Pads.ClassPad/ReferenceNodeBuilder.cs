@@ -123,7 +123,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 			ProjectReference pref = CurrentNode.DataItem as ProjectReference;
 			if (pref != null) {
 				foreach (string fileName in pref.GetReferencedFileNames (IdeApp.Workspace.ActiveConfiguration))
-					IdeApp.Workbench.OpenDocument (fileName);
+					IdeApp.Workbench.OpenDocument (fileName, project: null);
 			}
 		}
 	}

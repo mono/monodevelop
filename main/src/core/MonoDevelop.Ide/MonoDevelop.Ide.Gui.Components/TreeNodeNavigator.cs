@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			public void ScrollToNode ()
 			{
-				tree.ScrollToCell (store.GetPath (currentIter), pad.CompleteColumn, true, 0, 0);
+				tree.ScrollToCell (store.GetPath (currentIter), pad.CompleteColumn, true, 0, -1);
 			}
 
 			public bool MoveToRoot ()
@@ -369,6 +369,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				}
 			}
 			
+			public T GetParentDataItem<T> (bool includeCurrent)
+			{
+				return (T)GetParentDataItem (typeof(T), includeCurrent);
+			}
+
 			public object GetParentDataItem (Type type, bool includeCurrent)
 			{
 				if (includeCurrent && type.IsInstanceOfType (DataItem))

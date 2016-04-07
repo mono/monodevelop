@@ -25,14 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using Xwt;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class AddPackagesDialogRunner
+	internal class AddPackagesDialogRunner
 	{
 		public void Run (string initialSearch = null)
 		{

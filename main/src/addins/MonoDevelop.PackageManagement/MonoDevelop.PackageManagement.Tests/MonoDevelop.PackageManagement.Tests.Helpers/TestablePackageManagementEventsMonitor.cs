@@ -26,17 +26,17 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackageManagementEventsMonitor : PackageManagementEventsMonitor
+	class TestablePackageManagementEventsMonitor : PackageManagementEventsMonitor
 	{
 		public TestablePackageManagementEventsMonitor (
-			IProgressMonitor progressMonitor,
+			ProgressMonitor progressMonitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 			: base (progressMonitor, packageManagementEvents, progressProvider)
@@ -50,19 +50,19 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FilesChanged.AddRange (files);
 		}
 
-		protected override void GuiSyncDispatch (MessageHandler handler)
+		protected override void GuiSyncDispatch (Action action)
 		{
-			handler.Invoke ();
+			action.Invoke ();
 		}
 
-		protected override void ShowPackageConsole (IProgressMonitor progressMonitor)
+		protected override void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			IsPackageConsoleShown = true;
 			ProgressMonitorPassedToShowPackageConsole = progressMonitor;
 		}
 
 		public bool IsPackageConsoleShown;
-		public IProgressMonitor ProgressMonitorPassedToShowPackageConsole;
+		public ProgressMonitor ProgressMonitorPassedToShowPackageConsole;
 
 		protected override void ReconnectAssemblyReferences (IPackageManagementProject project)
 		{

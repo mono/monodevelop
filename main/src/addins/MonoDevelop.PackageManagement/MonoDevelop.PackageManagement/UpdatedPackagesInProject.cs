@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackagesInProject
+	internal class UpdatedPackagesInProject
 	{
 		List<IPackageName> packages;
 
@@ -82,6 +82,13 @@ namespace MonoDevelop.PackageManagement
 					packages.Remove (package);
 				}
 			}
+
+			RemoveUninstalledPackages (packageReferences);
+		}
+
+		void RemoveUninstalledPackages (IEnumerable<PackageReference> packageReferences)
+		{
+			packages.RemoveAll (package => !packageReferences.Any (packageReference => packageReference.Id == package.Id));
 		}
 	}
 }

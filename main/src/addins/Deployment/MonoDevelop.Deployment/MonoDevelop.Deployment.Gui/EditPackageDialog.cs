@@ -54,7 +54,7 @@ namespace MonoDevelop.Deployment.Gui
 
 		protected virtual void OnEntrySelectorSelectionChanged(object sender, System.EventArgs e)
 		{
-			SolutionItem ce = entrySelector.GetSelectedEntry ();
+			SolutionFolderItem ce = entrySelector.GetSelectedEntry ();
 			if (ce != null)
 				target.SetSolutionItem (ce, entrySelector.GetSelectedChildren ());
 		}

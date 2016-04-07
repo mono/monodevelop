@@ -31,16 +31,13 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Templates;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {
 	class GtkTemplateCellRenderer : CellRendererText
 	{
-		public static Color LanguageButtonBackgroundColor = new Color (247, 247, 247);
-
-		Color triangleColor = new Color (83, 83, 83);
 		Rectangle languageRect;
 		int dropdownTriangleWidth = 8;
 		int dropdownTriangleHeight = 5;
@@ -125,7 +122,7 @@ namespace MonoDevelop.Ide.Projects
 					DrawTemplateNameText (window, widget, cell_area, iconRect, languageRect, flags);
 
 					RoundBorder (ctx, languageRect.X, languageRect.Y, languageRect.Width, languageRect.Height);
-					SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
+					SetSourceColor (ctx, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToCairoColor ());
 					ctx.Fill ();
 
 					int languageTextX = languageRect.X + GetLanguageLeftHandPadding (scale);
@@ -184,11 +181,13 @@ namespace MonoDevelop.Ide.Projects
 
 		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
-			StateType state = GetState (widget, flags);
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, (int)TemplateIcon.Width, (int)TemplateIcon.Height);
 
+			var img = TemplateIcon;
+			if ((flags & Gtk.CellRendererState.Selected) != 0)
+				img = img.WithStyles ("sel");
 			using (var ctx = CairoHelper.Create (window)) {
-				ctx.DrawImage (widget, TemplateIcon, iconRect.X, iconRect.Y);
+				ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
 			}
 
 			return iconRect;
@@ -281,7 +280,7 @@ namespace MonoDevelop.Ide.Projects
 			int width = (int)(scale * dropdownTriangleWidth);
 			int height = (int)(scale * dropdownTriangleHeight);
 
-			SetSourceColor (ctx, triangleColor.ToCairoColor ());
+			SetSourceColor (ctx, Styles.NewProjectDialog.TemplateLanguageButtonTriangle.ToCairoColor ());
 			ctx.MoveTo (x, y);
 			ctx.LineTo (x + width, y);
 			ctx.LineTo (x + (width / 2), y + height);

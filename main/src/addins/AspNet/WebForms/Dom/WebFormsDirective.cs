@@ -26,8 +26,8 @@
 
 using System.Diagnostics;
 using System.Text;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {
@@ -36,12 +36,12 @@ namespace MonoDevelop.AspNet.WebForms.Dom
 		XName name;
 		XAttributeCollection attributes;
 
-		public WebFormsDirective (TextLocation start) : base (start)
+		public WebFormsDirective (DocumentLocation start) : base (start)
 		{
 			attributes = new XAttributeCollection (this);
 		}
 
-		public WebFormsDirective (TextLocation start, XName name) : this (start)
+		public WebFormsDirective (DocumentLocation start, XName name) : this (start)
 		{
 			this.name = name;
 		}

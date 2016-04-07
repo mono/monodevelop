@@ -27,7 +27,7 @@
 
 namespace MonoDevelop.Projects
 {
-	public class DefaultConfigurationSelector: ConfigurationSelector
+	public sealed class DefaultConfigurationSelector: ConfigurationSelector
 	{
 		public override ItemConfiguration GetConfiguration (IConfigurationTarget target)
 		{

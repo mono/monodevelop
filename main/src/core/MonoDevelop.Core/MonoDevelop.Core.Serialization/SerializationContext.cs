@@ -37,7 +37,7 @@ namespace MonoDevelop.Core.Serialization
 		string file;
 		IPropertyFilter propertyFilter;
 		DataSerializer serializer;
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		char directorySeparatorChar = System.IO.Path.DirectorySeparatorChar;
 		HashSet<ItemProperty> forcedSerializationProps;
 		
@@ -73,7 +73,7 @@ namespace MonoDevelop.Core.Serialization
 			}
 		}
 
-		public IProgressMonitor ProgressMonitor {
+		public ProgressMonitor ProgressMonitor {
 			get {
 				return monitor;
 			}
@@ -81,9 +81,18 @@ namespace MonoDevelop.Core.Serialization
 				monitor = value;
 			}
 		}
-		
+
+		/// <summary>
+		/// When set to true, properties with default values are serialized
+		/// </summary>
 		public bool IncludeDefaultValues { get; set; }
 		
+		/// <summary>
+		/// When set to true, properties with default values are serialized, and properties that have
+		/// been removed are serialized as a DataDeletedValue.
+		/// </summary>
+		public bool IncludeDeletedValues { get; set; }
+
 		public void ResetDefaultValueSerialization ()
 		{
 			forcedSerializationProps = null;
@@ -98,7 +107,7 @@ namespace MonoDevelop.Core.Serialization
 		
 		public bool IsDefaultValueSerializationForced (ItemProperty prop)
 		{
-			if (IncludeDefaultValues)
+			if (IncludeDefaultValues || IncludeDeletedValues)
 				return true;
 			else if (forcedSerializationProps != null)
 				return forcedSerializationProps.Contains (prop);

@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeInstallPackageAction : InstallPackageAction
+	class FakeInstallPackageAction : InstallPackageAction
 	{
 		public FakeInstallPackageAction ()
 			: this (null)
@@ -44,8 +44,19 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public FakeInstallPackageAction (IPackageManagementProject project, IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+			: this (project, packageManagementEvents, new FakeFileRemover (), new FakeLicenseAcceptanceService ())
 		{
+		}
+
+		public FakeInstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			FakeFileRemover fileRemover,
+			FakeLicenseAcceptanceService licenseAcceptanceService)
+			: base (project, packageManagementEvents, fileRemover, licenseAcceptanceService)
+		{
+			FileRemover = fileRemover;
+			LicenseAcceptanceService = licenseAcceptanceService;
 			Operations = new List<PackageOperation> ();
 			Logger = new FakeLogger ();
 		}
@@ -63,6 +74,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public Action ExecuteAction = () => { };
+
+		public FakeFileRemover FileRemover;
+		public FakeLicenseAcceptanceService LicenseAcceptanceService;
 	}
 }
 

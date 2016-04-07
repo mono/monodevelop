@@ -30,22 +30,25 @@
 using System;
 using System.Linq;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
-	public class CombinedDesignView : AbstractViewContent
+	public class CombinedDesignView : ViewContent
 	{
-		IViewContent content;
+		ViewContent content;
 		Gtk.Widget control;
 		List<TabView> tabs = new List<TabView> ();
 		
-		public CombinedDesignView (IViewContent content)
+		public CombinedDesignView (ViewContent content)
 		{
 			this.content = content;
 	/* This code causes that chagnes in a version control view always select the source code view.
@@ -54,7 +57,6 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					ShowPage (0);
 				};
 			}*/
-			content.ContentChanged += new EventHandler (OnTextContentChanged);
 			content.DirtyChanged += new EventHandler (OnTextDirtyChanged);
 			
 			CommandRouterContainer crc = new CommandRouterContainer (content.Control, content, true);
@@ -86,7 +88,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public bool HasPage (Gtk.Widget page)
 		{
-			return tabs.Any (p => p.Control == page);
+			return tabs.Any (p => p.Control.GetNativeWidget<Gtk.Widget> () == page);
 		}
 		
 		public void RemoveButton (Gtk.Widget page)
@@ -107,18 +109,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			ShowPage (0);*/
 		}
 		
-		public override MonoDevelop.Projects.Project Project {
-			get { return base.Project; }
-			set { 
-				base.Project = value; 
-				content.Project = value; 
+		protected override void OnSetProject (Projects.Project project)
+		{
+			base.OnSetProject (project);
+			content.Project = project; 
+		}
+
+		public override ProjectReloadCapability ProjectReloadCapability {
+			get {
+				return content.ProjectReloadCapability;
 			}
 		}
 		
-		protected override void OnWorkbenchWindowChanged (EventArgs e)
+		protected override void OnWorkbenchWindowChanged ()
 		{
-			base.OnWorkbenchWindowChanged (e);
-			content.WorkbenchWindow = WorkbenchWindow;
+			base.OnWorkbenchWindowChanged ();
+			if (content != null)
+				content.WorkbenchWindow = WorkbenchWindow;
 			if (WorkbenchWindow != null) {
 				foreach (TabView view in tabs) {
 					view.WorkbenchWindow = WorkbenchWindow;
@@ -160,7 +167,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		public override void Dispose ()
 		{
-			content.ContentChanged -= new EventHandler (OnTextContentChanged);
+			if (content == null)
+				return;
+
 			content.DirtyChanged -= new EventHandler (OnTextDirtyChanged);
 			IdeApp.Workbench.ActiveDocumentChanged -= new EventHandler (OnActiveDocumentChanged);
 			content.Dispose ();
@@ -171,19 +180,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			base.Dispose ();
 		}
 		
-		public override void Load (string fileName)
+		public override Task Load (FileOpenInformation fileOpenInformation)
 		{
-			ContentName = fileName;
-			content.Load (fileName);
+			ContentName = fileOpenInformation.FileName;
+			return content.Load (ContentName);
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get { return control; }
 		}
 		
-		public override void Save (string fileName)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save (fileName);
+			return content.Save (fileSaveInformation);
 		}
 		
 		public override bool IsDirty {
@@ -210,14 +219,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
-		void OnTextContentChanged (object s, EventArgs args)
-		{
-			OnContentChanged (args);
-		}
-		
 		void OnTextDirtyChanged (object s, EventArgs args)
 		{
-			OnDirtyChanged (args);
+			OnDirtyChanged ();
 		}
 		
 		void OnActiveDocumentChanged (object s, EventArgs args)
@@ -230,7 +234,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 		}
 		
-		public override object GetContent (Type type)
+		protected override object OnGetContent (Type type)
 		{
 //			if (type == typeof(IEditableTextBuffer)) {
 //				// Intercept the IPositionable interface, since we need to
@@ -241,20 +245,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 //					return null;
 //			}
 //			
-			return  base.GetContent (type) ?? (content !=null  ? content.GetContent (type) : null);
+			return  base.OnGetContent (type) ?? (content !=null  ? content.GetContent (type) : null);
 		}
 
 		public void JumpTo (int line, int column)
 		{
-			IEditableTextBuffer ip = (IEditableTextBuffer) content.GetContent (typeof(IEditableTextBuffer));
+			var ip = (TextEditor) content.GetContent (typeof(TextEditor));
 			if (ip != null) {
 				ShowPage (0);
-				ip.SetCaretTo (line, column);
+				ip.SetCaretLocation (line, column);
 			}
 		}
 	}
 	
-	class TabView: AbstractBaseViewContent, IAttachableViewContent
+	class TabView: BaseViewContent
 	{
 		string label;
 		Gtk.Widget content;
@@ -265,32 +269,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			this.content = content;
 		}
 		
-		public override object GetContent (Type type)
+		protected override object OnGetContent (Type type)
 		{
-			if (type.IsInstanceOfType (Control))
-				return Control;
-			return base.GetContent (type);
+			if (type.IsInstanceOfType (content))
+				return content;
+			return base.OnGetContent (type);
 		}
 		
-		#region IAttachableViewContent implementation
-		public virtual void Selected ()
-		{
-		}
-
-		public virtual void Deselected ()
-		{
-		}
-
-		public virtual void BeforeSave ()
-		{
-		}
-
-		public virtual void BaseContentChanged ()
-		{
-		}
-		#endregion
-
-		public override Widget Control {
+		public override Control Control {
 			get {
 				return content;
 			}

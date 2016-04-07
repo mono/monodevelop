@@ -86,6 +86,7 @@ namespace MonoDevelop.Ide.Fonts
 						DestroyWithParent = true,
 						TransientFor = this.Toplevel as Gtk.Window
 					};
+					MonoDevelop.Components.IdeTheme.ApplyTheme (selectionDialog);
 					try {
 						string fontValue = FontService.FilterFontName (GetFont (desc.Name));
 						selectionDialog.SetFontName (fontValue);

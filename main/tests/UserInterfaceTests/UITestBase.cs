@@ -31,6 +31,8 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Linq;
+using MonoDevelop.Core.Logging;
+using MonoDevelop.Core;
 
 namespace UserInterfaceTests
 {
@@ -42,9 +44,10 @@ namespace UserInterfaceTests
 		string currentTestResultFolder;
 		string currentTestResultScreenshotFolder;
 
-		int testScreenshotIndex;
+		int testScreenshotIndex, reproStepIndex;
 
 		protected readonly List<string> FoldersToClean = new List<string> ();
+		protected FileLogger Logger;
 
 		public AutoTestClientSession Session {
 			get { return TestService.Session; }
@@ -56,7 +59,23 @@ namespace UserInterfaceTests
 
 		protected UITestBase (string mdBinPath)
 		{
-			MonoDevelopBinPath = mdBinPath;
+			var installedXS = Environment.GetEnvironmentVariable ("USE_INSTALLED_XS");
+			if (!string.IsNullOrWhiteSpace(installedXS)) {
+				if (Platform.IsMac)
+					installedXS = Path.Combine(installedXS, "Contents/MacOS/XamarinStudio");
+				else if (Platform.IsWindows)
+					installedXS = Path.Combine(installedXS, @"bin\XamarinStudio.exe");
+			}
+
+			if (File.Exists (installedXS)) {
+				MonoDevelopBinPath = installedXS;
+				Console.WriteLine ("[UITEST] Using installed Xamarin Studio from this location: " + installedXS);
+			}
+			else {
+				Console.WriteLine ("[UITEST] Installed Xamarin Studio not found. Falling back to default behavior.");
+				MonoDevelopBinPath = mdBinPath;
+			}
+
 			currentWorkingDirectory = Directory.GetCurrentDirectory ();
 		}
 
@@ -70,6 +89,7 @@ namespace UserInterfaceTests
 		public virtual void SetUp ()
 		{
 			SetupTestResultFolder ();
+			SetupTestLogger ();
 			SetupScreenshotsFolder ();
 			SetupIdeLogFolder ();
 
@@ -89,31 +109,39 @@ namespace UserInterfaceTests
 		public virtual void Teardown ()
 		{
 			try {
-				if (TestContext.CurrentContext.Result.Status != TestStatus.Passed && Session.Query (IdeQuery.XamarinUpdate).Any ()) {
-					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
-				}
-				ValidateIdeLogMessages ();
-			} finally {
+				bool isInconclusive = false;
 				var testStatus = TestContext.CurrentContext.Result.Status;
 				if (testStatus != TestStatus.Passed) {
 					try {
+						var updateOpened = Session.Query (IdeQuery.XamarinUpdate);
+						if (updateOpened != null && updateOpened.Any ())
+							isInconclusive = true;
 						TakeScreenShot (string.Format ("{0}-Test-Failed", TestContext.CurrentContext.Test.Name));
 					} catch (Exception e) {
 						Session.DebugObject.Debug ("Final Screenshot failed");
+						Session.DebugObject.Debug (e.ToString ());
 					}
 				}
 
 				File.WriteAllText (Path.Combine (currentTestResultFolder, "MemoryUsage.json"),
-					JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
+				                   JsonConvert.SerializeObject (Session.MemoryStats, Formatting.Indented));
 
 				Ide.CloseAll ();
 				TestService.EndSession ();
+
+				ValidateIdeLogMessages ();
 
 				OnCleanUp ();
 				if (testStatus == TestStatus.Passed) {
 					if (Directory.Exists (currentTestResultScreenshotFolder))
 						Directory.Delete (currentTestResultScreenshotFolder, true);
 				}
+
+				if (isInconclusive)
+					Assert.Inconclusive ("Xamarin Update is blocking the application focus");
+			} finally {
+				LoggingService.RemoveLogger (Logger.Name);
+				Logger.Dispose ();
 			}
 		}
 
@@ -142,6 +170,17 @@ namespace UserInterfaceTests
 			Directory.CreateDirectory (currentTestResultFolder);
 		}
 
+		void SetupTestLogger ()
+		{
+			reproStepIndex = 0;
+			var currentTestLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Test.log.txt", TestContext.CurrentContext.Test.Name.ToPathSafeString ()));
+			Logger = new FileLogger (currentTestLog) {
+				Name = TestContext.CurrentContext.Test.Name,
+				EnabledLevel = EnabledLoggingLevel.All,
+			};
+			LoggingService.AddLogger (Logger);
+		}
+
 		void SetupScreenshotsFolder ()
 		{
 			testScreenshotIndex = 1;
@@ -153,16 +192,32 @@ namespace UserInterfaceTests
 
 		void SetupIdeLogFolder ()
 		{
-			var currentXSIdeLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.Name.Replace ('/','_').Replace ('\\','_')));
+			var currentXSIdeLog = Path.Combine (currentTestResultFolder, string.Format ("{0}.Ide.log", TestContext.CurrentContext.Test.Name.ToPathSafeString ()));
 			Environment.SetEnvironmentVariable ("MONODEVELOP_LOG_FILE", currentXSIdeLog);
 			Environment.SetEnvironmentVariable ("MONODEVELOP_FILE_LOG_LEVEL", "UpToInfo");
 		}
 
-		protected void TakeScreenShot (string stepName)
+		public void TakeScreenShot (string stepName)
 		{
-			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName);
+			stepName = string.Format ("{0:D3}-{1}", testScreenshotIndex++, stepName).ToPathSafeString ();
 			var screenshotPath = Path.Combine (currentTestResultScreenshotFolder, stepName) + ".png";
 			Session.TakeScreenshot (screenshotPath);
+		}
+
+		public void ReproStep (string stepDescription, params object[] info)
+		{
+			reproStepIndex++;
+			stepDescription = string.Format ("@Repro-Step-{0:D2}: {1}", reproStepIndex, stepDescription);
+			LoggingService.LogInfo (stepDescription);
+			foreach (var obj in info) {
+				if (obj != null)
+					LoggingService.LogInfo (string.Format("@Repro-Info-{0:D2}: {1}", reproStepIndex, obj.ToString ()));
+			}
+		}
+
+		public void ReproFailedStep (string expected, string actual, params object [] info)
+		{
+			ReproStep (string.Format ("Expected: {0}\nActual: {1}", expected, actual), info);
 		}
 
 		protected virtual void OnCleanUp ()

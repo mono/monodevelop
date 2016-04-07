@@ -36,10 +36,10 @@ namespace MonoDevelop.Projects
 	
 	public class SolutionItemEventArgs : EventArgs
 	{
-		SolutionItem entry;
+		SolutionFolderItem entry;
 		Solution solution;
 		
-		public SolutionItem SolutionItem {
+		public SolutionFolderItem SolutionItem {
 			get {
 				return entry;
 			}
@@ -51,12 +51,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 		
-		public SolutionItemEventArgs (SolutionItem entry)
+		public SolutionItemEventArgs (SolutionFolderItem entry)
 		{
 			this.entry = entry;
 		}
 		
-		public SolutionItemEventArgs (SolutionItem entry, Solution solution)
+		public SolutionItemEventArgs (SolutionFolderItem entry, Solution solution)
 		{
 			this.solution = solution;
 			this.entry = entry;
@@ -69,7 +69,7 @@ namespace MonoDevelop.Projects
 	{
 		bool reloading;
 		
-		public SolutionItemChangeEventArgs (SolutionItem item, Solution parentSolution, bool reloading): base (item, parentSolution)
+		public SolutionItemChangeEventArgs (SolutionFolderItem item, Solution parentSolution, bool reloading): base (item, parentSolution)
 		{
 			this.reloading = reloading;
 		}
@@ -82,14 +82,14 @@ namespace MonoDevelop.Projects
 		/// When Reloading is true, it returns the original solution item that is being reloaded
 		/// </summary>
 		/// <value>The replaced item.</value>
-		public SolutionItem ReplacedItem { get; internal set; }
+		public SolutionFolderItem ReplacedItem { get; internal set; }
 	}
 	
 	public delegate void SolutionItemModifiedEventHandler (object sender, SolutionItemModifiedEventArgs e);
 	
 	public class SolutionItemModifiedEventArgs: EventArgsChain<SolutionItemModifiedEventInfo>
 	{
-		public SolutionItemModifiedEventArgs (SolutionItem item, string hint)
+		public SolutionItemModifiedEventArgs (SolutionFolderItem item, string hint)
 		{
 			Add (new SolutionItemModifiedEventInfo (item, hint));
 		}
@@ -99,7 +99,7 @@ namespace MonoDevelop.Projects
 	{
 		string hint;
 		
-		public SolutionItemModifiedEventInfo (SolutionItem item, string hint): base (item)
+		public SolutionItemModifiedEventInfo (SolutionFolderItem item, string hint): base (item)
 		{
 			this.hint = hint;
 		}

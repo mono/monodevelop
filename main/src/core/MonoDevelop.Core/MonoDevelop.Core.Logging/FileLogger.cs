@@ -45,7 +45,9 @@ namespace MonoDevelop.Core.Logging
 		
 		public FileLogger (string filename, bool append)
 		{
-			writer = new StreamWriter (filename, append);
+			writer = new StreamWriter (filename, append) {
+				AutoFlush = true	
+			};
 			name = filename;
 		}
 

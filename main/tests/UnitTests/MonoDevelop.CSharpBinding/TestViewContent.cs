@@ -29,102 +29,105 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Mono.TextEditor;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
-	public class TestViewContent : AbstractViewContent, IEditableTextBuffer, Mono.TextEditor.ITextEditorDataProvider
+	public class TestViewContent : ViewContent
 	{
-		TextEditorData data;
+		TextEditor data;
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return null;
 			}
 		}
 		
-		public TextEditorData Data {
+		public TextEditor Data {
 			get {
 				return this.data;
 			}
 		}
 		public TestViewContent ()
 		{
-			document = new Mono.TextEditor.TextDocument ();
-			data = new TextEditorData (document);
+			data = TextEditorFactory.CreateNewEditor ();
+			Contents.Add (data);;
 			Name = "";
 		}
 
-		public TestViewContent (TextEditorData data)
+		public TestViewContent (IReadonlyTextDocument doc)
 		{
-			this.document = data.Document;
-			this.data = data;
+			data = TextEditorFactory.CreateNewEditor (doc);
+			Contents.Add (data);
 			Name = "";
 		}
-		
-		public override void Load(string fileName)
+
+		protected override void OnContentNameChanged ()
 		{
+			base.OnContentNameChanged ();
+			Name = ContentName;
 		}
 		
 		FilePath name;
 		public FilePath Name { 
 			get { return name; }
-			set { name =  document.FileName = value; }
+			set { name =  data.FileName = value; }
 		}
 		
 		public int LineCount {
 			get {
-				return document.LineCount;
+				return data.LineCount;
 			}
 		}
-		
-		Mono.TextEditor.TextDocument document;
+
 		public string Text {
 			get {
-				return document.Text;
+				return data.Text;
 			}
 			set {
-				document.Text = value;
+				data.Text = value;
 			}
 		}
 		
 		public int InsertText (int position, string text)
 		{
-			document.Insert (position, text);
+			data.InsertText (position, text);
 			return text.Length;
 		}
 		
 		public void DeleteText (int position, int length)
 		{
-			document.Replace (position, length, "");
+			data.ReplaceText (position, length, "");
 		}
 		
 		public int Length {
 			get {
-				return document.TextLength;
+				return data.Length;
 			}
 		}
 		
 		public string GetText (int startPosition, int endPosition)
 		{
-			return document.GetTextBetween (startPosition, endPosition);
+			return data.GetTextBetween (startPosition, endPosition);
 		}
 		public char GetCharAt (int position)
 		{
-			return document.GetCharAt (position);
+			return data.GetCharAt (position);
 		}
 		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
-			return document.LocationToOffset (line, column);
+			return data.LocationToOffset (line, column);
 		}
 		
 		public void GetLineColumnFromPosition (int position, out int line, out int column)
 		{
-			DocumentLocation loc = document.OffsetToLocation (position);
+			var loc = data.OffsetToLocation (position);
 			line = loc.Line;
 			column = loc.Column;
 		}
@@ -133,17 +136,17 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		public int CursorPosition {
 			get {
-				return data.Caret.Offset;
+				return data.CaretOffset;
 			}
 			set {
-				data.Caret.Offset = value;
+				data.CaretOffset = value;
 			}
 		}
 
 		public int SelectionStartPosition { 
 			get {
 				if (!data.IsSomethingSelected)
-					return data.Caret.Offset;
+					return data.CaretOffset;
 				return data.SelectionRange.Offset;
 			}
 		}
@@ -151,14 +154,14 @@ namespace MonoDevelop.CSharpBinding.Tests
 		public int SelectionEndPosition { 
 			get {
 				if (!data.IsSomethingSelected)
-					return data.Caret.Offset;
+					return data.CaretOffset;
 				return data.SelectionRange.EndOffset;
 			}
 		}
 		
 		public void Select (int startPosition, int endPosition)
 		{
-			data.SelectionRange = new TextSegment (startPosition, endPosition - startPosition);
+			data.SelectionRange = TextSegment.FromBounds (startPosition, endPosition);
 		}
 		
 		public void ShowPosition (int position)
@@ -202,17 +205,17 @@ namespace MonoDevelop.CSharpBinding.Tests
 		
 		public List<object> Contents = new List<object> ();
 		
-		public override object GetContent (Type type) 
+		protected override IEnumerable<object> OnGetContents (Type type)
 		{
-			return Contents.FirstOrDefault (o => type.IsInstanceOfType (type)) ??  base.GetContent (type);
+			return base.OnGetContents(type).Concat (Contents.Where (c => type.IsInstanceOfType (c)));
 		}
-		
+
 		public IDisposable OpenUndoGroup ()
 		{
 			return new DisposeStub ();
 		}
 		
-		public TextEditorData GetTextEditorData ()
+		public TextEditor GetTextEditorData ()
 		{
 			return data;
 		}
@@ -230,6 +233,5 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 		#endregion
 		public event EventHandler CaretPositionSet;
-		public event EventHandler<TextChangedEventArgs> TextChanged;
 	}
 }

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -33,7 +32,7 @@ namespace MonoDevelop.Projects
 	{
 		public ProjectOperationContext ()
 		{
-			GlobalProperties = new Dictionary<string,string> ();
+			GlobalProperties = new ProjectItemMetadata ();
 		}
 
 		public ProjectOperationContext (OperationContext other): this ()
@@ -42,14 +41,14 @@ namespace MonoDevelop.Projects
 				CopyFrom (other);
 		}
 
-		public Dictionary<string,string> GlobalProperties { get; private set; }
+		public IPropertySet GlobalProperties { get; private set; }
 
 		public override void CopyFrom (OperationContext other)
 		{
 			base.CopyFrom (other);
 			var o = other as ProjectOperationContext;
 			if (o != null)
-				GlobalProperties = new Dictionary<string,string> (o.GlobalProperties);
+				GlobalProperties = new ProjectItemMetadata ((ProjectItemMetadata) o.GlobalProperties);
 		}
 	}
 }

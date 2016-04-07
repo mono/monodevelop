@@ -25,15 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components
 {
@@ -150,10 +149,14 @@ namespace MonoDevelop.Components
 		const int spacing = arrowLeftPadding + arrowRightPadding + arrowSize;
 		const int minRegionSelectorWidth = 30;
 		
-		Func<int, Widget> createMenuForItem;
+		Func<int, Control> createMenuForItem;
 		Widget menuWidget;
-		
-		public PathBar (Func<int, Widget> createMenuForItem)
+		bool pressMenuWasVisible;
+		int pressHoverIndex;
+		int menuIndex;
+		uint hideTimeout;
+
+		public PathBar (Func<int, Control> createMenuForItem)
 		{
 			this.Events =  EventMask.ExposureMask | 
 				           EventMask.EnterNotifyMask |
@@ -244,13 +247,8 @@ namespace MonoDevelop.Components
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-
 				ctx.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				using (var g = new Cairo.LinearGradient (0, 0, 0, Allocation.Height)) {
-					g.AddColorStop (0, Styles.BreadcrumbBackgroundColor);
-					g.AddColorStop (1, Styles.BreadcrumbGradientEndColor);
-					ctx.SetSource (g);
-				}
+				ctx.SetSourceColor (Styles.BreadcrumbBackgroundColor.ToCairoColor ());
 				ctx.Fill ();
 
 				if (widths == null)
@@ -285,6 +283,7 @@ namespace MonoDevelop.Components
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 					layout.SetMarkup (GetFirstLineFromMarkup (leftPath [i].Markup));
 
 					ctx.Save ();
@@ -343,6 +342,7 @@ namespace MonoDevelop.Components
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
+					layout.FontDescription = FontService.SansFont.CopyModified (Styles.FontScale11);
 					layout.SetMarkup (GetFirstLineFromMarkup (rightPath [i].Markup));
 
 					ctx.Save ();
@@ -371,7 +371,7 @@ namespace MonoDevelop.Components
 
 				ctx.MoveTo (0, Allocation.Height - 0.5);
 				ctx.RelLineTo (Allocation.Width, 0);
-				ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor);
+				ctx.SetSourceColor (Styles.BreadcrumbBottomBorderColor.ToCairoColor ());
 				ctx.LineWidth = 1;
 				ctx.Stroke ();
 			}
@@ -385,7 +385,7 @@ namespace MonoDevelop.Components
 			ctx.LineTo (x + arrowSize, y + size / 2);
 			ctx.LineTo (x, y + size);
 			ctx.ClosePath ();
-			ctx.SetSourceColor (CairoExtensions.ColorShade (Style.Dark (State).ToCairoColor (), 0.6));
+			ctx.SetSourceColor (Styles.BaseIconColor.ToCairoColor());
 			ctx.Fill ();
 		}
 
@@ -397,13 +397,8 @@ namespace MonoDevelop.Components
 			double height = Allocation.Height - topPadding - bottomPadding + buttonPadding * 2;
 
 			ctx.Rectangle (x, y, width, height);
-			ctx.SetSourceColor (Styles.BreadcrumbButtonFillColor);
+			ctx.SetSourceColor (Styles.BreadcrumbButtonFillColor.ToCairoColor ());
 			ctx.Fill ();
-
-			ctx.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
-			ctx.SetSourceColor (Styles.BreadcrumbButtonBorderColor);
-			ctx.LineWidth = 1;
-			ctx.Stroke ();
 		}
 
 		int[] ReduceWidths (int overflow)
@@ -435,6 +430,9 @@ namespace MonoDevelop.Components
 
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
+			pressMenuWasVisible = menuVisible;
+			pressHoverIndex = menuIndex;
+
 			HideMenu ();
 			if (hovering) {
 				pressed = true;
@@ -448,6 +446,8 @@ namespace MonoDevelop.Components
 			pressed = false;
 			if (hovering) {
 				QueueDraw ();
+				if (pressMenuWasVisible && pressHoverIndex == hoverIndex)
+					return true;
 				ShowMenu ();
 			}
 			return true;
@@ -459,18 +459,18 @@ namespace MonoDevelop.Components
 				return;
 
 			HideMenu ();
-
+			menuIndex = hoverIndex;
 			menuWidget = createMenuForItem (hoverIndex);
 			if (menuWidget == null)
 				return;
 			menuWidget.Hidden += delegate {
-				
 				menuVisible = false;
 				QueueDraw ();
 				
 				//FIXME: for some reason the menu's children don't get activated if we destroy 
 				//directly here, so use a timeout to delay it
-				GLib.Timeout.Add (100, delegate {
+				hideTimeout = GLib.Timeout.Add (100, delegate {
+					hideTimeout = 0;
 					HideMenu ();
 					return false;
 				});
@@ -492,6 +492,9 @@ namespace MonoDevelop.Components
 
 		public void HideMenu ()
 		{
+			if (hideTimeout != 0) {
+				GLib.Source.Remove (hideTimeout); 
+			}
 			if (menuWidget != null) {
 				menuWidget.Destroy ();
 				menuWidget = null;
@@ -533,18 +536,21 @@ namespace MonoDevelop.Components
 			int dy = oy + this.Allocation.Bottom;
 			
 			var req = widget.SizeRequest ();
-			
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (dx, dy));
+
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (dx, dy));
+			int geomWidth = (int)geometry.Width;
+			int geomLeft = (int)geometry.Left;
+			int geomRight = (int)geometry.Right;
 			int width = System.Math.Max (req.Width, w);
-			if (width >= geometry.Width - spacing * 2) {
-				width = geometry.Width - spacing * 2;
-				dx = geometry.Left + spacing;
+			if (width >= geomWidth - spacing * 2) {
+				width = geomWidth - spacing * 2;
+				dx = geomLeft + spacing;
 			}
 			widget.WidthRequest = width;
 			if (dy + req.Height > geometry.Bottom)
 				dy = oy + this.Allocation.Y - req.Height;
-			if (dx + width > geometry.Right)
-				dx = geometry.Right - width;
+			if (dx + width > geomRight)
+				dx = geomRight - width;
 			(widget as Gtk.Window).Move (dx, dy);
 			(widget as Gtk.Window).Resize (width, req.Height);
 			widget.GrabFocus ();
@@ -690,10 +696,10 @@ namespace MonoDevelop.Components
 			
 			widths = null;
 		}
-		
-		public override void Destroy ()
+
+		protected override void OnDestroyed ()
 		{
-			base.Destroy ();
+			base.OnDestroyed ();
 			styleButton.Destroy ();
 			KillLayout ();
 			this.boldAtts.Dispose ();

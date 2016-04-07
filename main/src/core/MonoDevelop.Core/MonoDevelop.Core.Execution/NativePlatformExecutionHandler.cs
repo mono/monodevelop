@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.Core.Execution
 			this.defaultEnvironmentVariables = defaultEnvironmentVariables;
 		}
 		
-		public virtual IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public virtual ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			ProcessExecutionCommand cmd = (ProcessExecutionCommand) command;
 			IDictionary<string, string> vars;
@@ -61,7 +62,7 @@ namespace MonoDevelop.Core.Execution
 			} else
 				vars = cmd.EnvironmentVariables;
 			
-			return Runtime.ProcessService.StartConsoleProcess (cmd.Command, cmd.Arguments, cmd.WorkingDirectory, vars, console, null);
+			return Runtime.ProcessService.StartConsoleProcess (cmd.Command, cmd.Arguments, cmd.WorkingDirectory, console, vars);
 		}
 	
 		public virtual bool CanExecute (ExecutionCommand command)

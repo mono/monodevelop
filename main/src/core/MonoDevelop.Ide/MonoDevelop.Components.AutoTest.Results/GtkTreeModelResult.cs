@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Gtk;
 using System.Linq;
 
@@ -38,14 +39,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 		TreeIter? resultIter;
 		string DesiredText;
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column) : base (parent)
+		internal GtkTreeModelResult (Widget parent, TreeModel treeModel, int column) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
 			Column = column;
 		}
 
-		public GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter) : base (parent)
+		internal GtkTreeModelResult (Widget parent, TreeModel treeModel, int column, TreeIter iter) : base (parent)
 		{
 			ParentWidget = parent;
 			TModel = treeModel;
@@ -78,7 +79,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Model (string column)
 		{
-			return null;
+			var columnNumber = GetColumnNumber (column, TModel);
+			if (columnNumber == -1)
+				return null;
+			Column = columnNumber;
+			return this;
 		}
 
 		bool CheckForText (TreeModel model, TreeIter iter, bool exact)
@@ -117,7 +122,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Property (string propertyName, object value)
 		{
-			if (resultIter != null && resultIter.HasValue) {
+			if (resultIter.HasValue) {
 				var objectToCompare = TModel.GetValue (resultIter.Value, Column);
 				return MatchProperty (propertyName, objectToCompare, value);
 			}
@@ -127,7 +132,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override ObjectProperties Properties ()
 		{
-			if (resultIter != null && resultIter.HasValue) {
+			if (resultIter.HasValue) {
 				var objectForProperties = TModel.GetValue (resultIter.Value, Column);
 				return base.GetProperties (objectForProperties);
 			}
@@ -257,24 +262,25 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return false;
 		}
 
-		public override bool TypeKey (char key, string state = "")
-		{
-			return false;
-		}
-
-		public override bool TypeKey (string keyString, string state = "")
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override bool EnterText (string text)
-		{
-			return false;
-		}
-
 		public override bool Toggle (bool active)
 		{
+			if (resultIter.HasValue) {
+				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
+				if (modelValue is bool) {
+					TModel.SetValue ((TreeIter)resultIter, Column, active);
+					return true;
+				}
+			}
 			return false;
+		}
+
+		public override void SetProperty (string propertyName, object value)
+		{
+			if (resultIter.HasValue) {
+				var modelValue = TModel.GetValue ((TreeIter)resultIter, Column);
+
+				SetProperty (modelValue, propertyName, value);
+			}
 		}
 	}
 }

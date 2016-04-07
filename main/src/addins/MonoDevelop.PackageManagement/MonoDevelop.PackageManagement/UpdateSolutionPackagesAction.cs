@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdateSolutionPackagesAction : IUpdatePackagesAction
+	internal class UpdateSolutionPackagesAction : IUpdatePackagesAction
 	{
 		List<IPackageFromRepository> packages = new List<IPackageFromRepository>();
 		List<PackageOperation> operations = new List<PackageOperation>();

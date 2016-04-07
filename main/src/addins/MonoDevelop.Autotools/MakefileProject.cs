@@ -11,20 +11,22 @@ namespace MonoDevelop.Autotools
 		{
 		}
 		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string id, ConfigurationKind kind)
 		{
-			MakefileProjectConfiguration conf = new MakefileProjectConfiguration ();
-			conf.Name = name;
-			return conf;
+			return new MakefileProjectConfiguration (id);
 		}
-		
-		public override IEnumerable<string> GetProjectTypes ()
+
+		protected override void OnGetTypeTags (HashSet<string> types)
 		{
-			yield return "MakefileProject";
+			base.OnGetTypeTags (types);
+			types.Add ("MakefileProject");
 		}
 	}
 	
 	public class MakefileProjectConfiguration: ProjectConfiguration
 	{
+		public MakefileProjectConfiguration (string id) : base (id)
+		{
+		}
 	}
 }

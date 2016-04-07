@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 
 		public Mono.TextEditor.TextDocument.LineState GetLineState (DocumentLine line)
 		{
-			if (line != null) {
+			if (line != null && lineStates != null) {
 				try {
 					var info = lineStates [line.LineNumber];
 					if (info != null) {

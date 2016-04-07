@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide
 						sw.Write (body);
 					}
 				}
-			).ContinueWith (HandleResponse);
+			).ContinueWith (HandleResponse, TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 		
 		static void HandleResponse (Task<HttpWebResponse> t)

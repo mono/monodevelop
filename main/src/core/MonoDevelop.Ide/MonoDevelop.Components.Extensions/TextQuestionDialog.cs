@@ -65,9 +65,9 @@ namespace MonoDevelop.Components.Extensions
 		
 		protected override bool RunDefault ()
 		{
-			Dialog md = null;
+			Gtk.Dialog md = null;
 			try {
-				md = new Dialog (Caption, TransientFor, DialogFlags.Modal | DialogFlags.DestroyWithParent) {
+				md = new Gtk.Dialog (Caption, TransientFor, DialogFlags.Modal | DialogFlags.DestroyWithParent) {
 					HasSeparator = false,
 					BorderWidth = 6,
 				};

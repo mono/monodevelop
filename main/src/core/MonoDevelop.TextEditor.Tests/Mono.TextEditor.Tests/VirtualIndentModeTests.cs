@@ -168,8 +168,8 @@ namespace Mono.TextEditor.Tests
 			var data = CreateData ("test\n\n\n");
 			data.Caret.Location = new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1));
 			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (2, data.IndentationTracker.GetVirtualIndentationColumn (2, 1) - 1), data.Caret.Location);
-			Assert.AreEqual ("test\n\t\n\n", data.Document.Text);
+			Assert.AreEqual (new DocumentLocation (1, 5), data.Caret.Location);
+			Assert.AreEqual ("test\n\n", data.Document.Text);
 		}
 
 		[Test]
@@ -206,7 +206,7 @@ namespace Mono.TextEditor.Tests
 			CaretMoveActions.Up (data);
 			Assert.AreEqual (new DocumentLocation (1, 3), data.Caret.Location);
 			DeleteActions.Delete (data);
-			Assert.AreEqual ("\t\t\t\ttest", data.Document.Text);
+			Assert.AreEqual ("\t\ttest", data.Document.Text);
 		}
 
 		[Test]
@@ -262,7 +262,7 @@ namespace Mono.TextEditor.Tests
 			data.Caret.Location = new DocumentLocation (2, 2);
 			DeleteActions.Backspace (data);
 			Assert.AreEqual ("\n\n\n", data.Document.Text);
-			Assert.AreEqual (1, data.Caret.Column);
+			Assert.AreEqual (1, data.Caret.Offset);
 		}
 
 		[Test]
@@ -391,7 +391,7 @@ namespace Mono.TextEditor.Tests
 			data.Caret.Location = new DocumentLocation (1, 2);
 			DeleteActions.Backspace (data);
 			Assert.AreEqual ("", data.Document.Text);
-			Assert.AreEqual (new DocumentLocation (1, 1), data.Caret.Location);
+			Assert.AreEqual (0, data.Caret.Offset);
 		}
 
 		/// <summary>
@@ -451,19 +451,111 @@ namespace Mono.TextEditor.Tests
 		{
 			var data = CreateData ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n\t\t\r\n\r\n");
 			data.Options.DefaultEolMarker = "\r\n";
-			data.IndentationTracker = new DefaultIndentationTracker (data.Document);
+			data.IndentationTracker = new DefaultIndentationTracker (data.Document) {
+				SupportedFeatures = IndentatitonTrackerFeatures.All
+			};
 			data.Caret.Location = new DocumentLocation (4, 3);
-
-			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (4, 2), data.Caret.Location);
-			DeleteActions.Backspace (data);
-			Assert.AreEqual (new DocumentLocation (4, 1), data.Caret.Location);
 
 			DeleteActions.Backspace (data);
 			Assert.AreEqual (new DocumentLocation (3, 3), data.Caret.Location);
 
 		}
 
+		[Test]
+		public void TestSmartBackspaceBehavior ()
+		{
+			var data = CreateData ("\n\t\t\n\t\t");
+			data.Caret.Location = new DocumentLocation (3, 3);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual ("\n", data.Document.Text);
+		}
+
+		[Test]
+		public void TestSmartBackspaceBehaviorCase2 ()
+		{
+			var data = CreateData ("\n\t\tTest\n\t\t");
+			data.Caret.Location = new DocumentLocation (3, 3);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 7), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tTest", data.Document.Text);
+		}
+
+		[Test]
+		public void TestSmartBackspaceBehaviorCase3 ()
+		{
+			var data = CreateData ("\n\t\t   Test");
+			data.Caret.Location = new DocumentLocation (2, 6);
+			DeleteActions.Backspace (data);
+
+			Assert.AreEqual (new DocumentLocation (2, 5), data.Caret.Location);
+			Assert.AreEqual ("\n\t\t  Test", data.Document.Text);
+
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 4), data.Caret.Location);
+			Assert.AreEqual ("\n\t\t Test", data.Document.Text);
+
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tTest", data.Document.Text);
+		}
+
+		[Test]
+		public void TestEmptyLineSmartBackspace ()
+		{
+			var data = CreateData ("\n\n\n\n");
+			data.IndentationTracker = new SmartIndentModeTests.TestIndentTracker ("\t");
+			data.Caret.Location = new DocumentLocation (3, 2);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 2), data.Caret.Location);
+			Assert.AreEqual ("\n\n\n", data.Document.Text);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (1, 2), data.Caret.Location);
+			Assert.AreEqual ("\n\n", data.Document.Text);
+		}
+
+
+		[Test]
+		public void TestSmartExistingLineBackspace ()
+		{
+			var data = CreateData ("\n\t\t\n\t\tTest");
+			data.Caret.Location = new DocumentLocation (3, 3);
+			DeleteActions.Backspace (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tTest", data.Document.Text);
+		}
+
+
+		[Test]
+		public void TestSmartDeleteBehavior ()
+		{
+			var data = CreateData ("\n\t\t\n\t\t");
+			data.Caret.Location = new DocumentLocation (2, 3);
+			DeleteActions.Delete (data);
+			Assert.AreEqual (new DocumentLocation (2, 3), data.Caret.Location);
+			Assert.AreEqual ("\n", data.Document.Text);
+		}
+
+		[Test]
+		public void TestSmartDeleteBehaviorNonEmptyLines ()
+		{
+			var data = CreateData ("\n\t\tFoo\n\t\tBar");
+			data.Caret.Location = new DocumentLocation (2, 6);
+			DeleteActions.Delete (data);
+			Assert.AreEqual (new DocumentLocation (2, 6), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tFooBar", data.Document.Text);
+		}
+
+
+		[Test]
+		public void TestSmartDeleteBehaviorBug1 ()
+		{
+			var data = CreateData ("\n\t\tFoo\n\t\t Bar");
+			data.Caret.Location = new DocumentLocation (2, 6);
+			DeleteActions.Delete (data);
+			Assert.AreEqual (new DocumentLocation (2, 6), data.Caret.Location);
+			Assert.AreEqual ("\n\t\tFooBar", data.Document.Text);
+		}
 	}
 }
 

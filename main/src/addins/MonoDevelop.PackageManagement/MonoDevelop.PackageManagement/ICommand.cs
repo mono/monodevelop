@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ICommand
+	internal interface ICommand
 	{
 		bool CanExecute(object parameter);
 		void Execute(object parameter);

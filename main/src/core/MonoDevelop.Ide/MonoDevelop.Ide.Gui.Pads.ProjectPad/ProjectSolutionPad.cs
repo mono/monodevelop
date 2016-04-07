@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 				return null;
 			});
-			TreeView.ShowSelectionPopupButton = true;
 		}
 		
 		protected override void OnSelectionChanged (object sender, EventArgs args)
@@ -67,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			if (nav != null) {
 				WorkspaceItem c = (WorkspaceItem) nav.GetParentDataItem (typeof(WorkspaceItem), true);
 				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = c;
-				SolutionItem ce = (SolutionItem) nav.GetParentDataItem (typeof(SolutionItem), true);
+				SolutionFolderItem ce = (SolutionFolderItem) nav.GetParentDataItem (typeof(SolutionFolderItem), true);
 				IdeApp.ProjectOperations.CurrentSelectedSolutionItem = ce;
 				IdeApp.ProjectOperations.CurrentSelectedItem = nav.DataItem;
 			}

@@ -1,7 +1,6 @@
 //gcc -m32 monostub.m -o monostub -framework AppKit
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -11,10 +10,9 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <ctype.h>
+#include <time.h>
 
-#import <Cocoa/Cocoa.h>
-
-#define MONO_LIB_PATH(lib) "/Library/Frameworks/Mono.framework/Versions/Current/lib/"lib
+#include "monostub-utils.h"
 
 typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
@@ -53,38 +51,6 @@ exit_with_message (char *reason, char *argv0)
 	exit (1);
 }
 
-static int
-check_mono_version (const char *version, const char *req_version)
-{
-	char *req_end, *end;
-	long req_val, val;
-	
-	while (*req_version) {
-		req_val = strtol (req_version, &req_end, 10);
-		if (req_version == req_end || (*req_end && *req_end != '.')) {
-			fprintf (stderr, "Bad version requirement string '%s'\n", req_end);
-			return FALSE;
-		}
-		
-		req_version = req_end;
-		if (*req_version)
-			req_version++;
-		
-		val = strtol (version, &end, 10);
-		if (version == end || val < req_val)
-			return FALSE;
-		
-		if (val > req_val)
-			return TRUE;
-		
-		if (*req_version == '.' && *end != '.')
-			return FALSE;
-		
-		version = end + 1;
-	}
-	
-	return TRUE;
-}
 
 typedef struct _ListNode {
 	struct _ListNode *next;
@@ -208,177 +174,9 @@ get_mono_env_options (int *count)
 	return argv;
 }
 
-static bool
-push_env (const char *variable, const char *value)
-{
-	const char *current;
-	size_t len;
-	char *buf;
-	
-	if ((current = getenv (variable)) && *current) {
-		len = strlen (value);
-		
-		if (!strncmp (current, value, len) && (current[len] == ':' || current[len] == '\0'))
-			return NO;
-		
-		if (!(buf = malloc (len + strlen (current) + 2)))
-			return NO;
-		
-		memcpy (buf, value, len);
-		buf[len] = ':';
-		strcpy (buf + len + 1, current);
-		setenv (variable, buf, 1);
-		free (buf);
-	} else {
-		setenv (variable, value, 1);
-	}
-
-	//printf ("Updated the %s environment variable.\n", variable);
-	
-	return YES;
-}
-
-static char *
-str_append (const char *base, const char *append)
-{
-	size_t baselen = strlen (base);
-	size_t len = strlen (append);
-	char *buf;
-	
-	if (!(buf = malloc (baselen + len + 1)))
-		return NULL;
-	
-	memcpy (buf, base, baselen);
-	strcpy (buf + baselen, append);
-	
-	return buf;
-}
-
-static char *
-generate_fallback_path (const char *contentsDir)
-{
-	char *lib_dir;
-	char *monodevelop_bin_dir;
-	char *value;
-	char *result;
-
-	/* Inject our Resources/lib dir */
-	lib_dir = str_append (contentsDir, "/Resources/lib:");
-
-	/* Inject our Resources/lib/monodevelop/bin dir so we can load libxammac.dylib */
-	monodevelop_bin_dir = str_append (contentsDir, "/Resources/lib/monodevelop/bin:");
-
-	if (lib_dir == NULL || monodevelop_bin_dir == NULL)
-		abort ();
-
-	value = str_append (lib_dir, monodevelop_bin_dir);
-	if (value == NULL)
-		abort ();
-
-	/* Mono's lib dir, and CommandLineTool's lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
-	result = str_append (value, "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib");
-
-	free (lib_dir);
-	free (monodevelop_bin_dir);
-	free (value);
-	return result;
-}
-
-static bool
-update_environment (const char *contentsDir)
-{
-	bool updated = NO;
-	char *value;
-	
-	if ((value = generate_fallback_path (contentsDir))) {
-		if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", value))
-			updated = YES;
-		
-		free (value);
-	}
-	
-	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
-	if ((value = str_append (contentsDir, "/Resources/lib/pkgconfig:/Library/Frameworks/Mono.framework/External/pkgconfig"))) {
-		if (push_env ("PKG_CONFIG_PATH", value))
-			updated = YES;
-		
-		free (value);
-	}
-
-	if ((value = str_append (contentsDir, "/Resources"))) {
-		if (push_env ("MONO_GAC_PREFIX", value))
-			updated = YES;
-		
-		free (value);
-	}
-	
-	if ((value = str_append (contentsDir, "/MacOS"))) {
-		char *compat;
-		
-		// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
-		// and older versions of mtouch relied on this broken behavior.
-		if ((compat = str_append (contentsDir, "/Resources"))) {
-			size_t compatlen = strlen (compat);
-			size_t valuelen = strlen (value);
-			char *combined;
-			
-			if ((combined = malloc (compatlen + valuelen + 2))) {
-				memcpy (combined, compat, compatlen);
-				combined[compatlen] = ':';
-				strcpy (combined + compatlen + 1, value);
-
-				if (push_env ("PATH", combined))
-					updated = YES;
-				
-				free (combined);
-			} else {
-				// if we can't combine them, set the old (incorrect) compat value
-				if (push_env ("PATH", compat))
-					updated = YES;
-			}
-			
-			free (compat);
-		} else {
-			if (push_env ("PATH", value))
-				updated = YES;
-		}
-		
-		free (value);
-	}
-
-	return updated;
-}
-
-static bool
-env2bool (const char *env, bool defaultValue)
-{
-	const char *value;
-	bool nz = NO;
-	int i;
-	
-	if (!(value = getenv (env)))
-		return defaultValue;
-	
-	if (!strcasecmp (value, "true"))
-		return YES;
-	
-	if (!strcasecmp (value, "yes"))
-		return YES;
-	
-	/* check to see if the value is numeric. All numeric values evaluate to true *except* zero */
-	for (i = 0; value[i]; i++) {
-		if (!isdigit ((int) ((unsigned char) value[i])))
-			return NO;
-		
-		if (value[i] != '0')
-			nz = YES;
-	}
-	
-	return nz;
-}
-
 int main (int argc, char **argv)
 {
+	//clock_t start = clock();
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 
@@ -392,20 +190,27 @@ int main (int argc, char **argv)
 		binDir = [[NSString alloc] initWithUTF8String: "."];
 
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
+
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"3.10";
+	NSString *req_mono_version = @"4.3";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
+	bool need64Bit = false;
 
 	NSDictionary *plist = [[NSBundle mainBundle] infoDictionary];
 	if (plist) {
 		NSNumber *sgen_obj = (NSNumber *) [plist objectForKey:@"MonoUseSGen"];
 		if (sgen_obj)
 			use_sgen = [sgen_obj boolValue];
-		
+
 		NSString *version_obj = [plist objectForKey:@"MonoMinVersion"];
 		if (version_obj && [version_obj length] > 0)
 			req_mono_version = version_obj;
+
+		NSNumber *need_64bit_obj = (NSNumber *) [plist objectForKey:@"Mono64Bit"];
+		if (need_64bit_obj) {
+			need64Bit = [need_64bit_obj boolValue];
+		}
 	}
 
 	NSString *exePath, *exeName;
@@ -419,7 +224,7 @@ int main (int argc, char **argv)
 	else
 		basename++;
 	
-	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
+	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String], need64Bit)) {
 		//printf ("Updated the environment.\n");
 		[pool drain];
 		
@@ -443,7 +248,8 @@ int main (int argc, char **argv)
 	
 	if (libmono == NULL) {
 		fprintf (stderr, "Failed to load libmono%s-2.0.dylib: %s\n", use_sgen ? "sgen" : "", dlerror ());
-		exit_with_message ("This application requires the Mono framework.", argv[0]);
+		NSString *msg = [NSString stringWithFormat:@"This application requires Mono %s or newer.", [req_mono_version UTF8String]]; 
+		exit_with_message ((char *)[msg UTF8String], argv[0]);
 	}
 	
 	mono_main _mono_main = (mono_main) dlsym (libmono, "mono_main");
@@ -465,8 +271,10 @@ int main (int argc, char **argv)
 	}
 	
 	char *mono_version = _mono_get_runtime_build_info ();
-	if (!check_mono_version (mono_version, [req_mono_version UTF8String]))
-		exit_with_message ("This application requires a newer version of the Mono framework.", argv[0]);
+	if (!check_mono_version (mono_version, [req_mono_version UTF8String])) {
+		NSString *msg = [NSString stringWithFormat:@"This application requires a newer version (%s+) of the Mono framework.", [req_mono_version UTF8String]]; 
+		exit_with_message ((char *)[msg UTF8String], argv[0]);
+	}
 	
 	extra_argv = get_mono_env_options (&extra_argc);
 	
@@ -490,5 +298,8 @@ int main (int argc, char **argv)
 	free (extra_argv);
 	[pool drain];
 	
+	//clock_t end = clock();
+	//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
+
 	return _mono_main (argc + extra_argc + injected, new_argv);
 }

@@ -33,6 +33,6 @@ namespace MonoDevelop.Gettext
 	interface IFileScanner
 	{
 		bool CanScan (TranslationProject project, Catalog catalog, string fileName, string mimeType);
-		void UpdateCatalog (TranslationProject project, Catalog catalog, IProgressMonitor monitor, string fileName);	
+		void UpdateCatalog (TranslationProject project, Catalog catalog, ProgressMonitor monitor, string fileName);	
 	}
 }

@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackageViewModelFactory : PackageViewModelFactory
+	internal class UpdatedPackageViewModelFactory : PackageViewModelFactory
 	{
 		SelectedProjectsForUpdatedPackages selectedProjectsForUpdatedPackages;
 		

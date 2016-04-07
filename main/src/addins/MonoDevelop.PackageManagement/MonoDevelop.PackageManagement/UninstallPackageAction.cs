@@ -30,9 +30,9 @@ using System;
 using System.IO;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class UninstallPackageAction : ProcessPackageAction
+	internal class UninstallPackageAction : ProcessPackageAction
 	{
 		public UninstallPackageAction(
 			IPackageManagementProject project,

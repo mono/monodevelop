@@ -25,16 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackageCompatibilityRunner : PackageCompatibilityRunner
+	class TestablePackageCompatibilityRunner : PackageCompatibilityRunner
 	{
-		MessageHandler backgroundDispatcher;
+		Action backgroundDispatcher;
 
 		public TestablePackageCompatibilityRunner (
 			IDotNetProject project,
@@ -59,13 +59,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			backgroundDispatcher.Invoke ();
 		}
 
-		protected override void BackgroundDispatch (MessageHandler handler)
+		protected override void BackgroundDispatch (Action action)
 		{
-			backgroundDispatcher = handler;
+			backgroundDispatcher = action;
 		}
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
-			IProgressMonitor monitor,
+			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
@@ -97,7 +97,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool PackageConsoleIsShown;
 
-		protected override void ShowPackageConsole (IProgressMonitor progressMonitor)
+		protected override void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			PackageConsoleIsShown = true;
 		}

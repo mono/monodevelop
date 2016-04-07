@@ -43,12 +43,12 @@ namespace Mono.TextEditor
 				int matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset);
 				if (matchingBracketOffset == -1 && data.Caret.Offset > 0)
 					matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset - 1);
-			
+
 				if (matchingBracketOffset != -1)
 					data.Caret.Offset = matchingBracketOffset;
 			}
 		}
-		
+
 		public static int RemoveTabInLine (TextEditorData data, DocumentLine line)
 		{
 			if (line.LengthIncludingDelimiter == 0)
@@ -116,7 +116,7 @@ namespace Mono.TextEditor
 					if (!removedFromLast)
 						lc = lead.Column;
 				} else {
-					if (!removedFromFirst)
+				if (!removedFromFirst)
 						lc = lead.Column;
 					if (!removedFromLast)
 						ac = anchor.Column;
@@ -135,10 +135,15 @@ namespace Mono.TextEditor
 				return;
 			}
 			var line = data.Document.GetLine (data.Caret.Line);
-			if (line != null)
-				RemoveTabInLine (data, line);
+			if (line != null) {
+				if (line.Length == 0 && data.Caret.Column > 1) {
+					data.Caret.Column = 1;
+				} else {
+					RemoveTabInLine (data, line);
+				}
+			}
 		}
-		
+
 		public static void GetSelectedLines (TextEditorData data, out int startLineNr, out int endLineNr)
 		{
 			if (data.IsSomethingSelected) {
@@ -272,9 +277,11 @@ namespace Mono.TextEditor
 					break;
 				case IndentStyle.Auto:
 					data.EnsureCaretIsNotVirtual ();
-					var sb = new StringBuilder (data.EolMarker);
-					sb.Append (data.Document.GetLineIndent (data.Caret.Line));
-					data.InsertAtCaret (sb.ToString ());
+					var indent = data.Document.GetLineIndent (data.Caret.Line);
+					data.InsertAtCaret (data.EolMarker);
+					data.EnsureCaretIsNotVirtual ();
+					if (data.GetLine (data.Caret.Line).Length == 0)
+						data.InsertAtCaret (indent);
 					break;
 				case IndentStyle.Smart:
 					if (!data.HasIndentationTracker)
@@ -506,64 +513,14 @@ namespace Mono.TextEditor
 					DocumentLine line = data.Document.GetLine (data.Caret.Line);
 					if (line == null)
 						return;
-					data.Insert (line.Offset, data.GetTextAt (line.SegmentIncludingDelimiter));
+					if (line.DelimiterLength == 0) {
+						data.Insert (line.Offset, data.GetTextAt (line.SegmentIncludingDelimiter) + data.EolMarker);
+					} else {
+						data.Insert (line.Offset, data.GetTextAt (line.SegmentIncludingDelimiter));
+					}
 				}
 			}
 		}
 
-		public static void SortSelectedLines (TextEditorData data)
-		{
-			var start = data.MainSelection.Start;
-			var end = data.MainSelection.End;
-			var caret = data.Caret.Location;
-
-			int startLine = start.Line;
-			int endLine = end.Line;
-			if (startLine == endLine)
-				return;
-
-			int length = 0;
-			var lines = new string[endLine - startLine + 1];
-			for (int i = startLine; i <= endLine; i++) {
-				//get lines *with* line endings
-				var lineText = data.GetLineText (i, true);
-				lines [i - startLine] = lineText;
-				length += lineText.Length;
-			}
-
-			var linesUnsorted = new string[lines.Length];
-
-			Array.Sort (lines, StringComparer.Ordinal);
-
-			bool changed = false;
-			for (int i = 0; i <= lines.Length; i++) {
-				//can't simply use reference comparison as Array.Sort is not stable
-				if (string.Equals (lines [i], linesUnsorted [i], StringComparison.Ordinal)) {
-					continue;
-				}
-				changed = true;
-				break;
-			}
-			if (!changed) {
-				return;
-			}
-
-
-			var sb = new StringBuilder ();
-			for (int i = 0; i < lines.Length; i++) {
-				sb.Append (lines [i]);
-			}
-
-			var startOffset = data.Document.LocationToOffset (new TextLocation (startLine, 0));
-			data.Replace (startOffset, length, sb.ToString ());
-
-			data.Caret.Location = LimitColumn (data, caret);
-			data.SetSelection (LimitColumn (data, start), LimitColumn (data, end));
-		}
-
-		static DocumentLocation LimitColumn (TextEditorData data, DocumentLocation loc)
-		{
-			return new DocumentLocation (loc.Line, System.Math.Min (loc.Column, data.GetLine (loc.Line).Length + 1));
-		}
 	}
 }

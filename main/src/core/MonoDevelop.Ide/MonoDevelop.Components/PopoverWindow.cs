@@ -27,7 +27,6 @@ using System;
 using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 using Gdk;
 using Xwt.Motion;
 
@@ -63,6 +62,7 @@ namespace MonoDevelop.Components
 			AppPaintable = true;
 			TypeHint = WindowTypeHint.Tooltip;
 			CheckScreenColormap ();
+			AddEvents ((int)EventMask.ButtonReleaseMask);
 
 			alignment = new Alignment (0, 0, 1f, 1f);
 			alignment.Show ();
@@ -102,6 +102,8 @@ namespace MonoDevelop.Components
 				QueueDraw ();
 			}
 		}
+
+		public int CaretSpacing { get; set; }
 
 		public bool ShowArrow {
 			get { return Theme.ShowArrow; }
@@ -199,7 +201,9 @@ namespace MonoDevelop.Components
 			set;
 		}
 
-		public void RepositionWindow (Gdk.Rectangle? newCaret = null)
+		protected PopupPosition CurrentPosition { get { return position; }}
+
+		public virtual void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
 			if (parent == null)
 				return;
@@ -228,6 +232,10 @@ namespace MonoDevelop.Components
 					caret = new Gdk.Rectangle (0, 0, alloc.Width, alloc.Height);
 				caret = GtkUtil.ToScreenCoordinates (parent, parent.GdkWindow, caret);
 			}
+
+			caret.Inflate (CaretSpacing, CaretSpacing);
+			if (!Core.Platform.IsWindows)
+				caret.Inflate (-1, -1);
 
 			Gtk.Requisition request = SizeRequest ();
 			var screen = parent.Screen;
@@ -265,14 +273,14 @@ namespace MonoDevelop.Components
 
 			switch ((PopupPosition)((int)position & 0x0f)) {
 			case PopupPosition.Top:
-				y = caret.Bottom;
+				y = caret.Bottom + 1;
 				break;
 			case PopupPosition.Bottom:
 				y = caret.Y - request.Height; break;
 			case PopupPosition.Right:
 				x = caret.X - request.Width; break;
 			case PopupPosition.Left:
-				x = caret.Right; break;
+				x = caret.Right + 1; break;
 			}
 			int offset;
 			if ((position & PopupPosition.Top) != 0 || (position & PopupPosition.Bottom) != 0) {
@@ -381,12 +389,11 @@ namespace MonoDevelop.Components
 				if (Theme.DrawPager) {
 					Theme.RenderPager (context, 
 					                   PangoContext,
-					                   new Gdk.Rectangle (Allocation.X, Allocation.Y, paintSize.Width, paintSize.Height));
+					                   BorderAllocation);
 				}
 
-				Theme.RenderBorder (context, BorderAllocation, position);
+				Theme.RenderShadow (context, BorderAllocation, position);
 				context.Restore ();
-
 			}
 
 			if (changed)
@@ -403,7 +410,7 @@ namespace MonoDevelop.Components
 		void UpdatePadding ()
 		{
 			uint top,left,bottom,right;
-			top = left = bottom = right = (uint)Theme.Padding + 1;
+			top = left = bottom = right = (uint)(Theme.Padding + (Core.Platform.IsWindows ? 1 : 2));
 
 			if (ShowArrow) {
 				if ((position & PopupPosition.Top) != 0)
@@ -459,8 +466,53 @@ namespace MonoDevelop.Components
 						rect.Width -= Theme.ArrowLength;
 					}
 				}
+				if (!Core.Platform.IsWindows) {
+					if ((position & PopupPosition.Top) != 0) {
+						rect.Y += 1;
+						rect.Height -= 1;
+					}
+					else if ((position & PopupPosition.Bottom) != 0) {
+						rect.Height -= 1;
+					}
+					else if ((position & PopupPosition.Left) != 0) {
+						rect.X += 1;
+						rect.Width -= 1;
+					}
+					else if ((position & PopupPosition.Right) != 0) {
+						rect.Width -= 1;
+					}
+				}
 				return rect;
 			}
+		}
+
+		public event EventHandler PagerLeftClicked;
+		public event EventHandler PagerRightClicked;
+
+		protected virtual void OnPagerLeftClicked ()
+		{
+			if (PagerLeftClicked != null)
+				PagerLeftClicked (this, null);
+		}
+
+		protected virtual void OnPagerRightClicked ()
+		{
+			if (PagerRightClicked != null)
+				PagerRightClicked (this, null);
+		}
+
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			if (evnt.Button != 1 || !Theme.DrawPager)
+				return base.OnButtonPressEvent (evnt);
+
+			var retval = false;
+			if (retval = Theme.HitTestPagerLeftArrow (PangoContext, BorderAllocation, new Point ((int)evnt.X, (int)evnt.Y)))
+				OnPagerLeftClicked ();
+			else if (retval = Theme.HitTestPagerRightArrow (PangoContext, BorderAllocation, new Point ((int)evnt.X, (int)evnt.Y)))
+				OnPagerRightClicked ();
+
+			return retval;
 		}
 	}
 }

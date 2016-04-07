@@ -25,12 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageViewModelFactory : IPackageViewModelFactory
+	class FakePackageViewModelFactory : IPackageViewModelFactory
 	{
 		public FakePackageManagementSolution FakeSolution = new FakePackageManagementSolution ();
 		PackageManagementEvents packageManagementEvents = new PackageManagementEvents ();

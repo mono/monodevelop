@@ -61,15 +61,10 @@ namespace MonoDevelop.Gettext
 			[LocalizedDescription ("Include this file in the translation scan.")]
 			public bool ScanForTranslations {
 				get {
-					object result = file.ExtendedProperties [scanForTranslationsProperty];
-					return result == null ? true : (bool)result;
+					return file.Metadata.GetValue (scanForTranslationsProperty, true);
 				}
 				set {
-					if (value) {
-						file.ExtendedProperties.Remove (scanForTranslationsProperty);
-					} else {
-						file.ExtendedProperties [scanForTranslationsProperty] = value;
-					}
+					file.Metadata.SetValue (scanForTranslationsProperty, value, true);
 				}
 			}
 		}

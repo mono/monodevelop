@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageActionRunner : IPackageActionRunner
+	internal class PackageActionRunner : IPackageActionRunner
 	{
 		IPackageManagementEvents packageManagementEvents;
 		

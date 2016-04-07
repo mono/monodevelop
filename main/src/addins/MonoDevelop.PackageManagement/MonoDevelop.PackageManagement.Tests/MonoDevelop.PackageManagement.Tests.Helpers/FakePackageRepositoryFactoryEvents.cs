@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
-	public class FakePackageRepositoryFactoryEvents : IPackageRepositoryFactoryEvents
+	class FakePackageRepositoryFactoryEvents : IPackageRepositoryFactoryEvents
 	{
 		public event EventHandler<PackageRepositoryFactoryEventArgs> RepositoryCreated;
 

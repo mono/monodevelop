@@ -34,9 +34,9 @@ using System.Runtime.Versioning;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageViewModel : ViewModelBase<PackageViewModel>
+	internal class PackageViewModel : ViewModelBase<PackageViewModel>
 	{
 		DelegateCommand addPackageCommand;
 		DelegateCommand removePackageCommand;

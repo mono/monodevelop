@@ -52,6 +52,7 @@ namespace MonoDevelop.Components.DockNotebook
 		static List<DockNotebook> allNotebooks = new List<DockNotebook> ();
 
 		public static event EventHandler ActiveNotebookChanged;
+		public static event EventHandler NotebookChanged;
 
 		enum TargetList {
 			UriList = 100
@@ -85,7 +86,7 @@ namespace MonoDevelop.Components.DockNotebook
 					var item = new ContextMenuItem (tab.Markup ?? tab.Text);
 					var locTab = tab;
 					item.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => {
-						currentTab = locTab;
+						CurrentTab = locTab;
 					};
 					menu.Items.Add (item);
 				}
@@ -315,6 +316,8 @@ namespace MonoDevelop.Components.DockNotebook
 			if (PageAdded != null)
 				PageAdded (this, EventArgs.Empty);
 
+			NotebookChanged?.Invoke (this, EventArgs.Empty);
+
 			return tab;
 		}
 
@@ -349,6 +352,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			if (PageRemoved != null)
 				PageRemoved (this, EventArgs.Empty);
+
+			NotebookChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
@@ -395,6 +400,7 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override void OnDestroyed ()
 		{
 			allNotebooks.Remove (this);
+
 			if (ActiveNotebook == this)
 				ActiveNotebook = null;
 			if (fleurCursor != null) {
@@ -402,6 +408,15 @@ namespace MonoDevelop.Components.DockNotebook
 				fleurCursor = null;
 			}
 			base.OnDestroyed ();
+		}
+	}
+
+	class DockNotebookChangedArgs : EventArgs
+	{
+		public DockNotebook Notebook { get; private set; }
+		public DockNotebookChangedArgs (DockNotebook notebook)
+		{
+			Notebook = notebook;
 		}
 	}
 }

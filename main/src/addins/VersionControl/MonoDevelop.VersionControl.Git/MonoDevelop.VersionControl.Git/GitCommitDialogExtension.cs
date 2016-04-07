@@ -42,8 +42,9 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override bool Initialize (ChangeSet changeSet)
 		{
-			if (changeSet.Repository is GitRepository) {
-				widget = new GitCommitDialogExtensionWidget ();
+			var repo = changeSet.Repository as GitRepository;
+			if (repo != null) {
+				widget = new GitCommitDialogExtensionWidget (repo);
 				Add (widget);
 				widget.Show ();
 				Show ();
@@ -144,11 +145,11 @@ namespace MonoDevelop.VersionControl.Git
 		static string GetDesc (string name, string email)
 		{
 			if (string.IsNullOrEmpty (name) && string.IsNullOrEmpty (email))
-				return "Not configured";
+				return GettextCatalog.GetString ("Not configured");
 			if (string.IsNullOrEmpty (name))
 				name = GettextCatalog.GetString ("Name not configured");
 			if (string.IsNullOrEmpty (email))
-				email = GettextCatalog.GetString ("e-mail not configured");
+				email = GettextCatalog.GetString ("Email not configured");
 			return name + ", " + email;
 		}
 
@@ -162,7 +163,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			this.textView = textView;
 			overflowTextTag = new Gtk.TextTag ("overflow");
-			overflowTextTag.Foreground = "red";
+			overflowTextTag.Foreground = Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false);
 			overflowTextTag.ForegroundSet = true;
 			textView.Buffer.TagTable.Add (overflowTextTag);
 			textView.Buffer.Changed += OnTextChanged;
@@ -185,8 +186,8 @@ namespace MonoDevelop.VersionControl.Git
 			var lines = text.Split ('\n');
 			if (lines.Length > 0 && lines [0].Length > maxLengthConventionForFirstLineOfCommitMessage) {
 				if (!textView.HasTooltip) {
-					textView.TooltipText = String.Format (GettextCatalog.GetString (
-						"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message"),
+					textView.TooltipText = GettextCatalog.GetString (
+						"When using Git, it is not recommended to surpass the character count of {0} in the first line of the commit message",
 						maxLengthConventionForFirstLineOfCommitMessage);
 					textView.HasTooltip = true;
 				}

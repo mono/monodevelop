@@ -31,7 +31,7 @@ using Gtk;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Gettext.Translator;
-using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.Gettext
@@ -75,7 +75,7 @@ namespace MonoDevelop.Gettext
 			};
 		}
 		
-		public void ApplyFeature (SolutionFolder parentCombine, SolutionItem entry)
+		public void ApplyFeature (SolutionFolder parentCombine, SolutionFolderItem entry)
 		{
 			TranslationProject newProject;
 			if (entry is TranslationProject)
@@ -94,7 +94,7 @@ namespace MonoDevelop.Gettext
 			if (store.GetIterFirst (out iter)) {
 				do {
 					string code = (string)store.GetValue (iter, 1);
-					newProject.AddNewTranslation (code, new NullProgressMonitor ());
+					newProject.AddNewTranslation (code, new ProgressMonitor ());
 				} while (store.IterNext (ref iter));
 			}
 		}

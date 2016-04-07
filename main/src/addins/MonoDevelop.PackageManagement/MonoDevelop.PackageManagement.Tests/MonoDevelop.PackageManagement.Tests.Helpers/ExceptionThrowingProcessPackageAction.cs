@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class ExceptionThrowingProcessPackageAction : TestableProcessPackageAction
+	class ExceptionThrowingProcessPackageAction : TestableProcessPackageAction
 	{
 		public Exception ExceptionToThrowInExecuteCore = 
 			new Exception ("Error");

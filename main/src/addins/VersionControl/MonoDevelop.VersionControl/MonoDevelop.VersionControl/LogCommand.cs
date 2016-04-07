@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Linq;
+using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -40,28 +41,26 @@ namespace MonoDevelop.VersionControl
 		{
 			// We want directories to be able to view the log for an entire directory
 			// by selecting it from the solution pane
-			return item.VersionInfo.IsVersioned
-				&& AddinManager.GetExtensionObjects<ILogViewHandler> (LogViewHandlers).Any (h => h.CanHandle (item, null));
+			return item.VersionInfo.IsVersioned && 
+				       AddinManager.GetExtensionObjects<IVersionControlViewHandler> (LogViewHandlers).Any (h => h.CanHandle (item, null));
 		}
 		
-		public static bool Show (VersionControlItemList items, bool test)
+		public static async Task<bool> Show (VersionControlItemList items, bool test)
 		{
 			if (test)
 				return items.All (CanShow);
 			
 			foreach (var item in items) {
-				Document document = null;
-				if (!item.IsDirectory)
-					document = IdeApp.Workbench.OpenDocument (item.Path, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
-
-				if (document != null) {
+				if (!item.IsDirectory) {
+					Document document = await IdeApp.Workbench.OpenDocument (item.Path, item.ContainerProject, OpenDocumentOptions.Default | OpenDocumentOptions.OnlyInternalViewer);
 					document.Window.SwitchView (document.Window.FindView<ILogView> ());
-				} else {
-					VersionControlDocumentInfo info = new VersionControlDocumentInfo (null, item, item.Repository);
-					LogView logView = new LogView (info);
-					info.Document = IdeApp.Workbench.OpenDocument (logView, true).PrimaryView;
-					logView.Selected ();	
+					continue;
 				}
+
+				var info = new VersionControlDocumentInfo (null, item, item.Repository);
+				var logView = new LogView (info);
+				info.Document = IdeApp.Workbench.OpenDocument (logView, true).PrimaryView;
+				logView.Init ();
 			}
 			
 			return true;

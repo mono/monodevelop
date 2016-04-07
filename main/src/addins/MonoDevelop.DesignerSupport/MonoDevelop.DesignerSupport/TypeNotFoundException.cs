@@ -28,7 +28,7 @@
 
 using System;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -36,7 +36,7 @@ namespace MonoDevelop.DesignerSupport
 	{
 		string className;
 		
-		public TypeNotFoundException (string className, DomRegion location, string fileName)
+		public TypeNotFoundException (string className, DocumentLocation location, string fileName)
 			: base (location, fileName)
 		{
 			this.ClassName = className;

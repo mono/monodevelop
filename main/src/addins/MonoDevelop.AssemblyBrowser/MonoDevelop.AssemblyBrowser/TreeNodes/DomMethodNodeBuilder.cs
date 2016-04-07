@@ -40,13 +40,14 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -78,8 +79,9 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)dataObject;
 			var dt = new DefaultResolvedTypeDefinition (GetContext (treeBuilder), method.DeclaringTypeDefinition);
 			var resolved = (DefaultResolvedMethod)Resolve (treeBuilder, method, dt);
+			var ambience = new CSharpAmbience ();
 			try {
-				nodeInfo.Label = Ambience.GetString (resolved, OutputFlags.ClassBrowserEntries | OutputFlags.IncludeMarkup | OutputFlags.CompletionListFomat);
+				nodeInfo.Label = MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (ambience.ConvertSymbol (resolved));
 			} catch (Exception) {
 				nodeInfo.Label = method.Name;
 			}
@@ -119,16 +121,16 @@ namespace MonoDevelop.AssemblyBrowser
 			return (ModuleDefinition)nav.DataItem;
 		}
 
-		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
+		public static List<ReferenceSegment> Decompile (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
 			return Decompile (data, module, currentType, setData, settings);
 		}
 
 
-		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
+		public static List<ReferenceSegment> Decompile (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
 		{
 			var context = new DecompilerContext (module);
 			var source = new CancellationTokenSource ();
@@ -140,7 +142,7 @@ namespace MonoDevelop.AssemblyBrowser
 				setData (astBuilder);
 				astBuilder.RunTransformations (o => false);
 				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-				var output = new ColoredCSharpFormatter (data.Document);
+				var output = new ColoredCSharpFormatter (data);
 				astBuilder.GenerateCode (output);
 				output.SetDocumentData ();
 				return output.ReferencedSegments;
@@ -152,10 +154,10 @@ namespace MonoDevelop.AssemblyBrowser
 					setData (astBuilder);
 					astBuilder.RunTransformations (o => false);
 					GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-					var output = new ColoredCSharpFormatter (data.Document);
+					var output = new ColoredCSharpFormatter (data);
 					astBuilder.GenerateCode (output);
 					output.SetDocumentData ();
-					data.Document.Insert (data.Document.TextLength, "/* body decompilation failed: \n" + e + " */"); 
+					data.InsertText (data.Length, "/* body decompilation failed: \n" + e + " */"); 
 				} catch (Exception e2) {
 					data.Text = "/* fallback decompilation failed: \n" + e2 +"*/";
 				}
@@ -163,15 +165,15 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 
-		public static List<ReferenceSegment> GetSummary (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
+		public static List<ReferenceSegment> GetSummary (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
 			return GetSummary (data, module, currentType, setData, settings);
 		}
 
-		public static List<ReferenceSegment> GetSummary (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
+		public static List<ReferenceSegment> GetSummary (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
 		{
 			var context = new DecompilerContext (module);
 			var source = new CancellationTokenSource ();
@@ -184,7 +186,7 @@ namespace MonoDevelop.AssemblyBrowser
 				setData (astBuilder);
 				astBuilder.RunTransformations (o => false);
 				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-				var output = new ColoredCSharpFormatter (data.Document);
+				var output = new ColoredCSharpFormatter (data);
 				astBuilder.GenerateCode (output);
 				output.SetDocumentData ();
 				return output.ReferencedSegments;
@@ -194,20 +196,22 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 
-		internal static string GetAttributes (Ambience ambience, IEnumerable<IAttribute> attributes)
+		internal static string GetAttributes (IEnumerable<IAttribute> attributes)
 		{
-			StringBuilder result = new StringBuilder ();
+			var result = new StringBuilder ();
+			//var ambience = new CSharpAmbience ();
+
 			foreach (var attr in attributes) {
 				if (result.Length > 0)
 					result.AppendLine ();
-	//			result.Append (ambience.GetString (attr, OutputFlags.AssemblyBrowserDescription));
+				// result.Append (ambience.ConvertSymbol (attr));
 			}
 			if (result.Length > 0)
 				result.AppendLine ();
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
@@ -218,7 +222,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
@@ -238,29 +242,29 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append ("</a></u></span>");
 		}
 		
-		public static List<ReferenceSegment> Disassemble (TextEditorData data, Action<ReflectionDisassembler> setData)
+		public static List<ReferenceSegment> Disassemble (TextEditor data, Action<ReflectionDisassembler> setData)
 		{
 			var source = new CancellationTokenSource ();
-			var output = new ColoredCSharpFormatter (data.Document);
+			var output = new ColoredCSharpFormatter (data);
 			var disassembler = new ReflectionDisassembler (output, true, source.Token);
 			setData (disassembler);
 			output.SetDocumentData ();
 			return output.ReferencedSegments;
 		}
 		
-		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditorData data)
+		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditor data)
 		{
 			if (IsFromAssembly (navigator))
 				return false;
 			
 			var method = (IUnresolvedEntity)navigator.DataItem;
-			data.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (method.Region.FileName);
-			data.Caret.Location = method.Region.Begin;
-			data.CenterToCaret ();
+			var source = StringTextSource.ReadFrom (method.Region.FileName);
+			data.Text = source.Text;
+			data.CaretLocation = new MonoDevelop.Ide.Editor.DocumentLocation (method.Region.BeginLine, method.Region.BeginColumn);
 			return true;
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
@@ -276,21 +280,15 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			var resolved = Resolve (navigator, method);
 			if (GetMainAssembly (navigator) == null) {
-				return Mono.TextEditor.Utils.TextFileUtility.ReadAllText (method.Region.FileName);
+				return StringTextSource.ReadFrom (method.Region.FileName).Text;
 			}
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");
-			result.Append (Ambience.GetString (resolved, OutputFlags.AssemblyBrowserDescription | OutputFlags.IncludeConstraints));
+			result.Append (MonoDevelop.Ide.TypeSystem.Ambience.EscapeText (Ambience.ConvertSymbol (resolved)));
 			result.Append ("</big>");
 			result.AppendLine ();
-			
-			AmbienceService.DocumentationFormatOptions options = new AmbienceService.DocumentationFormatOptions ();
-			options.MaxLineLength = -1;
-			options.BigHeadings = true;
-			options.Ambience = Ambience;
-			result.AppendLine ();
-			
-			result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
+
+			//result.Append (AmbienceService.GetDocumentationMarkup (resolved, AmbienceService.GetDocumentation (resolved), options));
 			
 			return result.ToString ();
 		}

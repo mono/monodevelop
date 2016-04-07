@@ -30,9 +30,9 @@ using System;
 using MonoDevelop.Ide;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class FileConflictResolver : IFileConflictResolver
+	internal class FileConflictResolver : IFileConflictResolver
 	{
 		static AlertButton YesToAllButton = new AlertButton ("Yes to All");
 		static AlertButton NoToAllButton = new AlertButton ("No to All");

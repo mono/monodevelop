@@ -112,8 +112,14 @@ namespace MonoDevelop.Ide.Projects
 		{
 			selection.Clear ();
 			configureProject = netProject;
-			SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
-			Reset ();
+			if (netProject != null) {
+				SetTargetFramework (netProject.AssemblyContext, netProject.TargetFramework);
+				Reset ();
+			} else {
+				targetContext = null;
+				targetVersion = null;
+				store.Clear ();
+			}
 		}
 		
 		public void SetFilter (string filter)
@@ -133,106 +139,112 @@ namespace MonoDevelop.Ide.Projects
 
         public void Reset ()
         {
-            store.Clear ();
+			try {
+				treeView.FreezeChildNotify ();
+				store.Clear ();
 
-			bool isPcl = configureProject is PortableDotNetProject;
+				bool isPcl = configureProject.IsPortableLibrary;
 
-            foreach (SystemAssembly systemAssembly in targetContext.GetAssemblies (targetVersion)) {
-				if (systemAssembly.Package.IsFrameworkPackage && (isPcl || systemAssembly.Name == "mscorlib"))
-                    continue;
-				
-				bool selected = IsSelected (ReferenceType.Package, systemAssembly.FullName, systemAssembly.Package.Name);
-				int matchRank = 0;
-				string name, version;
-				
-				if (stringMatcher != null) {
-					string txt = systemAssembly.Name + " " + systemAssembly.Version;
-					if (!stringMatcher.CalcMatchRank (txt, out matchRank))
+				foreach (SystemAssembly systemAssembly in targetContext.GetAssemblies (targetVersion)) {
+					if (systemAssembly.Package.IsFrameworkPackage && (isPcl || systemAssembly.Name == "mscorlib"))
 						continue;
-					int[] match = stringMatcher.GetMatch (txt);
-					name = GetMatchMarkup (treeView, systemAssembly.Name, match, 0);
-					version = GetMatchMarkup (treeView, systemAssembly.Version, match, systemAssembly.Name.Length + 1);
-				} else {
-					name = GLib.Markup.EscapeText (systemAssembly.Name);
-					version = GLib.Markup.EscapeText (systemAssembly.Version);
-				}
-				string pkg = systemAssembly.Package.GetDisplayName ();
-				if (systemAssembly.Package.IsInternalPackage)
-					pkg += " " + GettextCatalog.GetString ("(Provided by {0})", BrandingService.ApplicationName);
-				
-				store.AppendValues (name, 
-					version, 
-					systemAssembly, 
-					selected, 
-					systemAssembly.FullName, 
-					pkg,
-					MonoDevelop.Ide.Gui.Stock.Package,
-					matchRank,
-					ReferenceType.Package);
-			}
-			
-			if (showAll) {
-				Solution openSolution = configureProject.ParentSolution;
-				if (openSolution == null)
-					return;
-				
-				Dictionary<DotNetProject,bool> references = new Dictionary<DotNetProject, bool> ();
-				
-				foreach (Project projectEntry in openSolution.GetAllSolutionItems<Project>()) {
-	
-					if (projectEntry == configureProject)
-						continue;
-	
-					bool selected = IsSelected (ReferenceType.Project, projectEntry.Name, "");
+
+					bool selected = IsSelected (ReferenceType.Package, systemAssembly.FullName, systemAssembly.Package.Name);
 					int matchRank = 0;
-					string name;
-					
+					string name, version;
+
 					if (stringMatcher != null) {
-						if (!stringMatcher.CalcMatchRank (projectEntry.Name, out matchRank))
+						string txt = systemAssembly.Name + " " + systemAssembly.Version;
+						if (!stringMatcher.CalcMatchRank (txt, out matchRank))
 							continue;
-						int[] match = stringMatcher.GetMatch (projectEntry.Name);
-						name = GetMatchMarkup (treeView, projectEntry.Name, match, 0);
+						int [] match = stringMatcher.GetMatch (txt);
+						name = GetMatchMarkup (treeView, systemAssembly.Name, match, 0);
+						version = GetMatchMarkup (treeView, systemAssembly.Version, match, systemAssembly.Name.Length + 1);
 					} else {
-						name = GLib.Markup.EscapeText (projectEntry.Name);
+						name = GLib.Markup.EscapeText (systemAssembly.Name);
+						version = GLib.Markup.EscapeText (systemAssembly.Version);
 					}
-					
-					DotNetProject netProject = projectEntry as DotNetProject;
-					if (netProject != null) {
-						if (ProjectReferencePanel.ProjectReferencesProject (references, null, netProject, configureProject.Name))
+					string pkg = systemAssembly.Package.GetDisplayName ();
+					if (systemAssembly.Package.IsInternalPackage)
+						pkg += " " + GettextCatalog.GetString ("(Provided by {0})", BrandingService.ApplicationName);
+
+					store.InsertWithValues (-1,
+						name,
+						version,
+						systemAssembly,
+						selected,
+						systemAssembly.FullName,
+						pkg,
+						MonoDevelop.Ide.Gui.Stock.Package,
+						matchRank,
+						ReferenceType.Package);
+				}
+
+				if (showAll) {
+					Solution openSolution = configureProject.ParentSolution;
+					if (openSolution == null)
+						return;
+
+					Dictionary<DotNetProject, bool> references = new Dictionary<DotNetProject, bool> ();
+
+					foreach (Project projectEntry in openSolution.GetAllItems<Project> ()) {
+
+						if (projectEntry == configureProject)
 							continue;
 
-						string reason;
-					    if (!configureProject.CanReferenceProject (netProject, out reason))
-							continue;
-					}
-					store.AppendValues (name, "", null, selected, projectEntry.Name, "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
-				}
-				
-				foreach (FilePath file in selectDialog.GetRecentFileReferences ()) {
-					bool selected = IsSelected (ReferenceType.Assembly, file, "");
-					int matchRank = 0;
-					string fname = file.FileName;
-					string name;
+						bool selected = IsSelected (ReferenceType.Project, projectEntry.Name, "");
+						int matchRank = 0;
+						string name;
 
-					string version = string.Empty;
-					try {
-						string sname = SystemAssemblyService.GetAssemblyName (file);
-						var aname = SystemAssemblyService.ParseAssemblyName (sname);
-						version = aname.Version.ToString ();
-					} catch {
-						continue;
+						if (stringMatcher != null) {
+							if (!stringMatcher.CalcMatchRank (projectEntry.Name, out matchRank))
+								continue;
+							int [] match = stringMatcher.GetMatch (projectEntry.Name);
+							name = GetMatchMarkup (treeView, projectEntry.Name, match, 0);
+						} else {
+							name = GLib.Markup.EscapeText (projectEntry.Name);
+						}
+
+						DotNetProject netProject = projectEntry as DotNetProject;
+						if (netProject != null) {
+							if (ProjectReferencePanel.ProjectReferencesProject (references, null, netProject, configureProject.Name))
+								continue;
+
+							string reason;
+							if (!configureProject.CanReferenceProject (netProject, out reason))
+								continue;
+						}
+						store.InsertWithValues(-1, name, "", null, selected, projectEntry.FileName.ToString (), "", projectEntry.StockIcon, matchRank, ReferenceType.Project);
 					}
-					
-					if (stringMatcher != null) {
-						if (!stringMatcher.CalcMatchRank (fname, out matchRank))
+
+					foreach (FilePath file in selectDialog.GetRecentFileReferences ()) {
+						bool selected = IsSelected (ReferenceType.Assembly, file, "");
+						int matchRank = 0;
+						string fname = file.FileName;
+						string name;
+
+						string version = string.Empty;
+						try {
+							string sname = SystemAssemblyService.GetAssemblyName (file);
+							var aname = SystemAssemblyService.ParseAssemblyName (sname);
+							version = aname.Version.ToString ();
+						} catch {
 							continue;
-						int[] match = stringMatcher.GetMatch (fname);
-						name = GetMatchMarkup (treeView, fname, match, 0);
-					} else {
-						name = GLib.Markup.EscapeText (fname);
+						}
+
+						if (stringMatcher != null) {
+							if (!stringMatcher.CalcMatchRank (fname, out matchRank))
+								continue;
+							int [] match = stringMatcher.GetMatch (fname);
+							name = GetMatchMarkup (treeView, fname, match, 0);
+						} else {
+							name = GLib.Markup.EscapeText (fname);
+						}
+						store.InsertWithValues (-1, name, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
 					}
-					store.AppendValues (name, version, null, selected, (string)file, GLib.Markup.EscapeText (file), MonoDevelop.Ide.Gui.Stock.OpenFolder, matchRank, ReferenceType.Assembly);
 				}
+			} finally {
+				treeView.ThawChildNotify ();
 			}
         }
 		
@@ -240,7 +252,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			StringBuilder result = new StringBuilder ();
 			int lastPos = 0;
-			var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
+			var color = HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
 				widget.Style.Text (StateType.Normal), 3)[2];
 			for (int n=0; n < matches.Length; n++) {
 				int pos = matches[n] - startIndex;
@@ -278,11 +290,14 @@ namespace MonoDevelop.Ide.Projects
 								found = true;
 							break;
 						case ReferenceType.Project:
-							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+							var path = (FilePath)(string) store.GetValue (iter, ColFullName);
+							var project = refInfo.ResolveProject (configureProject.ParentSolution);
+							if (project != null && path.CanonicalPath == project.FileName.CanonicalPath)
 								found = true;
 							break;
 						case ReferenceType.Assembly:
-							if ((string)store.GetValue (iter, ColFullName) == refInfo.Reference)
+							var file = (FilePath)(string) store.GetValue (iter, ColFullName);
+							if (file.CanonicalPath == refInfo.HintPath.CanonicalPath)
 								found = true;
 							break;
 						}
@@ -333,10 +348,17 @@ namespace MonoDevelop.Ide.Projects
 			string fullName = (string)store.GetValue (iter, ColFullName);
             if ((bool)store.GetValue (iter, ColSelected) == false) {
                 store.SetValue (iter, ColSelected, true);
-				if (rt == ReferenceType.Package)
-					selectDialog.AddReference (new ProjectReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
-				else
-					selectDialog.AddReference (new ProjectReference (rt, fullName));
+				switch (rt) {
+				case ReferenceType.Package:
+					selectDialog.AddReference (ProjectReference.CreateAssemblyReference ((SystemAssembly)store.GetValue (iter, ColAssembly)));
+					break;
+				case ReferenceType.Assembly:
+					selectDialog.AddReference (ProjectReference.CreateAssemblyFileReference (fullName));
+					break;
+				case ReferenceType.Project:
+					selectDialog.AddReference (ProjectReference.CreateProjectReference (fullName));
+					break;
+				}
             }
             else {
                 store.SetValue (iter, ColSelected, false);

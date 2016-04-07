@@ -26,12 +26,13 @@
 
 using System;
 using System.IO;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableMonoDevelopProjectSystem : SharpDevelopProjectSystem
+	class TestableMonoDevelopProjectSystem : MonoDevelopProjectSystem
 	{
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;
@@ -46,8 +47,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogAddedReferenceToProject;
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject;
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
+		public FakeNuGetPackageNewImportsHandler NewImportsHandler;
 
-		public static Action<MessageHandler> GuiSyncDispatcher = handler => handler.Invoke ();
+		public static Action<Action> GuiSyncDispatcher = handler => handler.Invoke ();
+		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
 
 		public TestableMonoDevelopProjectSystem (IDotNetProject project)
 			: this (
@@ -65,7 +68,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IPackageManagementProjectService projectService,
 			PackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
-			: base (project, fileService, projectService, packageManagementEvents, GuiSyncDispatcher)
+			: base (project, fileService, projectService, packageManagementEvents, GuiSyncDispatcher, GuiSyncDispatcherFunc)
 		{
 			FakeFileService = (FakeFileService)fileService;
 			FakeProjectService = (FakePackageManagementProjectService)projectService;
@@ -116,6 +119,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			FileNameAndProjectNamePassedToLogAddedFileToProject =
 				new FileNameAndProjectName (fileName, projectName);
+		}
+
+		protected override INuGetPackageNewImportsHandler CreateNewImportsHandler ()
+		{
+			NewImportsHandler = new FakeNuGetPackageNewImportsHandler ();
+			return NewImportsHandler;
 		}
 	}
 }

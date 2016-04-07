@@ -27,16 +27,17 @@
 //
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.Components;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide.Gui.Dialogs;
 
 namespace MonoDevelop.PackageManagement.Gui
 {
-	public class PackageManagementOptionsPanel : OptionsPanel
+	internal class PackageManagementOptionsPanel : OptionsPanel
 	{
 		PackageManagementOptionsViewModel optionsViewModel;
-		
-		public override Gtk.Widget CreatePanelWidget()
+
+		public override Control CreatePanelWidget()
 		{
 			var viewModels = new PackageManagementViewModels ();
 			optionsViewModel = viewModels.PackageManagementOptionsViewModel;

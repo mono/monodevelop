@@ -182,18 +182,18 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public TextEditor Editor {
+		public MonoTextEditor Editor {
 			get;
 			private set;
 		}
 		
-		public MarginMouseEventArgs (TextEditor editor, Gdk.Event raw, uint button, double x, double y, Gdk.ModifierType modifierState)
+		public MarginMouseEventArgs (MonoTextEditor editor, Gdk.Event raw, uint button, double x, double y, Gdk.ModifierType modifierState)
 			: this (editor, raw.Type, button, x, y, modifierState)
 		{
 			this.RawEvent = raw;
 		}
 		
-		public MarginMouseEventArgs (TextEditor editor, Gdk.EventType type, uint button, double x, double y, Gdk.ModifierType modifierState)
+		public MarginMouseEventArgs (MonoTextEditor editor, Gdk.EventType type, uint button, double x, double y, Gdk.ModifierType modifierState)
 		{
 			this.Editor = editor;
 			this.Type = type;

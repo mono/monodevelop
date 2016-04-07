@@ -161,6 +161,17 @@ namespace Mono.MHex
 			Options = HexEditorOptions.DefaultOptions;
 			Options.Changed += OptionsChanged;
 		}
+
+		protected override void Dispose (bool disposing)
+		{
+			Options.Changed -= OptionsChanged;
+			if (caretTimer != null) { 
+				caretTimer.Elapsed -= UpdateCaret;
+				caretTimer.Dispose ();
+				caretTimer = null;
+			}
+			base.Dispose (disposing);
+		}
 		
 		public void PurgeLayoutCaches ()
 		{
@@ -226,9 +237,7 @@ namespace Mono.MHex
 
 		void OptionsChanged (object sender, EventArgs e)
 		{
-			gutterMargin.IsVisible = Options.ShowLineNumberMargin;
-			iconMargin.IsVisible = iconMargin.IsVisible;
-			
+			iconMargin.IsVisible = gutterMargin.IsVisible = Options.ShowLineNumberMargin;
 			
 			Margins.ForEach (margin => { 
 				margin.PurgeLayoutCache (); 

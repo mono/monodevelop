@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class LicenseAcceptanceViewModel : ViewModelBase<LicenseAcceptanceViewModel>
+	internal class LicenseAcceptanceViewModel : ViewModelBase<LicenseAcceptanceViewModel>
 	{
 		IList<PackageLicenseViewModel> packages;
 		

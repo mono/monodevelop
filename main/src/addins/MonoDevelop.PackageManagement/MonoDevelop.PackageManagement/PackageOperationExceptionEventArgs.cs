@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageOperationExceptionEventArgs : EventArgs
+	internal class PackageOperationExceptionEventArgs : EventArgs
 	{
 		public PackageOperationExceptionEventArgs(Exception ex)
 		{

@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -490,12 +489,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
 			action.Package = new FakePackage ("Test", "1.1");
-			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly");
-			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
 			fakeProject.UpdatePackageAction = (p, a) => {
-				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework") {
-					LocalCopy = true
-				};
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = true;
 				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
@@ -512,12 +510,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
 			action.Package = new FakePackage ("Test", "1.1");
-			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly");
-			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
 			fakeProject.UpdatePackageAction = (p, a) => {
-				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "nunit.framework") {
-					LocalCopy = true
-				};
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+				referenceBeingRemoved.LocalCopy = true;
 				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
@@ -534,14 +531,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
 			action.Package = new FakePackage ("Test", "1.1");
-			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly") {
-				LocalCopy = true
-			};
-			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			firstReferenceBeingAdded.LocalCopy = true;
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
 			fakeProject.UpdatePackageAction = (p, a) => {
-				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework") {
-					LocalCopy = false
-				};
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = false;
 				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
@@ -558,14 +553,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			fakeProject.FakePackages.Add (new FakePackage ("Test", "1.0"));
 			action.Package = new FakePackage ("Test", "1.1");
-			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly") {
-				LocalCopy = true
-			};
-			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			firstReferenceBeingAdded.LocalCopy = true;
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
 			fakeProject.UpdatePackageAction = (p, a) => {
-				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "nunit.framework") {
-					LocalCopy = false
-				};
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+				referenceBeingRemoved.LocalCopy = false;
 				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
 				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
 				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
@@ -650,6 +643,35 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
 			Assert.IsFalse (fileRemovedResult.Value);
+		}
+
+		[Test]
+		public void NewInstance_LicensesMustBeAccepted_TrueByDefault ()
+		{
+			CreateSolution ();
+
+			Assert.IsTrue (action.LicensesMustBeAccepted);
+		}
+
+		[Test]
+		public void Execute_UpdateIfPackageDoesNotExistInProjectSetToFalseAndPackageDoesNotExistInProjectAndPackageRequiresLicenseAcceptance_PackageLicenseAcceptanceIsNotRequested ()
+		{
+			CreateSolution ();
+			var package = new FakePackage ("Test") {
+				RequireLicenseAcceptance = true
+			};
+			action.Package = package;
+			var operation = new FakePackageOperation (package, PackageAction.Install);
+			action.PackageId = package.Id;
+			action.PackageVersion = package.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+			action.UpdateIfPackageDoesNotExistInProject = false;
+			action.Execute ();
+
+			bool updated = fakeProject.IsUpdatePackageCalled;
+
+			Assert.IsFalse (updated);
+			Assert.IsNull (action.LicenseAcceptanceService.PackagesAccepted);
 		}
 	}
 }

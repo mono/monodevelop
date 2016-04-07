@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -42,22 +43,15 @@ namespace MonoDevelop.SourceEditor
 	{
 		readonly static List<SourceEditorView> openFiles = new List<SourceEditorView> ();
 		readonly static FileSystemWatcher fileSystemWatcher;
-		readonly static StringComparison fileNameComparer = Platform.IsWindows ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-
-		public static bool SuspendFileWatch {
-			get;
-			set;
-		}
 
 		static FileRegistry ()
 		{
 			fileSystemWatcher = new FileSystemWatcher ();
-			fileSystemWatcher.Created += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
-			fileSystemWatcher.Changed += (FileSystemEventHandler)DispatchService.GuiDispatch (new FileSystemEventHandler (OnFileChanged));
+			fileSystemWatcher.Created += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
+			fileSystemWatcher.Changed += (s, e) => Runtime.RunInMainThread (() => OnFileChanged (s, e));
 
-			var fileChanged = DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (HandleFileServiceChange));
-			FileService.FileCreated += fileChanged;
-			FileService.FileChanged += fileChanged;
+			FileService.FileCreated += HandleFileServiceChange;
+			FileService.FileChanged += HandleFileServiceChange;
 
 		}
 
@@ -79,13 +73,14 @@ namespace MonoDevelop.SourceEditor
 
 		static void HandleFileServiceChange (object sender, FileEventArgs e)
 		{
-			// The Ide.Document generates a file service changed event this needs to be skipped.
-			if (!TypeSystemService.TrackFileChanges)
-				return;
 			bool foundOneChange = false;
 			foreach (var file in e) {
+				if (skipFiles.Contains (file.FileName)) {
+					skipFiles.Remove (file.FileName);
+					continue;
+				}
 				foreach (var view in openFiles) {
-					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, fileNameComparer))
+					if (SkipView (view) || !string.Equals (view.ContentName, file.FileName, FilePath.PathComparison))
 						continue;
 					if (!view.IsDirty/* && (IdeApp.Workbench.AutoReloadDocuments || file.AutoReload)*/)
 						view.SourceEditorWidget.Reload ();
@@ -117,20 +112,22 @@ namespace MonoDevelop.SourceEditor
 
 		static void OnFileChanged (object sender, FileSystemEventArgs e)
 		{
-			if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created) 
+			if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
 				CheckFileChange (e.FullPath);
 		}
 
 		static void CheckFileChange (string fileName)
 		{
-			if (SuspendFileWatch)
+			if (skipFiles.Contains (fileName)) {
+				skipFiles.Remove (fileName);
 				return;
+			}
 
 			var changedViews = new List<SourceEditorView> ();
 			foreach (var view in openFiles) {
 				if (SkipView (view))
 					continue;
-				if (string.Equals (view.ContentName, fileName, fileNameComparer)) {
+				if (string.Equals (view.ContentName, fileName, FilePath.PathComparison)) {
 					if (view.LastSaveTimeUtc == File.GetLastWriteTimeUtc (fileName))
 						continue;
 					if (!view.IsDirty/* && IdeApp.Workbench.AutoReloadDocuments*/)
@@ -196,7 +193,7 @@ namespace MonoDevelop.SourceEditor
 			foreach (var view in openFiles) {
 				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
-				
+
 				view.SourceEditorWidget.ConvertLineEndings ();
 				view.SourceEditorWidget.RemoveMessageBar ();
 				view.WorkbenchWindow.ShowNotification = false;
@@ -225,9 +222,16 @@ namespace MonoDevelop.SourceEditor
 			foreach (var view in openFiles) {
 				if (SkipView (view) || !view.SourceEditorWidget.HasIncorrectEolMarker)
 					continue;
-				view.SourceEditorWidget.UpdateEolMarkerMessage(multiple);
+				view.SourceEditorWidget.UpdateEolMarkerMessage (multiple);
 			}
+		}
+
+		static List<string> skipFiles = new List<string> ();
+		internal static void SkipNextChange (string fileName)
+		{
+			if (!skipFiles.Contains (fileName))
+				skipFiles.Add (fileName);
 		}
 		#endregion
 	}
-} 
+}

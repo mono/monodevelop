@@ -38,7 +38,7 @@ namespace MonoDevelop.VersionControl.Views
 {
 	public class MergeWidget : EditorCompareWidgetBase
 	{
-		protected override TextEditor MainEditor {
+		protected internal override MonoTextEditor MainEditor {
 			get {
 				return editors != null && editors.Length >= 2 ? editors[1] : null;
 			}
@@ -49,7 +49,7 @@ namespace MonoDevelop.VersionControl.Views
 			MainEditor.Document.TextReplaced += UpdateConflictsOnTextReplace;
 		}
 
-		protected override void UndoChange (TextEditor fromEditor, TextEditor toEditor, Hunk hunk)
+		protected override void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
 		{
 			base.UndoChange (fromEditor, toEditor, hunk);
 			int i = leftConflicts.IndexOf (hunk);
@@ -100,9 +100,9 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] {
-				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
-				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
-				new TextEditor (new TextDocument (), new CommonTextEditorOptions ()),
+				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
+				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
+				new MonoTextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
 			};
 			
 			this.editors[0].Document.ReadOnly = true;
@@ -173,8 +173,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override void UpdateDiff ()
 		{
-			LeftDiff  = new List<Hunk> (editors[0].Document.Diff (MainEditor.Document));
-			RightDiff = new List<Hunk> (editors[2].Document.Diff (MainEditor.Document));
+			LeftDiff  = new List<Hunk> (editors[0].Document.Diff (MainEditor.Document, includeEol: false));
+			RightDiff = new List<Hunk> (editors[2].Document.Diff (MainEditor.Document, includeEol: false));
 
 			DocumentLine line;
 			LeftDiff.RemoveAll (item => null != (line = MainEditor.Document.GetLine (item.InsertStart)) &&

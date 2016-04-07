@@ -30,9 +30,9 @@ using System;
 using System.Linq;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class MachinePackageCache : IMachinePackageCache
+	internal class MachinePackageCache : IMachinePackageCache
 	{
 		public IQueryable<IPackage> GetPackages()
 		{

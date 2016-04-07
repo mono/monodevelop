@@ -47,8 +47,8 @@ namespace Mono.Instrumentation.Monitor
 //		TreeIter iterStart;
 		TreeIter iterTimers;
 		TreeIter iterTimerStats;
-		Dictionary<ChartView,InstrumenationChartView> chartWidgets = new Dictionary<ChartView, InstrumenationChartView> ();
-		InstrumenationChartView timersWidget;
+		Dictionary<ChartView,InstrumentationChartView> chartWidgets = new Dictionary<ChartView, InstrumentationChartView> ();
+		InstrumentationChartView timersWidget;
 		
 		public InstrumentationViewerDialog (): base ("Instrumentation Monitor")
 		{
@@ -194,7 +194,7 @@ namespace Mono.Instrumentation.Monitor
 			
 			if (store.GetPath (it).Equals (store.GetPath (iterTimers))) {
 				if (timersWidget == null) {
-					timersWidget = new InstrumenationChartView (this);
+					timersWidget = new InstrumentationChartView (this);
 					timersWidget.ShowAllTimers ();
 				}
 				SetView (timersWidget, "Timers", false);
@@ -208,9 +208,9 @@ namespace Mono.Instrumentation.Monitor
 			else {
 				ChartView v = (ChartView) store.GetValue (it, 1);
 				if (v != null) {
-					InstrumenationChartView cv;
+					InstrumentationChartView cv;
 					if (!chartWidgets.TryGetValue (v, out cv)) {
-						cv = new InstrumenationChartView (this);
+						cv = new InstrumentationChartView (this);
 						chartWidgets [v] = cv;
 						cv.SetView (v);
 					}
@@ -258,17 +258,17 @@ namespace Mono.Instrumentation.Monitor
 		
 		protected virtual void OnButtonSaveClicked (object sender, System.EventArgs e)
 		{
-			((InstrumenationChartView)viewBox.Child).Save ();
+			((InstrumentationChartView)viewBox.Child).Save ();
 		}
 		
 		protected virtual void OnButtonSaveAsClicked (object sender, System.EventArgs e)
 		{
-			((InstrumenationChartView)viewBox.Child).SaveAs ();
+			((InstrumentationChartView)viewBox.Child).SaveAs ();
 		}
 		
 		protected virtual void OnButtonDeleteClicked (object sender, System.EventArgs e)
 		{
-			((InstrumenationChartView)viewBox.Child).Delete ();
+			((InstrumentationChartView)viewBox.Child).Delete ();
 		}
 		
 		protected virtual void OnFlushMemoryActionActivated (object sender, System.EventArgs e)
@@ -287,7 +287,7 @@ namespace Mono.Instrumentation.Monitor
 		
 		protected virtual void OnOpenActionActivated (object sender, System.EventArgs e)
 		{
-			FileChooserDialog fdiag  = new FileChooserDialog ("Open Data File", this, FileChooserAction.Open);
+			FileChooserDialog fdiag  = new FileChooserDialog ("Open Data File", this, Gtk.FileChooserAction.Open);
 			fdiag.AddButton (Gtk.Stock.Cancel, ResponseType.Cancel);
 			fdiag.AddButton (Gtk.Stock.Open, ResponseType.Ok);
 			fdiag.SelectMultiple = false;

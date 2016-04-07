@@ -1,0 +1,10 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ExtraProp>ExtraVal</ExtraProp>
+    <EvalExtraProp>$(ExtraProp)</EvalExtraProp>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Extra" />
+    <None Include="foo.txt" />
+  </ItemGroup>
+</Project>

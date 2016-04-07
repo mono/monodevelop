@@ -29,7 +29,7 @@ namespace Mono.TextEditor
 {
 	public class CodeSegmentEditorWindow : Gtk.Window
 	{
-		TextEditor codeSegmentEditor = new TextEditor ();
+		MonoTextEditor codeSegmentEditor = new MonoTextEditor ();
 		
 		public ISyntaxMode SyntaxMode {
 			get {
@@ -49,15 +49,15 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public CodeSegmentEditorWindow (TextEditor editor) : base (Gtk.WindowType.Toplevel)
+		public CodeSegmentEditorWindow (MonoTextEditor editor) : base (Gtk.WindowType.Toplevel)
 		{
 			Gtk.ScrolledWindow scrolledWindow = new Gtk.ScrolledWindow ();
 			scrolledWindow.Child = codeSegmentEditor;
 			scrolledWindow.ShadowType = Gtk.ShadowType.In;
 			Child = scrolledWindow;
 			codeSegmentEditor.Realize ();
-			((SimpleEditMode)codeSegmentEditor.CurrentMode).AddBinding (Gdk.Key.Escape, Close);
-			TextEditorOptions options = new TextEditorOptions ();
+			((SimpleEditMode)codeSegmentEditor.CurrentMode).AddBinding (Gdk.Key.Escape, Close, true);
+			TextEditorOptions options = new TextEditorOptions (true);
 			options.FontName = editor.Options.FontName;
 			options.ColorScheme = editor.Options.ColorScheme;
 			options.ShowRuler =  false;

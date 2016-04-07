@@ -44,5 +44,11 @@ namespace MonoDevelop.Core.Serialization
 		{
 			return "";
 		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is default value.
+		/// </summary>
+		/// <remarks>This flag is set when an object is serialized using the IncludeDefaultValues or IncludeDeletedValues</remarks>
+		public bool IsDefaultValue { get; set; }
 	}
 }

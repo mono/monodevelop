@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 
@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageSource ()
 		{
-			CreatePackageSource ("http://sharpdevelop.codeplex.com", "Test");
+			CreatePackageSource ("http://monodevelop.codeplex.com", "Test");
 		}
 
 		void CreatePackageSource (string source, string name)
@@ -49,7 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageSourceWithName (string  name)
 		{
-			CreatePackageSource ("http://sharpdevelop.codeplex.com", name);
+			CreatePackageSource ("http://monodevelop.codeplex.com", name);
 		}
 
 		void  CreatePackageSourceWithSourceUrl (string  sourceUrl)

@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPropertyService
+	internal interface IPropertyService
 	{
 		string DataDirectory { get; }
 		string ConfigDirectory { get; }

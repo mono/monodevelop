@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
 using System.Collections.Generic;
 using Mono.Addins;
@@ -43,11 +44,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public OpenFileDialog (string title) : this (title, Gtk.FileChooserAction.Save)
+		public OpenFileDialog (string title) : this (title, FileChooserAction.Save)
 		{
 		}
 		
-		public OpenFileDialog (string title, Gtk.FileChooserAction action)
+		public OpenFileDialog (string title, FileChooserAction action)
 		{
 			Title = title;
 			Action = action;
@@ -93,7 +94,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		protected override bool RunDefault ()
 		{
-			var win = new FileSelectorDialog (Title, Action);
+			var win = new FileSelectorDialog (Title, Action.ToGtkAction ());
 			win.SelectedEncoding = Encoding != null ? Encoding.CodePage : 0;
 			win.ShowEncodingSelector = ShowEncodingSelector;
 			win.ShowViewerSelector = ShowViewerSelector;

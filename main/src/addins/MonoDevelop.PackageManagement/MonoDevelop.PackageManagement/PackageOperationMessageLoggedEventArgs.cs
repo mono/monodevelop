@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageOperationMessageLoggedEventArgs : EventArgs
+	internal class PackageOperationMessageLoggedEventArgs : EventArgs
 	{
 		public PackageOperationMessageLoggedEventArgs(
 			MessageLevel level,

@@ -34,9 +34,9 @@ using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class DotNetProjectExtensions
+	internal static class DotNetProjectExtensions
 	{
 		public static readonly Guid WebApplication = Guid.Parse("{349C5851-65DF-11DA-9384-00065B846F21}");
 		public static readonly Guid WebSite = Guid.Parse("{E24C65DC-7377-472B-9ABA-BC803B73C61A}");
@@ -47,7 +47,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			return project.HasProjectType(WebApplication) || project.HasProjectType(WebSite);
 		}
-		
+
 		public static bool HasProjectType(this IDotNetProject project, Guid projectTypeGuid)
 		{
 			foreach (string guid in project.GetProjectTypeGuids()) {
@@ -57,13 +57,13 @@ namespace ICSharpCode.PackageManagement
 			}
 			return false;
 		}
-		
+
 		public static string[] GetProjectTypeGuids(this IDotNetProject project)
 		{
 			string projectTypeGuids = project.GetProjectTypeGuidPropertyValue();
 			return projectTypeGuids.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
 		}
-		
+
 		static bool IsMatch(Guid guid, string guidStringToMatch)
 		{
 			Guid result;
@@ -72,7 +72,7 @@ namespace ICSharpCode.PackageManagement
 			}
 			return false;
 		}
-		
+
 		public static string GetProjectTypeGuidPropertyValue (this IDotNetProject project)
 		{
 			string propertyValue = null;

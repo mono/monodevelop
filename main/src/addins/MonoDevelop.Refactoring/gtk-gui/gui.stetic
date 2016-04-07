@@ -6,9 +6,7 @@
   </configuration>
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor2.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.Refactoring/MonoDevelop.Refactoring.dll" internal="true" />
   </import>
   <widget class="Gtk.Dialog" id="MonoDevelop.Refactoring.RefactoringPreviewDialog" design-size="400 300">
@@ -205,10 +203,11 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Image" id="imageWarning">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-apply Button</property>
-                  </widget>
+	              <widget class="MonoDevelop.Components.ImageView" id="imageWarning">
+	                <property name="MemberName" />
+	                <property name="IconSize">Button</property>
+	                <property name="IconId">md-warning</property>
+	              </widget>
                   <packing>
                     <property name="Position">0</property>
                     <property name="AutoSize">True</property>
@@ -483,9 +482,11 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Image" id="imageError">
-                    <property name="MemberName" />
-                  </widget>
+	              <widget class="MonoDevelop.Components.ImageView" id="imageError">
+	                <property name="MemberName" />
+	                <property name="IconSize">Menu</property>
+	                <property name="IconId">md-error</property>
+	              </widget>
                   <packing>
                     <property name="Position">0</property>
                     <property name="AutoSize">True</property>

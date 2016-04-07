@@ -127,10 +127,14 @@ namespace MonoDevelop.Core.FileSystem
 			GetNextForPath (path, true).DeleteDirectory (path);
 		}
 
-		public virtual void RequestFileEdit (IEnumerable<FilePath> files)
+		public virtual FileWriteableState GetWriteableState (FilePath file)
 		{
-			foreach (var fg in files.GroupBy (f => GetNextForPath (f, false)))
-				fg.Key.RequestFileEdit (fg);
+			return GetNextForPath (file, false).GetWriteableState (file);
+		}
+
+		public virtual void RequestFileEdit (FilePath file)
+		{
+			GetNextForPath (file, false).RequestFileEdit (file);
 		}
 		
 		public virtual void NotifyFilesChanged (IEnumerable<FilePath> files)
@@ -138,6 +142,7 @@ namespace MonoDevelop.Core.FileSystem
 			foreach (var fsFiles in files.GroupBy (f => GetNextForPath (f, false)))
 				fsFiles.Key.NotifyFilesChanged (files);
 		}
+
 	}
 
 	class DummyFileSystemExtension: FileSystemExtension

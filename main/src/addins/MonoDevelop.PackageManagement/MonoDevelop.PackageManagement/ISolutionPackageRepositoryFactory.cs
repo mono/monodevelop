@@ -30,9 +30,9 @@ using System;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ISolutionPackageRepositoryFactory
+	internal interface ISolutionPackageRepositoryFactory
 	{
 		ISolutionPackageRepository CreateSolutionPackageRepository (ISolution solution);
 	}

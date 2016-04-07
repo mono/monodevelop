@@ -31,6 +31,8 @@ using System;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Navigation
 {
@@ -39,10 +41,12 @@ namespace MonoDevelop.Ide.Navigation
 		int line;
 		int column;
 		
-		public TextFileNavigationPoint (Document doc, IEditableTextBuffer buffer)
+		public TextFileNavigationPoint (Document doc, TextEditor buffer)
 			: base (doc)
 		{
-			buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out column);
+			var location = buffer.CaretLocation;
+			line = location.Line;
+			column = location.Column;
 		}
 		
 		public TextFileNavigationPoint (FilePath file, int line, int column)
@@ -75,15 +79,15 @@ namespace MonoDevelop.Ide.Navigation
 			}
 		}
 		
-		protected override Document DoShow ()
+		protected override async Task<Document> DoShow ()
 		{
-			Document doc = base.DoShow ();
+			Document doc = await base.DoShow ();
 			if (doc != null) {
-				IEditableTextBuffer buf = doc.GetContent<IEditableTextBuffer> ();
+				var buf = doc.Editor;
 				if (buf != null) {
 					doc.DisableAutoScroll ();
 					buf.RunWhenLoaded (() => {
-						buf.SetCaretTo (Math.Max (line, 1), Math.Max (column, 1));
+						buf.SetCaretLocation (Math.Max (line, 1), Math.Max (column, 1));
 					});
 				}
 			}

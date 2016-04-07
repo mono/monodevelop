@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public static class SelectedProjectCollectionAssert
+	static class SelectedProjectCollectionAssert
 	{
 		public static void AreEqual (
 			IEnumerable<IPackageManagementSelectedProject> expected,

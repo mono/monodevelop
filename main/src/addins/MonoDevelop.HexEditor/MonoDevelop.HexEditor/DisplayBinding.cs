@@ -39,7 +39,7 @@ namespace MonoDevelop.HexEditor
 			}
 		}
 		
-		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
+		public ViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
 			
 			return new HexEditorView ();

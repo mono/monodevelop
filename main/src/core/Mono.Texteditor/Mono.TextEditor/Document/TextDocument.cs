@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 {
 	public class TextDocument : ICSharpCode.NRefactory.AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
 	{
-		readonly IBuffer buffer;
+		ImmutableText buffer;
 		readonly ILineSplitter splitter;
 
 		ISyntaxMode syntaxMode = null;
@@ -61,11 +61,21 @@ namespace Mono.TextEditor
 					lock (this) {
 						mimeType = value;
 						SyntaxMode = SyntaxModeService.GetSyntaxMode (this, value);
+						OnMimeTypeChanged (EventArgs.Empty);
 					}
 				}
 			}
 		}
-		
+
+		public event EventHandler MimeTypeChanged;
+
+		protected virtual void OnMimeTypeChanged (EventArgs e)
+		{
+			EventHandler handler = this.MimeTypeChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		string fileName;
 		public string FileName {
 			get {
@@ -91,6 +101,16 @@ namespace Mono.TextEditor
 			set;
 		}
 
+		public bool UseBom {
+			get;
+			set;
+		}
+
+		public System.Text.Encoding Encoding {
+			get;
+			set;
+		}
+
 		internal ILineSplitter Splitter {
 			get {
 				return splitter;
@@ -112,7 +132,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected virtual void OnSyntaxModeChanged (Mono.TextEditor.SyntaxModeChangeEventArgs e)
+		protected virtual void OnSyntaxModeChanged (SyntaxModeChangeEventArgs e)
 		{
 			var handler = SyntaxModeChanged;
 			if (handler != null)
@@ -135,11 +155,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected TextDocument (IBuffer buffer,ILineSplitter splitter)
+		protected TextDocument (ImmutableText buffer,ILineSplitter splitter)
 		{
 			this.buffer = buffer;
 			this.splitter = splitter;
-			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
 			textSegmentMarkerTree.InstallListener (this);
@@ -152,7 +171,7 @@ namespace Mono.TextEditor
 				foldedSegments.Remove (e.Node);
 		}
 
-		public TextDocument () : this(new GapBuffer (), new LineSplitter ())
+		public TextDocument () : this(ImmutableText.Empty, new LineSplitter ())
 		{
 		}
 
@@ -163,41 +182,55 @@ namespace Mono.TextEditor
 
 		public static TextDocument CreateImmutableDocument (string text, bool suppressHighlighting = true)
 		{
-			return new TextDocument (new StringBuffer (text), new PrimitiveLineSplitter ()) {
+			return new TextDocument (new ImmutableText (text), new PrimitiveLineSplitter ()) {
 				SuppressHighlightUpdate = suppressHighlighting,
 				Text = text,
 				ReadOnly = true
 			};
 		}
 
-		void SplitterLineSegmentTreeLineChanged (object sender, LineEventArgs e)
-		{
-			if (LineChanged != null)
-				LineChanged (this, e);
+		public event EventHandler<LineEventArgs> LineChanged {
+			add { splitter.LineChanged += value; }
+			remove { splitter.LineChanged -= value; }
 		}
-		
-		public event EventHandler<LineEventArgs> LineChanged;
-	//	public event EventHandler<LineEventArgs> LineInserted;
-		
+
+		public event EventHandler<LineEventArgs> LineInserted {
+			add { splitter.LineInserted += value; }
+			remove { splitter.LineInserted -= value; }
+		}
+
+		public event EventHandler<LineEventArgs> LineRemoved {
+			add { splitter.LineRemoved += value; }
+			remove { splitter.LineRemoved -= value; }
+		}
+
 		#region Buffer implementation
+
 		public int TextLength {
 			get {
-				return buffer.TextLength;
+				return buffer.Length;
 			}
 		}
 
 		public bool SuppressHighlightUpdate { get; set; }
 		internal DocumentLine longestLineAtTextSet;
+		WeakReference cachedText;
 
 		public string Text {
 			get {
-				return buffer.Text;
+				string completeText = cachedText != null ? (cachedText.Target as string) : null;
+				if (completeText == null) {
+					completeText = buffer.ToString();
+					cachedText = new WeakReference(completeText);
+				}
+				return completeText;
 			}
 			set {
 				var args = new DocumentChangeEventArgs (0, Text, value);
 				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
-				buffer.Text = value;
+				cachedText = null;
+				buffer = new ImmutableText (value);
 				extendingTextMarkers = new List<TextLineMarker> ();
 				splitter.Initalize (value, out longestLineAtTextSet);
 				ClearFoldSegments ();
@@ -232,18 +265,20 @@ namespace Mono.TextEditor
 		public void Replace (int offset, int count, string value, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
 		{
 			if (offset < 0)
-				throw new ArgumentOutOfRangeException ("offset", "must be > 0, was: " + offset);
+				throw new ArgumentOutOfRangeException (nameof (offset), "must be > 0, was: " + offset);
 			if (offset > TextLength)
-				throw new ArgumentOutOfRangeException ("offset", "must be <= Length, was: " + offset);
+				throw new ArgumentOutOfRangeException (nameof (offset), "must be <= TextLength(" + TextLength +"), was: " + offset);
 			if (count < 0)
-				throw new ArgumentOutOfRangeException ("count", "must be > 0, was: " + count);
-
+				throw new ArgumentOutOfRangeException (nameof (count), "must be > 0, was: " + count);
+			if (ReadOnly)
+				return;
 			InterruptFoldWorker ();
+
 			//int oldLineCount = LineCount;
 			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
-			OnTextReplacing (args);
-			value = args.InsertedText.Text;
+
 			UndoOperation operation = null;
+			bool endUndo = false;
 			if (!isInUndo) {
 				operation = new UndoOperation (args);
 				if (currentAtomicOperation != null) {
@@ -251,16 +286,27 @@ namespace Mono.TextEditor
 				} else {
 					OnBeginUndo ();
 					undoStack.Push (operation);
-					OnEndUndo (new UndoOperationEventArgs (operation));
+					endUndo = true;
 				}
 				redoStack.Clear ();
 			}
+
+			if (value != null)
+				EnsureSegmentIsUnfolded (offset, value.Length);
 			
-			buffer.Replace (offset, count, value);
+			OnTextReplacing (args);
+			value = args.InsertedText.Text;
+
+			cachedText = null;
+			buffer = buffer.RemoveText(offset, count);
+			if (!string.IsNullOrEmpty (value))
+				buffer = buffer.InsertText (offset, value);
 			foldSegmentTree.UpdateOnTextReplace (this, args);
 			splitter.TextReplaced (this, args);
 			versionProvider.AppendChange (args);
 			OnTextReplaced (args);
+			if (endUndo)
+				OnEndUndo (new UndoOperationEventArgs (operation));
 		}
 		
 		public string GetTextBetween (int startOffset, int endOffset)
@@ -274,7 +320,7 @@ namespace Mono.TextEditor
 			if (endOffset > TextLength)
 				throw new ArgumentException ("endOffset > Length");
 			
-			return buffer.GetTextAt (startOffset, endOffset - startOffset);
+			return buffer.ToString (startOffset, endOffset - startOffset);
 		}
 		
 		public string GetTextBetween (DocumentLocation start, DocumentLocation end)
@@ -297,7 +343,7 @@ namespace Mono.TextEditor
 				throw new ArgumentException ("count < 0");
 			if (offset + count > TextLength)
 				throw new ArgumentException ("offset + count is beyond EOF");
-			return buffer.GetTextAt (offset, count);
+			return buffer.ToString (offset, count);
 		}
 		
 		public string GetTextAt (DocumentRegion region)
@@ -333,21 +379,17 @@ namespace Mono.TextEditor
 		
 		public char GetCharAt (int offset)
 		{
-			if (offset < 0)
-				throw new ArgumentException ("offset < 0");
-			if (offset >= TextLength)
-				throw new ArgumentException ("offset >= TextLength");
-			return buffer.GetCharAt (offset);
+			return buffer [offset];
 		}
 
 		public char GetCharAt (DocumentLocation location)
 		{
-			return buffer.GetCharAt (LocationToOffset (location));
+			return buffer [LocationToOffset (location)];
 		}
 
 		public char GetCharAt (int line, int column)
 		{
-			return buffer.GetCharAt (LocationToOffset (line, column));
+			return buffer [LocationToOffset (line, column)];
 		}
 
 		/// <summary>
@@ -359,7 +401,7 @@ namespace Mono.TextEditor
 		/// <returns>The first index where the character was found; or -1 if no occurrence was found.</returns>
 		public int IndexOf (char c, int startIndex, int count)
 		{
-			return buffer.IndexOf (c, startIndex, count);
+			return Text.IndexOf (c, startIndex, count);
 		}
 		
 		/// <summary>
@@ -371,7 +413,7 @@ namespace Mono.TextEditor
 		/// <returns>The first index where any character was found; or -1 if no occurrence was found.</returns>
 		public int IndexOfAny (char[] anyOf, int startIndex, int count)
 		{
-			return buffer.IndexOfAny (anyOf, startIndex, count);
+			return Text.IndexOfAny (anyOf, startIndex, count);
 		}
 		
 		/// <summary>
@@ -384,7 +426,7 @@ namespace Mono.TextEditor
 		/// <returns>The first index where the search term was found; or -1 if no occurrence was found.</returns>
 		public int IndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			return buffer.IndexOf (searchText, startIndex, count, comparisonType);
+			return Text.IndexOf (searchText, startIndex, count, comparisonType);
 		}
 		
 		/// <summary>
@@ -398,7 +440,7 @@ namespace Mono.TextEditor
 		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
 		public int LastIndexOf (char c, int startIndex, int count)
 		{
-			return buffer.LastIndexOf (c, startIndex, count);
+			return Text.LastIndexOf (c, startIndex, count);
 		}
 		
 		/// <summary>
@@ -413,7 +455,7 @@ namespace Mono.TextEditor
 		/// This is different than the meaning of the parameters on string.LastIndexOf!</remarks>
 		public int LastIndexOf (string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			return buffer.LastIndexOf (searchText, startIndex, count, comparisonType);
+			return Text.LastIndexOf (searchText, startIndex, count, comparisonType);
 		}
 
 		protected virtual void OnTextReplaced (DocumentChangeEventArgs args)
@@ -619,24 +661,30 @@ namespace Mono.TextEditor
 			
 			public override void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.currentAtomicUndoOperationType.Push (operationType);
-				for (int i = operations.Count - 1; i >= 0; i--) {
-					operations [i].Undo (doc, false);
-					doc.OnUndone (new UndoOperationEventArgs (operations[i]));
+				doc.BeginAtomicUndo (operationType);
+				try {
+					for (int i = operations.Count - 1; i >= 0; i--) {
+						operations [i].Undo (doc, false);
+						doc.OnUndone (new UndoOperationEventArgs (operations [i]));
+					}
+				} finally {
+					doc.EndAtomicUndo ();
 				}
-				doc.currentAtomicUndoOperationType.Pop (); 
 				if (fireEvent)
 					OnUndoDone ();
 			}
 			
 			public override void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.currentAtomicUndoOperationType.Push (operationType);
-				foreach (UndoOperation operation in this.operations) {
-					operation.Redo (doc, false);
-					doc.OnRedone (new UndoOperationEventArgs (operation));
+				doc.BeginAtomicUndo (operationType);
+				try {
+					foreach (UndoOperation operation in this.operations) {
+						operation.Redo (doc, false);
+						doc.OnRedone (new UndoOperationEventArgs (operation));
+					}
+				} finally {
+					doc.EndAtomicUndo ();
 				}
-				doc.currentAtomicUndoOperationType.Pop (); 
 				if (fireEvent)
 					OnRedoDone ();
 			}
@@ -921,11 +969,7 @@ namespace Mono.TextEditor
 		internal void BeginAtomicUndo (OperationType operationType = OperationType.Undefined)
 		{
 			currentAtomicUndoOperationType.Push (operationType);
-			if (atomicUndoLevel == 0) {
-				if (this.syntaxMode != null && !SuppressHighlightUpdate)
-					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
-			}
-			if (currentAtomicOperation == null) {
+ 			if (currentAtomicOperation == null) {
 				Debug.Assert (atomicUndoLevel == 0); 
 				currentAtomicOperation = new AtomicUndoOperation (operationType);
 				OnBeginUndo ();
@@ -1106,8 +1150,10 @@ namespace Mono.TextEditor
 				} else {
 					DocumentLine startLine = splitter.GetLineByOffset (offset);
 					DocumentLine endLine = splitter.GetLineByOffset (newFoldSegment.EndOffset);
-					newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
-					newFoldSegment.Column = offset - startLine.Offset + 1;
+					if (endLine != null)
+						newFoldSegment.EndColumn = newFoldSegment.EndOffset - endLine.Offset + 1;
+					if (startLine != null)
+						newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
 					foldedSegmentAdded |= newFoldSegment.IsFolded;
 					if (oldIndex < oldSegments.Count && newFoldSegment.Length == oldSegments [oldIndex].Length) {
@@ -1176,6 +1222,11 @@ namespace Mono.TextEditor
 			return foldSegmentTree.GetSegmentsOverlapping (line.Offset, line.Length).Cast<FoldSegment> ();
 		}
 
+		public IEnumerable<FoldSegment> GetFoldingContaining (int offset, int length)
+		{
+			return foldSegmentTree.GetSegmentsOverlapping (offset, length).Cast<FoldSegment> ();
+		}
+
 		public IEnumerable<FoldSegment> GetStartFoldings (int lineNumber)
 		{
 			return GetStartFoldings (this.GetLine (lineNumber));
@@ -1186,6 +1237,11 @@ namespace Mono.TextEditor
 			if (line == null)
 				return new FoldSegment[0];
 			return GetFoldingContaining (line).Where (fold => fold.StartLine == line);
+		}
+
+		public IEnumerable<FoldSegment> GetStartFoldings (int offset, int length)
+		{
+			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.StartLine.Offset && fold.StartLine.Offset < offset + length);
 		}
 
 		public IEnumerable<FoldSegment> GetEndFoldings (int lineNumber)
@@ -1200,7 +1256,12 @@ namespace Mono.TextEditor
 					yield return segment;
 			}
 		}
-		
+
+		public IEnumerable<FoldSegment> GetEndFoldings (int offset, int length)
+		{
+			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.EndLine.Offset && fold.EndLine.Offset < offset + length);
+		}
+
 		public int GetLineCount (FoldSegment segment)
 		{
 			return segment.EndLine.LineNumber - segment.StartLine.LineNumber;
@@ -1218,7 +1279,20 @@ namespace Mono.TextEditor
 				CommitDocumentUpdate ();
 			}
 		}
-		
+
+		public void EnsureSegmentIsUnfolded (int offset, int length)
+		{
+			bool needUpdate = false;
+			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
+				needUpdate = true;
+				fold.IsFolded = false;
+			}
+			if (needUpdate) {
+				RequestUpdate (new UpdateAll ());
+				CommitDocumentUpdate ();
+			}
+		}
+
 		internal void InformFoldTreeUpdated ()
 		{
 			var handler = FoldTreeUpdated;
@@ -1284,7 +1358,7 @@ namespace Mono.TextEditor
 			AddMarker (line, marker, true);
 		}
 
-		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate)
+		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate, int idx = -1)
 		{
 			if (line == null || marker == null)
 				return;
@@ -1295,7 +1369,7 @@ namespace Mono.TextEditor
 					extendingTextMarkers.Sort (CompareMarkers);
 				}
 			}
-			line.AddMarker (marker);
+			line.AddMarker (marker, idx);
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (commitUpdate)
 				this.CommitLineUpdate (line);
@@ -1367,7 +1441,13 @@ namespace Mono.TextEditor
 
 		#region Text segment markers
 
-		SegmentTree<TextSegmentMarker> textSegmentMarkerTree = new SegmentTree<TextSegmentMarker> (); 
+		int textSegmentInsertId = 0;
+		SegmentTree<TextSegmentMarker> textSegmentMarkerTree = new SegmentTree<TextSegmentMarker> ();
+
+		public static IEnumerable<TextSegmentMarker> OrderTextSegmentMarkersByInsertion (IEnumerable<TextSegmentMarker> enumerable)
+		{
+			return enumerable.OrderBy (m => m.insertId);
+		}
 
 		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (DocumentLine line)
 		{
@@ -1387,6 +1467,7 @@ namespace Mono.TextEditor
 
 		public void AddMarker (TextSegmentMarker marker)
 		{
+			marker.insertId = textSegmentInsertId++;
 			textSegmentMarkerTree.Add (marker);
 			var startLine = OffsetToLineNumber (marker.Offset);
 			var endLine = OffsetToLineNumber (marker.EndOffset);
@@ -1656,12 +1737,14 @@ namespace Mono.TextEditor
 		
 		
 		#region Diff
+
+
 		int[] GetDiffCodes (ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
 		{
 			int i = 0;
 			var result = new int[LineCount];
 			foreach (DocumentLine line in Lines) {
-				string lineText = buffer.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
+				string lineText = buffer.ToString (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
 				int curCode;
 				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
 					codeDictionary[lineText] = curCode = ++codeCounter;
@@ -1854,12 +1937,12 @@ namespace Mono.TextEditor
 
 		public System.IO.TextReader CreateReader ()
 		{
-			return new BufferedTextReader (buffer);
+			return new ImmutableTextTextReader (buffer);
 		}
 
 		public System.IO.TextReader CreateReader (int offset, int length)
 		{
-			throw new NotImplementedException ();
+			return new ImmutableTextTextReader(buffer.GetText(offset, length));
 		}
 
 		string ICSharpCode.NRefactory.Editor.ITextSource.GetText (int offset, int length)
@@ -1893,26 +1976,43 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public SnapshotDocument (string text, ITextSourceVersion version) : base (new StringBuffer (text), new PrimitiveLineSplitter ())
+			public SnapshotDocument (TextDocument doc) : base (doc.buffer, new LazyLineSplitter (doc.LineCount))
 			{
-				this.version = version;
-				Text = text;
+				this.version = doc.Version;
+				((LazyLineSplitter)splitter).src = this;
+				fileName = doc.fileName;
+				Encoding = doc.Encoding;
+				UseBom = doc.UseBom;
+				mimeType = doc.mimeType;
+
 				ReadOnly = true;
 			}
 		}
 
 		public TextDocument CreateDocumentSnapshot ()
 		{
-			return new SnapshotDocument (Text, Version);
+			return new SnapshotDocument (this);
+		}
+
+		public ImmutableText GetImmutableText ()
+		{
+			return buffer;
+		}
+
+		public ImmutableText GetImmutableText (int offset, int count)
+		{
+			return buffer.GetText (offset, count);
 		}
 
 		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
 		{
-			return new SnapshotDocument (Text, Version);
+			return new SnapshotDocument (this);
 		}
 
-
-
+		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
+		{
+			buffer.CopyTo (sourceIndex, destination, destinationIndex, count); 
+		}
 		#endregion
 	}
 	

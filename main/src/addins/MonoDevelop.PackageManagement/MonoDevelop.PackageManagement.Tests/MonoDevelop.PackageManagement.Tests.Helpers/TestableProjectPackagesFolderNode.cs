@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableProjectPackagesFolderNode : ProjectPackagesFolderNode
+	class TestableProjectPackagesFolderNode : ProjectPackagesFolderNode
 	{
 		public TestableProjectPackagesFolderNode (
 			IDotNetProject project,

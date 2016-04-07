@@ -1,5 +1,5 @@
 ﻿//
-// SharpDevelopProjectSystemTests.cs
+// MonoDevelopProjectSystemTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,12 +28,12 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.Formats.MSBuild;
+using MonoDevelop.Projects.MSBuild;
 using NuGet;
 using NUnit.Framework;
 
@@ -87,26 +87,38 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AssertLastMSBuildChildElementHasProjectAttributeValue (string expectedImport)
 		{
-			ImportAndCondition import = project.ImportsAdded.Last ();
+			ImportAndCondition import = projectSystem.NewImportsHandler.ImportsAdded.Last ();
 			Assert.AreEqual (expectedImport, import.Name);
 		}
 
 		void AssertLastImportHasCondition (string expectedCondition)
 		{
-			ImportAndCondition import = project.ImportsAdded.Last ();
+			ImportAndCondition import = projectSystem.NewImportsHandler.ImportsAdded.Last ();
 			Assert.AreEqual (expectedCondition, import.Condition);
+		}
+
+		void AssertLastImportHasImportLocation (ProjectImportLocation expectedLocation)
+		{
+			ImportAndCondition import = projectSystem.NewImportsHandler.ImportsAdded.Last ();
+			Assert.AreEqual (expectedLocation, import.Location);
 		}
 
 		void AssertFirstMSBuildChildElementHasProjectAttributeValue (string expectedImport)
 		{
-			ImportAndCondition import = project.ImportsAdded.First ();
+			ImportAndCondition import = projectSystem.NewImportsHandler.ImportsAdded.First ();
 			Assert.AreEqual (expectedImport, import.Name);
 		}
 
 		void AssertFirstImportHasCondition (string expectedCondition)
 		{
-			ImportAndCondition import = project.ImportsAdded.First ();
+			ImportAndCondition import = projectSystem.NewImportsHandler.ImportsAdded.First ();
 			Assert.AreEqual (expectedCondition, import.Condition);
+		}
+
+		void AssertFirstImportHasImportLocation (ProjectImportLocation expectedLocation)
+		{
+			ImportAndCondition import = projectSystem.NewImportsHandler.ImportsAdded.First ();
+			Assert.AreEqual (expectedLocation, import.Location);
 		}
 
 		void AssertImportRemoved (string expectedImportRemoved)
@@ -117,7 +129,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		MSBuildProject CreateMSBuildProject (string xml)
 		{
 			var msbuildProject = new MSBuildProject ();
-			msbuildProject.Document.LoadXml (xml);
+			msbuildProject.LoadXml (xml);
 			return msbuildProject;
 		}
 
@@ -402,7 +414,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
-			Assert.AreEqual (fileName, actualReference.HintPath);
+			Assert.AreEqual (fileName, actualReference.HintPath.ToString());
 		}
 
 		[Test]
@@ -417,7 +429,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual ("nunit.framework", actualReference.Reference);
-			Assert.AreEqual (fullFileName, actualReference.HintPath);
+			Assert.AreEqual (fullFileName, actualReference.HintPath.ToString());
 		}
 
 		[Test]
@@ -899,6 +911,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
 			AssertLastMSBuildChildElementHasProjectAttributeValue (@"..\packages\Foo.0.1\build\Foo.targets");
+			AssertLastImportHasImportLocation (ProjectImportLocation.Bottom);
 		}
 
 		[Test]
@@ -911,6 +924,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
 			AssertLastMSBuildChildElementHasProjectAttributeValue (@"packages\Foo.0.1\build\Foo.targets");
+			AssertLastImportHasImportLocation (ProjectImportLocation.Bottom);
 		}
 
 		[Test]
@@ -923,6 +937,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
 			AssertLastImportHasCondition ("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
+			AssertLastImportHasImportLocation (ProjectImportLocation.Bottom);
 		}
 
 		[Test]
@@ -931,11 +946,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
 			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
-			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+			Assert.AreEqual (1, projectSystem.NewImportsHandler.ImportsAdded.Count);
 
-			Assert.AreEqual (2, project.ImportsAdded.Count);
+			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+			Assert.AreEqual (1, projectSystem.NewImportsHandler.ImportsAdded.Count);
 		}
 
 		[Test]
@@ -945,11 +961,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 			string targetPath2 = @"d:\projects\MyProject\packages\Foo.0.1\BUILD\FOO.TARGETS".ToNativePath ();
+
 			projectSystem.AddImport (targetPath1, ProjectImportLocation.Bottom);
+			Assert.AreEqual (1, projectSystem.NewImportsHandler.ImportsAdded.Count);
 
 			projectSystem.AddImport (targetPath2, ProjectImportLocation.Bottom);
-
-			Assert.AreEqual (2, project.ImportsAdded.Count);
+			Assert.AreEqual (1, projectSystem.NewImportsHandler.ImportsAdded.Count);
 		}
 
 		[Test]
@@ -988,7 +1005,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.RemoveImport (targetPath2);
 
-			Assert.AreEqual (1, project.ImportsAdded.Count);
+			Assert.AreEqual (1, projectSystem.NewImportsHandler.ImportsAdded.Count);
 			Assert.AreEqual (2, project.ImportsRemoved.Count);
 		}
 
@@ -1013,6 +1030,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
 
 			AssertFirstMSBuildChildElementHasProjectAttributeValue (@"..\packages\Foo.0.1\build\Foo.targets");
+			AssertFirstImportHasImportLocation (ProjectImportLocation.Top);
 		}
 
 		[Test]
@@ -1025,6 +1043,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
 
 			AssertFirstImportHasCondition ("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
+			AssertFirstImportHasImportLocation (ProjectImportLocation.Top);
 		}
 
 		[Test]
@@ -1033,11 +1052,13 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
 			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
+			Assert.AreEqual (1, projectSystem.NewImportsHandler.ImportsAdded.Count);
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
 
-			Assert.AreEqual (2, project.ImportsAdded.Count);
+			Assert.AreEqual (1, projectSystem.NewImportsHandler.ImportsAdded.Count);
 		}
 
 		[Test]
@@ -1172,7 +1193,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			int targetCountBeforeSave = msbuildProject.Targets.Count ();
 			project.SaveAction = () => {
 				var msbuildExtension = new PackageManagementMSBuildExtension ();
-				msbuildExtension.SaveProject (null, null, msbuildProject);
+				msbuildExtension.UpdateProject (msbuildProject);
 			};
 
 			projectSystem.RemoveImport (targetPath);
@@ -1195,7 +1216,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.AddReference (fileName, null);
 
-			Assert.AreEqual (fileName, referenceBeingAdded.HintPath);
+			Assert.AreEqual (fileName, referenceBeingAdded.HintPath.ToString ());
 			Assert.IsTrue (referenceBeingAdded.LocalCopy);
 		}
 
@@ -1215,8 +1236,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.RemoveReference (fileName);
 
-			Assert.AreEqual (fileName, referenceBeingRemoved.HintPath);
+			Assert.AreEqual (fileName, referenceBeingRemoved.HintPath.ToString ());
 			Assert.IsFalse (projectIsSaved);
+		}
+
+		[Test]
+		public void AddImport_FullImportFilePathAndBottomOfProject_ImportHandlerIsDisposed ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+
+			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+
+			Assert.IsTrue (projectSystem.NewImportsHandler.IsDisposed);
 		}
 	}
 }

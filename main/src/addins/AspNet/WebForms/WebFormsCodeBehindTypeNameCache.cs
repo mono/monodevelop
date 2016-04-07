@@ -32,19 +32,21 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.WebForms;
 using MonoDevelop.AspNet.Projects;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.WebForms
 {
-	class WebFormsCodeBehindTypeNameCache : ProjectFileCache<AspNetAppProject,string>
+	class WebFormsCodeBehindTypeNameCache : ProjectFileCache<Project,string>
 	{
-		public WebFormsCodeBehindTypeNameCache (AspNetAppProject proj) : base (proj)
+		public WebFormsCodeBehindTypeNameCache (Project proj) : base (proj)
 		{
 		}
 
 		protected override string GenerateInfo (string filename)
 		{
 			try {
-				var doc = TypeSystemService.ParseFile (filename, DesktopService.GetMimeTypeForUri (filename), File.ReadAllText (filename)) as WebFormsParsedDocument;
+				var doc = TypeSystemService.ParseFile (null, filename, DesktopService.GetMimeTypeForUri (filename), StringTextSource.ReadFrom (filename)).Result as WebFormsParsedDocument;
 				if (doc != null && !string.IsNullOrEmpty (doc.Info.InheritedClass))
 					return doc.Info.InheritedClass;
 			} catch (Exception ex) {

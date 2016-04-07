@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Templates
 				t.Show ();
 		}
 			
-		public override bool AddToProject (SolutionItem policyParent, Project project,
+		public override bool AddToProject (SolutionFolderItem policyParent, Project project,
 		                                   string language, string directory, string name)
 		{
 			bool addedSomething = false;
@@ -97,7 +97,8 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			foreach (FileDescriptionTemplate t in templates) {
-				addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
+				if (t.EvaluateCreateCondition ())
+					addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
 			}
 			return addedSomething;
 		}

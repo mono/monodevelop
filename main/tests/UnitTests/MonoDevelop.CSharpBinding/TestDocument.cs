@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -42,15 +43,20 @@ namespace MonoDevelop.CSharpBinding
 		public TestDocument (MonoDevelop.Ide.Gui.IWorkbenchWindow window) : base(window)
 		{
 		}
+
+		public void UpdateProject (Project project)
+		{
+			SetProject (project);
+		}
 		
 		public IProjectContent HiddenProjectContent;
 
-		public override IProjectContent GetProjectContext ()
-		{
-			if (HiddenProjectContent != null)
-				return HiddenProjectContent;
-			return base.GetProjectContext ();
-		}
+//		public override IProjectContent GetProjectContext ()
+//		{
+//			if (HiddenProjectContent != null)
+//				return HiddenProjectContent;
+//			return base.GetProjectContext ();
+//		}
 	}
 }
 

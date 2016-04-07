@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 {
@@ -39,13 +40,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 	{
 		ClassBrowserPadWidget widget;
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return widget;
 			}
 		}
 		
-		public override void Initialize (IPadWindow container)
+		protected override void Initialize (IPadWindow container)
 		{
 			base.Initialize (container);
 			this.widget = new ClassBrowserPadWidget (base.TreeView, container); 

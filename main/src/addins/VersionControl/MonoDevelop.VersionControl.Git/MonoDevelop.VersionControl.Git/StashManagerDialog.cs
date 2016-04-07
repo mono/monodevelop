@@ -28,10 +28,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide;
 using LibGit2Sharp;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class StashManagerDialog : Dialog
+	partial class StashManagerDialog : Gtk.Dialog
 	{
 		readonly GitRepository repository;
 		readonly ListStore store;
@@ -103,26 +104,24 @@ namespace MonoDevelop.VersionControl.Git
 			return (Stash) store.GetValue (it, 0);
 		}
 
-		void ApplyStashAndRemove(int s)
+		async Task ApplyStashAndRemove(int s)
 		{
 			using (IdeApp.Workspace.GetFileStatusTracker ()) {
-				GitService.ApplyStash (repository, s).Completed += delegate(IAsyncOperation op) {
-					if (op.Success)
-						stashes.Remove (s);
-				};
+				if (await GitService.ApplyStash (repository, s))
+					stashes.Remove (s);
 			}
 		}
 
-		protected void OnButtonApplyClicked (object sender, System.EventArgs e)
+		protected async void OnButtonApplyClicked (object sender, System.EventArgs e)
 		{
 			int s = GetSelectedIndex ();
 			if (s != -1) {
-				GitService.ApplyStash (repository, s);
+				await GitService.ApplyStash (repository, s);
 				Respond (ResponseType.Ok);
 			}
 		}
 
-		protected void OnButtonBranchClicked (object sender, System.EventArgs e)
+		protected async void OnButtonBranchClicked (object sender, System.EventArgs e)
 		{
 			Stash s = GetSelected ();
 			int stashIndex = GetSelectedIndex ();
@@ -131,8 +130,8 @@ namespace MonoDevelop.VersionControl.Git
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 						repository.CreateBranchFromCommit (dlg.BranchName, s.Base);
-						GitService.SwitchToBranch (repository, dlg.BranchName);
-						ApplyStashAndRemove (stashIndex);
+						if (await GitService.SwitchToBranch (repository, dlg.BranchName))
+							await ApplyStashAndRemove (stashIndex);
 					}
 				} finally {
 					dlg.Destroy ();
@@ -152,11 +151,11 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected void OnButtonApplyRemoveClicked (object sender, System.EventArgs e)
+		protected async void OnButtonApplyRemoveClicked (object sender, System.EventArgs e)
 		{
 			int s = GetSelectedIndex ();
 			if (s != -1) {
-				ApplyStashAndRemove (s);
+				await ApplyStashAndRemove (s);
 				Respond (ResponseType.Ok);
 			}
 		}

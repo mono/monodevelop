@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectReferencesNodeBuilderExtension : NodeBuilderExtension
+	internal class ProjectReferencesNodeBuilderExtension : NodeBuilderExtension
 	{
 		public override bool CanBuildNode (Type dataType)
 		{

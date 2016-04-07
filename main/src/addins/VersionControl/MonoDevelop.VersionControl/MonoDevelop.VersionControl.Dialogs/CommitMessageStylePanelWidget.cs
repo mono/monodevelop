@@ -136,8 +136,7 @@ namespace MonoDevelop.VersionControl
 		void OnChanged ()
 		{
 			UpdatePreview ();
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
+			Changed?.Invoke (this, EventArgs.Empty);
 		}
 		
 		protected virtual void OnCheckUseBulletsToggled (object sender, System.EventArgs e)

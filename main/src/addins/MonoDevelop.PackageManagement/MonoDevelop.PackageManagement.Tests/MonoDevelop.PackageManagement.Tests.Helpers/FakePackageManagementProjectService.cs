@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementProjectService : IPackageManagementProjectService
+	class FakePackageManagementProjectService : IPackageManagementProjectService
 	{
 		public IProject CurrentProject { get; set; }
 		public ISolution OpenSolution { get; set; }

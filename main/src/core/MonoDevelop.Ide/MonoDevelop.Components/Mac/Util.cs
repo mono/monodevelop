@@ -99,6 +99,27 @@ namespace MonoDevelop.Components.Mac
 			return NSColor.FromDeviceRgba ((float)col.Red, (float)col.Green, (float)col.Blue, (float)col.Alpha);
 		}
 
+		public static NSColor ToNSColor (this Cairo.Color col)
+		{
+			return NSColor.FromDeviceRgba ((float)col.R, (float)col.G, (float)col.B, (float)col.A);
+		}
+
+		static readonly CoreGraphics.CGColorSpace DeviceRgbColorSpace = CoreGraphics.CGColorSpace.CreateDeviceRGB ();
+
+		public static CoreGraphics.CGColor ToCGColor (this Cairo.Color col)
+		{
+			return new CoreGraphics.CGColor (DeviceRgbColorSpace, new nfloat[] {
+				(nfloat)col.R, (nfloat)col.G, (nfloat)col.B, (nfloat)col.A
+			});
+		}
+		
+		public static CoreGraphics.CGColor ToCGColor (this Color col)
+		{
+			return new CoreGraphics.CGColor (DeviceRgbColorSpace, new nfloat[] {
+				(nfloat)col.Red, (nfloat)col.Green, (nfloat)col.Blue, (nfloat)col.Alpha
+			});
+		}
+
 		static Selector applyFontTraits = new Selector ("applyFontTraits:range:");
 
 		public static NSAttributedString ToAttributedString (this FormattedText ft)
@@ -139,7 +160,7 @@ namespace MonoDevelop.Components.Mac
 				else if (att is LinkTextAttribute) {
 					var xa = (LinkTextAttribute)att;
 					ns.AddAttribute (NSStringAttributeKey.Link, new NSUrl (xa.Target.ToString ()), r);
-					ns.AddAttribute (NSStringAttributeKey.ForegroundColor, NSColor.Blue, r);
+					ns.AddAttribute (NSStringAttributeKey.ForegroundColor, Ide.Gui.Styles.LinkForegroundColor.ToNSColor (), r);
 					ns.AddAttribute (NSStringAttributeKey.UnderlineStyle, NSNumber.FromInt32 ((int)NSUnderlineStyle.Single), r);
 				}
 				else if (att is StrikethroughTextAttribute) {

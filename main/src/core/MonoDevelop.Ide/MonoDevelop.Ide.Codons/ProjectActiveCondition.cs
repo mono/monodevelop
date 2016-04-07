@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Codons
 			if (activeproject == "*") {
 				return project != null;
 			}
-			return project != null && project.GetProjectTypes ().All (p => p != activeproject);
+			return project != null && project.GetTypeTags ().All (p => p != activeproject);
 		}
 	}
 

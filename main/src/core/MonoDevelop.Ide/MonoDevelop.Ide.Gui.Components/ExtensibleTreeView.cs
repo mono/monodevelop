@@ -1,4 +1,4 @@
-//
+﻿//
 // ExtensibleTreeView.cs
 //
 // Author:
@@ -30,15 +30,8 @@
 //#define TREE_VERIFY_INTEGRITY
 
 using System;
-using System.IO;
-using System.ComponentModel;
-using System.Drawing;
-using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Xml;
-using System.Resources;
 using System.Text;
 
 using Mono.Addins;
@@ -48,13 +41,12 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
-using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public partial class ExtensibleTreeView : CompactScrolledWindow
+	public partial class ExtensibleTreeView : Control, ICommandRouter
 	{
 		internal const int NodeInfoColumn = 0;
 		internal const int DataItemColumn = 1;
@@ -66,6 +58,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
 		NodeHashtable nodeHash = new NodeHashtable ();
 
+		ExtensibleTreeViewWidget widget;
 		ExtensibleTreeViewTree tree;
 		Gtk.TreeStore store;
 		Gtk.TreeViewColumn complete_column;
@@ -74,8 +67,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeBuilderContext builderContext;
 		Hashtable callbacks = new Hashtable ();
 		bool editingText = false;
-		bool showSelectionPopupButton;
-		Gtk.TreeIter? lastPopupButtonIter;
 
 		TreePadOption[] options;
 		TreeOptions globalOptions;
@@ -99,22 +90,90 @@ namespace MonoDevelop.Ide.Gui.Components
 			set { contextMenuTypeNameAliases = value; }
 		}
 
-		public Gtk.TreeStore Store {
+		internal Gtk.TreeStore Store {
 			get {
 				return this.store;
 			}
 		}
 
-		public Gtk.TreeView Tree {
+		internal Gtk.TreeView Tree {
 			get {
 				return tree;
 			}
 		}
 
+		public event EventHandler SelectionChanged;
+
+		public bool AllowsMultipleSelection {
+			get {
+				return Tree.Selection.Mode == Gtk.SelectionMode.Multiple;
+			}
+			set {
+				if (value)
+					Tree.Selection.Mode = Gtk.SelectionMode.Multiple;
+				else
+					Tree.Selection.Mode = Gtk.SelectionMode.Single;
+			}
+		}
+
 		public string Id { get; set; }
+
+
+		class ExtensibleTreeViewWidget : CompactScrolledWindow, ICommandRouter
+		{
+			ExtensibleTreeView control;
+
+			public ExtensibleTreeViewWidget (ExtensibleTreeView control)
+			{
+				this.control = control;
+				ShadowType = Gtk.ShadowType.None;
+				ShowBorderLine = false;
+			}
+
+			protected override void OnStyleSet (Gtk.Style previous_style)
+			{
+				base.OnStyleSet (previous_style);
+				control.UpdateFont ();
+			}
+
+			protected override bool OnScrollEvent (Gdk.EventScroll evnt)
+			{
+				var modifier = !Platform.IsMac? Gdk.ModifierType.ControlMask
+				                    //Mac window manager already uses control-scroll, so use command
+				                    //Command might be either meta or mod1, depending on GTK version
+				                    : (Gdk.ModifierType.MetaMask | Gdk.ModifierType.Mod1Mask);
+
+				if ((evnt.State & modifier) !=0) {
+					if (evnt.Direction == Gdk.ScrollDirection.Up)
+						control.ZoomIn ();
+					else if (evnt.Direction == Gdk.ScrollDirection.Down)
+						control.ZoomOut ();
+
+					return true;
+				}
+				return base.OnScrollEvent (evnt);
+			}
+
+			protected override void OnDestroyed ()
+			{
+				control.Destroy ();
+				base.OnDestroyed ();
+			}
+
+			public object GetNextCommandTarget ()
+			{
+				return control;
+			}
+		}
+
+		protected override object CreateNativeWidget<T> ()
+		{
+			return widget;
+		}
 
 		public ExtensibleTreeView ()
 		{
+			widget = new ExtensibleTreeViewWidget (this);
 			tree = new ExtensibleTreeViewTree (this);
 		}
 
@@ -134,18 +193,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.ColumnsAutosize ();
 		}
 
-		protected override void OnStyleSet (Gtk.Style previous_style)
+		public void Initialize (NodeBuilder [] builders, TreePadOption [] options, string contextMenuPath = null)
 		{
-			base.OnStyleSet (previous_style);
-			UpdateFont ();
+			OnInitialize (builders, options, contextMenuPath);
 		}
 
-		public void Initialize (NodeBuilder[] builders, TreePadOption[] options)
-		{
-			Initialize (builders, options, null);
-		}
-
-		public virtual void Initialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
+		protected virtual void OnInitialize (NodeBuilder[] builders, TreePadOption[] options, string contextMenuPath)
 		{
 			this.contextMenuPath = contextMenuPath;
 			builderContext = new TreeBuilderContext (this);
@@ -171,7 +224,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			text_render = new CustomCellRendererText (this);
 			text_render.Ypad = 0;
-			IdeApp.Preferences.CustomPadFontChanged += CustomFontPropertyChanged;;
+			IdeApp.Preferences.CustomPadFont.Changed += CustomFontPropertyChanged;
 			text_render.EditingStarted += HandleEditingStarted;
 			text_render.Edited += HandleOnEdit;
 			text_render.EditingCanceled += HandleOnEditCancelled;
@@ -191,17 +244,27 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
-			tree.ButtonPressEvent += HandleButtonPressEvent;
 			tree.MotionNotifyEvent += HandleMotionNotifyEvent;
 			tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;
+
+			if (GtkGestures.IsSupported) {
+				tree.AddGestureMagnifyHandler ((sender, args) => {
+					Zoom += Zoom * (args.Magnification / 4d);
+				});
+			}
 
 			for (int n=3; n<16; n++) {
 				Gtk.Rc.ParseString ("style \"MonoDevelop.ExtensibleTreeView_" + n + "\" {\n GtkTreeView::expander-size = " + n + "\n }\n");
 				Gtk.Rc.ParseString ("widget \"*.MonoDevelop.ExtensibleTreeView_" + n + "\" style  \"MonoDevelop.ExtensibleTreeView_" + n + "\"\n");
 			}
 
-			this.Add (tree);
-			this.ShowAll ();
+			if (!string.IsNullOrEmpty (Id))
+				Zoom = PropertyService.Get<double> ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, 1d);
+			else
+				Zoom = 1d;
+
+			widget.Add (tree);
+			widget.ShowAll ();
 
 #if TREE_VERIFY_INTEGRITY
 			GLib.Timeout.Add (3000, Checker);
@@ -244,8 +307,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (ZoomableCellRendererPixbuf)renderer;
 
-			cell.Image = info.Icon != null && info.Icon != CellRendererImage.NullImage && info.DisabledStyle ? info.Icon.WithAlpha (0.5) : info.Icon;
-			cell.ImageExpanderOpen = cell.Image;
+			var img = info.Icon != null && info.Icon != CellRendererImage.NullImage && info.DisabledStyle ? info.Icon.WithAlpha (0.5) : info.Icon;
+			cell.Image = img;
+			cell.ImageExpanderOpen = img;
 			cell.ImageExpanderClosed = info.ClosedIcon != null && info.ClosedIcon != CellRendererImage.NullImage && info.DisabledStyle ? info.ClosedIcon.WithAlpha (0.5) : info.ClosedIcon;
 			cell.OverlayBottomLeft = info.OverlayBottomLeft;
 			cell.OverlayBottomRight = info.OverlayBottomRight;
@@ -267,7 +331,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				cell.TextMarkup = info.Label;
 
 			cell.StatusIcon = info.StatusIconInternal;
-			cell.ShowPopupButton = (bool)model.GetValue (it, ShowPopupColumn);
 		}
 
 		public void UpdateBuilders (NodeBuilder[] builders, TreePadOption[] options)
@@ -411,18 +474,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[GLib.ConnectBefore]
-		void HandleButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
-		{
-			if (ShowSelectionPopupButton && text_render.PointerInButton ((int)args.Event.XRoot, (int)args.Event.YRoot)) {
-				text_render.Pushed = true;
-				args.RetVal = true;
-				var entryset = BuildEntrySet ();
-
-				IdeApp.CommandService.ShowContextMenu (tree, args.Event, entryset, this, HandleMenuHidden);
-			}
-		}
-
-		[GLib.ConnectBefore]
 		void HandleMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
 		{
 			Gtk.TreePath path;
@@ -431,12 +482,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			bool popupShown = false;
 
 			if (tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy)) {
-				if (ShowSelectionPopupButton) {
-					text_render.PointerPosition = new Gdk.Point ((int)args.Event.XRoot, (int)args.Event.YRoot);
-					var area = tree.GetCellArea (path, tree.Columns [0]);
-					tree.QueueDrawArea (area.X, area.Y, area.Width, area.Height);
-				}
-
 				Gtk.TreeIter it;
 				if (store.GetIter (out it, path)) {
 					var info = (NodeInfo)store.GetValue (it, NodeInfoColumn);
@@ -501,7 +546,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
 			}
 			text_render.Pushed = false;
-			QueueDraw ();
+			widget.QueueDraw ();
 		}
 
 		internal void LockUpdates ()
@@ -537,7 +582,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			set { builders = value; }
 		}
 
-		public Gtk.TreeViewColumn CompleteColumn {
+		internal Gtk.TreeViewColumn CompleteColumn {
 			get {
 				return complete_column;
 			}
@@ -549,13 +594,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		public ITreeBuilderContext BuilderContext {
+		internal ITreeBuilderContext BuilderContext {
 			get {
 				return builderContext;
 			}
 		}
 
-		public object[] CopyObjects {
+		internal object[] CopyObjects {
 			get {
 				return copyObjects;
 			}
@@ -564,7 +609,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		public DragOperation CurrentTransferOperation {
+		internal DragOperation CurrentTransferOperation {
 			get {
 				return currentTransferOperation;
 			}
@@ -790,7 +835,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		internal object GetNextCommandTarget ()
+		internal new object GetNextCommandTarget ()
 		{
 			return null;
 		}
@@ -923,7 +968,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.Open)]
-		public virtual void ActivateCurrentItem ()
+		public void ActivateCurrentItem ()
+		{
+			OnActivateCurrentItem ();
+		}
+
+		protected virtual void OnActivateCurrentItem ()
 		{
 			try {
 				LockUpdates ();
@@ -937,13 +987,18 @@ namespace MonoDevelop.Ide.Gui.Components
 							break;
 					}
 				}
-				OnCurrentItemActivated (EventArgs.Empty);
+				OnCurrentItemActivated ();
 			} finally {
 				UnlockUpdates ();
 			}
 		}
 
-		public virtual void DeleteCurrentItem ()
+		public void DeleteCurrentItem ()
+		{
+			OnDeleteCurrentItem ();
+		}
+
+		protected virtual void OnDeleteCurrentItem ()
 		{
 			try {
 				LockUpdates ();
@@ -988,7 +1043,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.RefreshTree)]
-		public virtual void RefreshCurrentItem ()
+		public void RefreshCurrentItem ()
+		{
+			OnRefreshCurrentItem ();
+		}
+
+		protected virtual void OnRefreshCurrentItem ()
 		{
 			try {
 				LockUpdates ();
@@ -1011,19 +1071,99 @@ namespace MonoDevelop.Ide.Gui.Components
 			RefreshTree ();
 		}
 
-		protected virtual void OnCurrentItemActivated (EventArgs args)
+		protected virtual void OnCurrentItemActivated ()
 		{
 			if (CurrentItemActivated != null)
-				CurrentItemActivated (this, args);
+				CurrentItemActivated (this, EventArgs.Empty);
 		}
 
 		public event EventHandler CurrentItemActivated;
 
-		[Obsolete ("Not supported anymore")]
+		#region Zoom
+
+		const double ZOOM_FACTOR = 1.1f;
+		const int ZOOM_MIN_POW = -4;
+		const int ZOOM_MAX_POW = 8;
+		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
+		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
+		double zoom;
+
 		public double Zoom {
-			get { return 1d; }
-			set { }
+			get {
+				 return zoom;
+			}
+			set {
+				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
+				if (value > ZOOM_MAX || value < ZOOM_MIN)
+					return;
+				//snap to one, if within 0.001d
+				if ((System.Math.Abs (value - 1d)) < 0.001d) {
+					value = 1d;
+				}
+				if (zoom != value) {
+					zoom = value;
+					OnZoomChanged (value);
+				}
+			}
 		}
+
+		void OnZoomChanged (double value)
+		{
+			pix_render.Zoom = value;
+			text_render.Zoom = value;
+
+			int expanderSize = (int) (12 * Zoom);
+			if (expanderSize < 3) expanderSize = 3;
+			if (expanderSize > 15) expanderSize = 15;
+			if (expanderSize != 12)
+				tree.Name = "MonoDevelop.ExtensibleTreeView_" + expanderSize;
+			else
+				tree.Name = "";
+			tree.ColumnsAutosize ();
+			if (!string.IsNullOrEmpty (Id)) {
+				PropertyService.Set ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, Zoom);
+			}
+		}
+
+		[CommandHandler (ViewCommands.ZoomIn)]
+		public void ZoomIn ()
+		{
+			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow + 1);
+		}
+
+		[CommandHandler (ViewCommands.ZoomOut)]
+		public void ZoomOut ()
+		{
+			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow - 1);
+		}
+
+		[CommandHandler (ViewCommands.ZoomReset)]
+		public void ZoomReset ()
+		{
+			Zoom = 1d;
+		}
+
+		[CommandUpdateHandler (ViewCommands.ZoomIn)]
+		protected void UpdateZoomIn (CommandInfo cinfo)
+		{
+			cinfo.Enabled = zoom < ZOOM_MAX - 0.000001d;
+		}
+
+		[CommandUpdateHandler (ViewCommands.ZoomOut)]
+		protected void UpdateZoomOut (CommandInfo cinfo)
+		{
+			cinfo.Enabled = zoom > ZOOM_MIN + 0.000001d;
+		}
+
+		[CommandUpdateHandler (ViewCommands.ZoomReset)]
+		protected void UpdateZoomReset (CommandInfo cinfo)
+		{
+			cinfo.Enabled = zoom != 1d;
+		}
+
+		#endregion Zoom
 
 		[CommandHandler (EditCommands.Copy)]
 		public void CopyCurrentItem ()
@@ -1048,7 +1188,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Copy)]
-		protected void UpdateCopyCurrentItem (CommandInfo info)
+		internal void UpdateCopyCurrentItem (CommandInfo info)
 		{
 			if (editingText) {
 				info.Bypass = true;
@@ -1058,7 +1198,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Cut)]
-		protected void UpdateCutCurrentItem (CommandInfo info)
+		internal void UpdateCutCurrentItem (CommandInfo info)
 		{
 			if (editingText) {
 				info.Bypass = true;
@@ -1140,7 +1280,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Paste)]
-		protected void UpdatePasteToCurrentItem (CommandInfo info)
+		internal void UpdatePasteToCurrentItem (CommandInfo info)
 		{
 			if (editingText) {
 				info.Bypass = true;
@@ -1186,7 +1326,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return (NodeInfo)store.GetValue (it, NodeInfoColumn);
 		}
 
-		public void StartLabelEditInternal()
+		void StartLabelEditInternal()
 		{
 			if (editingText)
 				return;
@@ -1390,7 +1530,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return (TypeNodeBuilder) chain [0];
 		}
 
-		public NodeBuilder[] GetBuilderChain (Type type)
+		internal NodeBuilder[] GetBuilderChain (Type type)
 		{
 			NodeBuilder[] chain;
 			builderChains.TryGetValue (type, out chain);
@@ -1635,7 +1775,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return nodeHash.ContainsKey (dataObject);
 		}
 
-		public void NotifyInserted (Gtk.TreeIter it, object dataObject)
+		internal void NotifyInserted (Gtk.TreeIter it, object dataObject)
 		{
 			if (callbacks.Count > 0) {
 				ArrayList list = callbacks [dataObject] as ArrayList;
@@ -1668,7 +1808,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return sb.ToString ();
 		}
 
-		public void RefreshNode (Gtk.TreeIter iter)
+		void RefreshNode (Gtk.TreeIter iter)
 		{
 			ITreeBuilder builder = CreateBuilder (iter);
 			builder.UpdateAll ();
@@ -1728,7 +1868,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (EditCommands.Rename)]
-		public void UpdateStartLabelEdit (CommandInfo info)
+		internal void UpdateStartLabelEdit (CommandInfo info)
 		{
 			if (editingText || GetSelectedNodes ().Length != 1) {
 				info.Visible = false;
@@ -1783,7 +1923,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
+			var entryset = BuildEntrySet ();
+			if (entryset == null)
+				return;
 
 			if (evt == null) {
 				var paths = tree.Selection.GetSelectedRows ();
@@ -1797,7 +1939,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected CommandEntrySet BuildEntrySet ()
+		CommandEntrySet BuildEntrySet ()
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
 			if (tnav == null)
@@ -1832,7 +1974,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandUpdateHandler (ViewCommands.TreeDisplayOptionList)]
-		protected void BuildTreeOptionsMenu (CommandArrayInfo info)
+		internal void BuildTreeOptionsMenu (CommandArrayInfo info)
 		{
 			foreach (TreePadOption op in options) {
 				CommandInfo ci = new CommandInfo (op.Label);
@@ -1842,14 +1984,14 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.TreeDisplayOptionList)]
-		protected void OptionToggled (string optionId)
+		internal void OptionToggled (string optionId)
 		{
 			globalOptions [optionId] = !globalOptions [optionId];
 			RefreshRoots ();
 		}
 
 		[CommandHandler (ViewCommands.ResetTreeDisplayOptions)]
-		protected void ResetOptions ()
+		public void ResetOptions ()
 		{
 			foreach (TreePadOption op in options)
 				globalOptions [op.Id] = op.DefaultValue;
@@ -1868,7 +2010,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			} while (store.IterNext (ref it));
 		}
 
-		protected void RefreshTree ()
+		public void RefreshTree ()
 		{
 			foreach (TreeNodeNavigator node in GetSelectedNodes ()) {
 				Gtk.TreeIter it = node.CurrentPosition._iter;
@@ -1880,17 +2022,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 
 		[CommandHandler (ViewCommands.CollapseAllTreeNodes)]
-		protected void CollapseTree ()
+		public void CollapseTree ()
 		{
 			tree.CollapseAll();
-		}
-
-		public bool ShowSelectionPopupButton {
-			get { return showSelectionPopupButton; }
-			set {
-				showSelectionPopupButton = value;
-				UpdateSelectionPopupButton ();
-			}
 		}
 
 		[GLib.ConnectBefore]
@@ -1950,38 +2084,13 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected virtual void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
+		void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
 		{
 			ActivateCurrentItem ();
 		}
 
-		void UpdateSelectionPopupButton ()
+		void OnSelectionChanged (object sender, EventArgs args)
 		{
-			if (editingText)
-				return;
-
-			if (lastPopupButtonIter != null) {
-				if (store.IterIsValid (lastPopupButtonIter.Value))
-					tree.Model.SetValue (lastPopupButtonIter.Value, ShowPopupColumn, false);
-				lastPopupButtonIter = null;
-			}
-
-			if (showSelectionPopupButton) {
-				var sel = Tree.Selection.GetSelectedRows ();
-				if (sel.Length > 0) {
-					Gtk.TreeIter it;
-					if (store.GetIter (out it, sel[0])) {
-						lastPopupButtonIter = it;
-						tree.Model.SetValue (it, ShowPopupColumn, true);
-					}
-				}
-			}
-		}
-
-		protected virtual void OnSelectionChanged (object sender, EventArgs args)
-		{
-			UpdateSelectionPopupButton ();
-
 			TreeNodeNavigator node = (TreeNodeNavigator) GetSelectedNode ();
 			if (node != null) {
 				NodeBuilder[] chain = node.NodeBuilderChain;
@@ -1997,11 +2106,18 @@ namespace MonoDevelop.Ide.Gui.Components
 					node.MoveToPosition (pos);
 				}
 			}
+			OnSelectionChanged ();
 		}
 
-		protected override void OnDestroyed ()
+		protected virtual void OnSelectionChanged ()
 		{
-			IdeApp.Preferences.CustomPadFontChanged -= CustomFontPropertyChanged;;
+			if (SelectionChanged != null)
+				SelectionChanged (this, EventArgs.Empty);
+		}
+
+		void Destroy ()
+		{
+			IdeApp.Preferences.CustomPadFont.Changed -= CustomFontPropertyChanged;
 			if (pix_render != null) {
 				pix_render.Destroy ();
 				pix_render = null;
@@ -2032,26 +2148,11 @@ namespace MonoDevelop.Ide.Gui.Components
 				builders = null;
 			}
 			builderChains.Clear ();
-
-			base.OnDestroyed ();
 		}
 
-		class PopupButton: Gtk.EventBox
+		object ICommandRouter.GetNextCommandTarget ()
 		{
-			public event EventHandler Clicked;
-
-			public PopupButton ()
-			{
-				Gtk.Button b = new Gtk.Button ("...");
-				b.CanFocus = false;
-				Add (b);
-
-				b.Clicked += delegate {
-					if (Clicked != null)
-						Clicked (this, EventArgs.Empty);
-				};
-				ShowAll ();
-			}
+			return widget.Parent;
 		}
 
 		internal class PadCheckMenuItem: Gtk.CheckMenuItem
@@ -2248,13 +2349,10 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		class CustomCellRendererText: Gtk.CellRendererText
 		{
+			double zoom;
 			Pango.Layout layout;
 			Pango.FontDescription scaledFont, customFont;
 
-			static Xwt.Drawing.Image popupIcon;
-			static Xwt.Drawing.Image popupIconDown;
-			static Xwt.Drawing.Image popupIconHover;
-			bool bound;
 			ExtensibleTreeView parent;
 			Gdk.Rectangle buttonScreenRect;
 			Gdk.Rectangle buttonAllocation;
@@ -2280,9 +2378,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			static CustomCellRendererText ()
 			{
-				popupIcon = Xwt.Drawing.Image.FromResource ("tree-popup-button.png");
-				popupIconDown = Xwt.Drawing.Image.FromResource ("tree-popup-button-down.png");
-				popupIconHover = Xwt.Drawing.Image.FromResource ("tree-popup-button-hover.png");
 			}
 
 			[GLib.Property ("text-markup")]
@@ -2290,9 +2385,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				get { return markup; }
 				set { Markup = markup = value; }
 			}
-
-			[GLib.Property ("show-popup-button")]
-			public bool ShowPopupButton { get; set; }
 
 			[GLib.Property ("status-icon")]
 			public Xwt.Drawing.Image StatusIcon { get; set; }
@@ -2302,14 +2394,38 @@ namespace MonoDevelop.Ide.Gui.Components
 				this.parent = parent;
 			}
 
+			static Xwt.Size defaultIconSize = Gtk.IconSize.Menu.GetSize ();
+
+			static Xwt.Size GetZoomedIconSize (Xwt.Drawing.Image icon, double zoom)
+			{
+				if (icon == null || icon == CellRendererImage.NullImage)
+						return defaultIconSize;
+
+				var size = icon.HasFixedSize ? icon.Size : defaultIconSize;
+
+				if (zoom == 1)
+					return size;
+
+				int w = (int) (zoom * (double) size.Width);
+				int h = (int) (zoom * (double) size.Height);
+				if (w == 0) w = 1;
+				if (h == 0) h = 1;
+				return new Xwt.Size (w, h);
+			}
+
+			static Xwt.Drawing.Image GetResized (Xwt.Drawing.Image icon, double zoom)
+			{
+				var size = GetZoomedIconSize (icon, zoom);
+				return icon.WithSize (size);
+			}
 
 			void SetupLayout (Gtk.Widget widget)
 			{
 				if (scaledFont == null) {
 					if (scaledFont != null)
 						scaledFont.Dispose ();
-					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
-					scaledFont.Size = customFont.Size;
+					scaledFont = (customFont ?? parent.widget.Style.FontDesc).Copy ();
+					scaledFont.Size = (int)(customFont.Size * Zoom);
 					if (layout != null)
 						layout.FontDescription = scaledFont;
 				}
@@ -2323,8 +2439,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 				layout.SetMarkup (TextMarkup);
 			}
-
-			const int iconMode = 0;
 
 			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
@@ -2348,85 +2462,19 @@ namespace MonoDevelop.Ide.Gui.Components
 
 				bool hasStatusIcon = StatusIcon != CellRendererImage.NullImage && StatusIcon != null;
 
-				if (hasStatusIcon && iconMode != 2) {
-					var x = iconMode == 1 ? tx : tx + w + StatusIconSpacing;
+				if (hasStatusIcon) {
+					var img = GetResized (StatusIcon, zoom);
+					if (st == Gtk.StateType.Selected)
+						img = img.WithStyles ("sel");
+					var x = tx + w + StatusIconSpacing;
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
-						ctx.DrawImage (widget, StatusIcon, x, cell_area.Y + (cell_area.Height - StatusIcon.Height) / 2);
+						ctx.DrawImage (widget, img, x, cell_area.Y + (cell_area.Height - img.Height) / 2);
 					}
-					if (iconMode == 1)
-						tx += (int)StatusIcon.Width + StatusIconSpacing;
 				}
 
 				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
 
-				hasStatusIcon &= iconMode == 2;
-
-				if (ShowPopupButton || hasStatusIcon) {
-					if (!bound) {
-						bound = true;
-						((Gtk.ScrolledWindow)widget.Parent).Hadjustment.ValueChanged += delegate {
-							foreach (var r in parent.Tree.Selection.GetSelectedRows ()) {
-								var rect = parent.Tree.GetCellArea (r, parent.Tree.Columns [0]);
-								parent.Tree.QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
-							}
-						};
-					}
-
-					var selected = (flags & Gtk.CellRendererState.Selected) != 0;
-					if (selected || hasStatusIcon) {
-						var icon = Pushed ? popupIconDown : popupIcon;
-						var dy = (cell_area.Height - (int)icon.Height) / 2 - 1;
-						var y = cell_area.Y + dy;
-						var x = cell_area.X + cell_area.Width - (int)icon.Width - dy;
-
-						var sw = (Gtk.ScrolledWindow)widget.Parent;
-						int ox, oy, ow, oh;
-						sw.GdkWindow.GetOrigin (out ox, out oy);
-						sw.GdkWindow.GetSize (out ow, out oh);
-						ox += sw.Allocation.X;
-						oy += sw.Allocation.Y;
-						if (sw.VScrollbar.Visible)
-							ow -= sw.VScrollbar.Allocation.Width;
-
-						int cx, cy, cw, ch;
-						((Gdk.Window)window).GetOrigin (out cx, out cy);
-						((Gdk.Window)window).GetSize (out cw, out ch);
-						cx += widget.Allocation.X;
-						cy += widget.Allocation.Y;
-
-						int rp = ox + ow;
-						int diff = rp - (cx + cw);
-
-						if (diff < 0) {
-							x += diff;
-							if (x < cell_area.X + 20)
-								x = cell_area.X + 20;
-						}
-
-						buttonScreenRect = new Gdk.Rectangle (cx + x, cy + y, (int)popupIcon.Width, (int)popupIcon.Height);
-
-						buttonAllocation = new Gdk.Rectangle (x, y, (int)popupIcon.Width, (int)popupIcon.Height);
-						buttonAllocation = GtkUtil.ToScreenCoordinates (widget, ((Gdk.Window)window), buttonAllocation);
-						buttonAllocation = GtkUtil.ToWindowCoordinates (widget, widget.GdkWindow, buttonAllocation);
-
-						bool mouseOver = (flags & Gtk.CellRendererState.Prelit) != 0 && buttonScreenRect.Contains (PointerPosition);
-						if (mouseOver && !Pushed)
-							icon = popupIconHover;
-
-						using (var ctx = Gdk.CairoHelper.Create (window)) {
-							if (ShowPopupButton && selected) {
-								if (hasStatusIcon)
-									x -= (int) icon.Width + StatusIconSpacing;
-								ctx.DrawImage (widget, icon, x, y);
-								if (hasStatusIcon)
-									x += (int) icon.Width + StatusIconSpacing;
-							}
-							if (hasStatusIcon) {
-								ctx.DrawImage (widget, StatusIcon, x, y);
-							}
-						}
-					}
-				}
+				hasStatusIcon = false;
 			}
 
 			public Gdk.Rectangle GetStatusIconArea (Gtk.Widget widget, Gdk.Rectangle cell_area)
@@ -2436,23 +2484,38 @@ namespace MonoDevelop.Ide.Gui.Components
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 
+				var iconSize = GetZoomedIconSize (StatusIcon, zoom);
 				int tx = cell_area.X + (int)Xpad;
-				if (iconMode == 0) {
-					var x = tx + w + StatusIconSpacing;
-					return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
-				} else if (iconMode == 1) {
-					var x = tx;
-					return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
-				} else {
-					return new Gdk.Rectangle (cell_area.Width - (int) StatusIcon.Width, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
-				}
+				var x = tx + w + StatusIconSpacing;
+				return new Gdk.Rectangle (x, cell_area.Y, (int) iconSize.Width, (int) cell_area.Height);
 			}
 
 			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null)
-					width += (int) StatusIcon.Width + StatusIconSpacing;
+				SetupLayout (widget);
+
+				x_offset = y_offset = 0;
+
+				layout.GetPixelSize (out width, out height);
+				width += (int)Xpad * 2;
+
+				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null) {
+					var iconSize = GetZoomedIconSize (StatusIcon, zoom);
+					width += (int)iconSize.Width + StatusIconSpacing;
+				}
+			}
+
+			public double Zoom {
+				get {
+					return zoom;
+				}
+				set {
+					if (scaledFont != null) {
+						scaledFont.Dispose ();
+						scaledFont = null;
+					}
+					zoom = value;
+				}
 			}
 
 			public bool PointerInButton (int px, int py)
@@ -2535,12 +2598,25 @@ namespace MonoDevelop.Ide.Gui.Components
 
 	class ZoomableCellRendererPixbuf: CellRendererImage
 	{
+		double zoom = 1f;
+
 		Dictionary<Xwt.Drawing.Image,Xwt.Drawing.Image> resizedCache = new Dictionary<Xwt.Drawing.Image, Xwt.Drawing.Image> ();
 
 		Xwt.Drawing.Image overlayBottomLeft;
 		Xwt.Drawing.Image overlayBottomRight;
 		Xwt.Drawing.Image overlayTopLeft;
 		Xwt.Drawing.Image overlayTopRight;
+
+		public double Zoom {
+			get { return zoom; }
+			set {
+				if (zoom != value) {
+					zoom = value;
+					resizedCache.Clear ();
+					Notify ("image");
+				}
+			}
+		}
 
 		public override Xwt.Drawing.Image Image {
 			get {
@@ -2616,7 +2692,22 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (value == null || value == CellRendererImage.NullImage)
 				return null;
 
-			return value;
+			var img = value.HasFixedSize ? value : value.WithSize (Gtk.IconSize.Menu);
+
+			if (zoom == 1)
+				return img;
+
+			Xwt.Drawing.Image resized;
+			if (resizedCache.TryGetValue (img, out resized))
+				return resized;
+
+			int w = (int) (zoom * (double) img.Width);
+			int h = (int) (zoom * (double) img.Height);
+			if (w == 0) w = 1;
+			if (h == 0) h = 1;
+			resized = img.WithSize (w, h);
+			resizedCache [img] = resized;
+			return resized;
 		}
 
 		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
@@ -2644,15 +2735,25 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (image == null)
 					return;
 
+				bool selected = (flags & Gtk.CellRendererState.Selected) != 0;
+
 				using (var ctx = Gdk.CairoHelper.Create (window)) {
-					if (overlayBottomLeft != null && overlayBottomLeft != NullImage)
-						ctx.DrawImage (widget, overlayBottomLeft, x - overlayOverflow, y + image.Height - overlayBottomLeft.Height + overlayOverflow);
-					if (overlayBottomRight != null && overlayBottomRight != NullImage)
-						ctx.DrawImage (widget, overlayBottomRight, x + image.Width - overlayBottomRight.Width + overlayOverflow, y + image.Height - overlayBottomRight.Height + overlayOverflow);
-					if (overlayTopLeft != null && overlayTopLeft != NullImage)
-						ctx.DrawImage (widget, overlayTopLeft, x - overlayOverflow, y - overlayOverflow);
-					if (overlayTopRight != null && overlayTopRight != NullImage)
-						ctx.DrawImage (widget, overlayTopRight, x + image.Width - overlayTopRight.Width + overlayOverflow, y - overlayOverflow);
+					if (overlayBottomLeft != null && overlayBottomLeft != NullImage) {
+						var img = selected ? overlayBottomLeft.WithStyles ("sel") : overlayBottomLeft;
+						ctx.DrawImage (widget, img, x - overlayOverflow, y + image.Height - img.Height + overlayOverflow);
+					}
+					if (overlayBottomRight != null && overlayBottomRight != NullImage) {
+						var img = selected ? overlayBottomRight.WithStyles ("sel") : overlayBottomRight;
+						ctx.DrawImage (widget, img, x + image.Width - img.Width + overlayOverflow, y + image.Height - img.Height + overlayOverflow);
+					}
+					if (overlayTopLeft != null && overlayTopLeft != NullImage) {
+						var img = selected ? overlayTopLeft.WithStyles ("sel") : overlayTopLeft;
+						ctx.DrawImage (widget, img, x - overlayOverflow, y - overlayOverflow);
+					}
+					if (overlayTopRight != null && overlayTopRight != NullImage) {
+						var img = selected ? overlayTopRight.WithStyles ("sel") : overlayTopRight;
+						ctx.DrawImage (widget, img, x + image.Width - img.Width + overlayOverflow, y - overlayOverflow);
+					}
 				}
 			}
 		}

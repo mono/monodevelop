@@ -261,5 +261,7 @@
 			</array>
 		</dict>
 	</array>
+	<key>Mono64Bit</key>
+	<true/>
 </dict>
 </plist>

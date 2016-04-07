@@ -32,13 +32,13 @@ using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class PinnedWatchWidget : EventBox
+	class PinnedWatchWidget : EventBox
 	{
 		readonly ObjectValueTreeView valueTree;
 		ScrolledWindow sw;
 		ObjectValue objectValue;
 
-		TextEditor Editor {
+		MonoTextEditor Editor {
 			get; set;
 		}
 		
@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public PinnedWatchWidget (TextEditor editor, PinnedWatch watch)
+		public PinnedWatchWidget (MonoTextEditor editor, PinnedWatch watch)
 		{
 			objectValue = watch.Value;
 			Editor = editor;
@@ -158,7 +158,7 @@ namespace MonoDevelop.SourceEditor
 			TreeViewColumn col;
 			int cx, cy;
 			valueTree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy);
-			Gdk.Rectangle rect = valueTree.GetCellArea (path, col);
+			//Gdk.Rectangle rect = valueTree.GetCellArea (path, col);
 			if (!mousePressed && valueTree.Columns[0] == col) {
 				mousePressed = true;
 				Editor.TextArea.MoveToTop (this);

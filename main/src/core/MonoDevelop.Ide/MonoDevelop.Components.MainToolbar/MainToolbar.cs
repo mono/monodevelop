@@ -30,7 +30,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using System.Linq;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Projects;
@@ -38,14 +37,11 @@ using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Execution;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
-using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 using System.Text;
-
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -210,7 +206,6 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Ready = true;
 			matchEntry.Visible = true;
 			matchEntry.IsCheckMenu = true;
-			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
 			matchEntry.WidthRequest = 240;
 			if (!Platform.IsMac && !Platform.IsWindows)
 				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9")); // TODO: VV: "Segoe UI 9"
@@ -268,7 +263,7 @@ namespace MonoDevelop.Components.MainToolbar
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.Button == 1 && evnt.Window == GdkWindow) {
-				var window = (Window)Toplevel;
+				var window = (Gtk.Window)Toplevel;
 				if (!DesktopService.GetIsFullscreen (window)) {
 					window.BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
 					return true;
@@ -297,8 +292,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
-			if (SearchEntryActivated != null)
-				SearchEntryChanged (sender, e);
+			SearchEntryChanged?.Invoke (sender, e);
 		}
 
 		void HandleSearchEntryActivated (object sender, EventArgs e)
@@ -360,14 +354,8 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				context.MoveTo (0, Allocation.Height - 0.5);
 				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomBorderColor);
+				context.SetSourceColor (Styles.ToolbarBottomBorderColor.ToCairoColor ());
 				context.Stroke ();
-
-				context.MoveTo (0, Allocation.Height - 1.5);
-				context.RelLineTo (Allocation.Width, 0);
-				context.SetSourceColor (Styles.ToolbarBottomGlowColor);
-				context.Stroke ();
-
 			}
 			return base.OnExposeEvent (evnt);
 		}

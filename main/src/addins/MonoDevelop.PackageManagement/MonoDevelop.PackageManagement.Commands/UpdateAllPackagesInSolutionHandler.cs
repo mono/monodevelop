@@ -27,23 +27,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class UpdateAllPackagesInSolutionHandler : PackagesCommandHandler
+	internal class UpdateAllPackagesInSolutionHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{
 			try {
-				UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution ();
+				IPackageManagementSolution solution = GetPackageManagementSolution ();
+				UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution (solution);
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage (updateAllPackages.Projects);
-				RestoreBeforeUpdateAction.Restore (updateAllPackages.Projects, () => {
-					DispatchService.GuiSyncDispatch (() => {
+				RestoreBeforeUpdateAction.Restore (solution, updateAllPackages.Projects, () => {
+					Runtime.RunInMainThread (() => {
 						Update (updateAllPackages, progressMessage);
-					});
+					}).Wait ();
 				});
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
@@ -61,10 +61,10 @@ namespace MonoDevelop.PackageManagement.Commands
 			}
 		}
 
-		UpdateAllPackagesInSolution CreateUpdateAllPackagesInSolution ()
+		UpdateAllPackagesInSolution CreateUpdateAllPackagesInSolution (IPackageManagementSolution solution)
 		{
 			return new UpdateAllPackagesInSolution (
-				PackageManagementServices.Solution,
+				solution,
 				PackageManagementServices.PackageRepositoryCache.CreateAggregateRepository ());
 		}
 

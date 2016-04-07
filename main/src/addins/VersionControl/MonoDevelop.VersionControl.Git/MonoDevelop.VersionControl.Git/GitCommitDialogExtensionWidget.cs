@@ -24,15 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	[System.ComponentModel.ToolboxItem(true)]
 	partial class GitCommitDialogExtensionWidget : Gtk.Bin
 	{
-		public GitCommitDialogExtensionWidget ()
+		public GitCommitDialogExtensionWidget (GitRepository repo)
 		{
 			this.Build ();
+
+			bool hasRemote = repo.GetCurrentRemote () != null;
+			if (!hasRemote) {
+				checkPush.Sensitive = false;
+				checkPush.TooltipText = GettextCatalog.GetString ("Pushing is only available for repositories with configured remotes.");
+			}
 		}
 
 		public bool PushAfterCommit {
@@ -59,8 +66,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void OnChanged (object sender, EventArgs e)
 		{
-			if (Changed != null)
-				Changed (this, EventArgs.Empty);
+			Changed?.Invoke (this, EventArgs.Empty);
 		}
 
 		public event EventHandler Changed;

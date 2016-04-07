@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects
 	{
 		ItemConfiguration configuration;
 		
-		public ConfigurationEventArgs (SolutionEntityItem entry, ItemConfiguration configuration): base (entry)
+		public ConfigurationEventArgs (SolutionItem entry, ItemConfiguration configuration): base (entry)
 		{
 			this.configuration = configuration;
 		}

@@ -29,7 +29,6 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Formatting;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -47,9 +46,9 @@ namespace MonoDevelop.CSharp.Completion
 			var tooltipInfo = new TooltipInformation ();
 			var file = ext.CSharpUnresolvedFile;
 			var compilation = ext.UnresolvedFileCompilation;
-			var textEditorData = ext.TextEditorData;
+			var textEditorData = ext.Editor;
 			var formattingPolicy = ext.FormattingPolicy;
-			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
+			var resolver = file.GetResolver (compilation, textEditorData.CaretLocation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.HighlightParameter = currentParameter;
 			tooltipInfo.SignatureMarkup = sig.GetArrayIndexerMarkup (arrayType);

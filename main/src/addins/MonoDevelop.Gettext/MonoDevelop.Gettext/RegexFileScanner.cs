@@ -118,7 +118,7 @@ namespace MonoDevelop.Gettext
 			return r;
 		}
 		
-		public virtual void UpdateCatalog (TranslationProject project, Catalog catalog, IProgressMonitor monitor, string fileName)
+		public virtual void UpdateCatalog (TranslationProject project, Catalog catalog, ProgressMonitor monitor, string fileName)
 		{
 			string text = File.ReadAllText (fileName);
 			string relativeFileName = MonoDevelop.Core.FileService.AbsoluteToRelativePath (project.BaseDirectory, fileName);

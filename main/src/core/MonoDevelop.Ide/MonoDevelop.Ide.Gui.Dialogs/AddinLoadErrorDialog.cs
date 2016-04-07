@@ -33,10 +33,11 @@ using System.Reflection;
 
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
-	internal partial class AddinLoadErrorDialog: Gtk.Dialog
+	internal partial class AddinLoadErrorDialog: IdeDialog
 	{
 		public AddinLoadErrorDialog (AddinError[] errors, bool warning)
 		{

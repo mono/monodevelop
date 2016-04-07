@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public enum PackageReferenceNodeCommands
+	internal enum PackageReferenceNodeCommands
 	{
 		ShowPackageVersion,
 		UpdatePackage,

@@ -37,7 +37,7 @@ namespace MonoDevelop.Components.Chart
 		string title;
 		List<Data> dataArray = new List<Data> ();
 		bool visible = true;
-		internal BasicChart Owner;
+		internal ChartWidget Owner;
 		Cairo.Color color;
 		bool extendBoundingValues;
 		DisplayMode mode;

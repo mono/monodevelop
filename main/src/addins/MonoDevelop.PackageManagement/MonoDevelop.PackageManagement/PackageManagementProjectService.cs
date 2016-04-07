@@ -32,9 +32,9 @@ using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProjectService : IPackageManagementProjectService
+	internal class PackageManagementProjectService : IPackageManagementProjectService
 	{
 		public PackageManagementProjectService ()
 		{

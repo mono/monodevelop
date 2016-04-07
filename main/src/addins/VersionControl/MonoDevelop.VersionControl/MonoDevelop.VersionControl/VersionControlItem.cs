@@ -35,23 +35,44 @@ namespace MonoDevelop.VersionControl
 	{
 		VersionInfo versionInfo;
 
-		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
+		public VersionControlItem (Repository repository, WorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
 		{
 			Path = path;
 			Repository = repository;
 			WorkspaceObject = workspaceObject;
 			IsDirectory = isDirectory;
 			this.versionInfo = versionInfo;
+
+			var obj = workspaceObject;
+			while (obj != null) {
+				var p = obj as Project;
+				if (p != null)
+					ContainerProject = p;
+
+				obj = obj.ParentObject;
+			}
 		}
 		
-		public IWorkspaceObject WorkspaceObject {
+		public WorkspaceObject WorkspaceObject {
 			get;
 			private set;
 		}
-		
+
+		internal Project ContainerProject {
+			get;
+			private set;
+		}
+
+		Repository repository;
 		public Repository Repository {
-			get;
-			private set;
+			get {
+				if (repository != null && repository.Disposed)
+					repository = VersionControlService.GetRepository (WorkspaceObject);
+				return repository;
+			}
+			internal set {
+				repository = value;
+			}
 		}
 		
 		public FilePath Path {
@@ -77,6 +98,9 @@ namespace MonoDevelop.VersionControl
 					}
 				}
 				return versionInfo;
+			}
+			internal set {
+				versionInfo = value;
 			}
 		}
 	}

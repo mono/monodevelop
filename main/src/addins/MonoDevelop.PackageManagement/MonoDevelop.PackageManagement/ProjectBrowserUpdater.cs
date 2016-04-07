@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ProjectBrowserUpdater : IProjectBrowserUpdater
+	internal class ProjectBrowserUpdater : IProjectBrowserUpdater
 	{
 //		ProjectBrowserControl projectBrowser;
 //		

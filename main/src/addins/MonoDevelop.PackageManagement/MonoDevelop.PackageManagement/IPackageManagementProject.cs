@@ -35,9 +35,9 @@ using NuGet;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementProject
+	internal interface IPackageManagementProject
 	{
 		event EventHandler<PackageOperationEventArgs> PackageInstalled;
 		event EventHandler<PackageOperationEventArgs> PackageUninstalled;

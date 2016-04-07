@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.VersionControl.Dialogs
 {
 	internal partial class EditRepositoryDialog : Gtk.Dialog
 	{
 		Repository repo;
-		ArrayList systems = new ArrayList ();
+		List<VersionControlSystem> systems = new List<VersionControlSystem> ();
 		IRepositoryEditor editor;
 		
 		public EditRepositoryDialog (Repository editedRepository)
@@ -21,7 +22,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				
 				editor = repo.VersionControlSystem.CreateRepositoryEditor (repo);
 				repoEditorContainer.Add (editor.Widget);
-				editor.Widget.Show ();
+				editor.Show ();
 			}
 			else {
 				foreach (VersionControlSystem vcs in VersionControlService.GetVersionControlSystems ()) {
@@ -58,13 +59,13 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 			string oldname = repo != null ? repo.Name : "";
 
-			VersionControlSystem vcs = (VersionControlSystem) systems [versionControlType.Active];
+			VersionControlSystem vcs = systems [versionControlType.Active];
 			repo = vcs.CreateRepositoryInstance ();
 			repo.Name = oldname;
 			repo.NameChanged += OnNameChanged;
 			editor = vcs.CreateRepositoryEditor (repo);
 			repoEditorContainer.Add (editor.Widget);
-			editor.Widget.Show ();
+			editor.Show ();
 			entryName.Sensitive = true;
 		}
 

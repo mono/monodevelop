@@ -5,36 +5,67 @@ namespace MonoDevelop.CSharp.Project
 	internal partial class CodeGenerationPanelWidget
 	{
 		private global::Gtk.VBox vbox62;
+		
 		private global::Gtk.Label label82;
+		
 		private global::Gtk.HBox hbox56;
+		
 		private global::Gtk.Label label81;
+		
 		private global::Gtk.VBox vbox65;
+		
 		private global::Gtk.Table table1;
+		
 		private global::Gtk.CheckButton enableOptimizationCheckButton;
+		
 		private global::Gtk.CheckButton generateOverflowChecksCheckButton;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.ComboBox comboPlatforms;
+		
 		private global::Gtk.HBox hbox2;
+		
 		private global::Gtk.ComboBox comboDebug;
+		
 		private global::Gtk.HBox hbox4;
+		
 		private global::Gtk.CheckButton generateXmlOutputCheckButton;
+		
 		private global::MonoDevelop.Components.FileEntry xmlDocsEntry;
+		
 		private global::Gtk.Label label1;
+		
 		private global::Gtk.Label label2;
+		
 		private global::Gtk.Label label87;
+		
 		private global::Gtk.Entry symbolsEntry;
+		
 		private global::Gtk.Label label93;
+		
 		private global::Gtk.HBox hbox48;
+		
 		private global::Gtk.Label label73;
+		
 		private global::Gtk.VBox vbox67;
+		
 		private global::Gtk.HBox hbox60;
+		
 		private global::Gtk.Label label85;
+		
 		private global::Gtk.SpinButton warningLevelSpinButton;
+		
 		private global::Gtk.HBox hbox3;
+		
 		private global::Gtk.Label label86;
+		
 		private global::Gtk.Entry ignoreWarningsEntry;
+		
 		private global::Gtk.CheckButton warningsAsErrorsCheckButton;
+		
 		private global::Gtk.HBox hbox5;
+		
 		private global::Gtk.Label label74;
 
 		protected virtual void Build ()

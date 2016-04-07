@@ -41,7 +41,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 	{
 		NSObject ResultObject;
 
-		public NSObjectResult (NSObject resultObject)
+		internal NSObjectResult (NSObject resultObject)
 		{
 			ResultObject = resultObject;
 		}
@@ -242,6 +242,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 		public override void Flash ()
 		{
 			
+		}
+
+		public override void SetProperty (string propertyName, object value)
+		{
+			SetProperty (ResultObject, propertyName, value);
 		}
 
 #region MacPlatform.MacIntegration.MainToolbar.SelectorView

@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
-	partial class AddLogEntryDialog : Dialog
+	partial class AddLogEntryDialog : Gtk.Dialog
 	{
 		readonly ListStore store;
 		readonly Dictionary<ChangeLogEntry, string> changes = new Dictionary<ChangeLogEntry, string> ();

@@ -4,13 +4,12 @@
 //
 
 using System;
-using Gtk;
 
 namespace MonoDevelop.Components
 {
 	class FolderDialog : FileSelector
 	{
-		public FolderDialog (string title) : base (title, FileChooserAction.SelectFolder)
+		public FolderDialog (string title) : base (title, Gtk.FileChooserAction.SelectFolder)
 		{
 			this.SelectMultiple = false;
 		}

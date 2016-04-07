@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class FilePathExtensions
+	internal static class FilePathExtensions
 	{
 		public static bool IsPackagesConfigFileName (this FilePath filePath)
 		{

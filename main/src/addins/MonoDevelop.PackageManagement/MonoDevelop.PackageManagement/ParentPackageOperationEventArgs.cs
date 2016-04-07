@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ParentPackageOperationEventArgs : EventArgs
+	internal class ParentPackageOperationEventArgs : EventArgs
 	{
 		public ParentPackageOperationEventArgs(IPackage package, IPackageManagementProject project)
 			: this (package, project, new PackageOperation [0])

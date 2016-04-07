@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IUpdatedPackagesInSolution
+	internal interface IUpdatedPackagesInSolution
 	{
 		void Clear ();
 		void CheckForUpdates ();

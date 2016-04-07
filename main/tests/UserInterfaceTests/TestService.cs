@@ -38,10 +38,8 @@ namespace UserInterfaceTests
 		{
 			Session = new AutoTestClientSession ();
 
-			//TODO: support for testing the installed app
-
 			Session.StartApplication (file: monoDevelopBinPath, environment: new Dictionary<string,string> {
-				{ "MONODEVELOP_TEST_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
+				{ "MONODEVELOP_PROFILE", profilePath ?? Util.CreateTmpDir ("profile") }
 			});
 
 			Session.SetGlobalValue ("MonoDevelop.Core.Instrumentation.InstrumentationService.Enabled", true);

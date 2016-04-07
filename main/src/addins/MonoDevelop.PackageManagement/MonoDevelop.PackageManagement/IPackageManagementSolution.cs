@@ -26,23 +26,21 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementSolution
+	internal interface IPackageManagementSolution
 	{
 		IPackageManagementProject GetActiveProject();
 		IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository);
 		IPackageManagementProject GetProject(PackageSource source, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
 		IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project);
+		IPackageManagementProject GetProject (IDotNetProject project);
 		IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository);
 		
 		IDotNetProject GetActiveDotNetProject ();

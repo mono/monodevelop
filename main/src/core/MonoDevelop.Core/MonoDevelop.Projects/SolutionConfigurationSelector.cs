@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.Projects
 {
-	public class SolutionConfigurationSelector: ConfigurationSelector
+	public sealed class SolutionConfigurationSelector: ConfigurationSelector
 	{
 		public string Id { get; private set; }
 		
@@ -48,9 +48,9 @@ namespace MonoDevelop.Projects
 		public override ItemConfiguration GetConfiguration (IConfigurationTarget target)
 		{
 			ItemConfiguration sconf;
-			if (target is SolutionEntityItem) {
+			if (target is SolutionItem) {
 				// Get the mapped configuration
-				SolutionEntityItem item = (SolutionEntityItem) target;
+				SolutionItem item = (SolutionItem) target;
 				if (item.ParentSolution != null) {
 					SolutionConfiguration config = item.ParentSolution.Configurations [Id];
 					if (config != null) {

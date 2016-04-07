@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementOutputMessagesView : IPackageManagementOutputMessagesView
+	internal class PackageManagementOutputMessagesView : IPackageManagementOutputMessagesView
 	{
 		public static readonly string CategoryName = "PackageManagement";
 		

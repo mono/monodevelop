@@ -58,6 +58,7 @@ namespace MonoDevelop.VersionControl.Views
 			CheckCombinationsAreColor (new Hunk (0, 0, 2, 1), AssertIsBlue);
 		}
 
+		[Ignore("No dark border colors with new flat design, borders have the same color")]
 		[Test()]
 		public void TestDarkColorsAreDarker ()
 		{

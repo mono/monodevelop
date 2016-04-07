@@ -31,7 +31,7 @@ using System.Collections;
 
 namespace MonoDevelop.Projects
 {
-	public class WorkspaceItemCollection: Collection<WorkspaceItem>
+	public class WorkspaceItemCollection: ItemCollection<WorkspaceItem>
 	{
 		Workspace parent;
 		
@@ -39,26 +39,15 @@ namespace MonoDevelop.Projects
 		{
 		}
 
-		public WorkspaceItemCollection (IList<WorkspaceItem> list) : base(list)
-		{
-		}
-		
 		internal WorkspaceItemCollection (Workspace parent)
 		{
 			this.parent = parent;
 		}
-		
-		public WorkspaceItem[] ToArray ()
-		{
-			WorkspaceItem[] arr = new WorkspaceItem [Count];
-			CopyTo (arr, 0);
-			return arr;
-		}
-		
+
 		internal void Replace (WorkspaceItem item, WorkspaceItem newItem)
 		{
 			int i = IndexOf (item);
-			Items [i] = newItem;
+			List = List.SetItem (i, newItem);
 			if (parent != null) {
 				item.ParentWorkspace = null;
 				newItem.ParentWorkspace = parent;
@@ -67,47 +56,26 @@ namespace MonoDevelop.Projects
 			// Don't notify the parent workspace here since Replace is only
 			// used internally when reloading items
 		}
-		
-		protected override void ClearItems ()
+
+		protected override void OnItemsRemoved (IEnumerable<WorkspaceItem> items)
 		{
+			base.OnItemsRemoved (items);
 			if (parent != null) {
-				List<WorkspaceItem> items = new List<WorkspaceItem> (this);
 				foreach (WorkspaceItem it in items) {
 					it.ParentWorkspace = null;
 					parent.NotifyItemRemoved (new WorkspaceItemChangeEventArgs (it, false));
 				}
 			}
-			else
-				base.ClearItems ();
 		}
-		
-		protected override void InsertItem (int index, WorkspaceItem item)
+
+		protected override void OnItemsAdded (IEnumerable<WorkspaceItem> items)
 		{
-			base.InsertItem (index, item);
+			base.OnItemsAdded (items);
 			if (parent != null) {
-				item.ParentWorkspace = parent;
-				parent.NotifyItemAdded (new WorkspaceItemChangeEventArgs (item, false));
-			}
-		}
-		
-		protected override void RemoveItem (int index)
-		{
-			WorkspaceItem item = this [index];
-			base.RemoveItem (index);
-			if (parent != null) {
-				item.ParentWorkspace = parent;
-				parent.NotifyItemRemoved (new WorkspaceItemChangeEventArgs (item, false));
-			}
-		}
-		
-		protected override void SetItem (int index, WorkspaceItem item)
-		{
-			WorkspaceItem oldItem = this [index];
-			base.SetItem (index, item);
-			if (parent != null) {
-				item.ParentWorkspace = parent;
-				parent.NotifyItemRemoved (new WorkspaceItemChangeEventArgs (oldItem, false));
-				parent.NotifyItemAdded (new WorkspaceItemChangeEventArgs (item, false));
+				foreach (var item in items) {
+					item.ParentWorkspace = parent;
+					parent.NotifyItemAdded (new WorkspaceItemChangeEventArgs (item, false));
+				}
 			}
 		}
 	}

@@ -26,8 +26,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using Gtk;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using MonoDevelop.Components;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
 
@@ -55,7 +55,7 @@ namespace MonoDevelop.Platform
 			var fileDialog = dialog as CommonOpenFileDialog;
 			if (fileDialog != null) {
 				fileDialog.Multiselect = data.SelectMultiple;
-				if (data.Action == FileChooserAction.SelectFolder) {
+				if ((data.Action & FileChooserAction.SelectFolder) != 0) {
 					fileDialog.IsFolderPicker = true;
 					return;
 				}

@@ -38,13 +38,15 @@ using Gtk;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Projects
 {
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	internal partial class NewFileDialog : Dialog
+	internal partial class NewFileDialog : Gtk.Dialog
 	{
 		List<TemplateItem> alltemplates = new List<TemplateItem> ();
 		List<Category> categories = new List<Category> ();
@@ -166,10 +168,13 @@ namespace MonoDevelop.Ide.Projects
 		{
 			string key = "Dialogs.NewFileDialog.LastSelectedCategory";
 			if (proj != null) {
-				key += "." + proj.GetProjectTypes ().First ();
-				var dnp = proj as DotNetProject;
-				if (dnp != null)
-					key += "." + dnp.LanguageName;
+				string projectType = proj.GetTypeTags ().FirstOrDefault ();
+				if (projectType != null) {
+					key += "." + projectType;
+					var dnp = proj as DotNetProject;
+					if (dnp != null)
+						key += "." + dnp.LanguageName;
+				}
 			}
 			return key;
 		}
@@ -284,22 +289,23 @@ namespace MonoDevelop.Ide.Projects
 				project = parentProject;
 
 			if (project != null) {
+				var catName = GetCategoryForProject (titem.Template.Categories, project);
 				if ((templateLanguage != "") && (activeLangs.Count > 2)) {
 					// The template requires a language, but the project does not have a single fixed
 					// language type (plus empty match), so create a language category
 					cat = GetCategory (templateLanguage);
-					cat = GetCategory (cat.Categories, titem.Template.Category);
+					cat = GetCategory (cat.Categories, catName);
 				} else {
-					cat = GetCategory (titem.Template.Category);
+					cat = GetCategory (catName);
 				}
 			} else {
 				if (templateLanguage != "") {
 					// The template requires a language, but there is no current language set, so
 					// create a category for it
 					cat = GetCategory (templateLanguage);
-					cat = GetCategory (cat.Categories, titem.Template.Category);
+					cat = GetCategory (cat.Categories, titem.Template.Categories.First ().Value);
 				} else {
-					cat = GetCategory (titem.Template.Category);
+					cat = GetCategory (titem.Template.Categories.First ().Value);
 				}
 			}
 
@@ -317,6 +323,17 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			alltemplates.Add (titem);
+		}
+
+		static string GetCategoryForProject (Dictionary<string, string> categories, Project project)
+		{
+			var projectTypes = project.GetTypeTags ();
+			foreach (var type in projectTypes) {
+				if (categories.ContainsKey (type))
+					return categories [type];
+			}
+
+			return categories.ContainsKey (FileTemplate.DefaultCategoryKey) ? categories [FileTemplate.DefaultCategoryKey] : "Misc";
 		}
 
 		//tree view event handler for double-click
@@ -476,12 +493,12 @@ namespace MonoDevelop.Ide.Projects
 						return;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error creating file", ex);
-					MessageService.ShowException (ex);
+					MessageService.ShowError ("Error creating file", ex);
 					return;
 				}
 
 				if (project != null)
-					IdeApp.ProjectOperations.Save (project);
+					IdeApp.ProjectOperations.SaveAsync (project);
 
 				if (OnOked != null)
 					OnOked (null, null);
@@ -597,19 +614,19 @@ namespace MonoDevelop.Ide.Projects
 			infoLabel.Text = string.Empty;
 			labelTemplateTitle.Text = string.Empty;
 			
-			ReadOnlyCollection<Project> projects = null;
+			Project[] projects = null;
 			if (parentProject == null)
-				projects = IdeApp.Workspace.GetAllProjects ();
+				projects = IdeApp.Workspace.GetAllProjects ().ToArray ();
 
-			if (projects != null && projects.Count > 0) {
+			if (projects != null && projects.Length > 0) {
 				Project curProject = IdeApp.ProjectOperations.CurrentSelectedProject;
 
 				boxProject.Visible = true;
 				projectAddCheckbox.Active = curProject != null;
 				projectAddCheckbox.Toggled += new EventHandler (AddToProjectToggled);
 
-				projectNames = new string[projects.Count];
-				projectRefs = new Project[projects.Count];
+				projectNames = new string[projects.Length];
+				projectRefs = new Project[projects.Length];
 				int i = 0;
 
 				bool singleSolution = IdeApp.Workspace.Items.Count == 1 && IdeApp.Workspace.Items[0] is Solution;
@@ -747,6 +764,9 @@ namespace MonoDevelop.Ide.Projects
 				HeadersVisible = false;
 				templateStore = new ListStore (typeof(string), typeof(string), typeof(TemplateItem));
 				Model = templateStore;
+
+				SemanticModelAttribute modelAttr = new SemanticModelAttribute ("templateStore__Icon", "templateStore__Name", "templateStore__Template");
+				TypeDescriptor.AddAttributes (templateStore, modelAttr);
 				
 				TreeViewColumn col = new TreeViewColumn ();
 				CellRendererImage crp = new CellRendererImage ();

@@ -29,13 +29,13 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using System.ComponentModel;
 
 namespace MonoDevelop.PackageManagement
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PagedResultsWidget : Gtk.Bin
+	internal partial class PagedResultsWidget : Gtk.Bin
 	{
 		PackagesViewModel viewModel;
 		List<Button> buttons;

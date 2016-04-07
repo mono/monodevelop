@@ -30,28 +30,30 @@ using MonoDevelop.CSharpBinding.Tests;
 using System.Collections.Generic;
 using MonoDevelop.CSharpBinding;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Core.ProgressMonitoring;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
 	[TestFixture()]
 	public class GenerateNewMemberTests : UnitTests.TestBase
 	{
-		static void TestInsertionPoints (string text)
+		static async Task TestInsertionPoints (string text)
 		{
-			
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			TestViewContent sev = new TestViewContent ();
-			var project = new UnknownProject ();
-			project.FileName = "test.csproj";
-			
-			TypeSystemService.LoadProject (project);
-
-			sev.Project = project;
-			tww.ViewContent = sev;
+			var tww = new TestWorkbenchWindow ();
+			var content = new TestViewContent ();
+			tww.ViewContent = content;
+			content.ContentName = "/a.cs";
+			content.Data.MimeType = "text/x-csharp";
+			MonoDevelop.AnalysisCore.AnalysisOptions.EnableUnitTestEditorIntegration.Set (true);
 			var doc = new MonoDevelop.Ide.Gui.Document (tww);
+
 			var data = doc.Editor;
 			List<InsertionPoint> loc = new List<InsertionPoint> ();
 			for (int i = 0; i < text.Length; i++) {
@@ -61,7 +63,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					ch = text [i];
 					NewLineInsertion insertBefore = NewLineInsertion.None;
 					NewLineInsertion insertAfter = NewLineInsertion.None;
-					
+
 					switch (ch) {
 					case 'n':
 						break;
@@ -83,7 +85,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					case 'S':
 						insertBefore = insertAfter = NewLineInsertion.BlankLine;
 						break;
-						
+
 					case 't':
 						insertBefore = NewLineInsertion.Eol;
 						insertAfter = NewLineInsertion.BlankLine;
@@ -104,27 +106,48 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 						Assert.Fail ("unknown insertion point:" + ch);
 						break;
 					}
-					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.TextLength), insertBefore, insertAfter));
+					var vv = data.OffsetToLocation (data.Length);
+					loc.Add (new InsertionPoint (new DocumentLocation (vv.Line, vv.Column), insertBefore, insertAfter));
 				} else {
-					data.Insert (data.Document.TextLength, ch.ToString ());
+					data.InsertText (data.Length, ch.ToString ());
 				}
 			}
-			
-			var parsedFile = TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data.Document.Text);
 
-			var foundPoints = CodeGenerationService.GetInsertionPoints (doc.Editor, parsedFile, parsedFile.TopLevelTypeDefinitions.First ());
-			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
-			for (int i = 0; i < loc.Count; i++) {
-				Assert.AreEqual (loc[i].Location, foundPoints[i].Location, "point " + i + " doesn't match");
-				Assert.AreEqual (loc[i].LineAfter, foundPoints[i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
-				Assert.AreEqual (loc[i].LineBefore, foundPoints[i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
+
+			var project = Services.ProjectService.CreateProject ("C#");
+			project.Name = "test";
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			using (var monitor = new ProgressMonitor ())
+				await TypeSystemService.Load (solution, monitor);
+			content.Project = project;
+			doc.SetProject (project);
+			var parsedFile = await doc.UpdateParseDocument ();
+			var model = parsedFile.GetAst<SemanticModel> ();
+			var sym = model?.GetEnclosingSymbol (data.Text.IndexOf ('{'));
+			var type = sym as INamedTypeSymbol ?? sym?.ContainingType;
+			if (type != null) {
+				var foundPoints = InsertionPointService.GetInsertionPoints (doc.Editor, parsedFile, type, type.Locations.First ());
+				Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");
+				for (int i = 0; i < loc.Count; i++) {
+					Assert.AreEqual (loc [i].Location, foundPoints [i].Location, "point " + i + " doesn't match");
+					Assert.AreEqual (loc [i].LineAfter, foundPoints [i].LineAfter, "point " + i + " ShouldInsertNewLineAfter doesn't match");
+					Assert.AreEqual (loc [i].LineBefore, foundPoints [i].LineBefore, "point " + i + " ShouldInsertNewLineBefore doesn't match");
+				}
 			}
+
+			TypeSystemService.Unload (solution);
+
 		}
 		
 		[Test()]
-		public void TestBasicInsertionPoint ()
+		public async Task TestBasicInsertionPoint ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test {
 @D	
 	void TestMe ()
@@ -136,9 +159,9 @@ class Test {
 		}
 		
 		[Test()]
-		public void TestBasicInsertionPoint2 ()
+		public async Task TestBasicInsertionPoint2 ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test 
 {
 @D	
@@ -151,9 +174,9 @@ class Test
 		}
 		
 		
-		public void TestBasicInsertionPointWithoutEmpty ()
+		public async Task TestBasicInsertionPointWithoutEmpty ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test {
 	@Tvoid TestMe ()
 	{
@@ -163,39 +186,39 @@ class Test {
 		}
 		
 		[Test()]
-		public void TestBasicInsertionPointOneLineCase ()
+		public async Task TestBasicInsertionPointOneLineCase ()
 		{
-			TestInsertionPoints (@"class Test {@tvoid TestMe () { }@v}");
+			await TestInsertionPoints (@"class Test {@tvoid TestMe () { }@v}");
 		}
 		
 		
 		[Test()]
-		public void TestEmptyClass ()
+		public async Task TestEmptyClass ()
 		{
-			TestInsertionPoints (@"class Test {@s}");
+			await TestInsertionPoints (@"class Test {@s}");
 		}
 		
 		[Test()]
-		public void TestEmptyClass2 ()
+		public async Task TestEmptyClass2 ()
 		{
-			TestInsertionPoints (@"class Test {
+			await TestInsertionPoints (@"class Test {
 @n
 }");
 		}
 		
 		[Test()]
-		public void TestEmptyClass3 ()
+		public async Task TestEmptyClass3 ()
 		{
-			TestInsertionPoints (@"class Test
+			await TestInsertionPoints (@"class Test
 {
 @n
 }");
 		}
 		
 		[Test()]
-		public void TestComplexInsertionPoint ()
+		public async Task TestComplexInsertionPoint ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 class Test {
 @D	
 	void TestMe ()
@@ -220,9 +243,9 @@ class Test {
 		}
 		
 		[Test()]
-		public void TestComplexInsertionPointCase2 ()
+		public async Task TestComplexInsertionPointCase2 ()
 		{
-			TestInsertionPoints (@"class MainClass {
+			await TestInsertionPoints (@"class MainClass {
 @D	static void A ()
 	{
 	}
@@ -245,13 +268,13 @@ class Test {
 		
 		
 		[Test()]
-		public void TestEmptyClassInsertion ()
+		public async Task TestEmptyClassInsertion ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 public class EmptyClass
 {@s}");
 			
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 public class EmptyClass : Base
 {@s}");
 
@@ -259,9 +282,9 @@ public class EmptyClass : Base
 
 		[Ignore()]
 		[Test()]
-		public void TestBrokenInsertionPoint ()
+		public async Task TestBrokenInsertionPoint ()
 		{
-			TestInsertionPoints (@"
+			await TestInsertionPoints (@"
 public class EmptyClass
 }");
 
@@ -272,9 +295,9 @@ public class EmptyClass
 		/// Bug 5682 - insert method inserts two trailing tabs after } and has no trailing blank line
 		/// </summary>
 		[Test()]
-		public void Bug5682 ()
+		public async Task Bug5682 ()
 		{
-			TestInsertionPoints (@"class MainClass {
+			await TestInsertionPoints (@"class MainClass {
 @D	static void A ()
 	{
 	}
@@ -287,7 +310,36 @@ public class EmptyClass
 ");
 		}
 
-		
+		[Test]
+		public async Task TestComplexInsertionPOintCase3 ()
+		{
+			await TestInsertionPoints (@"using System;
+class vaevle
+{
+@D    int fooBar = 0;
+@u	
+
+    public event EventHandler FooBar;
+@u	
+
+    public vaevle ()
+    {
+        FooBar += HandleEventHandler;
+    }
+@u	
+
+    public static void Main (string [] args)
+    {
+        try {
+            System.Console.WriteLine (nameof (args));
+        } catch (Exception e) when (true) {
+
+        }
+    }
+@s}
+
+");
+		}
 	}
 }
 

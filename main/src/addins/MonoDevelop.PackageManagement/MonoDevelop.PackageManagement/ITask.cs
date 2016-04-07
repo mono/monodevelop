@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ITask<TResult>
+	internal interface ITask<TResult>
 	{
 		void Start();
 		void Cancel();

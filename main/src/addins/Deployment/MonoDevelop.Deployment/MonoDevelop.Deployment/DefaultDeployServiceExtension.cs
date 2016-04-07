@@ -8,7 +8,7 @@ namespace MonoDevelop.Deployment
 {
 	class DefaultDeployServiceExtension: DeployServiceExtension
 	{
-		public override DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionItem entry, ConfigurationSelector configuration)
+		public override DeployFileCollection GetDeployFiles (DeployContext ctx, SolutionFolderItem entry, ConfigurationSelector configuration)
 		{
 			if (entry is IDeployable)
 				return new DeployFileCollection (((IDeployable)entry).GetDeployFiles (configuration));

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <Test>
+      Value1
+      <!--comment-->
+      Value2
+      <!-- We don't need IIS parameters
+      AddDeclareParametersItemsForIis7;
+      AddDeclareParametersItemsForIis6;
+      AddDeclareParametersItemsForContentPath;-->
+    </Test>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_GatherParamsDependsOn>
+      $(_GatherParamsDependsOn);
+      GetProjectWebProperties;
+      ImportParametersFiles;
+      TransformWebConfig;
+      ProfileTransformWebConfig;
+      AutoParameterizationWebConfigConnectionStrings;
+      AddDeclareParametersItems;
+      ImportPublishingParameterValues;
+      <!-- We don't need IIS parameters
+      AddDeclareParametersItemsForIis7;
+      AddDeclareParametersItemsForIis6;
+      AddDeclareParametersItemsForContentPath;-->
+    </_GatherParamsDependsOn>
+  </PropertyGroup>
+</Project>

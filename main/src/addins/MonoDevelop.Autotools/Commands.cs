@@ -39,7 +39,7 @@ namespace MonoDevelop.Autotools
 	{
 		public override bool CanBuildNode (Type dataType)
 		{
-			return typeof (Solution).IsAssignableFrom (dataType) || typeof (SolutionItem).IsAssignableFrom (dataType);
+			return typeof (Solution).IsAssignableFrom (dataType) || typeof (SolutionFolderItem).IsAssignableFrom (dataType);
 		}
 		
 		public override Type CommandHandlerType {
@@ -52,25 +52,25 @@ namespace MonoDevelop.Autotools
 		[CommandHandler (Commands.GenerateFiles)]
 		protected void OnGenerate()
 		{
-			SolutionItem entry = CurrentNode.DataItem as SolutionItem;
+			SolutionFolderItem entry = CurrentNode.DataItem as SolutionFolderItem;
 			Solution solution = CurrentNode.DataItem as Solution;
 			GenerateMakefiles (entry, solution);
 		}
 		
-		internal static void GenerateMakefiles (SolutionItem entry, Solution solution)
+		internal static void GenerateMakefiles (SolutionFolderItem entry, Solution solution)
 		{
 			if (solution == null) {
 				AlertButton generateMakefilesButton = new AlertButton (GettextCatalog.GetString ("_Generate Makefiles"));
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Generating Makefiles is not supported for single projects. Do you want to generate them for the full solution - '{0}' ?", entry.ParentSolution.Name),
 				                                AlertButton.Cancel,
 				                                generateMakefilesButton) == generateMakefilesButton) 
-					solution = ((SolutionItem)entry).ParentSolution;
+					solution = ((SolutionFolderItem)entry).ParentSolution;
 				else
 					return;
 			}
 
 			DeployContext ctx = null;
-			IProgressMonitor monitor = null;
+			ProgressMonitor monitor = null;
 
 			GenerateMakefilesDialog dialog = new GenerateMakefilesDialog (solution);
 			try {

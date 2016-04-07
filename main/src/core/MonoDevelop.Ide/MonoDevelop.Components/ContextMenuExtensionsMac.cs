@@ -27,6 +27,7 @@
 using System;
 #if MAC
 using AppKit;
+using Foundation;
 #endif
 
 namespace MonoDevelop.Components
@@ -34,24 +35,34 @@ namespace MonoDevelop.Components
 	#if MAC
 	static class ContextMenuExtensionsMac
 	{
-		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ContextMenu menu)
+		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ContextMenu menu, Action closeHandler)
 		{
 			if (parent == null)
 				throw new ArgumentNullException ("parent");
 			if (menu == null)
 				throw new ArgumentNullException ("menu");
 
-			var nsMenu = FromMenu (menu);
+			var nsMenu = FromMenu (menu, closeHandler);
 			ShowContextMenu (parent, evt, nsMenu);
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ContextMenu menu)
+		{
+			ShowContextMenu (parent, evt, menu, null);
+		}
+
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu, Action closeHandler, bool selectFirstItem = false)
+		{
+			var nsMenu = FromMenu (menu, closeHandler);
+			ShowContextMenu (parent, x, y, nsMenu, selectFirstItem);
 		}
 
 		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, ContextMenu menu)
 		{
-			var nsMenu = FromMenu (menu);
-			ShowContextMenu (parent, x, y, nsMenu);
+			ShowContextMenu (parent, x, y, menu, null);
 		}
 
-		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, NSMenu menu)
+		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, NSMenu menu, bool selectFirstItem = false)
 		{
 			if (parent == null)
 				throw new ArgumentNullException ("parent");
@@ -72,19 +83,27 @@ namespace MonoDevelop.Components
 				if (toplevel.TypeHint == Gdk.WindowTypeHint.Toolbar && toplevel.Type == Gtk.WindowType.Toplevel && toplevel.Decorated == false) {
 					// Undecorated toplevel toolbars are used for auto-hide pad windows. Don't add a titlebar offset for them.
 					titleBarOffset = 0;
+				} else if (MonoDevelop.Ide.DesktopService.GetIsFullscreen (toplevel)) {
+					titleBarOffset = 0;
 				} else {
 					titleBarOffset = MonoDevelop.Components.Mac.GtkMacInterop.GetTitleBarHeight () + 12;
 				}
 
-				var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
+				if (selectFirstItem) {
+					var pt = new CoreGraphics.CGPoint (x, y);
+					menu.PopUpMenu (menu.ItemAt (0), pt, nsview);
+				} else {
+					var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
 
-				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
-					pt,
-					0, 0,
-					nswindow.WindowNumber,
-					null, 0, 0, 0);
+					var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
+					                                pt,
+					                                0, 0,
+					                                nswindow.WindowNumber,
+					                                null, 0, 0, 0);
+					NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+				}
 
-				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+
 			});
 		}
 
@@ -103,7 +122,7 @@ namespace MonoDevelop.Components
 				return NSMenuItem.SeparatorItem;
 			}
 
-			var menuItem = new NSMenuItem (item.Label, (s, e) => item.Click ());
+			var menuItem = new NSMenuItem (item.Label.Replace ("_",""), (s, e) => item.Click ());
 
 			menuItem.Hidden = !item.Visible;
 			menuItem.Enabled = item.Sensitive;
@@ -118,15 +137,29 @@ namespace MonoDevelop.Components
 			} 
 
 			if (item.SubMenu != null && item.SubMenu.Items.Count > 0) {
-				menuItem.Submenu = FromMenu (item.SubMenu);
+				menuItem.Submenu = FromMenu (item.SubMenu, null);
 			}
 
 			return menuItem;
 		}
 
-		static NSMenu FromMenu (ContextMenu menu)
+		class ContextMenuDelegate : NSObject
+		{
+			public Action CloseHandler { get; set; }
+
+			[Export ("menuDidClose:")]
+			void MenuDidClose (NSMenu menu)
+			{
+				if (CloseHandler != null) {
+					CloseHandler ();
+				}
+			}
+		}
+
+		static NSMenu FromMenu (ContextMenu menu, Action closeHandler)
 		{
 			var result = new NSMenu () { AutoEnablesItems = false };
+			result.WeakDelegate = new ContextMenuDelegate { CloseHandler = closeHandler };
 
 			foreach (var menuItem in menu.Items) {
 				var item = CreateMenuItem (menuItem);

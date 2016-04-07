@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
-using Gtk;
 using MonoDevelop.Components;
 
 #pragma warning disable 612
@@ -54,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		LoadSavePanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new LoadSavePanelWidget ();
 		}
@@ -77,11 +76,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			Build ();
 			
-			folderEntry.Path = IdeApp.ProjectOperations.ProjectsDefaultPath;
+			folderEntry.Path = IdeApp.Preferences.ProjectsDefaultPath;
 			
 			loadUserDataCheckButton.Active = IdeApp.Preferences.LoadDocumentUserProperties;
 			createBackupCopyCheckButton.Active = IdeApp.Preferences.CreateFileBackupCopies;
-			loadPrevProjectCheckButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup;
+			loadPrevProjectCheckButton.Active = IdeApp.Preferences.LoadPrevSolutionOnStartup.Value;
 		}
 		
 		public bool ValidateChanges ()
@@ -99,10 +98,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store () 
 		{
-			IdeApp.Preferences.LoadPrevSolutionOnStartup = loadPrevProjectCheckButton.Active;
-			IdeApp.Preferences.LoadDocumentUserProperties = loadUserDataCheckButton.Active;
-			IdeApp.Preferences.CreateFileBackupCopies = createBackupCopyCheckButton.Active;
-			IdeApp.ProjectOperations.ProjectsDefaultPath = folderEntry.Path;
+			IdeApp.Preferences.LoadPrevSolutionOnStartup.Value = loadPrevProjectCheckButton.Active;
+			IdeApp.Preferences.LoadDocumentUserProperties.Value = loadUserDataCheckButton.Active;
+			IdeApp.Preferences.CreateFileBackupCopies.Value = createBackupCopyCheckButton.Active;
+			IdeApp.Preferences.ProjectsDefaultPath.Value = folderEntry.Path;
 		}
 	}
 }

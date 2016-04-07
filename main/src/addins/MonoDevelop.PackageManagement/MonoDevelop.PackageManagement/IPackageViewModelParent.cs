@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageViewModelParent
+	internal interface IPackageViewModelParent
 	{
 		bool IncludePrerelease { get; }
 		void OnPackageCheckedChanged (PackageViewModel packageViewModel);

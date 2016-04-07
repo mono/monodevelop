@@ -49,7 +49,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			Mono.Cecil.Resource resource = (Mono.Cecil.Resource)dataObject;
-			nodeInfo.Label = resource.Name;
+			nodeInfo.Label = Ide.TypeSystem.Ambience.EscapeText (resource.Name);
 			nodeInfo.Icon = Context.GetIcon (Stock.ResourceFileIcon);
 		}
 		

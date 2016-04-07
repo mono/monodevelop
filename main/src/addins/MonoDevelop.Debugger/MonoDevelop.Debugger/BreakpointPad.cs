@@ -40,7 +40,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
-	public class BreakpointPad : IPadContent
+	public class BreakpointPad : PadContent
 	{
 		BreakpointStore breakpoints;
 		
@@ -50,11 +50,6 @@ namespace MonoDevelop.Debugger
 		ScrolledWindow sw;
 		CommandEntrySet menuSet;
 		TreeViewState treeState;
-		
-		EventHandler<BreakpointEventArgs> breakpointUpdatedHandler;
-		EventHandler<BreakpointEventArgs> breakpointRemovedHandler;
-		EventHandler<BreakpointEventArgs> breakpointAddedHandler;
-		EventHandler breakpointChangedHandler;
 		
 		enum Columns
 		{
@@ -74,12 +69,13 @@ namespace MonoDevelop.Debugger
 			Properties
 		}
 		
-		public void Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
+			Id = "MonoDevelop.Debugger.BreakpointPad";
 			// Toolbar and menu definitions
 			
 			ActionCommand gotoCmd = new ActionCommand (LocalCommands.GoToFile, GettextCatalog.GetString ("Go to File"));
-			ActionCommand propertiesCmd = new ActionCommand (LocalCommands.Properties, GettextCatalog.GetString ("Properties"), Gtk.Stock.Properties);
+			ActionCommand propertiesCmd = new ActionCommand (LocalCommands.Properties, GettextCatalog.GetString ("Properties"), Stock.Properties);
 			
 			menuSet = new CommandEntrySet ();
 			menuSet.Add (gotoCmd);
@@ -99,8 +95,8 @@ namespace MonoDevelop.Debugger
 			toolbarSet.AddSeparator ();
 			toolbarSet.Add (propertiesCmd);
 			toolbarSet.AddSeparator ();
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DispayType = CommandEntryDisplayType.IconAndText });
-			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DispayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewFunctionBreakpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
+			toolbarSet.Add (new CommandEntry (DebugCommands.NewCatchpoint){ DisplayType = CommandEntryDisplayType.IconAndText });
 			
 			// The breakpoint list
 			
@@ -162,15 +158,10 @@ namespace MonoDevelop.Debugger
 			
 			UpdateDisplay ();
 
-			breakpointUpdatedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointUpdated);
-			breakpointRemovedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointRemoved);
-			breakpointAddedHandler = DispatchService.GuiDispatch<EventHandler<BreakpointEventArgs>> (OnBreakpointAdded);
-			breakpointChangedHandler = DispatchService.GuiDispatch<EventHandler> (OnBreakpointChanged);
-			
-			breakpoints.BreakpointAdded += breakpointAddedHandler;
-			breakpoints.BreakpointRemoved += breakpointRemovedHandler;
-			breakpoints.Changed += breakpointChangedHandler;
-			breakpoints.BreakpointUpdated += breakpointUpdatedHandler;
+			breakpoints.BreakpointAdded += OnBreakpointAdded;
+			breakpoints.BreakpointRemoved += OnBreakpointRemoved;
+			breakpoints.Changed += OnBreakpointChanged;
+			breakpoints.BreakpointUpdated += OnBreakpointUpdated;
 			
 			DebuggingService.PausedEvent += OnDebuggerStatusCheck;
 			DebuggingService.ResumedEvent += OnDebuggerStatusCheck;
@@ -178,21 +169,22 @@ namespace MonoDevelop.Debugger
 			
 			tree.RowActivated += OnRowActivated;
 			
-			DockItemToolbar toolbar = window.GetToolbar (PositionType.Top);
+			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Top);
 			toolbar.Add (toolbarSet, sw);
 			toolbar.ShowAll ();
 		}
 		
-		public void Dispose ()
+		public override void Dispose ()
 		{
-			breakpoints.BreakpointAdded -= breakpointAddedHandler;
-			breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
-			breakpoints.Changed -= breakpointChangedHandler;
-			breakpoints.BreakpointUpdated -= breakpointUpdatedHandler;
+			breakpoints.BreakpointAdded -= OnBreakpointAdded;
+			breakpoints.BreakpointRemoved -= OnBreakpointRemoved;
+			breakpoints.Changed -= OnBreakpointChanged;
+			breakpoints.BreakpointUpdated -= OnBreakpointUpdated;
 			
 			DebuggingService.PausedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.ResumedEvent -= OnDebuggerStatusCheck;
 			DebuggingService.StoppedEvent -= OnDebuggerStatusCheck;
+			base.Dispose ();
 		}
 
 		void ShowPopup (Gdk.EventButton evt)
@@ -226,7 +218,7 @@ namespace MonoDevelop.Debugger
 		[CommandHandler (DebugCommands.EnableDisableBreakpoint)]
 		protected void OnEnableDisable ()
 		{
-			breakpoints.Changed -= breakpointChangedHandler;
+			breakpoints.Changed -= OnBreakpointChanged;
 
 			try {
 				bool enable = false;
@@ -258,7 +250,7 @@ namespace MonoDevelop.Debugger
 					store.SetValue (iter, (int) Columns.Selected, enable);
 				}
 			} finally {
-				breakpoints.Changed += breakpointChangedHandler;
+				breakpoints.Changed += OnBreakpointChanged;
 			}
 		}
 		
@@ -282,7 +274,7 @@ namespace MonoDevelop.Debugger
 		{
 			bool deleted = false;
 
-			breakpoints.BreakpointRemoved -= breakpointRemovedHandler;
+			breakpoints.BreakpointRemoved -= OnBreakpointRemoved;
 
 			try {
 				// Note: since we'll be modifying the list of breakpoints, we need to sort
@@ -302,7 +294,7 @@ namespace MonoDevelop.Debugger
 					deleted = true;
 				}
 			} finally {
-				breakpoints.BreakpointRemoved += breakpointRemovedHandler;
+				breakpoints.BreakpointRemoved += OnBreakpointRemoved;
 			}
 
 			return deleted;
@@ -369,7 +361,7 @@ namespace MonoDevelop.Debugger
 		
 		void ItemToggled (object o, ToggledArgs args)
 		{
-			breakpoints.Changed -= breakpointChangedHandler;
+			breakpoints.Changed -= OnBreakpointChanged;
 			
 			try {
 				TreeIter iter;
@@ -382,7 +374,7 @@ namespace MonoDevelop.Debugger
 					store.SetValue (iter, (int) Columns.Selected, bp.Enabled);
 				}
 			} finally {
-				breakpoints.Changed += breakpointChangedHandler;
+				breakpoints.Changed += OnBreakpointChanged;
 			}
 		}
 		
@@ -430,36 +422,38 @@ namespace MonoDevelop.Debugger
 		
 		void OnBreakpointUpdated (object s, BreakpointEventArgs args)
 		{
-			TreeIter it;
+			Runtime.RunInMainThread (() => {
+				TreeIter it;
 
-			if (!store.GetIterFirst (out it))
-				return;
+				if (!store.GetIterFirst (out it))
+					return;
 
-			do {
-				var bp = (BreakEvent) store.GetValue (it, (int) Columns.Breakpoint);
-				if (bp == args.Breakpoint) {
-					string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
-					string traceVal = (bp.HitAction & HitAction.PrintExpression) != HitAction.None ? bp.LastTraceValue : "";
-					store.SetValue (it, (int) Columns.HitCount, hitCount);
-					store.SetValue (it, (int) Columns.LastTrace, traceVal);
-					break;
-				}
-			} while (store.IterNext (ref it));
+				do {
+					var bp = (BreakEvent) store.GetValue (it, (int) Columns.Breakpoint);
+					if (bp == args.Breakpoint) {
+						string hitCount = bp.HitCountMode != HitCountMode.None ? bp.CurrentHitCount.ToString () : "";
+						string traceVal = (bp.HitAction & HitAction.PrintExpression) != HitAction.None ? bp.LastTraceValue : "";
+						store.SetValue (it, (int) Columns.HitCount, hitCount);
+						store.SetValue (it, (int) Columns.LastTrace, traceVal);
+						break;
+					}
+				} while (store.IterNext (ref it));
+			});
 		}
 		
 		protected void OnBreakpointAdded (object o, EventArgs args)
 		{
-			UpdateDisplay ();	
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		protected void OnBreakpointRemoved (object o, EventArgs args)
 		{
-			UpdateDisplay ();	
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		protected void OnBreakpointChanged (object o, EventArgs args)
 		{
-			UpdateDisplay ();	
+			Runtime.RunInMainThread ((System.Action)UpdateDisplay);
 		}
 		
 		void OnDebuggerStatusCheck (object s, EventArgs a)
@@ -473,25 +467,16 @@ namespace MonoDevelop.Debugger
 			OnBpJumpTo ();
 		}
 		
-		public Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return control;
 			}
-		}
-
-		public string Id {
-			get { return "MonoDevelop.Debugger.BreakpointPad"; }
 		}
 
 		public string DefaultPlacement {
 			get { return "Bottom"; }
 		}
 
-		public void RedrawContent ()
-		{
-			UpdateDisplay ();
-		}
-		
 		protected void OnDeleteClicked (object o, EventArgs args)
 		{
 			OnDeleted ();

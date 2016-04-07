@@ -1,6 +1,8 @@
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Xml.Completion;
 using NUnit.Framework;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Tests.Schema
 {
@@ -28,56 +30,56 @@ namespace MonoDevelop.Xml.Tests.Schema
 		}	
 		
 		[Test]
-		public void TextElementHasOneAttribute()
+		public async Task TextElementHasOneAttribute()
 		{
-			CompletionDataList attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
+			CompletionDataList attributesCompletionData = await SchemaCompletionData.GetAttributeCompletionData(textElementPath, CancellationToken.None);
 			
 			Assert.AreEqual(1, attributesCompletionData.Count, 
 			                "Should have 1 text attribute.");
 		}
 		
 		[Test]
-		public void TextElementAttributeName()
+		public async Task TextElementAttributeName()
 		{
-			CompletionDataList attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
+			CompletionDataList attributesCompletionData = await SchemaCompletionData.GetAttributeCompletionData(textElementPath, CancellationToken.None);
 			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributesCompletionData, "foo"),
 			              "Unexpected text attribute name.");
 		}
 
 		[Test]
-		public void NoteElementHasChildElement()
+		public async Task NoteElementHasChildElement()
 		{
 			CompletionDataList childElementCompletionData
-				= SchemaCompletionData.GetChildElementCompletionData(noteElementPath);
+				= await SchemaCompletionData.GetChildElementCompletionData(noteElementPath, CancellationToken.None);
 			
 			Assert.AreEqual(1, childElementCompletionData.Count,
 			                "Should be one child.");
 		}
 		
 		[Test]
-		public void NoteElementHasNoAttributes()
+		public async Task NoteElementHasNoAttributes()
 		{	
 			CompletionDataList attributeCompletionData
-				= SchemaCompletionData.GetAttributeCompletionData(noteElementPath);
+			= await SchemaCompletionData.GetAttributeCompletionData(noteElementPath, CancellationToken.None);
 			
 			Assert.AreEqual(0, attributeCompletionData.Count,
 			                "Should no attributes.");
 		}
 
 		[Test]
-		public void OneRootElement()
+		public async Task OneRootElement()
 		{
 			CompletionDataList elementCompletionData
-				= SchemaCompletionData.GetElementCompletionData();
+				= await SchemaCompletionData.GetElementCompletionData(CancellationToken.None);
 			
 			Assert.AreEqual(1, elementCompletionData.Count, "Should be 1 root element.");
 		}
 		
 		[Test]
-		public void RootElementIsNote()
+		public async Task RootElementIsNote()
 		{
 			CompletionDataList elementCompletionData
-				= SchemaCompletionData.GetElementCompletionData();
+				= await SchemaCompletionData.GetElementCompletionData(CancellationToken.None);
 			
 			Assert.IsTrue(Contains(elementCompletionData, "note"), 
 			              "Should be called note.");

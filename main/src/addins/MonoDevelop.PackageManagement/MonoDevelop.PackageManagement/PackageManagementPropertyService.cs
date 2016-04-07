@@ -29,9 +29,9 @@
 using System;
 using MonoDevelop.Core;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementPropertyService : IPropertyService
+	internal class PackageManagementPropertyService : IPropertyService
 	{
 		public string DataDirectory {
 			get { return UserProfile.Current.ConfigDir; }

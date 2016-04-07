@@ -42,6 +42,7 @@ namespace MonoDevelop.Components
 		bool use_markup = false;
 		Pango.Layout layout;
 		int indent;
+		int spacing;
 		int width = int.MaxValue;
 		
 		bool breakOnPunctuation;
@@ -87,6 +88,7 @@ namespace MonoDevelop.Components
 			if (FontDescription != null)
 				layout.FontDescription = FontDescription;
 			layout.Indent = (int) (indent * Pango.Scale.PangoScale);
+			layout.Spacing = (int) (spacing * Pango.Scale.PangoScale);
 			layout.Wrap = wrapMode;
 			if (width >= 0)
 				layout.Width = (int)(width * Pango.Scale.PangoScale);
@@ -200,6 +202,17 @@ namespace MonoDevelop.Components
 				indent = value;
 				if (layout != null) {
 					layout.Indent = (int) (indent * Pango.Scale.PangoScale);
+					QueueResize ();
+				}
+			}
+		}
+
+		public int Spacing {
+			get { return spacing; }
+			set {
+				spacing = value;
+				if (layout != null) {
+					layout.Spacing = (int) (spacing * Pango.Scale.PangoScale);
 					QueueResize ();
 				}
 			}

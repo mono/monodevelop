@@ -30,6 +30,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -65,9 +66,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Style != null) {
 				if (toolbar.IconSize == Gtk.IconSize.Menu || toolbar.IconSize == Gtk.IconSize.SmallToolbar) {
-					Pango.FontDescription fd = Style.FontDescription.Copy ();
-					fd.Size = (int) (fd.Size * Pango.Scale.Small);
-					ctx.FontDesc = fd;
+					ctx.FontDesc = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 				} else {
 					ctx.FontDesc = Style.FontDescription;
 				}

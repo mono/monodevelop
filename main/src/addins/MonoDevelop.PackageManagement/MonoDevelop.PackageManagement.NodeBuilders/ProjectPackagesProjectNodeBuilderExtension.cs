@@ -26,7 +26,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
@@ -34,7 +34,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectPackagesProjectNodeBuilderExtension : NodeBuilderExtension
+	internal class ProjectPackagesProjectNodeBuilderExtension : NodeBuilderExtension
 	{
 		IPackageManagementEvents packageManagementEvents;
 
@@ -72,8 +72,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		void RefreshAllChildNodes ()
 		{
-			DispatchService.GuiDispatch (() => {
-				foreach (DotNetProject project in IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ()) {
+			Runtime.RunInMainThread (() => {
+				foreach (DotNetProject project in IdeApp.Workspace.GetAllItems<DotNetProject> ()) {
 					RefreshChildNodes (project);
 				}
 			});
@@ -83,7 +83,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			ITreeBuilder builder = Context.GetTreeBuilder (project);
 			if (builder != null) {
-				builder.UpdateChildren ();
+				if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
+					builder.UpdateAll ();
+					builder.MoveToParent ();
+				}
+
+				if (builder.MoveToChild ("Packages", typeof (ProjectPackagesFolderNode))) {
+					var packagesFolder = (ProjectPackagesFolderNode)builder.DataItem;
+					packagesFolder.ClearPackageReferences ();
+					builder.UpdateAll ();
+					builder.MoveToParent ();
+				}
 			}
 		}
 

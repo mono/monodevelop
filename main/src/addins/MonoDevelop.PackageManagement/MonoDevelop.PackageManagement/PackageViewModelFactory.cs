@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageViewModelFactory : IPackageViewModelFactory
+	internal class PackageViewModelFactory : IPackageViewModelFactory
 	{
 		public PackageViewModelFactory(IPackageViewModelFactory packageViewModelFactory)
 			: this(

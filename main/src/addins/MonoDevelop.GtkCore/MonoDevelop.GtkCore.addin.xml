@@ -115,13 +115,6 @@
 		<CommandItem id = "MonoDevelop.GtkCore.GtkCommands.EditIcons" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.Project"
-		              name = "GtkDesignInfo"
-		              skipEmpty = "True"
-		              type = "MonoDevelop.GtkCore.GtkDesignInfo" />
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class="MonoDevelop.GtkCore.GtkCoreStartupCommand" />
 	</Extension>
@@ -146,7 +139,7 @@
 		<StockIcon stockid = "md-gtkcore-actiongroup" resource = "actiongroup.png" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Class class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension"  insertafter="MidStep"/>
 	</Extension>
 	

@@ -29,9 +29,9 @@
 using System;
 using System.Linq;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
+	internal class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
 	{
 		PackageManagementOptions options;
 		IRecentPackageRepository recentPackageRepository;

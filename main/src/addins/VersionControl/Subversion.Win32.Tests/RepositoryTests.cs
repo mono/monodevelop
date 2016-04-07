@@ -42,17 +42,8 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		public override void Setup ()
 		{
 			RemotePath = new FilePath (FileService.CreateTempDirectory ());
-			RemoteUrl = "svn://localhost:3690/repo";
-			SvnServe = new Process ();
+			RemoteUrl = "file://" + RemotePath + "/repo";
 			base.Setup ();
-		}
-
-		[TearDown]
-		public override void TearDown ()
-		{
-			SvnServe.Kill ();
-
-			base.TearDown ();
 		}
 
 		protected override void TestDiff ()

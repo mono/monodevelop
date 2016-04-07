@@ -24,7 +24,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-/*using System;
+using System;
 using System.Linq;
 using NUnit.Framework;
 using System.IO;
@@ -54,7 +54,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("This fails with NGit, probably because the diff algorithm is different")]
 		public void TestBlameRevisionsWithMultipleCommits ()
 		{
 			Commit[] blameCommits = GetBlameForFixedFile ("c5f4319ee3e077436e3950c8a764959d50bf57c0");
@@ -84,7 +83,6 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 
 		[Test]
-		[Ignore ("This fails with NGit, probably because the diff algorithm is different")]
 		public void TestBlameRevisionsWithTwoCommits ()
 		{
 			string commit1 = "b6e41ee2dd00e8744abc4835567e06667891b2cf";
@@ -134,12 +132,10 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		[Test]
 		public void TestBlameLineCountWithNoCommits ()
 		{
-			Commit[] blameCommits = GetBlameForFixedFile ("39fe1158de8da8b82822e299958d35c51d493298");
-			Assert.That (blameCommits, Is.Null);
+			Assert.Throws<NotFoundException> (() => GetBlameForFixedFile ("39fe1158de8da8b82822e299958d35c51d493298"));
 		}
 
 		[Test]
-		[Ignore]
 		public void TestBlameForProjectDom ()
 		{
 			Commit[] blameCommits = GetBlameForFile ("6469602e3c0ba6953fd3ef0ae01d77abe1d9ab70", "main/src/core/MonoDevelop.Core/MonoDevelop.Projects.Dom.Parser/ProjectDom.cs");
@@ -277,13 +273,20 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			if (blame == null)
 			{
-				var result = repo.Blame (filePath);
-				if (result == null)
+				var result = repo.Blame (filePath, new BlameOptions {
+					StartingAt = revision,
+				});
+				if (!result.Any ())
 					return null;
 
-				blame = new Commit [result.Count ()];
-				for (int i = 0; i < result.Count (); i ++)
-					blame [i] = result[i].FinalCommit;
+				var count = result.Sum (hunk => hunk.LineCount);
+				blame = new Commit [count];
+				int x = 0;
+				foreach (var res in result) {
+					for (int i = 0; i < res.LineCount; ++i)
+						blame [x++] = res.FinalCommit;
+				}
+				
 				blames.Add(key, blame);
 			}
 
@@ -316,4 +319,4 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		}
 	}
 }
-*/
+

@@ -97,9 +97,9 @@ namespace Mono.TextEditor
 	
 	public class HelpWindowEditMode : SimpleEditMode
 	{
-		protected new TextEditor editor;
+		protected new MonoTextEditor editor;
 		
-		public new TextEditor Editor {
+		public new MonoTextEditor Editor {
 			get {
 				return editor;
 			}
@@ -143,8 +143,10 @@ namespace Mono.TextEditor
 			editor.SizeAllocated -= MoveHelpWindow;
 			editor.VScroll -= HandleVScroll;
 			editor.Destroyed -= HandleEditorDestroy;
+			HelpWindow.Hide ();
 			HelpWindow.Destroy ();
 			HelpWindow = null;
+			editor.QueueDraw ();
 		}
 		
 		void HandleEditorDestroy (object sender, EventArgs e)
@@ -199,7 +201,7 @@ namespace Mono.TextEditor
 			get { return insertionPoints; }
 		}
 		
-		public InsertionCursorEditMode (TextEditor editor, List<InsertionPoint> insertionPoints)
+		public InsertionCursorEditMode (MonoTextEditor editor, List<InsertionPoint> insertionPoints)
 		{
 			this.editor = editor;
 			this.insertionPoints = insertionPoints;
@@ -294,7 +296,6 @@ namespace Mono.TextEditor
 		class CursorDrawer : MarginDrawer
 		{
 			InsertionCursorEditMode mode;
-			static readonly Cairo.Color LineColor = HslColor.Parse ("#666666");
 
 
 			public CursorDrawer (InsertionCursorEditMode mode)
@@ -324,7 +325,7 @@ namespace Mono.TextEditor
 
 			public double GetLineIndentationStart ()
 			{
-				TextEditor editor = mode.editor;
+				MonoTextEditor editor = mode.editor;
 
 				var lineAbove = editor.Document.GetLine (mode.CurrentInsertionPoint.Line - 1);
 				var lineBelow = editor.Document.GetLine (mode.CurrentInsertionPoint.Line);
@@ -356,15 +357,15 @@ namespace Mono.TextEditor
 
 			public override void Draw (Cairo.Context cr, Cairo.Rectangle erea)
 			{
-				TextEditor editor = mode.editor;
+				MonoTextEditor editor = mode.editor;
 				
 				double y = editor.LineToY (mode.CurrentInsertionPoint.Line) - editor.VAdjustment.Value; 
-				double x = GetLineIndentationStart ();
-				double x2 = editor.Allocation.Width - mode.HelpWindow.Allocation.Width - InsertionCursorEditMode.HelpWindowMargin * 2;
+				double x = GetLineIndentationStart () - 3;
+				double x2 = editor.Allocation.Width - mode.HelpWindow.Allocation.Width - InsertionCursorEditMode.HelpWindowMargin * 2 + 4;
 				cr.MoveTo (x, y);
 				cr.LineTo (x2, y);
 
-				cr.SetSourceColor (LineColor);
+				cr.SetSourceColor (Styles.InsertionCursorLineColor.ToCairoColor ());
 				cr.Stroke ();
 				
 //				DrawArrow (cr, x - 4, y);

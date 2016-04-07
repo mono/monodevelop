@@ -37,7 +37,7 @@ namespace MonoDevelop.Projects
 		string oldName;
 		string newName;
 		
-		public SolutionItemRenamedEventArgs (SolutionItem node, string oldName, string newName)
+		public SolutionItemRenamedEventArgs (SolutionFolderItem node, string oldName, string newName)
 		: base (node)
 		{
 			this.oldName = oldName;

@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IRecentPackageRepository : IPackageRepository
+	internal interface IRecentPackageRepository : IPackageRepository
 	{
 		void Clear();
 		bool HasRecentPackages { get; }

@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
-	public interface IFoldable
+	interface IFoldable
 	{
 		void ToggleAllFoldings ();
 		void FoldDefinitions ();

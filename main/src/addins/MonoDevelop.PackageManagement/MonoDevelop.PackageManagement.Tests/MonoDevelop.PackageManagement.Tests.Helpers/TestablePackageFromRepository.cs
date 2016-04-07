@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackageFromRepository : PackageFromRepository
+	class TestablePackageFromRepository : PackageFromRepository
 	{
 		public FakePackage FakePackagePassedToConstructor;
 		public FakePackageRepository FakePackageRepositoryPassedToConstructor;

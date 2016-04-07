@@ -27,19 +27,25 @@ using System;
 using System.Collections.Generic;
 
 
-using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Policies;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Formatting;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class CSharpFormatter : AbstractAdvancedFormatter
+	class CSharpFormatter : AbstractCodeFormatter
 	{
 		static internal readonly string MimeType = "text/x-csharp";
 
@@ -47,110 +53,59 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
-		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, int line)
+		public override bool SupportsPartialDocumentFormatting { get { return true; } }
+
+		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
 		{
-			DocumentLine lineSegment = data.Document.GetLine (line);
+			var lineSegment = editor.GetLine (line);
 			if (lineSegment == null)
 				return;
 
 			try {
-				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-				var tracker = new CSharpIndentEngine (data.Document, data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
+				var policy = policyParent.Get<CSharpFormattingPolicy> (MimeType);
+				var textpolicy = policyParent.Get<TextStylePolicy> (MimeType);
+				var tracker = new CSharpIndentEngine (policy.CreateOptions (textpolicy));
 
-				tracker.Update (lineSegment.Offset);
+				tracker.Update (IdeApp.Workbench.ActiveDocument.Editor, lineSegment.Offset);
 				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
-					tracker.Push (data.Document.GetCharAt (i));
+					tracker.Push (editor.GetCharAt (i));
 				}
 
-				string curIndent = lineSegment.GetIndentation (data.Document);
+				string curIndent = lineSegment.GetIndentation (editor);
 
 				int nlwsp = curIndent.Length;
-				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
+				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && editor.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					string newIndent = tracker.ThisLineIndent;
 					if (newIndent != curIndent) 
-						data.Replace (lineSegment.Offset, nlwsp, newIndent);
+						editor.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting", e);
 			}
 		}
 
-		public override void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
+		protected override void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
 		{
-			OnTheFlyFormatter.Format (doc, startOffset, endOffset);
+			OnTheFlyFormatter.Format (editor, context, startOffset, startOffset + length);
 		}
 
-
-		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
+		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string input, int startOffset, int endOffset)
 		{
-			var data = new TextEditorData ();
-			data.Document.SuppressHighlightUpdate = true;
-			data.Document.MimeType = mimeType;
-			data.Document.FileName = "toformat.cs";
-			if (textPolicy != null) {
-				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
-				data.Options.TabSize = textPolicy.TabWidth;
-				data.Options.IndentationSize = textPolicy.IndentWidth;
-				data.Options.IndentStyle = textPolicy.RemoveTrailingWhitespace ? IndentStyle.Virtual : IndentStyle.Smart;
-			}
-			data.Text = input;
+			var inputTree = CSharpSyntaxTree.ParseText (input);
 
-			// System.Console.WriteLine ("-----");
-			// System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
-			// System.Console.WriteLine ("-----");
-
-			var parser = new CSharpParser ();
-			var compilationUnit = parser.Parse (data);
-			bool hadErrors = parser.HasErrors;
-			
-			if (hadErrors) {
-				//				foreach (var e in parser.ErrorReportPrinter.Errors)
-				//					Console.WriteLine (e.Message);
-				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-			}
-
-			var originalVersion = data.Document.Version;
-
-			var textEditorOptions = data.CreateNRefactoryTextEditorOptions ();
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.CSharpFormatter (
-				policy.CreateOptions (),
-				textEditorOptions
-			) {
-				FormattingMode = FormattingMode.Intrusive
-			};
-
-			var changes = formattingVisitor.AnalyzeFormatting (data.Document, compilationUnit);
-			try {
-				changes.ApplyChanges (startOffset, endOffset - startOffset);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error in code formatter", e);
-				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-			}
-
-			// check if the formatter has produced errors
-			parser = new CSharpParser ();
-			parser.Parse (data);
-			if (parser.HasErrors) {
-				LoggingService.LogError ("C# formatter produced source code errors. See console for output.");
-				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-			}
-
-			var currentVersion = data.Document.Version;
-
-			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset));
-			data.Dispose ();
-			return result;
+			var root = inputTree.GetRoot ();
+			var doc = Formatter.Format (root, new TextSpan (startOffset, endOffset - startOffset), TypeSystemService.Workspace, policy.CreateOptions (textPolicy));
+			var result = doc.ToFullString ();
+			return result.Substring (startOffset, endOffset + result.Length - input.Length - startOffset);
 		}
 
-		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
+		protected override ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, ITextSource input, int startOffset, int length)
 		{
-			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-			var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+			var policy = policyParent.Get<CSharpFormattingPolicy> (mimeType);
+			var textPolicy = policyParent.Get<TextStylePolicy> (mimeType);
 
-			return FormatText (policy, textPolicy, mimeTypeChain.First (), input, startOffset, endOffset);
-
+			return new StringTextSource (FormatText (policy, textPolicy, input.Text, startOffset, startOffset + length));
 		}
 	}
 }

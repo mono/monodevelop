@@ -32,10 +32,10 @@ using Gtk;
 using Gdk;
 using Glade;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components;
-
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.GtkCore.Dialogs
 {
@@ -45,7 +45,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		[Glade.Widget] protected Gtk.TreeView treeClasses;
 		ListStore store;
 		
-		public SelectRenamedClassDialog (IEnumerable<IType> classes)
+		public SelectRenamedClassDialog (IEnumerable<INamedTypeSymbol> classes)
 		{
 			XML glade = new XML (null, "gui.glade", "SelectRenamedClassDialog", null);
 			glade.Autoconnect (this);
@@ -67,7 +67,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 			
 			foreach (var cls in classes) {
 				var pic = ImageService.GetIcon (cls.GetStockIcon ());
-				store.AppendValues (pic, cls.FullName);
+				store.AppendValues (pic, cls.GetFullName ());
 			}
 		}
 		

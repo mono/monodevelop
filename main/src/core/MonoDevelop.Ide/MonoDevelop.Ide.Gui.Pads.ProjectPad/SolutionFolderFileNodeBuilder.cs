@@ -113,19 +113,34 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 				
-			IdeApp.ProjectOperations.Save (modifiedSolutionsToSave);
+			IdeApp.ProjectOperations.SaveAsync (modifiedSolutionsToSave);
 		}
 		
 		public override void ActivateItem ()
 		{
 			SolutionFolderFileNode file = (SolutionFolderFileNode) CurrentNode.DataItem;
-			IdeApp.Workbench.OpenDocument (file.FileName);
+			IdeApp.Workbench.OpenDocument (file.FileName, project: null);
 		}
 		
 		public override DragOperation CanDragNode ()
 		{
 			return DragOperation.Copy | DragOperation.Move;
 		}
+
+		[CommandHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWith (object ob)
+		{
+			var finfo = (SolutionFolderFileNode)CurrentNode.DataItem;
+			((FileViewer)ob).OpenFile (finfo.FileName);
+		}
+
+		[CommandUpdateHandler (ViewCommands.OpenWithList)]
+		public void OnOpenWithUpdate (CommandArrayInfo info)
+		{
+			var pf = (SolutionFolderFileNode)CurrentNode.DataItem;
+			ProjectFileNodeCommandHandler.PopulateOpenWithViewers (info, null, pf.FileName);
+		}
+
 	}
 	
 	class SolutionFolderFileNode: IFileItem

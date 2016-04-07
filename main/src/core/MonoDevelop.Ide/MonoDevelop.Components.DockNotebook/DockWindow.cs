@@ -27,7 +27,6 @@
 using Gdk;
 using Gtk;
 using MonoDevelop.Components.Docking;
-using Mono.TextEditor;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
@@ -36,7 +35,7 @@ using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	class DockWindow : Gtk.Window
+	class DockWindow : IdeWindow
 	{
 		static List<DockWindow> allWindows = new List<DockWindow> ();
 

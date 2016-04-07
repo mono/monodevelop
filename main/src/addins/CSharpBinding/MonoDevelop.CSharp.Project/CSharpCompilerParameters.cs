@@ -33,6 +33,10 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using Mono.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Projects.MSBuild;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -49,18 +53,16 @@ namespace MonoDevelop.CSharp.Project
 	/// <summary>
 	/// This class handles project specific compiler parameters
 	/// </summary>
-	public class CSharpCompilerParameters: DotNetConfigurationParameters
+	public class CSharpCompilerParameters: DotNetCompilerParameters
 	{
 		// Configuration parameters
-		
-		[ItemProperty ("WarningLevel")]
-		int  warninglevel = 4;
+
+		int? warninglevel = 4;
 		
 		[ItemProperty ("NoWarn", DefaultValue = "")]
 		string noWarnings = String.Empty;
 		
-		[ItemProperty ("Optimize")]
-		bool optimize;
+		bool? optimize = false;
 		
 		[ItemProperty ("AllowUnsafeBlocks", DefaultValue = false)]
 		bool unsafecode = false;
@@ -89,63 +91,74 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty("WarningsNotAsErrors", DefaultValue="")]
 		string warningsNotAsErrors = "";
 
-		[ItemProperty("DebugType", DefaultValue="")]
-		string debugType = "";
-		
-		#region Members required for backwards compatibility. Not used for anything else.
-		
-		[ItemProperty ("StartupObject", DefaultValue = null)]
-		internal string mainclass;
-		
-		[ProjectPathItemProperty ("ApplicationIcon", DefaultValue = null)]
-		internal string win32Icon;
-
-		[ProjectPathItemProperty ("Win32Resource", DefaultValue = null)]
-		internal string win32Resource;
-	
-		[ItemProperty ("CodePage", DefaultValue = null)]
-		internal string codePage;
-
-		[ItemProperty ("GenerateDocumentation", DefaultValue = null)]
-		bool? generateXmlDocumentation = null;
-		
-		#endregion
-		
-		
-		protected override void OnEndLoad ()
+		protected override void Write (IPropertySet pset)
 		{
-			base.OnEndLoad ();
-			
-			// Backwards compatibility. Move parameters to the project parameters object
-			if (ParentConfiguration != null && ParentConfiguration.ProjectParameters != null) {
-				CSharpProjectParameters cparams = (CSharpProjectParameters) ParentConfiguration.ProjectParameters;
-				if (win32Icon != null) {
-					cparams.Win32Icon = win32Icon;
-					win32Icon = null;
-				}
-				if (win32Resource != null) {
-					cparams.Win32Resource = win32Resource;
-					win32Resource = null;
-				}
-				if (mainclass != null) {
-					cparams.MainClass = mainclass;
-					mainclass = null;
-				}
-				if (!string.IsNullOrEmpty (codePage)) {
-					cparams.CodePage = int.Parse (codePage);
-					codePage = null;
-				}
-			}
+			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
 
-			if (generateXmlDocumentation.HasValue && ParentConfiguration != null) {
-				if (generateXmlDocumentation.Value)
+			base.Write (pset);
+
+			if (optimize.HasValue)
+				pset.SetValue ("Optimize", optimize.Value);
+			if (warninglevel.HasValue)
+				pset.SetValue ("WarningLevel", warninglevel.Value);
+		}
+
+		protected override void Read (IPropertySet pset)
+		{
+			base.Read (pset);
+
+			var prop = pset.GetProperty ("GenerateDocumentation");
+			if (prop != null && documentationFile != null) {
+				if (prop.GetValue<bool> ())
 					documentationFile = ParentConfiguration.CompiledOutputName.ChangeExtension (".xml");
 				else
 					documentationFile = null;
-				generateXmlDocumentation = null;
 			}
+
+			optimize = pset.GetValue ("Optimize", (bool?)null);
+			warninglevel = pset.GetValue<int?> ("WarningLevel", null);
 		}
-	
+
+		public override CompilationOptions CreateCompilationOptions ()
+		{
+			var project = (CSharpProject) ParentProject;
+			return new CSharpCompilationOptions (
+				OutputKind.ConsoleApplication,
+				false,
+				null,
+				project.MainClass,
+				"Script",
+				null,
+				OptimizationLevel.Debug,
+				GenerateOverflowChecks,
+				UnsafeCode,
+				null,
+				ParentConfiguration.SignAssembly ? ParentConfiguration.AssemblyKeyFile : null,
+				ImmutableArray<byte>.Empty,
+				null,
+				Microsoft.CodeAnalysis.Platform.AnyCpu,
+				ReportDiagnostic.Default,
+				WarningLevel,
+				null,
+				false,
+				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
+				strongNameProvider: new DesktopStrongNameProvider ()
+			);
+		}
+
+		public override Microsoft.CodeAnalysis.ParseOptions CreateParseOptions (DotNetProjectConfiguration configuration)
+		{
+			var symbols = GetDefineSymbols ();
+			if (configuration != null)
+				symbols = symbols.Concat (configuration.GetDefineSymbols ()).Distinct ();
+			return new Microsoft.CodeAnalysis.CSharp.CSharpParseOptions (
+				GetRoslynLanguageVersion (langVersion),
+				Microsoft.CodeAnalysis.DocumentationMode.Parse,
+				Microsoft.CodeAnalysis.SourceCodeKind.Regular,
+				ImmutableArray<string>.Empty.AddRange (symbols)
+			);
+		}
+
 
 		public LangVersion LangVersion {
 			get {
@@ -166,7 +179,6 @@ namespace MonoDevelop.CSharp.Project
 
 #region Code Generation
 
-		[Obsolete]
 		public override void AddDefineSymbol (string symbol)
 		{
 			var symbols = new List<string> (GetDefineSymbols ());
@@ -176,10 +188,9 @@ namespace MonoDevelop.CSharp.Project
 
 		public override IEnumerable<string> GetDefineSymbols ()
 		{
-			return definesymbols.Split (';', ',', ' ', '\t').Where (s => !string.IsNullOrWhiteSpace (s));
+			return definesymbols.Split (';', ',', ' ', '\t').Where (s => SyntaxFacts.IsValidIdentifier (s) && !string.IsNullOrWhiteSpace (s));
 		}
 
-		[Obsolete]
 		public override void RemoveDefineSymbol (string symbol)
 		{
 			var symbols = new List<string> (GetDefineSymbols ());
@@ -202,10 +213,11 @@ namespace MonoDevelop.CSharp.Project
 		
 		public bool Optimize {
 			get {
-				return optimize;
+				return optimize ?? false;
 			}
 			set {
-				optimize = value;
+				if (value != Optimize)
+					optimize = value;
 			}
 		}
 		
@@ -245,24 +257,20 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 
-		public override string DebugType {
-			get {
-				return debugType;
-			}
-			set {
-				debugType = value;
-			}
-		}
-
 #endregion
 
 #region Errors and Warnings 
 		public int WarningLevel {
 			get {
-				return warninglevel;
+				return warninglevel ?? 4;
 			}
 			set {
-				warninglevel = value;
+				if (warninglevel.HasValue) {
+					warninglevel = value;
+				} else {
+					if (value != 4)
+						warninglevel = value; 
+				}
 			}
 		}
 		
@@ -314,6 +322,19 @@ namespace MonoDevelop.CSharp.Project
 			case "5": return LangVersion.Version5;
 			case "6": return LangVersion.Version6;
 			default: return null;
+			}
+		}
+
+		Microsoft.CodeAnalysis.CSharp.LanguageVersion GetRoslynLanguageVersion (string value)
+		{
+			switch (value) {
+			case "ISO-1": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
+			case "ISO-2": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp2;
+			case "3": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp3;
+			case "4": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
+			case "5": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
+			case "6": return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
+			default: return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
 			}
 		}
 

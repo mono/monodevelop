@@ -111,7 +111,7 @@ namespace UserInterfaceTests
 			GitCreateAndCommit (templateOptions, "First commit");
 			var changeDescription = MakeSomeChangesAndSaveAll ("Program.cs");
 			TestGitStash (changeDescription);
-			Session.WaitForElement (IdeQuery.TextArea);
+			Session.WaitForElement (IdeQuery.TextArea, 20000);
 			TakeScreenShot ("After-Stash");
 		}
 	}

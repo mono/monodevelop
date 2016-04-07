@@ -25,16 +25,16 @@
 // THE SOFTWARE.
 
 using System.Linq;
-using ICSharpCode.NRefactory;
-using Mono.TextEditor;
 using MonoDevelop.Ide;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.AspNet.Razor.Dom
 {
 	public abstract class RazorCodeFragment : XContainer
 	{
-		protected RazorCodeFragment (TextLocation start) : base (start)
+		protected RazorCodeFragment (DocumentLocation start) : base (start)
 		{
 		}
 
@@ -44,34 +44,32 @@ namespace MonoDevelop.AspNet.Razor.Dom
 
 		public string Name { get; set; }
 
-		public TextLocation? FirstBracket { get; set; }
+		public DocumentLocation? FirstBracket { get; set; }
 
-		public TextDocument Document {
+		public ITextDocument Document {
 			get {
-				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Editor != null)
-					return IdeApp.Workbench.ActiveDocument.Editor.Document;
-				return null;
+				return RazorWorkbenchService.ActiveDocument;
 			}
 		}
 
-		public bool IsEndingBracket (TextLocation bracketLocation)
+		public bool IsEndingBracket (DocumentLocation bracketLocation)
 		{
 			// If document isn't entirely loaded
-			if (Document == null || Document.Lines.Count () < Region.BeginLine)
+			if (Document == null || Document.LineCount < Region.BeginLine)
 				return false;
 
 			if (!FirstBracket.HasValue && !FindFirstBracket (bracketLocation))
 				return false;
 
-			int firstBracketOffset = Document.GetOffset (FirstBracket.Value);
-			int currentBracketOffset = Document.GetOffset (bracketLocation);
+			int firstBracketOffset = Document.LocationToOffset (FirstBracket.Value);
+			int currentBracketOffset = Document.LocationToOffset (bracketLocation);
 
-			return Document.GetMatchingBracketOffset (firstBracketOffset) == currentBracketOffset;
+			return SimpleBracketMatcher.GetMatchingBracketOffset (Document, firstBracketOffset) == currentBracketOffset;
 		}
 
-		public bool FindFirstBracket (TextLocation currentLocation)
+		public bool FindFirstBracket (DocumentLocation currentLocation)
 		{
-			if (Document.Lines.Count () < Region.BeginLine)
+			if (Document == null || Document.LineCount < Region.BeginLine)
 				return false;
 
 			int firstBracketPosition = Document.GetTextBetween (Region.Begin, currentLocation).IndexOf ('{');

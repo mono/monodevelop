@@ -45,7 +45,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		private class UnlockWorker : Task 
+		private class UnlockWorker : VersionControlTask 
 		{
 			VersionControlItemList items;
 						

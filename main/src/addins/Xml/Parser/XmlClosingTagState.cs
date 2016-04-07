@@ -108,7 +108,8 @@ namespace MonoDevelop.Xml.Parser
 			}
 			
 			if (c == '<') {
-				context.LogError ("Unexpected '<' in tag.");
+				context.LogError ("Unexpected '<' in tag.", context.LocationMinus (1));
+				context.Nodes.Pop ();
 				rollback = string.Empty;
 				return Parent;
 			}
@@ -123,7 +124,8 @@ namespace MonoDevelop.Xml.Parser
 			}
 			
 			rollback = string.Empty;
-			context.LogError ("Unexpected character '" + c + "' in closing tag.");
+			context.LogError ("Unexpected character '" + c + "' in closing tag.", context.LocationMinus (1));
+			context.Nodes.Pop ();
 			return Parent;
 		}
 	}

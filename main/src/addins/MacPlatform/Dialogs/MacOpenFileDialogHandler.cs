@@ -31,8 +31,10 @@ using System.Text;
 
 using AppKit;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;
@@ -47,18 +49,15 @@ namespace MonoDevelop.MacIntegration
 			NSSavePanel panel = null;
 			
 			try {
-				bool directoryMode = data.Action != Gtk.FileChooserAction.Open
-						&& data.Action != Gtk.FileChooserAction.Save;
-				
-				if (data.Action == Gtk.FileChooserAction.Save) {
+				if (data.Action == FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
 					panel = new NSOpenPanel {
-						CanChooseDirectories = directoryMode,
-						CanChooseFiles = !directoryMode,
+						CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
+						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
 					};
 				}
-				
+
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
 				SelectEncodingPopUpButton encodingSelector = null;
@@ -70,7 +69,7 @@ namespace MonoDevelop.MacIntegration
 				List<FileViewer> currentViewers = null;
 				var labels = new List<MDAlignment> ();
 				
-				if (!directoryMode) {
+				if ((data.Action & FileChooserAction.FileFlags) != 0) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
 
 					if (filterPopup != null) {
@@ -84,7 +83,7 @@ namespace MonoDevelop.MacIntegration
 					}
 
 					if (data.ShowEncodingSelector) {
-						encodingSelector = new SelectEncodingPopUpButton (data.Action != Gtk.FileChooserAction.Save);
+						encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save);
 						encodingSelector.SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0;
 						
 						var encodingLabel = new MDAlignment (new MDLabel (GettextCatalog.GetString ("Encoding:")), true);
@@ -218,7 +217,8 @@ namespace MonoDevelop.MacIntegration
 				if (closeSolutionButton != null)
 					closeSolutionButton.State = NSCellStateValue.On;
 				
-				selected = 0;
+				if (!CanBeOpenedInAssemblyBrowser (filename))
+					selected = 0;
 				hasWorkbenchViewer = true;
 				i++;
 			}
@@ -241,6 +241,11 @@ namespace MonoDevelop.MacIntegration
 			button.Enabled = currentViewers.Count > 1;
 			button.SelectItem (selected);
 			return hasWorkbenchViewer;
+		}
+
+		static bool CanBeOpenedInAssemblyBrowser (FilePath filename)
+		{
+			return filename.Extension.ToLower () == ".exe" || filename.Extension.ToLower () == ".dll";
 		}
 
 		static void CenterAccessoryView (MDBox box)

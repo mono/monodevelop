@@ -30,14 +30,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Security.Cryptography;
 
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredPackageSourceSettings
+	internal class RegisteredPackageSourceSettings
 	{
 		public static readonly string PackageSourcesSectionName = "packageSources";
 		public static readonly string ActivePackageSourceSectionName = "activePackageSource";
@@ -104,7 +104,7 @@ namespace ICSharpCode.PackageManagement
 			try {
 				ReadPackageSources ();
 			} catch (Exception ex) {
-				LoggingService.LogError ("Unable to read NuGet.config file.", ex);
+				ShowReadPackageSourcesError (ex);
 
 				// Fallback to using the default package source only (nuget.org)
 				// and treat NuGet.config as read-only.
@@ -122,6 +122,27 @@ namespace ICSharpCode.PackageManagement
 			if (!savedPackageSources.Any()) {
 				UpdatePackageSourceSettingsWithChanges();
 			}
+		}
+
+		static void ShowReadPackageSourcesError (Exception ex)
+		{
+			Ide.MessageService.ShowError (
+				GettextCatalog.GetString ("Unable to read the NuGet.Config file"),
+				String.Format (GetReadPackageSourcesErrorMessage (ex),
+					BrandingService.ApplicationName,
+					ex.Message),
+				ex);
+		}
+
+		static string GetReadPackageSourcesErrorMessage (Exception ex)
+		{
+			if (ex is CryptographicException) {
+				return GettextCatalog.GetString ("Unable to decrypt passwords stored in the NuGet.Config file. " +
+					"{0} will now fallback to using the Official NuGet Gallery and the NuGet.Config file will be treated as read-only.");
+			}
+
+			return GettextCatalog.GetString ("An error occurred when trying to read the NuGet.Config file. " +
+				"{0} will now fallback to using the Official NuGet Gallery and the NuGet.Config file will be treated as read-only.\n\n{1}");
 		}
 		
 		void PackageSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)

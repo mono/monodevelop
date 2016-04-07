@@ -4,7 +4,6 @@
 		<Category _name = "Deployment" id = "Deployment">
 		<Command id = "MonoDevelop.Deployment.Commands.CreatePackage"
 				defaultHandler = "MonoDevelop.Deployment.CreatePackageHandler"
-				icon = "md-package"
 				_label = "Create Package..." />
 		<Command id = "MonoDevelop.Deployment.Commands.AddPackage"
 				defaultHandler = "MonoDevelop.Deployment.AddPackageHandler"
@@ -117,21 +116,8 @@
 		<Class class = "MonoDevelop.Deployment.Gui.PropertyProvider"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.Deploy" type = "System.Boolean" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.TargetDirectoryId" type = "System.String" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.RelativeDeployPath" type = "System.String" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.HasPathReferences" type = "System.Boolean" />
-		<ItemProperty class = "MonoDevelop.Projects.ProjectFile"
-			name = "DeployService.UseProjectRelativePath" type = "System.Boolean" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "PackagingProject" resource = "PackagingProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.PackagingProject" resource = "PackagingProject.xpt.xml"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">

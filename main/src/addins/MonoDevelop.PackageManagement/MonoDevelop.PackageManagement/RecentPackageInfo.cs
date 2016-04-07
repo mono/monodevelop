@@ -29,7 +29,7 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
 	public class RecentPackageInfo
 	{
@@ -39,12 +39,12 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public RecentPackageInfo(IPackage package)
+		internal RecentPackageInfo(IPackage package)
 			: this(package.Id, package.Version)
 		{
 		}
 		
-		public RecentPackageInfo(string id, SemanticVersion version)
+		internal RecentPackageInfo(string id, SemanticVersion version)
 		{
 			this.Id = id;
 			this.version = version;
@@ -62,7 +62,7 @@ namespace ICSharpCode.PackageManagement
 			return String.Format("[RecentPackageInfo Id={0}, Version={1}]", Id, Version);
 		}
 		
-		public bool IsMatch(IPackage package)
+		internal bool IsMatch(IPackage package)
 		{
 			return (package.Version.ToString() == Version) && (package.Id == Id);
 		}

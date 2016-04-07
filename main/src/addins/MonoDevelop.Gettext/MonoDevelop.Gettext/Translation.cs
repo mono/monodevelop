@@ -84,7 +84,7 @@ namespace MonoDevelop.Gettext
 			return Path.Combine (moDirectory, parentProject.PackageName + ".mo");
 		}
 		
-		public BuildResult Build (IProgressMonitor monitor, ConfigurationSelector configuration)
+		public BuildResult Build (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			BuildResult results = new BuildResult ("", 0, 0);
 			

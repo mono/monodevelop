@@ -29,11 +29,10 @@
 using System;
 using Cairo;
 using Gtk;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Theming
 {
-	public class GtkTheme : Theme
+	class GtkTheme : Theme
 	{
 		private Cairo.Color rule_color;
 		private Cairo.Color border_color;

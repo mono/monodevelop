@@ -38,11 +38,15 @@ namespace MonoDevelop.DesignerSupport
 	class ProjectFileDescriptor: CustomDescriptor, IDisposable
 	{
 		ProjectFile file;
-		
+		Project project;
+
 		public ProjectFileDescriptor (ProjectFile file)
 		{
 			this.file = file;
-			file.Project.FilePropertyChangedInProject += OnFilePropertyChangedInProject;
+			project = file.Project;
+			if (project != null) {
+				project.FilePropertyChangedInProject += OnFilePropertyChangedInProject;
+			}
 		}
 
 		void OnFilePropertyChangedInProject (object sender, ProjectFileEventArgs args)
@@ -58,7 +62,10 @@ namespace MonoDevelop.DesignerSupport
 
 		void IDisposable.Dispose ()
 		{
-			file.Project.FilePropertyChangedInProject -= OnFilePropertyChangedInProject;
+			if (project != null) {
+				project.FilePropertyChangedInProject -= OnFilePropertyChangedInProject;
+				project = null;
+			}
 		}
 		
 		[LocalizedCategory ("Misc")]

@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IMessageViewCategory
+	internal interface IMessageViewCategory
 	{
 		void AppendLine(string text);
 		void Clear();

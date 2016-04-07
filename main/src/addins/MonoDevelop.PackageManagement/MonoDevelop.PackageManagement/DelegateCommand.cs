@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class DelegateCommand : ICommand
+	internal class DelegateCommand : ICommand
 	{
 		Action<object> execute;
 		Predicate<object> canExecute;

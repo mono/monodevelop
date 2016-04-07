@@ -32,9 +32,9 @@ using System.Linq;
 
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
+	internal class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
 	{
 		IThreadSafePackageManagementEvents packageManagementEvents;
 		PackagesViewModels packagesViewModels;

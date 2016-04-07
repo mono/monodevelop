@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;

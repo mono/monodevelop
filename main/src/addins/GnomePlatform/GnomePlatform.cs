@@ -208,7 +208,7 @@ namespace MonoDevelop.Platform
 		TerminalRunnerHandler runner;
 		TerminalOpenFolderRunnerHandler openDirectoryRunner;
 		
-		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
+		public override ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables, 
 		                                                            string title, bool pauseWhenFinished)
 		{
@@ -225,7 +225,7 @@ namespace MonoDevelop.Platform
 			ProcessWrapper proc = new ProcessWrapper ();
 			proc.StartInfo = psi;
 			proc.Start ();
-			return proc;
+			return proc.ProcessAsyncOperation;
 		}
 		
 #region Terminal runner implementations

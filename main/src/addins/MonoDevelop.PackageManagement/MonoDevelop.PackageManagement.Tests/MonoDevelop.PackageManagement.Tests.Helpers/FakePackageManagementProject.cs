@@ -28,13 +28,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementProject : IPackageManagementProject
+	class FakePackageManagementProject : IPackageManagementProject
 	{
 		public FakePackageManagementProject ()
 			: this ("Test")

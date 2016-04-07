@@ -32,7 +32,8 @@ using Mono.Addins.Gui;
 using MonoDevelop.Ide.ProgressMonitoring;
 using Mono.Addins;
 using MonoDevelop.Core.Setup;
-using Mono.TextEditor;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -42,27 +43,34 @@ namespace MonoDevelop.Ide.Updater
 		AddinRepositoryEntry[] updates;
 		static StatusBarIcon updateIcon;
 		internal static AddinsUpdateHandler Instance;
-		IProgressMonitor updateMonitor;
+
+		ProgressMonitor updateMonitor;
+		Task currentTask = null;
 
 		public AddinsUpdateHandler ()
 		{
 			Instance = this;
 		}
 
-		public void CheckUpdates (IProgressMonitor monitor, bool automatic)
+		public async Task CheckUpdates (ProgressMonitor monitor, bool automatic)
 		{
 			updateMonitor = monitor;
 			try {
 				if (UpdateService.UpdateLevel == UpdateLevel.Test)
 					Runtime.AddinSetupService.RegisterMainRepository (UpdateLevel.Test, true);
-				using (ProgressStatusMonitor pm = new ProgressStatusMonitor (monitor)) {
-					Runtime.AddinSetupService.Repositories.UpdateAllRepositories (pm);
-					updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();
-					if (updates.Length > 0)
-						DispatchService.GuiDispatch (new MessageHandler (WarnAvailableUpdates));
-				}
+
+				currentTask = Task.Run (delegate {
+					using (ProgressStatusMonitor pm = new ProgressStatusMonitor (monitor)) {
+						Runtime.AddinSetupService.Repositories.UpdateAllRepositories (pm);
+						updates = Runtime.AddinSetupService.Repositories.GetAvailableUpdates ();
+					}
+				});
+				await currentTask;
+				if (updates.Length > 0)
+					WarnAvailableUpdates ();
 			} finally {
 				updateMonitor = null;
+				currentTask = null;
 			}
 		}
 
@@ -86,30 +94,24 @@ namespace MonoDevelop.Ide.Updater
 
 		void OnUpdateClicked (object s, StatusBarIconClickedEventArgs args)
 		{
-			if (args.Button != Xwt.PointerButton.Right && args.Button == Xwt.PointerButton.Left) {
+			if (args.Button == Xwt.PointerButton.Left) {
 				HideAlert ();
 				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 			}
 		}
 
-		public static void ShowManager ()
+		public async static void ShowManager ()
 		{
-			IProgressMonitor m = Instance != null ? Instance.updateMonitor : null;
-			if (m != null && !m.AsyncOperation.IsCompleted) {
-				AggregatedProgressMonitor monitor = new AggregatedProgressMonitor (m);
-				monitor.AddSlaveMonitor (new MessageDialogProgressMonitor (true, true, false));
-				monitor.AsyncOperation.WaitForCompleted ();
+			Task t = Instance != null ? Instance.currentTask : null;
+
+			if (t != null && t.IsCompleted) {
+				AggregatedProgressMonitor monitor = new AggregatedProgressMonitor (Instance.updateMonitor);
+				monitor.AddFollowerMonitor (new MessageDialogProgressMonitor (true, true, false));
+				await t;
 			}
 			HideAlert ();
 
 			AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
-		}
-
-		internal void QueryAddinUpdates ()
-		{
-			IProgressMonitor monitor = updateMonitor;
-			if (monitor != null)
-				monitor.AsyncOperation.WaitForCompleted ();
 		}
 
 		public static void HideAlert ()

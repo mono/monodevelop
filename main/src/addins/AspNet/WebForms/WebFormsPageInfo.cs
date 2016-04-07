@@ -28,11 +28,11 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.AspNet.WebForms
 {

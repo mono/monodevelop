@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using MonoDevelop.Core;
 using System.Reflection;
+using System.Linq;
 
 namespace UserInterfaceTests
 {
@@ -37,6 +38,17 @@ namespace UserInterfaceTests
 		{
 			if (data != null)
 				TestService.Session.DebugObject.Debug (data.ToString ());
+		}
+
+		public static string ToPathSafeString (this string str, char replaceWith = '-')
+		{
+			var invalids = Path.GetInvalidFileNameChars ().Concat (Path.GetInvalidPathChars ()).Distinct ().ToArray ();
+			return new string (str.Select (c => invalids.Contains (c) ? replaceWith : c).ToArray ());
+		}
+
+		public static string ToBoldText (this string str)
+		{
+			return str != null ? string.Format ("<b>{0}</b>", str) : null;
 		}
 
 		public static FilePath CreateTmpDir (string hint = null)
@@ -62,6 +74,16 @@ namespace UserInterfaceTests
 			default:
 				return Ide.EmptyAction;
 			}
+		}
+
+		public static Action<string> GetNonNullAction (Action<string> action)
+		{
+			return action ?? delegate { };
+		}
+
+		public static string StripBold (this string value)
+		{
+			return value != null ? value.Replace ("<b>", string.Empty).Replace ("</b>", string.Empty) : null;
 		}
 	}
 }

@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeTaskFactory : ITaskFactory
+	class FakeTaskFactory : ITaskFactory
 	{
 		public bool IsCreateTaskCalled;
 		public bool RunTasksSynchronously;

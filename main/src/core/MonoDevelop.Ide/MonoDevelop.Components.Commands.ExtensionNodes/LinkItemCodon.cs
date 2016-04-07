@@ -53,7 +53,7 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		public override object CreateInstance ()
 		{
 			// FIXME: Use internal resource
-			return new LinkCommandEntry (label, link, "md-web-search-icon");
+			return new LinkCommandEntry (label, link, "md-web-search");
 		}
 	}
 }

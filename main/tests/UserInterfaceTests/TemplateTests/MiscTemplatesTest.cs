@@ -55,7 +55,7 @@ namespace UserInterfaceTests
 				TemplateKindRoot = templateKind,
 				TemplateKind = templateName
 			};
-			CreateBuildProject (templateOptions, EmptyAction);
+			CreateBuildProject (templateOptions, () => Ide.WaitForIdeIdle ());
 			IsTemplateSelected (templateOptions);
 		}
 	}

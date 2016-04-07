@@ -68,7 +68,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			format.MaxColumns = 70;
 			format.Style = style;
 			
-			SolutionItem item = null;
+			SolutionFolderItem item = null;
 			if (parent.ConfiguredSolutionItem != null)
 				item = parent.ConfiguredSolutionItem;
 			else if (parent.ConfiguredSolution != null)

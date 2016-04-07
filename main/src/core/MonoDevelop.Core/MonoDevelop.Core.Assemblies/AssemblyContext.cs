@@ -29,20 +29,21 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Mono.PkgConfig;
 
 namespace MonoDevelop.Core.Assemblies
 {
 	public class AssemblyContext: IAssemblyContext
 	{
-		Dictionary<string, SystemPackage> assemblyPathToPackage = new Dictionary<string, SystemPackage> ();
-		Dictionary<string, SystemAssembly> assemblyFullNameToAsm = new Dictionary<string, SystemAssembly> ();
-		Dictionary<string, SystemPackage> packagesHash = new Dictionary<string, SystemPackage> ();
-		List<SystemPackage> packages = new List<SystemPackage> ();
+		ImmutableDictionary<string, SystemPackage> assemblyPathToPackage = ImmutableDictionary<string, SystemPackage>.Empty;
+		ImmutableDictionary<string, SystemAssembly> assemblyFullNameToAsm = ImmutableDictionary<string, SystemAssembly>.Empty;
+		ImmutableDictionary<string, SystemPackage> packagesHash = ImmutableDictionary<string, SystemPackage>.Empty;
+		ImmutableList<SystemPackage> packages = ImmutableList<SystemPackage>.Empty;
 		
 		public event EventHandler Changed;
 
-		public ICollection<string> GetAssemblyFullNames ()
+		public IEnumerable<string> GetAssemblyFullNames ()
 		{
 			return assemblyFullNameToAsm.Keys;
 		}
@@ -90,8 +91,8 @@ namespace MonoDevelop.Core.Assemblies
 					asms.Add (AddAssembly (asm.File, new AssemblyInfo (asm), p));
 			}
 			p.Initialize (pinfo, asms, isInternal);
-			packages.Add (p);
-			packagesHash [pinfo.Name] = p;
+			packages = packages.Add (p);
+			packagesHash = packagesHash.SetItem (pinfo.Name, p);
 			
 			NotifyChanged ();
 			
@@ -117,8 +118,8 @@ namespace MonoDevelop.Core.Assemblies
 			foreach (SystemAssembly asm in p.Assemblies)
 				RemoveAssembly (asm);
 			
-			packages.Remove (p);
-			packagesHash.Remove (p.Name);
+			packages = packages.Remove (p);
+			packagesHash = packagesHash.Remove (p.Name);
 			NotifyChanged ();
 		}
 		
@@ -537,8 +538,8 @@ namespace MonoDevelop.Core.Assemblies
 					asm.NextSameName = prevAsm.NextSameName;
 					prevAsm.NextSameName = asm;
 				} else
-					assemblyFullNameToAsm [asm.FullName] = asm;
-				assemblyPathToPackage [assemblyfile] = package;
+					assemblyFullNameToAsm = assemblyFullNameToAsm.SetItem (asm.FullName, asm);
+				assemblyPathToPackage = assemblyPathToPackage.SetItem (assemblyfile, package);
 				return asm;
 			} catch {
 				return null;
@@ -551,7 +552,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (!assemblyFullNameToAsm.TryGetValue (asm.FullName, out ca))
 				return;
 			
-			assemblyPathToPackage.Remove (asm.Location);
+			assemblyPathToPackage = assemblyPathToPackage.Remove (asm.Location);
 			
 			SystemAssembly prev = null;
 			do {
@@ -559,9 +560,9 @@ namespace MonoDevelop.Core.Assemblies
 					if (prev != null)
 						prev.NextSameName = ca.NextSameName;
 					else if (ca.NextSameName != null)
-						assemblyFullNameToAsm [asm.FullName] = ca.NextSameName;
+						assemblyFullNameToAsm = assemblyFullNameToAsm.SetItem (asm.FullName, ca.NextSameName);
 					else
-						assemblyFullNameToAsm.Remove (asm.FullName);
+						assemblyFullNameToAsm = assemblyFullNameToAsm.Remove (asm.FullName);
 					break;
 				} else {
 					prev = ca;
@@ -577,8 +578,8 @@ namespace MonoDevelop.Core.Assemblies
 			    && packagesHash.TryGetValue (package.Name, out oldPackage) && !oldPackage.IsFrameworkPackage) {
 				ForceUnregisterPackage (oldPackage);
 			}
-			packagesHash [package.Name] = package;
-			packages.Add (package);
+			packagesHash = packagesHash.SetItem (package.Name, package);
+			packages = packages.Add (package);
 		}
 
 		public static AssemblyName ParseAssemblyName (string fullname)

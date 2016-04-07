@@ -35,12 +35,12 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class MarkerOperationsHandler : CommandHandler
+	class MarkerOperationsHandler : CommandHandler
 	{
 		protected override void Run (object data)
 		{
 			UrlMarker urlMarker = data as UrlMarker;
-			if (data == null)
+			if (urlMarker == null)
 				return;
 			try {
 				if (urlMarker.UrlType == UrlType.Email) {

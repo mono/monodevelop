@@ -30,9 +30,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementTask<TResult> : ITask<TResult>
+	internal class PackageManagementTask<TResult> : ITask<TResult>
 	{
 		Task<TResult> task;
 		Action<ITask<TResult>> continueWith;

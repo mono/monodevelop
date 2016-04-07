@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class IPackageFromRepositoryExtensions
+	internal static class IPackageFromRepositoryExtensions
 	{
 		public static IDisposable StartInstallOperation(this IPackageFromRepository package)
 		{

@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class PackageManagementEnumerableExtensions
+	internal static class PackageManagementEnumerableExtensions
 	{
 		public static IEnumerable<TSource> DistinctLast<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
 		{

@@ -32,9 +32,9 @@ using System.Linq;
 
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackagesForSelectedPageResult
+	internal class PackagesForSelectedPageResult
 	{
 		public PackagesForSelectedPageResult(IEnumerable<IPackage> packages, PackagesForSelectedPageQuery query)
 		{

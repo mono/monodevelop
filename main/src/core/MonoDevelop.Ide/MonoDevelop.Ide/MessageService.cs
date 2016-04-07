@@ -30,10 +30,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
+using System.Threading.Tasks;
 
 #if MAC
 using AppKit;
@@ -87,8 +88,9 @@ namespace MonoDevelop.Ide
 		public static AlertButton Stop    = new AlertButton (Gtk.Stock.Stop, true);
 		public static AlertButton Proceed = new AlertButton (GettextCatalog.GetString ("_Proceed"));
 		public static AlertButton Replace = new AlertButton (GettextCatalog.GetString ("_Replace"));
-		
+
 		public static AlertButton OverwriteFile = new AlertButton (GettextCatalog.GetString ("_Overwrite file"));
+		public static AlertButton AddExistingFile = new AlertButton (GettextCatalog.GetString ("Add existing file"));
 		
 		
 		public string Label { get; set; }
@@ -128,52 +130,7 @@ namespace MonoDevelop.Ide
 	public static class MessageService
 	{
 		public static Window RootWindow { get; internal set; }
-		
-		#region ShowException
-		
-		public static void ShowException (Exception e)
-		{
-			ShowException ((Window)null, e);
-		}
-		
-		public static void ShowException (Exception e, string message)
-		{
-			ShowException ((Window)null, e, message);
-		}
-		
-		public static void ShowException (Exception e, string message, string title)
-		{
-			ShowException ((Window)null, e, message, title);
-		}
-		
-		public static AlertButton ShowException (Exception e, string message, string title, params AlertButton[] buttons)
-		{
-			return ShowException ((Window)null, e, message, title, buttons);
-		}
 
-		public static void ShowException (Window parent, Exception e)
-		{
-			ShowException (parent, e, e.Message);
-		}
-		
-		public static void ShowException (Window parent, Exception e, string message)
-		{
-			ShowException (parent, e, message, null);
-		}
-		
-		public static void ShowException (Window parent, Exception e, string message, string title)
-		{
-			ShowException (parent, e, message, title, null);
-		}
-
-		public static AlertButton ShowException (Window parent, Exception e, string message, string title, params AlertButton[] buttons)
-		{
-			if (!IdeApp.IsInitialized)
-				throw new Exception ("IdeApp has not been initialized. Propagating the exception.", e); 
-			return messageService.ShowException (parent, title, message, e, buttons);
-		}
-		#endregion
-		
 		#region ShowError
 		public static void ShowError (string primaryText)
 		{
@@ -330,13 +287,13 @@ namespace MonoDevelop.Ide
 			return ShowCustomDialog (dialog, null);
 		}
 		
-		public static int ShowCustomDialog (Dialog dialog, Window parent)
+		public static int ShowCustomDialog (Dialog dlg, Window parent)
 		{
+			Gtk.Dialog dialog = dlg;
 			try {
-				return RunCustomDialog (dialog, parent);
+				return RunCustomDialog (dlg, parent);
 			} finally {
-				if (dialog != null)
-					dialog.Destroy ();
+				dialog?.Destroy ();
 			}
 		}
 		
@@ -348,9 +305,10 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Places and runs a transient dialog. Does not destroy it, so values can be retrieved from its widgets.
 		/// </summary>
-		public static int RunCustomDialog (Dialog dialog, Window parent)
+		public static int RunCustomDialog (Dialog dlg, Window parent)
 		{
 			// if dialog is modal, make sure it's parented on any existing modal dialog
+			Gtk.Dialog dialog = dlg;
 			if (dialog.Modal) {
 				parent = GetDefaultModalParent ();
 			}
@@ -362,21 +320,22 @@ namespace MonoDevelop.Ide
 
 			dialog.TransientFor = parent;
 			dialog.DestroyWithParent = true;
+			MonoDevelop.Components.IdeTheme.ApplyTheme (dialog);
 
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
 
 			#if MAC
-			DispatchService.GuiSyncDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				// If there is a native NSWindow model window running, we need
 				// to show the new dialog over that window.
 				if (NSApplication.SharedApplication.ModalWindow != null)
 					dialog.Shown += HandleShown;
 				else
 					PlaceDialog (dialog, parent);
-			});
+			}).Wait ();
 			#endif
-			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
+			return GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 
 		#if MAC
@@ -403,26 +362,27 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static Window GetDefaultModalParent ()
 		{
-			foreach (Window w in Window.ListToplevels ())
+			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
 				if (w.Visible && w.HasToplevelFocus && w.Modal)
 					return w;
 			return GetFocusedToplevel ();
 		}
 
-		static Window GetFocusedToplevel ()
+		static Gtk.Window GetFocusedToplevel ()
 		{
-			return Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
+			return Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
 		}
 		
 		/// <summary>
 		/// Positions a dialog relative to its parent on platforms where default placement is known to be poor.
 		/// </summary>
-		public static void PlaceDialog (Window child, Window parent)
+		public static void PlaceDialog (Window childControl, Window parent)
 		{
 			//HACK: this is a workaround for broken automatic window placement on Mac
 			if (!Platform.IsMac)
 				return;
 
+			Gtk.Window child = childControl;
 			//modal windows should always be placed o top of existing modal windows
 			if (child.Modal)
 				parent = GetDefaultModalParent ();
@@ -436,8 +396,10 @@ namespace MonoDevelop.Ide
 		}
 		
 		/// <summary>Centers a window relative to its parent.</summary>
-		static void CenterWindow (Window child, Window parent)
+		static void CenterWindow (Window childControl, Window parentControl)
 		{
+			Gtk.Window child = childControl;
+			Gtk.Window parent = parentControl;
 			child.Child.Show ();
 			int w, h, winw, winh, x, y, winx, winy;
 			child.GetSize (out w, out h);
@@ -500,6 +462,40 @@ namespace MonoDevelop.Ide
 		{
 			return messageService.GenericAlert (parent, message);
 		}
+
+		public static async Task<T> ExecuteTaskAndShowWaitDialog<T> (Task<T> task, string waitMessage, CancellationTokenSource cts)
+		{
+			bool taskFinished = false;
+			var dontExitMethodUntilDialogClosed = new TaskCompletionSource<bool> ();
+			var delayTask = Task.Delay (1000);//Don't show wait dialog immediately, wait 1 sec before showing
+			var finishedTask = await Task.WhenAny (delayTask, task).ConfigureAwait (false);
+			if (finishedTask == task)//If task finished before delayTask, great return value and never display dialog
+				return task.Result;
+			//cancelDialog is used to close dialog when task is finished
+			var cancelDialog = new CancellationTokenSource ();
+			Gtk.Application.Invoke (delegate {
+				if (cancelDialog.Token.IsCancellationRequested)
+					return;
+				var gm = new GenericMessage (waitMessage, null, cancelDialog.Token);
+				gm.Buttons.Add (AlertButton.Cancel);
+				gm.DefaultButton = 0;
+				GenericAlert (gm);
+				dontExitMethodUntilDialogClosed.SetResult (true);
+				if (!taskFinished) {
+					//Don't cancel if task finished already, we closed dialog via cancelDialog.Cancel ();
+					//caller of this method might reuse this cts for other tasks
+					cts.Cancel ();
+				}
+			});
+			try {
+				await task.ConfigureAwait (false);
+			} finally {
+				taskFinished = true;
+				cancelDialog.Cancel ();
+			}
+			await dontExitMethodUntilDialogClosed.Task.ConfigureAwait (false);
+			return task.Result;
+		}
 		
 		public static string GetTextResponse (string question, string caption, string initialValue)
 		{
@@ -540,22 +536,6 @@ namespace MonoDevelop.Ide
 		//The real GTK# code is wrapped in a GuiSyncObject to make calls synchronous on the GUI thread
 		class InternalMessageService : GuiSyncObject
 		{
-			public AlertButton ShowException (Window parent, string title, string message, Exception e, params AlertButton[] buttons)
-			{
-				if ((buttons == null || buttons.Length == 0) && (e is UserException) && ((UserException)e).AlreadyReportedToUser)
-					return AlertButton.Ok;
-
-				var exceptionDialog = new ExceptionDialog {
-					Buttons = buttons ?? new [] { AlertButton.Ok },
-					Title = title ?? GettextCatalog.GetString ("An error has occurred"),
-					Message = message,
-					Exception = e,
-					TransientFor = parent ?? GetDefaultModalParent (),
-				};
-				exceptionDialog.Run ();
-				return exceptionDialog.ResultButton;
-			}
-			
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {
@@ -618,7 +598,7 @@ namespace MonoDevelop.Ide
 				AlertButtonClicked (this, args);
 			return args.CloseDialog;
 		}
-		
+
 		public void AddOption (string id, string text, bool setByDefault)
 		{
 			Options.Add (new AlertOption (id, text) { Value = setByDefault });

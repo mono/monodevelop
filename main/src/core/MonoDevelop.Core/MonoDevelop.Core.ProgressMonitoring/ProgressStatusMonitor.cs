@@ -33,15 +33,16 @@ namespace MonoDevelop.Core.ProgressMonitoring
 {
 	public class ProgressStatusMonitor: MarshalByRefObject, IProgressStatus, IDisposable
 	{
-		IProgressMonitor monitor;
+		ProgressMonitor monitor;
 		int step;
 		int logLevel;
+		bool canceled;
 		
-		public ProgressStatusMonitor (IProgressMonitor monitor): this (monitor, 1)
+		public ProgressStatusMonitor (ProgressMonitor monitor): this (monitor, 1)
 		{
 		}
 		
-		public ProgressStatusMonitor (IProgressMonitor monitor, int logLevel)
+		public ProgressStatusMonitor (ProgressMonitor monitor, int logLevel)
 		{
 			this.logLevel = logLevel;
 			this.monitor = monitor;
@@ -77,7 +78,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		}
 		
 		public bool IsCanceled {
-			get { return monitor.IsCancelRequested; }
+			get { return monitor.CancellationToken.IsCancellationRequested || canceled; }
 		}
 		
 		public int LogLevel {
@@ -87,7 +88,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		
 		public void Cancel ()
 		{
-			monitor.AsyncOperation.Cancel ();
+			canceled = true;
 		}
 		
 		public void Dispose ()

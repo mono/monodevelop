@@ -38,20 +38,19 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.MainToolbar;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Core.Text;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class ResultsDataSource: List<SearchResult>, ISearchDataSource
 	{
-
-		Gtk.Widget widget;
+		
 		SearchResult bestResult;
 		int bestRank = int.MinValue;
 
-		public ResultsDataSource (Gtk.Widget widget)
+		public ResultsDataSource ()
 		{
-			this.widget = widget;
 		}
 
 		public void SortUpToN (MonoDevelop.Components.MainToolbar.SearchCategory.DataItemComparer comparison, int n)
@@ -124,20 +123,26 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (isSelected)
 				return GLib.Markup.EscapeText (this [item].PlainText);
-			return this [item].GetMarkupText (widget);
+			return this [item].GetMarkupText (isSelected);
 		}
 
 		string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)
 		{
 			if (isSelected)
 				return GLib.Markup.EscapeText (this [item].Description);
-			return this [item].GetDescriptionMarkupText (widget);
+			return this [item].GetDescriptionMarkupText ();
 		}
 
-		ICSharpCode.NRefactory.TypeSystem.DomRegion ISearchDataSource.GetRegion (int item)
+		ISegment ISearchDataSource.GetRegion (int item)
 		{
 			var result = this [item];
-			return new DomRegion (result.File, result.Row, result.Column, result.Row, result.Column);
+			return new TextSegment (result.Offset, result.Length);
+		}
+
+		string ISearchDataSource.GetFileName (int item)
+		{
+			var result = this [item];
+			return result.File;
 		}
 
 		bool ISearchDataSource.CanActivate (int item)
@@ -163,9 +168,9 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		TooltipInformation ISearchDataSource.GetTooltip (int item)
+		Task<TooltipInformation> ISearchDataSource.GetTooltip (CancellationToken token, int item)
 		{
-			return this [item].TooltipInformation;
+			return this [item].GetTooltipInformation (token);
 		}
 		#endregion
 

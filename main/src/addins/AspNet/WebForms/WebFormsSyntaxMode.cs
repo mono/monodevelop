@@ -25,8 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using System.Xml;
 using System.Text;
 using MonoDevelop.Core;
 using Mono.TextEditor;

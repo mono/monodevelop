@@ -34,6 +34,7 @@ using MonoDevelop.Core.Execution;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Gui;
 using Mono.Debugging;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -44,103 +45,42 @@ namespace MonoDevelop.Debugger
 			return DebuggingService.CanDebugCommand (command);
 		}
 
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			if (!CanExecute (command))
 			    return null;
-			DebugExecutionHandler h = new DebugExecutionHandler (null);
-			return h.Execute (command, console);
+			return DebuggingService.Run (command, console);
 		}
 	}
-	
-	class DebugExecutionHandler: IProcessAsyncOperation
+
+	class DebugAsyncOperation: ProcessAsyncOperation
 	{
-		bool done;
-		ManualResetEvent stopEvent;
-		DebuggerEngine factory;
-		
-		public DebugExecutionHandler (DebuggerEngine factory)
+		TaskCompletionSource<int> taskSource;
+
+		public DebugAsyncOperation ()
 		{
-			this.factory = factory;
-			DebuggingService.StoppedEvent += new EventHandler (OnStopDebug);
-		}
-		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
-		{
-			DebuggingService.InternalRun (command, factory, console);
-			return this;
-		}
-		
-		public void Cancel ()
-		{
-			DebuggingService.Stop ();
-		}
-		
-		public void WaitForCompleted ()
-		{
-			lock (this) {
-				if (done) return;
-				if (stopEvent == null)
-					stopEvent = new ManualResetEvent (false);
-			}
-			stopEvent.WaitOne ();
-		}
-		
-		public int ExitCode {
-			get { return 0; }
-		}
-		
-		public bool IsCompleted {
-			get { return done; }
-		}
-		
-		public bool Success {
-			get { return true; }
+			taskSource = new TaskCompletionSource<int> ();
+			DebuggingService.StoppedEvent += OnStopDebug;
+			CancellationTokenSource = new CancellationTokenSource ();
+			CancellationTokenSource.Token.Register (DebuggingService.Stop);
+			Task = taskSource.Task;
 		}
 
-		public bool SuccessWithWarnings {
-			get { return true; }
+		public void Cleanup ()
+		{
+			if (taskSource != null) {
+				taskSource.SetResult (0);
+				taskSource = null;
+			}
+			DebuggingService.StoppedEvent -= OnStopDebug;
 		}
 
 		void OnStopDebug (object sender, EventArgs args)
 		{
-			lock (this) {
-				done = true;
-				if (stopEvent != null)
-					stopEvent.Set ();
-				if (completedEvent != null)
-					completedEvent (this);
-			}
-
-			DebuggingService.StoppedEvent -= new EventHandler (OnStopDebug);
-		}
-		
-		event OperationHandler IAsyncOperation.Completed {
-			add {
-				bool raiseNow = false;
-				lock (this) {
-					if (done)
-						raiseNow = true;
-					else
-						completedEvent += value;
-				}
-				if (raiseNow)
-					value (this);
-			}
-			remove {
-				lock (this) {
-					completedEvent -= value;
-				}
+			if (taskSource != null) {
+				taskSource.SetResult (0);
+				taskSource = null;
 			}
 		}
-		
-		//FIXME:
-		public int ProcessId {
-			get { return -1; }
-		}
-		
-		event OperationHandler completedEvent;
-		
-		void IDisposable.Dispose () {}
 	}
 }

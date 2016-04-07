@@ -26,7 +26,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.SharedAssetsProjects;
 
@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		GeneralProjectOptionsWidget widget;
 
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return widget = new GeneralProjectOptionsWidget (ConfiguredProject, ParentDialog);
 		}

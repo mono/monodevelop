@@ -27,6 +27,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Mono.TextEditor.PopupWindow;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Mono.TextEditor
 {
@@ -188,7 +190,7 @@ namespace Mono.TextEditor
 
 		TextLinkTooltipProvider tooltipProvider;
 
-		public TextLinkEditMode (TextEditor editor, int baseOffset, List<TextLink> links)
+		public TextLinkEditMode (MonoTextEditor editor, int baseOffset, List<TextLink> links)
 		{
 			this.editor = editor;
 			this.links = links;
@@ -547,19 +549,19 @@ namespace Mono.TextEditor
 			this.mode = mode;
 		}
 		#region ITooltipProvider implementation 
-		public override TooltipItem GetItem (TextEditor Editor, int offset)
+		public override Task<TooltipItem> GetItem (MonoTextEditor Editor, int offset, CancellationToken token = default(CancellationToken))
 		{
 			int o = offset - mode.BaseOffset;
 			for (int i = 0; i < mode.Links.Count; i++) {
 				TextLink l = mode.Links [i];
 				if (!l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
-					return new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length);
+					return Task.FromResult (new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length));
 			}
-			return null;
+			return Task.FromResult<TooltipItem> (null);
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
 		}
 
-		protected override Gtk.Window CreateTooltipWindow (TextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Gtk.Window CreateTooltipWindow (MonoTextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			TextLink link = item.Item as TextLink;
 			if (link == null || string.IsNullOrEmpty (link.Tooltip))
@@ -570,7 +572,7 @@ namespace Mono.TextEditor
 			return window;
 		}
 
-		protected override void GetRequiredPosition (TextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		protected override void GetRequiredPosition (MonoTextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			TooltipWindow win = (TooltipWindow)tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
@@ -594,7 +596,7 @@ namespace Mono.TextEditor
 			IsVisible = true;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			int caretOffset = editor.Caret.Offset - BaseOffset;
 
@@ -625,7 +627,7 @@ namespace Mono.TextEditor
 						double x1 = metrics.TextRenderStartPosition + x_pos - 1;
 						double x2 = metrics.TextRenderStartPosition + x_pos2 - 1 + 0.5;
 
-						cr.Rectangle (x1 + 0.5, y + 0.5, x2 - x1, editor.LineHeight - 1);
+						cr.Rectangle (x1 + 0.5, metrics.LineYRenderStartPosition + 0.5, x2 - x1, editor.LineHeight - 1);
 						
 						cr.SetSourceColor (fillGc);
 						cr.FillPreserve ();
@@ -649,7 +651,7 @@ namespace Mono.TextEditor
 			return margin is GutterMargin;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var width = metrics.Width;
 
@@ -661,7 +663,7 @@ namespace Mono.TextEditor
 			return true;
 		}
 
-		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
+		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var width = metrics.Width;
 			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;

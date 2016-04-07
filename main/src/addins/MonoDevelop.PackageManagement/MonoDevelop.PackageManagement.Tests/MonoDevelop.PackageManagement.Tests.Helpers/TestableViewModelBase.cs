@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableViewModelBase : ViewModelBase<TestableViewModelBase>
+	class TestableViewModelBase : ViewModelBase<TestableViewModelBase>
 	{
 		public string MyProperty { get; set; }
 	}

@@ -41,18 +41,12 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 			return "WebReferences";
 		}
 		
-		/// <summary>Build the node in the project tree.</summary>
-		/// <param name="treeBuilder">An ITreeBuilder containing the project tree builder.</param>
-		/// <param name="dataObject">An object containing the current builder child.</param>
-		/// <param name="label">A string containing the label of the node.</param>
-		/// <param name="icon">A Pixbif containing the icon for the node.</param>
-		/// <param name="closedIcon">A Pixbif containing the closed icon for the node.</param>
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var folder = (WebReferenceFolder) dataObject;
 			nodeInfo.Label = folder.IsWCF ? GettextCatalog.GetString ("Web Services") : GettextCatalog.GetString ("Web References");
-			nodeInfo.Icon = Context.GetIcon (Stock.OpenReferenceFolder);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.ClosedReferenceFolder);
+			nodeInfo.Icon = Context.GetIcon ("md-webreference-folder");
+			nodeInfo.ClosedIcon = Context.GetIcon ("md-webreference-folder");
 			
 		}
 		
@@ -71,11 +65,9 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 		{
 			var folder = (WebReferenceFolder) dataObject;
 			if (folder.IsWCF)
-				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWCF (folder.Project))
-					treeBuilder.AddChild(item);
+				treeBuilder.AddChildren (WebReferencesService.GetWebReferenceItemsWCF (folder.Project));
 			else
-				foreach (WebReferenceItem item in WebReferencesService.GetWebReferenceItemsWS (folder.Project))
-					treeBuilder.AddChild(item);
+				treeBuilder.AddChildren (WebReferencesService.GetWebReferenceItemsWS (folder.Project));
 		}
 		
 		/// <summary>Compare two object with one another and returns a number based on their sort order.</summary>

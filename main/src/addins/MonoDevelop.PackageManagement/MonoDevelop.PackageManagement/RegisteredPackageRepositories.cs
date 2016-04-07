@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredPackageRepositories : IRegisteredPackageRepositories
+	internal class RegisteredPackageRepositories : IRegisteredPackageRepositories
 	{
 		IPackageRepositoryCache repositoryCache;
 		PackageManagementOptions options;

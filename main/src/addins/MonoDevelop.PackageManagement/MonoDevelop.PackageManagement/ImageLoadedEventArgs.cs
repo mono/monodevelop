@@ -29,7 +29,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ImageLoadedEventArgs : EventArgs
+	internal class ImageLoadedEventArgs : EventArgs
 	{
 		public ImageLoadedEventArgs (Image image, Uri uri, object state)
 		{

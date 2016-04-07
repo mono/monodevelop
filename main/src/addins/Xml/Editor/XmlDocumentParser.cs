@@ -27,7 +27,8 @@
 //
 
 using System;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Parser;
@@ -36,24 +37,31 @@ namespace MonoDevelop.Xml.Editor
 {
 	class XmlDocumentParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, MonoDevelop.Projects.Project project = null)
+		public override Task<ParsedDocument> Parse (ParseOptions options, CancellationToken cancellationToken)
 		{
-			var doc = new XmlParsedDocument (fileName);
+			return Task.Run (() => ParseInternal (options, cancellationToken));
+		}
+
+		ParsedDocument ParseInternal (ParseOptions options, CancellationToken cancellationToken)
+		{
+			var doc = new XmlParsedDocument (options.FileName);
 			doc.Flags |= ParsedDocumentFlags.NonSerializable;
+			var xmlParser = new XmlParser (new XmlRootState (), true);
+
 			try {
-				var xmlParser = new XmlParser (new XmlRootState (), true);
-				xmlParser.Parse (content);
-				doc.XDocument = xmlParser.Nodes.GetRoot ();
-				doc.Add (xmlParser.Errors);
-				
-				if (doc.XDocument != null && doc.XDocument.RootElement != null) {
-					if (!doc.XDocument.RootElement.IsEnded)
-						doc.XDocument.RootElement.End (xmlParser.Location);
-				}
+				xmlParser.Parse (options.Content.CreateReader ());
+			} catch (Exception ex) {
+				Core.LoggingService.LogError ("Unhandled error parsing xml document", ex);
 			}
-			catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("Unhandled error parsing xml document", ex);
+
+			doc.XDocument = xmlParser.Nodes.GetRoot ();
+			doc.AddRange (xmlParser.Errors);
+
+			if (doc.XDocument != null && doc.XDocument.RootElement != null) {
+				if (!doc.XDocument.RootElement.IsEnded)
+					doc.XDocument.RootElement.End (xmlParser.Location);
 			}
+
 			return doc;
 		}
 	}

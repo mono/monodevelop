@@ -95,8 +95,10 @@ namespace MonoDevelop.VersionControl
 				Dispose ();
 		}
 
+		internal bool Disposed { get; private set; }
 		public virtual void Dispose ()
 		{
+			Disposed = true;
 			if (!queryRunning)
 				return;
 
@@ -113,8 +115,7 @@ namespace MonoDevelop.VersionControl
 			get { return name ?? string.Empty; }
 			set {
 				name = value;
-				if (NameChanged != null)
-					NameChanged (this, EventArgs.Empty);
+				NameChanged?.Invoke (this, EventArgs.Empty);
 			}		
 		}
 		
@@ -414,17 +415,23 @@ namespace MonoDevelop.VersionControl
 					// new queries to the queue while long-running VCS operations are being performed
 					var groups = fileQueryQueueClone.GroupBy (q => (q.QueryFlags & VersionInfoQueryFlags.IncludeRemoteStatus) != 0);
 					foreach (var group in groups) {
+						if (Disposed)
+							break;
 						var status = OnGetVersionInfo (group.SelectMany (q => q.Paths), group.Key);
 						infoCache.SetStatus (status);
 					}
 
 					foreach (var item in directoryQueryQueueClone) {
+						if (Disposed)
+							break;
 						var status = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, false);
 						infoCache.SetDirectoryStatus (item.Directory, status, item.GetRemoteStatus);
 					}
 
 					foreach (var item in recursiveDirectoryQueryQueueClone) {
 						try {
+							if (Disposed)
+								continue;
 							item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
 						} finally {
 							item.ResetEvent.Set ();
@@ -502,29 +509,29 @@ namespace MonoDevelop.VersionControl
 		// Imports a directory into the repository. 'serverPath' is the relative path in the repository.
 		// 'localPath' is the local directory to publish. 'files' is the list of files to add to the new
 		// repository directory (must use absolute local paths).
-		public Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
+		public Repository Publish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor)
 		{
 			var res = OnPublish (serverPath, localPath, files, message, monitor);
 			ClearCachedVersionInfo (localPath);
 			return res;
 		}
 		
-		protected abstract Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor);
+		protected abstract Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, ProgressMonitor monitor);
 
 		// Updates a local file or directory from the repository
 		// Returns a list of updated files
-		public void Update (FilePath localPath, bool recurse, IProgressMonitor monitor)
+		public void Update (FilePath localPath, bool recurse, ProgressMonitor monitor)
 		{
 			Update (new FilePath[] { localPath }, recurse, monitor);
 		}
 
-		public void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		public void Update (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			OnUpdate (localPaths, recurse, monitor);
 			ClearCachedVersionInfo (localPaths);
 		}
 		
-		protected abstract void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
+		protected abstract void OnUpdate (FilePath[] localPaths, bool recurse, ProgressMonitor monitor);
 		
 		// Called to create a ChangeSet to be used for a commit operation
 		public virtual ChangeSet CreateChangeSet (FilePath basePath)
@@ -541,7 +548,8 @@ namespace MonoDevelop.VersionControl
 			
 			if (null != diffs) {
 				foreach (DiffInfo diff in diffs) {
-					patch.AppendLine (diff.Content);
+					if (!string.IsNullOrWhiteSpace (diff.Content))
+						patch.AppendLine (diff.Content);
 				}
 			}
 			
@@ -549,70 +557,74 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Commits changes in a set of files or directories into the repository
-		public void Commit (ChangeSet changeSet, IProgressMonitor monitor)
+		public void Commit (ChangeSet changeSet, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (changeSet.BaseLocalPath);
 			OnCommit (changeSet, monitor);
 		}
 		
-		protected abstract void OnCommit (ChangeSet changeSet, IProgressMonitor monitor);
+		protected abstract void OnCommit (ChangeSet changeSet, ProgressMonitor monitor);
 
 		// Gets the contents of this repositories into the specified local path
-		public void Checkout (FilePath targetLocalPath, bool recurse, IProgressMonitor monitor)
+		public void Checkout (FilePath targetLocalPath, bool recurse, ProgressMonitor monitor)
 		{
 			Checkout (targetLocalPath, null, recurse, monitor); 
 		}
 
-		public void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
+		public void Checkout (FilePath targetLocalPath, Revision rev, bool recurse, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (targetLocalPath);
 			OnCheckout (targetLocalPath, rev, recurse, monitor);
 		}
 
-		protected abstract void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor);
+		protected abstract void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, ProgressMonitor monitor);
 
-		public void Revert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		public void Revert (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localPaths);
 			OnRevert (localPaths, recurse, monitor);
 		}
 
-		public void Revert (FilePath localPath, bool recurse, IProgressMonitor monitor)
+		public void Revert (FilePath localPath, bool recurse, ProgressMonitor monitor)
 		{
 			Revert (new FilePath[] { localPath }, recurse, monitor);
 		}
 
-		protected abstract void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
+		protected abstract void OnRevert (FilePath[] localPaths, bool recurse, ProgressMonitor monitor);
 
-		public void RevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		public void RevertRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localPath);
 			OnRevertRevision (localPath, revision, monitor);
 		}
 
-		protected abstract void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);
+		protected abstract void OnRevertRevision (FilePath localPath, Revision revision, ProgressMonitor monitor);
 
-		public void RevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
+		public void RevertToRevision (FilePath localPath, Revision revision, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localPath);
 			OnRevertToRevision (localPath, revision, monitor);
 		}
 		
-		protected abstract void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor);
+		protected abstract void OnRevertToRevision (FilePath localPath, Revision revision, ProgressMonitor monitor);
 		
 		// Adds a file or directory to the repository
-		public void Add (FilePath localPath, bool recurse, IProgressMonitor monitor)
+		public void Add (FilePath localPath, bool recurse, ProgressMonitor monitor)
 		{
 			Add (new FilePath[] { localPath }, recurse, monitor);
 		}
 
-		public void Add (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
+		public void Add (FilePath[] localPaths, bool recurse, ProgressMonitor monitor)
 		{
-			OnAdd (localPaths, recurse, monitor);
+			try {
+				OnAdd (localPaths, recurse, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to add file", e);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		protected abstract void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
+		protected abstract void OnAdd (FilePath[] localPaths, bool recurse, ProgressMonitor monitor);
 		
 		// Returns true if the file can be moved from source location (and repository) to this repository
 		public virtual bool CanMoveFilesFrom (Repository srcRepository, FilePath localSrcPath, FilePath localDestPath)
@@ -626,57 +638,81 @@ namespace MonoDevelop.VersionControl
 		// For example, when moving a file to an unversioned directory, the implementation
 		// might just throw an exception, or it could version the directory, or it could
 		// ask the user what to do.
-		public void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		public void MoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localSrcPath, localDestPath);
-			OnMoveFile (localSrcPath, localDestPath, force, monitor);
+			try {
+				OnMoveFile (localSrcPath, localDestPath, force, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to move file", e);
+				File.Move (localSrcPath, localDestPath);
+			}
 		}
 		
-		protected virtual void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected virtual void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			File.Move (localSrcPath, localDestPath);
 		}
 		
 		// Moves a directory. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file move.
-		public void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		public void MoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			ClearCachedVersionInfo (localSrcPath, localDestPath);
-			OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
+			try {
+				OnMoveDirectory (localSrcPath, localDestPath, force, monitor);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to move directory", e);
+				FileService.SystemDirectoryRename (localSrcPath, localDestPath);
+			}
 		}
 		
-		protected virtual void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
+		protected virtual void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			FileService.SystemDirectoryRename (localSrcPath, localDestPath);
 		}
 		
 		// Deletes a file or directory. This method may be called for versioned and unversioned
 		// files. The default implementetions performs a system file delete.
-		public void DeleteFile (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal = true)
+		public void DeleteFile (FilePath localPath, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
 			DeleteFiles (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
-		public void DeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal = true)
+		public void DeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
-			OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			try {
+				OnDeleteFiles (localPaths, force, monitor, keepLocal);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to delete file", e);
+				if (!keepLocal)
+					foreach (var path in localPaths)
+						File.Delete (path);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
+		protected abstract void OnDeleteFiles (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal);
 
-		public void DeleteDirectory (FilePath localPath, bool force, IProgressMonitor monitor, bool keepLocal = true)
+		public void DeleteDirectory (FilePath localPath, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
 			DeleteDirectories (new FilePath[] { localPath }, force, monitor, keepLocal);
 		}
 
-		public void DeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal = true)
+		public void DeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal = true)
 		{
-			OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			try {
+				OnDeleteDirectories (localPaths, force, monitor, keepLocal);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to delete directory", e);
+				if (!keepLocal)
+					foreach (var path in localPaths)
+						Directory.Delete (path, true);
+			}
 			ClearCachedVersionInfo (localPaths);
 		}
 
-		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal);
+		protected abstract void OnDeleteDirectories (FilePath[] localPaths, bool force, ProgressMonitor monitor, bool keepLocal);
 		
 		// Called to request write permission for a file. The file may not yet exist.
 		// After the file is modified or created, NotifyFileChanged is called.
@@ -701,26 +737,26 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		// Locks a file in the repository so no other users can change it
-		public void Lock (IProgressMonitor monitor, params FilePath[] localPaths)
+		public void Lock (ProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			ClearCachedVersionInfo (localPaths);
 			OnLock (monitor, localPaths);
 		}
 		
 		// Locks a file in the repository so no other users can change it
-		protected virtual void OnLock (IProgressMonitor monitor, params FilePath[] localPaths)
+		protected virtual void OnLock (ProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			throw new System.NotSupportedException ();
 		}
 		
 		// Unlocks a file in the repository so other users can change it
-		public void Unlock (IProgressMonitor monitor, params FilePath[] localPaths)
+		public void Unlock (ProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			ClearCachedVersionInfo (localPaths);
 			OnUnlock (monitor, localPaths);
 		}
 		
-		protected virtual void OnUnlock (IProgressMonitor monitor, params FilePath[] localPaths)
+		protected virtual void OnUnlock (ProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			throw new System.NotSupportedException ();
 		}
@@ -822,18 +858,21 @@ namespace MonoDevelop.VersionControl
 			}
 			return list.ToArray ();
 		}
-		
+
 		/// <summary>
 		/// Retrieves annotations for a given path in the repository.
 		/// </summary>
 		/// <param name="repositoryPath">
 		/// A <see cref="FilePath"/>
 		/// </param>
+		/// <param name="since">
+		/// A <see cref="Revision"/>
+		/// </param>
 		/// <returns>
-		/// A <see cref="System.String"/> corresponding to each line 
+		/// A <see cref="Annotation"/> corresponding to each line 
 		/// of the file to which repositoryPath points.
 		/// </returns>
-		public virtual Annotation[] GetAnnotations (FilePath repositoryPath)
+		public virtual Annotation [] GetAnnotations (FilePath repositoryPath, Revision since)
 		{
 			return new Annotation[0];
 		}
@@ -872,9 +911,14 @@ namespace MonoDevelop.VersionControl
 	
 	public class Annotation
 	{
-		public string Revision {
+		public Revision Revision {
 			get;
 			private set;
+		}
+
+		string text;
+		public string Text {
+			get { return text ?? Revision?.ToString (); }
 		}
 
 		public string Author {
@@ -900,24 +944,26 @@ namespace MonoDevelop.VersionControl
 			get { return Date != DateTime.MinValue; }
 		}
 
-		public Annotation (string revision, string author, DateTime date)
+		public Annotation (Revision revision, string author, DateTime date) : this (revision, author, date, null)
 		{
-			this.Revision = revision;
-			this.Author = author;
-			this.Date = date;
 		}
 
-		public Annotation (string revision, string author, DateTime date, string email)
+		public Annotation (Revision revision, string author, DateTime date, string email) : this (revision, author, date, email, null)
 		{
-			this.Revision = revision;
-			this.Author = author;
-			this.Date = date;
-			this.Email = email;
+		}
+
+		public Annotation (Revision revision, string author, DateTime date, string email, string text)
+		{
+			Revision = revision;
+			Author = author;
+			Date = date;
+			Email = email;
+			this.text = text;
 		}
 		
 		public override string ToString ()
 		{
-			return String.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}, Email={4}, HasEmail={5}]",
+			return string.Format ("[Annotation: Revision={0}, Author={1}, Date={2}, HasDate={3}, Email={4}, HasEmail={5}]",
 									Revision, Author, Date, HasDate, Email, HasEmail);
 		}
 	}

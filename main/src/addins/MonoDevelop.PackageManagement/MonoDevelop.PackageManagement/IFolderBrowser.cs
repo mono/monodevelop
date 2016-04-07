@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IFolderBrowser
+	internal interface IFolderBrowser
 	{
 		string SelectFolder();
 	}

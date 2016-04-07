@@ -30,12 +30,12 @@
 	</ExtensionPoint>
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
-			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
-			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-locals" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
 			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-breakpoints" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" />
-			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
-			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.WatchPad/Right Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
+			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-locals" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals" />
+			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
 			<Pad id = "MonoDevelop.Debugger.ImmediatePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.StackTracePad/Center Bottom" icon="md-view-debug-immediate" class = "MonoDevelop.Debugger.ImmediatePad" _label="Immediate" />
+			<Pad id = "MonoDevelop.Debugger.StackTracePad" defaultLayout="Debug" defaultPlacement = "MonoDevelop.Debugger.WatchPad/Right Bottom" icon="md-view-debug-call-stack" class = "MonoDevelop.Debugger.StackTracePad" _label="Call Stack" />
+			<Pad id = "MonoDevelop.Debugger.ThreadsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-threads" class = "MonoDevelop.Debugger.ThreadsPad" _label="Threads" />
 		</Category>
 	</Extension>
 
@@ -56,14 +56,14 @@
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
 		<Command id = "MonoDevelop.Debugger.DebugCommands.Debug"
 				defaultHandler = "MonoDevelop.Debugger.DebugHandler"
-				icon = "md-execute-debug"
+				icon = "md-bug"
 				shortcut = "F5"
 				macShortcut = "Meta|Return"
 				_description = "Start debugging"
 				_label = "Start _Debugging" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugEntry"
 				defaultHandler = "MonoDevelop.Debugger.DebugEntryHandler"
-				icon = "md-execute-debug"
+				icon = "md-bug"
 				_description = "Debug current project"
 				_label = "Start D_ebugging Item" />
 	</Extension>
@@ -124,7 +124,7 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.NewCatchpoint"
 				defaultHandler = "MonoDevelop.Debugger.NewCatchpointHandler"
 				_label = "New Exception Catchpoint"
-				icon = "md-breakpoint-new" />
+				icon = "md-catchpoint-new" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpoints"
 				defaultHandler = "MonoDevelop.Debugger.ShowBreakpointsHandler"
 				_label = "View Breakpoints"
@@ -164,6 +164,7 @@
 				defaultHandler = "MonoDevelop.Debugger.ExpressionEvaluatorCommand" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine"
 				_label = "Show Current Execution Line"
+				icon = "md-go-to-line"
 				shortcut = "Alt|*"
 				defaultHandler = "MonoDevelop.Debugger.ShowCurrentExecutionLineCommand" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.AddWatch"
@@ -230,15 +231,12 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-22.png" size = "SmallToolbar"/>
-		<StockIcon stockid = "md-execute-debug" icon = "gtk-execute|res:debug-overlay-24.png" size = "LargeToolbar"/>
 		<StockIcon stockid = "md-continue-debug" resource = "continue-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-pause-debug" resource = "pause-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-step-into-debug" resource = "step-in-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-step-out-debug" resource = "step-out-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-step-over-debug" resource = "step-over-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-view-debug-breakpoints" resource = "breakpoint-16.png" size="Menu" />
+		<StockIcon stockid = "md-view-debug-breakpoints" resource = "pad-breakpoints-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-call-stack" resource = "pad-call-stack-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-locals" resource = "pad-locals-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-threads" resource = "pad-threads-16.png" size="Menu" />

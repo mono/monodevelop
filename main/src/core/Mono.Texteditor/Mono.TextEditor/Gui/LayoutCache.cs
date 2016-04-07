@@ -33,10 +33,10 @@ namespace Mono.TextEditor
 	/// </summary>
 	public class LayoutCache : IDisposable
 	{
-		readonly Gtk.Widget widget;
+		readonly MonoTextEditor widget;
 		readonly Queue<LayoutProxy> layoutQueue = new Queue<LayoutProxy> ();
 
-		public LayoutCache (Gtk.Widget widget)
+		public LayoutCache (MonoTextEditor widget)
 		{
 			if (widget == null)
 				throw new ArgumentNullException ("widget");
@@ -65,6 +65,7 @@ namespace Mono.TextEditor
 		{
 			readonly LayoutCache layoutCache;
 			readonly Pango.Layout layout;
+			int width = -1, height = -1, lineCount = -1;
 
 			public LayoutProxy (LayoutCache layoutCache, Pango.Layout layout)
 			{
@@ -134,11 +135,12 @@ namespace Mono.TextEditor
 			}
 
 			public int LineCount {
-				get { return layout.LineCount; }
+				get { return lineCount < 0 ? lineCount = layout.LineCount : lineCount; }
 			}
 
 			public void SetText (string text)
 			{
+				this.width = this.height = lineCount = -1;
 				layout.SetText (text); 
 			}
 
@@ -159,7 +161,14 @@ namespace Mono.TextEditor
 
 			public void GetSize (out int width, out int height)
 			{
-				layout.GetSize (out width, out height); 
+				if (this.width >= 0) {
+					width = this.width;
+					height = this.height;
+					return;
+				}
+				layout.GetSize (out width, out height);
+				this.width = width;
+				this.height = height;
 			}
 
 			public bool XyToIndex (int x, int y, out int index, out int trailing)
@@ -174,11 +183,29 @@ namespace Mono.TextEditor
 
 			public void GetPixelSize (out int width, out int height)
 			{
-				layout.GetPixelSize (out width, out height); 
+				if (this.width >= 0) {
+					width = (int)(this.width / Pango.Scale.PangoScale);
+					height = (int)(this.height / Pango.Scale.PangoScale);
+					return;
+				}
+
+				layout.GetPixelSize (out width, out height);
+				this.width = (int)(width * Pango.Scale.PangoScale);
+				this.height = (int)(height * Pango.Scale.PangoScale);
 			}
 
 			public void GetExtents (out Pango.Rectangle ink_rect, out Pango.Rectangle logical_rect)
 			{
+				if (this.width >= 0) {
+					ink_rect = logical_rect = new Pango.Rectangle {
+						X = 0,
+						Y = 0,
+						Width = width,
+						Height = height
+					};
+					return;
+				}
+
 				layout.GetExtents (out ink_rect, out logical_rect); 
 			}
 		}

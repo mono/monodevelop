@@ -30,6 +30,7 @@ using Gtk;
 using System.Linq;
 using Mono.Addins;
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				isRoot = false;
 		}
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			HBox hbox = new HBox (false, 6);
 			Label label = new Label ();
@@ -112,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			warningMessage = new HBox ();
 			warningMessage.Spacing = 6;
-			Image img = new Image (Stock.Warning, IconSize.Menu);
+			var img = new ImageView (Stock.Warning, IconSize.Menu);
 			warningMessage.PackStart (img, false, false, 0);
 			Label wl = new Label (GettextCatalog.GetString ("Changes done in this section will only be applied to new projects. " +
 				"Settings for existing projects can be modified in the project (or solution) options dialog."));

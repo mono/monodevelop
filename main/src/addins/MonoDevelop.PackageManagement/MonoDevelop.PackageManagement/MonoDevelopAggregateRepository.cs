@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MonoDevelopAggregateRepository : AggregateRepository
+	internal class MonoDevelopAggregateRepository : AggregateRepository
 	{
 		ConcurrentQueue<Exception> failures = new ConcurrentQueue<Exception> ();
 

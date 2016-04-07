@@ -35,12 +35,18 @@ using Mono.Addins.Setup;
 using System.IO;
 using System.Collections;
 using MonoDevelop.Core.Logging;
+using System.Threading;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public class MonoDevelopProcessHost
+class MonoDevelopProcessHost
 {
 	public static int Main (string[] args)
 	{
 		try {
+			var sc = new ConsoleSynchronizationContext ();
+			SynchronizationContext.SetSynchronizationContext (sc);
+
 			Runtime.SetProcessName ("mdtool");
 
 			EnabledLoggingLevel verbosity = EnabledLoggingLevel.Fatal;
@@ -129,7 +135,11 @@ public class MonoDevelopProcessHost
 				return badInput? 1 : 0;
 			}
 
-			return tool.Run (toolArgs);
+			var task = tool.Run (toolArgs);
+			task.ContinueWith ((t) => sc.ExitLoop ());
+			sc.RunMainLoop ();
+			return task.Result;
+
 		} catch (UserException ex) {
 			Console.WriteLine (ex.Message);
 			return -1;
@@ -198,4 +208,67 @@ public class MonoDevelopProcessHost
 		Console.WriteLine ();
 	}
 
+	class ConsoleSynchronizationContext: SynchronizationContext
+	{
+		// This class implements a threading context based on a basic message loop, which emulates the
+		// behavior of a normal UI loop. This is necessary since there is no UI loop when running mdtool.
+
+		Queue<Tuple<SendOrPostCallback,object>> work = new Queue<Tuple<SendOrPostCallback, object>> ();
+		bool endLoop;
+
+		public override void Post (SendOrPostCallback d, object state)
+		{
+			lock (work) {
+				work.Enqueue (new Tuple<SendOrPostCallback, object> (d, state));
+				Monitor.Pulse (work);
+			}
+		}
+
+		public override void Send (SendOrPostCallback d, object state)
+		{
+			var evt = new ManualResetEventSlim (false);
+			Exception exception = null;
+			Post (s => {
+				try {
+					d.Invoke (state);
+				} catch (Exception ex) {
+					exception = ex;
+				} finally {
+					Thread.MemoryBarrier ();
+					evt.Set ();
+				}
+			}, null);
+			evt.Wait ();
+			if (exception != null)
+				throw exception;
+		}
+
+		public void RunMainLoop ()
+		{
+			do {
+				Tuple<SendOrPostCallback,object> next = null;
+				lock (work) {
+					if (work.Count > 0 && !endLoop)
+						next = work.Dequeue ();
+					else if (!endLoop)
+						Monitor.Wait (work);
+				}
+				if (next != null) {
+					try {
+						next.Item1 (next.Item2);
+					} catch (Exception ex) {
+						Console.WriteLine (ex);
+					}
+				}
+			} while (!endLoop);
+		}
+
+		public void ExitLoop ()
+		{
+			lock (work) {
+				endLoop = true;
+				Monitor.Pulse (work);
+			}
+		}
+	}
 }

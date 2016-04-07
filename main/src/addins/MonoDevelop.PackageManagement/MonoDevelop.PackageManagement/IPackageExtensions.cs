@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class IPackageExtensions
+	internal static class IPackageExtensions
 	{
 		/// <summary>
 		/// Returns description if summary is missing.

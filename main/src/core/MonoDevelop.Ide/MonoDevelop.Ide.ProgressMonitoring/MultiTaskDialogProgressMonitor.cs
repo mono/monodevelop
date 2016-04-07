@@ -34,12 +34,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.ProgressMonitoring
 {
 	
 	
-	public class MultiTaskDialogProgressMonitor : BaseProgressMonitor 
+	public class MultiTaskDialogProgressMonitor : ProgressMonitor 
 	{
 		StringCollection errorsMessages = new StringCollection ();
 		StringCollection warningMessages = new StringCollection ();
@@ -64,7 +65,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		{
 		}
 		
-		public MultiTaskDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, IDictionary<string, string> taskLabelAliases)
+		public MultiTaskDialogProgressMonitor (bool showProgress, bool allowCancel, bool showDetails, IDictionary<string, string> taskLabelAliases): base (Runtime.MainSynchronizationContext)
 		{
 			if (showProgress) {
 				var parent = MessageService.GetDefaultModalParent ();
@@ -74,8 +75,8 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 					TransientFor = parent,
 				};
 				MessageService.PlaceDialog (dialog, parent);
-				Mono.TextEditor.GtkWorkarounds.PresentWindowWithNotification (dialog);
-				dialog.AsyncOperation = AsyncOperation;
+				GtkWorkarounds.PresentWindowWithNotification (dialog);
+				dialog.CancellationTokenSource = CancellationTokenSource;
 				DispatchService.RunPendingEvents ();
 				this.showDetails = showDetails;
 			}
@@ -106,46 +107,38 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		protected override void OnProgressChanged ()
 		{
 			if (dialog != null) {
-				dialog.SetProgress (CurrentTaskWork);
-				DispatchService.RunPendingEvents ();
+				dialog.SetProgress (Progress);
 			}
 		}
 		
-		public override void BeginTask (string name, int totalWork)
+		protected override void OnBeginTask (string name, int totalWork, int stepWork)
 		{
 			if (dialog != null) {
 				dialog.BeginTask (name);
 			}
-			base.BeginTask (name, totalWork);
+			base.OnBeginTask (name, totalWork, stepWork);
 		}
-		
-		public override void BeginStepTask (string name, int totalWork, int stepSize)
-		{
-			if (dialog != null) {
-				dialog.BeginTask (name);
-			}
-			base.BeginStepTask (name, totalWork, stepSize);
-		}
-		
-		public override void EndTask ()
+
+		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (dialog != null) {
 				dialog.EndTask ();
 			}
-			base.EndTask ();
 			DispatchService.RunPendingEvents ();
+			base.OnEndTask (name, totalWork, stepWork);
 		}
-						
-		public override void ReportWarning (string message)
+
+		protected override void OnWarningReported (string message)
 		{
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("WARNING: ") + message + "\n");
 				DispatchService.RunPendingEvents ();
 			}
 			warningMessages.Add (message);
+			base.OnWarningReported (message);
 		}
-		
-		public override void ReportError (string message, Exception ex)
+
+		protected override void OnErrorReported (string message, Exception ex)
 		{
 			if (message == null && ex != null)
 				message = ex.Message;
@@ -153,22 +146,23 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				if (!message.EndsWith (".")) message += ".";
 				message += " " + ex.Message;
 			}
-			
+
 			errorsMessages.Add (message);
 			if (ex != null) {
 				LoggingService.LogError (ex.ToString ());
 				errorException = ex;
 			}
-			
+
 			if (dialog != null) {
 				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + message + "\n");
 				DispatchService.RunPendingEvents ();
 			}
+			base.OnErrorReported (message, ex);
 		}
 		
 		protected override void OnCompleted ()
 		{
-			DispatchService.GuiDispatch (new MessageHandler (ShowDialogs));
+			Runtime.RunInMainThread ((Action) ShowDialogs);
 			base.OnCompleted ();
 		}
 		

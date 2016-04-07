@@ -29,9 +29,9 @@
 using System;
 using System.IO;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTemplatePackagesSettingsFileName
+	internal class ProjectTemplatePackagesSettingsFileName
 	{
 		string directory;
 		

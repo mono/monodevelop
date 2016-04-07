@@ -26,13 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public static class PackageCollectionAssert
+	static class PackageCollectionAssert
 	{
 		public static void AreEqual (IEnumerable<IPackage> expectedPackages, IEnumerable<PackageViewModel> actualViewModels)
 		{

@@ -26,7 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -55,7 +56,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 
-		public DomRegion Region {
+		public bool HasRegion {
+			get {
+				return !Region.IsEmpty;
+			}
+		}
+
+		public DocumentRegion Region {
 			get;
 			set;
 		}
@@ -86,7 +93,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public override string ToString ()
 		{
-			return string.Format ("[Comment: OpenTag={0}, ClosingTag={1}, Region={3}, IsDocumentation={4}, CommentStartsLine={5}, CommentType={6}]", OpenTag, ClosingTag, Text, Region, IsDocumentation, CommentStartsLine, CommentType);
+			return $"[Comment: OpenTag={OpenTag}, ClosingTag={ClosingTag}, Region={Region}, Text={Text}, IsDocumentation={IsDocumentation}, CommentStartsLine={CommentStartsLine}, CommentType={CommentType}]";
 		}
 	}
 }

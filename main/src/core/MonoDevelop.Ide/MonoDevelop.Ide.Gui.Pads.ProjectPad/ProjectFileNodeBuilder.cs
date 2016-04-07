@@ -86,18 +86,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			
 			if (file.IsLink && nodeInfo.Icon != null) {
 				var overlay = ImageService.GetIcon ("md-link-overlay").WithSize (Xwt.IconSize.Small);
-				var cached = Context.GetComposedIcon (nodeInfo.Icon, overlay);
-				if (cached != null)
-					nodeInfo.Icon = cached;
-				else {
-					var ib = new Xwt.Drawing.ImageBuilder (nodeInfo.Icon.Width, nodeInfo.Icon.Height);
-					ib.Context.DrawImage (nodeInfo.Icon, 0, 0);
-					ib.Context.DrawImage (overlay, 0, 0);
-					var res = ib.ToVectorImage ();
-					ib.Dispose ();
-					Context.CacheComposedIcon (nodeInfo.Icon, overlay, res);
-					nodeInfo.Icon = res;
-				}
+				nodeInfo.OverlayBottomRight = overlay;
 			}
 		}
 		
@@ -154,8 +143,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.BuildChildNodes (treeBuilder, dataObject);
 			ProjectFile file = (ProjectFile) dataObject;
 			if (file.HasChildren)
-				foreach (ProjectFile pf in file.DependentChildren)
-					treeBuilder.AddChild (pf);
+				treeBuilder.AddChildren (file.DependentChildren);
 		}
 	}
 	
@@ -168,11 +156,16 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			selectionLength = Path.GetFileNameWithoutExtension(name).Length;
 		}
 
-		public override void RenameItem (string newName)
+		public async override void RenameItem (string newName)
 		{
 			ProjectFile newProjectFile = null;
 			var file = (ProjectFile) CurrentNode.DataItem;
-			
+
+			string oldFileName = file.FilePath;
+			string newFileName = Path.Combine (Path.GetDirectoryName (oldFileName), newName);
+			if (oldFileName == newFileName)
+				return;
+
 			FilePath newPath, newLink = FilePath.Null;
 			if (file.IsLink) {
 				var oldLink = file.ProjectVirtualPath;
@@ -186,7 +179,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (file.Project != null)
 					newProjectFile = file.Project.Files.GetFileWithVirtualPath (newPath.ToRelative (file.Project.BaseDirectory));
 
-				if (!FileService.IsValidPath (newPath)) {
+				if (!FileService.IsValidPath (newPath) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 				} else if ((newProjectFile != null && newProjectFile != file) || File.Exists (file.FilePath.ParentDirectory.Combine (newName))) {
 					// If there is already a file under the newPath which is *different*, then throw an exception
@@ -194,7 +187,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				} else {
 					FileService.RenameFile (file.FilePath, newName);
 					if (file.Project != null)
-						IdeApp.ProjectOperations.Save (file.Project);
+						await IdeApp.ProjectOperations.SaveAsync (file.Project);
 				}
 			} catch (ArgumentException) { // new file name with wildcard (*, ?) characters in it
 				MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
@@ -233,7 +226,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public override void DeleteMultipleItems ()
 		{
-			var projects = new Set<SolutionEntityItem> ();
+			var projects = new Set<SolutionItem> ();
 			var files = new List<ProjectFile> ();
 			bool hasChildren = false;
 
@@ -300,7 +293,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					FileService.DeleteFile (file.Name);
 			}
 
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 
 		static bool CheckAnyFileExists (IEnumerable<ProjectFile> files)
@@ -378,7 +371,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnSetBuildAction (object ob)
 		{
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<SolutionItem> projects = new Set<SolutionItem> ();
 			string action = (string)ob;
 			
 			foreach (ITreeNavigator node in CurrentNodes) {
@@ -386,7 +379,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				file.BuildAction = action;
 				projects.Add (file.Project);
 			}
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 		
 		[CommandUpdateHandler (FileCommands.SetBuildAction)]
@@ -452,7 +445,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 			
-			Set<SolutionEntityItem> projects = new Set<SolutionEntityItem> ();
+			Set<SolutionItem> projects = new Set<SolutionItem> ();
 			
 			foreach (ITreeNavigator node in CurrentNodes) {
 				ProjectFile file = (ProjectFile) node.DataItem;
@@ -464,7 +457,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 				
-			IdeApp.ProjectOperations.Save (projects);
+			IdeApp.ProjectOperations.SaveAsync (projects);
 		}
 		
 		[CommandUpdateHandler (FileCommands.CopyToOutputDirectory)]

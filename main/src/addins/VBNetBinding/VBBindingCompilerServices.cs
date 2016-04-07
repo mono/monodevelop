@@ -49,7 +49,7 @@ namespace MonoDevelop.VBNetBinding {
 	/// </summary>
 	public class VBBindingCompilerServices
 	{
-		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProjectParameters projectparameters, string outputFileName)
+		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProject projectparameters, string outputFileName)
 		{
 			var project = configuration.ParentItem;
 			StringBuilder sb = new StringBuilder ();
@@ -183,16 +183,14 @@ namespace MonoDevelop.VBNetBinding {
 			return sb.ToString();
 		}
 		
-		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, IProgressMonitor monitor)
+		public BuildResult Compile (ProjectItemCollection items, DotNetProjectConfiguration configuration, ConfigurationSelector configSelector, ProgressMonitor monitor)
 		{
 			VBCompilerParameters compilerparameters = (VBCompilerParameters) configuration.CompilationParameters;
 			if (compilerparameters == null)
 				compilerparameters = new VBCompilerParameters ();
 			
-			VBProjectParameters projectparameters = (VBProjectParameters) configuration.ProjectParameters;
-			if (projectparameters == null)
-				projectparameters = new VBProjectParameters ();
-			
+			var projectparameters = (VBProject) configuration.ParentItem;
+
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();
 			StreamWriter writer = new StreamWriter (responseFileName);

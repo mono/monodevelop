@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageViewModelOperationLogger : ILogger
+	internal class PackageViewModelOperationLogger : ILogger
 	{
 		ILogger logger;
 		IPackage package;

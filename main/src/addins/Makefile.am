@@ -17,14 +17,14 @@ SUBDIRS = \
 	AspNet \
 	CSharpBinding \
 	ILAsmBinding \
-	NUnit \
+	MonoDevelop.UnitTesting \
+	MonoDevelop.UnitTesting.NUnit \
 	MonoDeveloperExtensions \
 	VBNetBinding \
 	MonoDevelop.GtkCore \
 	ChangeLogAddIn \
 	MonoDevelop.WebReferences \
 	MonoDevelop.RegexToolkit \
-	CBinding \
 	MonoDevelop.AssemblyBrowser \
 	MonoDevelop.Debugger.Soft \
 	WindowsPlatform \

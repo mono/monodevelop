@@ -368,7 +368,7 @@ namespace Mono.Instrumentation.Monitor
 			
 			ctx.NewPath ();
 			ctx.Rectangle (markerX, ytop + baseTime + 0.5, MarkerWidth/2, ((mainValue.Duration.TotalMilliseconds * scale) / 1000));
-			Mono.TextEditor.HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
+			HslColor hsl = Style.Foreground (Gtk.StateType.Normal);
 			hsl.L = 0.8;
 			ctx.SetSourceColor (hsl);
 			ctx.Fill ();
@@ -465,7 +465,7 @@ namespace Mono.Instrumentation.Monitor
 				ctx.NewPath ();
 				double dx = val == focusedValue ? 0 : 2;
 				ctx.Rectangle (lx + 0.5 + dx - SelectedValuePadding, ytime + 0.5, LineEndWidth - dx*2 + SelectedValuePadding, ((val.Duration.TotalMilliseconds * scale) / 1000));
-				Mono.TextEditor.HslColor hsl = color;
+				HslColor hsl = color;
 				hsl.L = val == focusedValue ? 0.9 : 0.8;
 				ctx.SetSourceColor (hsl);
 				ctx.Fill ();

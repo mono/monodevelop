@@ -25,18 +25,28 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableUpdatePackageAction : UpdatePackageAction
+	class TestableUpdatePackageAction : UpdatePackageAction
 	{
 		public TestableUpdatePackageAction (
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents,
 			IFileRemover fileRemover)
-			: base (project, packageManagementEvents, fileRemover)
+			: this (project, packageManagementEvents, fileRemover, new FakeLicenseAcceptanceService ())
 		{
+		}
+
+		public TestableUpdatePackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover,
+			FakeLicenseAcceptanceService licenseAcceptanceService)
+			: base (project, packageManagementEvents, fileRemover, licenseAcceptanceService)
+		{
+			LicenseAcceptanceService = licenseAcceptanceService;
 			CreateOpenPackageReadMeMonitorAction = packageId => {
 				OpenPackageReadMeMonitor = base.CreateOpenPackageReadMeMonitor (packageId) as OpenPackageReadMeMonitor;
 				return OpenPackageReadMeMonitor;
@@ -50,6 +60,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return CreateOpenPackageReadMeMonitorAction (packageId);
 		}
+
+		public FakeLicenseAcceptanceService LicenseAcceptanceService;
 	}
 }
 

@@ -1,21 +1,21 @@
-// 
+//
 // StatusArea.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
-// 
+//
 // Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,8 +35,6 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor;
-
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
 using MonoDevelop.Ide.Fonts;
@@ -107,8 +105,10 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusBarContextHandler ctxHandler;
 		bool progressBarVisible;
 
+		string currentApplicationName = String.Empty;
+
 		Queue<Message> messageQueue;
-		
+
 		public StatusBar MainContext {
 			get { return ctxHandler.MainContext; }
 		}
@@ -127,7 +127,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				label.Wrap = true;
 				label.WidthRequest = messageBox.Allocation.Width;
-				
+
 				e.Tooltip.Custom = label;
 				e.RetVal = true;
 			} else {
@@ -148,7 +148,7 @@ namespace MonoDevelop.Components.MainToolbar
 			statusIconBox.BorderWidth = 0;
 			statusIconBox.Spacing = 3;
 
-			Action<bool> animateProgressBar = 
+			Action<bool> animateProgressBar =
 				showing => this.Animate ("ProgressBarFade",
 				                         val => renderArg.ProgressBarAlpha = val,
 				                         renderArg.ProgressBarAlpha,
@@ -162,7 +162,7 @@ namespace MonoDevelop.Components.MainToolbar
 				QueueDraw ();
 				animateProgressBar (true);
 			};
-			
+
 			ProgressEnd += delegate {
 				renderArg.ShowProgressBar = false;
 //				StopBuildAnimation ();
@@ -236,7 +236,7 @@ namespace MonoDevelop.Components.MainToolbar
 				theme.Dispose ();
 			base.OnDestroyed ();
 		}
-		
+
 		void IAnimatable.BatchBegin () { }
 		void IAnimatable.BatchCommit () { QueueDraw (); }
 
@@ -297,27 +297,27 @@ namespace MonoDevelop.Components.MainToolbar
 			else
 				box = new VBox ();
 			box.Spacing = 3;
-			
+
 			var errorIcon = ImageService.GetIcon (StockIcons.Error).WithSize (Xwt.IconSize.Small);
 			var warningIcon = ImageService.GetIcon (StockIcons.Warning).WithSize (Xwt.IconSize.Small);
 
 			var errorImage = new Xwt.ImageView (errorIcon);
 			var warningImage = new Xwt.ImageView (warningIcon);
-			
+
 			box.PackStart (errorImage.ToGtkWidget (), false, false, 0);
 			Label errors = new Gtk.Label ();
 			box.PackStart (errors, false, false, 0);
-			
+
 			box.PackStart (warningImage.ToGtkWidget (), false, false, 0);
 			Label warnings = new Gtk.Label ();
 			box.PackStart (warnings, false, false, 0);
 			box.NoShowAll = true;
 			box.Show ();
-			
+
 			TaskEventHandler updateHandler = delegate {
 				int ec=0, wc=0;
 
-				foreach (Task t in TaskService.Errors) {
+				foreach (TaskListEntry t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
@@ -325,7 +325,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 
 
-				using (var font = FontService.SansFont.CopyModified (0.8d)) {
+				using (var font = FontService.SansFont.CopyModified (MonoDevelop.Ide.Gui.Styles.FontScale11)) {
 					errors.Visible = ec > 0;
 					errors.ModifyFont (font);
 					errors.Text = ec.ToString ();
@@ -341,15 +341,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 				UpdateSeparators ();
 			};
-			
+
 			updateHandler (null, null);
-			
+
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
+
+			currentApplicationName = BrandingService.ApplicationLongName;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 			
 			box.Destroyed += delegate {
 				TaskService.Errors.TasksAdded -= updateHandler;
 				TaskService.Errors.TasksRemoved -= updateHandler;
+				BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			};
 
 			ebox.VisibleWindow = false;
@@ -366,6 +370,16 @@ namespace MonoDevelop.Components.MainToolbar
 			warningImage.Visible = false;
 
 			return ebox;
+		}
+
+		void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			if (renderArg.CurrentText == currentApplicationName) {
+				LoadText (BrandingService.ApplicationLongName, false);
+				LoadPixbuf (null);
+				QueueDraw ();
+			}
+			currentApplicationName = BrandingService.ApplicationLongName;
 		}
 
 		protected override void OnRealized ()
@@ -399,13 +413,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			StatusIcon icon = new StatusIcon (this, pixbuf);
 			statusIconBox.PackEnd (icon.box);
 			statusIconBox.ShowAll ();
 			return icon;
 		}
-		
+
 		void HideStatusIcon (StatusIcon icon)
 		{
 			statusIconBox.Remove (icon.EventBox);
@@ -443,7 +457,7 @@ namespace MonoDevelop.Components.MainToolbar
 			Xwt.Drawing.Image icon;
 			uint animation;
 			Xwt.ImageView image;
-			
+
 			int astep;
 			Xwt.Drawing.Image[] images;
 			TooltipPopoverWindow tooltipWindow;
@@ -451,7 +465,7 @@ namespace MonoDevelop.Components.MainToolbar
 			uint tipShowTimeoutId;
 			DateTime scheduledTipTime;
 			const int TooltipTimeout = 350;
-			
+
 			public StatusIcon (StatusArea statusBar, Xwt.Drawing.Image icon)
 			{
 				if (!icon.HasFixedSize)
@@ -485,21 +499,21 @@ namespace MonoDevelop.Components.MainToolbar
 					});
 				};
 			}
-			
+
 			[GLib.ConnectBefore]
 			void HandleLeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
 			{
 				mouseOver = false;
 				HideTooltip ();
 			}
-			
+
 			[GLib.ConnectBefore]
 			void HandleEnterNotifyEvent (object o, EnterNotifyEventArgs args)
 			{
 				mouseOver = true;
 				ShowTooltip ();
 			}
-			
+
 			void ShowTooltip ()
 			{
 				scheduledTipTime = DateTime.Now + TimeSpan.FromMilliseconds (TooltipTimeout);
@@ -530,7 +544,7 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				return false;
 			}
-			
+
 			void HideTooltip ()
 			{
 				if (tooltipWindow != null) {
@@ -538,7 +552,7 @@ namespace MonoDevelop.Components.MainToolbar
 					tooltipWindow = null;
 				}
 			}
-			
+
 			public void Dispose ()
 			{
 				HideTooltip ();
@@ -553,7 +567,7 @@ namespace MonoDevelop.Components.MainToolbar
 					animation = 0;
 				}
 			}
-			
+
 			public string ToolTip {
 				get { return tip; }
 				set {
@@ -567,11 +581,11 @@ namespace MonoDevelop.Components.MainToolbar
 						ShowTooltip ();
 				}
 			}
-			
+
 			public EventBox EventBox {
 				get { return box; }
 			}
-			
+
 			public Xwt.Drawing.Image Image {
 				get { return icon; }
 				set {
@@ -581,24 +595,24 @@ namespace MonoDevelop.Components.MainToolbar
 					image.Image = icon;
 				}
 			}
-			
+
 			public void SetAlertMode (int seconds)
 			{
 				astep = 0;
 				alertEnd = DateTime.Now.AddSeconds (seconds);
-				
+
 				if (animation != 0)
 					GLib.Source.Remove (animation);
-				
+
 				animation = GLib.Timeout.Add (60, new GLib.TimeoutHandler (AnimateIcon));
-				
+
 				if (images == null) {
 					images = new Xwt.Drawing.Image [10];
 					for (int n=0; n<10; n++)
 						images [n] = icon.WithAlpha (((double)(9-n))/10.0);
 				}
 			}
-			
+
 			bool AnimateIcon ()
 			{
 				if (DateTime.Now >= alertEnd && astep == 0) {
@@ -610,14 +624,14 @@ namespace MonoDevelop.Components.MainToolbar
 					image.Image = images [astep];
 				else
 					image.Image = images [20 - astep - 1];
-				
+
 				astep = (astep + 1) % 20;
 				return true;
 			}
 
 			public event EventHandler<StatusBarIconClickedEventArgs> Clicked;
 		}
-		
+
 		#endregion
 
 		#region StatusBarContextBase implementation
@@ -659,7 +673,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void ShowMessageInner (IconId image, string message, bool isMarkup)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 
 			if (image == StockIcons.StatusError) {
 				// If the application doesn't have the focus, trigger the animation
@@ -681,10 +695,10 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 					animPauseHandle = 0;
 					return false;
-				});	
+				});
 			});
 			*/
-			this.Animate ("Text", 
+			this.Animate ("Text",
 			              x => renderArg.TextAnimationProgress = x,
 			              easing: Easing.SinInOut,
 			              finished: (x, b) => { animPauseHandle = GLib.Timeout.Add (1000, () => {
@@ -694,7 +708,7 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 					animPauseHandle = 0;
 					return false;
-				});	
+				});
 			});
 
 
@@ -707,7 +721,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void LoadText (string message, bool isMarkup)
 		{
 			if (string.IsNullOrEmpty(message))
-				message = BrandingService.ApplicationName;
+				message = BrandingService.ApplicationLongName;
 			message = message ?? "";
 
 			renderArg.LastText = renderArg.CurrentText;
@@ -740,13 +754,13 @@ namespace MonoDevelop.Components.MainToolbar
 			// load image now
 			if (ImageService.IsAnimation (image, Gtk.IconSize.Menu)) {
 				iconAnimation = ImageService.GetAnimatedIcon (image, Gtk.IconSize.Menu);
-				renderArg.CurrentPixbuf = iconAnimation.FirstFrame.WithSize (14,14);
+				renderArg.CurrentPixbuf = iconAnimation.FirstFrame.WithSize (16,16);
 				currentIconAnimation = iconAnimation.StartAnimation (delegate (Xwt.Drawing.Image p) {
-					renderArg.CurrentPixbuf = p.WithSize (14,14);
+					renderArg.CurrentPixbuf = p.WithSize (16,16);
 					QueueDraw ();
 				});
 			} else {
-				renderArg.CurrentPixbuf = ImageService.GetIcon (image).WithSize (14,14);
+				renderArg.CurrentPixbuf = ImageService.GetIcon (image).WithSize (16,16);
 			}
 
 			iconLoaded = true;
@@ -757,45 +771,45 @@ namespace MonoDevelop.Components.MainToolbar
 		#region Progress Monitor implementation
 		public static event EventHandler ProgressBegin, ProgressEnd, ProgressPulse;
 		public static event EventHandler<FractionEventArgs> ProgressFraction;
-		
+
 		public sealed class FractionEventArgs : EventArgs
 		{
 			public double Work { get; private set; }
-			
+
 			public FractionEventArgs (double work)
 			{
 				this.Work = work;
 			}
 		}
-		
+
 		static void OnProgressBegin (EventArgs e)
 		{
 			var handler = ProgressBegin;
 			if (handler != null)
 				handler (null, e);
 		}
-		
+
 		static void OnProgressEnd (EventArgs e)
 		{
 			var handler = ProgressEnd;
 			if (handler != null)
 				handler (null, e);
 		}
-		
+
 		static void OnProgressPulse (EventArgs e)
 		{
 			var handler = ProgressPulse;
 			if (handler != null)
 				handler (null, e);
 		}
-		
+
 		static void OnProgressFraction (FractionEventArgs e)
 		{
 			var handler = ProgressFraction;
 			if (handler != null)
 				handler (null, e);
 		}
-		
+
 		public void BeginProgress (string name)
 		{
 			ShowMessage (name);
@@ -804,7 +818,7 @@ namespace MonoDevelop.Components.MainToolbar
 				OnProgressBegin (EventArgs.Empty);
 			}
 		}
-		
+
 		public void BeginProgress (IconId image, string name)
 		{
 			ShowMessage (image, name);
@@ -813,13 +827,13 @@ namespace MonoDevelop.Components.MainToolbar
 				OnProgressBegin (EventArgs.Empty);
 			}
 		}
-		
+
 		public void SetProgressFraction (double work)
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			OnProgressFraction (new FractionEventArgs (work));
 		}
-		
+
 		public void EndProgress ()
 		{
 			if (!progressBarVisible)
@@ -829,18 +843,18 @@ namespace MonoDevelop.Components.MainToolbar
 			OnProgressEnd (EventArgs.Empty);
 			AutoPulse = false;
 		}
-		
+
 		public void Pulse ()
 		{
-			DispatchService.AssertGuiThread ();
+			Runtime.AssertMainThread ();
 			OnProgressPulse (EventArgs.Empty);
 		}
-		
+
 		uint autoPulseTimeoutId;
 		public bool AutoPulse {
 			get { return autoPulseTimeoutId != 0; }
 			set {
-				DispatchService.AssertGuiThread ();
+				Runtime.AssertMainThread ();
 				if (value) {
 					if (autoPulseTimeoutId == 0) {
 						autoPulseTimeoutId = GLib.Timeout.Add (100, delegate {
@@ -867,6 +881,8 @@ namespace MonoDevelop.Components.MainToolbar
 				var alloc = Allocation;
 				//alloc.Inflate (0, -2);
 				ctx.Rectangle (alloc.X, alloc.Y, 1, alloc.Height);
+
+				// FIXME: VV: Remove gradient features
 				using (Cairo.LinearGradient gr = new LinearGradient (alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height)) {
 					gr.AddColorStop (0, new Cairo.Color (0, 0, 0, 0));
 					gr.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.2));

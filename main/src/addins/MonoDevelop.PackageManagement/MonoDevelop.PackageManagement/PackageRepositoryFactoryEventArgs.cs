@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageRepositoryFactoryEventArgs : EventArgs
+	internal class PackageRepositoryFactoryEventArgs : EventArgs
 	{
 		public PackageRepositoryFactoryEventArgs(IPackageRepository repository)
 		{

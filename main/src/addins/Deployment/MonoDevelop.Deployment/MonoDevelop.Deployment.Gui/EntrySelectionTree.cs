@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -15,7 +16,7 @@ namespace MonoDevelop.Deployment.Gui
 	internal partial class EntrySelectionTree : Gtk.Bin
 	{
 		TreeStore store;
-		Dictionary<SolutionItem,SolutionItem> selectedEntries = new Dictionary<SolutionItem,SolutionItem> ();
+		Dictionary<SolutionFolderItem,SolutionFolderItem> selectedEntries = new Dictionary<SolutionFolderItem,SolutionFolderItem> ();
 		PackageBuilder builder;
 		Solution solution;
 		
@@ -44,13 +45,13 @@ namespace MonoDevelop.Deployment.Gui
 			tree.AppendColumn (col);
 		}
 		
-		public void Fill (PackageBuilder builder, SolutionItem selection)
+		public void Fill (PackageBuilder builder, SolutionFolderItem selection)
 		{
 			store.Clear ();
 			
 			this.builder = builder;
 			if (selection is SolutionFolder) {
-				foreach (SolutionItem e in ((SolutionFolder)selection).GetAllItems ()) {
+				foreach (SolutionFolderItem e in ((SolutionFolder)selection).GetAllItems ()) {
 					if (builder.CanBuild (e))
 						selectedEntries [e] = e;
 				}
@@ -64,17 +65,15 @@ namespace MonoDevelop.Deployment.Gui
 			else {
 				solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 				if (solution == null) {
-					ReadOnlyCollection<Solution> items = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetAllSolutions ();
-					if (items.Count > 0)
-						solution = items [0];
-					else
+					solution = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.GetAllItems<Solution> ().FirstOrDefault();
+					if (solution == null)
 						return;
 				}
 			}
 			AddEntry (TreeIter.Zero, solution.RootFolder);
 		}
 		
-		void AddEntry (TreeIter iter, SolutionItem entry)
+		void AddEntry (TreeIter iter, SolutionFolderItem entry)
 		{
 			string icon;
 			if (entry.ParentFolder == null)
@@ -101,49 +100,49 @@ namespace MonoDevelop.Deployment.Gui
 				tree.ExpandToPath (store.GetPath (iter));
 			
 			if (entry is SolutionFolder) {
-				foreach (SolutionItem ce in ((SolutionFolder)entry).Items) {
+				foreach (SolutionFolderItem ce in ((SolutionFolder)entry).Items) {
 					AddEntry (iter, ce);
 				}
 			}
 		}
 		
-		public void SetSelection (SolutionItem rootEntry, SolutionItem[] childEntries)
+		public void SetSelection (SolutionFolderItem rootEntry, SolutionFolderItem[] childEntries)
 		{
 			selectedEntries.Clear ();
 			selectedEntries [rootEntry] = rootEntry;
-			foreach (SolutionItem e in childEntries)
+			foreach (SolutionFolderItem e in childEntries)
 				selectedEntries [e] = e;
 			UpdateSelectionChecks (TreeIter.Zero, true);
 		}
 		
-		public SolutionItem GetSelectedEntry ()
+		public SolutionFolderItem GetSelectedEntry ()
 		{
 			return GetCommonSolutionItem ();
 		}
 		
-		public SolutionItem[] GetSelectedChildren ()
+		public SolutionFolderItem[] GetSelectedChildren ()
 		{
 			// The first entry is the root entry
-			SolutionItem common = GetCommonSolutionItem ();
+			SolutionFolderItem common = GetCommonSolutionItem ();
 			if (common == null)
 				return null;
 			ArrayList list = new ArrayList ();
-			foreach (SolutionItem e in selectedEntries.Keys)
+			foreach (SolutionFolderItem e in selectedEntries.Keys)
 				if (e != common)
 					list.Add (e);
-			return (SolutionItem[]) list.ToArray (typeof(SolutionItem));
+			return (SolutionFolderItem[]) list.ToArray (typeof(SolutionFolderItem));
 		}
 		
 		void OnToggled (object sender, Gtk.ToggledArgs args)
 		{
 			TreeIter iter;
 			store.GetIterFromString (out iter, args.Path);
-			SolutionItem ob = (SolutionItem) store.GetValue (iter, 2);
+			SolutionFolderItem ob = (SolutionFolderItem) store.GetValue (iter, 2);
 			if (selectedEntries.ContainsKey (ob)) {
 				selectedEntries.Remove (ob);
 				store.SetValue (iter, 3, false);
 				if (ob is SolutionFolder) {
-					foreach (SolutionItem e in ((SolutionFolder)ob).GetAllItems ())
+					foreach (SolutionFolderItem e in ((SolutionFolder)ob).GetAllItems ())
 						selectedEntries.Remove (e);
 					UpdateSelectionChecks (TreeIter.Zero, false);
 				}
@@ -151,13 +150,13 @@ namespace MonoDevelop.Deployment.Gui
 				selectedEntries [ob] = ob;
 				store.SetValue (iter, 3, true);
 				if (ob is SolutionFolder) {
-					foreach (SolutionItem e in ((SolutionFolder)ob).GetAllItems ()) {
+					foreach (SolutionFolderItem e in ((SolutionFolder)ob).GetAllItems ()) {
 						if (builder.CanBuild (e))
 							selectedEntries [e] = e;
 					}
 					UpdateSelectionChecks (TreeIter.Zero, false);
 				}
-				SelectCommonCombine ((SolutionItem)ob);
+				SelectCommonCombine ((SolutionFolderItem)ob);
 			}
 			if (SelectionChanged != null)
 				SelectionChanged (this, EventArgs.Empty);
@@ -174,7 +173,7 @@ namespace MonoDevelop.Deployment.Gui
 					return;
 			}
 			do {
-				bool sel = selectedEntries.ContainsKey ((SolutionItem) store.GetValue (iter, 2));
+				bool sel = selectedEntries.ContainsKey ((SolutionFolderItem) store.GetValue (iter, 2));
 				store.SetValue (iter, 3, sel);
 				if (sel)
 					tree.ExpandToPath (store.GetPath (iter));
@@ -183,16 +182,16 @@ namespace MonoDevelop.Deployment.Gui
 			while (store.IterNext (ref iter));
 		}
 		
-		void SelectCommonCombine (SolutionItem e)
+		void SelectCommonCombine (SolutionFolderItem e)
 		{
-			SolutionItem common = GetCommonSolutionItem ();
+			SolutionFolderItem common = GetCommonSolutionItem ();
 			if (common == null)
 				return;
 			selectedEntries [common] = common;
-			SolutionItem[] entries = new SolutionItem [selectedEntries.Count];
+			SolutionFolderItem[] entries = new SolutionFolderItem [selectedEntries.Count];
 			selectedEntries.Keys.CopyTo (entries, 0);
-			foreach (SolutionItem se in entries) {
-				SolutionItem ce = se;
+			foreach (SolutionFolderItem se in entries) {
+				SolutionFolderItem ce = se;
 				while (ce != null && ce != common) {
 					selectedEntries [ce] = ce;
 					ce = ce.ParentFolder;
@@ -201,7 +200,7 @@ namespace MonoDevelop.Deployment.Gui
 			UpdateSelectionChecks (TreeIter.Zero, false);
 		}
 		
-		SolutionItem GetCommonSolutionItem ()
+		SolutionFolderItem GetCommonSolutionItem ()
 		{
 			return PackageBuilder.GetCommonSolutionItem (selectedEntries.Keys);
 		}

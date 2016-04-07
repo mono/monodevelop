@@ -5,7 +5,9 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Win32;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+#if ASPNET
 using MonoDevelop.AspNet.Execution;
+#endif
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -18,9 +20,11 @@ namespace MonoDevelop.Debugger.Win32
 			DotNetExecutionCommand cmd = command as DotNetExecutionCommand;
 			if (cmd != null)
 				return (cmd.TargetRuntime == null || cmd.TargetRuntime.RuntimeId == "MS.NET");
+#if ASPNET
 			var acmd = command as AspNetExecutionCommand;
 			if (acmd != null)
 				return (acmd.TargetRuntime == null || acmd.TargetRuntime.RuntimeId == "MS.NET");
+#endif
 			return false;
 		}
 
@@ -38,7 +42,7 @@ namespace MonoDevelop.Debugger.Win32
 				}
 				return startInfo;
 			}
-
+#if ASPNET
 			var acmd = command as AspNetExecutionCommand;
 			if (acmd != null) {
 				DebuggerStartInfo startInfo = new DebuggerStartInfo ();
@@ -57,12 +61,17 @@ namespace MonoDevelop.Debugger.Win32
 				startInfo.EnvironmentVariables["DEVPATH"] = Path.GetDirectoryName (xspPath);
 				return startInfo;
 			}
+#endif
 			throw new NotSupportedException ();
 		}
 
 		public DebuggerSession CreateSession ( )
 		{
+<<<<<<< HEAD
 			return new CorDebuggerSession(FilePath.GetInvalidPathChars());
+=======
+			return MtaThread.Run(() => new CorDebuggerSession());
+>>>>>>> mono/master
 		}
 
 		public ProcessInfo[] GetAttachableProcesses ( )

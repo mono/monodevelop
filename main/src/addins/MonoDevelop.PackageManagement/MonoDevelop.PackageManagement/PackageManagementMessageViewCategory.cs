@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementMessageViewCategory : IMessageViewCategory
+	internal class PackageManagementMessageViewCategory : IMessageViewCategory
 	{
 //		MessageViewCategory messageViewCategory;
 //		
