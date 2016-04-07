@@ -35,6 +35,7 @@ using NuGet.Configuration;
 using NuGet.LibraryModel;
 using NuGet.Logging;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
@@ -100,6 +101,30 @@ namespace MonoDevelop.PackageManagement
 					libraryRange.ToString ());
 			}
 			throw new ApplicationException (GettextCatalog.GetString ("Restore failed."));
+		}
+
+		public Task<bool> IsRestoreRequired (BuildIntegratedNuGetProject project)
+		{
+			var pathResolver = new VersionFolderPathResolver (packagesFolder);
+			var projects = new BuildIntegratedNuGetProject[] { project };
+			bool restoreRequired = BuildIntegratedRestoreUtility.IsRestoreRequired (projects, pathResolver);
+
+			return Task.FromResult (restoreRequired);
+		}
+
+		public async Task<IEnumerable<BuildIntegratedNuGetProject>> GetProjectsRequiringRestore (
+			IEnumerable<BuildIntegratedNuGetProject> projects)
+		{
+			var projectsToBeRestored = new List<BuildIntegratedNuGetProject> ();
+
+			foreach (BuildIntegratedNuGetProject project in projects) {
+				bool restoreRequired = await IsRestoreRequired (project);
+				if (restoreRequired) {
+					projectsToBeRestored.Add (project);
+				}
+			}
+
+			return projectsToBeRestored;
 		}
 	}
 }
