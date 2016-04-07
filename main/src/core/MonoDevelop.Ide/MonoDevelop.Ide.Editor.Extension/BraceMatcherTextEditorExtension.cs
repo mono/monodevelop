@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if ((Editor.TextEditorType & TextEditorType.Invisible) != 0)
 				return;
 			DefaultSourceEditorOptions.Instance.highlightMatchingBracket.Changed += HighlightMatchingBracket_Changed;
+			HighlightMatchingBracket_Changed (this, EventArgs.Empty);
 		}
 
 		void HighlightMatchingBracket_Changed (object sender, EventArgs e)
@@ -89,6 +90,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		public override void Dispose ()
 		{
 			src.Cancel ();
+			DefaultSourceEditorOptions.Instance.highlightMatchingBracket.Changed -= HighlightMatchingBracket_Changed;
 			if (isSubscribed) {
 				Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
 				DocumentContext.DocumentParsed -= HandleDocumentParsed;
