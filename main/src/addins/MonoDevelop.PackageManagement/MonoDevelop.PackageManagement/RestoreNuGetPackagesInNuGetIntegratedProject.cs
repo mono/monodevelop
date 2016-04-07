@@ -1,5 +1,5 @@
 ﻿//
-// RestoreNuGetPackagesInProjectAction.cs
+// RestoreNuGetPackagesInNuGetIntegratedProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,43 +24,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Commands;
 using NuGet.Configuration;
+using NuGet.LibraryModel;
+using NuGet.Logging;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
+using NuGet.ProjectManagement.Projects;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class RestoreNuGetPackagesInProjectAction : IPackageAction
+	internal class RestoreNuGetPackagesInNuGetIntegratedProject : IPackageAction
 	{
-		ISolutionManager solutionManager;
-		IPackageManagementEvents packageManagementEvents;
-		PackageRestoreManager restoreManager;
-		NuGetProject nugetProject;
 		DotNetProject project;
+		BuildIntegratedNuGetProject nugetProject;
 		CancellationToken cancellationToken;
+		IPackageManagementEvents packageManagementEvents;
+		List<SourceRepository> packageSources;
+		string packagesFolder;
 
-		public RestoreNuGetPackagesInProjectAction (
+		public RestoreNuGetPackagesInNuGetIntegratedProject (
 			DotNetProject project,
-			NuGetProject nugetProject,
+			BuildIntegratedNuGetProject nugetProject,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.cancellationToken = cancellationToken;
 			this.project = project;
 			this.nugetProject = nugetProject;
+			this.cancellationToken = cancellationToken;
+			this.packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
+			packageSources = SourceRepositoryProviderFactory
+				.CreateSourceRepositoryProvider ()
+				.GetRepositories ()
+				.ToList ();
 
-			solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
+			ISettings settings = Settings.LoadDefaultSettings (null, null, null);
 
-			restoreManager = new PackageRestoreManager (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				Settings.LoadDefaultSettings (null, null, null),
-				solutionManager
-			);
+			packagesFolder = BuildIntegratedProjectUtility.GetEffectiveGlobalPackagesFolder ( 
+				project.ParentSolution.BaseDirectory,
+				settings); 
 		}
 
 		public void Execute ()
@@ -75,15 +85,32 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync ()
 		{
-			await restoreManager.RestoreMissingPackagesAsync (
-				solutionManager.SolutionDirectory,
+			RestoreResult restoreResult = await BuildIntegratedRestoreUtility.RestoreAsync (
 				nugetProject,
-				new NuGetProjectContext (),
+				CreateLogger (),
+				packageSources, 
+				packagesFolder, 
 				cancellationToken);
 
-			await Runtime.RunInMainThread (() => project.RefreshReferenceStatus ());
+			if (!restoreResult.Success) {
+				ReportRestoreError (restoreResult);
+			}
+		}
 
-			packageManagementEvents.OnPackagesRestored ();
+		ILogger CreateLogger ()
+		{
+			return new PackageManagementLogger (packageManagementEvents);
+		}
+
+		void ReportRestoreError (RestoreResult restoreResult)
+		{
+			foreach (LibraryRange libraryRange in restoreResult.GetAllUnresolved ()) {
+				packageManagementEvents.OnPackageOperationMessageLogged (
+					NuGet.MessageLevel.Info,
+					GettextCatalog.GetString ("Restore failed for '{0}'."),
+					libraryRange.ToString ());
+			}
+			throw new ApplicationException (GettextCatalog.GetString ("Restore failed."));
 		}
 	}
 }

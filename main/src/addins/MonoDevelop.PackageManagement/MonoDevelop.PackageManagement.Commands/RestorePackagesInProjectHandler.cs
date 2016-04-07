@@ -26,6 +26,8 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Projects;
+using NuGet.ProjectManagement.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -35,7 +37,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			try {
 				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-				var action = new RestoreNuGetPackagesInProjectAction (GetSelectedDotNetProject ());
+				IPackageAction action = CreateRestorePackagesAction (GetSelectedDotNetProject ());
 				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
@@ -45,6 +47,19 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
+		}
+
+		IPackageAction CreateRestorePackagesAction (DotNetProject project)
+		{
+			var nugetProject = new MonoDevelopNuGetProjectFactory ()
+				.CreateNuGetProject (project);
+
+			var buildIntegratedProject = nugetProject as BuildIntegratedNuGetProject;
+			if (buildIntegratedProject != null) {
+				return new RestoreNuGetPackagesInNuGetIntegratedProject (project, buildIntegratedProject);
+			}
+
+			return new RestoreNuGetPackagesInProjectAction (project, nugetProject);
 		}
 
 		void ShowStatusBarError (Exception ex)
