@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageRepository : IRecentPackageRepository, IProgressProvider
+	public class FakePackageRepository : IRecentPackageRepository, IProgressProvider, ICloneableRepository
 	{
 		public List<FakePackage> FakePackages = new List<FakePackage> ();
 		public bool IsRemovePackageCalled;
@@ -90,6 +90,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			if (ProgressAvailable != null) {
 				ProgressAvailable (this, e);
 			}
+		}
+
+		public FakePackageRepository ClonedRepository;
+
+		public bool IsCloneOf (FakePackageRepository packageRepository)
+		{
+			return ClonedRepository == packageRepository;
+		}
+
+		public IPackageRepository Clone ()
+		{
+			return new FakePackageRepository () {
+				ClonedRepository = this
+			};
 		}
 	}
 }
