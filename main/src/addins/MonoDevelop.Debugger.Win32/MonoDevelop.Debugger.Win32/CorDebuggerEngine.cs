@@ -67,11 +67,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public DebuggerSession CreateSession ( )
 		{
-<<<<<<< HEAD
-			return new CorDebuggerSession(FilePath.GetInvalidPathChars());
-=======
-			return MtaThread.Run(() => new CorDebuggerSession());
->>>>>>> mono/master
+			return MtaThread.Run(() => new CorDebuggerSession(FilePath.GetInvalidPathChars()));
 		}
 
 		public ProcessInfo[] GetAttachableProcesses ( )
