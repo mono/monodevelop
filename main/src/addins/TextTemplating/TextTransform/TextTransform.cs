@@ -67,7 +67,7 @@ namespace Mono.TextTemplating
 				{ "I=", "Paths to search for included files", s => generator.IncludePaths.Add (s) },
 				{ "P=", "Paths to search for referenced assemblies", s => generator.ReferencePaths.Add (s) },
 				{ "dp=", "Directive processor (name!class!assembly)", s => directives.Add (s) },
-				{ "a=", "Parameters ([processorName]![directiveName]!name!value)", s => parameters.Add (s) },
+				{ "a=", "Parameters (name=value) or ([processorName!][directiveName!]name!value)", s => parameters.Add (s) },
 				{ "h|?|help", "Show help", s => ShowHelp (false) },
 		//		{ "k=,", "Session {key},{value} pairs", (s, t) => session.Add (s, t) },
 				{ "c=", "Preprocess the template into {0:class}", (s) => preprocess = s },
@@ -97,31 +97,11 @@ namespace Mono.TextTemplating
 				}
 			}
 
-			//FIXME: implement quoting and escaping for values
 			foreach (var par in parameters) {
-				var split = par.Split ('!');
-
-				if (split.Length < 2) {
-					Console.Error.WriteLine ("Parameter must have name and value: {0}", par);
+				if (!generator.TryAddParameter (par)) {
+					Console.Error.WriteLine ("Parameter has incorrect format: {0}", par);
 					return -1;
 				}
-
-				if (split.Length > 4) {
-					Console.Error.WriteLine ("Parameter has too many arguments: {0}", par);
-					return -1;
-				}
-
-				string parName = split[split.Length-2];
-				string parVal  = split[split.Length-1];
-				var directiveName = split.Length > 2 ? split [split.Length - 3] : null;
-				var processorName = split.Length > 3 ? split [0] : null;
-
-				if (string.IsNullOrEmpty (parName)) {
-					Console.Error.WriteLine ("Parameter has no name: {0}", par);
-					return -1;
-				}
-
-				generator.AddParameter (processorName, directiveName, parName, parVal);
 			}
 			
 			foreach (var dir in directives) {
