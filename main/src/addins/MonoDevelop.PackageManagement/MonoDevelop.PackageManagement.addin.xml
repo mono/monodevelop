@@ -51,10 +51,9 @@
 			_label="_Update NuGet Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
 		<Command
-			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
+			id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject"
 			_description="Retargets all packages"
-			_label="Re_target"
-			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
+			_label="Re_target" />
 		</Category>
 	</Extension>
 	
@@ -81,7 +80,7 @@
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages" />
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject" />
+				id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem

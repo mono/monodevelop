@@ -401,7 +401,6 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageReinstaller.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ReinstallProjectPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageOperations.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\ReinstallAllPackagesInProjectHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackagesCompatibilityReport.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
@@ -505,6 +504,8 @@
     <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetIntegratedProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopBuildIntegratedRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateSourceRepositoryProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesFolderNodeCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

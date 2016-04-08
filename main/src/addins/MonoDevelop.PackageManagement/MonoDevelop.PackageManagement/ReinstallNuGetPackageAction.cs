@@ -1,5 +1,5 @@
 ﻿//
-// UninstallNuGetPackageAction.cs
+// ReinstallNuGetPackageAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,31 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Threading;
-using System.Threading.Tasks;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class UninstallNuGetPackageAction : INuGetPackageAction
+	internal class ReinstallNuGetPackageAction : IPackageAction
 	{
 		NuGetPackageManager packageManager;
-		NuGetProject project;
+		NuGetProject nugetProject;
+		NuGetProjectContext context;
 		CancellationToken cancellationToken;
+		InstallNuGetPackageAction installAction;
+		UninstallNuGetPackageAction uninstallAction;
 
-		public UninstallNuGetPackageAction (
-			ISolutionManager solutionManager,
-			NuGetProject project,
+		public ReinstallNuGetPackageAction (
+			IDotNetProject project,
+			NuGetProject nugetProject,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.project = project;
+			this.nugetProject = nugetProject;
 			this.cancellationToken = cancellationToken;
+			context = new NuGetProjectContext ();
 
 			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
+
+			var solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
 
 			packageManager = new NuGetPackageManager (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
@@ -56,32 +61,22 @@ namespace MonoDevelop.PackageManagement
 				solutionManager,
 				restartManager
 			);
+
+			CreateInstallAction (solutionManager,  project);
+			CreateUninstallAction (solutionManager);
 		}
 
 		public string PackageId { get; set; }
-		public bool ForceRemove { get; set; }
+		public NuGetVersion Version { get; set; }
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
-		}
+			uninstallAction.PackageId = PackageId;
+			uninstallAction.Execute ();
 
-		async Task ExecuteAsync ()
-		{
-			INuGetProjectContext context = CreateProjectContext ();
-
-			var actions = await packageManager.PreviewUninstallPackageAsync (
-				project,
-				PackageId,
-				CreateUninstallationContext (),
-				context,
-				cancellationToken);
-
-			await packageManager.ExecuteNuGetProjectActionsAsync (
-				project,
-				actions,
-				context,
-				cancellationToken);
+			installAction.PackageId = PackageId;
+			installAction.Version = Version;
+			installAction.Execute ();
 		}
 
 		public bool HasPackageScriptsToRun ()
@@ -89,14 +84,25 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		INuGetProjectContext CreateProjectContext ()
+		void CreateUninstallAction (ISolutionManager solutionManager)
 		{
-			return new NuGetProjectContext (); 
+			uninstallAction = new UninstallNuGetPackageAction (
+				solutionManager,
+				nugetProject,
+				cancellationToken) {
+				ForceRemove = true
+			};
 		}
 
-		UninstallationContext CreateUninstallationContext ()
+		void CreateInstallAction (ISolutionManager solutionManager, IDotNetProject project)
 		{
-			return new UninstallationContext (false, ForceRemove);
+			installAction = new InstallNuGetPackageAction (
+				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ().GetRepositories (),
+				solutionManager,
+				project,
+				context,
+				cancellationToken
+			);
 		}
 	}
 }

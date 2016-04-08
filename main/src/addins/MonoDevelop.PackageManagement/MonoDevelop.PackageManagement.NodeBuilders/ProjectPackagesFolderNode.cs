@@ -238,6 +238,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				LoggingService.LogError ("OnInstalledPackagesRead error.", ex);
 			}
 		}
+
+		public bool AnyPackageReferencesRequiringReinstallation ()
+		{
+			return GetPackageReferences ().Any (packageReference => packageReference.RequireReinstallation);
+		}
 	}
 }
 
