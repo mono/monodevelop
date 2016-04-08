@@ -445,6 +445,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public void CreateAggregateRepository_OnePackageSourceHasInvalidUri_NoExceptionThrownWhenCreatingAggregateRepositoryAndSearchingForPackages ()
 		{
 			CreatePackageSources ();
@@ -462,6 +463,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public void CreateAggregateRepository_OnePackageSourceHasInvalidUriAndSearchExecutedMultipleTimes_ExceptionThrownByPackageRepositoryIsOnlyRecordedOnce ()
 		{
 			CreatePackageSources ();

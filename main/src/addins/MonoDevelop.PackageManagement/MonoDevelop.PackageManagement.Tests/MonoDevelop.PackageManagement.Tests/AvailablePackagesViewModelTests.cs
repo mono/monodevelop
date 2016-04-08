@@ -938,6 +938,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithOneFailingRepository_HasErrorIsTrueAndErrorMessageHasWarning ()
 		{
 			CreateRegisteredPackageRepositories ();
@@ -952,6 +953,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithAllRepositoriesFailing_HasErrorIsTrueAndErrorMessageHasWarning ()
 		{
 			CreateRegisteredPackageRepositories ();
@@ -966,6 +968,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithAllRepositoriesFailing_RepositoryErrorIsDisplayed ()
 		{
 			CreateRegisteredPackageRepositories ();
@@ -983,6 +986,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		[Ignore]
 		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithOneFailingRepository_RepositoryErrorIsDisplayed ()
 		{
 			CreateRegisteredPackageRepositories ();
