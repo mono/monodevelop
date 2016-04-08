@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
@@ -44,8 +45,8 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class ProgressMonitorManager : GuiSyncObject
 	{
-		ArrayList searchMonitors = new ArrayList ();
-		ArrayList outputMonitors = new ArrayList ();
+		List<Pad> searchMonitors = new List<Pad> ();
+		List<Pad> outputMonitors = new List<Pad> ();
 		
 		/******************************/
 
