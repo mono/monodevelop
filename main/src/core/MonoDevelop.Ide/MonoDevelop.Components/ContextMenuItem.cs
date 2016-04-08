@@ -93,6 +93,21 @@ namespace MonoDevelop.Components
 
 		public bool Visible { get; set; }
 
+		public event EventHandler<Gtk.Widget> Selected;
+
+		internal void FireSelectedEvent (Gtk.Widget widget)
+		{
+			Selected?.Invoke (this, widget);
+		}
+
+		public event EventHandler<Gtk.Widget> Deselected;
+
+		internal void FireDeselectedEvent (Gtk.Widget widget)
+		{
+			Deselected?.Invoke (this, widget);
+		}
+
+
 		public Xwt.Drawing.Image Image {
 			get { return image; }
 			set {
@@ -142,5 +157,6 @@ namespace MonoDevelop.Components
 			if (Clicked != null)
 				Clicked (this, e);
 		}
-	}
+
+}
 }

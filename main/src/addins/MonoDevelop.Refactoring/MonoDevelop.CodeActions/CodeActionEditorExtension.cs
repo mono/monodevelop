@@ -100,6 +100,7 @@ namespace MonoDevelop.CodeActions
 		{
 			CancelMenuCloseTimer ();
 			CancelQuickFixTimer ();
+			HidePreviewTooltip ();
 			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
 			Editor.SelectionChanged -= HandleSelectionChanged;
 			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
@@ -277,6 +278,7 @@ namespace MonoDevelop.CodeActions
 			public readonly string Label;
 
 			public readonly System.Action Action;
+			public Action<Gtk.Widget, int, int> ShowPreviewTooltip;
 
 			public FixMenuEntry (string label, System.Action action)
 			{
@@ -360,9 +362,9 @@ namespace MonoDevelop.CodeActions
 
 				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-
 				var menu = CreateContextMenu (entrySet);
-				menu.Show (parent, x, y, () => Editor.SuppressTooltips = false, true);
+				HidePreviewTooltip ();
+				menu.Show (parent, x, y, () => { Editor.SuppressTooltips = false; HidePreviewTooltip ();}, true);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while context menu popup.", ex);
 			}
@@ -372,7 +374,6 @@ namespace MonoDevelop.CodeActions
 		ContextMenu CreateContextMenu (FixMenuDescriptor entrySet)
 		{
 			var menu = new ContextMenu ();
-
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
 					menu.Items.Add (new SeparatorContextMenuItem ());
@@ -384,13 +385,32 @@ namespace MonoDevelop.CodeActions
 				var subMenu = item as FixMenuDescriptor;
 				if (subMenu != null) {
 					menuItem.SubMenu = CreateContextMenu (subMenu);
+					menuItem.Selected += delegate (object sender, Widget e) {
+						HidePreviewTooltip ();
+					};
+					menuItem.Deselected += delegate { HidePreviewTooltip (); };
 				} else {
 					menuItem.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => ((System.Action)((ContextMenuItem)sender).Context) ();
+					menuItem.Selected += delegate (object sender, Widget e) {
+						HidePreviewTooltip ();
+						if (item.ShowPreviewTooltip != null) {
+							item.ShowPreviewTooltip (e, 0, 0);
+						}
+					};
+					menuItem.Deselected += delegate { HidePreviewTooltip (); };
 				}
 				menu.Items.Add (menuItem);
 			}
-
+			menu.Closed += delegate { HidePreviewTooltip (); };
 			return menu;
+		}
+
+		void HidePreviewTooltip ()
+		{
+			if (currentPreviewWindow != null) {
+				currentPreviewWindow.Destroy ();
+				currentPreviewWindow = null;
+			}
 		}
 
 		static string CreateLabel (string title, ref int mnemonic)
@@ -449,6 +469,8 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
+		static RefactoringPreviewTooltipWindow currentPreviewWindow;
+
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
 			int mnemonic = 1;
@@ -468,6 +490,13 @@ namespace MonoDevelop.CodeActions
 					await new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run ();
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
 				});
+
+				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Widget widget, int arg2, int arg3) {
+					HidePreviewTooltip ();
+					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.CodeAction);
+					currentPreviewWindow.RequestPopup (widget.Parent);
+				};
+
 				menu.Add (thisInstanceMenuItem);
 				items++;
 			}
@@ -485,6 +514,13 @@ namespace MonoDevelop.CodeActions
 					await new ContextActionRunner (fix.CodeAction, Editor, DocumentContext).Run ();
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
 				});
+
+				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Widget widget, int arg2, int arg3) {
+					HidePreviewTooltip ();
+					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.CodeAction);
+					currentPreviewWindow.RequestPopup (widget.Parent);
+				};
+
 				menu.Add (thisInstanceMenuItem);
 				items++;
 			}
@@ -510,6 +546,16 @@ namespace MonoDevelop.CodeActions
 					 	}
 				 	}
 				);
+				menuItem.ShowPreviewTooltip = async delegate (Widget widget, int arg2, int arg3) {
+					var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
+					HidePreviewTooltip ();
+					var fix = fixes.FirstOrDefault ();
+					if (fix == null)
+						return;
+					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.Action);
+					currentPreviewWindow.RequestPopup (widget.Parent);
+				};
+
 				subMenu.Add (menuItem);
 				menu.Add (subMenu);
 				items++;
@@ -541,6 +587,15 @@ namespace MonoDevelop.CodeActions
 													 delegate {
 														 descriptor.DisableWithPragma (Editor, DocumentContext, fix);
 													 });
+					menuItem.ShowPreviewTooltip = async delegate (Widget widget, int arg2, int arg3) {
+						var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { fix }, default (CancellationToken)).ConfigureAwait (false);
+						HidePreviewTooltip ();
+						var fix2 = fixes.FirstOrDefault ();
+						if (fix2 == null)
+							return;
+						currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix2.Action);
+						currentPreviewWindow.RequestPopup (widget.Parent);
+					};
 					subMenu.Add (menuItem);
 					menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with file"),
 						delegate {

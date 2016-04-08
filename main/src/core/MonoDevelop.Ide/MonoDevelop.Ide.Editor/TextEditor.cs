@@ -743,7 +743,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string GetTextAt (int offset, int length)
 		{
-			if (offset < 0 || offset >= Length)
+			if (offset < 0 || offset > Length)
 				throw new ArgumentOutOfRangeException (nameof (offset), "offset needs to be >= 0 && < " + Length + ", was :" + offset);
 			return ReadOnlyTextDocument.GetTextAt (offset, length);
 		}

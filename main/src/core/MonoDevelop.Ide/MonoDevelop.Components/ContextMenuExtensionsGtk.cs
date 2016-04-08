@@ -62,8 +62,10 @@ namespace MonoDevelop.Components
 
 			var gtkMenu = FromMenu (menu, closeHandler);
 			gtkMenu.ShowAll ();
-			if (selectFirstItem && gtkMenu.Children.Length > 0)
-				gtkMenu.SelectItem (gtkMenu.Children[0]); 
+			if (selectFirstItem && gtkMenu.Children.Length > 0) {
+				gtkMenu.SelectItem (gtkMenu.Children [0]);
+				menu.Items [0].FireSelectedEvent (gtkMenu.Children [0]);
+			}
 			ShowContextMenu (parent, x, y, gtkMenu);
 		}
 
@@ -106,7 +108,12 @@ namespace MonoDevelop.Components
 			} else {
 				menuItem = new Gtk.ImageMenuItem (item.Label);
 			} 
-
+			menuItem.Selected += delegate {
+				item.FireSelectedEvent (menuItem);
+			};
+			menuItem.Deselected += delegate {
+				item.FireDeselectedEvent (menuItem);
+			};
 			if (item.SubMenu != null && item.SubMenu.Items.Count > 0) {
 				menuItem.Submenu = FromMenu (item.SubMenu, null);
 			}
@@ -144,9 +151,11 @@ namespace MonoDevelop.Components
 					result.Append (item);
 			}
 
-			if (closeHandler != null) {
-				result.Hidden += (sender, e) => closeHandler ();
-			}
+			result.Hidden += delegate {
+				if (closeHandler != null)
+					closeHandler ();
+				menu.FireClosedEvent ();
+			};
 			return result;
 		}
 	}
