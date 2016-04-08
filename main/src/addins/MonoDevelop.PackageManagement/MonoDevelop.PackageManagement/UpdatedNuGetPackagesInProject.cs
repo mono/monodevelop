@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
 
@@ -76,9 +77,21 @@ namespace MonoDevelop.PackageManagement
 
 		public void RemoveUpdatedPackages (IEnumerable<NuGet.PackageReference> packageReferences)
 		{
-			foreach (NuGet.PackageReference packageReference in packageReferences) {
-				PackageIdentity package = packages.Find (existingPackageName => existingPackageName.Id == packageReference.Id);
-				if ((package != null) && IsNewPackageInstalled (package.Version, packageReference.Version)) {
+			RemoveUpdatedPackages (packageReferences.Select (packageReference => CreatePackageReference (packageReference)));
+		}
+
+		PackageReference CreatePackageReference (NuGet.PackageReference packageReference)
+		{
+			var version = new NuGetVersion (packageReference.Version.ToString ());
+			var identity = new PackageIdentity (packageReference.Id, version);
+			return new PackageReference (identity, null);
+		}
+
+		public void RemoveUpdatedPackages (IEnumerable<PackageReference> packageReferences)
+		{
+			foreach (PackageReference packageReference in packageReferences) {
+				PackageIdentity package = packages.Find (existingPackageName => existingPackageName.Id == packageReference.PackageIdentity.Id);
+				if ((package != null) && (package.Version <= packageReference.PackageIdentity.Version)) {
 					packages.Remove (package);
 				}
 			}
@@ -86,15 +99,9 @@ namespace MonoDevelop.PackageManagement
 			RemoveUninstalledPackages (packageReferences);
 		}
 
-		bool IsNewPackageInstalled (NuGetVersion updatedPackageAvailableVersion, NuGet.SemanticVersion installedVersion)
+		void RemoveUninstalledPackages (IEnumerable<PackageReference> packageReferences)
 		{
-			var version = new NuGet.SemanticVersion (updatedPackageAvailableVersion.ToString ());
-			return version <= installedVersion;
-		}
-
-		void RemoveUninstalledPackages (IEnumerable<NuGet.PackageReference> packageReferences)
-		{
-			packages.RemoveAll (package => !packageReferences.Any (packageReference => packageReference.Id == package.Id));
+			packages.RemoveAll (package => !packageReferences.Any (packageReference => packageReference.PackageIdentity.Id == package.Id));
 		}
 	}
 }

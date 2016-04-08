@@ -145,10 +145,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		int GetUpdatedPackagesCount ()
 		{
-			return updatedPackagesInWorkspace
-				.GetUpdatedPackages (project)
-				.GetPackages ()
-				.Count ();
+			UpdatedNuGetPackagesInProject updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (project);
+			updatedPackages.RemoveUpdatedPackages (GetPackageReferences ());
+
+			return updatedPackages.GetPackages ().Count ();
 		}
 
 		public bool AnyPackageReferences ()
