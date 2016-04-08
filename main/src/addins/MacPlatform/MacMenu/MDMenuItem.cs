@@ -176,8 +176,10 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			if (!String.IsNullOrWhiteSpace (fileName)) {
 				item.ToolTip = fileName;
 				var icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
-				if (icon != null)
-					item.Image = icon.ToNSImage ();
+				if (icon != null) {
+					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
+					item.Image = icon.WithStyles ("sel").ToBitmap (scale).ToNSImage ();
+				}
 			}
 
 			SetAccel (item, info.AccelKey);
