@@ -20,6 +20,7 @@ type SyntaxHighlighting() =
         let line = data.Lines |> Seq.head
         let chunks = syntaxMode.GetChunks(style, line, offset, line.Length)
         let chunk = chunks |> Seq.tryFind (fun c -> c.Offset = offset && c.Length = length)
+
         match chunk with
         | Some (c) -> c.Style |> should equal expectedStyle
         | _ -> printfn "Offset - %d, Length - %d" offset length
@@ -57,8 +58,9 @@ type SyntaxHighlighting() =
     [<TestCase("§[§", "Punctuation(Brackets)")>]
     [<TestCase("§{§", "Punctuation(Brackets)")>]
     [<TestCase("do Something() |> §ignore§", "User Method Declaration")>]
-    [<TestCase("let §mutable§ x = 1", "Keyword(Modifiers)")>]
-    [<TestCase("let mutable §x§ = 1", "User Field Declaration")>]
+    [<TestCase("let §mutable§ x   = 1", "Keyword(Modifiers)")>]
+    [<TestCase("let mutable  §x§ = 1", "User Field Declaration")>]
+    [<TestCase("let mutable x§ = §1", "Plain Text")>]
     [<TestCase("c.Style §|> §should equal", "Plain Text")>]
     [<TestCase("c.Style |> §should§ equal", "User Method Declaration")>]
     [<TestCase("match §x§ with", "User Field Declaration")>]
@@ -104,6 +106,7 @@ type SyntaxHighlighting() =
     [<TestCase(@"w11.Position <- §0§", "Number")>]
     [<TestCase(@" §-1§", "Number")>]
     [<TestCase(@"[0§..§1]", "Plain Text")>]
+    [<TestCase("let mutable x§   = §1", "Plain Text")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
