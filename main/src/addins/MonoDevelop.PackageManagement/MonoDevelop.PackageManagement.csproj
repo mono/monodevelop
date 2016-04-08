@@ -276,15 +276,12 @@
     <Compile Include="MonoDevelop.PackageManagement\ProcessPackageOperationsAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectBrowserUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFramework.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageRepositoryCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageSettingsFileName.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageInfo.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageRepositories.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSource.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSources.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSourceSettings.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RegisteredProjectTemplatePackageSources.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SettingsFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpUserAgent.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionExtensions.cs" />
@@ -507,6 +504,7 @@
     <Compile Include="MonoDevelop.PackageManagement\IUpdatedNuGetPackagesInWorkspace.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetIntegratedProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopBuildIntegratedRestorer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateSourceRepositoryProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

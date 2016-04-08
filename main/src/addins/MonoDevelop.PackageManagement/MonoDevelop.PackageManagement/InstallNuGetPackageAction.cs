@@ -24,7 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Projects;
@@ -40,9 +41,11 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class InstallNuGetPackageAction : INuGetPackageAction, IInstallNuGetPackageAction
 	{
-		SourceRepository sourceRepository;
+		List<SourceRepository> primarySources;
+		List<SourceRepository> secondarySources = new List<SourceRepository> ();
 		NuGetPackageManager packageManager;
 		NuGetProject project;
+		NuGetProjectContext context;
 		IDotNetProject dotNetProject;
 		CancellationToken cancellationToken;
 
@@ -52,10 +55,26 @@ namespace MonoDevelop.PackageManagement
 			IDotNetProject dotNetProject,
 			NuGetProjectContext projectContext,
 			CancellationToken cancellationToken = default(CancellationToken))
+			: this (
+				new [] { sourceRepository },
+				solutionManager,
+				dotNetProject,
+				projectContext,
+				cancellationToken)
 		{
-			this.sourceRepository = sourceRepository;
+		}
+
+		public InstallNuGetPackageAction (
+			IEnumerable<SourceRepository> primarySources,
+			ISolutionManager solutionManager,
+			IDotNetProject dotNetProject,
+			NuGetProjectContext projectContext,
+			CancellationToken cancellationToken = default(CancellationToken))
+		{
+			this.primarySources = primarySources.ToList ();
 			this.cancellationToken = cancellationToken;
 			this.dotNetProject = dotNetProject;
+			this.context = projectContext;
 
 			project = new MonoDevelopNuGetProjectFactory ()
 				.CreateNuGetProject (dotNetProject, projectContext);
@@ -83,15 +102,14 @@ namespace MonoDevelop.PackageManagement
 		async Task ExecuteAsync ()
 		{
 			var identity = new PackageIdentity (PackageId, Version);
-			INuGetProjectContext context = CreateProjectContext ();
 
 			var actions = await packageManager.PreviewInstallPackageAsync (
 				project,
 				identity,
 				CreateResolutionContext (),
 				context,
-				sourceRepository,
-				new SourceRepository[0],
+				primarySources,
+				secondarySources,
 				cancellationToken);
 
 			NuGetPackageManager.SetDirectInstall (identity, context);
@@ -118,11 +136,6 @@ namespace MonoDevelop.PackageManagement
 				true,
 				VersionConstraints.None
 			);
-		}
-
-		INuGetProjectContext CreateProjectContext ()
-		{
-			return new NuGetProjectContext (); 
 		}
 
 		public bool IsForProject (DotNetProject project)

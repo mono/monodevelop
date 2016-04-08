@@ -24,37 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
-using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
-using NuGet;
-using System.Linq;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class ProjectTemplateNuGetPackageInstaller : ProjectTemplatePackageInstaller
 	{
-		IPackageManagementSolution packageManagementSolution;
-		IPackageRepositoryCache packageRepositoryCache;
 		IBackgroundPackageActionRunner backgroundPackageActionRunner;
 
 		public ProjectTemplateNuGetPackageInstaller ()
-			: this(
-				PackageManagementServices.Solution,
-				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
-				PackageManagementServices.BackgroundPackageActionRunner)
+			: this(PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
 		public ProjectTemplateNuGetPackageInstaller (
-			IPackageManagementSolution solution,
-			IPackageRepositoryCache packageRepositoryCache,
 			IBackgroundPackageActionRunner backgroundPackageActionRunner)
 		{
-			this.packageManagementSolution = solution;
-			this.packageRepositoryCache = packageRepositoryCache;
 			this.backgroundPackageActionRunner = backgroundPackageActionRunner;
 		}
 
@@ -79,42 +69,52 @@ namespace MonoDevelop.PackageManagement
 
 		List<IPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
+			var repositoryProvider = new ProjectTemplateSourceRepositoryProvider ();
+			var repositories = repositoryProvider.GetRepositories ().ToList ();
+
 			var installPackageActions = new List<IPackageAction> ();
 
 			foreach (PackageReferencesForCreatedProject packageReferences in packageReferencesForCreatedProjects) {
 				var project = solution.GetAllProjects ().FirstOrDefault (p => p.Name == packageReferences.ProjectName) as DotNetProject;
 				if (project != null) {
-					installPackageActions.AddRange (CreateInstallPackageActions (project, packageReferences));
+					installPackageActions.AddRange (CreateInstallPackageActions (project, packageReferences, repositories));
 				}
 			}
 
 			return installPackageActions;
 		}
 
-		IEnumerable<InstallPackageAction> CreateInstallPackageActions (DotNetProject dotNetProject, PackageReferencesForCreatedProject projectPackageReferences)
+		IEnumerable<InstallNuGetPackageAction> CreateInstallPackageActions (
+			DotNetProject dotNetProject,
+			PackageReferencesForCreatedProject projectPackageReferences,
+			IEnumerable<SourceRepository> repositories)
 		{
-			IPackageManagementProject project = CreatePackageManagementProject (dotNetProject);
 			foreach (ProjectTemplatePackageReference packageReference in projectPackageReferences.PackageReferences) {
-				InstallPackageAction action = project.CreateInstallPackageAction ();
+				var action = CreateInstallNuGetPackageAction (dotNetProject, repositories);
 				action.PackageId = packageReference.Id;
-				action.PackageVersion = GetPackageVersion (packageReference);
+				action.Version = GetPackageVersion (packageReference);
 
 				yield return action;
 			}
 		}
 
-		SemanticVersion GetPackageVersion (ProjectTemplatePackageReference packageReference)
+		InstallNuGetPackageAction CreateInstallNuGetPackageAction (
+			DotNetProject dotNetProject,
+			IEnumerable<SourceRepository> repositories)
 		{
-			if (!string.IsNullOrEmpty (packageReference.Version)) {
-				return new SemanticVersion (packageReference.Version);
-			}
-			return null;
+			return new InstallNuGetPackageAction (
+				repositories,
+				new MonoDevelopSolutionManager (dotNetProject.ParentSolution),
+				new DotNetProjectProxy (dotNetProject),
+				new NuGetProjectContext ());
 		}
 
-		IPackageManagementProject CreatePackageManagementProject (DotNetProject project)
+		NuGetVersion GetPackageVersion (ProjectTemplatePackageReference packageReference)
 		{
-			var dotNetProject = new DotNetProjectProxy (project);
-			return packageManagementSolution.GetProject (packageRepositoryCache.CreateAggregateWithPriorityMachineCacheRepository (), dotNetProject);
+			if (!string.IsNullOrEmpty (packageReference.Version)) {
+				return new NuGetVersion (packageReference.Version);
+			}
+			return null;
 		}
 	}
 }

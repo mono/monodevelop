@@ -55,7 +55,7 @@ namespace MonoDevelop.PackageManagement
 				return installNuGetPackageAction.Version;
 			}
 			var installPackageAction = action as InstallPackageAction;
-			return new NuGetVersion (installNuGetPackageAction.Version.ToString ());
+			return new NuGetVersion (installPackageAction.GetPackageVersion ().ToString ());
 		}
 	}
 }

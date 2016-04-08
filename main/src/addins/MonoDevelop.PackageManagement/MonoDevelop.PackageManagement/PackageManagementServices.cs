@@ -41,8 +41,6 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
 		static readonly PackageManagementOutputMessagesView outputMessagesView;
 		static readonly PackageActionRunner packageActionRunner;
-		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
-		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
 		static readonly PackageRepositoryCache packageRepositoryCache;
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
 		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
@@ -61,9 +59,7 @@ namespace MonoDevelop.PackageManagement
 			userAgentGenerator.Register (packageRepositoryCache);
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
-			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
-			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(projectTemplatePackageSources);
-			
+
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			solution = new PackageManagementSolution (registeredPackageRepositories, projectService, packageManagementEvents);
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
@@ -135,14 +131,6 @@ namespace MonoDevelop.PackageManagement
 		
 		internal static IPackageActionRunner PackageActionRunner {
 			get { return packageActionRunner; }
-		}
-		
-		internal static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
-			get { return projectTemplatePackageRepositoryCache; }
-		}
-		
-		internal static RegisteredPackageSources ProjectTemplatePackageSources {
-			get { return projectTemplatePackageSources.PackageSources; }
 		}
 
 		internal static IBackgroundPackageActionRunner BackgroundPackageActionRunner {

@@ -1,10 +1,10 @@
-﻿// 
-// RegisteredProjectTemplatePackageSources.cs
+﻿//
+// ProjectTemplateSourceRepositoryProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,36 +24,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using NuGet;
+using System.Linq;
 using Mono.Addins;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide.Templates;
+using NuGet.Configuration;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class RegisteredProjectTemplatePackageSources
+	internal class ProjectTemplateSourceRepositoryProvider
 	{
-		RegisteredPackageSources packageSources = new RegisteredPackageSources();
+		ISourceRepositoryProvider provider;
 
-		public RegisteredProjectTemplatePackageSources ()
+		public ProjectTemplateSourceRepositoryProvider ()
 		{
-			packageSources = new RegisteredPackageSources (GetPackageSources ());
+			provider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
 		}
-		
-		List<PackageSource> GetPackageSources()
+
+		public IEnumerable<SourceRepository> GetRepositories ()
 		{
-			var addinPackageSources = new List<PackageSource> ();
+			return GetPackageSources ()
+				.Select (packageSource => provider.CreateRepository (packageSource));
+		}
+
+		IEnumerable<PackageSource> GetPackageSources ()
+		{
+			var packageSources = new List<PackageSource> ();
+
 			foreach (PackageRepositoryNode node in AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/ProjectTemplatePackageRepositories")) {
-				addinPackageSources.Add (node.GetPackageSource ());
+				packageSources.Add (node.CreatePackageSource ());
 			}
-			addinPackageSources.Add (RegisteredPackageSources.DefaultPackageSource);
-			return addinPackageSources;
+
+			packageSources.Add (CreateDefaultPackageSource ());
+
+			return packageSources;
 		}
-		
-		public RegisteredPackageSources PackageSources {
-			get { return packageSources; }
+
+		PackageSource CreateDefaultPackageSource ()
+		{
+			return new PackageSource (
+				RegisteredPackageSources.DefaultPackageSourceUrl,
+				RegisteredPackageSources.DefaultPackageSourceName);
 		}
 	}
 }
+
