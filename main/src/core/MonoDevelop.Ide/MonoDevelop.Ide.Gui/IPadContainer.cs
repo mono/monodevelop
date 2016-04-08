@@ -307,6 +307,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void NotifyDestroyed ()
 		{
+			content?.Dispose ();
 			if (PadDestroyed != null)
 				PadDestroyed (this, EventArgs.Empty);
 		}
