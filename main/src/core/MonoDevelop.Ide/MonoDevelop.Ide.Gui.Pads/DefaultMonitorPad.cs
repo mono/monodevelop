@@ -218,6 +218,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logView.Clear ();
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
+
+			base.Dispose ();
 		}
 	}
 }
