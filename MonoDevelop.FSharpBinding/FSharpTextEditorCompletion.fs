@@ -121,7 +121,6 @@ module Completion =
 
     let (|InvalidToken|_|) context =
         let token = Tokens.getTokenAtPoint context.editor context.editor.DocumentContext context.triggerOffset
-
         if Tokens.isInvalidCompletionToken token then
             Some InvalidToken
         else
@@ -353,14 +352,18 @@ module Completion =
             yield CompletionData(keyValuePair.Key, IconId("md-keyword"),keyValuePair.Value) ]
 
     let parseLock = obj()
+
+    let filterResults (data: seq<CompletionData>) residue =
+        data |> Seq.filter(fun c -> residue = "" || (Char.ToLowerInvariant c.DisplayText.[0]) = (Char.ToLowerInvariant residue.[0]))
+
     let getFsiCompletions context = 
 
         async {
             let { column = column
                   lineToCaret = lineToCaret
                   completionChar = completionChar } = context
-            let result = CompletionDataList()
 
+            let result = CompletionDataList()
 
             match FSharpInteractivePad.Fsi with
             | Some pad ->
@@ -375,8 +378,9 @@ module Completion =
                         |> Seq.cast<CompletionData>
 
                     result.AddRange completions
+                    let _idents, residue = Parsing.findLongIdentsAndResidue(column, lineToCaret)
                     if completionChar <> '.' && result.Count > 0 then
-                        let _idents, residue = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+
                         LoggingService.logDebug "Completion: residue %s" residue
                         result.DefaultCompletionString <- residue
                         result.TriggerWordLength <- residue.Length
@@ -385,9 +389,8 @@ module Completion =
                     if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
                         // Add the code templates and compiler generated identifiers if the completion char is not '.'
                         CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-                        result.AddRange compilerIdentifiers
-                                
-                        result.AddRange keywordCompletionData
+                        result.AddRange (filterResults compilerIdentifiers residue)
+                        result.AddRange (filterResults keywordCompletionData residue)
                     return result
                 | None -> return result
             | None -> return result
@@ -433,7 +436,7 @@ module Completion =
                             | _ -> false
 
                         let data = getCompletionData symbols isInAttribute
-                        result.AddRange data
+                        result.AddRange (filterResults data residue)
 
                         if completionChar <> '.' && result.Count > 0 then
                             LoggingService.logDebug "Completion: residue %s" residue
@@ -444,9 +447,9 @@ module Completion =
                         if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
                             // Add the code templates and compiler generated identifiers if the completion char is not '.'
                             CodeTemplates.CodeTemplateService.AddCompletionDataForMime ("text/x-fsharp", result)
-                            result.AddRange compilerIdentifiers
+                            result.AddRange (filterResults compilerIdentifiers residue)
                                     
-                            result.AddRange keywordCompletionData
+                            result.AddRange (filterResults keywordCompletionData residue)
                     | None -> ()
                 return result
             with

@@ -34,9 +34,8 @@ module Tokens =
 
     let isInvalidCompletionToken (token:FSharpTokenInfo option) =
         match token with 
-        | Some token -> Lexer.isNonTipToken token//token.CharClass <> FSharpTokenCharKind.WhiteSpace
-                        //&& Lexer.isNonTipToken token
-        | None -> true
+        | Some token -> Lexer.isNonTipToken token
+        | None -> false
                 
     let tryGetTokens source defines fileName =
         try
