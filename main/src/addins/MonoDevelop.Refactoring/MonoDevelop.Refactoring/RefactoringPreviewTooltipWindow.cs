@@ -68,9 +68,7 @@ namespace MonoDevelop.Refactoring
 			var token = popupSrc.Token;
 
 			diff = await Task.Run (async delegate {
-				Console.WriteLine ("action : " + codeAction);
-				foreach (var op in await codeAction.GetOperationsAsync (token)) {
-					Console.WriteLine ("operation : " + op);
+				foreach (var op in await codeAction.GetPreviewOperationsAsync (token)) {
 					var ac = op as ApplyChangesOperation;
 					if (ac == null) {
 						continue;
