@@ -323,18 +323,22 @@ namespace MonoDevelop.PackageManagement
 			return packageSourceViewModels.Last();
 		}
 		
-		public void BrowsePackageFolder()
+		public bool BrowsePackageFolder()
 		{
 			string folder = folderBrowser.SelectFolder();
 			if (folder != null) {
 				UpdateNewPackageSourceUsingSelectedFolder(folder);
+				return true;
 			}
+			return false;
 		}
 		
 		void UpdateNewPackageSourceUsingSelectedFolder(string folder)
 		{
 			NewPackageSourceUrl = folder;
-			NewPackageSourceName = GetPackageSourceNameFromFolder(folder);
+			if (String.IsNullOrEmpty (NewPackageSourceName)) {
+				NewPackageSourceName = GetPackageSourceNameFromFolder (folder);
+			}
 		}
 		
 		string GetPackageSourceNameFromFolder(string folder)
