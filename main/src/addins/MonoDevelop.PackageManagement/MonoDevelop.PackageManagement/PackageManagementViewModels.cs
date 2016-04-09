@@ -90,21 +90,6 @@ namespace MonoDevelop.PackageManagement
 				new PackageManagementTaskFactory());
 		}
 		
-		public RegisteredPackageSourcesViewModel RegisteredPackageSourcesViewModel {
-			get {
-				if (registeredPackageSourcesViewModel == null) {
-					registeredPackageSourcesViewModel = CreateRegisteredPackageSourcesViewModel();
-				}
-				return registeredPackageSourcesViewModel;
-			}
-		}
-		
-		RegisteredPackageSourcesViewModel CreateRegisteredPackageSourcesViewModel()
-		{
-			CreateRegisteredPackageRepositories();
-			return new RegisteredPackageSourcesViewModel(registeredPackageRepositories);
-		}
-		
 		public PackageManagementOptionsViewModel PackageManagementOptionsViewModel {
 			get {
 				if (packageManagementOptionsViewModel == null) {

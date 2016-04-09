@@ -109,7 +109,7 @@ namespace MonoDevelop.PackageManagement
 			return MarkupString.Format (
 				"<b>{0}</b>\n<span foreground='{2}'>{1}</span>",
 				PackageSourceViewModel.Name,
-				PackageSourceViewModel.SourceUrl,
+				PackageSourceViewModel.Source,
 				Ide.Gui.Styles.ColorGetHex (flags.HasFlag (CellRendererState.Selected) ? Styles.PackageSourceUrlSelectedTextColor : Styles.PackageSourceUrlTextColor));
 		}
 

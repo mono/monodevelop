@@ -77,6 +77,11 @@
     <Reference Include="NuGet.Packaging">
       <HintPath>..\..\..\..\packages\NuGet.Packaging.3.3.0\lib\net45\NuGet.Packaging.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Configuration">
+      <HintPath>..\..\..\..\packages\NuGet.Configuration.3.3.0\lib\net45\NuGet.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization" />
+    <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -231,6 +236,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\MinClientVersionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageNewImportsHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageSourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

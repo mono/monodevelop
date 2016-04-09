@@ -32,8 +32,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
-using MonoDevelop.PackageManagement;
 using NuGet;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -41,8 +41,8 @@ namespace MonoDevelop.PackageManagement
 	{
 		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
 			new ObservableCollection<PackageSourceViewModel>();
-		RegisteredPackageSources packageSources;
-		IRegisteredPackageRepositories registeredPackageRepositories;
+		NuGet.Configuration.IPackageSourceProvider packageSourceProvider;
+
 		IFolderBrowser folderBrowser;
 		PackageSourceViewModelChecker packageSourceChecker = new PackageSourceViewModelChecker ();
 		
@@ -53,26 +53,29 @@ namespace MonoDevelop.PackageManagement
 		DelegateCommand browsePackageFolderCommand;
 		DelegateCommand updatePackageSourceCommand;
 		
-		RegisteredPackageSource newPackageSource = new RegisteredPackageSource();
+		PackageSourceViewModel newPackageSource = new PackageSourceViewModel ();
 		PackageSourceViewModel selectedPackageSourceViewModel;
 		bool isEditingSelectedPackageSource;
-		
-		public RegisteredPackageSourcesViewModel(
-			IRegisteredPackageRepositories registeredPackageRepositories)
-			: this(registeredPackageRepositories, new FolderBrowser())
+
+		public RegisteredPackageSourcesViewModel ()
+			: this (SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ())
 		{
 		}
-		
-		public RegisteredPackageSourcesViewModel(
-			IRegisteredPackageRepositories registeredPackageRepositories,
+
+		public RegisteredPackageSourcesViewModel (ISourceRepositoryProvider sourceRepositoryProvider)
+			: this (sourceRepositoryProvider.PackageSourceProvider, new FolderBrowser ())
+		{
+		}
+
+		public RegisteredPackageSourcesViewModel (
+			NuGet.Configuration.IPackageSourceProvider packageSourceProvider,
 			IFolderBrowser folderBrowser)
 		{
-			this.packageSources = registeredPackageRepositories.PackageSources;
+			this.packageSourceProvider = packageSourceProvider;
 			this.folderBrowser = folderBrowser;
-			this.registeredPackageRepositories = registeredPackageRepositories;
 
 			packageSourceChecker.PackageSourceChecked += PackageSourceChecked;
-			CreateCommands();
+			CreateCommands ();
 		}
 
 		void PackageSourceChecked (object sender, PackageSourceViewModelCheckedEventArgs e)
@@ -140,9 +143,16 @@ namespace MonoDevelop.PackageManagement
 		{
 			ReplaceExistingPackageSourceCredentialProvider ();
 
-			foreach (PackageSource packageSource in packageSources) {
+			foreach (NuGet.Configuration.PackageSource packageSource in GetPackageSourcesFromProvider ()) {
 				AddPackageSourceToViewModel(packageSource);
 			}
+		}
+
+		IEnumerable<NuGet.Configuration.PackageSource> GetPackageSourcesFromProvider ()
+		{
+			return packageSourceProvider
+				.LoadPackageSources ()
+				.Where (packageSource => !packageSource.IsMachineWide);
 		}
 
 		/// <summary>
@@ -154,7 +164,7 @@ namespace MonoDevelop.PackageManagement
 			HttpClient.DefaultCredentialProvider = new SettingsCredentialProvider (NullCredentialProvider.Instance, this);
 		}
 		
-		void AddPackageSourceToViewModel(PackageSource packageSource)
+		void AddPackageSourceToViewModel (NuGet.Configuration.PackageSource packageSource)
 		{
 			var packageSourceViewModel = new PackageSourceViewModel(packageSource);
 			packageSourceViewModels.Add(packageSourceViewModel);
@@ -216,9 +226,9 @@ namespace MonoDevelop.PackageManagement
 		
 		void AddNewPackageSourceToViewModel()
 		{
-			var packageSource = newPackageSource.ToPackageSource();
+			var packageSource = newPackageSource.GetPackageSource ();
 			packageSource.IsEnabled = true;
-			AddPackageSourceToViewModel(packageSource);
+			AddPackageSourceToViewModel (packageSource);
 		}
 		
 		void SelectLastPackageSourceViewModel()
@@ -338,7 +348,7 @@ namespace MonoDevelop.PackageManagement
 				isEditingSelectedPackageSource = value;
 				if (isEditingSelectedPackageSource) {
 					NewPackageSourceName = selectedPackageSourceViewModel.Name;
-					NewPackageSourceUrl = selectedPackageSourceViewModel.SourceUrl;
+					NewPackageSourceUrl = selectedPackageSourceViewModel.Source;
 					NewPackageSourceUserName = selectedPackageSourceViewModel.UserName;
 					NewPackageSourcePassword = selectedPackageSourceViewModel.Password;
 				} else {
@@ -361,7 +371,7 @@ namespace MonoDevelop.PackageManagement
 		public void UpdatePackageSource ()
 		{
 			selectedPackageSourceViewModel.Name = NewPackageSourceName;
-			selectedPackageSourceViewModel.SourceUrl = NewPackageSourceUrl;
+			selectedPackageSourceViewModel.Source = NewPackageSourceUrl;
 			selectedPackageSourceViewModel.UserName = NewPackageSourceUserName;
 			selectedPackageSourceViewModel.Password = NewPackageSourcePassword;
 
@@ -372,7 +382,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Save (IEnumerable<PackageSourceViewModel> packageSourceViewModels)
 		{
-			registeredPackageRepositories.UpdatePackageSources (
+			packageSourceProvider.SavePackageSources (
 				packageSourceViewModels.Select (viewModel => viewModel.GetPackageSource ()));
 		}
 
@@ -401,7 +411,7 @@ namespace MonoDevelop.PackageManagement
 		/// </summary>
 		IEnumerable<PackageSource> IPackageSourceProvider.LoadPackageSources ()
 		{
-			return packageSourceViewModels.Select (viewModel => viewModel.GetPackageSource ());
+			return packageSourceViewModels.Select (viewModel => viewModel.GetNuGet2PackageSource ());
 		}
 
 		void IPackageSourceProvider.SavePackageSources (IEnumerable<PackageSource> sources)
