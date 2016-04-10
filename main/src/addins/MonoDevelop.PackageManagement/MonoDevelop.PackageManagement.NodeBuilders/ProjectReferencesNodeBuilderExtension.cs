@@ -52,7 +52,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (packagesFolder != null && packagesFolder.AnyPackageReferences ()) {
 				var projectReferences = dataObject as ProjectReferenceCollection;
 				var folderNode = new ProjectReferencesFromPackagesFolderNode (packagesFolder, projectReferences);
-				treeBuilder.AddChild (folderNode);
+				if (folderNode.AnyReferencesFromPackages ()) {
+					treeBuilder.AddChild (folderNode);
+				}
 			}
 		}
 

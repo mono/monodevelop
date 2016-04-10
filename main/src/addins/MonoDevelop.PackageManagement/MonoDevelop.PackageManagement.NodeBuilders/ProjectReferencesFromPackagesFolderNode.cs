@@ -59,6 +59,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public ProjectReferenceCollection References { get; private set; }
 		public FilePath PackagesFolderPath { get; private set; }
 
+		public bool AnyReferencesFromPackages () 
+		{ 
+			return GetReferencesFromPackages ().Any (); 
+		} 
+
 		public IEnumerable<ProjectReference> GetReferencesFromPackages ()
 		{
 			foreach (ProjectReference projectReference in References.Where (IsReferenceFromPackage)) {
