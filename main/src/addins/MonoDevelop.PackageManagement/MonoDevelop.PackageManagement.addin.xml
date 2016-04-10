@@ -154,4 +154,8 @@
 	<Extension path="/MonoDevelop/Refactoring/CodeDiagnosticProvider">
 		<Class class="MonoDevelop.PackageManagement.Refactoring.PackageCodeDiagnosticProvider" />
 	</Extension>-->
+
+	<Extension path="/MonoDevelop/Core/SystemInformation"> 
+		<Class class="MonoDevelop.PackageManagement.NuGetSystemInformation" /> 
+	</Extension>
 </ExtensionModel>

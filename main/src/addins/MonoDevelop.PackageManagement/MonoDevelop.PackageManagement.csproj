@@ -506,6 +506,7 @@
     <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateSourceRepositoryProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ReinstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesFolderNodeCommands.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetSystemInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
