@@ -19,9 +19,10 @@ type FSharpBraceMatcher() =
         if caretOffset = -1 || caretOffset >= editor.Length then
             Task.FromResult(Nullable())
         else
-
-        match editor.GetCharAt(caretOffset) with
-        | '(' | ')' ->
+        let isFsi = editor.FileName.ToString() = "__FSI__.fsx"
+        match editor.GetCharAt(caretOffset), isFsi with
+        | '(', false
+        | ')', false ->
             let computation = async {
                 let getOffset (range:Range.range) =
                     editor.LocationToOffset (range.StartLine, range.StartColumn+1)

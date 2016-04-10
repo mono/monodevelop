@@ -21,7 +21,6 @@ open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Projects
 
-
 [<AutoOpen>]
 module ColorHelpers =
     let strToColor s =
@@ -183,12 +182,9 @@ type FSharpInteractivePad() =
 
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
-            //let colourSchemChanged =
-            //    IdeApp.Preferences.ColorScheme.Changed.Subscribe (fun _ -> this.UpdateColors ())
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
-                //colourSchemChanged.Dispose()
                 if killIntent = NoIntent then
                     Runtime.RunInMainThread(fun () ->
                         LoggingService.LogDebug ("Interactive: process stopped")
@@ -223,22 +219,12 @@ type FSharpInteractivePad() =
         session |> Option.iter (fun ses -> ses.Kill())
         if intent = Restart then session <- setupSession()
 
+    let input = new ResizeArray<_>()
     member x.Text =
         editor.Text
 
     member x.AddMorePrompt() =
         addMarker newLineIcon
-
-    member x.SendAndEchoText s = 
-        editor.CaretOffset <- editor.Length
-        let lines = String.getLines s
-        editor.InsertAtCaret (lines.[0] + "\n") 
-        for line in lines.[1..] do
-            addMarker newLineIcon
-            editor.InsertAtCaret (line + "\n")
-            commandHistoryPast.Push line
-        x.SendCommand (s + "\n") 
-        editor.ScrollTo editor.CaretLocation
 
     member x.Session = session
 
@@ -247,15 +233,16 @@ type FSharpInteractivePad() =
         resetFsi Kill
 
     member x.SendCommandAndStore command =
+        input.Add command
         session 
         |> Option.iter(fun ses ->
             commandHistoryPast.Push command
             ses.SendInput (command + "\n"))
 
     member x.SendCommand command =
+        input.Add command
         session 
-        |> Option.iter(fun ses ->
-            ses.SendInput command)
+        |> Option.iter(fun ses -> ses.SendInput (command + ";;"))
 
     member x.RequestCompletions lineStr column =
         session 
@@ -321,9 +308,9 @@ type FSharpInteractivePad() =
         if x.IsSelectionNonEmpty then
             let sel = IdeApp.Workbench.ActiveDocument.Editor.SelectedText
             getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
 
-            x.SendCommand (sel + ";;")
+            x.SendCommand sel
         else
           //if nothing is selected send the whole line
             x.SendLine()
@@ -332,11 +319,11 @@ type FSharpInteractivePad() =
         if isNull IdeApp.Workbench.ActiveDocument then ()
         else
             getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
 
             let line = IdeApp.Workbench.ActiveDocument.Editor.CaretLine
             let text = IdeApp.Workbench.ActiveDocument.Editor.GetLineText(line)
-            x.SendCommand (text + ";;")
+            x.SendCommand text
             //advance to the next line
             if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
             then IdeApp.Workbench.ActiveDocument.Editor.SetCaretLocation (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
@@ -344,9 +331,9 @@ type FSharpInteractivePad() =
     member x.SendFile() =
         let text = IdeApp.Workbench.ActiveDocument.Editor.Text
         getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
 
-        x.SendCommand (text + ";;")
+        x.SendCommand text
 
     member x.IsSelectionNonEmpty =
         if isNull IdeApp.Workbench.ActiveDocument ||
@@ -376,12 +363,10 @@ type FSharpInteractivePad() =
         let orderedreferences = orderAssemblyReferences.Order references
 
         getCorrectDirectory()
-            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\";;") )
+            |> Option.iter (fun path -> x.SendCommand ("#silentCd @\"" + path + "\"") )
 
         orderedreferences
-        |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path ))
-
-        x.SendCommand ";;"
+        |> List.iter (fun a -> x.SendCommand (sprintf  @"#r ""%s""" a.Path))
 
     override x.Initialize(container:MonoDevelop.Ide.Gui.IPadWindow) =
         LoggingService.LogDebug ("InteractivePad: created!")
@@ -390,15 +375,16 @@ type FSharpInteractivePad() =
         ctx.Editor <- editor
         let toolbar = container.GetToolbar(DockPositionType.Right)
 
-        let buttonClear = new DockToolButton("gtk-clear")
-        buttonClear.Clicked.Add(fun _ -> editor.Text <- "")
-        buttonClear.TooltipText <- GettextCatalog.GetString("Clear")
-        toolbar.Add(buttonClear)
+        let addButton icon action tooltip =
+            let button = new DockToolButton(icon)
+            button.Clicked.Add(action)
+            button.TooltipText <- GettextCatalog.GetString(tooltip)
+            toolbar.Add(button)
 
-        let buttonRestart = new DockToolButton("gtk-refresh")
-        buttonRestart.Clicked.Add(fun _ -> x.RestartFsi())
-        buttonRestart.TooltipText <- GettextCatalog.GetString("Reset")
-        toolbar.Add(buttonRestart)
+        addButton "gtk-save" (fun _ -> x.Save()) "Save as script"
+        addButton "gtk-open" (fun _ -> x.OpenScript()) "Open"
+        addButton "gtk-clear" (fun _ -> editor.Text <- "") "Clear"
+        addButton "gtk-refresh" (fun _ -> x.RestartFsi()) "Reset"
 
         toolbar.ShowAll()
 
@@ -412,6 +398,20 @@ type FSharpInteractivePad() =
 
     member x.Paste() = clipboardHandler.Paste()
 
+    member x.Save() =
+        let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as script"), MonoDevelop.Components.FileChooserAction.Save)
+        if dlg.Run () then
+            let file = dlg.SelectedFile
+            let lines = input |> Seq.map (fun line -> line.TrimEnd(';'))
+            let fileContent = String.concat "\n" lines
+            File.WriteAllText(file.FullPath.ToString(), fileContent)
+
+    member x.OpenScript() =
+        let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open)
+
+        if dlg.Run () then
+            let file = dlg.SelectedFile
+            x.SendCommand ("#load \"" + file.FullPath.ToString() + "\"")
 
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
