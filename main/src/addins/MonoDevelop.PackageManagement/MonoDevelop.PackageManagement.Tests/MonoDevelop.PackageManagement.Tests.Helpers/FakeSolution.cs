@@ -74,6 +74,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				ProjectRemoved (this, new DotNetProjectEventArgs (project));
 			}
 		}
+
+		public bool Equals (ISolution solution)
+		{
+			return this == solution;
+		}
 	}
 }
 

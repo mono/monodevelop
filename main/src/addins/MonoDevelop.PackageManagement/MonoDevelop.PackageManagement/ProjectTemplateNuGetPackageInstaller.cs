@@ -62,7 +62,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			List<IPackageAction> actions = CreateInstallPackageActions (solution, packageReferencesForCreatedProjects);
 			if (actions.Any () && PackageManagementServices.Options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled) {
-				actions.Add (new CheckForUpdatedPackagesAction ());
+				actions.Add (new CheckForUpdatedPackagesAction (solution));
 			}
 			return actions;
 		}

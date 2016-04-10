@@ -29,7 +29,8 @@ namespace MonoDevelop.PackageManagement
 	internal interface IUpdatedNuGetPackagesInWorkspace
 	{
 		void Clear ();
-		void CheckForUpdates ();
+		void Clear (ISolution solution);
+		void CheckForUpdates (ISolution solution);
 		UpdatedNuGetPackagesInProject GetUpdatedPackages (IDotNetProject project);
 		bool AnyUpdates ();
 	}

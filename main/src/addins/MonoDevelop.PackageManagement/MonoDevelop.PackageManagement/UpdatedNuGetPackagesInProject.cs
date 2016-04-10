@@ -51,6 +51,10 @@ namespace MonoDevelop.PackageManagement
 
 		public IDotNetProject Project { get; private set; }
 
+		public ISolution ParentSolution {
+			get { return Project.ParentSolution; }
+		}
+
 		public IEnumerable<PackageIdentity> GetPackages ()
 		{
 			return packages;

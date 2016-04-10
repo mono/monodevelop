@@ -24,100 +24,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using NuGet.Packaging.Core;
-using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class UpdatedNuGetPackagesInWorkspace : IUpdatedNuGetPackagesInWorkspace
 	{
-		IPackageManagementEvents packageManagementEvents;
 		CheckForNuGetPackageUpdatesTaskRunner taskRunner;
-		List<ParentPackageOperationDuringCheckForUpdates> packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationDuringCheckForUpdates> ();
+		IPackageManagementEvents packageManagementEvents;
+		List<ISolution> pendingSolutions = new List<ISolution> ();
 		List<UpdatedNuGetPackagesInProject> projectsWithUpdatedPackages = new List<UpdatedNuGetPackagesInProject> ();
-
-		class ParentPackageOperationDuringCheckForUpdates
-		{
-			public ParentPackageOperationDuringCheckForUpdates (ParentPackageOperationEventArgs eventArgs, bool isInstall)
-			{
-				EventArgs = eventArgs;
-				IsInstall = isInstall;
-			}
-
-			public ParentPackageOperationEventArgs EventArgs { get; set; }
-			public bool IsInstall { get; set; }
-		}
 
 		public UpdatedNuGetPackagesInWorkspace (
 			IPackageManagementEvents packageManagementEvents)
 		{
 			this.packageManagementEvents = packageManagementEvents;
 			this.taskRunner = new CheckForNuGetPackageUpdatesTaskRunner (this);
-
-			this.packageManagementEvents.ParentPackageInstalled += PackageInstalled;
-			this.packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
-		}
-
-		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
-		{
-			RefreshUpdatedPackages (e, true);
-		}
-
-		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)
-		{
-			RefreshUpdatedPackages (e, false);
-		}
-
-		void RefreshUpdatedPackages (ParentPackageOperationEventArgs e, bool installed)
-		{
-			GuiDispatch (() => {
-				if (taskRunner.IsRunning) {
-					packageOperationsDuringCheckForUpdates.Add (
-						new ParentPackageOperationDuringCheckForUpdates (e, installed));
-				} else {
-					RemoveUpdatedPackages (e, installed);
-				}
-			});
-		}
-
-		void RemoveUpdatedPackages (ParentPackageOperationEventArgs e, bool installed)
-		{
-			UpdatedNuGetPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
-			if (updatedPackages.AnyPackages ()) {
-				if (!installed) {
-					updatedPackages.RemovePackage (new PackageIdentity (
-						e.Package.Id,
-						new NuGetVersion (e.Package.Version.ToString ())));
-				}
-				updatedPackages.RemoveUpdatedPackages (e.Project.GetPackageReferences ());
-			}
 		}
 
 		public void Clear ()
 		{
 			taskRunner.Stop ();
 			projectsWithUpdatedPackages = new List<UpdatedNuGetPackagesInProject> ();
-			packageOperationsDuringCheckForUpdates = new List<ParentPackageOperationDuringCheckForUpdates> ();
+			pendingSolutions = new List<ISolution> ();
 		}
 
-		public void CheckForUpdates ()
+		public void Clear (ISolution solution)
+		{
+			projectsWithUpdatedPackages.RemoveAll (project => project.ParentSolution.Equals (solution));
+			pendingSolutions.RemoveAll (pendingSolution => pendingSolution.Equals (solution));
+		}
+
+		public void CheckForUpdates (ISolution solution)
 		{
 			GuiDispatch (() => {
-				Clear ();
-				taskRunner.Start (GetProjects ());
+
+				if (taskRunner.IsRunning) {
+					pendingSolutions.Add (solution);
+					return;
+				}
+
+				taskRunner.Start (GetProjects (solution.Solution));
 			});
 		}
 
-		IEnumerable<DotNetProject> GetProjects ()
+		IEnumerable<DotNetProject> GetProjects (Solution solution)
 		{
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			if (solution != null) {
 				foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
 					yield return project;
@@ -127,21 +83,17 @@ namespace MonoDevelop.PackageManagement
 
 		public void CheckForUpdatesCompleted (IEnumerable<UpdatedNuGetPackagesInProject> projects)
 		{
-			projectsWithUpdatedPackages = projects.ToList ();
-
-			RemovePackagesUpdatedDuringCheckForUpdates ();
+			projectsWithUpdatedPackages.AddRange (projects.ToList ());
 
 			if (AnyUpdates ()) {
 				packageManagementEvents.OnUpdatedPackagesAvailable ();
 			}
-		}
 
-		void RemovePackagesUpdatedDuringCheckForUpdates ()
-		{
-			foreach (ParentPackageOperationDuringCheckForUpdates operation in packageOperationsDuringCheckForUpdates) {
-				RemoveUpdatedPackages (operation.EventArgs, operation.IsInstall);
+			if (pendingSolutions.Any ()) {
+				var solution = pendingSolutions[0];
+				pendingSolutions.RemoveAt (0);
+				CheckForUpdates (solution);
 			}
-			packageOperationsDuringCheckForUpdates.Clear ();
 		}
 
 		public UpdatedNuGetPackagesInProject GetUpdatedPackages (IDotNetProject project)

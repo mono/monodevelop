@@ -58,6 +58,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return ProjectsWithUpdatedPackages.Any ();
 		}
+
+		public void Clear (ISolution solution)
+		{
+		}
+
+		public void CheckForUpdates (ISolution solution)
+		{
+		}
 	}
 }
 

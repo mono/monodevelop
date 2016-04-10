@@ -125,8 +125,12 @@ namespace MonoDevelop.PackageManagement
 			} else if (!IsCurrentTask (providers)) {
 				return;
 			} else {
-				updatedNuGetPackagesInWorkspace.CheckForUpdatesCompleted (task.Result);
 				currentProviders = null;
+				if (cancellationTokenSource != null) {
+					cancellationTokenSource.Dispose ();
+					cancellationTokenSource = null;
+				}
+				updatedNuGetPackagesInWorkspace.CheckForUpdatesCompleted (task.Result);
 			}
 		}
 

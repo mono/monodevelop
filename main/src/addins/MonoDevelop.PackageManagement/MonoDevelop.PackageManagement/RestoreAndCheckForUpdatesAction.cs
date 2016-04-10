@@ -133,7 +133,7 @@ namespace MonoDevelop.PackageManagement
 		void CheckForUpdates ()
 		{
 			try {
-				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates ();
+				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates (new SolutionProxy (solution));
 			} catch (Exception ex) {
 				LoggingService.LogError ("Check for NuGet package updates error.", ex);
 			}

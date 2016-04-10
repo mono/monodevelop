@@ -38,28 +38,20 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			ClearUpdatedPackagesInSolution ();
+			ClearUpdatedPackages ();
 			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
 			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 			IdeApp.Workspace.ItemUnloading += WorkspaceItemUnloading;
+			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
 		}
 
 		async void SolutionLoaded (object sender, SolutionEventArgs e)
 		{
 			try {
-				ClearUpdatedPackagesInSolution ();
-
 				if (ShouldRestorePackages) {
 					await RestoreAndCheckForUpdates (e.Solution);
 				} else if (ShouldCheckForUpdates && AnyProjectHasPackages (e.Solution)) {
-					// Use background dispatch even though the check is not done on the
-					// background dispatcher thread so that the solution load completes before
-					// the check for updates starts. Otherwise the check for updates finishes
-					// before the solution loads and the status bar never reports that
-					// package updates were being checked.
-					PackageManagementBackgroundDispatcher.Dispatch (() => {
-						CheckForUpdates ();
-					});
+					CheckForUpdates (e.Solution);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("PackageManagementStartupHandler error", ex);
@@ -74,14 +66,24 @@ namespace MonoDevelop.PackageManagement.Commands
 			get { return PackageManagementServices.Options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled; }
 		}
 
-		void ClearUpdatedPackagesInSolution ()
+		void ClearUpdatedPackagesInSolution (Solution solution)
+		{
+			PackageManagementServices.UpdatedPackagesInWorkspace.Clear (new SolutionProxy (solution));
+		}
+
+		void ClearUpdatedPackages ()
 		{
 			PackageManagementServices.UpdatedPackagesInWorkspace.Clear ();
 		}
 
 		void SolutionUnloaded (object sender, SolutionEventArgs e)
 		{
-			ClearUpdatedPackagesInSolution ();
+			ClearUpdatedPackagesInSolution (e.Solution);
+		}
+
+		void LastWorkspaceItemClosed (object sender, EventArgs e)
+		{
+			ClearUpdatedPackages ();
 		}
 
 		async Task RestoreAndCheckForUpdates (Solution solution)
@@ -96,7 +98,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
 				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
 			} else if (checkUpdatesAfterRestore) {
-				CheckForUpdates ();
+				CheckForUpdates (solution);
 			}
 		}
 
@@ -107,10 +109,15 @@ namespace MonoDevelop.PackageManagement.Commands
 				.Any ();
 		}
 
-		void CheckForUpdates ()
+		void CheckForUpdates (Solution solution)
+		{
+			CheckForUpdates (new SolutionProxy (solution));
+		}
+
+		void CheckForUpdates (ISolution solution)
 		{
 			try {
-				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates ();
+				PackageManagementServices.UpdatedPackagesInWorkspace.CheckForUpdates (solution);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Check for NuGet package updates error.", ex);
 			}
