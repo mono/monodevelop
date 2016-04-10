@@ -25,6 +25,9 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using NuGet.Packaging;
 
@@ -51,6 +54,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		protected override bool IsPackageInstalled (PackageReference reference)
 		{
 			return PackageReferencesWithPackageInstalled.Contains (reference);
+		}
+
+		public TaskCompletionSource<bool> RefreshTaskCompletionSource;
+
+		protected override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationTokenSource tokenSource)
+		{
+			RefreshTaskCompletionSource = new TaskCompletionSource<bool> ();
+			return Task.FromResult (PackageReferences.AsEnumerable ());
+		}
+
+		protected override void OnInstalledPackagesRead (Task<IEnumerable<PackageReference>> task, CancellationTokenSource tokenSource)
+		{
+			base.OnInstalledPackagesRead (task, tokenSource);
+			RefreshTaskCompletionSource.SetResult (true);
 		}
 	}
 }

@@ -49,6 +49,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		VersionFolderPathResolver packagePathResolver; 
 		IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		List<PackageReference> packageReferences = new List<PackageReference> ();
+		bool packageReferencesRefreshed;
 
 		CancellationTokenSource cancellationTokenSource;
 
@@ -145,6 +146,10 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		int GetUpdatedPackagesCount ()
 		{
+			if (!packageReferencesRefreshed) {
+				return 0;
+			}
+
 			UpdatedNuGetPackagesInProject updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (project);
 			updatedPackages.RemoveUpdatedPackages (GetPackageReferences ());
 
@@ -220,17 +225,22 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			var tokenSource = new CancellationTokenSource ();
 			cancellationTokenSource = tokenSource;
-			nugetProject
-				.GetInstalledPackagesAsync (cancellationTokenSource.Token)
+			GetInstalledPackagesAsync (tokenSource)
 				.ContinueWith (task => OnInstalledPackagesRead (task, tokenSource), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
-		void OnInstalledPackagesRead (Task<IEnumerable<PackageReference>> task, CancellationTokenSource tokenSource)
+		protected virtual Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationTokenSource tokenSource)
+		{
+			return nugetProject.GetInstalledPackagesAsync (tokenSource.Token);
+		}
+
+		protected virtual void OnInstalledPackagesRead (Task<IEnumerable<PackageReference>> task, CancellationTokenSource tokenSource)
 		{
 			try {
 				if (task.IsFaulted) {
 					LoggingService.LogError ("OnInstalledPackagesRead error.", task.Exception);
 				} else if (!tokenSource.IsCancellationRequested) {
+					packageReferencesRefreshed = true;
 					packageReferences = task.Result.ToList ();
 					OnPackageReferencesChanged ();
 				}

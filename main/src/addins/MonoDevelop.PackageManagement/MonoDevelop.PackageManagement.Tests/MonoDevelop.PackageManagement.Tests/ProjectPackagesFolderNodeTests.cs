@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.PackageManagement.NodeBuilders;
@@ -85,11 +86,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			packagesFolderNode.PackageReferencesWithPackageInstalled.Add (packageReference);
 		}
 
+		Task RefreshNodePackages ()
+		{
+			packagesFolderNode.RefreshPackages ();
+			return packagesFolderNode.RefreshTaskCompletionSource.Task;
+		}
+
 		[Test]
-		public void GetLabel_NoUpdatedPackages_ReturnsPackages ()
+		public async Task GetLabel_NoUpdatedPackages_ReturnsPackages ()
 		{
 			CreateNode ();
 			NoUpdatedPackages ();
+			await RefreshNodePackages ();
 
 			string label = packagesFolderNode.GetLabel ();
 
@@ -119,11 +127,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetLabel_OneUpdatedPackage_ReturnsPackagesWithCount ()
+		public async Task GetLabel_OneUpdatedPackage_ReturnsPackagesWithCount ()
 		{
 			CreateNode ();
 			AddPackageReferenceToProject ("MyPackage", "1.0");
 			AddUpdatedPackageForProject ("MyPackage", "1.1");
+			await RefreshNodePackages ();
 
 			string label = packagesFolderNode.GetLabel ();
 
@@ -131,12 +140,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetLabel_TwoUpdatedPackages_ReturnsPackagesWithCount ()
+		public async Task GetLabel_TwoUpdatedPackages_ReturnsPackagesWithCount ()
 		{
 			CreateNode ();
 			AddPackageReferenceToProject ("One", "1.0");
 			AddPackageReferenceToProject ("Two", "1.0");
 			AddUpdatedPackagesForProject ("One", "1.1", "Two", "1.3");
+			await RefreshNodePackages ();
 
 			string label = packagesFolderNode.GetLabel ();
 
@@ -144,12 +154,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetPackageReferencesNodes_OnePackageReferenceButNoUpdatedPackages_ReturnsOneNode ()
+		public async Task GetPackageReferencesNodes_OnePackageReferenceButNoUpdatedPackages_ReturnsOneNode ()
 		{
 			CreateNode ();
 			PackageReference packageReference = AddPackageReferenceToProject ("MyPackage", "1.0");
 			PackageIsInstalledInProject (packageReference);
 			NoUpdatedPackages ();
+			await RefreshNodePackages ();
 
 			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
 
@@ -160,11 +171,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetPackageReferencesNodes_OnePackageReferenceButPackageNotInstalledAndNoUpdatedPackages_ReturnsOneNode ()
+		public async Task GetPackageReferencesNodes_OnePackageReferenceButPackageNotInstalledAndNoUpdatedPackages_ReturnsOneNode ()
 		{
 			CreateNode ();
 			AddPackageReferenceToProject ("MyPackage", "1.0");
 			NoUpdatedPackages ();
+			await RefreshNodePackages ();
 
 			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
 
@@ -175,12 +187,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackages_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
+		public async Task GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackages_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
 		{
 			CreateNode ();
 			PackageReference packageReference = AddPackageReferenceToProject ("MyPackage", "1.0");
 			PackageIsInstalledInProject (packageReference);
 			AddUpdatedPackageForProject ("MyPackage", "1.2");
+			await RefreshNodePackages ();
 
 			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
 
@@ -191,11 +204,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackagesButPackageNotRestored_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
+		public async Task GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackagesButPackageNotRestored_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
 		{
 			CreateNode ();
 			AddPackageReferenceToProject ("MyPackage", "1.0");
 			AddUpdatedPackageForProject ("MyPackage", "1.2");
+			await RefreshNodePackages ();
 
 			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
 
@@ -205,6 +219,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("MyPackage <span color='grey'>(1.2 available)</span>", referenceNode.GetLabel ());
 			Assert.AreEqual (Stock.Reference, referenceNode.GetIconId ());
 			Assert.IsTrue (referenceNode.IsDisabled ());
+		}
+
+		[Test]
+		public async Task GetLabel_OneUpdatedPackageButInstalledPackageNotReadFromProjectYet_PackageCountNotShownUntilInstalledPackagesAreRead ()
+		{
+			CreateNode ();
+			AddPackageReferenceToProject ("MyPackage", "1.0");
+			AddUpdatedPackageForProject ("MyPackage", "1.1");
+			string labelBeforeInstalledPackagesRead = packagesFolderNode.GetLabel ();
+			await RefreshNodePackages ();
+
+			string labelAfterInstalledPackagesRead = packagesFolderNode.GetLabel ();
+
+			Assert.AreEqual ("Packages", labelBeforeInstalledPackagesRead);
+			Assert.AreEqual ("Packages <span color='grey'>(1 update)</span>", labelAfterInstalledPackagesRead);
 		}
 	}
 }
