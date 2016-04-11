@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void Update ()
 		{
-			var solutionManager = new MonoDevelopSolutionManager (GetSelectedSolution ());
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (GetSelectedSolution ());
 			var action = new UpdateAllNuGetPackagesInProjectAction (solutionManager, GetSelectedDotNetProject ());
 
 			//TODO: No updates available message.

@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement
 
 		public IEnumerable<IPackageAction> CreateActions ()
 		{
-			var solutionManager = new MonoDevelopSolutionManager (solution);
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
 
 			foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
 				yield return new UpdateAllNuGetPackagesInProjectAction (

@@ -64,18 +64,23 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		IEnumerable<ReinstallNuGetPackageAction> CreateReinstallActions (ProjectPackagesFolderNode packagesFolderNode)
 		{
-			var nugetProject = new MonoDevelopNuGetProjectFactory ()
-				.CreateNuGetProject (packagesFolderNode.Project);
-			
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packagesFolderNode.Project.ParentSolution);
+
+			var nugetProject = solutionManager.GetNuGetProject (packagesFolderNode.Project);
+
 			return packagesFolderNode.GetPackageReferencesNodes ()
-				.Select (packageReferenceNode => CreateReinstallPackageAction (nugetProject, packageReferenceNode));
+				.Select (packageReferenceNode => CreateReinstallPackageAction (nugetProject, packageReferenceNode, solutionManager));
 		}
 
-		ReinstallNuGetPackageAction CreateReinstallPackageAction (NuGetProject nugetProject, PackageReferenceNode packageReference)
+		ReinstallNuGetPackageAction CreateReinstallPackageAction (
+			NuGetProject nugetProject,
+			PackageReferenceNode packageReference,
+			IMonoDevelopSolutionManager solutionManager)
 		{
 			var action = new ReinstallNuGetPackageAction (
 				packageReference.Project,
-				nugetProject);
+				nugetProject,
+				solutionManager);
 
 			action.PackageId = packageReference.Id;
 			action.Version = packageReference.Version;

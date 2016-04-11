@@ -104,7 +104,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return new InstallNuGetPackageAction (
 				repositories,
-				new MonoDevelopSolutionManager (dotNetProject.ParentSolution),
+				PackageManagementServices.Workspace.GetSolutionManager (dotNetProject.ParentSolution),
 				new DotNetProjectProxy (dotNetProject),
 				new NuGetProjectContext ());
 		}

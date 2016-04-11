@@ -51,9 +51,8 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
-			var solutionManager = new MonoDevelopSolutionManager (packageReferenceNode.Project.ParentSolution);
-			var project = new MonoDevelopNuGetProjectFactory ()
-				.CreateNuGetProject (packageReferenceNode.Project);
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+			var project = solutionManager.GetNuGetProject (packageReferenceNode.Project);
 			var action = new UninstallNuGetPackageAction (solutionManager, project) {
 				PackageId = packageReferenceNode.Id
 			};
@@ -89,9 +88,8 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 
 			try {
-				var solutionManager = new MonoDevelopSolutionManager (packageReferenceNode.Project.ParentSolution);
-				var project = new MonoDevelopNuGetProjectFactory ()
-					.CreateNuGetProject (packageReferenceNode.Project);
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+				var project = solutionManager.GetNuGetProject (packageReferenceNode.Project);
 				var action = new UpdateNuGetPackageAction (solutionManager, project) {
 					PackageId = packageReferenceNode.Id,
 					IncludePrerelease = !packageReferenceNode.IsReleaseVersion ()

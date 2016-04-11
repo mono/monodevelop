@@ -39,8 +39,13 @@ namespace MonoDevelop.PackageManagement
 		ISettings settings;
 
 		public MonoDevelopNuGetProjectFactory ()
+			: this (Settings.LoadDefaultSettings (null, null, null))
 		{
-			settings = Settings.LoadDefaultSettings (null, null, null);
+		}
+
+		public MonoDevelopNuGetProjectFactory (ISettings settings)
+		{
+			this.settings = settings;
 		}
 
 		public NuGetProject CreateNuGetProject (IDotNetProject project)

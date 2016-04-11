@@ -50,7 +50,7 @@ namespace MonoDevelop.PackageManagement
 		int currentIndex;
 		bool includePrerelease;
 		bool ignorePackageCheckedChanged;
-		MonoDevelopSolutionManager solutionManager;
+		IMonoDevelopSolutionManager solutionManager;
 		NuGetProject project;
 		IDotNetProject dotNetProject;
 		NuGetProjectContext projectContext;
@@ -61,7 +61,7 @@ namespace MonoDevelop.PackageManagement
 			CheckedPackageViewModels = new ObservableCollection<PackageSearchResultViewModel> ();
 			ErrorMessage = String.Empty;
 
-			solutionManager = new MonoDevelopSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			projectContext = new NuGetProjectContext ();
 			dotNetProject = new DotNetProjectProxy ((DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject);
 		}

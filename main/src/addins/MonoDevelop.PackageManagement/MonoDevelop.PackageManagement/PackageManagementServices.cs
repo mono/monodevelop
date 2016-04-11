@@ -50,6 +50,7 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageCompatibilityHandler packageCompatibilityHandler;
 		static readonly UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		static readonly PackageManagementProjectOperations projectOperations;
+		static readonly PackageManagementWorkspace workspace;
 
 		static PackageManagementServices()
 		{
@@ -74,6 +75,8 @@ namespace MonoDevelop.PackageManagement
 			updatedPackagesInWorkspace = new UpdatedNuGetPackagesInWorkspace (packageManagementEvents);
 
 			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
+
+			workspace = new PackageManagementWorkspace ();
 
 			InitializeCredentialProvider();
 			PackageManagementBackgroundDispatcher.Initialize ();
@@ -155,6 +158,10 @@ namespace MonoDevelop.PackageManagement
 
 		public static IPackageManagementProjectOperations ProjectOperations {
 			get { return projectOperations; }
+		}
+
+		internal static PackageManagementWorkspace Workspace {
+			get { return workspace; }
 		}
 	}
 }

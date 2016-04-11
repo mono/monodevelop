@@ -1,5 +1,5 @@
 ﻿//
-// RestoreNuGetPackagesInNuGetIntegratedProject.cs
+// IMonoDevelopSolutionManager.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,50 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using MonoDevelop.Projects;
-using NuGet.ProjectManagement.Projects;
+using NuGet.Configuration;
+using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class RestoreNuGetPackagesInNuGetIntegratedProject : IPackageAction
+	internal interface IMonoDevelopSolutionManager : ISolutionManager
 	{
-		DotNetProject project;
-		BuildIntegratedNuGetProject nugetProject;
-		CancellationToken cancellationToken;
-		MonoDevelopBuildIntegratedRestorer packageRestorer;
-
-		public RestoreNuGetPackagesInNuGetIntegratedProject (
-			DotNetProject project,
-			BuildIntegratedNuGetProject nugetProject,
-			IMonoDevelopSolutionManager solutionManager,
-			CancellationToken cancellationToken = default(CancellationToken))
-		{
-			this.project = project;
-			this.nugetProject = nugetProject;
-			this.cancellationToken = cancellationToken;
-
-			packageRestorer = new MonoDevelopBuildIntegratedRestorer (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				solutionManager.Settings,
-				solutionManager.SolutionDirectory);
-		}
-
-		public void Execute ()
-		{
-			ExecuteAsync ().Wait ();
-		}
-
-		public bool HasPackageScriptsToRun ()
-		{
-			return false;
-		}
-
-		async Task ExecuteAsync ()
-		{
-			await packageRestorer.RestorePackages (nugetProject, cancellationToken);
-		}
+		ISettings Settings { get; }
+		NuGetProject GetNuGetProject (IDotNetProject project);
 	}
 }
 

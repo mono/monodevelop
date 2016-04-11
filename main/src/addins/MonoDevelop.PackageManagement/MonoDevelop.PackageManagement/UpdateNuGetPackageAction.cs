@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
@@ -45,14 +44,13 @@ namespace MonoDevelop.PackageManagement
 		ISourceRepositoryProvider sourceRepositoryProvider;
 
 		public UpdateNuGetPackageAction (
-			ISolutionManager solutionManager,
+			IMonoDevelopSolutionManager solutionManager,
 			NuGetProject project,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.project = project;
 			this.cancellationToken = cancellationToken;
 
-			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
 
 			sourceRepositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
@@ -60,7 +58,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageManager = new NuGetPackageManager (
 				sourceRepositoryProvider,
-				settings,
+				solutionManager.Settings,
 				solutionManager,
 				restartManager
 			);

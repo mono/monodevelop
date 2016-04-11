@@ -81,21 +81,20 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		protected void CreateInitNuGetProject ()
 		{
-			nugetProject = new MonoDevelopNuGetProjectFactory ().CreateNuGetProject(project);
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			nugetProject = solutionManager.GetNuGetProject (project);
 
-			string solutionDirectory = project.ParentSolution.BaseDirectory;
-			var settings = Settings.LoadDefaultSettings (null, null, null);
-			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionDirectory, settings);
+			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionManager, solutionManager.Settings);
 			folder = new FolderNuGetProject (path);
 
 			if (nugetProject is INuGetIntegratedProject) {
-				string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder (settings); 
+				string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings); 
 				packagePathResolver = new VersionFolderPathResolver ( 
 					globalPackagesFolder, 
-					normalizePackageId: false); 
+					normalizePackageId: false);
 			}
 
-			PackagesFolderPath = new FilePath (path);
+			PackagesFolderPath = new FilePath (path).FullPath;
 		}
 
 		public FilePath PackagesFolderPath { get; private set; }

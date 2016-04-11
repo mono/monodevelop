@@ -509,6 +509,8 @@
     <Compile Include="MonoDevelop.PackageManagement\NuGetSystemInformation.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageLicenseAuditor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageLicense.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementWorkspace.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopSolutionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

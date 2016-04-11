@@ -29,7 +29,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Projects;
-using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
@@ -51,7 +50,7 @@ namespace MonoDevelop.PackageManagement
 
 		public InstallNuGetPackageAction (
 			SourceRepository sourceRepository,
-			ISolutionManager solutionManager,
+			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
 			NuGetProjectContext projectContext,
 			CancellationToken cancellationToken = default(CancellationToken))
@@ -66,7 +65,7 @@ namespace MonoDevelop.PackageManagement
 
 		public InstallNuGetPackageAction (
 			IEnumerable<SourceRepository> primarySources,
-			ISolutionManager solutionManager,
+			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
 			NuGetProjectContext projectContext,
 			CancellationToken cancellationToken = default(CancellationToken))
@@ -76,15 +75,13 @@ namespace MonoDevelop.PackageManagement
 			this.dotNetProject = dotNetProject;
 			this.context = projectContext;
 
-			project = new MonoDevelopNuGetProjectFactory ()
-				.CreateNuGetProject (dotNetProject, projectContext);
+			project = solutionManager.GetNuGetProject (dotNetProject);
 
-			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
 
 			packageManager = new NuGetPackageManager (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				settings,
+				solutionManager.Settings,
 				solutionManager,
 				restartManager
 			);

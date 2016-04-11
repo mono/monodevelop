@@ -24,10 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 
@@ -40,19 +38,18 @@ namespace MonoDevelop.PackageManagement
 		CancellationToken cancellationToken;
 
 		public UninstallNuGetPackageAction (
-			ISolutionManager solutionManager,
+			IMonoDevelopSolutionManager solutionManager,
 			NuGetProject project,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.project = project;
 			this.cancellationToken = cancellationToken;
 
-			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
 
 			packageManager = new NuGetPackageManager (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				settings,
+				solutionManager.Settings,
 				solutionManager,
 				restartManager
 			);

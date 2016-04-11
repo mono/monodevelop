@@ -24,14 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
@@ -42,7 +40,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageRestoreManager restoreManager;
 		MonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
-		ISolutionManager solutionManager;
+		IMonoDevelopSolutionManager solutionManager;
 		CancellationToken cancellationToken;
 		IPackageManagementEvents packageManagementEvents;
 		Solution solution;
@@ -56,14 +54,14 @@ namespace MonoDevelop.PackageManagement
 			this.solution = solution;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			solutionManager = new MonoDevelopSolutionManager (solution);
+			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (solution);
 
 			nugetProjects = solutionManager.GetNuGetProjects ().ToList ();
 
 			if (AnyProjectsUsingPackagesConfig ()) {
 				restoreManager = new PackageRestoreManager (
 					SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-					Settings.LoadDefaultSettings (null, null, null),
+					solutionManager.Settings,
 					solutionManager
 				);
 			}
@@ -71,7 +69,7 @@ namespace MonoDevelop.PackageManagement
 			if (AnyProjectsUsingProjectJson ()) {
 				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (
 					SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-					Settings.LoadDefaultSettings (null, null, null),
+					solutionManager.Settings,
 					solution.BaseDirectory);
 			}
 		}

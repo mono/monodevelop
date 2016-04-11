@@ -54,12 +54,14 @@ namespace MonoDevelop.PackageManagement
 		public void Run (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
 			try {
-				var nugetProject = new MonoDevelopNuGetProjectFactory ()
-					.CreateNuGetProject (packageReferenceNode.Project);
-				
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+
+				var nugetProject = solutionManager.GetNuGetProject (packageReferenceNode.Project);
+
 				var action = new ReinstallNuGetPackageAction (
 					packageReferenceNode.Project,
-					nugetProject);
+					nugetProject,
+					solutionManager);
 				action.PackageId = packageReferenceNode.Id;
 				action.Version = packageReferenceNode.Version;
 

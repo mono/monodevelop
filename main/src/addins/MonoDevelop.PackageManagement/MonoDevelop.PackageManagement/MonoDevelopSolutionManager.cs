@@ -26,17 +26,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class MonoDevelopSolutionManager : ISolutionManager
+	internal class MonoDevelopSolutionManager : IMonoDevelopSolutionManager
 	{
-		Solution solution;
 		List<NuGetProject> projects;
 
 		public MonoDevelopSolutionManager (ISolution solution)
@@ -46,8 +47,13 @@ namespace MonoDevelop.PackageManagement
 
 		public MonoDevelopSolutionManager (Solution solution)
 		{
-			this.solution = solution;
+			Solution = solution;
+			string rootDirectory = Path.Combine (solution.BaseDirectory, ".nuget");
+			Settings = NuGet.Configuration.Settings.LoadDefaultSettings (rootDirectory, null, null);
 		}
+
+		public Solution Solution { get; private set; }
+		public ISettings Settings { get; private set; }
 
 		public NuGetProject DefaultNuGetProject {
 			get {
@@ -76,7 +82,7 @@ namespace MonoDevelop.PackageManagement
 		public INuGetProjectContext NuGetProjectContext { get; set; }
 
 		public string SolutionDirectory {
-			get { return solution.BaseDirectory; }
+			get { return Solution.BaseDirectory; }
 		}
 
 		public event EventHandler<ActionsExecutedEventArgs> ActionsExecuted;
@@ -97,7 +103,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (projects == null) {
 				Runtime.RunInMainThread (() => {
-					projects = GetNuGetProjects (solution).ToList ();
+					projects = GetNuGetProjects (Solution).ToList ();
 				}).Wait ();
 			}
 			return projects;
@@ -118,6 +124,12 @@ namespace MonoDevelop.PackageManagement
 
 		public void OnActionsExecuted (IEnumerable<ResolvedAction> actions)
 		{
+		}
+
+		public NuGetProject GetNuGetProject (IDotNetProject project)
+		{
+			return new MonoDevelopNuGetProjectFactory (Settings)
+				.CreateNuGetProject (project);
 		}
 	}
 }

@@ -28,12 +28,13 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.IO;
+using NuGet.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal static class ProjectReferenceExtensions
 	{
-		public static bool IsReferenceFromPackage (this ProjectReference projectReference, FilePath packagesFilePath)
+		public static bool IsReferenceFromPackage (this ProjectReference projectReference, FilePath packagesFolderPath)
 		{
 			if (!projectReference.IsAssemblyReference ())
 				return false;
@@ -46,18 +47,30 @@ namespace MonoDevelop.PackageManagement
 			if (assemblyFilePath.IsNullOrEmpty)
 				return false;
 
-			return assemblyFilePath.IsChildPathOf (packagesFilePath);
+			return assemblyFilePath.IsChildPathOf (packagesFolderPath);
 		}
 
-		// TODO: packages path is not configurable.
 		public static bool IsReferenceFromPackage (this ProjectReference projectReference)
 		{
-			FilePath? solutionDirectory = projectReference.OwnerProject?.ParentSolution?.BaseDirectory;
-			if (solutionDirectory != null) {
-				string packagesFolderPath = solutionDirectory.Value.Combine ("packages");
-				return projectReference.IsReferenceFromPackage (packagesFolderPath);
-			}
-			return false;
+			if (!projectReference.IsAssemblyReference ())
+				return false;
+
+			var project = projectReference.OwnerProject as DotNetProject;
+			if (project == null)
+				return false;
+
+			var assemblyFilePath = new FilePath (projectReference.GetFullAssemblyPath ());
+			if (assemblyFilePath.IsNullOrEmpty)
+				return false;
+
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			if (solutionManager == null)
+				return false;
+
+			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionManager, solutionManager.Settings);
+			var packagesFolderPath = new FilePath (path).FullPath;
+
+			return assemblyFilePath.IsChildPathOf (packagesFolderPath);
 		}
 
 		static bool IsAssemblyReference (this ProjectReference reference)

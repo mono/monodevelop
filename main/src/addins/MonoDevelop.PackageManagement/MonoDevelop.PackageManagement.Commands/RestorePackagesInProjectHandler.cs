@@ -51,15 +51,15 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		IPackageAction CreateRestorePackagesAction (DotNetProject project)
 		{
-			var nugetProject = new MonoDevelopNuGetProjectFactory ()
-				.CreateNuGetProject (project);
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			var nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
 
 			var buildIntegratedProject = nugetProject as BuildIntegratedNuGetProject;
 			if (buildIntegratedProject != null) {
-				return new RestoreNuGetPackagesInNuGetIntegratedProject (project, buildIntegratedProject);
+				return new RestoreNuGetPackagesInNuGetIntegratedProject (project, buildIntegratedProject, solutionManager);
 			}
 
-			return new RestoreNuGetPackagesInProjectAction (project, nugetProject);
+			return new RestoreNuGetPackagesInProjectAction (project, nugetProject, solutionManager);
 		}
 
 		void ShowStatusBarError (Exception ex)

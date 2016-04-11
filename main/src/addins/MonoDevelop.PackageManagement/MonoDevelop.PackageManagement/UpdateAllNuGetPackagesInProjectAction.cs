@@ -44,7 +44,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		NuGetPackageManager packageManager;
 		PackageRestoreManager restoreManager;
-		ISolutionManager solutionManager;
+		IMonoDevelopSolutionManager solutionManager;
 		IPackageManagementEvents packageManagementEvents;
 		DotNetProject dotNetProject;
 		NuGetProject project;
@@ -54,7 +54,7 @@ namespace MonoDevelop.PackageManagement
 		string projectName;
 
 		public UpdateAllNuGetPackagesInProjectAction (
-			ISolutionManager solutionManager,
+			IMonoDevelopSolutionManager solutionManager,
 			DotNetProject dotNetProject,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -64,26 +64,24 @@ namespace MonoDevelop.PackageManagement
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			project = new MonoDevelopNuGetProjectFactory ()
-				.CreateNuGetProject (dotNetProject);
-			
+			project = solutionManager.GetNuGetProject (new DotNetProjectProxy (dotNetProject));
+
 			projectName = dotNetProject.Name;
 
-			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
 
 			sourceRepositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
 
 			packageManager = new NuGetPackageManager (
 				sourceRepositoryProvider,
-				settings,
+				solutionManager.Settings,
 				solutionManager,
 				restartManager
 			);
 
 			restoreManager = new PackageRestoreManager (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				Settings.LoadDefaultSettings (null, null, null),
+				solutionManager.Settings,
 				solutionManager
 			);
 		}

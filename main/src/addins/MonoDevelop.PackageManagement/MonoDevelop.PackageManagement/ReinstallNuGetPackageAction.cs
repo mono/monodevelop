@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Threading;
-using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 using NuGet.Versioning;
@@ -44,20 +43,18 @@ namespace MonoDevelop.PackageManagement
 		public ReinstallNuGetPackageAction (
 			IDotNetProject project,
 			NuGetProject nugetProject,
+			IMonoDevelopSolutionManager solutionManager,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.nugetProject = nugetProject;
 			this.cancellationToken = cancellationToken;
 			context = new NuGetProjectContext ();
 
-			var settings = Settings.LoadDefaultSettings (null, null, null);
 			var restartManager = new DeleteOnRestartManager ();
-
-			var solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
 
 			packageManager = new NuGetPackageManager (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				settings,
+				solutionManager.Settings,
 				solutionManager,
 				restartManager
 			);
@@ -84,7 +81,7 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		void CreateUninstallAction (ISolutionManager solutionManager)
+		void CreateUninstallAction (IMonoDevelopSolutionManager solutionManager)
 		{
 			uninstallAction = new UninstallNuGetPackageAction (
 				solutionManager,
@@ -94,7 +91,7 @@ namespace MonoDevelop.PackageManagement
 			};
 		}
 
-		void CreateInstallAction (ISolutionManager solutionManager, IDotNetProject project)
+		void CreateInstallAction (IMonoDevelopSolutionManager solutionManager, IDotNetProject project)
 		{
 			installAction = new InstallNuGetPackageAction (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ().GetRepositories (),

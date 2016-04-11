@@ -28,7 +28,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 
@@ -36,7 +35,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class RestoreNuGetPackagesInProjectAction : IPackageAction
 	{
-		ISolutionManager solutionManager;
+		IMonoDevelopSolutionManager solutionManager;
 		IPackageManagementEvents packageManagementEvents;
 		PackageRestoreManager restoreManager;
 		NuGetProject nugetProject;
@@ -46,19 +45,19 @@ namespace MonoDevelop.PackageManagement
 		public RestoreNuGetPackagesInProjectAction (
 			DotNetProject project,
 			NuGetProject nugetProject,
+			IMonoDevelopSolutionManager solutionManager,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.cancellationToken = cancellationToken;
 			this.project = project;
 			this.nugetProject = nugetProject;
+			this.solutionManager = solutionManager;
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
-
 			restoreManager = new PackageRestoreManager (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				Settings.LoadDefaultSettings (null, null, null),
+				solutionManager.Settings,
 				solutionManager
 			);
 		}
