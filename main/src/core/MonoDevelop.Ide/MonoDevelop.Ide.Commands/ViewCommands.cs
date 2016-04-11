@@ -27,6 +27,7 @@
 
 
 using System;
+using System.Linq;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -65,8 +66,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			for (int i = 0; i < IdeApp.Workbench.Pads.Count; i++) {
-				Pad pad = IdeApp.Workbench.Pads[i];
+			string group;
+			var lastListGroup = new Dictionary <CommandArrayInfo, string>();
+
+			foreach (Pad pad in IdeApp.Workbench.Pads.OrderBy (p => p.Group, StringComparer.InvariantCultureIgnoreCase)) {
 
 				CommandInfo ci = new CommandInfo(pad.Title);
 				ci.Icon = pad.Icon;
@@ -96,14 +99,23 @@ namespace MonoDevelop.Ide.Commands
 						}
 					}
 				}
+
+				int atIndex = 0;
 				for (int j = list.Count - 1; j >= 0; j--) {
-					if (!(list[j] is CommandInfoSet)) {
-						list.Insert (j + 1, ci, pad);
-						pad = null;
+					if (!(list [j] is CommandInfoSet)) {
+						atIndex = j + 1;
 						break;
 					}
 				}
-				if (pad != null) list.Insert (0, ci, pad); 
+
+				list.Insert (atIndex, ci, pad);
+				lastListGroup.TryGetValue (list, out group);
+				if (group != pad.Group) {
+					lastListGroup [list] = pad.Group;
+					CommandInfo sep = new CommandInfo ("-");
+					sep.IsArraySeparator = true;
+					list.Insert (atIndex, sep, null);
+				}
 			}
 		}
 
