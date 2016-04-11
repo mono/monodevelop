@@ -507,6 +507,8 @@
     <Compile Include="MonoDevelop.PackageManagement\ReinstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesFolderNodeCommands.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetSystemInformation.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageLicenseAuditor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageLicense.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +41,7 @@ namespace MonoDevelop.PackageManagement
 		NuGetPackageManager packageManager;
 		NuGetProject project;
 		CancellationToken cancellationToken;
+		List<SourceRepository> primarySources;
 		ISourceRepositoryProvider sourceRepositoryProvider;
 
 		public UpdateNuGetPackageAction (
@@ -54,6 +56,7 @@ namespace MonoDevelop.PackageManagement
 			var restartManager = new DeleteOnRestartManager ();
 
 			sourceRepositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			primarySources = sourceRepositoryProvider.GetRepositories ().ToList ();
 
 			packageManager = new NuGetPackageManager (
 				sourceRepositoryProvider,
@@ -80,9 +83,11 @@ namespace MonoDevelop.PackageManagement
 				project,
 				CreateResolutionContext (),
 				context,
-				sourceRepositoryProvider.GetRepositories ().ToList (),
+				primarySources,
 				new SourceRepository[0],
 				cancellationToken);
+
+			await CheckLicenses (actions);
 
 			await packageManager.ExecuteNuGetProjectActionsAsync (
 				project,
@@ -109,6 +114,11 @@ namespace MonoDevelop.PackageManagement
 		INuGetProjectContext CreateProjectContext ()
 		{
 			return new NuGetProjectContext (); 
+		}
+
+		Task CheckLicenses (IEnumerable<NuGetProjectAction> actions)
+		{
+			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
 		}
 	}
 }

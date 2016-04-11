@@ -112,6 +112,8 @@ namespace MonoDevelop.PackageManagement
 				secondarySources,
 				cancellationToken);
 
+			await CheckLicenses (actions);
+
 			NuGetPackageManager.SetDirectInstall (identity, context);
 
 			await packageManager.ExecuteNuGetProjectActionsAsync (
@@ -141,6 +143,11 @@ namespace MonoDevelop.PackageManagement
 		public bool IsForProject (DotNetProject project)
 		{
 			return dotNetProject.DotNetProject == project;
+		}
+
+		Task CheckLicenses (IEnumerable<NuGetProjectAction> actions)
+		{
+			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
 		}
 	}
 }

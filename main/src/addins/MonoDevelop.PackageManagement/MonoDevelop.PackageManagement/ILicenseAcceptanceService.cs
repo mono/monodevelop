@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using NuGet;
 
@@ -35,5 +34,6 @@ namespace MonoDevelop.PackageManagement
 	internal interface ILicenseAcceptanceService
 	{
 		bool AcceptLicenses(IEnumerable<IPackage> packages);
+		bool AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses);
 	}
 }
