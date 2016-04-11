@@ -51,7 +51,7 @@ namespace MonoDevelop.Refactoring
 		List<DiffHunk> diff;
 
 		int lineHeight;
-
+		int indentLength;
 		FontDescription fontDescription;
 
 		public RefactoringPreviewTooltipWindow (TextEditor editor, DocumentContext documentContext, CodeAction codeAction)
@@ -83,7 +83,7 @@ namespace MonoDevelop.Refactoring
 
 					changedTextDocument = TextEditorFactory.CreateNewDocument (new StringTextSource ((await changedDocument.GetTextAsync (token)).ToString ()), editor.FileName);
 					try {
-						var list = new List<DiffHunk> (editor.GetDiff (changedTextDocument));
+						var list = new List<DiffHunk> (editor.GetDiff (changedTextDocument, false));
 						if (list.Count > 0)
 							return list;
 					} catch (Exception e) {
@@ -122,6 +122,7 @@ namespace MonoDevelop.Refactoring
 			DiffHunk next;
 			qh.Enqueue (current);
 			int x = 0;
+			indentLength = -1;
 			while (he.MoveNext ()) {
 				next = he.Current;
 
@@ -179,12 +180,31 @@ namespace MonoDevelop.Refactoring
 		void MeasureLine (IReadonlyTextDocument document, int lineNumber, ref int x, ref int y)
 		{
 			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
-				drawingLayout.SetText (document.GetLineText (lineNumber));
+				var line = document.GetLine (lineNumber);
+				var indent = line.GetIndentation (document);
+
+				var curLineIndent = CalcIndentLength(indent);
+				if (this.indentLength < 0 || this.indentLength> curLineIndent)
+					this.indentLength = curLineIndent;
+				drawingLayout.SetText (document.GetTextAt (line));
 				int w, h;
 				drawingLayout.GetPixelSize (out w, out h);
 				x = Math.Max (x, w);
 				y += lineHeight;
 			}
+		}
+
+		int CalcIndentLength (string indent)
+		{
+			int result = 0;
+			foreach (var ch in indent) {
+				if (ch == '\t') {
+					result = result - result % DefaultSourceEditorOptions.Instance.TabSize + DefaultSourceEditorOptions.Instance.TabSize;
+				} else {
+					result++;
+				}
+			}
+			return result;
 		}
 
 		protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
@@ -261,12 +281,31 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-		void DrawLine (Cairo.Context g, IReadonlyTextDocument document, int lineNumber, ref int y)
+		int CorrectIndent (IReadonlyTextDocument document, IDocumentLine line, int indentLength)
+		{
+			int result = 0;
+			int o = line.Offset;
+			while (indentLength > 0) {
+				char ch = document [o + result];
+				if (ch == '\t') {
+					indentLength = indentLength + indentLength % DefaultSourceEditorOptions.Instance.TabSize - DefaultSourceEditorOptions.Instance.TabSize;
+				} else if (ch == ' '){
+					indentLength --;
+				} else {
+					break;
+				}
+				result++;
+			}
+			return result;
+		}
+
+		void DrawLine (Cairo.Context g, TextEditor editor, int lineNumber, ref int y)
 		{
 			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
 				drawingLayout.FontDescription = fontDescription;
-				var line = document.GetLine (lineNumber);
-				drawingLayout.SetMarkup (editor.GetPangoMarkup (line.Offset, line.Length));
+				var line = editor.GetLine (lineNumber);
+				var correctedIndentLength = CorrectIndent (editor, line, indentLength);
+				drawingLayout.SetMarkup (editor.GetPangoMarkup (line.Offset + Math.Min (correctedIndentLength, line.Length), Math.Max (0, line.Length - correctedIndentLength)));
 				g.Save ();
 				g.Translate (textBorder, y);
 				g.ShowLayout (drawingLayout);
@@ -279,7 +318,9 @@ namespace MonoDevelop.Refactoring
 		{
 			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
 				drawingLayout.FontDescription = fontDescription;
-				drawingLayout.SetText (document.GetLineText (lineNumber));
+				var line = document.GetLine (lineNumber);
+				var correctedIndentLength = CorrectIndent (document, line, indentLength);
+				drawingLayout.SetText (document.GetTextAt (line.Offset + Math.Min (correctedIndentLength, line.Length), Math.Max (0, line.Length - correctedIndentLength)));
 				g.Save ();
 				g.Translate (textBorder, y);
 				g.ShowLayout (drawingLayout);
