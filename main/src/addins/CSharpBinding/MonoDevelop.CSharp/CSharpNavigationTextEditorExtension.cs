@@ -43,21 +43,23 @@ namespace MonoDevelop.CSharp
 	{
 		static List<NavigationSegment> emptyList = new List<NavigationSegment> ();
 
-		protected override async Task<IEnumerable<NavigationSegment>> RequestLinksAsync (int offset, int length, CancellationToken token)
+		protected override Task<IEnumerable<NavigationSegment>> RequestLinksAsync (int offset, int length, CancellationToken token)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
-				return emptyList;
+				return TaskUtil.EmptyEnumerable<NavigationSegment> ();
 			var model = parsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
-				return emptyList;
-			try {
-				var visitor = new NavigationVisitor (DocumentContext, model, new TextSpan (offset, length), token);
-				visitor.Visit (await model.SyntaxTree.GetRootAsync (token).ConfigureAwait (false));
-				return visitor.result;
-			} catch (OperationCanceledException) {
-				return emptyList;
-			}
+				return TaskUtil.EmptyEnumerable<NavigationSegment> ();
+			return Task.Run (delegate {
+				try {
+					var visitor = new NavigationVisitor (DocumentContext, model, new TextSpan (offset, length), token);
+					visitor.Visit (model.SyntaxTree.GetRootAsync (token).Result);
+					return (IEnumerable<NavigationSegment>)visitor.result;
+				} catch (OperationCanceledException) {
+					return (IEnumerable<NavigationSegment>)emptyList;
+				}
+			});
 		}
 
 		class NavigationVisitor : CSharpSyntaxWalker
