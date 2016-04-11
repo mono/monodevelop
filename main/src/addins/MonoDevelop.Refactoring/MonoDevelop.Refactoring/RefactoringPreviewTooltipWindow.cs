@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Util;
 using System.Linq;
 using MonoDevelop.Core;
+using Pango;
 
 namespace MonoDevelop.Refactoring
 {
@@ -51,6 +52,8 @@ namespace MonoDevelop.Refactoring
 
 		int lineHeight;
 
+		FontDescription fontDescription;
+
 		public RefactoringPreviewTooltipWindow (TextEditor editor, DocumentContext documentContext, CodeAction codeAction)
 		{
 			this.editor = editor;
@@ -58,12 +61,15 @@ namespace MonoDevelop.Refactoring
 			this.codeAction = codeAction;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
-			using (var metrics = PangoContext.GetMetrics (PangoContext.FontDescription, PangoContext.Language)) {
+			fontDescription = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
+			fontDescription.Size = (int)(fontDescription.Size * 0.8f);
+
+			using (var metrics = PangoContext.GetMetrics (fontDescription, PangoContext.Language)) {
 				lineHeight = (int)Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
 			}
 		}
 
-		internal async void RequestPopup (Widget parent)
+		internal async void RequestPopup (Xwt.Rectangle rect)
 		{
 			var token = popupSrc.Token;
 
@@ -88,7 +94,7 @@ namespace MonoDevelop.Refactoring
 				return new List<DiffHunk> ();
 			});
 			if (diff.Count > 0 && !token.IsCancellationRequested)
-				ShowPopup (parent, PopupPosition.Left);
+				ShowPopup (rect, PopupPosition.Left);
 		}
 
 		protected override void OnDestroyed ()
@@ -258,6 +264,7 @@ namespace MonoDevelop.Refactoring
 		void DrawLine (Cairo.Context g, IReadonlyTextDocument document, int lineNumber, ref int y)
 		{
 			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
+				drawingLayout.FontDescription = fontDescription;
 				var line = document.GetLine (lineNumber);
 				drawingLayout.SetMarkup (editor.GetPangoMarkup (line.Offset, line.Length));
 				g.Save ();
@@ -271,6 +278,7 @@ namespace MonoDevelop.Refactoring
 		void DrawTextLine (Cairo.Context g, IReadonlyTextDocument document, int lineNumber, ref int y)
 		{
 			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
+				drawingLayout.FontDescription = fontDescription;
 				drawingLayout.SetText (document.GetLineText (lineNumber));
 				g.Save ();
 				g.Translate (textBorder, y);
