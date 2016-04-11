@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return AcceptLicensesReturnValue;
 		}
 
-		public bool AcceptLicenses (IEnumerable<NuGetPackageLicences> licenses)
+		public bool AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
 		{
 			throw new NotImplementedException ();
 		}
