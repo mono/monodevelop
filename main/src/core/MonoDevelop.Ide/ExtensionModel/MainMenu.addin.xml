@@ -70,6 +70,7 @@
 		<ItemSet id = "SelectionMode" _label = "Selection _Mode" autohide = "true" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
 		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 		
 		<SeparatorItem id = "Separator4" />
 		

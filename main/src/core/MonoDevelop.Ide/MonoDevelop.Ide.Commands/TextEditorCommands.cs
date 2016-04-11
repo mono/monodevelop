@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		ShowCompletionWindow,
 		ShowCodeTemplateWindow,
+		ShowCodeSurroundingsWindow,
 		LineEnd,
 		LineStart,
 		DeleteLeftChar,

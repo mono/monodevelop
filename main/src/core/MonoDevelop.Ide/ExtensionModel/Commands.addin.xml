@@ -929,6 +929,10 @@
 			_description="Inserts a template or when something is selected surrounds selection with a template"
 			_label = "_Template..."
 			_displayName = "Insert Template..."/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"
+			_description="Surrounds selection with a template when something is selected"
+			_label = "_Surround With..."
+			_displayName = "Surround Selection With..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
 			_label = "Go to end of line" macShortcut = "Meta+Right"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineStart"
