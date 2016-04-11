@@ -43,18 +43,18 @@ namespace MonoDevelop.CSharp
 	{
 		static List<NavigationSegment> emptyList = new List<NavigationSegment> ();
 
-		protected override Task<IEnumerable<NavigationSegment>> RequestLinksAsync (int offset, int length, CancellationToken token)
+		protected override async Task<IEnumerable<NavigationSegment>> RequestLinksAsync (int offset, int length, CancellationToken token)
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
-				return TaskUtil.EmptyEnumerable<NavigationSegment> ();
+				return Enumerable.Empty<NavigationSegment> ();
 			var model = parsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
-				return TaskUtil.EmptyEnumerable<NavigationSegment> ();
-			return Task.Run (delegate {
+				return Enumerable.Empty<NavigationSegment> ();
+			return await Task.Run (async delegate {
 				try {
 					var visitor = new NavigationVisitor (DocumentContext, model, new TextSpan (offset, length), token);
-					visitor.Visit (model.SyntaxTree.GetRootAsync (token).Result);
+					visitor.Visit (await model.SyntaxTree.GetRootAsync (token).ConfigureAwait (false));
 					return (IEnumerable<NavigationSegment>)visitor.result;
 				} catch (OperationCanceledException) {
 					return (IEnumerable<NavigationSegment>)emptyList;
