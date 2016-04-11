@@ -319,16 +319,16 @@ namespace MonoDevelop.Ide.Editor.Projection
 			return projectedExtension.HandleParameterCompletionAsync (ConvertContext (completionContext), completionChar, token);
 		}
 
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			var task = ctx.GetPartialProjectionsAsync ();
 			if (task != null)
-				projections = await task;
+				projections = task.Result;
 			var projectedExtension = GetCurrentExtension();
 			if (projectedExtension != null) {
-				return await projectedExtension.KeyPress (descriptor);
+				return projectedExtension.KeyPress (descriptor);
 			}
-			return await base.KeyPress (descriptor);
+			return base.KeyPress (descriptor);
 		}
 
 		public override Task<ParameterHintingResult> ParameterCompletionCommand (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)

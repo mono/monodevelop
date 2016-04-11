@@ -26,9 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -54,7 +52,7 @@ namespace MonoDevelop.PackageManagement
 			CreateProjectManager();
 		}
 		
-		// <summary>
+		/// <summary>
 		/// project manager should be created with:
 		/// 	local repo = PackageReferenceRepository(projectSystem, sharedRepo)
 		///     packageRefRepo should have its RegisterIfNecessary() method called before creating the project manager.
@@ -78,9 +76,25 @@ namespace MonoDevelop.PackageManagement
 		
 		MonoDevelopProjectManager CreateProjectManager(PackageReferenceRepository packageRefRepository)
 		{
-			return new MonoDevelopProjectManager(LocalRepository, PathResolver, projectSystem, packageRefRepository);
+			IPackageRepository sourceRepository = CreateProjectManagerSourceRepository ();
+			return new MonoDevelopProjectManager (sourceRepository, PathResolver, projectSystem, packageRefRepository);
 		}
-		
+
+		IPackageRepository CreateProjectManagerSourceRepository ()
+		{
+			var fallbackRepository = SourceRepository as FallbackRepository;
+			if (fallbackRepository != null) {
+				var primaryRepositories = new [] {
+					LocalRepository,
+					fallbackRepository.SourceRepository.Clone () }; 
+
+				return new FallbackRepository (
+					new AggregateRepository (primaryRepositories),
+					fallbackRepository.DependencyResolver);
+			}
+			return new AggregateRepository (new [] { LocalRepository, SourceRepository.Clone () });
+		}
+
 		public void InstallPackage(IPackage package)
 		{
 			bool ignoreDependencies = false;
@@ -96,7 +110,7 @@ namespace MonoDevelop.PackageManagement
 		
 		public void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
-			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			var monitor = new PackageReferenceMonitor (ProjectManager, this);
 			using (monitor) {
 				ProjectManager.AddPackageReference(package.Id, package.Version, ignoreDependencies, allowPrereleaseVersions);
 			}
@@ -127,6 +141,13 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (!IsPackageReferencedByOtherProjects(package)) {
 				ExecuteUninstall(package);
+			}
+		}
+
+		public void InstallPackageIntoSolutionRepository (IPackage package)
+		{
+			if (!LocalRepository.Exists (package)) {
+				ExecuteInstall (package);
 			}
 		}
 		
@@ -164,7 +185,7 @@ namespace MonoDevelop.PackageManagement
 		
 		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
 		{
-			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
+			var monitor = new PackageReferenceMonitor (ProjectManager, this);
 			using (monitor) {
 				ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);
 			}

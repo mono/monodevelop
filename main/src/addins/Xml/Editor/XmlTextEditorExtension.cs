@@ -611,16 +611,17 @@ namespace MonoDevelop.Xml.Editor
 		
 		#region Smart indent
 		
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			bool result;
+			
 
 			if (Editor.Options.IndentStyle == IndentStyle.Smart && descriptor.SpecialKey == SpecialKey.Return) {
-				result = await base.KeyPress (descriptor);
+				result = base.KeyPress (descriptor);
 				SmartIndentLine (Editor.CaretLine);
 				return result;
 			}
-			return await base.KeyPress (descriptor);
+			return base.KeyPress (descriptor);
 		}
 		
 		void SmartIndentLine (int line)
@@ -711,7 +712,7 @@ namespace MonoDevelop.Xml.Editor
 
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not open document.", ex);
-					MessageService.ShowException (ex, "Could not open document.");
+					MessageService.ShowError ("Could not open document.", ex);
 				}
 			}
 		}
@@ -747,7 +748,7 @@ namespace MonoDevelop.Xml.Editor
 				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
-				MessageService.ShowException (ex, "Could not open document.");
+				MessageService.ShowError ("Could not open document.", ex);
 			}
 		}
 		

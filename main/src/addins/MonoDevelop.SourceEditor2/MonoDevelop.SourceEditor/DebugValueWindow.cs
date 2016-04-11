@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 			this.AllowGrow = false;
 			this.Decorated = false;
 
-			TransientFor = (Gtk.Window) ((Gtk.Widget)editor).Toplevel;
+			TransientFor = (Gtk.Window) (editor.GetNativeWidget <Gtk.Widget> ()).Toplevel;
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
 

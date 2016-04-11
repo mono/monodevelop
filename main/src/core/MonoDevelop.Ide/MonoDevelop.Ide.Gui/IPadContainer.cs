@@ -279,14 +279,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void NotifyShown ()
 		{
-			if (PadShown != null)
-				PadShown (this, EventArgs.Empty);
+			PadShown?.Invoke (this, EventArgs.Empty);
 		}
 		
 		internal void NotifyHidden ()
 		{
-			if (PadHidden != null)
-				PadHidden (this, EventArgs.Empty);
+			PadHidden?.Invoke (this, EventArgs.Empty);
 		}
 		
 		internal void NotifyContentShown ()
@@ -295,20 +293,18 @@ namespace MonoDevelop.Ide.Gui
 				HasNewData = false;
 			if (HasErrors)
 				HasErrors = false;
-			if (PadContentShown != null)
-				PadContentShown (this, EventArgs.Empty);
+			PadContentShown?.Invoke (this, EventArgs.Empty);
 		}
 		
 		internal void NotifyContentHidden ()
 		{
-			if (PadContentHidden != null)
-				PadContentHidden (this, EventArgs.Empty);
+			PadContentHidden?.Invoke (this, EventArgs.Empty);
 		}
 		
 		internal void NotifyDestroyed ()
 		{
-			if (PadDestroyed != null)
-				PadDestroyed (this, EventArgs.Empty);
+			PadDestroyed?.Invoke (this, EventArgs.Empty);
+			content?.Dispose ();
 		}
 		
 		public event EventHandler PadShown;

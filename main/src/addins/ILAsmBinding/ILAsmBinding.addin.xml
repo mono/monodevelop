@@ -1,7 +1,7 @@
 <ExtensionModel>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "ILAsmConsoleProject" resource = "ILAsmConsoleProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.IL.ConsoleProject" resource = "ILAsmConsoleProject.xpt.xml"/>
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/FileFilters">
 		<FileFilter id = "ILAsm Files" _label = "ILAsm Files" extensions = "*.il"/>

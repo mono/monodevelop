@@ -31,6 +31,7 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
@@ -2245,24 +2246,24 @@ namespace MonoDevelop.Components.Commands
 			if (customHandlerChain != null) {
 				info.UpdateHandlerData = Method;
 
-				DateTime t = DateTime.Now;
+				var sw = Stopwatch.StartNew ();
 				customHandlerChain.CommandUpdate (cmdTarget, info);
-				var time = DateTime.Now - t;
-				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
-					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, CustomUpdater:{2}", (int)time.TotalMilliseconds, CommandId, customHandlerChain);
+				sw.Stop ();
+				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, CustomUpdater:{2}, CommandTargetType:{3}", (int)sw.ElapsedMilliseconds, CommandId, customHandlerChain, cmdTarget.GetType ());
 			} else {
 				if (Method == null)
 					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandUpdateHandler was expected.");
 				if (isArray)
 					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
 
-				DateTime t = DateTime.Now;
+				var sw = Stopwatch.StartNew ();
 
 				Method.Invoke (cmdTarget, new object[] {info} );
 
-				var time = DateTime.Now - t;
-				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
-					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name);
+				sw.Stop ();
+				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)sw.ElapsedMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			}
 		}
 		
@@ -2277,13 +2278,13 @@ namespace MonoDevelop.Components.Commands
 				if (!isArray)
 					throw new InvalidOperationException ("Invalid signature for command update handler: " + Method.DeclaringType + "." + Method.Name + "()");
 
-				DateTime t = DateTime.Now;
+				var sw = Stopwatch.StartNew ();
 
 				Method.Invoke (cmdTarget, new object[] {info} );
-				
-				var time = DateTime.Now - t;
-				if (time.TotalMilliseconds > CommandManager.SlowCommandWarningTime)
-					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}", (int)time.TotalMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name);
+
+				sw.Stop ();
+				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)sw.ElapsedMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			}
 		}
 	}

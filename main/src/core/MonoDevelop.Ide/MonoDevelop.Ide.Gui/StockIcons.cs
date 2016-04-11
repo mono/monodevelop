@@ -163,5 +163,6 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Clear = "md-clear";
 		public static readonly IconId Execute = Gtk.Stock.Execute;
 		public static readonly IconId SearchboxSearch = "md-searchbox-search";
+		public static readonly IconId Updates = "md-updates";
 	}
 }

@@ -273,6 +273,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 			control.FocusChain = new Gtk.Widget [] { sw };
 		}
+
+		public override void Dispose ()
+		{
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
+			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
+
+			base.Dispose ();
+		}
 		
 		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
 		{
