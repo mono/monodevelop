@@ -247,6 +247,8 @@
 		</ItemSet>
 		<SeparatorItem id = "CustomToolsSection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
+		<SeparatorItem/>
+		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.EditCustomTools" />
 		<SeparatorItem id = "OptionsSection" />
 		<Condition id="Platform" value="windows">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />

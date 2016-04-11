@@ -686,6 +686,9 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 			type="array"
 			_label = "Tool List" />
+	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.EditCustomTools"
+			defaultHandler = "MonoDevelop.Ide.Commands.EditCustomToolsHandler"
+			_label = "Edit Custom Tools..." />
 
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer"
 			defaultHandler = "MonoDevelop.Ide.Commands.InstrumentationViewerHandler"
