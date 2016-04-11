@@ -572,7 +572,7 @@ type FsiParameterHintingData (tooltip:MonoDevelop.FSharp.Shared.ParameterTooltip
                 match tooltip with
                 | MonoDevelop.FSharp.Shared.ParameterTooltip.ToolTip (signature, doc, parameters) -> 
                     let signature, parameterName = 
-                        if paramIndex = -1 then
+                        if paramIndex = -1 || paramIndex < parameters.Length - 1 then
                             Highlight.syntaxHighlight signature, null
                         else
                             let paramName = parameters.[paramIndex]
@@ -639,7 +639,10 @@ module ParameterHinting =
                             tooltips
                             |> List.map (fun meth -> FsiParameterHintingData (meth) :> ParameterHintingData)
                             |> ResizeArray.ofList
-                        return ParameterHintingResult(hintingData, startOffset)
+                        if hintingData.Count > 0 then
+                            return ParameterHintingResult(hintingData, startOffset)
+                        else
+                            return ParameterHintingResult.Empty
                     | _ -> return ParameterHintingResult.Empty
                 | _ -> return ParameterHintingResult.Empty
             else

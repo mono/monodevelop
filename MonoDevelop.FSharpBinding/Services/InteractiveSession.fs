@@ -121,7 +121,7 @@ type InteractiveSession() =
 
     member x.Kill() =
         if not fsiProcess.HasExited then
-            sendCommand "#q"
+            x.SendInput "#q;;"
             for i in 0 .. 10 do
                 if not fsiProcess.HasExited then
                     LoggingService.logDebug "Interactive: waiting for process exit after #q... %d" (i*200)
