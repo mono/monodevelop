@@ -93,18 +93,18 @@ namespace MonoDevelop.Components
 
 		public bool Visible { get; set; }
 
-		public event EventHandler<Gtk.Widget> Selected;
+		public event EventHandler<Xwt.Rectangle> Selected;
 
-		internal void FireSelectedEvent (Gtk.Widget widget)
+		internal void FireSelectedEvent (Xwt.Rectangle menuArea)
 		{
-			Selected?.Invoke (this, widget);
+			Selected?.Invoke (this, menuArea);
 		}
 
-		public event EventHandler<Gtk.Widget> Deselected;
+		public event EventHandler Deselected;
 
-		internal void FireDeselectedEvent (Gtk.Widget widget)
+		internal void FireDeselectedEvent ()
 		{
-			Deselected?.Invoke (this, widget);
+			Deselected?.Invoke (this, EventArgs.Empty);
 		}
 
 

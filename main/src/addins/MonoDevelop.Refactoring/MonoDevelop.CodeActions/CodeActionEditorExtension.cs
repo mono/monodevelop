@@ -278,7 +278,7 @@ namespace MonoDevelop.CodeActions
 			public readonly string Label;
 
 			public readonly System.Action Action;
-			public Action<Gtk.Widget, int, int> ShowPreviewTooltip;
+			public Action<Xwt.Rectangle> ShowPreviewTooltip;
 
 			public FixMenuEntry (string label, System.Action action)
 			{
@@ -385,16 +385,16 @@ namespace MonoDevelop.CodeActions
 				var subMenu = item as FixMenuDescriptor;
 				if (subMenu != null) {
 					menuItem.SubMenu = CreateContextMenu (subMenu);
-					menuItem.Selected += delegate (object sender, Widget e) {
+					menuItem.Selected += delegate (object sender, Xwt.Rectangle e) {
 						HidePreviewTooltip ();
 					};
 					menuItem.Deselected += delegate { HidePreviewTooltip (); };
 				} else {
 					menuItem.Clicked += (object sender, ContextMenuItemClickedEventArgs e) => ((System.Action)((ContextMenuItem)sender).Context) ();
-					menuItem.Selected += delegate (object sender, Widget e) {
+					menuItem.Selected += delegate (object sender, Xwt.Rectangle e) {
 						HidePreviewTooltip ();
 						if (item.ShowPreviewTooltip != null) {
-							item.ShowPreviewTooltip (e, 0, 0);
+							item.ShowPreviewTooltip (e);
 						}
 					};
 					menuItem.Deselected += delegate { HidePreviewTooltip (); };
@@ -491,10 +491,10 @@ namespace MonoDevelop.CodeActions
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
 				});
 
-				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Widget widget, int arg2, int arg3) {
+				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Xwt.Rectangle rect) {
 					HidePreviewTooltip ();
 					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.CodeAction);
-					currentPreviewWindow.RequestPopup (widget.Parent);
+					currentPreviewWindow.RequestPopup (rect);
 				};
 
 				menu.Add (thisInstanceMenuItem);
@@ -515,10 +515,10 @@ namespace MonoDevelop.CodeActions
 					ConfirmUsage (fix.CodeAction.EquivalenceKey);
 				});
 
-				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Widget widget, int arg2, int arg3) {
+				thisInstanceMenuItem.ShowPreviewTooltip = delegate (Xwt.Rectangle rect) {
 					HidePreviewTooltip ();
 					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.CodeAction);
-					currentPreviewWindow.RequestPopup (widget.Parent);
+					currentPreviewWindow.RequestPopup (rect);
 				};
 
 				menu.Add (thisInstanceMenuItem);
@@ -546,14 +546,14 @@ namespace MonoDevelop.CodeActions
 					 	}
 				 	}
 				);
-				menuItem.ShowPreviewTooltip = async delegate (Widget widget, int arg2, int arg3) {
+				menuItem.ShowPreviewTooltip = async delegate (Xwt.Rectangle rect) {
 					var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
 					HidePreviewTooltip ();
 					var fix = fixes.FirstOrDefault ();
 					if (fix == null)
 						return;
 					currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix.Action);
-					currentPreviewWindow.RequestPopup (widget.Parent);
+					currentPreviewWindow.RequestPopup (rect);
 				};
 
 				subMenu.Add (menuItem);
@@ -587,14 +587,14 @@ namespace MonoDevelop.CodeActions
 													 delegate {
 														 descriptor.DisableWithPragma (Editor, DocumentContext, fix);
 													 });
-					menuItem.ShowPreviewTooltip = async delegate (Widget widget, int arg2, int arg3) {
+					menuItem.ShowPreviewTooltip = async delegate (Xwt.Rectangle rect) {
 						var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (DocumentContext.AnalysisDocument, new TextSpan (Editor.CaretOffset, 0), new [] { fix }, default (CancellationToken)).ConfigureAwait (false);
 						HidePreviewTooltip ();
 						var fix2 = fixes.FirstOrDefault ();
 						if (fix2 == null)
 							return;
 						currentPreviewWindow = new RefactoringPreviewTooltipWindow (this.Editor, this.DocumentContext, fix2.Action);
-						currentPreviewWindow.RequestPopup (widget.Parent);
+						currentPreviewWindow.RequestPopup (rect);
 					};
 					subMenu.Add (menuItem);
 					menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with file"),

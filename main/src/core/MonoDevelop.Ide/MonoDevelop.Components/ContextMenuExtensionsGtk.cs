@@ -64,7 +64,10 @@ namespace MonoDevelop.Components
 			gtkMenu.ShowAll ();
 			if (selectFirstItem && gtkMenu.Children.Length > 0) {
 				gtkMenu.SelectItem (gtkMenu.Children [0]);
-				menu.Items [0].FireSelectedEvent (gtkMenu.Children [0]);
+				var child = gtkMenu.Children [0];
+				int ox, oy;
+				child.ParentWindow.GetOrigin (out ox, out oy);
+				menu.Items [0].FireSelectedEvent (new Xwt.Rectangle (ox, oy, child.Allocation.Width, child.Allocation.Height));
 			}
 			ShowContextMenu (parent, x, y, gtkMenu);
 		}
@@ -109,10 +112,12 @@ namespace MonoDevelop.Components
 				menuItem = new Gtk.ImageMenuItem (item.Label);
 			} 
 			menuItem.Selected += delegate {
-				item.FireSelectedEvent (menuItem);
+				int x, y;
+				menuItem.Parent.GdkWindow.GetOrigin (out x, out y);
+				item.FireSelectedEvent (new Xwt.Rectangle (x, y, menuItem.Parent.Allocation.Width, menuItem.Parent.Allocation.Height));
 			};
 			menuItem.Deselected += delegate {
-				item.FireDeselectedEvent (menuItem);
+				item.FireDeselectedEvent ();
 			};
 			if (item.SubMenu != null && item.SubMenu.Items.Count > 0) {
 				menuItem.Submenu = FromMenu (item.SubMenu, null);
