@@ -45,13 +45,14 @@ using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Refactoring
 { 
 	public static class RefactoringService
 	{
 		internal static Func<TextEditor, DocumentContext, OptionSet> OptionSetCreation;
-		static List<FindReferencesProvider> findReferencesProvider = new List<FindReferencesProvider> ();
+		static ImmutableList<FindReferencesProvider> findReferencesProvider = ImmutableList<FindReferencesProvider>.Empty;
 		static List<JumpToDeclarationHandler> jumpToDeclarationHandler = new List<JumpToDeclarationHandler> ();
 
 		static RefactoringService ()
@@ -242,20 +243,20 @@ namespace MonoDevelop.Refactoring
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			try {
-				foreach (var provider in findReferencesProvider) {
+			foreach (var provider in findReferencesProvider) {
+				try {
 					foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 						monitor.ReportResult (result);
 					}
-				}
-			} catch (Exception ex) {
-				if (monitor != null)
-					monitor.ReportError ("Error finding references", ex);
-				else
+				} catch (Exception ex) {
+					if (monitor != null)
+						monitor.ReportError ("Error finding references", ex);
 					LoggingService.LogError ("Error finding references", ex);
-			} finally {
-				if (monitor != null)
-					monitor.Dispose ();
+					findReferencesProvider = findReferencesProvider.Remove (provider);
+				} finally {
+					if (monitor != null)
+						monitor.Dispose ();
+				}
 			}
 		}
 
@@ -264,38 +265,40 @@ namespace MonoDevelop.Refactoring
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			try {
-				foreach (var provider in findReferencesProvider) {
+			foreach (var provider in findReferencesProvider) {
+				try {
 					foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 						monitor.ReportResult (result);
 					}
-				}
-			} catch (OperationCanceledException) {
+				} catch (OperationCanceledException) {
 
-			} catch (Exception ex) {
-				if (monitor != null)
-					monitor.ReportError ("Error finding references", ex);
-				else
+				} catch (Exception ex) {
+					if (monitor != null)
+						monitor.ReportError ("Error finding references", ex);
 					LoggingService.LogError ("Error finding references", ex);
-			} finally {
-				if (monitor != null)
-					monitor.Dispose ();
+					findReferencesProvider = findReferencesProvider.Remove (provider);
+				} finally {
+					if (monitor != null)
+						monitor.Dispose ();
+				}
 			}
 		}
 
 		public static async Task<bool> TryJumpToDeclarationAsync (string documentIdString, Projects.Project hintProject = null, CancellationToken token = default(CancellationToken))
 		{
-			try {
 				if (hintProject == null)
 					hintProject = IdeApp.Workbench.ActiveDocument?.Project;
-				foreach (var handler in jumpToDeclarationHandler) {
+			for (int i = 0; i < jumpToDeclarationHandler.Count; i++) {
+				var handler = jumpToDeclarationHandler [i];
+				try {
 					if (await handler.TryJumpToDeclarationAsync (documentIdString, hintProject, token))
 						return true;
+				} catch (OperationCanceledException) {
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error jumping to declaration", ex);
 				}
-			} catch (OperationCanceledException) {
-			} catch (Exception ex) {
-				LoggingService.LogError ("Error finding references", ex);
 			}
+
 			return false;
 		}
 	}
