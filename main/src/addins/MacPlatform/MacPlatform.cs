@@ -458,26 +458,12 @@ namespace MonoDevelop.MacIntegration
 				FilePath bundleIconRoot = GetAppBundleRoot (exePath).Combine ("Contents", "Resources");
 				NSString initialBundleIconFile = (NSString)initialBundleIconFileValue;
 
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-					iconFile = bundleIconRoot.Combine (Path.GetFileNameWithoutExtension (initialBundleIconFile) + "~dark" + Path.GetExtension (initialBundleIconFile));
-				}
-
-				// There is no monodevelop~dark.icns, fallback to monodevelop.icns
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null || !File.Exists (iconFile)) {
-					iconFile = bundleIconRoot.Combine (initialBundleIconFile);
-				}
+				iconFile = bundleIconRoot.Combine (initialBundleIconFile);
 			} else {
 				// Setup without bundle.
 				string iconName = BrandingService.GetString ("ApplicationIcon");
 				if (iconName != null) {
-					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-						string darkIconName = Path.GetFileNameWithoutExtension (iconName) + "~dark" + Path.GetExtension (iconName);
-						iconFile = BrandingService.GetFile (darkIconName);
-					}
-
-					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null) {
-						iconFile = BrandingService.GetFile (iconName);
-					}
+					iconFile = BrandingService.GetFile (iconName);
 				} else {
 					// assume running from build directory
 					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
