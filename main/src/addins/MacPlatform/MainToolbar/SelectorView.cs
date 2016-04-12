@@ -307,6 +307,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public override void MouseDown (NSEvent theEvent)
 			{
+				if (!Enabled)
+					return;
+
 				var locationInView = ConvertPointFromView (theEvent.LocationInWindow, null);
 
 				var cellIdx = IndexOfCellAtX (locationInView.X);
@@ -315,7 +318,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 
 				var item = PathComponentCells [cellIdx];
-				if (item == null)
+				if (item == null || !item.Enabled)
 					return;
 
 				var componentRect = ((NSPathCell)Cell).GetRect (item, Frame, this);
