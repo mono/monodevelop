@@ -39,6 +39,12 @@ namespace MonoDevelop.Ide.FindInFiles
 	{
 		SearchResultPad outputPad;
 
+		internal SearchResultPad ResultPad {
+			get {
+				return outputPad;
+			}
+		}
+
 		internal SearchProgressMonitor (Pad pad, CancellationTokenSource cancellationTokenSource = null): base (Runtime.MainSynchronizationContext, cancellationTokenSource)
 		{
 			AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad));
