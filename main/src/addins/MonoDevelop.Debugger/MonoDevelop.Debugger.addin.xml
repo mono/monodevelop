@@ -29,7 +29,7 @@
 		<ExtensionNode name="Type" />
 	</ExtensionPoint>
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<Category id="Debug" _name="Debug Windows">
+		<Category id="Debug" _name="Debug Pads">
 			<Pad id = "MonoDevelop.Debugger.BreakpointPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-breakpoints" class = "MonoDevelop.Debugger.BreakpointPad" _label="Breakpoints" group="main"/>
 			<Pad id = "MonoDevelop.Debugger.LocalsPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-locals" class = "MonoDevelop.Debugger.LocalsPad" _label="Locals"  group="main"/>
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch"  group="main"/>
