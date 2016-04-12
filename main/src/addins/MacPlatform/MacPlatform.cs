@@ -449,26 +449,24 @@ namespace MonoDevelop.MacIntegration
 
 		static void SetupDockIcon ()
 		{
-			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 			NSObject initialBundleIconFileValue;
+
+			// Don't do anything if we're inside an app bundle.
+			if (NSBundle.MainBundle.InfoDictionary.TryGetValue (new NSString ("CFBundleIconFile"), out initialBundleIconFileValue)) {
+				return;
+			}
+
+			// Setup without bundle.
+			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+			string iconName = BrandingService.GetString ("ApplicationIcon");
 			string iconFile = null;
 
-			// Try setting a dark variant of the application dock icon if one exists in the app bundle.
-			if (NSBundle.MainBundle.InfoDictionary.TryGetValue (new NSString ("CFBundleIconFile"), out initialBundleIconFileValue)) {
-				FilePath bundleIconRoot = GetAppBundleRoot (exePath).Combine ("Contents", "Resources");
-				NSString initialBundleIconFile = (NSString)initialBundleIconFileValue;
-
-				iconFile = bundleIconRoot.Combine (initialBundleIconFile);
+			if (iconName != null) {
+				iconFile = BrandingService.GetFile (iconName);
 			} else {
-				// Setup without bundle.
-				string iconName = BrandingService.GetString ("ApplicationIcon");
-				if (iconName != null) {
-					iconFile = BrandingService.GetFile (iconName);
-				} else {
-					// assume running from build directory
-					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
-					iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
-				}
+				// assume running from build directory
+				var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
+				iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
 			}
 
 			if (File.Exists (iconFile)) {
