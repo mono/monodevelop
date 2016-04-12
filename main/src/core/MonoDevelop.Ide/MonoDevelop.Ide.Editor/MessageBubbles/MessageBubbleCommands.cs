@@ -62,17 +62,17 @@ namespace MonoDevelop.Ide.Editor
 		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
-			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Errors & Warnings"), new Action (delegate {
+			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("E_rrors"), new Action (delegate {
+				IdeApp.Preferences.ShowMessageBubbles.Value = ShowMessageBubbles.ForErrors;
+				IdeApp.Preferences.DefaultHideMessageBubbles.Value = false;
+			}));
+			info.Checked = !IdeApp.Preferences.DefaultHideMessageBubbles && IdeApp.Preferences.ShowMessageBubbles.Value == ShowMessageBubbles.ForErrors;
+
+			info = ainfo.Add (GettextCatalog.GetString ("_Errors and Warnings"), new Action (delegate {
 				IdeApp.Preferences.ShowMessageBubbles.Value = ShowMessageBubbles.ForErrorsAndWarnings;
 				IdeApp.Preferences.DefaultHideMessageBubbles.Value = false;
 			}));
 			info.Checked = !IdeApp.Preferences.DefaultHideMessageBubbles && IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrorsAndWarnings;
-			
-			info = ainfo.Add (GettextCatalog.GetString ("E_rrors only"), new Action (delegate {
-				IdeApp.Preferences.ShowMessageBubbles.Value = ShowMessageBubbles.ForErrors;
-				IdeApp.Preferences.DefaultHideMessageBubbles.Value = false;
-			}));
-			info.Checked = !IdeApp.Preferences.DefaultHideMessageBubbles && IdeApp.Preferences.ShowMessageBubbles.Value == ShowMessageBubbles.ForErrors;
 		}
 	}
 }
