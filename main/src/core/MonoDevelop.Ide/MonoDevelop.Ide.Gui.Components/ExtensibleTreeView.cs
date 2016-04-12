@@ -1881,8 +1881,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				info.Visible = false;
 				return;
 			}
-
-			info.Text = GettextCatalog.GetString ("Re_name");
 		}
 
 		NodeAttributes GetNodeAttributes (TreeNodeNavigator node)
