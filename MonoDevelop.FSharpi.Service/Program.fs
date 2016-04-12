@@ -5,6 +5,7 @@ open System.Text
 open Newtonsoft.Json
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
+
 open MonoDevelop.FSharp.Shared
 /// Wrapper for fsi with support for returning completions
 module CompletionServer =
@@ -21,9 +22,10 @@ module CompletionServer =
 
         let serializer = JsonSerializer.Create()
 
-        let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(Settings.fsi, true)
-        let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream, true)
+        let fsiConfig = FsiEvaluationSession.GetDefaultConfiguration(Microsoft.FSharp.Compiler.Interactive.Settings.fsi, true)
 
+        let fsiSession = FsiEvaluationSession.Create(fsiConfig, argv, inStream, outStream, outStream, true)
+       
         let (|Input|_|) (command: string) =
             if command.StartsWith("input ") then
                 Some(command.[6..])
