@@ -46,6 +46,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal NSToolbar widget;
 		internal Gtk.Window gtkWindow;
 
+		public static bool IsFullscreen { get; private set; }
 		AwesomeBar awesomeBar;
 
 		RunButton runButton {
@@ -146,9 +147,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				item.MaxSize = size;
 			});
 
+			// We can't use the events that Xamarin.Mac adds for delegate methods as they will overwrite
+			// the delegate that Gtk has added
 			NSWindow nswin = GtkMacInterop.GetNSWindow (window);
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction, nswin);
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction, nswin);
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillEnterFullScreenNotification, (note) => IsFullscreen = true, nswin);
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillExitFullScreenNotification, (note) => IsFullscreen = false, nswin);
 		}
 
 		internal void Initialize ()
