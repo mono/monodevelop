@@ -194,7 +194,6 @@
 	</ItemSet>
 
 	<ItemSet id = "Project" _label = "_Project">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
 		<SeparatorItem id = "ExportSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
@@ -215,6 +214,8 @@
 		<SeparatorItem id = "OptionsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions" />
+		<SeparatorItem id = "ProjectToolsSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution" />
 	</ItemSet>
 
 	<ItemSet id = "Build" _label = "_Build">
