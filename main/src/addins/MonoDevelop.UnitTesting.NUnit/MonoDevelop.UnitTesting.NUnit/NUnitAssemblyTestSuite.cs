@@ -444,10 +444,11 @@ namespace MonoDevelop.UnitTesting.NUnit
 					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Canceled"), null);
 				}
 			} finally {
+				// Dispose the runner before the console, to make sure the console is available until the runner is disposed.
+				runner.Dispose ();
 				if (console != null)
 					console.Dispose ();
 				cancelReg.Dispose ();
-				runner.Dispose ();
 				File.Delete (crashLogFile);
 			}
 			
