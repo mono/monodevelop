@@ -54,19 +54,19 @@ module CompilerArguments =
           project.GetReferencedAssemblyProjects(getCurrentConfigurationOrDefault project)
           |> Seq.exists isPortable
 
-      let getAssemblyLocation (reference:ProjectReference) =
+      let getAssemblyLocations (reference:ProjectReference) =
           let tryGetFromHintPath() =
               if reference.HintPath.IsNotNull then 
                   let path = reference.HintPath.FullPath |> string
                   let path = path.Replace("/Library/Frameworks/Mono.framework/External",
                                           "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono")
                   if File.Exists path then 
-                      Some path 
+                      [path]
                   else
                       // try and resolve from GAC
-                      Some reference.HintPath.FileName
+                      [reference.HintPath.FileName]
               else
-                  None
+                  []
 
           match reference.ReferenceType with
           | ReferenceType.Assembly ->
@@ -75,17 +75,28 @@ module CompilerArguments =
               if isNull reference.Package then
                   tryGetFromHintPath()
               else 
-                  reference.Package.Assemblies
-                  |> Seq.tryFind (fun a -> a.FullName = reference.Include
-                                           || a.Name = reference.Include)
-                  |> Option.map (fun a -> a.Location)
+                  if reference.Include <> "System" then
+                      let assembly = 
+                              reference.Package.Assemblies
+                              |> Seq.find (fun a -> a.Name = reference.Include)
+                      [assembly.Location]
+                  else
+                      reference.Package.Assemblies
+                      |> Seq.map (fun a -> a.Location)
+                      |> List.ofSeq
+
           | ReferenceType.Project -> 
               let referencedProject = reference.Project :?> DotNetProject
-              referencedProject.GetReferencedAssemblyProjects (getCurrentConfigurationOrDefault referencedProject)
-              |> Seq.tryFind(fun p -> p.Name = reference.Reference)
-              |> Option.map(fun p -> let output = p.GetOutputFileName(getCurrentConfigurationOrDefault p)
-                                     output.FullPath.ToString())
-          | _ -> None
+              let reference =
+                  referencedProject.GetReferencedAssemblyProjects (getCurrentConfigurationOrDefault referencedProject)
+                  |> Seq.tryFind(fun p -> p.Name = reference.Reference)
+
+              match reference with
+                  | Some ref ->
+                      let output = ref.GetOutputFileName(getCurrentConfigurationOrDefault ref)
+                      [output.FullPath.ToString()]
+                  | _ -> []
+          | _ -> []
 
       let getDefaultTargetFramework (runtime:TargetRuntime) =
           let newest_net_framework_folder (best:TargetFramework,best_version:int[]) (candidate_framework:TargetFramework) =
@@ -135,7 +146,7 @@ module CompilerArguments =
 
       let getPortableReferences (project: DotNetProject) configSelector =
           project.References
-          |> Seq.choose getAssemblyLocation
+          |> Seq.collect getAssemblyLocations
           |> Seq.append (portableReferences project)
           |> set
           |> Set.toList
@@ -177,7 +188,8 @@ module CompilerArguments =
            match referencedAssemblies |> Seq.tryFind Project.isPortable with
            | Some _ -> true
            | None -> project.References
-                     |> Seq.choose (fun r -> if r.ReferenceType = ReferenceType.Assembly then Project.getAssemblyLocation r else None)
+                     |> Seq.filter (fun r -> r.ReferenceType = ReferenceType.Assembly)
+                     |> Seq.collect Project.getAssemblyLocations
                      |> Seq.tryFind isAssemblyPortable
                      |> Option.isSome
 
@@ -194,7 +206,7 @@ module CompilerArguments =
 
         let refs =
           project.References
-          |> Seq.choose Project.getAssemblyLocation
+          |> Seq.collect Project.getAssemblyLocations
           |> Seq.append portableRefs
           |> Seq.toList
 
