@@ -76,12 +76,14 @@ namespace MonoDevelop.AssemblyBrowser
 			FileName = fileName;
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", nameof (fileName));
-			assemblyLoaderTask = Task.Run (() => {
+			assemblyLoaderTask = Task.Run (async () => {
 				try {
 					var asm = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
 						AssemblyResolver = this
 					});
-					return Tuple.Create (asm, widget.CecilLoader.LoadAssembly (asm));
+					var loadedAssembley = await Runtime.RunInMainThread (() => widget.CecilLoader.LoadAssembly (asm));
+
+					return Tuple.Create (asm, loadedAssembley);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					return null;
