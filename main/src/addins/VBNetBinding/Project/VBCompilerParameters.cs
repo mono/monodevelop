@@ -36,7 +36,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class VBCompilerParameters: ConfigurationParameters
+	public class VBCompilerParameters: DotNetCompilerParameters
 	{
 		//
 		// Project level properties:
@@ -104,7 +104,6 @@ namespace MonoDevelop.VBNetBinding
 		[ItemProperty ("AdditionalParameters")]
 		string additionalParameters = String.Empty;
 
-		[Obsolete]
 		public override void AddDefineSymbol (string symbol)
 		{
 			var symbols = new List<string> (GetDefineSymbols ());
@@ -112,7 +111,6 @@ namespace MonoDevelop.VBNetBinding
 			definesymbols = string.Join (";", symbols) + ";";
 		}
 		
-		[Obsolete]
 		public override void RemoveDefineSymbol (string symbol)
 		{
 			var symbols = new List<string> (GetDefineSymbols ());

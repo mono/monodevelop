@@ -26,16 +26,17 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class WorkbenchWindow: Gtk.Window
+	class WorkbenchWindow: Gtk.Window
 	{
 		List<TopLevelChild> topLevels = new List<TopLevelChild> ();
 		
 		public WorkbenchWindow (): base (Gtk.WindowType.Toplevel)
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 			this.Role = "workbench";
 		}
 

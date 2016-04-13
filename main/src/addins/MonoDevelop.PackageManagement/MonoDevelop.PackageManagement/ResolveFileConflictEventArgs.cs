@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ResolveFileConflictEventArgs : EventArgs
+	internal class ResolveFileConflictEventArgs : EventArgs
 	{
 		public ResolveFileConflictEventArgs(string message)
 		{

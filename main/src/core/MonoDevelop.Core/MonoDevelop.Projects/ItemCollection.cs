@@ -28,46 +28,141 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Immutable;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class ItemCollection<T>: Collection<T>
+	public class ItemCollection<T>: IEnumerable<T>
 	{
-		protected override void InsertItem (int index, T item)
-		{
-			base.InsertItem (index, item);
-			OnItemAdded (item);
-		}
-		
-		protected override void RemoveItem (int index)
-		{
-			T it = this [index];
-			base.RemoveItem (index);
-			OnItemRemoved (it);
-		}
-		
-		protected override void SetItem (int index, T item)
-		{
-			T it = this [index];
-			base.SetItem (index, item);
-			OnItemRemoved (it);
-			OnItemAdded (item);
-		}
-		
-		protected override void ClearItems ()
-		{
-			List<T> items = new List<T> (this);
-			base.ClearItems ();
-			foreach (T it in items)
-				OnItemRemoved (it);
+		ImmutableList<T> list = ImmutableList<T>.Empty;
+		bool controlWrites;
+
+		protected ImmutableList<T> List {
+			get {
+				return this.list;
+			}
+			set {
+				list = value;
+			}
 		}
 
-		protected virtual void OnItemAdded (T item)
+		internal void SetShared ()
+		{
+			controlWrites = true;
+		}
+
+		protected void AssertCanWrite ()
+		{
+			if (controlWrites)
+				Runtime.AssertMainThread ();
+		}
+
+		public void Add (T item)
+		{
+			list = list.Add (item);
+			OnItemsAdded (new [] { item });
+		}
+
+		public void AddRange (IEnumerable<T> items)
+		{
+			AssertCanWrite ();
+			list = list.AddRange (items);
+			OnItemsAdded (items);
+		}
+
+		public void Insert (int index, T item)
+		{
+			list = list.Insert (index, item);
+			OnItemsAdded (new [] { item });
+		}
+
+		public void RemoveRange (IEnumerable<T> items)
+		{
+			AssertCanWrite ();
+			list = list.RemoveRange (items);
+			OnItemsRemoved (items);
+		}
+
+		public bool Remove (T item)
+		{
+			AssertCanWrite ();
+
+			int i = list.IndexOf (item);
+			if (i != -1) {
+				RemoveAt (i);
+				return true;
+			}
+			return false;
+		}
+
+		public void RemoveAt (int index)
+		{
+			AssertCanWrite ();
+			T it = list [index];
+			list = list.RemoveAt (index);
+			OnItemsRemoved (new [] { it });
+		}
+
+		public int IndexOf (T item)
+		{
+			return list.IndexOf (item);
+		}
+
+		public bool Contains (T item)
+		{
+			return list.Contains (item);
+		}
+
+		public T this [int index] {
+			get {
+				return list [index];
+			}
+			set {
+				AssertCanWrite ();
+				T it = list [index];
+				list = list.SetItem (index, value);
+				OnItemsRemoved (new [] { it });
+				OnItemsAdded (new [] { value });
+			}
+		}
+
+		public void Clear ()
+		{
+			AssertCanWrite ();
+			var oldList = list;
+			list = list.Clear ();
+			OnItemsRemoved (oldList);
+		}
+
+		public int Count {
+			get { return list.Count; }
+		}
+
+		protected virtual void OnItemsAdded (IEnumerable<T> items)
 		{
 		}
 		
-		protected virtual void OnItemRemoved (T item)
+		protected virtual void OnItemsRemoved (IEnumerable<T> items)
 		{
 		}
+
+		#region IEnumerable implementation
+
+		public IEnumerator<T> GetEnumerator ()
+		{
+			return list.GetEnumerator ();
+		}
+
+		#endregion
+
+		#region IEnumerable implementation
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return ((System.Collections.IEnumerable)list).GetEnumerator ();
+		}
+
+		#endregion
 	}
 }

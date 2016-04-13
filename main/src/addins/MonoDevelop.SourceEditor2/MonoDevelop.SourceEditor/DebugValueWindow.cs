@@ -34,10 +34,11 @@ using Gtk;
 using Mono.TextEditor;
 using Gdk;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class BaseWindow : Gtk.Window
+	class BaseWindow : Gtk.Window
 	{
 		public BaseWindow () : base (Gtk.WindowType.Toplevel)
 		{
@@ -64,20 +65,51 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 
-	public class DebugValueWindow : PopoverWindow
+	class DebugValueWindow : PopoverWindow
 	{
 		ObjectValueTreeView tree;
 		ScrolledWindow sw;
 
-		public DebugValueWindow (Mono.TextEditor.TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
+		static readonly string innerTreeName = "MonoDevelop.SourceEditor.DebugValueWindow.ObjectValueTreeView";
+		static string currentBgColor;
+
+		static DebugValueWindow ()
+		{
+			UpdateTreeStyle (Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ());
+			Ide.Gui.Styles.Changed += (sender, e) => UpdateTreeStyle (Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ());
+		}
+
+		static void UpdateTreeStyle (Cairo.Color newBgColor)
+		{
+			string oddRowColor, bgColor;
+
+			bgColor = CairoExtensions.ColorGetHex (newBgColor);
+			if (bgColor == currentBgColor)
+				return;
+
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));
+			else
+				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));
+
+			string rc = "style \"" + innerTreeName + "\" = \"treeview\" {\n";
+			rc += string.Format ("GtkTreeView::odd-row-color = \"{0}\"\n", oddRowColor);
+			rc += string.Format ("base[NORMAL] = \"{0}\"\n", bgColor);
+			rc += "\n}\n";
+			rc += string.Format ("widget \"*.{0}\" style \"{0}\" ", innerTreeName);
+
+			Rc.ParseString (rc);
+			currentBgColor = bgColor;
+		}
+
+		public DebugValueWindow (TextEditor editor, int offset, StackFrame frame, ObjectValue value, PinnedWatch watch) : base (Gtk.WindowType.Toplevel)
 		{
 			this.TypeHint = WindowTypeHint.PopupMenu;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.Decorated = false;
 
-			TransientFor = (Gtk.Window)editor.Toplevel;
-
+			TransientFor = (Gtk.Window) (editor.GetNativeWidget <Gtk.Widget> ()).Toplevel;
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
 
@@ -85,7 +117,10 @@ namespace MonoDevelop.SourceEditor
 			sw.HscrollbarPolicy = PolicyType.Never;
 			sw.VscrollbarPolicy = PolicyType.Never;
 
+			UpdateTreeStyle (Theme.BackgroundColor);
 			tree = new ObjectValueTreeView ();
+			tree.Name = innerTreeName;
+
 			sw.Add (tree);
 			ContentBox.Add (sw);
 
@@ -97,29 +132,47 @@ namespace MonoDevelop.SourceEditor
 			tree.AllowPinning = true;
 			tree.RootPinAlwaysVisible = true;
 			tree.PinnedWatch = watch;
-			DocumentLocation location = editor.Document.OffsetToLocation (offset);
+			var location = editor.OffsetToLocation (offset);
 			tree.PinnedWatchLine = location.Line;
-			tree.PinnedWatchFile = ((ExtensibleTextEditor)editor).View.ContentName;
+			tree.PinnedWatchFile = editor.FileName;
 
 			tree.AddValue (value);
 			tree.Selection.UnselectAll ();
 			tree.SizeAllocated += OnTreeSizeChanged;
-			tree.PinStatusChanged += delegate {
-				Destroy ();
-			};
+			tree.PinStatusChanged += OnPinStatusChanged;
 
 			sw.ShowAll ();
 
-			tree.StartEditing += delegate {
-				Modal = true;
-			};
-
-			tree.EndEditing += delegate {
-				Modal = false;
-			};
+			tree.StartEditing += OnStartEditing;
+			tree.EndEditing += OnEndEditing;
 
 			ShowArrow = true;
 			Theme.CornerRadius = 3;
+		}
+
+		void OnStartEditing (object sender, EventArgs args)
+		{
+			Modal = true;
+		}
+
+		void OnEndEditing (object sender, EventArgs args)
+		{
+			Modal = false;
+		}
+
+		void OnPinStatusChanged (object sender, EventArgs args)
+		{
+			Destroy ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			tree.StartEditing -= OnStartEditing;
+			tree.EndEditing -= OnEndEditing;
+			tree.PinStatusChanged -= OnPinStatusChanged;
+			tree.SizeAllocated -= OnTreeSizeChanged;
+
+			base.OnDestroyed ();
 		}
 
 		protected override bool OnEnterNotifyEvent (EventCrossing evnt)
@@ -167,11 +220,12 @@ namespace MonoDevelop.SourceEditor
 				this.GetPosition (out x, out y);
 				oldY = y;
 
-				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+				Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				int top = (int)geometry.Top;
 				if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Y + geometry.Height - edgeGap)
-					y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
-				if (y < geometry.Top + edgeGap)
-					y = geometry.Top + edgeGap;
+					y = top + ((int)geometry.Height - allocation.Height - edgeGap);
+				if (y < top + edgeGap)
+					y = top + edgeGap;
 
 				if (y != oldY) {
 					Move (x, y);

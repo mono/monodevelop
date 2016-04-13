@@ -26,19 +26,19 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagerFactory : IPackageManagerFactory
+	class FakePackageManagerFactory : IPackageManagerFactory
 	{
 		public FakePackageManager FakePackageManager = new FakePackageManager ();
 		public IPackageRepository PackageRepositoryPassedToCreatePackageManager;
 		public IDotNetProject ProjectPassedToCreateRepository;
 		public ISolutionPackageRepository SolutionPackageRepositoryPassedToCreatePackageManager;
 
-		public ISharpDevelopPackageManager CreatePackageManager (IPackageRepository sourceRepository, IDotNetProject project)
+		public IMonoDevelopPackageManager CreatePackageManager (IPackageRepository sourceRepository, IDotNetProject project)
 		{
 			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
 			ProjectPassedToCreateRepository = project;

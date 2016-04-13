@@ -26,15 +26,14 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.Linq;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public static class ProjectHelper
+	static class ProjectHelper
 	{
 		public static ISolution CreateSolution ()
 		{
@@ -96,13 +95,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public static void AddReference (FakeDotNetProject project, string referenceName, string hintPath = null)
 		{
-			var reference = new ProjectReference (ReferenceType.Assembly, referenceName, hintPath);
+			var reference = ProjectReference.CreateCustomReference (ReferenceType.Assembly, referenceName, hintPath);
 			project.References.Add (reference);
 		}
 
 		public static void AddGacReference (FakeDotNetProject project, string referenceName)
 		{
-			var reference = new ProjectReference (ReferenceType.Package, referenceName);
+			var reference = ProjectReference.CreateAssemblyReference (referenceName);
 			project.References.Add (reference);
 		}
 

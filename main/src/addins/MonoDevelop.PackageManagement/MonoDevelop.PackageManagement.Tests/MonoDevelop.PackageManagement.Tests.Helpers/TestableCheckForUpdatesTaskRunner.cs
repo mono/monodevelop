@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
+	class TestableCheckForUpdatesTaskRunner : CheckForUpdatesTaskRunner
 	{
 		public List<string> LoggedErrorMessages = new List<string> ();
 		public List<Exception> LoggedExceptions = new List<Exception> ();
@@ -39,11 +39,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableCheckForUpdatesTaskRunner (ITaskFactory taskFactory)
 			: base (taskFactory)
 		{
-		}
-
-		protected override void GuiBackgroundDispatch (MessageHandler handler)
-		{
-			handler.Invoke ();
 		}
 
 		protected override void LogError (string message, Exception ex)

@@ -28,9 +28,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -38,6 +41,8 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		MultiConfigItemOptionsDialog dialog;
 		Gtk.ComboBox configCombo;
+		Gtk.ListStore configListStore;
+		const int configListStoreConfigNameColumn = 1;
 		Gtk.ComboBox platformCombo;
 		List<ItemConfiguration> currentConfigs = new List<ItemConfiguration> ();
 		List<string> platforms = new List<string> ();
@@ -94,16 +99,23 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 		}
 		
-		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
+		Control IOptionsPanel.CreatePanelWidget ()
 		{
 			Gtk.VBox cbox = new Gtk.VBox (false, 6);
-			Gtk.HBox combosBox = new Gtk.HBox (false, 6);
+			Gtk.HBox combosBox = new Gtk.HBox (false, 6) { Name = "panelWidgetCombosBox" };
 			cbox.PackStart (combosBox, false, false, 0);
 			combosBox.PackStart (new Gtk.Label (GettextCatalog.GetString ("Configuration:")), false, false, 0);
-			configCombo = Gtk.ComboBox.NewText ();
+			configListStore = new Gtk.ListStore (typeof(string), typeof(string));
+			configCombo = new Gtk.ComboBox (configListStore) { Name = "panelWidgetConfigurationCombo" };
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("configListStore__DisplayName", "configListStore__ConfigName");
+			TypeDescriptor.AddAttributes (configListStore, modelAttr);
+			var cell = new Gtk.CellRendererText ();
+			configCombo.PackStart (cell, true);
+			configCombo.AddAttribute (cell, "text", 0);
 			combosBox.PackStart (configCombo, false, false, 0);
 			combosBox.PackStart (new Gtk.Label (GettextCatalog.GetString ("Platform:")), false, false, 0);
 			platformCombo = Gtk.ComboBox.NewText ();
+			platformCombo.Name = "panelWidgetPlatformCombo";
 			combosBox.PackStart (platformCombo, false, false, 0);
 			cbox.PackStart (new Gtk.HSeparator (), false, false, 0);
 			cbox.ShowAll ();
@@ -150,18 +162,33 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		void FillConfigurations ()
 		{
 			loading = true;
-			((Gtk.ListStore)configCombo.Model).Clear ();
+			configListStore.Clear ();
 			
 			if (allowMixedConfigurations)
-				configCombo.AppendText (GettextCatalog.GetString ("All Configurations"));
-			
+				AppendComboConfig (GettextCatalog.GetString ("All Configurations"));
+
 			HashSet<string> configs = new HashSet<string> ();
 			foreach (ItemConfiguration config in FilterConfigurations (dialog.ConfigurationData.Configurations)) {
 				if (configs.Add (config.Name))
-					configCombo.AppendText (config.Name);
+					AppendComboConfig (config.Name);
 			}
 			
 			loading = false;
+		}
+
+		void AppendComboConfig (string configName)
+		{
+			bool isActive = IdeApp.Workspace.ActiveConfigurationId == configName;
+			AppendComboConfig (configName, isActive);
+		}
+
+		void AppendComboConfig (string configName, bool isActive = false)
+		{
+			string displayName = configName;
+			if (isActive)
+				displayName = configName + " " + GettextCatalog.GetString ("(Active)");
+
+			configListStore.AppendValues (displayName, configName);
 		}
 		
 		protected virtual bool ConfigurationsAreEqual (IEnumerable<ItemConfiguration> configs)
@@ -183,7 +210,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			string configName = null;
 			if (!allowMixedConfigurations || configCombo.Active > 0)
-				configName = configCombo.ActiveText;
+				configName = GetSelectedComboConfig ();
 
 			foreach (ItemConfiguration config in FilterConfigurations (dialog.ConfigurationData.Configurations)) {
 				if ((configName == null || config.Name == configName) && !platforms.Contains (config.Platform)) {
@@ -192,6 +219,15 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 			loading = false;
+		}
+
+		string GetSelectedComboConfig ()
+		{
+			Gtk.TreeIter iter;
+			if (configCombo.GetActiveIter (out iter)) {
+				return (string)configCombo.Model.GetValue (iter, configListStoreConfigNameColumn);
+			}
+			return null;
 		}
 		
 		void OnConfigChanged (object s, EventArgs a)
@@ -229,7 +265,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 
 			currentConfigs.Clear ();
 			
-			string configName = dialog.CurrentConfig = configCombo.ActiveText;
+			string configName = dialog.CurrentConfig = GetSelectedComboConfig ();
 			if (configName == GettextCatalog.GetString ("All Configurations"))
 				configName = null;
 			
@@ -290,7 +326,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			Gtk.TreeIter it;
 			if (configCombo.Model.GetIterFirst (out it)) {
 				do {
-					if (config == (string) configCombo.Model.GetValue (it, 0)) {
+					if (config == (string) configCombo.Model.GetValue (it, configListStoreConfigNameColumn)) {
 						configCombo.SetActiveIter (it);
 						break;
 					}

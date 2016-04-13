@@ -25,14 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using System.IO;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class ProjectReferenceExtensions
+	internal static class ProjectReferenceExtensions
 	{
 		public static bool IsReferenceFromPackage (this ProjectReference projectReference)
 		{

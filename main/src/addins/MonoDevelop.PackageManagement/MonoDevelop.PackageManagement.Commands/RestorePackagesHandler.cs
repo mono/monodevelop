@@ -26,24 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class RestorePackagesHandler : PackagesCommandHandler
+	internal class RestorePackagesHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{
-			var runner = new PackageRestoreRunner ();
-			DispatchService.BackgroundDispatch (() => {
+			var runner = new PackageRestoreRunner (GetPackageManagementSolution ());
+			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				runner.Run ();
+				runner = null;
 			});
 		}
 

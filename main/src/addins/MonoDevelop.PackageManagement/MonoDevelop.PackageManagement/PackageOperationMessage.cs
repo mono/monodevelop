@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageOperationMessage
+	internal class PackageOperationMessage
 	{
 		string message;
 		object[] args;

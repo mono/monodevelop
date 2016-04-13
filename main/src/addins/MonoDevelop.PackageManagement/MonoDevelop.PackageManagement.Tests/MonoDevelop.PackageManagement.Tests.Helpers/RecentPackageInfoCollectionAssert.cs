@@ -26,11 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public static class RecentPackageInfoCollectionAssert
+	static class RecentPackageInfoCollectionAssert
 	{
 		public static void AreEqual (IEnumerable<RecentPackageInfo> expectedPackages, IEnumerable<RecentPackageInfo> actualPackages)
 		{

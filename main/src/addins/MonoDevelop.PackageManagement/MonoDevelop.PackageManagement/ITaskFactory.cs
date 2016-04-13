@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ITaskFactory
+	internal interface ITaskFactory
 	{
 		ITask<TResult> CreateTask<TResult>(
 			Func<TResult> function,

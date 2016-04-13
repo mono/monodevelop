@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NuGet;
@@ -99,12 +99,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateAction ("MyPackage", "1.2.3.4");
 			FakePackage package = AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
-			var firstReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NewAssembly");
-			var secondReferenceBeingAdded = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
 			project.FakeUninstallPackageAction.ExecuteAction = () => {
-				var referenceBeingRemoved = new ProjectReference (ReferenceType.Assembly, "NUnit.Framework") {
-					LocalCopy = false
-				};
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = false;
 				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
 			};
 			bool installActionMaintainsLocalCopyReferences = false;
@@ -168,6 +167,18 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (fileRemovedResult.Value);
 			Assert.IsNull (fileRemover.FileRemoved);
+		}
+
+		[Test]
+		public void Execute_PackageExistsInSourceRepository_PackageIsInstalledWithoutLicenseAgreementDialogShowns ()
+		{
+			CreateAction ("MyPackage", "1.2.3.4");
+			AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
+
+			action.Execute ();
+
+			Assert.IsTrue (project.LastInstallPackageCreated.IsExecuteCalled);
+			Assert.IsFalse (project.LastInstallPackageCreated.LicensesMustBeAccepted);
 		}
 	}
 }

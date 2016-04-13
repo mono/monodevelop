@@ -35,7 +35,7 @@ namespace MonoDevelop.AspNet.Execution
 {	
 	static class BrowserLauncher
 	{
-		public static IProcessAsyncOperation LaunchDefaultBrowser (string url)
+		public static ProcessAsyncOperation LaunchDefaultBrowser (string url)
 		{
 			try {
 				DesktopService.ShowUrl (url);

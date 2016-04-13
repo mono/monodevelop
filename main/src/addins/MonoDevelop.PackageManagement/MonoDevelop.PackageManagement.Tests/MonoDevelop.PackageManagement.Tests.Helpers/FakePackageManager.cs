@@ -27,12 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManager : ISharpDevelopPackageManager
+	class FakePackageManager : IMonoDevelopPackageManager
 	{
 		public FakeProjectManager FakeProjectManager = new FakeProjectManager ();
 		public FakePackageManagementProjectService FakeProjectService = new FakePackageManagementProjectService ();
@@ -65,7 +64,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public IPackageRepository SourceRepository { get; set; }
 
-		public ISharpDevelopProjectManager ProjectManager { get; set; }
+		public IMonoDevelopProjectManager ProjectManager { get; set; }
 
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository ();
 
@@ -255,6 +254,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+		}
+
+		public void InstallPackageIntoSolutionRepository (IPackage package)
 		{
 		}
 	}

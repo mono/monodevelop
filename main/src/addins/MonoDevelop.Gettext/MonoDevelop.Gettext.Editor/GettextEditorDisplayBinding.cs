@@ -47,9 +47,9 @@ namespace MonoDevelop.Gettext
 			return filePath.IsNotNull && filePath.HasExtension (".po");
 		}
 		
-		public IViewContent CreateContent (FilePath filePath, string mimeType, Project project)
+		public ViewContent CreateContent (FilePath filePath, string mimeType, Project project)
 		{
-			foreach (TranslationProject tp in IdeApp.Workspace.GetAllSolutionItems<TranslationProject>  ())
+			foreach (TranslationProject tp in IdeApp.Workspace.GetAllItems<TranslationProject>  ())
 				if (tp.BaseDirectory == Path.GetDirectoryName (filePath))
 					return new Editor.CatalogEditorView (tp, filePath);
 			

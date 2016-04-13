@@ -43,7 +43,7 @@ namespace MonoDevelop.SourceEditor
 		internal Dictionary<string, LayoutDescriptor> textWidthDictionary = new Dictionary<string, LayoutDescriptor> ();
 		internal Dictionary<DocumentLine, double> lineWidthDictionary = new Dictionary<DocumentLine, double> ();
 		
-		internal TextEditor editor;
+		internal MonoTextEditor editor;
 
 		internal Pango.FontDescription fontDescription;
 		internal Pango.FontDescription tooltipFontDescription;
@@ -51,7 +51,7 @@ namespace MonoDevelop.SourceEditor
 
 		public MessageBubbleTextMarker CurrentSelectedTextMarker;
 
-		public MessageBubbleCache (TextEditor editor)
+		public MessageBubbleCache (MonoTextEditor editor)
 		{
 			this.editor = editor;
 			errorPixbuf = Xwt.Drawing.Image.FromResource ("gutter-error-15.png");
@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 							w += (int)cache.warningPixbuf.Width + iconTextSpacing;
 
 						requisition.Width = Math.Max (w + textBorder * 2, requisition.Width);
-						y += h + verticalTextSpace;
+						y += h + verticalTextSpace - 3;
 					}
 				}
 
@@ -147,7 +147,6 @@ namespace MonoDevelop.SourceEditor
 
 			protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
 			{
-				Theme.BorderColor = marker.TooltipColor.Color;
 				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 				g.SetSourceColor (marker.TooltipColor.Color);
 				g.Fill ();

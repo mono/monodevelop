@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.PackageManagement;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class OpenDotNetProjects
+	internal class OpenDotNetProjects
 	{
 		IPackageManagementProjectService projectService;
 		

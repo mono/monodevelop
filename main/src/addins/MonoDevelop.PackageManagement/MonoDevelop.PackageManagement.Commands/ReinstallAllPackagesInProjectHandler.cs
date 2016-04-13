@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using MonoDevelop.Projects;
@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class ReinstallAllPackagesInProjectHandler : PackagesCommandHandler
+	internal class ReinstallAllPackagesInProjectHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{

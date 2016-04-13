@@ -28,10 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using System.Threading.Tasks;
+using MonoDevelop.PackageManagement;
 using Mono.Unix;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 using NuGet;
 using Xwt;
 using Xwt.Drawing;
@@ -40,7 +42,7 @@ using PropertyChangedEventArgs = System.ComponentModel.PropertyChangedEventArgs;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class AddPackagesDialog
+	internal partial class AddPackagesDialog
 	{
 		IBackgroundPackageActionRunner backgroundActionRunner;
 		IRecentPackageRepository recentPackageRepository;
@@ -60,6 +62,7 @@ namespace MonoDevelop.PackageManagement
 			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
 		ImageLoader imageLoader = new ImageLoader ();
 		bool loadingMessageVisible;
+		const string IncludePrereleaseUserPreferenceName = "NuGet.AddPackagesDialog.IncludePrerelease";
 
 		public AddPackagesDialog (ManagePackagesViewModel parentViewModel, string initialSearch = null)
 			: this (
@@ -108,6 +111,9 @@ namespace MonoDevelop.PackageManagement
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
 			parentViewModel.Dispose ();
 			DisposeExistingTimer ();
+			packageStore.Clear ();
+			viewModel = null;
+			parentViewModel = null;
 			base.Dispose (disposing);
 		}
 
@@ -187,12 +193,40 @@ namespace MonoDevelop.PackageManagement
 		void ShowPrereleaseCheckBoxClicked (object sender, EventArgs e)
 		{
 			viewModel.IncludePrerelease = !viewModel.IncludePrerelease;
+
+			SaveIncludePrereleaseUserPreference ();
+		}
+
+		void SaveIncludePrereleaseUserPreference ()
+		{
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution != null) {
+				if (viewModel.IncludePrerelease) {
+					solution.UserProperties.SetValue (IncludePrereleaseUserPreferenceName, viewModel.IncludePrerelease);
+				} else {
+					solution.UserProperties.RemoveValue (IncludePrereleaseUserPreferenceName);
+				}
+				solution.SaveUserProperties ();
+			}
+		}
+
+		bool GetIncludePrereleaseUserPreference ()
+		{
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution != null) {
+				return solution.UserProperties.GetValue (IncludePrereleaseUserPreferenceName, false);
+			}
+
+			return false;
 		}
 
 		void LoadViewModel (string initialSearch)
 		{
 			viewModel.ClearPackagesOnPaging = false;
 			viewModel.SearchTerms = initialSearch;
+
+			viewModel.IncludePrerelease = GetIncludePrereleaseUserPreference ();
+			showPrereleaseCheckBox.Active = viewModel.IncludePrerelease;
 
 			ClearSelectedPackageInformation ();
 			PopulatePackageSources ();
@@ -416,7 +450,7 @@ namespace MonoDevelop.PackageManagement
 				// Workaround: Image loading is incorrectly being done on GUI thread
 				// since the wrong synchronization context seems to be used. So
 				// here we switch to a background thread and then back to the GUI thread.
-				DispatchService.BackgroundDispatch (() => LoadImage (packageViewModel.IconUrl, row));
+				Task.Run (() => LoadImage (packageViewModel.IconUrl, row));
 			}
 		}
 
@@ -424,7 +458,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			// Put it back on the GUI thread so the correct synchronization context
 			// is used. The image loading will be done on a background thread.
-			DispatchService.GuiDispatch (() => imageLoader.LoadFrom (iconUrl, row));
+			Runtime.RunInMainThread (() => imageLoader.LoadFrom (iconUrl, row));
 		}
 
 		bool IsOddRow (int row)

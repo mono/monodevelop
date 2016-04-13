@@ -32,9 +32,9 @@ using System.Linq;
 
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ISolutionPackageRepository
+	internal interface ISolutionPackageRepository
 	{
 		string GetInstallPath(IPackage package);
 		IEnumerable<IPackage> GetPackagesByDependencyOrder();

@@ -33,7 +33,7 @@ using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class MergeDialog : Dialog
+	partial class MergeDialog : Gtk.Dialog
 	{
 		readonly TreeStore store;
 		readonly GitRepository repo;

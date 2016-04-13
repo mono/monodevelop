@@ -27,12 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class CheckForUpdatesTask : IDisposable
+	internal class CheckForUpdatesTask : IDisposable
 	{
 		UpdatedPackagesInSolution updatedPackagesInSolution;
 		List<IPackageManagementProject> projects;
@@ -61,15 +61,18 @@ namespace MonoDevelop.PackageManagement
 					projectsWithUpdatedPackages.Add (updatedPackages);
 				}
 			}
+
+			projects.Clear ();
+
+			if (disposed) {
+				projectsWithUpdatedPackages.Clear ();
+			}
 		}
 
 		public void CheckForUpdatesCompleted ()
 		{
-			updatedPackagesInSolution.CheckForUpdatesCompleted (this);
-		}
-
-		public IEnumerable<UpdatedPackagesInProject> ProjectsWithUpdatedPackages {
-			get { return projectsWithUpdatedPackages; }
+			updatedPackagesInSolution.CheckForUpdatesCompleted (projectsWithUpdatedPackages);
+			projectsWithUpdatedPackages.Clear ();
 		}
 
 		public void Dispose ()

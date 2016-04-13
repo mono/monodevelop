@@ -32,9 +32,9 @@ using System.Threading.Tasks;
 
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementTaskFactory : ITaskFactory
+	internal class PackageManagementTaskFactory : ITaskFactory
 	{
 		public ITask<TResult> CreateTask<TResult>(
 			Func<TResult> function,

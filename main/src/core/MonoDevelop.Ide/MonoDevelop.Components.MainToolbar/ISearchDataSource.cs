@@ -26,8 +26,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -39,10 +39,12 @@ namespace MonoDevelop.Components.MainToolbar
 		Xwt.Drawing.Image GetIcon (int item);
 		string GetMarkup (int item, bool isSelected);
 		string GetDescriptionMarkup (int item, bool isSelected);
-		TooltipInformation GetTooltip (int item);
+		Task<TooltipInformation> GetTooltip (CancellationToken token, int item);
 		double GetWeight (int item);
 
-		DomRegion GetRegion (int item);
+		ISegment GetRegion (int item);
+		string GetFileName (int item);
+
 		bool CanActivate (int item);
 		void Activate (int item);
 	}

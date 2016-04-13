@@ -27,12 +27,12 @@
 using System;
 using System.IO;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class OpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
+	internal class OpenPackageReadMeMonitor : IOpenPackageReadMeMonitor
 	{
 		IPackageManagementProject project;
 		IPackageManagementFileService fileService;

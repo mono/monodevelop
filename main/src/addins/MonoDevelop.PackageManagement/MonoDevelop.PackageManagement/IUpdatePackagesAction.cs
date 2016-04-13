@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IUpdatePackagesAction : IPackageAction, IUpdatePackageSettings
+	internal interface IUpdatePackagesAction : IPackageAction, IUpdatePackageSettings
 	{
 		IEnumerable<PackageOperation> Operations { get; }
 		ILogger Logger { get; set; }

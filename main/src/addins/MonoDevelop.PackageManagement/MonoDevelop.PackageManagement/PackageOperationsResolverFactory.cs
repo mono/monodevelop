@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageOperationsResolverFactory : IPackageOperationResolverFactory
+	internal class PackageOperationsResolverFactory : IPackageOperationResolverFactory
 	{
 		public IPackageOperationResolver CreateInstallPackageOperationResolver(
 			IPackageRepository localRepository,

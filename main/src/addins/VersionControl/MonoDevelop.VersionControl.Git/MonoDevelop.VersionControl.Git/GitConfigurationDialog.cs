@@ -35,7 +35,7 @@ using System.ComponentModel;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class GitConfigurationDialog : Dialog
+	partial class GitConfigurationDialog : Gtk.Dialog
 	{
 		readonly GitRepository repo;
 		readonly ListStore storeBranches;
@@ -85,8 +85,8 @@ namespace MonoDevelop.VersionControl.Git
 			SemanticModelAttribute remotesModelAttr = new SemanticModelAttribute ("storeRemotes__Remote", "storeRemotes__Name", "storeRemotes__Url", "storeRemotes__BranchName", "storeRemotes__FullName");
 			TypeDescriptor.AddAttributes (storeRemotes, remotesModelAttr);
 
-			treeRemotes.AppendColumn ("Remote Source / Branch", new CellRendererText (), "markup", 1);
-			treeRemotes.AppendColumn ("Url", new CellRendererText (), "text", 2);
+			treeRemotes.AppendColumn (GettextCatalog.GetString ("Remote Source / Branch"), new CellRendererText (), "markup", 1);
+			treeRemotes.AppendColumn (GettextCatalog.GetString ("Url"), new CellRendererText (), "text", 2);
 
 			treeRemotes.Selection.Changed += delegate {
 				TreeIter it;
@@ -221,14 +221,14 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		protected virtual void OnButtonSetDefaultBranchClicked (object sender, EventArgs e)
+		protected virtual async void OnButtonSetDefaultBranchClicked (object sender, EventArgs e)
 		{
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			var b = (Branch) storeBranches.GetValue (it, 0);
-			GitService.SwitchToBranch (repo, b.FriendlyName);
-			FillBranches ();
+			if (await GitService.SwitchToBranch (repo, b.FriendlyName))
+				FillBranches ();
 		}
 
 		protected virtual void OnButtonAddRemoteClicked (object sender, EventArgs e)
@@ -369,7 +369,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (remoteName == null)
 				return;
 
-			repo.Fetch (VersionControlService.GetProgressMonitor ("Fetching remote..."), remoteName);
+			repo.Fetch (VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote...")), remoteName);
 			FillRemotes ();
 		}
 	}

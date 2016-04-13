@@ -1425,7 +1425,7 @@
               <widget class="Gtk.Label" id="labelTop">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Credentials required for the repository: {0}</property>
+                <property name="LabelProp" translatable="yes">Credentials required for the repository:</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
@@ -1435,12 +1435,25 @@
               </packing>
             </child>
             <child>
-              <placeholder />
+              <widget class="Gtk.Label" id="labelTop1">
+                <property name="MemberName" />
+                <property name="Xalign">0</property>
+                <property name="LabelProp" translatable="yes">&lt;b&gt;{0}&lt;/b&gt;</property>
+                <property name="UseMarkup">True</property>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>

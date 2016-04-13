@@ -29,21 +29,23 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public enum ShowWhitespaces {
+	public enum ShowWhitespaces
+	{
 		Never,
 		Selection,
 		Always
 	}
 
 	[Flags]
-	public enum IncludeWhitespaces {
-		None        = 0,
-		Space       = 1,
-		Tab         = 2,
+	public enum IncludeWhitespaces
+	{
+		None = 0,
+		Space = 1,
+		Tab = 2,
 		LineEndings = 4,
-		All         = Space | Tab | LineEndings
+		All = Space | Tab | LineEndings
 	}
-	
+
 	public interface ITextEditorOptions : IDisposable
 	{
 		double Zoom { get; set; }
@@ -53,11 +55,11 @@ namespace Mono.TextEditor
 		void ZoomIn ();
 		void ZoomOut ();
 		void ZoomReset ();
-		
+
 		string IndentationString { get; }
-		
+
 		IWordFindStrategy WordFindStrategy { get; set; }
-		
+
 		bool AllowTabsAfterNonTabs { get; set; }
 		bool HighlightMatchingBracket { get; set; }
 		bool TabsToSpaces { get; set; }
@@ -80,21 +82,23 @@ namespace Mono.TextEditor
 		bool DrawIndentationMarkers { get; set; }
 
 		bool WrapLines { get; set; }
-		string FontName { get;  set; }
-		Pango.FontDescription Font { get;  }
+		string FontName { get; set; }
+		Pango.FontDescription Font { get; }
 
 		string GutterFontName { get; set; }
 		Pango.FontDescription GutterFont { get; }
-		
-		string ColorScheme { get; set;  }
+
+		string ColorScheme { get; set; }
 		string DefaultEolMarker { get; set; }
 
 		ShowWhitespaces ShowWhitespaces { get; set; }
 		IncludeWhitespaces IncludeWhitespaces { get; set; }
 
 		bool GenerateFormattingUndoStep { get; set; }
+		event EventHandler ZoomChanged;
+
 		ColorScheme GetColorStyle ();
-		
+
 		event EventHandler Changed;
 	}
 }

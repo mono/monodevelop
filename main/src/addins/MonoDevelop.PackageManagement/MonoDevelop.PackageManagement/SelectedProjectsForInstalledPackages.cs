@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class SelectedProjectsForInstalledPackages : PackageManagementSelectedProjects
+	internal class SelectedProjectsForInstalledPackages : PackageManagementSelectedProjects
 	{
 		public SelectedProjectsForInstalledPackages(IPackageManagementSolution solution)
 			: base(solution)

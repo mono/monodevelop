@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeUpdatedPackagesInSolution : IUpdatedPackagesInSolution
+	class FakeUpdatedPackagesInSolution : IUpdatedPackagesInSolution
 	{
 		public List<UpdatedPackagesInProject> ProjectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
 

@@ -28,38 +28,23 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Components.MainToolbar
 {
-	public abstract class SearchCategory 
+	public abstract class SearchCategory : IComparable<SearchCategory>
 	{
+		protected const int FirstCategory = -1000;
+		protected int sortOrder = 0;
+
 		internal class DataItemComparer : IComparer<SearchResult>
 		{
-			CancellationToken Token {
-				get; set;
-			}
-
-			public DataItemComparer ()
-			{
-			}
-
-			public DataItemComparer (CancellationToken token)
-			{
-				Token = token;
-			}
-
-			static uint compareTick;
 			public int Compare (SearchResult o1, SearchResult o2)
 			{
-				if (unchecked(compareTick++) % 100 == 0)
-					Token.ThrowIfCancellationRequested ();
-
 				var r = o2.Rank.CompareTo (o1.Rank);
 				if (r == 0)
 					r = o1.SearchResultType.CompareTo (o2.SearchResultType);
 				if (r == 0)
-					return String.CompareOrdinal (o1.MatchedString, o2.MatchedString);
+					return string.CompareOrdinal (o1.MatchedString, o2.MatchedString);
 				return r;
 			}
 		}
@@ -81,6 +66,9 @@ namespace MonoDevelop.Components.MainToolbar
 			set;
 		}
 
+		public abstract string[] Tags {
+			get;
+		}
 
 		public SearchCategory (string name)
 		{
@@ -89,6 +77,16 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public abstract bool IsValidTag (string tag);
 
-		public abstract Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token);
+		public abstract Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token);
+
+		public virtual void Initialize (PopoverWindow popupWindow)
+		{
+			
+		}
+
+		public int CompareTo (SearchCategory other)
+		{
+			return sortOrder.CompareTo (other.sortOrder);
+		}
 	}
 }

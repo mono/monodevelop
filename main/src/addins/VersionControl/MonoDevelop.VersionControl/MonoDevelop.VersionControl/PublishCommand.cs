@@ -10,7 +10,7 @@ namespace MonoDevelop.VersionControl
 {
 	internal class PublishCommand 
 	{
-		public static bool Publish (IWorkspaceObject entry, FilePath localPath, bool test)
+		public static bool Publish (WorkspaceObject entry, FilePath localPath, bool test)
 		{
 			if (test)
 				return VersionControlService.CheckVersionControlInstalled () && VersionControlService.GetRepository (entry) == null;
@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl
 				dlg.Message = GettextCatalog.GetString ("Initial check-in of module {0}", moduleName);
 				do {
 					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Repository != null) {
-						AlertButton publishButton = new AlertButton ("_Publish");					
+						AlertButton publishButton = new AlertButton (GettextCatalog.GetString ("_Publish"));
 						if (MessageService.AskQuestion (GettextCatalog.GetString ("Are you sure you want to publish the project?"), GettextCatalog.GetString ("The project will be published to the repository '{0}', module '{1}'.", dlg.Repository.Name, dlg.ModuleName), AlertButton.Cancel, publishButton) == publishButton) {
 							PublishWorker w = new PublishWorker (dlg.Repository, dlg.ModuleName, localPath, files.ToArray (), dlg.Message);
 							w.Start ();
@@ -53,7 +53,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		static void GetFiles (List<FilePath> files, IWorkspaceObject entry)
+		static void GetFiles (List<FilePath> files, WorkspaceObject entry)
 		{
 			// Ensure that we strip out all linked files from outside of the solution/projects path.
 			if (entry is IWorkspaceFileObject)
@@ -68,43 +68,44 @@ namespace MonoDevelop.VersionControl
 				return true;
 			return false;
 		}
-	}
-	
-	internal class PublishWorker : Task {
-		Repository vc;
-		FilePath path;
-		string moduleName;
-		FilePath[] files;
-		string message;
 
-		public PublishWorker (Repository vc, string moduleName, FilePath localPath, FilePath[] files, string message) 
+		class PublishWorker : VersionControlTask
 		{
-			this.vc = vc;
-			this.path = localPath;
-			this.moduleName = moduleName;
-			this.files = files;
-			this.message = message;
-			OperationType = VersionControlOperationType.Push;
-		}
+			Repository vc;
+			FilePath path;
+			string moduleName;
+			FilePath [] files;
+			string message;
 
-		protected override string GetDescription ()
-		{
-			return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
-		}
-		
-		protected override void Run ()
-		{
-			try {
-				vc.Publish (moduleName, path, files, message, Monitor);
-			} catch (VersionControlException e) {
-				Monitor.ReportError (e.Message, null);
-				return;
+			public PublishWorker (Repository vc, string moduleName, FilePath localPath, FilePath [] files, string message)
+			{
+				this.vc = vc;
+				this.path = localPath;
+				this.moduleName = moduleName;
+				this.files = files;
+				this.message = message;
+				OperationType = VersionControlOperationType.Push;
 			}
 
-			Gtk.Application.Invoke (delegate {
-				VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
-			});
-			Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
+			protected override string GetDescription ()
+			{
+				return GettextCatalog.GetString ("Publishing \"{0}\" Project...", moduleName);
+			}
+
+			protected override void Run ()
+			{
+				try {
+					vc.Publish (moduleName, path, files, message, Monitor);
+				} catch (VersionControlException e) {
+					Monitor.ReportError (e.Message, null);
+					return;
+				}
+
+				Gtk.Application.Invoke (delegate {
+					VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (vc, path, true));
+				});
+				Monitor.ReportSuccess (GettextCatalog.GetString ("Publish operation completed."));
+			}
 		}
 	}
 }

@@ -34,9 +34,9 @@ using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementOptions
+	internal class PackageManagementOptions
 	{
 		const string PackageDirectoryPropertyName = "PackagesDirectory";
 		const string RecentPackagesPropertyName = "RecentPackages";

@@ -24,143 +24,187 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Gtk;
+using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
-using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Text;
 using System.Linq;
+using MonoDevelop.Core;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Simplification;
+using ICSharpCode.NRefactory6.CSharp;
+using Gtk;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
 	class CreateConstructorGenerator : ICodeGenerator
 	{
-		public string Icon {
-			get {
+		public string Icon
+		{
+			get
+			{
 				return "md-newmethod";
 			}
 		}
-		
-		public string Text {
-			get {
+
+		public string Text
+		{
+			get
+			{
 				return GettextCatalog.GetString ("Constructor");
 			}
 		}
-		
-		public string GenerateDescription {
-			get {
+
+		public string GenerateDescription
+		{
+			get
+			{
 				return GettextCatalog.GetString ("Select members to be initialized by the constructor.");
 			}
 		}
-		
+
 		public bool IsValid (CodeGenerationOptions options)
 		{
 			var createConstructor = new CreateConstructor (options);
 			return createConstructor.IsValid ();
 		}
-		
+
 		public IGenerateAction InitalizeSelection (CodeGenerationOptions options, TreeView treeView)
 		{
 			var createConstructor = new CreateConstructor (options);
 			createConstructor.Initialize (treeView);
 			return createConstructor;
 		}
-		
+
+		internal static TypeSyntax ConvertType (ITypeSymbol symbol)
+		{
+			// TODO: There needs to be a better way doing that.
+			return SyntaxFactory.ParseTypeName (symbol.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat));
+		}
+
 		class CreateConstructor : AbstractGenerateAction
 		{
 			public CreateConstructor (CodeGenerationOptions options) : base (options)
 			{
 			}
-			
+
 			protected override IEnumerable<object> GetValidMembers ()
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 
-				var bt = Options.EnclosingType.DirectBaseTypes.FirstOrDefault (t => t.Kind != TypeKind.Interface);
+				var bt = Options.EnclosingType.BaseType;
 
 				if (bt != null) {
-					var ctors = bt.GetConstructors (m => !m.IsSynthetic).ToList ();
-					foreach (var ctor in ctors) {
-						if (ctor.Parameters.Count > 0 || ctors.Count > 1) {
+					var ctors = bt.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Constructor && !m.IsImplicitlyDeclared).ToList ();
+					foreach (IMethodSymbol ctor in ctors) {
+						if (ctor.Parameters.Length > 0 || ctors.Count > 1) {
 							yield return ctor;
 						}
-					} 
+					}
 				}
 
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSynthetic)
+				foreach (IFieldSymbol field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
+					if (field.IsImplicitlyDeclared)
 						continue;
 					yield return field;
 				}
 
-				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSynthetic)
+				foreach (IPropertySymbol property in Options.EnclosingType.GetMembers ().OfType<IPropertySymbol> ()) {
+					if (property.IsImplicitlyDeclared)
 						continue;
-					if (!property.CanSet)
+					if (property.SetMethod == null)
 						continue;
 					yield return property;
 				}
 			}
-			
-			static string CreateParameterName (IMember member)
+
+			static string CreateParameterName (ISymbol member)
 			{
 				if (char.IsUpper (member.Name[0]))
 					return char.ToLower (member.Name[0]) + member.Name.Substring (1);
 				return member.Name;
 			}
-			
+
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
 				bool gotConstructorOverrides = false;
-				foreach (IMethod m in includedMembers.OfType<IMethod> ().Where (m => m.SymbolKind == SymbolKind.Constructor)) {
+				foreach (IMethodSymbol m in includedMembers.OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Constructor)) {
 					gotConstructorOverrides = true;
-					var init = new ConstructorInitializer {
-						ConstructorInitializerType = ConstructorInitializerType.Base
-					};
-
-					var overridenConstructor = new ConstructorDeclaration {
-						Name = Options.EnclosingType.Name,
-						Modifiers = Modifiers.Public,
-						Body = new BlockStatement (),
-					};
-
-					if (m.Parameters.Count > 0)
-						overridenConstructor.Initializer = init;
-
+					var parameters = new List<ParameterSyntax> ();
+					var initArgs = new List<ArgumentSyntax> ();
+					var statements = new List<StatementSyntax> ();
 					foreach (var par in m.Parameters) {
-						overridenConstructor.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (par.Type), par.Name));
-						init.Arguments.Add (new IdentifierExpression(par.Name)); 
+						parameters.Add (SyntaxFactory.Parameter (SyntaxFactory.Identifier (par.Name)).WithType (ConvertType (par.Type)));
+						initArgs.Add (SyntaxFactory.Argument (SyntaxFactory.ParseExpression (par.Name)));
 					}
-					foreach (var member in includedMembers.OfType<IMember> ()) {
-						if (member.SymbolKind == SymbolKind.Constructor)
+
+					foreach (ISymbol member in includedMembers) {
+						if (member.Kind == SymbolKind.Method)
 							continue;
-						overridenConstructor.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (member.ReturnType), CreateParameterName (member)));
+						var paramName = CreateParameterName (member);
+						parameters.Add (SyntaxFactory.Parameter (SyntaxFactory.Identifier (paramName)).WithType (ConvertType (member.GetReturnType ())));
 
-						var memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
-						var assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
-						overridenConstructor.Body.Statements.Add (new ExpressionStatement (assign));
+						statements.Add (
+							SyntaxFactory.ExpressionStatement (
+								SyntaxFactory.AssignmentExpression (
+									SyntaxKind.SimpleAssignmentExpression,
+									SyntaxFactory.MemberAccessExpression (
+										SyntaxKind.SimpleMemberAccessExpression,
+										SyntaxFactory.ThisExpression (),
+										SyntaxFactory.IdentifierName (member.Name)
+									),
+									SyntaxFactory.IdentifierName (paramName)
+								)
+							)
+						);
 					}
 
-					yield return overridenConstructor.ToString (Options.FormattingOptions);
+					var node = SyntaxFactory.ConstructorDeclaration (
+					SyntaxFactory.List<AttributeListSyntax> (),
+					SyntaxFactory.TokenList (SyntaxFactory.Token (SyntaxKind.PublicKeyword)),
+					SyntaxFactory.Identifier (Options.EnclosingType.Name),
+					SyntaxFactory.ParameterList (SyntaxFactory.SeparatedList<ParameterSyntax> (parameters)),
+						initArgs.Count > 0 ? SyntaxFactory.ConstructorInitializer (SyntaxKind.BaseConstructorInitializer, SyntaxFactory.ArgumentList (SyntaxFactory.SeparatedList<ArgumentSyntax> (initArgs))) : null,
+					SyntaxFactory.Block (statements.ToArray ())
+				);
+					yield return Options.OutputNode (node).Result;
 				}
 				if (gotConstructorOverrides)
 					yield break;
-				var constructorDeclaration = new ConstructorDeclaration {
-					Name = Options.EnclosingType.Name,
-					Modifiers = Modifiers.Public,
-					Body = new BlockStatement ()
-				};
 
-				foreach (IMember member in includedMembers) {
-					constructorDeclaration.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (member.ReturnType), CreateParameterName (member)));
+				var parameters2 = new List<ParameterSyntax> ();
+				var statements2 = new List<StatementSyntax> ();
+				foreach (ISymbol member in includedMembers) {
+					var paramName = CreateParameterName (member);
+					parameters2.Add (SyntaxFactory.Parameter (SyntaxFactory.Identifier (paramName)).WithType (ConvertType (member.GetReturnType ())));
 
-					var memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
-					var assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
-					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
+					statements2.Add (
+						SyntaxFactory.ExpressionStatement (
+							SyntaxFactory.AssignmentExpression (
+								SyntaxKind.SimpleAssignmentExpression,
+								SyntaxFactory.MemberAccessExpression (
+									SyntaxKind.SimpleMemberAccessExpression,
+									SyntaxFactory.ThisExpression (),
+									SyntaxFactory.IdentifierName (member.Name)
+								),
+								SyntaxFactory.IdentifierName (paramName)
+							)
+						)
+					);
 				}
 				
-				yield return constructorDeclaration.ToString (Options.FormattingOptions);
+				var node2 = SyntaxFactory.ConstructorDeclaration (
+					SyntaxFactory.List<AttributeListSyntax> (),
+					SyntaxFactory.TokenList (SyntaxFactory.Token (SyntaxKind.PublicKeyword)),
+					SyntaxFactory.Identifier (Options.EnclosingType.Name),
+					SyntaxFactory.ParameterList (SyntaxFactory.SeparatedList<ParameterSyntax> (parameters2)),
+					null,
+					SyntaxFactory.Block (statements2.ToArray ())
+				);
+				yield return Options.OutputNode (node2).Result;
 			}
 		}
 	}

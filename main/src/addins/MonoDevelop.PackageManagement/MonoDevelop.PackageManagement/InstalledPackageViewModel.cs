@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class InstalledPackageViewModel : PackageViewModel
+	internal class InstalledPackageViewModel : PackageViewModel
 	{
 		public InstalledPackageViewModel(
 			IPackageViewModelParent parent,

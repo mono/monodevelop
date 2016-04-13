@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Xwt;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.CodeCompletion;
@@ -32,7 +33,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public class CompletionCharactersPanel : VBox, IOptionsPanel
+	class CompletionCharactersPanel : VBox, IOptionsPanel
 	{
 		ListView list;
 		ListStore store;
@@ -87,7 +88,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 		}
 
-		Gtk.Widget IOptionsPanel.CreatePanelWidget ()
+		Control IOptionsPanel.CreatePanelWidget ()
 		{
 			return (Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (this);
 		}

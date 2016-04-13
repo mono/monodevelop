@@ -39,13 +39,6 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 {
 	public class WindowsFolderNodeBuilder: TypeNodeBuilder
 	{
-		EventHandler updateDelegate;
-		
-		public WindowsFolderNodeBuilder ()
-		{
-			updateDelegate = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnUpdateFiles));
-		}
-		
 		public override Type NodeDataType {
 			get { return typeof(WindowsFolder); }
 		}
@@ -82,10 +75,8 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 			GtkDesignInfo info = GtkDesignInfo.FromProject (p);
 			if (!info.GuiBuilderProject.HasError) {
 				builder.AddChild (new StockIconsNode (p));
-				foreach (GuiBuilderWindow fi in info.GuiBuilderProject.Windows)
-					builder.AddChild (fi);
-				foreach (Stetic.ActionGroupInfo group in info.GuiBuilderProject.SteticProject.ActionGroups)
-					builder.AddChild (group);
+				builder.AddChildren (info.GuiBuilderProject.Windows);
+				builder.AddChildren (info.GuiBuilderProject.SteticProject.ActionGroups);
 			}
 		}
 
@@ -105,13 +96,13 @@ namespace MonoDevelop.GtkCore.NodeBuilders
 		public override void OnNodeAdded (object dataObject)
 		{
 			WindowsFolder w = (WindowsFolder) dataObject;
-			w.Changed += updateDelegate;
+			w.Changed += OnUpdateFiles;
 		}
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
 			WindowsFolder w = (WindowsFolder)dataObject;
-			w.Changed -= updateDelegate;
+			w.Changed -= OnUpdateFiles;
 			w.Dispose ();
 		}
 		

@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeSolutionPackageRepositoryFactory : ISolutionPackageRepositoryFactory
+	class FakeSolutionPackageRepositoryFactory : ISolutionPackageRepositoryFactory
 	{
 		public FakeSolutionPackageRepository FakeSolutionPackageRepository = new FakeSolutionPackageRepository ();
 		public ISolution SolutionPassedToCreateSolutionPackageRepository;

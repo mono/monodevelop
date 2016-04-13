@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -38,12 +37,14 @@ using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.WebForms
 {
 	public class WebFormsParser : TypeSystemParser
 	{
-		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
+		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
 			var info = new WebFormsPageInfo ();
 			var errors = new List<Error> ();
@@ -54,9 +55,9 @@ namespace MonoDevelop.AspNet.WebForms
 			);
 			
 			try {
-				parser.Parse (tr);
+				parser.Parse (parseOptions.Content.CreateReader ());
 			} catch (Exception ex) {
-				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (fileName ?? "") + "'", ex);
+				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (parseOptions.FileName ?? "") + "'", ex);
 				errors.Add (new Error (ErrorType.Error, "Unhandled error parsing ASP.NET document: " + ex.Message));
 			}
 
@@ -67,20 +68,20 @@ namespace MonoDevelop.AspNet.WebForms
 			XDocument xDoc = parser.Nodes.GetRoot ();
 			info.Populate (xDoc, errors);
 			
-			var type = AspNetAppProject.DetermineWebSubtype (fileName);
+			var type = AspNetAppProjectFlavor.DetermineWebSubtype (parseOptions.FileName);
 			if (type != info.Subtype) {
 				if (info.Subtype == WebSubtype.None) {
-					errors.Add (new Error (ErrorType.Error, "File directive is missing", 1, 1));
+					errors.Add (new Error (ErrorType.Error, "File directive is missing", new DocumentLocation (1, 1)));
 				} else {
 					type = info.Subtype;
-					errors.Add (new Error (ErrorType.Warning, "File directive does not match page extension", 1, 1));
+					errors.Add (new Error (ErrorType.Warning, "File directive does not match page extension", new DocumentLocation (1, 1)));
 				}
 			}
 			
-			var result = new WebFormsParsedDocument (fileName, type, info, xDoc);
-			result.Add (errors);
+			var result = new WebFormsParsedDocument (parseOptions.FileName, type, info, xDoc);
+			result.AddRange (errors);
 			
-			return result;
+			return System.Threading.Tasks.Task.FromResult((ParsedDocument)result);
 		}
 	}
 }

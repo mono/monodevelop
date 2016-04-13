@@ -26,78 +26,218 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.FindInFiles;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
 using System.Threading;
 using MonoDevelop.SourceEditor;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide;
+using MonoDevelop.Refactoring;
+using Microsoft.CodeAnalysis.FindSymbols;
+using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
+using System.Collections.Immutable;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighlighters;
+using Microsoft.CodeAnalysis.Editor.Implementation.Highlighting;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	public class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
+	class UsageData
+	{
+		public RefactoringSymbolInfo SymbolInfo;
+		public Document Document;
+		public int Offset;
+
+		public ISymbol Symbol {
+			get { return SymbolInfo != null ? SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol : null; }
+		}
+	}
+	
+	class HighlightUsagesExtension : AbstractUsagesExtension<UsageData>
 	{
 		CSharpSyntaxMode syntaxMode;
+		static IHighlighter [] highlighters;
 
-		public override void Initialize ()
+		static HighlightUsagesExtension ()
+		{
+			highlighters = typeof (HighlightUsagesExtension).Assembly
+				.GetTypes ()
+				.Where (t => !t.IsAbstract && typeof (IHighlighter).IsAssignableFrom (t))
+				.Select (t => (IHighlighter)Activator.CreateInstance (t)).ToArray ();
+		}
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-
-			TextEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
-			syntaxMode = new CSharpSyntaxMode (Document);
-			TextEditorData.Document.SyntaxMode = syntaxMode;
+			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
+			syntaxMode = new CSharpSyntaxMode (Editor, DocumentContext);
+			Editor.SemanticHighlighting = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				TextEditorData.Document.SyntaxMode = null;
+				Editor.SemanticHighlighting = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
 			base.Dispose ();
 		}
-
-		protected override bool TryResolve (out ResolveResult resolveResult)
+		
+		protected async override Task<UsageData> ResolveAsync (CancellationToken token)
 		{
-			AstNode node;
-			resolveResult = null;
-			if (!Document.TryResolveAt (Document.Editor.Caret.Location, out resolveResult, out node)) {
-				return false;
-			}
-			if (node is PrimitiveType) {
-				return false;
-			}
-			return true;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return new UsageData ();
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return new UsageData ();
+
+			var symbolInfo = await RefactoringSymbolInfo.GetSymbolInfoAsync (doc, doc.Editor, token);
+			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
+				return new UsageData {
+					Document = analysisDocument,
+					Offset = doc.Editor.CaretOffset
+				};
+			
+			if (symbolInfo.Symbol != null && !symbolInfo.Node.IsKind (SyntaxKind.IdentifierName) && !symbolInfo.Node.IsKind (SyntaxKind.GenericName)) 
+				return new UsageData ();
+
+			return new UsageData {
+				Document = analysisDocument,
+				SymbolInfo = symbolInfo,
+				Offset = doc.Editor.CaretOffset
+			};
 		}
 
-
-		protected override IEnumerable<MemberReference> GetReferences (ResolveResult resolveResult, CancellationToken token)
+		protected override async Task<IEnumerable<MemberReference>> GetReferencesAsync (UsageData resolveResult, CancellationToken token)
 		{
-			var finder = new MonoDevelop.CSharp.Refactoring.CSharpReferenceFinder ();
-			if (resolveResult is MemberResolveResult) {
-				finder.SetSearchedMembers (new [] { ((MemberResolveResult)resolveResult).Member });
-			} else if (resolveResult is TypeResolveResult) {
-				finder.SetSearchedMembers (new [] { resolveResult.Type });
-			} else if (resolveResult is MethodGroupResolveResult) { 
-				finder.SetSearchedMembers (((MethodGroupResolveResult)resolveResult).Methods);
-			} else if (resolveResult is NamespaceResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamespaceResolveResult)resolveResult).Namespace });
-			} else if (resolveResult is LocalResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((LocalResolveResult)resolveResult).Variable });
-			} else if (resolveResult is NamedArgumentResolveResult) { 
-				finder.SetSearchedMembers (new [] { ((NamedArgumentResolveResult)resolveResult).Parameter });
-			} else {
-				return EmptyList;
+			var result = new List<MemberReference> ();
+			if (resolveResult.Symbol == null) {
+				if (resolveResult.Document == null)
+					return result;
+				var root = await resolveResult.Document.GetSyntaxRootAsync (token).ConfigureAwait (false);
+				var doc2 = resolveResult.Document;
+
+				foreach (var highlighter in highlighters) {
+					try {
+						foreach (var span in highlighter.GetHighlights (root, resolveResult.Offset, token)) {
+							result.Add (new MemberReference (span, doc2.FilePath, span.Start, span.Length) {
+								ReferenceUsageType = ReferenceUsageType.Keyword
+							});
+						}
+					} catch (Exception e) {
+						LoggingService.LogError ("Highlighter " + highlighter + " threw exception.", e);
+					}
+				}
+				return result;
 			}
 
-			try {
-				return new List<MemberReference> (finder.FindInDocument (Document, token));
-			} catch (Exception e) {
-				LoggingService.LogError ("Error in highlight usages extension.", e);
+			var doc = resolveResult.Document;
+			var documents = ImmutableHashSet.Create (doc); 
+			var symbol = resolveResult.Symbol;
+			foreach (var loc in symbol.Locations) {
+				if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
+					result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
+						ReferenceUsageType = ReferenceUsageType.Declariton	
+					});
 			}
-			return EmptyList;
+
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, token)) {
+				foreach (var loc in mref.Locations) {
+					Microsoft.CodeAnalysis.Text.TextSpan span = loc.Location.SourceSpan;
+					var root = loc.Location.SourceTree.GetRoot ();
+					var node = root.FindNode (loc.Location.SourceSpan);
+					var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+					if (!trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+						span = node.Span;
+					}
+
+
+
+
+
+					if (span.Start != loc.Location.SourceSpan.Start) {
+						span = loc.Location.SourceSpan;
+					}
+					result.Add (new MemberReference (symbol, doc.FilePath, span.Start, span.Length) {
+						ReferenceUsageType = GetUsage (node)
+					});
+				}
+			}
+
+			foreach (var loc in await GetAdditionalReferencesAsync (doc, symbol, token)) {
+				result.Add (new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
+					ReferenceUsageType = ReferenceUsageType.Write
+				});
+			}
+
+			return result;
 		}
+
+		async Task<IEnumerable<Location>> GetAdditionalReferencesAsync (Document document, ISymbol symbol, CancellationToken cancellationToken)
+		{
+			// The FindRefs engine won't find references through 'var' for performance reasons.
+			// Also, they are not needed for things like rename/sig change, and the normal find refs
+			// feature.  However, we would lke the results to be highlighted to get a good experience
+			// while editing (especially since highlighting may have been invoked off of 'var' in
+			// the first place).
+			//
+			// So we look for the references through 'var' directly in this file and add them to the
+			// results found by the engine.
+			List<Location> results = null;
+
+			if (symbol is INamedTypeSymbol && symbol.Name != "var") {
+				var originalSymbol = symbol.OriginalDefinition;
+				var root = await document.GetSyntaxRootAsync (cancellationToken).ConfigureAwait (false);
+
+				var descendents = root.DescendantNodes ();
+				var semanticModel = default (SemanticModel);
+
+				foreach (var type in descendents.OfType<IdentifierNameSyntax> ()) {
+					cancellationToken.ThrowIfCancellationRequested ();
+
+					if (type.IsVar) {
+						if (semanticModel == null) {
+							semanticModel = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+						}
+
+						var boundSymbol = semanticModel.GetSymbolInfo (type, cancellationToken).Symbol;
+						boundSymbol = boundSymbol == null ? null : boundSymbol.OriginalDefinition;
+
+						if (originalSymbol.Equals (boundSymbol)) {
+							if (results == null) {
+								results = new List<Location> ();
+							}
+
+							results.Add (type.GetLocation ());
+						}
+					}
+				}
+			}
+
+			return results ?? SpecializedCollections.EmptyEnumerable<Location> ();
+		}
+
+		static ReferenceUsageType GetUsage (SyntaxNode node)
+		{
+			if (node == null)
+				return ReferenceUsageType.Read;
+			
+			var parent = node.AncestorsAndSelf ().OfType<ExpressionSyntax> ().FirstOrDefault();
+			if (parent == null)
+				return ReferenceUsageType.Read;
+			if (parent.IsOnlyWrittenTo ())
+				return ReferenceUsageType.Write;
+			if (parent.IsWrittenTo ())
+				return ReferenceUsageType.ReadWrite;
+			return ReferenceUsageType.Read;
+		}
+
 	}
 }
 

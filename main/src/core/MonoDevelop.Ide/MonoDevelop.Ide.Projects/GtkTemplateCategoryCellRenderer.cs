@@ -88,12 +88,14 @@ namespace MonoDevelop.Ide.Projects
 
 		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
-			StateType state = GetState (widget, flags);
 			int iconY = cell_area.Y + ((cell_area.Height - (int)CategoryIcon.Height) / 2) + topLevelTemplateHeadingYOffset;
 			var iconRect = new Rectangle (cell_area.X + (int)Xpad, iconY, (int)CategoryIcon.Width, (int)CategoryIcon.Height);
 
+			var img = CategoryIcon;
+			if ((flags & Gtk.CellRendererState.Selected) != 0)
+				img = img.WithStyles ("sel");
 			using (var ctx = CairoHelper.Create (window)) {
-				ctx.DrawImage (widget, CategoryIcon, iconRect.X, iconRect.Y);
+				ctx.DrawImage (widget, img, iconRect.X, iconRect.Y);
 			}
 			return iconRect;
 		}

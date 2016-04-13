@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageAction
+	internal interface IPackageAction
 	{
 		void Execute();
 		bool HasPackageScriptsToRun();

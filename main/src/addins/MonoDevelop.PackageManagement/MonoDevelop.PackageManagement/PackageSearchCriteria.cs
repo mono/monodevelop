@@ -29,7 +29,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageSearchCriteria
+	internal class PackageSearchCriteria
 	{
 		WildcardVersionSpec wildcardVersionSpec;
 

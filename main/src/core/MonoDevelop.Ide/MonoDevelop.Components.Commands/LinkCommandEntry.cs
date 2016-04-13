@@ -73,10 +73,10 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 		
-		internal protected override Gtk.MenuItem CreateMenuItem (CommandManager manager)
+		internal override Gtk.MenuItem CreateMenuItem (CommandManager manager)
 		{
 			Gtk.ImageMenuItem item = new Gtk.ImageMenuItem (text != null ? text : url);
-			item.Image = new Gtk.Image (icon, Gtk.IconSize.Menu);
+			item.Image = new ImageView (icon, Gtk.IconSize.Menu);
 			item.Activated += new EventHandler (HandleActivation);
 			item.Selected += delegate {
 				CommandInfo ci = new CommandInfo (Text);
@@ -90,7 +90,7 @@ namespace MonoDevelop.Components.Commands
 			return item;
 		}
 
-		internal protected override Gtk.ToolItem CreateToolItem (CommandManager manager)
+		internal override Gtk.ToolItem CreateToolItem (CommandManager manager)
 		{
 			Gtk.ToolButton item = new Gtk.ToolButton (text);
 			item.StockId = icon;

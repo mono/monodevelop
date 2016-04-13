@@ -25,7 +25,7 @@ namespace NuGet
 	/// <summary>
 	/// Represents a package repository that implements a dependency provider. 
 	/// </summary>
-	public class FallbackRepository : IDependencyResolver, IServiceBasedRepository, IPackageLookup, ILatestPackageLookup, IOperationAwareRepository
+	internal class FallbackRepository : IDependencyResolver, IServiceBasedRepository, IPackageLookup, ILatestPackageLookup, IOperationAwareRepository
 	{
 		private readonly IPackageRepository _primaryRepository;
 		private readonly IPackageRepository _dependencyResolver;

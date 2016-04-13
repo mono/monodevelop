@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Gtk;
@@ -53,13 +54,13 @@ namespace ILAsmBinding
 			this.project       = project;
 			this.configuration = configuration;
 			compileTargetCombo.Active          = configuration.CompileTarget == CompileTarget.Exe ? 0 : 1;
-			checkbuttonIncludeDebugInfo.Active = configuration.DebugMode;
+			checkbuttonIncludeDebugInfo.Active = configuration.DebugSymbols;
 		}
 		
 		public void Store ()
 		{
 			project.CompileTarget = compileTargetCombo.Active == 0 ? CompileTarget.Exe : CompileTarget.Library;
-			configuration.DebugMode = checkbuttonIncludeDebugInfo.Active;
+			configuration.DebugSymbols = checkbuttonIncludeDebugInfo.Active;
 		}
 	}
 	
@@ -67,7 +68,7 @@ namespace ILAsmBinding
 	{
 		CompilerParametersPanelWidget widget;
 		
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return widget = new CompilerParametersPanelWidget ();
 		}

@@ -38,14 +38,15 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.CustomTools;
 using System.Resources.Tools;
 using System.CodeDom.Compiler;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CustomTools
 {
 	public class PublicResXFileCodeGenerator : ISingleFileCustomTool
 	{
-		public IAsyncOperation Generate (IProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		public Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			return new ThreadAsyncOperation (ResXFileCodeGenerator.GenerateFile (file, result, false), result);
+			return ResXFileCodeGenerator.GenerateFile (file, result, false);
 		}
 	}
 }

@@ -25,12 +25,11 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class RestorePackagesInProjectHandler : PackagesCommandHandler
+	internal class RestorePackagesInProjectHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{
@@ -39,9 +38,11 @@ namespace MonoDevelop.PackageManagement.Commands
 				return;
 
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-			var runner = new PackageRestoreRunner ();
-			DispatchService.BackgroundDispatch (() => {
+			var runner = new PackageRestoreRunner (GetPackageManagementSolution ());
+			PackageManagementBackgroundDispatcher.Dispatch (() => {
 				runner.Run (project, progressMessage);
+				runner = null;
+				project = null;
 			});
 		}
 

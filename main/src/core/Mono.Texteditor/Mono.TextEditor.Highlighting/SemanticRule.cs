@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 		{
 			if (endOffset <= startOffset || startOffset >= doc.TextLength || inUpdate)
 				return;
-			if (startChunk.Style != "Comment(Line)" && startChunk.Style != "Comment(Block)")
+			if (startChunk.Style != Highlighting.ColorScheme.CommentsSingleLineKey && startChunk.Style != Highlighting.ColorScheme.CommentsBlockKey)
 				return;
 			inUpdate = true;
 			try {

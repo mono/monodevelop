@@ -39,7 +39,7 @@ namespace MonoDevelop.TextTemplating
 			
 			TaskService.Errors.Clear ();
 			foreach (CompilerError err in errors) {
-					TaskService.Errors.Add (new Task (err.FileName, err.ErrorText, err.Column, err.Line,
+					TaskService.Errors.Add (new TaskListEntry (err.FileName, err.ErrorText, err.Column, err.Line,
 					                                  err.IsWarning? TaskSeverity.Warning : TaskSeverity.Error));
 			}
 			TaskService.ShowErrors ();

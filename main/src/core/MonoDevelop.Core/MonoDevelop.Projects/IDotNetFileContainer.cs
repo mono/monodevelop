@@ -30,7 +30,7 @@ namespace MonoDevelop.Projects
 {
 	public interface IDotNetFileContainer
 	{
-		string GetDefaultNamespace (string fileName);
+		string GetDefaultNamespace (string fileName, bool useVisualStudioNamingPolicy = false);
 	}
 }
 

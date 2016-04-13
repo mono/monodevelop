@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 				NodeBuilder[] chain = null;
 				Type oldType = null;
-				Gtk.TreeIter oldIter = Gtk.TreeIter.Zero;
+				Gtk.TreeIter oldIter = currentIter;
 //				DateTime time = DateTime.Now;
 				int items = 0;
 				pad.Tree.FreezeChildNotify ();

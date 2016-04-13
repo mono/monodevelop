@@ -30,7 +30,7 @@ using Gtk;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCellViewCheckBox
+	internal class PackageCellViewCheckBox
 	{
 		static int indicatorSize;
 		static int indicatorSpacing;

@@ -25,8 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
-using Gtk;
 
 namespace MonoDevelop.Ide.Gui.OptionPanels
 {
@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		MaintenanceOptionsPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new MaintenanceOptionsPanelWidget ();
 		}
@@ -64,9 +64,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void ApplyChanges ()
 		{
 			if (IdeApp.Preferences.EnableInstrumentation != checkInstr.Active)
-				IdeApp.Preferences.EnableInstrumentation = checkInstr.Active;
+				IdeApp.Preferences.EnableInstrumentation.Value = checkInstr.Active;
 			if (IdeApp.Preferences.EnableAutomatedTesting != checkAutoTest.Active)
-				IdeApp.Preferences.EnableAutomatedTesting = checkAutoTest.Active;
+				IdeApp.Preferences.EnableAutomatedTesting.Value = checkAutoTest.Active;
 		}
 	}
 }

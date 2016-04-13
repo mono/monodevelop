@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IThreadSafePackageManagementEvents : IPackageManagementEvents, IDisposable
+	internal interface IThreadSafePackageManagementEvents : IPackageManagementEvents, IDisposable
 	{
 	}
 }

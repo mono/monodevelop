@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Navigation
 					return point;
 			}
 			
-			IEditableTextBuffer editBuf = doc.GetContent<IEditableTextBuffer> ();
+			var editBuf = doc.Editor;
 			if (editBuf != null) {
 				point = new TextFileNavigationPoint (doc, editBuf);
 				if (point != null)
@@ -224,10 +224,10 @@ namespace MonoDevelop.Ide.Navigation
 			get { return closedHistory.Count != 0; }
 		}
 
-		public static void OpenLastClosedDocument () {
+		public static async void OpenLastClosedDocument () {
 			if (HasClosedDocuments) {
 				var tuple = closedHistory.Pop ();
-				var doc = tuple.Item1.ShowDocument ();
+				var doc = await tuple.Item1.ShowDocument ();
 				IdeApp.Workbench.ReorderTab (IdeApp.Workbench.Documents.IndexOf (doc), tuple.Item2);
 			}
 		}
@@ -291,8 +291,8 @@ namespace MonoDevelop.Ide.Navigation
 			currentDoc.Closed += HandleCurrentDocClosed;
 			
 			if (currentDoc.Editor != null) {
-				currentDoc.Editor.Document.TextReplaced += BufferTextChanged;
-				currentDoc.Editor.Caret.PositionChanged += BufferCaretPositionChanged;
+				currentDoc.Editor.TextChanged += BufferTextChanged;
+				currentDoc.Editor.CaretPositionChanged += BufferCaretPositionChanged;
 			}
 		}
 
@@ -308,8 +308,8 @@ namespace MonoDevelop.Ide.Navigation
 			
 			currentDoc.Closed -= HandleCurrentDocClosed;
 			if (currentDoc.Editor != null) {
-				currentDoc.Editor.Document.TextReplaced -= BufferTextChanged;
-				currentDoc.Editor.Caret.PositionChanged -= BufferCaretPositionChanged;
+				currentDoc.Editor.TextChanged -= BufferTextChanged;
+				currentDoc.Editor.CaretPositionChanged -= BufferCaretPositionChanged;
 			}
 			currentDoc = null;
 		}

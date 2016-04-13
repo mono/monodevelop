@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ISolution
+	internal interface ISolution
 	{
 		Solution Solution { get; }
 
@@ -41,6 +41,7 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<IDotNetProject> GetAllProjects ();
 
 		event EventHandler<DotNetProjectEventArgs> ProjectAdded;
+		event EventHandler<DotNetProjectEventArgs> ProjectRemoved;
 	}
 }
 

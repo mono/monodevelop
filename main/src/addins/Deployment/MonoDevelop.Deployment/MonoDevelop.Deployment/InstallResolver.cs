@@ -40,7 +40,7 @@ namespace MonoDevelop.Deployment
 	{
 		string appName;
 		
-		public void Install (IProgressMonitor monitor, SolutionItem entry, string appName, string prefix, ConfigurationSelector configuration)
+		public void Install (ProgressMonitor monitor, SolutionFolderItem entry, string appName, string prefix, ConfigurationSelector configuration)
 		{
 			this.appName = appName;
 			
@@ -49,9 +49,9 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		void InstallEntry (IProgressMonitor monitor, DeployContext ctx, SolutionItem entry, ConfigurationSelector configuration)
+		void InstallEntry (ProgressMonitor monitor, DeployContext ctx, SolutionFolderItem entry, ConfigurationSelector configuration)
 		{
-			foreach (DeployFile df in DeployService.GetDeployFiles (ctx, new SolutionItem[] { entry }, configuration)) {
+			foreach (DeployFile df in DeployService.GetDeployFiles (ctx, new SolutionFolderItem[] { entry }, configuration)) {
 				string targetPath = df.ResolvedTargetFile;
 				if (targetPath == null) {
 					monitor.ReportWarning ("Could not copy file '" + df.RelativeTargetPath + "': Unknown target directory.");
@@ -64,7 +64,7 @@ namespace MonoDevelop.Deployment
 			SolutionFolder c = entry as SolutionFolder;
 			if (c != null) {
 				monitor.BeginTask ("Installing solution '" + c.Name + "'", c.Items.Count);
-				foreach (SolutionItem ce in c.Items) {
+				foreach (SolutionFolderItem ce in c.Items) {
 					InstallEntry (monitor, ctx, ce, configuration);
 					monitor.Step (1);
 				}
@@ -72,7 +72,7 @@ namespace MonoDevelop.Deployment
 			}
 		}
 		
-		void CopyFile (IProgressMonitor monitor, string src, string dest, DeployFileAttributes atts)
+		void CopyFile (ProgressMonitor monitor, string src, string dest, DeployFileAttributes atts)
 		{
 			dest = FileService.GetFullPath (dest);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Deploying file {0}.", dest));

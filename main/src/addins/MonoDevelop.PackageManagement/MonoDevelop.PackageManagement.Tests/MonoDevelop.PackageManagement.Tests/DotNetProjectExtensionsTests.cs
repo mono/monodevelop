@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
 

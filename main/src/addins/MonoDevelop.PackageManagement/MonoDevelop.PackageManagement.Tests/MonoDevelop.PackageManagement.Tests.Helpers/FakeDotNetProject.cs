@@ -30,10 +30,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeDotNetProject : FakeProject, IDotNetProject
+	class FakeDotNetProject : FakeProject, IDotNetProject
 	{
 		public FakeDotNetProject ()
 		{
@@ -81,10 +82,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public Action SaveAction = () => { };
 
-		public override void Save ()
+		public override async Task SaveAsync ()
 		{
 			SaveAction ();
-			base.Save ();
+			await base.SaveAsync ();
 			ReferencesWhenSavedCount = References.Count;
 			FilesAddedWhenSavedCount = FilesAdded.Count;
 			FilesInProjectWhenSavedCount = Files.Count;
@@ -104,11 +105,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return buildAction;
 		}
 
-		public List<ImportAndCondition> ImportsAdded = new List<ImportAndCondition> ();
-
 		public void AddImportIfMissing (string name, string condition)
 		{
-			ImportsAdded.Add (new ImportAndCondition (name, condition));
+			throw new ApplicationException ("Obsolete should not be called.");
 		}
 
 		public List<string> ImportsRemoved = new List <string> ();

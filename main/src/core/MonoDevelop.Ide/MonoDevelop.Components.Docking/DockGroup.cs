@@ -140,11 +140,10 @@ namespace MonoDevelop.Components.Docking
 			gitem.ParentGroup = this;
 			return gitem;
 		}
-		
+
 		DockGroupItem Split (DockGroupType newType, bool addFirst, DockItem obj, int npos)
 		{
 			DockGroupItem item = new DockGroupItem (Frame, obj);
-			
 			if (npos == -1 || type == DockGroupType.Tabbed) {
 				if (ParentGroup != null && ParentGroup.Type == newType) {
 					// No need to split. Just add the new item as a sibling of this one.
@@ -189,7 +188,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			return item;
 		}
-		
+
 		internal DockGroup FindGroupContaining (string id)
 		{
 			DockGroupItem it = FindDockGroupItem (id);
@@ -454,7 +453,8 @@ namespace MonoDevelop.Components.Docking
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
 
-				int ins = (int) Math.Truncate (ob.Size);
+				double obSize = double.IsNaN (ob.Size) ? 10.0 : ob.Size;
+				int ins = (int) Math.Truncate (obSize);
 				
 				if (n == VisibleObjects.Count - 1)
 					ins = realSize - ts;
@@ -872,7 +872,7 @@ namespace MonoDevelop.Components.Docking
 
 			if (areasList == null && oper == DrawSeparatorOperation.Draw) {
 				hgc = new Gdk.GC (Frame.Container.GdkWindow);
-				hgc.RgbFgColor = Styles.DockFrameBackground;
+				hgc.RgbFgColor = Styles.DockFrameBackground.ToGdkColor ();
 			}
 
 			for (int n=0; n<VisibleObjects.Count; n++) {

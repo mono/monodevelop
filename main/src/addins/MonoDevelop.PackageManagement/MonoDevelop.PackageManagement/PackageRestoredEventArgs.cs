@@ -29,7 +29,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageRestoredEventArgs : EventArgs
+	internal class PackageRestoredEventArgs : EventArgs
 	{
 		public PackageRestoredEventArgs (IPackage package)
 		{

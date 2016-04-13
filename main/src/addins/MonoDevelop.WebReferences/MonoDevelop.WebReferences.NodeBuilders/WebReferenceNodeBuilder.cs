@@ -39,12 +39,6 @@ namespace MonoDevelop.WebReferences.NodeBuilders
 			return "WebReferenceItem";
 		}
 		
-		/// <summary>Build the node in the project tree.</summary>
-		/// <param name="treeBuilder">An ITreeBuilder containing the project tree builder.</param>
-		/// <param name="dataObject">An object containing the current builder child.</param>
-		/// <param name="label">A string containing the label of the node.</param>
-		/// <param name="icon">A Pixbif containing the icon for the node.</param>
-		/// <param name="closedIcon">A Pixbif containing the closed icon for the node.</param>
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			nodeInfo.Label = ((WebReferenceItem) dataObject).Name;

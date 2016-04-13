@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.DocFood
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.DocFood
 			this.Name = name;
 		}
 		
-		public override void Run (DocGenerator generator, object member)
+		public override void Run (DocGenerator generator, ISymbol member)
 		{
 			string str = StringParserService.Parse (Documentation, generator.tags).Trim ();
 			if (!char.IsUpper (str[0]))

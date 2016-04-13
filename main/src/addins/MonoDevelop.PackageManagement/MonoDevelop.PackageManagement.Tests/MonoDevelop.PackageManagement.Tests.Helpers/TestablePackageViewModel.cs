@@ -1,10 +1,10 @@
 ﻿using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackageViewModel : PackageViewModel
+	class TestablePackageViewModel : PackageViewModel
 	{
 		public FakePackageManagementSolution FakeSolution;
 		public PackageManagementEvents PackageManagementEvents;

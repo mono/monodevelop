@@ -27,13 +27,13 @@
 //
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PackageLicenseWidget : Gtk.Bin
+	internal partial class PackageLicenseWidget : Gtk.Bin
 	{
 		public PackageLicenseWidget (PackageLicenseViewModel viewModel)
 		{

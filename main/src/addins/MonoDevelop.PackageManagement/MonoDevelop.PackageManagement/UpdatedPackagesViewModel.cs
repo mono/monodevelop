@@ -32,9 +32,9 @@ using System.Linq;
 
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackagesViewModel : PackagesViewModel
+	internal class UpdatedPackagesViewModel : PackagesViewModel
 	{
 		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;

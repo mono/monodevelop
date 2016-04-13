@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeSolution : ISolution
+	class FakeSolution : ISolution
 	{
 		public FilePath BaseDirectory { get; set; }
 		public FilePath FileName { get; set; }
@@ -63,6 +63,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			if (ProjectAdded != null) {
 				ProjectAdded (this, new DotNetProjectEventArgs (project));
+			}
+		}
+
+		public event EventHandler<DotNetProjectEventArgs> ProjectRemoved;
+
+		public void RaiseProjectRemovedEvent (IDotNetProject project)
+		{
+			if (ProjectRemoved != null) {
+				ProjectRemoved (this, new DotNetProjectEventArgs (project));
 			}
 		}
 	}

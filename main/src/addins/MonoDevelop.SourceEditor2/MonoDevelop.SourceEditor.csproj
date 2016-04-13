@@ -9,8 +9,9 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.SourceEditor</RootNamespace>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
+    <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <AssemblyName>MonoDevelop.SourceEditor2</AssemblyName>
+    <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -67,11 +68,6 @@
       <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
@@ -97,6 +93,16 @@
       <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
+      <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
+      <Name>Xwt.Gtk</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -119,6 +125,18 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Reflection.Metadata.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -126,8 +144,6 @@
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorDisplayBinding.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\BehaviorPanel.cs" />
@@ -141,27 +157,17 @@
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateCodon.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateExtensionNodeLoader.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\IdeViMode.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeCodon.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PrintSettingsWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCommands.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorShemeEditor.cs" />
@@ -171,11 +177,8 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskStrip.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollbarCommand.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollBarMode.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IQuickTaskProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTask.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskMiniMapMode.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IUsageProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
@@ -187,10 +190,34 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\AbstractUsagesExtension.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ITextDocumentWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UsageSegmentMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextSourceVersionWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextChangeEventArgsWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextPasteHandlerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\SelectionSurroundingProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\IndentationTrackerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\WavedLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\GrayOutMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UrlTextLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\AsmLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\LinkMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\ListDataProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\FoldSegmentWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\SemanticHighlightingSyntaxMode.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ReadonlyDocumentSnapshot.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\ErrorMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeLoader.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ImmutableTextTextSource.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SearchInSelectionMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\DefaultAutoInsertBracketHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -199,14 +226,17 @@
     <EmbeddedResource Include="MonoDevelop.SourceEditor.addin.xml">
       <LogicalName>MonoDevelop.SourceEditor.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.SourceEditor\searchoptions.png">
-      <LogicalName>searchoptions.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-busy-16.png">
       <LogicalName>issues-busy-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-busy-16%402x.png">
       <LogicalName>issues-busy-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-busy-16~dark.png">
+      <LogicalName>issues-busy-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-busy-16~dark%402x.png">
+      <LogicalName>issues-busy-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-error-16.png">
       <LogicalName>issues-error-16.png</LogicalName>
@@ -214,11 +244,23 @@
     <EmbeddedResource Include="icons\issues-error-16%402x.png">
       <LogicalName>issues-error-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-error-16~dark.png">
+      <LogicalName>issues-error-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-error-16~dark%402x.png">
+      <LogicalName>issues-error-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-ok-16.png">
       <LogicalName>issues-ok-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-ok-16%402x.png">
       <LogicalName>issues-ok-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-ok-16~dark.png">
+      <LogicalName>issues-ok-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-ok-16~dark%402x.png">
+      <LogicalName>issues-ok-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-suggestion-16.png">
       <LogicalName>issues-suggestion-16.png</LogicalName>
@@ -226,17 +268,47 @@
     <EmbeddedResource Include="icons\issues-suggestion-16%402x.png">
       <LogicalName>issues-suggestion-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-suggestion-16~dark.png">
+      <LogicalName>issues-suggestion-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-suggestion-16~dark%402x.png">
+      <LogicalName>issues-suggestion-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-warning-16.png">
       <LogicalName>issues-warning-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\issues-warning-16%402x.png">
       <LogicalName>issues-warning-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-warning-16~dark.png">
+      <LogicalName>issues-warning-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\issues-warning-16~dark%402x.png">
+      <LogicalName>issues-warning-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-options-22x32.png">
+      <LogicalName>find-options-22x32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-options-22x32%402x.png">
+      <LogicalName>find-options-22x32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-options-22x32~dark.png">
+      <LogicalName>find-options-22x32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\find-options-22x32~dark%402x.png">
+      <LogicalName>find-options-22x32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-bookmark-15.png">
       <LogicalName>gutter-bookmark-15.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-bookmark-15%402x.png">
       <LogicalName>gutter-bookmark-15@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-bookmark-15~dark.png">
+      <LogicalName>gutter-bookmark-15~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\gutter-bookmark-15~dark%402x.png">
+      <LogicalName>gutter-bookmark-15~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\gutter-error-15.png">
       <LogicalName>gutter-error-15.png</LogicalName>
@@ -256,11 +328,47 @@
     <EmbeddedResource Include="icons\prefs-markers-rulers-16%402x.png">
       <LogicalName>prefs-markers-rulers-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~dark.png">
+      <LogicalName>prefs-markers-rulers-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~dark%402x.png">
+      <LogicalName>prefs-markers-rulers-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~sel.png">
+      <LogicalName>prefs-markers-rulers-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~sel%402x.png">
+      <LogicalName>prefs-markers-rulers-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~dark~sel.png">
+      <LogicalName>prefs-markers-rulers-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-markers-rulers-16~dark~sel%402x.png">
+      <LogicalName>prefs-markers-rulers-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-syntax-highlighting-16.png">
       <LogicalName>prefs-syntax-highlighting-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-syntax-highlighting-16%402x.png">
       <LogicalName>prefs-syntax-highlighting-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~dark.png">
+      <LogicalName>prefs-syntax-highlighting-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~dark%402x.png">
+      <LogicalName>prefs-syntax-highlighting-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~sel.png">
+      <LogicalName>prefs-syntax-highlighting-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~sel%402x.png">
+      <LogicalName>prefs-syntax-highlighting-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~dark~sel.png">
+      <LogicalName>prefs-syntax-highlighting-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-syntax-highlighting-16~dark~sel%402x.png">
+      <LogicalName>prefs-syntax-highlighting-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-text-editor-general-16.png">
       <LogicalName>prefs-text-editor-general-16.png</LogicalName>
@@ -268,28 +376,78 @@
     <EmbeddedResource Include="icons\prefs-text-editor-general-16%402x.png">
       <LogicalName>prefs-text-editor-general-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~dark.png">
+      <LogicalName>prefs-text-editor-general-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~dark%402x.png">
+      <LogicalName>prefs-text-editor-general-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~sel.png">
+      <LogicalName>prefs-text-editor-general-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~sel%402x.png">
+      <LogicalName>prefs-text-editor-general-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~dark~sel.png">
+      <LogicalName>prefs-text-editor-general-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-general-16~dark~sel%402x.png">
+      <LogicalName>prefs-text-editor-general-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-text-editor-behavior-16.png">
       <LogicalName>prefs-text-editor-behavior-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\prefs-text-editor-behavior-16%402x.png">
       <LogicalName>prefs-text-editor-behavior-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-completion-appearance-16.png">
-      <LogicalName>prefs-completion-appearance-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~dark.png">
+      <LogicalName>prefs-text-editor-behavior-16~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-completion-appearance-16%402x.png">
-      <LogicalName>prefs-completion-appearance-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~dark%402x.png">
+      <LogicalName>prefs-text-editor-behavior-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-completion-behavior-16.png">
-      <LogicalName>prefs-completion-behavior-16.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~sel.png">
+      <LogicalName>prefs-text-editor-behavior-16~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\prefs-completion-behavior-16%402x.png">
-      <LogicalName>prefs-completion-behavior-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~sel%402x.png">
+      <LogicalName>prefs-text-editor-behavior-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~dark~sel.png">
+      <LogicalName>prefs-text-editor-behavior-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-text-editor-behavior-16~dark~sel%402x.png">
+      <LogicalName>prefs-text-editor-behavior-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16.png">
+      <LogicalName>prefs-completion-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16%402x.png">
+      <LogicalName>prefs-completion-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16~dark.png">
+      <LogicalName>prefs-completion-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16~dark%402x.png">
+      <LogicalName>prefs-completion-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16~sel.png">
+      <LogicalName>prefs-completion-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16~sel%402x.png">
+      <LogicalName>prefs-completion-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16~dark~sel.png">
+      <LogicalName>prefs-completion-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\prefs-completion-16~dark~sel%402x.png">
+      <LogicalName>prefs-completion-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
+    <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
+    <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
   </ItemGroup>
 </Project>

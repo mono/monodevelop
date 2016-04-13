@@ -40,6 +40,6 @@ namespace MonoDevelop.Deployment
 		string Id { get; }
 		string Name { get; }
 		FileCopyConfiguration CreateConfiguration ();
-		void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection files, DeployContext context);
+		void CopyFiles (ProgressMonitor monitor, IFileReplacePolicy replacePolicy, FileCopyConfiguration copyConfig, DeployFileCollection files, DeployContext context);
 	}
 }

@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementCompilerMessageView : ICompilerMessageView
+	internal class PackageManagementCompilerMessageView : ICompilerMessageView
 	{
 		public IMessageViewCategory Create(string categoryName, string categoryDisplayName)
 		{

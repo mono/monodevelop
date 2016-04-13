@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageFromRepository : IPackage
+	internal interface IPackageFromRepository : IPackage
 	{
 		IPackageRepository Repository { get; }
 		bool HasDependencies { get; }

@@ -1094,6 +1094,7 @@ namespace Mono.TextTemplating
 			var initializeCodeGenerator = GetInitializeCodeGeneratorAction (cgType);
 			var cgFieldGen = cgType.GetMethod ("GenerateField", BindingFlags.NonPublic | BindingFlags.Instance);
 			var cgPropGen = cgType.GetMethod ("GenerateProperty", BindingFlags.NonPublic | BindingFlags.Instance);
+			var cgMethGen = cgType.GetMethod ("GenerateMethod", BindingFlags.NonPublic | BindingFlags.Instance);
 
 			#pragma warning disable 0618
 			var generator = (CodeGenerator) provider.CreateGenerator ();
@@ -1111,6 +1112,12 @@ namespace Mono.TextTemplating
 				if (p != null) {
 					initializeCodeGenerator (generator, sw, options);
 					cgPropGen.Invoke (generator, new object[] { p, dummy });
+					continue;
+				}
+				var m = member as CodeMemberMethod;
+				if (m != null) {
+					initializeCodeGenerator (generator, sw, options);
+					cgMethGen.Invoke (generator, new object[] { m, dummy });
 					continue;
 				}
 			}

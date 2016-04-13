@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeBackgroundPackageActionRunner : IBackgroundPackageActionRunner
+	class FakeBackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
 		public IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project)
 		{

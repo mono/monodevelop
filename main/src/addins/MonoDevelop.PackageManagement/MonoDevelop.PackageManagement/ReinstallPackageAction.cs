@@ -31,12 +31,12 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using MonoDevelop.Projects;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ReinstallPackageAction : ProcessPackageAction
+	internal class ReinstallPackageAction : ProcessPackageAction
 	{
 		IFileRemover fileRemover;
 
@@ -84,6 +84,7 @@ namespace MonoDevelop.PackageManagement
 			action.Package = Package;
 			action.OpenReadMeText = false;
 			action.PreserveLocalCopyReferences = false;
+			action.LicensesMustBeAccepted = false;
 			action.Execute ();
 		}
 	}

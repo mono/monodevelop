@@ -96,8 +96,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			} else if (hasCachedPolicy) {
 				policyContainer.Set<T> ((T) cachedPolicy, mimeType);
 			}
+			OnPolicyStored ();
 		}
-		
+
+		protected virtual void OnPolicyStored ()
+		{ 
+		}
 		void IMimeTypePolicyOptionsPanel.LoadParentPolicy ()
 		{
 			T policy = GetInheritedPolicy (mimeTypeScopes);

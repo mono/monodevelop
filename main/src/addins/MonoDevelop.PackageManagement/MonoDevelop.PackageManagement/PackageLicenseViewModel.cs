@@ -27,11 +27,14 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageLicenseViewModel : ViewModelBase<PackageLicenseViewModel>
+	internal class PackageLicenseViewModel : ViewModelBase<PackageLicenseViewModel>
 	{
 		IPackage package;
 		
@@ -50,6 +53,23 @@ namespace ICSharpCode.PackageManagement
 		
 		public Uri LicenseUrl {
 			get { return package.LicenseUrl; }
+		}
+
+		internal string GetAuthors ()
+		{
+			List<string> authors = package.Authors.ToList ();
+
+			string authorStartText = null;
+			if (authors.Count > 1) {
+				authorStartText = GettextCatalog.GetString ("Authors:");
+			} else {
+				authorStartText = GettextCatalog.GetString ("Author:");
+			}
+
+			return String.Format (
+				"{0} {1}",
+				authorStartText,
+				String.Join (", ", authors));
 		}
 	}
 }

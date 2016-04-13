@@ -54,9 +54,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public override void BuildChildNodes (ITreeBuilder ctx, object dataObject)
 		{
 			var resourceFolder = (AssemblyResourceFolder)dataObject;
-			foreach (object resource in resourceFolder.Resources) {
-				ctx.AddChild (resource);
-			}
+			ctx.AddChildren (resourceFolder.Resources);
 		}
 		
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

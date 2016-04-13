@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.Policies
 		
 		public void Add (ScopedPolicy scopedPolicy)
 		{
-			Add (new PolicyKey (scopedPolicy.PolicyType, scopedPolicy.Scope), scopedPolicy.Policy);
+			this[new PolicyKey (scopedPolicy.PolicyType, scopedPolicy.Scope)] = scopedPolicy.Policy;
 		}
 		
 		public bool ContainsKey (Type policyType, string scope)

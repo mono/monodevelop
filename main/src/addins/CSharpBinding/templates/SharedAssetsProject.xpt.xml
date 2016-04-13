@@ -11,6 +11,7 @@
 		<Image id="md-shared-project" />
 		<_Description>Creates a project that allows sharing files between projects</_Description>
 		<DefaultFilename>Shared</DefaultFilename>
+		<GroupId>md-project-shared-library</GroupId>
 		<LanguageName>C#</LanguageName>
 	</TemplateConfiguration>
 	

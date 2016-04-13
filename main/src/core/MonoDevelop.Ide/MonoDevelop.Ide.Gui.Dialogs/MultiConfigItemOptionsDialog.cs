@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Projects;
@@ -43,7 +44,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 		}
 		
-		public MultiConfigItemOptionsDialog (Gtk.Window parentWindow, object dataObject): base (parentWindow, dataObject)
+		public MultiConfigItemOptionsDialog (Window parentWindow, object dataObject): base (parentWindow, dataObject)
 		{
 			IConfigurationTarget ct = DataObject as IConfigurationTarget;
 			if (ct == null)
@@ -132,13 +133,13 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			ConfigurationData data = new ConfigurationData (entry);
 
 			foreach (ItemConfiguration conf in entry.Configurations) {
-				ItemConfiguration copy = (ItemConfiguration) conf.Clone ();
+				ItemConfiguration copy = entry.CloneConfiguration (conf, conf.Id);
 				data.Configurations.Add (copy);
 			}
 			if (entry is Solution) {
-				foreach (SolutionItem e in ((Solution)entry).Items) {
-					if (e is SolutionEntityItem)
-						data.children.Add (ConfigurationData.Build ((SolutionEntityItem) e));
+				foreach (SolutionFolderItem e in ((Solution)entry).Items) {
+					if (e is SolutionItem)
+						data.children.Add (Build ((SolutionItem) e));
 				}
 			}
 			return data;
@@ -177,7 +178,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				data.Update (modifiedObjects);
 
 			// If configurations have been renamed, update the references in the solution
-			SolutionEntityItem item = entry as SolutionEntityItem;
+			SolutionItem item = entry as SolutionItem;
 			if (item != null && renameData.Count > 0) {
 				Solution sol = item.ParentSolution;
 				if (sol != null) {
@@ -196,12 +197,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		
 		public ItemConfiguration AddConfiguration (string name, string sourceName, bool createChildConfigurations)
 		{
-			ItemConfiguration conf = entry.CreateConfiguration (name);
+			ItemConfiguration conf = entry.CreateConfiguration (name, ConfigurationKind.Blank);
 
 			if (sourceName != null) {
 				ItemConfiguration sc = configurations [sourceName];
 				if (sc != null)
-					conf.CopyFrom (sc);
+					conf.CopyFrom (sc, true);
 				else
 					sourceName = null;
 			}
@@ -211,9 +212,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				foreach (ConfigurationData data in children) {
 					SolutionConfigurationEntry ce;
 					if (sourceName != null)
-						ce = cc.GetEntryForItem ((SolutionEntityItem)data.Entry);
+						ce = cc.GetEntryForItem ((SolutionItem)data.Entry);
 					else
-						ce = cc.AddItem ((SolutionEntityItem) data.Entry);
+						ce = cc.AddItem ((SolutionItem) data.Entry);
 					if (createChildConfigurations) {
 						ce.ItemConfiguration = name;
 						if (data.Configurations [name] == null)
@@ -242,13 +243,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				ConfigurationsChanged (this, null);
 		}
 		
-		public void RenameConfiguration (string oldName, string newName, bool renameChildConfigurations)
+		public ItemConfiguration RenameConfiguration (string oldName, string newName, bool renameChildConfigurations)
 		{
 			renameData.Add (new RenameData { OldName = oldName, NewName = newName });
-			
+			ItemConfiguration newConf = null;
+
 			ItemConfiguration cc = configurations [oldName];
 			if (cc != null) {
-				cc.Id = newName;
+				newConf = entry.CreateConfiguration (newName, ConfigurationKind.Blank);
+				newConf.CopyFrom (cc, true);
+				int i = configurations.IndexOf (cc);
+				configurations [i] = newConf;
 			}
 			if (renameChildConfigurations) {
 				if (entry is Solution) {
@@ -264,6 +269,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			if (ConfigurationsChanged != null)
 				ConfigurationsChanged (this, null);
+			return newConf;
 		}
 		
 		public event EventHandler ConfigurationsChanged;

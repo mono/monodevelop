@@ -26,50 +26,52 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.Xml.Completion
 {
 	public class EmptyXmlCompletionProvider : IXmlCompletionProvider
 	{
-		public CompletionDataList GetElementCompletionData ()
+		public Task<CompletionDataList> GetElementCompletionData (CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 
-		public CompletionDataList GetElementCompletionData (string namespacePrefix)
+		public Task<CompletionDataList> GetElementCompletionData (string namespacePrefix, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 
-		public CompletionDataList GetChildElementCompletionData (XmlElementPath path)
+		public Task<CompletionDataList> GetChildElementCompletionData (XmlElementPath path, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 
-		public CompletionDataList GetAttributeCompletionData (XmlElementPath path)
+		public Task<CompletionDataList> GetAttributeCompletionData (XmlElementPath path, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 
-		public CompletionDataList GetAttributeValueCompletionData (XmlElementPath path, string name)
+		public Task<CompletionDataList> GetAttributeValueCompletionData (XmlElementPath path, string name, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 
-		public CompletionDataList GetChildElementCompletionData (string tagName)
+		public Task<CompletionDataList> GetChildElementCompletionData (string tagName, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 
-		public CompletionDataList GetAttributeCompletionData (string tagName)
+		public Task<CompletionDataList> GetAttributeCompletionData (string tagName, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 
-		public CompletionDataList GetAttributeValueCompletionData (string tagName, string name)
+		public Task<CompletionDataList> GetAttributeValueCompletionData (string tagName, string name, CancellationToken token)
 		{
-			return new CompletionDataList ();
+			return Task.FromResult (new CompletionDataList ());
 		}
 	}
 }

@@ -55,6 +55,7 @@ namespace MonoDevelop.MacIntegration
 					panel = new NSOpenPanel {
 						CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
 						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
+						CanCreateDirectories = (data.Action & FileChooserAction.CreateFolder) != 0,
 						ResolvesAliases = false,
 					};
 				}

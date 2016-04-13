@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl
 		{
 			VersionControlItemList list = new VersionControlItemList ();
 			
-			IWorkspaceObject wob;
+			WorkspaceObject wob;
 			Repository repo = null;
 			wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 			if (wob != null)
@@ -243,7 +243,7 @@ namespace MonoDevelop.VersionControl
 		}
 	}
 
-	class CurrentFileViewHandler<T> : FileVersionControlCommandHandler where T:IAttachableViewContent
+	class CurrentFileViewHandler<T> : FileVersionControlCommandHandler
 	{
 		protected override bool RunCommand (VersionControlItemList items, bool test)
 		{

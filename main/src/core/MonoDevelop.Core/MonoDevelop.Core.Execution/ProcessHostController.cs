@@ -50,7 +50,7 @@ namespace MonoDevelop.Core.Execution
 		DateTime lastReleaseTime;
 		bool starting;
 		bool stopping;
-		IProcessAsyncOperation process;
+		ProcessAsyncOperation process;
 		Timer timer;
 		string id;
 		IExecutionHandler executionHandlerFactory;
@@ -88,7 +88,7 @@ namespace MonoDevelop.Core.Execution
 			timer.Elapsed += new System.Timers.ElapsedEventHandler (WaitTimeout);
 		}
 
-		public void Start (IList<string> userAssemblyPaths = null)
+		public void Start (IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			lock (this) {
 				if (starting)
@@ -129,11 +129,11 @@ namespace MonoDevelop.Core.Execution
 					if (userAssemblyPaths != null)
 						cmd.UserAssemblyPaths = userAssemblyPaths;
 					cmd.DebugMode = isDebugMode;
-					ProcessHostConsole cons = new ProcessHostConsole ();
-					process = executionHandlerFactory.Execute (cmd, cons);
+					OperationConsole cons = console ?? new ProcessHostConsole ();
+					var p = process = executionHandlerFactory.Execute (cmd, cons);
 					Counters.ExternalHostProcesses++;
 
-					process.Completed += ProcessExited;
+					process.Task.ContinueWith ((t) => ProcessExited (p));
 
 				} catch (Exception ex) {
 					if (tmpFile != null) {
@@ -155,7 +155,7 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		void ProcessExited (IAsyncOperation oper)
+		void ProcessExited (ProcessAsyncOperation oper)
 		{
 			lock (this) {
 
@@ -182,12 +182,12 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 
-		public object CreateInstance (Type type, string[] addins, IList<string> userAssemblyPaths = null)
+		public object CreateInstance (Type type, string[] addins, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			lock (this) {
 				references++;
 				if (processHost == null)
-					Start (userAssemblyPaths);
+					Start (userAssemblyPaths, console);
 			}
 
 			if (!runningEvent.WaitOne (15000, false)) {
@@ -212,12 +212,12 @@ namespace MonoDevelop.Core.Execution
 			}
 		}
 		
-		public object CreateInstance (string assemblyPath, string typeName, string[] addins, IList<string> userAssemblyPaths = null)
+		public object CreateInstance (string assemblyPath, string typeName, string[] addins, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			lock (this) {
 				references++;
 				if (processHost == null)
-					Start (userAssemblyPaths);
+					Start (userAssemblyPaths, console);
 			}
 
 			if (!runningEvent.WaitOne (15000, false)) {
@@ -307,7 +307,7 @@ namespace MonoDevelop.Core.Execution
 		void WaitTimeout (object sender, System.Timers.ElapsedEventArgs args)
 		{
 			try {
-				IProcessAsyncOperation oldProcess;
+				ProcessAsyncOperation oldProcess;
 				
 				lock (this) {
 					if (references > 0) {
@@ -364,106 +364,22 @@ namespace MonoDevelop.Core.Execution
 
 	}
 	
-	class ProcessHostConsole: IConsole
+	class ProcessHostConsole: OperationConsole
 	{
-		//nothing fires this event so make a dummy implementation to keep csc happy
-		event EventHandler IConsole.CancelRequested { add { } remove {} }
-		
-		public TextReader In {
+		public override TextReader In {
 			get { return Console.In; }
 		}
 		
-		public TextWriter Out {
+		public override TextWriter Out {
 			get { return Console.Out; }
 		}
 		
-		public TextWriter Error {
+		public override TextWriter Error {
 			get { return Console.Error; }
 		}
 		
-		public TextWriter Log {
+		public override TextWriter Log {
 			get { return Out; }
-		}
-		
-		public bool CloseOnDispose {
-			get {
-				return false;
-			}
-		}
-		
-		public void Dispose ()
-		{
-		}
-	}
-	
-	class InernalProcessHost: Process, IProcessAsyncOperation
-	{
-		object doneLock = new object ();
-		bool finished;
-		OperationHandler completed;
-		
-		public InernalProcessHost ()
-		{
-			Exited += delegate {
-				lock (doneLock) {
-					finished = true;
-					Monitor.PulseAll (doneLock);
-					if (completed != null)
-						completed (this);
-				}
-			};
-		}
-		
-		public int ProcessId {
-			get { return Id; }
-		}
-		
-		public event OperationHandler Completed {
-			add {
-				lock (doneLock) {
-					completed += value; 
-					if (finished)
-						value (this);
-				}
-			}
-			remove {
-				lock (doneLock) {
-					completed -= value;
-				}
-			}
-		}
-		
-		public void Cancel ()
-		{
-			Kill ();
-		}
-		
-		public void WaitForCompleted ()
-		{
-			lock (doneLock) {
-				while (!finished)
-					Monitor.Wait (doneLock);
-			}
-		}
-		
-		public bool IsCompleted {
-			get {
-				lock (doneLock) {
-					return finished;
-				}
-			}
-		}
-		
-		public bool Success {
-			get {
-				return true;
-			}
-		}
-		
-		public bool SuccessWithWarnings {
-			get {
-				return true;
-			}
 		}
 	}
 }

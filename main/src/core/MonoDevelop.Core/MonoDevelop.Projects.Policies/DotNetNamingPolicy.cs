@@ -58,22 +58,6 @@ namespace MonoDevelop.Projects.Policies
 			return other != null && other.DirectoryNamespaceAssociation == DirectoryNamespaceAssociation
 				&& other.ResourceNamePolicy == ResourceNamePolicy;
 		}
-		
-		internal static ResourceNamePolicy GetDefaultResourceNamePolicy (object ob)
-		{
-			FileFormat format = null;
-			if (ob is SolutionEntityItem)
-				format = ((SolutionEntityItem)ob).FileFormat;
-			else if (ob is SolutionItem)
-				format = ((SolutionItem)ob).ParentSolution.FileFormat;
-			else if (ob is Solution)
-				format = ((Solution)ob).FileFormat;
-			
-			if (format != null && format.Name.StartsWith ("MSBuild"))
-				return ResourceNamePolicy.MSBuild;
-			else
-				return ResourceNamePolicy.FileName;
-		}
 	}
 	
 	public enum DirectoryNamespaceAssociation

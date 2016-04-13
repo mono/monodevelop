@@ -127,7 +127,7 @@ namespace MonoDevelop.Components.AutoTest
 			else
 				try {
 					process.Kill ();
-				} catch (InvalidOperationException invalidExp) {
+				} catch (InvalidOperationException) {
 					Console.WriteLine ("Process has already exited");
 				}
 		}
@@ -211,6 +211,11 @@ namespace MonoDevelop.Components.AutoTest
 		public int ErrorCount (TaskSeverity severity)
 		{
 			return session.ErrorCount (severity);
+		}
+
+		public List<TaskListEntryDTO> GetErrors (TaskSeverity severity)
+		{
+			return session.GetErrors (severity);
 		}
 
 		public void WaitForEvent (string name)
@@ -360,6 +365,14 @@ namespace MonoDevelop.Components.AutoTest
 			AppResult[] results = Query (query);
 			foreach (var result in results) {
 				session.Flash (result);
+			}
+		}
+
+		public void SetProperty (Func<AppQuery, AppQuery> query, string propertyName, object value)
+		{
+			AppResult[] results = Query (query);
+			foreach (var result in results) {
+				session.SetProperty (result, propertyName, value);
 			}
 		}
 

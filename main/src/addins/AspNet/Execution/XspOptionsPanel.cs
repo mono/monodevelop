@@ -29,7 +29,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.AspNet.Projects;
 
@@ -39,14 +39,14 @@ namespace MonoDevelop.AspNet.Execution
 	{
 		XspOptionsPanelWidget panel;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
-			return panel = new XspOptionsPanelWidget ((AspNetAppProject) ConfiguredProject);
+			return panel = new XspOptionsPanelWidget (ConfiguredProject.GetService<AspNetAppProjectFlavor> ());
 		}
 		
 		public override void ApplyChanges ()
 		{
-			panel.Store ((AspNetAppProject) ConfiguredProject);
+			panel.Store (ConfiguredProject.GetService<AspNetAppProjectFlavor> ());
 		}
 	}
 }

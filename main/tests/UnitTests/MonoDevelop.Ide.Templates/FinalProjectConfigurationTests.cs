@@ -243,6 +243,8 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[TestCase ("a", true)]
+		[TestCase ("a.b", true)]
+		[TestCase ("a_b", true)]
 		[TestCase ("a&b", false)]
 		[TestCase ("a<b", false)]
 		[TestCase ("a*b", false)]
@@ -266,6 +268,8 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[TestCase ("a", true)]
+		[TestCase ("a.b", true)]
+		[TestCase ("a_b", true)]
 		[TestCase ("a&b", false)]
 		[TestCase ("a<b", false)]
 		[TestCase ("a*b", false)]
@@ -290,6 +294,8 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[TestCase ("a", true)]
+		[TestCase ("a.b", true)]
+		[TestCase ("a_b", true)]
 		[TestCase ("a&b", false)]
 		[TestCase ("a<b", false)]
 		[TestCase ("a*b", false)]
@@ -309,6 +315,29 @@ namespace MonoDevelop.Ide.Templates
 			bool result = config.IsValid ();
 
 			Assert.AreEqual (valid, result);
+		}
+
+		[Test]
+		public void EmojiProjectNameCharactersCauseConfigToBeInvalid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+
+			// Mahjong tile
+			config.ProjectName = "\U0001F004"; 
+			Assert.IsFalse (config.IsValid ());
+
+			// Smiley face
+			config.ProjectName = "\U0001F600"; 
+			Assert.IsFalse (config.IsValid ());
+
+			// Zimbabwe flag.
+			config.ProjectName = "\U0001F1FF\U0001F1FC"; 
+			Assert.IsFalse (config.IsValid ());
+
+			// Double exclamation mark.
+			config.ProjectName = "\U0000203C"; 
+			Assert.IsFalse (config.IsValid ());
 		}
 
 		[Test]

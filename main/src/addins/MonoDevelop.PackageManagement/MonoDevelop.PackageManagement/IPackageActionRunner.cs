@@ -29,9 +29,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageActionRunner
+	internal interface IPackageActionRunner
 	{
 		void Run(IPackageAction action);
 		void Run(IEnumerable<IPackageAction> actions);

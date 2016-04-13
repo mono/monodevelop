@@ -27,9 +27,8 @@
 //
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Parser
 {
@@ -132,7 +131,7 @@ namespace MonoDevelop.Xml.Parser
 				switch (context.StateTag) {
 				case 0:
 					if (c == '[') {
-						doc.InternalDeclarationRegion = new DomRegion (context.Location, TextLocation.Empty);
+						doc.InternalDeclarationRegion = new DocumentRegion (context.Location, DocumentLocation.Empty);
 						context.StateTag = 1;
 						return null;
 					}
@@ -143,7 +142,7 @@ namespace MonoDevelop.Xml.Parser
 						return null;
 					} else if (c == ']') {
 						context.StateTag = 0;
-						doc.InternalDeclarationRegion = new DomRegion (doc.InternalDeclarationRegion.Begin, context.Location);
+						doc.InternalDeclarationRegion = new DocumentRegion (doc.InternalDeclarationRegion.Begin, context.Location);
 						return null;
 					}
 					break;

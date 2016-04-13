@@ -34,13 +34,11 @@ namespace Mono.TextEditor
 {
 	public class GutterMargin : Margin
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		int width;
 		int oldLineCountLog10 = -1;
 
-		double fontHeight;
-		
-		public GutterMargin (TextEditor editor)
+		public GutterMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
 
@@ -80,11 +78,6 @@ namespace Mono.TextEditor
 				this.width += 4;
 				if (!editor.Options.ShowFoldMargin)
 					this.width += 2;
-
-				using (var metrics = editor.PangoContext.GetMetrics (layout.FontDescription, editor.PangoContext.Language)) {
-					fontHeight = System.Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
-				}
-
 			}
 		}
 		
@@ -183,6 +176,7 @@ namespace Mono.TextEditor
 			base.cursor.Dispose ();
 			base.cursor = null;
 			
+			this.editor.Caret.PositionChanged -= EditorCarethandlePositionChanged;
 			this.editor.Document.TextSet -= HandleEditorDocumenthandleTextSet;
 			this.editor.Document.LineChanged -= UpdateWidth;
 //			layout = layout.Kill ();

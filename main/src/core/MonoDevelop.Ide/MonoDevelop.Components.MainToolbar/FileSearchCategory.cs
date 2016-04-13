@@ -32,165 +32,125 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
 using Gtk;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Components.MainToolbar
 {
 	class FileSearchCategory : SearchCategory
 	{
-		Widget widget;
-		public FileSearchCategory (Widget widget) : base (GettextCatalog.GetString("Files"))
+		public FileSearchCategory () : base (GettextCatalog.GetString ("Files"))
 		{
-			this.widget = widget;
-			this.lastResult = new WorkerResult (widget);
 		}
 
-		IEnumerable<ProjectFile> files {
-			get {
-				foreach (Document doc in IdeApp.Workbench.Documents) {
-					// We only want to check it here if it's not part
-					// of the open combine.  Otherwise, it will get
-					// checked down below.
-					if (doc.Project == null && doc.IsFile)
-						yield return new ProjectFile (doc.Name);
-				}
-				
-				var projects = IdeApp.Workspace.GetAllProjects ();
+		static FileSearchCategory ()
+		{
+			IdeApp.Workspace.SolutionLoaded += delegate { allFilesCache = null; };
+			IdeApp.Workspace.SolutionUnloaded += delegate { allFilesCache = null; };
+			IdeApp.Workspace.ItemAddedToSolution += delegate { allFilesCache = null; };
+			IdeApp.Workspace.ItemRemovedFromSolution += delegate { allFilesCache = null; };
+			IdeApp.Workspace.FileAddedToProject += delegate { allFilesCache = null; };
+			IdeApp.Workspace.FileRemovedFromProject += delegate { allFilesCache = null; };
+			IdeApp.Workspace.FileRenamedInProject += delegate { allFilesCache = null; };
+			IdeApp.Workbench.DocumentOpened += delegate { allFilesCache = null; };
+			IdeApp.Workbench.DocumentClosed += delegate { allFilesCache = null; };
+		}
 
-				foreach (Project p in projects) {
-					foreach (ProjectFile file in p.Files) {
-						if (file.Subtype != Subtype.Directory && (file.Flags & ProjectItemFlags.Hidden) != ProjectItemFlags.Hidden)
-							yield return file;
+		List<Tuple<string, string, ProjectFile>> GenerateAllFiles ()
+		{
+			//Slowest thing here is GetRelProjectPath, hence Tuple<,,> needs to be cached
+			var list = new List<Tuple<string, string, ProjectFile>> ();
+			foreach (var doc in IdeApp.Workbench.Documents) {
+				// We only want to check it here if it's not part
+				// of the open combine.  Otherwise, it will get
+				// checked down below.
+				if (doc.Project == null && doc.IsFile) {
+					var pf = new ProjectFile (doc.Name);
+					list.Add (new Tuple<string, string, ProjectFile> (System.IO.Path.GetFileName (pf.FilePath), FileSearchResult.GetRelProjectPath (pf), pf));
+				}
+			}
+
+			var projects = IdeApp.Workspace.GetAllProjects ();
+
+			foreach (var p in projects) {
+				foreach (ProjectFile pf in p.Files) {
+					if (pf.Subtype != Subtype.Directory && (pf.Flags & ProjectItemFlags.Hidden) != ProjectItemFlags.Hidden) {
+						list.Add (new Tuple<string, string, ProjectFile> (System.IO.Path.GetFileName (pf.FilePath), FileSearchResult.GetRelProjectPath (pf), pf));
 					}
 				}
 			}
+			return list;
 		}
 
-		WorkerResult lastResult;
-		string[] validTags = new [] { "file"};
+		string [] validTags = new [] { "file", "f" };
+
+		public override string [] Tags {
+			get {
+				return validTags;
+			}
+		}
 
 		public override bool IsValidTag (string tag)
 		{
 			return validTags.Any (t => t == tag);
 		}
 
-		public override Task<ISearchDataSource> GetResults (SearchPopupSearchPattern searchPattern, int resultsCount, CancellationToken token)
+		static List<Tuple<string, string, ProjectFile>> allFilesCache;
+		static object allFilesLock = new object ();
+
+		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{
-			return Task.Factory.StartNew (delegate {
-				if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag))
-					return null;
-				try {
-					var newResult = new WorkerResult (widget);
-					newResult.pattern = searchPattern.Pattern;
-					newResult.IncludeFiles = true;
-					newResult.IncludeTypes = true;
-					newResult.IncludeMembers = true;
-
-					string toMatch = searchPattern.Pattern;
-					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
-					newResult.FullSearch = true;
-
-					AllResults (lastResult, newResult, token);
-					newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
-					lastResult = newResult;
-					return (ISearchDataSource)newResult.results;
-				} catch {
-					token.ThrowIfCancellationRequested ();
-					throw;
+			return Task.Run (delegate {
+				List<Tuple<string, string, ProjectFile>> files;
+				//This lock is here in case user quickly types 5 letters which triggers 5 threads
+				//we don't want to use all CPU doing same thing, instead 1st one will create cache, others will wait here
+				//and then all will use cached version...
+				lock (allFilesLock) {
+					files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
+				}
+				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
+				var savedMatches = new Dictionary<string, MatchResult> ();
+				foreach (var file in files) {
+					if (token.IsCancellationRequested)
+						break;
+					int rank1;
+					int rank2;
+					var match1 = MatchName (savedMatches, matcher, file.Item1, out rank1);
+					var match2 = MatchName (savedMatches, matcher, file.Item2, out rank2);
+					if (match1 && match2) {
+						if (rank1 > rank2 || (rank1 == rank2 && String.CompareOrdinal (file.Item1, file.Item2) > 0)) {
+							searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, file.Item1, rank1, file.Item3));
+						} else {
+							searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, file.Item2, rank2, file.Item3));
+						}
+					} else if (match1) {
+						searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, file.Item1, rank1, file.Item3));
+					} else if (match2) {
+						searchResultCallback.ReportResult (new FileSearchResult (pattern.Pattern, file.Item2, rank2, file.Item3));
+					}
 				}
 			}, token);
 		}
 
-		void AllResults (WorkerResult lastResult, WorkerResult newResult, CancellationToken token)
+		static bool MatchName (Dictionary<string, MatchResult> savedMatches, StringMatcher matcher, string name, out int matchRank)
 		{
-			// Search files
-			if (newResult.IncludeFiles) {
-				newResult.filteredFiles = new List<ProjectFile> ();
-				bool startsWithLastFilter = lastResult != null && lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern) && lastResult.filteredFiles != null;
-				IEnumerable<ProjectFile> allFiles = startsWithLastFilter ? lastResult.filteredFiles : files;
-				foreach (ProjectFile file in allFiles) {
-					token.ThrowIfCancellationRequested ();
-					SearchResult curResult = newResult.CheckFile (file);
-					if (curResult != null) {
-						newResult.filteredFiles.Add (file);
-						newResult.results.Add (curResult);
-					}
-				}
+			if (name == null) {
+				matchRank = -1;
+				return false;
 			}
+			MatchResult savedMatch;
+			if (!savedMatches.TryGetValue (name, out savedMatch)) {
+				bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
+				savedMatches [name] = savedMatch = new MatchResult (doesMatch, matchRank);
+			}
+
+			matchRank = savedMatch.Rank;
+			return savedMatch.Match;
 		}
-		
-		class WorkerResult 
-		{
-			public List<ProjectFile> filteredFiles = null;
-			public List<ITypeDefinition> filteredTypes = null;
-			public List<IMember> filteredMembers  = null;
-			
-			public string pattern = null;
-			public bool isGotoFilePattern;
-			public ResultsDataSource results;
-			
-			public bool FullSearch;
-			
-			public bool IncludeFiles, IncludeTypes, IncludeMembers;
-			
-			public Ambience ambience;
-			
-			public StringMatcher matcher = null;
-			
-			public WorkerResult (Widget widget)
-			{
-				results = new ResultsDataSource (widget);
-			}
-			
-			internal SearchResult CheckFile (ProjectFile file)
-			{
-				int rank;
-				string matchString = System.IO.Path.GetFileName (file.FilePath);
-				if (MatchName (matchString, out rank)) 
-					return new FileSearchResult (pattern, matchString, rank, file, true);
-				
-				if (!FullSearch)
-					return null;
-				matchString = FileSearchResult.GetRelProjectPath (file);
-				if (MatchName (matchString, out rank)) 
-					return new FileSearchResult (pattern, matchString, rank, file, false);
-				
-				return null;
-			}
-			
-			internal SearchResult CheckType (ITypeDefinition type)
-			{
-				int rank;
-				if (MatchName (type.Name, out rank))
-					return new TypeSearchResult (pattern, type.Name, rank, type, false) { Ambience = ambience };
-				if (!FullSearch)
-					return null;
-				if (MatchName (type.FullName, out rank))
-					return new TypeSearchResult (pattern, type.FullName, rank, type, true) { Ambience = ambience };
-				return null;
-			}
-			
-			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> ();
-			bool MatchName (string name, out int matchRank)
-			{
-				if (name == null) {
-					matchRank = -1;
-					return false;
-				}
-				MatchResult savedMatch;
-				if (!savedMatches.TryGetValue (name, out savedMatch)) {
-					bool doesMatch = matcher.CalcMatchRank (name, out matchRank);
-					savedMatches[name] = savedMatch = new MatchResult (doesMatch, matchRank);
-				}
-				
-				matchRank = savedMatch.Rank;
-				return savedMatch.Match;
-			}
-		}
+
 	}
 }
 

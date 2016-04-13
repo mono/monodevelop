@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using System.Linq;
 
 namespace MonoDevelop.Deployment.Gui
 {
@@ -11,22 +12,22 @@ namespace MonoDevelop.Deployment.Gui
 	[System.ComponentModel.ToolboxItem(true)]
 	internal partial class PackagingFeatureWidget : Gtk.Bin
 	{
-		SolutionItem entry;
+		SolutionFolderItem entry;
 		SolutionFolder parentFolder;
 		ArrayList packages = new ArrayList ();
 		PackagingProject newPackProject;
 		bool creatingPackProject;
 		
-		public PackagingFeatureWidget (SolutionFolder parentFolder, SolutionItem entry)
+		public PackagingFeatureWidget (SolutionFolder parentFolder, SolutionFolderItem entry)
 		{
 			this.Build();
 			this.entry = entry;
 			this.parentFolder = parentFolder;
-			
+
 			creatingPackProject = entry is PackagingProject;
 			
 			if (!creatingPackProject) {
-				ReadOnlyCollection<PackagingProject> packProjects = parentFolder.ParentSolution.GetAllSolutionItems<PackagingProject> ();
+				var packProjects = parentFolder.ParentSolution.GetAllItems<PackagingProject> ().ToList ();
 				newPackProject = new PackagingProject ();
 			
 				string label = GettextCatalog.GetString ("Create packages for this project in a new Packaging Project");
@@ -146,12 +147,12 @@ namespace MonoDevelop.Deployment.Gui
 				if (creatingPackProject) {
 					pb.SetSolutionItem (parentFolder.ParentSolution.RootFolder);
 					// Add all compatible projects
-					foreach (SolutionItem e in parentFolder.ParentSolution.GetAllSolutionItems ()) {
+					foreach (SolutionFolderItem e in parentFolder.ParentSolution.GetAllSolutionItems ()) {
 						if (pb.CanBuild (e))
 							pb.AddEntry (e);
 					}
 				} else {
-					pb.SetSolutionItem (parentFolder, new SolutionItem [] { entry });
+					pb.SetSolutionItem (parentFolder, new SolutionFolderItem [] { entry });
 				}
 				
 				PackageBuilder[] defp = pb.CreateDefaultBuilders ();

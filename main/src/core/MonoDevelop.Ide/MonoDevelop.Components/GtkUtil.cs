@@ -39,7 +39,15 @@ namespace MonoDevelop.Components
 	{
 		static Dictionary<TreeView, TreeViewTooltipsData> treeData = new Dictionary<TreeView, TreeViewTooltipsData> ();
 
-		static readonly Xwt.Toolkit gtkToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk);
+		static Xwt.Toolkit gtkToolkit;
+
+		internal static Xwt.Toolkit GtkToolkit {
+			get {
+				if (gtkToolkit == null)
+					gtkToolkit = Xwt.Toolkit.LoadedToolkits.FirstOrDefault (t => t.Type == Xwt.ToolkitType.Gtk);
+				return gtkToolkit;
+			}
+		}
 
 		public static Cairo.Color ToCairoColor (this Gdk.Color color)
 		{
@@ -53,6 +61,11 @@ namespace MonoDevelop.Components
 			return new Xwt.Drawing.Color ((double)color.Red / ushort.MaxValue,
 				(double)color.Green / ushort.MaxValue,
 				(double)color.Blue / ushort.MaxValue);
+		}
+
+		public static string GetHex (this Gdk.Color color)
+		{
+			return String.Format("#{0:x2}{1:x2}{2:x2}", (byte)(color.Red), (byte)(color.Green), (byte)(color.Blue));
 		}
 
 		public static Gdk.Color ToGdkColor (this Cairo.Color color)
@@ -89,6 +102,19 @@ namespace MonoDevelop.Components
 			return c.ToGdkColor ();
 		}
 
+		/// <summary>
+		/// Makes a color lighter or darker
+		/// </summary>
+		/// <param name='lightAmount'>
+		/// Amount of lightness to add. If the value is positive, the color will be lighter,
+		/// if negative it will be darker. Value must be between 0 and 1.
+		/// </param>
+		public static HslColor AddLight (this HslColor color, double lightAmount)
+		{
+			color.L += lightAmount;
+			return color;
+		}
+
 		public static Cairo.Color AddLight (this Cairo.Color color, double lightAmount)
 		{
 			var c = color.ToXwtColor ();
@@ -96,64 +122,70 @@ namespace MonoDevelop.Components
 			return c.ToCairoColor ();
 		}
 
+		/// <summary>
+		/// Makes a color lighter or darker
+		/// </summary>
+		/// <param name='lightAmount'>
+		/// Amount of lightness to add. If the value is positive, the color will be lighter,
+		/// if negative it will be darker. Value must be between 0 and 1.
+		/// </param>
+		public static Xwt.Drawing.Color AddLight (this Xwt.Drawing.Color color, double lightAmount)
+		{
+			color.Light += lightAmount;
+			return color;
+		}
+
 		public static Xwt.Drawing.Context CreateXwtContext (this Gtk.Widget w)
 		{
 			var c = Gdk.CairoHelper.Create (w.GdkWindow);
-			return gtkToolkit.WrapContext (w, c);
+			return GtkToolkit.WrapContext (w, c);
 		}
 
 		public static Gtk.Widget ToGtkWidget (this Xwt.Widget widget)
 		{
-			return (Gtk.Widget) gtkToolkit.GetNativeWidget (widget);
+			return (Gtk.Widget) GtkToolkit.GetNativeWidget (widget);
 		}
 
 		public static void DrawImage (this Cairo.Context s, Gtk.Widget widget, Xwt.Drawing.Image image, double x, double y)
 		{
-			gtkToolkit.RenderImage (widget, s, image, x, y);
+			GtkToolkit.RenderImage (widget, s, image, x, y);
 		}
 
 		public static Xwt.Drawing.Image ToXwtImage (this Gdk.Pixbuf pix)
 		{
-			return gtkToolkit.WrapImage (pix);
+			return GtkToolkit.WrapImage (pix);
 		}
 
 		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image)
 		{
-			return (Gdk.Pixbuf)gtkToolkit.GetNativeImage (image);
+			return (Gdk.Pixbuf)GtkToolkit.GetNativeImage (image);
 		}
 
 		public static Gdk.Pixbuf ToPixbuf (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
-			return (Gdk.Pixbuf)gtkToolkit.GetNativeImage (image.WithSize (size));
+			return (Gdk.Pixbuf)GtkToolkit.GetNativeImage (image.WithSize (size));
 		}
 
 		public static Xwt.Drawing.Image WithSize (this Xwt.Drawing.Image image, Gtk.IconSize size)
 		{
 			int w, h;
-			if (!Gtk.Icon.SizeLookup (size, out w, out h))
-				return image;
-			if (size == IconSize.Menu)
-				w = h = 16;
+			size.GetSize (out w, out h);
 			return image.WithSize (w, h);
 		}
 
-		public static Xwt.Drawing.Image GetImageResource (this RuntimeAddin addin, string resource)
+		public static Xwt.Size GetSize (this IconSize size)
 		{
-			using (var s = addin.GetResource (resource)) {
-				var img = Xwt.Drawing.Image.FromStream (s);
-				int i = resource.LastIndexOf ('.');
-				if (i != -1) {
-					var resource2x = resource.Substring (0, i) + "@2x" + resource.Substring (i);
-					var s2x = addin.GetResource (resource2x);
-					if (s2x != null) {
-						using (s2x) {
-							var img2x = Xwt.Drawing.Image.FromStream (s2x);
-							return Xwt.Drawing.Image.CreateMultiSizeIcon (new Xwt.Drawing.Image[] {img, img2x});
-						}
-					}
-				}
-				return img;
-			}
+			int w, h;
+			size.GetSize (out w, out h);
+			return new Xwt.Size (w, h);
+		}
+
+		public static void GetSize (this IconSize size, out int width, out int height)
+		{
+			if (!Icon.SizeLookup (size, out width, out height))
+				return;
+			if (size == IconSize.Menu)
+				width = height = 16;
 		}
 
 		public static Gdk.Point GetScreenCoordinates (this Gtk.Widget w, Gdk.Point p)
@@ -187,10 +219,7 @@ namespace MonoDevelop.Components
 			tree.ScrollEvent += HandleTreeScrollEvent;
 			tree.Hidden += HandleTreeHidden;
 			tree.Unrealized += HandleTreeHidden;
-			tree.Destroyed += delegate {
-				ResetTooltip (tree);
-				treeData.Remove (tree);
-			};
+			tree.Destroyed += HandleTreeDestroyed;
 		}
 		
 		static void ResetTooltip (Gtk.TreeView tree)
@@ -211,6 +240,14 @@ namespace MonoDevelop.Components
 			ResetTooltip ((Gtk.TreeView) sender);
 		}
 
+		static void HandleTreeDestroyed (object sender, EventArgs e)
+		{
+			var tree = (Gtk.TreeView)sender;
+
+			ResetTooltip (tree);
+			treeData.Remove (tree);
+		}
+
 		[GLib.ConnectBeforeAttribute]
 		static void HandleTreeScrollEvent (object o, ScrollEventArgs args)
 		{
@@ -221,16 +258,30 @@ namespace MonoDevelop.Components
 		static void HandleLeaveNotifyEvent(object o, LeaveNotifyEventArgs args)
 		{
 			TreeView tree = (TreeView) o;
+			ScheduleHideTooltip (tree);
+		}
+
+		internal static void ScheduleHideTooltip (TreeView tree)
+		{
 			TreeViewTooltipsData data;
 			if (!treeData.TryGetValue (tree, out data))
 				return;
 			data.LeaveTimer = GLib.Timeout.Add (50, delegate {
 				data.LeaveTimer = 0;
-				if (data != null && data.Tooltip != null && data.Tooltip.MouseIsOver)
-					return false;
 				HideTooltip (tree);
 				return false;
 			});
+		}
+
+		internal static void UnscheduleHideTooltip (TreeView tree)
+		{
+			TreeViewTooltipsData data;
+			if (!treeData.TryGetValue (tree, out data))
+				return;
+			if (data.LeaveTimer != 0) {
+				GLib.Source.Remove (data.LeaveTimer);
+				data.LeaveTimer = 0;
+			}
 		}
 
 		internal static void HideTooltip (TreeView tree)
@@ -242,6 +293,10 @@ namespace MonoDevelop.Components
 				GLib.Source.Remove (data.ShowTimer);
 				data.ShowTimer = 0;
 				return;
+			}
+			if (data.LeaveTimer != 0) {
+				GLib.Source.Remove (data.LeaveTimer);
+				data.LeaveTimer = 0;
 			}
 			if (data.Tooltip != null) {
 				data.Tooltip.Destroy ();
@@ -297,6 +352,21 @@ namespace MonoDevelop.Components
 				GLib.Source.Remove (data.ShowTimer);
 				data.ShowTimer = 0;
 			}
+		}
+
+		public static bool GetCellForegroundSet (this Gtk.CellRendererText cell)
+		{
+			GLib.Value property = cell.GetProperty ("foreground-set");
+			bool result = (bool)property;
+			property.Dispose ();
+			return result;
+		}
+
+		public static void SetCellForegroundSet (this Gtk.CellRendererText cell, bool value)
+		{
+			GLib.Value val = new GLib.Value (value);
+			cell.SetProperty ("foreground-set", val);
+			val.Dispose ();
 		}
 
 		public static Gdk.Rectangle ToScreenCoordinates (Gtk.Widget widget, Gdk.Window w, Gdk.Rectangle rect)
@@ -494,8 +564,15 @@ namespace MonoDevelop.Components
 			#if MAC
 			var entries = window.FindAllChildWidgets ().OfType<Gtk.Entry> ();
 			foreach (var entry in entries) {
-				entry.ButtonPressEvent += EntryButtonPressHandler;
+				entry.UseNativeContextMenus ();
 			}
+			#endif
+		}
+
+		public static void UseNativeContextMenus (this Gtk.Entry entry)
+		{
+			#if MAC
+			entry.ButtonPressEvent += EntryButtonPressHandler;
 			#endif
 		}
 
@@ -515,9 +592,13 @@ namespace MonoDevelop.Components
 			paste.Clicked += PasteClicked;
 			context_menu.Items.Add (paste);
 
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
+
 			var delete = new ContextMenuItem { Label = GettextCatalog.GetString ("Delete"), Context = entry };
 			delete.Clicked += DeleteClicked;
 			context_menu.Items.Add (delete);
+
+			context_menu.Items.Add (new SeparatorContextMenuItem ());
 
 			var select_all = new ContextMenuItem { Label = GettextCatalog.GetString ("Select All"), Context = entry };
 			select_all.Clicked += SelectAllClicked;
@@ -737,8 +818,6 @@ namespace MonoDevelop.Components
 		TreeView tree;
 		TreeIter iter;
 
-		public bool MouseIsOver;
-		
 		public CellTooltipWindow (TreeView tree, TreeViewColumn col, TreePath path)
 		{
 			this.tree = tree;
@@ -780,6 +859,7 @@ namespace MonoDevelop.Components
 
 			Gdk.Rectangle expose = Allocation;
 			Gdk.Color save = Gdk.Color.Zero;
+			bool hasFgColor = false;
 			int x = 1;
 
 			col.CellSetCellData (tree.Model, iter, false, false);
@@ -789,6 +869,7 @@ namespace MonoDevelop.Components
 					continue;
 
 				if (cr is CellRendererText) {
+					hasFgColor = ((CellRendererText)cr).GetCellForegroundSet ();
 					save = ((CellRendererText)cr).ForegroundGdk;
 					((CellRendererText)cr).ForegroundGdk = Style.Foreground (State);
 				}
@@ -805,6 +886,7 @@ namespace MonoDevelop.Components
 
 				if (cr is CellRendererText) {
 					((CellRendererText)cr).ForegroundGdk = save;
+					((CellRendererText)cr).SetCellForegroundSet (hasFgColor);
 				}
 			}
 
@@ -886,14 +968,16 @@ namespace MonoDevelop.Components
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			MouseIsOver = false;
-			GtkUtil.HideTooltip (tree);
+			// While showing a window, if the cursor is in the area of the new window, sometimes we get several Enter/Leave events
+			// in sequence, until the window is fully visible. To avoid hiding the window too early, we schedule here a tooltip
+			// hide, which will be canceled if we get a new Enter event.
+			GtkUtil.ScheduleHideTooltip (tree);
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			MouseIsOver = true;
+			GtkUtil.UnscheduleHideTooltip (tree);
 			return base.OnEnterNotifyEvent (evnt);
 		}
 	}

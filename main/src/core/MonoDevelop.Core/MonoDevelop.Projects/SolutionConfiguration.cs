@@ -42,15 +42,11 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class SolutionConfiguration : ItemConfiguration
+	public sealed class SolutionConfiguration : ItemConfiguration
 	{
 		Solution parentSolution;
 		
 		List<SolutionConfigurationEntry> configurations = new List<SolutionConfigurationEntry> ();
-		
-		public SolutionConfiguration ()
-		{
-		}
 		
 		public SolutionConfiguration (string id): base (id)
 		{
@@ -73,7 +69,7 @@ namespace MonoDevelop.Projects
 			get { return configurations.AsReadOnly (); }
 		}
 		
-		public bool BuildEnabledForItem (SolutionEntityItem item)
+		public bool BuildEnabledForItem (SolutionItem item)
 		{
 			foreach (SolutionConfigurationEntry entry in configurations) {
 				if (entry.Item == item)
@@ -82,7 +78,7 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		public string GetMappedConfiguration (SolutionEntityItem item)
+		public string GetMappedConfiguration (SolutionItem item)
 		{
 			foreach (SolutionConfigurationEntry entry in configurations) {
 				if (entry.Item == item)
@@ -91,7 +87,7 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		public SolutionConfigurationEntry GetEntryForItem (SolutionEntityItem item)
+		public SolutionConfigurationEntry GetEntryForItem (SolutionItem item)
 		{
 			foreach (SolutionConfigurationEntry entry in configurations) {
 				if (entry.Item == item)
@@ -100,13 +96,13 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 		
-		public SolutionConfigurationEntry AddItem (SolutionEntityItem item)
+		public SolutionConfigurationEntry AddItem (SolutionItem item)
 		{
 			string conf = FindMatchingConfiguration (item);
 			return AddItem (item, conf != null, conf);
 		}
 		
-		string FindMatchingConfiguration (SolutionEntityItem item)
+		string FindMatchingConfiguration (SolutionItem item)
 		{
 			SolutionItemConfiguration startupConfiguration = null;
 
@@ -153,7 +149,7 @@ namespace MonoDevelop.Projects
 			return item.Configurations [0].Id;
 		}
 		
-		public SolutionConfigurationEntry AddItem (SolutionEntityItem item, bool build, string itemConfiguration)
+		public SolutionConfigurationEntry AddItem (SolutionItem item, bool build, string itemConfiguration)
 		{
 			if (itemConfiguration == null)
 				itemConfiguration = Name;
@@ -166,7 +162,7 @@ namespace MonoDevelop.Projects
 			return conf;
 		}
 		
-		public void RemoveItem (SolutionEntityItem item)
+		public void RemoveItem (SolutionItem item)
 		{
 			for (int n=0; n<configurations.Count; n++) {
 				if (configurations [n].Item == item) {
@@ -176,7 +172,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void ReplaceItem (SolutionEntityItem oldItem, SolutionEntityItem newItem)
+		internal void ReplaceItem (SolutionItem oldItem, SolutionItem newItem)
 		{
 			foreach (var e in configurations.Where (ce => ce.Item == oldItem))
 				e.Item = newItem;
@@ -184,9 +180,9 @@ namespace MonoDevelop.Projects
 				parentSolution.UpdateDefaultConfigurations ();
 		}
 		
-		public override void CopyFrom (ItemConfiguration configuration)
+		protected override void OnCopyFrom (ItemConfiguration configuration, bool isRename)
 		{
-			base.CopyFrom (configuration);
+			base.OnCopyFrom (configuration, isRename);
 			
 			SolutionConfiguration conf = (SolutionConfiguration) configuration;
 			if (parentSolution == null)
@@ -203,7 +199,7 @@ namespace MonoDevelop.Projects
 	
 	public class SolutionConfigurationEntry 
 	{
-		SolutionEntityItem item;
+		SolutionItem item;
 		SolutionConfiguration parentConfig;
 		
 		[ItemProperty ("name")]
@@ -227,7 +223,7 @@ namespace MonoDevelop.Projects
 			this.deploy = other.deploy;
 		}
 		
-		internal SolutionConfigurationEntry (SolutionConfiguration parentConfig, SolutionEntityItem item)
+		internal SolutionConfigurationEntry (SolutionConfiguration parentConfig, SolutionItem item)
 		{
 			this.parentConfig = parentConfig;
 			this.item = item;
@@ -258,12 +254,12 @@ namespace MonoDevelop.Projects
 			set { deploy = value; }
 		}
 
-		public SolutionEntityItem Item {
+		public SolutionItem Item {
 			get {
 				if (item == null && parentConfig != null) {
 					Solution sol = parentConfig.ParentSolution;
 					if (sol != null)
-						item = sol.GetSolutionItem (itemId) as SolutionEntityItem;
+						item = sol.GetSolutionItem (itemId) as SolutionItem;
 				}
 				return item;
 			}

@@ -25,8 +25,9 @@
 
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
@@ -60,9 +61,20 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public MarkerPanel()
 		{
 			this.Build();
+			showLineNumbers = DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
+			underlineErrors = DefaultSourceEditorOptions.Instance.UnderlineErrors;
+			highlightMatchingBracket = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
+			highlightCurrentLine = DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+			showRuler = DefaultSourceEditorOptions.Instance.ShowRuler;
+			enableAnimation = DefaultSourceEditorOptions.Instance.EnableAnimations;
+			enableHighlightUsages = DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
+			drawIndentMarkers = DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
+			showWhitespaces = DefaultSourceEditorOptions.Instance.ShowWhitespaces;
+			includeWhitespaces = DefaultSourceEditorOptions.Instance.IncludeWhitespaces;
+			enableQuickDiff = DefaultSourceEditorOptions.Instance.EnableQuickDiff;
 		}
 		
-		public virtual Gtk.Widget CreatePanelWidget ()
+		public virtual Control CreatePanelWidget ()
 		{
 			this.showLineNumbersCheckbutton.Active = showLineNumbers = DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
 			this.showLineNumbersCheckbutton.Toggled += delegate {

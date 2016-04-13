@@ -25,11 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageSourceViewModelChangedEventArgs : EventArgs
+	internal class PackageSourceViewModelChangedEventArgs : EventArgs
 	{
 		public PackageSourceViewModelChangedEventArgs (PackageSourceViewModel packageSource)
 		{

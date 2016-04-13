@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTargetFrameworkChangedEventArgs : EventArgs
+	internal class ProjectTargetFrameworkChangedEventArgs : EventArgs
 	{
 		public ProjectTargetFrameworkChangedEventArgs (IDotNetProject project)
 		{

@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -33,8 +35,13 @@ namespace MonoDevelop.Projects
 		public ProjectItemEventArgs ()
 		{
 		}
-		
-		public ProjectItemEventArgs (SolutionEntityItem solutionItem, ProjectItem item)
+
+		public ProjectItemEventArgs (IEnumerable<ProjectItemEventInfo> infos)
+		{
+			AddRange (infos);
+		}
+
+		public ProjectItemEventArgs (SolutionItem solutionItem, ProjectItem item)
 		{
 			Add (new ProjectItemEventInfo (solutionItem, item)); 
 		}
@@ -43,15 +50,15 @@ namespace MonoDevelop.Projects
 	public class ProjectItemEventInfo
 	{
 		ProjectItem item;
-		SolutionEntityItem solutionItem;
+		SolutionItem solutionItem;
 		
-		public ProjectItemEventInfo (SolutionEntityItem solutionItem, ProjectItem item)
+		public ProjectItemEventInfo (SolutionItem solutionItem, ProjectItem item)
 		{
 			this.item = item;
 			this.solutionItem = solutionItem;
 		}
 		
-		public SolutionEntityItem SolutionItem {
+		public SolutionItem SolutionItem {
 			get {
 				return solutionItem;
 			}

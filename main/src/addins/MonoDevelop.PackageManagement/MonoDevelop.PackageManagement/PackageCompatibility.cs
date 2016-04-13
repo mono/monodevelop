@@ -28,12 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCompatibility
+	internal class PackageCompatibility
 	{
 		IDotNetProject project;
 		IPackage package;

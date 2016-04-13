@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeProjectManager : ISharpDevelopProjectManager
+	public class FakeProjectManager : IMonoDevelopProjectManager
 	{
 		public FakePackageRepository FakeLocalRepository {
 			get { return LocalRepository as FakePackageRepository; }
@@ -55,8 +55,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		protected virtual void OnPackageReferenceAdded (IPackage package)
 		{
+			OnPackageReferenceAdded (new PackageOperationEventArgs (package, null, String.Empty));
+		}
+
+		protected virtual void OnPackageReferenceAdded (PackageOperationEventArgs eventArgs)
+		{
 			if (PackageReferenceAdded != null) {
-				PackageReferenceAdded (this, new PackageOperationEventArgs (package, null, String.Empty));
+				PackageReferenceAdded (this, eventArgs);
 			}
 		}
 
@@ -113,6 +118,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void FirePackageReferenceAdded (IPackage package)
 		{
 			OnPackageReferenceAdded (package);
+		}
+
+		public void FirePackageReferenceAdded (PackageOperationEventArgs eventArgs)
+		{
+			OnPackageReferenceAdded (eventArgs);
 		}
 
 		public void FirePackageReferenceRemoved (IPackage package)

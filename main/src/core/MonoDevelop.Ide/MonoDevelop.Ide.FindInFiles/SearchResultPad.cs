@@ -31,10 +31,13 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using System.Threading;
+using MonoDevelop.Components;
+using System;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
-	public class SearchResultPad : AbstractPadContent
+	public class SearchResultPad : PadContent
 	{
 		readonly SearchResultWidget widget = new SearchResultWidget ();
 		
@@ -44,18 +47,18 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Control Control {
 			get {
 				return widget;
 			}
 		}
 		
-		public IAsyncOperation AsyncOperation {
+		public CancellationTokenSource CancellationTokenSource {
 			get {
-				return widget.AsyncOperation;
+				return widget.CancellationTokenSource;
 			}
 			set {
-				widget.AsyncOperation = value;
+				widget.CancellationTokenSource = value;
 			}
 		}
 		public bool FocusPad {
@@ -94,10 +97,23 @@ namespace MonoDevelop.Ide.FindInFiles
 			widget.AddRange (results);
 		}
 		
-		public override void Initialize (IPadWindow window)
+		protected override void Initialize (IPadWindow window)
 		{
 			window.Icon = Stock.FindIcon;
+
+			IdeApp.Workspace.LastWorkspaceItemClosed += OnLastWorkspaceItemClosed;
 			base.Initialize (window);
+		}
+
+		public override void Dispose ()
+		{
+			IdeApp.Workspace.LastWorkspaceItemClosed -= OnLastWorkspaceItemClosed;
+			base.Dispose ();
+		}
+
+		void OnLastWorkspaceItemClosed (object sender, EventArgs args)
+		{
+			widget.Reset ();
 		}
 		
 		public void BeginProgress (string title)

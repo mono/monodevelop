@@ -27,20 +27,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class UpdateAllPackagesInProjectHandler : PackagesCommandHandler
+	internal class UpdateAllPackagesInProjectHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{
 			try {
+				IPackageManagementSolution solution = GetPackageManagementSolution ();
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-				RestoreBeforeUpdateAction.Restore (project, () => {
-					DispatchService.GuiSyncDispatch (() => Update (project));
+				RestoreBeforeUpdateAction.Restore (solution, project, () => {
+					Runtime.RunInMainThread (() => Update (project)).Wait ();
 				});
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);

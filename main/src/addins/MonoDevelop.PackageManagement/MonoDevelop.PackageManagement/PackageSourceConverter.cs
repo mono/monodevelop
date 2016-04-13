@@ -31,9 +31,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class PackageSourceConverter
+	internal static class PackageSourceConverter
 	{
 		public static IEnumerable<PackageSource> ConvertFromSettings(IEnumerable<SettingValue> packageSources)
 		{

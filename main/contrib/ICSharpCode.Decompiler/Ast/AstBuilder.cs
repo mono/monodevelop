@@ -72,6 +72,8 @@ namespace ICSharpCode.Decompiler.Ast
 					return true;
 				if (settings.AnonymousMethods && method.HasGeneratedName() && method.IsCompilerGenerated())
 					return true;
+				if (settings.HideNonPublicMembers && !(method.IsPublic || method.IsFamily))
+					return true;
 			}
 
 			TypeDefinition type = member as TypeDefinition;
@@ -89,6 +91,8 @@ namespace ICSharpCode.Decompiler.Ast
 					if (type.IsAnonymousType())
 						return true;
 				}
+				if (settings.HideNonPublicMembers && !(type.IsPublic))
+					return true;
 			}
 			
 			FieldDefinition field = member as FieldDefinition;

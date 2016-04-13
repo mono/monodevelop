@@ -51,6 +51,9 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Desktop;
+using System.Threading.Tasks;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
 {
@@ -59,15 +62,14 @@ namespace MonoDevelop.Ide
 		Socket listen_socket   = null;
 		ArrayList errorsList = new ArrayList ();
 		bool initialized;
-		internal static string DefaultTheme;
 		static readonly int ipcBasePort = 40000;
 		
-		int IApplication.Run (string[] args)
+		Task<int> IApplication.Run (string[] args)
 		{
 			var options = MonoDevelopOptions.Parse (args);
 			if (options.Error != null || options.ShowHelp)
-				return options.Error != null? -1 : 0;
-			return Run (options);
+				return Task.FromResult (options.Error != null? -1 : 0);
+			return Task.FromResult (Run (options));
 		}
 		
 		int Run (MonoDevelopOptions options)
@@ -79,9 +81,6 @@ namespace MonoDevelop.Ide
 			Platform.Initialize ();
 
 			LoggingService.LogInfo ("Operating System: {0}", SystemInformation.GetOperatingSystemDescription ());
-
-			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
-			IdeApp.Customizer.Initialize ();
 
 			Counters.Initialization.BeginTiming ();
 
@@ -95,17 +94,18 @@ namespace MonoDevelop.Ide
 			if (Platform.IsWindows && !CheckWindowsGtk ())
 				return 1;
 			SetupExceptionManager ();
-			
+
+			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
+			IdeApp.Customizer.Initialize ();
+
 			try {
 				GLibLogging.Enabled = true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
 
-			SetupTheme ();
-
 			var args = options.RemainingArgs.ToArray ();
-			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
+			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
 
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
@@ -115,23 +115,23 @@ namespace MonoDevelop.Ide
 			Xwt.Application.InitializeAsGuest (Xwt.ToolkitType.Gtk);
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,GtkExtendedTitleBarWindowBackend> ();
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarDialogBackend,GtkExtendedTitleBarDialogBackend> ();
+			IdeTheme.SetupXwtTheme ();
 
 			//default to Windows IME on Windows
-			if (Platform.IsWindows && Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 16) {
+			if (Platform.IsWindows && GtkWorkarounds.GtkMinorVersion >= 16) {
 				var settings = Gtk.Settings.Default;
-				var val = Mono.TextEditor.GtkWorkarounds.GetProperty (settings, "gtk-im-module");
+				var val = GtkWorkarounds.GetProperty (settings, "gtk-im-module");
 				if (string.IsNullOrEmpty (val.Val as string))
-					Mono.TextEditor.GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
+					GtkWorkarounds.SetProperty (settings, "gtk-im-module", new GLib.Value ("ime"));
 			}
 			
-			InternalLog.Initialize ();
 			string socket_filename = null;
 			EndPoint ep = null;
 			
 			DispatchService.Initialize ();
 
 			// Set a synchronization context for the main gtk thread
-			SynchronizationContext.SetSynchronizationContext (new GtkSynchronizationContext ());
+			SynchronizationContext.SetSynchronizationContext (DispatchService.SynchronizationContext);
 			Runtime.MainSynchronizationContext = SynchronizationContext.Current;
 			
 			AddinManager.AddinLoadError += OnAddinError;
@@ -158,15 +158,9 @@ namespace MonoDevelop.Ide
 
 			Counters.Initialization.Trace ("Initializing theme");
 
-			DefaultTheme = Gtk.Settings.Default.ThemeName;
-			string theme = IdeApp.Preferences.UserInterfaceTheme;
-			if (string.IsNullOrEmpty (theme))
-				theme = DefaultTheme;
-			ValidateGtkTheme (ref theme);
-			if (theme != DefaultTheme)
-				Gtk.Settings.Default.ThemeName = theme;
+			IdeTheme.SetupGtkTheme ();
 			
-			IProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
+			ProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
 
@@ -203,12 +197,6 @@ namespace MonoDevelop.Ide
 			}
 			
 			Counters.Initialization.Trace ("Checking System");
-			string version = Assembly.GetEntryAssembly ().GetName ().Version.Major + "." + Assembly.GetEntryAssembly ().GetName ().Version.Minor;
-			
-			if (Assembly.GetEntryAssembly ().GetName ().Version.Build != 0)
-				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Build;
-			if (Assembly.GetEntryAssembly ().GetName ().Version.Revision != 0)
-				version += "." + Assembly.GetEntryAssembly ().GetName ().Version.Revision;
 
 			CheckFileWatcher ();
 			
@@ -237,20 +225,18 @@ namespace MonoDevelop.Ide
 				if (!CheckSCPlugin ())
 					return 1;
 
-				// no alternative for Application.ThreadException?
-				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
-
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
 
 				// load previous combine
+				RecentFile openedProject = null;
 				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
-					if (proj != null)
-						IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
+					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					if (openedProject != null)
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList), TaskScheduler.FromCurrentSynchronizationContext ());
 				}
-
-				IdeApp.OpenFiles (startupInfo.RequestedFileList);
+				if (openedProject == null)
+					IdeApp.OpenFiles (startupInfo.RequestedFileList);
 				
 				monitor.Step (1);
 			
@@ -272,7 +258,8 @@ namespace MonoDevelop.Ide
 			}
 			
 			errorsList = null;
-			
+			AddinManager.AddinLoadError -= OnAddinError;
+
 			// FIXME: we should probably track the last 'selected' one
 			// and do this more cleanly
 			try {
@@ -304,7 +291,6 @@ namespace MonoDevelop.Ide
 			IdeApp.Customizer.OnCoreShutdown ();
 
 			InstrumentationService.Stop ();
-			AddinManager.AddinLoadError -= OnAddinError;
 			
 			return 0;
 		}
@@ -339,31 +325,6 @@ namespace MonoDevelop.Ide
 			lockupCheckThread.Name = "Lockup check";
 			lockupCheckThread.IsBackground = true;
 			lockupCheckThread.Start (); 
-		}
-
-		void SetupTheme ()
-		{
-			// Use the bundled gtkrc only if the Xamarin theme is installed
-			if (File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.so")) || File.Exists (Path.Combine (Gtk.Rc.ModuleDir, "libxamarin.dll"))) {
-				var gtkrc = "gtkrc";
-				if (Platform.IsWindows) {
-					gtkrc += ".win32";
-					var osv = Environment.OSVersion.Version;
-					if (osv.Major == 6 && osv.Minor < 1)
-						gtkrc += "-vista";
-				} else if (Platform.IsMac) {
-					gtkrc += ".mac";
-
-					var osv = Platform.OSVersion;
-					if (osv.Major == 10 && osv.Minor >= 10) {
-						gtkrc += "-yosemite";
-					}
-				}
-
-				var gtkrcf = PropertyService.EntryAssemblyPath.Combine (gtkrc);
-				LoggingService.LogInfo ("GTK: Using gtkrc from {0}", gtkrcf);
-				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", gtkrcf);
-			}
 		}
 
 		[System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
@@ -503,47 +464,6 @@ namespace MonoDevelop.Ide
 			IdeApp.Workbench.Present ();
 			return false;
 		}
-
-		internal static string[] gtkThemeFallbacks = new string[] {
-			"Xamarin",// the best!
-			"Gilouche", // SUSE
-			"Mint-X", // MINT
-			"Radiance", // Ubuntu 'light' theme (MD looks better with the light theme in 4.0 - if that changes switch this one)
-			"Clearlooks" // GTK theme
-		};
-
-		static void ValidateGtkTheme (ref string theme)
-		{
-			if (!MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.IsBadGtkTheme (theme))
-				return;
-
-			var themes = MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanelWidget.InstalledThemes;
-
-			string fallback = gtkThemeFallbacks
-				.Select (fb => themes.FirstOrDefault (t => string.Compare (fb, t, StringComparison.OrdinalIgnoreCase) == 0))
-				.FirstOrDefault (t => t != null);
-
-			string message = "Theme Not Supported";
-
-			string detail;
-			if (themes.Count > 0) {
-				detail =
-					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable. MonoDevelop will " +
-					"now switch to an alternate GTK+ theme.\n\n" +
-					"This message will continue to be shown at startup until you set a alternate GTK+ theme as your " +
-					"default in the GTK+ Theme Selector or MonoDevelop Preferences.";
-			} else {
-				detail =
-					"Your system is using the '{0}' GTK+ theme, which is known to be very unstable, and no other GTK+ " +
-					"themes appear to be installed. Please install another GTK+ theme.\n\n" +
-					"This message will continue to be shown at startup until you install a different GTK+ theme and " +
-					"set it as your default in the GTK+ Theme Selector or MonoDevelop Preferences.";
-			}
-
-			MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), AlertButton.Ok);
-
-			theme = fallback ?? themes.FirstOrDefault () ?? theme;
-		}
 		
 		void CheckFileWatcher ()
 		{
@@ -616,6 +536,14 @@ namespace MonoDevelop.Ide
 		static void HandleException (Exception ex, bool willShutdown)
 		{
 			var msg = String.Format ("An unhandled exception has occured. Terminating {0}? {1}", BrandingService.ApplicationName, willShutdown);
+			var aggregateException = ex as AggregateException;
+			if (aggregateException != null) {
+				aggregateException.Flatten ().Handle (innerEx => {
+					HandleException (innerEx, willShutdown);
+					return true;
+				});
+				return;
+			}
 
 			if (willShutdown)
 				LoggingService.LogFatalError (msg, ex);
@@ -647,6 +575,12 @@ namespace MonoDevelop.Ide
 			if (customizer == null)
 				customizer = LoadBrandingCustomizer ();
 			options.IdeCustomizer = customizer;
+
+			if (!Platform.IsWindows) {
+				// Limit maximum threads when running on mono
+				int threadCount = 8 * Environment.ProcessorCount;
+				ThreadPool.SetMaxThreads (threadCount, threadCount);
+			}
 
 			int ret = -1;
 			try {

@@ -36,9 +36,9 @@ using MonoDevelop.Projects;
 using NuGet;
 using MonoDevelop.PackageManagement;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementSelectedProjects
+	internal class PackageManagementSelectedProjects
 	{
 		bool? singleProjectSelected;
 		IDotNetProject singleDotNetProjectSelected;

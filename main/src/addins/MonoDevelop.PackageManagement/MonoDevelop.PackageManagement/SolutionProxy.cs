@@ -32,10 +32,11 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class SolutionProxy : ISolution
+	internal class SolutionProxy : ISolution
 	{
 		Solution solution;
 		EventHandler<DotNetProjectEventArgs> projectAdded;
+		EventHandler<DotNetProjectEventArgs> projectRemoved;
 
 		public SolutionProxy (Solution solution)
 		{
@@ -82,6 +83,29 @@ namespace MonoDevelop.PackageManagement
 			var project = e.SolutionItem as DotNetProject;
 			if (project != null) {
 				projectAdded (this, new DotNetProjectEventArgs (project));
+			}
+		}
+
+		public event EventHandler<DotNetProjectEventArgs> ProjectRemoved {
+			add {
+				if (projectRemoved == null) {
+					solution.SolutionItemRemoved += SolutionItemRemoved;
+				}
+				projectRemoved += value;
+			}
+			remove {
+				projectRemoved -= value;
+				if (projectRemoved == null) {
+					solution.SolutionItemRemoved -= SolutionItemRemoved;
+				}
+			}
+		}
+
+		void SolutionItemRemoved (object sender, SolutionItemChangeEventArgs e)
+		{
+			var project = e.SolutionItem as DotNetProject;
+			if (project != null) {
+				projectRemoved (this, new DotNetProjectEventArgs (project));
 			}
 		}
 	}

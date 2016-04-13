@@ -29,14 +29,15 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class ColorShemeEditor : Gtk.Dialog
 	{
-		TextEditor textEditor;
+		MonoTextEditor textEditor;
 		ColorScheme colorSheme;
-		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ColorScheme.PropertyDecsription), typeof(object));
+		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ColorScheme.PropertyDescription), typeof(object));
 		string fileName;
 		HighlightingPanel panel;
 
@@ -44,8 +45,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.panel = panel;
 			this.Build ();
-			textEditor = new TextEditor ();
-			textEditor.Options = DefaultSourceEditorOptions.Instance;
+			textEditor = new MonoTextEditor ();
+			textEditor.Options = new StyledSourceEditorOptions (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance);
 			this.scrolledwindowTextEditor.Child = textEditor;
 			textEditor.ShowAll ();
 			
@@ -73,7 +74,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void SyntaxCellRenderer (Gtk.CellLayout cell_layout, Gtk.CellRenderer cell, Gtk.TreeModel tree_model, Gtk.TreeIter iter)
 		{
 			var renderer = (Gtk.CellRendererText)cell;
-			var data = (ColorScheme.PropertyDecsription)colorStore.GetValue (iter, 1);
+			var data = (ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
 			string markup = GLib.Markup.EscapeText (data.Attribute.Name);
 			renderer.Markup = markup;
 		}
@@ -86,7 +87,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (colorStore.GetIterFirst (out iter)) {
 				do {
-					var data = (ColorScheme.PropertyDecsription)colorStore.GetValue (iter, 1);
+					var data = (ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
 					var style = colorStore.GetValue (iter, 2);
 					data.Info.SetValue (sheme, style, null);
 				} while (colorStore.IterNext (ref iter));
@@ -100,8 +101,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				if (editor == null)
 					continue;
 				doc.UpdateParseDocument ();
-				editor.Parent.TextViewMargin.PurgeLayoutCache ();
-				editor.Document.CommitUpdateAll ();
+//				editor.Parent.TextViewMargin.PurgeLayoutCache ();
+//				editor.Document.CommitUpdateAll ();
 			}
 		
 		}

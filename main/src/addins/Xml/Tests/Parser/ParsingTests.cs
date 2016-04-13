@@ -27,11 +27,11 @@
 //
 
 using System.Linq;
+using NUnit.Framework;
 
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
-using NUnit.Framework;
+using MonoDevelop.Ide.TypeSystem;
 
 
 namespace MonoDevelop.Xml.Tests.Parser
@@ -170,7 +170,17 @@ namespace MonoDevelop.Xml.Tests.Parser
 			parser.AssertEmpty ();
 			parser.AssertErrorCount (0);
 		}
-		
+
+
+		[Test]
+		public void BadClosingTag ()
+		{
+			var parser = new TestXmlParser (CreateRootState ());
+			parser.Parse (@"<doc><x><abc></ab c><cd></cd></x></doc>");
+			parser.AssertEmpty ();
+			parser.AssertErrorCount (2);
+		}
+
 		[Test]
 		public void Misc ()
 		{
@@ -243,8 +253,8 @@ namespace MonoDevelop.Xml.Tests.Parser
 			Assert.AreEqual ("foo", el.Attributes.ElementAt (2).Name.Name);
 			Assert.AreEqual (3, el.Attributes.Count ());
 			parser.AssertErrorCount (1);
-			Assert.AreEqual (1, parser.Errors [0].Region.BeginLine);
-			Assert.AreEqual (26, parser.Errors [0].Region.BeginColumn);
+			Assert.AreEqual (1, parser.Errors [0].Region.Begin.Line);
+			Assert.AreEqual (26, parser.Errors [0].Region.Begin.Column);
 		}
 
 		[Test]

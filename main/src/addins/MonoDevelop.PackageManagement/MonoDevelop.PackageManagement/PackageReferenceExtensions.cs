@@ -26,13 +26,13 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class PackageReferenceExtensions
+	internal static class PackageReferenceExtensions
 	{
 		public static bool IsPackageInstalled (this PackageReference packageReference, DotNetProject project)
 		{
@@ -51,6 +51,15 @@ namespace MonoDevelop.PackageManagement
 			return repository
 				.GetPackageLookupPaths (packageReference.Id, packageReference.Version)
 				.Any ();
+		}
+
+		public static bool IsReleaseVersion (this PackageReference packageReference)
+		{
+			if (packageReference.Version == null) {
+				return true;
+			}
+
+			return String.IsNullOrEmpty (packageReference.Version.SpecialVersion);
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Extensions
 	[ExtensionNodeChild (typeof(OptionsDialogSection))]
 	[ExtensionNodeChild (typeof(OptionsPanelNode))]
 	[ExtensionNode ("Section")]
-	public class OptionsDialogSection: OptionsPanelNode, ICloneable
+	class OptionsDialogSection: OptionsPanelNode, ICloneable
 	{
 		[NodeAttribute]
 		string icon;

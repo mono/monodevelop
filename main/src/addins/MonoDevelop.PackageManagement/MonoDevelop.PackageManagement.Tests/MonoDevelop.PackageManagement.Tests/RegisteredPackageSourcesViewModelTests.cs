@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
@@ -127,7 +127,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Load_PackageSourceModifiedAfterLoadAndSaveNotCalled_RegisteredPackageSourcesInOptionsUnchanged ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Test", "http://sharpdevelop.com");
+			AddPackageSourceToOptions ("Test", "http://monodevelop.com");
 			viewModel.Load ();
 
 			PackageSourceViewModel packageSourceViewModel = viewModel.PackageSourceViewModels [0];
@@ -135,7 +135,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageSourceViewModel.SourceUrl = "changed-url";
 
 			var expectedSources = new PackageSource[] {
-				new PackageSource ("http://sharpdevelop.com", "Test")
+				new PackageSource ("http://monodevelop.com", "Test")
 			};
 
 			PackageSourceCollectionAssert.AreEqual (expectedSources, packageSources);
@@ -145,7 +145,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Save_PackageSourceModifiedAfterLoad_RegisteredPackageSourcesInOptionsUpdated ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Test", "http://sharpdevelop.com");
+			AddPackageSourceToOptions ("Test", "http://monodevelop.com");
 			viewModel.Load ();
 
 			PackageSourceViewModel packageSourceViewModel = viewModel.PackageSourceViewModels [0];
@@ -165,17 +165,17 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Save_OnePackageSourceAddedAfterLoadAndBeforeSave_TwoRegisteredPackageSourcesInOptions ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Test", "http://sharpdevelop.com/1");
+			AddPackageSourceToOptions ("Test", "http://monodevelop.com/1");
 			viewModel.Load ();
 
-			var newSource = new PackageSource ("http://sharpdevelop.com/2", "Test");
+			var newSource = new PackageSource ("http://monodevelop.com/2", "Test");
 
 			var newPackageSourceViewModel = new PackageSourceViewModel (newSource);
 			viewModel.PackageSourceViewModels.Add (newPackageSourceViewModel);
 
 			viewModel.Save ();
 
-			var expectedSource = new PackageSource ("http://sharpdevelop.com/1", "Test");
+			var expectedSource = new PackageSource ("http://monodevelop.com/1", "Test");
 
 			var expectedSources = new PackageSource[] {
 				expectedSource,
@@ -191,12 +191,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateViewModel ();
 			viewModel.Load ();
 			viewModel.NewPackageSourceName = "Test";
-			viewModel.NewPackageSourceUrl = "http://sharpdevelop.com";
+			viewModel.NewPackageSourceUrl = "http://monodevelop.com";
 
 			viewModel.AddPackageSourceCommand.Execute (null);
 
 			var expectedSources = new PackageSource[] {
-				new PackageSource ("http://sharpdevelop.com", "Test")
+				new PackageSource ("http://monodevelop.com", "Test")
 			};
 
 			PackageSourceCollectionAssert.AreEqual (expectedSources, viewModel.PackageSourceViewModels);

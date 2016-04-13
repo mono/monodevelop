@@ -29,9 +29,9 @@ namespace MonoDevelop.Autotools
 {
 	public interface IMakefileHandler
 	{
-		bool CanDeploy (SolutionItem entry, MakefileType type);
+		bool CanDeploy (SolutionFolderItem entry, MakefileType type);
 
-		Makefile Deploy (AutotoolsContext ctx, SolutionItem entry, IProgressMonitor monitor);
+		Makefile Deploy (AutotoolsContext ctx, SolutionFolderItem entry, ProgressMonitor monitor);
 	}
 	
 	public enum MakefileType

@@ -32,6 +32,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.AutoTest;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -119,7 +120,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 				ClearPopupMenuItems ();
 				AddLanguageMenuItems (popupMenu, template);
-				popupMenu.ModifyBg (StateType.Normal, GtkTemplateCellRenderer.LanguageButtonBackgroundColor);
+				popupMenu.ModifyBg (StateType.Normal, Styles.NewProjectDialog.TemplateLanguageButtonBackground.ToGdkColor ());
 				popupMenu.ShowAll ();
 
 				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
@@ -202,6 +203,13 @@ namespace MonoDevelop.Ide.Projects
 				popupMenu.Destroy ();
 				popupMenu = null;
 			}
+
+			if (!controller.IsFirstPage)
+				templatesHBox.Destroy ();
+
+			if (!controller.IsLastPage)
+				projectConfigurationWidget.Destroy ();
+
 			base.Destroy ();
 		}
 
@@ -214,7 +222,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddTopLevelTemplateCategory (TemplateCategory category)
 		{
-			Xwt.Drawing.Image icon = GetIcon (category.IconId, IconSize.Menu);
+			Xwt.Drawing.Image icon = GetIcon (category.IconId ?? "md-platform-other", IconSize.Menu);
 			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
 			templateCategoriesListStore.AppendValues (
@@ -364,6 +372,8 @@ namespace MonoDevelop.Ide.Projects
 				var currentCategory = templateCategoriesListStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
 				if (currentCategory == category) {
 					templateCategoriesTreeView.Selection.SelectIter (iter);
+					TreePath path = templateCategoriesListStore.GetPath (iter);
+					templateCategoriesTreeView.ScrollToCell (path, null, true, 1, 0);
 					break;
 				}
 			}
@@ -395,12 +405,12 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		void MoveToNextPage ()
+		async void MoveToNextPage ()
 		{
 			if (controller.IsLastPage) {
 				try {
 					CanMoveToNextPage = false;
-					controller.Create ();
+					await controller.Create ();
 				} finally {
 					CanMoveToNextPage = true;
 				}

@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class DotNetProjectProxy : ProjectProxy, IDotNetProject
+	internal class DotNetProjectProxy : ProjectProxy, IDotNetProject
 	{
 		DotNetProject project;
 		EventHandler<ProjectModifiedEventArgs> projectModifiedHandler;
@@ -120,7 +120,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void DisposeProjectBuilder ()
 		{
-			DotNetProject.DisposeProjectBuilder ();
+			DotNetProject.ReloadProjectBuilder ();
 		}
 	}
 }

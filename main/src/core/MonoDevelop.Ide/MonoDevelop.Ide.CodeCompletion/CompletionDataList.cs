@@ -30,12 +30,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public interface ICompletionDataList : IList<ICompletionData>
+	public interface ICompletionDataList : IList<CompletionData>
 	{
+		int TriggerWordLength { get; }
+
 		bool IsSorted { get; }
 		bool AutoCompleteUniqueMatch { get; }
 		bool AutoCompleteEmptyMatch { get; }
@@ -44,8 +46,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		bool AutoSelect { get; }
 		string DefaultCompletionString { get; }
 		CompletionSelectionMode CompletionSelectionMode { get; }
-		void Sort (Comparison<ICompletionData> comparison);
-		void Sort (IComparer<ICompletionData> comparison);
+		void Sort (Comparison<CompletionData> comparison);
+		void Sort (IComparer<CompletionData> comparison);
 		
 		IEnumerable<ICompletionKeyHandler> KeyHandler { get; }
 		
@@ -56,8 +58,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	
 	public interface ICompletionKeyHandler
 	{
-		bool PreProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
-		bool PostProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
+		bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction);
+		bool PostProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction);
 	}
 	
 	public enum CompletionSelectionMode {
@@ -65,10 +67,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		OwnTextField
 	}
 	
-	public class CompletionDataList : List<ICompletionData>, ICompletionDataList
+	public class CompletionDataList : List<CompletionData>, ICompletionDataList
 	{
+		public int TriggerWordLength { get; set; }
+
 		public bool IsSorted { get; set; }
-		public IComparer<ICompletionData> Comparer { get; set; }
+		public IComparer<CompletionData> Comparer { get; set; }
 		
 		public bool AutoCompleteUniqueMatch { get; set; }
 		public string DefaultCompletionString { get; set; }
@@ -87,7 +91,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AutoSelect = true;
 		}
 		
-		public CompletionDataList (IEnumerable<ICompletionData> data) : base(data)
+		public CompletionDataList (IEnumerable<CompletionData> data) : base(data)
 		{
 			this.AutoSelect = true;
 		}
@@ -144,7 +148,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return false;
 		}
 		
-		public void RemoveWhere (Func<ICompletionData,bool> shouldRemove)
+		public void RemoveWhere (Func<CompletionData,bool> shouldRemove)
 		{
 			for (int i = 0; i < this.Count;) {
 				if (shouldRemove (this[i]))

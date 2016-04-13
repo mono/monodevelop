@@ -33,14 +33,14 @@ using System.Linq;
 
 using Gdk;
 using Gtk;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class PackagesWidget : Gtk.Bin
+	internal partial class PackagesWidget : Gtk.Bin
 	{
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;

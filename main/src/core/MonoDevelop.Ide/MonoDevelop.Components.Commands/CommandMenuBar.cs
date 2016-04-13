@@ -26,15 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using Gtk;
-using Gdk;
-using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Commands
 {
-	public class CommandMenuBar: Gtk.MenuBar
+	class CommandMenuBar: Gtk.MenuBar
 	{
 		CommandManager manager;
 

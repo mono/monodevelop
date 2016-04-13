@@ -89,7 +89,7 @@ namespace MonoDevelop.AspNet.Execution
 			return cmd != null && !string.IsNullOrEmpty (GetXspName (cmd));
 		}
 		
-		public IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console)
+		public ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console)
 		{
 			var cmd = (AspNetExecutionCommand) command;
 			var xspPath = GetXspPath (cmd);
@@ -100,6 +100,11 @@ namespace MonoDevelop.AspNet.Execution
 			{
 				if (!evars.ContainsKey (v.Key))
 					evars.Add (v.Key, v.Value);
+			}
+
+			//HACK: work around Mono trying to create registry in non-writable location
+			if (cmd.TargetRuntime is MonoTargetRuntime && !Platform.IsWindows) {
+				evars ["MONO_REGISTRY_PATH"] = UserProfile.Current.TempDir.Combine ("aspnet-registry");
 			}
 
 			//if it's a script, use a native execution handler

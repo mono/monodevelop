@@ -8,6 +8,7 @@ using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -300,13 +301,16 @@ namespace MonoDevelop.VersionControl.Views
 					if (line == -1)
 						line = 1;
 				}
-				IdeApp.Workbench.OpenDocument (files [0], line, 0);
+				var proj = IdeApp.Workspace.GetProjectsContainingFile (files [0]).FirstOrDefault ();
+				IdeApp.Workbench.OpenDocument (files [0], proj, line, 0);
 			}
 			else {
 				AlertButton openAll = new AlertButton (GettextCatalog.GetString ("_Open All")); 
 				if (MessageService.AskQuestion (GettextCatalog.GetString ("Do you want to open all {0} files?", files.Length), AlertButton.Cancel, openAll) == openAll) {
-					for (int n=0; n<files.Length; n++)
-						IdeApp.Workbench.OpenDocument (files[n], n==0);
+					for (int n=0; n<files.Length; n++) {
+						var proj = IdeApp.Workspace.GetProjectsContainingFile (files [n]).FirstOrDefault ();
+						IdeApp.Workbench.OpenDocument (files [n], proj, n == 0);
+					}
 				}
 			}
 		}

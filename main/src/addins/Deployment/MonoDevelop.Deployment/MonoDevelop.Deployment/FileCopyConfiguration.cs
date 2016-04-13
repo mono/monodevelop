@@ -69,7 +69,7 @@ namespace MonoDevelop.Deployment
 			get;
 		}
 		
-		public void CopyFiles (IProgressMonitor monitor, IFileReplacePolicy replacePolicy, DeployFileCollection files, DeployContext context)
+		public void CopyFiles (ProgressMonitor monitor, IFileReplacePolicy replacePolicy, DeployFileCollection files, DeployContext context)
 		{
 			Handler.CopyFiles (monitor, replacePolicy, this, files, context);
 		}

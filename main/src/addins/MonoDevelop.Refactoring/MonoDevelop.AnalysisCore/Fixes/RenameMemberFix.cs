@@ -27,13 +27,10 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.Rename;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.Semantics;
-using Mono.TextEditor;
+using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
@@ -42,14 +39,14 @@ namespace MonoDevelop.AnalysisCore.Fixes
 		public string NewName { get; private set; }
 		public string OldName { get; private set; }
 		public string IdString { get; set; }
-		public IEntity Item { get; private set; }
-		
-		public RenameMemberFix (IEntity item, string oldName, string newName)
-		{
-			this.OldName = oldName;
-			this.NewName = newName;
-			this.Item = item;
-		}
+//		public IEntity Item { get; private set; }
+//		
+//		public RenameMemberFix (IEntity item, string oldName, string newName)
+//		{
+//			this.OldName = oldName;
+//			this.NewName = newName;
+//			this.Item = item;
+//		}
 		
 		public string FixType { get { return "RenameMember"; } }
 	}
@@ -58,23 +55,22 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	{
 		//FIXME: why is this invalid on the parseddocuments loaded when the doc is first loaded?
 		//maybe the item's type's SourceProject is null?
-		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
+		public IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, DocumentContext doc, object fix)
 		{
 			var renameFix = (RenameMemberFix)fix;
 			var refactoring = new RenameRefactoring ();
-			var options = new RefactoringOptions (doc) {
-				SelectedItem = renameFix.Item,
+			var options = new RefactoringOptions (editor, doc) {
+			//	SelectedItem = renameFix.Item,
 			};
 			
-			if (renameFix.Item == null) {
-				ResolveResult resolveResult;
-				
-				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Document, out resolveResult);
-			}
-			
-			if (!refactoring.IsValid (options))
-				yield break;
-			
+//			if (renameFix.Item == null) {
+//				ResolveResult resolveResult;
+//				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Editor, options.DocumentContext, out resolveResult);
+//			}
+//			
+//			if (!refactoring.IsValid (options))
+//				yield break;
+//			
 			var prop = new RenameRefactoring.RenameProperties () {
 				NewName = renameFix.NewName,
 			};
@@ -113,25 +109,25 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			public RenameRefactoring.RenameProperties Properties;
 			public bool Preview;
 			public string Label { get; set; }
-			public DocumentRegion DocumentRegion { get; set; }
+			public TextSpan DocumentRegion { get; set; }
 			public string IdString { get; set; }
 
 			public void Fix ()
 			{
 				if (string.IsNullOrEmpty (Properties.NewName)) {
-					Refactoring.Run (Options);
+					//Refactoring.RunInplace (Options);
 					return;
 				}
-				
-				//FIXME: performchanges should probably use a monitor too, as it can be slow
-				var changes = Refactoring.PerformChanges (Options, Properties);
-				if (Preview) {
-					using (var dlg = new RefactoringPreviewDialog (changes))
-						MessageService.ShowCustomDialog (dlg);
-				} else {
-					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
-					RefactoringService.AcceptChanges (monitor, changes);
-				}
+
+//				//FIXME: performchanges should probably use a monitor too, as it can be slow
+//				var changes = Refactoring.PerformChanges (Options, Properties);
+//				if (Preview) {
+//				using (var dlg = new RefactoringPreviewDialog (changes))
+//					MessageService.ShowCustomDialog (dlg);
+//				} else {
+//					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
+//					RefactoringService.AcceptChanges (monitor, changes);
+//				}
 			}
 			
 			public bool SupportsBatchFix {

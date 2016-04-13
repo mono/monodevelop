@@ -26,7 +26,7 @@
 //
 
 using System;
-using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Dialogs
 {
@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	{
 		void Initialize (OptionsDialog dialog, object dataObject);
 		
-		Widget CreatePanelWidget ();
+		Control CreatePanelWidget ();
 		
 		bool IsVisible ();
 		bool ValidateChanges ();

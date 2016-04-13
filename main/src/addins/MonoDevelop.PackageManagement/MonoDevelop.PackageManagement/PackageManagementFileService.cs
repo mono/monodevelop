@@ -31,9 +31,9 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementFileService : IPackageManagementFileService
+	internal class PackageManagementFileService : IPackageManagementFileService
 	{
 		IPackageManagementEvents packageManagementEvents;
 
@@ -71,9 +71,9 @@ namespace ICSharpCode.PackageManagement
 
 		public void OpenFile (string path)
 		{
-			DispatchService.GuiSyncDispatch (() => {
+			Runtime.RunInMainThread (() => {
 				IdeApp.Workbench.OpenDocument (path, null, true);
-			});
+			}).Wait ();
 		}
 	}
 }

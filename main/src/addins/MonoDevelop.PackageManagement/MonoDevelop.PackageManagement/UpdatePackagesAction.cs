@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdatePackagesAction : IUpdatePackagesAction
+	internal class UpdatePackagesAction : IUpdatePackagesAction
 	{
 		List<IPackage> packages = new List<IPackage>();
 		List<PackageOperation> operations = new List<PackageOperation>();

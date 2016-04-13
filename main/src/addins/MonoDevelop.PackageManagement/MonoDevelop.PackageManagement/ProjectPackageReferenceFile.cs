@@ -28,11 +28,11 @@ using System;
 using System.Linq;
 using MonoDevelop.Projects;
 using NuGet;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectPackageReferenceFile : PackageReferenceFile
+	internal class ProjectPackageReferenceFile : PackageReferenceFile
 	{
 		public ProjectPackageReferenceFile (DotNetProject project)
 			: base(project.GetPackagesConfigFilePath ())

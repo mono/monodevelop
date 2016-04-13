@@ -26,12 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 
 using MonoDevelop.Ide;
 using Gtk;
 using Gdk;
-using Mono.TextEditor.PopupWindow;
 
 namespace MonoDevelop.Components
 {
@@ -41,7 +39,7 @@ namespace MonoDevelop.Components
 		
 		public string LinkColor {
 			get {
-				var color = Mono.TextEditor.HslColor.GenerateHighlightColors (Style.Background (State), Style.Text (State), 3)[2];
+				var color = HslColor.GenerateHighlightColors (Style.Background (State), Style.Text (State), 3)[2];
 				return color.ToPangoString ();
 			}
 		}
@@ -118,19 +116,23 @@ namespace MonoDevelop.Components
 //					LimitWidth (fittedWidth);
 //				}
 				
-				Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+				Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				int left = (int)geometry.Left;
+				int top = (int)geometry.Top;
+				int width = (int)geometry.Width;
+				int height = (int)geometry.Height;
 				if (NudgeHorizontal) {
 					if (allocation.Width <= geometry.Width && x + allocation.Width >= geometry.Left + geometry.Width - edgeGap)
-						x = geometry.Left + (geometry.Width - allocation.Width - edgeGap);
-					if (x <= geometry.Left + edgeGap)
-						x = geometry.Left + edgeGap;
+						x = left + (width - allocation.Width - edgeGap);
+					if (x <= left + edgeGap)
+						x = left + edgeGap;
 				}
 				
 				if (NudgeVertical) {
 					if (allocation.Height <= geometry.Height && y + allocation.Height >= geometry.Top + geometry.Height - edgeGap)
-						y = geometry.Top + (geometry.Height - allocation.Height - edgeGap);
-					if (y <= geometry.Top + edgeGap)
-						y = geometry.Top + edgeGap;
+						y = top + (height - allocation.Height - edgeGap);
+					if (y <= top + edgeGap)
+						y = top + edgeGap;
 				}
 				
 				if (y != oldY || x != oldX)

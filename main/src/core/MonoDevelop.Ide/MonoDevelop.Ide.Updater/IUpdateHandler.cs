@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Updater
 {
@@ -40,7 +41,7 @@ namespace MonoDevelop.Ide.Updater
 		/// 'True' if the check has been automatically started by MD (e.g. when MD starts). 
 		/// 'False' if the check was started explicitly by the user.
 		/// </param>
-		void CheckUpdates (IProgressMonitor monitor, bool automatic);
+		Task CheckUpdates (ProgressMonitor monitor, bool automatic);
 	}
 }
 

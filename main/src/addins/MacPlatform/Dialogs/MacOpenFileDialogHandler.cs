@@ -34,6 +34,7 @@ using AppKit;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;
@@ -56,7 +57,7 @@ namespace MonoDevelop.MacIntegration
 						CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
 					};
 				}
-				
+
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
 				SelectEncodingPopUpButton encodingSelector = null;
@@ -216,7 +217,8 @@ namespace MonoDevelop.MacIntegration
 				if (closeSolutionButton != null)
 					closeSolutionButton.State = NSCellStateValue.On;
 				
-				selected = 0;
+				if (!CanBeOpenedInAssemblyBrowser (filename))
+					selected = 0;
 				hasWorkbenchViewer = true;
 				i++;
 			}
@@ -239,6 +241,11 @@ namespace MonoDevelop.MacIntegration
 			button.Enabled = currentViewers.Count > 1;
 			button.SelectItem (selected);
 			return hasWorkbenchViewer;
+		}
+
+		static bool CanBeOpenedInAssemblyBrowser (FilePath filename)
+		{
+			return filename.Extension.ToLower () == ".exe" || filename.Extension.ToLower () == ".dll";
 		}
 
 		static void CenterAccessoryView (MDBox box)

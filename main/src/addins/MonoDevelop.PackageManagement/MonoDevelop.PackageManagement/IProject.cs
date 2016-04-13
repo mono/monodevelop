@@ -27,18 +27,21 @@
 using System;
 using System.Collections;
 using MonoDevelop.Core;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IProject
+	internal interface IProject
 	{
 		string Name { get; }
 		FilePath FileName { get; }
 		FilePath BaseDirectory { get; }
 		ISolution ParentSolution { get; }
 		IDictionary ExtendedProperties { get; }
+		IEnumerable<string> FlavorGuids { get; }
 
-		void Save ();
+		Task SaveAsync ();
 	}
 }
 

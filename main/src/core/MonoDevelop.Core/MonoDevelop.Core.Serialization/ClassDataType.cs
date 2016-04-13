@@ -313,15 +313,25 @@ namespace MonoDevelop.Core.Serialization
 			foreach (ItemProperty prop in Properties) {
 				if (prop.ReadOnly || !prop.CanSerialize (serCtx, obj))
 					continue;
-				object val = prop.GetValue (obj);
-				if (val == null)
-					continue;
-				if (!serCtx.IsDefaultValueSerializationForced (prop) && val.Equals (prop.DefaultValue))
-					continue;
 				
 				DataCollection col = itemCol;
+
+				object val = prop.GetValue (obj);
+				if (val == null) {
+					if (serCtx.IncludeDeletedValues) {
+						if (prop.IsNested)
+							col = GetNestedCollection (col, prop.NameList, 0, true);
+						col.Add (new DataDeletedNode (prop.SingleName));
+					}
+					continue;
+				}
+				
+				var isDefault = val.Equals (prop.DefaultValue);
+				if (isDefault && !serCtx.IsDefaultValueSerializationForced (prop))
+					continue;
+
 				if (prop.IsNested)
-					col = GetNestedCollection (col, prop.NameList, 0);
+					col = GetNestedCollection (col, prop.NameList, 0, isDefault);
 				
 				if (prop.ExpandedCollection) {
 					ICollectionHandler handler = prop.ExpandedCollectionHandler;
@@ -336,8 +346,12 @@ namespace MonoDevelop.Core.Serialization
 				}
 				else {
 					DataNode data = prop.Serialize (serCtx, obj, val);
-					if (data == null)
+					if (data == null) {
+						if (serCtx.IncludeDeletedValues)
+							col.Add (new DataDeletedNode (prop.SingleName));
 						continue;
+					}
+					data.IsDefaultValue = isDefault;
 					col.Add (data);
 				}
 			}
@@ -352,7 +366,7 @@ namespace MonoDevelop.Core.Serialization
 			return itemCol;
 		}
 		
-		DataCollection GetNestedCollection (DataCollection col, string[] nameList, int pos)
+		DataCollection GetNestedCollection (DataCollection col, string[] nameList, int pos, bool isDefault)
 		{
 			if (pos == nameList.Length - 1) return col;
 
@@ -361,8 +375,11 @@ namespace MonoDevelop.Core.Serialization
 				item = new DataItem ();
 				item.Name = nameList[pos];
 				col.Add (item);
+				item.IsDefaultValue = isDefault;
 			}
-			return GetNestedCollection (item.ItemData, nameList, pos + 1);
+			if (item.IsDefaultValue && !isDefault)
+				item.IsDefaultValue = false;
+			return GetNestedCollection (item.ItemData, nameList, pos + 1, isDefault);
 		}
 		
 		internal protected override object OnDeserialize (SerializationContext serCtx, object mapData, DataNode data)

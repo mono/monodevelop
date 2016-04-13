@@ -33,9 +33,9 @@ using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementEvents
+	internal interface IPackageManagementEvents
 	{
 		event EventHandler PackageOperationsStarting;
 		event EventHandler PackageOperationsFinished;

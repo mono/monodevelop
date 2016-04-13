@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.TextEditing
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.Ide.TextEditing
 		public int OffsetY { get; set; }
 		public bool AllowMove { get; set; }
 
-		public abstract Gtk.Widget CreateWidget ();
+		public abstract Control CreateWidget ();
 
 		protected TopLevelWidgetExtension ()
 		{

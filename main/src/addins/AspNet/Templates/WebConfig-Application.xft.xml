@@ -11,17 +11,17 @@
 		<Icon>md-html-file-icon</Icon>
 		<LanguageName>C#</LanguageName>
 		<ProjectType>AspNetApp</ProjectType>
-		<DefaultFilename IsFixed="True">web.config</DefaultFilename>
-		<_Description>Creates an ASP.NET web.config file for an application.</_Description>
+		<DefaultFilename IsFixed="True">Web.config</DefaultFilename>
+		<_Description>Creates an ASP.NET Web.config file for an application.</_Description>
 	</TemplateConfiguration>
 	
 	<Conditions>
-		<ParentProject PermittedCreationPaths="" ExcludedFiles="web.config" RequireProject="True"/>
+		<ParentProject PermittedCreationPaths="" ExcludedFiles="Web.config" RequireProject="True"/>
 	</Conditions>
 
 	<!-- Template Content -->
 	<TemplateFiles>
-		<File name="web.config">
+		<File name="Web.config">
 <![CDATA[<?xml version="1.0" ?>
 <!--
 Web.config file for ${ProjectName}.
@@ -31,53 +31,9 @@ http://www.mono-project.com/Config_system.web and
 http://msdn2.microsoft.com/en-us/library/b5ysx397.aspx
 -->
 <configuration>
-	<system.web>
-		<compilation 
-			defaultLanguage="C#"
-			debug="true"
-		>
-			<assemblies>
-			</assemblies>
-		</compilation>
-		
-		<customErrors
-			mode="RemoteOnly" 
-		>
-		</customErrors>
-		
-		<authentication
-			mode="None"
-		>
-		</authentication>
-		
-		<authorization>
-			<allow users="*" />
-		</authorization>
-		
-		<httpHandlers>
-		</httpHandlers>
-		
-		<trace 
-			enabled="false"
-			localOnly="true"
-			pageOutput="false"
-			requestLimit="10" 
-			traceMode="SortByTime"
-		/>
-		
-		<sessionState
-			mode="InProc" 
-			cookieless="false" 
-			timeout="20" 
-		/>
-		
-		<globalization
-			requestEncoding="utf-8" 
-			responseEncoding="utf-8" 
-		/>
-		
-		<pages>
-		</pages>
+		<system.web>
+			<compilation debug="true" targetFramework="4.5" />
+			<httpRuntime targetFramework="4.5" />
 	</system.web>
 </configuration>
 ]]>

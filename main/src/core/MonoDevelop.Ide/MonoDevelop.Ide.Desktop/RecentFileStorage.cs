@@ -296,9 +296,10 @@ namespace MonoDevelop.Ide.Desktop
 		void OnRecentFilesChanged (List<RecentItem> cachedItemList)
 		{
 			this.cachedItemList = cachedItemList;
-			if (changed != null) {
-				changed (this, EventArgs.Empty);
-			}
+			Runtime.RunInMainThread (() => {
+				if (changed != null)
+					changed (this, EventArgs.Empty);
+			});
 		}
 		
 		EventHandler changed;

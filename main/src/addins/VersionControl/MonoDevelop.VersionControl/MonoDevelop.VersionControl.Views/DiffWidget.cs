@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
@@ -33,10 +34,10 @@ namespace MonoDevelop.VersionControl.Views
 	public partial class DiffWidget : Gtk.Bin
 	{
 		VersionControlDocumentInfo info;
-		Mono.TextEditor.TextEditor diffTextEditor;
+		Mono.TextEditor.MonoTextEditor diffTextEditor;
 		ComparisonWidget comparisonWidget;
-		Gtk.Button buttonNext;
-		Gtk.Button buttonPrev;
+		DocumentToolButton buttonNext;
+		DocumentToolButton buttonPrev;
 		Gtk.Button buttonDiff;
 		Gtk.Label labelOverview;
 
@@ -48,7 +49,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		string LabelText {
 			get {
-				if (comparisonWidget.Diff.Count == 0)
+				if (!comparisonWidget.Diff.Any ())
 					return GettextCatalog.GetString ("Both files are equal");
 				int added=0, removed=0;
 				foreach (var h in comparisonWidget.Diff) {
@@ -63,7 +64,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public Mono.TextEditor.TextEditor FocusedEditor {
+		public Mono.TextEditor.MonoTextEditor FocusedEditor {
 			get {
 				return comparisonWidget.FocusedEditor;
 			}
@@ -91,7 +92,7 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			comparisonWidget.SetVersionControlInfo (info);
 			this.buttonDiff.Clicked += HandleButtonDiffhandleClicked;
-			diffTextEditor = new global::Mono.TextEditor.TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ());
+			diffTextEditor = new global::Mono.TextEditor.MonoTextEditor (new Mono.TextEditor.TextDocument (), CommonTextEditorOptions.Instance);
 			diffTextEditor.Document.MimeType = "text/x-diff";
 			
 			diffTextEditor.Options.ShowFoldMargin = false;
@@ -114,7 +115,8 @@ namespace MonoDevelop.VersionControl.Views
 		
 		void SetButtonSensitivity ()
 		{
-			this.buttonNext.Sensitive = this.buttonPrev.Sensitive = notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
+			this.buttonNext.GetNativeWidget<Gtk.Widget> ().Sensitive = this.buttonPrev.GetNativeWidget<Gtk.Widget> ().Sensitive =
+				notebook1.Page == 0 &&  comparisonWidget.Diff != null && comparisonWidget.Diff.Count > 0;
 		}
 		
 		void HandleButtonDiffhandleClicked (object sender, EventArgs e)
@@ -143,7 +145,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		static string GetRevisionText (Mono.TextEditor.TextEditor editor, Revision rev)
+		static string GetRevisionText (Mono.TextEditor.MonoTextEditor editor, Revision rev)
 		{
 			if (!editor.Document.ReadOnly)
 				return GettextCatalog.GetString ("(working copy)");

@@ -32,9 +32,9 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTargetFramework
+	internal class ProjectTargetFramework
 	{
 		IDotNetProject project;
 		FrameworkName targetFramework;

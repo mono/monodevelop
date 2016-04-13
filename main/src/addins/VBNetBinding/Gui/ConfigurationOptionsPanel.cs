@@ -28,6 +28,7 @@
 
 using System;
 
+using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -41,7 +42,7 @@ namespace MonoDevelop.VBNetBinding
 		{
 		}
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			Console.WriteLine ("ConfigurationOptionsPanel.CreatePanelWidget");
 			return (widget = new ConfigurationOptionsPanelWidget (ConfiguredProject));

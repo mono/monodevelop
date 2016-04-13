@@ -33,7 +33,6 @@ using System.Runtime.InteropServices;
 using Gdk;
 using Cairo;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -541,6 +540,11 @@ namespace MonoDevelop.Components
 			var img = new ImageSurface (tmp);
 			System.IO.File.Delete (tmp);
 			return img;
+		}
+
+		public static Cairo.Color WithAlpha (Cairo.Color c, double alpha)
+		{
+			return new Cairo.Color (c.R, c.G, c.B, alpha);
 		}
 
 		public static Cairo.Color MultiplyAlpha (this Cairo.Color self, double alpha)

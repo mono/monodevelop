@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 using Mono.Addins;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -40,7 +41,7 @@ namespace MonoDevelop.Ide.Projects
 {
 	public class CombineOptionsDialog : MultiConfigItemOptionsDialog
 	{
-		public CombineOptionsDialog (Gtk.Window parentWindow, Solution solution) : base (parentWindow, solution)
+		public CombineOptionsDialog (Window parentWindow, Solution solution) : base (parentWindow, solution)
 		{
 			this.Title = GettextCatalog.GetString ("Solution Options") + " - " + solution.Name;
 		}

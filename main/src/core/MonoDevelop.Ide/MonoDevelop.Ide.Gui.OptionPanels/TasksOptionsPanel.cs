@@ -66,6 +66,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			buttonChange.Clicked += new EventHandler (ChangeToken);
 			buttonRemove.Clicked += new EventHandler (RemoveToken);
 			entryToken.Changed += new EventHandler (Validate);
+
+			Styles.Changed += HandleUserInterfaceSkinChanged;
 		}
 		
 		void Validate (object sender, EventArgs args)
@@ -120,7 +122,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void OnTokenSelectionChanged (object sender, EventArgs args)
 		{
 			TreeSelection selection = sender as TreeSelection;
-			if (sender != null)
+			if (selection != null)
 			{
 				TreeIter iter;
 				TreeModel model = (TreeModel)tokensStore;
@@ -167,10 +169,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			foreach (var ctag in CommentTag.SpecialCommentTags)
 				tokensStore.AppendValues (ctag.Tag, ctag.Priority);
-			
-			colorbuttonHighPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksHighPrioColor", ""));
-			colorbuttonNormalPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksNormalPrioColor", ""));
-			colorbuttonLowPrio.Color = StringToColor ((string)PropertyService.Get ("Monodevelop.UserTasksLowPrioColor", ""));
+
+			LoadColors ();
+		}
+
+		void HandleUserInterfaceSkinChanged (object sender, EventArgs e)
+		{
+			LoadColors ();
+		}
+
+		public void LoadColors ()
+		{
+			colorbuttonHighPrio.Color = StringToColor (IdeApp.Preferences.UserTasksHighPrioColor);
+			colorbuttonNormalPrio.Color = StringToColor (IdeApp.Preferences.UserTasksNormalPrioColor);
+			colorbuttonLowPrio.Color = StringToColor (IdeApp.Preferences.UserTasksLowPrioColor);
 		}
 		
 		public void Store ()
@@ -181,9 +193,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			CommentTag.SpecialCommentTags = tags;
 			
-			PropertyService.Set ("Monodevelop.UserTasksHighPrioColor", ColorToString (colorbuttonHighPrio.Color));
-			PropertyService.Set ("Monodevelop.UserTasksNormalPrioColor", ColorToString (colorbuttonNormalPrio.Color));
-			PropertyService.Set ("Monodevelop.UserTasksLowPrioColor", ColorToString (colorbuttonLowPrio.Color));
+			IdeApp.Preferences.UserTasksHighPrioColor.Value = ColorToString (colorbuttonHighPrio.Color);
+			IdeApp.Preferences.UserTasksNormalPrioColor.Value = ColorToString (colorbuttonNormalPrio.Color);
+			IdeApp.Preferences.UserTasksLowPrioColor.Value = ColorToString (colorbuttonLowPrio.Color);
 		}
 		
 		static string ColorToString (Gdk.Color color)
@@ -209,13 +221,19 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			}
 			return color;
 		}
+
+		public override void Destroy ()
+		{
+			Styles.Changed -= HandleUserInterfaceSkinChanged;
+			base.Destroy ();
+		}
 	}
 	
 	internal class TasksOptionsPanel : OptionsPanel
 	{
 		TasksPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			widget = new TasksPanelWidget ();
 			widget.Load ();

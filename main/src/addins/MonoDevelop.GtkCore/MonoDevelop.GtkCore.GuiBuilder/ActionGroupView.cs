@@ -27,7 +27,7 @@
 //
 
 using System;
-using System.Collections;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -35,8 +35,10 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.DesignerSupport;
-using ICSharpCode.NRefactory.TypeSystem;
-
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -49,7 +51,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		Stetic.ActionGroupInfo groupInfo;
 		string groupName;
 		
-		public ActionGroupView (IViewContent content, Stetic.ActionGroupInfo group, GuiBuilderProject project): base (content)
+		public ActionGroupView (ViewContent content, Stetic.ActionGroupInfo group, GuiBuilderProject project): base (content)
 		{
 			groupName = group.Name;
 			this.project = project;
@@ -139,15 +141,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.TargetObject = designer.RootComponent;
 		}
 		
-		public override void Save (string fileName)
+		public override async Task Save (FileSaveInformation fileSaveInformation)
 		{
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, groupInfo.Name);
 			
-			base.Save (fileName);
+			await base.Save (fileSaveInformation);
 			if (designer == null)
 				return;
 
-			codeBinder.UpdateBindings (fileName);
+			codeBinder.UpdateBindings (fileSaveInformation.FileName);
 			
 			designer.Save ();
 			
@@ -179,19 +181,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			var cls = codeBinder.GetClass ();
-			foreach (var met in cls.Methods) {
-				if (met.Name == signal.Handler) {
-					ShowPage (1);
-					JumpTo (met.Region.BeginLine, met.Region.BeginColumn);
-					break;
-				}
+			var met = cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
+			if (met != null) { 
+				ShowPage (1);
+				RefactoringService.RoslynJumpToDeclaration(met);
 			}
 		}
 		
 		void OnGroupModified (object s, EventArgs a)
 		{
-			if (designer.Modified)
-				OnContentChanged (a);
 			IsDirty = designer.Modified;
 		}
 		
@@ -200,15 +198,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.BindSignal (a.Signal);
 		}
 		
-		void OnSignalChanged (object s, Stetic.ComponentSignalEventArgs a)
+		async void OnSignalChanged (object s, Stetic.ComponentSignalEventArgs a)
 		{
-			codeBinder.UpdateSignal (a.OldSignal, a.Signal);
+			await codeBinder.UpdateSignal (a.OldSignal, a.Signal);
 		}
 		
-		void OnBindField (object s, EventArgs args)
+		async void OnBindField (object s, EventArgs args)
 		{
 			if (designer.SelectedAction != null) {
-				codeBinder.BindToField (designer.SelectedAction);
+				await codeBinder.BindToField (designer.SelectedAction);
 			}
 		}
 	}

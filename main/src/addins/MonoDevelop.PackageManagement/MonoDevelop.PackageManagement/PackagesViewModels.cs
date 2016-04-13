@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackagesViewModels : IDisposable
+	internal class PackagesViewModels : IDisposable
 	{
 		public PackagesViewModels(
 			IPackageManagementSolution solution,

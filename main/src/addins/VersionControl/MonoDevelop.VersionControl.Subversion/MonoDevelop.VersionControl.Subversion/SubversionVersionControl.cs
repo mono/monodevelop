@@ -91,9 +91,15 @@ namespace MonoDevelop.VersionControl.Subversion
 		public VersionInfo GetVersionInfo (Repository repo, FilePath localPath, bool getRemoteStatus)
 		{
 			// Check for directory before checking for file, since directory links may appear as files
-			if (Directory.Exists (localPath))
-				return GetDirStatus (repo, localPath, getRemoteStatus);
-			return GetFileStatus (repo, localPath, getRemoteStatus);
+			var isDir = Directory.Exists (localPath);
+			try {
+				if (isDir)
+					return GetDirStatus (repo, localPath, getRemoteStatus);
+				return GetFileStatus (repo, localPath, getRemoteStatus);
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to query subversion status", e);
+				return VersionInfo.CreateUnversioned (localPath, isDir);
+			}
 		}
 
 		private VersionInfo GetFileStatus (Repository repo, FilePath sourcefile, bool getRemoteStatus)
@@ -137,28 +143,33 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public VersionInfo[] GetDirectoryVersionInfo (Repository repo, FilePath sourcepath, bool getRemoteStatus, bool recursive)
 		{
-			return Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus).ToArray ();
+			try {
+				return Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus).ToArray ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Failed to get subversion directory status", e);
+				return new VersionInfo [0];
+			}
 		}
 
 		public abstract IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus);
 
-		public abstract void Update (FilePath path, bool recurse, IProgressMonitor monitor);
+		public abstract void Update (FilePath path, bool recurse, ProgressMonitor monitor);
 
-		public abstract void Commit (FilePath[] paths, string message, IProgressMonitor monitor);
+		public abstract void Commit (FilePath[] paths, string message, ProgressMonitor monitor);
 
-		public abstract void Mkdir (string[] paths, string message, IProgressMonitor monitor);
+		public abstract void Mkdir (string[] paths, string message, ProgressMonitor monitor);
 
-		public abstract void Checkout (string url, FilePath path, Revision rev, bool recurse, IProgressMonitor monitor);
+		public abstract void Checkout (string url, FilePath path, Revision rev, bool recurse, ProgressMonitor monitor);
 
-		public abstract void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor);
+		public abstract void Revert (FilePath[] paths, bool recurse, ProgressMonitor monitor);
 
-		public abstract void RevertRevision (FilePath path, Revision revision, IProgressMonitor monitor);
+		public abstract void RevertRevision (FilePath path, Revision revision, ProgressMonitor monitor);
 
-		public abstract void RevertToRevision (FilePath path, Revision revision, IProgressMonitor monitor);
+		public abstract void RevertToRevision (FilePath path, Revision revision, ProgressMonitor monitor);
 
-		public abstract void Add (FilePath path, bool recurse, IProgressMonitor monitor);
+		public abstract void Add (FilePath path, bool recurse, ProgressMonitor monitor);
 
-		public abstract void Delete (FilePath path, bool force, IProgressMonitor monitor);
+		public abstract void Delete (FilePath path, bool force, ProgressMonitor monitor);
 
 		public abstract void Ignore (FilePath[] paths);
 
@@ -178,16 +189,16 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public abstract IEnumerable<DirectoryEntry> ListUrl (string url, bool recurse, SvnRevision rev);
 
-		public void Move (FilePath srcPath, FilePath destPath, bool force, IProgressMonitor monitor)
+		public void Move (FilePath srcPath, FilePath destPath, bool force, ProgressMonitor monitor)
 		{
 			Move (srcPath, destPath, SvnRevision.Head, force, monitor);
 		}
 
-		public abstract void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor);
+		public abstract void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, ProgressMonitor monitor);
 
-		public abstract void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths);
+		public abstract void Lock (ProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths);
 
-		public abstract void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths);
+		public abstract void Unlock (ProgressMonitor monitor, bool breakLock, params FilePath[] paths);
 
 		public string GetUnifiedDiff (FilePath path, bool recursive, bool remoteDiff)
 		{

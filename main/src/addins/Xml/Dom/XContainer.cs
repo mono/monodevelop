@@ -26,13 +26,13 @@
 
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Xml.Dom
 {
 	public abstract class XContainer : XNode
 	{
-		protected XContainer (TextLocation start) : base (start) {	}
+		protected XContainer (DocumentLocation start) : base (start) {	}
 
 		XNode firstNode;
 		XNode lastChild;

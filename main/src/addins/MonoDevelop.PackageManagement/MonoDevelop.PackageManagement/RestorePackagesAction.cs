@@ -27,13 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RestorePackagesAction : IPackageAction
+	internal class RestorePackagesAction : IPackageAction
 	{
 		IPackageManagementSolution solution;
 		IPackageManagementEvents packageManagementEvents;
@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 				solution,
 				packageManagementEvents,
 				PackageManagementServices.PackageRepositoryCache,
-				new SharpDevelopPackageManagerFactory ())
+				new MonoDevelopPackageManagerFactory ())
 		{
 		}
 

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	
+	<PropertyGroup>
+		<Test1 Condition="$(cond2) == val2_0">One</Test1>
+		<Test2 Condition="$(cond2) == val2_0">One</Test2>
+		<Test3 Condition="'$(cond1)|$(cond2)' == 'val14_1|val14_2'">One</Test3>
+		<Test3 Condition="'$(cond2)|$(cond1)' == 'val14_3|val14_4'">One</Test3>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="$(cond1) == 'val1'">
+		<Test1 Condition="$(cond2) == val2_1">One</Test1>
+		<Test1 Condition="'$(cond2)' == 'val2_2'">One</Test1>
+		<Test2 Condition="$(cond3) != val3">One</Test2>
+		<Test3 Condition="$(cond4) != val4 and $(cond5 == val5)">One</Test3>
+		<Test4 Condition="$(cond6) != val6 or $(cond6 == val6)">One</Test4>
+		<Test5 Condition="'$(cond7)|$(cond8)' == 'val7|val8'">One</Test5>
+	</PropertyGroup>
+	
+	<ItemGroup Condition="'$(cond12)' == 'val12'">
+		<File Include="foo" Condition="'$(cond10)' == 'val10'" />
+	</ItemGroup>
+	
+	<Choose>
+		<When Condition="$(cond10) == val10_1">
+			<PropertyGroup Condition="'$(cond13)' == 'val13_1'">
+				<Test1 Condition="$(cond11) == val11">One</Test1>
+			</PropertyGroup>
+			<PropertyGroup Condition="'$(cond13)' == 'val13_2'">
+				<Test1 Condition="$(cond11) == val11">One</Test1>
+			</PropertyGroup>
+		</When>
+		<When Condition="$(cond10) == val10_2">
+			<PropertyGroup Condition="'$(cond13)' == 'val13_3'">
+				<Test1 Condition="$(cond2) == val2_3">One</Test1>
+				<Test1 Condition="$(cond2) == val2_4">One</Test1>
+			</PropertyGroup>
+		</When>
+		<Otherwise>
+			<PropertyGroup Condition="'$(cond13)' == 'val13_4'">
+				<Test1 Condition="$(cond2) == val2_5">One</Test1>
+				<Test1 Condition="$(cond2) == val2_6">One</Test1>
+			</PropertyGroup>
+		</Otherwise>
+	</Choose>
+	
+	<Import Project="conditioned-properties1.targets" />
+	<Import Project="conditioned-properties2.targets" Condition="$(cond9)==val9"/>
+</Project>

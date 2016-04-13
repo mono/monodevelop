@@ -38,7 +38,7 @@ namespace MonoDevelop.AspNet.WebForms
 {
 	public class MasterContentFileDescriptionTemplate : SingleFileDescriptionTemplate
 	{
-		public override void ModifyTags (SolutionItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
+		public override void ModifyTags (SolutionFolderItem policyParent, Project project, string language, string identifier, string fileName, ref Dictionary<string,string> tags)
 		{
 			base.ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 			if (fileName == null)
@@ -47,13 +47,13 @@ namespace MonoDevelop.AspNet.WebForms
 			tags ["AspNetMaster"] = "";
 			tags ["AspNetMasterContent"] = "";
 			
-			AspNetAppProject aspProj = project as AspNetAppProject;
+			var aspProj = project.GetService<AspNetAppProjectFlavor> ();
 			if (aspProj == null)
 				throw new InvalidOperationException ("MasterContentFileDescriptionTemplate is only valid for ASP.NET projects");
 			
 			ProjectFile masterPage = null;
 			
-			var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (aspProj, null, "*.master");
+			var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (project, null, "*.master");
 			try {
 				dialog.Title = GettextCatalog.GetString ("Select a Master Page...");
 				int response = MonoDevelop.Ide.MessageService.RunCustomDialog (dialog);
@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNet.WebForms
 			tags ["AspNetMaster"] = aspProj.LocalToVirtualPath (masterPage);
 			
 			try {
-				var pd = TypeSystemService.ParseFile (project, masterPage.FilePath)
+				var pd = TypeSystemService.ParseFile (project, masterPage.FilePath).Result
 						as WebFormsParsedDocument;
 				if (pd == null)
 					return;

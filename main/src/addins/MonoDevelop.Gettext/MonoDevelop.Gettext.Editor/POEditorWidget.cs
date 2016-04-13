@@ -38,12 +38,14 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Gettext.Editor;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
 using System.ComponentModel;
 using System.Threading;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Gettext
 {
@@ -55,9 +57,8 @@ namespace MonoDevelop.Gettext
 		ListStore foundInStore;
 		Catalog catalog;
 		string  poFileName;
-		Mono.TextEditor.TextEditorOptions options = new Mono.TextEditor.TextEditorOptions ();
-		Mono.TextEditor.TextEditor texteditorOriginal = new Mono.TextEditor.TextEditor ();
-		Mono.TextEditor.TextEditor texteditorPlural = new Mono.TextEditor.TextEditor ();
+		TextEditor texteditorOriginal = TextEditorFactory.CreateNewEditor ();
+		TextEditor texteditorPlural = TextEditorFactory.CreateNewEditor ();
 		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
@@ -186,7 +187,7 @@ namespace MonoDevelop.Gettext
 					lineNr = 1 + int.Parse (line);
 				} catch {
 				}
-				IdeApp.Workbench.OpenDocument (file, lineNr, 1);
+				IdeApp.Workbench.OpenDocument (new FileOpenInformation (file, project, lineNr, 1, OpenDocumentOptions.Default));
 			};
 			this.notebookTranslated.RemovePage (0);
 			this.searchEntryFilter.Entry.Text = "";
@@ -239,22 +240,26 @@ namespace MonoDevelop.Gettext
 			widgets.Add (this);
 			
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
-			options.ShowLineNumberMargin = false;
-			options.ShowFoldMargin = false;
-			options.ShowIconMargin = false;
-			options.ColorScheme = IdeApp.Preferences.ColorScheme;
-			options.FontName = PropertyService.Get<string> ("FontName");
-			
+
 			this.scrolledwindowOriginal.Child = this.texteditorOriginal;
 			this.scrolledwindowPlural.Child = this.texteditorPlural;
-			this.texteditorOriginal.Show ();
-			this.texteditorPlural.Show ();
-			texteditorOriginal.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
-			texteditorPlural.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
-			this.texteditorOriginal.Options = options;
-			this.texteditorPlural.Options = options;
-			this.texteditorOriginal.Document.ReadOnly = true;
-			this.texteditorPlural.Document.ReadOnly = true;
+			this.scrolledwindowOriginal.Child.Show ();
+			this.scrolledwindowPlural.Child.Show ();
+			scrolledwindowOriginal.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
+			scrolledwindowPlural.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
+			this.texteditorOriginal.Options = DefaultSourceEditorOptions.PlainEditor;
+			this.texteditorPlural.Options = DefaultSourceEditorOptions.PlainEditor;
+			this.texteditorOriginal.IsReadOnly = true;
+			this.texteditorPlural.IsReadOnly = true;
+			toolbarPages.ModifyBg (StateType.Normal, Styles.POEditor.TabBarBackgroundColor);
+
+			MonoDevelop.Ide.Gui.Styles.Changed += HandleStylesChanged;
+		}
+
+		void HandleStylesChanged (object sender, EventArgs e)
+		{
+			UpdateFromCatalog ();
+			toolbarPages.ModifyBg (StateType.Normal, Styles.POEditor.TabBarBackgroundColor);
 		}
 
 		void HandleCellRendFuzzyToggled (object sender, ToggledArgs args)
@@ -299,13 +304,6 @@ namespace MonoDevelop.Gettext
 		
 		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
 		{
-			texteditorOriginal.QueueDraw ();
-			texteditorPlural.QueueDraw ();
-			for (int i = this.notebookTranslated.NPages - 1; i >= 0; i--) {
-				Mono.TextEditor.TextEditor view = GetTextView (i);
-				if (view != null)
-					view.QueueDraw ();
-			}
 		}
 		
 		#region Options
@@ -467,13 +465,10 @@ namespace MonoDevelop.Gettext
 			this.Catalog = newCatalog;
 			UpdateTasks ();
 		}
-		
-		Mono.TextEditor.TextEditor GetTextView (int index)
+		List<TextEditor> notebookTranslatedEditors = new List<TextEditor> ();
+		TextEditor GetTextView (int index)
 		{
-			ScrolledWindow window = this.notebookTranslated.GetNthPage (index) as ScrolledWindow;
-			if (window != null)
-				return window.Child as Mono.TextEditor.TextEditor;
-			return null;
+			return notebookTranslatedEditors[index];
 		}
 		
 		void ClearTextview ()
@@ -485,24 +480,23 @@ namespace MonoDevelop.Gettext
 		void AddTextview (int index)
 		{
 			ScrolledWindow window = new ScrolledWindow ();
-			Mono.TextEditor.TextEditor textView = new Mono.TextEditor.TextEditor ();
+			var textView = TextEditorFactory.CreateNewEditor ();
 			window.Child = textView;
-			textView.Options = options;
-			textView.Document.TextReplaced += delegate {
+			textView.TextChanged += delegate {
 				if (this.isUpdating)
 					return;
 				try {
 					if (this.currentEntry != null) {
-						string escapedText = textView.Document.Text;
+						string escapedText = textView.Text;
 						string oldText     = this.currentEntry.GetTranslation (index);
 						this.currentEntry.SetTranslation (escapedText, index);
 						AddChange (this.currentEntry, oldText, escapedText, index);
 					}
 					IdeApp.Workbench.StatusBar.ShowReady ();
-					textView.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
+					window.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Normal));
 				} catch (System.Exception e) {
 					IdeApp.Workbench.StatusBar.ShowError (e.Message);
-					textView.ModifyBase (Gtk.StateType.Normal, errorColor);
+					window.Child.ModifyBase (Gtk.StateType.Normal, errorColor);
 				}
 				treeviewEntries.QueueDraw ();
 				UpdateProgressBar ();
@@ -513,6 +507,7 @@ namespace MonoDevelop.Gettext
 			label.Text = this.Catalog.PluralFormsDescriptions [index];
 			window.ShowAll ();
 			this.notebookTranslated.AppendPage (window, label);
+			notebookTranslatedEditors.Add (textView);
 		}
 		
 		void ShowPopup (EventButton evt)
@@ -601,14 +596,15 @@ namespace MonoDevelop.Gettext
 		void RemoveTextViewsFrom (int index)
 		{
 			for (int i = this.notebookTranslated.NPages - 1; i >= index; i--) {
-				Mono.TextEditor.TextEditor view = GetTextView (i);
+				var view = GetTextView (i);
 				if (view == null)
 					continue;
 //				if (gtkSpellSet.ContainsKey (view)) {
 //					GtkSpell.Detach (view);
 //					gtkSpellSet.Remove (view);
 //				}
-				this.notebookTranslated.RemovePage (i);
+				notebookTranslated.RemovePage (i);
+				notebookTranslatedEditors.RemoveAt (i); 
 			}
 		}
 		
@@ -617,9 +613,9 @@ namespace MonoDevelop.Gettext
 			this.isUpdating = true;
 			try {
 				currentEntry = entry;
-				this.texteditorOriginal.Caret.Location = new DocumentLocation (1, 1);
-				this.texteditorOriginal.Document.Text = entry != null ? entry.String : "";
-				this.texteditorOriginal.VAdjustment.Value = this.texteditorOriginal.HAdjustment.Value = 0;
+				this.texteditorOriginal.CaretLocation = new DocumentLocation (1, 1);
+				this.texteditorOriginal.Text = entry != null ? entry.String : "";
+				//this.texteditorOriginal.VAdjustment.Value = this.texteditorOriginal.HAdjustment.Value = 0;
 				
 //				if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginal)) {
 //					GtkSpell.Attach (this.textviewOriginal, "en");
@@ -630,9 +626,9 @@ namespace MonoDevelop.Gettext
 				this.notebookTranslated.ShowTabs = entry != null && entry.HasPlural;
 				
 				if (entry != null && entry.HasPlural) {
-					this.texteditorPlural.Caret.Location = new DocumentLocation (1, 1);
-					this.texteditorPlural.Document.Text = entry.PluralString;
-					this.texteditorPlural.VAdjustment.Value = this.texteditorPlural.HAdjustment.Value = 0;
+					this.texteditorPlural.CaretLocation = new DocumentLocation (1, 1);
+					this.texteditorPlural.Text = entry.PluralString;
+					//this.texteditorPlural.VAdjustment.Value = this.texteditorPlural.HAdjustment.Value = 0;
 //					if (GtkSpell.IsSupported && !gtkSpellSet.ContainsKey (this.textviewOriginalPlural)) {
 //						GtkSpell.Attach (this.textviewOriginalPlural, "en");
 //						this.gtkSpellSet[this.textviewOriginalPlural] = true;
@@ -649,14 +645,12 @@ namespace MonoDevelop.Gettext
 					}
 					
 					for (int i = 0; i < entry.NumberOfTranslations; i++) {
-						Mono.TextEditor.TextEditor textView = GetTextView (i);
+						var textView = GetTextView (i);
 						if (textView == null)
 							continue;
 						textView.ClearSelection ();
-						textView.Document.Text = entry != null ?  entry.GetTranslation (i) : "";
-						textView.Caret.Offset = textView.Document.Text.Length;
-						textView.VAdjustment.Value = textView.HAdjustment.Value = 0;
-						textView.Document.CommitUpdateAll ();
+						textView.Text = entry != null ?  entry.GetTranslation (i) : "";
+						EditActions.MoveCaretToDocumentEnd (textView);
 					}
 					
 					foreach (string reference in entry.References) {
@@ -703,26 +697,21 @@ namespace MonoDevelop.Gettext
 			return entry.IsFuzzy ? iconFuzzy : entry.IsTranslated ? iconValid : iconMissing;
 		}
 		
-		static string iconFuzzy   = "error-16.png";// "md-translation-fuzzy";
-		static string iconValid   = "done-16.png";//"md-translation-valid";
-		static string iconMissing = "warning-16.png";//"md-translation-missing";
-		
-//		static Color translated   = new Color (255, 255, 255);
-		static Color untranslated = new Color (234, 232, 227);
-		static Color fuzzy        = new Color (237, 226, 187);
-		static Color missing      = new Color (237, 167, 167);
+		static string iconFuzzy   = "md-error";// "md-translation-fuzzy";
+		static string iconValid   = "md-done";//"md-translation-valid";
+		static string iconMissing = "md-warning";//"md-translation-missing";
 		
 		Color GetRowColorForEntry (CatalogEntry entry)
 		{
 			if (entry.References.Length == 0)
-				return missing;
-			return entry.IsFuzzy ? fuzzy : entry.IsTranslated ? Style.Base (StateType.Normal) : untranslated;
+				return Styles.POEditor.EntryMissingBackgroundColor;
+			return entry.IsFuzzy ? Styles.POEditor.EntryFuzzyBackgroundColor : entry.IsTranslated ? Style.Base (StateType.Normal) : Styles.POEditor.EntryUntranslatedBackgroundColor;
 		}
 		
 		Color GetForeColorForEntry (CatalogEntry entry)
 		{
 			if (entry.References.Length == 0)
-				return missing;
+				return Styles.POEditor.EntryMissingBackgroundColor;
 			return entry.IsFuzzy ? Style.Black : entry.IsTranslated ? Style.Text (StateType.Normal) : Style.Black;
 		}
 		
@@ -810,7 +799,7 @@ namespace MonoDevelop.Gettext
 		}
 		
 		string filter = "";
-		Regex  regex = new Regex ("");
+		System.Text.RegularExpressions.Regex  regex = new System.Text.RegularExpressions.Regex ("");
 		
 		void UpdateFromCatalog ()
 		{
@@ -822,14 +811,16 @@ namespace MonoDevelop.Gettext
 					RegexOptions options = RegexOptions.Compiled;
 					if (!IsCaseSensitive)
 						options |= RegexOptions.IgnoreCase;
-					regex = new Regex (filter, options);
+					regex = new System.Text.RegularExpressions.Regex (filter, options);
 				} catch (Exception e) {
 					IdeApp.Workbench.StatusBar.ShowError (e.Message);
 					this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, errorColor);
+					this.searchEntryFilter.QueueDraw ();
 					return;
 				}
 			}
 			this.searchEntryFilter.Entry.ModifyBase (StateType.Normal, Style.Base (StateType.Normal));
+			this.searchEntryFilter.QueueDraw ();
 			
 			int found = 0;
 			ListStore newStore = new ListStore (typeof(CatalogEntry));
@@ -891,7 +882,7 @@ namespace MonoDevelop.Gettext
 			TreeIter iter;
 			if (store.GetIterFirst (out iter)) {
 				do {
-					CatalogEntry curEntry = store.GetValue (iter, 4) as CatalogEntry;
+					CatalogEntry curEntry = store.GetValue (iter, 0) as CatalogEntry;
 					if (entry == curEntry) {
 						this.treeviewEntries.Selection.SelectIter (iter);
 						TreePath iterPath = store.GetPath (iter);
@@ -958,6 +949,7 @@ namespace MonoDevelop.Gettext
 		
 		protected override void OnDestroyed ()
 		{
+			MonoDevelop.Ide.Gui.Styles.Changed -= HandleStylesChanged;
 			StopTaskWorkerThread ();
 		
 			if (store != null) {
@@ -976,7 +968,7 @@ namespace MonoDevelop.Gettext
 			base.OnDestroyed ();
 		}
 #region Tasks
-		public class TranslationTask : Task
+		public class TranslationTask : TaskListEntry
 		{
 			POEditorWidget widget;
 			CatalogEntry entry;
@@ -1000,7 +992,7 @@ namespace MonoDevelop.Gettext
 			TaskService.Errors.ClearByOwner (this);
 		}
 		
-		static bool CompareTasks (List<Task> list1, List<Task> list2)
+		static bool CompareTasks (List<TaskListEntry> list1, List<TaskListEntry> list2)
 		{
 			if (list1.Count != list2.Count)
 				return false;
@@ -1110,7 +1102,7 @@ namespace MonoDevelop.Gettext
 		{
 			public override bool EntryFails (CatalogEntry entry)
 			{
-				foreach (System.Text.RegularExpressions.Match match in Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
+				foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
 					if (!entry.GetTranslation (0).Contains (match.Value)) 
 						return true;
 				}
@@ -1119,7 +1111,7 @@ namespace MonoDevelop.Gettext
 			
 			public override string FailReason (CatalogEntry entry)
 			{
-				foreach (System.Text.RegularExpressions.Match match in Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
+				foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches (entry.String, @"\{.\}", RegexOptions.None))  {
 					if (!entry.GetTranslation (0).Contains (match.Value)) 
 						return GettextCatalog.GetString ("Original string '{0}' contains '{1}', translation doesn't.", entry.String, match.Value);
 				}
@@ -1128,7 +1120,7 @@ namespace MonoDevelop.Gettext
 		}
 		
 		
-		List<Task> currentTasks = new List<Task> ();
+		List<TaskListEntry> currentTasks = new List<TaskListEntry> ();
 		
 		BackgroundWorker updateTaskThread = null;
 		
@@ -1140,7 +1132,7 @@ namespace MonoDevelop.Gettext
 				return;
 			}
 			
-			List<Task> tasks = new List<Task> ();
+			List<TaskListEntry> tasks = new List<TaskListEntry> ();
 			try {
 				foreach (CatalogEntryRule rule in rules) {
 					foreach (CatalogEntry entry in catalog) {
@@ -1223,9 +1215,9 @@ namespace MonoDevelop.Gettext
 			{
 				widget.inUndoOperation = true;
 				widget.SelectEntry (Entry);
-				Mono.TextEditor.TextEditor textView = widget.GetTextView (Index);
+				var textView = widget.GetTextView (Index);
 				if (textView != null)
-					textView.Document.Text = OldText;
+					textView.Text = OldText;
 				widget.inUndoOperation = false;
 			}
 			
@@ -1233,9 +1225,9 @@ namespace MonoDevelop.Gettext
 			{
 				widget.inUndoOperation = true;
 				widget.SelectEntry (Entry);
-				Mono.TextEditor.TextEditor textView = widget.GetTextView (Index);
+				var textView = widget.GetTextView (Index);
 				if (textView != null)
-					textView.Document.Text = Text;
+					textView.Text = Text;
 				widget.inUndoOperation = false;
 			}
 		}

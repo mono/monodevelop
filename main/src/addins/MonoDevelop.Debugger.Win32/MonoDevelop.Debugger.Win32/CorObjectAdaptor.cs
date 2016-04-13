@@ -1217,8 +1217,8 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			CorValue obj = GetRealObject (ctx, objr);
 
-			if ((obj is CorReferenceValue) && ((CorReferenceValue) obj).IsNull)
-				return new EvaluationResult ("(null)");
+			if ((obj is CorReferenceValue) && ((CorReferenceValue)obj).IsNull)
+				return null;
 
 			CorStringValue stringVal = obj as CorStringValue;
 			if (stringVal != null) {

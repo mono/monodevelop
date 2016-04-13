@@ -38,12 +38,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
-	class ExceptionCaughtDialog : Dialog
+	class ExceptionCaughtDialog : Gtk.Dialog
 	{
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
@@ -74,6 +74,7 @@ namespace MonoDevelop.Debugger
 		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
 		{
 			this.Name = "wizard_dialog";
+			this.ApplyTheme ();
 			selected = exception = ex;
 			message = msg;
 
@@ -132,6 +133,7 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionValueTreeView = new ObjectValueTreeView ();
 			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
+			ExceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ());
 			ExceptionValueTreeView.AllowPopupMenu = false;
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
@@ -794,7 +796,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("lightning-16.png");
 			var image = new Xwt.ImageView (icon).ToGtkWidget ();
@@ -888,7 +890,7 @@ namespace MonoDevelop.Debugger
 			dlg.Line = Line;
 		}
 
-		public override Widget CreateWidget ()
+		public override Control CreateWidget ()
 		{
 			var box = new EventBox ();
 			box.VisibleWindow = false;
@@ -908,17 +910,17 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtTextEditorExtension : TextEditorExtension
 	{
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
+			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
 			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
-			    DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
+				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
 				return true;
 			}
 
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 	}
 }

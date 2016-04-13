@@ -29,6 +29,7 @@ using System.Linq;
 using MonoDevelop.Ide;
 using NUnit.Framework;
 using UnitTests;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects
 {
@@ -40,16 +41,13 @@ namespace MonoDevelop.Projects
 		/// so it can detect if a project is a web project or not.
 		/// </summary>
 		[Test]
-		public void LoadedWebProjectContainsWebProjectTypeGuid ()
+		public async Task LoadedWebProjectContainsWebProjectTypeGuid ()
 		{
 			string solutionFileName = Util.GetSampleProject ("WebProjectTest", "WebProjectTest.sln");
-			var solution = (Solution)Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
 			Project project = solution.GetAllProjects ().First ();
 
-			string projectTypeGuids = (string) project.ExtendedProperties ["ProjectTypeGuids"];
-			string[] guids = projectTypeGuids.Split (';');
-
-			Assert.That (guids, Contains.Item ("{349C5851-65DF-11DA-9384-00065B846F21}"));
+			Assert.That (project.FlavorGuids, Contains.Item ("{349C5851-65DF-11DA-9384-00065B846F21}"));
 		}
 	}
 }

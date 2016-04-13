@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementSelectedProject : IPackageManagementSelectedProject
+	internal class PackageManagementSelectedProject : IPackageManagementSelectedProject
 	{
 		public PackageManagementSelectedProject(IPackageManagementProject project)
 			: this(project, selected: false)

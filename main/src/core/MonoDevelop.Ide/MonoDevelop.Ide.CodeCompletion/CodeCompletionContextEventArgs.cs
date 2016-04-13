@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 {
 	public class CodeCompletionContextEventArgs : EventArgs
 	{
-		public ICompletionWidget Widget {
+		internal ICompletionWidget Widget {
 			get;
 			set;
 		}
@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			set;
 		}
 		
-		public CodeCompletionContextEventArgs (ICompletionWidget widget, CodeCompletionContext codeCompletionContext, string completedWord)
+		internal CodeCompletionContextEventArgs (ICompletionWidget widget, CodeCompletionContext codeCompletionContext, string completedWord)
 		{
 			this.Widget = widget;
 			this.CodeCompletionContext = codeCompletionContext;

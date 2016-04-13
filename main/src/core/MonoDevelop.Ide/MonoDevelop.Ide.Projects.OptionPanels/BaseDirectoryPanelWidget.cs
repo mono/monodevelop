@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	
 	[System.ComponentModel.Category("MonoDevelop.Projects.Gui")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class BaseDirectoryPanelWidget : Gtk.Bin
+	partial class BaseDirectoryPanelWidget : Gtk.Bin
 	{
 		public BaseDirectoryPanelWidget()
 		{

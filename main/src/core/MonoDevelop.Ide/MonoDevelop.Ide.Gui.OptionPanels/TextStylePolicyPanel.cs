@@ -25,6 +25,7 @@
 //THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Projects;
@@ -38,7 +39,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 	{
 		TextStylePolicyPanelWidget widget;
 		
-		public override Gtk.Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			widget = new TextStylePolicyPanelWidget (this);
 			widget.Show ();

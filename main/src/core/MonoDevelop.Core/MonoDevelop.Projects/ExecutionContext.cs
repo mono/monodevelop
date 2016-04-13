@@ -35,15 +35,15 @@ namespace MonoDevelop.Projects
 	public sealed class ExecutionContext
 	{
 		IExecutionHandler executionHandler;
-		IConsoleFactory consoleFactory;
+		OperationConsoleFactory consoleFactory;
 		ExecutionTarget executionTarget;
 		
-		public ExecutionContext (IExecutionMode executionMode, IConsoleFactory consoleFactory, ExecutionTarget target)
+		public ExecutionContext (IExecutionMode executionMode, OperationConsoleFactory consoleFactory, ExecutionTarget target)
 			: this (executionMode.ExecutionHandler, consoleFactory, target)
 		{
 		}
 		
-		public ExecutionContext (IExecutionHandler executionHandler, IConsoleFactory consoleFactory, ExecutionTarget target)
+		public ExecutionContext (IExecutionHandler executionHandler, OperationConsoleFactory consoleFactory, ExecutionTarget target)
 		{
 			var targetedHandler = executionHandler as ITargetedExecutionHandler;
 			if (targetedHandler != null)
@@ -62,11 +62,11 @@ namespace MonoDevelop.Projects
 			get { return executionTarget; }
 		}
 		
-		public IConsoleFactory ConsoleFactory {
+		public OperationConsoleFactory ConsoleFactory {
 			get { return consoleFactory; }
 		}
 		
-		public IConsoleFactory ExternalConsoleFactory {
+		public ExternalConsoleFactory ExternalConsoleFactory {
 			get { return MonoDevelop.Core.Execution.ExternalConsoleFactory.Instance; }
 		}
 	}

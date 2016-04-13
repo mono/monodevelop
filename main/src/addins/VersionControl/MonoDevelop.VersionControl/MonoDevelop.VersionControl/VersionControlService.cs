@@ -46,7 +46,7 @@ namespace MonoDevelop.VersionControl
 		static List<VersionControlSystem> handlers = new List<VersionControlSystem> ();
 		static VersionControlConfiguration configuration;
 		static DataContext dataContext = new DataContext ();
-		
+
 		public static event FileUpdateEventHandler FileStatusChanged;
 		public static event CommitEventHandler PrepareCommit;
 		public static event CommitEventHandler BeginCommit;
@@ -196,16 +196,16 @@ namespace MonoDevelop.VersionControl
 		}
 
 		internal static Dictionary<Repository, InternalRepositoryReference> referenceCache = new Dictionary<Repository, InternalRepositoryReference> ();
-		public static Repository GetRepository (IWorkspaceObject entry)
+		public static Repository GetRepository (WorkspaceObject entry)
 		{
 			if (IsGloballyDisabled)
 				return null;
 
 			InternalRepositoryReference repoRef = (InternalRepositoryReference) entry.ExtendedProperties [typeof(InternalRepositoryReference)];
-			if (repoRef != null)
+			if (repoRef != null && !repoRef.Repo.Disposed)
 				return repoRef.Repo;
 			
-			Repository repo = VersionControlService.GetRepositoryReference (entry.BaseDirectory, entry.Name);
+			Repository repo = GetRepositoryReference (entry.BaseDirectory, entry.Name);
 			InternalRepositoryReference rref = null;
 			if (repo != null) {
 				repo.AddRef ();
@@ -380,57 +380,52 @@ namespace MonoDevelop.VersionControl
 		
 		internal static void NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyPrepareCommit (repo, changeSet);
 				});
 				return;
 			}
 
-			if (PrepareCommit != null) {
-				try {
-					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-				}
+			try {
+				PrepareCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, false));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		
 		internal static void NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyBeforeCommit (repo, changeSet);
 				});
 				return;
 			}
 
-			if (BeginCommit != null) {
-				try {
-					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-				}
+			try {
+				BeginCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, false));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		
 		internal static void NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
 		{
-			if (!DispatchService.IsGuiThread) {
+			if (!Runtime.IsMainThread) {
 				Gtk.Application.Invoke (delegate {
 					NotifyAfterCommit (repo, changeSet, success);
 				});
 				return;
 			}
 
-			if (EndCommit != null) {
-				try {
-					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
-				} catch (Exception ex) {
-					LoggingService.LogInternalError (ex);
-					return;
-				}
+			try {
+				EndCommit?.Invoke (null, new CommitEventArgs (repo, changeSet, success));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+				return;
 			}
+
 			if (success) {
 				foreach (ChangeSetItem it in changeSet.Items)
 					SetCommitComment (it.LocalPath, null, false);
@@ -447,13 +442,12 @@ namespace MonoDevelop.VersionControl
 		
 		public static void NotifyFileStatusChanged (FileUpdateEventArgs args) 
 		{
-			if (!DispatchService.IsGuiThread)
+			if (!Runtime.IsMainThread)
 				Gtk.Application.Invoke (delegate {
 					NotifyFileStatusChanged (args);
 				});
 			else {
-				if (FileStatusChanged != null)
-					FileStatusChanged (null, args);
+				FileStatusChanged?.Invoke (null, args);
 			}
 		}
 
@@ -473,7 +467,7 @@ namespace MonoDevelop.VersionControl
 		static void OnFileAdded (object s, ProjectFileEventArgs e)
 		{
 			FileUpdateEventArgs vargs = new FileUpdateEventArgs ();
-			IProgressMonitor monitor = null;
+			ProgressMonitor monitor = null;
 			try {
 				foreach (var repoFiles in e.GroupBy (i => i.Project)) {
 					Repository repo = GetRepository (repoFiles.Key);
@@ -520,10 +514,10 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 */
-		static void SolutionItemAddFiles (string rootPath, SolutionItem entry, HashSet<string> files)
+		static void SolutionItemAddFiles (string rootPath, SolutionFolderItem entry, HashSet<string> files)
 		{
-			if (entry is SolutionEntityItem) {
-				foreach (var file in ((SolutionEntityItem)entry).GetItemFiles (false))
+			if (entry is SolutionItem) {
+				foreach (var file in ((SolutionItem)entry).GetItemFiles (false))
 					SolutionItemAddFile (rootPath, files, file);
 			}
 			
@@ -533,7 +527,7 @@ namespace MonoDevelop.VersionControl
 						SolutionItemAddFile (rootPath, files, file.FilePath);
 				}
 			} else if (entry is SolutionFolder) {
-				foreach (SolutionItem ent in ((SolutionFolder) entry).Items)
+				foreach (SolutionFolderItem ent in ((SolutionFolder) entry).Items)
 					SolutionItemAddFiles (rootPath, ent, files);
 			}
 		}
@@ -557,7 +551,7 @@ namespace MonoDevelop.VersionControl
 				return;
 
 			// handles addition of solutions and projects
-			SolutionItem parent = (SolutionItem) args.SolutionItem.ParentFolder;
+			SolutionFolderItem parent = (SolutionFolderItem) args.SolutionItem.ParentFolder;
 			
 			if (parent == null)
 				return;
@@ -567,7 +561,7 @@ namespace MonoDevelop.VersionControl
 			if (repo == null)
 				return;
 			
-			SolutionItem entry = args.SolutionItem;
+			SolutionFolderItem entry = args.SolutionItem;
 			Repository currentRepo = GetRepository (entry);
 			if (currentRepo != null && currentRepo.VersionControlSystem != repo.VersionControlSystem) {
 				// If the item is already under version control using a different version control system
@@ -584,7 +578,7 @@ namespace MonoDevelop.VersionControl
 			var files = new HashSet<string> { path };
 			SolutionItemAddFiles (path, entry, files);
 			
-			using (IProgressMonitor monitor = GetStatusMonitor ()) {
+			using (ProgressMonitor monitor = GetStatusMonitor ()) {
 				var status = repo.GetDirectoryVersionInfo (path, false, true);
 				foreach (var v in status) {
 					if (!v.IsVersioned && files.Contains (v.LocalPath))
@@ -598,12 +592,12 @@ namespace MonoDevelop.VersionControl
 			NotifyFileStatusChanged (new FileUpdateEventArgs (repo, parent.BaseDirectory, true));
 		}
 		
-		public static IProgressMonitor GetProgressMonitor (string operation)
+		public static ProgressMonitor GetProgressMonitor (string operation)
 		{
 			return GetProgressMonitor (operation, VersionControlOperationType.Other);
 		}
 		
-		public static IProgressMonitor GetProgressMonitor (string operation, VersionControlOperationType op)
+		public static ProgressMonitor GetProgressMonitor (string operation, VersionControlOperationType op)
 		{
 			IconId icon;
 			switch (op) {
@@ -612,15 +606,15 @@ namespace MonoDevelop.VersionControl
 			default: icon = "md-version-control"; break;
 			}
 
-			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", "Version Control", "md-version-control", false, true);
+			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", GettextCatalog.GetString ("Version Control"), "md-version-control", false, true);
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-			mon.AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad));
+			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad));
 			return mon;
 		}
 		
-		static IProgressMonitor GetStatusMonitor ()
+		static ProgressMonitor GetStatusMonitor ()
 		{
 			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Updating version control repository"), "vc-remote-status", true);
 		}
@@ -715,12 +709,7 @@ namespace MonoDevelop.VersionControl
 		{
 			configuration = null;
 		}
-		
-		public static void StoreRepositoryReference (Repository repo, string path, string id)
-		{
-			repo.VersionControlSystem.StoreRepositoryReference (repo, path, id);
-		}
-		
+
 		public static bool CheckVersionControlInstalled ()
 		{
 			if (IsGloballyDisabled)
@@ -729,44 +718,7 @@ namespace MonoDevelop.VersionControl
 			return GetVersionControlSystems ().Any (vcs => vcs.IsInstalled);
 		}
 		
-		internal static Repository InternalGetRepositoryReference (string path, string id)
-		{
-			string file = InternalGetRepositoryPath (path, id);
-			if (file == null)
-				return null;
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextReader reader = new XmlTextReader (new StreamReader (file));
-			try {
-				return (Repository) ser.Deserialize (reader, typeof(Repository));
-			} finally {
-				reader.Close ();
-			}
-		}
-
-		internal static string InternalGetRepositoryPath (string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			if (!File.Exists (file))
-				return null;
-
-			return file;
-		}
-		
-		internal static void InternalStoreRepositoryReference (Repository repo, string path, string id)
-		{
-			string file = Path.Combine (path, id) + ".mdvcs";
-			
-			XmlDataSerializer ser = new XmlDataSerializer (dataContext);
-			XmlTextWriter tw = new XmlTextWriter (new StreamWriter (file));
-			try {
-				ser.Serialize (tw, repo, typeof(Repository));
-			} finally {
-				tw.Close ();
-			}
-		}
-		
-		public static CommitMessageFormat GetCommitMessageFormat (SolutionItem item)
+		public static CommitMessageFormat GetCommitMessageFormat (SolutionFolderItem item)
 		{
 			CommitMessageFormat format = new CommitMessageFormat ();
 			format.Style = item.Policies.Get<VersionControlPolicy> ().CommitMessageStyle;
@@ -787,7 +739,7 @@ namespace MonoDevelop.VersionControl
 						break;
 					}
 				} else {
-					project = IdeApp.Workspace.GetProjectContainingFile (item.LocalPath);
+					project = IdeApp.Workspace.GetProjectsContainingFile (item.LocalPath).FirstOrDefault ();
 				}
 			}
 			CommitMessageStyle style;
@@ -823,8 +775,7 @@ namespace MonoDevelop.VersionControl
 	
 	class InternalRepositoryReference: IDisposable
 	{
-		Repository repo;
-		
+		readonly Repository repo;
 		public InternalRepositoryReference (Repository repo)
 		{
 			this.repo = repo;

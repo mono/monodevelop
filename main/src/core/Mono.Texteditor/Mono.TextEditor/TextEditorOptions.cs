@@ -61,14 +61,15 @@ namespace Mono.TextEditor
 		bool removeTrailingWhitespaces = true;
 		bool allowTabsAfterNonTabs = true;
 		string fontName = DEFAULT_FONT;
-		public static string DefaultColorStyle = "Default";
+		public static string DefaultColorStyle = "Light";
 		string colorStyle = DefaultColorStyle;
 		Pango.FontDescription font, gutterFont;
 		
-		double zoom = 1d;
 		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
 
 		#region Zoom
+		static double zoom = 1d;
+		static event EventHandler StaticZoomChanged;
 
 		const double ZOOM_FACTOR = 1.1f;
 		const int ZOOM_MIN_POW = -4;
@@ -76,53 +77,70 @@ namespace Mono.TextEditor
 		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
 		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
 
+
+		double myZoom = 1d;
+		public bool ZoomOverride { get; private set; }
+
+
 		public double Zoom {
 			get {
-				 return zoom;
+				if (ZoomOverride)
+					return myZoom;
+				return zoom;
 			}
 			set {
 				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
 				if (value > ZOOM_MAX || value < ZOOM_MIN)
 					return;
+				
 				//snap to one, if within 0.001d
 				if ((System.Math.Abs (value - 1d)) < 0.001d) {
 					value = 1d;
 				}
+				if (ZoomOverride) {
+					if (myZoom != value) {
+						myZoom = value;
+						DisposeFont ();
+						ZoomChanged?.Invoke (this, EventArgs.Empty);
+						OnChanged (EventArgs.Empty);
+					}
+					return;
+				}
 				if (zoom != value) {
 					zoom = value;
-					DisposeFont ();
-					OnChanged (EventArgs.Empty);
+					StaticZoomChanged?.Invoke (this, EventArgs.Empty);
 				}
 			}
 		}
-		
+		public event EventHandler ZoomChanged;
+
 		public bool CanZoomIn {
 			get {
-				return zoom < ZOOM_MAX - 0.000001d;
+				return Zoom < ZOOM_MAX - 0.000001d;
 			}
 		}
 		
 		public bool CanZoomOut {
 			get {
-				return zoom > ZOOM_MIN + 0.000001d;
+				return Zoom > ZOOM_MIN + 0.000001d;
 			}
 		}
 		
 		public bool CanResetZoom {
 			get {
-				return zoom != 1d;
+				return Zoom != 1d;
 			}
 		}
 		
 		public void ZoomIn ()
 		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			int oldPow = (int)System.Math.Round (System.Math.Log (Zoom) / System.Math.Log (ZOOM_FACTOR));
 			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow + 1);
 		}
 		
 		public void ZoomOut ()
 		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			int oldPow = (int)System.Math.Round (System.Math.Log (Zoom) / System.Math.Log (ZOOM_FACTOR));
 			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow - 1);
 		}
 		
@@ -345,7 +363,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void DisposeFont ()
+		protected void DisposeFont ()
 		{
 			if (font != null) {
 				font.Dispose ();
@@ -543,7 +561,7 @@ namespace Mono.TextEditor
 		
 		public virtual void CopyFrom (TextEditorOptions other)
 		{
-			zoom = other.zoom;
+			Zoom = other.Zoom;
 			highlightMatchingBracket = other.highlightMatchingBracket;
 			tabsToSpaces = other.tabsToSpaces;
 			indentationSize = other.indentationSize;
@@ -568,11 +586,27 @@ namespace Mono.TextEditor
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}
-		
+
+		public TextEditorOptions (bool zoomOverride = false)
+		{
+			ZoomOverride = zoomOverride;
+			if (!ZoomOverride)
+				StaticZoomChanged += HandleStaticZoomChanged;
+		}
+
 		public virtual void Dispose ()
 		{
+			if (!ZoomOverride)
+				StaticZoomChanged -= HandleStaticZoomChanged;
 		}
-		
+
+		void HandleStaticZoomChanged (object sender, EventArgs e)
+		{
+			DisposeFont ();
+			ZoomChanged?.Invoke (this, EventArgs.Empty);
+			OnChanged (EventArgs.Empty);
+		}
+
 		protected void OnChanged (EventArgs args)
 		{
 			if (Changed != null)

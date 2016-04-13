@@ -39,6 +39,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Instrumentation;
 using Mono.Addins;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -155,17 +156,12 @@ namespace MonoDevelop.Core.Execution
 			// 	p.Exited += exited;
 			// p.EnableRaisingEvents = true;
 			
-			if (exited != null) {
-				MonoDevelop.Core.OperationHandler handler = null;
-				handler = delegate (MonoDevelop.Core.IAsyncOperation op) {
-					op.Completed -= handler;
-					exited (p, EventArgs.Empty);
-				};
-				((MonoDevelop.Core.IAsyncOperation)p).Completed += handler;
-			}
-			
 			Counters.ProcessesStarted++;
 			p.Start ();
+
+			if (exited != null)
+				p.Task.ContinueWith (t => exited (p, EventArgs.Empty), Runtime.MainTaskScheduler);
+
 			return p;
 		}
 
@@ -194,17 +190,13 @@ namespace MonoDevelop.Core.Execution
 			return startInfo;
 		}
 		
-		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, IConsole console,
-		                                                   EventHandler exited)
+		public ProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory, OperationConsole console,
+			IDictionary<string, string> environmentVariables = null, EventHandler exited = null)
 		{
-			return StartConsoleProcess (command, arguments, workingDirectory, null, console, exited);
-		}
-		
-		public IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
-		                                                   IDictionary<string, string> environmentVariables, IConsole console, EventHandler exited)
-		{
-			if ((console == null || (console is ExternalConsole)) && externalConsoleHandler != null) {
-				
+			var externalConsole = console as ExternalConsole;
+
+			if ((console == null || externalConsole != null) && externalConsoleHandler != null) {
+
 				var dict = new Dictionary<string,string> ();
 				if (environmentVariables != null)
 					foreach (var kvp in environmentVariables)
@@ -215,14 +207,11 @@ namespace MonoDevelop.Core.Execution
 				
 				var p = externalConsoleHandler (command, arguments, workingDirectory, dict,
 					GettextCatalog.GetString ("{0} External Console", BrandingService.ApplicationName),
-					console != null ? !console.CloseOnDispose : false);
+					externalConsole != null ? !externalConsole.CloseOnDispose : false);
 
 				if (p != null) {
-					if (exited != null) {
-						p.Completed += delegate {
-							exited (p, EventArgs.Empty);
-						};
-					}
+					if (exited != null)
+						p.Task.ContinueWith (t => exited (p, EventArgs.Empty), Runtime.MainTaskScheduler);
 					Counters.ProcessesStarted++;
 					return p;
 				} else {
@@ -234,8 +223,8 @@ namespace MonoDevelop.Core.Execution
 				foreach (KeyValuePair<string, string> kvp in environmentVariables)
 					psi.EnvironmentVariables [kvp.Key] = kvp.Value;
 			ProcessWrapper pw = StartProcess (psi, console.Out, console.Error, null);
-			new ProcessMonitor (console, pw, exited);
-			return pw;
+			new ProcessMonitor (console, pw.ProcessAsyncOperation, exited);
+			return pw.ProcessAsyncOperation;
 		}
 		
 		public IExecutionHandler GetDefaultExecutionHandler (ExecutionCommand command)
@@ -316,44 +305,25 @@ namespace MonoDevelop.Core.Execution
 				return externalProcess;
 			}
 		}
-		
-		public IDisposable CreateExternalProcessObject (Type type)
-		{
-			return CreateExternalProcessObject (type, true);
-		}
-		
+
 		void CheckRemoteType (Type type)
 		{
 			if (!typeof(IDisposable).IsAssignableFrom (type))
 				throw new ArgumentException ("The remote object type must implement IDisposable", "type");
 		}
 		
-		public IDisposable CreateExternalProcessObject (Type type, bool shared, IList<string> userAssemblyPaths = null)
+		public IDisposable CreateExternalProcessObject (Type type, bool shared = true, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			CheckRemoteType (type);
-			ProcessHostController hc = GetHost (type.ToString(), shared, null);
-			return (IDisposable) hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths);
+			var hc = GetHost (type.ToString(), shared, null);
+			return (IDisposable) hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths, console);
 		}
 
-		public IDisposable CreateExternalProcessObject (Type type, TargetRuntime runtime)
-		{
-			return CreateExternalProcessObject (type, runtime.GetExecutionHandler ());
-		}
-
-		public IDisposable CreateExternalProcessObject (Type type, IExecutionHandler executionHandler, IList<string> userAssemblyPaths = null)
+		public IDisposable CreateExternalProcessObject (Type type, IExecutionHandler executionHandler, IList<string> userAssemblyPaths = null, OperationConsole console = null)
 		{
 			CheckRemoteType (type);
-			return (IDisposable)GetHost (type.ToString (), false, executionHandler).CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths);
-		}
-		
-		public IDisposable CreateExternalProcessObject (string assemblyPath, string typeName, bool shared, params string[] requiredAddins)
-		{
-			return (IDisposable) GetHost (typeName, shared, null).CreateInstance (assemblyPath, typeName, requiredAddins);
-		}
-		
-		public IDisposable CreateExternalProcessObject (string assemblyPath, string typeName, IExecutionHandler executionHandler, params string[] requiredAddins)
-		{
-			return (IDisposable) GetHost (typeName, false, executionHandler).CreateInstance (assemblyPath, typeName, requiredAddins);
+			var hc = GetHost (type.ToString (), false, executionHandler);
+			return (IDisposable)hc.CreateInstance (type.Assembly.Location, type.FullName, GetRequiredAddins (type), userAssemblyPaths, console);
 		}
 		
 		public bool IsValidForRemoteHosting (IExecutionHandler handler)
@@ -418,24 +388,28 @@ namespace MonoDevelop.Core.Execution
 	
 	class ProcessMonitor
 	{
-		public IConsole console;
+		public OperationConsole console;
 		EventHandler exited;
-		IProcessAsyncOperation operation;
+		ProcessAsyncOperation operation;
+		IDisposable cancelRegistration;
 
-		public ProcessMonitor (IConsole console, IProcessAsyncOperation operation, EventHandler exited)
+		public ProcessMonitor (OperationConsole console, ProcessAsyncOperation operation, EventHandler exited)
 		{
 			this.exited = exited;
 			this.operation = operation;
 			this.console = console;
-			operation.Completed += new OperationHandler (OnOperationCompleted);
-			console.CancelRequested += new EventHandler (OnCancelRequest);
+			operation.Task.ContinueWith (t => OnOperationCompleted ());
+			cancelRegistration = console.CancellationToken.Register (operation.Cancel);
 		}
 		
-		public void OnOperationCompleted (IAsyncOperation op)
+		public void OnOperationCompleted ()
 		{
+			cancelRegistration.Dispose ();
 			try {
 				if (exited != null)
-					exited (op, null);
+					Runtime.RunInMainThread (() => {
+						exited (operation, EventArgs.Empty);
+					});
 				
 				if (!Platform.IsWindows && Mono.Unix.Native.Syscall.WIFSIGNALED (operation.ExitCode))
 					console.Log.WriteLine (GettextCatalog.GetString ("The application was terminated by a signal: {0}"), Mono.Unix.Native.Syscall.WTERMSIG (operation.ExitCode));
@@ -444,14 +418,6 @@ namespace MonoDevelop.Core.Execution
 			} finally {
 				console.Dispose ();
 			}
-		}
-
-		void OnCancelRequest (object sender, EventArgs args)
-		{
-			operation.Cancel ();
-
-			//remove the cancel handler, it will be attached again when StartConsoleProcess is called
-			console.CancelRequested -= new EventHandler (OnCancelRequest);
 		}
 	}
 	
@@ -475,5 +441,5 @@ namespace MonoDevelop.Core.Execution
 		}
 	}
 	
-	public delegate IProcessAsyncOperation ExternalConsoleHandler (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished);
+	public delegate ProcessAsyncOperation ExternalConsoleHandler (string command, string arguments, string workingDirectory, IDictionary<string, string> environmentVariables, string title, bool pauseWhenFinished);
 }

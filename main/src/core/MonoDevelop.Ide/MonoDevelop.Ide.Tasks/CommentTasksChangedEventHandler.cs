@@ -31,23 +31,44 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Tasks
 {
-	public class CommentTasksChangedEventArgs : EventArgs
+	public class CommentTaskChange
 	{
-		string filename;
-		IList<Tag> tagComments;
-		Project project;
-		
-		public CommentTasksChangedEventArgs (string filename, IList<Tag> tagComments, Project project)
+		readonly string filename;
+		readonly IReadOnlyList<Tag> tagComments;
+		readonly Project project;
+
+		public string FileName { get { return filename; } }
+
+		public IReadOnlyList<Tag> TagComments { get { return tagComments; } }
+
+		public Project Project { get { return project; } }
+
+		public CommentTaskChange (string filename, IReadOnlyList<Tag> tagComments, Project project)
 		{
 			this.filename = filename;
 			this.tagComments = tagComments;
 			this.project = project;
 		}
-		
-		public string FileName { get { return filename; } }
+	}
 
-		public IList<Tag> TagComments { get { return tagComments; } }
+	public class CommentTasksChangedEventArgs : EventArgs
+	{
+		IReadOnlyList<CommentTaskChange> changes;
 
-		public Project Project { get { return project; } }
+		public IReadOnlyList<CommentTaskChange> Changes {
+			get {
+				return changes;
+			}
+		}
+
+		public CommentTasksChangedEventArgs (IReadOnlyList<CommentTaskChange> changes)
+		{
+			this.changes = changes;
+		}
+
+		public CommentTasksChangedEventArgs (string filename, IReadOnlyList<Tag> tagComments, Project project)
+		{
+			changes = new [] { new CommentTaskChange (filename, tagComments, project) };
+		}
 	}
 }

@@ -32,9 +32,9 @@ using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ConfigSettingsFileSystem : PhysicalFileSystem
+	internal class ConfigSettingsFileSystem : PhysicalFileSystem
 	{
 		ConfigSettingsFileSystem(string root)
 			: base(root)

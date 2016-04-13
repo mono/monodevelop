@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementSelectedProject
+	internal interface IPackageManagementSelectedProject
 	{
 		string Name { get; }
 		bool IsSelected { get; set; }

@@ -88,7 +88,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 			foreach (object ob in exts) {
 				CommitDialogExtension ext = ob as CommitDialogExtension;
 				if (ext == null) {
-					MessageService.ShowError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
+					LoggingService.LogError ("Commit extension type " + ob.GetType() + " must be a subclass of CommitDialogExtension");
 					continue;
 				}
 				if (ext.Initialize (changeSet)) {
@@ -196,7 +196,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 					GettextCatalog.GetString ("Do you want to save the changes before committing?"),
 					new AlertButton[] {
 						AlertButton.Cancel,
-						new AlertButton ("Don't Save"),
+						new AlertButton (GettextCatalog.GetString ("Don't Save")),
 						AlertButton.Save
 					}
 				);

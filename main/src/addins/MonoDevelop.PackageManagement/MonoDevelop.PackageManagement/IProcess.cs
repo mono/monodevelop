@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IProcess
+	internal interface IProcess
 	{
 		void Start(string fileName);
 	}

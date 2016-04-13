@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects
 		PolicySet currentSet;
 		bool loading;
 		
-		public DefaultPolicyOptionsDialog (Gtk.Window parentWindow)
+		public DefaultPolicyOptionsDialog (MonoDevelop.Components.Window parentWindow)
 			: base (parentWindow, new PolicySet (),
 			        "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels")
 		{
@@ -260,14 +260,14 @@ namespace MonoDevelop.Ide.Projects
 			try {
 				dlg.Title = GettextCatalog.GetString ("Apply to Project");
 				dlg.RootItem = IdeApp.Workspace;
-				dlg.SelectedItem = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				dlg.SelectableItemTypes = new Type[] { typeof(Solution), typeof(SolutionItem) };
+				dlg.SelectedItem = IdeApp.ProjectOperations.CurrentSelectedObject;
+				dlg.SelectableItemTypes = new Type[] { typeof(Solution), typeof(SolutionFolderItem) };
 				if (MessageService.RunCustomDialog (dlg, this) == (int) Gtk.ResponseType.Ok) {
 					((IPolicyProvider)dlg.SelectedItem).Policies.Import (currentSet, true);
 					if (dlg.SelectedItem is IWorkspaceFileObject)
-						IdeApp.ProjectOperations.Save ((IWorkspaceFileObject)dlg.SelectedItem);
+						IdeApp.ProjectOperations.SaveAsync (dlg.SelectedItem);
 					else
-						IdeApp.ProjectOperations.Save (((SolutionItem)dlg.SelectedItem).ParentSolution);
+						IdeApp.ProjectOperations.SaveAsync (((SolutionFolderItem)dlg.SelectedItem).ParentSolution);
 				}
 			} finally {
 				dlg.Destroy ();
@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			OpenFileDialog dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Policy File"));
 			dlg.TransientFor = this;
-			dlg.InitialFileName = currentSet.Name + ".mdpolicy";
+			dlg.InitialFileName = currentSet.Id + ".mdpolicy";
 			dlg.Action = MonoDevelop.Components.FileChooserAction.Save;
 			dlg.AddFilter (BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop policy files")), "*.mdpolicy");
 			dlg.AddAllFilesFilter ();
@@ -329,9 +329,10 @@ namespace MonoDevelop.Ide.Projects
 		
 		void UpdateStatus ()
 		{
+			Gtk.Widget mainBox = MainBox;
 			if (sets.Count == 0) {
 				deleteButton.Sensitive = exportButton.Sensitive = false;
-				MainBox.Sensitive = false;
+				mainBox.Sensitive = false;
 				((ListStore)policiesCombo.Model).Clear ();
 				policiesCombo.Sensitive = false;
 				policiesCombo.AppendText (GettextCatalog.GetString ("No Selection"));
@@ -339,7 +340,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 			else {
 				deleteButton.Sensitive = exportButton.Sensitive = true;
-				MainBox.Sensitive = true;
+				mainBox.Sensitive = true;
 				policiesCombo.Sensitive = true;
 			}
 		}

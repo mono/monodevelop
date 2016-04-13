@@ -33,7 +33,7 @@ using MonoDevelop.PackageManagement.Commands;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class PackageReferenceNodeBuilder : TypeNodeBuilder
+	internal class PackageReferenceNodeBuilder : TypeNodeBuilder
 	{
 		public override Type NodeDataType {
 			get { return typeof(PackageReferenceNode); }

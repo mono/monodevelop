@@ -33,9 +33,9 @@ using System.Runtime.Versioning;
 
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackageFromRepository : IPackageFromRepository
+	internal class PackageFromRepository : IPackageFromRepository
 	{
 		IPackage package;
 		bool? hasDependencies;

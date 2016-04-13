@@ -29,7 +29,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class ExceptionThrowingRegisteredPackageRepositories : FakeRegisteredPackageRepositories
+	class ExceptionThrowingRegisteredPackageRepositories : FakeRegisteredPackageRepositories
 	{
 		public Exception ExceptionToThrowWhenActiveRepositoryAccessed { get; set; }
 

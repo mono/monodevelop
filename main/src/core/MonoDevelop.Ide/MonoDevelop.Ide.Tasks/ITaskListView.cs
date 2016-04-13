@@ -27,13 +27,13 @@
 //
 
 using System;
-using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Tasks
 {
 	public interface ITaskListView
 	{
-		TreeView Content { get; }
-		Widget[] ToolBarItems { get; }
+		Control Content { get; }
+		Control[] ToolBarItems { get; }
 	}
 }

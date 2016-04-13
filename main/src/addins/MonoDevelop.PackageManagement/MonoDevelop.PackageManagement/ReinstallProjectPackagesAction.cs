@@ -27,13 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ReinstallProjectPackagesAction : IPackageAction
+	internal class ReinstallProjectPackagesAction : IPackageAction
 	{
 		IPackageManagementProject project;
 		IPackageManagementEvents packageManagementEvents;

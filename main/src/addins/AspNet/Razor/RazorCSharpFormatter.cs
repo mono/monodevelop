@@ -26,28 +26,29 @@
 
 using System.Collections.Generic;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.AspNet.Razor
 {
-	public class RazorCSharpFormatter : AbstractAdvancedFormatter
+	public class RazorCSharpFormatter : AbstractCodeFormatter
 	{
 		public override bool SupportsOnTheFlyFormatting { get { return true; } }
 		public override bool SupportsCorrectingIndent { get { return true; } }
+		public override bool SupportsPartialDocumentFormatting { get { return true; } }
 
-		public override void CorrectIndenting (PolicyContainer policyParent,
-			IEnumerable<string> mimeTypeChain, Mono.TextEditor.TextEditorData data, int line)
+		protected override void CorrectIndentingImplementation (PolicyContainer policyParent, TextEditor editor, int line)
 		{
 		}
 
-		public override string FormatText (PolicyContainer policyParent,
-			IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
+		protected override Core.Text.ITextSource FormatImplementation (PolicyContainer policyParent, string mimeType, Core.Text.ITextSource input, int startOffset, int length)
 		{
-			return null;
+			return input.CreateSnapshot (startOffset, length);
+        }
+
+		protected override void OnTheFlyFormatImplementation (TextEditor editor, DocumentContext context, int startOffset, int length)
+		{
 		}
 
-		public override void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
-		{
-		}
 	}
 }

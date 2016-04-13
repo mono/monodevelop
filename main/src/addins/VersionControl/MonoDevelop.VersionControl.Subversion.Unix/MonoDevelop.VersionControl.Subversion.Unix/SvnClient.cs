@@ -136,7 +136,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string Version {
 			get {
-				return GetVersion ();
+				try {
+					return GetVersion ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Failed to query Subversion version info", e);
+					return base.Version;
+				}
 			}
 		}
 
@@ -195,6 +200,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
+			if (path.IsNullOrEmpty)
+				return string.Empty;
+
 			if (Pre_1_7)
 				return base.GetDirectoryDotSvn (path);
 
@@ -250,7 +258,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		readonly IntPtr pool;
 		readonly IntPtr ctx;
 
-		IProgressMonitor updatemonitor;
+		ProgressMonitor updatemonitor;
 		ArrayList updateFileList;
 		string commitmessage;
 
@@ -398,7 +406,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			IntPtr localpool = newpool (IntPtr.Zero);
 			var error = new LibSvnClient.svn_error_t {
 				apr_err = LibApr.APR_OS_START_USEERR,
-				message = "Operation cancelled.",
+				message = GettextCatalog.GetString ("Operation cancelled."),
 				pool = localpool,
 			};
 
@@ -662,7 +670,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 
 			Annotation[] annotations = new Annotation [numAnnotations];
-			AnnotationCollector collector = new AnnotationCollector (annotations);
+			AnnotationCollector collector = new AnnotationCollector (annotations, repo);
 
 			IntPtr localpool = IntPtr.Zero;
 			try {
@@ -725,7 +733,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Update (FilePath path, bool recurse, IProgressMonitor monitor)
+		public override void Update (FilePath path, bool recurse, ProgressMonitor monitor)
 		{
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException();
@@ -750,7 +758,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor)
+		public override void Revert (FilePath[] paths, bool recurse, ProgressMonitor monitor)
 		{
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException();
@@ -765,7 +773,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Add (FilePath path, bool recurse, IProgressMonitor monitor)
+		public override void Add (FilePath path, bool recurse, ProgressMonitor monitor)
 		{
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
@@ -781,7 +789,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Checkout (string url, FilePath path, Revision revision, bool recurse, IProgressMonitor monitor)
+		public override void Checkout (string url, FilePath path, Revision revision, bool recurse, ProgressMonitor monitor)
 		{
 			if (url == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -809,7 +817,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Commit (FilePath[] paths, string message, IProgressMonitor monitor)
+		public override void Commit (FilePath[] paths, string message, ProgressMonitor monitor)
 		{
 			if (paths == null || message == null || monitor == null)
 				throw new ArgumentNullException();
@@ -835,7 +843,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Mkdir (string[] paths, string message, IProgressMonitor monitor) 
+		public override void Mkdir (string[] paths, string message, ProgressMonitor monitor) 
 		{
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException ();
@@ -856,7 +864,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Delete (FilePath path, bool force, IProgressMonitor monitor)
+		public override void Delete (FilePath path, bool force, ProgressMonitor monitor)
 		{
 			if (path == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
@@ -874,7 +882,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
+		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, ProgressMonitor monitor)
 		{
 			if (srcPath == FilePath.Null || destPath == FilePath.Null || monitor == null)
 				throw new ArgumentNullException ();
@@ -895,7 +903,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
+		public override void Lock (ProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
 		{
 			nb = new notify_baton ();
 			IntPtr localpool = IntPtr.Zero;
@@ -914,7 +922,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 		
-		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
+		public override void Unlock (ProgressMonitor monitor, bool breakLock, params FilePath[] paths)
 		{
 			nb = new notify_baton ();
 			IntPtr localpool = IntPtr.Zero;
@@ -926,7 +934,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 				CheckError (svn.client_unlock (array, breakLock, ctx, localpool));
 				if (paths.Length != lockFileList.Count)
-					throw new SubversionException ("Lock operation failed.");
+					throw new SubversionException ("Unlock operation failed.");
 			} finally {
 				lockFileList = null;
 				TryEndOperation (localpool);
@@ -986,12 +994,12 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
-		public override void RevertToRevision (FilePath path, Revision revision, IProgressMonitor monitor)
+		public override void RevertToRevision (FilePath path, Revision revision, ProgressMonitor monitor)
 		{
 			Merge (path, LibSvnClient.Rev.Head, (LibSvnClient.Rev) revision);
 		}
 
-		public override void RevertRevision (FilePath path, Revision revision, IProgressMonitor monitor)
+		public override void RevertRevision (FilePath path, Revision revision, ProgressMonitor monitor)
 		{
 			SvnRevision srev = (SvnRevision) revision;
 			Merge (path, (LibSvnClient.Rev) srev, LibSvnClient.Rev.Number (srev.Rev - 1));
@@ -1136,7 +1144,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return IntPtr.Zero;
 		}
 
-		IntPtr TryStartOperation (IProgressMonitor monitor)
+		IntPtr TryStartOperation (ProgressMonitor monitor)
 		{
 			Monitor.Enter (svn);
 			updatemonitor = monitor;
@@ -1161,7 +1169,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (ent.RemoteTextStatus != LibSvnClient.svn_wc_status_kind.EMPTY) {
 				rs = ConvertStatus (LibSvnClient.NodeSchedule.Normal, ent.RemoteTextStatus);
 				rr = new SvnRevision (repo, ent.LastCommitRevision, ent.LastCommitDate,
-				                      ent.LastCommitAuthor, "(unavailable)", null);
+				                      ent.LastCommitAuthor, GettextCatalog.GetString ("(unavailable)"), null);
 			}
 
 			VersionStatus status = ConvertStatus (ent.Schedule, ent.TextStatus);
@@ -1219,13 +1227,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		IntPtr svn_cancel_func_t_impl (IntPtr baton)
 		{
-			if (updatemonitor == null || !updatemonitor.IsCancelRequested)
+			if (updatemonitor == null || !updatemonitor.CancellationToken.IsCancellationRequested)
 				return IntPtr.Zero;
 
 			IntPtr localpool = newpool (IntPtr.Zero);
 			var err = new LibSvnClient.svn_error_t {
 				apr_err = 200015,
-				message = "The operation was interrupted",
+				message = GettextCatalog.GetString ("The operation was interrupted"),
 				pool = localpool
 			};
 
@@ -1283,7 +1291,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			progressData.LogTimer.Interval = 1000;
 			progressData.LogTimer.Elapsed += delegate {
 				progressData.Seconds += 1;
-				updatemonitor.Log.WriteLine ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds);
+				updatemonitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds));
 			};
 			progressData.LogTimer.Start ();
 		}
@@ -1446,7 +1454,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 //				actiondesc = string.Format (GettextCatalog.GetString ("Path '{0}' is no longer a member of a changelist."), file);
 //				break;
 			default:
-				System.Console.WriteLine("untranslated action:" + data.action);
+				LoggingService.LogDebug ("untranslated action:" + data.action);
 				actiondesc = data.action.ToString () + " " + file;
 				break;
 				/*
@@ -1456,11 +1464,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			
 			if (updatemonitor != null && !string.IsNullOrEmpty (actiondesc)) {
-				if (skipEol) {
-					updatemonitor.Log.Write (actiondesc);
-				} else {
-					updatemonitor.Log.WriteLine (actiondesc);
-				}
+				Runtime.RunInMainThread (() => {
+					if (skipEol) {
+						updatemonitor.Log.Write (actiondesc);
+					} else {
+						updatemonitor.Log.WriteLine (actiondesc);
+					}
+				});
 			}
 			if (updateFileList != null && notifyChange && File.Exists (file))
 				updateFileList.Add (file);
@@ -1663,6 +1673,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		/// </summary>
 		private class AnnotationCollector
 		{
+			readonly Repository repo;
 			readonly Annotation[] annotations;
 			public LibSvnClient.svn_client_blame_receiver_t Func {
 				get; private set;
@@ -1680,14 +1691,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					} catch {
 						tdate = DateTime.MinValue;
 					}
-					annotations[(int)line_no] = new Annotation (revision.ToString (), author, tdate);
+					annotations[(int)line_no] = new Annotation (new SvnRevision(repo, (int)revision), author, tdate);
 				}
 				
 				return IntPtr.Zero;
 			}
 			
-			public AnnotationCollector (Annotation[] annotations)
+			public AnnotationCollector (Annotation[] annotations, Repository repo)
 			{
+				this.repo = repo;
 				this.annotations = annotations;
 				Func = CollectorFunc;
 			}

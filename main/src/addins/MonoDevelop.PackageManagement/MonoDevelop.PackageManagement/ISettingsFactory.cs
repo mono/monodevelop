@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface ISettingsFactory
+	internal interface ISettingsFactory
 	{
 		ISettings CreateSettings(string directory);
 	}

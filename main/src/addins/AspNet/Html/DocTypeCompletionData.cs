@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -61,24 +62,21 @@ namespace MonoDevelop.AspNet.Html
 			get { return name; }
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			MonoDevelop.Ide.Gui.Content.IEditableTextBuffer buf = window.CompletionWidget as MonoDevelop.Ide.Gui.Content.IEditableTextBuffer;
+			var buf = window.CompletionWidget;
 			if (buf != null) {
-				using (var undo = buf.OpenUndoGroup ()) {
-					int deleteStartOffset = window.CodeCompletionContext.TriggerOffset;
-					if (text.StartsWith (docTypeStart)) {
-						int start = window.CodeCompletionContext.TriggerOffset - docTypeStart.Length;
-						if (start >= 0) {
-							string readback = buf.GetText (start, window.CodeCompletionContext.TriggerOffset);
-							if (string.Compare (readback, docTypeStart, StringComparison.OrdinalIgnoreCase) == 0)
-								deleteStartOffset -= docTypeStart.Length;
-						}
+				int deleteStartOffset = window.CodeCompletionContext.TriggerOffset;
+				if (text.StartsWith (docTypeStart)) {
+					int start = window.CodeCompletionContext.TriggerOffset - docTypeStart.Length;
+					if (start >= 0) {
+						string readback = buf.GetText (start, window.CodeCompletionContext.TriggerOffset);
+						if (string.Compare (readback, docTypeStart, StringComparison.OrdinalIgnoreCase) == 0)
+							deleteStartOffset -= docTypeStart.Length;
 					}
-					
-					buf.DeleteText (deleteStartOffset, buf.CursorPosition - deleteStartOffset);
-					buf.InsertText (buf.CursorPosition, text);
 				}
+				
+				buf.Replace (deleteStartOffset, buf.CaretOffset - deleteStartOffset, text);
 			}
 		}
 	}

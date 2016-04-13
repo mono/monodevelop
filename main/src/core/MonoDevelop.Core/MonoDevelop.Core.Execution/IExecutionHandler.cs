@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -56,7 +57,7 @@ namespace MonoDevelop.Core.Execution
 		/// <param name='console'>
 		/// Console where to log the output
 		/// </param>
-		IProcessAsyncOperation Execute (ExecutionCommand command, IConsole console);
+		ProcessAsyncOperation Execute (ExecutionCommand command, OperationConsole console);
 	}
 
 	/// <summary>

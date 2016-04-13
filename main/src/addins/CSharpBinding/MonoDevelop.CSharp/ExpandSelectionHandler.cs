@@ -24,10 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp
 {
@@ -39,68 +39,99 @@ namespace MonoDevelop.CSharp
 	
 	class ExpandSelectionHandler : CommandHandler
 	{
+		internal class ExpandSelectionAnnotation
+		{
+			readonly MonoDevelop.Ide.Editor.TextEditor editor;
+
+			public Stack<SyntaxNode> Stack = new Stack<SyntaxNode> ();
+
+			public ExpandSelectionAnnotation (MonoDevelop.Ide.Editor.TextEditor editor)
+			{
+				this.editor = editor;
+				editor.CaretPositionChanged += Editor_CaretPositionChanged;
+			}
+
+			void Editor_CaretPositionChanged (object sender, EventArgs e)
+			{
+				editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+				Stack = null;
+				editor.RemoveAnnotations<ExpandSelectionAnnotation> ();
+			}
+		}
+
+		internal static ExpandSelectionAnnotation GetSelectionAnnotation (MonoDevelop.Ide.Editor.TextEditor editor)
+		{
+			var result = editor.Annotation<ExpandSelectionAnnotation> ();
+			if (result == null) {
+				result = new ExpandSelectionAnnotation (editor);
+				editor.AddAnnotation (result);
+			}
+			return result;
+		}
+
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return;
+			var selectionRange = doc.Editor.SelectionRange;
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return;
-			var unit = parsedDocument.GetAst<SyntaxTree> ();
-			if (unit == null)
+			var model = parsedDocument.GetAst<SemanticModel> ();
+			if (model == null)
 				return;
-			var node = unit.GetNodeAt (doc.Editor.Caret.Location);
+			var unit = model.SyntaxTree.GetRoot ();
+			var node = unit.FindNode (Microsoft.CodeAnalysis.Text.TextSpan.FromBounds (selectionRange.Offset, selectionRange.EndOffset));
 			if (node == null)
 				return;
 			
 			if (doc.Editor.IsSomethingSelected) {
-				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation, node.EndLocation)) {
+				while (node != null && ShrinkSelectionHandler.IsSelected (doc.Editor, node.Span)) {
 					node = node.Parent;
 				}
 			}
-			
-			if (node != null)
-				doc.Editor.SetSelection (node.StartLocation, node.EndLocation);
+
+			if (node != null) {
+				var selectionAnnotation = GetSelectionAnnotation (doc.Editor);
+				selectionAnnotation.Stack.Push (node);
+				doc.Editor.SetSelection (node.SpanStart, node.Span.End);
+			}
 		}
 	}
 	
 	class ShrinkSelectionHandler : CommandHandler
 	{
-		protected override void Run ()
+		internal static bool IsSelected (MonoDevelop.Ide.Editor.TextEditor editor, Microsoft.CodeAnalysis.Text.TextSpan span)
+		{
+			var selection = editor.SelectionRange;
+			return selection.Offset == span.Start && selection.Length == span.Length;
+		}
+
+		protected async override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var parsedDocument = doc.ParsedDocument;
+			if (doc == null)
+				return;
+			var selectionRange = doc.Editor.CaretOffset;
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var parsedDocument = await analysisDocument.GetSyntaxTreeAsync ();
 			if (parsedDocument == null)
 				return;
-			var unit = parsedDocument.GetAst<SyntaxTree> ();
+			var unit = parsedDocument.GetRoot ();
 			if (unit == null)
 				return;
-			var node = unit.GetNodeAt (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
-			if (node == null)
-				return;
-			var nodeStack = new Stack<AstNode> ();
-			nodeStack.Push (node);
-			if (doc.Editor.IsSomethingSelected) {
-				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation, node.EndLocation)) {
-					node = node.Parent;
-					if (node != null) {
-						if (nodeStack.Count > 0 && nodeStack.Peek ().StartLocation == node.StartLocation && nodeStack.Peek ().EndLocation == node.EndLocation)
-							nodeStack.Pop ();
-						nodeStack.Push (node);
-					}
-				}
-			}
-			
-			if (nodeStack.Count > 2) {
-				nodeStack.Pop (); // parent
-				nodeStack.Pop (); // current node
-				node = nodeStack.Pop (); // next children in which the caret is
-				doc.Editor.SetSelection (node.StartLocation, node.EndLocation);
+
+			var selectionAnnotation = ExpandSelectionHandler.GetSelectionAnnotation (doc.Editor);
+			selectionAnnotation.Stack.Pop ();
+			if (selectionAnnotation.Stack.Count > 0) {
+				var node = selectionAnnotation.Stack.Peek ();
+				doc.Editor.SetSelection (node.SpanStart, node.Span.End);
 			} else {
 				doc.Editor.ClearSelection ();
 			}
 		}
 	}
 }
-

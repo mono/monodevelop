@@ -29,7 +29,8 @@
 
 
 using Gtk;
-	
+
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -121,7 +122,7 @@ namespace MonoDevelop.GtkCore.Dialogs
 		
 		WidgetBuilderOptionPanelWidget widget;
 
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return (widget = new WidgetBuilderOptionPanelWidget (ConfiguredProject));
 		}

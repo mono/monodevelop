@@ -34,9 +34,9 @@ using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Core;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class AvailablePackagesViewModel : PackagesViewModel
+	internal class AvailablePackagesViewModel : PackagesViewModel
 	{
 		ISolutionPackageRepository solutionPackageRepository;
 		IPackageRepository repository;

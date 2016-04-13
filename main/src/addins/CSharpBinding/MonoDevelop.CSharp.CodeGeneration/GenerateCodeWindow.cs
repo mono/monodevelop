@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
-using Mono.TextEditor.PopupWindow;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -134,10 +134,10 @@ namespace MonoDevelop.CodeGeneration
 			GetSize (out w, out h);
 			
 			int myMonitor = Screen.GetMonitorAtPoint (x, y);
-			Gdk.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen, myMonitor);
+			Xwt.Rectangle geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, myMonitor);
 
 			if (x + w > geometry.Right)
-				x = geometry.Right - w;
+				x = (int)geometry.Right - w;
 
 			if (y + h > geometry.Bottom)
 				y = y - completionContext.TriggerTextHeight - h;
@@ -174,9 +174,9 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		public static void ShowIfValid (Document document, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		public static void ShowIfValid (TextEditor editor, DocumentContext context, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
 		{
-			var options = CodeGenerationOptions.CreateCodeGenerationOptions (document);
+			var options = CodeGenerationOptions.CreateCodeGenerationOptions (editor, context);
 			
 			var validGenerators = new List<ICodeGenerator> ();
 			foreach (var generator in CodeGenerationService.CodeGenerators) {

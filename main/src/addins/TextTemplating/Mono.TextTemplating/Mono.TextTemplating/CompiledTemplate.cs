@@ -121,13 +121,17 @@ namespace Mono.TextTemplating
 		
 		Assembly ResolveReferencedAssemblies (object sender, ResolveEventArgs args)
 		{
-			Assembly asm = null;
+			AssemblyName asmName = new AssemblyName (args.Name);
 			foreach (var asmFile in assemblyFiles) {
-				var name = System.IO.Path.GetFileNameWithoutExtension (asmFile);
-				if (args.Name.StartsWith (name, StringComparison.Ordinal))
-					asm = Assembly.LoadFrom (asmFile);
+				if (asmName.Name == System.IO.Path.GetFileNameWithoutExtension (asmFile))
+					return Assembly.LoadFrom (asmFile);
 			}
-			return asm;
+
+			var path = host.ResolveAssemblyReference (asmName.Name + ".dll");
+			if (System.IO.File.Exists (path))
+				return Assembly.LoadFrom (path);
+
+			return null;
 		}
 		
 		public void Dispose ()

@@ -27,7 +27,7 @@
 //
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -38,10 +38,10 @@ namespace MonoDevelop.DesignerSupport
 		int column = 0;
 		string fileName = null;
 		
-		public ErrorInFileException (DomRegion region, string fileName)
+		public ErrorInFileException (DocumentLocation region, string fileName)
 		{
-			this.line = region.BeginLine;
-			this.column = region.BeginColumn;
+			this.line = region.Line;
+			this.column = region.Column;
 			this.fileName = fileName;
 		}
 		

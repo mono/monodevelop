@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class PackageSourceExtensions
+	internal static class PackageSourceExtensions
 	{
 		public static bool IsAggregate(this PackageSource packageSource)
 		{

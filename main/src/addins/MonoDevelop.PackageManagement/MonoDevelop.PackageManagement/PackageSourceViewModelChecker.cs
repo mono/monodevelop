@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageSourceViewModelChecker : IDisposable
+	internal class PackageSourceViewModelChecker : IDisposable
 	{
 		PackageManagementTaskFactory taskFactory = new PackageManagementTaskFactory ();
 		List<ITask<PackageSourceViewModelCheckedEventArgs>> tasks = new List<ITask<PackageSourceViewModelCheckedEventArgs>>();

@@ -38,13 +38,13 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ErrorText
+	class ErrorText
 	{
-		public Task Task { get; set; }
+		public TaskListEntry Task { get; set; }
 		public bool IsError { get; set; }
 		public string ErrorMessage { get; set; }
 
-		public ErrorText (Task task, bool isError, string errorMessage)
+		public ErrorText (TaskListEntry task, bool isError, string errorMessage)
 		{
 			this.Task = task;
 			this.IsError = isError;

@@ -33,21 +33,91 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Serialization;
+using System.Linq;
+using System.Threading.Tasks;
+using MonoDevelop.Projects.MD1;
 
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public class Workspace: WorkspaceItem, ICustomDataItem
+	public sealed class Workspace: WorkspaceItem, ICustomDataItem, IBuildTarget
 	{
 		WorkspaceItemCollection items;
-		
-		public override void Dispose ()
+
+		public Workspace ()
 		{
-			base.Dispose ();
-			foreach (WorkspaceItem it in Items)
-				it.Dispose ();
+			Initialize (this);
+			items = new WorkspaceItemCollection (this);
+		}
+
+		public override void SetLocation (FilePath baseDirectory, string name)
+		{
+			FileName = baseDirectory.Combine (name + ".mdw");
+		}
+
+		internal protected override Task OnSave (ProgressMonitor monitor)
+		{
+			return MD1FileFormat.Instance.WriteFile (FileName, this, monitor);
+		}
+
+		protected override void OnSetShared ()
+		{
+			base.OnSetShared ();
+			items.SetShared ();
 		}
 		
+		protected override void OnDispose ()
+		{
+			foreach (WorkspaceItem it in Items)
+				it.Dispose ();
+			base.OnDispose ();
+		}
+
+		bool IBuildTarget.CanBuild (ConfigurationSelector configuration)
+		{
+			return true;
+		}
+
+		[ThreadSafe]
+		public async Task<BuildResult> Build (ProgressMonitor monitor, ConfigurationSelector configuration, bool buildReferencedTargets = false, OperationContext operationContext = null)
+		{
+			var res = new BuildResult { BuildCount = 0 };
+			foreach (var bt in Items.OfType<IBuildTarget> ())
+				res.Append (await bt.Build (monitor, configuration, operationContext:operationContext));
+			return res;
+		}
+
+		[ThreadSafe]
+		public async Task<BuildResult> Clean (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext = null)
+		{
+			AssertMainThread ();
+			var res = new BuildResult { BuildCount = 0 };
+			foreach (var bt in Items.OfType<IBuildTarget> ())
+				res.Append (await bt.Clean (monitor, configuration, operationContext));
+			return res;
+		}
+
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
+			throw new NotSupportedException ();
+		}
+
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		{
+			return false;
+		}
+
+		public bool NeedsBuilding (ConfigurationSelector configuration)
+		{
+			return Items.OfType<IBuildTarget> ().Any (t => t.NeedsBuilding (configuration));
+		}
+		
+		[ThreadSafe]
 		public override ReadOnlyCollection<string> GetConfigurations ()
 		{
 			List<string> configs = new List<string> ();
@@ -60,53 +130,20 @@ namespace MonoDevelop.Projects
 			return configs.AsReadOnly ();
 		}
 		
+		[ThreadSafe]
 		public WorkspaceItemCollection Items {
 			get {
-				if (items == null)
-					items = new WorkspaceItemCollection (this);
 				return items; 
 			}
 		}
-		
-		public override ReadOnlyCollection<T> GetAllItems<T> ()
-		{
-			List<T> list = new List<T> ();
-			GetAllItems<T> (list, this);
-			return list.AsReadOnly ();
-		}
-		
-		void GetAllItems<T> (List<T> list, WorkspaceItem item) where T: WorkspaceItem
-		{
-			if (item is T)
-				list.Add ((T) item);
-			
-			if (item is Workspace) {
-				foreach (WorkspaceItem citem in ((Workspace)item).Items)
-					GetAllItems<T> (list, citem);
-			}
-		}
-		
-		public override SolutionEntityItem FindSolutionItem (string fileName)
-		{
-			foreach (WorkspaceItem it in Items) {
-				SolutionEntityItem si = it.FindSolutionItem (fileName);
-				if (si != null)
-					return si;
-			}
-			return null;
-		}
 
-		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
-		public override Project GetProjectContainingFile (FilePath fileName)
+		[ThreadSafe]
+		protected override IEnumerable<WorkspaceObject> OnGetChildren ()
 		{
-			foreach (WorkspaceItem it in Items) {
-				Project p = it.GetProjectContainingFile (fileName);
-				if (p != null)
-					return p;
-			}
-			return null;
+			return Items;
 		}
-
+		
+		[ThreadSafe]
 		public override IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
 		{
 			foreach (WorkspaceItem it in Items) {
@@ -116,7 +153,8 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public override bool ContainsItem (IWorkspaceObject obj)
+		[ThreadSafe]
+		public override bool ContainsItem (WorkspaceObject obj)
 		{
 			if (base.ContainsItem (obj))
 				return true;
@@ -128,84 +166,41 @@ namespace MonoDevelop.Projects
 			return false;
 		}
 		
-		
-		public override ReadOnlyCollection<T> GetAllSolutionItems<T> ()
+		[ThreadSafe]
+		public Task<WorkspaceItem> ReloadItem (ProgressMonitor monitor, WorkspaceItem item)
 		{
-			List<T> list = new List<T> ();
-			foreach (WorkspaceItem it in Items) {
-				list.AddRange (it.GetAllSolutionItems<T> ());
-			}
-			return list.AsReadOnly ();
-		}
+			return Runtime.RunInMainThread (async delegate {
+				if (Items.IndexOf (item) == -1)
+					throw new InvalidOperationException ("Item '" + item.Name + "' does not belong to workspace '" + Name + "'");
 
-		public override void ConvertToFormat (FileFormat format, bool convertChildren)
-		{
-			base.ConvertToFormat (format, convertChildren);
-			if (convertChildren) {
-				foreach (WorkspaceItem it in Items)
-					it.ConvertToFormat (format, true);
-			}
-		}
-
-		
-		internal protected override BuildResult OnRunTarget (IProgressMonitor monitor, string target, ConfigurationSelector configuration)
-		{
-			BuildResult result = null;
-			monitor.BeginTask (null, Items.Count);
-			try {
-				foreach (WorkspaceItem it in Items) {
-					BuildResult res = it.RunTarget (monitor, target, configuration);
-					if (res != null) {
-						if (result == null) {
-							result = new BuildResult ();
-							result.BuildCount = 0;
-						}
-						result.Append (res);
-					}
-					monitor.Step (1);
+				// Load the new item
+				
+				WorkspaceItem newItem;
+				try {
+					newItem = await Services.ProjectService.ReadWorkspaceItem (monitor, item.FileName);
+				} catch (Exception ex) {
+					UnknownWorkspaceItem e = new UnknownWorkspaceItem ();
+					e.LoadError = ex.Message;
+					e.FileName = item.FileName;
+					newItem = e;
 				}
-			} finally {
-				monitor.EndTask ();
-			}
-			return result;
-		}
-		
-		protected internal override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
-		{
-			throw new NotImplementedException ();
-		}
-		
-		public WorkspaceItem ReloadItem (IProgressMonitor monitor, WorkspaceItem item)
-		{
-			if (Items.IndexOf (item) == -1)
-				throw new InvalidOperationException ("Item '" + item.Name + "' does not belong to workspace '" + Name + "'");
-
-			// Load the new item
-			
-			WorkspaceItem newItem;
-			try {
-				newItem = Services.ProjectService.ReadWorkspaceItem (monitor, item.FileName);
-			} catch (Exception ex) {
-				UnknownWorkspaceItem e = new UnknownWorkspaceItem ();
-				e.LoadError = ex.Message;
-				e.FileName = item.FileName;
-				newItem = e;
-			}
-			
-			// Replace in the file list
-			Items.Replace (item, newItem);
-			
-			NotifyModified ();
-			NotifyItemRemoved (new WorkspaceItemChangeEventArgs (item, true));
-			NotifyItemAdded (new WorkspaceItemChangeEventArgs (newItem, true));
-			
-			item.Dispose ();
-			return newItem;
+				
+				// Replace in the file list
+				Items.Replace (item, newItem);
+				
+				NotifyModified ();
+				NotifyItemRemoved (new WorkspaceItemChangeEventArgs (item, true));
+				NotifyItemAdded (new WorkspaceItemChangeEventArgs (newItem, true));
+				
+				item.Dispose ();
+				return newItem;
+			});
 		}
 
-		public override List<FilePath> GetItemFiles (bool includeReferencedFiles)
+		[ThreadSafe]
+		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
 		{
-			List<FilePath> list = base.GetItemFiles (includeReferencedFiles);
+			List<FilePath> list = base.OnGetItemFiles (includeReferencedFiles).ToList ();
 			if (includeReferencedFiles) {
 				foreach (WorkspaceItem it in Items)
 					list.AddRange (it.GetItemFiles (true));
@@ -216,31 +211,33 @@ namespace MonoDevelop.Projects
 		
 		internal void NotifyItemAdded (WorkspaceItemChangeEventArgs args)
 		{
+			AssertMainThread ();
 			OnItemAdded (args);
 			OnConfigurationsChanged ();
 		}
 		
 		internal void NotifyItemRemoved (WorkspaceItemChangeEventArgs args)
 		{
+			AssertMainThread ();
 			OnItemRemoved (args);
 			OnConfigurationsChanged ();
 		}
 		
-		protected virtual void OnItemAdded (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnItemAdded (WorkspaceItemChangeEventArgs args)
 		{
 			if (ItemAdded != null)
 				ItemAdded (this, args);
 			OnDescendantItemAdded (args);
 		}
 		
-		protected virtual void OnItemRemoved (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnItemRemoved (WorkspaceItemChangeEventArgs args)
 		{
 			if (ItemRemoved != null)
 				ItemRemoved (this, args);
 			OnDescendantItemRemoved (args);
 		}
 		
-		protected virtual void OnDescendantItemAdded (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnDescendantItemAdded (WorkspaceItemChangeEventArgs args)
 		{
 			if (DescendantItemAdded != null)
 				DescendantItemAdded (this, args);
@@ -248,7 +245,7 @@ namespace MonoDevelop.Projects
 				ParentWorkspace.OnDescendantItemAdded (args);
 		}
 		
-		protected virtual void OnDescendantItemRemoved (WorkspaceItemChangeEventArgs args)
+		/*protected virtual*/ void OnDescendantItemRemoved (WorkspaceItemChangeEventArgs args)
 		{
 			if (DescendantItemRemoved != null)
 				DescendantItemRemoved (this, args);
@@ -275,16 +272,16 @@ namespace MonoDevelop.Projects
 		{
 			DataItem items = (DataItem) data.Extract ("Items");
 			handler.Deserialize (this, data);
-			IProgressMonitor monitor = handler.SerializationContext.ProgressMonitor;
+			ProgressMonitor monitor = handler.SerializationContext.ProgressMonitor;
 			if (monitor == null)
-				monitor = new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ();
+				monitor = new ProgressMonitor ();
 			if (items != null) {
 				string baseDir = Path.GetDirectoryName (handler.SerializationContext.BaseFile);
 				monitor.BeginTask (null, items.ItemData.Count);
 				try {
 					foreach (DataValue item in items.ItemData) {
 						string file = Path.Combine (baseDir, item.Value);
-						WorkspaceItem it = Services.ProjectService.ReadWorkspaceItem (monitor, file);
+						WorkspaceItem it = Services.ProjectService.ReadWorkspaceItem (monitor, file).Result;
 						if (it != null)
 							Items.Add (it);
 						monitor.Step (1);

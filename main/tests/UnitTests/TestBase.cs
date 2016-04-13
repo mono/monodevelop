@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading;
 
 namespace UnitTests
 {
@@ -39,9 +40,22 @@ namespace UnitTests
 	{
 		static bool firstRun = true;
 		
-		
+		static TestBase ()
+		{
+			var topPath = LocateTopLevel ();
+			LoggingService.AddLogger (new MonoDevelop.Core.Logging.FileLogger (Path.Combine (topPath, "TestResult_LoggingService.log")));
+		}
+
+		static string LocateTopLevel ()
+		{
+			var cwd = typeof (TestBase).Assembly.Location;
+			while (!string.IsNullOrEmpty (cwd) && !File.Exists (Path.Combine (cwd, "top_level_monodevelop")))
+				cwd = Path.GetDirectoryName (cwd);
+			return cwd;
+		}
+
 		[TestFixtureSetUp]
-		public virtual void Setup ()
+		public void Simulate ()
 		{
 			if (firstRun) {
 				string rootDir = Path.Combine (Util.TestsRootDir, "config");
@@ -61,14 +75,14 @@ namespace UnitTests
 			}
 		}
 
-		static void InternalSetup (string rootDir)
+		protected virtual void InternalSetup (string rootDir)
 		{
 			Util.ClearTmpDir ();
 			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
 			Environment.SetEnvironmentVariable ("XDG_CONFIG_HOME", rootDir);
 			Runtime.Initialize (true);
+			Xwt.Application.Initialize (Xwt.ToolkitType.Gtk);
 			Gtk.Application.Init ();
-			TypeSystemService.TrackFileChanges = true;
 			DesktopService.Initialize ();
 			global::MonoDevelop.Projects.Services.ProjectService.DefaultTargetFramework
 				= Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_0);

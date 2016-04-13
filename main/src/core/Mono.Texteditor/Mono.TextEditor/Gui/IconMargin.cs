@@ -33,11 +33,11 @@ namespace Mono.TextEditor
 {
 	public class IconMargin : Margin
 	{
-		TextEditor editor;
+		MonoTextEditor editor;
 		Cairo.Color backgroundColor, separatorColor;
 		const int marginWidth = 22;
 		
-		public IconMargin (TextEditor editor)
+		public IconMargin (MonoTextEditor editor)
 		{
 			this.editor = editor;
 		}
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 	
 	public class BookmarkMarginDrawEventArgs : EventArgs
 	{
-		public TextEditor Editor {
+		public MonoTextEditor Editor {
 			get;
 			private set;
 		}
@@ -166,7 +166,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public BookmarkMarginDrawEventArgs (TextEditor editor, Cairo.Context context, DocumentLine line, int lineNumber, double xPos, double yPos)
+		public BookmarkMarginDrawEventArgs (MonoTextEditor editor, Cairo.Context context, DocumentLine line, int lineNumber, double xPos, double yPos)
 		{
 			this.Editor = editor;
 			this.Context    = context;

@@ -26,12 +26,14 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using GLib;
+using MonoDevelop.CodeIssues;
 
 namespace MonoDevelop.CodeActions
 {
@@ -39,7 +41,7 @@ namespace MonoDevelop.CodeActions
 	{
 		ContextActionPanelWidget widget;
 		
-		public override Widget CreatePanelWidget ()
+		public override Control CreatePanelWidget ()
 		{
 			return widget = new ContextActionPanelWidget ("text/x-csharp");
 		}
@@ -54,14 +56,14 @@ namespace MonoDevelop.CodeActions
 	{
 		readonly string mimeType;
 		
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeActionProvider), typeof(string));
-		readonly Dictionary<CodeActionProvider, bool> providerStates = new Dictionary<CodeActionProvider, bool> ();
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeRefactoringDescriptor));
+		readonly Dictionary<CodeRefactoringDescriptor, bool> providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
 
 		void GetAllProviderStates ()
 		{
-			string disabledNodes = PropertyService.Get ("ContextActions." + mimeType, "");
-			foreach (var node in RefactoringService.ContextAddinNodes.Where (n => n.MimeType == mimeType)) {
-				providerStates [node] = disabledNodes.IndexOf (node.IdString, StringComparison.Ordinal) < 0;
+			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
+			foreach (var node in BuiltInCodeDiagnosticProvider.GetBuiltInCodeRefactoringDescriptorsAsync (CodeRefactoringService.MimeTypeToLanguage(language), true).Result) {
+				providerStates [node] = node.IsEnabled;
 			}
 		}
 
@@ -94,7 +96,7 @@ namespace MonoDevelop.CodeActions
 				TreeIter iter;
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
-				var provider = (CodeActionProvider)treeStore.GetValue (iter, 2);
+				var provider = (CodeRefactoringDescriptor)treeStore.GetValue (iter, 2);
 				providerStates [provider] = !providerStates [provider];
 				treeStore.SetValue (iter, 1, providerStates [provider]);
 			};
@@ -125,26 +127,20 @@ namespace MonoDevelop.CodeActions
 		{
 			treeStore.Clear ();
 			var sortedAndFiltered = providerStates.Keys
-				.Where (node => string.IsNullOrEmpty (filter) || node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
-				.OrderBy (n => n.Title, StringComparer.Ordinal);
+				.Where (node => string.IsNullOrEmpty (filter) || node.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
+				.OrderBy (n => n.Name, StringComparer.Ordinal);
 			foreach (var node in sortedAndFiltered) {
-				var title = node.Title;
+				var title = node.Name;
 				MonoDevelop.CodeIssues.CodeIssuePanelWidget.MarkupSearchResult (filter, ref title);
-				treeStore.AppendValues (title, providerStates [node], node, node.Description);
+				treeStore.AppendValues (title, providerStates [node], node);
 			}
 		}
 
 		public void ApplyChanges ()
 		{
-			var sb = new StringBuilder ();
 			foreach (var kv in providerStates) {
-				if (kv.Value)
-					continue;
-				if (sb.Length > 0)
-					sb.Append (",");
-				sb.Append (kv.Key.IdString);
+				kv.Key.IsEnabled = kv.Value;
 			}
-			PropertyService.Set ("ContextActions." + mimeType, sb.ToString ());
 		}
 	}
 }

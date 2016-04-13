@@ -29,8 +29,12 @@ using MonoDevelop.Components;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Gui;
 using System.Linq;
-using Mono.TextEditor.PopupWindow;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -77,22 +81,28 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ShowOverload ();
 		}
 
-		public void AddOverload (CompletionData data)
+		public async Task AddOverload (CompletionData data, CancellationToken cancelToken)
 		{
-			var tooltipInformation = data.CreateTooltipInformation (false);
-			if (tooltipInformation.IsEmpty)
-				return;
+			try {
+				var tooltipInformation = await data.CreateTooltipInformation (false, cancelToken);
+				if (tooltipInformation == null || tooltipInformation.IsEmpty || cancelToken.IsCancellationRequested)
+					return;
 
-			using (var layout = new Pango.Layout (PangoContext)) {
-				layout.FontDescription = FontService.GetFontDescription ("Editor");
-				layout.SetMarkup (tooltipInformation.SignatureMarkup);
-				int w, h;
-				layout.GetPixelSize (out w, out h);
-				if (w >= Allocation.Width - 10) {
-					tooltipInformation = data.CreateTooltipInformation (true);
+				using (var layout = new Pango.Layout (PangoContext)) {
+					layout.FontDescription = Theme.Font;
+					layout.SetMarkup (tooltipInformation.SignatureMarkup);
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					if (w >= Allocation.Width - 10) {
+						tooltipInformation = await data.CreateTooltipInformation (true, cancelToken);
+					}
 				}
+				if (cancelToken.IsCancellationRequested)
+					return;
+				AddOverload (tooltipInformation);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while adding overload : " + data, e);
 			}
-			AddOverload (tooltipInformation);
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -112,8 +122,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				headLabel.Visible = !string.IsNullOrEmpty (o.SignatureMarkup);
 				int x, y;
 				GetPosition (out x, out y);
-				var geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-				headLabel.MaxWidth = Math.Max (geometry.Width / 5, 480);
+				var geometry = DesktopService.GetUsableMonitorGeometry (Screen.Number, Screen.GetMonitorAtPoint (x, y));
+				headLabel.MaxWidth = Math.Max ((int)geometry.Width / 5, 480);
 
 				if (Theme.DrawPager && overloads.Count > 1) {
 					headLabel.WidthRequest = headLabel.RealWidth + 70;
@@ -121,11 +131,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					headLabel.WidthRequest = -1;
 				}
 				foreach (var cat in o.Categories) {
-					descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (cat.Item1), cat.Item2, foreColor, Theme.Font), true, true, 4);
 				}
 
 				if (!string.IsNullOrEmpty (o.SummaryMarkup)) {
-					descriptionBox.PackStart (CreateCategory (GettextCatalog.GetString ("Summary"), o.SummaryMarkup), true, true, 4);
+					descriptionBox.PackStart (CreateCategory (GetHeaderMarkup (GettextCatalog.GetString ("Summary")), o.SummaryMarkup, foreColor, Theme.Font), true, true, 4);
 				}
 				if (!string.IsNullOrEmpty (o.FooterMarkup)) {
 
@@ -136,7 +146,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					contentLabel.MaxWidth = 400;
 					contentLabel.Markup = o.FooterMarkup.Trim ();
 					contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-					contentLabel.FontDescription = FontService.GetFontDescription ("Editor");
+					contentLabel.FontDescription = Theme.Font;
 
 					descriptionBox.PackEnd (contentLabel, true, true, 4);
 				}
@@ -147,8 +157,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 					descriptionBox.ShowAll ();
 				}
 				Theme.CurrentPage = current_overload;
-				QueueResize ();
+				// if the target is not on the left or top side, we may loose the arrow alignment on our target
+				// and must reposition
+				if (!CurrentPosition.HasFlag (PopupPosition.Left) &&
+				    !CurrentPosition.HasFlag (PopupPosition.Top))
+					RepositionWindow ();
+				else
+					QueueResize ();
 			}
+		}
+
+		internal static string GetHeaderMarkup (string headerName)
+		{
+			return headerName;
+			// return "<span foreground=\"#a7a79c\" size=\"larger\">" + headerName + "</span>";
 		}
 
 		public void OverloadLeft ()
@@ -191,30 +213,39 @@ namespace MonoDevelop.Ide.CodeCompletion
 			current_overload = 0;
 		}
 
-		VBox CreateCategory (string categoryName, string categoryContentMarkup)
+		internal static VBox CreateCategory (string categoryName, string categoryContentMarkup, Cairo.Color foreColor, Pango.FontDescription font)
 		{
 			var vbox = new VBox ();
 
-			vbox.Spacing = 2;
+			vbox.Spacing = 8;
 
 			if (categoryName != null) {
 				var catLabel = new FixedWidthWrapLabel ();
-				catLabel.Text = categoryName;
+				catLabel.Markup = categoryName;
 				catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-				catLabel.FontDescription = FontService.GetFontDescription ("Editor");
+				catLabel.FontDescription = font.Copy ();
+				catLabel.FontDescription.Weight = Pango.Weight.Bold;
+				catLabel.FontDescription.Size = catLabel.FontDescription.Size + (int)(1 * Pango.Scale.PangoScale);
 				vbox.PackStart (catLabel, false, true, 0);
 			}
 
 			var contentLabel = new FixedWidthWrapLabel ();
+			HBox hbox = new HBox ();
+
+			// hbox.PackStart (new Label(), false, true, 10);
+
+
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
+			contentLabel.Spacing = 1;
 			contentLabel.BreakOnCamelCasing = false;
 			contentLabel.BreakOnPunctuation = false;
 			contentLabel.MaxWidth = 400;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
 			contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
-			contentLabel.FontDescription = FontService.GetFontDescription ("Editor");
+			contentLabel.FontDescription = font;
 
-			vbox.PackStart (contentLabel, true, true, 0);
+			hbox.PackStart (contentLabel, true, true, 0);
+			vbox.PackStart (hbox, true, true, 0);
 
 			return vbox;
 		}
@@ -225,10 +256,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal void SetDefaultScheme ()
 		{
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
+				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+
 			Theme.SetSchemeColors (scheme);
-			foreColor = scheme.PlainText.Foreground;
+			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (Styles.FontScale11);
+			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
+			Theme.ShadowColor = Styles.PopoverWindow.ShadowColor.ToCairoColor ();
+			if (this.Visible)
+				ShowOverload ();
 		}
 
 		public TooltipInformationWindow () : base ()
@@ -244,7 +283,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			
 			headLabel = new FixedWidthWrapLabel ();
 			headLabel.Indent = -20;
-			headLabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (1.1);
 			headLabel.Wrap = Pango.WrapMode.WordChar;
 			headLabel.BreakOnCamelCasing = false;
 			headLabel.BreakOnPunctuation = false;
@@ -264,10 +302,45 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
 
+			vb2.ShowAll ();
 			SetDefaultScheme ();
+			Styles.Changed += HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
+		}
 
-			ShowAll ();
-			DesktopService.RemoveWindowShadow (this);
+		public override void RepositionWindow(Gdk.Rectangle? newCaret = null)
+		{
+			// Setting the opicity delayed to 1 is a hack to ensure smooth animation popup see "Bug 32046 - Janky animations on tooltips"
+			Opacity = 0;
+			base.RepositionWindow(newCaret);
+			GLib.Timeout.Add (50, delegate {
+				Opacity = 1;
+				return false;
+			});
+		}
+
+		protected override void OnPagerLeftClicked ()
+		{
+			OverloadLeft ();
+			base.OnPagerLeftClicked ();
+		}
+
+		protected override void OnPagerRightClicked ()
+		{
+			OverloadRight ();
+			base.OnPagerRightClicked ();
+		}
+
+		void HandleSkinChanged (object sender, EventArgs e)
+		{
+			SetDefaultScheme ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			Styles.Changed -= HandleSkinChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
 		}
 	}
 }

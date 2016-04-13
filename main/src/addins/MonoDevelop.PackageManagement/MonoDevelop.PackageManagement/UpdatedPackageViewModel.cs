@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackageViewModel : PackageViewModel
+	internal class UpdatedPackageViewModel : PackageViewModel
 	{
 		public UpdatedPackageViewModel(
 			IPackageViewModelParent parent,

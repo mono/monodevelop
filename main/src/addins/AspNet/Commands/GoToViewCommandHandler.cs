@@ -26,7 +26,6 @@
 
 using System;
 using System.IO;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -43,17 +42,12 @@ namespace MonoDevelop.AspNet.Commands
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var currentLocation = doc.Editor.Caret.Location;
-
-			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
-			string controllerName = controller.Name;
-			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
-			if (pos > 0)
-				controllerName = controllerName.Remove (pos);
+			var method = MethodDeclarationAtCaret.Create (doc);
+			string controllerName = method.GetParentMvcControllerName ();
 
 			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
 
-			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
+			string actionName = method.Name;
 			var viewFoldersPaths = new [] {
 				baseDirectory.Combine ("Views", controllerName),
 				baseDirectory.Combine ("Views", "Shared")

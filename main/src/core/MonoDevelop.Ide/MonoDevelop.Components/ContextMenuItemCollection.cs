@@ -31,11 +31,8 @@ namespace MonoDevelop.Components
 {
 	public class ContextMenuItemCollection: Collection<ContextMenuItem>
 	{
-		readonly ContextMenu parent;
-
-		internal ContextMenuItemCollection (ContextMenu parent)
+		internal ContextMenuItemCollection ()
 		{
-			this.parent = parent;
 		}
 	}
 }

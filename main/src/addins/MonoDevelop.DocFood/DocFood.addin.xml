@@ -10,7 +10,7 @@
 		         _label = "Document this" /> -->
 		<Command id = "MonoDevelop.DocFood.Commands.DocumentBuffer"
 		         defaultHandler = "MonoDevelop.DocFood.DocumentBufferHandler"
-		         _label = "Document buffer" />
+		         _label = "Document Buffer" />
 	</Extension>
 	
 

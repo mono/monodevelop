@@ -27,12 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class LocalCopyReferenceMaintainer : IDisposable
+	internal class LocalCopyReferenceMaintainer : IDisposable
 	{
 		readonly IPackageManagementEvents packageManagementEvents;
 		List<ProjectReference> referencesRemovedWithLocalCopyFalse = new List<ProjectReference> ();

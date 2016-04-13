@@ -35,7 +35,7 @@ using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	abstract class AbstractParameterDataProvider : ParameterDataProvider
+	abstract class AbstractParameterDataProvider : ParameterHintingData
 	{
 		protected CSharpCompletionTextEditorExtension ext;
 
@@ -49,28 +49,29 @@ namespace MonoDevelop.CSharp.Completion
 		TypeSystemAstBuilder builder;
 		protected string GetShortType (IType type)
 		{
-			if (builder == null) {
-				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Document.Editor.Caret.Location);
-				var state = new CSharpResolver (ctx);
-				builder = new TypeSystemAstBuilder (state);
-				var dt = state.CurrentTypeDefinition;
-				var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
-				if (declaring != null) {
-					while (dt != null) {
-						if (dt.Equals (declaring)) {
-							builder.AlwaysUseShortTypeNames = true;
-							break;
-						}
-						dt = dt.DeclaringTypeDefinition;
-					}
-				}
-			}
-			try {
-				return GLib.Markup.EscapeText (builder.ConvertType(type).ToString (ext.FormattingPolicy.CreateOptions ()));
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while getting short type.", e);
-				return "";
-			}
+			return type.Name;
+//			if (builder == null) {
+//				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Document.Editor.Caret.Location);
+//				var state = new CSharpResolver (ctx);
+//				builder = new TypeSystemAstBuilder (state);
+//				var dt = state.CurrentTypeDefinition;
+//				var declaring = ctx.CurrentTypeDefinition != null ? ctx.CurrentTypeDefinition.DeclaringTypeDefinition : null;
+//				if (declaring != null) {
+//					while (dt != null) {
+//						if (dt.Equals (declaring)) {
+//							builder.AlwaysUseShortTypeNames = true;
+//							break;
+//						}
+//						dt = dt.DeclaringTypeDefinition;
+//					}
+//				}
+//			}
+//			try {
+//				return GLib.Markup.EscapeText (builder.ConvertType(type).ToString (ext.FormattingPolicy.CreateOptions ()));
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Exception while getting short type.", e);
+//				return "";
+//			}
 		}
 
 		protected string GetParameterString (IParameter parameter)

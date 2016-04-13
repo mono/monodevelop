@@ -139,7 +139,7 @@ namespace MonoDevelop.Debugger.Tests
 				return;
 			}
 
-			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version);
+			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version + " " + (IntPtr.Size == 8 ? "64bit" : "32bit"));
 
 			// main/build/tests
 			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
@@ -204,9 +204,16 @@ namespace MonoDevelop.Debugger.Tests
 			};
 
 			Session.TargetStopped += (sender, e) => {
-				Frame = e.Backtrace.GetFrame (0);
-				lastStoppedPosition = Frame.SourceLocation;
-				targetStoppedEvent.Set ();
+				//This can be null in case of ForcedStop
+				//which is called when exception is thrown
+				//when Continue & Stepping is executed
+				if (e.Backtrace != null) {
+					Frame = e.Backtrace.GetFrame (0);
+					lastStoppedPosition = Frame.SourceLocation;
+					targetStoppedEvent.Set ();
+				} else {
+					Console.WriteLine ("e.Backtrace is null");
+				}
 			};
 
 			var targetExited = new ManualResetEvent (false);
@@ -215,6 +222,10 @@ namespace MonoDevelop.Debugger.Tests
 			};
 
 			Session.Run (dsi, ops);
+			Session.ExceptionHandler = (ex) => {
+				Console.WriteLine ("Session.ExceptionHandler:" + Environment.NewLine + ex.ToString ());
+				return true;
+			};
 			switch (WaitHandle.WaitAny (new WaitHandle[]{ done, targetExited }, 30000)) {
 			case 0:
 				//Breakpoint is hit good... run tests now
@@ -295,7 +306,7 @@ namespace MonoDevelop.Debugger.Tests
 
 		public bool CheckPosition (string guid, int offset = 0, string statement = null, bool silent = false)
 		{
-			if (!targetStoppedEvent.WaitOne (3000)) {
+			if (!targetStoppedEvent.WaitOne (6000)) {
 				if (!silent)
 					Assert.Fail ("CheckPosition failure: Target stop timeout");
 				return false;
@@ -427,7 +438,7 @@ namespace MonoDevelop.Debugger.Tests
 
 			lock (locker) {
 				while (val.IsEvaluating) {
-					if (!Monitor.Wait (locker, 4000))
+					if (!Monitor.Wait (locker, 8000))
 						throw new Exception ("Timeout while waiting for value evaluation");
 				}
 			}

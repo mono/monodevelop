@@ -70,18 +70,14 @@ Packaging for OS X
 
 To package MonoDevelop for OS X in a convenient MonoDevelop.app
 file, just do this after MonoDevelop has finished building (with
-`make`): `cd main/build/MacOSX ; make`.
+`make`): `cd main/build/MacOSX ; make app`.
 You can run MonoDevelop: `open MonoDevelop.app` or build dmg package: `./make-dmg-bundle.sh`
 
 Dependencies
 ------------
 
-	Mono >= 3.0.4
-	Gtk# >= 2.12.8
-	monodoc >= 1.0
-	mono-addins >= 0.6
-	cmake (Linux only for git support)
-	libssh2 (Linux only for git support)
+- [Windows](https://github.com/mono/md-website/blob/gh-pages/developers/building-monodevelop.md#prerequisites-and-source)
+- [Unix](http://www.monodevelop.com/developers/building-monodevelop/#linux)
 
 Special Environment Variables
 -----------------------------

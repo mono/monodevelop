@@ -27,14 +27,14 @@
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
 using NuGet;
 using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTemplateNuGetPackageInstaller : ProjectTemplatePackageInstaller
+	internal class ProjectTemplateNuGetPackageInstaller : ProjectTemplatePackageInstaller
 	{
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;

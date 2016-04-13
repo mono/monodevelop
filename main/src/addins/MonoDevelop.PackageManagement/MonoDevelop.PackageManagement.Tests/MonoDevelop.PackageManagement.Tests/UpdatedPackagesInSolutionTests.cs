@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
@@ -587,6 +587,103 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (1, updatedPackages.GetPackages ().Count ());
 			Assert.AreEqual ("MyPackage", updatedPackages.GetPackages ().First ().Id);
 			Assert.AreEqual ("1.8", updatedPackages.GetPackages ().First ().Version.ToString ());
+		}
+
+		[Test]
+		public void CheckForUpdates_ProjectHasPreReleasePackageWhichHasUpdatedPrereleasePackage_OnePrereleaseUpdateFound ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0.1-alpha");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.0.1-beta");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (1, updatedPackages.GetPackages ().Count ());
+			Assert.AreEqual ("MyPackage", updatedPackages.GetPackages ().First ().Id);
+			Assert.AreEqual ("1.0.1-beta", updatedPackages.GetPackages ().First ().Version.ToString ());
+		}
+
+		[Test]
+		public void CheckForUpdates_ProjectHasPreReleasePackageWhichHasUpdatedStablePackage_OneStableUpdateFound ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0.1-alpha");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.0.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (1, updatedPackages.GetPackages ().Count ());
+			Assert.AreEqual ("MyPackage", updatedPackages.GetPackages ().First ().Id);
+			Assert.AreEqual ("1.0.1", updatedPackages.GetPackages ().First ().Version.ToString ());
+		}
+
+		[Test]
+		public void CheckForUpdates_ProjectHasStableAndPreReleasePackagesBothWithUpdatese_TwoUpdatesFound ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0.1-alpha");
+			project.AddPackageReference ("AnotherPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.0.1-beta");
+			AddUpdatedPackageToAggregateSourceRepository ("AnotherPackage", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (2, updatedPackages.GetPackages ().Count ());
+			Assert.AreEqual ("AnotherPackage", updatedPackages.GetPackages ().First ().Id);
+			Assert.AreEqual ("1.1", updatedPackages.GetPackages ().First ().Version.ToString ());
+			Assert.AreEqual ("MyPackage", updatedPackages.GetPackages ().Last ().Id);
+			Assert.AreEqual ("1.0.1-beta", updatedPackages.GetPackages ().Last ().Version.ToString ());
+		}
+
+		[Test]
+		public void CheckForUpdates_ProjectHasStablePackageWhichHasUpdatedPrereleasePackage_NoUpdatesFound ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0.1");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1.0-alpha");
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
+
+		[Test]
+		public void GetUpdatedPackages_UpdatingThreeOldAndroidPackagesInstallsOneAndUpdatesOneAndRemovesOneWithOneInstall_NoUpdatesRemain ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("Xamarin.Android.Support.v13", "20.0.0.4");
+			project.AddPackageReference ("Xamarin.Android.Support.v4", "20.0.0.4");
+			project.AddPackageReference ("Xamarin.Android.Support.v7.AppCompat", "20.0.0.2");
+			AddUpdatedPackageToAggregateSourceRepository ("Xamarin.Android.Support.v13", "23.1.1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("Xamarin.Android.Support.v4", "23.1.1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("Xamarin.Android.Support.v7.AppCompat", "23.1.1.0");
+			updatedPackagesInSolution.CheckForUpdates ();
+			int originalUpdatesAvailable = updatedPackagesInSolution
+				.GetUpdatedPackages (project.Project)
+				.GetPackages ()
+				.Count ();
+			var task = taskFactory.FakeTasksCreated [0] as FakeTask<CheckForUpdatesTask>;
+			task.ExecuteTaskButNotContinueWith ();
+			project.PackageReferences.Clear ();
+			project.AddPackageReference ("Xamarin.Android.Support.v4", "23.1.1.0");
+			project.AddPackageReference ("Xamarin.Android.Support.v7.AppCompat", "23.1.1.0");
+			var installedPackage = FakePackage.CreatePackageWithVersion ("Xamarin.Android.Support.v4", "23.1.1.0");
+			packageManagementEvents.OnParentPackageInstalled (installedPackage, project);
+			task.ExecuteContinueWith ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (3, originalUpdatesAvailable);
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
 		}
 	}
 }

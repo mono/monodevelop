@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		RunOptionsPanelWidget  widget;
 		
-		public override Widget CreatePanelWidget()
+		public override Control CreatePanelWidget()
 		{
 			return (widget = new RunOptionsPanelWidget ());
 		}

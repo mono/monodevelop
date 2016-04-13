@@ -37,7 +37,11 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
+using ICSharpCode.NRefactory6.CSharp.Completion;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -107,9 +111,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Find the classes that could be bound to this design
 			var ctx = fproject.GetParserContext ();
 			ArrayList list = new ArrayList ();
-			foreach (var cls in ctx.MainAssembly.GetAllTypeDefinitions ()) {
+			foreach (var cls in ctx.GetAllTypesInMainAssembly ()) {
 				if (IsValidClass (cls))
-					list.Add (cls.FullName);
+					list.Add (cls.GetFullName ());
 			}
 		
 			// Ask what to do
@@ -224,27 +228,23 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		internal bool IsValidClass (IType cls)
+		internal bool IsValidClass (ITypeSymbol cls)
 		{
-			foreach (var bt in cls.DirectBaseTypes) {
-				if (bt.ReflectionName == rootWidget.Component.Type.ClassName)
-					return true;
-				
-				var baseCls = bt;
-				if (baseCls != null && IsValidClass (baseCls))
-					return true;
-			}
-			return false;
+			if (cls.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
+				return false;
+			if (cls.BaseType.GetFullName () == rootWidget.Component.Type.ClassName)
+				return true;
+			return IsValidClass (cls.BaseType);
 		}
 	}
 	
 	class OpenDocumentFileProvider: ITextFileProvider
 	{
-		public IEditableTextFile GetEditableTextFile (FilePath filePath)
+		public ITextDocument GetEditableTextFile (FilePath filePath)
 		{
-			foreach (Document doc in IdeApp.Workbench.Documents) {
+			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
-					IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
+					var ef = doc.Editor;
 					if (ef != null) return ef;
 				}
 			}

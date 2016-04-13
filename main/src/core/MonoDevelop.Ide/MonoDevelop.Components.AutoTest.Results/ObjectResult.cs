@@ -122,5 +122,10 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			
 		}
+
+		public override void SetProperty (string propertyName, object newValue)
+		{
+			SetProperty (value, propertyName, newValue);
+		}
 	}
 }

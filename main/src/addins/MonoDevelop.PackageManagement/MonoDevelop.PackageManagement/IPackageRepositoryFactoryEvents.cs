@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageRepositoryFactoryEvents
+	internal interface IPackageRepositoryFactoryEvents
 	{
 		event EventHandler<PackageRepositoryFactoryEventArgs> RepositoryCreated;
 	}

@@ -32,6 +32,8 @@ using Mono.MHex.Data;
 using MonoDevelop.Ide.Gui.Content;
 using Xwt;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.HexEditor
 {
@@ -50,15 +52,25 @@ namespace MonoDevelop.HexEditor
 		{
 			hexEditor.HexEditorStyle = new MonoDevelopHexEditorStyle (hexEditor);
 			SetOptions ();
-			MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.Changed += delegate {
-				SetOptions ();
-			};
+			DefaultSourceEditorOptions.Instance.Changed += Instance_Changed;
 			hexEditor.HexEditorData.Replaced += delegate {
 				this.IsDirty = true;
 			};
 			window = new ScrollView (hexEditor);
 		}
-		
+
+		public override void Dispose ()
+		{
+			((MonoDevelopHexEditorStyle)hexEditor.HexEditorStyle).Dispose ();
+			DefaultSourceEditorOptions.Instance.Changed -= Instance_Changed;
+			base.Dispose ();
+		}
+
+		void Instance_Changed (object sender, EventArgs e)
+		{
+			SetOptions ();
+		}
+
 		void SetOptions ()
 		{
 			var name = FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
@@ -67,17 +79,19 @@ namespace MonoDevelop.HexEditor
 			hexEditor.Repaint ();
 		}
 		
-		public override void Save (string fileName)
+		public override Task Save (FileSaveInformation fileSaveInformation)
 		{
-			File.WriteAllBytes (fileName, hexEditor.HexEditorData.Bytes);
-			ContentName = fileName;
+			File.WriteAllBytes (fileSaveInformation.FileName, hexEditor.HexEditorData.Bytes);
+			ContentName = fileSaveInformation.FileName;
 			this.IsDirty = false;
+			return Task.FromResult (true);
 		}
 		
-		public override void Load (string fileName)
+		public override async Task Load (FileOpenInformation fileOpenInformation)
 		{
+			var fileName = fileOpenInformation.FileName;
 			using (Stream stream = File.OpenRead (fileName)) { 
-				hexEditor.HexEditorData.Buffer = ArrayBuffer.Load (stream);
+				hexEditor.HexEditorData.Buffer = await ArrayBuffer.LoadAsync (stream);
 			}
 			
 			ContentName = fileName;

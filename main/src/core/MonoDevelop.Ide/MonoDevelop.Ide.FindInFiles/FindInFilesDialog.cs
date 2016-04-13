@@ -34,6 +34,7 @@ using MonoDevelop.Components;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Content;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -142,6 +143,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		FindInFilesDialog (bool showReplace)
 		{
 			Build ();
+			IdeTheme.ApplyTheme (this);
 			
 			properties = PropertyService.Get ("MonoDevelop.FindReplaceDialogs.SearchOptions", new Properties ());
 			SetButtonIcon (toggleReplaceInFiles, "gtk-find-and-replace");
@@ -172,7 +174,11 @@ namespace MonoDevelop.Ide.FindInFiles
 			};
 			
 			buttonSearch.Clicked += HandleSearchClicked;
-			buttonClose.Clicked += (sender, e) => Destroy ();
+			buttonClose.Clicked += (sender, e) => {
+				if (resultPad != null)
+					resultPad.Window.Activate (true);
+				Destroy ();
+			};
 			DeleteEvent += (o, args) => Destroy ();
 			buttonSearch.GrabDefault ();
 
@@ -180,7 +186,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var scopeStore = new ListStore (typeof(string));
 
 			var workspace = IdeApp.Workspace;
-			if (workspace != null && workspace.GetAllSolutions ().Count == 1) {
+			if (workspace != null && workspace.GetAllSolutions ().Count() == 1) {
 				scopeStore.AppendValues (GettextCatalog.GetString ("Whole solution"));
 			} else {
 				scopeStore.AppendValues (GettextCatalog.GetString ("All solutions"));
@@ -202,7 +208,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				toggleFindInFiles.Toggle ();
 
 			if (IdeApp.Workbench.ActiveDocument != null) {
-				var view = IdeApp.Workbench.ActiveDocument.GetContent<ITextBuffer> ();
+				var view = IdeApp.Workbench.ActiveDocument.Editor;
 				if (view != null) {
 					string selectedText = FormatPatternToSelectionOption (view.SelectedText, properties.Get ("RegexSearch", false));
 					if (!string.IsNullOrEmpty (selectedText)) {
@@ -223,8 +229,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			comboboxentryFind.GrabFocus ();
 			DeleteEvent += delegate { Destroy (); };
 			UpdateStopButton ();
-			
+			UpdateSensitivity ();
+			if (!buttonSearch.Sensitive) {
+				comboboxScope.Active = (int)SearchScope.Directories;
+			}
+
 			Child.Show ();
+			updateTimer = GLib.Timeout.Add (750, delegate {
+				UpdateSensitivity ();
+				return true;
+			});
 		}
 		
 		static void TableAddRow (Table table, uint row, Widget column1, Widget column2)
@@ -488,10 +502,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			searchentryFileMask = null;
 			labelFileMask = null;
 		}
-		
+
 		void HandleScopeChanged (object sender, EventArgs e)
 		{
-			switch ((SearchScope) comboboxScope.Active) {
+			switch ((SearchScope)comboboxScope.Active) {
 			case SearchScope.WholeWorkspace:
 				HideDirectoryPathUI ();
 				ShowFileMaskUI ();
@@ -517,10 +531,39 @@ namespace MonoDevelop.Ide.FindInFiles
 				HideFileMaskUI ();
 				break;
 			}
-			
+			UpdateSensitivity ();
 			Requisition req = SizeRequest ();
 			Resize (req.Width, req.Height);
 			//this.QueueResize ();
+		}
+
+
+		void UpdateSensitivity ()
+		{
+			bool isSensitive = true;
+			switch ((SearchScope)comboboxScope.Active) {
+			case SearchScope.WholeWorkspace:
+				isSensitive = IdeApp.Workspace.IsOpen;
+				break;
+			case SearchScope.CurrentProject:
+				isSensitive = IdeApp.ProjectOperations.CurrentSelectedProject != null;
+				break;
+			case SearchScope.AllOpenFiles:
+				isSensitive = IdeApp.Workbench.Documents.Count > 0;
+				break;
+			case SearchScope.Directories:
+				isSensitive = true;
+				break;
+			case SearchScope.CurrentDocument:
+				isSensitive = IdeApp.Workbench.ActiveDocument != null;
+				break;
+			case SearchScope.Selection:
+				isSensitive = IdeApp.Workbench.ActiveDocument != null;
+				break;
+			}
+			buttonSearch.Sensitive = isSensitive;
+			if (buttonReplace != null)
+				buttonReplace.Sensitive = isSensitive;
 		}
 
 		protected override void OnSizeRequested (ref Requisition requisition)
@@ -542,7 +585,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			string defaultFolder = comboboxentryPath.Entry.Text;
 			if (string.IsNullOrEmpty (defaultFolder))
-				defaultFolder = IdeApp.ProjectOperations.ProjectsDefaultPath;
+				defaultFolder = IdeApp.Preferences.ProjectsDefaultPath;
 			if (!string.IsNullOrEmpty (defaultFolder))
 				dlg.CurrentFolder = defaultFolder;
 			
@@ -559,7 +602,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		void InitFromProperties ()
 		{
 			comboboxScope.Active = properties.Get ("Scope", (int) SearchScope.WholeWorkspace);
-
+				
 			//checkbuttonRecursively.Active    = properties.Get ("SearchPathRecursively", true);
 			//checkbuttonFileMask.Active       = properties.Get ("UseFileMask", false);
 			checkbuttonCaseSensitive.Active = properties.Get ("CaseSensitive", false);
@@ -641,6 +684,10 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		protected override void OnDestroyed ()
 		{
+			if (updateTimer != 0) {
+				GLib.Source.Remove (updateTimer);
+				updateTimer = 0;
+			}
 			StorePoperties ();
 			base.OnDestroyed ();
 		}
@@ -679,24 +726,12 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			switch ((SearchScope) comboboxScope.Active) {
 			case SearchScope.CurrentDocument:
-				if (IdeApp.Workbench.ActiveDocument == null) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
-					return null;
-				}
 				scope = new DocumentScope ();
 				break;
 			case SearchScope.Selection:
-				if (IdeApp.Workbench.ActiveDocument == null) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open document."));
-					return null;
-				}
 				scope = new SelectionScope ();
 				break;
 			case SearchScope.WholeWorkspace:
-				if (!IdeApp.Workspace.IsOpen) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there are no open solutions."));
-					return null;
-				}
 				scope = new WholeSolutionScope ();
 				break;
 			case SearchScope.CurrentProject:
@@ -705,23 +740,8 @@ namespace MonoDevelop.Ide.FindInFiles
 					scope = new WholeProjectScope (currentSelectedProject);
 					break;
 				}
-				if (IdeApp.Workspace.IsOpen && IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-					var question = GettextCatalog.GetString (
-						"Currently there is no project selected. Search in the solution instead ?");
-					if (MessageService.AskQuestion (question, AlertButton.Yes, AlertButton.No) == AlertButton.Yes) {
-						scope = new WholeSolutionScope ();
-						break;
-					} else {
-						return null;
-					}
-				}
-				MessageService.ShowError (GettextCatalog.GetString ("Currently there is no open solution."));
 				return null;
 			case SearchScope.AllOpenFiles:
-				if (IdeApp.Workbench.Documents.Count == 0) {
-					MessageService.ShowError (GettextCatalog.GetString ("Currently there are no open documents."));
-					return null;
-				}
 				scope = new AllOpenFilesScope ();
 				break;
 			case SearchScope.Directories: 
@@ -756,42 +776,42 @@ namespace MonoDevelop.Ide.FindInFiles
 		static FindReplace find;
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryFind.Entry.Text, comboboxentryReplace.Entry.Text ?? "", GetScope (), GetFilterOptions (), () => UpdateStopButton ());
+			SearchReplace (comboboxentryFind.Entry.Text, comboboxentryReplace.Entry.Text ?? "", GetScope (), GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
 		}
 
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryFind.Entry.Text, null, GetScope (), GetFilterOptions (), () => UpdateStopButton ());
+			SearchReplace (comboboxentryFind.Entry.Text, null, GetScope (), GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
 		}
 
-		readonly static List<ISearchProgressMonitor> searchesInProgress = new List<ISearchProgressMonitor> ();
+		static CancellationTokenSource searchTokenSource = new CancellationTokenSource ();
+		static Task currentTask;
+		uint updateTimer;
+		SearchResultPad resultPad;
+
 		void UpdateStopButton ()
 		{
-			buttonStop.Sensitive = searchesInProgress.Count > 0;
+			buttonStop.Sensitive = currentTask != null && !currentTask.IsCompleted;
+		}
+
+		void UpdateResultPad (SearchResultPad pad)
+		{
+			resultPad = pad;
 		}
 
 		void ButtonStopClicked (object sender, EventArgs e)
 		{
-			lock (searchesInProgress) {
-				if (searchesInProgress.Count == 0)
-					return;
-				ISearchProgressMonitor monitor = searchesInProgress[searchesInProgress.Count - 1];
-				monitor.AsyncOperation.Cancel ();
-			}
+			searchTokenSource.Cancel ();
 		}
 
-		internal static void SearchReplace (string findPattern, string replacePattern, Scope scope, FilterOptions options, System.Action UpdateStopButton)
+		internal static void SearchReplace (string findPattern, string replacePattern, Scope scope, FilterOptions options, System.Action UpdateStopButton, System.Action<SearchResultPad> UpdateResultPad)
 		{
 			if (find != null && find.IsRunning) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
 					return;
-				lock (searchesInProgress) {
-					foreach (var mon in searchesInProgress)
-						mon.AsyncOperation.Cancel ();
-					searchesInProgress.Clear ();
-				}
 			}
-			
+			searchTokenSource.Cancel ();
+
 			if (scope == null)
 				return;
 			
@@ -809,16 +829,21 @@ namespace MonoDevelop.Ide.FindInFiles
 				MessageService.ShowError (GettextCatalog.GetString ("Replace pattern is invalid"));
 				return;
 			}
-
-			ThreadPool.QueueUserWorkItem (delegate {
-				using (ISearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
+			var cancelSource = new CancellationTokenSource ();
+			searchTokenSource = cancelSource;
+			var token = cancelSource.Token;
+			currentTask = Task.Run (delegate {
+				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, cancellationTokenSource:cancelSource)) {
 
 					searchMonitor.PathMode = scope.PathMode;
 
-					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
+					if (UpdateResultPad != null) {
+						Application.Invoke (delegate {
+							UpdateResultPad (searchMonitor.ResultPad);
+						});
+					}
 
-					lock (searchesInProgress)
-						searchesInProgress.Add (searchMonitor);
+					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
 					if (UpdateStopButton != null) {
 						Application.Invoke (delegate {
 							UpdateStopButton ();
@@ -830,8 +855,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						
 					try {
 						var results = new List<SearchResult> ();
-						foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options)) {
-							if (searchMonitor.IsCancelRequested)
+						foreach (SearchResult result in find.FindAll (scope, searchMonitor, pattern, replacePattern, options, token)) {
+							if (token.IsCancellationRequested)
 								return;
 							results.Add (result);
 						}
@@ -845,7 +870,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					if (errorMessage != null) {
 						message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
 						searchMonitor.ReportError (message, null);
-					} else if (searchMonitor.IsCancelRequested) {
+					} else if (searchMonitor.CancellationToken.IsCancellationRequested) {
 						message = GettextCatalog.GetString ("Search cancelled.");
 						searchMonitor.ReportWarning (message);
 					} else {
@@ -856,7 +881,6 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 					searchMonitor.ReportStatus (message);
 					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
-					searchesInProgress.Remove (searchMonitor);
 				}
 				if (UpdateStopButton != null) {
 					Application.Invoke (delegate {

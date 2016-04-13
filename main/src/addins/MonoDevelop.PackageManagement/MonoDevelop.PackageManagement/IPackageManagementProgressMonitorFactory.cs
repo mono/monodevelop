@@ -29,9 +29,9 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementProgressMonitorFactory
+	internal interface IPackageManagementProgressMonitorFactory
 	{
-		IProgressMonitor CreateProgressMonitor (string statusText);
+		ProgressMonitor CreateProgressMonitor (string statusText);
 	}
 }
 

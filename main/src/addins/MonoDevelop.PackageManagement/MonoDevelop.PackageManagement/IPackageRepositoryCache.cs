@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageRepositoryCache : ISharpDevelopPackageRepositoryFactory
+	internal interface IPackageRepositoryCache : IMonoDevelopPackageRepositoryFactory
 	{
 		IRecentPackageRepository RecentPackageRepository { get; }
 		IPackageRepository CreateAggregateRepository();

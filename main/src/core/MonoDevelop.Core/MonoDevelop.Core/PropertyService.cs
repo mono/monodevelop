@@ -39,18 +39,11 @@ namespace MonoDevelop.Core
 	/// <summary>
 	/// The Property wrapper wraps a global property service value as an easy to use object.
 	/// </summary>
-	public class PropertyWrapper<T>
+	public abstract class ConfigurationProperty<T>
 	{
-		T value;
-		readonly string propertyName;
-
 		public T Value {
-			get {
-				return value;
-			}
-			set {
-				Set (value);
-			}
+			get { return OnGetValue (); }
+			set { OnSetValue (value); }
 		}
 
 		/// <summary>
@@ -64,40 +57,79 @@ namespace MonoDevelop.Core
 		/// </returns>
 		public bool Set (T newValue)
 		{
-			if (!object.Equals (this.value, newValue)) {
-				this.value = newValue;
+			return OnSetValue (newValue);
+		}
+
+		public static implicit operator T (ConfigurationProperty<T> watch)
+		{
+			return watch.Value;
+		}
+
+		protected abstract T OnGetValue ();
+
+		protected abstract bool OnSetValue (T value);
+
+		protected void OnChanged ()
+		{
+			var handler = this.Changed;
+			if (handler != null)
+				handler (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Changed;
+	}
+
+	class CoreConfigurationProperty<T>: ConfigurationProperty<T>
+	{
+		T value;
+		string propertyName;
+
+		public CoreConfigurationProperty (string name, T defaultValue, string oldName = null)
+		{
+			this.propertyName = name;
+			if (PropertyService.HasValue (name)) {
+				value = PropertyService.Get<T> (name);
+				return;
+			} else if (!string.IsNullOrEmpty (oldName)) {
+				if (PropertyService.HasValue (oldName)) {
+					value = PropertyService.Get<T> (oldName);
+					PropertyService.Set (name, value);
+					return;
+				}
+			}
+			value = defaultValue;
+		}
+
+		protected override T OnGetValue ()
+		{
+			return value;
+		}
+
+		protected override bool OnSetValue (T value)
+		{
+			if (!object.Equals (this.value, value)) {
+				this.value = value;
 				PropertyService.Set (propertyName, value);
-				OnChanged (EventArgs.Empty);
+				OnChanged ();
 				return true;
 			}
 			return false;
 		}
+	}
 
-		public PropertyWrapper (string propertyName, T defaultValue)
+	public abstract class ConfigurationProperty
+	{
+		public static ConfigurationProperty<T> Create<T> (string propertyName, T defaultValue, string oldName = null)
 		{
-			this.propertyName = propertyName;
-			value = PropertyService.Get (propertyName, defaultValue);
+			return new CoreConfigurationProperty<T> (propertyName, defaultValue, oldName);
 		}
-
-		public static implicit operator T (PropertyWrapper<T> watch)
-		{
-			return watch.value;
-		}
-
-		protected virtual void OnChanged (EventArgs e)
-		{
-			EventHandler handler = this.Changed;
-			if (handler != null)
-				handler (this, e);
-		}
-		public event EventHandler Changed;
 	}
 
 	public static class PropertyService
 	{
-		public static PropertyWrapper<T> Wrap<T> (string property, T defaultValue)
+		public static ConfigurationProperty<T> Wrap<T> (string property, T defaultValue)
 		{
-			return new PropertyWrapper<T> (property, defaultValue);
+			return new CoreConfigurationProperty<T> (property, defaultValue);
 		}
 
 		//force the static class to intialize
@@ -168,8 +200,10 @@ namespace MonoDevelop.Core
 				UserDataMigrationService.SetMigrationSource (migratableProfile, migrateVersion);
 			
 			properties.PropertyChanged += delegate(object sender, PropertyChangedEventArgs args) {
-				if (PropertyChanged != null)
-					PropertyChanged (sender, args);
+				Runtime.RunInMainThread (() => {
+					if (PropertyChanged != null)
+						PropertyChanged (sender, args);
+				});
 			};
 			
 			Counters.PropertyServiceInitialization.EndTiming ();

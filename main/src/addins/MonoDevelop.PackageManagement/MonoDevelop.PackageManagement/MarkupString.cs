@@ -30,9 +30,9 @@ using System;
 using System.Linq;
 using GLib;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public static class MarkupString
+	internal static class MarkupString
 	{
 		public static string Format (string format, params string[] args)
 		{

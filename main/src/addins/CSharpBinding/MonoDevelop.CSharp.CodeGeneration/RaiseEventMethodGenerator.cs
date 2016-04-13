@@ -25,15 +25,18 @@
 // THE SOFTWARE.
 using System;
 
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -77,7 +80,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 
-			static string GetEventMethodName (IMember member)
+			static string GetEventMethodName (ISymbol member)
 			{
 				return "On" + member.Name;
 			}
@@ -86,13 +89,13 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (var e in Options.EnclosingType.Events) {
-					if (e.IsSynthetic)
+				foreach (IEventSymbol e in Options.EnclosingType.GetMembers ().OfType<IEventSymbol> ()) {
+					if (e.IsImplicitlyDeclared)
 						continue;
-					var invokeMethod = e.ReturnType.GetDelegateInvokeMethod ();
+					var invokeMethod = e.GetReturnType ().GetDelegateInvokeMethod ();
 					if (invokeMethod == null)
 						continue;
-					if (Options.EnclosingType.GetMethods (m => m.Name == GetEventMethodName (e)).Any ())
+					if (Options.EnclosingType.GetMembers ().OfType<IMethodSymbol> ().Any (m => m.Name == GetEventMethodName (e)))
 						continue;
 					yield return e;
 				}
@@ -100,40 +103,89 @@ namespace MonoDevelop.CodeGeneration
 
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				foreach (IMember member in includedMembers) {
-					var invokeMethod = member.ReturnType.GetDelegateInvokeMethod ();
+				foreach (IEventSymbol member in includedMembers) {
+					var invokeMethod = member.GetReturnType ().GetDelegateInvokeMethod ();
 					if (invokeMethod == null)
 						continue;
 
-					var methodDeclaration = new MethodDeclaration () {
-						Name = GetEventMethodName (member),
-						ReturnType = new PrimitiveType ("void"),
-						Modifiers = Modifiers.Protected | Modifiers.Virtual,
-						Parameters = {
-							new ParameterDeclaration (Options.CreateShortType (invokeMethod.Parameters [1].Type), invokeMethod.Parameters [1].Name)
-						},
-						Body = new BlockStatement () {
-							new VariableDeclarationStatement (
-								new SimpleType ("var"),//Options.CreateShortType (member.ReturnType), 
-								handlerName, 
-								new MemberReferenceExpression (new ThisReferenceExpression (), member.Name)
-							),
-							new IfElseStatement () {
-								Condition = new BinaryOperatorExpression (new IdentifierExpression (handlerName), BinaryOperatorType.InEquality, new PrimitiveExpression (null)),
-								TrueStatement = new ExpressionStatement (new InvocationExpression (new IdentifierExpression (handlerName)) {
-									Arguments = {
-										new ThisReferenceExpression (),
-										new IdentifierExpression (invokeMethod.Parameters [1].Name)
-									}
-								})
-							}
-						}
-					};
+					var node = SyntaxFactory.MethodDeclaration (
+						SyntaxFactory.PredefinedType (SyntaxFactory.Token (SyntaxKind.VoidKeyword)),
+						SyntaxFactory.Identifier (GetEventMethodName (member))
+					);
 
-					yield return methodDeclaration.ToString (Options.FormattingOptions);
+					node = node.WithModifiers (SyntaxFactory.TokenList (SyntaxFactory.Token (SyntaxKind.ProtectedKeyword), SyntaxFactory.Token (SyntaxKind.VirtualKeyword)));
+					node = node.WithParameterList (SyntaxFactory.ParameterList (SyntaxFactory.SeparatedList<ParameterSyntax> (new [] {
+						SyntaxFactory.Parameter (SyntaxFactory.Identifier (invokeMethod.Parameters [1].Name)).WithType (SyntaxFactory.ParseTypeName (Options.CreateShortType (invokeMethod.Parameters [1].Type)))
+					})));
+
+					bool csharp6Style = true;
+					;
+					if (csharp6Style) {
+						var expressionSyntax = SyntaxFactory.ParseExpression ("foo?.bar") as ConditionalAccessExpressionSyntax;
+						Console.WriteLine (expressionSyntax.OperatorToken.Kind ());
+						Console.WriteLine (expressionSyntax.Expression.GetType ());
+						Console.WriteLine (expressionSyntax.WhenNotNull.GetType ());
+						node = node.WithBody (SyntaxFactory.Block (
+							SyntaxFactory.ExpressionStatement (
+								SyntaxFactory.InvocationExpression (
+									SyntaxFactory.ConditionalAccessExpression (
+										SyntaxFactory.MemberAccessExpression (
+											SyntaxKind.SimpleMemberAccessExpression,
+											SyntaxFactory.ThisExpression (),
+											SyntaxFactory.IdentifierName (member.Name)
+										),
+										SyntaxFactory.MemberBindingExpression (SyntaxFactory.IdentifierName ("Invoke"))
+									),
+									SyntaxFactory.ArgumentList (
+										SyntaxFactory.SeparatedList<ArgumentSyntax> (new [] {
+											SyntaxFactory.Argument (SyntaxFactory.ThisExpression ()),
+											SyntaxFactory.Argument (SyntaxFactory.IdentifierName (invokeMethod.Parameters [1].Name))
+										})
+									)
+								)
+							)
+						));
+					} else {
+						node = node.WithBody (SyntaxFactory.Block (
+							SyntaxFactory.LocalDeclarationStatement (
+								SyntaxFactory.VariableDeclaration (
+									SyntaxFactory.ParseTypeName ("var"),
+									SyntaxFactory.SeparatedList<VariableDeclaratorSyntax> (new [] {
+										SyntaxFactory.VariableDeclarator (SyntaxFactory.Identifier (handlerName)).WithInitializer (
+											SyntaxFactory.EqualsValueClause (
+												SyntaxFactory.MemberAccessExpression (
+													SyntaxKind.SimpleMemberAccessExpression,
+													SyntaxFactory.ThisExpression (),
+													SyntaxFactory.IdentifierName (member.Name)
+												)
+											)
+										)
+									})
+								)
+							),
+							SyntaxFactory.IfStatement (
+								SyntaxFactory.BinaryExpression (
+									SyntaxKind.NotEqualsExpression,
+									SyntaxFactory.IdentifierName (handlerName),
+									SyntaxFactory.ParseExpression ("null")
+								),
+								SyntaxFactory.ExpressionStatement (
+									SyntaxFactory.InvocationExpression (
+										SyntaxFactory.IdentifierName (handlerName), 
+										SyntaxFactory.ArgumentList (
+											SyntaxFactory.SeparatedList<ArgumentSyntax> (new [] {
+												SyntaxFactory.Argument (SyntaxFactory.ThisExpression ()),
+												SyntaxFactory.Argument (SyntaxFactory.IdentifierName (invokeMethod.Parameters [1].Name))
+											})
+										)
+									)
+								)
+							)
+						));
+					}
+					yield return Options.OutputNode (node).Result;
 				}
 			}
 		}
 	}
 }
-

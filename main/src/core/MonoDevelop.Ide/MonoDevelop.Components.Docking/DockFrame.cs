@@ -40,8 +40,10 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockFrame: HBox, IAnimatable
+	class DockFrame: HBox, IAnimatable
 	{
+		public event EventHandler<EventArgs> LayoutChanged;
+
 		internal const double ItemDockCenterArea = 0.4;
 		internal const int GroupDockSeparatorSize = 40;
 		
@@ -68,7 +70,7 @@ namespace MonoDevelop.Components.Docking
 
 		public DockFrame ()
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			GtkWorkarounds.FixContainerLeak (this);
 
 			dockBarTop = new DockBar (this, Gtk.PositionType.Top);
 			dockBarBottom = new DockBar (this, Gtk.PositionType.Bottom);
@@ -667,6 +669,7 @@ namespace MonoDevelop.Components.Docking
 			while (reader.NodeType != XmlNodeType.EndElement) {
 				if (reader.NodeType == XmlNodeType.Element) {
 					DockLayout layout = DockLayout.Read (this, reader);
+					layout.AllocationChanged += LayoutAllocationChanged;
 					layouts.Add (layout.Name, layout);
 				}
 				else
@@ -675,6 +678,11 @@ namespace MonoDevelop.Components.Docking
 			}
 			reader.ReadEndElement ();
 			container.RelayoutWidgets ();
+		}
+
+		void LayoutAllocationChanged (object sender, EventArgs e)
+		{
+			LayoutChanged?.Invoke (this, EventArgs.Empty);
 		}
 
 		internal void UpdateTitle (DockItem item)
@@ -690,6 +698,11 @@ namespace MonoDevelop.Components.Docking
 			dockBarRight.UpdateTitle (item);
 		}
 		
+		internal void UpdateStyles ()
+		{
+			container.ReloadStyles ();
+		}
+
 		internal void UpdateStyle (DockItem item)
 		{
 			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
@@ -861,7 +874,7 @@ namespace MonoDevelop.Components.Docking
 			w.Y = y;
 
 			if (UseWindowsForTopLevelFrames) {
-				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
+				var win = new IdeWindow (Gtk.WindowType.Toplevel);
 				win.SkipTaskbarHint = true;
 				win.Decorated = false;
 				win.TypeHint = Gdk.WindowTypeHint.Toolbar;

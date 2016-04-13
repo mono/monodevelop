@@ -27,13 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementSolution : IPackageManagementSolution
+	class FakePackageManagementSolution : IPackageManagementSolution
 	{
 		public void AddPackageToActiveProjectLocalRepository (FakePackage package)
 		{
@@ -217,6 +217,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void AddPackageReference (string packageId, string packageVersion)
 		{
 			SolutionPackageRepository.AddPackageReference (packageId, packageVersion);
+		}
+
+		public IPackageManagementProject GetProject (IDotNetProject project)
+		{
+			return FakeActiveProject;
 		}
 	}
 }

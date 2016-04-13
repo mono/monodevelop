@@ -29,9 +29,9 @@
 using System;
 using NuGet;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class RegisteredPackageSource
+	internal class RegisteredPackageSource
 	{
 		public string Source { get; set; }
 		public string Name { get; set; }

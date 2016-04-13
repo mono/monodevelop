@@ -30,14 +30,14 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.VBNetBinding
 {
-	[DataItem ("Import")]
-	public class Import: SimpleProjectItem
+	public class Import: ProjectItem
 	{
 		public Import ()
 		{
+			ItemName = "Import";
 		}
 		
-		public Import (string include)
+		public Import (string include): this ()
 		{
 			Include = include;
 		}

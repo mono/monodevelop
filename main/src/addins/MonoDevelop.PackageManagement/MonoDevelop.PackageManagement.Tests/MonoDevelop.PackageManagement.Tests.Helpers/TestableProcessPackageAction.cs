@@ -24,11 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableProcessPackageAction : ProcessPackageAction
+	class TestableProcessPackageAction : ProcessPackageAction
 	{
 		public FakePackageManagementProject FakeProject;
 		public PackageManagementEvents PackageManagementEvents;

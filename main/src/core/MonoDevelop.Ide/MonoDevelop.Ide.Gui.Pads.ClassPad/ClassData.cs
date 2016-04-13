@@ -32,52 +32,54 @@ using System.Collections;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
+using Project = MonoDevelop.Projects.Project;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 {
 	public class ClassData
 	{
-		ITypeDefinition cls;
+		ITypeSymbol cls;
 		Project project;
-		
-		public ClassData (Project p, ITypeDefinition c)
+
+		public ClassData (Project p, ITypeSymbol c)
 		{
 			cls = c;
 			project = p;
 		}
-		
-		public ITypeDefinition Class {
+
+		public ITypeSymbol Class {
 			get { return cls; }
 		}
-		
+
 		public Project Project {
 			get { return project; }
 		}
-		
+
 		internal void UpdateFrom (ClassData cd)
 		{
 			cls = cd.cls;
 			project = cd.project;
 		}
-		
+
 		public override bool Equals (object ob)
 		{
 			ClassData other = ob as ClassData;
-			return (other != null && cls.FullName == other.cls.FullName &&
+			return (other != null && cls.GetFullName () == other.cls.GetFullName () &&
 					project == other.project);
 		}
-		
+
 		public override int GetHashCode ()
 		{
 			if (project == null)
-				return cls.FullName.GetHashCode ();
-			return (cls.FullName + project.Name).GetHashCode ();
+				return cls.GetFullName ().GetHashCode ();
+			return (cls.GetFullName () + project.Name).GetHashCode ();
 		}
-		
+
 		public override string ToString ()
 		{
-			return base.ToString () + " [" + cls.FullName + ", " + (project != null ? project.Name : "null")+ "]";
+			return base.ToString () + " [" + cls.GetFullName () + ", " + (project != null ? project.Name : "null") + "]";
 		}
 	}
 }

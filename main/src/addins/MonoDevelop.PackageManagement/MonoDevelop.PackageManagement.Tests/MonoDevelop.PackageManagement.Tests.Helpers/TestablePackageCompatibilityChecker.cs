@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
+	class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
 	{
 		public TestablePackageCompatibilityChecker (
 			IPackageManagementSolution solution,
@@ -47,7 +47,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return PackageReferenceFile;
 		}
 
-		protected override void GuiDispatch (MessageHandler handler)
+		protected override void GuiDispatch (Action handler)
 		{
 			handler.Invoke ();
 		}

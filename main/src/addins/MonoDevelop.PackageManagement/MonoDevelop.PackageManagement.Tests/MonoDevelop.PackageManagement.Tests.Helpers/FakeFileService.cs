@@ -28,11 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeFileService : IPackageManagementFileService
+	class FakeFileService : IPackageManagementFileService
 	{
 		public string PathPassedToRemoveFile;
 		public string PathPassedToRemoveDirectory;

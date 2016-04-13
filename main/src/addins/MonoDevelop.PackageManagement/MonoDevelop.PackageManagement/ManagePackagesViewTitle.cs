@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class ManagePackagesViewTitle
+	internal class ManagePackagesViewTitle
 	{
 		public ManagePackagesViewTitle(IPackageManagementSolution solution)
 		{

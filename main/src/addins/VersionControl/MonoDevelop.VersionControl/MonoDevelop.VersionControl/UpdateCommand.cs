@@ -16,7 +16,7 @@ namespace MonoDevelop.VersionControl
 			return true;
 		}
 
-		private class UpdateWorker : Task {
+		private class UpdateWorker : VersionControlTask {
 			VersionControlItemList items;
 						
 			public UpdateWorker (VersionControlItemList items) {

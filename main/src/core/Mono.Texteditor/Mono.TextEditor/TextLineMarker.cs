@@ -31,8 +31,8 @@ namespace Mono.TextEditor
 {
 	public interface IExtendingTextLineMarker 
 	{
-		double GetLineHeight (TextEditor editor);
-		void Draw (TextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
+		double GetLineHeight (MonoTextEditor editor);
+		void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
 	
 	public interface IActionTextLineMarker
@@ -40,9 +40,10 @@ namespace Mono.TextEditor
 		/// <returns>
 		/// true, if the mouse press was handled - false otherwise.
 		/// </returns>
-		bool MousePressed (TextEditor editor, MarginMouseEventArgs args);
-		
-		void MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result);
+		bool MousePressed (MonoTextEditor editor, MarginMouseEventArgs args);
+		bool MouseReleased (MonoTextEditor editor, MarginMouseEventArgs args);
+
+		void MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result);
 	}
 	
 	public class TextLineMarkerHoverResult 
@@ -90,6 +91,8 @@ namespace Mono.TextEditor
 		public double LineHeight { get; internal set; }
 
 		public double WholeLineWidth { get; internal set; }
+
+		public double LineYRenderStartPosition { get; internal set; }
 	}
 
 	public class EndOfLineMetrics
@@ -97,6 +100,7 @@ namespace Mono.TextEditor
 		public DocumentLine LineSegment { get; internal set; }
 		public double TextRenderEndPosition { get; internal set; }
 		public double LineHeight { get; internal set; }
+		public double LineYRenderStartPosition { get; internal set; }
 	}
 
 	public class TextLineMarker
@@ -116,7 +120,11 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-		
+
+		public object Tag {
+			get;
+			set;
+		}		
 		
 		bool isVisible = true;
 		public virtual bool IsVisible {
@@ -128,7 +136,7 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public virtual void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 		}
 		
@@ -143,9 +151,8 @@ namespace Mono.TextEditor
 		/// <returns><c>true</c>, if background was drawn, <c>false</c> otherwise.</returns>
 		/// <param name="editor">The editor.</param>
 		/// <param name="cr">The cairo context.</param>
-		/// <param name="y">The y coordinate.</param>
 		/// <param name="metrics">The line metrics.</param>
-		public virtual bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public virtual bool DrawBackground (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			return false;
 		}
@@ -153,7 +160,7 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Is used to draw in the area after the visible text.
 		/// </summary>
-		public virtual void DrawAfterEol (TextEditor textEditor, Cairo.Context cr, double y, EndOfLineMetrics lineHeight)
+		public virtual void DrawAfterEol (MonoTextEditor textEditor, Cairo.Context cr, EndOfLineMetrics metrics)
 		{
 		}
 	}

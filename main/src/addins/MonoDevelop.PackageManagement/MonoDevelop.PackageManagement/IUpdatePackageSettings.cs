@@ -28,9 +28,9 @@
 
 using System;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public interface IUpdatePackageSettings
+	internal interface IUpdatePackageSettings
 	{
 		bool UpdateDependencies { get; set; }
 		bool AllowPrereleaseVersions { get; set; }

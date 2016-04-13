@@ -28,8 +28,11 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp;
+using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CodeGeneration
@@ -41,62 +44,105 @@ namespace MonoDevelop.CodeGeneration
 				return "md-method";
 			}
 		}
-		
+
 		public string Text {
 			get {
 				return GettextCatalog.GetString ("Override members");
 			}
 		}
-		
+
 		public string GenerateDescription {
 			get {
 				return GettextCatalog.GetString ("Select members to be overridden.");
 			}
 		}
-		
+
 		public bool IsValid (CodeGenerationOptions options)
 		{
 			return new OverrideMethods (options).IsValid ();
 		}
-		
+
 		public IGenerateAction InitalizeSelection (CodeGenerationOptions options, Gtk.TreeView treeView)
 		{
 			OverrideMethods overrideMethods = new OverrideMethods (options);
 			overrideMethods.Initialize (treeView);
 			return overrideMethods;
 		}
-		
+
 		class OverrideMethods : AbstractGenerateAction
 		{
 			public OverrideMethods (CodeGenerationOptions options) : base (options)
 			{
 			}
-			
+
 			protected override IEnumerable<object> GetValidMembers ()
 			{
-				var type = Options.EnclosingType;
-				if (type == null || Options.EnclosingMember != null)
-					yield break;
-				HashSet<string> memberName = new HashSet<string> ();
-				foreach (var member in Options.EnclosingType.GetMembers ()) {
-					if (member.IsSynthetic)
-						continue;
-					if (member.IsOverridable) {
-						string id = AmbienceService.DefaultAmbience.GetString (member, OutputFlags.ClassBrowserEntries);
-						if (memberName.Contains (id))
-							continue;
-						memberName.Add (id);
-						yield return member;
+				var encType = Options.EnclosingType as INamedTypeSymbol;
+				if (encType == null || Options.EnclosingMember != null)
+					return Enumerable.Empty<object> ();
+
+
+				var result = new HashSet<ISymbol> ();
+				var cancellationToken = default(CancellationToken);
+				var baseTypes = encType.GetBaseTypes ().Reverse ();
+				foreach (var type in baseTypes) {
+					RemoveOverriddenMembers (result, type, cancellationToken);
+
+					AddOverridableMembers (result, encType, type, cancellationToken);
+				}
+				RemoveOverriddenMembers (result, encType, cancellationToken);
+				return result;
+			}
+
+			static void AddOverridableMembers (HashSet<ISymbol> result, INamedTypeSymbol containingType, INamedTypeSymbol type, CancellationToken cancellationToken)
+			{
+				foreach (var member in type.GetMembers()) {
+					if (IsOverridable (member, containingType)) {
+						result.Add (member);
 					}
 				}
 			}
-			
+
+			protected static void RemoveOverriddenMembers (HashSet<ISymbol> result, INamedTypeSymbol containingType, CancellationToken cancellationToken)
+			{
+				foreach (var member in containingType.GetMembers()) {
+					var overriddenMember = member.OverriddenMember ();
+					if (overriddenMember != null) {
+						result.Remove (overriddenMember);
+					}
+				}
+			}
+
+			public static bool IsOverridable (ISymbol member, INamedTypeSymbol containingType)
+			{
+				if (member.IsAbstract || member.IsVirtual || member.IsOverride) {
+					if (member.IsSealed) {
+						return false;
+					}
+
+					if (!member.IsAccessibleWithin (containingType)) {
+						return false;
+					}
+
+					switch (member.Kind) {
+					case SymbolKind.Event:
+						return true;
+					case SymbolKind.Method:
+						return ((IMethodSymbol)member).MethodKind == MethodKind.Ordinary;
+					case SymbolKind.Property:
+						return !((IPropertySymbol)member).IsWithEvents;
+					}
+				}
+				return false;
+			}
+
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				var generator = Options.CreateCodeGenerator ();
-				generator.AutoIndent = false;
-				foreach (IMember member in includedMembers) 
-					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
+				var currentType = Options.EnclosingType as INamedTypeSymbol;
+
+				foreach (ISymbol member in includedMembers) {
+					yield return CSharpCodeGenerator.CreateOverridenMemberImplementation (Options.DocumentContext, Options.Editor, currentType, currentType.Locations.First (), member, false, null).Code;
+				}
 			}
 		}
 	}

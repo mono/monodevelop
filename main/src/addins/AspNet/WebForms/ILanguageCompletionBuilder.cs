@@ -26,13 +26,14 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -86,20 +87,18 @@ namespace MonoDevelop.AspNet.WebForms
 	/// </summary>
 	public class DocumentInfo
 	{
-		public DocumentInfo (ICompilation dom, WebFormsParsedDocument aspNetParsedDocument, IEnumerable<string> imports)
+		public DocumentInfo (WebFormsParsedDocument aspNetParsedDocument, IEnumerable<string> imports)
 		{
-			this.Dom = dom;
 			this.AspNetDocument = aspNetParsedDocument;
 			this.Imports = imports;
 			BuildExpressionAndScriptsLists ();
 		}
 		
-		public ICompilation Dom { get; private set; }
 		public WebFormsParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
-		public IUnresolvedTypeDefinition CodeBesideClass { get; set; }
+		public INamedTypeSymbol CodeBesideClass { get; set; }
 		
 		public string BaseType {
 			get {
@@ -163,16 +162,16 @@ namespace MonoDevelop.AspNet.WebForms
 	{
 		bool SupportsLanguage (string language);
 		
-		ParsedDocument BuildDocument (DocumentInfo info, TextEditorData textEditorData);
+		ParsedDocument BuildDocument (DocumentInfo info, MonoDevelop.Ide.Editor.TextEditor textEditorData);
 		
-		ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo);
-		
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, string textAfterCaret, bool isExpression);
-		
-		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo);
-		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
+//		ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, LocalDocumentInfo localInfo);
+//		
+//		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, MonoDevelop.Ide.Editor.TextEditor textEditorData, string expressionText, string textAfterCaret, bool isExpression);
+//		
+//		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo);
+//		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
+//		ParameterHintingResult HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
+//		bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
 	}
 	
 	public static class LanguageCompletionBuilderService

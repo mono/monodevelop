@@ -30,9 +30,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class SelectProjectsViewModel
+	internal class SelectProjectsViewModel
 	{
 		ObservableCollection<IPackageManagementSelectedProject> projects = 
 			new ObservableCollection<IPackageManagementSelectedProject>();

@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.PackageManagement;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests

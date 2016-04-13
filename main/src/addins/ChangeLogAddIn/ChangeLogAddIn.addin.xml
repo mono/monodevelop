@@ -17,7 +17,7 @@
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/VersionControl">
 		<ComplexCondition>
 			<Or>
-				<Condition id="ItemType" value="SolutionItem" />
+				<Condition id="ItemType" value="SolutionFolderItem" />
 				<Condition id="ItemType" value="Solution" />
 			</Or>
 			<Section id = "ChangeLogIntegration" _label = "ChangeLog Integration" fill="true" class="MonoDevelop.ChangeLogAddIn.ProjectOptionPanel" />

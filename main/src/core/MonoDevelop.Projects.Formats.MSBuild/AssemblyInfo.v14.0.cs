@@ -1,6 +1,6 @@
 [assembly: System.Reflection.AssemblyTitle ("MonoDevelop MSBuild 14.0 Builder")]
 
-namespace MonoDevelop.Projects.Formats.MSBuild
+namespace MonoDevelop.Projects.MSBuild
 {
 	static class MSBuildConsts
 	{
