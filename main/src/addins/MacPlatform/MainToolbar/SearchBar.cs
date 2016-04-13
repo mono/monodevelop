@@ -58,7 +58,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 						path.LineWidth = 0.5f;
 
-						Styles.DarkBorderColor.ToNSColor ().SetStroke ();
+						// Hack to make the border be the correct colour in fullscreen mode
+						// See comment in AwesomeBar.cs for more details
+						if (MainToolbar.IsFullscreen) {
+							Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
+						} else {
+							Styles.DarkBorderColor.ToNSColor ().SetStroke ();
+						}
 						path.Stroke ();
 					}
 

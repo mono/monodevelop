@@ -131,7 +131,14 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				//
 				// However after switching theme this filter is removed and the colour set here is the actual colour
 				// displayed onscreen.
-				Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
+
+				// This also seems to happen in fullscreen mode
+				if (MainToolbar.IsFullscreen) {
+					Styles.DarkBorderColor.ToNSColor ().SetStroke ();
+				} else {
+					Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
+				}
+
 				path.Stroke ();
 			} else {
 				if (controlView.Window?.Screen?.BackingScaleFactor == 2) {
@@ -144,7 +151,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public override void DrawInteriorWithFrame (CGRect cellFrame, NSView inView)
 		{
 			cellFrame = new CGRect (cellFrame.X, cellFrame.Y + 0.5f, cellFrame.Width, cellFrame.Height);
+
+			var old = Enabled;
+
+			// In fullscreen mode with dark skin on El Capitan, the disabled icon picked is for the
+			// normal appearance so it is too dark. Hack this so it comes up lighter.
+			// For further information see the comment in AwesomeBar.cs
+			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark && MainToolbar.IsFullscreen) {
+				Enabled = true;
+			}
 			base.DrawInteriorWithFrame (cellFrame, inView);
+			Enabled = old;
+
 		}
 	}
 }
