@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -65,7 +66,15 @@ namespace MonoDevelop.AssemblyBrowser
 				return assemblyLoaderTask.Result.Item2;
 			}
 		}
-		
+
+		CecilLoader loader;
+		internal CecilLoader CecilLoader {
+			get {
+				return loader;
+			}
+		}
+
+
 		public AssemblyLoader (AssemblyBrowserWidget widget, string fileName)
 		{
 			if (widget == null)
@@ -76,19 +85,57 @@ namespace MonoDevelop.AssemblyBrowser
 			FileName = fileName;
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", nameof (fileName));
-			assemblyLoaderTask = Task.Run (() => {
+
+			loader = new CecilLoader (true);
+			loader.InterningProvider = new FastNonInterningProvider ();
+			loader.IncludeInternalMembers = true;
+
+			assemblyLoaderTask = Task.Run ( () => {
 				try {
 					var asm = AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
 						AssemblyResolver = this
 					});
-					return Tuple.Create (asm, widget.CecilLoader.LoadAssembly (asm));
+					var loadedAssembley = loader.LoadAssembly (asm);
+					return Tuple.Create (asm, loadedAssembley);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading assembly " + FileName, e);
 					return null;
 				}
 			}, src.Token);
 		}
-		
+
+		class FastNonInterningProvider : InterningProvider
+		{
+			Dictionary<string, string> stringDict = new Dictionary<string, string> ();
+
+			public override string Intern (string text)
+			{
+				if (text == null)
+					return null;
+
+				string output;
+				if (stringDict.TryGetValue (text, out output))
+					return output;
+				stringDict [text] = text;
+				return text;
+			}
+
+			public override ISupportsInterning Intern (ISupportsInterning obj)
+			{
+				return obj;
+			}
+
+			public override IList<T> InternList<T> (IList<T> list)
+			{
+				return list;
+			}
+
+			public override object InternValue (object obj)
+			{
+				return obj;
+			}
+		}
+
 		#region IAssemblyResolver implementation
 		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name)
 		{
