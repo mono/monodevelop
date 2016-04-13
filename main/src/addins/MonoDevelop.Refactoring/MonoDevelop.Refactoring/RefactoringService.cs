@@ -61,10 +61,10 @@ namespace MonoDevelop.Refactoring
 				var provider  = (FindReferencesProvider) args.ExtensionObject;
 				switch (args.Change) {
 					case ExtensionChange.Add:
-					findReferencesProvider.Add (provider);
+					findReferencesProvider = findReferencesProvider.Add (provider);
 					break;
 					case ExtensionChange.Remove:
-					findReferencesProvider.Remove (provider);
+					findReferencesProvider = findReferencesProvider.Remove (provider);
 					break;
 				}
 			});
