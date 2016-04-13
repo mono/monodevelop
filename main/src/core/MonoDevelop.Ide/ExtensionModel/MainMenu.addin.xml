@@ -113,6 +113,7 @@
 	</ItemSet>
 	
 	<ItemSet id = "View" _label = "_View">
+		<SeparatorItem _label = "Layout"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.LayoutList" />
 		<SeparatorItem id = "ViewSeparator1" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
@@ -246,7 +247,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToggleSessionRecorder" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ReplaySession" />
 		</ItemSet>
-		<SeparatorItem id = "CustomToolsSection" />
+		<SeparatorItem id = "CustomToolsSection" _label = "Custom"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
 		<SeparatorItem/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.EditCustomTools" />
