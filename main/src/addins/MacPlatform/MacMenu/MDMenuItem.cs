@@ -33,6 +33,7 @@ using Foundation;
 using ObjCRuntime;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Navigation;
 
 namespace MonoDevelop.MacIntegration.MacMenu
 {
@@ -167,7 +168,11 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			var doc = info.DataItem as Ide.Gui.Document;
 			if (doc != null)
 				fileName = doc.FileName;
-			else {
+			else if (info.DataItem is NavigationHistoryItem) {
+					var navDoc = ((NavigationHistoryItem)info.DataItem).NavigationPoint as DocumentNavigationPoint;
+					if (navDoc != null)
+						fileName = navDoc.FileName;
+			} else {
 				var str = info.DataItem as string;
 				if (str != null && System.IO.Path.IsPathRooted (str) && System.IO.File.Exists (str))
 					fileName = str;
