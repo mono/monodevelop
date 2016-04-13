@@ -46,11 +46,8 @@ namespace MonoDevelop.Debugger
 		public class ExceptionCaughtDialogStyle
 		{
 			public Color TreeBackgroundColor { get; internal set; }
-			public Color InfoFrameBackgroundColor { get; internal set; }
-			public Color InfoFrameBorderColor { get; internal set; }
-			public Color LineNumberBackgroundColor { get; internal set; }
-			public Color LineNumberInUserCodeBackgroundColor { get; internal set; }
 			public Color LineNumberTextColor { get; internal set; }
+			public Color TreeSelectedBackgroundColor { get; internal set; }
 		}
 
 		static Styles ()
@@ -62,6 +59,7 @@ namespace MonoDevelop.Debugger
 		public static void LoadStyles ()
 		{
 			ExceptionCaughtDialog = new ExceptionCaughtDialogStyle ();
+			ExceptionCaughtDialog.TreeBackgroundColor = Ide.Gui.Styles.BrowserPadBackground;
 
 			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
@@ -70,11 +68,8 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueDisabledText = Color.FromName ("#7f7f7f");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#1FAECE");
 
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#fbefce");
-				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#f0e4c2");
-				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4");
-				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = Color.FromName ("#e599de");
-				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#ffffff");
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#BBBBBB");
+				ExceptionCaughtDialog.TreeSelectedBackgroundColor = ExceptionCaughtDialog.TreeBackgroundColor.WithIncreasedLight (-0.1);
 			} else {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#7c8695");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
@@ -82,11 +77,8 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#4FCAE6");
 
-				ExceptionCaughtDialog.InfoFrameBackgroundColor = Color.FromName ("#675831");
-				ExceptionCaughtDialog.InfoFrameBorderColor = Color.FromName ("#7a6a3d");
-				ExceptionCaughtDialog.LineNumberBackgroundColor = Color.FromName ("#c4c4c4");
-				ExceptionCaughtDialog.LineNumberInUserCodeBackgroundColor = Color.FromName ("#e599de");
-				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#222222");
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#BBBBBB");
+				ExceptionCaughtDialog.TreeSelectedBackgroundColor = ExceptionCaughtDialog.TreeBackgroundColor.WithIncreasedLight (0.1);
 			}
 
 			// Shared
@@ -96,8 +88,6 @@ namespace MonoDevelop.Debugger
 			PreviewVisualizerBackgroundColor = Ide.Gui.Styles.PopoverWindow.DefaultBackgroundColor;
 			PreviewVisualizerTextColor = Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
 			PreviewVisualizerHeaderTextColor = Ide.Gui.Styles.PopoverWindow.DefaultTextColor;
-
-			ExceptionCaughtDialog.TreeBackgroundColor = Ide.Gui.Styles.PrimaryBackgroundColor;
 		}
 	}
 }

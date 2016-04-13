@@ -171,7 +171,7 @@ namespace MonoDevelop.Debugger
 			expander.UseMarkup = true;
 			expander.Expanded = true;
 			expander.Activated += Expander_Activated;
-			expander.ModifyBg (StateType.Prelight, new Gdk.Color (255, 255, 255));
+			expander.ModifyBg (StateType.Prelight, Ide.Gui.Styles.PrimaryBackgroundColor.ToGdkColor ());
 			return expander;
 		}
 
@@ -198,7 +198,7 @@ namespace MonoDevelop.Debugger
 
 		Widget CreateStackTraceTreeView ()
 		{
-			var store = new ListStore (typeof(ExceptionStackFrame), typeof(string), typeof(bool));
+			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
 			StackTraceTreeView = new TreeView (store);
 			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
@@ -278,7 +278,7 @@ namespace MonoDevelop.Debugger
 			var vbox = new VBox (false, 0);
 			var whiteBackground = new EventBox ();
 			whiteBackground.Show ();
-			whiteBackground.ModifyBg (StateType.Normal, new Gdk.Color (255, 255, 255));
+			whiteBackground.ModifyBg (StateType.Normal, Ide.Gui.Styles.PrimaryBackgroundColor.ToGdkColor ());
 			whiteBackground.Add (vbox);
 			hadInnerException = HasInnerException ();
 			if (hadInnerException) {
@@ -353,10 +353,10 @@ namespace MonoDevelop.Debugger
 		Widget CreateInnerExceptionsTree ()
 		{
 			InnerExceptionsTreeView = new TreeView ();
-			InnerExceptionsTreeView.ModifyBase (StateType.Normal, new Gdk.Color (225, 228, 232)); // background
-			InnerExceptionsTreeView.ModifyBase (StateType.Selected, new Gdk.Color (205, 208, 212)); // selected
+			InnerExceptionsTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // background
+			InnerExceptionsTreeView.ModifyBase (StateType.Selected, Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.ToGdkColor ()); // selected
 			InnerExceptionsTreeView.HeadersVisible = false;
-			InnerExceptionsStore = new TreeStore (typeof(ExceptionInfo));
+			InnerExceptionsStore = new TreeStore (typeof (ExceptionInfo));
 
 			FillInnerExceptionsStore (InnerExceptionsStore, exception);
 			InnerExceptionsTreeView.AppendColumn ("Exception", new CellRendererInnerException (), new TreeCellDataFunc ((tree_column, cell, tree_model, iter) => {
@@ -374,7 +374,7 @@ namespace MonoDevelop.Debugger
 				}
 			};
 			var eventBox = new EventBox ();
-			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (225, 228, 232)); // top and bottom padders
+			eventBox.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // top and bottom padders
 			var vbox = new VBox ();
 			vbox.PackStart (InnerExceptionsTreeView, true, true, 9);
 			eventBox.Add (vbox);
@@ -566,14 +566,22 @@ namespace MonoDevelop.Debugger
 						layout.FontDescription = font;
 
 						if ((flags & CellRendererState.Selected) != 0) {
-							cr.SetSourceRGB (205 / 256.0, 208 / 256.0, 212 / 256.0); // selected
+							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Red,
+											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Green,
+											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Blue); // selected
 							cr.Fill ();
-							cr.SetSourceColor (new Cairo.Color (0, 0, 0));
+							cr.SetSourceColor (new Cairo.Color (Ide.Gui.Styles.BaseForegroundColor.Red,
+																Ide.Gui.Styles.BaseForegroundColor.Green,
+																Ide.Gui.Styles.BaseForegroundColor.Blue));
 							layout.SetMarkup ("<b>" + Text + "</b>");
 						} else {
-							cr.SetSourceRGB (225 / 256.0, 228 / 256.0, 232 / 256.0); // background
+							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeBackgroundColor.Red,
+											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Green,
+											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Blue); // background
 							cr.Fill ();
-							cr.SetSourceColor (new Cairo.Color (0, 0, 0));
+							cr.SetSourceColor (new Cairo.Color (Ide.Gui.Styles.BaseForegroundColor.Red,
+																Ide.Gui.Styles.BaseForegroundColor.Green,
+																Ide.Gui.Styles.BaseForegroundColor.Blue));
 							layout.SetMarkup (Text);
 						}
 
@@ -614,6 +622,8 @@ namespace MonoDevelop.Debugger
 
 			if (selected)
 				markup = "<span foreground='#FFFFFF'>" + markup + "</span>";
+			else
+				markup = "<span foreground='" + Ide.Gui.Styles.BaseForegroundColor.ToHexString (false) + "'>" + markup + "</span>";
 
 			return markup;
 		}
@@ -624,7 +634,7 @@ namespace MonoDevelop.Debugger
 				return "";
 			}
 
-			var markup = string.Format ("<span foreground='{0}'>{1}", selected ? "#FFFFFF" : "#BBBBBB", GLib.Markup.EscapeText (Path.GetFileName (Frame.File)));
+			var markup = string.Format ("<span foreground='{0}'>{1}", selected ? "#FFFFFF" : Styles.ExceptionCaughtDialog.LineNumberTextColor.ToHexString (false), GLib.Markup.EscapeText (Path.GetFileName (Frame.File)));
 			if (Frame.Line > 0) {
 				markup += ":" + Frame.Line;
 				if (Frame.Column > 0)
@@ -913,8 +923,8 @@ namespace MonoDevelop.Debugger
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
-			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
-				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
+				!DebuggingService.ExceptionCaughtMessage.IsMinimized &&
+				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath (DocumentContext.Name).CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
 				return true;
