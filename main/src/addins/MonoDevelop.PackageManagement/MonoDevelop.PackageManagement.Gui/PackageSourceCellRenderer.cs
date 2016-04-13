@@ -33,7 +33,7 @@ using Gdk;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageSourceCellRenderer : CellRenderer
+	internal class PackageSourceCellRenderer : CellRenderer
 	{
 		[GLib.Property("package-source")]
 		public PackageSourceViewModel PackageSourceViewModel { get; set; }

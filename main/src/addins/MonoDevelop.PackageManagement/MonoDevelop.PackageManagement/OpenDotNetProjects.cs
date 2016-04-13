@@ -33,7 +33,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class OpenDotNetProjects
+	internal class OpenDotNetProjects
 	{
 		IPackageManagementProjectService projectService;
 		

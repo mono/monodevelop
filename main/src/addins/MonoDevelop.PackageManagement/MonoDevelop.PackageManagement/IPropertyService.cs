@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPropertyService
+	internal interface IPropertyService
 	{
 		string DataDirectory { get; }
 		string ConfigDirectory { get; }

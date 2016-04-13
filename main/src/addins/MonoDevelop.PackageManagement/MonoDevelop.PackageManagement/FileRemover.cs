@@ -29,7 +29,7 @@ using System.IO;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class FileRemover : IFileRemover
+	internal class FileRemover : IFileRemover
 	{
 		public void RemoveFile (string fileName)
 		{

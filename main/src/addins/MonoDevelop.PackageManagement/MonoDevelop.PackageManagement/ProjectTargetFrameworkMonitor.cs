@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectTargetFrameworkMonitor
+	internal class ProjectTargetFrameworkMonitor
 	{
 		IPackageManagementProjectService projectService;
 		List<MonitoredSolution> monitoredSolutions = new List<MonitoredSolution> ();

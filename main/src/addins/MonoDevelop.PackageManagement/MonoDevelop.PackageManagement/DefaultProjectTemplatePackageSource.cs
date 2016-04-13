@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class DefaultProjectTemplatePackageSource
+	internal class DefaultProjectTemplatePackageSource
 	{
 		PackageSource packageSource;
 		

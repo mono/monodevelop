@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class LicenseAcceptanceService : ILicenseAcceptanceService
+	internal class LicenseAcceptanceService : ILicenseAcceptanceService
 	{
 		public bool AcceptLicenses (IEnumerable<IPackage> packages)
 		{
@@ -51,7 +51,8 @@ namespace MonoDevelop.PackageManagement
 		bool ShowLicenseAcceptanceDialog (IEnumerable<IPackage> packages)
 		{
 			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (packages)) {
-				int result = MessageService.ShowCustomDialog (dialog);
+				dialog.Modal = false;
+				int result = MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
 				return result == (int)Gtk.ResponseType.Ok;
 			}
 		}

@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageFiles
+	internal class PackageFiles
 	{
 		IEnumerable<IPackageFile> files;
 		

@@ -36,7 +36,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ReinstallPackageAction : ProcessPackageAction
+	internal class ReinstallPackageAction : ProcessPackageAction
 	{
 		IFileRemover fileRemover;
 

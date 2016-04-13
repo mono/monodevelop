@@ -29,7 +29,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface ISettingsProvider
+	internal interface ISettingsProvider
 	{
 		event EventHandler SettingsChanged;
 		ISettings LoadSettings();

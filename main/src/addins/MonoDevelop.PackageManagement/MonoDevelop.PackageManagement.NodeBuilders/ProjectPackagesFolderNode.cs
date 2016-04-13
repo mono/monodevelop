@@ -34,7 +34,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class ProjectPackagesFolderNode
+	internal class ProjectPackagesFolderNode
 	{
 		IDotNetProject project;
 		IUpdatedPackagesInSolution updatedPackagesInSolution;

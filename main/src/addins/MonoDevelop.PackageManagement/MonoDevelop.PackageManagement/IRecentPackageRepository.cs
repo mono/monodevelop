@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IRecentPackageRepository : IPackageRepository
+	internal interface IRecentPackageRepository : IPackageRepository
 	{
 		void Clear();
 		bool HasRecentPackages { get; }

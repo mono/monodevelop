@@ -33,7 +33,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagementSolution : IPackageManagementSolution
+	class FakePackageManagementSolution : IPackageManagementSolution
 	{
 		public void AddPackageToActiveProjectLocalRepository (FakePackage package)
 		{

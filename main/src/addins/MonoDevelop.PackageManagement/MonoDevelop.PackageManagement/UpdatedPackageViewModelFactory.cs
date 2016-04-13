@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackageViewModelFactory : PackageViewModelFactory
+	internal class UpdatedPackageViewModelFactory : PackageViewModelFactory
 	{
 		SelectedProjectsForUpdatedPackages selectedProjectsForUpdatedPackages;
 		

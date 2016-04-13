@@ -34,7 +34,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeDotNetProject : FakeProject, IDotNetProject
+	class FakeDotNetProject : FakeProject, IDotNetProject
 	{
 		public FakeDotNetProject ()
 		{

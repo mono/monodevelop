@@ -103,13 +103,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static ColorScheme GetColorStyle (string name)
 		{
-			if (styles.ContainsKey (name))
-				return styles [name];
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
-				return GetColorStyle (name);
 			}
-			return GetColorStyle (GetDefaultColorStyleName());
+			if (!styles.ContainsKey (name)) {
+				LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
+				name = GetDefaultColorStyleName ();
+			}
+			if (!styles.ContainsKey (name)) {
+				LoggingService.LogError ("Color style " + name + " not found.");
+				return null;
+			}
+			return styles [name];
 		}
 
 		static IStreamProvider GetProvider (ColorScheme style)

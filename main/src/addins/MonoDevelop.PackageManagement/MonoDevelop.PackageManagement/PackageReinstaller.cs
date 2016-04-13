@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement.NodeBuilders;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageReinstaller
+	internal class PackageReinstaller
 	{
 		IPackageManagementSolution solution;
 		IBackgroundPackageActionRunner runner;

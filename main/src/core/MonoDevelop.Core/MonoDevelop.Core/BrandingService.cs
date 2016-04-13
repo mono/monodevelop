@@ -42,12 +42,44 @@ namespace MonoDevelop.Core
 		static XDocument brandingDocument;
 		static XDocument localizedBrandingDocument;
 		
-		public static readonly string ApplicationName;
+		static string applicationName;
+		static string applicationLongName;
+
 		public static readonly string SuiteName;
 		public static readonly string ProfileDirectoryName;
 		public static readonly string StatusSteadyIconId;
 		public static readonly string HelpAboutIconId;
-		
+
+		public static string ApplicationName {
+			get {
+				return applicationName;
+			}
+			set {
+				if (string.IsNullOrEmpty (value))
+					value = "MonoDevelop";
+
+				if (applicationName != value) {
+					applicationName = value;
+					OnApplicationNameChanged ();
+				}
+			}
+		}
+
+		public static string ApplicationLongName {
+			get {
+				return applicationLongName;
+			}
+			set {
+				if (string.IsNullOrEmpty (value))
+					value = "MonoDevelop";
+
+				if (applicationLongName != value) {
+					applicationLongName = value;
+					OnApplicationNameChanged ();
+				}
+			}
+		}
+
 		static BrandingService ()
 		{
 			try {
@@ -77,6 +109,7 @@ namespace MonoDevelop.Core
 					}
 				}
 				ApplicationName = GetString ("ApplicationName");
+				ApplicationLongName = GetString ("ApplicationLongName") ?? ApplicationName;
 				SuiteName = GetString ("SuiteName");
 				ProfileDirectoryName = GetString ("ProfileDirectoryName");
 				StatusSteadyIconId = GetString ("StatusAreaSteadyIcon");
@@ -84,9 +117,6 @@ namespace MonoDevelop.Core
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not read branding document", ex);
 			}
-			
-			if (string.IsNullOrEmpty (ApplicationName))
-				ApplicationName = "MonoDevelop";
 
 			if (string.IsNullOrEmpty (SuiteName))
 				SuiteName = ApplicationName;
@@ -183,6 +213,15 @@ namespace MonoDevelop.Core
 		public static string BrandApplicationName (string s)
 		{
 			return s.Replace ("MonoDevelop", ApplicationName);
+		}
+
+		public static event EventHandler ApplicationNameChanged;
+
+		static void OnApplicationNameChanged ()
+		{
+			var handler = ApplicationNameChanged;
+			if (handler != null)
+				handler (null, new EventArgs ());
 		}
 	}
 }

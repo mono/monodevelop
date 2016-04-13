@@ -398,7 +398,7 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			if (enabled) {
 				AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-				mon.AddSlaveMonitor (new IntrumentationMonitor (counter), MonitorAction.Tasks | MonitorAction.WriteLog);
+				mon.AddFollowerMonitor (new IntrumentationMonitor (counter), MonitorAction.Tasks | MonitorAction.WriteLog);
 				return mon;
 			} else
 				return monitor;

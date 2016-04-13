@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IMessageViewCategory
+	internal interface IMessageViewCategory
 	{
 		void AppendLine(string text);
 		void Clear();

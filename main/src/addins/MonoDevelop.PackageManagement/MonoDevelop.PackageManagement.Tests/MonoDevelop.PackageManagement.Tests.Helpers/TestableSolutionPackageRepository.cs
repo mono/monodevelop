@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestableSolutionPackageRepository : SolutionPackageRepository
+	class TestableSolutionPackageRepository : SolutionPackageRepository
 	{
 		public TestableSolutionPackageRepository (
 			ISolution solution,

@@ -351,7 +351,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
 			nfloat fontSize = NSFont.SystemFontSize;
-			if (Window != null) {
+			if (Window != null && Window.Screen != null) {
 				fontSize -= Window.Screen.BackingScaleFactor == 2 ? 2 : 1;
 			} else {
 				fontSize -= 1;
@@ -398,7 +398,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			textField.Cell = new VerticallyCenteredTextFieldCell (0f);
 			textField.Cell.StringValue = "";
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+			UpdateApplicationNamePlaceholderText ();
 
 			// The rect is empty because we use InVisibleRect to track the whole of the view.
 			textFieldArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect, this, null);
@@ -437,6 +437,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			AddSubview (buildResults);
 			AddSubview (imageView);
@@ -444,6 +445,16 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			progressView = new ProgressView ();
 			AddSubview (progressView);
+		}
+
+		void UpdateApplicationNamePlaceholderText ()
+		{
+			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationLongName, ColorForType (MessageType.Ready));
+		}
+
+		void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			UpdateApplicationNamePlaceholderText ();
 		}
 
 		public override void DidChangeBackingProperties ()
@@ -461,7 +472,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
 			}
 
-			textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+			UpdateApplicationNamePlaceholderText ();
 			textColor = ColorForType (messageType);
 			ReconstructString ();
 		}
@@ -471,6 +482,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			TaskService.Errors.TasksAdded -= updateHandler;
 			TaskService.Errors.TasksRemoved -= updateHandler;
 			Ide.Gui.Styles.Changed -= LoadStyles;
+			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 			base.Dispose (disposing);
 		}
 
@@ -503,7 +515,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			if (string.IsNullOrEmpty (text)) {
 				textField.AttributedStringValue = new NSAttributedString ("");
-				textField.Cell.PlaceholderAttributedString = GetStatusString (BrandingService.ApplicationName, ColorForType (MessageType.Ready));
+				UpdateApplicationNamePlaceholderText ();
 				imageView.Image = ImageService.GetIcon (Stock.StatusSteady).ToNSImage ();
 			} else {
 				textField.AttributedStringValue = GetStatusString (text, textColor);

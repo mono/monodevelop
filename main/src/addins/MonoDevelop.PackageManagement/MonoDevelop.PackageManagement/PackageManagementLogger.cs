@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementLogger : ILogger
+	internal class PackageManagementLogger : ILogger
 	{
 		IPackageManagementEvents packageManagementEvents;
 		

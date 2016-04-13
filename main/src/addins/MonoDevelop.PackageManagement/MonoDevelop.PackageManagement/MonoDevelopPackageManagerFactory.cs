@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class MonoDevelopPackageManagerFactory : IPackageManagerFactory
+	internal class MonoDevelopPackageManagerFactory : IPackageManagerFactory
 	{
 		PackageManagementOptions options;
 		IMonoDevelopPackageRepositoryFactory packageRepositoryFactory;

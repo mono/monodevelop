@@ -33,7 +33,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProgressMonitorFactory : IPackageManagementProgressMonitorFactory
+	internal class PackageManagementProgressMonitorFactory : IPackageManagementProgressMonitorFactory
 	{
 		public ProgressMonitor CreateProgressMonitor (string title)
 		{

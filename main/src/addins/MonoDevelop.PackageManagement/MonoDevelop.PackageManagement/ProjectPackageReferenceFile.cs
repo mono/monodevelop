@@ -32,7 +32,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectPackageReferenceFile : PackageReferenceFile
+	internal class ProjectPackageReferenceFile : PackageReferenceFile
 	{
 		public ProjectPackageReferenceFile (DotNetProject project)
 			: base(project.GetPackagesConfigFilePath ())

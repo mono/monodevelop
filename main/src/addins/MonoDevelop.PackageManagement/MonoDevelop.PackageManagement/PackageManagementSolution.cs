@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementSolution : IPackageManagementSolution
+	internal class PackageManagementSolution : IPackageManagementSolution
 	{
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IPackageManagementProjectService projectService;

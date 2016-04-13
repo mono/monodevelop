@@ -33,7 +33,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementFileService : IPackageManagementFileService
+	internal class PackageManagementFileService : IPackageManagementFileService
 	{
 		IPackageManagementEvents packageManagementEvents;
 

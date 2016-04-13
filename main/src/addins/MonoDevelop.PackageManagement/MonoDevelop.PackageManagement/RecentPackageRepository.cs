@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class RecentPackageRepository : IRecentPackageRepository
+	internal class RecentPackageRepository : IRecentPackageRepository
 	{
 		public const int DefaultMaximumPackagesCount = 20;
 		

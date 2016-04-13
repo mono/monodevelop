@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class AddPackagesDialogRunner
+	internal class AddPackagesDialogRunner
 	{
 		public void Run (string initialSearch = null)
 		{

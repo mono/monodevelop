@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IFileRemover
+	internal interface IFileRemover
 	{
 		void RemoveFile (string fileName);
 	}

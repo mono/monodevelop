@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ProjectBrowserUpdater : IProjectBrowserUpdater
+	internal class ProjectBrowserUpdater : IProjectBrowserUpdater
 	{
 //		ProjectBrowserControl projectBrowser;
 //		

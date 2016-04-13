@@ -31,7 +31,7 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
+	class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
 	{
 		public TestablePackageCompatibilityChecker (
 			IPackageManagementSolution solution,

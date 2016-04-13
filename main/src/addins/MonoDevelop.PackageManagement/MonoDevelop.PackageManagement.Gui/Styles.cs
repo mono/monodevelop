@@ -24,10 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class Styles
+	internal static class Styles
 	{
 		public static Xwt.Drawing.Color LineBorderColor { get; internal set; }
 		public static Xwt.Drawing.Color BackgroundColor { get; internal set; }
@@ -67,11 +68,14 @@ namespace MonoDevelop.PackageManagement
 			CellSelectionColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
 			CellTextSelectionColor = Ide.Gui.Styles.BaseSelectionTextColor;
 
-			PackageSourceUrlSelectedTextColor = PackageSourceUrlTextColor;
-			PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
 			PackageInfoBackgroundColor = Ide.Gui.Styles.SecondaryBackgroundLighterColor;
 			PackageSourceErrorTextColor = Ide.Gui.Styles.ErrorForegroundColor;
 			PackageSourceUrlTextColor = Ide.Gui.Styles.DimTextColor;
+
+			PackageSourceErrorSelectedTextColor = PackageSourceErrorTextColor;
+
+			// Blue selection text color only on Mac
+			PackageSourceUrlSelectedTextColor = Platform.IsMac ? Xwt.Drawing.Color.FromName ("#ffffff") : Ide.Gui.Styles.DimTextColor;
 
 			LineBorderColor = Ide.Gui.Styles.SeparatorColor;
 

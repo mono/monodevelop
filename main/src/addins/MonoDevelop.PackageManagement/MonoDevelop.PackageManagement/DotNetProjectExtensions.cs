@@ -33,11 +33,10 @@ using System.IO;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
-using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class DotNetProjectExtensions
+	internal static class DotNetProjectExtensions
 	{
 		public static readonly Guid WebApplication = Guid.Parse("{349C5851-65DF-11DA-9384-00065B846F21}");
 		public static readonly Guid WebSite = Guid.Parse("{E24C65DC-7377-472B-9ABA-BC803B73C61A}");

@@ -32,7 +32,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeFileService : IPackageManagementFileService
+	class FakeFileService : IPackageManagementFileService
 	{
 		public string PathPassedToRemoveFile;
 		public string PathPassedToRemoveDirectory;

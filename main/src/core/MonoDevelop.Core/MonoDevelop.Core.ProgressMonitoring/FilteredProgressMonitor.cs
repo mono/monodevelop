@@ -35,13 +35,13 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	public class FilteredProgressMonitor: AggregatedProgressMonitor
 	{
 		public FilteredProgressMonitor (ProgressMonitor targetMonitor)
-			: this (targetMonitor, MonitorAction.WriteLog | MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.ReportSuccess | MonitorAction.Cancel | MonitorAction.SlaveCancel)
+			: this (targetMonitor, MonitorAction.WriteLog | MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.ReportSuccess | MonitorAction.Cancel | MonitorAction.FollowerCancel)
 		{
 		}
 		
 		public FilteredProgressMonitor (ProgressMonitor targetMonitor, MonitorAction actionMask)
 		{
-			AddSlaveMonitor (targetMonitor, actionMask);
+			AddFollowerMonitor (targetMonitor, actionMask);
 		}
 	}
 }

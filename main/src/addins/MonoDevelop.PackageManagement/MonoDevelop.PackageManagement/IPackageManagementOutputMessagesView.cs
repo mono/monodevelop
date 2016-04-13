@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IPackageManagementOutputMessagesView
+	internal interface IPackageManagementOutputMessagesView
 	{
 		void Clear();
 	}

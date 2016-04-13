@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeInstallPackageAction : InstallPackageAction
+	class FakeInstallPackageAction : InstallPackageAction
 	{
 		public FakeInstallPackageAction ()
 			: this (null)

@@ -32,7 +32,7 @@ using System.Runtime.Versioning;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
-	public class PackageReferenceNodeDescriptor : CustomDescriptor
+	internal class PackageReferenceNodeDescriptor : CustomDescriptor
 	{
 		PackageReferenceNode packageReferenceNode;
 

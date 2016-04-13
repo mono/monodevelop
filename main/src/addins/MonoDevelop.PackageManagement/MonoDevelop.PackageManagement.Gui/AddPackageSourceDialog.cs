@@ -30,7 +30,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
-	public partial class AddPackageSourceDialog
+	internal partial class AddPackageSourceDialog
 	{
 		RegisteredPackageSourcesViewModel viewModel;
 

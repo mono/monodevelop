@@ -31,7 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ResolveFileConflictEventArgs : EventArgs
+	internal class ResolveFileConflictEventArgs : EventArgs
 	{
 		public ResolveFileConflictEventArgs(string message)
 		{

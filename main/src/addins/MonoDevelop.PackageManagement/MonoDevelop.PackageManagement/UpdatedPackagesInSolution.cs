@@ -35,7 +35,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatedPackagesInSolution : IUpdatedPackagesInSolution
+	internal class UpdatedPackagesInSolution : IUpdatedPackagesInSolution
 	{
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;

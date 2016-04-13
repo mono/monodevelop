@@ -35,7 +35,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementProgressMonitor : ProgressMonitor
+	internal class PackageManagementProgressMonitor : ProgressMonitor
 	{
 		OutputProgressMonitor consoleMonitor;
 		CancellationTokenRegistration consoleMonitorReg;
@@ -51,7 +51,7 @@ namespace MonoDevelop.PackageManagement
 
 		public PackageManagementProgressMonitor (OutputProgressMonitor consoleMonitor, ProgressMonitor statusMonitor)
 		{
-			AddSlaveMonitor (statusMonitor);
+			AddFollowerMonitor (statusMonitor);
 			this.consoleMonitor = consoleMonitor;
 
 			consoleMonitorReg = consoleMonitor.CancellationToken.Register (OnCancelRequested);

@@ -81,6 +81,7 @@ style "default" {
 
     GtkScrolledWindow::scrollbar-spacing = 0
     GtkScrolledWindow::scrollbars-within-bevel = 1
+    GtkScrolledWindow::draw-child-bg = 1
     GtkScale::slider-length = 14
 
     GtkMenu::horizontal-padding = 3
@@ -164,6 +165,7 @@ style "menubar" = "default" {
 style "menu-item" = "menu" {
     xthickness = 2
     ythickness = 3
+    GtkMenuItem::arrow-scaling = 0.35
 
     engine "xamarin" {
         arrowstyle = 3
@@ -347,7 +349,7 @@ style "scrollbar" = "default"
     engine "xamarin"
     {
         contrast = 0.0
-        trough_shades = { 1.026, 1.026 }
+        trough_shades = { 1.0, 1.0 }
         stepperstyle = 1
         arrowstyle = 0
     }
@@ -360,11 +362,6 @@ style "completion_scrollbar" = "scrollbar"
     GtkRange::slider-width = 9
 
     bg[NORMAL] = @bg_color
-
-    engine "xamarin"
-    {
-        trough_shades = { 0.97, 0.97 }
-    }
 }
 
 style "progressbar" = "default"

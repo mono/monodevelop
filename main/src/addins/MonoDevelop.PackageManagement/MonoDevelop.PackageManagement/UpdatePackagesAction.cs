@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class UpdatePackagesAction : IUpdatePackagesAction
+	internal class UpdatePackagesAction : IUpdatePackagesAction
 	{
 		List<IPackage> packages = new List<IPackage>();
 		List<PackageOperation> operations = new List<PackageOperation>();

@@ -32,7 +32,7 @@ using GLib;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class MarkupString
+	internal static class MarkupString
 	{
 		public static string Format (string format, params string[] args)
 		{

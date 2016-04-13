@@ -31,7 +31,7 @@ using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
+	internal class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
 	{
 		PackageManagementOptions options;
 		IRecentPackageRepository recentPackageRepository;

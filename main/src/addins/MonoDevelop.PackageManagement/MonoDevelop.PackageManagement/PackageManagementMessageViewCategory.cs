@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementMessageViewCategory : IMessageViewCategory
+	internal class PackageManagementMessageViewCategory : IMessageViewCategory
 	{
 //		MessageViewCategory messageViewCategory;
 //		

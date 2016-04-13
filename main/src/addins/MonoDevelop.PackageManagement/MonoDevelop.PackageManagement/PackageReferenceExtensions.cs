@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class PackageReferenceExtensions
+	internal static class PackageReferenceExtensions
 	{
 		public static bool IsPackageInstalled (this PackageReference packageReference, DotNetProject project)
 		{

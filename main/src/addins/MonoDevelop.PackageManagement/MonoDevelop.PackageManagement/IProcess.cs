@@ -30,7 +30,7 @@ using System;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IProcess
+	internal interface IProcess
 	{
 		void Start(string fileName);
 	}

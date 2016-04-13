@@ -29,7 +29,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class RestorePackagesInProjectHandler : PackagesCommandHandler
+	internal class RestorePackagesInProjectHandler : PackagesCommandHandler
 	{
 		protected override void Run ()
 		{

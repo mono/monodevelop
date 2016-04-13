@@ -29,7 +29,7 @@ using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeUninstallPackageAction : UninstallPackageAction
+	class FakeUninstallPackageAction : UninstallPackageAction
 	{
 		public bool IsExecuted;
 

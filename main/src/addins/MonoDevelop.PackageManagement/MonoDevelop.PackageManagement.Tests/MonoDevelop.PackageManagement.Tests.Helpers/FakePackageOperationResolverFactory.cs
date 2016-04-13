@@ -30,7 +30,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageOperationResolverFactory : IPackageOperationResolverFactory
+	class FakePackageOperationResolverFactory : IPackageOperationResolverFactory
 	{
 		public FakePackageOperationResolver FakeInstallPackageOperationResolver = new FakePackageOperationResolver ();
 		public IPackageRepository LocalRepositoryPassedToCreateInstallPackageOperationsResolver;

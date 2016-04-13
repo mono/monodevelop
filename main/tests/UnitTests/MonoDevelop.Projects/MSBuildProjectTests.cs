@@ -364,6 +364,18 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (p.TextFormat.NewLine, p.StartWhitespace);
 			Assert.AreEqual ("  ", import.StartWhitespace);
 		}
+
+		[Test]
+		public void ParseConditionWithMethodInvoke ()
+		{
+			// XBC 40008
+			string projectFile = Util.GetSampleProject ("msbuild-tests", "condition-parse.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			Assert.AreEqual ("Foo", p.EvaluatedProperties.GetValue ("Test1"));
+			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("Test2"));
+		}
 	}
 }
 

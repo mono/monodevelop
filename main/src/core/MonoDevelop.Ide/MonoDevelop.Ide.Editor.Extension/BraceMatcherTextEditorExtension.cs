@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		CancellationTokenSource src = new CancellationTokenSource();
 		static List<AbstractBraceMatcher> braceMatcher = new List<AbstractBraceMatcher> ();
-
+		bool isSubscribed;
 		static BraceMatcherTextEditorExtension()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/BraceMatcher", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -64,15 +64,38 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			if ((Editor.TextEditorType & TextEditorType.Invisible) != 0)
 				return;
-			Editor.CaretPositionChanged += Editor_CaretPositionChanged;
-			DocumentContext.DocumentParsed += HandleDocumentParsed;
+			DefaultSourceEditorOptions.Instance.highlightMatchingBracket.Changed += HighlightMatchingBracket_Changed;
+			HighlightMatchingBracket_Changed (this, EventArgs.Empty);
+		}
+
+		void HighlightMatchingBracket_Changed (object sender, EventArgs e)
+		{
+			if (DefaultSourceEditorOptions.Instance.HighlightMatchingBracket) {
+				if (isSubscribed)
+					return;
+				Editor.CaretPositionChanged += Editor_CaretPositionChanged;
+				DocumentContext.DocumentParsed += HandleDocumentParsed;
+				isSubscribed = true;
+				Editor_CaretPositionChanged (null, null);
+			} else {
+				if (!isSubscribed)
+					return;
+				Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+				DocumentContext.DocumentParsed -= HandleDocumentParsed;
+				Editor.UpdateBraceMatchingResult (null);
+				isSubscribed = false;
+			}
 		}
 
 		public override void Dispose ()
 		{
 			src.Cancel ();
-			Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
-			DocumentContext.DocumentParsed -= HandleDocumentParsed;
+			DefaultSourceEditorOptions.Instance.highlightMatchingBracket.Changed -= HighlightMatchingBracket_Changed;
+			if (isSubscribed) {
+				Editor.CaretPositionChanged -= Editor_CaretPositionChanged;
+				DocumentContext.DocumentParsed -= HandleDocumentParsed;
+				isSubscribed = false;
+			}
 		}
 
 		void HandleDocumentParsed (object sender, EventArgs e)

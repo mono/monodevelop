@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IUpdatePackageActions : IUpdatePackageSettings
+	internal interface IUpdatePackageActions : IUpdatePackageSettings
 	{
 		//IPackageScriptRunner PackageScriptRunner { get; set; }
 		

@@ -33,7 +33,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class ReducedPackageOperations
+	internal class ReducedPackageOperations
 	{
 		IPackageOperationResolver resolver;
 		IList<PackageOperation> operations;

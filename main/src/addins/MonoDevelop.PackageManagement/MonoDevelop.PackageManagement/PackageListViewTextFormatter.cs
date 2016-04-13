@@ -29,7 +29,7 @@ using System.Text;
 
 namespace MonoDevelop.PackageManagement
 {
-	public static class PackageListViewTextFormatter
+	internal static class PackageListViewTextFormatter
 	{
 		public static string Format (string text)
 		{

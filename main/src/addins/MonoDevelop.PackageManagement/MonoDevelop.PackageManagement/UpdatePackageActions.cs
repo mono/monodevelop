@@ -27,7 +27,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
-	public abstract class UpdatePackageActions : IUpdatePackageActions
+	internal abstract class UpdatePackageActions : IUpdatePackageActions
 	{
 		public bool UpdateDependencies { get; set; }
 		public bool AllowPrereleaseVersions { get; set; }
