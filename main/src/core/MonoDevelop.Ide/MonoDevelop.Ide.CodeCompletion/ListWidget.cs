@@ -43,7 +43,7 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public class ListWidget : Gtk.DrawingArea
+	class ListWidget : Gtk.DrawingArea
 	{
 		int listWidth = minSize;
 		const int minSize = 400;

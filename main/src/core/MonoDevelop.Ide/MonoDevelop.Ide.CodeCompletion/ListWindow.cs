@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Complete = 8
 	}
 
-	public class ListWindow : PopoverWindow
+	class ListWindow : PopoverWindow
 	{
 		const int WindowWidth = 400;
 

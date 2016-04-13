@@ -289,12 +289,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			if (CompletionWindowManager.IsVisible) {
-				var completionWindow = new Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y, CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height);
-				if (completionWindow.IntersectsWith (new Rectangle (X, Y, allocation.Width, allocation.Height))) {
-					X = completionWindow.X;
-					Y = completionWindow.Y - allocation.Height - 6;
+				var completionWindow = new Xwt.Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y, CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height);
+				if (completionWindow.IntersectsWith (new Xwt.Rectangle (X, Y, allocation.Width, allocation.Height))) {
+					X = (int) completionWindow.X;
+					Y = (int)completionWindow.Y - allocation.Height - 6;
 					if (Y < 0)
-						Y = completionWindow.Bottom + 6;
+						Y = (int)completionWindow.Bottom + 6;
 				}
 			}
 
