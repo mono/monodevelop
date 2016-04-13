@@ -2744,7 +2744,7 @@ namespace MonoDevelop.Projects
 			var include = GetPrefixedInclude (pathPrefix, item.UnevaluatedInclude ?? item.Include);
 
 			MSBuildItem buildItem;
-			if (item.BackingItem != null && item.BackingItem.Name == item.ItemName) {
+			if (item.BackingItem?.ParentObject != null && item.BackingItem.Name == item.ItemName) {
 				buildItem = item.BackingItem;
 			} else {
 				buildItem = msproject.AddNewItem (item.ItemName, include);
