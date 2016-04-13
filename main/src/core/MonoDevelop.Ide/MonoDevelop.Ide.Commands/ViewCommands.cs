@@ -133,22 +133,22 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.ViewCommands.LayoutList
 	public class LayoutListHandler : CommandHandler
 	{
-		static readonly Dictionary<string, string> nameMapping;
+		static internal readonly Dictionary<string, string> NameMapping;
 
 		static LayoutListHandler ()
 		{
-			nameMapping = new Dictionary<string, string> ();
-			nameMapping ["Solution"] = "Code";
-			nameMapping ["Visual Design"] = "Design";
-			nameMapping ["Debug"] = "Debug";
-			nameMapping ["Unit Testing"] = "Test";
+			NameMapping = new Dictionary<string, string> ();
+			NameMapping ["Solution"] = "Code";
+			NameMapping ["Visual Design"] = "Design";
+			NameMapping ["Debug"] = "Debug";
+			NameMapping ["Unit Testing"] = "Test";
 		}
 
 		protected override void Update (CommandArrayInfo info)
 		{
 			string text;
 			foreach (var name in IdeApp.Workbench.Layouts) {
-				if (!nameMapping.TryGetValue (name, out text))
+				if (!NameMapping.TryGetValue (name, out text))
 					text = name;
 				CommandInfo item = new CommandInfo(GettextCatalog.GetString (text));
 				item.Checked = IdeApp.Workbench.CurrentLayout == name;
@@ -188,11 +188,20 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = !String.Equals ("Solution", IdeApp.Workbench.CurrentLayout, StringComparison.OrdinalIgnoreCase);
-			info.Text = GettextCatalog.GetString ("_Delete \u201C{0}\u201D Layout", IdeApp.Workbench.CurrentLayout);
+			string itemName;
+			if (!LayoutListHandler.NameMapping.TryGetValue (IdeApp.Workbench.CurrentLayout, out itemName))
+				itemName = IdeApp.Workbench.CurrentLayout;
+			if (info.Enabled)
+				info.Text = GettextCatalog.GetString ("_Delete \u201C{0}\u201D Layout", itemName);
+			else
+				info.Text = GettextCatalog.GetString ("_Delete Current Layout");
 		}
 		protected override void Run ()
 		{
-			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the \u201C{0}\u201D layout?", IdeApp.Workbench.CurrentLayout), AlertButton.Delete)) {
+			string itemName;
+			if (!LayoutListHandler.NameMapping.TryGetValue (IdeApp.Workbench.CurrentLayout, out itemName))
+				itemName = IdeApp.Workbench.CurrentLayout;
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the \u201C{0}\u201D layout?", itemName), AlertButton.Delete)) {
 				string clayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Solution";
 				IdeApp.Workbench.DeleteLayout (clayout);
