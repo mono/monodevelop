@@ -265,7 +265,7 @@ namespace MonoDevelop.Debugger
 				var bp = be as Breakpoint;
 				if (bp != null) {
 					if (!string.IsNullOrEmpty (bp.FileName))
-						IdeApp.Workbench.OpenDocument (bp.FileName, bp.Line, 1);
+						IdeApp.Workbench.OpenDocument (bp.FileName, null, bp.Line, 1);
 				}
 			}
 		}
