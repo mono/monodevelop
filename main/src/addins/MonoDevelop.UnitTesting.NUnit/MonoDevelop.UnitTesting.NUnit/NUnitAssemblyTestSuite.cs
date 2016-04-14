@@ -503,6 +503,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 					tcpListener = new MonoDevelop.UnitTesting.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
+				cmd.WorkingDirectory = Path.GetDirectoryName (AssemblyPath);
 
 				// Note that we always dispose the tcp listener as we don't want it listening
 				// forever if the test runner does not try to connect to it
