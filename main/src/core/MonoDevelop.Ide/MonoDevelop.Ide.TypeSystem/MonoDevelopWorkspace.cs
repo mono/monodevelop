@@ -1080,6 +1080,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				var projectData = GetProjectData (GetProjectId (project));
 				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+					if (projectData.GetDocumentId (projectFile.FilePath) != null) // may already been added by a rename event.
+						return;
 					var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile);
 					OnDocumentAdded (newDocument);
 				} else {
