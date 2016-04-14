@@ -63,13 +63,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			buildIcon = MultiResImage.CreateMultiResImage ("build", "");
 
 			// We can use Template images supported by NSButton, thus no reloading
-			// on theme/skin change is required.
+			// on theme change is required.
 			stopIcon.Template = continueIcon.Template = buildIcon.Template = true;
 		}
 
 		void UpdateCell ()
 		{
-			Appearance = NSAppearance.GetAppearance (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark ? NSAppearance.NameVibrantDark : NSAppearance.NameAqua);
+			Appearance = NSAppearance.GetAppearance (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark ? NSAppearance.NameVibrantDark : NSAppearance.NameAqua);
 			NeedsDisplay = true;
 		}
 
@@ -118,7 +118,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	{
 		public override void DrawBezelWithFrame (CGRect frame, NSView controlView)
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 				var inset = frame.Inset (0.25f, 0.25f);
 
 				var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
@@ -154,10 +154,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			var old = Enabled;
 
-			// In fullscreen mode with dark skin on El Capitan, the disabled icon picked is for the
+			// In fullscreen mode with dark theme on El Capitan, the disabled icon picked is for the
 			// normal appearance so it is too dark. Hack this so it comes up lighter.
 			// For further information see the comment in AwesomeBar.cs
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark && MainToolbar.IsFullscreen) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark && MainToolbar.IsFullscreen) {
 				Enabled = true;
 			}
 			base.DrawInteriorWithFrame (cellFrame, inView);

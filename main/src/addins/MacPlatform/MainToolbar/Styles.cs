@@ -51,7 +51,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public static void LoadStyles ()
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				BaseBackgroundColor = Ide.Gui.Styles.BaseBackgroundColor;
 				BaseForegroundColor = Ide.Gui.Styles.BaseForegroundColor;
 				DisabledForegroundColor = Xwt.Mac.Util.ToXwtColor (AppKit.NSColor.DisabledControlText); //Ide.Gui.Styles.DimTextColor;

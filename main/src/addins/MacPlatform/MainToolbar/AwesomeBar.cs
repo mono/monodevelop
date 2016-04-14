@@ -1,4 +1,4 @@
-﻿//
+//
 // AwesomeBar.cs
 //
 // Author:
@@ -81,7 +81,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.ViewDidMoveToWindow ();
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				return;
 			}
 
@@ -143,7 +143,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth - 2, ToolbarWidgetHeight);
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
 			} else {
 				nfloat elcapYOffset = 0;
