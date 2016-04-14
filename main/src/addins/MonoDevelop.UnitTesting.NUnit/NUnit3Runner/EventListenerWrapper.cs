@@ -118,12 +118,22 @@ namespace NUnit3Runner
 			RemoteTestResult res = new RemoteTestResult ();
 
 			if (e.LocalName == "test-suite") {
-				res.Failures = int.Parse (e.GetAttribute ("failed"));
-				res.Errors = 0;
-				res.Ignored = int.Parse (e.GetAttribute ("skipped"));
-				res.Inconclusive = int.Parse (e.GetAttribute ("inconclusive"));
+				int r;
+				if (int.TryParse (e.GetAttribute ("failed"), out r))
+					res.Failures = r;
+
+				if (int.TryParse (e.GetAttribute ("skipped"), out r))
+					res.Ignored = r;
+
+				if (int.TryParse (e.GetAttribute ("inconclusive"), out r))
+					res.Inconclusive = r;
+
+				if (int.TryParse (e.GetAttribute ("passed"), out r))
+					res.Passed = r;
+			
 				res.NotRunnable = 0;
-				res.Passed = int.Parse (e.GetAttribute ("passed"));
+				res.Errors = 0;
+
 			} else if (e.LocalName == "test-case") {
 				var runResult = e.GetAttribute ("result");
 				if (runResult == "Passed")
@@ -150,7 +160,9 @@ namespace NUnit3Runner
 				}
 			}
 
-			res.Time = TimeSpan.FromSeconds (double.Parse (e.GetAttribute ("duration"), CultureInfo.InvariantCulture));
+			double d;
+			if (double.TryParse (e.GetAttribute ("duration"), NumberStyles.Any, CultureInfo.InvariantCulture, out d))
+				res.Time = TimeSpan.FromSeconds (d);
 
 			var output = e.SelectSingleNode ("output");
 			if (output != null) {
