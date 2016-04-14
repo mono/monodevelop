@@ -67,7 +67,7 @@
 
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
-		<ItemSet id = "SelectionMode" _label = "Selection _Mode" autohide = "true" >
+		<ItemSet id = "SelectionMode" _label = "Selection _Mode" >
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
@@ -250,7 +250,6 @@
 		</ItemSet>
 		<SeparatorItem id = "CustomToolsSection" _label = "Custom"/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList" />
-		<SeparatorItem/>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.EditCustomTools" />
 		<SeparatorItem id = "OptionsSection" />
 		<Condition id="Platform" value="windows">
@@ -289,8 +288,8 @@
 		<SeparatorItem id = "Separator3" />
 		<ItemSet id = "Diagnostics">
 			<LinkItem id = "ReportBug" _label = "Report Problem..." link = "http://xamar.in/r/file_studio_bug" />
+			<SeparatorItem id = "DiagnosticToolsSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory" />
-			<SeparatorItem id = "InstrumentationSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer" />
 		</ItemSet>
 		<Condition id = "Platform" value = "!mac">

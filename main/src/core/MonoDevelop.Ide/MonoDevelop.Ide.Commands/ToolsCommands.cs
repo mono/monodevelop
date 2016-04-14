@@ -68,6 +68,8 @@ namespace MonoDevelop.Ide.Commands
 				info.Add (commandInfo, externalTool);
 
 			}
+			if (info.Count > 0)
+				info.AddSeparator ();
 		}
 
 		protected override void Run (object dataItem)
