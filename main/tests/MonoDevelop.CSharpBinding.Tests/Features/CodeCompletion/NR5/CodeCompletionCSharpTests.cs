@@ -30,7 +30,6 @@ using System;
 using NUnit.Framework;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
