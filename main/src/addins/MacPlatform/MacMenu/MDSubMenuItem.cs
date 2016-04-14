@@ -48,7 +48,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			if (ces.AutoHide)
 				Hidden = Submenu.ItemArray ().All (item => item.Hidden);
 			else
-				Enabled = Submenu.ItemArray ().Any (item => item.Hidden);
+				Enabled = Submenu.ItemArray ().Any (item => !item.Hidden);
 			if (!Hidden) {
 				MDMenu.ShowLastSeparator (ref lastSeparator);
 			}
