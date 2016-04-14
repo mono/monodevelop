@@ -398,7 +398,7 @@ namespace MonoDevelop.MacIntegration
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (10, delegate {
 						IdeApp.OpenFiles (e.Documents.Select (
-							doc => new FileOpenInformation (doc.Key, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
+							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
 						);
 						return false;
 					});
@@ -424,7 +424,7 @@ namespace MonoDevelop.MacIntegration
 								if (!Int32.TryParse (qs ["column"], out column))
 									column = 1;
 
-								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
+								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath), null,
 									line, column, OpenDocumentOptions.DefaultInternal);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
