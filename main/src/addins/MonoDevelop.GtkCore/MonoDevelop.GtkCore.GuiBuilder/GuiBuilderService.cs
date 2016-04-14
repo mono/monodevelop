@@ -176,7 +176,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				file = ActionGroupDisplayBinding.BindToClass (project, group);
 			}
 			
-			Document doc = await IdeApp.Workbench.OpenDocument (file, true);
+			Document doc = await IdeApp.Workbench.OpenDocument (file, null, true);
 			if (doc != null) {
 				ActionGroupView view = doc.GetContent<ActionGroupView> ();
 				if (view != null) {
