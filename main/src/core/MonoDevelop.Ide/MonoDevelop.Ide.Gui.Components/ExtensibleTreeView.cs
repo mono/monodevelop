@@ -2440,7 +2440,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (DisabledStyle) {
 					Gdk.Color fgColor;
 					if (Platform.IsMac && flags.HasFlag (Gtk.CellRendererState.Selected)) 
-						fgColor = widget.Style.Text (IdeTheme.UserInterfaceSkin == Skin.Light ? Gtk.StateType.Selected : Gtk.StateType.Normal);
+						fgColor = widget.Style.Text (IdeTheme.UserInterfaceTheme == Theme.Light ? Gtk.StateType.Selected : Gtk.StateType.Normal);
 					else
 						fgColor = widget.Style.Text (Gtk.StateType.Insensitive);
 					layout.SetMarkup ("<span foreground='" + fgColor.GetHex () + "'>" + TextMarkup + "</span>");

@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide
 		}
 
 		public readonly ConfigurationProperty<string> UserInterfaceLanguage = Runtime.Preferences.UserInterfaceLanguage;
-		public readonly ConfigurationProperty<string> UserInterfaceTheme = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
+		public readonly ConfigurationProperty<string> UserInterfaceThemeName = ConfigurationProperty.Create ("MonoDevelop.Ide.UserInterfaceTheme", Platform.IsLinux ? "" : "Light");
 		public readonly ConfigurationProperty<WorkbenchCompactness> WorkbenchCompactness = ConfigurationProperty.Create ("MonoDevelop.Ide.WorkbenchCompactness", MonoDevelop.Ide.WorkbenchCompactness.Normal);
 		public readonly ConfigurationProperty<bool> LoadPrevSolutionOnStartup = ConfigurationProperty.Create ("SharpDevelop.LoadPrevProjectOnStartup", false);
 		public readonly ConfigurationProperty<bool> CreateFileBackupCopies = ConfigurationProperty.Create ("SharpDevelop.CreateBackupCopy", false);
@@ -144,8 +144,8 @@ namespace MonoDevelop.Ide
 		public readonly ConfigurationProperty<bool> FilterCompletionListByEditorBrowsable = ConfigurationProperty.Create ("FilterCompletionListByEditorBrowsable", true);
 		public readonly ConfigurationProperty<bool> IncludeEditorBrowsableAdvancedMembers = ConfigurationProperty.Create ("IncludeEditorBrowsableAdvancedMembers", true);
 
-		public Skin UserInterfaceSkin {
-			get { return MonoDevelop.Components.IdeTheme.UserInterfaceSkin; }
+		public Theme UserInterfaceTheme {
+			get { return MonoDevelop.Components.IdeTheme.UserInterfaceTheme; }
 		}
 
 		internal static readonly string DefaultLightColorScheme = "Light";
@@ -156,16 +156,16 @@ namespace MonoDevelop.Ide
 
 		public readonly SchemeConfigurationProperty ColorScheme = new SchemeConfigurationProperty ("ColorScheme", DefaultLightColorScheme, DefaultDarkColorScheme);
 
-		public readonly SkinConfigurationProperty<string> UserTasksHighPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksHighPrioColor", "", "rgb:ffff/ffff/ffff");
-		public readonly SkinConfigurationProperty<string> UserTasksNormalPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksNormalPrioColor", "", "rgb:ffff/ffff/ffff");
-		public readonly SkinConfigurationProperty<string> UserTasksLowPrioColor = new SkinConfigurationProperty<string> ("Monodevelop.UserTasksLowPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly ThemeConfigurationProperty<string> UserTasksHighPrioColor = new ThemeConfigurationProperty<string> ("Monodevelop.UserTasksHighPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly ThemeConfigurationProperty<string> UserTasksNormalPrioColor = new ThemeConfigurationProperty<string> ("Monodevelop.UserTasksNormalPrioColor", "", "rgb:ffff/ffff/ffff");
+		public readonly ThemeConfigurationProperty<string> UserTasksLowPrioColor = new ThemeConfigurationProperty<string> ("Monodevelop.UserTasksLowPrioColor", "", "rgb:ffff/ffff/ffff");
 
-		public class SkinConfigurationProperty<T>: ConfigurationProperty<T>
+		public class ThemeConfigurationProperty<T>: ConfigurationProperty<T>
 		{
 			readonly ConfigurationProperty<T> lightConfiguration;
 			readonly ConfigurationProperty<T> darkConfiguration;
 
-			public SkinConfigurationProperty (string propertyName, T defaultLightValue, T defaultDarkValue, string oldName = null)
+			public ThemeConfigurationProperty (string propertyName, T defaultLightValue, T defaultDarkValue, string oldName = null)
 			{
 				lightConfiguration = ConfigurationProperty.Create<T> (propertyName, defaultLightValue, oldName);
 				darkConfiguration = ConfigurationProperty.Create<T> (propertyName + "-Dark", defaultDarkValue, oldName + "-Dark");
@@ -175,12 +175,12 @@ namespace MonoDevelop.Ide
 				MonoDevelop.Ide.Gui.Styles.Changed += (sender, e) => OnChanged ();
 			}
 
-			public T ValueForSkin (Skin skin)
+			public T ValueForTheme (Theme theme)
 			{
-				switch (skin) {
-					case Skin.Light:
+				switch (theme) {
+					case Theme.Light:
 						return lightConfiguration.Value;
-					case Skin.Dark:
+					case Theme.Dark:
 						return darkConfiguration.Value;
 					default:
 						throw new InvalidOperationException ();
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide
 
 			protected override T OnGetValue ()
 			{
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 					return lightConfiguration;
 				else
 					return darkConfiguration;
@@ -197,14 +197,14 @@ namespace MonoDevelop.Ide
 
 			protected override bool OnSetValue (T value)
 			{
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 					return lightConfiguration.Set (value);
 				else
 					return darkConfiguration.Set (value);
 			}
 		}
 
-		public class SchemeConfigurationProperty: SkinConfigurationProperty<string>
+		public class SchemeConfigurationProperty: ThemeConfigurationProperty<string>
 		{
 			public SchemeConfigurationProperty (string propertyName, string defaultLightValue, string defaultDarkValue, string oldName = null)
 				: base (propertyName, defaultLightValue, defaultDarkValue, oldName)
@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide
 		PromptForSave,
 	}
 
-	public enum Skin
+	public enum Theme
 	{
 		Light,
 		Dark
