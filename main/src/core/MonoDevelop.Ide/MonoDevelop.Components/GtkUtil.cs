@@ -65,7 +65,10 @@ namespace MonoDevelop.Components
 
 		public static string GetHex (this Gdk.Color color)
 		{
-			return String.Format("#{0:x2}{1:x2}{2:x2}", (byte)(color.Red), (byte)(color.Green), (byte)(color.Blue));
+			return String.Format("#{0:x2}{1:x2}{2:x2}",
+			                     (byte)(((double)color.Red / ushort.MaxValue) * 255),
+			                     (byte)(((double)color.Green / ushort.MaxValue) * 255),
+			                     (byte)(((double)color.Blue / ushort.MaxValue) * 255));
 		}
 
 		public static Gdk.Color ToGdkColor (this Cairo.Color color)
