@@ -32,7 +32,6 @@ using AppKit;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects.Text;
-using System.Linq;
 
 namespace MonoDevelop.MacIntegration
 {

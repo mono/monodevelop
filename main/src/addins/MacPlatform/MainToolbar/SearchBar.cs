@@ -38,7 +38,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	[Register]
 	class SearchBar : NSSearchField
 	{
-		bool debugSearchbar;
 		internal Widget gtkWidget;
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
@@ -183,8 +182,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			Cell = new DarkSkinSearchFieldCell ();
 
 			Initialize ();
-			var debugFilePath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".xs-searchbar-debug");
-			debugSearchbar = System.IO.File.Exists (debugFilePath);
 
 			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 			UpdateLayout ();
