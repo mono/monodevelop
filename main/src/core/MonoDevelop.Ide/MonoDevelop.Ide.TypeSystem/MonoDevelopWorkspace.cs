@@ -427,6 +427,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
 		{
+			if (projectFile == null)
+				throw new ArgumentNullException (nameof (projectFile));
+			if (projections == null)
+				throw new ArgumentNullException (nameof (projections));
 			foreach (var entry in projectionList) {
 				if (entry.File.FilePath == projectFile.FilePath) {
 					projectionList.Remove (entry);
