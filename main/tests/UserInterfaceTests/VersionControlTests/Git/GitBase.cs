@@ -234,7 +234,7 @@ namespace UserInterfaceTests
 				Session.WaitForElement (IdeQuery.GitConfigurationDialog);
 				TakeScreenShot ("Git-User-Not-Configured");
 				EnterGitUserConfig ("John Doe", "john.doe@example.com");
-			} catch (TimeoutException e) { }
+			} catch (TimeoutException) { }
 			Session.WaitForElement (c => IdeQuery.GitConfigurationDialog (c));
 			TakeScreenShot ("Ok-Clicked");
 		}
