@@ -78,18 +78,21 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		void DisposeLogger ()
 		{
-			if (currentLogWriter != null) {
-				flushTimer.Dispose ();
-				flushTimer = null;
-				FlushLog ();
-				currentLogWriter = null;
+			lock (flushLogLock)
+			lock (log) {
+				if (currentLogWriter != null) {
+					flushTimer.Dispose ();
+					flushTimer = null;
+					FlushLog ();
+					currentLogWriter = null;
+				}
 			}
 		}
 
 		void LogWriteLine (string txt)
 		{
-			if (currentLogWriter != null) {
-				lock (log) {
+			lock (log) {
+				if (currentLogWriter != null) {
 					// Append the line to the log, and schedule the flush of the log, unless it has already been done
 					log.AppendLine (txt);
 					if (!flushingLog) {
