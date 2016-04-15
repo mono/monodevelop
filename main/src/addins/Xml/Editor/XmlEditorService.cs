@@ -33,11 +33,7 @@ using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Editor;
-using System.Xml.XPath;
-using System.Xml.Xsl;
 
-using MonoDevelop.Components;
-using MonoDevelop.Components.Extensions;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;

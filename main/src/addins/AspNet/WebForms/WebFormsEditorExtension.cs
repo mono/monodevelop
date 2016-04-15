@@ -324,7 +324,7 @@ namespace MonoDevelop.AspNet.WebForms
 // TODO: Roslyn port
 //		public override ParameterHintingResult HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar)
 //		{
-///*			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
+// /*			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
 //				return documentBuilder.HandleParameterCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar);
 //			}*/
 //			
