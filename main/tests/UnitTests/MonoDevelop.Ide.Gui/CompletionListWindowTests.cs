@@ -232,7 +232,7 @@ namespace MonoDevelop.Ide.Gui
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
 				DefaultCompletionString = settings.DefaultCompletionString
 			};
-			listWindow.List.FilterWords ();
+			listWindow.FilterWords ();
 			listWindow.UpdateWordSelection ();
 			listWindow.ResetSizes ();
 			return listWindow;
@@ -871,7 +871,7 @@ namespace MonoDevelop.Ide.Gui
 			listWindow.CodeCompletionContext = new CodeCompletionContext ();
 			listWindow.CompletionDataList = list;
 			listWindow.CompletionWidget = testCompletionWidget = new TestCompletionWidget ();
-			listWindow.List.FilterWords ();
+			listWindow.FilterWords ();
 			listWindow.ResetSizes ();
 			listWindow.UpdateWordSelection ();
 			SimulateInput (listWindow, simulatedInput);

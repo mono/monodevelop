@@ -1,5 +1,5 @@
 ﻿// 
-// RemovedPackageReferenceMonitor.cs
+// PackageReferenceMonitor.cs
 // 
 // Author:
 //   Matt Ward <ward.matt@gmail.com>
@@ -32,25 +32,36 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class RemovedPackageReferenceMonitor : IDisposable
+	internal class PackageReferenceMonitor : IDisposable
 	{
 		IMonoDevelopProjectManager projectManager;
+		IMonoDevelopPackageManager packageManager;
 		List<IPackage> packagesRemoved = new List<IPackage>();
 		
-		public RemovedPackageReferenceMonitor(IMonoDevelopProjectManager projectManager)
+		public PackageReferenceMonitor (
+			IMonoDevelopProjectManager projectManager,
+			IMonoDevelopPackageManager packageManager)
 		{
 			this.projectManager = projectManager;
+			this.packageManager = packageManager;
 			projectManager.PackageReferenceRemoved += PackageReferenceRemoved;
+			projectManager.PackageReferenceAdded += PackageReferenceAdded;
 		}
 		
 		void PackageReferenceRemoved(object sender, PackageOperationEventArgs e)
 		{
 			packagesRemoved.Add(e.Package);
 		}
+
+		void PackageReferenceAdded (object sender, PackageOperationEventArgs e)
+		{
+			packageManager.InstallPackageIntoSolutionRepository (e.Package);
+		}
 		
 		public void Dispose()
 		{
 			projectManager.PackageReferenceRemoved -= PackageReferenceRemoved;
+			projectManager.PackageReferenceAdded -= PackageReferenceAdded;
 		}
 		
 		public List<IPackage> PackagesRemoved {

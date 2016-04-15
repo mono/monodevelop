@@ -49,7 +49,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		Complete = 8
 	}
 
-	public class ListWindow : PopoverWindow
+	class ListWindow : PopoverWindow
 	{
 		const int WindowWidth = 400;
 
@@ -105,11 +105,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			Theme.Padding = 0;
 
 			UpdateStyle ();
-			Gui.Styles.Changed += HandleSkinChanged;
-			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
+			Gui.Styles.Changed += HandleThemeChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 		}
 
-		void HandleSkinChanged (object sender, EventArgs e)
+		void HandleThemeChanged (object sender, EventArgs e)
 		{
 			UpdateStyle ();
 		}
@@ -125,8 +125,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			Gui.Styles.Changed -= HandleSkinChanged;
-			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
+			Gui.Styles.Changed -= HandleThemeChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleThemeChanged;
 		}
 
 		protected virtual void DoubleClick ()

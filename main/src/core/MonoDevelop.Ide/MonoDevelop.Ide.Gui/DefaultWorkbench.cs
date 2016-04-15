@@ -1415,7 +1415,7 @@ namespace MonoDevelop.Ide.Gui
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
 				if (window.HasErrors && !window.ContentVisible)
-					windowTitle = "<span foreground='red'>" + windowTitle + "</span>";
+					windowTitle = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + windowTitle + "</span>";
 				else if (window.HasNewData && !window.ContentVisible)
 					windowTitle = "<b>" + windowTitle + "</b>";
 				item.Label = windowTitle;

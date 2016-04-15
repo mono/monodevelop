@@ -337,8 +337,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		const string ProgressLayerFadingId = "ProgressLayerFading";
 		const string growthAnimationKey = "bounds";
 		StatusBarContextHandler ctxHandler;
-		Stack<double> progressMarks = new Stack<double> ();
-		bool currentTextIsMarkup;
 		string text;
 		MessageType messageType;
 		NSColor textColor;
@@ -466,7 +464,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		void LoadStyles (object sender = null, EventArgs args = null)
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 				Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
 			} else {
 				Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
@@ -669,7 +667,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return false;
 
 			text = message;
-			currentTextIsMarkup = isMarkup;
 			messageType = statusType;
 			textColor = ColorForType (statusType);
 

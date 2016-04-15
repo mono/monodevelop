@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
@@ -44,8 +45,8 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class ProgressMonitorManager : GuiSyncObject
 	{
-		ArrayList searchMonitors = new ArrayList ();
-		ArrayList outputMonitors = new ArrayList ();
+		List<Pad> searchMonitors = new List<Pad> ();
+		List<Pad> outputMonitors = new List<Pad> ();
 		
 		/******************************/
 
@@ -280,11 +281,12 @@ namespace MonoDevelop.Ide.Gui
 			lock (searchMonitors) {
 				searchMonitors.Add (pad);
 
-				if (searchMonitors.Count > 1) {
+				if (searchMonitors.Count > 1) {					// This is needed due to ContextBoundObject not being able to do a reflection access on private fields
+					var searchMonitorsCopy = searchMonitors;
 					// Additional search pads will be destroyed when hidden
 					pad.Window.PadHidden += delegate {
-						lock (searchMonitors) {
-							searchMonitors.Remove (pad);
+						lock (searchMonitorsCopy) {
+							searchMonitorsCopy.Remove (pad);
 						}
 						pad.Destroy ();
 					};

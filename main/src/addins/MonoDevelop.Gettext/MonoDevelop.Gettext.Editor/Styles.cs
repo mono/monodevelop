@@ -49,7 +49,7 @@ namespace MonoDevelop.Gettext
 		public static void LoadStyles ()
 		{
 			POEditor = new POEditorStyle ();
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				POEditor.EntryUntranslatedBackgroundColor = new Gdk.Color (234, 232, 227);
 				POEditor.EntryMissingBackgroundColor = new Gdk.Color (237, 226, 187);
 				POEditor.EntryFuzzyBackgroundColor = new Gdk.Color (255, 199, 186);

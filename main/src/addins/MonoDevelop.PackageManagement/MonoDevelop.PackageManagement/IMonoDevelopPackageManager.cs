@@ -26,9 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -49,5 +47,7 @@ namespace MonoDevelop.PackageManagement
 		ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages);
 		
 		void RunPackageOperations(IEnumerable<PackageOperation> operations);
+
+		void InstallPackageIntoSolutionRepository (IPackage package);
 	}
 }

@@ -129,7 +129,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (IdeApp.Preferences.ForceSuggestionMode)
 					wnd.AutoSelect = false;
 				wnd.Show ();
-				DesktopService.RemoveWindowShadow (wnd);
 				OnWindowShown (EventArgs.Empty);
 				return true;
 			} catch (Exception ex) {
@@ -183,7 +182,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static void UpdateWordSelection (string text)
 		{
 			if (IsVisible) {
-				wnd.List.CompletionString = text;
+				wnd.CompletionString = text;
 				wnd.UpdateWordSelection ();
 			}
 		}

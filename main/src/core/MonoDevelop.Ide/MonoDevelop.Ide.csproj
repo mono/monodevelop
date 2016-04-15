@@ -8205,7 +8205,6 @@
     <Compile Include="MonoDevelop.Ide\TaskUtil.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CodeAnalysisPanel.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionKeyHandler.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\FirstCategory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\NR5CompatibiltyExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectConfigurationControl.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectCacheHostServiceFactory.cs" />

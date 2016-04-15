@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -255,6 +254,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+		}
+
+		public void InstallPackageIntoSolutionRepository (IPackage package)
 		{
 		}
 	}
