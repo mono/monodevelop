@@ -191,6 +191,7 @@ namespace MonoDevelop.Ide.Desktop
 				if (list[i].IsInGroup (group) && (++count > limit)) {
 					list.RemoveAt (i);
 					i--;
+					modified = true;
 				}
 			}
 			return modified;
