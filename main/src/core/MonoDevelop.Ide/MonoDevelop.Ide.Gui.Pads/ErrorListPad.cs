@@ -781,13 +781,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter.Refilter ();
 		}
 
-		bool FilterTasks (TreeModel model, TreeIter sortedIter)
+		bool FilterTasks (TreeModel model, TreeIter iter)
 		{
-			Gtk.TreeIter iter;
 			bool canShow = false;
 
 			try {
-				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task == null)
 					return true;
