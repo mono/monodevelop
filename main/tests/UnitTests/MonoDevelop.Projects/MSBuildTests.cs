@@ -1354,6 +1354,24 @@ namespace MonoDevelop.Projects
         }
 
 		[Test]
+		public async Task TargetEvaluationResultTryGetPathValueForNullPropertyValue ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var p = (Project) sol.Items [0];
+
+			var ctx = new TargetEvaluationContext ();
+			ctx.PropertiesToEvaluate.Add ("MissingProperty");
+			var res = await p.RunTarget (Util.GetMonitor (), "Build", p.Configurations [0].Selector, ctx);
+
+			Assert.IsNull (res.Properties.GetValue ("MissingProperty"));
+
+			FilePath path = null;
+			bool foundProperty = res.Properties.TryGetPathValue ("MissingProperty", out path);
+			Assert.IsFalse (foundProperty);
+		}
+
+		[Test]
 		public async Task BuildWithCustomProps ()
 		{
 			string projFile = Util.GetSampleProject ("msbuild-tests", "project-with-custom-build-target.csproj");

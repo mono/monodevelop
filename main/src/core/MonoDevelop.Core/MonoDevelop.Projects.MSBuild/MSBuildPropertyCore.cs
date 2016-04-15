@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects.MSBuild
 			var res = MSBuildProjectService.FromMSBuildPath (baseDir, val, out path);
 
 			// Remove the trailing slash
-			if (path.Length > 0 && path[path.Length - 1] == System.IO.Path.DirectorySeparatorChar && path != "." + System.IO.Path.DirectorySeparatorChar)
+			if (path != null && path.Length > 0 && path[path.Length - 1] == System.IO.Path.DirectorySeparatorChar && path != "." + System.IO.Path.DirectorySeparatorChar)
 				path = path.TrimEnd (System.IO.Path.DirectorySeparatorChar);
 			
 			value = path;
