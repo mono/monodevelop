@@ -562,10 +562,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnTaskJumpto (object o, EventArgs args)
 		{
-			TreeIter iter;
+			TreeIter iter, sortedIter;
 			TreeModel model;
-			if (view.Selection.GetSelected (out model, out iter)) {
-				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (iter));
+			if (view.Selection.GetSelected (out model, out sortedIter)) {
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
 				store.SetValue (iter, DataColumns.Read, true);
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
@@ -781,11 +781,13 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter.Refilter ();
 		}
 
-		bool FilterTasks (TreeModel model, TreeIter iter)
+		bool FilterTasks (TreeModel model, TreeIter sortedIter)
 		{
+			Gtk.TreeIter iter;
 			bool canShow = false;
 
 			try {
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task == null)
 					return true;
