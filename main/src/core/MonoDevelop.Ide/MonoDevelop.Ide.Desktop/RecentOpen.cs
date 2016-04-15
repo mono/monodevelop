@@ -34,6 +34,7 @@ using System.IO;
 
 using MonoDevelop.Core;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -61,29 +62,29 @@ namespace MonoDevelop.Ide.Desktop
 			remove { recentFiles.RecentFilesChanged -= value; }
 		}
 		
-		protected override IList<RecentFile> OnGetProjects ()
+		protected override Task<List<RecentFile>> OnGetProjects ()
 		{
 			try {
 				return Get (projGroup);
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't get recent projects list.", e);
-				return new List <RecentFile> ();
+				return Task.FromResult (new List <RecentFile> ());
 			}
 		}
 		
-		protected override IList<RecentFile> OnGetFiles ()
+		protected override Task<List<RecentFile>> OnGetFiles ()
 		{
 			try {
 				return Get (fileGroup);
 			} catch (Exception e) {
 				LoggingService.LogError ("Can't get recent files list.", e);
-				return new List <RecentFile> ();
+				return Task.FromResult (new List <RecentFile> ());
 			}
 		}
 		
-		IList<RecentFile> Get (string grp)
+		async Task<List<RecentFile>> Get (string grp)
 		{
-			var gp = recentFiles.GetItemsInGroup (grp);
+			var gp = await recentFiles.GetItemsInGroup (grp);
 			return gp.Select (i => new RecentFile (i.LocalPath, i.Private, i.Timestamp)).ToList ();
 		}
 		
@@ -162,9 +163,9 @@ namespace MonoDevelop.Ide.Desktop
 			favoriteFiles = PropertyService.Get (FavoritesConfigKey, new List<string> ());
 		}
 
-		public IList<RecentFile> GetProjects ()
+		public async Task<List<RecentFile>> GetProjects ()
 		{
-			var projects = OnGetProjects ();
+			var projects = await OnGetProjects ();
 			List<RecentFile> result = new List<RecentFile> ();
 			List<string> toRemove = null;
 			foreach (var f in favoriteFiles) {
@@ -190,7 +191,7 @@ namespace MonoDevelop.Ide.Desktop
 			return result;
 		}
 
-		public IList<RecentFile> GetFiles ()
+		public Task<List<RecentFile>> GetFiles ()
 		{
 			return OnGetFiles ();
 		}
@@ -203,8 +204,8 @@ namespace MonoDevelop.Ide.Desktop
 		public abstract void NotifyFileRemoved (string filename);
 		public abstract void NotifyFileRenamed (string oldName, string newName);
 		
-		protected abstract IList<RecentFile> OnGetProjects ();
-		protected abstract IList<RecentFile> OnGetFiles ();
+		protected abstract Task<List<RecentFile>> OnGetProjects ();
+		protected abstract Task<List<RecentFile>> OnGetFiles ();
 
 		public void AddFile (string fileName, MonoDevelop.Projects.Project project)
 		{

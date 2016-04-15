@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			DesktopService.RecentFiles.Changed -= RecentFilesChanged;
 		}
 
-		void RecentFilesChanged (object sender, EventArgs e)
+		async void RecentFilesChanged (object sender, EventArgs e)
 		{
 			//this can get called by async dispatch after the widget is destroyed
 			if (destroyed)
@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			box.PackStart (hbox, false, false, 0);
 			
 			//TODO: pinned files
-			foreach (var recent in DesktopService.RecentFiles.GetProjects ().Take (itemCount)) {
+			foreach (var recent in (await DesktopService.RecentFiles.GetProjects ()).Take (itemCount)) {
 				var filename = recent.FileName;
 
 				var accessed = recent.TimeStamp;
