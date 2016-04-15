@@ -158,7 +158,12 @@ namespace MonoDevelop.Ide.Gui
 		/// </remarks>
 		public Pad GetPadForMonitor (ProgressMonitor monitor)
 		{
-			foreach (Pad pad in outputMonitors) {
+			List<Pad> outputMonitorsCopy;
+			lock (outputMonitors) {
+				outputMonitorsCopy = new List<Pad> (outputMonitors);
+			}
+
+			foreach (Pad pad in outputMonitorsCopy) {
 				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
 				if (p.CurrentMonitor == monitor)
 					return pad;
@@ -217,7 +222,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitorPad.StatusSourcePad = pad;
 			pad.Sticky = true;
-			outputMonitors.Add (pad);
+			lock (outputMonitors) {
+				outputMonitors.Add (pad);
+			}
 			
 			if (instanceCount > 0) {
 				// Additional output pads will be destroyed when hidden
@@ -238,7 +245,9 @@ namespace MonoDevelop.Ide.Gui
 
 		void DestroyPad (Pad pad)
 		{
-			outputMonitors.Remove (pad);
+			lock (outputMonitors) {
+				outputMonitors.Remove (pad);
+			}
 			pad.Destroy ();
 		}
 		
