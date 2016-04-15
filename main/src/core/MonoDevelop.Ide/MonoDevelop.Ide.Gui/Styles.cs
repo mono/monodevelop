@@ -310,7 +310,7 @@ namespace MonoDevelop.Ide.Gui
 			DefaultFont = defaultStyle.FontDescription.Copy ();
 			DefaultFontName = DefaultFont.ToString ();
 
-			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 				LoadLightStyle ();
 			else
 				LoadDarkStyle ();
@@ -574,7 +574,7 @@ namespace MonoDevelop.Ide.Gui
 
 			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#5e5e5e");
 			PopoverWindow.DefaultTextColor = Color.FromName ("#bdc1c1");
-			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (0); // transparent since dark skin doesn't need shadows
+			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (0); // transparent since dark theme doesn't need shadows
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = Color.FromName ("#fffcd1");

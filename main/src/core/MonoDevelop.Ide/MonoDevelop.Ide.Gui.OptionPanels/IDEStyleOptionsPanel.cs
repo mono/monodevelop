@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void Load ()
 		{
-			currentTheme = IdeApp.Preferences.UserInterfaceTheme;
+			currentTheme = IdeApp.Preferences.UserInterfaceThemeName;
 
 			for (int n = 1; n < isoCodes.Length; n += 2)
 				comboLanguage.AppendText (GettextCatalog.GetString (isoCodes [n]));
@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			foreach (string t in InstalledThemes)
 				comboTheme.AppendText (t);
 
-			var sel = themes.Value.IndexOf (IdeApp.Preferences.UserInterfaceTheme);
+			var sel = themes.Value.IndexOf (IdeApp.Preferences.UserInterfaceThemeName);
 			if (sel == -1)
 				sel = 0;
 			else if (Platform.IsLinux)
@@ -185,8 +185,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				);
 			}
 
-			if (currentTheme != IdeApp.Preferences.UserInterfaceTheme.Value) {
-				IdeApp.Preferences.UserInterfaceTheme.Value = currentTheme;
+			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value) {
+				IdeApp.Preferences.UserInterfaceThemeName.Value = currentTheme;
 				MessageService.ShowMessage (
 					GettextCatalog.GetString (
 						"The user interface theme change will take effect the next time you start {0}",

@@ -127,7 +127,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			double inactiveIconAlpha;
 
-			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 				inactiveIconAlpha = 0.8;
 			else
 				inactiveIconAlpha = 0.6;

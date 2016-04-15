@@ -45,7 +45,7 @@ namespace MonoDevelop.Components
 		internal static string DefaultGtkDataFolder;
 		internal static string DefaultGtk2RcFiles;
 
-		public static Skin UserInterfaceSkin { get; private set; }
+		public static Theme UserInterfaceTheme { get; private set; }
 
 		static IdeTheme ()
 		{
@@ -100,7 +100,7 @@ namespace MonoDevelop.Components
 			
 			if (Platform.IsLinux) {
 				DefaultTheme = Gtk.Settings.Default.ThemeName;
-				string theme = IdeApp.Preferences.UserInterfaceTheme;
+				string theme = IdeApp.Preferences.UserInterfaceThemeName;
 				if (string.IsNullOrEmpty (theme))
 					theme = DefaultTheme;
 				ValidateGtkTheme (ref theme);
@@ -123,12 +123,12 @@ namespace MonoDevelop.Components
 			if (DefaultTheme == null)
 				SetupGtkTheme ();
 
-			string current_theme = IdeApp.Preferences.UserInterfaceTheme;
+			string current_theme = IdeApp.Preferences.UserInterfaceThemeName;
 
 			if (!Platform.IsLinux) {
-				UserInterfaceSkin = IdeApp.Preferences.UserInterfaceTheme == "Dark" ? Skin.Dark : Skin.Light;
-				if (current_theme != UserInterfaceSkin.ToString ()) // Only Skin names allowed on Win/Mac
-					current_theme = UserInterfaceSkin.ToString ();
+				UserInterfaceTheme = IdeApp.Preferences.UserInterfaceThemeName == "Dark" ? Theme.Dark : Theme.Light;
+				if (current_theme != UserInterfaceTheme.ToString ()) // Only theme names allowed on Win/Mac
+					current_theme = UserInterfaceTheme.ToString ();
 			}
 
 			var use_bundled_theme = false;
@@ -183,7 +183,7 @@ namespace MonoDevelop.Components
 				} else if (Platform.IsMac) {
 					
 					var gtkrc = "gtkrc.mac";
-					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark)
+					if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark)
 						gtkrc += "-dark";
 					gtkrc = PropertyService.EntryAssemblyPath.Combine (gtkrc);
 
@@ -219,10 +219,10 @@ namespace MonoDevelop.Components
 			if (Platform.IsLinux) {
 				var defaultStyle = Gtk.Rc.GetStyle (IdeApp.Workbench.RootWindow);
 				var bgColor = defaultStyle.Background (Gtk.StateType.Normal);
-				UserInterfaceSkin = HslColor.Brightness (bgColor) < 0.5 ? Skin.Dark : Skin.Light;
+				UserInterfaceTheme = HslColor.Brightness (bgColor) < 0.5 ? Theme.Dark : Theme.Light;
 			}
 
-			if (UserInterfaceSkin == Skin.Dark)
+			if (UserInterfaceTheme == Theme.Dark)
 				Xwt.Drawing.Context.SetGlobalStyle ("dark");
 			else
 				Xwt.Drawing.Context.ClearGlobalStyle ("dark");
@@ -287,12 +287,12 @@ namespace MonoDevelop.Components
 
 		static void SetTheme (NSWindow window)
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 				window.Appearance = NSAppearance.GetAppearance (NSAppearance.NameAqua);
 			else
 				window.Appearance = NSAppearance.GetAppearance (NSAppearance.NameVibrantDark);
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				window.StyleMask &= ~NSWindowStyle.TexturedBackground;
 				return;
 			}
