@@ -40,6 +40,7 @@ using System.Threading;
 using System.Xml;
 using System.Linq;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -208,22 +209,52 @@ namespace MonoDevelop.Ide.Desktop
 			}
 			return modified;
 		}
-		
+
+		CancellationTokenSource cts = new CancellationTokenSource ();
+		Task recentSaveTask;
+		List<Func<List<RecentItem>, bool>> modifyList = new List<Func<List<RecentItem>, bool>> ();
 		bool ModifyStore (Func<List<RecentItem>,bool> modify)
 		{
+			lock (modifyList) {
+				modifyList.Add (modify);
+
+				if (recentSaveTask == null) {
+					recentSaveTask = Task.Delay (1000).ContinueWith (t => SaveRecentFiles ());
+				}
+			}
+			return true;
+		}
+
+		void SaveRecentFiles ()
+		{
+			List<Func<List<RecentItem>, bool>> localModifyList;
 			List<RecentItem> list;
+
+			lock (modifyList) {
+				localModifyList = new List<Func<List<RecentItem>, bool>> (modifyList);
+				modifyList.Clear ();
+				recentSaveTask = null;
+			}
+
 			using (var fs = AcquireFileExclusive (filePath)) {
 				list = ReadStore (fs);
-				if (!modify (list)) {
-					return false;
+				bool modified = false;
+
+				foreach (var modify in localModifyList) {
+					if (!modify (list)) {
+						continue;
+					}
+
+					modified = true;
 				}
-				fs.Position = 0;
-				fs.SetLength (0);
-				WriteStore (fs, list);
+
+				if (modified) {
+					fs.Position = 0;
+					fs.SetLength (0);
+					WriteStore (fs, list);
+					OnRecentFilesChanged (list);
+				}
 			}
-			//TODO: can we suppress duplicate event from the FSW?
-			OnRecentFilesChanged (list);
-			return true;
 		}
 		
 		static List<RecentItem> ReadStore (FileStream file)
