@@ -487,6 +487,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		void addQueuedUpdate (QueuedUpdate update)
 		{
 			lock (updates) {
+				if (destroyed)
+					return;
+				
 				updates.Enqueue (update);
 				if (!outputDispatcherRunning) {
 					GLib.Timeout.Add (50, outputDispatcher);
@@ -624,15 +627,17 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
+		bool destroyed = false;
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
-			
 			lock (updates) {
+				destroyed = true;
 				updates.Clear ();
 				lastTextWrite = null;
 			}
 			IdeApp.Preferences.CustomOutputPadFont.Changed -= HandleCustomFontChanged;
+
+			base.OnDestroyed ();
 		}
 		
 		abstract class QueuedUpdate
