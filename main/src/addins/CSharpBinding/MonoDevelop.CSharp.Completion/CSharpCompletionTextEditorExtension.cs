@@ -59,7 +59,6 @@ using System.Runtime.ExceptionServices;
 using MonoDevelop.Ide.TypeSystem;
 using RefactoringEssentials;
 using MonoDevelop.CSharp.Diagnostics.InconsistentNaming;
-using RefactoringEssentials.CSharp.Diagnostics;
 
 namespace MonoDevelop.CSharp.Completion
 {
