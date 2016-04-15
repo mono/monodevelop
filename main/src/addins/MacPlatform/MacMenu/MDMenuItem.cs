@@ -111,6 +111,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 				}
 			}
 
+			index++;
 			PopulateArrayItems (info.ArrayInfo, parent, ref lastSeparator, ref index);
 		}
 
@@ -125,7 +126,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 					n.Hidden = true;
 					n.Target = this;
 					lastSeparator = n;
-					if (parent.Count > ++index)
+					if (parent.Count > index)
 						parent.InsertItem (n, index);
 					else
 						parent.AddItem (n);
@@ -148,11 +149,13 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 				if (!item.Hidden)
 					MDMenu.ShowLastSeparator (ref lastSeparator);
-				if (parent.Count > ++index)
+				if (parent.Count > index)
 					parent.InsertItem (item, index);
 				else
 					parent.AddItem (item);
+				index++;
 			}
+			index--;
 		}
 
 		class MDExpandedArrayItem : NSMenuItem
