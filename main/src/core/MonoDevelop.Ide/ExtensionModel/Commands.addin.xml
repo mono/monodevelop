@@ -838,7 +838,7 @@
 			shortcut = "Control|F3"
 			macShortcut = "Meta|E" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection"
-			_label = "Find _Previous Selection"
+			_label = "Find Previous Like Selection"
 			_description = "Search backwards for the selected text"
 			shortcut = "Shift|Control|F3" />
 
