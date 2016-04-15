@@ -158,12 +158,9 @@ namespace MonoDevelop.Ide.Gui
 		/// </remarks>
 		public Pad GetPadForMonitor (ProgressMonitor monitor)
 		{
-			List<Pad> outputMonitorsCopy;
-			lock (outputMonitors) {
-				outputMonitorsCopy = new List<Pad> (outputMonitors);
-			}
+			Runtime.AssertMainThread ();
 
-			foreach (Pad pad in outputMonitorsCopy) {
+			foreach (Pad pad in outputMonitors) {
 				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
 				if (p.CurrentMonitor == monitor)
 					return pad;
