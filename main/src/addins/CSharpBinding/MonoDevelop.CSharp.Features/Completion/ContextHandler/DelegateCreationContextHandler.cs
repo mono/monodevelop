@@ -86,14 +86,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var enclosingType = model.GetEnclosingNamedType (position, cancellationToken);
 			if (enclosingType == null)
 				return Task.FromResult (Enumerable.Empty<CompletionData> ());
-			var memberMethods = enclosingType.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Ordinary).ToArray ();
 
 			var list = new List<CompletionData> ();
 			foreach (var type in ctx.InferredTypes) {
 				if (type.TypeKind != TypeKind.Delegate)
 					continue;
 
-				AddCompatibleMethods (engine, list, type, memberMethods, cancellationToken);
 
 				string delegateName = null;
 
@@ -107,16 +105,6 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				result.AutoSelect = false;
 			}
 			return Task.FromResult ((IEnumerable<CompletionData>)list);
-		}
-
-		void AddCompatibleMethods (CompletionEngine engine, List<CompletionData> list, ITypeSymbol delegateType, IMethodSymbol [] memberMethods, CancellationToken cancellationToken)
-		{
-			var delegateMethod = delegateType.GetDelegateInvokeMethod ();
-			foreach (var method in memberMethods) {
-				if (method.ReturnType.Equals (delegateMethod.ReturnType) && SignatureComparer.HaveSameSignature (delegateMethod.Parameters, method.Parameters, false, false)) {
-					list.Add (engine.Factory.CreateExistingMethodDelegate (this, method));
-				}
-			}
 		}
 
 		static string GuessEventHandlerBaseName (SyntaxNode node, TypeDeclarationSyntax containingTypeDeclaration)
