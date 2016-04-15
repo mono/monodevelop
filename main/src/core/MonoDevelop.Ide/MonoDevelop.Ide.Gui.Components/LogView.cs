@@ -572,6 +572,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		bool ShouldAutoScroll ()
 		{
+			if (scrollView == null || scrollView.Vadjustment == null)
+				return false;
+
 			// we need to account for the page size as well for some reason
 			return scrollView.Vadjustment.Value + scrollView.Vadjustment.PageSize >= scrollView.Vadjustment.Upper;
 		}
