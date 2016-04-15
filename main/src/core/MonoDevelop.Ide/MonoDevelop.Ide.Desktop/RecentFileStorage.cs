@@ -210,7 +210,6 @@ namespace MonoDevelop.Ide.Desktop
 			return modified;
 		}
 
-		CancellationTokenSource cts = new CancellationTokenSource ();
 		Task recentSaveTask;
 		List<Func<List<RecentItem>, bool>> modifyList = new List<Func<List<RecentItem>, bool>> ();
 		bool ModifyStore (Func<List<RecentItem>,bool> modify)
