@@ -26,6 +26,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.ProjectManagement.Projects;
 
@@ -37,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 		BuildIntegratedNuGetProject nugetProject;
 		CancellationToken cancellationToken;
 		MonoDevelopBuildIntegratedRestorer packageRestorer;
+		IPackageManagementEvents packageManagementEvents;
 
 		public RestoreNuGetPackagesInNuGetIntegratedProject (
 			DotNetProject project,
@@ -47,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 			this.project = project;
 			this.nugetProject = nugetProject;
 			this.cancellationToken = cancellationToken;
+			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
 			packageRestorer = new MonoDevelopBuildIntegratedRestorer (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
@@ -67,6 +70,10 @@ namespace MonoDevelop.PackageManagement
 		async Task ExecuteAsync ()
 		{
 			await packageRestorer.RestorePackages (nugetProject, cancellationToken);
+
+			await Runtime.RunInMainThread (() => project.RefreshReferenceStatus ());
+
+			packageManagementEvents.OnPackagesRestored ();
 		}
 	}
 }
