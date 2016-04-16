@@ -512,6 +512,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementWorkspace.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopSolutionManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetProjectExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageRestoreMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

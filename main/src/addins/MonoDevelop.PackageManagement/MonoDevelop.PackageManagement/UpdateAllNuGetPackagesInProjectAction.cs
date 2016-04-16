@@ -148,11 +148,13 @@ namespace MonoDevelop.PackageManagement
 
 			var missingPackages = packages.Select (package => IsMissingForCurrentProject (package)).ToList ();
 			if (missingPackages.Any ()) {
-				await restoreManager.RestoreMissingPackagesAsync (
-					solutionManager.SolutionDirectory,
-					project,
-					context,
-					cancellationToken);
+				using (var monitor = new PackageRestoreMonitor (restoreManager)) {
+					await restoreManager.RestoreMissingPackagesAsync (
+						solutionManager.SolutionDirectory,
+						project,
+						context,
+						cancellationToken);
+				}
 
 				await Runtime.RunInMainThread (() => dotNetProject.RefreshReferenceStatus ());
 

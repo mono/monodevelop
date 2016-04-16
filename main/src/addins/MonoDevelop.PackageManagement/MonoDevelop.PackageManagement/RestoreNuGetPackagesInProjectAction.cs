@@ -74,11 +74,13 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync ()
 		{
-			await restoreManager.RestoreMissingPackagesAsync (
-				solutionManager.SolutionDirectory,
-				nugetProject,
-				new NuGetProjectContext (),
-				cancellationToken);
+			using (var monitor = new PackageRestoreMonitor (restoreManager)) {
+				await restoreManager.RestoreMissingPackagesAsync (
+					solutionManager.SolutionDirectory,
+					nugetProject,
+					new NuGetProjectContext (),
+					cancellationToken);
+			}
 
 			await Runtime.RunInMainThread (() => project.RefreshReferenceStatus ());
 

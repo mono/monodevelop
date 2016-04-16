@@ -103,10 +103,12 @@ namespace MonoDevelop.PackageManagement
 		async Task ExecuteAsync ()
 		{
 			if (restoreManager != null) {
-				await restoreManager.RestoreMissingPackagesInSolutionAsync (
-					solutionManager.SolutionDirectory,
-					new NuGetProjectContext (),
-					cancellationToken);
+				using (var monitor = new PackageRestoreMonitor (restoreManager)) {
+					await restoreManager.RestoreMissingPackagesInSolutionAsync (
+						solutionManager.SolutionDirectory,
+						new NuGetProjectContext (),
+						cancellationToken);
+				}
 			}
 
 			if (buildIntegratedRestorer != null) {
