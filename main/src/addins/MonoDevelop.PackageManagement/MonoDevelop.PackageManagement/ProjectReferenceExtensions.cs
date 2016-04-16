@@ -63,12 +63,7 @@ namespace MonoDevelop.PackageManagement
 			if (assemblyFilePath.IsNullOrEmpty)
 				return false;
 
-			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
-			if (solutionManager == null)
-				return false;
-
-			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionManager, solutionManager.Settings);
-			var packagesFolderPath = new FilePath (path).FullPath;
+			FilePath packagesFolderPath = project.GetPackagesFolderPath ();
 
 			return assemblyFilePath.IsChildPathOf (packagesFolderPath);
 		}

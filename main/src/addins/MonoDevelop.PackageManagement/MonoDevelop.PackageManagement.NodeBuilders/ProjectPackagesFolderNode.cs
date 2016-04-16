@@ -84,17 +84,15 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 			nugetProject = solutionManager.GetNuGetProject (project);
 
-			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionManager, solutionManager.Settings);
-			folder = new FolderNuGetProject (path);
-
 			if (nugetProject is INuGetIntegratedProject) {
-				string globalPackagesFolder = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings); 
+				PackagesFolderPath = SettingsUtility.GetGlobalPackagesFolder (solutionManager.Settings); 
 				packagePathResolver = new VersionFolderPathResolver ( 
-					globalPackagesFolder, 
+					PackagesFolderPath, 
 					normalizePackageId: false);
+			} else {
+				PackagesFolderPath = nugetProject.GetPackagesFolderPath (solutionManager);
+				folder = new FolderNuGetProject (PackagesFolderPath);
 			}
-
-			PackagesFolderPath = new FilePath (path).FullPath;
 		}
 
 		public FilePath PackagesFolderPath { get; private set; }

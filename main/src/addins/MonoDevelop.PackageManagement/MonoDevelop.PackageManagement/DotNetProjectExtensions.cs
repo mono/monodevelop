@@ -33,6 +33,9 @@ using System.IO;
 using MonoDevelop.Projects;
 using NuGet;
 using NuGet.Common;
+using MonoDevelop.Core;
+using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -126,7 +129,7 @@ namespace MonoDevelop.PackageManagement
 
 		static string GetDefaultPackagesConfigFilePath (string projectDirectory)
 		{
-			return Path.Combine (projectDirectory, Constants.PackageReferenceFile);
+			return Path.Combine (projectDirectory, NuGet.Constants.PackageReferenceFile);
 		}
 
 		public static string GetPackagesConfigFilePath (this IDotNetProject project)
@@ -141,6 +144,19 @@ namespace MonoDevelop.PackageManagement
 				return nonDefaultPackagesConfigFilePath;
 			}
 			return GetDefaultPackagesConfigFilePath (projectDirectory);
+		}
+
+		public static FilePath GetPackagesFolderPath (this DotNetProject project)
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			if (solutionManager == null)
+				return FilePath.Null;
+
+			NuGetProject nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
+			if (nugetProject == null)
+				return FilePath.Null;
+
+			return nugetProject.GetPackagesFolderPath (solutionManager);
 		}
 	}
 }

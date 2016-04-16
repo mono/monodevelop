@@ -511,6 +511,7 @@
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageLicense.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementWorkspace.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopSolutionManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetProjectExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
