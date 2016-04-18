@@ -668,6 +668,11 @@
 			_label = "_Cursor Position"
 			shortcut = "Alt|C"
 			_description = "Go to Cursor Position" />
+	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument"
+			defaultHandler = "MonoDevelop.Ide.Commands.CenterAndFocusCurrentDocumentHandler"
+			_label = "Center and F_ocus Document"
+			shortcut = "Alt|Shift|C"
+			_description = "Focus and center current document" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage"
 			defaultHandler = "MonoDevelop.Ide.WelcomePage.ShowWelcomePageHandler"
 			_label = "Welcome Page"
