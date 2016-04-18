@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide
 		static EventHandler initializedEvent;
 		public static event EventHandler Initialized {
 			add {
-				if (isInitialized) value (null, EventArgs.Empty);
+				if (isInitialized) Runtime.RunInMainThread (() => value (null, EventArgs.Empty));
 				else initializedEvent += value;
 			}
 			remove { 
