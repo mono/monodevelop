@@ -665,12 +665,13 @@
 			macShortcut = "Alt|Meta|Left"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
-			_label = "_Cursor Position"
+			_label = "_Focus Document"
 			shortcut = "Alt|C"
-			_description = "Go to Cursor Position" />
+			_description = "Focus current document" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.CenterAndFocusCurrentDocumentHandler"
-			_label = "Center and F_ocus Document"
+			_displayName = "Center and Focus Document"
+			_label = "_Cursor Position"
 			shortcut = "Alt|Shift|C"
 			_description = "Focus and center current document" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage"

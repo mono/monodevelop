@@ -174,7 +174,7 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" />
 			<SeparatorItem id = "GoToSeparator" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" />
 		</ItemSet>
 		<SeparatorItem id = "Separator2" />
