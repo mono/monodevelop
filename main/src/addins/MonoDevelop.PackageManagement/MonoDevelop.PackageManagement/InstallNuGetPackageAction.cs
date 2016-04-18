@@ -77,6 +77,8 @@ namespace MonoDevelop.PackageManagement
 
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
+			LicensesMustBeAccepted = true;
+
 			var restartManager = new DeleteOnRestartManager ();
 
 			packageManager = new NuGetPackageManager (
@@ -90,6 +92,7 @@ namespace MonoDevelop.PackageManagement
 		public string PackageId { get; set; }
 		public NuGetVersion Version { get; set; }
 		public bool IncludePrerelease { get; set; }
+		public bool LicensesMustBeAccepted { get; set; }
 
 		public void Execute ()
 		{
@@ -109,7 +112,9 @@ namespace MonoDevelop.PackageManagement
 				secondarySources,
 				cancellationToken);
 
-			await CheckLicenses (actions);
+			if (LicensesMustBeAccepted) {
+				await CheckLicenses (actions);
+			}
 
 			NuGetPackageManager.SetDirectInstall (identity, context);
 

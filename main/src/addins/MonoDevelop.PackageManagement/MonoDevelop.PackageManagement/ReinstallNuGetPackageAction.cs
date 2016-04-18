@@ -73,6 +73,7 @@ namespace MonoDevelop.PackageManagement
 
 			installAction.PackageId = PackageId;
 			installAction.Version = Version;
+			installAction.LicensesMustBeAccepted = false;
 			installAction.Execute ();
 		}
 
