@@ -168,6 +168,8 @@
     <Compile Include="MonoDevelop.Refactoring\FindReferencesProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring\JumpToDeclarationHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
+    <Compile Include="MonoDevelop.Refactoring\AnalyzeWholeSolutionHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\AnalyzeCurrentProjectHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
