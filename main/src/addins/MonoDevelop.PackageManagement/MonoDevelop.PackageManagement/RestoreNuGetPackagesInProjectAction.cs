@@ -82,9 +82,16 @@ namespace MonoDevelop.PackageManagement
 					cancellationToken);
 			}
 
-			await Runtime.RunInMainThread (() => project.RefreshReferenceStatus ());
+			await Runtime.RunInMainThread (() => RefreshProjectReferences ());
 
 			packageManagementEvents.OnPackagesRestored ();
+		}
+
+		void RefreshProjectReferences ()
+		{
+			foreach (DotNetProject dotNetProject in project.ParentSolution.GetAllDotNetProjects ()) {
+				dotNetProject.RefreshReferenceStatus ();
+			}
 		}
 	}
 }
