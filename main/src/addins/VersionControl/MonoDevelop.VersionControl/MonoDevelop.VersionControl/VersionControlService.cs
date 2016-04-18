@@ -93,6 +93,11 @@ namespace MonoDevelop.VersionControl
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/VersionControl/VersionControlSystems", OnExtensionChanged);
 		}
 
+		// This exists for the sole purpose of calling the static constructor.
+		public static void Initialize ()
+		{
+		}
+
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			VersionControlSystem vcs;

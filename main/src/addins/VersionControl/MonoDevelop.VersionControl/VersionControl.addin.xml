@@ -319,6 +319,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class = "MonoDevelop.VersionControl.Views.SubviewAttachmentHandler"/>
+		<Class class = "MonoDevelop.VersionControl.VersionControlInitializer"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/VersionControl/BlameView/ContextMenu">
