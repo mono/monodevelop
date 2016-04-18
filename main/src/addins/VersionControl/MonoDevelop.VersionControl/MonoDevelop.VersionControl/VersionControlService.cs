@@ -181,8 +181,9 @@ namespace MonoDevelop.VersionControl
 			
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
-				case VersionStatus.ScheduledReplace:
 					return GettextCatalog.GetString ("Modified");
+				case VersionStatus.ScheduledReplace:
+					return GettextCatalog.GetString ("Renamed");
 				case VersionStatus.Conflicted:
 					return GettextCatalog.GetString ("Conflict");
 				case VersionStatus.ScheduledAdd:
