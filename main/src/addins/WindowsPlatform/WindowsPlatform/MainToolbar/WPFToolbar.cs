@@ -68,7 +68,7 @@ namespace WindowsPlatform.MainToolbar
 			};
 
 			toolbar.SearchBar.SearchBar.TextChanged += (o, e) => {
-				if (string.IsNullOrEmpty (SearchText) || SearchText == SearchPlaceholderMessage)
+				if (SearchText == SearchPlaceholderMessage)
 					return;
 
 				if (SearchEntryChanged != null)
