@@ -229,9 +229,10 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Opening Files");
 
 				// load previous combine
+				bool shouldOpenPrevious = IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen;
 				Task.Run (async () => {
 					RecentFile openedProject = null;
-					if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
+					if (shouldOpenPrevious) {
 						openedProject = (await DesktopService.RecentFiles.GetProjects ()).FirstOrDefault ();
 						if (openedProject != null) {
 							await Runtime.RunInMainThread (async () => {
