@@ -39,6 +39,9 @@ using System.Text.RegularExpressions;
 using AppKit;
 using MonoDevelop.Components.Mac;
 #endif
+#if WIN32
+using System.Windows.Input;
+#endif
 
 namespace MonoDevelop.Components
 {
@@ -379,6 +382,19 @@ namespace MonoDevelop.Components
 
 		public static Gdk.ModifierType GetCurrentKeyModifiers ()
 		{
+			#if WIN32
+			Gdk.ModifierType mtype = Gdk.ModifierType.None;
+			ModifierKeys mod = Keyboard.Modifiers;
+			if ((mod & ModifierKeys.Shift) > 0)
+				mtype |= Gdk.ModifierType.ShiftMask;
+			if ((mod & ModifierKeys.Control) > 0)
+				mtype |= Gdk.ModifierType.ControlMask;
+			if ((mod & ModifierKeys.Alt) > 0)
+				mtype |= Gdk.ModifierType.Mod1Mask; // Alt key
+			if ((mod & ModifierKeys.Windows) > 0)
+				mtype |= Gdk.ModifierType.Mod2Mask; // Command key
+			return mtype;
+			#else
 			if (Platform.IsMac) {
 				Gdk.ModifierType mtype = Gdk.ModifierType.None;
 				ulong mod;
@@ -402,6 +418,7 @@ namespace MonoDevelop.Components
 				Gtk.Global.GetCurrentEventState (out mtype);
 				return mtype;
 			}
+			#endif
 		}
 
 		public static void GetPageScrollPixelDeltas (this Gdk.EventScroll evt, double pageSizeX, double pageSizeY,
