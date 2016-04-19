@@ -174,11 +174,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			};
 			
 			buttonSearch.Clicked += HandleSearchClicked;
-			buttonClose.Clicked += (sender, e) => {
-				if (resultPad != null)
-					resultPad.Window.Activate (true);
-				Destroy ();
-			};
+			buttonClose.Clicked += (sender, e) => Destroy ();
 			DeleteEvent += (o, args) => Destroy ();
 			buttonSearch.GrabDefault ();
 
@@ -684,6 +680,13 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		protected override void OnDestroyed ()
 		{
+			if (resultPad != null) {
+				var resultWidget = resultPad.Control.GetNativeWidget<SearchResultWidget> ();
+				if (resultWidget.ResultCount > 0) {
+					resultPad.Window.Activate (true);
+				}
+			}
+
 			if (updateTimer != 0) {
 				GLib.Source.Remove (updateTimer);
 				updateTimer = 0;
