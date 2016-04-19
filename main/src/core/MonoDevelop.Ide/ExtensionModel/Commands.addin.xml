@@ -380,7 +380,7 @@
 			icon  = "gtk-open" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewFileHandler"
-			_label = "_File..."
+			_label = "New _File..."
 			shortcut = "Control|N"
 			macShortcut = "Meta|N"
 			_description = "Create a new file"
@@ -400,14 +400,14 @@
 			_label = "Save A_ll" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
-			_label = "_Solution..."
+			_label = "New _Solution..."
 			icon = "md-new-solution"
 			_description = "Create a new solution"
 			macShortcut = "Meta|Shift|N"
 			shortcut = "Control|Shift|N"  />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewWorkspaceHandler"
-			_label = "_Workspace..."
+			_label = "New _Workspace..."
 			_description = "Create a new workspace"
 			icon  = "md-new-workspace" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"

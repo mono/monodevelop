@@ -17,11 +17,10 @@
 
 <Extension path = "/MonoDevelop/Ide/MainMenu">
 	<ItemSet id = "File" _label = "_File">
-		<ItemSet id = "New" _label = "_New">
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" />
-		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" />
+		<SeparatorItem id = "NewSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 		<SeparatorItem id = "OpenSep" />
 
