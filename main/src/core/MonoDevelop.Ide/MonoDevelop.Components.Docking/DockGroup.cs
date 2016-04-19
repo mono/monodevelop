@@ -140,11 +140,10 @@ namespace MonoDevelop.Components.Docking
 			gitem.ParentGroup = this;
 			return gitem;
 		}
-		
+
 		DockGroupItem Split (DockGroupType newType, bool addFirst, DockItem obj, int npos)
 		{
 			DockGroupItem item = new DockGroupItem (Frame, obj);
-			
 			if (npos == -1 || type == DockGroupType.Tabbed) {
 				if (ParentGroup != null && ParentGroup.Type == newType) {
 					// No need to split. Just add the new item as a sibling of this one.
@@ -189,7 +188,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			return item;
 		}
-		
+
 		internal DockGroup FindGroupContaining (string id)
 		{
 			DockGroupItem it = FindDockGroupItem (id);

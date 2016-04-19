@@ -166,6 +166,7 @@ namespace MonoDevelop.Components.DockNotebook
 			var alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			PreviousButton = new Button (alignment);
+			PreviousButton.TooltipText = Core.GettextCatalog.GetString ("Switch to previous document");
 			PreviousButton.Relief = ReliefStyle.None;
 			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
 
@@ -175,10 +176,12 @@ namespace MonoDevelop.Components.DockNotebook
 			alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			NextButton = new Button (alignment);
+			NextButton.TooltipText = Core.GettextCatalog.GetString ("Switch to next document");
 			NextButton.Relief = ReliefStyle.None;
 			NextButton.CanDefault = NextButton.CanFocus = false;
 
 			DropDownButton = new MenuButton ();
+			DropDownButton.TooltipText = Core.GettextCatalog.GetString ("Document List"); 
 			DropDownButton.Relief = ReliefStyle.None;
 			DropDownButton.CanDefault = DropDownButton.CanFocus = false;
 

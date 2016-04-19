@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Completion
 			});
 		}
 
-		public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
 			string partialWord = GetCurrentWord (window, descriptor);
 			int skipChars = 0;
@@ -311,7 +311,6 @@ namespace MonoDevelop.CSharp.Completion
 					ext.RunCompletionCommand ();
 				});
 			}
-			return Task.FromResult (ka);
 		}
 
 		static bool IsBracketAlreadyInserted (CSharpCompletionTextEditorExtension ext, IMethodSymbol method)

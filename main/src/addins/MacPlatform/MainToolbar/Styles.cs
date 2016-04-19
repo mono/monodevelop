@@ -41,6 +41,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		// Dark workaround colors
 		public static Color DarkBorderColor { get; private set; }
 		public static Color DarkBorderBrokenColor { get; private set; }
+		public static Color DarkToolbarBackgroundColor { get; private set; }
 
 		static Styles ()
 		{
@@ -50,7 +51,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public static void LoadStyles ()
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				BaseBackgroundColor = Ide.Gui.Styles.BaseBackgroundColor;
 				BaseForegroundColor = Ide.Gui.Styles.BaseForegroundColor;
 				DisabledForegroundColor = Xwt.Mac.Util.ToXwtColor (AppKit.NSColor.DisabledControlText); //Ide.Gui.Styles.DimTextColor;
@@ -72,6 +73,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				// To get the DarkBorderColor we need to use a workaround.
 				// See comment in ColoredButtonCell.DrawBezelWithFrame (RunButton.cs)
 				DarkBorderBrokenColor = Color.FromName ("#3e3e3e");
+
+				DarkToolbarBackgroundColor = Color.FromName ("#4e4e4e");
 			}
 		}
 	}

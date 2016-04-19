@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects.MSBuild
 		class LoadedProjectInfo
 		{
 			public MSBuildProject Project;
+			public DateTime LastWriteTime;
 			public int ReferenceCount;
 		}
 
@@ -92,11 +93,16 @@ namespace MonoDevelop.Projects.MSBuild
 				LoadedProjectInfo pi;
 				if (loadedProjects.TryGetValue (fileName, out pi)) {
 					pi.ReferenceCount++;
+					var lastWriteTime = File.GetLastWriteTime (fileName);
+					if (pi.LastWriteTime != lastWriteTime) {
+						pi.LastWriteTime = lastWriteTime;
+						pi.Project.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
+					}
 					return pi.Project;
 				}
 				MSBuildProject p = new MSBuildProject (EngineManager);
 				p.Load (fileName, new MSBuildXmlReader { ForEvaluation = true });
-				loadedProjects [fileName] = new LoadedProjectInfo { Project = p };
+				loadedProjects [fileName] = new LoadedProjectInfo { Project = p, LastWriteTime = File.GetLastWriteTime (fileName) };
 				//Console.WriteLine ("Loaded: " + fileName);
 				return p;
 			}

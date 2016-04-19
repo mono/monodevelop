@@ -30,7 +30,7 @@ using CoreGraphics;
 using Foundation;
 using MonoDevelop.Core;
 
-using MonoDevelop.Core;
+using Xwt.Mac;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
@@ -77,6 +77,83 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}
 		}
 
+		public override void ViewDidMoveToWindow ()
+		{
+			base.ViewDidMoveToWindow ();
+
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
+				return;
+			}
+
+			// I'm sorry. I'm so so sorry.
+			// When the user has Graphite appearance set in System Preferences on El Capitan
+			// and they enter fullscreen mode, Cocoa doesn't respect the VibrantDark appearance
+			// making the toolbar background white instead of black, however the toolbar items do still respect
+			// the dark appearance, making them white on white.
+			//
+			// So, an absolute hack is to go through the toolbar hierarchy and make all the views background colours
+			// be the dark grey we wanted them to be in the first place.
+			//
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=40160
+			//
+			if (Window == null || Window == MacInterop.GtkQuartz.GetWindow (IdeApp.Workbench.RootWindow)) {
+				if (Superview != null) {
+					Superview.WantsLayer = false;
+
+					if (Superview.Superview != null) {
+						Superview.Superview.WantsLayer = false;
+					}
+				}
+				return;
+			}
+
+			var bgColor = Styles.DarkToolbarBackgroundColor.ToNSColor ().CGColor;
+
+			// NSToolbarItemViewer
+			if (Superview != null) {
+				Superview.WantsLayer = true;
+				Superview.Layer.BackgroundColor = bgColor;
+
+				if (Superview.Superview != null) {
+					// _NSToolbarViewClipView
+					Superview.Superview.WantsLayer = true;
+					Superview.Superview.Layer.BackgroundColor = bgColor;
+
+					if (Superview.Superview.Superview != null && Superview.Superview.Superview.Superview != null) {
+						// NSTitlebarView
+						Superview.Superview.Superview.Superview.WantsLayer = true;
+						Superview.Superview.Superview.Superview.Layer.BackgroundColor = bgColor;
+					}
+				}
+			}
+		}
+
+		NSObject superviewFrameChangeObserver;
+		public override void ViewWillMoveToSuperview (NSView newSuperview)
+		{
+			if (Superview != null && superviewFrameChangeObserver != null) {
+				NSNotificationCenter.DefaultCenter.RemoveObserver (superviewFrameChangeObserver);
+				superviewFrameChangeObserver = null;
+
+				Superview.PostsFrameChangedNotifications = false;
+			}
+
+			base.ViewWillMoveToSuperview (newSuperview);
+		}
+
+		public override void ViewDidMoveToSuperview ()
+		{
+			base.ViewDidMoveToSuperview ();
+
+			if (Superview != null) {
+				Superview.PostsFrameChangedNotifications = true;
+				superviewFrameChangeObserver = NSNotificationCenter.DefaultCenter.AddObserver (NSView.FrameChangedNotification, (note) => {
+					// Centre vertically in superview frame
+					Frame = new CGRect (0, Superview.Frame.Y + (Superview.Frame.Height - ToolbarWidgetHeight) / 2, Superview.Frame.Width, ToolbarWidgetHeight);
+				}, Superview);
+			}
+		}
+
 		void UpdateLayout ()
 		{
 			RunButton.Frame = new CGRect (toolbarPadding, 0, runButtonWidth, ToolbarWidgetHeight);
@@ -92,8 +169,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth - 2, ToolbarWidgetHeight);
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth, 0, searchbarWidth, ToolbarWidgetHeight);
 			} else {
 				nfloat elcapYOffset = 0;
 				nfloat elcapHOffset = 0;
@@ -107,7 +184,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					elcapYOffset = scaleFactor == 2 ? -0.5f : -1;
 					elcapHOffset = 1.0f;
 				}
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);
 			}
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));

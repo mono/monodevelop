@@ -3466,6 +3466,18 @@
     <EmbeddedResource Include="icons\link-overlay-16~dark%402x.png">
       <LogicalName>link-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\link-overlay-16~sel.png">
+      <LogicalName>link-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\link-overlay-16~sel%402x.png">
+      <LogicalName>link-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\link-overlay-16~dark~sel.png">
+      <LogicalName>link-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\link-overlay-16~dark~sel%402x.png">
+      <LogicalName>link-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-error-list-16.png">
       <LogicalName>pad-error-list-16.png</LogicalName>
     </EmbeddedResource>
@@ -7802,8 +7814,6 @@
     <Compile Include="MonoDevelop.Components.Extensions\AlertDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkAlertDialog.cs" />
     <Compile Include="MonoDevelop.Components.Extensions\TextQuestionDialog.cs" />
-    <Compile Include="MonoDevelop.Components.Extensions\ErrorDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\GtkErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\DefaultCodeFormatter.cs" />
     <Compile Include="MonoDevelop.Ide.CodeFormatting\CodeFormatterExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewPolicySetDialog.cs" />
@@ -8195,7 +8205,6 @@
     <Compile Include="MonoDevelop.Ide\TaskUtil.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\CodeAnalysisPanel.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ICompletionKeyHandler.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\FirstCategory.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\NR5CompatibiltyExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\ProjectConfigurationControl.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopProjectCacheHostServiceFactory.cs" />

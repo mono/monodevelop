@@ -299,8 +299,6 @@ namespace Mono.TextEditor
 			// This is required to properly handle resizing and rendering of children
 			ResizeMode = ResizeMode.Queue;
 			snooperID = Gtk.Key.SnooperInstall (TooltipKeySnooper);
-
-			KeyPressEvent += OnKeyPress;
 		}
 
 		uint snooperID;
@@ -599,7 +597,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		async void IMCommit (object sender, Gtk.CommitArgs ca)
+		void IMCommit (object sender, Gtk.CommitArgs ca)
 		{
 			if (!IsRealized || !IsFocus)
 				return;
@@ -616,9 +614,9 @@ namespace Mono.TextEditor
 				
 				//include the other pre-IM state *if* the post-IM char matches the pre-IM (key-mapped) one
 				 if (lastIMEventMappedChar == utf32Char && lastIMEventMappedChar == (uint)lastIMEventMappedKey) {
-					await editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
+					editor.OnIMProcessedKeyPressEvent (lastIMEventMappedKey, lastIMEventMappedChar, lastIMEventMappedModifier);
 				} else {
-					await editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
+					editor.OnIMProcessedKeyPressEvent ((Gdk.Key)0, (uint)utf32Char, Gdk.ModifierType.None);
 				}
 			}
 			
@@ -1017,53 +1015,52 @@ namespace Mono.TextEditor
 			GdkWindow.Cursor = currentCursor = cursor;
 		}
 
-		async void OnKeyPress (object sender, Gtk.KeyPressEventArgs args)
+		protected override bool OnKeyPressEvent (Gdk.EventKey evt)
 		{
-			Gdk.EventKey evt = args.Event;
-			args.RetVal = true;
-
 			Gdk.Key key;
 			Gdk.ModifierType mod;
-			KeyboardShortcut [] accels;
+			KeyboardShortcut[] accels;
 			GtkWorkarounds.MapKeys (evt, out key, out mod, out accels);
 			//HACK: we never call base.OnKeyPressEvent, so implement the popup key manually
 			if (key == Gdk.Key.Menu || (key == Gdk.Key.F10 && mod.HasFlag (ModifierType.ShiftMask))) {
 				OnPopupMenu ();
-				return;
+				return true;
 			}
 			uint keyVal = (uint)key;
 			CurrentMode.SelectValidShortcut (accels, out key, out mod);
 			if (key == Gdk.Key.F1 && (mod & (ModifierType.ControlMask | ModifierType.ShiftMask)) == ModifierType.ControlMask) {
 				var p = LocationToPoint (Caret.Location);
 				ShowTooltip (Gdk.ModifierType.None, Caret.Offset, p.X, p.Y);
-				return;
+				return true;
 			}
 			if (key == Gdk.Key.F2 && textViewMargin.IsCodeSegmentPreviewWindowShown) {
 				textViewMargin.OpenCodeSegmentEditor ();
-				return;
+				return true;
 			}
-
+			
 			//FIXME: why are we doing this?
 			if ((key == Gdk.Key.space || key == Gdk.Key.parenleft || key == Gdk.Key.parenright) && (mod & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
 				mod = Gdk.ModifierType.None;
-
+			
 			uint unicodeChar = Gdk.Keyval.ToUnicode (keyVal);
-
+			
 			if (CurrentMode.WantsToPreemptIM || CurrentMode.PreemptIM (key, unicodeChar, mod)) {
 				ResetIMContext ();
 				//FIXME: should call base.OnKeyPressEvent when SimulateKeyPress didn't handle the event
 				SimulateKeyPress (key, unicodeChar, mod);
-				return;
+				return true;
 			}
 			bool filter = IMFilterKeyPress (evt, key, unicodeChar, mod);
 			if (filter)
-				return;
-
+				return true;
+			
 			//FIXME: OnIMProcessedKeyPressEvent should return false when it didn't handle the event
-			if (await editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
-				return;
-			args.RetVal = base.OnKeyPressEvent (evt);
+			if (editor.OnIMProcessedKeyPressEvent (key, unicodeChar, mod))
+				return true;
+			
+			return base.OnKeyPressEvent (evt);
 		}
+		
 
 		protected override bool OnKeyReleaseEvent (EventKey evnt)
 		{
@@ -1543,7 +1540,7 @@ namespace Mono.TextEditor
 
 				//	int yMargin = 1 * this.LineHeight;
 				double caretPosition = editor.TextArea.LineToY (p.Line);
-				caretPosition -= editor.TextArea.textEditorData.VAdjustment.PageSize / 2;
+				caretPosition -= editor.TextArea.textEditorData.VAdjustment.PageSize / 3;
 
 				// Make sure the caret position is inside the bounds. This avoids an unnecessary bump of the scrollview.
 				// The adjustment does this check, but does it after assigning the value, so the value may be out of bounds for a while.

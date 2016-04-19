@@ -155,7 +155,7 @@
     <Compile Include="MonoDevelop.PackageManagement\RecentPackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ReducedPackageOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSourcesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RemovedPackageReferenceMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageReferenceMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ResolveFileConflictEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SelectedProjectsForInstalledPackages.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SelectedProjectsForUpdatedPackages.cs" />

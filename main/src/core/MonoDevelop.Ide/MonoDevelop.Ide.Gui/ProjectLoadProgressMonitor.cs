@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public GtkProjectLoadProgressMonitor (ProgressMonitor monitor): base (Runtime.MainSynchronizationContext)
 		{
-			AddSlaveMonitor (monitor);
+			AddFollowerMonitor (monitor);
 		}
 
 		public override void Dispose ()

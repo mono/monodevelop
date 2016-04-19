@@ -46,6 +46,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal NSToolbar widget;
 		internal Gtk.Window gtkWindow;
 
+		public static bool IsFullscreen { get; private set; }
 		AwesomeBar awesomeBar;
 
 		RunButton runButton {
@@ -71,7 +72,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void AttachToolbarEvents (SearchBar bar)
 		{
 			bar.Changed += (o, e) => {
-				bar.LogMessage("Text changed");
 				if (SearchEntryChanged != null)
 					SearchEntryChanged (o, e);
 			};
@@ -141,15 +141,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var item = widget.Items[0];
 
 				var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
-				var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;//MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan ? 24 : 22;
+				var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;
 				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, awesomebarHeight);
+
 				item.MinSize = size;
 				item.MaxSize = size;
 			});
 
+			// We can't use the events that Xamarin.Mac adds for delegate methods as they will overwrite
+			// the delegate that Gtk has added
 			NSWindow nswin = GtkMacInterop.GetNSWindow (window);
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, resizeAction, nswin);
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidEndLiveResizeNotification, resizeAction, nswin);
+
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillEnterFullScreenNotification, (note) => IsFullscreen = true, nswin);
+			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.WillExitFullScreenNotification, (note) => IsFullscreen = false, nswin);
 		}
 
 		internal void Initialize ()
@@ -267,7 +273,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public string SearchCategory {
 			set {
 				var entry = searchEntry;
-				entry.LogMessage ("Selecting text '${value}'");
 				entry.SelectText (entry);
 				entry.StringValue = value;
 				entry.CurrentEditor.SelectedRange = new Foundation.NSRange (value.Length, 0);
@@ -279,7 +284,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return searchEntry.StringValue;
 			}
 			set {
-				searchEntry.LogMessage ($"Setting text to '{value}'");
 				searchEntry.StringValue = value;
 			}
 		}

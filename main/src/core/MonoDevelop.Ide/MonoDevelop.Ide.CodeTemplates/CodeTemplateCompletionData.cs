@@ -30,7 +30,6 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -54,10 +53,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			this.Description = template.Shortcut + Environment.NewLine + GettextCatalog.GetString (template.Description);
 		}
 		
-		public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			template.Insert (doc.Editor, doc.DocumentContext);
-			return Task.FromResult (ka);
 		}
 	}
 }

@@ -307,6 +307,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public override void MouseDown (NSEvent theEvent)
 			{
+				if (!Enabled)
+					return;
+
 				var locationInView = ConvertPointFromView (theEvent.LocationInWindow, null);
 
 				var cellIdx = IndexOfCellAtX (locationInView.X);
@@ -315,11 +318,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 
 				var item = PathComponentCells [cellIdx];
-				if (item == null)
+				if (item == null || !item.Enabled)
 					return;
 
 				var componentRect = ((NSPathCell)Cell).GetRect (item, Frame, this);
-				int idx = -1;
 				int i = 0;
 
 				NSMenuItem selectedItem = null;
@@ -376,7 +378,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (menu.Count > 1) {
 					var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
 
-					if (Window.Screen.BackingScaleFactor == 2)
+					if (Window?.Screen?.BackingScaleFactor == 2)
 						offs.Y += 0.5f; // fine tune menu position on retinas
 
 					menu.PopUpMenu (selectedItem, offs, this);
@@ -449,7 +451,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				// for its icons. It may be related to the images being initially loaded through the Gtk backend and then converted to NSImage
 				// at a later date.
 				// For whatever reason, we custom load the images here through NSImage, providing both 1x and 2x image reps.
-				PathComponentCells [ConfigurationIdx].Image = MultiResImage.CreateMultiResImage ("project", deviceStyle);
+				PathComponentCells [ConfigurationIdx].Image = MultiResImage.CreateMultiResImage ("project", projectStyle);
 				PathComponentCells [RuntimeIdx].Image = MultiResImage.CreateMultiResImage ("device", deviceStyle);
 				RealignTexts ();
 			}

@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
@@ -35,8 +33,7 @@ namespace MonoDevelop.PackageManagement
 		public static IPackageManagementProject GetProject (this IPackageManagementSolution solution, DotNetProject project)
 		{
 			var projectProxy = new DotNetProjectProxy (project);
-			var repository = PackageManagementServices.PackageRepositoryCache.CreateAggregateWithPriorityMachineCacheRepository ();
-			return solution.GetProject (repository, projectProxy);
+			return solution.GetProject (projectProxy);
 		}
 	}
 }

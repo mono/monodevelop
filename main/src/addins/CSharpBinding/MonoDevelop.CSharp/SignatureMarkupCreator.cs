@@ -78,8 +78,8 @@ namespace MonoDevelop.CSharp
 		{
 			this.offset = offset;
 			this.colorStyle = SyntaxModeService.GetColorStyle (Ide.IdeApp.Preferences.ColorScheme);
-			if (!this.colorStyle.FitsIdeSkin (Ide.IdeApp.Preferences.UserInterfaceSkin))
-				this.colorStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
+			if (!this.colorStyle.FitsIdeTheme (Ide.IdeApp.Preferences.UserInterfaceTheme))
+				this.colorStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
 			this.ctx = ctx;
 			if (ctx != null) {
 				this.options = ctx.GetOptionSet ();

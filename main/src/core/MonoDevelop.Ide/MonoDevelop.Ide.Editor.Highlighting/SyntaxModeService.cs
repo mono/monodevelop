@@ -66,50 +66,55 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static ColorScheme GetDefaultColorStyle (this Skin skin)
+		public static ColorScheme GetDefaultColorStyle (this Theme theme)
 		{
-			return GetColorStyle (GetDefaultColorStyleName (skin));
+			return GetColorStyle (GetDefaultColorStyleName (theme));
 		}
 
 		public static string GetDefaultColorStyleName ()
 		{
-			return GetDefaultColorStyleName (IdeApp.Preferences.UserInterfaceSkin);
+			return GetDefaultColorStyleName (IdeApp.Preferences.UserInterfaceTheme);
 		}
 
-		public static string GetDefaultColorStyleName (this Skin skin)
+		public static string GetDefaultColorStyleName (this Theme theme)
 		{
-			switch (skin) {
-				case Skin.Light:
+			switch (theme) {
+				case Theme.Light:
 					return IdePreferences.DefaultLightColorScheme;
-				case Skin.Dark:
+				case Theme.Dark:
 					return IdePreferences.DefaultDarkColorScheme;
 				default:
 					throw new InvalidOperationException ();
 			}
 		}
 
-		public static ColorScheme GetUserColorStyle (this Skin skin)
+		public static ColorScheme GetUserColorStyle (this Theme theme)
 		{
-			var schemeName = IdeApp.Preferences.ColorScheme.ValueForSkin (skin);
+			var schemeName = IdeApp.Preferences.ColorScheme.ValueForTheme (theme);
 			return GetColorStyle (schemeName);
 		}
 
-		public static bool FitsIdeSkin (this ColorScheme scheme, Skin skin)
+		public static bool FitsIdeTheme (this ColorScheme scheme, Theme theme)
 		{
-			if (skin == Skin.Dark)
+			if (theme == Theme.Dark)
 				return (scheme.PlainText.Background.L <= 0.5);
 			return (scheme.PlainText.Background.L > 0.5);
 		}
 
 		public static ColorScheme GetColorStyle (string name)
 		{
-			if (styles.ContainsKey (name))
-				return styles [name];
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
-				return GetColorStyle (name);
 			}
-			return GetColorStyle (GetDefaultColorStyleName());
+			if (!styles.ContainsKey (name)) {
+				LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
+				name = GetDefaultColorStyleName ();
+			}
+			if (!styles.ContainsKey (name)) {
+				LoggingService.LogError ("Color style " + name + " not found.");
+				return null;
+			}
+			return styles [name];
 		}
 
 		static IStreamProvider GetProvider (ColorScheme style)

@@ -37,8 +37,7 @@ namespace MonoDevelop.CSharp.UnitTests
 	{
 		public override async System.Threading.Tasks.Task<SourceCodeLocation> GetSourceCodeLocationAsync (MonoDevelop.Projects.Project project, string fixtureTypeNamespace, string fixtureTypeName, string testName, System.Threading.CancellationToken cancellationToken)
 		{
-			var csc = new CancellationTokenSource ();
-			var ctx = await TypeSystemService.GetCompilationAsync (project, csc.Token).ConfigureAwait (false);
+			var ctx = await TypeSystemService.GetCompilationAsync (project, cancellationToken).ConfigureAwait (false);
 			var cls = ctx?.Assembly?.GetTypeByMetadataName (string.IsNullOrEmpty (fixtureTypeNamespace) ? fixtureTypeName : fixtureTypeNamespace + "." + fixtureTypeName);
 			if (cls == null)
 				return null;

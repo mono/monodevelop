@@ -882,7 +882,7 @@ namespace MonoDevelop.Gettext
 			TreeIter iter;
 			if (store.GetIterFirst (out iter)) {
 				do {
-					CatalogEntry curEntry = store.GetValue (iter, 4) as CatalogEntry;
+					CatalogEntry curEntry = store.GetValue (iter, 0) as CatalogEntry;
 					if (entry == curEntry) {
 						this.treeviewEntries.Selection.SelectIter (iter);
 						TreePath iterPath = store.GetPath (iter);

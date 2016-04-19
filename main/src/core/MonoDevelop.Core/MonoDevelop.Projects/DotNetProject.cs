@@ -581,7 +581,7 @@ namespace MonoDevelop.Projects
 
 		internal void RenameReferences (string oldName, string newName)
 		{
-			ArrayList toBeRenamed = new ArrayList ();
+			List<ProjectReference> toBeRenamed = new List<ProjectReference> ();
 
 			foreach (ProjectReference refInfo in this.References) {
 				if (refInfo.ReferenceType == ReferenceType.Project) {

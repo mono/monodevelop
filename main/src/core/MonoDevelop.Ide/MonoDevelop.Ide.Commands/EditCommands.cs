@@ -376,6 +376,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			object focus = IdeApp.Workbench.RootWindow.HasToplevelFocus ? IdeApp.Workbench.RootWindow.Focus : null;
 			info.Enabled = (focus is Gtk.Editable || focus is Gtk.TextView);
+			info.Bypass = !IdeApp.Workbench.RootWindow.HasToplevelFocus;
 
 #if MAC
 			var macfocus = AppKit.NSApplication.SharedApplication?.KeyWindow?.FirstResponder;

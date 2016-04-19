@@ -65,7 +65,10 @@ namespace MonoDevelop.Components
 
 		public static string GetHex (this Gdk.Color color)
 		{
-			return String.Format("#{0:x2}{1:x2}{2:x2}", (byte)(color.Red), (byte)(color.Green), (byte)(color.Blue));
+			return String.Format("#{0:x2}{1:x2}{2:x2}",
+			                     (byte)(((double)color.Red / ushort.MaxValue) * 255),
+			                     (byte)(((double)color.Green / ushort.MaxValue) * 255),
+			                     (byte)(((double)color.Blue / ushort.MaxValue) * 255));
 		}
 
 		public static Gdk.Color ToGdkColor (this Cairo.Color color)
@@ -354,6 +357,21 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		public static bool GetCellForegroundSet (this Gtk.CellRendererText cell)
+		{
+			GLib.Value property = cell.GetProperty ("foreground-set");
+			bool result = (bool)property;
+			property.Dispose ();
+			return result;
+		}
+
+		public static void SetCellForegroundSet (this Gtk.CellRendererText cell, bool value)
+		{
+			GLib.Value val = new GLib.Value (value);
+			cell.SetProperty ("foreground-set", val);
+			val.Dispose ();
+		}
+
 		public static Gdk.Rectangle ToScreenCoordinates (Gtk.Widget widget, Gdk.Window w, Gdk.Rectangle rect)
 		{
 			return new Gdk.Rectangle (ToScreenCoordinates (widget, w, rect.X, rect.Y), rect.Size);
@@ -549,8 +567,15 @@ namespace MonoDevelop.Components
 			#if MAC
 			var entries = window.FindAllChildWidgets ().OfType<Gtk.Entry> ();
 			foreach (var entry in entries) {
-				entry.ButtonPressEvent += EntryButtonPressHandler;
+				entry.UseNativeContextMenus ();
 			}
+			#endif
+		}
+
+		public static void UseNativeContextMenus (this Gtk.Entry entry)
+		{
+			#if MAC
+			entry.ButtonPressEvent += EntryButtonPressHandler;
 			#endif
 		}
 
@@ -837,6 +862,7 @@ namespace MonoDevelop.Components
 
 			Gdk.Rectangle expose = Allocation;
 			Gdk.Color save = Gdk.Color.Zero;
+			bool hasFgColor = false;
 			int x = 1;
 
 			col.CellSetCellData (tree.Model, iter, false, false);
@@ -846,6 +872,7 @@ namespace MonoDevelop.Components
 					continue;
 
 				if (cr is CellRendererText) {
+					hasFgColor = ((CellRendererText)cr).GetCellForegroundSet ();
 					save = ((CellRendererText)cr).ForegroundGdk;
 					((CellRendererText)cr).ForegroundGdk = Style.Foreground (State);
 				}
@@ -862,6 +889,7 @@ namespace MonoDevelop.Components
 
 				if (cr is CellRendererText) {
 					((CellRendererText)cr).ForegroundGdk = save;
+					((CellRendererText)cr).SetCellForegroundSet (hasFgColor);
 				}
 			}
 

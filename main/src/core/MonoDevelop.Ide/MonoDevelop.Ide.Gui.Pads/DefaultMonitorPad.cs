@@ -135,9 +135,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnButtonPinClick (object sender, EventArgs e)
 		{
 			if (buttonPin.Active)
-				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
+				((ImageView)buttonPin.Image).SetIcon (Stock.PinDown, IconSize.Menu);
 			else
-				((ImageView)buttonPin.Image).SetIcon ("md-pin-down", IconSize.Menu);
+				((ImageView)buttonPin.Image).SetIcon (Stock.PinUp, IconSize.Menu);
 		}
 		
 		public bool AllowReuse {
@@ -218,6 +218,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 			logView.Clear ();
 			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
+
+			base.Dispose ();
 		}
 	}
 }

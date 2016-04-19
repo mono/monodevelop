@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide.Editor
 
 		object ICommandRouter.GetNextCommandTarget ()
 		{
-			return textEditorImpl;
+			return textEditor;
 		}
 
 		#endregion

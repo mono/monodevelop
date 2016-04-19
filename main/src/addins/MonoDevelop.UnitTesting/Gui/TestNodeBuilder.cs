@@ -161,7 +161,7 @@ namespace MonoDevelop.UnitTesting
 //			UnitTestResult res = test.GetLastResult ();
 			loc = test.SourceCodeLocation;
 			if (loc != null)
-				await IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+				await IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 		}
 		
 		[CommandHandler (TestCommands.GoToFailure)]
@@ -175,14 +175,7 @@ namespace MonoDevelop.UnitTesting
 			if (loc == null)
 				loc = test.SourceCodeLocation;
 			if (loc != null)
-				await IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
-		}
-		
-		[CommandUpdateHandler (TestCommands.ShowTestCode)]
-		protected void OnUpdateRunTest (CommandInfo info)
-		{
-			UnitTest test = CurrentNode.DataItem as UnitTest;
-			info.Enabled = test.SourceCodeLocation != null;
+				await IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 		}
 
 		[CommandUpdateHandler (TestCommands.GoToFailure)]
@@ -194,7 +187,7 @@ namespace MonoDevelop.UnitTesting
 
 		bool IsGoToFailureEnabled (UnitTest test)
 		{
-			if (test.SourceCodeLocation == null || test is UnitTestGroup)
+			if (/*test.SourceCodeLocation == null ||*/ test is UnitTestGroup)
 				return false;
 
 			UnitTestResult res = test.GetLastResult ();

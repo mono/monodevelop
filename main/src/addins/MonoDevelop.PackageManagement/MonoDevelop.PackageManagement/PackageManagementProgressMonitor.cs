@@ -51,7 +51,7 @@ namespace MonoDevelop.PackageManagement
 
 		public PackageManagementProgressMonitor (OutputProgressMonitor consoleMonitor, ProgressMonitor statusMonitor)
 		{
-			AddSlaveMonitor (statusMonitor);
+			AddFollowerMonitor (statusMonitor);
 			this.consoleMonitor = consoleMonitor;
 
 			consoleMonitorReg = consoleMonitor.CancellationToken.Register (OnCancelRequested);
