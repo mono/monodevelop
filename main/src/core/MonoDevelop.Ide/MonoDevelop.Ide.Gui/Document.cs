@@ -789,8 +789,16 @@ namespace MonoDevelop.Ide.Gui
 
 		Task EnsureAnalysisDocumentIsOpen ()
 		{
-			if (analysisDocument != null)
-				return SpecializedTasks.EmptyTask;
+			if (analysisDocument != null) {
+				Microsoft.CodeAnalysis.Document doc;
+				try {
+					 doc = RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
+				} catch (Exception) {
+					doc = null;
+				}
+				if (doc != null)
+					return SpecializedTasks.EmptyTask;
+			}
 			if (Editor == null) {
 				UnsubscibeAnalysisdocument ();
 				return SpecializedTasks.EmptyTask;
