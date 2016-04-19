@@ -611,6 +611,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void ShowReady ()
 		{
 			ShowMessage (null, "", false, MessageType.Ready);
+			SetMessageSourcePad (null);
 		}
 
 		static Pad sourcePad;
