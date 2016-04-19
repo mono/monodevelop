@@ -113,6 +113,13 @@ namespace VersionControl.Subversion.Unix.Tests
 			base.UnlocksEntities ();
 		}
 
+		[Test]
+		[Ignore ("Subversion does not support case renaming on non-Windows")]
+		public override void MoveAndMoveBackCaseOnly ()
+		{
+			base.MoveAndMoveBackCaseOnly ();
+		}
+
 		protected override void PostUnlock ()
 		{
 			string added = LocalPath + "testfile";

@@ -34,13 +34,13 @@ using MonoDevelop.Projects.MSBuild;
 namespace MonoDevelop.Projects
 {
 	[TestFixture]
-	public class SharedAssetsProjectTests: TestBase
+	public class SharedAssetsProjectTests : TestBase
 	{
 		[Test]
 		public async Task LoadSharedProject ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var pc1 = sol.FindProjectByName ("Console1");
 			Assert.IsNotNull (pc1);
@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects
 			var pc3 = sol.FindProjectByName ("Console3");
 			Assert.IsNotNull (pc3);
 
-			var pcs = (SharedAssetsProject) sol.FindProjectByName ("Shared");
+			var pcs = (SharedAssetsProject)sol.FindProjectByName ("Shared");
 			Assert.IsNotNull (pcs);
 
 			Assert.AreEqual (4, sol.GetAllProjects ().Count ());
@@ -70,7 +70,7 @@ namespace MonoDevelop.Projects
 		public async Task BuildSharedProject ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var pc1 = sol.FindProjectByName ("Console1");
 			var res = await pc1.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
 			Assert.AreEqual (0, res.ErrorCount);
@@ -81,7 +81,7 @@ namespace MonoDevelop.Projects
 		public async Task PropagateFileChanges ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var pc1 = sol.FindProjectByName ("Console1");
 			var pc2 = sol.FindProjectByName ("Console2");
 			var pc3 = sol.FindProjectByName ("Console3");
@@ -126,10 +126,10 @@ namespace MonoDevelop.Projects
 		public async Task AddReference ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
 			var pcs = sol.FindProjectByName ("Shared");
-			var pc3 = (DotNetProject) sol.FindProjectByName ("Console3");
+			var pc3 = (DotNetProject)sol.FindProjectByName ("Console3");
 
 			var sharedFile = pcs.ItemDirectory.Combine ("MyClass.cs");
 			Assert.IsFalse (pc3.Files.GetFile (sharedFile) != null);
@@ -149,10 +149,10 @@ namespace MonoDevelop.Projects
 		public async Task RemoveReference ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
-			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
-			var pc1 = (DotNetProject) sol.FindProjectByName ("Console1");
-			var pc2 = (DotNetProject) sol.FindProjectByName ("Console2");
+			var pc1 = (DotNetProject)sol.FindProjectByName ("Console1");
+			var pc2 = (DotNetProject)sol.FindProjectByName ("Console2");
 			var pcs = sol.FindProjectByName ("Shared");
 
 			var sharedFile = pcs.ItemDirectory.Combine ("MyClass.cs");
@@ -176,7 +176,7 @@ namespace MonoDevelop.Projects
 			sol.ConvertToFormat (MSBuildFileFormat.VS2012);
 			await sol.SaveAsync (Util.GetMonitor ());
 
-			var pc = (DotNetProject) sol.Items [0];
+			var pc = (DotNetProject)sol.Items [0];
 
 			// Add shared project
 
@@ -364,17 +364,17 @@ namespace MonoDevelop.Projects
 		public async Task ProjItemsFileNameNotMatchingShproj_Bug20571 ()
 		{
 			string solFile = Util.GetSampleProject ("SharedProjectTestBug20571", "SharedProjectTest.sln");
-			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (3, sol.GetAllProjects ().Count());
+			Assert.AreEqual (3, sol.GetAllProjects ().Count ());
 
-			var pc1 = (DotNetProject) sol.FindProjectByName ("Console1");
+			var pc1 = (DotNetProject)sol.FindProjectByName ("Console1");
 			Assert.IsNotNull (pc1);
 
-			var pc2 = (DotNetProject) sol.FindProjectByName ("Console2");
+			var pc2 = (DotNetProject)sol.FindProjectByName ("Console2");
 			Assert.IsNotNull (pc2);
 
-			var pcs = (SharedAssetsProject) sol.FindProjectByName ("Shared");
+			var pcs = (SharedAssetsProject)sol.FindProjectByName ("Shared");
 			Assert.IsNotNull (pcs);
 
 			Assert.IsTrue (pc1.References.Any (r => r.Reference == "Shared"));
@@ -390,10 +390,10 @@ namespace MonoDevelop.Projects
 
 			await pc2.SaveAsync (Util.GetMonitor ());
 
-			Solution sol2 = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			Solution sol2 = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
 			sol.Dispose ();
 
-			pc2 = (DotNetProject) sol2.FindProjectByName ("Console2");
+			pc2 = (DotNetProject)sol2.FindProjectByName ("Console2");
 			Assert.IsNotNull (pc2);
 
 			Assert.IsTrue (pc2.References.Any (r => r.Reference == "Shared"));
@@ -409,18 +409,44 @@ namespace MonoDevelop.Projects
 			string projFile = Util.GetSampleProject ("shared-project-from-vs", "TestApp.shproj");
 			var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 			Assert.IsInstanceOf<SharedAssetsProject> (p);
-			var sp = (SharedAssetsProject) p;
+			var sp = (SharedAssetsProject)p;
 
 			var refProj = File.ReadAllText (projFile);
 			var refItems = File.ReadAllText (sp.ProjItemsPath);
 
-			await p.SaveAsync (Util.GetMonitor());
+			await p.SaveAsync (Util.GetMonitor ());
 
 			var savedProj = File.ReadAllText (projFile);
 			var savedItems = File.ReadAllText (sp.ProjItemsPath);
 
 			Assert.AreEqual (refProj, savedProj);
 			Assert.AreEqual (refItems, savedItems);
+		}
+
+		[Test]
+		public async Task Bug39405_GetSourceFilesAsyncAfterAddingNewFile ()
+		{
+			string solFile = Util.GetSampleProject ("SharedProjectTest", "SharedProjectTest.sln");
+			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			var pc1 = sol.FindProjectByName ("Console1");
+			Assert.IsNotNull (pc1);
+
+			var pcs = (SharedAssetsProject)sol.FindProjectByName ("Shared");
+			Assert.IsNotNull (pcs);
+
+			Assert.AreEqual (4, sol.GetAllProjects ().Count ());
+
+			var sourceFiles = await pc1.GetSourceFilesAsync (ConfigurationSelector.Default);
+			Assert.IsFalse (sourceFiles.Any (pf => pf.Name.EndsWith ("NewClass.cs", System.StringComparison.Ordinal)), "Source files list already has NewClass.cs");
+
+			pcs.AddFile ("NewClass.cs");
+			//IDE after adding file saves project
+			await pcs.SaveAsync (Util.GetMonitor ());
+
+			sourceFiles = await pc1.GetSourceFilesAsync (ConfigurationSelector.Default);
+
+			Assert.IsTrue (sourceFiles.Any (pf => pf.Name.EndsWith ("NewClass.cs", System.StringComparison.Ordinal)), "Source files list doesn't contain NewClass.cs");
 		}
 	}
 }

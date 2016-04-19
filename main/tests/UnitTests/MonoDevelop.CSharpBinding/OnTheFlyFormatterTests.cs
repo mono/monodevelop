@@ -136,8 +136,8 @@ namespace MonoDevelop.CSharpBinding
 	{
 		Console.WriteLine ()      ;$
 	}
-}", async (content, ext) => {
-				await ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
 			
 				var newText = content.Text;
 				Assert.AreEqual (@"class Foo
@@ -159,8 +159,8 @@ namespace MonoDevelop.CSharpBinding
 	{
 		Console.WriteLine()                   ;
 	}$
-}", async (content, ext) => {
-				await ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
 
 				var newText = content.Text;
 				Console.WriteLine (newText);
@@ -188,8 +188,8 @@ namespace MonoDevelop.CSharpBinding
 		Console.WriteLine()                   ;
 	}$
 	}
-}", async (content, ext) => {
-				await ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
 			
 				var newText = content.Text;
 				Console.WriteLine (newText);
@@ -221,8 +221,8 @@ namespace MonoDevelop.CSharpBinding
 	}catch(Exception e){
 	}$
 	}
-}", async (content, ext) => {
-				await ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
+}", (content, ext) => {
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.braceright, '}', Gdk.ModifierType.None));
 			
 				var newText = content.Text;
 				Console.WriteLine (newText);
@@ -272,9 +272,9 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public async Task TestNonVerbatimToVerbatimConversion ()
 		{
-			await Simulate ("$\"\\t\"", async (content, ext) => {
+			await Simulate ("$\"\\t\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
-				await ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\t\"", newText);
 			});
@@ -286,9 +286,9 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public async Task TestBug14686 ()
 		{
-			await Simulate ("$\"\\\\\"", async (content, ext) => {
+			await Simulate ("$\"\\\\\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
-				await ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\\\"", newText);
 			});
@@ -297,16 +297,16 @@ namespace MonoDevelop.CSharpBinding
 		[Test]
 		public async Task TestBug14686Case2 ()
 		{
-			await Simulate ("$\"\\\"", async (content, ext) => {
+			await Simulate ("$\"\\\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
-				await ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\\\"", newText);
 			});
 
-			await Simulate ("$\"\\\"a", async (content, ext) => {
+			await Simulate ("$\"\\\"a", (content, ext) => {
 				content.Data.InsertText (0, "@");
-				await ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\\\"a", newText);
 			});
@@ -324,10 +324,10 @@ class Foo
 		} catch (Exception e) {$}
 	}
 }
-", async (content, ext) => {
+", (content, ext) => {
 				ext.ReindentOnTab ();
 				EditActions.NewLine (ext.Editor);
-				await ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None));
 
 				var newText = content.Text;
 
@@ -354,12 +354,12 @@ class Foo
 		[Test]
 		public async Task TestBug16174_AutoIndent ()
 		{
-			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", async (content, ext) => {
+			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
 				var options = DefaultSourceEditorOptions.Instance;
 				options.IndentStyle = IndentStyle.Auto;
 				ext.Editor.Options = options;
 				EditActions.NewLine (ext.Editor);
-				await ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 
 				var newText = content.Text;
 
@@ -373,12 +373,12 @@ class Foo
 		[Test]
 		public async Task TestBug16174_VirtualIndent ()
 		{
-			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", async (content, ext) => {
+			await Simulate ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", (content, ext) => {
 				var options = DefaultSourceEditorOptions.Instance;
 				options.IndentStyle = IndentStyle.Virtual;
 				ext.Editor.Options = options;
 				EditActions.NewLine (ext.Editor);
-				await ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 
 				var newText = content.Text;
 
@@ -396,9 +396,9 @@ class Foo
 		[Test]
 		public async Task TestBug16283 ()
 		{
-			await Simulate ("$\"\\dev\\null {0}\"", async (content, ext) => {
+			await Simulate ("$\"\\dev\\null {0}\"", (content, ext) => {
 				content.Data.InsertText (0, "@");
-				await ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk ((Gdk.Key)'@', '@', Gdk.ModifierType.None));
 				var newText = content.Text;
 				Assert.AreEqual ("@\"\\dev\null {0}\"", newText);
 			});
@@ -447,11 +447,11 @@ namespace FormatSelectionTest
 		//random comment
 		Console.WriteLine ()      ;$
 	}
-}", async (content, ext) => {
+}", (content, ext) => {
 				content.Data.Options = new CustomEditorOptions {
 					IndentStyle = IndentStyle.Virtual
 				};
-				await ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
+				ext.KeyPress (KeyDescriptor.FromGtk (Gdk.Key.semicolon, ';', Gdk.ModifierType.None));
 			
 				var newText = content.Text;
 				Assert.AreEqual (@"class Foo

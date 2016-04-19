@@ -30,7 +30,6 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor.Extension;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.JSon
 {
@@ -47,9 +46,9 @@ namespace MonoDevelop.JSon
 			stateTracker = new CacheIndentEngine (indentEngine);
 			Editor.SetIndentationTracker (new JSonIndentationTracker (Editor, stateTracker));
 		}
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			var result = await base.KeyPress (descriptor);
+			var result = base.KeyPress (descriptor);
 
 			if (descriptor.SpecialKey == SpecialKey.Return) {
 				if (Editor.Options.IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Virtual) {

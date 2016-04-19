@@ -74,6 +74,7 @@ namespace WindowsPlatform.MainToolbar
 			};
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
+			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			StatusText.ToolTipOpening += (o, e) => {
 				e.Handled = !TextTrimmed ();
@@ -119,6 +120,7 @@ namespace WindowsPlatform.MainToolbar
 		{
 			TaskService.Errors.TasksAdded -= updateHandler;
 			TaskService.Errors.TasksRemoved -= updateHandler;
+			BrandingService.ApplicationNameChanged -= ApplicationNameChanged;
 		}
 
 		public void EndProgress ()
@@ -223,7 +225,14 @@ namespace WindowsPlatform.MainToolbar
 		public void ShowReady ()
 		{
 			Status = StatusBarStatus.Ready;
-			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationName);
+			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationLongName);
+			SetMessageSourcePad (null);
+		}
+
+		void ApplicationNameChanged (object sender, EventArgs e)
+		{
+			if (Status == StatusBarStatus.Ready)
+				ShowReady ();
 		}
 
 		public StatusBarIcon ShowStatusIcon (Xwt.Drawing.Image pixbuf)

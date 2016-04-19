@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Git
 			comboSources.Sensitive = checkTrack.Active;
 			buttonOk.Sensitive = entryName.Text.Length > 0;
 			if (oldName != entryName.Text && repo.GetBranches ().Any (b => b.FriendlyName == entryName.Text)) {
-				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
+				labelError.Markup = "<span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;
 			} else if (!Reference.IsValidName ("refs/" + entryName.Text)) {

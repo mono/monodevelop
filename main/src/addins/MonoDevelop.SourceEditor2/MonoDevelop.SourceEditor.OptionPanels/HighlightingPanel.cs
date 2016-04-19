@@ -60,10 +60,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
-			MonoDevelop.Ide.Gui.Styles.Changed += HandleSkinChanged;
+			MonoDevelop.Ide.Gui.Styles.Changed += HandleThemeChanged;
 		}
 
-		void HandleSkinChanged (object sender, EventArgs e)
+		void HandleThemeChanged (object sender, EventArgs e)
 		{
 			ShowStyles ();
 		}
@@ -77,7 +77,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				styleStore = null;
 			}
 
-			MonoDevelop.Ide.Gui.Styles.Changed -= HandleSkinChanged;
+			MonoDevelop.Ide.Gui.Styles.Changed -= HandleThemeChanged;
 			base.OnDestroyed ();
 		}
 

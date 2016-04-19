@@ -291,8 +291,10 @@ namespace MonoDevelop.Ide.CustomTools
 			// Maybe I was cancelled while I was waiting. In that case, the task has already been removed from
 			// the runningTasks collection
 
-			if (cs.IsCancellationRequested)
+			if (cs.IsCancellationRequested) {
+				newTask.TrySetResult (true);
 				return;
+			}
 
 			// Execute the generator
 

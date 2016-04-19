@@ -660,6 +660,11 @@
 			_label = "_Focus Document"
 			shortcut = "Alt|C"
 			_description = "Focus current document" />
+	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument"
+			defaultHandler = "MonoDevelop.Ide.Commands.CenterAndFocusCurrentDocumentHandler"
+			_label = "Center and F_ocus Document"
+			shortcut = "Alt|Shift|C"
+			_description = "Focus and center current document" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage"
 			defaultHandler = "MonoDevelop.Ide.WelcomePage.ShowWelcomePageHandler"
 			_label = "Welcome Page"
@@ -673,7 +678,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
 			icon = "gtk-plugin"
 			_description = "Manage add-ins"
-			_label = "_Add-in Manager" />
+			_label = "_Add-ins..." />
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 			type="array"

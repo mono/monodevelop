@@ -87,7 +87,7 @@ namespace MonoDevelop.SourceEditor
 			if (bgColor == currentBgColor)
 				return;
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences.UserInterfaceTheme == Ide.Theme.Light)
 				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));
 			else
 				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));
@@ -109,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 			this.AllowGrow = false;
 			this.Decorated = false;
 
-			TransientFor = (Gtk.Window) ((Gtk.Widget)editor).Toplevel;
+			TransientFor = (Gtk.Window) (editor.GetNativeWidget <Gtk.Widget> ()).Toplevel;
 			// Avoid getting the focus when the window is shown. We'll get it when the mouse enters the window
 			AcceptFocus = false;
 

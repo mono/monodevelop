@@ -58,7 +58,7 @@ namespace MonoDevelop.DesignerSupport
 			var files = GetFileGroup (projectFile).ToList ();
 			for (int i = 0; i < files.Count; i++) {
 				if (projectFile.Equals (files[i]))
-					IdeApp.Workbench.OpenDocument (files[(i+1)%(files.Count)].FilePath, true);
+					IdeApp.Workbench.OpenDocument (files[(i+1)%(files.Count)].FilePath, null, true);
 			}
 		}
 

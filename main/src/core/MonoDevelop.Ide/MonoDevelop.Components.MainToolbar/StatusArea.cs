@@ -347,7 +347,7 @@ namespace MonoDevelop.Components.MainToolbar
 			TaskService.Errors.TasksAdded += updateHandler;
 			TaskService.Errors.TasksRemoved += updateHandler;
 
-			currentApplicationName = BrandingService.ApplicationName;
+			currentApplicationName = BrandingService.ApplicationLongName;
 			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 			
 			box.Destroyed += delegate {
@@ -375,11 +375,11 @@ namespace MonoDevelop.Components.MainToolbar
 		void ApplicationNameChanged (object sender, EventArgs e)
 		{
 			if (renderArg.CurrentText == currentApplicationName) {
-				LoadText (BrandingService.ApplicationName, false);
+				LoadText (BrandingService.ApplicationLongName, false);
 				LoadPixbuf (null);
 				QueueDraw ();
 			}
-			currentApplicationName = BrandingService.ApplicationName;
+			currentApplicationName = BrandingService.ApplicationLongName;
 		}
 
 		protected override void OnRealized ()
@@ -436,6 +436,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public void ShowReady ()
 		{
 			ShowMessage ("");
+			SetMessageSourcePad (null);
 		}
 
 		public void SetMessageSourcePad (Pad pad)
@@ -721,7 +722,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void LoadText (string message, bool isMarkup)
 		{
 			if (string.IsNullOrEmpty(message))
-				message = BrandingService.ApplicationName;
+				message = BrandingService.ApplicationLongName;
 			message = message ?? "";
 
 			renderArg.LastText = renderArg.CurrentText;

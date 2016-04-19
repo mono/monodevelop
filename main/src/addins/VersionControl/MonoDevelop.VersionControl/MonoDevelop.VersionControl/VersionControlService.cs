@@ -93,6 +93,11 @@ namespace MonoDevelop.VersionControl
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/VersionControl/VersionControlSystems", OnExtensionChanged);
 		}
 
+		// This exists for the sole purpose of calling the static constructor.
+		public static void Initialize ()
+		{
+		}
+
 		static void OnExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
 			VersionControlSystem vcs;
@@ -181,8 +186,9 @@ namespace MonoDevelop.VersionControl
 			
 			switch (status & VersionStatus.LocalChangesMask) {
 				case VersionStatus.Modified:
-				case VersionStatus.ScheduledReplace:
 					return GettextCatalog.GetString ("Modified");
+				case VersionStatus.ScheduledReplace:
+					return GettextCatalog.GetString ("Renamed");
 				case VersionStatus.Conflicted:
 					return GettextCatalog.GetString ("Conflict");
 				case VersionStatus.ScheduledAdd:
@@ -610,7 +616,7 @@ namespace MonoDevelop.VersionControl
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-			mon.AddSlaveMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad));
+			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad));
 			return mon;
 		}
 		

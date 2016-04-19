@@ -90,7 +90,17 @@ namespace MonoDevelop.CodeIssues
 				var analyzers = System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange (providers);
 				var diagnosticList = new List<Diagnostic> ();
 				try {
-					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, null, cancellationToken);
+					var options = new CompilationWithAnalyzersOptions (
+						null, 
+						delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
+							LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
+						},
+						null, 
+						false, 
+						false
+					);
+
+					compilationWithAnalyzer = compilation.WithAnalyzers (analyzers, options);
 					if (input.ParsedDocument == null || cancellationToken.IsCancellationRequested)
 						return Enumerable.Empty<Result> ();
 					
@@ -124,5 +134,7 @@ namespace MonoDevelop.CodeIssues
 				return Enumerable.Empty<Result> ();
 			}
 		}
+
+
 	}
 }

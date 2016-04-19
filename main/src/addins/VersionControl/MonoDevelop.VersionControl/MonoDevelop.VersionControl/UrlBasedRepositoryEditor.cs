@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -16,6 +17,10 @@ namespace MonoDevelop.VersionControl
 		public UrlBasedRepositoryEditor (UrlBasedRepository repo)
 		{
 			Build ();
+
+			labelError.Markup = "<small><span color='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>"
+				+ GettextCatalog.GetString ("Invalid URL") + "</span></small>";
+
 			protocols = new List<string> (repo.SupportedProtocols);
 			protocols.AddRange (repo.SupportedNonUrlProtocols);
 

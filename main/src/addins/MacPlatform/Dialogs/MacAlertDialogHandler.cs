@@ -65,7 +65,7 @@ namespace MonoDevelop.MacIntegration
 					// HACK: VK The icon is not rendered in dark style correctly
 					//       Use light variant and reder it here
 					//       as long as NSAppearance.NameVibrantDark is broken
-					if (IdeTheme.UserInterfaceSkin == Skin.Dark)
+					if (IdeTheme.UserInterfaceTheme == Theme.Dark)
 						alert.Icon = img.WithStyles ("-dark").ToBitmap (GtkWorkarounds.GetScaleFactor ()).ToNSImage ();
 					else
 						alert.Icon = img.ToNSImage ();

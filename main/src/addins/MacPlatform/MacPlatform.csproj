@@ -19,6 +19,7 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoWarn>1591;1573</NoWarn>
@@ -119,7 +120,6 @@
     <Compile Include="MacExternalConsoleProcess.cs" />
     <Compile Include="MacInterop\Carbon.cs" />
     <Compile Include="MacInterop\AppleEvents\Native.cs" />
-    <Compile Include="Dialogs\MacExceptionDialogHandler.cs" />
     <Compile Include="MacMenu\MDLinkMenuItem.cs" />
     <Compile Include="MacMenu\MDMenu.cs" />
     <Compile Include="MacMenu\MDMenuItem.cs" />

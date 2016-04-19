@@ -472,7 +472,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				do {
 					Command command = (Command) keyStore.GetValue (citer, commandCol);
 					if (command == cmd) {
-						TreePath path = keyStore.GetPath (citer);
+						TreePath path = filterModel.ConvertChildPathToPath (keyStore.GetPath (citer));
 						keyTreeView.ExpandToPath (path);
 						keyTreeView.Selection.SelectPath (path);
 						keyTreeView.ScrollToCell (path, keyTreeView.Columns[0], true, 0.5f, 0f);

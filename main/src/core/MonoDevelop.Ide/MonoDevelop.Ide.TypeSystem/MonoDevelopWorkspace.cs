@@ -427,6 +427,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal void UpdateProjectionEntry (MonoDevelop.Projects.ProjectFile projectFile, IReadOnlyList<Projection> projections)
 		{
+			if (projectFile == null)
+				throw new ArgumentNullException (nameof (projectFile));
+			if (projections == null)
+				throw new ArgumentNullException (nameof (projections));
 			foreach (var entry in projectionList) {
 				if (entry.File.FilePath == projectFile.FilePath) {
 					projectionList.Remove (entry);
@@ -1080,6 +1084,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				var projectData = GetProjectData (GetProjectId (project));
 				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+					if (projectData.GetDocumentId (projectFile.FilePath) != null) // may already been added by a rename event.
+						return;
 					var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile);
 					OnDocumentAdded (newDocument);
 				} else {

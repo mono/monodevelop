@@ -486,7 +486,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			var aggregatedMonitor = monitor as AggregatedProgressMonitor;
 			if (aggregatedMonitor != null)
-				return aggregatedMonitor.MasterMonitor as ProjectLoadProgressMonitor;
+				return aggregatedMonitor.LeaderMonitor as ProjectLoadProgressMonitor;
 
 			return null;
 		}

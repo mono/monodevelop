@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Desktop
 		public FdoRecentFiles (string storageFile)
 		{
 			recentFiles = new RecentFileStorage (storageFile);
-			recentFiles.RemoveMissingFiles (projGroup, fileGroup);
+			recentFiles.RemoveMissingFiles (fileGroup);
 		}
 		
 		public override event EventHandler Changed {

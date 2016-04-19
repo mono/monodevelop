@@ -264,6 +264,70 @@ namespace Mono.TextTemplating
 		{
 			parameters.Add (new ParameterKey (processorName, directiveName, parameterName), value);
 		}
+
+		/// <summary>
+		/// Parses a parameter and adds it.
+		/// </summary>
+		/// <returns>Whether the parameter was parsed successfully.</returns>
+		/// <param name="unparsedParameter">Parameter in name=value or processor!directive!name!value format.</param>
+		public bool TryAddParameter (string unparsedParameter)
+		{
+			string processor, directive, name, value;
+			if (TryParseParameter (unparsedParameter, out processor, out directive, out name, out value)) {
+				AddParameter (processor, directive, name, value);
+				return true;
+			}
+			return false;
+		}
+
+		internal static bool TryParseParameter (string parameter, out string processor, out string directive, out string name, out string value)
+		{
+			processor = directive = name = value = "";
+
+			int start = 0;
+			int end = parameter.IndexOfAny (new [] { '=', '!' });
+			if (end < 0)
+				return false;
+
+			//simple format n=v
+			if (parameter [end] == '=') {
+				name = parameter.Substring (start, end);
+				value = parameter.Substring (end + 1);
+				return !string.IsNullOrEmpty (name);
+			}
+
+			//official format, p!d!n!v
+			processor = parameter.Substring (start, end);
+
+			start = end + 1;
+			end = parameter.IndexOf ('!', start);
+			if (end < 0) {
+				//unlike official version, we allow you to omit processor/directive
+				name = processor;
+				value = parameter.Substring (start);
+				processor = "";
+				return !string.IsNullOrEmpty (name);
+			}
+
+			directive = parameter.Substring (start, end - start);
+
+
+			start = end + 1;
+			end = parameter.IndexOf ('!', start);
+			if (end < 0) {
+				//we also allow you just omit the processor
+				name = directive;
+				directive = processor;
+				value = parameter.Substring (start);
+				processor = "";
+				return !string.IsNullOrEmpty (name);
+			}
+
+			name = parameter.Substring (start, end - start);
+			value = parameter.Substring (end + 1);
+
+			return !string.IsNullOrEmpty (name);
+		}
 		
 		protected virtual bool LoadIncludeText (string requestFileName, out string content, out string location)
 		{

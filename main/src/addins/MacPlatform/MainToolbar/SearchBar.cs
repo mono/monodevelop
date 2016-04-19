@@ -38,7 +38,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	[Register]
 	class SearchBar : NSSearchField
 	{
-		bool debugSearchbar;
 		internal Widget gtkWidget;
 		internal event EventHandler<Xwt.KeyEventArgs> KeyPressed;
 		internal event EventHandler LostFocus;
@@ -48,17 +47,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		// To only draw the border, NSSearchFieldCell needs to be subclassed. Unfortunately this stops the 
 		// animation on activation working. I suspect this is implemented inside the NSSearchField rather
 		// than the NSSearchFieldCell which can't do animation.
-		class DarkSkinSearchFieldCell : NSSearchFieldCell
+		class DarkThemeSearchFieldCell : NSSearchFieldCell
 		{
 			public override void DrawWithFrame (CGRect cellFrame, NSView inView)
 			{
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 					var inset = cellFrame.Inset (0.25f, 0.25f);
 					if (!ShowsFirstResponder) {
 						var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 						path.LineWidth = 0.5f;
 
-						Styles.DarkBorderColor.ToNSColor ().SetStroke ();
+						// Hack to make the border be the correct colour in fullscreen mode
+						// See comment in AwesomeBar.cs for more details
+						if (MainToolbar.IsFullscreen) {
+							Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
+						} else {
+							Styles.DarkBorderColor.ToNSColor ().SetStroke ();
+						}
 						path.Stroke ();
 					}
 
@@ -79,7 +84,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						CancelButtonCell.DrawWithFrame (CancelButtonRectForBounds (inset), inView);
 					}
 				} else {
-					if (inView.Window.Screen.BackingScaleFactor == 2) {
+					if (inView.Window?.Screen?.BackingScaleFactor == 2) {
 						nfloat yOffset = 0f;
 						nfloat hOffset = 0f;
 
@@ -145,7 +150,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public override void SelectWithFrame (CGRect aRect, NSView inView, NSText editor, NSObject delegateObject, nint selStart, nint selLength)
 			{
 				nfloat xOffset = 0;
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 					xOffset = -1.5f;
 				}
 				// y does not appear to affect anything. Whatever value is set here for y will always be 1px below the
@@ -174,11 +179,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SearchBar ()
 		{
-			Cell = new DarkSkinSearchFieldCell ();
+			Cell = new DarkThemeSearchFieldCell ();
 
 			Initialize ();
-			var debugFilePath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".xs-searchbar-debug");
-			debugSearchbar = System.IO.File.Exists (debugFilePath);
 
 			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 			UpdateLayout ();
@@ -200,20 +203,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			PlaceholderAttributedString = MakePlaceholderString (PlaceholderText);
 		}
 
-		internal void LogMessage (string message)
-		{
-			if (!debugSearchbar)
-				return;
-
-			LoggingService.LogInfo (message);
-		}
-
 		void Initialize ()
 		{
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResignKeyNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
 
-				LogMessage ($"Lost focus from resign key: {other.DebugDescription}.");
 				if (notification.Object == Window) {
 					if (LostFocus != null)
 						LostFocus (this, null);
@@ -221,7 +215,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			}));
 			NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidResizeNotification, notification => Runtime.RunInMainThread (() => {
 				var other = (NSWindow)notification.Object;
-				LogMessage ($"Lost focus from resize: {other.DebugDescription}.");
 				if (notification.Object == Window) {
 					if (LostFocus != null)
 						LostFocus (this, null);
@@ -234,30 +227,21 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (KeyPressed != null)
 				KeyPressed (this, kargs);
 
-			LogMessage ($"KeyPressed with Handled {kargs.Handled}");
 			return kargs.Handled;
 		}
 
 		public override bool PerformKeyEquivalent (NSEvent theEvent)
 		{
 			var popupHandled = SendKeyPressed (theEvent.ToXwtKeyEventArgs ());
-			LogMessage ($"Popup handled {popupHandled}");
 			if (popupHandled)
 				return true;
-			var baseHandled = base.PerformKeyEquivalent (theEvent);;
-			LogMessage ($"Base handled {baseHandled}");
-			LogMessage ($"First Reponder {NSApplication.SharedApplication?.KeyWindow?.FirstResponder}");
-			LogMessage ($"Refuses First Responder {RefusesFirstResponder}");
-			LogMessage ($"Editor chain {CurrentEditor}");
-			return baseHandled;
+			return base.PerformKeyEquivalent (theEvent);;
 		}
 
 		bool ignoreEndEditing = false;
 		public override void DidEndEditing (NSNotification notification)
 		{
 			base.DidEndEditing (notification);
-
-			LogMessage ("Did end editing");
 
 			if (ignoreEndEditing) {
 				ignoreEndEditing = false;
@@ -268,25 +252,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			nint value = ((NSNumber)notification.UserInfo.ValueForKey ((NSString)"NSTextMovement")).LongValue;
 			if (value == (nint)(long)NSTextMovement.Tab) {
-				LogMessage ("Tab movement");
 				SelectText (this);
 				return;
 			}
 
 			if (value == (nint)(long)NSTextMovement.Return) {
-				LogMessage ("Activated by enter");
 				if (SelectionActivated != null)
 					SelectionActivated (this, null);
 				return;
 			}
 
-			LogMessage ($"Got NSTextMovement: {value}");
-
 			// This means we've reached a focus loss event.
 			var replacedWith = notification.UserInfo.ValueForKey ((NSString)"_NSFirstResponderReplacingFieldEditor");
 			if (replacedWith != this && LostFocus != null) {
-				if (replacedWith != null)
-					LogMessage ($"Mouse focus loss to {replacedWith.DebugDescription}");
 				LostFocus (this, null);
 			}
 		}
@@ -295,14 +273,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			base.ViewDidMoveToWindow ();
 
-			LogMessage ("View moved to parent window");
 			// Needs to be grabbed after it's parented.
 			gtkWidget = Components.Mac.GtkMacInterop.NSViewToGtkWidget (this);
 		}
 
 		public override bool BecomeFirstResponder ()
 		{
-			LogMessage ("Becoming first responder");
 			bool firstResponder = base.BecomeFirstResponder ();
 			if (firstResponder) {
 				ignoreEndEditing = true;
@@ -317,7 +293,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void Focus ()
 		{
-			LogMessage ("Focused");
 			Window.MakeFirstResponder (this);
 		}
 	}

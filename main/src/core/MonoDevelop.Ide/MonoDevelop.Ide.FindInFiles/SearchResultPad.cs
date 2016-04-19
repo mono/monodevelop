@@ -33,6 +33,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using System.Threading;
 using MonoDevelop.Components;
+using System;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -100,8 +101,19 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			window.Icon = Stock.FindIcon;
 
-			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => widget.Reset ();
+			IdeApp.Workspace.LastWorkspaceItemClosed += OnLastWorkspaceItemClosed;
 			base.Initialize (window);
+		}
+
+		public override void Dispose ()
+		{
+			IdeApp.Workspace.LastWorkspaceItemClosed -= OnLastWorkspaceItemClosed;
+			base.Dispose ();
+		}
+
+		void OnLastWorkspaceItemClosed (object sender, EventArgs args)
+		{
+			widget.Reset ();
 		}
 		
 		public void BeginProgress (string title)

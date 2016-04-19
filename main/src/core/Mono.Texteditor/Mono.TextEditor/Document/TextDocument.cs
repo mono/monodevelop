@@ -969,11 +969,7 @@ namespace Mono.TextEditor
 		internal void BeginAtomicUndo (OperationType operationType = OperationType.Undefined)
 		{
 			currentAtomicUndoOperationType.Push (operationType);
-			if (atomicUndoLevel == 0) {
-				if (this.syntaxMode != null && !SuppressHighlightUpdate)
-					Mono.TextEditor.Highlighting.SyntaxModeService.WaitUpdate (this);
-			}
-			if (currentAtomicOperation == null) {
+ 			if (currentAtomicOperation == null) {
 				Debug.Assert (atomicUndoLevel == 0); 
 				currentAtomicOperation = new AtomicUndoOperation (operationType);
 				OnBeginUndo ();
@@ -1184,7 +1180,13 @@ namespace Mono.TextEditor
 		public void WaitForFoldUpdateFinished ()
 		{
 			if (foldSegmentTask != null) {
-				foldSegmentTask.Wait (5000);
+				try {
+					foldSegmentTask.Wait (5000);
+				} catch (AggregateException e) {
+					e.Flatten ().Handle (x => x is OperationCanceledException);
+				} catch (OperationCanceledException) {
+					
+				}
 				foldSegmentTask = null;
 			}
 		}
@@ -1362,7 +1364,7 @@ namespace Mono.TextEditor
 			AddMarker (line, marker, true);
 		}
 
-		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate)
+		public void AddMarker (DocumentLine line, TextLineMarker marker, bool commitUpdate, int idx = -1)
 		{
 			if (line == null || marker == null)
 				return;
@@ -1373,7 +1375,7 @@ namespace Mono.TextEditor
 					extendingTextMarkers.Sort (CompareMarkers);
 				}
 			}
-			line.AddMarker (marker);
+			line.AddMarker (marker, idx);
 			OnMarkerAdded (new TextMarkerEvent (line, marker));
 			if (commitUpdate)
 				this.CommitLineUpdate (line);

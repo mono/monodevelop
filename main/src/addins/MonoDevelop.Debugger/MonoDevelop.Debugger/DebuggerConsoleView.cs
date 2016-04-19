@@ -31,7 +31,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Debugger
 {
@@ -269,18 +268,18 @@ namespace MonoDevelop.Debugger
 			Buffer.MoveMark (tokenBeginMark, iter);
 		}
 
-		async void OnEditKeyRelease (object sender, Gtk.KeyReleaseEventArgs args)
+		void OnEditKeyRelease (object sender, Gtk.KeyReleaseEventArgs args)
 		{
 			UpdateTokenBeginMarker ();
 
 			if (keyHandled)
 				return;
 
-			await CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 
-		protected override async Task<bool> ProcessKeyPressEvent (Gtk.KeyPressEventArgs args)
+		protected override bool ProcessKeyPressEvent (Gtk.KeyPressEventArgs args)
 		{
 			keyHandled = false;
 
@@ -294,11 +293,11 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (currentCompletionData != null) {
-				if ((keyHandled = await CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier))))
+				if ((keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier))))
 					return true;
 			}
 
-			return await base.ProcessKeyPressEvent (args);
+			return base.ProcessKeyPressEvent (args);
 		}
 
 		protected override void UpdateInputLineBegin ()

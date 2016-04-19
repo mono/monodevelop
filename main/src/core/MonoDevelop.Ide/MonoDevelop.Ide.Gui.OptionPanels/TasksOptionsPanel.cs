@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			buttonRemove.Clicked += new EventHandler (RemoveToken);
 			entryToken.Changed += new EventHandler (Validate);
 
-			Styles.Changed += HandleUserInterfaceSkinChanged;
+			Styles.Changed += HandleUserInterfaceThemeChanged;
 		}
 		
 		void Validate (object sender, EventArgs args)
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			LoadColors ();
 		}
 
-		void HandleUserInterfaceSkinChanged (object sender, EventArgs e)
+		void HandleUserInterfaceThemeChanged (object sender, EventArgs e)
 		{
 			LoadColors ();
 		}
@@ -224,7 +224,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		public override void Destroy ()
 		{
-			Styles.Changed -= HandleUserInterfaceSkinChanged;
+			Styles.Changed -= HandleUserInterfaceThemeChanged;
 			base.Destroy ();
 		}
 	}

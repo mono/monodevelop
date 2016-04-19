@@ -93,12 +93,12 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			bool res;
 			if (CurrentCompletionContext != null) {
-				if (await CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
-					await CompletionWindowManager.PostProcessKeyEvent (descriptor);
+				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
+					CompletionWindowManager.PostProcessKeyEvent (descriptor);
 					autoHideCompletionWindow = true;
 					// in named parameter case leave the parameter window open.
 					autoHideParameterWindow = descriptor.KeyChar != ':';
@@ -124,9 +124,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (descriptor.SpecialKey == SpecialKey.BackSpace && Editor.CaretOffset > 0)
 				deleteOrBackspaceTriggerChar = Editor.GetCharAt (Editor.CaretOffset - 1);
 			
-			res = await base.KeyPress (descriptor);
+			res = base.KeyPress (descriptor);
 
-			await CompletionWindowManager.PostProcessKeyEvent (descriptor);
+			CompletionWindowManager.PostProcessKeyEvent (descriptor);
 
 			var ignoreMods = ModifierKeys.Control | ModifierKeys.Alt
 				| ModifierKeys.Command;
@@ -159,14 +159,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 						};
 						CompletionWindowManager.WindowClosed += windowClosed;
 
-						var result = await task;
-						CompletionWindowManager.WindowClosed -= windowClosed;
-						if (!token.IsCancellationRequested) {
+						task.ContinueWith (t => {
+							CompletionWindowManager.WindowClosed -= windowClosed;
+							if (token.IsCancellationRequested)
+								return;
+							var result = t.Result;
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
 
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-															  || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
 									CurrentCompletionContext.TriggerWordLength = triggerWordLength;
 								}
@@ -177,7 +179,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								CompletionWindowManager.HideWindow ();
 								CurrentCompletionContext = null;
 							}
-						}
+						}, Runtime.MainTaskScheduler);
 					} else {
 						CurrentCompletionContext = null;
 					}
@@ -214,9 +216,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 						};
 						CompletionWindowManager.WindowClosed += windowClosed;
 
-						var result = await task;
-						CompletionWindowManager.WindowClosed -= windowClosed;
-						if (!token.IsCancellationRequested) {
+						task.ContinueWith (t => {
+							CompletionWindowManager.WindowClosed -= windowClosed;
+							if (token.IsCancellationRequested)
+								return;
+							var result = t.Result;
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
 
@@ -236,7 +240,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								CompletionWindowManager.HideWindow ();
 								CurrentCompletionContext = null;
 							}
-						}
+						}, Runtime.MainTaskScheduler);
 					} else {
 						CurrentCompletionContext = null;
 					}
@@ -255,9 +259,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 				try {
 					var task = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token);
 					if (task != null) {
-						var result = await task;
-						if (!token.IsCancellationRequested && result != null)
-							ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, result);
+						task.ContinueWith (t => {
+							if (!token.IsCancellationRequested && t.Result != null)
+								ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, t.Result);
+						}, Runtime.MainTaskScheduler);
 					}
 				} catch (TaskCanceledException) {
 				} catch (AggregateException) {
@@ -362,11 +367,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			if (completionList == null) {
 				return;
 			}
-			var wnd = new CompletionListWindow (Gtk.WindowType.Toplevel);
-			wnd.TypeHint = Gdk.WindowTypeHint.Dialog;
-			wnd.SkipPagerHint = true;
-			wnd.SkipTaskbarHint = true;
-			wnd.Decorated = false;
+			var wnd = CompletionListWindow.CreateAsDialog ();
 			wnd.Extension = this;
 			wnd.ShowListWindow ((char)0, completionList, CompletionWidget, ctx);
 		}

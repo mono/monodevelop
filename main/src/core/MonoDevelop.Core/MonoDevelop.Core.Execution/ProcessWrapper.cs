@@ -96,8 +96,12 @@ namespace MonoDevelop.Core.Execution
 				if (endEventErr != null)
 					endEventErr.WaitOne ();
 
-				if (HasExited)
-					operation.ExitCode = ExitCode;
+				try {
+					if (HasExited)
+						operation.ExitCode = ExitCode;
+				} catch {
+					// Ignore
+				}
 
 				try {
 					OnExited (this, EventArgs.Empty);

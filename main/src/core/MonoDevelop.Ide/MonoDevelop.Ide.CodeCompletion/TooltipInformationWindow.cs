@@ -257,8 +257,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		internal void SetDefaultScheme ()
 		{
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
-				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
+				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 
 			Theme.SetSchemeColors (scheme);
 			foreColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
@@ -304,8 +304,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vb2.ShowAll ();
 			SetDefaultScheme ();
-			Styles.Changed += HandleSkinChanged;
-			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
+			Styles.Changed += HandleThemeChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 		}
 
 		public override void RepositionWindow(Gdk.Rectangle? newCaret = null)
@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.OnPagerRightClicked ();
 		}
 
-		void HandleSkinChanged (object sender, EventArgs e)
+		void HandleThemeChanged (object sender, EventArgs e)
 		{
 			SetDefaultScheme ();
 		}
@@ -339,8 +339,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			Styles.Changed -= HandleSkinChanged;
-			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
+			Styles.Changed -= HandleThemeChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleThemeChanged;
 		}
 	}
 }

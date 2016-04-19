@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public CommonAboutDialog ()
 		{
 			Name = "wizard_dialog";
-			Title = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationName);
+			Title = string.Format (GettextCatalog.GetString ("About {0}"), BrandingService.ApplicationLongName);
 			TransientFor = IdeApp.Workbench.RootWindow;
 			AllowGrow = false;
 			HasSeparator = false;

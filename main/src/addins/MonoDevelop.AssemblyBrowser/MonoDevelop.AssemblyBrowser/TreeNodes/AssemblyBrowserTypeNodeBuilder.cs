@@ -50,10 +50,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		internal CecilLoader CecilLoader {
-			get {
-				return Widget.CecilLoader;
-			}
+		internal CecilLoader GetCecilLoader (ITreeNavigator navigator)
+		{
+			return navigator.GetParentDataItem<AssemblyLoader> (false).CecilLoader;
 		}
 		
 		public override int CompareObjects (ITreeNavigator thisNode, ITreeNavigator otherNode)

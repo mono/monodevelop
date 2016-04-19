@@ -590,7 +590,7 @@ namespace MonoDevelop.SourceEditor
 							oldMarker.AddError (marker.Task, marker.Task.Severity == TaskSeverity.Error, marker.Task.Description);
 						} else {
 							marker.LineSegment = lineSegment;
-							widget.Document.AddMarker (lineSegment, marker, false);
+							widget.Document.AddMarker (lineSegment, marker, false, 0);
 							newErrorMarkers.Add (marker);
 						}
 					}
@@ -2740,7 +2740,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (this.isDisposed || !TextEditor.Options.ShowFoldMargin)
 				return;
-			TextEditor.Document.UpdateFoldSegments (foldings.Cast<FoldSegment> ().ToList ());
+			TextEditor.Document.UpdateFoldSegments (foldings.Cast<FoldSegment> ().ToList (), true);
 		}
 
 		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsContaining (int offset)

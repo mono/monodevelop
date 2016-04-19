@@ -271,7 +271,7 @@ namespace WindowsPlatform
 
 		public static void LoadStyles ()
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				MainToolbarBackgroundBrush = new SolidColorBrush (ColorFromHex("FFFFFF", 0));
 				MainToolbarForegroundBrush = new SolidColorBrush (ColorFromHex("222222"));
 				MainToolbarDisabledForegroundBrush = new SolidColorBrush (ColorFromHex("808080"));

@@ -94,7 +94,7 @@ namespace UserInterfaceTests
 			takeScreenshot ("NuGet-Update-Is-"+isUpdate);
 			try {
 				WaitForNuGet.Success (packageOptions.PackageName, isUpdate ? NuGetOperations.Update : NuGetOperations.Add);
-			} catch (TimeoutException e) {
+			} catch (TimeoutException) {
 				takeScreenshot ("Wait-For-NuGet-Operation-Failed");
 				throw;
 			}

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 
 using MonoDevelop.Projects;
 using Mono.Addins;
@@ -89,6 +90,8 @@ namespace MonoDevelop.Ide.Gui
 		MainToolbarController toolbar;
 		MonoDevelopStatusBar bottomBar;
 
+		Timer saveTimer;
+
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
 		private void DoNotCompile ()
 		{
@@ -98,6 +101,7 @@ namespace MonoDevelop.Ide.Gui
 #endif
 		
 		public event EventHandler ActiveWorkbenchWindowChanged;
+		public event EventHandler WorkbenchTabsChanged;
 		
 		public MonoDevelop.Ide.StatusBar StatusBar {
 			get {
@@ -204,7 +208,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public DefaultWorkbench()
 		{
-			Title = BrandingService.ApplicationName;
+			Title = BrandingService.ApplicationLongName;
 			LoggingService.LogInfo ("Creating DefaultWorkbench");
 			
 			WidthRequest = normalBounds.Width;
@@ -216,8 +220,14 @@ namespace MonoDevelop.Ide.Gui
 			SetAppIcons ();
 
 			IdeApp.CommandService.SetRootWindow (this);
+			DockNotebook.NotebookChanged += NotebookPagesChanged;
 		}
-		
+
+		void NotebookPagesChanged (object sender, EventArgs e)
+		{
+			WorkbenchTabsChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		void SetAppIcons ()
 		{
 			//first try to get the icon from the GTK icon theme
@@ -529,9 +539,9 @@ namespace MonoDevelop.Ide.Gui
 				post = "*";
 			}
 			if (window.ViewContent.Project != null) {
-				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationName;
+				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationLongName;
 			}
-			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationName;
+			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationLongName;
 		}
 		
 		void SetWorkbenchTitle ()
@@ -554,8 +564,8 @@ namespace MonoDevelop.Ide.Gui
 		static string GetDefaultTitle ()
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationName;
-			return BrandingService.ApplicationName;
+				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationLongName;
+			return BrandingService.ApplicationLongName;
 		}
 
 		void ApplicationNameChanged (object sender, EventArgs e)
@@ -832,7 +842,24 @@ namespace MonoDevelop.Ide.Gui
 
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
-			
+			dock.LayoutChanged += (o, e) => {
+				if (saveTimer != null) {
+					saveTimer.Stop ();
+					saveTimer.Dispose ();
+				}
+
+				// Save the layout changes after 10 seconds.
+				saveTimer = new Timer (10000);
+				saveTimer.Elapsed += (s, ev) => {
+					Runtime.RunInMainThread (() => {
+						dock.SaveLayouts (configFile);
+						saveTimer.Dispose ();
+						saveTimer = null;
+					});
+				};
+				saveTimer.Start ();
+			};
+
 			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
 			IdeApp.Preferences.WorkbenchCompactness.Changed += delegate {
 				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
@@ -1388,7 +1415,7 @@ namespace MonoDevelop.Ide.Gui
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
 				if (window.HasErrors && !window.ContentVisible)
-					windowTitle = "<span foreground='red'>" + windowTitle + "</span>";
+					windowTitle = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + windowTitle + "</span>";
 				else if (window.HasNewData && !window.ContentVisible)
 					windowTitle = "<b>" + windowTitle + "</b>";
 				item.Label = windowTitle;

@@ -61,7 +61,8 @@ namespace MonoDevelop.PackageManagement
 		bool ShowLicenseAcceptanceDialog (IEnumerable<NuGetPackageLicense> licenses)
 		{
 			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
-				int result = MessageService.ShowCustomDialog (dialog);
+				dialog.Modal = false;
+				int result = MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
 				return result == (int)Gtk.ResponseType.Ok;
 			}
 		}

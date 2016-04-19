@@ -217,16 +217,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			buffer.TagTable.Add (bold);
 			
 			errorTag = new TextTag ("error");
-			errorTag.Foreground = "#dc3122";
+			errorTag.Foreground = Styles.ErrorForegroundColor.ToHexString (false);
 			errorTag.Weight = Weight.Bold;
 			buffer.TagTable.Add (errorTag);
 
 			debugTag = new TextTag ("debug");
-			debugTag.Foreground = "#256ada";
+			debugTag.Foreground = Styles.InformationForegroundColor.ToHexString (false);
 			buffer.TagTable.Add (debugTag);
 
 			consoleLogTag = new TextTag ("consoleLog");
-			consoleLogTag.Foreground = "darkgrey";
+			consoleLogTag.Foreground = Styles.DimTextColor.ToHexString (false);
 			buffer.TagTable.Add (consoleLogTag);
 			
 			tag = new TextTag ("0");
@@ -487,6 +487,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		void addQueuedUpdate (QueuedUpdate update)
 		{
 			lock (updates) {
+				if (destroyed)
+					return;
+				
 				updates.Enqueue (update);
 				if (!outputDispatcherRunning) {
 					GLib.Timeout.Add (50, outputDispatcher);
@@ -572,6 +575,9 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		bool ShouldAutoScroll ()
 		{
+			if (scrollView == null || scrollView.Vadjustment == null)
+				return false;
+
 			// we need to account for the page size as well for some reason
 			return scrollView.Vadjustment.Value + scrollView.Vadjustment.PageSize >= scrollView.Vadjustment.Upper;
 		}
@@ -624,15 +630,17 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
+		bool destroyed = false;
 		protected override void OnDestroyed ()
 		{
-			base.OnDestroyed ();
-			
 			lock (updates) {
+				destroyed = true;
 				updates.Clear ();
 				lastTextWrite = null;
 			}
 			IdeApp.Preferences.CustomOutputPadFont.Changed -= HandleCustomFontChanged;
+
+			base.OnDestroyed ();
 		}
 		
 		abstract class QueuedUpdate
