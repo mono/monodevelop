@@ -27,9 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
+using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
@@ -108,26 +112,35 @@ namespace MonoDevelop.PackageManagement
 
 		public IEnumerable<PackageManagementPackageReference> GetInstalledPackages (Project project)
 		{
-			return Runtime.RunInMainThread (() => {
-				string url = RegisteredPackageSources.DefaultPackageSourceUrl;
-				var repository = registeredPackageRepositories.CreateRepository (new NuGet.PackageSource (url));
-				IPackageManagementProject packageManagementProject = solution.GetProject (repository, new DotNetProjectProxy ((DotNetProject)project));
+			try {
+				return Runtime.RunInMainThread (async () => {
+					var dotNetProject = (DotNetProject)project;
+					var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+					var nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (dotNetProject));
 
-				var packages = packageManagementProject
-					.GetPackageReferences ()
-					.Select (packageReference => new PackageManagementPackageReference (packageReference.Id, packageReference.Version.ToString ()))
-					.ToList ();
+					var packagesBeingInstalled = GetPackagesBeingInstalled (dotNetProject).ToList ();
 
-				packages.AddRange (GetMissingPackagesBeingInstalled (packages, (DotNetProject)project));
-				return packages;
-			}).Result;
+					var packages = await Task.Run (() => nugetProject.GetInstalledPackagesAsync (CancellationToken.None)).ConfigureAwait (false);
+
+					var packageReferences = packages
+						.Select (package => new PackageManagementPackageReference (package.PackageIdentity))
+						.ToList ();
+
+					packageReferences.AddRange (GetMissingPackagesBeingInstalled (packageReferences, packagesBeingInstalled));
+
+					return packageReferences;
+				}).Result;
+			} catch (Exception ex) {
+				LoggingService.LogError ("GetInstalledPackages error.", ex);
+				throw ExceptionUtility.Unwrap (ex);
+			}
 		}
 
 		IEnumerable<PackageManagementPackageReference> GetMissingPackagesBeingInstalled (
 			IEnumerable<PackageManagementPackageReference> existingPackages,
-			DotNetProject project)
+			IEnumerable<PackageManagementPackageReference> packagesBeingInstalled)
 		{
-			return GetPackagesBeingInstalled (project)
+			return packagesBeingInstalled
 				.Where (package => !existingPackages.Any (existingPackage => existingPackage.Id == package.Id));
 		}
 

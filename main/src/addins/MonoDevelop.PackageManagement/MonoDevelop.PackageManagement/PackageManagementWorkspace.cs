@@ -82,14 +82,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			Runtime.AssertMainThread ();
 
-			return solutionManagers.FirstOrDefault (manager => manager.Solution == solution);
+			return GetSolutionManager (new SolutionProxy (solution));
 		}
 
 		public IMonoDevelopSolutionManager GetSolutionManager (ISolution solution)
 		{
 			Runtime.AssertMainThread ();
 
-			return solutionManagers.FirstOrDefault (manager => manager.Solution == solution.Solution);
+			var solutionManager = solutionManagers.FirstOrDefault (manager => manager.Solution == solution.Solution);
+			if (solutionManager != null) {
+				return solutionManager;
+			}
+
+			return new MonoDevelopSolutionManager (solution);
 		}
 	}
 }

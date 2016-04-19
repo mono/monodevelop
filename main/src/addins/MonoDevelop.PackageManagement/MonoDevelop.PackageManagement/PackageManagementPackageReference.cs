@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -34,6 +34,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			Id = id;
 			Version = version;
+		}
+
+		internal PackageManagementPackageReference (PackageIdentity package)
+			: this (package.Id, package.Version.ToString ())
+		{
 		}
 
 		public string Id { get; set; }
