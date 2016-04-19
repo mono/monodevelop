@@ -237,8 +237,13 @@ namespace MonoDevelop.Core
 				openStepWork = -1;
 				var t = currentTask;
 				currentTask = t.ParentTask;
-				if (currentTask == null)
+				if (currentTask == null) {
 					rootTask = null;
+					if (context != null)
+						context.Post ((o) => OnLastTaskRemoved (), null);
+					else
+						OnLastTaskRemoved ();
+				}
 				t.SetComplete ();
 		//		if (t.Name != null) {
 					if (context != null)
@@ -552,6 +557,10 @@ namespace MonoDevelop.Core
 		}
 
 		protected virtual void OnEndTask (string name, int totalWork, int stepWork)
+		{
+		}
+
+		protected virtual void OnLastTaskRemoved ()
 		{
 		}
 

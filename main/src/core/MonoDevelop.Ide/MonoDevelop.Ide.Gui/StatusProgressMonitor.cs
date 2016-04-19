@@ -82,6 +82,11 @@ namespace MonoDevelop.Ide.Gui
 			else
 				statusBar.SetProgressFraction (0);
 		}
+
+		protected override void OnLastTaskRemoved ()
+		{
+			statusBar.EndProgress ();
+		}
 		
 		protected override void OnCompleted ()
 		{
