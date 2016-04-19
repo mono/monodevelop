@@ -121,6 +121,10 @@
       <Name>MonoDevelop.UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
+      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
+      <Name>RefactoringEssentials</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -171,9 +175,6 @@
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
       <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="RefactoringEssentials">
-      <HintPath>..\..\..\build\bin\RefactoringEssentials.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
