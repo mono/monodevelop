@@ -145,6 +145,9 @@ namespace WindowsPlatform.MainToolbar
 				model = value;
 
 				var dropMenu = DropMenu;
+				var open = dropMenu.IsSubmenuOpen;
+				if (open)
+					dropMenu.IsSubmenuOpen = false;
 
 				foreach (MenuItem item in dropMenu.Items)
 					item.Click -= OnMenuItemClicked;
@@ -157,6 +160,8 @@ namespace WindowsPlatform.MainToolbar
 				IsEnabled = Focusable = IsHitTestVisible = dropMenu.Items.Count > 1;
 				if (count == 0)
 					DropMenuText = "Default";
+
+				dropMenu.IsSubmenuOpen = open;
 			}
 		}
 
@@ -238,13 +243,20 @@ namespace WindowsPlatform.MainToolbar
 			set
 			{
 				model = value;
-				
+
+				var open = DropMenu.IsSubmenuOpen;
+				if (open)
+					DropMenu.IsSubmenuOpen = false;
 				FillSource (DropMenu.Items, value);
+
+
 
 				int count = DropMenu.Items.Count;
 				IsEnabled = Focusable = IsHitTestVisible = count > 1;
 				if (count == 0)
 					DropMenuText = "Default";
+
+				DropMenu.IsSubmenuOpen = open;
 			}
 		}
 
