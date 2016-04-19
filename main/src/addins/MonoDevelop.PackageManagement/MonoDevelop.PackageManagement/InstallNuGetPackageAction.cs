@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -118,11 +119,13 @@ namespace MonoDevelop.PackageManagement
 
 			NuGetPackageManager.SetDirectInstall (identity, context);
 
-			await packageManager.ExecuteNuGetProjectActionsAsync (
-				project,
-				actions,
-				context,
-				cancellationToken);
+			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				await packageManager.ExecuteNuGetProjectActionsAsync (
+					project,
+					actions,
+					context,
+					cancellationToken);
+			}
 
 			NuGetPackageManager.ClearDirectInstall (context);
 		}
@@ -150,6 +153,11 @@ namespace MonoDevelop.PackageManagement
 		Task CheckLicenses (IEnumerable<NuGetProjectAction> actions)
 		{
 			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
+		}
+
+		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
+		{
+			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
 		}
 	}
 }

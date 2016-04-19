@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -87,11 +88,13 @@ namespace MonoDevelop.PackageManagement
 
 			await CheckLicenses (actions);
 
-			await packageManager.ExecuteNuGetProjectActionsAsync (
-				project,
-				actions,
-				context,
-				cancellationToken);
+			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				await packageManager.ExecuteNuGetProjectActionsAsync (
+					project,
+					actions,
+					context,
+					cancellationToken);
+			}
 		}
 
 		public bool HasPackageScriptsToRun ()
@@ -117,6 +120,11 @@ namespace MonoDevelop.PackageManagement
 		Task CheckLicenses (IEnumerable<NuGetProjectAction> actions)
 		{
 			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
+		}
+
+		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
+		{
+			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
 		}
 	}
 }
