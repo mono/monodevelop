@@ -32,7 +32,19 @@ namespace CustomControls.OS
 
         [DllImport (Win32.SHLWAPI, SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int AssocQueryStringW (AssociationFlags flags, AssociationString str, string assoc, string extra, StringBuilder outBuffer, ref int outBufferSize);
-    }
+
+		[DllImport (Win32.USER32)]
+		[return: MarshalAs (UnmanagedType.Bool)]
+		public static extern bool GetWindowPlacement (IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+
+		[DllImport (Win32.USER32)]
+		[return: MarshalAs (UnmanagedType.Bool)]
+		public static extern bool SetWindowPlacement (IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+
+		public const int SW_SHOWNORMAL = 1;
+		public const int SW_SHOWMINIMIZED = 2;
+		public const int SW_SHOWMAXIMIZED = 3;
+	}
 
 	[Flags]
 	public enum AssociationFlags {
@@ -74,5 +86,15 @@ namespace CustomControls.OS
 		DelegateExecute,
 		SupportedUriProtocols,
 		MaxString
+	}
+
+	public struct WINDOWPLACEMENT
+	{
+		public int length;
+		public int flags;
+		public int showCmd;
+		public System.Drawing.Point ptMinPosition;
+		public System.Drawing.Point ptMaxPosition;
+		public System.Drawing.Rectangle rcNormalPosition;
 	}
 }
