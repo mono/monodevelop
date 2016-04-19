@@ -209,6 +209,11 @@ namespace MonoDevelop.PackageManagement
 				LoggingService.LogError ("Failed to read package versions.", ex);
 			}
 		}
+
+		public bool IsOlderPackageInstalled ()
+		{
+			return parent.IsOlderPackageInstalled (Id, SelectedVersion);
+		}
 	}
 }
 

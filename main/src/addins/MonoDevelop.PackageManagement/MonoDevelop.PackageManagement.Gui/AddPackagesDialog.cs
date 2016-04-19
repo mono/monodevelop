@@ -698,7 +698,7 @@ namespace MonoDevelop.PackageManagement
 
 			PackageSearchResultViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
 			if (selectedPackageViewModel != null) {
-				//return selectedPackageViewModel.IsOlderPackageInstalled ();
+				return selectedPackageViewModel.IsOlderPackageInstalled ();
 			}
 			return false;
 		}
@@ -755,6 +755,7 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			viewModel.SelectedPackage.SelectedVersion = (NuGetVersion)packageVersionComboBox.SelectedItem;
+			UpdateAddPackagesButton ();
 		}
 	}
 }

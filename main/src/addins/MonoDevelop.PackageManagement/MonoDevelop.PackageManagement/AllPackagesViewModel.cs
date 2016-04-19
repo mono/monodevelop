@@ -35,8 +35,10 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement.UI;
+using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -51,9 +53,10 @@ namespace MonoDevelop.PackageManagement
 		bool includePrerelease;
 		bool ignorePackageCheckedChanged;
 		IMonoDevelopSolutionManager solutionManager;
-		NuGetProject project;
+		NuGetProject nugetProject;
 		IDotNetProject dotNetProject;
 		NuGetProjectContext projectContext;
+		List<PackageReference> packageReferences = new List<PackageReference> ();
 
 		public AllPackagesViewModel ()
 		{
@@ -64,6 +67,9 @@ namespace MonoDevelop.PackageManagement
 			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			projectContext = new NuGetProjectContext ();
 			dotNetProject = new DotNetProjectProxy ((DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject);
+
+			nugetProject = solutionManager.GetNuGetProject (dotNetProject);
+			GetPackagesInstalledInProject ();
 		}
 
 		public string SearchTerms { get; set; }
@@ -157,6 +163,7 @@ namespace MonoDevelop.PackageManagement
 			CancelReadPackagesTask ();
 			IsDisposed = true;
 		}
+
 
 		protected virtual void OnDispose()
 		{
@@ -363,6 +370,37 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public PackageSearchResultViewModel SelectedPackage { get; set; }
+
+		public bool IsOlderPackageInstalled (string id, NuGetVersion version)
+		{
+			return packageReferences.Any (packageReference => IsOlderPackagInstalled (packageReference, id, version));
+		}
+
+		bool IsOlderPackagInstalled (PackageReference packageReference, string id, NuGetVersion version)
+		{
+			return packageReference.PackageIdentity.Id == id &&
+				packageReference.PackageIdentity.Version < version;
+		}
+
+		void GetPackagesInstalledInProject ()
+		{
+			nugetProject
+				.GetInstalledPackagesAsync (CancellationToken.None)
+				.ContinueWith (task => OnReadInstalledPackages (task), TaskScheduler.FromCurrentSynchronizationContext ());
+		}
+
+		void OnReadInstalledPackages (Task<IEnumerable<PackageReference>> task)
+		{
+			try {
+				if (task.IsFaulted) {
+					LoggingService.LogError ("Unable to read installed packages.", task.Exception);
+				} else {
+					packageReferences = task.Result.ToList ();
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("OnReadInstalledPackages", ex);
+			}
+		}
 	}
 }
 
