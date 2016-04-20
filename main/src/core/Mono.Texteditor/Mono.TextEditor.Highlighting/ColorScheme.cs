@@ -562,8 +562,16 @@ namespace Mono.TextEditor.Highlighting
 		public ChunkStyle DiffHeaderNew { get; private set; }
 
 		public const string DiffLocationKey = "Diff Location";
-		[ColorDescription(DiffLocationKey)] //not defined
+		[ColorDescription (DiffLocationKey)] //not defined
 		public ChunkStyle DiffLocation { get; private set; }
+
+		public const string PreviewDiffRemovedKey = "Preview Diff Removed Line";
+		[ColorDescription (PreviewDiffRemovedKey)] //not defined
+		public ChunkStyle PreviewDiffRemoved { get; private set; }
+
+		public const string PreviewDiffAddeddKey = "Preview Diff Added Line";
+		[ColorDescription (PreviewDiffAddeddKey)] //not defined
+		public ChunkStyle PreviewDiffAddedd { get; private set; }
 
 		public const string HtmlAttributeNameKey = "Html Attribute Name";
 		[ColorDescription(HtmlAttributeNameKey, VSSetting="HTML Attribute")]

@@ -29,12 +29,12 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public interface IExtendingTextLineMarker 
+	public interface IExtendingTextLineMarker
 	{
 		double GetLineHeight (MonoTextEditor editor);
 		void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
-	
+
 	public interface IActionTextLineMarker
 	{
 		/// <returns>
@@ -45,13 +45,13 @@ namespace Mono.TextEditor
 
 		void MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result);
 	}
-	
-	public class TextLineMarkerHoverResult 
+
+	public class TextLineMarkerHoverResult
 	{
 		bool isCursorSet;
 
 		public bool HasCursor {
-			get { return isCursorSet;}
+			get { return isCursorSet; }
 		}
 
 		Gdk.Cursor cursor;
@@ -66,11 +66,11 @@ namespace Mono.TextEditor
 		}
 		public string TooltipMarkup { get; set; }
 	}
-	
+
 	[Flags]
 	public enum TextLineMarkerFlags
 	{
-		None           = 0,
+		None = 0,
 		DrawsSelection = 1
 	}
 
@@ -106,7 +106,7 @@ namespace Mono.TextEditor
 	public class TextLineMarker
 	{
 		DocumentLine lineSegment;
-		
+
 		public DocumentLine LineSegment {
 			get {
 				return lineSegment;
@@ -115,7 +115,7 @@ namespace Mono.TextEditor
 				lineSegment = value;
 			}
 		}
-		
+
 		public virtual TextLineMarkerFlags Flags {
 			get;
 			set;
@@ -124,8 +124,8 @@ namespace Mono.TextEditor
 		public object Tag {
 			get;
 			set;
-		}		
-		
+		}
+
 		bool isVisible = true;
 		public virtual bool IsVisible {
 			get { return isVisible; }
@@ -135,11 +135,11 @@ namespace Mono.TextEditor
 		public TextLineMarker ()
 		{
 		}
-		
+
 		public virtual void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 		}
-		
+
 		public virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			return baseStyle;

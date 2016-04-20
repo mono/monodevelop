@@ -227,6 +227,9 @@
 		{ "name": "Diff Header(New)", "fore": "#008000", "weight": "bold" },
 		{ "name": "Diff Location", "fore": "#FB8B00", "weight": "bold" },
 
+		{ "name": "Preview Diff Removed Line", "fore": "#5c2c2c", "back": "#dcb4b4" },
+		{ "name": "Preview Diff Added Line", "fore": "#235423", "back": "#a4d9a4" },
+
 		{ "name": "Css Comment", "fore": "monokai-comment", "weight": "bold" },
 		{ "name": "Css Property Name", "fore": "black", "weight": "bold" },
 		{ "name": "Css Property Value", "fore": "monokai-string", "weight": "bold" },

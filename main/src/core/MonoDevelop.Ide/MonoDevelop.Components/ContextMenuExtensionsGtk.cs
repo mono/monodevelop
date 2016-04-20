@@ -26,6 +26,7 @@
 
 using System;
 using Xwt.GtkBackend;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
@@ -62,9 +63,35 @@ namespace MonoDevelop.Components
 
 			var gtkMenu = FromMenu (menu, closeHandler);
 			gtkMenu.ShowAll ();
-			if (selectFirstItem && gtkMenu.Children.Length > 0)
-				gtkMenu.SelectItem (gtkMenu.Children[0]); 
+			if (selectFirstItem && gtkMenu.Children.Length > 0) {
+				gtkMenu.SelectItem (gtkMenu.Children [0]);
+				new PoupHandlerWrapper (menu, gtkMenu);
+			}
 			ShowContextMenu (parent, x, y, gtkMenu);
+		}
+
+		// Gtk.Menu.Popup event seems not to be working correcty 
+		// so doing a work around using the expose event.
+		class PoupHandlerWrapper
+		{
+			ContextMenu menu;
+
+			public PoupHandlerWrapper (ContextMenu menu, Gtk.Menu gtkMenu)
+			{
+				this.menu = menu;
+				gtkMenu.ExposeEvent += HandleExposeEvent;
+			}
+
+			void HandleExposeEvent (object o, Gtk.ExposeEventArgs args)
+			{
+				var gtkMenu = (Gtk.Menu)o;
+				gtkMenu.ExposeEvent -= HandleExposeEvent;
+				int ox, oy;
+				gtkMenu.ParentWindow.GetOrigin (out ox, out oy);
+				int rx, ry;
+				IdeApp.Workbench.RootWindow.GdkWindow.GetOrigin (out rx, out ry);
+				menu.Items [0].FireSelectedEvent (new Xwt.Rectangle (ox - rx, oy - ry, gtkMenu.Allocation.Width, gtkMenu.Allocation.Height));
+			}
 		}
 
 		public static void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, Gtk.Menu menu)
@@ -106,7 +133,20 @@ namespace MonoDevelop.Components
 			} else {
 				menuItem = new Gtk.ImageMenuItem (item.Label);
 			} 
+			menuItem.Selected += delegate (object sender, EventArgs e) {
+				var si = sender as Gtk.MenuItem;
+				if (si == null || si.GdkWindow == null)
+					return;
+				int x, y;
+				si.GdkWindow.GetOrigin (out x, out y);
+				int rx, ry;
+				IdeApp.Workbench.RootWindow.GdkWindow.GetOrigin (out rx, out ry);
 
+				item.FireSelectedEvent (new Xwt.Rectangle (x - rx, y - ry, si.Allocation.Width, si.Allocation.Height));
+			};
+			menuItem.Deselected += delegate {
+				item.FireDeselectedEvent ();
+			};
 			if (item.SubMenu != null && item.SubMenu.Items.Count > 0) {
 				menuItem.Submenu = FromMenu (item.SubMenu, null);
 			}
@@ -144,9 +184,11 @@ namespace MonoDevelop.Components
 					result.Append (item);
 			}
 
-			if (closeHandler != null) {
-				result.Hidden += (sender, e) => closeHandler ();
-			}
+			result.Hidden += delegate {
+				if (closeHandler != null)
+					closeHandler ();
+				menu.FireClosedEvent ();
+			};
 			return result;
 		}
 	}

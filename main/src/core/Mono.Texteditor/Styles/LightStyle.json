@@ -229,6 +229,9 @@
 		{ "name": "Diff Header(New)", "fore": "skyblue2", "weight": "bold" },
 		{ "name": "Diff Location", "fore": "plum2", "weight": "bold" },
 
+		{ "name": "Preview Diff Removed Line", "fore": "#a14d4d", "back": "#fcf8f8" },
+		{ "name": "Preview Diff Added Line", "fore": "#419b41", "back": "#edf8ed" },
+
 		{ "name": "Css Comment", "fore": "comment-gray", "weight": "bold" },
 		{ "name": "Css Property Name", "fore": "text-black", "weight": "bold" },
 		{ "name": "Css Property Value", "fore": "literal-orange", "weight": "bold" },
