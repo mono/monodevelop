@@ -102,6 +102,10 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync ()
 		{
+			if (Version == null) {
+				Version = await GetLatestPackageVersion (PackageId);
+			}
+
 			var identity = new PackageIdentity (PackageId, Version);
 
 			var actions = await packageManager.PreviewInstallPackageAsync (
@@ -128,6 +132,16 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			NuGetPackageManager.ClearDirectInstall (context);
+		}
+
+		Task<NuGetVersion> GetLatestPackageVersion (string packageId)
+		{
+			return NuGetPackageManager.GetLatestVersionAsync (
+				packageId,
+				project,
+				CreateResolutionContext (),
+				primarySources,
+				cancellationToken);
 		}
 
 		public bool HasPackageScriptsToRun ()

@@ -514,6 +514,7 @@
     <Compile Include="MonoDevelop.PackageManagement\NuGetProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DefaultPackageSourceSettingsProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -33,7 +33,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
-using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
@@ -75,23 +76,43 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<PackageManagementPackageReference> packages,
 			bool licensesAccepted)
 		{
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var repository = repositoryProvider.CreateRepository (new PackageSource (packageSourceUrl));
+
+			InstallPackages (new [] { repository }, project, packages, licensesAccepted);
+		}
+
+		public void InstallPackages (
+			Project project,
+			IEnumerable<PackageManagementPackageReference> packages)
+		{
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var repositories = repositoryProvider.GetRepositories ().ToList ();
+			InstallPackages (repositories, project, packages, licensesAccepted: false);
+		}
+
+		void InstallPackages (
+			IEnumerable<SourceRepository> repositories,
+			Project project,
+			IEnumerable<PackageManagementPackageReference> packages,
+			bool licensesAccepted)
+		{
 			List<INuGetPackageAction> actions = null;
 
 			Runtime.RunInMainThread (() => {
 				var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
-				var repository = repositoryProvider.CreateRepository (new PackageSource (packageSourceUrl));
 				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 				var dotNetProject = new DotNetProjectProxy ((DotNetProject)project);
 				var context = new NuGetProjectContext ();
 
 				actions = packages.Select (packageReference => {
 					var action = new InstallNuGetPackageAction (
-						repository,
+						repositories,
 						solutionManager,
 						dotNetProject,
 						context);
 					action.PackageId = packageReference.Id;
-					action.Version = new NuGetVersion (packageReference.Version);
+					action.Version = packageReference.GetNuGetVersion ();
 					action.LicensesMustBeAccepted = !licensesAccepted;
 					return (INuGetPackageAction)action;
 				}).ToList ();
@@ -123,7 +144,7 @@ namespace MonoDevelop.PackageManagement
 					var packages = await Task.Run (() => nugetProject.GetInstalledPackagesAsync (CancellationToken.None)).ConfigureAwait (false);
 
 					var packageReferences = packages
-						.Select (package => new PackageManagementPackageReference (package.PackageIdentity))
+						.Select (package => CreatePackageReference (package.PackageIdentity))
 						.ToList ();
 
 					packageReferences.AddRange (GetMissingPackagesBeingInstalled (packageReferences, packagesBeingInstalled));
@@ -147,9 +168,27 @@ namespace MonoDevelop.PackageManagement
 		static IEnumerable<PackageManagementPackageReference> GetPackagesBeingInstalled (DotNetProject project)
 		{
 			return PackageManagementServices.BackgroundPackageActionRunner.PendingInstallActionsForProject (project)
-				.Select (installAction => new PackageManagementPackageReference (
-					installAction.GetPackageId (), 
-					installAction.GetPackageVersion ().ToString ()));
+				.Select (installAction => CreatePackageReference (installAction));
+		}
+
+		static PackageManagementPackageReference CreatePackageReference (PackageIdentity package)
+		{
+			return new PackageManagementPackageReference (package.Id, package.Version.ToString ());
+		}
+
+		static PackageManagementPackageReference CreatePackageReference (IInstallNuGetPackageAction installAction)
+		{
+			return new PackageManagementPackageReference (
+				installAction.GetPackageId (), 
+				GetNuGetVersionString (installAction.GetPackageVersion ()));
+		}
+
+		static string GetNuGetVersionString (NuGetVersion version)
+		{
+			if (version != null)
+				return version.ToString ();
+
+			return null;
 		}
 
 		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)

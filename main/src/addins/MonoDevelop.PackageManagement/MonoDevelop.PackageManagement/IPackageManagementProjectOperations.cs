@@ -57,6 +57,13 @@ namespace MonoDevelop.PackageManagement
 		/// license acceptance dialog will be displayed for any licences that require a license to be accepted.</param>
 		void InstallPackages (string packageSourceUrl, Project project, IEnumerable<PackageManagementPackageReference> packages, bool licensesAccepted);
 
+		/// <summary>
+		/// Installs NuGet packages into the selected project using the enabled package sources.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		void InstallPackages (Project project, IEnumerable<PackageManagementPackageReference> packages);
+
 		IEnumerable<PackageManagementPackageReference> GetInstalledPackages (Project project);
 
 		event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;

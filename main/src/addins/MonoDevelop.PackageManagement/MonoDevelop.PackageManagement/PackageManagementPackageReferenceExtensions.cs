@@ -1,10 +1,10 @@
 ﻿//
-// PackageManagementPackageReference.cs
+// PackageManagementPackageReferenceExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,18 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using NuGet.Versioning;
+
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageManagementPackageReference
+	internal static class PackageManagementPackageReferenceExtensions
 	{
-		public PackageManagementPackageReference (string id, string version)
+		public static NuGetVersion GetNuGetVersion (this PackageManagementPackageReference packageReference)
 		{
-			Id = id;
-			Version = version;
+			if (!String.IsNullOrEmpty (packageReference.Version)) {
+				return new NuGetVersion (packageReference.Version);
+			}
+			return null;
 		}
-
-		public string Id { get; set; }
-		public string Version { get; set; }
 	}
 }
 
