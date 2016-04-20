@@ -178,8 +178,26 @@ module CompilerArguments =
        let isAssemblyPortable path =
            try
                let assembly = Assembly.ReflectionOnlyLoadFrom path
-               assembly.GetReferencedAssemblies()
-               |> Seq.exists (fun a -> a.Name = "System.Runtime")
+
+               let referencesSystemRuntime() =
+                   assembly.GetReferencedAssemblies()
+                   |> Seq.exists (fun a -> a.Name = "System.Runtime")
+
+               let hasTargetFrameworkProfile() =
+                   try
+                       assembly.GetCustomAttributes(true)
+                       |> Seq.tryFind (fun a -> 
+                              match a with
+                              | :? TargetFrameworkAttribute as attr -> 
+                                   let fn = new FrameworkName(attr.FrameworkName)
+                                   not (fn.Profile = "")             
+                              | _ -> false)
+                       |> Option.isSome
+                   with
+                   | :? IOException -> true
+                   | _e -> false
+
+               referencesSystemRuntime() || hasTargetFrameworkProfile()
            with
            | _e -> false
                         
