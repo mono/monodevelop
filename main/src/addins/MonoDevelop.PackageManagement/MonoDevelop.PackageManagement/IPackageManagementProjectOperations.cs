@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -63,6 +64,16 @@ namespace MonoDevelop.PackageManagement
 		/// <param name="project">Project.</param>
 		/// <param name="packages">Packages.</param>
 		void InstallPackages (Project project, IEnumerable<PackageManagementPackageReference> packages);
+
+		/// <summary>
+		/// Installs NuGet packages into the selected project. If a NuGet package requires a license to be
+		/// accepted then a dialog will be displayed.
+		/// </summary>
+		/// <returns>A task that can be used to determine when all the packages have been installed.</returns>
+		/// <param name="packageSourceUrl">Package source URL.</param>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		Task InstallPackagesAsync (string packageSourceUrl, Project project, IEnumerable<PackageManagementPackageReference> packages);
 
 		IEnumerable<PackageManagementPackageReference> GetInstalledPackages (Project project);
 

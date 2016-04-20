@@ -98,6 +98,17 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<PackageManagementPackageReference> packages,
 			bool licensesAccepted)
 		{
+			var actions = CreateInstallActions (repositories, project, packages, licensesAccepted).ToList ();
+			ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (actions);
+			backgroundActionRunner.Run (progressMessage, actions);
+		}
+
+		IEnumerable<INuGetPackageAction> CreateInstallActions (
+			IEnumerable<SourceRepository> repositories,
+			Project project,
+			IEnumerable<PackageManagementPackageReference> packages,
+			bool licensesAccepted)
+		{
 			List<INuGetPackageAction> actions = null;
 
 			Runtime.RunInMainThread (() => {
@@ -119,8 +130,22 @@ namespace MonoDevelop.PackageManagement
 				}).ToList ();
 			}).Wait ();
 
+			return actions;
+		}
+
+		public Task InstallPackagesAsync (
+			string packageSourceUrl,
+			Project project,
+			IEnumerable<PackageManagementPackageReference> packages)
+		{
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var repository = repositoryProvider.CreateRepository (new PackageSource (packageSourceUrl));
+			var repositories = new [] { repository };
+
+			var actions = CreateInstallActions (repositories, project, packages, licensesAccepted: false).ToList ();
+
 			ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (actions);
-			backgroundActionRunner.Run (progressMessage, actions);
+			return backgroundActionRunner.RunAsync (progressMessage, actions);
 		}
 
 		ProgressMonitorStatusMessage GetProgressMonitorStatusMessages (List<INuGetPackageAction> packageActions)
@@ -136,6 +161,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			try {
 				return Runtime.RunInMainThread (async () => {
+					if (!IsValidProject (project)) {
+						return Enumerable.Empty<PackageManagementPackageReference> ();
+					}
+
 					var dotNetProject = (DotNetProject)project;
 					var nugetProject = CreateNuGetProject (dotNetProject);
 
@@ -155,6 +184,12 @@ namespace MonoDevelop.PackageManagement
 				LoggingService.LogError ("GetInstalledPackages error.", ex);
 				throw ExceptionUtility.Unwrap (ex);
 			}
+		}
+
+		static bool IsValidProject (Project project)
+		{
+			return project is DotNetProject &&
+				!String.IsNullOrEmpty (project.Name);
 		}
 
 		NuGetProject CreateNuGetProject (DotNetProject project)

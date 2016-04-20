@@ -27,11 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using NuGet;
-using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -46,15 +44,26 @@ namespace MonoDevelop.PackageManagement
 		List<FileEventArgs> fileChangedEvents = new List<FileEventArgs> ();
 		List<IPackageManagementProject> projectsRequiringTypeSystemRefresh = new List<IPackageManagementProject> ();
 		ISolution solutionContainingProjectBuildersToDispose;
+		TaskCompletionSource<bool> taskCompletionSource;
 
 		public PackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
+			: this (progressMonitor, packageManagementEvents, progressProvider, null)
+		{
+		}
+
+		public PackageManagementEventsMonitor (
+			ProgressMonitor progressMonitor,
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider,
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
 			this.progressMonitor = progressMonitor;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
+			this.taskCompletionSource = taskCompletionSource;
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
@@ -135,6 +144,10 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				progressMonitor.ReportSuccess (progressMessage.Success);
 			}
+
+			if (taskCompletionSource != null) {
+				taskCompletionSource.TrySetResult (true);
+			}
 		}
 
 		void AcceptLicenses (object sender, AcceptLicensesEventArgs e)
@@ -197,6 +210,10 @@ namespace MonoDevelop.PackageManagement
 			progressMonitor.ReportError (progressMessage.Error, null);
 			ShowPackageConsole (progressMonitor);
 			packageManagementEvents.OnPackageOperationError (ex);
+
+			if (taskCompletionSource != null) {
+				taskCompletionSource.TrySetException (ExceptionUtility.Unwrap (ex));
+			}
 		}
 
 		static string GetErrorMessageForPackageConsole (Exception ex)

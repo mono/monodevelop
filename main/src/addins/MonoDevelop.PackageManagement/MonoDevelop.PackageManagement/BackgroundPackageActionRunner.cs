@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet;
@@ -74,16 +75,31 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
+			Run (progressMessage, actions, null);
+		}
+
+		void Run (
+			ProgressMonitorStatusMessage progressMessage,
+			IEnumerable<IPackageAction> actions,
+			TaskCompletionSource<bool> taskCompletionSource)
+		{
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
 			runCount++;
 
 			List<IPackageAction> actionsList = actions.ToList ();
 			BackgroundDispatch (() => {
-				TryRunActionsWithProgressMonitor (progressMessage, actionsList);
+				TryRunActionsWithProgressMonitor (progressMessage, actionsList, taskCompletionSource);
 				actionsList = null;
 				progressMessage = null;
 			});
+		}
+
+		public Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
+		{
+			var taskCompletionSource = new TaskCompletionSource<bool> ();
+			Run (progressMessage, actions, taskCompletionSource);
+			return taskCompletionSource.Task;
 		}
 
 		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
@@ -93,10 +109,13 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void TryRunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> actions)
+		void TryRunActionsWithProgressMonitor (
+			ProgressMonitorStatusMessage progressMessage,
+			IList<IPackageAction> actions,
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
 			try {
-				RunActionsWithProgressMonitor (progressMessage, actions);
+				RunActionsWithProgressMonitor (progressMessage, actions, taskCompletionSource);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			} finally {
@@ -104,10 +123,13 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
+		void RunActionsWithProgressMonitor (
+			ProgressMonitorStatusMessage progressMessage,
+			IList<IPackageAction> installPackageActions,
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
 			using (ProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
-				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (monitor)) {
+				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (monitor, taskCompletionSource)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
@@ -126,17 +148,18 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor)
+		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor, TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider);
+			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider, taskCompletionSource);
 		}
 
 		protected virtual PackageManagementEventsMonitor CreateEventMonitor (
 			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IProgressProvider progressProvider,
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider, taskCompletionSource);
 		}
 
 		void RunActionsWithProgressMonitor (ProgressMonitor monitor, IList<IPackageAction> packageActions)
