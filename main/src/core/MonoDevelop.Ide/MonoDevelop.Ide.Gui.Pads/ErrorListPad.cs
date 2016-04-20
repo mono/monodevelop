@@ -271,7 +271,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				AddTask (t);
 			}
 
-			control.FocusChain = new Gtk.Widget [] { sw };
+			control.FocusChain = new Gtk.Widget [] { outputView };
 		}
 
 		public override void Dispose ()
