@@ -1184,6 +1184,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var projectId = GetProjectId (project);
 			if (CurrentSolution.ContainsProject (projectId)) {
 				OnProjectReloaded (await LoadProject (project, default(CancellationToken)).ConfigureAwait (false));
+				ProjectReloaded?.Invoke (this, new RoslynProjectEventArgs (projectId));
 			} else {
 				modifiedProjects.Add (project);
 			}
@@ -1191,6 +1192,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 
+
+		public event EventHandler<RoslynProjectEventArgs> ProjectReloaded;
 
 
 		/// <summary>
@@ -1213,43 +1216,54 @@ namespace MonoDevelop.Ide.TypeSystem
 			originalOffset = offset;
 			return false;
 		}
+
 	}
 
-//	static class MonoDevelopWorkspaceFeatures
-//	{
-//		static FeaturePack pack;
-//
-//		public static FeaturePack Features {
-//			get {
-//				if (pack == null)
-//					Interlocked.CompareExchange (ref pack, ComputePack (), null);
-//				return pack;
-//			}
-//		}
-//
-//		static FeaturePack ComputePack ()
-//		{
-//			var assemblies = new List<Assembly> ();
-//			var workspaceCoreAssembly = typeof(Workspace).Assembly;
-//			assemblies.Add (workspaceCoreAssembly);
-//
-//			LoadAssembly (assemblies, "Microsoft.CodeAnalysis.CSharp.Workspaces");
-//			//LoadAssembly (assemblies, "Microsoft.CodeAnalysis.VisualBasic.Workspaces");
-//
-//			var catalogs = assemblies.Select (a => new System.ComponentModel.Composition.Hosting.AssemblyCatalog (a));
-//
-//			return new MefExportPack (catalogs);
-//		}
-//
-//		static void LoadAssembly (List<Assembly> assemblies, string assemblyName)
-//		{
-//			try {
-//				var loadedAssembly = Assembly.Load (assemblyName);
-//				assemblies.Add (loadedAssembly);
-//			} catch (Exception e) {
-//				LoggingService.LogWarning ("Couldn't load assembly:" + assemblyName, e);
-//			}
-//		}
-//	}
+	//	static class MonoDevelopWorkspaceFeatures
+	//	{
+	//		static FeaturePack pack;
+	//
+	//		public static FeaturePack Features {
+	//			get {
+	//				if (pack == null)
+	//					Interlocked.CompareExchange (ref pack, ComputePack (), null);
+	//				return pack;
+	//			}
+	//		}
+	//
+	//		static FeaturePack ComputePack ()
+	//		{
+	//			var assemblies = new List<Assembly> ();
+	//			var workspaceCoreAssembly = typeof(Workspace).Assembly;
+	//			assemblies.Add (workspaceCoreAssembly);
+	//
+	//			LoadAssembly (assemblies, "Microsoft.CodeAnalysis.CSharp.Workspaces");
+	//			//LoadAssembly (assemblies, "Microsoft.CodeAnalysis.VisualBasic.Workspaces");
+	//
+	//			var catalogs = assemblies.Select (a => new System.ComponentModel.Composition.Hosting.AssemblyCatalog (a));
+	//
+	//			return new MefExportPack (catalogs);
+	//		}
+	//
+	//		static void LoadAssembly (List<Assembly> assemblies, string assemblyName)
+	//		{
+	//			try {
+	//				var loadedAssembly = Assembly.Load (assemblyName);
+	//				assemblies.Add (loadedAssembly);
+	//			} catch (Exception e) {
+	//				LoggingService.LogWarning ("Couldn't load assembly:" + assemblyName, e);
+	//			}
+	//		}
+	//	}
+
+	public class RoslynProjectEventArgs : EventArgs
+	{
+		public ProjectId ProjectId { get; private set; }
+
+		public RoslynProjectEventArgs (ProjectId projectId)
+		{
+			ProjectId = projectId;
+		}
+	}
 
 }
