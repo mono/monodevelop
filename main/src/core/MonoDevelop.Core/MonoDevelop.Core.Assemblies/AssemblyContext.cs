@@ -299,7 +299,10 @@ namespace MonoDevelop.Core.Assemblies
 		public string FindInstalledAssembly (string fullname, string package, TargetFramework fx)
 		{
 			Initialize ();
-			fullname = NormalizeAsmName (fullname);
+			var assemblyName = ParseAssemblyName (fullname);
+			var version = assemblyName.Version;
+			var stringVersion = version?.ToString ();
+			fullname = assemblyName.Name;
 			
 			SystemAssembly fasm = GetAssemblyFromFullName (fullname, package, fx);
 			if (fasm != null)
@@ -323,14 +326,16 @@ namespace MonoDevelop.Core.Assemblies
 			var asms = FindNewerAssembliesSameName (fullname).ToList ();
 
 			if (fx != null) {
-				var fxAsm = BestFrameworkAssembly (asms, fx);
+				var fxAsm = BestFrameworkAssembly (asms, fx, version);
 				if (fxAsm != null)
 					return fxAsm.FullName;
 			}
 
 			string bestMatch = null;
 			foreach (SystemAssembly asm in asms) {
-				if (fx.CanReferenceAssembliesTargetingFramework (asm.Package.TargetFramework)) {
+				if (fx.CanReferenceAssembliesTargetingFramework (asm.Package.TargetFramework) &&
+				    (stringVersion == null || stringVersion == asm.Version)) {
+
 					if (package != null && asm.Package.Name == package)
 						return asm.FullName;
 					bestMatch = asm.FullName;
@@ -339,13 +344,13 @@ namespace MonoDevelop.Core.Assemblies
 			return bestMatch;
 		}
 
-		static SystemAssembly BestFrameworkAssembly (IEnumerable<SystemAssembly> assemblies, TargetFramework fx)
+		static SystemAssembly BestFrameworkAssembly (IEnumerable<SystemAssembly> assemblies, TargetFramework fx, Version version = null)
 		{
 			if (fx == null)
 				return null;
 			return BestFrameworkAssembly (
 				assemblies
-				.Where (a => a.Package != null && a.Package.IsFrameworkPackage && fx.IncludesFramework (a.Package.TargetFramework))
+				.Where (a => a.Package != null && a.Package.IsFrameworkPackage && fx.IncludesFramework (a.Package.TargetFramework) && (version == null || version == a.AssemblyName.Version))
 				.ToList ()
 			);
 		}

@@ -226,6 +226,7 @@ namespace WindowsPlatform.MainToolbar
 		{
 			Status = StatusBarStatus.Ready;
 			ShowMessage (BrandingService.StatusSteadyIconId, BrandingService.ApplicationLongName);
+			SetMessageSourcePad (null);
 		}
 
 		void ApplicationNameChanged (object sender, EventArgs e)

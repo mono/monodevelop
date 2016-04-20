@@ -158,6 +158,8 @@ namespace MonoDevelop.Ide.Gui
 		/// </remarks>
 		public Pad GetPadForMonitor (ProgressMonitor monitor)
 		{
+			Runtime.AssertMainThread ();
+
 			foreach (Pad pad in outputMonitors) {
 				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
 				if (p.CurrentMonitor == monitor)
@@ -217,7 +219,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitorPad.StatusSourcePad = pad;
 			pad.Sticky = true;
-			outputMonitors.Add (pad);
+			lock (outputMonitors) {
+				outputMonitors.Add (pad);
+			}
 			
 			if (instanceCount > 0) {
 				// Additional output pads will be destroyed when hidden
@@ -238,7 +242,9 @@ namespace MonoDevelop.Ide.Gui
 
 		void DestroyPad (Pad pad)
 		{
-			outputMonitors.Remove (pad);
+			lock (outputMonitors) {
+				outputMonitors.Remove (pad);
+			}
 			pad.Destroy ();
 		}
 		
