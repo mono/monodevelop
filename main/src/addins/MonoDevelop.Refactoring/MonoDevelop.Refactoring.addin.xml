@@ -95,6 +95,14 @@
 					_label = "Export C# Code Rules to a File" 
 					_description = "Generates an HTML file that contains a list of all code rules"
 					/>
+		<Command id = "MonoDevelop.Refactoring.AnalyzeWholeSolution"
+					defaultHandler = "MonoDevelop.Refactoring.AnalyzeWholeSolutionHandler"
+					_label = "_Whole Solution" 
+					/>
+		<Command id = "MonoDevelop.Refactoring.AnalyzeCurrentProject"
+					defaultHandler = "MonoDevelop.Refactoring.AnalyzeCurrentProjectHandler"
+					_label = "_Current Project" 
+					/>
 		</Category>
 	</Extension>
 	
@@ -159,4 +167,12 @@
 	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
 		<Class id="MidStep" class="MonoDevelop.Refactoring.DummyJumpToDeclarationHandler" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
+		<ItemSet id = "Analyze" _label = "_Analyze" insertbefore="OptionsSection">
+			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeWholeSolution" />
+			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeCurrentProject" />
+		</ItemSet>
+	</Extension>
+
 </ExtensionModel>
