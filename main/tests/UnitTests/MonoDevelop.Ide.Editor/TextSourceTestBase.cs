@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		[Test]
-		public void TestTextAt_Segment()
+		public void TestTextAt_Segment ()
 		{
 			const string txt = "test";
 			var test = CreateTextSource (txt);
@@ -179,6 +179,18 @@ namespace MonoDevelop.Ide.Editor
 				test.CopyTo (i, dest, 0, dest.Length);
 				Assert.AreEqual (txt.Substring (i, dest.Length), new string (dest));
 			}
+		}
+
+
+		/// <summary>
+		/// Bug 40522 - Can't enter comment on blank last line of file
+		/// </summary>
+		[Test]
+		public void TestBug40522 ()
+		{
+			const string txt = "test";
+			var test = CreateTextSource (txt);
+			Assert.AreEqual ("", test.GetTextAt (new TextSegment (txt.Length, 0)));
 		}
 	}
 }
