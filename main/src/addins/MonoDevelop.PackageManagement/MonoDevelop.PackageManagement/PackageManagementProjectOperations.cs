@@ -34,6 +34,7 @@ using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
@@ -136,8 +137,7 @@ namespace MonoDevelop.PackageManagement
 			try {
 				return Runtime.RunInMainThread (async () => {
 					var dotNetProject = (DotNetProject)project;
-					var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
-					var nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (dotNetProject));
+					var nugetProject = CreateNuGetProject (dotNetProject);
 
 					var packagesBeingInstalled = GetPackagesBeingInstalled (dotNetProject).ToList ();
 
@@ -155,6 +155,16 @@ namespace MonoDevelop.PackageManagement
 				LoggingService.LogError ("GetInstalledPackages error.", ex);
 				throw ExceptionUtility.Unwrap (ex);
 			}
+		}
+
+		NuGetProject CreateNuGetProject (DotNetProject project)
+		{
+			if (project.ParentSolution != null) {
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+				return solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
+			}
+
+			return new MonoDevelopNuGetProjectFactory ().CreateNuGetProject (project);
 		}
 
 		IEnumerable<PackageManagementPackageReference> GetMissingPackagesBeingInstalled (

@@ -80,7 +80,8 @@ namespace MonoDevelop.PackageManagement
 					project.Name);
 			}
 
-			string folderNuGetProjectFullPath = PackagesFolderPathUtility.GetPackagesFolderPath (project.ParentSolution.BaseDirectory, settings);
+			string baseDirectory = GetBaseDirectory (project);
+			string folderNuGetProjectFullPath = PackagesFolderPathUtility.GetPackagesFolderPath (baseDirectory, settings);
 
 			string packagesConfigFolderPath = project.BaseDirectory;
 
@@ -88,6 +89,16 @@ namespace MonoDevelop.PackageManagement
 				projectSystem, 
 				folderNuGetProjectFullPath, 
 				packagesConfigFolderPath);
+		}
+
+		static string GetBaseDirectory (DotNetProject project)
+		{
+			if (project.ParentSolution != null)
+				return project.ParentSolution.BaseDirectory;
+
+			LoggingService.LogWarning ("Project has no solution. Using project directory as base directory for NuGet. Project: '{0}'", project.FileName);
+
+			return project.BaseDirectory;
 		}
 	}
 }
