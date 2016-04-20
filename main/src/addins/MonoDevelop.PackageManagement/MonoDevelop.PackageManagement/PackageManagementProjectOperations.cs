@@ -30,6 +30,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+<<<<<<< HEAD
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
@@ -37,6 +38,9 @@ using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+=======
+using Cairo;
+>>>>>>> roslyn-analyzers
 
 namespace MonoDevelop.PackageManagement
 {
@@ -57,6 +61,7 @@ namespace MonoDevelop.PackageManagement
 			this.backgroundActionRunner = backgroundActionRunner;
 
 			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
+			packageManagementEvents.ParentPackageUninstalling += PackageUninstalling;
 			packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
 		}
 
@@ -221,6 +226,7 @@ namespace MonoDevelop.PackageManagement
 			return new PackageManagementPackageReference (package.Id, package.Version.ToString ());
 		}
 
+
 		static PackageManagementPackageReference CreatePackageReference (IInstallNuGetPackageAction installAction)
 		{
 			return new PackageManagementPackageReference (
@@ -244,6 +250,8 @@ namespace MonoDevelop.PackageManagement
 		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
 		{
 			OnPackageReferenceAdded (e);
+			var installPath = solution.GetInstallPath (e.Package);
+			MonoDevelop.Refactoring.AnalyzerPackageService.AddPackageFiles (e.Project.DotNetProject, e.Package.GetFiles ().Select (f => System.IO.Path.Combine (installPath, f.Path)));
 		}
 
 		void OnPackageReferencedRemoved (ParentPackageOperationEventArgs e)

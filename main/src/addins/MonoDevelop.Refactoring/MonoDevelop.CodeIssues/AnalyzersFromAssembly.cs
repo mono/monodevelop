@@ -46,7 +46,7 @@ namespace MonoDevelop.CodeIssues
 		public List<CodeDiagnosticDescriptor> Analyzers;
 		public List<CodeDiagnosticFixDescriptor> Fixes;
 		public List<CodeRefactoringDescriptor> Refactorings;
-
+		public List<System.Reflection.Assembly> Assemblies;
 		public readonly static AnalyzersFromAssembly Empty = new AnalyzersFromAssembly ();
 
 		public AnalyzersFromAssembly ()
@@ -54,6 +54,7 @@ namespace MonoDevelop.CodeIssues
 			Analyzers = new List<CodeDiagnosticDescriptor> ();
 			Fixes = new List<CodeDiagnosticFixDescriptor> ();
 			Refactorings = new List<CodeRefactoringDescriptor> ();
+			Assemblies = new List<System.Reflection.Assembly> ();
 		}
 
 		internal static AnalyzersFromAssembly CreateFrom (System.Reflection.Assembly asm, bool force = false)
@@ -65,6 +66,7 @@ namespace MonoDevelop.CodeIssues
 
 		internal void AddAssembly (System.Reflection.Assembly asm, bool force = false)
 		{
+			this.Assemblies.Add (asm);
 			if (!force) {
 				var assemblyName = asm.GetName ().Name;
 				if (assemblyName == "MonoDevelop.AspNet" ||

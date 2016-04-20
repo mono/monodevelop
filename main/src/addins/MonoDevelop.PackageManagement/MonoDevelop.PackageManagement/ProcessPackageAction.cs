@@ -66,11 +66,16 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
+		protected void OnParentPackageUninstalling()
+		{
+			packageManagementEvents.OnParentPackageUninstalling(Package, Project);
+		}
+
 		protected void OnParentPackageUninstalled()
 		{
 			packageManagementEvents.OnParentPackageUninstalled(Package, Project);
 		}
-		
+
 		public void Execute()
 		{
 			BeforeExecute();

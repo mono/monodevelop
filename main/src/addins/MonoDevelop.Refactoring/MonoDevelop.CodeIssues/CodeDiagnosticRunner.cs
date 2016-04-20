@@ -40,13 +40,23 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Collections.Immutable;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
-		static IEnumerable<CodeDiagnosticDescriptor> diagnostics;
 		static TraceListener consoleTraceListener = new ConsoleTraceListener ();
+		static ImmutableDictionary<Projects.Project, WeakReference<List<CodeDiagnosticDescriptor>>> diagnosticCache = ImmutableDictionary<Projects.Project, WeakReference<List<CodeDiagnosticDescriptor>>>.Empty;
+
+		static CodeDiagnosticRunner()
+		{
+			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+				diagnosticCache = ImmutableDictionary<Projects.Project, WeakReference<List<CodeDiagnosticDescriptor>>>.Empty;
+			};
+		}
 
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
 		{
@@ -62,9 +72,17 @@ namespace MonoDevelop.CodeIssues
 
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
-				if (diagnostics == null) {
-					diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken);
+				List<CodeDiagnosticDescriptor> diagnostics = null;
+				WeakReference<List<CodeDiagnosticDescriptor>> weakref;
+				var prj = analysisDocument.DocumentContext.Project;
+				if (diagnosticCache.TryGetValue (prj, out weakref)) {
+					weakref.TryGetTarget (out diagnostics);
 				}
+				if (diagnostics == null) {
+					diagnostics = (await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken)).ToList();
+					diagnosticCache = diagnosticCache.SetItem (prj, new WeakReference<List<CodeDiagnosticDescriptor>> (diagnostics));
+				}
+
 				var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
 				foreach (var diagnostic in diagnostics) {
 					if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
@@ -95,7 +113,6 @@ namespace MonoDevelop.CodeIssues
 						delegate (Exception exception, DiagnosticAnalyzer analyzer, Diagnostic diag) {
 							LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 						},
-						null, 
 						false, 
 						false
 					);
