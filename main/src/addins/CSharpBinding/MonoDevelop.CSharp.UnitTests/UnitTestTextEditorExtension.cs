@@ -38,6 +38,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace MonoDevelop.CSharp
 {
@@ -155,6 +156,7 @@ namespace MonoDevelop.CSharp
 							test.UnitTestIdentifier = GetFullName (parentClass) + "." + method.Name;
 							foundTests.Add (test);
 						}
+						break;
 					}
 				}
 				if (test != null) {

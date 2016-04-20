@@ -143,20 +143,10 @@ namespace MonoDevelop.Ide.Gui
 
 		public static readonly Pango.FontDescription StatusFont = Pango.FontDescription.FromString ("Normal");
 
-		public static int StatusFontPixelHeight { get { return (int)(11 * PixelScale); } }
-		public static int ProgressBarHeight { get { return (int)(18 * PixelScale); } }
-		public static int ProgressBarInnerPadding { get { return (int)(4 * PixelScale); } }
-		public static int ProgressBarOuterPadding { get { return (int)(4 * PixelScale); } }
-
-		static double? pixelScale = null;
-
-		static double PixelScale {
-			get {
-				if (!pixelScale.HasValue)
-					pixelScale = GtkWorkarounds.GetPixelScale ();
-				return (double)pixelScale;
-			}
-		}
+		public static int StatusFontPixelHeight { get { return 11; } }
+		public static int ProgressBarHeight { get { return 18; } }
+		public static int ProgressBarInnerPadding { get { return 4; } }
+		public static int ProgressBarOuterPadding { get { return 4; } }
 
 		// Toolbar
 
@@ -320,7 +310,7 @@ namespace MonoDevelop.Ide.Gui
 			DefaultFont = defaultStyle.FontDescription.Copy ();
 			DefaultFontName = DefaultFont.ToString ();
 
-			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 				LoadLightStyle ();
 			else
 				LoadDarkStyle ();
@@ -584,7 +574,7 @@ namespace MonoDevelop.Ide.Gui
 
 			PopoverWindow.DefaultBackgroundColor = Color.FromName ("#5e5e5e");
 			PopoverWindow.DefaultTextColor = Color.FromName ("#bdc1c1");
-			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (0); // transparent since dark skin doesn't need shadows
+			PopoverWindow.ShadowColor = Color.FromName ("#000000").WithAlpha (0); // transparent since dark theme doesn't need shadows
 
 			PopoverWindow.ParamaterWindows.GradientStartColor = Color.FromName ("#fffee6");
 			PopoverWindow.ParamaterWindows.GradientEndColor = Color.FromName ("#fffcd1");

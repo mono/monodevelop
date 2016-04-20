@@ -99,7 +99,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			AllowCommit = !requireComment;
 			
 			if (!AuthorInformation.Default.IsValid) {
-				msgLabel.Markup = "<b><span foreground='red'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
+				msgLabel.Markup = "<b><span foreground='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + GettextCatalog.GetString ("ChangeLog entries can't be generated.") + "</span></b>";
 				pathLabel.Text = GettextCatalog.GetString ("The name or e-mail of the user has not been configured.");
 				logButton.Label = GettextCatalog.GetString ("Configure user data");
 				optionsButton.Visible = false;
@@ -114,11 +114,11 @@ namespace MonoDevelop.ChangeLogAddIn
 				string fc = GettextCatalog.GetString ("There are {0} files without a comment.\nThe ChangeLog entry for those files will not be generated.", uncommentedCount);
 				if (requireComment)
 					fc += "\n" + GettextCatalog.GetString ("Some of the projects require that files have comments when they are committed.");
-				warning = "<b><span foreground='red'>" + fc + "</span></b>\n";
+				warning = "<b><span foreground='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + fc + "</span></b>\n";
 			}
 			if (unknownFileCount > 0) {
 				string fc = GettextCatalog.GetPluralString ("{0} ChangeLog file not found. Some changes will not be logged.","{0} ChangeLog files not found. Some changes will not be logged.", unknownFileCount, unknownFileCount);
-				msgLabel.Markup = warning + "<b><span foreground='red'>" + fc + "</span></b>";
+				msgLabel.Markup = warning + "<b><span foreground='" + Ide.Gui.Styles.ErrorForegroundColor.ToHexString (false) + "'>" + fc + "</span></b>";
 				pathLabel.Text = GettextCatalog.GetString ("Click on the 'Details' button for more info.");
 			} else if (entries.Count == 1) {
 				msgLabel.Markup = warning + "<b>" + GettextCatalog.GetString ("The following ChangeLog file will be updated:") + "</b>";

@@ -105,7 +105,7 @@ namespace MonoDevelop.Refactoring
 			if (result.Count > 1) {
 				result.RemoveAt (result.Count - 1); 
 				NewLineInsertion insertLine;
-				var typeSyntaxReference = type.DeclaringSyntaxReferences.FirstOrDefault (r => r.Span.Contains (sourceSpan));
+				var typeSyntaxReference = type.DeclaringSyntaxReferences.FirstOrDefault (r => r.SyntaxTree.FilePath == data.FileName && r.Span.Contains (sourceSpan));
 
 				var lineBefore = data.GetLineByOffset (typeSyntaxReference.Span.End).PreviousLine;
 				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data).Length) {

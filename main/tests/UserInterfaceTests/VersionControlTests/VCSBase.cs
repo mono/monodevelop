@@ -177,7 +177,7 @@ namespace UserInterfaceTests
 				Session.WaitForElement (c => c.Window ().Marked ("MonoDevelop.VersionControl.Git.UserGitConfigDialog"));
 				TakeScreenShot ("Git-User-Not-Configured");
 				EnterGitUserConfig ("John Doe", "john.doe@example.com");
-			} catch (TimeoutException e) { }
+			} catch (TimeoutException) { }
 		}
 
 		protected void EnterGitUserConfig (string gitUser, string gitEmail)

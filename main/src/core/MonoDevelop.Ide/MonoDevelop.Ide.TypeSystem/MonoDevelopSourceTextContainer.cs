@@ -66,7 +66,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				var oldText = CurrentText;
 				var newText = oldText.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
 				currentText = newText;
-				handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, new TextChangeRange(TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
+				try {
+					handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, newText, new TextChangeRange (TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while text replacing", ex);
+				}
 			}
 		}
 

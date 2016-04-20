@@ -680,6 +680,13 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		protected override void OnDestroyed ()
 		{
+			if (resultPad != null) {
+				var resultWidget = resultPad.Control.GetNativeWidget<SearchResultWidget> ();
+				if (resultWidget.ResultCount > 0) {
+					resultPad.Window.Activate (true);
+				}
+			}
+
 			if (updateTimer != 0) {
 				GLib.Source.Remove (updateTimer);
 				updateTimer = 0;
@@ -772,21 +779,27 @@ namespace MonoDevelop.Ide.FindInFiles
 		static FindReplace find;
 		void HandleReplaceClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryFind.Entry.Text, comboboxentryReplace.Entry.Text ?? "", GetScope (), GetFilterOptions (), () => UpdateStopButton ());
+			SearchReplace (comboboxentryFind.Entry.Text, comboboxentryReplace.Entry.Text ?? "", GetScope (), GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
 		}
 
 		void HandleSearchClicked (object sender, EventArgs e)
 		{
-			SearchReplace (comboboxentryFind.Entry.Text, null, GetScope (), GetFilterOptions (), () => UpdateStopButton ());
+			SearchReplace (comboboxentryFind.Entry.Text, null, GetScope (), GetFilterOptions (), () => UpdateStopButton (), UpdateResultPad);
 		}
 
 		static CancellationTokenSource searchTokenSource = new CancellationTokenSource ();
 		static Task currentTask;
 		uint updateTimer;
+		SearchResultPad resultPad;
 
 		void UpdateStopButton ()
 		{
 			buttonStop.Sensitive = currentTask != null && !currentTask.IsCompleted;
+		}
+
+		void UpdateResultPad (SearchResultPad pad)
+		{
+			resultPad = pad;
 		}
 
 		void ButtonStopClicked (object sender, EventArgs e)
@@ -794,7 +807,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			searchTokenSource.Cancel ();
 		}
 
-		internal static void SearchReplace (string findPattern, string replacePattern, Scope scope, FilterOptions options, System.Action UpdateStopButton)
+		internal static void SearchReplace (string findPattern, string replacePattern, Scope scope, FilterOptions options, System.Action UpdateStopButton, System.Action<SearchResultPad> UpdateResultPad)
 		{
 			if (find != null && find.IsRunning) {
 				if (!MessageService.Confirm (GettextCatalog.GetString ("There is a search already in progress. Do you want to stop it?"), AlertButton.Stop))
@@ -826,6 +839,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, cancellationTokenSource:cancelSource)) {
 
 					searchMonitor.PathMode = scope.PathMode;
+
+					if (UpdateResultPad != null) {
+						Application.Invoke (delegate {
+							UpdateResultPad (searchMonitor.ResultPad);
+						});
+					}
 
 					searchMonitor.ReportStatus (scope.GetDescription (options, pattern, null));
 					if (UpdateStopButton != null) {

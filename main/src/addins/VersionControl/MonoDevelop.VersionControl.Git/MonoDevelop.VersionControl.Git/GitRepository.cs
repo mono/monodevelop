@@ -1444,7 +1444,19 @@ namespace MonoDevelop.VersionControl.Git
 				dstRepo.Unstage (localDestPath);
 
 			if (srcRepo == dstRepo) {
-				srcRepo.Move (localSrcPath, localDestPath);
+				if (string.Equals (localSrcPath, localDestPath, StringComparison.OrdinalIgnoreCase)) {
+					try {
+						string temp = Path.GetTempFileName ();
+						File.Delete (temp);
+						File.Move (localSrcPath, temp);
+						DeleteFile (localSrcPath, true, monitor, false);
+						File.Move (temp, localDestPath);
+					} finally {
+						srcRepo.Stage (localDestPath);
+					}
+				} else {
+					srcRepo.Move (localSrcPath, localDestPath);
+				}
 				ClearCachedVersionInfo (localSrcPath, localDestPath);
 			} else {
 				File.Copy (localSrcPath, localDestPath);

@@ -61,10 +61,10 @@ namespace MonoDevelop.Refactoring
 				var provider  = (FindReferencesProvider) args.ExtensionObject;
 				switch (args.Change) {
 					case ExtensionChange.Add:
-					findReferencesProvider.Add (provider);
+					findReferencesProvider = findReferencesProvider.Add (provider);
 					break;
 					case ExtensionChange.Remove:
-					findReferencesProvider.Remove (provider);
+					findReferencesProvider = findReferencesProvider.Remove (provider);
 					break;
 				}
 			});
@@ -192,33 +192,33 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 
-//		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
-//		{
-//			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
-//			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
-//
-//			ThreadPool.QueueUserWorkItem (delegate {
-//				try {
-//					var result = new List<CodeAction> ();
-//					foreach (var r in issues) {
-//						if (token.IsCancellationRequested)
-//							return;
-//						var fresult = r as FixableResult;
-//						if (fresult == null)
-//							continue;
-////						foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
-////							result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r) {
-////								DocumentRegion = action.DocumentRegion
-////							});
-////						}
-//					}
-//					result.AddRange (GetValidActions (doc, loc).Result);
-//					callback (result);
-//				} catch (Exception ex) {
-//					LoggingService.LogError ("Error in analysis service", ex);
-//				}
-//			});
-//		}	
+		//		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
+		//		{
+		//			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
+		//			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
+		//
+		//			ThreadPool.QueueUserWorkItem (delegate {
+		//				try {
+		//					var result = new List<CodeAction> ();
+		//					foreach (var r in issues) {
+		//						if (token.IsCancellationRequested)
+		//							return;
+		//						var fresult = r as FixableResult;
+		//						if (fresult == null)
+		//							continue;
+		////						foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
+		////							result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r) {
+		////								DocumentRegion = action.DocumentRegion
+		////							});
+		////						}
+		//					}
+		//					result.AddRange (GetValidActions (doc, loc).Result);
+		//					callback (result);
+		//				} catch (Exception ex) {
+		//					LoggingService.LogError ("Error in analysis service", ex);
+		//				}
+		//			});
+		//		}	
 
 		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (IReadonlyTextDocument editor, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
@@ -243,20 +243,22 @@ namespace MonoDevelop.Refactoring
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			foreach (var provider in findReferencesProvider) {
-				try {
-					foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
-						monitor.ReportResult (result);
+			try {
+				foreach (var provider in findReferencesProvider) {
+					try {
+						foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
+							monitor.ReportResult (result);
+						}
+					} catch (Exception ex) {
+						if (monitor != null)
+							monitor.ReportError ("Error finding references", ex);
+						LoggingService.LogError ("Error finding references", ex);
+						findReferencesProvider = findReferencesProvider.Remove (provider);
 					}
-				} catch (Exception ex) {
-					if (monitor != null)
-						monitor.ReportError ("Error finding references", ex);
-					LoggingService.LogError ("Error finding references", ex);
-					findReferencesProvider = findReferencesProvider.Remove (provider);
-				} finally {
-					if (monitor != null)
-						monitor.Dispose ();
 				}
+			} finally {
+				if (monitor != null)
+					monitor.Dispose ();
 			}
 		}
 
@@ -265,22 +267,24 @@ namespace MonoDevelop.Refactoring
 			if (hintProject == null)
 				hintProject = IdeApp.Workbench.ActiveDocument?.Project;
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-			foreach (var provider in findReferencesProvider) {
-				try {
-					foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, monitor.CancellationToken)) {
-						monitor.ReportResult (result);
-					}
-				} catch (OperationCanceledException) {
+			try {
+				foreach (var provider in findReferencesProvider) {
+					try {
+						foreach (var result in await provider.FindAllReferences (documentIdString, hintProject, monitor.CancellationToken)) {
+							monitor.ReportResult (result);
+						}
+					} catch (OperationCanceledException) {
 
-				} catch (Exception ex) {
-					if (monitor != null)
-						monitor.ReportError ("Error finding references", ex);
-					LoggingService.LogError ("Error finding references", ex);
-					findReferencesProvider = findReferencesProvider.Remove (provider);
-				} finally {
-					if (monitor != null)
-						monitor.Dispose ();
+					} catch (Exception ex) {
+						if (monitor != null)
+							monitor.ReportError ("Error finding references", ex);
+						LoggingService.LogError ("Error finding references", ex);
+						findReferencesProvider = findReferencesProvider.Remove (provider);
+					}
 				}
+			} finally {
+				if (monitor != null)
+					monitor.Dispose ();
 			}
 		}
 

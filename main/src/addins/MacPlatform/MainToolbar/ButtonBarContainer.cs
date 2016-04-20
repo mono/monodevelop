@@ -79,7 +79,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nfloat y = 0;
 			nfloat height = AwesomeBar.ToolbarWidgetHeight;
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 				y = 2;
 				height += 2;
 			} else {

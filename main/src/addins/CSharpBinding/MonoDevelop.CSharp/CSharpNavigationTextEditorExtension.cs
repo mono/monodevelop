@@ -47,17 +47,19 @@ namespace MonoDevelop.CSharp
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
-				return emptyList;
+				return Enumerable.Empty<NavigationSegment> ();
 			var model = parsedDocument.GetAst<SemanticModel> ();
 			if (model == null)
-				return emptyList;
-			try {
-				var visitor = new NavigationVisitor (DocumentContext, model, new TextSpan (offset, length), token);
-				visitor.Visit (await model.SyntaxTree.GetRootAsync (token).ConfigureAwait (false));
-				return visitor.result;
-			} catch (OperationCanceledException) {
-				return emptyList;
-			}
+				return Enumerable.Empty<NavigationSegment> ();
+			return await Task.Run (async delegate {
+				try {
+					var visitor = new NavigationVisitor (DocumentContext, model, new TextSpan (offset, length), token);
+					visitor.Visit (await model.SyntaxTree.GetRootAsync (token).ConfigureAwait (false));
+					return (IEnumerable<NavigationSegment>)visitor.result;
+				} catch (OperationCanceledException) {
+					return (IEnumerable<NavigationSegment>)emptyList;
+				}
+			});
 		}
 
 		class NavigationVisitor : CSharpSyntaxWalker

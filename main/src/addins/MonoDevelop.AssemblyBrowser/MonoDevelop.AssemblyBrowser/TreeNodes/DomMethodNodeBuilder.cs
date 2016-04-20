@@ -216,7 +216,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = CecilLoader.GetCecilObject (method);
+			var cecilMethod = GetCecilLoader (navigator).GetCecilObject (method);
 			if (cecilMethod == null)
 				return null;
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
@@ -227,7 +227,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = CecilLoader.GetCecilObject (method);
+			var cecilMethod = GetCecilLoader (navigator).GetCecilObject (method);
 			if (cecilMethod == null)
 				return null;
 			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
@@ -269,7 +269,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
 				return null;
-			var cecilMethod = CecilLoader.GetCecilObject (method);
+			var cecilMethod = GetCecilLoader (navigator).GetCecilObject (method);
 			if (cecilMethod == null)
 				return null;
 			return Disassemble (data, rd => rd.DisassembleMethod (cecilMethod));
