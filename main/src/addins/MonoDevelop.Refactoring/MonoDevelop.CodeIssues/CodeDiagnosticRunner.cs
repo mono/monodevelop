@@ -80,7 +80,7 @@ namespace MonoDevelop.CodeIssues
 				}
 				if (diagnostics == null) {
 					diagnostics = (await CodeRefactoringService.GetCodeDiagnosticsAsync (analysisDocument.DocumentContext, language, cancellationToken)).ToList();
-					diagnosticCache = diagnosticCache.Add (prj, new WeakReference<List<CodeDiagnosticDescriptor>> (diagnostics));
+					diagnosticCache = diagnosticCache.SetItem (prj, new WeakReference<List<CodeDiagnosticDescriptor>> (diagnostics));
 				}
 
 				var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
