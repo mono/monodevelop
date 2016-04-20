@@ -50,35 +50,35 @@
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.XmlTransform">
-      <HintPath>..\..\..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\..\packages\NuGet.Core.2.10.1\lib\net40-Client\NuGet.Core.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NuGet.Versioning">
-      <HintPath>..\..\..\..\packages\NuGet.Versioning.3.3.0\lib\net45\NuGet.Versioning.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NuGet.Frameworks">
-      <HintPath>..\..\..\..\packages\NuGet.Frameworks.3.3.0\lib\net45\NuGet.Frameworks.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Frameworks.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Packaging.Core.Types">
-      <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.Types.3.3.0\lib\net45\NuGet.Packaging.Core.Types.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Packaging.Core.Types.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Packaging.Core">
-      <HintPath>..\..\..\..\packages\NuGet.Packaging.Core.3.3.0\lib\net45\NuGet.Packaging.Core.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Packaging.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="NuGet.Logging">
-      <HintPath>..\..\..\..\packages\NuGet.Logging.3.3.0\lib\net45\NuGet.Logging.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Logging.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Packaging">
-      <HintPath>..\..\..\..\packages\NuGet.Packaging.3.3.0\lib\net45\NuGet.Packaging.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Packaging.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Configuration">
-      <HintPath>..\..\..\..\packages\NuGet.Configuration.3.3.0\lib\net45\NuGet.Configuration.dll</HintPath>
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="System.Globalization" />
     <Reference Include="System.Security" />
@@ -262,8 +262,5 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.PackageManagement.Tests\" />
     <Folder Include="MonoDevelop.PackageManagement.Tests.Helpers\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>
