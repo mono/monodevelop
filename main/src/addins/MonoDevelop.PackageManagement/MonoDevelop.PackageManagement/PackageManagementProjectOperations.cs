@@ -30,7 +30,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
-<<<<<<< HEAD
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
@@ -38,9 +37,7 @@ using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
-=======
 using Cairo;
->>>>>>> roslyn-analyzers
 
 namespace MonoDevelop.PackageManagement
 {
@@ -61,7 +58,6 @@ namespace MonoDevelop.PackageManagement
 			this.backgroundActionRunner = backgroundActionRunner;
 
 			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
-			packageManagementEvents.ParentPackageUninstalling += PackageUninstalling;
 			packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
 		}
 
