@@ -114,7 +114,6 @@ namespace MonoDevelop.Refactoring
 			base.OnSizeRequested (ref requisition);
 			int y = verticalTextBorder * 2 - verticalTextSpace + (Core.Platform.IsWindows ? 10 : 2);
 
-
 			var qh = new Queue<DiffHunk> ();
 			var he = diff.GetEnumerator ();
 			he.MoveNext ();
@@ -138,7 +137,6 @@ namespace MonoDevelop.Refactoring
 			if (qh.Count != 0) {
 				MeasureHunks (qh, editor, changedTextDocument, ref x, ref y);
 			}
-
 			requisition.Height = y;
 			requisition.Width = x + textBorder * 2;
 		}
@@ -149,7 +147,6 @@ namespace MonoDevelop.Refactoring
 			int remStart;
 			int insStart;
 			int distance = 0;
-
 			do {
 				item = qh.Dequeue ();
 				remStart = System.Math.Max (1, item.RemoveStart - (distance != 0 ? distance : item.Context));
@@ -180,11 +177,15 @@ namespace MonoDevelop.Refactoring
 		void MeasureLine (IReadonlyTextDocument document, int lineNumber, ref int x, ref int y)
 		{
 			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
+				drawingLayout.FontDescription = fontDescription;
 				var line = document.GetLine (lineNumber);
 				var indent = line.GetIndentation (document);
-
 				var curLineIndent = CalcIndentLength(indent);
-				if (this.indentLength < 0 || this.indentLength> curLineIndent)
+				if (line.Length == curLineIndent) {
+					y += lineHeight;
+					return;
+				}
+				if (this.indentLength < 0 || this.indentLength > curLineIndent)
 					this.indentLength = curLineIndent;
 				drawingLayout.SetText (document.GetTextAt (line));
 				int w, h;
