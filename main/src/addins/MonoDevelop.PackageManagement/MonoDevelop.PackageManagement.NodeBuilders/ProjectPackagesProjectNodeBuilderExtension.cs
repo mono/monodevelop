@@ -102,6 +102,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 			packageManagementEvents.PackagesRestored -= PackagesRestored;
 			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
+			packageManagementEvents.PackageOperationsFinished -= PackageOperationsFinished;
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
 			packageManagementEvents.UpdatedPackagesAvailable -= UpdatedPackagesAvailable;
 		}

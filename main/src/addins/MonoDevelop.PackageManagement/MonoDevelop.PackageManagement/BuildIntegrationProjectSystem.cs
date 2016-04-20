@@ -34,6 +34,13 @@ namespace MonoDevelop.PackageManagement
 			return Task.FromResult (true);
 		}
 
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
+		{
+			packageManagementEvents.OnFileChanged (JsonConfigPath);
+
+			return base.PostProcessAsync (nuGetProjectContext, token);
+		}
+
 		public override Task<IReadOnlyList<BuildIntegratedProjectReference>> GetProjectReferenceClosureAsync (NuGet.Logging.ILogger logger)
 		{
 			// TODO: Needs to be implemented.

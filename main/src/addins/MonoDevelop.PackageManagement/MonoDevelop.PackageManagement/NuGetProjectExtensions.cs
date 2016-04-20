@@ -24,9 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
+using NuGet.ProjectManagement.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -44,6 +47,20 @@ namespace MonoDevelop.PackageManagement
 
 			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionManager, solutionManager.Settings);
 			return new FilePath (path).FullPath;
+		}
+
+		/// <summary>
+		/// PostProcessAsync is not run for BuildIntegratedNuGetProjects so we run it directly after
+		/// running a NuGet action.
+		/// </summary>
+		public static Task RunPostProcessAsync (this NuGetProject project, INuGetProjectContext context, CancellationToken token)
+		{
+			var buildIntegratedProject = project as BuildIntegratedNuGetProject;
+			if (buildIntegratedProject != null) {
+				return buildIntegratedProject.PostProcessAsync (context, token);
+			}
+
+			return Task.FromResult (0);
 		}
 	}
 }

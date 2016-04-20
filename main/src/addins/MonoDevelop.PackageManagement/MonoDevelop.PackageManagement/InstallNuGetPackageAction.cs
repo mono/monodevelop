@@ -132,6 +132,8 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			NuGetPackageManager.ClearDirectInstall (context);
+
+			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
 		Task<NuGetVersion> GetLatestPackageVersion (string packageId)

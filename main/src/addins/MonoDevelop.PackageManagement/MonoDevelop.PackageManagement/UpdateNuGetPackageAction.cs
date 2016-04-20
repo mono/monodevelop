@@ -95,6 +95,8 @@ namespace MonoDevelop.PackageManagement
 					context,
 					cancellationToken);
 			}
+
+			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
 		public bool HasPackageScriptsToRun ()
