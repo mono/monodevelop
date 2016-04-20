@@ -31,7 +31,6 @@ using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
 using MonoDevelop.Components;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
@@ -40,15 +39,15 @@ namespace MonoDevelop.PackageManagement.Gui
 {
 	internal class PackageSourcesOptionsPanel : OptionsPanel
 	{
-		PackageManagementViewModels viewModels;
+		RegisteredPackageSourcesViewModel viewModel;
 		PackageSourcesWidget packageSourcesWidget;
 
 		public override Control CreatePanelWidget()
 		{
-			viewModels = new PackageManagementViewModels ();
-			viewModels.RegisteredPackageSourcesViewModel.Load ();
+			viewModel = new RegisteredPackageSourcesViewModel ();
+			viewModel.Load ();
 			
-			packageSourcesWidget = new PackageSourcesWidget (viewModels.RegisteredPackageSourcesViewModel);
+			packageSourcesWidget = new PackageSourcesWidget (viewModel);
 			return packageSourcesWidget;
 		}
 
@@ -92,8 +91,7 @@ namespace MonoDevelop.PackageManagement.Gui
 
 		bool AnyPasswordsToBeEncrypted ()
 		{
-			return viewModels
-				.RegisteredPackageSourcesViewModel
+			return viewModel
 				.PackageSourceViewModels
 				.Any (packageSource => packageSource.HasPassword ());
 		}
@@ -125,10 +123,10 @@ namespace MonoDevelop.PackageManagement.Gui
 		{
 			try {
 				if (packageSourcesWidget.HasPackageSourcesOrderChanged) {
-					viewModels.RegisteredPackageSourcesViewModel.Save (
+					viewModel.Save (
 						packageSourcesWidget.GetOrderedPackageSources ());
 				} else {
-					viewModels.RegisteredPackageSourcesViewModel.Save ();
+					viewModel.Save ();
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unable to save NuGet.config changes", ex);

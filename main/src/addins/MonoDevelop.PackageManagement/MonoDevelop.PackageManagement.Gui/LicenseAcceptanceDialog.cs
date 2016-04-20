@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 			return String.Format (
 				"<span weight='bold'>{0}</span>\t{1}\n<a href='{2}'>{3}</a>",
 				package.Id,
-				package.GetAuthors (),
+				package.Author,
 				package.LicenseUrl,
 				GettextCatalog.GetString ("View License")
 			);

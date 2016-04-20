@@ -48,14 +48,40 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="NuGet.Core">
-      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\..\..\external\nuget-binary\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NuGet.Versioning">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="NuGet.Frameworks">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Frameworks.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core.Types">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Packaging.Core.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Packaging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="NuGet.Logging">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Configuration">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization" />
+    <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,8 +147,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\UninstallPackageHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatePackageActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\UpdatePackageHelper.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateAllPackagesInProjectTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateAllPackagesInSolutionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UserAgentGeneratorForRepositoryRequestsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithHttpClientEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReducedPackageOperationsTests.cs" />
@@ -181,7 +205,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageCompatibilityRunnerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityChecker.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReinstallerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeBackgroundPackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallPackageActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallProjectPackagesActionTests.cs" />
@@ -191,13 +214,12 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackagesFolderNodeTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackagesFolderNode.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatedPackagesInWorkspace.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PageCollectionAssert.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopAggregateRepositoryTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\RestorePackagesActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableLocalPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableSolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeFileRemover.cs" />
@@ -214,6 +236,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\MinClientVersionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageNewImportsHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageSourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

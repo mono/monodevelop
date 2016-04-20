@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Projects;
 

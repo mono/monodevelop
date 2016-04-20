@@ -41,8 +41,6 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
 		static readonly PackageManagementOutputMessagesView outputMessagesView;
 		static readonly PackageActionRunner packageActionRunner;
-		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
-		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
 		static readonly PackageRepositoryCache packageRepositoryCache;
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
 		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
@@ -50,20 +48,21 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementProgressProvider progressProvider;
 		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
 		static readonly PackageCompatibilityHandler packageCompatibilityHandler;
-		static readonly UpdatedPackagesInSolution updatedPackagesInSolution;
+		static readonly UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		static readonly PackageManagementProjectOperations projectOperations;
+		static readonly PackageManagementWorkspace workspace;
 
 		static PackageManagementServices()
 		{
+			DefaultPackageSourceSettingsProvider.CreateDefaultPackageSourceSettingsIfMissing ();
+
 			options = new PackageManagementOptions();
 			packageRepositoryCache = new PackageRepositoryCache (options);
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();
 			userAgentGenerator.Register (packageRepositoryCache);
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
-			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
-			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(projectTemplatePackageSources);
-			
+
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			solution = new PackageManagementSolution (registeredPackageRepositories, projectService, packageManagementEvents);
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
@@ -75,9 +74,11 @@ namespace MonoDevelop.PackageManagement
 			packageCompatibilityHandler = new PackageCompatibilityHandler ();
 			packageCompatibilityHandler.MonitorTargetFrameworkChanges (projectTargetFrameworkMonitor);
 
-			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
+			updatedPackagesInWorkspace = new UpdatedNuGetPackagesInWorkspace (packageManagementEvents);
 
 			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
+
+			workspace = new PackageManagementWorkspace ();
 
 			InitializeCredentialProvider();
 			PackageManagementBackgroundDispatcher.Initialize ();
@@ -136,14 +137,6 @@ namespace MonoDevelop.PackageManagement
 		internal static IPackageActionRunner PackageActionRunner {
 			get { return packageActionRunner; }
 		}
-		
-		internal static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
-			get { return projectTemplatePackageRepositoryCache; }
-		}
-		
-		internal static RegisteredPackageSources ProjectTemplatePackageSources {
-			get { return projectTemplatePackageSources.PackageSources; }
-		}
 
 		internal static IBackgroundPackageActionRunner BackgroundPackageActionRunner {
 			get { return backgroundPackageActionRunner; }
@@ -161,12 +154,16 @@ namespace MonoDevelop.PackageManagement
 			get { return progressProvider; }
 		}
 
-		internal static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
-			get { return updatedPackagesInSolution; }
+		internal static IUpdatedNuGetPackagesInWorkspace UpdatedPackagesInWorkspace {
+			get { return updatedPackagesInWorkspace; }
 		}
 
 		public static IPackageManagementProjectOperations ProjectOperations {
 			get { return projectOperations; }
+		}
+
+		internal static PackageManagementWorkspace Workspace {
+			get { return workspace; }
 		}
 	}
 }

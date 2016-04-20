@@ -30,9 +30,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
+using NuGet.Common;
+using MonoDevelop.Core;
+using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -94,12 +97,12 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasPackages (this IDotNetProject project)
 		{
-			return AnyFileExists (GetPossiblePackagesConfigFilePaths (project.BaseDirectory, project.Name));
+			return AnyFileExists (GetPossiblePackagesConfigOrProjectJsonFilePaths (project.BaseDirectory, project.Name));
 		}
 
 		static bool HasPackages (string projectDirectory, string projectName)
 		{
-			return AnyFileExists (GetPossiblePackagesConfigFilePaths (projectDirectory, projectName));
+			return AnyFileExists (GetPossiblePackagesConfigOrProjectJsonFilePaths (projectDirectory, projectName));
 		}
 
 		static bool AnyFileExists (IEnumerable<string> files)
@@ -107,10 +110,11 @@ namespace MonoDevelop.PackageManagement
 			return files.Any (FileExists);
 		}
 
-		static IEnumerable<string> GetPossiblePackagesConfigFilePaths (string projectDirectory, string projectName)
+		static IEnumerable<string> GetPossiblePackagesConfigOrProjectJsonFilePaths (string projectDirectory, string projectName)
 		{
 			yield return GetNonDefaultProjectPackagesConfigFilePath (projectDirectory, projectName);
 			yield return GetDefaultPackagesConfigFilePath (projectDirectory);
+			yield return ProjectJsonPathUtilities.GetProjectConfigPath (projectDirectory, projectName);
 		}
 
 		static string GetNonDefaultProjectPackagesConfigFilePath (string projectDirectory, string projectName)
@@ -125,7 +129,7 @@ namespace MonoDevelop.PackageManagement
 
 		static string GetDefaultPackagesConfigFilePath (string projectDirectory)
 		{
-			return Path.Combine (projectDirectory, Constants.PackageReferenceFile);
+			return Path.Combine (projectDirectory, NuGet.Constants.PackageReferenceFile);
 		}
 
 		public static string GetPackagesConfigFilePath (this IDotNetProject project)
@@ -140,6 +144,19 @@ namespace MonoDevelop.PackageManagement
 				return nonDefaultPackagesConfigFilePath;
 			}
 			return GetDefaultPackagesConfigFilePath (projectDirectory);
+		}
+
+		public static FilePath GetPackagesFolderPath (this DotNetProject project)
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			if (solutionManager == null)
+				return FilePath.Null;
+
+			NuGetProject nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
+			if (nugetProject == null)
+				return FilePath.Null;
+
+			return nugetProject.GetPackagesFolderPath (solutionManager);
 		}
 	}
 }

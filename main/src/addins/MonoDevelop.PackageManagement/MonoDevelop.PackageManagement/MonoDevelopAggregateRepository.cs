@@ -42,12 +42,12 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public override void LogRepository (IPackageRepository repository, Exception ex)
-		{
-			base.LogRepository (repository, ex);
-			LoggingService.LogInfo ("PackageRepository failure.", ex);
-			failures.Enqueue (ex);
-		}
+		//public override void LogRepository (IPackageRepository repository, Exception ex)
+		//{
+		//	base.LogRepository (repository, ex);
+		//	LoggingService.LogInfo ("PackageRepository failure.", ex);
+		//	failures.Enqueue (ex);
+		//}
 
 		public bool AnyFailures ()
 		{

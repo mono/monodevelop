@@ -28,11 +28,12 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class InstallPackageAction : ProcessPackageOperationsAction
+	internal class InstallPackageAction : ProcessPackageOperationsAction, IInstallNuGetPackageAction
 	{
 		IFileRemover fileRemover;
 
@@ -101,6 +102,11 @@ namespace MonoDevelop.PackageManagement
 				return base.CreateOpenPackageReadMeMonitor (packageId);
 			}
 			return NullOpenPackageReadMeMonitor.Null;
+		}
+
+		public bool IsForProject (DotNetProject project)
+		{
+			return Project.DotNetProject == project;
 		}
 	}
 }

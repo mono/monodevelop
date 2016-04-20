@@ -90,7 +90,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			return false;
 		}
 
-		Solution GetSelectedSolution ()
+		protected Solution GetSelectedSolution ()
 		{
 			DotNetProject project = GetSelectedDotNetProject ();
 			if (project != null) {

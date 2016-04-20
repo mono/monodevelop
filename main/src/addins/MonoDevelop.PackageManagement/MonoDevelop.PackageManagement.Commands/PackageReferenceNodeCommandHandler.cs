@@ -51,15 +51,17 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
-			UninstallPackageAction action = project.CreateUninstallPackageAction ();
-			action.Package = project.FindPackage (packageReferenceNode.Id);
-
-			if (action.Package != null) {
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+			var project = solutionManager.GetNuGetProject (packageReferenceNode.Project);
+			var action = new UninstallNuGetPackageAction (solutionManager, project) {
+				PackageId = packageReferenceNode.Id
+			};
+			// TODO - handle unrestored NuGet packages.
+			//if (action.Package != null) {
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-			} else {
-				ShowMissingPackageError (progressMessage, packageReferenceNode);
-			}
+			//} else {
+			//	ShowMissingPackageError (progressMessage, packageReferenceNode);
+			//}
 		}
 
 		void ShowMissingPackageError (ProgressMonitorStatusMessage progressMessage, PackageReferenceNode packageReferenceNode)
@@ -86,23 +88,24 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 
 			try {
-				IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
-				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
-				UpdatePackageAction action = project.CreateUpdatePackageAction ();
-				action.PackageId = packageReferenceNode.Id;
-				action.AllowPrereleaseVersions = !packageReferenceNode.IsReleaseVersion ();
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+				var project = solutionManager.GetNuGetProject (packageReferenceNode.Project);
+				var action = new UpdateNuGetPackageAction (solutionManager, project) {
+					PackageId = packageReferenceNode.Id,
+					IncludePrerelease = !packageReferenceNode.IsReleaseVersion ()
+				};
 
-				IPackageManagementSolution solution = GetPackageManagementSolution ();
-				RestoreBeforeUpdateAction.Restore (solution, project, () => {
-					UpdatePackage (progressMessage, action);
-				});
+				// TODO - No updates available status bar message.
+				//ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
+				UpdatePackage (progressMessage, action);
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
 		}
 
-		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, UpdatePackageAction action)
+		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
 		{
 			try {
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);

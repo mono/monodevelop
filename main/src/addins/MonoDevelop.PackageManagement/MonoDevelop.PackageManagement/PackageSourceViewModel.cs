@@ -27,32 +27,48 @@
 //
 
 using System;
-using NuGet;
+using NuGet.Configuration;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class PackageSourceViewModel : ViewModelBase<PackageSourceViewModel>
 	{
-		RegisteredPackageSource packageSource;
+		PackageSource packageSource;
+
+		public PackageSourceViewModel ()
+			: this (new PackageSource (""))
+		{
+		}
 		
 		public PackageSourceViewModel(PackageSource packageSource)
 		{
-			this.packageSource = new RegisteredPackageSource(packageSource);
+			this.packageSource = packageSource.Clone ();
+
+			Name = packageSource.Name;
 			IsValid = true;
 			ValidationFailureMessage = "";
 		}
 		
 		public PackageSource GetPackageSource()
 		{
-			return packageSource.ToPackageSource();
+			return new PackageSource (Source, Name, IsEnabled) {
+				UserName = UserName,
+				Password = Password,
+				ProtocolVersion = packageSource.ProtocolVersion
+			};
+		}
+
+		public NuGet.PackageSource GetNuGet2PackageSource ()
+		{
+			return new NuGet.PackageSource (Source, Name, IsEnabled) {
+				UserName = UserName,
+				Password = Password
+			};
 		}
 		
-		public string Name {
-			get { return packageSource.Name; }
-			set { packageSource.Name = value; }
-		}
+		public string Name { get; set; }
 		
-		public string SourceUrl {
+		public string Source {
 			get { return packageSource.Source; }
 			set { packageSource.Source = value; }
 		}
