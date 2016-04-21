@@ -8,28 +8,40 @@
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "Edit" id="Edit">
+			
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
 				_label = "_Generate Code..."
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
+		</Category>
+
+		<Category _name = "Code Navigation" id = "CodeNavigation">
+			
 		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsagesHandler"
-			_label = "_Find reference usages"/>
+			_label = "_Find Reference Usages"/>
 		<Command id = "MonoDevelop.CSharp.Navigation.FindExtensionMethods"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindExtensionMethodsHandler"
-			_label = "Extension Methods"/>
+			_label = "Extension Methods"
+			_displayName = "Find Extension Methods"/>
 		<Command id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindBaseSymbolsHandler"
-			_label = "Base Symbols"/>
+			_label = "Base Symbols"
+			_displayName = "Find Base Symbols"/>
 		<Command id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindDerivedSymbolsHandler"
-			_label = "Derived Symbols"/>
+			_label = "Derived Symbols"
+			_displayName = "Find Derived Symbols"/>
 		<Command id = "MonoDevelop.CSharp.Navigation.FindMemberOverloads"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindMemberOverloadsHandler"
-			_label = "Member Overloads"/>
+			_label = "Member Overloads"
+			_displayName = "Find Member Overloads"/>
 		<Command id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindImplementingMembersHandler"
-			_label = "Implementing Members"/>
+			_label = "Implementing Members"
+			_displayName = "Find Implementing Members"/>
+		</Category>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
