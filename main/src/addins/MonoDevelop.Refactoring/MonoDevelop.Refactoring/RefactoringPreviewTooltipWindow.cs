@@ -54,6 +54,8 @@ namespace MonoDevelop.Refactoring
 		int indentLength;
 		FontDescription fontDescription;
 
+		TabArray tabArray;
+
 		public RefactoringPreviewTooltipWindow (TextEditor editor, DocumentContext documentContext, CodeAction codeAction)
 		{
 			this.editor = editor;
@@ -66,6 +68,16 @@ namespace MonoDevelop.Refactoring
 
 			using (var metrics = PangoContext.GetMetrics (fontDescription, PangoContext.Language)) {
 				lineHeight = (int)Math.Ceiling (0.5 + (metrics.Ascent + metrics.Descent) / Pango.Scale.PangoScale);
+			}
+
+			using (var tabWidthLayout = new Pango.Layout (this.PangoContext)) {
+				tabWidthLayout.Alignment = Pango.Alignment.Left;
+				tabWidthLayout.FontDescription = fontDescription;
+				int tabWidth, h;
+				tabWidthLayout.GetSize (out tabWidth, out h);
+				tabWidthLayout.Dispose ();
+				tabArray = new Pango.TabArray (1, false);
+				tabArray.SetTab (0, Pango.TabAlign.Left, tabWidth);
 			}
 		}
 
@@ -99,6 +111,7 @@ namespace MonoDevelop.Refactoring
 
 		protected override void OnDestroyed ()
 		{
+			tabArray.Dispose ();
 			popupSrc.Cancel ();
 			base.OnDestroyed ();
 		}
@@ -176,8 +189,7 @@ namespace MonoDevelop.Refactoring
 
 		void MeasureLine (IReadonlyTextDocument document, int lineNumber, ref int x, ref int y)
 		{
-			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
-				drawingLayout.FontDescription = fontDescription;
+			using (var drawingLayout = CreateLayout ()) {
 				var line = document.GetLine (lineNumber);
 				var indent = line.GetIndentation (document);
 				var curLineIndent = CalcIndentLength(indent);
@@ -193,6 +205,14 @@ namespace MonoDevelop.Refactoring
 				x = Math.Max (x, w);
 				y += lineHeight;
 			}
+		}
+
+		Pango.Layout CreateLayout ()
+		{
+			var result = new Pango.Layout (this.PangoContext);
+			result.FontDescription = fontDescription;
+			result.Tabs = tabArray;
+			return result;
 		}
 
 		int CalcIndentLength (string indent)
@@ -302,8 +322,7 @@ namespace MonoDevelop.Refactoring
 
 		void DrawLine (Cairo.Context g, TextEditor editor, int lineNumber, ref int y)
 		{
-			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
-				drawingLayout.FontDescription = fontDescription;
+			using (var drawingLayout = CreateLayout ()) {
 				var line = editor.GetLine (lineNumber);
 				var correctedIndentLength = CorrectIndent (editor, line, indentLength);
 				drawingLayout.SetMarkup (editor.GetPangoMarkup (line.Offset + Math.Min (correctedIndentLength, line.Length), Math.Max (0, line.Length - correctedIndentLength)));
@@ -317,8 +336,7 @@ namespace MonoDevelop.Refactoring
 
 		void DrawTextLine (Cairo.Context g, IReadonlyTextDocument document, int lineNumber, ref int y)
 		{
-			using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
-				drawingLayout.FontDescription = fontDescription;
+			using (var drawingLayout = CreateLayout ()) {
 				var line = document.GetLine (lineNumber);
 				var correctedIndentLength = CorrectIndent (document, line, indentLength);
 				drawingLayout.SetText (document.GetTextAt (line.Offset + Math.Min (correctedIndentLength, line.Length), Math.Max (0, line.Length - correctedIndentLength)));
