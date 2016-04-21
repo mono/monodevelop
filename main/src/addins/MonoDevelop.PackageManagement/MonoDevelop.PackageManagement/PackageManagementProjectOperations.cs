@@ -56,8 +56,8 @@ namespace MonoDevelop.PackageManagement
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.backgroundActionRunner = backgroundActionRunner;
 
-			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
-			packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
+			packageManagementEvents.PackageInstalled += PackageInstalled;
+			packageManagementEvents.PackageUninstalled += PackageUninstalled;
 		}
 
 		public event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;
@@ -236,17 +236,17 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)
+		void PackageUninstalled (object sender, PackageManagementEventArgs e)
 		{
 			OnPackageReferencedRemoved (e);
 		}
 
-		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
+		void PackageInstalled (object sender, PackageManagementEventArgs e)
 		{
 			OnPackageReferenceAdded (e);
 		}
 
-		void OnPackageReferencedRemoved (ParentPackageOperationEventArgs e)
+		void OnPackageReferencedRemoved (PackageManagementEventArgs e)
 		{
 			var handler = PackageReferenceRemoved;
 			if (handler != null) {
@@ -254,7 +254,7 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void OnPackageReferenceAdded (ParentPackageOperationEventArgs e)
+		void OnPackageReferenceAdded (PackageManagementEventArgs e)
 		{
 			var handler = PackageReferenceAdded;
 			if (handler != null) {
@@ -262,7 +262,7 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		PackageManagementPackageReferenceEventArgs CreateEventArgs (ParentPackageOperationEventArgs e)
+		PackageManagementPackageReferenceEventArgs CreateEventArgs (PackageManagementEventArgs e)
 		{
 			return new PackageManagementPackageReferenceEventArgs (
 				e.Project.DotNetProject,

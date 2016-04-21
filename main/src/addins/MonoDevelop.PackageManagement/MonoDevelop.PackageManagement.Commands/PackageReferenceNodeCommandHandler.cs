@@ -52,8 +52,7 @@ namespace MonoDevelop.PackageManagement.Commands
 		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
-			var project = solutionManager.GetNuGetProject (packageReferenceNode.Project);
-			var action = new UninstallNuGetPackageAction (solutionManager, project) {
+			var action = new UninstallNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
 				PackageId = packageReferenceNode.Id
 			};
 			// TODO - handle unrestored NuGet packages.
@@ -89,8 +88,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 			try {
 				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
-				var project = solutionManager.GetNuGetProject (packageReferenceNode.Project);
-				var action = new UpdateNuGetPackageAction (solutionManager, project) {
+				var action = new UpdateNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
 					PackageId = packageReferenceNode.Id,
 					IncludePrerelease = !packageReferenceNode.IsReleaseVersion ()
 				};

@@ -56,11 +56,8 @@ namespace MonoDevelop.PackageManagement
 			try {
 				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
 
-				var nugetProject = solutionManager.GetNuGetProject (packageReferenceNode.Project);
-
 				var action = new ReinstallNuGetPackageAction (
 					packageReferenceNode.Project,
-					nugetProject,
 					solutionManager);
 				action.PackageId = packageReferenceNode.Id;
 				action.Version = packageReferenceNode.Version;

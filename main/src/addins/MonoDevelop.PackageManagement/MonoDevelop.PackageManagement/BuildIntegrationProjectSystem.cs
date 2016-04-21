@@ -12,12 +12,12 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject
 	{
+		DotNetProject project;
 		IPackageManagementEvents packageManagementEvents;
-		Project project;
 
 		public BuildIntegratedProjectSystem (
 			string jsonConfigPath,
-			Project project,
+			DotNetProject project,
 			IMSBuildNuGetProjectSystem msbuildProjectSystem,
 			string uniqueName)
 			: base (jsonConfigPath, msbuildProjectSystem)

@@ -39,6 +39,7 @@ namespace MonoDevelop.PackageManagement
 	internal class UpdateNuGetPackageAction : INuGetPackageAction
 	{
 		NuGetPackageManager packageManager;
+		IDotNetProject dotNetProject;
 		NuGetProject project;
 		CancellationToken cancellationToken;
 		List<SourceRepository> primarySources;
@@ -46,11 +47,13 @@ namespace MonoDevelop.PackageManagement
 
 		public UpdateNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
-			NuGetProject project,
+			IDotNetProject dotNetProject,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.project = project;
+			this.dotNetProject = dotNetProject;
 			this.cancellationToken = cancellationToken;
+
+			project = solutionManager.GetNuGetProject (dotNetProject);
 
 			var restartManager = new DeleteOnRestartManager ();
 
@@ -70,7 +73,9 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
+				ExecuteAsync ().Wait ();
+			}
 		}
 
 		async Task ExecuteAsync ()

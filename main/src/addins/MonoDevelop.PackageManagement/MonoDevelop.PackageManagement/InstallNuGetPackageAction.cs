@@ -97,7 +97,9 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
+				ExecuteAsync ().Wait ();
+			}
 		}
 
 		async Task ExecuteAsync ()

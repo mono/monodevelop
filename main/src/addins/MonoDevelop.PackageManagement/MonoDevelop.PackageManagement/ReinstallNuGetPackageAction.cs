@@ -26,7 +26,6 @@
 
 using System.Threading;
 using NuGet.PackageManagement;
-using NuGet.ProjectManagement;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
@@ -34,7 +33,6 @@ namespace MonoDevelop.PackageManagement
 	internal class ReinstallNuGetPackageAction : IPackageAction
 	{
 		NuGetPackageManager packageManager;
-		NuGetProject nugetProject;
 		NuGetProjectContext context;
 		CancellationToken cancellationToken;
 		InstallNuGetPackageAction installAction;
@@ -42,11 +40,9 @@ namespace MonoDevelop.PackageManagement
 
 		public ReinstallNuGetPackageAction (
 			IDotNetProject project,
-			NuGetProject nugetProject,
 			IMonoDevelopSolutionManager solutionManager,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.nugetProject = nugetProject;
 			this.cancellationToken = cancellationToken;
 			context = new NuGetProjectContext ();
 
@@ -59,8 +55,8 @@ namespace MonoDevelop.PackageManagement
 				restartManager
 			);
 
-			CreateInstallAction (solutionManager,  project);
-			CreateUninstallAction (solutionManager);
+			CreateInstallAction (solutionManager, project);
+			CreateUninstallAction (solutionManager, project);
 		}
 
 		public string PackageId { get; set; }
@@ -82,11 +78,11 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		void CreateUninstallAction (IMonoDevelopSolutionManager solutionManager)
+		void CreateUninstallAction (IMonoDevelopSolutionManager solutionManager, IDotNetProject project)
 		{
 			uninstallAction = new UninstallNuGetPackageAction (
 				solutionManager,
-				nugetProject,
+				project,
 				cancellationToken) {
 				ForceRemove = true
 			};
