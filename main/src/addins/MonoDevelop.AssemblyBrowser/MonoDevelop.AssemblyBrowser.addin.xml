@@ -7,7 +7,7 @@
 
 	<!-- Extensions -->
 
-	<Extension path = "/MonoDevelop/Ide/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands/Tools">
 		<Command id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser"
 		         defaultHandler = "MonoDevelop.AssemblyBrowser.AssemblyBrowserHandler"
 		         _label = "_Assembly Browser" />
