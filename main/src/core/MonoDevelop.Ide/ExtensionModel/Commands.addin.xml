@@ -435,6 +435,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem"
 			defaultHandler = "MonoDevelop.Ide.Commands.CloseWorkspaceHandler"
 			_label = "C_lose"
+			_displayName = "Close Workspace Item"
 			_description = "Close the active solution or workspace item"
 			icon = "md-close-combine-icon" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
@@ -467,8 +468,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles"
 			defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentFilesHandler"
 			_label = "_Clear"
+			_displayName="Clear Recent Files"
 			icon  = "gtk-clear"
-			_description = "Clear recent files" />
+			_description = "Clear recent files list" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList"
 			defaultHandler = "MonoDevelop.Ide.Commands.RecentProjectListHandler"
 			type="array"
@@ -476,8 +478,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects"
 			defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentProjectsHandler"
 			_label = "_Clear"
+			_displayName="Clear Recent Solutions"
 			icon  = "gtk-clear"
-			_description = "Clear recent solutions" />
+			_description = "Clear recent solutions list" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Exit"
 			defaultHandler = "MonoDevelop.Ide.Commands.ExitHandler"
 			_label = "_Quit"
@@ -524,9 +527,6 @@
 	         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
 			_description = "Copy the file path to the clipboard"
 			_label = "C_opy File Path"/>
-	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
-	         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
-			_label = "S_witch Maximized/Normal View"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab"
 			defaultHandler = "MonoDevelop.Ide.Commands.ReopenClosedTabHandler"
 			_label = "Reopen Closed Tab"
@@ -565,6 +565,9 @@
 			_label = "_Full Screen"
 			icon = "gtk-fullscreen"
 			_description = "Set full screen mode" />
+	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize"
+	         defaultHandler = "MonoDevelop.Ide.Commands.ToggleMaximizeHandler"
+			_label = "S_witch Maximized/Normal View"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.Open"
 			_description = "Open selected document"
 			_label = "_Open" />
@@ -1051,7 +1054,8 @@
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLineAtEnd"
 			_label = "Move caret to EOL and insert new line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement"
-			_label = "Completes the current statement"
+			_label = "Complete current statement"
+			_description = "Completes the current statement"
 			shortcut = "Control|Shift|Return" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord"
 			_label = "Delete previous word" />
