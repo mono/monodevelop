@@ -179,20 +179,18 @@ namespace MonoDevelop.Refactoring.Rename
 
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var changes = new List<Change> ();
-			var documents = new List<DocumentId> ();
+
 			foreach (var projectChange in newSolution.GetChanges (ws.CurrentSolution).GetProjectChanges ()) {
-				documents.AddRange (projectChange.GetChangedDocuments ());
-			}
-			FilterDuplicateLinkedDocs (newSolution, documents);
-			foreach (var changedDoc in documents) {
-				var newDoc = newSolution.GetDocument (changedDoc);
-				foreach (var textChange in await newDoc.GetTextChangesAsync (ws.CurrentSolution.GetDocument (changedDoc))) {
-					changes.Add (new TextReplaceChange () {
-						FileName = newDoc.FilePath,
-						Offset = textChange.Span.Start,
-						RemovedChars = textChange.Span.Length,
-						InsertedText = textChange.NewText
-					});
+				foreach (var changedDoc in projectChange.GetChangedDocuments ()) {
+					var newDoc = newSolution.GetDocument (changedDoc);
+					foreach (var textChange in await newDoc.GetTextChangesAsync (ws.CurrentSolution.GetDocument (changedDoc))) {
+						changes.Add (new TextReplaceChange () {
+							FileName = newDoc.FilePath,
+							Offset = textChange.Span.Start,
+							RemovedChars = textChange.Span.Length,
+							InsertedText = textChange.NewText
+						});
+					}
 				}
 			}
 
@@ -232,25 +230,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 			return changes;
 		}
-
-		static void FilterDuplicateLinkedDocs (Solution newSolution, List<DocumentId> documents)
-		{
-			foreach (var doc in documents) {
-				var newDoc = newSolution.GetDocument (doc);
-				bool didRemove = false;
-				foreach (var link in newDoc.GetLinkedDocumentIds ()) {
-					if (documents.Contains (link)) {
-						documents.Remove (link);
-						didRemove = true;
-					}
-				}
-				if (didRemove) {
-					FilterDuplicateLinkedDocs (newSolution, documents);
-					return;
-				}
-			}
-		}
-
+		
 		static string GetFullFileName (string fileName, string oldFullFileName, int tryCount)
 		{
 			var name = new StringBuilder (fileName);
