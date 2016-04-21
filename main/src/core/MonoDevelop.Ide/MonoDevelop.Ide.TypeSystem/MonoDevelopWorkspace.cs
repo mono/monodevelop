@@ -701,7 +701,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			Projection projection = null;
 			foreach (var entry in ProjectionList) {
-				var p = entry.Projections.FirstOrDefault (proj => FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
+				var p = entry.Projections.FirstOrDefault (proj => proj?.Document?.FileName != null && FilePath.PathComparer.Equals (proj.Document.FileName, filePath));
 				if (p != null) {
 					filePath = entry.File.FilePath;
 					projection = p;
