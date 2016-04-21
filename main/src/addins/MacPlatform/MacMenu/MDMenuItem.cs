@@ -93,7 +93,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
 
 			if (!isArrayItem) {
-				SetItemValues (this, info, ce.DisabledVisible);
+				SetItemValues (this, info, ce.DisabledVisible, ce.OverrideLabel);
 				if (!Hidden)
 					MDMenu.ShowLastSeparator (ref lastSeparator);
 				return;
@@ -163,9 +163,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			public CommandInfo Info;
 		}
 
-		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible)
+		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible, string overrideLabel = null)
 		{
-			item.SetTitleWithMnemonic (GetCleanCommandText (info));
+			item.SetTitleWithMnemonic (GetCleanCommandText (info, overrideLabel));
 
 			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
 			bool visible = info.Visible && (disabledVisible || info.Enabled);
@@ -271,9 +271,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			return "";
 		}
 
-		static string GetCleanCommandText (CommandInfo ci)
+		static string GetCleanCommandText (CommandInfo ci, string overrideLabel = null)
 		{
-			string txt = ci.Text;
+			string txt = overrideLabel ?? ci.Text;
 			if (txt == null)
 				return "";
 
