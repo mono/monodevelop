@@ -760,6 +760,18 @@ namespace MonoDevelop.SourceEditor
 			RunAction (ScrollActions.PageDown);
 		}
 
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollTop)]
+		internal void OnScrollTop ()
+		{
+			RunAction (ScrollActions.Top);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollBottom)]
+		internal void OnScrollBottom ()
+		{
+			RunAction (ScrollActions.Bottom);
+		}
+
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
 		internal void OnGotoMatchingBrace ()
 		{

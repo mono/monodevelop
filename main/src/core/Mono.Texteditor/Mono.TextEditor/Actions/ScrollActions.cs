@@ -58,6 +58,19 @@ namespace Mono.TextEditor
 			if (data.Parent != null)
 				data.Parent.SmoothScrollTo (newValue);
 		}
+
+		public static void Top (TextEditorData data)
+		{
+			if (data.Parent != null)
+				data.Parent.SmoothScrollTo (data.VAdjustment.Lower);
+		}
+
+		public static void Bottom (TextEditorData data)
+		{
+			var newValue = System.Math.Max (data.VAdjustment.Lower, data.VAdjustment.Upper - data.VAdjustment.PageSize);
+			if (data.Parent != null)
+				data.Parent.SmoothScrollTo (newValue);
+		}
 	}
 	
 }

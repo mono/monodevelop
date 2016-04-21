@@ -977,6 +977,10 @@
 			_label = "Scroll page up"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageDown"
 			_label = "Scroll page down"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollTop"
+			_label = "Scroll to top"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ScrollBottom"
+			_label = "Scroll to bottom"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine"
 			_label = "Delete entire line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineStart"
