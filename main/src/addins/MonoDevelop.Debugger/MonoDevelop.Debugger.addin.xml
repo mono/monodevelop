@@ -65,7 +65,8 @@
 				defaultHandler = "MonoDevelop.Debugger.DebugEntryHandler"
 				icon = "md-bug"
 				_description = "Debug current project"
-				_label = "Start D_ebugging Item" />
+				_label = "Start D_ebugging Item"
+				_displayName = "Start Debugging (Current Project)" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">

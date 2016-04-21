@@ -226,26 +226,26 @@
 		         type="array" />
 		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddController"
 		         _label = "Controller..."
+		         _displayName = "Add Controller..."
 		         _description = "Add an ASP.NET MVC controller" />
 		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddView"
 		         _label = "View..."
+		         _displayName = "Add View..."
 		         _description = "Add an ASP.NET MVC view" />
-		</Category>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.GoToView"
-				_label = "Go To View"
+				_label = "Go to View"
 				defaultHandler = "MonoDevelop.AspNet.Commands.GoToViewCommandHandler"
 				description = "Go to the corresponding view file" />
 		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddViewFromController"
 				_label = "Add View..."
+				_displayName = "Add View from Controller..."
 				defaultHandler = "MonoDevelop.AspNet.Commands.AddViewFromControllerCommandHandler"
 				description = "Add an ASP.NET MVC view" />
 		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.GoToController"
-				_label = "Go To Controller"
+				_label = "Go to Controller"
 				defaultHandler = "MonoDevelop.AspNet.Commands.GoToControllerCommandHandler"
 				description = "Go to the corresponding controller file" />
+		</Category>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">

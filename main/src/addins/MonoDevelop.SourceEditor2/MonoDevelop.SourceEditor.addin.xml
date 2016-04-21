@@ -73,7 +73,7 @@
 		</Category>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
+	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top"
 				_label = "_Top"/>
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom"
@@ -82,6 +82,9 @@
 				_label = "_Page Up"/>
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.PgDown"
 				_label = "P_age Down"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowTasks"
 				_label = "Show _Tasks"
 				type="radio"/>
