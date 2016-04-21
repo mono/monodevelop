@@ -68,7 +68,8 @@
 		/>
 		<Command id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommandHandler"
-			_label = "R_emove and Sort" 
+			_label = "R_emove and Sort"
+			_displayName = "Remove Unused and Sort (Usings)"
 		/>
 	</Extension>
 
