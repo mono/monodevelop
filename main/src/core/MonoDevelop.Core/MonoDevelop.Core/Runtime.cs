@@ -407,7 +407,11 @@ namespace MonoDevelop.Core
 						var t = func ();
 						t.ContinueWith (ta => {
 							try {
-								ts.SetResult (0);
+								if (ta.IsFaulted) {
+									ts.SetException (ta.Exception);
+								} else {
+									ts.SetResult (0);
+								}
 							} catch (Exception ex) {
 								ts.SetException (ex);
 							}
