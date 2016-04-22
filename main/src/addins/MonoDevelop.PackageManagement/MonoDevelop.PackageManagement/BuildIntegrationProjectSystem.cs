@@ -12,12 +12,12 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject
 	{
+		DotNetProject project;
 		IPackageManagementEvents packageManagementEvents;
-		Project project;
 
 		public BuildIntegratedProjectSystem (
 			string jsonConfigPath,
-			Project project,
+			DotNetProject project,
 			IMSBuildNuGetProjectSystem msbuildProjectSystem,
 			string uniqueName)
 			: base (jsonConfigPath, msbuildProjectSystem)
@@ -32,6 +32,13 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Warning, "PowerShell script init.ps1 is not supported.");
 
 			return Task.FromResult (true);
+		}
+
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
+		{
+			packageManagementEvents.OnFileChanged (JsonConfigPath);
+
+			return base.PostProcessAsync (nuGetProjectContext, token);
 		}
 
 		public override Task<IReadOnlyList<BuildIntegratedProjectReference>> GetProjectReferenceClosureAsync (NuGet.Logging.ILogger logger)

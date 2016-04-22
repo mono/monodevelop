@@ -34,18 +34,21 @@ namespace MonoDevelop.PackageManagement
 	internal class UninstallNuGetPackageAction : INuGetPackageAction
 	{
 		NuGetPackageManager packageManager;
+		IDotNetProject dotNetProject;
 		NuGetProject project;
 		CancellationToken cancellationToken;
 
 		public UninstallNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
-			NuGetProject project,
+			IDotNetProject dotNetProject,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.project = project;
+			this.dotNetProject = dotNetProject;
 			this.cancellationToken = cancellationToken;
 
 			var restartManager = new DeleteOnRestartManager ();
+
+			project = solutionManager.GetNuGetProject (dotNetProject);
 
 			packageManager = new NuGetPackageManager (
 				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
@@ -60,7 +63,9 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
+				ExecuteAsync ().Wait ();
+			}
 		}
 
 		async Task ExecuteAsync ()
@@ -79,6 +84,8 @@ namespace MonoDevelop.PackageManagement
 				actions,
 				context,
 				cancellationToken);
+
+			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
 		public bool HasPackageScriptsToRun ()

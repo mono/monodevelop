@@ -29,8 +29,8 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using NuGet;
 using MonoDevelop.Projects;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -55,6 +55,9 @@ namespace MonoDevelop.PackageManagement
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceAdding;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceRemoving;
 		event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
+		event EventHandler<PackageManagementEventArgs> PackageInstalled;
+		event EventHandler<PackageManagementEventArgs> PackageUninstalling;
+		event EventHandler<PackageManagementEventArgs> PackageUninstalled;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();

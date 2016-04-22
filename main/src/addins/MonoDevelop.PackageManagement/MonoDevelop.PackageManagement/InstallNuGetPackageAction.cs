@@ -97,7 +97,9 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
+				ExecuteAsync ().Wait ();
+			}
 		}
 
 		async Task ExecuteAsync ()
@@ -132,6 +134,8 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			NuGetPackageManager.ClearDirectInstall (context);
+
+			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
 		Task<NuGetVersion> GetLatestPackageVersion (string packageId)

@@ -66,20 +66,16 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packagesFolderNode.Project.ParentSolution);
 
-			var nugetProject = solutionManager.GetNuGetProject (packagesFolderNode.Project);
-
 			return packagesFolderNode.GetPackageReferencesNodes ()
-				.Select (packageReferenceNode => CreateReinstallPackageAction (nugetProject, packageReferenceNode, solutionManager));
+				.Select (packageReferenceNode => CreateReinstallPackageAction (packageReferenceNode, solutionManager));
 		}
 
 		ReinstallNuGetPackageAction CreateReinstallPackageAction (
-			NuGetProject nugetProject,
 			PackageReferenceNode packageReference,
 			IMonoDevelopSolutionManager solutionManager)
 		{
 			var action = new ReinstallNuGetPackageAction (
 				packageReference.Project,
-				nugetProject,
 				solutionManager);
 
 			action.PackageId = packageReference.Id;

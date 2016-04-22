@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using NuGet;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
@@ -226,6 +225,27 @@ namespace MonoDevelop.PackageManagement
 			if (ImportRemoved != null) {
 				ImportRemoved (this, new DotNetProjectImportEventArgs (project, import));
 			}
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageInstalled;
+
+		public void OnPackageInstalled (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
+		{
+			PackageInstalled?.Invoke (this, new PackageManagementEventArgs (project, e));
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageUninstalling;
+
+		public void OnPackageUninstalling (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
+		{
+			PackageUninstalling?.Invoke (this, new PackageManagementEventArgs (project, e));
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageUninstalled;
+
+		public void OnPackageUninstalled (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
+		{
+			PackageUninstalled?.Invoke (this, new PackageManagementEventArgs (project, e));
 		}
 	}
 }

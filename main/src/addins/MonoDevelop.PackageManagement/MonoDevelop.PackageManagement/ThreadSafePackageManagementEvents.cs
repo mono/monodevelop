@@ -29,10 +29,9 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using NuGet;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -251,7 +250,7 @@ namespace MonoDevelop.PackageManagement
 		}
 		
 		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
-		
+
 		public void OnParentPackagesUpdated(IEnumerable<IPackage> packages)
 		{
 			unsafeEvents.OnParentPackagesUpdated(packages);
@@ -347,6 +346,21 @@ namespace MonoDevelop.PackageManagement
 		public void OnImportRemoved (IDotNetProject project, string import)
 		{
 			unsafeEvents.OnImportRemoved (project, import);
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageInstalled {
+			add { unsafeEvents.PackageInstalled += value; }
+			remove { unsafeEvents.PackageInstalled -= value; }
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageUninstalling {
+			add { unsafeEvents.PackageUninstalling += value; }
+			remove { unsafeEvents.PackageUninstalling -= value; }
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageUninstalled {
+			add { unsafeEvents.PackageUninstalled += value; }
+			remove { unsafeEvents.PackageUninstalled -= value; }
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿//
-// NuGetProjectExtensions.cs
+// PackageManagementEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,43 +24,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading;
-using System.Threading.Tasks;
-using MonoDevelop.Core;
-using NuGet.PackageManagement;
+using System;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
-using NuGet.ProjectManagement.Projects;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal static class NuGetProjectExtensions
+	internal class PackageManagementEventArgs : EventArgs
 	{
-		public static FilePath GetPackagesFolderPath (this NuGetProject project, IMonoDevelopSolutionManager solutionManager)
+		public PackageManagementEventArgs (
+			IDotNetProject project,
+			PackageEventArgs e)
+			: this (project, e.Identity, e.InstallPath)
 		{
-			if (project is BuildIntegratedProjectSystem) {
-				string globalPackagesPath = BuildIntegratedProjectUtility.GetEffectiveGlobalPackagesFolder (
-					solutionManager.SolutionDirectory,
-					solutionManager.Settings);
-
-				return new FilePath (globalPackagesPath).FullPath;
-			}
-
-			string path = PackagesFolderPathUtility.GetPackagesFolderPath (solutionManager, solutionManager.Settings);
-			return new FilePath (path).FullPath;
+			PackageFilePath = GetPackageFilePath (e);
 		}
 
-		/// <summary>
-		/// PostProcessAsync is not run for BuildIntegratedNuGetProjects so we run it directly after
-		/// running a NuGet action.
-		/// </summary>
-		public static Task RunPostProcessAsync (this NuGetProject project, INuGetProjectContext context, CancellationToken token)
+		public PackageManagementEventArgs (
+			IDotNetProject project,
+			PackageIdentity package,
+			string installPath)
 		{
-			var buildIntegratedProject = project as BuildIntegratedNuGetProject;
-			if (buildIntegratedProject != null) {
-				return buildIntegratedProject.PostProcessAsync (context, token);
-			}
+			Project = project;
+			Package = package;
+			InstallPath = installPath;
+		}
 
-			return Task.FromResult (0);
+		public IDotNetProject Project { get; private set; }
+		public PackageIdentity Package { get; private set; }
+		public string InstallPath { get; private set; }
+		public string PackageFilePath { get; private set; }
+
+		public string Id {
+			get { return Package.Id; }
+		}
+
+		public NuGetVersion Version {
+			get { return Package.Version; }
+		}
+
+		static string GetPackageFilePath (PackageEventArgs e)
+		{
+			var folderNuGetProject = e.Project as FolderNuGetProject;
+			return folderNuGetProject?.GetInstalledPackageFilePath (e.Identity);
 		}
 	}
 }
