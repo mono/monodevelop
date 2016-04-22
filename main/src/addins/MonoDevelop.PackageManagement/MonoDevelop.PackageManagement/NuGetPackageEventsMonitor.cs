@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -66,17 +67,17 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageInstalled (object sender, PackageEventArgs e)
 		{
-			packageManagementEvents.OnPackageInstalled (project, e.Identity, e.InstallPath);
+			packageManagementEvents.OnPackageInstalled (project, e);
 		}
 
 		void PackageUninstalling (object sender, PackageEventArgs e)
 		{
-			packageManagementEvents.OnPackageUninstalling (project, e.Identity, e.InstallPath);
+			packageManagementEvents.OnPackageUninstalling (project, e);
 		}
 
 		void PackageUninstalled (object sender, PackageEventArgs e)
 		{
-			packageManagementEvents.OnPackageUninstalled (project, e.Identity, e.InstallPath);
+			packageManagementEvents.OnPackageUninstalled (project, e);
 		}
 	}
 }

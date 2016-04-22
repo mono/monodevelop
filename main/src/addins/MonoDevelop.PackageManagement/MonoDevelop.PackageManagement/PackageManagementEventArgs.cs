@@ -26,12 +26,21 @@
 
 using System;
 using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class PackageManagementEventArgs : EventArgs
 	{
+		public PackageManagementEventArgs (
+			IDotNetProject project,
+			PackageEventArgs e)
+			: this (project, e.Identity, e.InstallPath)
+		{
+			PackageFilePath = GetPackageFilePath (e);
+		}
+
 		public PackageManagementEventArgs (
 			IDotNetProject project,
 			PackageIdentity package,
@@ -45,6 +54,7 @@ namespace MonoDevelop.PackageManagement
 		public IDotNetProject Project { get; private set; }
 		public PackageIdentity Package { get; private set; }
 		public string InstallPath { get; private set; }
+		public string PackageFilePath { get; private set; }
 
 		public string Id {
 			get { return Package.Id; }
@@ -52,6 +62,12 @@ namespace MonoDevelop.PackageManagement
 
 		public NuGetVersion Version {
 			get { return Package.Version; }
+		}
+
+		static string GetPackageFilePath (PackageEventArgs e)
+		{
+			var folderNuGetProject = e.Project as FolderNuGetProject;
+			return folderNuGetProject?.GetInstalledPackageFilePath (e.Identity);
 		}
 	}
 }

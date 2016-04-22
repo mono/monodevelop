@@ -518,6 +518,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageEventsMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AnalyzerPackageMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

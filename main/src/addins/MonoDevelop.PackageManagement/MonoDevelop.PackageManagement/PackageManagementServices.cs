@@ -51,6 +51,7 @@ namespace MonoDevelop.PackageManagement
 		static readonly UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		static readonly PackageManagementProjectOperations projectOperations;
 		static readonly PackageManagementWorkspace workspace;
+		static readonly AnalyzerPackageMonitor analyzerPackageMonitor;
 
 		static PackageManagementServices()
 		{
@@ -82,6 +83,8 @@ namespace MonoDevelop.PackageManagement
 
 			InitializeCredentialProvider();
 			PackageManagementBackgroundDispatcher.Initialize ();
+
+			//analyzerPackageMonitor = new AnalyzerPackageMonitor ();
 		}
 		
 		internal static void InitializeCredentialProvider()

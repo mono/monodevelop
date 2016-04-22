@@ -332,29 +332,14 @@ namespace MonoDevelop.PackageManagement
 			remove { unsafeEvents.PackageInstalled -= value; }
 		}
 
-		public void OnPackageInstalled (IDotNetProject project, PackageIdentity package, string installPath)
-		{
-			unsafeEvents.OnPackageInstalled (project, package, installPath);
-		}
-
 		public event EventHandler<PackageManagementEventArgs> PackageUninstalling {
 			add { unsafeEvents.PackageUninstalling += value; }
 			remove { unsafeEvents.PackageUninstalling -= value; }
 		}
 
-		public void OnPackageUninstalling (IDotNetProject project, PackageIdentity package, string installPath)
-		{
-			unsafeEvents.OnPackageUninstalling (project, package, installPath);
-		}
-
 		public event EventHandler<PackageManagementEventArgs> PackageUninstalled {
 			add { unsafeEvents.PackageUninstalled += value; }
 			remove { unsafeEvents.PackageUninstalled -= value; }
-		}
-
-		public void OnPackageUninstalled (IDotNetProject project, PackageIdentity package, string installPath)
-		{
-			unsafeEvents.OnPackageUninstalled (project, package, installPath);
 		}
 	}
 }

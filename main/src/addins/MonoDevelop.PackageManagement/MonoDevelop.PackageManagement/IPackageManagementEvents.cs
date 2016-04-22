@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet;
-using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -77,9 +76,6 @@ namespace MonoDevelop.PackageManagement
 		void OnReferenceAdding (ProjectReference reference);
 		void OnReferenceRemoving (ProjectReference reference);
 		void OnImportRemoved (IDotNetProject project, string import);
-		void OnPackageInstalled (IDotNetProject project, PackageIdentity package, string installPath);
-		void OnPackageUninstalling (IDotNetProject project, PackageIdentity package, string installPath);
-		void OnPackageUninstalled (IDotNetProject project, PackageIdentity package, string installPath);
 
 		[Obsolete]
 		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);

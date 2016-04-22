@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using NuGet;
 using MonoDevelop.Projects;
-using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -221,23 +220,23 @@ namespace MonoDevelop.PackageManagement
 
 		public event EventHandler<PackageManagementEventArgs> PackageInstalled;
 
-		public void OnPackageInstalled (IDotNetProject project, PackageIdentity package, string installPath)
+		public void OnPackageInstalled (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
 		{
-			PackageInstalled?.Invoke (this, new PackageManagementEventArgs (project, package, installPath));
+			PackageInstalled?.Invoke (this, new PackageManagementEventArgs (project, e));
 		}
 
 		public event EventHandler<PackageManagementEventArgs> PackageUninstalling;
 
-		public void OnPackageUninstalling (IDotNetProject project, PackageIdentity package, string installPath)
+		public void OnPackageUninstalling (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
 		{
-			PackageUninstalling?.Invoke (this, new PackageManagementEventArgs (project, package, installPath));
+			PackageUninstalling?.Invoke (this, new PackageManagementEventArgs (project, e));
 		}
 
 		public event EventHandler<PackageManagementEventArgs> PackageUninstalled;
 
-		public void OnPackageUninstalled (IDotNetProject project, PackageIdentity package, string installPath)
+		public void OnPackageUninstalled (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
 		{
-			PackageUninstalled?.Invoke (this, new PackageManagementEventArgs (project, package, installPath));
+			PackageUninstalled?.Invoke (this, new PackageManagementEventArgs (project, e));
 		}
 	}
 }
