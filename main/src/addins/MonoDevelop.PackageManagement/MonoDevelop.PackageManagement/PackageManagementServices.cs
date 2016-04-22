@@ -84,7 +84,7 @@ namespace MonoDevelop.PackageManagement
 			InitializeCredentialProvider();
 			PackageManagementBackgroundDispatcher.Initialize ();
 
-			//analyzerPackageMonitor = new AnalyzerPackageMonitor ();
+			analyzerPackageMonitor = new AnalyzerPackageMonitor ();
 		}
 		
 		internal static void InitializeCredentialProvider()

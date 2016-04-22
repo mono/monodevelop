@@ -52,7 +52,10 @@ namespace MonoDevelop.PackageManagement
 		void PackageInstalled (object sender, PackageManagementEventArgs e)
 		{
 			try {
-				//AnalyzerPackageService.AddPackageFiles (e.Project.Project, GetFiles (e));
+				var files = GetFiles (e);
+				Runtime.RunInMainThread (() => {
+					AnalyzerPackageService.AddPackageFiles (e.Project.DotNetProject, files);
+				});
 			} catch (Exception ex) {
 				LoggingService.LogError ("AnalyzerPackageMonitor error.", ex);
 			}
@@ -73,7 +76,9 @@ namespace MonoDevelop.PackageManagement
 		void PackageUninstalled (object sender, PackageManagementEventArgs e)
 		{
 			try {
-				//AnalyzerPackageService.RemovePackageFiles (e.Project.Project, uninstalledFiles);
+				Runtime.RunInMainThread (() => {
+					AnalyzerPackageService.RemovePackageFiles (e.Project.DotNetProject, uninstalledFiles);
+				}).Wait ();
 				uninstalledFiles = new List<string> ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("AnalyzerPackageMonitor error.", ex);
