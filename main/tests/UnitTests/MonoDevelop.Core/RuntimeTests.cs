@@ -62,8 +62,12 @@ namespace MonoDevelop.Core
 		/// This test was failing since using an await returns a faulted Task and the
 		/// func does not directly throw an exception. The Task returned from the RunInMainThread
 		/// method would never be faulted.
+		/// 
+		/// This test fails on the Mac with an InvalidProgramException: Invalid IL code in 
+		/// MonoDevelop.Core.RuntimeTests/<RunInMainThreadWithAsyncFuncTask>
 		/// </summary>
 		[Test]
+		[Ignore ("This test fails on Mac but works on Windows.")]
 		public async Task RunInMainThreadWithAsyncFuncTask ()
 		{
 			await Task.Run (() => {
