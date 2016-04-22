@@ -28,6 +28,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
@@ -691,6 +693,96 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void AddFile_FileAdded_FileChangedEventIsFired ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			project.Name = "MyProject";
+			CreateProjectSystem (project);
+
+			string fileName = @"d:\projects\MyProject\NewFile.cs".ToNativePath ();
+			AddFile (@"NewFile.cs");
+
+			Assert.AreEqual (fileName, projectSystem.FakeFileService.FileNamePassedToOnFileChanged);
+		}
+
+		[Test]
+		public void AddFile_FileServiceOnFileChangedThrowsException_ExceptionIsThrownByAddFile ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			project.Name = "MyProject";
+			CreateProjectSystem (project);
+			var expectedException = new Exception ("Error");
+			projectSystem.FakeFileService.OnFileChangedAction = path => {
+				throw expectedException;
+			};
+
+			AggregateException ex = Assert.Throws<AggregateException> (() => {
+				AddFile (@"NewFile.cs");
+			});
+
+			Assert.AreEqual (expectedException, ex.GetBaseException ());
+		}
+
+		[Test]
+		public async Task AddFile_UseRuntimeRunInMainThreadAndFileServiceOnFileChangedThrowsException_ExceptionIsThrownByAddFile ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			project.Name = "MyProject";
+			CreateProjectSystem (project);
+			var expectedException = new Exception ("Error");
+			projectSystem.FakeFileService.OnFileChangedAction = path => {
+				throw expectedException;
+			};
+
+			await Task.Run (() => {
+				AggregateException ex = Assert.Throws<AggregateException> (() => {
+					AddFile (@"NewFile.cs");
+				});
+
+				Assert.AreEqual (expectedException, ex.GetBaseException ());
+			});
+		}
+
+		[Test]
+		public void AddFile_ProjectSaveThrowsException_ExceptionIsThrownByAddFile ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			project.Name = "MyProject";
+			CreateProjectSystem (project);
+			var expectedException = new Exception ("Error");
+			project.SaveAction = () => {
+				throw expectedException;
+			};
+
+			AggregateException ex = Assert.Throws<AggregateException> (() => {
+				AddFile (@"NewFile.cs");
+			});
+
+			Assert.AreEqual (expectedException, ex.GetBaseException ());
+		}
+
+		[Test]
+		public async Task AddFile_UseRuntimeRunInMainThreadAndProjectSaveThrowsException_ExceptionIsThrownByAddFile ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			project.Name = "MyProject";
+			CreateProjectSystem (project);
+			var expectedException = new Exception ("Error");
+			project.SaveAction = () => {
+				throw expectedException;
+			};
+			TestableMonoDevelopProjectSystem.UseDefaultGuiDispatcher = true;
+
+			await Task.Run (() => {
+				AggregateException ex = Assert.Throws<AggregateException> (() => {
+					AddFile (@"NewFile.cs");
+				});
+
+				Assert.AreEqual (expectedException, ex.GetBaseException ());
+			});
+		}
+
+		[Test]
 		public void DeleteFile_DeletesFileFromFileSystem_CallsFileServiceRemoveFile ()
 		{
 			CreateTestProject (@"d:\temp\MyProject.csproj");
@@ -1250,6 +1342,35 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
 			Assert.IsTrue (projectSystem.NewImportsHandler.IsDisposed);
+		}
+
+		[Test]
+		public void FileExistsInProject_ProjectThrowsException_ExceptionThrownByFileExistsInProject ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			project.Files = null;
+
+			Assert.Throws<ArgumentNullException> (() => {
+				projectSystem.FileExistsInProject ("MyClass.cs");
+			});
+		}
+
+		[Test]
+		public async Task FileExistsInProject_UseRealGuiDispatcherProjectThrowsException_ExceptionThrownByFileExistsInProject ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			project.Files = null;
+			TestableMonoDevelopProjectSystem.UseDefaultGuiDispatcher = true;
+
+			await Task.Run (() => {
+				AggregateException ex = Assert.Throws<AggregateException> (() => {
+					projectSystem.FileExistsInProject ("MyClass.cs");
+				});
+
+				Assert.IsInstanceOf<ArgumentNullException> (ex.GetBaseException ());
+			});
 		}
 	}
 }

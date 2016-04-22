@@ -49,8 +49,23 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 		public FakeNuGetPackageNewImportsHandler NewImportsHandler;
 
-		public static Action<Action> GuiSyncDispatcher = handler => handler.Invoke ();
-		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
+		public static bool UseDefaultGuiDispatcher = false;
+
+		public static Action<Action> GuiSyncDispatcher = handler => {
+			if (UseDefaultGuiDispatcher) {
+				MonoDevelopProjectSystem.DefaultGuiSyncDispatcher (handler);
+			} else {
+				handler.Invoke ();
+			}
+		};
+
+		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => {
+			if (UseDefaultGuiDispatcher) {
+				return MonoDevelopProjectSystem.GuiSyncDispatchWithException (handler);
+			} else {
+				return handler.Invoke();
+			}
+		};
 
 		public TestableMonoDevelopProjectSystem (IDotNetProject project)
 			: this (
@@ -74,6 +89,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakeProjectService = (FakePackageManagementProjectService)projectService;
 			PackageManagementEvents = packageManagementEvents;
 			Logger = logger;
+			FakeLogger = logger;
+
+			UseDefaultGuiDispatcher = false;
 		}
 
 		protected override void PhysicalFileSystemAddFile (string path, Stream stream)

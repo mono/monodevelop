@@ -258,7 +258,7 @@ namespace MonoDevelop.PackageManagement
 		public override void AddFile(string path, Stream stream)
 		{
 			PhysicalFileSystemAddFile(path, stream);
-			GuiSyncDispatch (async () => await AddFileToProject (path));
+			GuiSyncDispatch (() => AddFileToProject (path));
 		}
 		
 		protected virtual void PhysicalFileSystemAddFile(string path, Stream stream)
@@ -269,7 +269,7 @@ namespace MonoDevelop.PackageManagement
 		public override void AddFile(string path, Action<Stream> writeToStream)
 		{
 			PhysicalFileSystemAddFile (path, writeToStream);
-			GuiSyncDispatch (async () => await AddFileToProject (path));
+			GuiSyncDispatch (() => AddFileToProject (path));
 		}
 
 		protected virtual void PhysicalFileSystemAddFile (string path, Action<Stream> writeToStream)
@@ -478,7 +478,7 @@ namespace MonoDevelop.PackageManagement
 			guiSyncDispatcher (() => action ());
 		}
 
-		static Task GuiSyncDispatchWithException (Func<Task> func)
+		public static Task GuiSyncDispatchWithException (Func<Task> func)
 		{
 			if (Runtime.IsMainThread)
 				throw new InvalidOperationException ("GuiSyncDispatch called from GUI thread");

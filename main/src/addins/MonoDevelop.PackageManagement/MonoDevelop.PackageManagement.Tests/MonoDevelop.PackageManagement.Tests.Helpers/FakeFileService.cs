@@ -26,9 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -42,6 +39,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakeFileService (IDotNetProject project)
 		{
 			this.project = project;
+
+			OnFileChangedAction = path => {
+				FileNamePassedToOnFileChanged = path;
+			};
 		}
 
 		public void RemoveFile (string path)
@@ -55,9 +56,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			project.Files.Clear ();
 		}
 
+		public string FileNamePassedToOnFileChanged;
+
 		public void OnFileChanged (string path)
 		{
+			OnFileChangedAction (path);
 		}
+
+		public Action<string> OnFileChangedAction;
 
 		public string FileNamePassedToOpenFile;
 		public bool IsOpenFileCalled;
