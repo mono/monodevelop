@@ -86,7 +86,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** Detach the debugger from the process/appdomain. */
         public void Detach ()
         {
-            m_controller.Detach ();
+          m_controller.Detach ();
         }
     
         /** Terminate the current process. */

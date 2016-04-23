@@ -3,7 +3,7 @@ using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 using DC = Mono.Debugging.Client;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class CorEvaluationContext: EvaluationContext
 	{

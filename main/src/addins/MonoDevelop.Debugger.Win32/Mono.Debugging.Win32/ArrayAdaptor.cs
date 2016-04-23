@@ -30,7 +30,7 @@ using System.Collections;
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	class ArrayAdaptor: ICollectionAdaptor
 	{

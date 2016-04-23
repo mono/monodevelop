@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Mono.Debugging.Client;
+using Mono.Debugging.Win32;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 #if ASPNET
@@ -66,7 +67,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		public DebuggerSession CreateSession ( )
 		{
-			return MtaThread.Run(() => new CorDebuggerSession());
+			return MtaThread.Run(() => new CorDebuggerSession(FilePath.GetInvalidPathChars()));
 		}
 
 		public ProcessInfo[] GetAttachableProcesses ( )

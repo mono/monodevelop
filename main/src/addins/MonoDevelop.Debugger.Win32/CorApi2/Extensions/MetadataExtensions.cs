@@ -106,7 +106,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 	[CLSCompliant (false)]
 	public static class MetadataHelperFunctionsExtensions
 	{
-		public static Dictionary<CorElementType, Type> CoreTypes = new Dictionary<CorElementType, Type> ();
+		public static readonly Dictionary<CorElementType, Type> CoreTypes = new Dictionary<CorElementType, Type> ();
 		static MetadataHelperFunctionsExtensions ()
 		{
 			CoreTypes.Add (CorElementType.ELEMENT_TYPE_BOOLEAN, typeof (bool));

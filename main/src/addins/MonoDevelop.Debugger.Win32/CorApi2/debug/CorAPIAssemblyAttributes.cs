@@ -8,6 +8,6 @@ using System.Security.Permissions;
 
 
 // Expose non-CLS-compliant types, so we can't be CLS-compliant
-[assembly:CLSCompliant(true)]
+[assembly:CLSCompliant(false)]
 // [Xamarin] Bump version to .NET 4.0.
 [assembly:System.Runtime.InteropServices.ComVisible(false)]

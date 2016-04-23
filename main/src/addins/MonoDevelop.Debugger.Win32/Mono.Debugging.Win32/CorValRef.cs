@@ -1,6 +1,6 @@
 ﻿using Microsoft.Samples.Debugging.CorDebug;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class CorValRef
 	{

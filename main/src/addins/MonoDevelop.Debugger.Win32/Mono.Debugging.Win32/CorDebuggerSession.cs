@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,12 +15,12 @@ using Microsoft.Samples.Debugging.Extensions;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using System.Linq;
 
-namespace MonoDevelop.Debugger.Win32
+namespace Mono.Debugging.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
 	{
+		private readonly char[] badPathChars;
 		readonly object debugLock = new object ();
 		readonly object terminateLock = new object ();
 
@@ -32,10 +33,11 @@ namespace MonoDevelop.Debugger.Win32
 		bool autoStepInto;
 		bool stepInsideDebuggerHidden=false;
 		int processId;
+		bool attaching = false;
 
 		static int evaluationTimestamp;
 
-		readonly SymbolBinder symbolBinder = new SymbolBinder ();
+		readonly SymbolBinder symbolBinder = MtaThread.Run (() => new SymbolBinder ());
 		Dictionary<string, DocInfo> documents;
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
@@ -61,12 +63,13 @@ namespace MonoDevelop.Debugger.Win32
 			public int References;
 		}
 
-		public CorDebuggerSession ( )
+		public CorDebuggerSession(char[] badPathChars)
 		{
-			documents = new Dictionary<string, DocInfo> (StringComparer.CurrentCultureIgnoreCase);
-			modules = new Dictionary<string, ModuleInfo> (StringComparer.CurrentCultureIgnoreCase);
+			this.badPathChars = badPathChars;
+			documents = new Dictionary<string, DocInfo>(StringComparer.CurrentCultureIgnoreCase);
+			modules = new Dictionary<string, ModuleInfo>(StringComparer.CurrentCultureIgnoreCase);
 
-			ObjectAdapter = new CorObjectAdaptor ();
+			ObjectAdapter = new CorObjectAdaptor();
 		}
 
 		public new IDebuggerSessionFrontend Frontend {
@@ -80,11 +83,10 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override void Dispose ( )
 		{
-			MtaThread.Run (delegate
-			{
+			MtaThread.Run (() => {
 				TerminateDebugger ();
-				ObjectAdapter.Dispose ();
 			});
+			ObjectAdapter.Dispose();
 
 			base.Dispose ();
 
@@ -129,15 +131,17 @@ namespace MonoDevelop.Debugger.Win32
 
 				terminated = true;
 
-				ThreadPool.QueueUserWorkItem (delegate
-				{
-					if (process != null) {
-						// Process already running. Stop it. In the ProcessExited event the
-						// debugger engine will be terminated
-						process.Stop (4000);
+				if (process != null) {
+					// Process already running. Stop it. In the ProcessExited event the
+					// debugger engine will be terminated
+					process.Stop (4000);
+					if (attaching) {
+						process.Detach ();
+					}
+					else {
 						process.Terminate (1);
 					}
-				});
+				}
 			}
 		}
 
@@ -171,38 +175,60 @@ namespace MonoDevelop.Debugger.Win32
 					flags = (int)CreationFlags.CREATE_NO_WINDOW;
 						flags |= DebuggerExtensions.CREATE_REDIRECT_STD;
 				}
+				else {
+					flags |= (int) CreationFlags.CREATE_NEW_CONSOLE;
+				}
 
-				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);
-				processId = process.Id;
-
-				process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
-				process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
-				process.OnAssemblyLoad += new CorAssemblyEventHandler (OnAssemblyLoad);
-				process.OnAssemblyUnload += new CorAssemblyEventHandler (OnAssemblyUnload);
-				process.OnCreateThread += new CorThreadEventHandler (OnCreateThread);
-				process.OnThreadExit += new CorThreadEventHandler (OnThreadExit);
-				process.OnModuleLoad += new CorModuleEventHandler (OnModuleLoad);
-				process.OnModuleUnload += new CorModuleEventHandler (OnModuleUnload);
-				process.OnProcessExit += new CorProcessEventHandler (OnProcessExit);
-				process.OnUpdateModuleSymbols += new UpdateModuleSymbolsEventHandler (OnUpdateModuleSymbols);
-				process.OnDebuggerError += new DebuggerErrorEventHandler (OnDebuggerError);
-				process.OnBreakpoint += new BreakpointEventHandler (OnBreakpoint);
-				process.OnStepComplete += new StepCompleteEventHandler (OnStepComplete);
-				process.OnBreak += new CorThreadEventHandler (OnBreak);
-				process.OnNameChange += new CorThreadEventHandler (OnNameChange);
-				process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
-				process.OnEvalException += new EvalEventHandler (OnEvalException);
-				process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
-				process.OnException2 += new CorException2EventHandler (OnException2);
-
-				process.RegisterStdOutput (OnStdOutput);
-
+				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);				
+				SetupProcess (process);
 				process.Continue (false);
 			});
 			OnStarted ();
 		}
 
-		void OnStdOutput (object sender, CorTargetOutputEventArgs e)
+		protected override void OnAttachToProcess(long procId)
+		{
+			attaching = true;
+			MtaThread.Run(delegate
+			{
+				var version = CorDebugger.GetProcessLoadedRuntimes((int)procId);
+				if (!version.Any())
+					throw new InvalidOperationException(string.Format("Process {0} doesn't have .NET loaded runtimes", procId));
+				dbg = new CorDebugger(version.Last());
+				process = dbg.DebugActiveProcess((int)procId, false);
+				SetupProcess(process);
+				process.Continue(false);
+			});
+			OnStarted();
+		}
+
+
+		private void SetupProcess(CorProcess corProcess)
+		{
+			processId = corProcess.Id;
+			corProcess.OnCreateProcess += OnCreateProcess;
+			corProcess.OnCreateAppDomain += OnCreateAppDomain;
+			corProcess.OnAssemblyLoad += OnAssemblyLoad;
+			corProcess.OnAssemblyUnload += OnAssemblyUnload;
+			corProcess.OnCreateThread += OnCreateThread;
+			corProcess.OnThreadExit += OnThreadExit;
+			corProcess.OnModuleLoad += OnModuleLoad;
+			corProcess.OnModuleUnload += OnModuleUnload;
+			corProcess.OnProcessExit += OnProcessExit;
+			corProcess.OnUpdateModuleSymbols += OnUpdateModuleSymbols;
+			corProcess.OnDebuggerError += OnDebuggerError;
+			corProcess.OnBreakpoint += OnBreakpoint;
+			corProcess.OnStepComplete += OnStepComplete;
+			corProcess.OnBreak += OnBreak;
+			corProcess.OnNameChange += OnNameChange;
+			corProcess.OnEvalComplete += OnEvalComplete;
+			corProcess.OnEvalException += OnEvalException;
+			corProcess.OnLogMessage += OnLogMessage;
+			corProcess.OnException2 += OnException2;
+			corProcess.RegisterStdOutput(OnStdOutput);
+		}
+
+	  void OnStdOutput (object sender, CorTargetOutputEventArgs e)
 		{
 			OnTargetOutput (e.IsStdError, e.Text);
 		}
@@ -233,6 +259,9 @@ namespace MonoDevelop.Debugger.Win32
 			lock (threads) {
 				threads.Clear ();
 			}
+		  lock (processes) {
+		    processes.Clear();
+		  }
 		}
 
 		void OnBreak (object sender, CorThreadEventArgs e)
@@ -383,9 +412,11 @@ namespace MonoDevelop.Debugger.Win32
 			}
 
 			BreakEventInfo binfo;
-			if (breakpoints.TryGetValue (e.Breakpoint, out binfo)) {
+			BreakEvent breakEvent = null;
+			if (breakpoints.TryGetValue (e.Breakpoint, out binfo)) {        
 				e.Continue = true;
 				Breakpoint bp = (Breakpoint)binfo.BreakEvent;
+				breakEvent = bp;
 
 				binfo.IncrementHitCount();
 				if (!binfo.HitCountReached)
@@ -434,6 +465,7 @@ namespace MonoDevelop.Debugger.Win32
 			args.Process = GetProcess (process);
 			args.Thread = GetThread (e.Thread);
 			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
+			args.BreakEvent = breakEvent;
 			OnTargetEvent (args);
 		}
 
@@ -491,7 +523,6 @@ namespace MonoDevelop.Debugger.Win32
 			string file = e.Module.Assembly.Name;
 			lock (documents) {
 				ISymbolReader reader = null;
-				char[] badPathChars = MonoDevelop.Core.FilePath.GetInvalidPathChars ();
 				if (file.IndexOfAny (badPathChars) == -1 && System.IO.File.Exists (System.IO.Path.ChangeExtension (file, ".pdb"))) {
 					try {
 						reader = symbolBinder.GetReaderForFile (mi.RawCOMObject, file, ".");
@@ -564,9 +595,12 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnCreateProcess (object sender, CorProcessEventArgs e)
 		{
-			// Required to avoid the jit to get rid of variables too early
-			e.Process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-			e.Process.EnableLogMessages (true);
+		  if (!attaching) {
+		    // Required to avoid the jit to get rid of variables too early
+        // not allowed in attach mode
+		    e.Process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+		  }
+		  e.Process.EnableLogMessages (true);
 			e.Continue = true;
 		}
 
@@ -645,18 +679,12 @@ namespace MonoDevelop.Debugger.Win32
 				return false;
 			// See if a catchpoint is set for this exception.
 			foreach (Catchpoint cp in Breakpoints.GetCatchpoints()) {
-				if (cp.Enabled &&
-				    ((cp.IncludeSubclasses && exceptions.Contains (cp.ExceptionName)) ||
-				    (exceptions [0] == cp.ExceptionName))) {
+				if (cp.Enabled && ((cp.IncludeSubclasses && exceptions.Contains (cp.ExceptionName)) || (exceptions [0] == cp.ExceptionName))) {
 					return true;
 				}
 			}
 			
 			return false;
-		}
-
-		protected override void OnAttachToProcess (long processId)
-		{
 		}
 
 		protected override void OnContinue ( )
@@ -674,7 +702,7 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			MtaThread.Run (delegate
 			{
-				process.Detach ();
+				TerminateDebugger ();
 			});
 		}
 
@@ -1065,13 +1093,14 @@ namespace MonoDevelop.Debugger.Win32
 			CorValue exception = null;
 			CorEval eval = ctx.Eval;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+		    DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				mc.DoneEvent.Set ();
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+            DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
+            {
 				OnEndEvaluating ();
 				exception = eargs.Eval.Result;
 				mc.DoneEvent.Set ();
@@ -1112,15 +1141,8 @@ namespace MonoDevelop.Debugger.Win32
 
 			WaitUntilStopped ();
 			if (exception != null) {
-/*				ValueReference<CorValue, CorType> msg = ctx.Adapter.GetMember (ctx, val, "Message");
-				if (msg != null) {
-					string s = msg.ObjectValue as string;
-					mc.ExceptionMessage = s;
-				}
-				else
-					mc.ExceptionMessage = "Evaluation failed.";*/
 				CorValRef vref = new CorValRef (exception);
-				throw new EvaluatorException ("Evaluation failed: " + ObjectAdapter.GetValueTypeName (ctx, vref));
+				throw new EvaluatorExceptionThrownException (vref, ObjectAdapter.GetValueTypeName (ctx, vref));
 			}
 
 			return eval.Result;
@@ -1146,14 +1168,15 @@ namespace MonoDevelop.Debugger.Win32
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+            DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
+            {
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
@@ -1185,7 +1208,7 @@ namespace MonoDevelop.Debugger.Win32
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs)
+            DebugEventHandler<CorEvalEventArgs> completeHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
@@ -1193,7 +1216,7 @@ namespace MonoDevelop.Debugger.Win32
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs)
+            DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
