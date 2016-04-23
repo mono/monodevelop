@@ -113,7 +113,9 @@ namespace MonoDevelop.PackageManagement
 				includeUnlisted: false,
 				token: cancellationToken);
 
-			var package = packages.OrderByDescending (p => p.Identity.Version).FirstOrDefault ();
+			var package = packages
+				.Where (p => IsPackageVersionAllowed (p, packageReference))
+				.OrderByDescending (p => p.Identity.Version).FirstOrDefault ();
 			if (package == null)
 				return null;
 
@@ -126,6 +128,14 @@ namespace MonoDevelop.PackageManagement
 		void LogError (Task<PackageIdentity> task)
 		{
 			LoggingService.LogError ("Check for updates error.", task.Exception);
+		}
+
+		bool IsPackageVersionAllowed (UIPackageMetadata package, PackageReference packageReference)
+		{
+			if (!packageReference.HasAllowedVersions)
+				return true;
+
+			return packageReference.AllowedVersions.Satisfies (package.Identity.Version);
 		}
 	}
 }
