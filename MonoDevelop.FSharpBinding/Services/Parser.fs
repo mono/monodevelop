@@ -38,3 +38,16 @@ module Parsing =
                     | head :: tail -> tail |> List.rev, head
                     | [] -> [], ""
         | _ -> [], ""
+
+    let findResidue (col, lineStr:string) =
+        // scan backwards until we find the start of the current symbol
+        let rec loop index =
+            if index = 0 then
+                0
+            elif lineStr.[index - 1] = '.' || lineStr.[index - 1] = ' ' then
+                index
+            else
+                loop (index - 1)
+
+        let index = loop col
+        lineStr.[index..]

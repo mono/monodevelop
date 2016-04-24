@@ -79,9 +79,9 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
             | _ -> -1
 
 
-type FsiMemberCompletionData(name, icon) =
-    inherit CompletionData(CompletionText = PrettyNaming.QuoteIdentifierIfNeeded name,
-                           DisplayText = name,
+type FsiMemberCompletionData(displayText, completionText, icon) =
+    inherit CompletionData(CompletionText = completionText,
+                           DisplayText = displayText,
                            DisplayFlags = DisplayFlags.DescriptionHasMarkup,
                            Icon = icon)
 
@@ -91,7 +91,7 @@ type FsiMemberCompletionData(name, icon) =
             match pad.Session with
             | Some session ->              
                 // get completions from remote fsi process
-                pad.RequestTooltip name
+                pad.RequestTooltip displayText
 
                 let computation =
                     async {
@@ -374,11 +374,11 @@ module Completion =
                     let completions = 
                         Async.AwaitEvent (session.CompletionsReceived)
                         |> Async.RunSynchronously
-                        |> List.map (fun c -> FsiMemberCompletionData(c.displayText, symbolStringToIcon c.icon))
+                        |> List.map (fun c -> FsiMemberCompletionData(c.displayText, c.completionText, symbolStringToIcon c.icon))
                         |> Seq.cast<CompletionData>
 
                     result.AddRange completions
-                    let _idents, residue = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+                    let residue = Parsing.findResidue(column, lineToCaret)
                     if completionChar <> '.' && result.Count > 0 then
 
                         LoggingService.logDebug "Completion: residue %s" residue

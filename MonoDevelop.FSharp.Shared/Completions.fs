@@ -5,6 +5,7 @@ open Microsoft.FSharp.Compiler.Interactive.Shell
 
 type CompletionData = {
     displayText: string
+    completionText: string
     category: string
     icon: string
     overloads: CompletionData list
@@ -68,6 +69,7 @@ module Completion =
         let getCompletion displayText symbol = 
             Some  ({
                     displayText = displayText
+                    completionText = PrettyNaming.QuoteIdentifierIfNeeded displayText
                     icon = symbolToIcon symbol
                     category = ""
                     overloads = []
@@ -96,12 +98,12 @@ module Completion =
 
     let hashDirectives =
         [
-            { displayText = "#r"; category ="keywords"; icon = "md-keyword"; description = "Reference (dynamically load) the given DLL"; overloads = [] }
-            { displayText = "#I"; category ="keywords"; icon = "md-keyword"; description = "Add the given search path for referenced DLLs"; overloads = [] }
-            { displayText = "#load"; category ="keywords"; icon = "md-keyword"; description = "Load the given file(s) as if compiled and referenced"; overloads = [] }
-            { displayText = "#time"; category ="keywords"; icon = "md-keyword"; description = "Toggle timing on/off"; overloads = [] }
-            { displayText = "#help"; category ="keywords"; icon = "md-keyword"; description = "Display help"; overloads = [] }
-            { displayText = "#quit"; category ="keywords"; icon = "md-keyword"; description = "Exit"; overloads = [] }
+            { displayText = "#r"; completionText ="#r"; category ="keywords"; icon = "md-keyword"; description = "Reference (dynamically load) the given DLL"; overloads = [] }
+            { displayText = "#I"; completionText = "#I"; category ="keywords"; icon = "md-keyword"; description = "Add the given search path for referenced DLLs"; overloads = [] }
+            { displayText = "#load"; completionText = "#load"; category ="keywords"; icon = "md-keyword"; description = "Load the given file(s) as if compiled and referenced"; overloads = [] }
+            { displayText = "#time"; completionText = "#time"; category ="keywords"; icon = "md-keyword"; description = "Toggle timing on/off"; overloads = [] }
+            { displayText = "#help"; completionText = "#help"; category ="keywords"; icon = "md-keyword"; description = "Display help"; overloads = [] }
+            { displayText = "#quit"; completionText = "#quit"; category ="keywords"; icon = "md-keyword"; description = "Exit"; overloads = [] }
         ]
          
     let mutable symbolList = List.empty
