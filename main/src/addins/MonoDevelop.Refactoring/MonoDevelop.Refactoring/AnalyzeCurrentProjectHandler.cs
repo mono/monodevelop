@@ -69,13 +69,13 @@ namespace MonoDevelop.Refactoring
 			var analysisProject = TypeSystemService.GetCodeAnalysisProject (project);
 			if (analysisProject == null)
 				return;
-			var providers = await AnalyzeWholeSolutionHandler.GetProviders ();
 			try {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false)) {
 					CancellationToken token = monitor.CancellationToken;
 					var allDiagnostics = await Task.Run (async delegate {
 						var diagnosticList = new List<Diagnostic> ();
 						monitor.BeginTask (GettextCatalog.GetString ("Analyzing {0}", project.Name), 1);
+						var providers = await AnalyzeWholeSolutionHandler.GetProviders (analysisProject);
 						diagnosticList.AddRange (await AnalyzeWholeSolutionHandler.GetDiagnostics (analysisProject, providers, token));
 						monitor.EndTask ();
 						return diagnosticList;
