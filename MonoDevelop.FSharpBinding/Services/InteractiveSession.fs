@@ -11,6 +11,7 @@ open Newtonsoft.Json
 
 type CompletionData = {
     displayText: string
+    completionText: string
     category: string
     icon: string
     overloads: CompletionData list

@@ -29,6 +29,12 @@ type ParsingTests() =
         ident |> should equal expectedIdent
         residue |> should equal expectedResidue
 
+    let assertResidue (source: string) expectedResidue =
+        let col = source.IndexOf "|"
+        let source = source.Replace("|", "")
+        let residue = Parsing.findResidue(col, source)
+        residue |> should equal expectedResidue
+
     [<TestCase("let not|backticked = ", "notbackticked", 17)>]
     [<TestCase("open MonoDev|elop.FSharp", "MonoDevelop", 16)>]
     [<TestCase("open MonoDevelop.FSh|arp", "MonoDevelop.FSharp", 23)>]
@@ -45,7 +51,11 @@ type ParsingTests() =
     [<TestCase("open |  ", "", "")>]
     member x.``Find long idents and residue``(source: string, expectedIdent, expectedResidue) =
         assertLongIdentsAndResidue source expectedIdent expectedResidue
-        
+    
+    [<TestCase("#lo|", "#lo")>]
+    member x.``Find residue``(source: string, expectedResidue) =
+        assertResidue source expectedResidue
+
     [<Test>]
     member x.``Find custom operator``() =
         let source = "let ( >|.> ) a b = a + b"
