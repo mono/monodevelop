@@ -45,15 +45,11 @@ namespace MonoDevelop.Refactoring
 {
 	class AnalyzeWholeSolutionHandler : CommandHandler
 	{
-		static IEnumerable<CodeDiagnosticDescriptor> diagnostics;
-
-		internal static async Task<List<DiagnosticAnalyzer>> GetProviders ()
+		internal static async Task<List<DiagnosticAnalyzer>> GetProviders (Project project)
 		{
 			var providers = new List<DiagnosticAnalyzer> ();
 			var alreadyAdded = new HashSet<Type> ();
-			if (diagnostics == null) {
-				diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (new EmptyDocumentContext (), LanguageNames.CSharp, default (CancellationToken));
-			}
+			var	diagnostics = await CodeRefactoringService.GetCodeDiagnosticsAsync (new EmptyDocumentContext (project), LanguageNames.CSharp, default (CancellationToken));
 			var diagnosticTable = new Dictionary<string, CodeDiagnosticDescriptor> ();
 			foreach (var diagnostic in diagnostics) {
 				if (alreadyAdded.Contains (diagnostic.DiagnosticAnalyzerType))
@@ -102,13 +98,13 @@ namespace MonoDevelop.Refactoring
 		protected override async void Run ()
 		{
 			var workspace = TypeSystemService.Workspace;
-			var providers = await GetProviders ();
 			try {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false)) {
 					CancellationToken token = monitor.CancellationToken;
 					var allDiagnostics = await Task.Run (async delegate {
 						var diagnosticList = new List<Diagnostic> ();
 						foreach (var project in workspace.CurrentSolution.Projects) {
+							var providers = await GetProviders (project);
 							monitor.BeginTask (GettextCatalog.GetString ("Analyzing {0}", project.Name), 1);
 							diagnosticList.AddRange (await GetDiagnostics (project, providers, token));
 							monitor.EndTask ();
@@ -169,6 +165,13 @@ namespace MonoDevelop.Refactoring
 #pragma warning disable RECS0083 // Shows NotImplementedException throws in the quick task bar
 		class EmptyDocumentContext : DocumentContext
 		{
+			Project project;
+
+			public EmptyDocumentContext (Project project)
+			{
+				this.project = project;
+			}
+
 			public override Document AnalysisDocument {
 				get {
 					throw new NotImplementedException ();
@@ -189,7 +192,7 @@ namespace MonoDevelop.Refactoring
 
 			public override Projects.Project Project {
 				get {
-					throw new NotImplementedException ();
+					return TypeSystemService.GetMonoProject (project);
 				}
 			}
 
