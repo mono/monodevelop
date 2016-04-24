@@ -60,136 +60,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				del ();
 		}
 
-		static CommandInfoSet CreateFixMenu (TextEditor editor, DocumentContext ctx, SemanticModel semanticModel, CodeActionContainer container)
-		{
-			if (editor == null)
-				throw new ArgumentNullException (nameof (editor));
-			if (ctx == null)
-				throw new ArgumentNullException (nameof (ctx));
-			if (container == null)
-				throw new ArgumentNullException (nameof (container));
-			var result = new CommandInfoSet ();
-			result.Text = GettextCatalog.GetString ("Fix");
-			foreach (var diagnostic in container.CodeFixActions) {
-				var info = new CommandInfo (diagnostic.CodeAction.Title);
-				result.CommandInfos.Add (info, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (diagnostic.CodeAction, editor, ctx).Run ()));
-			}
-			bool firstDiagnosticOption = result.CommandInfos.Count != 0;
-
-			var warningsAtCaret = semanticModel
-				.GetDiagnostics (new TextSpan (editor.CaretOffset, 0))
-				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
-			foreach (var warning in warningsAtCaret) {
-
-				if (firstDiagnosticOption) {
-					result.CommandInfos.AddSeparator ();
-					firstDiagnosticOption = false;
-				}
-
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", warning.Descriptor.Title);
-				var subMenu = new CommandInfoSet ();
-				subMenu.Text = label;
-
-				var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
-				subMenu.CommandInfos.Add (info, new Action (async delegate {
-
-					var fixes = await CSharpSuppressionFixProvider.Instance.GetSuppressionsAsync (ctx.AnalysisDocument, new TextSpan (editor.CaretOffset, 0), new [] { warning }, default (CancellationToken)).ConfigureAwait (false);
-					foreach (var f in fixes) {
-						CodeDiagnosticDescriptor.RunAction (ctx, f.Action, default (CancellationToken));
-					}
-				}));
-
-				result.CommandInfos.Add (subMenu);
-			}
-
-			foreach (var fix in container.DiagnosticsAtCaret) {
-				var inspector = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (fix.Id);
-				if (inspector == null)
-					continue;
-
-				if (firstDiagnosticOption) {
-					result.CommandInfos.AddSeparator ();
-					firstDiagnosticOption = false;
-				}
-
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.GetMessage ());
-				var subMenu = new CommandInfoSet ();
-				subMenu.Text = label;
-
-				//				if (inspector.CanSuppressWithAttribute) {
-				//					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
-				//						delegate {
-				//							
-				//							inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
-				//						});
-				//					subMenu.Add (menuItem);
-				//				}
-
-				if (inspector.CanDisableWithPragma) {
-					var info = new CommandInfo (GettextCatalog.GetString ("_Suppress with #pragma"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithPragma (editor, ctx, fix)));
-
-					info = new CommandInfo (GettextCatalog.GetString ("_Suppress with file"));
-					subMenu.CommandInfos.Add (info, new Action (() => inspector.DisableWithFile (editor, ctx, fix)));
-				}
-
-				var configInfo = new CommandInfo (GettextCatalog.GetString ("_Configure Rule"));
-				subMenu.CommandInfos.Add (configInfo, new Action (() => {
-					IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "C#", dialog => {
-						var panel = dialog.GetPanel<CodeIssuePanel> ("C#");
-						if (panel == null)
-							return;
-						panel.Widget.SelectCodeIssue (inspector.IdString);
-					});
-				}));
-
-				foreach (var fix2 in container.CodeFixActions) {
-
-					var provider = fix2.Diagnostic.GetCodeFixProvider ().GetFixAllProvider ();
-					if (provider == null)
-						continue;
-					if (!provider.GetSupportedFixAllScopes ().Contains (FixAllScope.Document))
-						continue;
-					var subMenu2 = new CommandInfoSet ();
-					subMenu2.Text = GettextCatalog.GetString ("Fix all");
-					var diagnosticAnalyzer = fix2.Diagnostic.GetCodeDiagnosticDescriptor (LanguageNames.CSharp).GetProvider ();
-					if (!diagnosticAnalyzer.SupportedDiagnostics.Contains (fix.Descriptor))
-						continue;
-
-					var info = new CommandInfo (GettextCatalog.GetString ("In _Document"));
-					subMenu2.CommandInfos.Add (info, new Action (async delegate {
-
-						var fixAllDiagnosticProvider = new CodeActionEditorExtension.FixAllDiagnosticProvider (diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id).ToImmutableHashSet (), async (Microsoft.CodeAnalysis.Document doc, ImmutableHashSet<string> diagnostics, CancellationToken token) => {
-
-							var model = await doc.GetSemanticModelAsync (token);
-							var compilationWithAnalyzer = model.Compilation.WithAnalyzers (new [] { diagnosticAnalyzer }.ToImmutableArray (), null, token);
-
-							return await compilationWithAnalyzer.GetAnalyzerSemanticDiagnosticsAsync (model, null, token);
-						}, (arg1, arg2, arg3, arg4) => {
-							return Task.FromResult ((IEnumerable<Diagnostic>)new Diagnostic [] { });
-						});
-						var ctx2 = new FixAllContext (
-							ctx.AnalysisDocument,
-							fix2.Diagnostic.GetCodeFixProvider (),
-							FixAllScope.Document,
-							fix2.CodeAction.EquivalenceKey,
-							diagnosticAnalyzer.SupportedDiagnostics.Select (d => d.Id),
-							fixAllDiagnosticProvider,
-							default (CancellationToken)
-						);
-						var fixAll = await provider.GetFixAsync (ctx2);
-						using (var undo = editor.OpenUndoGroup ()) {
-							CodeDiagnosticDescriptor.RunAction (ctx, fixAll, default (CancellationToken));
-						}
-					}));
-					subMenu.CommandInfos.Add (subMenu2);
-				}
-				result.CommandInfos.Add (subMenu);
-			}
-
-			return result;
-		}
-
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -206,13 +76,6 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
-			if (ext != null) {
-				var fixMenu = CreateFixMenu (doc.Editor, doc, semanticModel, ext.GetCurrentFixes ());
-				if (fixMenu.CommandInfos.Count > 0) {
-					ainfo.Add (fixMenu, null);
-					added = true;
-				}
-			}
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
@@ -224,16 +87,6 @@ namespace MonoDevelop.CSharp.Refactoring
 				added = true;
 			}
 			bool first = true;
-			if (ext != null) {
-				foreach (var fix in ext.GetCurrentFixes ().CodeRefactoringActions) {
-					if (added & first && ciset.CommandInfos.Count > 0)
-						ciset.CommandInfos.AddSeparator ();
-					var info2 = new CommandInfo (fix.CodeAction.Title);
-					ciset.CommandInfos.Add (info2, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run ()));
-					added = true;
-					first = false;
-				}
-			}
 
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);
