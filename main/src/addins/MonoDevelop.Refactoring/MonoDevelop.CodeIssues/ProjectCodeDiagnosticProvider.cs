@@ -88,6 +88,11 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		internal static void ClearCache ()
+		{
+			cache = new Dictionary<DotNetProject, ProjectAnalyzers> ();
+		}
+
 		public override Task<IEnumerable<CodeDiagnosticDescriptor>> GetCodeDiagnosticDescriptorsAsync (DocumentContext document, string language, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var netProject = document.Project as DotNetProject;

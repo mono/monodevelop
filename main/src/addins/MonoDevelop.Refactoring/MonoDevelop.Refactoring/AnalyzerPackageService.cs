@@ -47,6 +47,7 @@ namespace MonoDevelop.Refactoring
 			}
 			if (save)
 				project.SaveAsync (new Core.ProgressMonitor ());
+			CodeDiagnosticRunner.ClearDiagnosticCache ();
 		}
 
 		public static void AddPackageFiles (DotNetProject project, IEnumerable<string> files)
@@ -73,7 +74,7 @@ namespace MonoDevelop.Refactoring
 			}
 			if (save)
 				project.SaveAsync (new Core.ProgressMonitor ());
-			
+			CodeDiagnosticRunner.ClearDiagnosticCache ();
 		}
 	}
 }

@@ -54,8 +54,14 @@ namespace MonoDevelop.CodeIssues
 		static CodeDiagnosticRunner()
 		{
 			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
-				diagnosticCache = ImmutableDictionary<Projects.Project, WeakReference<List<CodeDiagnosticDescriptor>>>.Empty;
+				ClearDiagnosticCache ();
 			};
+		}
+
+		public static void ClearDiagnosticCache ()
+		{
+			diagnosticCache = ImmutableDictionary<Projects.Project, WeakReference<List<CodeDiagnosticDescriptor>>>.Empty;
+			ProjectCodeDiagnosticProvider.ClearCache ();
 		}
 
 		public static async Task<IEnumerable<Result>> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
