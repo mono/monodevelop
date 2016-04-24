@@ -168,11 +168,21 @@
 		<Class id="MidStep" class="MonoDevelop.Refactoring.DummyJumpToDeclarationHandler" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
-		<ItemSet id = "Analyze" _label = "_Analyze" insertbefore="OptionsSection">
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<ItemSet 
+			id = "Analyze"
+			_label = "_Analyze">
 			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeWholeSolution" />
 			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeCurrentProject" />
 		</ItemSet>
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<ItemSet id = "Analyze" _label = "_Analyze">
+			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeWholeSolution" />
+			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeCurrentProject" />
+		</ItemSet>
+	</Extension>
+
 
 </ExtensionModel>
