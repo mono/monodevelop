@@ -960,6 +960,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			       aTask.FileName.CompareTo (zTask.FileName) :
 			       0;
 		}
+
+		internal void FocusOutputView ()
+		{
+			logBtn.Active = true;
+			HandleLogBtnToggled (this, EventArgs.Empty);
+		}
 		
 		void HandleLogBtnToggled (object sender, EventArgs e)
 		{
