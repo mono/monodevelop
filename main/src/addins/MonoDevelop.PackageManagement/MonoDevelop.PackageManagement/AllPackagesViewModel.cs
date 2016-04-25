@@ -306,7 +306,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (PackageItemListViewModel itemViewModel in itemViewModels) {
 				PackageSearchResultViewModel packageViewModel = CreatePackageViewModel (itemViewModel);
-				CheckNewPackageViewModelIfPreviouslyChecked (packageViewModel);
+				UpdatePackageViewModelIfPreviouslyChecked (packageViewModel);
 				yield return packageViewModel;
 			}
 		}
@@ -334,11 +334,16 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void CheckNewPackageViewModelIfPreviouslyChecked (PackageSearchResultViewModel packageViewModel)
+		void UpdatePackageViewModelIfPreviouslyChecked (PackageSearchResultViewModel packageViewModel)
 		{
 			ignorePackageCheckedChanged = true;
 			try {
-				packageViewModel.IsChecked = CheckedPackageViewModels.Contains (packageViewModel);
+				PackageSearchResultViewModel existingPackageViewModel = GetExistingCheckedPackageViewModel (packageViewModel.Id);
+				if (existingPackageViewModel != null) {
+					packageViewModel.UpdateFromPreviouslyCheckedViewModel (existingPackageViewModel);
+					CheckedPackageViewModels.Remove (existingPackageViewModel);
+					CheckedPackageViewModels.Add (packageViewModel);
+				}
 			} finally {
 				ignorePackageCheckedChanged = false;
 			}
@@ -346,13 +351,18 @@ namespace MonoDevelop.PackageManagement
 
 		void UncheckExistingCheckedPackageWithDifferentVersion (PackageSearchResultViewModel packageViewModel)
 		{
-			PackageSearchResultViewModel existingPackageViewModel = CheckedPackageViewModels
-				.FirstOrDefault (item => item.Id == packageViewModel.Id);
+			PackageSearchResultViewModel existingPackageViewModel = GetExistingCheckedPackageViewModel (packageViewModel.Id);
 
 			if (existingPackageViewModel != null) {
 				CheckedPackageViewModels.Remove (existingPackageViewModel);
 				existingPackageViewModel.IsChecked = false;
 			}
+		}
+
+		PackageSearchResultViewModel GetExistingCheckedPackageViewModel (string packageId)
+		{
+			return CheckedPackageViewModels
+				.FirstOrDefault (item => item.Id == packageId);
 		}
 
 		public IPackageAction CreateInstallPackageAction (PackageSearchResultViewModel packageViewModel)
@@ -373,10 +383,10 @@ namespace MonoDevelop.PackageManagement
 
 		public bool IsOlderPackageInstalled (string id, NuGetVersion version)
 		{
-			return packageReferences.Any (packageReference => IsOlderPackagInstalled (packageReference, id, version));
+			return packageReferences.Any (packageReference => IsOlderPackageInstalled (packageReference, id, version));
 		}
 
-		bool IsOlderPackagInstalled (PackageReference packageReference, string id, NuGetVersion version)
+		bool IsOlderPackageInstalled (PackageReference packageReference, string id, NuGetVersion version)
 		{
 			return packageReference.PackageIdentity.Id == id &&
 				packageReference.PackageIdentity.Version < version;

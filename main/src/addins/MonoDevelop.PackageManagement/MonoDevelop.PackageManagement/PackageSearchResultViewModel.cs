@@ -31,6 +31,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.PackageManagement.UI;
+using NuGet.Packaging.Core;
 using NuGet.Protocol.VisualStudio;
 using NuGet.Versioning;
 
@@ -200,6 +201,7 @@ namespace MonoDevelop.PackageManagement
 				if (task.IsFaulted) {
 					LoggingService.LogError ("Failed to read package versions.", task.Exception);
 				} else {
+					Versions.Clear ();
 					foreach (VersionInfo versionInfo in task.Result.OrderByDescending (v => v.Version)) {
 						Versions.Add (versionInfo.Version);
 					}
@@ -213,6 +215,30 @@ namespace MonoDevelop.PackageManagement
 		public bool IsOlderPackageInstalled ()
 		{
 			return parent.IsOlderPackageInstalled (Id, SelectedVersion);
+		}
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as PackageSearchResultViewModel;
+			if (other == null)
+				return false;
+
+			return StringComparer.OrdinalIgnoreCase.Equals (Id, other.Id);
+		}
+
+		public override int GetHashCode ()
+		{
+			return Id.GetHashCode ();
+		}
+
+		public void UpdateFromPreviouslyCheckedViewModel (PackageSearchResultViewModel packageViewModel)
+		{
+			IsChecked = packageViewModel.IsChecked;
+			SelectedVersion = packageViewModel.SelectedVersion;
+			if (SelectedVersion != Version) {
+				Versions.Add (Version);
+				Versions.Add (SelectedVersion);
+			}
 		}
 	}
 }
