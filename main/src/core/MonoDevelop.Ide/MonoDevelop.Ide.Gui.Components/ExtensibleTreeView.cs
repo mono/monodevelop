@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 #endif
 
-		void SetIconCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
+		static void SetIconCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
 		{
 			if (model == null)
 				return;
@@ -317,7 +317,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			cell.OverlayTopRight = info.OverlayTopRight;
 		}
 
-		void SetTextCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
+		static void SetTextCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
 		{
 			if (model == null)
 				return;
