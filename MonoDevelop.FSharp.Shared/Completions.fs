@@ -109,7 +109,7 @@ module Completion =
     let mutable symbolList = List.empty
     let getCompletions (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
-            let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction("();;")
+            let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction(input)
             let longName,residue = Parsing.findLongIdentsAndResidue(column, input)
             let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
             let results = symbols 
