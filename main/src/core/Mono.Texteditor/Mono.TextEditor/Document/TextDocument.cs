@@ -1180,7 +1180,13 @@ namespace Mono.TextEditor
 		public void WaitForFoldUpdateFinished ()
 		{
 			if (foldSegmentTask != null) {
-				foldSegmentTask.Wait (5000);
+				try {
+					foldSegmentTask.Wait (5000);
+				} catch (AggregateException e) {
+					e.Flatten ().Handle (x => x is OperationCanceledException);
+				} catch (OperationCanceledException) {
+					
+				}
 				foldSegmentTask = null;
 			}
 		}
