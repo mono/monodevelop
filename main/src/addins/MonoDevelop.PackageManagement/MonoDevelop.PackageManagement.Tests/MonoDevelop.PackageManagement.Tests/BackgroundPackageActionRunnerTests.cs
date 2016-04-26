@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
 using NuGet;
@@ -46,6 +45,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		ProgressMonitorStatusMessage progressMessage;
 		FakeProgressMonitor progressMonitor;
 		FakePackageRepositoryFactoryEvents repositoryFactoryEvents;
+		TestableInstrumentationService instrumentationService;
 
 		void CreateRunner ()
 		{
@@ -58,11 +58,13 @@ namespace MonoDevelop.PackageManagement.Tests
 			progressProvider = new PackageManagementProgressProvider (repositoryFactoryEvents, handler => {
 				handler.Invoke ();
 			});
+			instrumentationService = new TestableInstrumentationService ();
 
 			runner = new TestableBackgroundPackageActionRunner (
 				progressMonitorFactory,
 				packageManagementEvents,
-				progressProvider);
+				progressProvider,
+				instrumentationService);
 		}
 
 		void Run ()
@@ -79,6 +81,19 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeInstallPackageAction AddInstallAction ()
 		{
 			var action = new FakeInstallPackageAction (new FakePackageManagementProject (), packageManagementEvents);
+			action.Operations = new List <PackageOperation> ();
+			action.Logger = new FakeLogger ();
+			actions.Add (action);
+			return action;
+		}
+
+		FakeUpdatePackageAction AddUpdateAction ()
+		{
+			var action = new FakeUpdatePackageAction (
+				new FakePackageManagementProject (),
+				packageManagementEvents,
+				new FakeFileRemover (),
+				new FakeLicenseAcceptanceService ());
 			action.Operations = new List <PackageOperation> ();
 			action.Logger = new FakeLogger ();
 			actions.Add (action);
@@ -144,6 +159,38 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.Operations = operations;
 			action.Package = package;
 			return action;
+		}
+
+		void AssertInstallCounterIncrementedForPackage (string packageId, string packageVersion)
+		{
+			AssertCounterIncrementedForPackage (instrumentationService.InstallPackageMetadata, packageId, packageVersion);
+		}
+
+		static void AssertCounterIncrementedForPackage (
+			IDictionary<string, string> metadata,
+			string packageId,
+			string packageVersion)
+		{
+			string fullInfo = packageId + " v" + packageVersion;
+			Assert.AreEqual (packageId, metadata["PackageId"]);
+			Assert.AreEqual (fullInfo, metadata["Package"]);
+		}
+
+		void AssertUninstallCounterIncrementedForPackage (string packageId, string packageVersion)
+		{
+			Assert.AreEqual (packageId, instrumentationService.UninstallPackageMetadata["PackageId"]);
+			Assert.AreEqual (packageVersion, instrumentationService.UninstallPackageMetadata["PackageVersion"]);
+		}
+
+		void AssertUninstallCounterIncrementedForPackageOperation (string packageId, string packageVersion)
+		{
+			AssertCounterIncrementedForPackage (instrumentationService.UninstallPackageMetadata, packageId, packageVersion);
+		}
+
+		void AssertUninstallCounterIncrementedForPackage (string packageId)
+		{
+			Assert.AreEqual (packageId, instrumentationService.UninstallPackageMetadata["PackageId"]);
+			Assert.IsFalse (instrumentationService.UninstallPackageMetadata.ContainsKey ("PackageVersion"));
 		}
 
 		[Test]
@@ -567,6 +614,62 @@ namespace MonoDevelop.PackageManagement.Tests
 			Run ();
 
 			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageUninstalled_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			FakeUninstallPackageAction action = AddUninstallAction ();
+			action.Package = new FakePackage ("Test", "1.2");
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackage ("Test", "1.2");
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageUninstalledWithNoVersion_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			FakeUninstallPackageAction action = AddUninstallAction ();
+			var package = new FakePackage ("Test");
+			package.Version = null;
+			action.Package = package;
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackage ("Test");
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageInstalledWithTwoPackageOperations_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			FakeInstallPackageAction action = AddInstallAction ();
+			action.Package = new FakePackage ("Test", "1.2");
+			action.AddInstallPackageOperation ("Bar", "1.3");
+			action.AddUninstallPackageOperation ("Foo", "1.1");
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackageOperation ("Foo", "1.1");
+			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageUpdatedWithTwoPackageOperations_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			FakeUpdatePackageAction action = AddUpdateAction ();
+			action.Package = new FakePackage ("Test", "1.2");
+			action.AddInstallPackageOperation ("Bar", "1.3");
+			action.AddUninstallPackageOperation ("Foo", "1.1");
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackageOperation ("Foo", "1.1");
+			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
 		}
 	}
 }

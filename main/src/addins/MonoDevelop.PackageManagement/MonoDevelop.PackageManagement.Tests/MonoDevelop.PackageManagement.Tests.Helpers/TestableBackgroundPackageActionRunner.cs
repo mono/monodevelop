@@ -26,9 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using NuGet;
 using System.Threading.Tasks;
 
@@ -41,8 +39,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableBackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
-			: base (progressMonitorFactory, packageManagementEvents, progressProvider)
+			IProgressProvider progressProvider,
+			PackageManagementInstrumentationService instrumentationService)
+			: base (
+				progressMonitorFactory,
+				packageManagementEvents,
+				progressProvider,
+				instrumentationService)
 		{
 			Init ();
 		}

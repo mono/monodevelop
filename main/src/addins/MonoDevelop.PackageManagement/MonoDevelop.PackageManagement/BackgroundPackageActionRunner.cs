@@ -36,12 +36,10 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
-		static MonoDevelop.Core.Instrumentation.Counter InstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Installed", "Package Management", id:"PackageManagement.Package.Installed");
-		static MonoDevelop.Core.Instrumentation.Counter UninstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Uninstalled", "Package Management", id:"PackageManagement.Package.Uninstalled");
-
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
+		PackageManagementInstrumentationService instrumentationService;
 		List<IInstallNuGetPackageAction> pendingInstallActions = new List<IInstallNuGetPackageAction> ();
 		int runCount;
 
@@ -49,10 +47,24 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
+			: this (
+				progressMonitorFactory,
+				packageManagementEvents,
+				progressProvider,
+				new PackageManagementInstrumentationService ())
+		{
+		}
+
+		public BackgroundPackageActionRunner (
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider,
+			PackageManagementInstrumentationService instrumentationService)
 		{
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
+			this.instrumentationService = instrumentationService;
 		}
 
 		public bool IsRunning {
@@ -195,14 +207,14 @@ namespace MonoDevelop.PackageManagement
 					if (version != null)
 						metadata ["PackageVersion"] = version.ToString ();
 
-					UninstallPackageCounter.Inc (1, null, metadata);
+					instrumentationService.IncrementUninstallPackageCounter (metadata);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Instrumentation Failure in PackageManagement", ex);
 			}
 		}
 
-		static void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
+		void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
 		{
 			foreach (var op in operations) {
 				var metadata = new Dictionary<string, string> ();
@@ -211,10 +223,10 @@ namespace MonoDevelop.PackageManagement
 
 				switch (op.Action) {
 				case PackageAction.Install: 
-					InstallPackageCounter.Inc (1, null, metadata);
+					instrumentationService.IncrementInstallPackageCounter (metadata);
 					break;
 				case PackageAction.Uninstall:
-					UninstallPackageCounter.Inc (1, null, metadata);
+					instrumentationService.IncrementUninstallPackageCounter (metadata);
 					break;
 				}
 			}

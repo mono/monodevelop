@@ -237,6 +237,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageNewImportsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageSourceProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\TestableInstrumentationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

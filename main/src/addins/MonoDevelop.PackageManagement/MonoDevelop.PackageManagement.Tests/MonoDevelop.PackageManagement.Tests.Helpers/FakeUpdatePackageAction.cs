@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.PackageManagement;
+using System.Collections.Generic;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -36,6 +36,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakePackageManagementProject FakeProject;
 		public FakeFileRemover FileRemover;
 		public FakeLicenseAcceptanceService LicenseAcceptanceService;
+
+		List<PackageOperation> operations = new List<PackageOperation> ();
 
 		public FakeUpdatePackageAction ()
 			: this (new FakePackageManagementProject ())
@@ -58,6 +60,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakeProject = project as FakePackageManagementProject;
 			FileRemover = fileRemover;
 			LicenseAcceptanceService = licenseAcceptanceService;
+		}
+
+		public void AddInstallPackageOperation (string packageId, string packageVersion)
+		{
+			var package = new FakePackage (packageId, packageVersion);
+			operations.Add (new PackageOperation (package, PackageAction.Install));
+			Operations = operations;
+		}
+
+		public void AddUninstallPackageOperation (string packageId, string packageVersion)
+		{
+			var package = new FakePackage (packageId, packageVersion);
+			operations.Add (new PackageOperation (package, PackageAction.Uninstall));
+			Operations = operations;
 		}
 
 		protected override void ExecuteCore ()
