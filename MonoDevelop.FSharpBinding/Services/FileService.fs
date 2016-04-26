@@ -68,9 +68,12 @@ module FileService =
     
     /// Is the specified extension supported F# file?
     let supportedFileName fileName =
-        let ext = Path.GetExtension(fileName).ToLower()
-        supportedFileExtensions
-        |> List.exists ((=) ext)
+        if fileName = null then
+            false
+        else
+            let ext = Path.GetExtension(fileName).ToLower()
+            supportedFileExtensions
+            |> List.exists ((=) ext)
     
     let isInsideFSharpFile () =
         if IdeApp.Workbench.ActiveDocument = null ||
