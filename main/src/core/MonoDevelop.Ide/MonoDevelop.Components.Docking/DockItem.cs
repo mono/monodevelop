@@ -526,54 +526,47 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		internal bool ShowingContextMemu { get ; set; }
-		
-		internal void ShowDockPopupMenu (uint time)
+		internal bool ShowingContextMenu { get ; set; }
+
+		internal void ShowDockPopupMenu (Gtk.Widget parent, Gdk.EventButton evt)
 		{
-			Gtk.Menu menu = new Gtk.Menu ();
-			
+			var menu = new ContextMenu ();
+			ContextMenuItem citem;
+
 			// Hide menuitem
 			if ((Behavior & DockItemBehavior.CantClose) == 0) {
-				Gtk.MenuItem mitem = new Gtk.MenuItem (Catalog.GetString("Hide"));
-				mitem.Activated += delegate { Visible = false; };
-				menu.Append (mitem);
+				citem = new ContextMenuItem (Catalog.GetString ("Hide"));
+				citem.Clicked += delegate { Visible = false; };
+				menu.Add (citem);
 			}
-
-			Gtk.MenuItem citem;
 
 			// Auto Hide menuitem
 			if ((Behavior & DockItemBehavior.CantAutoHide) == 0 && Status != DockItemStatus.AutoHide) {
-				citem = new Gtk.MenuItem (Catalog.GetString("Minimize"));
-				citem.Activated += delegate { Status = DockItemStatus.AutoHide; };
-				menu.Append (citem);
+				citem = new ContextMenuItem (Catalog.GetString ("Minimize"));
+				citem.Clicked += delegate { Status = DockItemStatus.AutoHide; };
+				menu.Add (citem);
 			}
 
 			if (Status != DockItemStatus.Dockable) {
 				// Dockable menuitem
-				citem = new Gtk.MenuItem (Catalog.GetString("Dock"));
-				citem.Activated += delegate { Status = DockItemStatus.Dockable; };
-				menu.Append (citem);
+				citem = new ContextMenuItem (Catalog.GetString ("Dock"));
+				citem.Clicked += delegate { Status = DockItemStatus.Dockable; };
+				menu.Add (citem);
 			}
 
 			// Floating menuitem
 			if ((Behavior & DockItemBehavior.NeverFloating) == 0 && Status != DockItemStatus.Floating) {
-				citem = new Gtk.MenuItem (Catalog.GetString("Undock"));
-				citem.Activated += delegate { Status = DockItemStatus.Floating; };
-				menu.Append (citem);
+				citem = new ContextMenuItem (Catalog.GetString ("Undock"));
+				citem.Clicked += delegate { Status = DockItemStatus.Floating; };
+				menu.Add (citem);
 			}
 
-			if (menu.Children.Length == 0) {
-				menu.Destroy ();
+			if (menu.Items.Count == 0) {
 				return;
 			}
 
-			ShowingContextMemu = true;
-
-			menu.ShowAll ();
-			menu.Hidden += (o,e) => {
-				ShowingContextMemu = false;
-			};
-			menu.Popup (null, null, null, 3, time);
+			ShowingContextMenu = true;
+			menu.Show (parent, evt, () => { ShowingContextMenu = true; });
 		}
 	}
 
