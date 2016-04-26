@@ -538,15 +538,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			HideStatusMessage ();
 		}
 
-		void HandleMenuHidden (object sender, EventArgs e)
-		{
-			if (sender is Gtk.Menu) {
-				((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
-			}
-			text_render.Pushed = false;
-			widget.QueueDraw ();
-		}
-
 		internal void LockUpdates ()
 		{
 			if (++updateLockCount == 1)
