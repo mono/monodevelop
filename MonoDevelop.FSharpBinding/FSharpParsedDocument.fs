@@ -23,6 +23,12 @@ type FSharpParsedDocument(fileName, location: DocumentLocation option) =
 [<AutoOpen>]
 module DocumentContextExt =
     type DocumentContext with
+        member x.GetWorkingFolder() =
+            if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
+                let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+                if doc <> null then Path.GetDirectoryName(doc) |> Some else None
+            else None
+
         member x.TryGetFSharpParsedDocument() =
             x.TryGetParsedDocument()
             |> Option.bind (function :? FSharpParsedDocument as fpd -> Some fpd | _ -> None)

@@ -60,8 +60,10 @@ type FsiDocumentContext() =
     let mutable editor:TextEditor = null
 
     let contextChanged = DelegateEvent<_>()
+    let mutable workingFolder: string option = None
     do 
         project.FileName <- FilePath name
+
     override x.ParsedDocument = pd
     override x.AttachToProject(_) = ()
     override x.ReparseDocument() = ()
@@ -73,7 +75,9 @@ type FsiDocumentContext() =
 
     member x.CompletionWidget with set (value) = completionWidget <- value
     member x.Editor with set (value) = editor <- value
-
+    member x.WorkingFolder
+        with get() = workingFolder
+        and set(folder) = workingFolder <- folder
     interface ICompletionWidget with
         member x.CaretOffset
             with get() = completionWidget.CaretOffset
@@ -151,10 +155,12 @@ type FSharpInteractivePad() =
     let newLineIcon = ImageService.GetIcon("md-template")
 
     let getCorrectDirectory () =
-        if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
-            let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
-            if doc <> null then Path.GetDirectoryName(doc) |> Some else None
-        else None
+        ctx.WorkingFolder <-
+            if IdeApp.Workbench.ActiveDocument <> null && FileService.isInsideFSharpFile() then
+                let doc = IdeApp.Workbench.ActiveDocument.FileName.ToString()
+                if doc <> null then Path.GetDirectoryName(doc) |> Some else None
+            else None
+        ctx.WorkingFolder
 
     let nonBreakingSpace = "\u00A0" // used to disable editor syntax highlighting for output
 

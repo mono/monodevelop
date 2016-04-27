@@ -2,6 +2,9 @@
 
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open Microsoft.FSharp.Compiler.Interactive.Shell
+open System
+open System.IO
+open System.Text.RegularExpressions
 
 type CompletionData = {
     displayText: string
@@ -12,7 +15,19 @@ type CompletionData = {
     description: string
 }
 
+type PathCompletion = {
+    paths: string seq
+    residue: string
+}
+
 module Completion =
+    let (|FilePath|_|) line =
+        let matches = Regex.Matches(line, "^\s*#(load|r)\s+\"([^\"]*)", RegexOptions.Compiled)
+        if matches.Count > 0 then
+            Some (matches.[0].Groups.[1].Value, matches.[0].Groups.[2].Value)
+        else
+            None
+
     let rec allBaseTypes (entity:FSharpEntity) =
         seq {
             match entity.TryFullName with
@@ -107,12 +122,47 @@ module Completion =
         ]
          
     let mutable symbolList = List.empty
+
+    let getPaths directive (path: string) =
+        seq {
+            // absolute paths
+            if (Directory.Exists path) then
+                yield! Directory.EnumerateDirectories path
+
+                if directive = "load" then
+                    yield! Directory.EnumerateFiles(path, "*.fsx")
+
+                if directive = "r" then
+                    yield! Directory.EnumerateFiles(path, "*.dll")
+        }
+
+    let getPathCompletion (workingFolder: string option) directive (path: string) =
+        let separatorIndex = path.LastIndexOf Path.DirectorySeparatorChar
+        let pathToSeparator, residue, offset = 
+            if separatorIndex > -1 then
+                path.[0..separatorIndex], path.[separatorIndex..], 0
+            else
+                "", path, 1
+
+        let paths = seq {
+            if Path.IsPathRooted pathToSeparator then
+                yield! getPaths directive pathToSeparator
+                       |> Seq.map(fun path -> path.[separatorIndex..])
+            // relative to working folder
+            elif workingFolder.IsSome then
+                let relpath = Path.Combine (workingFolder.Value, pathToSeparator)
+                yield! getPaths directive relpath
+                       |> Seq.map(fun path -> path.[separatorIndex+workingFolder.Value.Length+1+offset..])
+        } 
+
+        { residue=residue; paths=paths  }
+
     let getCompletions (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
             let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction(input)
             let longName,residue = Parsing.findLongIdentsAndResidue(column, input)
             let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
-            let results = symbols 
+            let results = symbols
                           |> List.choose symbolToCompletionData
 
             let completions, symbols = results |> List.unzip
@@ -139,6 +189,8 @@ module Completion =
                 | None ->
                     EmptyTip
         }
+
+    
 
     let getParameterHints (fsiSession: FsiEvaluationSession, input:string, column: int) =
         async {
