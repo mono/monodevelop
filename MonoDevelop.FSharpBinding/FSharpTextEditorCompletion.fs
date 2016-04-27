@@ -162,6 +162,13 @@ module Completion =
         else
             None
 
+    let (|FilePath|_|) context =
+        let matches = Regex.Matches(context.lineToCaret, "^\s*#(load|r)\s+\"([^\"]*)", RegexOptions.Compiled)
+        if matches.Count > 0 then
+            Some (matches.[0].Groups.[1].Value, matches.[0].Groups.[2].Value)
+        else
+            None
+
     let (|LetIdentifier|_|) context =
         if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member)\s+[^=]+$", RegexOptions.Compiled) then
              let document = new TextDocument(context.lineToCaret)
@@ -460,6 +467,16 @@ module Completion =
                 return CompletionDataList()
         }
 
+    let getCompletionList (completions: MonoDevelop.FSharp.Shared.PathCompletion) =
+        let result = CompletionDataList()
+        result.DefaultCompletionString <- completions.residue
+        result.TriggerWordLength <- completions.residue.Length
+        let completions = 
+            completions.paths
+            |> Seq.map (fun path -> CompletionData(path))
+        result.AddRange completions
+        result
+
     let getModifiers context =
         let { 
             column = column
@@ -498,7 +515,15 @@ module Completion =
 
             let! results = async {
                 match completionContext with
-                | InvalidToken 
+                | FilePath (directive, path) ->
+                    let workingFolder =
+                        match documentContext |> Option.tryCast<FsiDocumentContext> with
+                        | Some ctx -> ctx.WorkingFolder
+                        | _ -> documentContext.GetWorkingFolder()
+
+                    let completions = MonoDevelop.FSharp.Shared.Completion.getPathCompletion workingFolder directive path
+                    return getCompletionList completions
+                | InvalidToken
                 | InvalidCompletionChar
                 | DoubleDot
                 | LiteralNumber
