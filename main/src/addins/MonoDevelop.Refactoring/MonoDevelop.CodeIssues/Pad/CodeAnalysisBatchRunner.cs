@@ -87,7 +87,6 @@ namespace MonoDevelop.CodeIssues
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Unhandled exception", e);
-					MessageService.ShowException (e);
 				}
 			}
 		}

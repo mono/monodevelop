@@ -755,9 +755,11 @@ namespace MonoDevelop.SourceEditor
 //				se.Buffer.SourceEncoding = encoding;
 //			TextFileService.FireCommitCountChanges (this);
 			
-			ContentName = fileName; 
-			UpdateMimeType (fileName);
-			Document.SetNotDirtyState ();
+			ContentName = fileName;
+			if (Document != null) {
+				UpdateMimeType (fileName);
+				Document.SetNotDirtyState ();
+			}
 			IsDirty = false;
 		}
 		

@@ -439,6 +439,46 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task RemoveRefreshedReferenceSaveProjectAndAddReferenceBackAgain ()
+		{
+			string solFile = Util.GetSampleProject ("reference-refresh", "ConsoleProject.sln");
+
+			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			DotNetProject project = sol.GetAllItems<DotNetProject> ().FirstOrDefault ();
+
+			File.Move (project.BaseDirectory.Combine ("test.dll"), project.BaseDirectory.Combine ("test.dll.tmp"));
+
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			project = sol.GetAllItems<DotNetProject> ().FirstOrDefault ();
+
+			ProjectReference r = project.References.FirstOrDefault (re => re.Reference == "test");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Package);
+			Assert.IsFalse (r.IsValid);
+
+			File.Move (project.BaseDirectory.Combine ("test.dll.tmp"), project.BaseDirectory.Combine ("test.dll"));
+
+			ProjectReference refreshedReference = r.GetRefreshedReference ();
+			Assert.IsNotNull (refreshedReference);
+
+			project.References.Remove (r);
+			await project.SaveAsync (Util.GetMonitor ());
+
+			project.References.Add (refreshedReference);
+			await project.SaveAsync (Util.GetMonitor ());
+
+			// Reload project.
+			sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			project = sol.GetAllItems<DotNetProject> ().FirstOrDefault ();
+
+			r = project.References.FirstOrDefault (re => re.Reference == "test");
+			Assert.IsNotNull (r);
+			Assert.AreEqual (r.ReferenceType, ReferenceType.Assembly);
+			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("test.dll").FullPath.ToString ());
+			Assert.IsTrue (r.IsValid);
+		}
+
+		[Test]
 		public void AssemblyReferenceHintPath ()
 		{
 			var file = (FilePath) GetType ().Assembly.Location;

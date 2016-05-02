@@ -65,8 +65,6 @@ namespace MonoDevelop.Components.Docking
 		static Xwt.Drawing.Image pixAutoHide;
 		static Xwt.Drawing.Image pixDock;
 
-		static double PixelScale = GtkWorkarounds.GetPixelScale ();
-
 		static readonly Xwt.WidgetSpacing TabPadding;
 		static readonly Xwt.WidgetSpacing TabActivePadding;
 
@@ -129,7 +127,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			double inactiveIconAlpha;
 
-			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 				inactiveIconAlpha = 0.8;
 			else
 				inactiveIconAlpha = 0.6;
@@ -164,7 +162,7 @@ namespace MonoDevelop.Components.Docking
 			WidthRequest = r;
 
 			if (visualStyle != null)
-				HeightRequest = visualStyle.PadTitleHeight != null ? (int)(visualStyle.PadTitleHeight.Value * PixelScale) : -1;
+				HeightRequest = visualStyle.PadTitleHeight != null ? (int)(visualStyle.PadTitleHeight.Value) : -1;
 		}
 
 		public void SetLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)

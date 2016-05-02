@@ -56,7 +56,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		static string MakeResName (string filename, string style, bool retina = false)
 		{
-			bool dark = IdeApp.Preferences.UserInterfaceSkin == Skin.Dark;
+			bool dark = IdeApp.Preferences.UserInterfaceTheme == Theme.Dark;
 
 			if (!string.IsNullOrEmpty (style)) {
 				style = "~" + style;

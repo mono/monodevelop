@@ -138,6 +138,18 @@
     <EmbeddedResource Include="icons\added-overlay-16~dark%402x.png">
       <LogicalName>added-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\added-overlay-16~sel.png">
+      <LogicalName>added-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\added-overlay-16~sel%402x.png">
+      <LogicalName>added-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\added-overlay-16~dark~sel.png">
+      <LogicalName>added-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\added-overlay-16~dark~sel%402x.png">
+      <LogicalName>added-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\modified-overlay-16.png">
       <LogicalName>modified-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -149,6 +161,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\modified-overlay-16~dark%402x.png">
       <LogicalName>modified-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\modified-overlay-16~sel.png">
+      <LogicalName>modified-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\modified-overlay-16~sel%402x.png">
+      <LogicalName>modified-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\modified-overlay-16~dark~sel.png">
+      <LogicalName>modified-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\modified-overlay-16~dark~sel%402x.png">
+      <LogicalName>modified-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\conflict-overlay-16.png">
       <LogicalName>conflict-overlay-16.png</LogicalName>
@@ -162,6 +186,18 @@
     <EmbeddedResource Include="icons\conflict-overlay-16~dark%402x.png">
       <LogicalName>conflict-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\conflict-overlay-16~sel.png">
+      <LogicalName>conflict-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\conflict-overlay-16~sel%402x.png">
+      <LogicalName>conflict-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\conflict-overlay-16~dark~sel.png">
+      <LogicalName>conflict-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\conflict-overlay-16~dark~sel%402x.png">
+      <LogicalName>conflict-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\locked-overlay-16.png">
       <LogicalName>locked-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -173,6 +209,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\locked-overlay-16~dark%402x.png">
       <LogicalName>locked-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locked-overlay-16~sel.png">
+      <LogicalName>locked-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locked-overlay-16~sel%402x.png">
+      <LogicalName>locked-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locked-overlay-16~dark~sel.png">
+      <LogicalName>locked-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\locked-overlay-16~dark~sel%402x.png">
+      <LogicalName>locked-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="VersionControl.addin.xml">
       <LogicalName>VersionControl.addin.xml</LogicalName>
@@ -189,6 +237,18 @@
     <EmbeddedResource Include="icons\removed-overlay-16~dark%402x.png">
       <LogicalName>removed-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\removed-overlay-16~sel.png">
+      <LogicalName>removed-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\removed-overlay-16~sel%402x.png">
+      <LogicalName>removed-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\removed-overlay-16~dark~sel.png">
+      <LogicalName>removed-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\removed-overlay-16~dark~sel%402x.png">
+      <LogicalName>removed-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\renamed-overlay-16.png">
       <LogicalName>renamed-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -201,6 +261,18 @@
     <EmbeddedResource Include="icons\renamed-overlay-16~dark%402x.png">
       <LogicalName>renamed-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16~sel.png">
+      <LogicalName>renamed-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16~sel%402x.png">
+      <LogicalName>renamed-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16~dark~sel.png">
+      <LogicalName>renamed-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\renamed-overlay-16~dark~sel%402x.png">
+      <LogicalName>renamed-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\ignored-overlay-16.png">
       <LogicalName>ignored-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -212,6 +284,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\ignored-overlay-16~dark%402x.png">
       <LogicalName>ignored-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ignored-overlay-16~sel.png">
+      <LogicalName>ignored-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ignored-overlay-16~sel%402x.png">
+      <LogicalName>ignored-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ignored-overlay-16~dark~sel.png">
+      <LogicalName>ignored-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\ignored-overlay-16~dark~sel%402x.png">
+      <LogicalName>ignored-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\repository-16.png">
       <LogicalName>repository-16.png</LogicalName>
@@ -237,6 +321,18 @@
     <EmbeddedResource Include="icons\versioned-overlay-16~dark%402x.png">
       <LogicalName>versioned-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\versioned-overlay-16~sel.png">
+      <LogicalName>versioned-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\versioned-overlay-16~sel%402x.png">
+      <LogicalName>versioned-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\versioned-overlay-16~dark~sel.png">
+      <LogicalName>versioned-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\versioned-overlay-16~dark~sel%402x.png">
+      <LogicalName>versioned-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\unversioned-overlay-16.png">
       <LogicalName>unversioned-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -248,6 +344,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\unversioned-overlay-16~dark%402x.png">
       <LogicalName>unversioned-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unversioned-overlay-16~sel.png">
+      <LogicalName>unversioned-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unversioned-overlay-16~sel%402x.png">
+      <LogicalName>unversioned-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unversioned-overlay-16~dark~sel.png">
+      <LogicalName>unversioned-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unversioned-overlay-16~dark~sel%402x.png">
+      <LogicalName>unversioned-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\lock-required-overlay-16.png">
       <LogicalName>lock-required-overlay-16.png</LogicalName>
@@ -261,6 +369,18 @@
     <EmbeddedResource Include="icons\lock-required-overlay-16~dark%402x.png">
       <LogicalName>lock-required-overlay-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\lock-required-overlay-16~sel.png">
+      <LogicalName>lock-required-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lock-required-overlay-16~sel%402x.png">
+      <LogicalName>lock-required-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lock-required-overlay-16~dark~sel.png">
+      <LogicalName>lock-required-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\lock-required-overlay-16~dark~sel%402x.png">
+      <LogicalName>lock-required-overlay-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\unlocked-overlay-16.png">
       <LogicalName>unlocked-overlay-16.png</LogicalName>
     </EmbeddedResource>
@@ -272,6 +392,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\unlocked-overlay-16~dark%402x.png">
       <LogicalName>unlocked-overlay-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16~sel.png">
+      <LogicalName>unlocked-overlay-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16~sel%402x.png">
+      <LogicalName>unlocked-overlay-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16~dark~sel.png">
+      <LogicalName>unlocked-overlay-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\unlocked-overlay-16~dark~sel%402x.png">
+      <LogicalName>unlocked-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Policies.xml">
       <LogicalName>Policies.xml</LogicalName>

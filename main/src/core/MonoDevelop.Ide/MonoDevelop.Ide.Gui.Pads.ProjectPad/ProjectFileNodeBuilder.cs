@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 			nodeInfo.Label = GLib.Markup.EscapeText (file.Link.IsNullOrEmpty ? file.FilePath.FileName : file.Link.FileName);
 			if (!File.Exists (file.FilePath)) {
-				nodeInfo.Label = "<span foreground='red'>" + nodeInfo.Label + "</span>";
+				nodeInfo.Label = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + nodeInfo.Label + "</span>";
 			}
 			
 			nodeInfo.Icon = DesktopService.GetIconForFile (file.FilePath, Gtk.IconSize.Menu);

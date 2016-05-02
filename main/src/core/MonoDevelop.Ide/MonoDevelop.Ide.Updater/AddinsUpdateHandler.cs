@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Updater
 
 			if (t != null && t.IsCompleted) {
 				AggregatedProgressMonitor monitor = new AggregatedProgressMonitor (Instance.updateMonitor);
-				monitor.AddSlaveMonitor (new MessageDialogProgressMonitor (true, true, false));
+				monitor.AddFollowerMonitor (new MessageDialogProgressMonitor (true, true, false));
 				await t;
 			}
 			HideAlert ();

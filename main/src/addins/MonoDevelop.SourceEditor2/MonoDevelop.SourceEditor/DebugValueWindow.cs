@@ -87,7 +87,7 @@ namespace MonoDevelop.SourceEditor
 			if (bgColor == currentBgColor)
 				return;
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences.UserInterfaceTheme == Ide.Theme.Light)
 				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));
 			else
 				oddRowColor = CairoExtensions.ColorGetHex (newBgColor.AddLight (-0.02));

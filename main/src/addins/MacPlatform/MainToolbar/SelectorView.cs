@@ -307,6 +307,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			public override void MouseDown (NSEvent theEvent)
 			{
+				if (!Enabled)
+					return;
+
 				var locationInView = ConvertPointFromView (theEvent.LocationInWindow, null);
 
 				var cellIdx = IndexOfCellAtX (locationInView.X);
@@ -315,7 +318,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 
 				var item = PathComponentCells [cellIdx];
-				if (item == null)
+				if (item == null || !item.Enabled)
 					return;
 
 				var componentRect = ((NSPathCell)Cell).GetRect (item, Frame, this);
@@ -376,7 +379,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (menu.Count > 1) {
 					var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
 
-					if (Window.Screen.BackingScaleFactor == 2)
+					if (Window?.Screen?.BackingScaleFactor == 2)
 						offs.Y += 0.5f; // fine tune menu position on retinas
 
 					menu.PopUpMenu (selectedItem, offs, this);

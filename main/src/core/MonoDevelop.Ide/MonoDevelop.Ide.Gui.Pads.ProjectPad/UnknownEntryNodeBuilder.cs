@@ -62,13 +62,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					Context.CacheComposedIcon (nodeInfo.Icon, "fade", gicon);
 				}
 				nodeInfo.Icon = gicon;
-				nodeInfo.Label = GettextCatalog.GetString ("<span foreground='grey'>{0} <span size='small'>(Unavailable)</span></span>", GLib.Markup.EscapeText (entry.Name));
+				nodeInfo.Label = GettextCatalog.GetString ("{0} <span size='small'>(Unavailable)</span>", GLib.Markup.EscapeText (entry.Name));
+				nodeInfo.DisabledStyle = true;
 			}
 			else if (entry.LoadError.Length > 0) {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project).WithAlpha (0.5);
 				nodeInfo.Label = entry.Name;
 				nodeInfo.StatusSeverity = TaskSeverity.Error;
 				nodeInfo.StatusMessage = GettextCatalog.GetString ("Load failed: ") + entry.LoadError;
+				nodeInfo.DisabledStyle = true;
 			} else {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project);
 				var gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");

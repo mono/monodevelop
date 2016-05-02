@@ -216,8 +216,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		void UpdateStyles (object sender = null, EventArgs e = null)
 		{
 			highlightStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			if (!highlightStyle.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
-				highlightStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceSkin);
+			if (!highlightStyle.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
+				highlightStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
 
 			if (markupCache != null)
 				markupCache = new List<Tuple<SearchResult, string>> ();
@@ -323,10 +323,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			double delta = Math.Abs (b1 - b2);
 			if (delta < 0.1) {
 				HslColor color1 = color;
-				color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? -0.5 : 0.5;
+				color1.L += IdeApp.Preferences.UserInterfaceTheme == Theme.Light ? -0.5 : 0.5;
 				if (Math.Abs (HslColor.Brightness (color1) - b2) < delta) {
 					color1 = color;
-					color1.L += IdeApp.Preferences.UserInterfaceSkin == Skin.Light ? 0.5 : -0.5;
+					color1.L += IdeApp.Preferences.UserInterfaceTheme == Theme.Light ? 0.5 : -0.5;
 				}
 				return color1;
 			}

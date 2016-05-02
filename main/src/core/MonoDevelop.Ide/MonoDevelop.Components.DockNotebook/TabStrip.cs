@@ -35,6 +35,7 @@ using Xwt.Motion;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -73,14 +74,13 @@ namespace MonoDevelop.Components.DockNotebook
 		public Button NextButton;
 		public MenuButton DropDownButton;
 
-		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
-		static readonly int TotalHeight = (int)(32 * PixelScale);
+		const int TotalHeight = 32;
 		static readonly Xwt.WidgetSpacing TabPadding;
 		static readonly Xwt.WidgetSpacing TabActivePadding;
-		static readonly int LeftBarPadding = (int)(44 * PixelScale);
-		static readonly int RightBarPadding = (int)(22 * PixelScale);
-		static readonly int VerticalTextSize = (int)(11 * PixelScale);
-		static readonly int ButtonSize = (int)(16 * PixelScale);
+		const int LeftBarPadding = 44;
+		const int RightBarPadding = 22;
+		const int VerticalTextSize = 11;
+		const int ButtonSize = 16;
 		const int TabSpacing = 0;
 		const int LeanWidth = 12;
 		const double CloseButtonMarginRight = 0;
@@ -837,6 +837,7 @@ namespace MonoDevelop.Components.DockNotebook
 					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 				}
 			}
+
 			la.Dispose ();
 		}
 

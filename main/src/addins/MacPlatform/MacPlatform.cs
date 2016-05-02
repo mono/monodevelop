@@ -72,7 +72,10 @@ namespace MonoDevelop.MacIntegration
 				return applicationMenuName ?? BrandingService.ApplicationName;
 			}
 			set {
-				applicationMenuName = value;
+				if (applicationMenuName != value) {
+					applicationMenuName = value;
+					OnApplicationMenuNameChanged ();
+				}
 			}
 		}
 
@@ -269,7 +272,6 @@ namespace MonoDevelop.MacIntegration
 			initedApp = true;
 
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
-			BrandingService.ApplicationNameChanged += ApplicationNameChanged;
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
 				IdeApp.Workbench.RootWindow.Realized += (sender, args) => {
@@ -299,7 +301,7 @@ namespace MonoDevelop.MacIntegration
 			return GettextCatalog.GetString ("Hide {0}", ApplicationMenuName);
 		}
 
-		static void ApplicationNameChanged (object sender, EventArgs e)
+		static void OnApplicationMenuNameChanged ()
 		{
 			Command aboutCommand = IdeApp.CommandService.GetCommand (HelpCommands.About);
 			if (aboutCommand != null)
@@ -445,40 +447,24 @@ namespace MonoDevelop.MacIntegration
 
 		static void SetupDockIcon ()
 		{
-			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
 			NSObject initialBundleIconFileValue;
+
+			// Don't do anything if we're inside an app bundle.
+			if (NSBundle.MainBundle.InfoDictionary.TryGetValue (new NSString ("CFBundleIconFile"), out initialBundleIconFileValue)) {
+				return;
+			}
+
+			// Setup without bundle.
+			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
+			string iconName = BrandingService.GetString ("ApplicationIcon");
 			string iconFile = null;
 
-			// Try setting a dark variant of the application dock icon if one exists in the app bundle.
-			if (NSBundle.MainBundle.InfoDictionary.TryGetValue (new NSString ("CFBundleIconFile"), out initialBundleIconFileValue)) {
-				FilePath bundleIconRoot = GetAppBundleRoot (exePath).Combine ("Contents", "Resources");
-				NSString initialBundleIconFile = (NSString)initialBundleIconFileValue;
-
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-					iconFile = bundleIconRoot.Combine (Path.GetFileNameWithoutExtension (initialBundleIconFile) + "~dark" + Path.GetExtension (initialBundleIconFile));
-				}
-
-				// There is no monodevelop~dark.icns, fallback to monodevelop.icns
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null || !File.Exists (iconFile)) {
-					iconFile = bundleIconRoot.Combine (initialBundleIconFile);
-				}
+			if (iconName != null) {
+				iconFile = BrandingService.GetFile (iconName);
 			} else {
-				// Setup without bundle.
-				string iconName = BrandingService.GetString ("ApplicationIcon");
-				if (iconName != null) {
-					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
-						string darkIconName = Path.GetFileNameWithoutExtension (iconName) + "~dark" + Path.GetExtension (iconName);
-						iconFile = BrandingService.GetFile (darkIconName);
-					}
-
-					if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light || iconFile == null) {
-						iconFile = BrandingService.GetFile (iconName);
-					}
-				} else {
-					// assume running from build directory
-					var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
-					iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
-				}
+				// assume running from build directory
+				var mdSrcMain = exePath.ParentDirectory.ParentDirectory.ParentDirectory;
+				iconFile = mdSrcMain.Combine ("theme-icons", "Mac", "monodevelop.icns");
 			}
 
 			if (File.Exists (iconFile)) {

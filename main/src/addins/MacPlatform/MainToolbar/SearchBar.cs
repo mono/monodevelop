@@ -48,17 +48,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		// To only draw the border, NSSearchFieldCell needs to be subclassed. Unfortunately this stops the 
 		// animation on activation working. I suspect this is implemented inside the NSSearchField rather
 		// than the NSSearchFieldCell which can't do animation.
-		class DarkSkinSearchFieldCell : NSSearchFieldCell
+		class DarkThemeSearchFieldCell : NSSearchFieldCell
 		{
 			public override void DrawWithFrame (CGRect cellFrame, NSView inView)
 			{
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 					var inset = cellFrame.Inset (0.25f, 0.25f);
 					if (!ShowsFirstResponder) {
 						var path = NSBezierPath.FromRoundedRect (inset, 3, 3);
 						path.LineWidth = 0.5f;
 
-						Styles.DarkBorderColor.ToNSColor ().SetStroke ();
+						// Hack to make the border be the correct colour in fullscreen mode
+						// See comment in AwesomeBar.cs for more details
+						if (MainToolbar.IsFullscreen) {
+							Styles.DarkBorderBrokenColor.ToNSColor ().SetStroke ();
+						} else {
+							Styles.DarkBorderColor.ToNSColor ().SetStroke ();
+						}
 						path.Stroke ();
 					}
 
@@ -79,7 +85,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						CancelButtonCell.DrawWithFrame (CancelButtonRectForBounds (inset), inView);
 					}
 				} else {
-					if (inView.Window.Screen.BackingScaleFactor == 2) {
+					if (inView.Window?.Screen?.BackingScaleFactor == 2) {
 						nfloat yOffset = 0f;
 						nfloat hOffset = 0f;
 
@@ -145,7 +151,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			public override void SelectWithFrame (CGRect aRect, NSView inView, NSText editor, NSObject delegateObject, nint selStart, nint selLength)
 			{
 				nfloat xOffset = 0;
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 					xOffset = -1.5f;
 				}
 				// y does not appear to affect anything. Whatever value is set here for y will always be 1px below the
@@ -174,7 +180,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public SearchBar ()
 		{
-			Cell = new DarkSkinSearchFieldCell ();
+			Cell = new DarkThemeSearchFieldCell ();
 
 			Initialize ();
 			var debugFilePath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.Personal), ".xs-searchbar-debug");

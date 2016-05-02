@@ -130,52 +130,7 @@ namespace MonoDevelop.Ide
 	public static class MessageService
 	{
 		public static Window RootWindow { get; internal set; }
-		
-		#region ShowException
-		
-		public static void ShowException (Exception e)
-		{
-			ShowException ((Window)null, e);
-		}
-		
-		public static void ShowException (Exception e, string message)
-		{
-			ShowException ((Window)null, e, message);
-		}
-		
-		public static void ShowException (Exception e, string message, string title)
-		{
-			ShowException ((Window)null, e, message, title);
-		}
-		
-		public static AlertButton ShowException (Exception e, string message, string title, params AlertButton[] buttons)
-		{
-			return ShowException ((Window)null, e, message, title, buttons);
-		}
 
-		public static void ShowException (Window parent, Exception e)
-		{
-			ShowException (parent, e, e.Message);
-		}
-		
-		public static void ShowException (Window parent, Exception e, string message)
-		{
-			ShowException (parent, e, message, null);
-		}
-		
-		public static void ShowException (Window parent, Exception e, string message, string title)
-		{
-			ShowException (parent, e, message, title, null);
-		}
-
-		public static AlertButton ShowException (Window parent, Exception e, string message, string title, params AlertButton[] buttons)
-		{
-			if (!IdeApp.IsInitialized)
-				throw new Exception ("IdeApp has not been initialized. Propagating the exception.", e); 
-			return messageService.ShowException (parent, title, message, e, buttons);
-		}
-		#endregion
-		
 		#region ShowError
 		public static void ShowError (string primaryText)
 		{
@@ -581,22 +536,6 @@ namespace MonoDevelop.Ide
 		//The real GTK# code is wrapped in a GuiSyncObject to make calls synchronous on the GUI thread
 		class InternalMessageService : GuiSyncObject
 		{
-			public AlertButton ShowException (Window parent, string title, string message, Exception e, params AlertButton[] buttons)
-			{
-				if ((buttons == null || buttons.Length == 0) && (e is UserException) && ((UserException)e).AlreadyReportedToUser)
-					return AlertButton.Ok;
-
-				var exceptionDialog = new ExceptionDialog {
-					Buttons = buttons ?? new [] { AlertButton.Ok },
-					Title = title ?? GettextCatalog.GetString ("An error has occurred"),
-					Message = message,
-					Exception = e,
-					TransientFor = parent ?? GetDefaultModalParent (),
-				};
-				exceptionDialog.Run ();
-				return exceptionDialog.ResultButton;
-			}
-			
 			public AlertButton GenericAlert (Window parent, MessageDescription message)
 			{
 				var dialog = new AlertDialog (message) {

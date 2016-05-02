@@ -915,8 +915,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		private void ItemToggled (object o, ToggledArgs args)
 		{
 			Gtk.TreeIter iter;
-			if (store.GetIterFromString (out iter, args.Path)) {
-				TaskListEntry task = (TaskListEntry)store.GetValue (iter, DataColumns.Task);
+
+			if (view.Model.GetIterFromString (out iter, args.Path)) {
+				TaskListEntry task = (TaskListEntry)view.Model.GetValue (iter, DataColumns.Task);
 				task.Completed = !task.Completed;
 				TaskService.FireTaskToggleEvent (this, new TaskEventArgs (task));
 			}
