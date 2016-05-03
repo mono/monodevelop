@@ -262,8 +262,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					string name = currentCat.Length == 0? translatedOther : currentCat;
 					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false, true);
 				}
+				var info = IdeApp.CommandService.GetCommandInfo (cmd.Id);
+
 				string label = cmd.Text.Replace ("_", String.Empty);
-				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, (string)cmd.Icon, true, true);
+				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, (string)info.Icon, true, true);
 			}
 			UpdateGlobalWarningLabel ();
 			Refilter ();
