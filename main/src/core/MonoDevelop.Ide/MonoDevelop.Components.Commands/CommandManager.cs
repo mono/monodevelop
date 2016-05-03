@@ -78,6 +78,9 @@ namespace MonoDevelop.Components.Commands
 		internal bool handlerFoundInMulticast;
 		Gtk.Widget lastActiveWidget;
 
+		Dictionary<string, List<Command>> conflicts = new Dictionary<string, List<Command>> ();
+		internal Dictionary<string, List<Command>> Conflicts { get { return conflicts; } }
+
 		public CommandManager (): this (null)
 		{
 		}
@@ -390,7 +393,12 @@ namespace MonoDevelop.Components.Commands
 			}
 
 			var toplevelFocus = IdeApp.Workbench.HasToplevelFocus;
+
+			var conflict = new List<Command> ();
+
 			bool bypass = false;
+			var dispatched = false;
+
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
 				if (cinfo.Bypass) {
@@ -398,9 +406,22 @@ namespace MonoDevelop.Components.Commands
 					continue;
 				}
 
-				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
-					return result;
+				if (cinfo.Enabled && cinfo.Visible) {
+					if (!dispatched)
+						dispatched = DispatchCommand (commands [i].Id, CommandSource.Keybinding);
+					conflict.Add (commands [i]);
+				}
 			}
+
+			if (conflict.Count > 1) {
+				conflicts [binding.ToString ()] = conflict;
+				if (KeyBindingFailed != null)
+					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}) has conflicts.", binding.ToString ())));
+			} else if (conflicts.ContainsKey (binding.ToString ()))
+				conflicts.Remove (binding.ToString ());
+
+			if (dispatched)
+				return result;
 
 			// The command has not been handled.
 			// If there is at least a handler that sets the bypass flag, allow gtk to execute the default action
