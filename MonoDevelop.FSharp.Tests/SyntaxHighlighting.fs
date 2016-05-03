@@ -107,6 +107,7 @@ type SyntaxHighlighting() =
     [<TestCase(@" §-1§", "Number")>]
     [<TestCase(@"[0§..§1]", "Plain Text")>]
     [<TestCase("let mutable x§   = §1", "Plain Text")>]
+    [<TestCase("§and§ Forest =", "Keyword(Namespace)")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
