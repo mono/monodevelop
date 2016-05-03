@@ -115,11 +115,16 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Update (CommandArrayInfo ainfo)
 		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			bool enabled = doc != null && doc.Editor != null;
+
 			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Complete"), false);
 			info.Checked = !IdeApp.Preferences.ForceSuggestionMode.Value;
+			info.Enabled = enabled;
 
 			info = ainfo.Add (GettextCatalog.GetString ("_Suggest"), true);
 			info.Checked = IdeApp.Preferences.ForceSuggestionMode.Value;
+			info.Enabled = enabled;
 		}
 	}
 }
