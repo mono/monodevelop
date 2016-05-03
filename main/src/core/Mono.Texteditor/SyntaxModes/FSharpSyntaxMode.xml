@@ -363,7 +363,7 @@
 		<Group color="Plain Text"/>
 	</Match>
 	
-	<Match expression="(module|type)(\s+)(\w+|``[^`]*``)" ignorecase="False">
+	<Match expression="(module|type|and)(\s+)(\w+|``[^`]*``)" ignorecase="False">
 		<Group color="Keyword(Namespace)"/>
 		<Group color="Plain Text"/>
 		<Group color="User Types"/>
