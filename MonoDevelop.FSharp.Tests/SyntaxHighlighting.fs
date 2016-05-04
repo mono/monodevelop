@@ -108,6 +108,7 @@ type SyntaxHighlighting() =
     [<TestCase(@"[0§..§1]", "Plain Text")>]
     [<TestCase("let mutable x§   = §1", "Plain Text")>]
     [<TestCase("§and§ Forest =", "Keyword(Namespace)")>]
+    [<TestCase("let rec go §xs§ =", "User Field Declaration")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
@@ -116,5 +117,6 @@ type SyntaxHighlighting() =
     [<TestCase(@"-> §^T§ :", "User Types")>]
     [<TestCase(@"   -> §seq§<'T>", "User Types")>]
     [<TestCase(@"   §list§ :", "User Field Declaration")>]
+
     member x.``Tooltip highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
