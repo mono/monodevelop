@@ -40,8 +40,11 @@ type UnformattedTextFileDescriptionTemplate() =
             let regex = new Regex("[^a-zA-Z0-9.]")
             regex.Replace(str, "")
 
-        tags.["Namespace"] <- ns
-        tags.["AppName"] <- getSafeName tags.["SolutionName"]
+        if tags.ContainsKey("Namespace") then
+            tags.["Namespace"] <- ns
+
+        if tags.ContainsKey("AppName") then
+            tags.["AppName"] <- getSafeName tags.["SolutionName"]
 
     override x.CreateFileContent(policyParent, project, language, fileName, identifier) =
         let tags = new Dictionary<_, _> ()
