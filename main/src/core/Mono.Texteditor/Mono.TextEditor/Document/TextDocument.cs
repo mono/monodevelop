@@ -35,7 +35,6 @@ using System.ComponentModel;
 using ICSharpCode.NRefactory.Editor;
 using System.Threading.Tasks;
 using System.Threading;
-using Gtk;
 
 namespace Mono.TextEditor
 {
@@ -1311,7 +1310,7 @@ namespace Mono.TextEditor
 			lock (foldSegmentTaskLock) {
 				if (foldSegmentTask != null) {
 					foldSegmentTask.ContinueWith (delegate {
-						Application.Invoke (delegate {
+						Gtk.Application.Invoke (delegate {
 							InternalInformFoldChanged (args);	
 						});
 					});
