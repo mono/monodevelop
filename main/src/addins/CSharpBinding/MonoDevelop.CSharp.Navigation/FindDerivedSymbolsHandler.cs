@@ -87,8 +87,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						}
 						foreach (var foundSymbol in result) {
 							foreach (var loc in foundSymbol.Locations) {
-								if (monitor.CancellationToken.IsCancellationRequested)
-									monitor.CancellationToken.ThrowIfCancellationRequested ();
+								monitor.CancellationToken.ThrowIfCancellationRequested ();
 								monitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 							}
 						}
