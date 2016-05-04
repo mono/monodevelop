@@ -354,6 +354,12 @@
     <EmbeddedResource Include="Styles\GruvboxStyle.json">
       <LogicalName>GruvboxStyle.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Cursors\cursor-mac-16.png">
+      <LogicalName>cursor-mac-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Cursors\cursor-mac-16%402x.png">
+      <LogicalName>cursor-mac-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -373,6 +379,7 @@
     <Folder Include="Mono.TextEditor\Gui\" />
     <Folder Include="Mono.TextEditor\Document\" />
     <Folder Include="Mono.TextEditor\Standalone\" />
+    <Folder Include="Cursors\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

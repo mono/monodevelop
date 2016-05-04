@@ -127,6 +127,15 @@ namespace Mono.TextEditor
 			this.textEditor = textEditor;
 
 			textEditor.Document.TextReplaced += HandleTextReplaced;
+
+			if (Platform.IsMac) {
+				var scale = GtkWorkarounds.GetScaleFactor (textEditor);
+				var cursorImage = Xwt.Drawing.Image.FromResource ("cursor-mac-16.png").WithSize (16 * scale);
+				var pbuf = Xwt.Toolkit.CurrentEngine.GetNativeImage (cursorImage) as Pixbuf;
+				if (pbuf != null)
+					xtermCursor = new Cursor (textEditor.Display, pbuf, (int)(cursorImage.Width / 2), (int)(cursorImage.Height / 2));
+			}
+
 			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
@@ -340,7 +349,7 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
+		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Circle);
 		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 
 		static readonly string[] markerTexts = {
