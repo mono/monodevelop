@@ -349,7 +349,7 @@ namespace Mono.TextEditor
 		}
 
 		System.ComponentModel.BackgroundWorker searchPatternWorker;
-		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Circle);
+		Gdk.Cursor xtermCursor = new Gdk.Cursor (Gdk.CursorType.Xterm);
 		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
 
 		static readonly string[] markerTexts = {
