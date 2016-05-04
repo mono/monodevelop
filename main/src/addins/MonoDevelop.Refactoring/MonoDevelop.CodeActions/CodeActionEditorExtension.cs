@@ -532,7 +532,7 @@ namespace MonoDevelop.CodeActions
 				.Where (diag => diag.Severity == DiagnosticSeverity.Warning).ToList ();
 			
 			foreach (var warning in warningsAtCaret) {
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", warning.Descriptor.Title);
+				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", warning.Descriptor.Title);
 				var subMenu = new FixMenuDescriptor (label);
 				if (first) {
 					menu.Add (FixMenuEntry.Separator);
@@ -563,7 +563,7 @@ namespace MonoDevelop.CodeActions
 
 			foreach (var fix_ in GetCurrentFixes ().DiagnosticsAtCaret) {
 				var fix = fix_;
-				var label = GettextCatalog.GetString ("_Options for \"{0}\"", fix.GetMessage ());
+				var label = GettextCatalog.GetString ("_Options for \u2018{0}\u2019", fix.GetMessage ());
 				var subMenu = new FixMenuDescriptor (label);
 
 				CodeDiagnosticDescriptor descriptor = BuiltInCodeDiagnosticProvider.GetCodeDiagnosticDescriptor (fix.Id);
