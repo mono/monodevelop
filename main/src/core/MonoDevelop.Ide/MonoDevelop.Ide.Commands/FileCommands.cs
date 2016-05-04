@@ -267,9 +267,9 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.FileCommands.RecentFileList
 	public class RecentFileListHandler : CommandHandler
 	{
-		protected override void Update (CommandArrayInfo info)
+		protected override async void Update (CommandArrayInfo info)
 		{
-			var files = DesktopService.RecentFiles.GetFiles ();
+			var files = await DesktopService.RecentFiles.GetFiles ();
 			if (files.Count == 0)
 				return;
 			
@@ -320,18 +320,18 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 		
-		protected override void Update (CommandInfo info)
+		protected override async void Update (CommandInfo info)
 		{
-			info.Enabled = DesktopService.RecentFiles.GetFiles ().Count > 0;
+			info.Enabled = (await DesktopService.RecentFiles.GetFiles ()).Count > 0;
 		}
 	}
 	
 	// MonoDevelop.Ide.Commands.FileCommands.RecentProjectList
 	public class RecentProjectListHandler : CommandHandler
 	{
-		protected override void Update (CommandArrayInfo info)
+		protected override async void Update (CommandArrayInfo info)
 		{
-			var projects = DesktopService.RecentFiles.GetProjects ();
+			var projects = await DesktopService.RecentFiles.GetProjects ();
 			if (projects.Count == 0)
 				return;
 				
@@ -403,9 +403,9 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 	
-		protected override void Update (CommandInfo info)
+		protected override async void Update (CommandInfo info)
 		{
-			info.Enabled = DesktopService.RecentFiles.GetProjects ().Count > 0;
+			info.Enabled = (await DesktopService.RecentFiles.GetProjects ()).Count > 0;
 		}
 	}
 	

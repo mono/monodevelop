@@ -229,15 +229,24 @@ namespace MonoDevelop.Ide
 				Counters.Initialization.Trace ("Opening Files");
 
 				// load previous combine
-				RecentFile openedProject = null;
-				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen) {
-					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
-					if (openedProject != null)
-						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith (t => IdeApp.OpenFiles (startupInfo.RequestedFileList), TaskScheduler.FromCurrentSynchronizationContext ());
-				}
-				if (openedProject == null)
-					IdeApp.OpenFiles (startupInfo.RequestedFileList);
-				
+				bool shouldOpenPrevious = IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile && !IdeApp.Workspace.WorkspaceItemIsOpening && !IdeApp.Workspace.IsOpen;
+				Task.Run (async () => {
+					RecentFile openedProject = null;
+					if (shouldOpenPrevious) {
+						openedProject = (await DesktopService.RecentFiles.GetProjects ()).FirstOrDefault ();
+						if (openedProject != null) {
+							await Runtime.RunInMainThread (async () => {
+								await IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName);
+								IdeApp.OpenFiles (startupInfo.RequestedFileList);
+							});
+						}
+					}
+					if (openedProject == null) {
+						await Runtime.RunInMainThread (() => {
+							IdeApp.OpenFiles (startupInfo.RequestedFileList);
+						});
+					}
+				});
 				monitor.Step (1);
 			
 			} catch (Exception e) {
