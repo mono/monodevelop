@@ -1107,11 +1107,12 @@
 			defaultHandler = "MonoDevelop.Ide.Editor.HideIssuesHandler"
 			_label = "_None"
 			_displayName = "Show/Hide Inline Messages"
-			_description = "Toggles the visibility of Inline Messages"/>
+			_description = "Toggles the visibility of Inline Messages"
+			type="option"/>
 	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues"
 			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
 			_label = "Toggle Issues"
-			type="array"/>
+			type="radio|array"/>
 	</Category>
 </Extension>
 </ExtensionModel>
