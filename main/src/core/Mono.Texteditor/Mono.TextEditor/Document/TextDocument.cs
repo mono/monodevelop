@@ -35,6 +35,7 @@ using System.ComponentModel;
 using ICSharpCode.NRefactory.Editor;
 using System.Threading.Tasks;
 using System.Threading;
+using Gtk;
 
 namespace Mono.TextEditor
 {
@@ -1060,6 +1061,7 @@ namespace Mono.TextEditor
 		readonly object syncObject = new object();
 
 		CancellationTokenSource foldSegmentSrc;
+		object foldSegmentTaskLock = new object ();
 		Task foldSegmentTask;
 
 		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false, CancellationToken masterToken = default(CancellationToken))
@@ -1067,37 +1069,39 @@ namespace Mono.TextEditor
 			if (newSegments == null) {
 				return;
 			}
-			InterruptFoldWorker ();
-			bool update;
-			if (!startTask) {
-				var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
-				if (useApplicationInvoke) {
-					Gtk.Application.Invoke (delegate {
+			lock (foldSegmentTaskLock) {
+				InterruptFoldWorker ();
+				bool update;
+				if (!startTask) {
+					var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
+					if (useApplicationInvoke) {
+						Gtk.Application.Invoke (delegate {
+							foldedSegments = newFoldedSegments;
+							InformFoldTreeUpdated ();
+						});
+					} else {
 						foldedSegments = newFoldedSegments;
 						InformFoldTreeUpdated ();
-					});
-				} else {
-					foldedSegments = newFoldedSegments;
-					InformFoldTreeUpdated ();
-				}
-				return;
-			}
-			foldSegmentSrc = new CancellationTokenSource ();
-			masterToken.Register (InterruptFoldWorker); 
-			var token = foldSegmentSrc.Token;
-			foldSegmentTask = Task.Factory.StartNew (delegate {
-				var segments = UpdateFoldSegmentWorker (newSegments, out update, token);
-				if (token.IsCancellationRequested)
+					}
 					return;
-				foldedSegments = segments;
-				Gtk.Application.Invoke (delegate {
+				}
+				foldSegmentSrc = new CancellationTokenSource ();
+				masterToken.Register (InterruptFoldWorker);
+				var token = foldSegmentSrc.Token;
+				foldSegmentTask = Task.Factory.StartNew (delegate {
+					var segments = UpdateFoldSegmentWorker (newSegments, out update, token);
 					if (token.IsCancellationRequested)
 						return;
-					InformFoldTreeUpdated ();
-					if (update)
-						CommitUpdateAll ();
-				});
-			}, token);
+					foldedSegments = segments;
+					Gtk.Application.Invoke (delegate {
+						if (token.IsCancellationRequested)
+							return;
+						InformFoldTreeUpdated ();
+						if (update)
+							CommitUpdateAll ();
+					});
+				}, token);
+			}
 		}
 		
 		void RemoveFolding (FoldSegment folding)
@@ -1304,7 +1308,21 @@ namespace Mono.TextEditor
 
 		internal void InformFoldChanged (FoldSegmentEventArgs args)
 		{
-			foldSegmentTask?.Wait ();
+			lock (foldSegmentTaskLock) {
+				if (foldSegmentTask != null) {
+					foldSegmentTask.ContinueWith (delegate {
+						Application.Invoke (delegate {
+							InternalInformFoldChanged (args);	
+						});
+					});
+				} else {
+					InternalInformFoldChanged (args);
+				}
+			}
+		}
+
+		void InternalInformFoldChanged (FoldSegmentEventArgs args)
+		{
 			if (args.FoldSegment.IsFolded) {
 				foldedSegments.Add (args.FoldSegment);
 			} else {
@@ -1314,7 +1332,7 @@ namespace Mono.TextEditor
 			if (handler != null)
 				handler (this, args);
 		}
-		
+
 		public event EventHandler<FoldSegmentEventArgs> Folded;
 		#endregion
 
