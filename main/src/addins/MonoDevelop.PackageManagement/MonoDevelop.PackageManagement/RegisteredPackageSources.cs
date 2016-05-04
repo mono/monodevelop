@@ -26,10 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using MonoDevelop.Core;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -37,7 +37,7 @@ namespace MonoDevelop.PackageManagement
 	internal class RegisteredPackageSources : ObservableCollection<PackageSource>
 	{
 		public static readonly string DefaultPackageSourceUrl = "https://www.nuget.org/api/v2/";
-		public static readonly string DefaultPackageSourceName = "Official NuGet Gallery";
+		public static readonly string DefaultPackageSourceName = GettextCatalog.GetString ("Official NuGet Gallery");
 		
 		public static readonly PackageSource DefaultPackageSource = 
 			new PackageSource(DefaultPackageSourceUrl, DefaultPackageSourceName);
