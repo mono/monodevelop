@@ -31,6 +31,7 @@ using System.Collections.Generic;
 
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Core;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Ide.TypeSystem;
 
@@ -103,7 +104,7 @@ namespace MonoDevelop.AspNet.WebForms
 				break;
 			case "mastertype":
 				if (MasterPageTypeVPath != null || MasterPageTypeName != null) {
-					errors.Add (new Error (ErrorType.Error, "Unexpected second mastertype directive", directive.Region));
+					errors.Add (new Error (ErrorType.Error, GettextCatalog.GetString ("Unexpected second mastertype directive"), directive.Region));
 					return;
 				}
 				MasterPageTypeName = GetAttributeValueCI (directive.Attributes, "typename");
@@ -111,7 +112,7 @@ namespace MonoDevelop.AspNet.WebForms
 				if (string.IsNullOrEmpty (MasterPageTypeName) == string.IsNullOrEmpty (MasterPageTypeVPath))
 					errors.Add (new Error (
 						ErrorType.Error,
-						"Mastertype directive must have non-empty 'typename' or 'virtualpath' attribute",
+						GettextCatalog.GetString ("Mastertype directive must have non-empty 'typename' or 'virtualpath' attribute"),
 						directive.Region
 					)
 					);
@@ -138,7 +139,7 @@ namespace MonoDevelop.AspNet.WebForms
 				else
 					errors.Add (new Error (
 						ErrorType.Error,
-						"Assembly directive must have non-empty 'name' or 'src' attribute",
+						GettextCatalog.GetString ("Assembly directive must have non-empty 'name' or 'src' attribute"),
 						directive.Region
 					)
 					);
@@ -150,7 +151,7 @@ namespace MonoDevelop.AspNet.WebForms
 				else
 					errors.Add (new Error (
 						ErrorType.Error,
-						"Import directive must have non-empty 'namespace' attribute",
+						GettextCatalog.GetString ("Import directive must have non-empty 'namespace' attribute"),
 						directive.Region
 					)
 					);
@@ -162,7 +163,7 @@ namespace MonoDevelop.AspNet.WebForms
 				else
 					errors.Add (new Error (
 						ErrorType.Error,
-						"Implements directive must have non-empty 'interface' attribute",
+						GettextCatalog.GetString ("Implements directive must have non-empty 'interface' attribute"),
 						directive.Region
 					)
 					);
@@ -175,7 +176,7 @@ namespace MonoDevelop.AspNet.WebForms
 		void SetSubtype (WebSubtype type, WebFormsDirective directive, List<Error> errors)
 		{
 			if (Subtype != WebSubtype.None) {
-				errors.Add (new Error (ErrorType.Error, "Unexpected directive " + directive.Name.FullName, directive.Region));
+				errors.Add (new Error (ErrorType.Error, GettextCatalog.GetString ("Unexpected directive {0}", directive.Name.FullName), directive.Region));
 				return;
 			}
 			

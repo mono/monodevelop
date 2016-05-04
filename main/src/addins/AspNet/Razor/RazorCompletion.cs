@@ -43,37 +43,37 @@ namespace MonoDevelop.AspNet.Razor
 		{
 			string icon = "md-keyword";
 
-			list.Add ("helper", icon, "Defines a helper");
-			list.Add ("functions", icon, "Defines a region of class members");
-			list.Add ("using", icon, "Imports a namespace");
+			list.Add ("helper", icon, GettextCatalog.GetString ("Defines a helper"));
+			list.Add ("functions", icon, GettextCatalog.GetString ("Defines a region of class members"));
+			list.Add ("using", icon, GettextCatalog.GetString ("Imports a namespace"));
 
 			if (kind == RazorHostKind.WebCode)
 				return;
 
-			list.Add ("inherits", icon, "Defines a base class of the view");
-			list.Add ("model", icon, "References a strongly-typed model");
+			list.Add ("inherits", icon, GettextCatalog.GetString ("Defines a base class of the view"));
+			list.Add ("model", icon, GettextCatalog.GetString ("References a strongly-typed model"));
 
 			if (kind == RazorHostKind.WebPage) {
-				list.Add ("layout", icon, "Defines a layout file to use in this view");
-				list.Add ("sessionstate", icon, "Defines a sessionstate mode");
-				list.Add ("section", icon, "Defines a section");
+				list.Add ("layout", icon, GettextCatalog.GetString ("Defines a layout file to use in this view"));
+				list.Add ("sessionstate", icon, GettextCatalog.GetString ("Defines a sessionstate mode"));
+				list.Add ("section", icon, GettextCatalog.GetString ("Defines a section"));
 			} else if (kind == RazorHostKind.Template) {
-				list.Add ("__class", icon, "Customizes the generated class");
-				list.Add ("__property", icon, "Adds a property");
+				list.Add ("__class", icon, GettextCatalog.GetString ("Customizes the generated class"));
+				list.Add ("__property", icon, GettextCatalog.GetString ("Adds a property"));
 			}
 		}
 
 		static void AddRazorTemplates (CompletionDataList list, RazorHostKind kind)
 		{
 			string icon = "md-template";
-			list.Add ("inherits", icon, "Template for inherits directive");
-			list.Add ("model", icon, "Template for model directive");
-			list.Add ("helper", icon, "Template for helper directive");
-			list.Add ("functions", icon, "Template for functions directive");
-			list.Add ("using", icon, "Template for using statement");
+			list.Add ("inherits", icon, GettextCatalog.GetString ("Template for inherits directive"));
+			list.Add ("model", icon, GettextCatalog.GetString ("Template for model directive"));
+			list.Add ("helper", icon, GettextCatalog.GetString ("Template for helper directive"));
+			list.Add ("functions", icon, GettextCatalog.GetString ("Template for functions directive"));
+			list.Add ("using", icon, GettextCatalog.GetString ("Template for using statement"));
 
 			if (kind == RazorHostKind.WebPage) {
-				list.Add ("section", icon, "Template for section directive");
+				list.Add ("section", icon, GettextCatalog.GetString ("Template for section directive"));
 			}
 		}
 
