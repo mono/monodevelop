@@ -55,6 +55,9 @@ namespace MonoDevelop.CSharp.Refactoring
 				try {
 					var antiDuplicatesSet = new HashSet<SearchResult> (new SearchResultComparer ());
 					foreach (var loc in symbol.Locations) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							return;
+
 						if (!loc.IsInSource)
 							continue;
 						var fileName = loc.SourceTree.FilePath;
@@ -70,8 +73,10 @@ namespace MonoDevelop.CSharp.Refactoring
 						monitor.ReportResult (sr);
 					}
 
-					foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, solution).ConfigureAwait (false)) {
+					foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, solution, monitor.CancellationToken).ConfigureAwait (false)) {
 						foreach (var loc in mref.Locations) {
+							if (monitor.CancellationToken.IsCancellationRequested)
+								return;
 							var fileName = loc.Document.FilePath;
 							var offset = loc.Location.SourceSpan.Start;
 							string projectedName;
@@ -86,6 +91,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							}
 						}
 					}
+				} catch (OperationCanceledException) {
 				} catch (Exception ex) {
 					if (monitor != null)
 						monitor.ReportError ("Error finding references", ex);

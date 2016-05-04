@@ -836,7 +836,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			searchTokenSource = cancelSource;
 			var token = cancelSource.Token;
 			currentTask = Task.Run (delegate {
-				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, cancellationTokenSource:cancelSource)) {
+				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
 
 					searchMonitor.PathMode = scope.PathMode;
 

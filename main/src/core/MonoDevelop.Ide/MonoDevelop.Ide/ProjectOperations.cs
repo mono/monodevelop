@@ -311,8 +311,11 @@ namespace MonoDevelop.Ide
 			
 			if (askIfMultipleLocations && locations.Length > 1) {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					foreach (var part in locations)
+					foreach (var part in locations) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							return;
 						monitor.ReportResult (GetJumpTypePartSearchResult (symbol, part));
+					}
 				}
 				return;
 			}
