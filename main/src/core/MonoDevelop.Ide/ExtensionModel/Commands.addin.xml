@@ -1108,7 +1108,7 @@
 			_label = "_None"
 			_displayName = "Show/Hide Inline Messages"
 			_description = "Toggles the visibility of Inline Messages"
-			type="option"/>
+			type="radio"/>
 	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues"
 			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
 			_label = "Toggle Issues"
