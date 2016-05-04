@@ -1067,7 +1067,6 @@ namespace Mono.TextEditor
 			if (newSegments == null) {
 				return;
 			}
-
 			InterruptFoldWorker ();
 			bool update;
 			if (!startTask) {
@@ -1090,10 +1089,10 @@ namespace Mono.TextEditor
 				var segments = UpdateFoldSegmentWorker (newSegments, out update, token);
 				if (token.IsCancellationRequested)
 					return;
+				foldedSegments = segments;
 				Gtk.Application.Invoke (delegate {
 					if (token.IsCancellationRequested)
 						return;
-					foldedSegments = segments;
 					InformFoldTreeUpdated ();
 					if (update)
 						CommitUpdateAll ();
@@ -1275,27 +1274,15 @@ namespace Mono.TextEditor
 		
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
-			bool needUpdate = false;
 			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset && offset < f.EndOffset)) {
-				needUpdate = true;
 				fold.IsFolded = false;
-			}
-			if (needUpdate) {
-				RequestUpdate (new UpdateAll ());
-				CommitDocumentUpdate ();
 			}
 		}
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
-			bool needUpdate = false;
 			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
-				needUpdate = true;
 				fold.IsFolded = false;
-			}
-			if (needUpdate) {
-				RequestUpdate (new UpdateAll ());
-				CommitDocumentUpdate ();
 			}
 		}
 
@@ -1308,13 +1295,16 @@ namespace Mono.TextEditor
 		public event EventHandler FoldTreeUpdated;
 		
 		HashSet<FoldSegment> foldedSegments = new HashSet<FoldSegment> ();
+
 		public IEnumerable<FoldSegment> FoldedSegments {
 			get {
 				return foldedSegments;
 			}
 		}
+
 		internal void InformFoldChanged (FoldSegmentEventArgs args)
 		{
+			foldSegmentTask?.Wait ();
 			if (args.FoldSegment.IsFolded) {
 				foldedSegments.Add (args.FoldSegment);
 			} else {
