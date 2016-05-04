@@ -129,6 +129,7 @@ namespace MonoDevelop.Components.Mac
 						parent.InsertItem (n, index);
 					else
 						parent.AddItem (n);
+					index++;
 					continue;
 				}
 

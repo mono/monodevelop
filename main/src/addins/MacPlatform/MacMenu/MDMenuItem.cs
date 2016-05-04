@@ -130,6 +130,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 						parent.InsertItem (n, index);
 					else
 						parent.AddItem (n);
+					index++;
 					continue;
 				}
 
