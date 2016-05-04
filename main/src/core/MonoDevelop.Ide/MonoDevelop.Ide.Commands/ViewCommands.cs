@@ -113,9 +113,11 @@ namespace MonoDevelop.Ide.Commands
 				lastListGroup.TryGetValue (list, out group);
 				if (group != pad.Group) {
 					lastListGroup [list] = pad.Group;
-					CommandInfo sep = new CommandInfo ("-");
-					sep.IsArraySeparator = true;
-					list.Insert (atIndex, sep, null);
+					if (atIndex > 0) {
+						CommandInfo sep = new CommandInfo ("-");
+						sep.IsArraySeparator = true;
+						list.Insert (atIndex, sep, null);
+					}
 				}
 			}
 		}
