@@ -249,6 +249,8 @@ namespace MonoDevelop.Refactoring
 						foreach (var result in await provider.FindReferences (documentIdString, hintProject, monitor.CancellationToken)) {
 							monitor.ReportResult (result);
 						}
+					} catch (OperationCanceledException) {
+						return;
 					} catch (Exception ex) {
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);
@@ -274,7 +276,7 @@ namespace MonoDevelop.Refactoring
 							monitor.ReportResult (result);
 						}
 					} catch (OperationCanceledException) {
-
+						return;
 					} catch (Exception ex) {
 						if (monitor != null)
 							monitor.ReportError ("Error finding references", ex);

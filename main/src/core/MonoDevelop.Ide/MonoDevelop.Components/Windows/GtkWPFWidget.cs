@@ -65,7 +65,13 @@ namespace MonoDevelop.Components.Windows
 			WidgetFlags |= WidgetFlags.NoWindow;
 		}
 
-		void RepositionWpfWindow ()
+        protected virtual void RepositionWpfWindow ()
+        {
+            int scale = (int)MonoDevelop.Components.GtkWorkarounds.GetScaleFactor(this);
+            RepositionWpfWindow (scale, scale);
+        }
+
+		protected void RepositionWpfWindow (int hscale, int vscale)
 		{
 			int x, y;
 			if (TranslateCoordinates (Toplevel, 0, 0, out x, out y)) {
@@ -75,8 +81,8 @@ namespace MonoDevelop.Components.Windows
 				wpfWidgetHost.Left = Allocation.Left;
 				wpfWidgetHost.Top = Allocation.Top;
 			}
-			wpfWidgetHost.Width = Allocation.Width + 1;
-			wpfWidgetHost.Height = Allocation.Height + 1;
+			wpfWidgetHost.Width = (Allocation.Width + 1) * hscale;
+			wpfWidgetHost.Height = (Allocation.Height + 1) * vscale;
 		}
 
 		protected override void OnRealized ()

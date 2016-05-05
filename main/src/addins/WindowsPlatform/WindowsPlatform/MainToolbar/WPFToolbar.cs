@@ -68,7 +68,7 @@ namespace WindowsPlatform.MainToolbar
 			};
 
 			toolbar.SearchBar.SearchBar.TextChanged += (o, e) => {
-				if (string.IsNullOrEmpty (SearchText) || SearchText == SearchPlaceholderMessage)
+				if (SearchText == SearchPlaceholderMessage)
 					return;
 
 				if (SearchEntryChanged != null)
@@ -102,7 +102,13 @@ namespace WindowsPlatform.MainToolbar
 			};
         }
 
-		void SendKeyPress(KeyEventArgs ka)
+        protected override void RepositionWpfWindow()
+        {
+            int scale = (int)MonoDevelop.Components.GtkWorkarounds.GetScaleFactor(this);
+            RepositionWpfWindow (scale, scale);
+        }
+
+        void SendKeyPress(KeyEventArgs ka)
 		{
 			if (SearchEntryKeyPressed != null)
 				SearchEntryKeyPressed(this, ka);

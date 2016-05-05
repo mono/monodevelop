@@ -378,6 +378,7 @@ namespace MonoDevelop.Projects
 			foreach (var projectFile in projectFiles) {
 				var info = new FileInfo (projectFile.FilePath);
 				infoList.Add (info);
+				info.Refresh ();
 			}
 
 			return infoList;

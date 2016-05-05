@@ -436,6 +436,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public void ShowReady ()
 		{
 			ShowMessage ("");
+			SetMessageSourcePad (null);
 		}
 
 		public void SetMessageSourcePad (Pad pad)

@@ -286,7 +286,7 @@
                   <widget class="Gtk.Label" id="labelReason">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">&lt;b&gt;Reason&lt;/b&gt;</property>
+                    <property name="LabelProp" translatable="yes">&lt;b&gt;Reason&lt;/b&gt;</property>
                     <property name="UseMarkup">True</property>
                   </widget>
                   <packing>

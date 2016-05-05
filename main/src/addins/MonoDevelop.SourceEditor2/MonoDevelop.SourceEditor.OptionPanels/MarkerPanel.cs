@@ -38,8 +38,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		bool showLineNumbers;
 
-		bool underlineErrors;
-
 		bool highlightMatchingBracket;
 
 		bool highlightCurrentLine;
@@ -62,7 +60,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.Build();
 			showLineNumbers = DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
-			underlineErrors = DefaultSourceEditorOptions.Instance.UnderlineErrors;
 			highlightMatchingBracket = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
 			highlightCurrentLine = DefaultSourceEditorOptions.Instance.HighlightCaretLine;
 			showRuler = DefaultSourceEditorOptions.Instance.ShowRuler;
@@ -79,14 +76,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.showLineNumbersCheckbutton.Active = showLineNumbers = DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
 			this.showLineNumbersCheckbutton.Toggled += delegate {
 				DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = this.showLineNumbersCheckbutton.Active;
-			};
-
-			this.underlineErrorsCheckbutton.Active = underlineErrors = DefaultSourceEditorOptions.Instance.UnderlineErrors;
-			this.underlineErrorsCheckbutton.Toggled += delegate {
-				DefaultSourceEditorOptions.Instance.UnderlineErrors = this.underlineErrorsCheckbutton.Active;
-				foreach (var doc in IdeApp.Workbench.Documents)
-					doc.StartReparseThread ();
-
 			};
 
 			this.highlightMatchingBracketCheckbutton.Active = highlightMatchingBracket = DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
@@ -157,7 +146,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public virtual void ApplyChanges ()
 		{
 			showLineNumbers = this.showLineNumbersCheckbutton.Active;
-			underlineErrors = this.underlineErrorsCheckbutton.Active;
 			highlightMatchingBracket = this.highlightMatchingBracketCheckbutton.Active;
 			highlightCurrentLine = this.highlightCurrentLineCheckbutton.Active;
 			showRuler = this.showRulerCheckbutton.Active;
@@ -180,7 +168,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		protected override void OnDestroyed ()
 		{
 			DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = showLineNumbers;
-			DefaultSourceEditorOptions.Instance.UnderlineErrors = underlineErrors;
 			DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = highlightMatchingBracket;
 			DefaultSourceEditorOptions.Instance.HighlightCaretLine = highlightCurrentLine;
 			DefaultSourceEditorOptions.Instance.ShowRuler = showRuler;

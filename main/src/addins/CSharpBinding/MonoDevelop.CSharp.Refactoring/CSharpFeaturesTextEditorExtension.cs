@@ -70,8 +70,12 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			GoToDefinitionService.DisplayMultiple = delegate (IEnumerable<Tuple<Solution, ISymbol, Location>> list) {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					foreach (var part in list)
+					foreach (var part in list) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							return;
+
 						monitor.ReportResult (GotoDeclarationHandler.GetJumpTypePartSearchResult (part.Item2, part.Item3));
+					}
 				}
 			};
 		}

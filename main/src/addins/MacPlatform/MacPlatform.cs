@@ -50,6 +50,8 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
+using System.Runtime.InteropServices;
+using ObjCRuntime;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -283,7 +285,7 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			PatchGtkTheme ();
-			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Runtime.RunInMainThread (
+			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
 				delegate {
 					Styles.LoadStyle();
 					PatchGtkTheme();
@@ -447,6 +449,9 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public extern static IntPtr IntPtr_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg1);
+
 		static void SetupDockIcon ()
 		{
 			NSObject initialBundleIconFileValue;
@@ -470,7 +475,11 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			if (File.Exists (iconFile)) {
-				NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
+				var image = new NSImage ();
+				var imageFile = new NSString (iconFile);
+
+				IntPtr p = IntPtr_objc_msgSend_IntPtr (image.Handle, Selector.GetHandle ("initByReferencingFile:"), imageFile.Handle);
+				NSApplication.SharedApplication.ApplicationIconImage = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
 			}
 		}
 

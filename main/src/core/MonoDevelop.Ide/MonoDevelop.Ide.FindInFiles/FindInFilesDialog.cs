@@ -174,11 +174,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			};
 			
 			buttonSearch.Clicked += HandleSearchClicked;
-			buttonClose.Clicked += (sender, e) => {
-				if (resultPad != null)
-					resultPad.Window.Activate (true);
-				Destroy ();
-			};
+			buttonClose.Clicked += (sender, e) => Destroy ();
 			DeleteEvent += (o, args) => Destroy ();
 			buttonSearch.GrabDefault ();
 
@@ -684,6 +680,13 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		protected override void OnDestroyed ()
 		{
+			if (resultPad != null) {
+				var resultWidget = resultPad.Control.GetNativeWidget<SearchResultWidget> ();
+				if (resultWidget.ResultCount > 0) {
+					resultPad.Window.Activate (true);
+				}
+			}
+
 			if (updateTimer != 0) {
 				GLib.Source.Remove (updateTimer);
 				updateTimer = 0;
@@ -833,7 +836,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			searchTokenSource = cancelSource;
 			var token = cancelSource.Token;
 			currentTask = Task.Run (delegate {
-				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, cancellationTokenSource:cancelSource)) {
+				using (SearchProgressMonitor searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true)) {
 
 					searchMonitor.PathMode = scope.PathMode;
 
@@ -866,20 +869,18 @@ namespace MonoDevelop.Ide.FindInFiles
 						LoggingService.LogError ("Error while search", ex);
 					}
 						
-					string message;
+					string message = null;
 					if (errorMessage != null) {
 						message = GettextCatalog.GetString ("The search could not be finished: {0}", errorMessage);
 						searchMonitor.ReportError (message, null);
-					} else if (searchMonitor.CancellationToken.IsCancellationRequested) {
-						message = GettextCatalog.GetString ("Search cancelled.");
-						searchMonitor.ReportWarning (message);
-					} else {
+					} else if (!searchMonitor.CancellationToken.IsCancellationRequested) {
 						string matches = string.Format (GettextCatalog.GetPluralString ("{0} match found", "{0} matches found", find.FoundMatchesCount), find.FoundMatchesCount);
 						string files = string.Format (GettextCatalog.GetPluralString ("in {0} file.", "in {0} files.", find.SearchedFilesCount), find.SearchedFilesCount);
 						message = GettextCatalog.GetString ("Search completed.") + Environment.NewLine + matches + " " + files;
 						searchMonitor.ReportSuccess (message);
 					}
-					searchMonitor.ReportStatus (message);
+					if (message != null)
+						searchMonitor.ReportStatus (message);
 					searchMonitor.Log.WriteLine (GettextCatalog.GetString ("Search time: {0} seconds."), (DateTime.Now - timer).TotalSeconds);
 				}
 				if (UpdateStopButton != null) {

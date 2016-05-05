@@ -26,8 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -78,7 +78,7 @@ namespace MonoDevelop.PackageManagement
 		
 		void ReportScriptsWillNotBeRun()
 		{
-			string message = "PowerShell scripts will not be run.";
+			string message = GettextCatalog.GetString ("PowerShell scripts will not be run.");
 			packageManagementEvents.OnPackageOperationMessageLogged(MessageLevel.Warning, message);
 		}
 	}

@@ -311,9 +311,14 @@ namespace MonoDevelop.VersionControl.Subversion
 		protected override void OnMoveFile (FilePath localSrcPath, FilePath localDestPath, bool force, ProgressMonitor monitor)
 		{
 			bool destIsVersioned = false;
-			
-			if (File.Exists (localDestPath))
+
+			if (File.Exists (localDestPath)) {
+				if (string.Equals (localSrcPath, localDestPath, StringComparison.OrdinalIgnoreCase)) {
+					Svn.Move (localSrcPath, localDestPath, true, monitor);
+					return;
+				}
 				throw new InvalidOperationException ("Cannot move file. Destination file already exist.");
+			}
 
 			if (IsVersioned (localDestPath)) {
 				// Revert to the original status

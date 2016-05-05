@@ -68,7 +68,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.labelError = new global::Gtk.Label ();
 			this.labelError.Name = "labelError";
 			this.labelError.Xalign = 0F;
-			this.labelError.LabelProp = "Error";
+			this.labelError.LabelProp = global::Mono.Unix.Catalog.GetString ("Error");
 			this.table4.Add (this.labelError);
 			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.table4 [this.labelError]));
 			w4.TopAttach = ((uint)(1));

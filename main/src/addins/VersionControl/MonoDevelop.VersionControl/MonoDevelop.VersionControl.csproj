@@ -981,6 +981,7 @@
     <Compile Include="MonoDevelop.VersionControl.Views\CommonTextEditorOptions.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BaseView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\Styles.cs" />
+    <Compile Include="MonoDevelop.VersionControl\VersionControlInitializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

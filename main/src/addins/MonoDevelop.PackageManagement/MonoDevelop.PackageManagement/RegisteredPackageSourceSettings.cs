@@ -137,12 +137,10 @@ namespace MonoDevelop.PackageManagement
 		static string GetReadPackageSourcesErrorMessage (Exception ex)
 		{
 			if (ex is CryptographicException) {
-				return GettextCatalog.GetString ("Unable to decrypt passwords stored in the NuGet.Config file. " +
-					"{0} will now fallback to using the Official NuGet Gallery and the NuGet.Config file will be treated as read-only.");
+				return GettextCatalog.GetString ("Unable to decrypt passwords stored in the NuGet.Config file. {0} will now fallback to using the Official NuGet Gallery and the NuGet.Config file will be treated as read-only.");
 			}
 
-			return GettextCatalog.GetString ("An error occurred when trying to read the NuGet.Config file. " +
-				"{0} will now fallback to using the Official NuGet Gallery and the NuGet.Config file will be treated as read-only.\n\n{1}");
+			return GettextCatalog.GetString ("An error occurred when trying to read the NuGet.Config file. {0} will now fallback to using the Official NuGet Gallery and the NuGet.Config file will be treated as read-only.\n\n{1}");
 		}
 		
 		void PackageSourcesChanged(object sender, NotifyCollectionChangedEventArgs e)

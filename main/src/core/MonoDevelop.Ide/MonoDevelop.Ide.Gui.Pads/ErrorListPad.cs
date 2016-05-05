@@ -271,7 +271,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				AddTask (t);
 			}
 
-			control.FocusChain = new Gtk.Widget [] { sw };
+			control.FocusChain = new Gtk.Widget [] { outputView };
 		}
 
 		public override void Dispose ()
@@ -781,13 +781,11 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter.Refilter ();
 		}
 
-		bool FilterTasks (TreeModel model, TreeIter sortedIter)
+		bool FilterTasks (TreeModel model, TreeIter iter)
 		{
-			Gtk.TreeIter iter;
 			bool canShow = false;
 
 			try {
-				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task == null)
 					return true;
@@ -961,6 +959,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return (aTask != null && zTask != null) ?
 			       aTask.FileName.CompareTo (zTask.FileName) :
 			       0;
+		}
+
+		internal void FocusOutputView ()
+		{
+			logBtn.Active = true;
+			HandleLogBtnToggled (this, EventArgs.Empty);
 		}
 		
 		void HandleLogBtnToggled (object sender, EventArgs e)
