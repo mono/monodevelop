@@ -243,7 +243,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			if (fileName == null)
-				throw new InvalidOperationException ("File name not provided in template");
+				throw new InvalidOperationException (GettextCatalog.GetString ("File name not provided in template"));
 			
 			//give it an extension if it didn't get one (compatibility with pre-substition behaviour)
 			if (Path.GetExtension (fileName).Length == 0) {
@@ -366,7 +366,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			var binding = LanguageBindingService.GetBindingPerLanguageName (language);
 			if (binding == null)
-				throw new InvalidOperationException ("Language '" + language + "' not found");
+				throw new InvalidOperationException (GettextCatalog.GetString ("Language '{0}' not found", language));
 			return binding;
 		}
 	}
