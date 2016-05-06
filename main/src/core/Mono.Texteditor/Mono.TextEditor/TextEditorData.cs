@@ -30,7 +30,6 @@ using Gtk;
 using System.IO;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
-using ICSharpCode.NRefactory.Editor;
 using Xwt.Drawing;
 
 namespace Mono.TextEditor
@@ -290,21 +289,21 @@ namespace Mono.TextEditor
 				if (Document.LineCount > 0) {
 					var line = Document.GetLine (DocumentLocation.MinLine);
 					switch (line.UnicodeNewline) {
-					case ICSharpCode.NRefactory.UnicodeNewline.LF:
+					case UnicodeNewline.LF:
 						return "\u000A";
-					case ICSharpCode.NRefactory.UnicodeNewline.CRLF:
+					case UnicodeNewline.CRLF:
 						return "\u000D\u000A";
-					case ICSharpCode.NRefactory.UnicodeNewline.CR:
+					case UnicodeNewline.CR:
 						return "\u000D";
-					case ICSharpCode.NRefactory.UnicodeNewline.NEL:
+					case UnicodeNewline.NEL:
 						return "\u0085";
-					case ICSharpCode.NRefactory.UnicodeNewline.VT:
+					case UnicodeNewline.VT:
 						return "\u000B";
-					case ICSharpCode.NRefactory.UnicodeNewline.FF:
+					case UnicodeNewline.FF:
 						return "\u000C";
-					case ICSharpCode.NRefactory.UnicodeNewline.LS:
+					case UnicodeNewline.LS:
 						return "\u2028";
-					case ICSharpCode.NRefactory.UnicodeNewline.PS:
+					case UnicodeNewline.PS:
 						return "\u2029";
 					}
 				} 

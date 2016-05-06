@@ -30,9 +30,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class TextSourceVersionWrapper : ITextSourceVersion
 	{
-		readonly ICSharpCode.NRefactory.Editor.ITextSourceVersion version;
+		readonly Mono.TextEditor.ITextSourceVersion version;
 
-		public TextSourceVersionWrapper (ICSharpCode.NRefactory.Editor.ITextSourceVersion version)
+		public TextSourceVersionWrapper (Mono.TextEditor.ITextSourceVersion version)
 		{
 			if (version == null)
 				throw new ArgumentNullException ("version");

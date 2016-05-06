@@ -40,11 +40,9 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
 using System.ComponentModel;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
@@ -491,7 +489,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
+		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, Mono.TextEditor.DocumentRegion region, Mono.TextEditor.FoldingType type)
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
@@ -656,7 +654,6 @@ namespace MonoDevelop.SourceEditor
 			splittedTextEditor.EditorExtension = textEditor.EditorExtension;
 			if (textEditor.GetTextEditorData ().HasIndentationTracker)
 				splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
-			splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
 
 			secondsw.SetTextEditor (splittedTextEditor);
 			splitContainer.Add2 (secondsw);

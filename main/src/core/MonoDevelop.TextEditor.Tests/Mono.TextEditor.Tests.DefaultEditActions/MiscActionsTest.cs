@@ -64,16 +64,6 @@ namespace Mono.TextEditor.Tests.Actions
 		}
 	
 		[Test()]
-		public void TestGotoMatchingBracket ()
-		{
-			var data = Create ("$(foo(bar))");
-			MiscActions.GotoMatchingBracket (data);
-			Check (data, "(foo(bar)$)");
-			MiscActions.GotoMatchingBracket (data);
-			Check (data, "$(foo(bar))");
-		}
-
-		[Test()]
 		public void TestInsertNewLine ()
 		{
 			TextEditorData data = new Mono.TextEditor.TextEditorData ();

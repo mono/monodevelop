@@ -24,11 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if STANDALONE
-
 using System;
 
-namespace ICSharpCode.NRefactory
+namespace Mono.TextEditor
 {
 	public enum UnicodeNewline {
 		Unknown,
@@ -251,5 +249,3 @@ namespace ICSharpCode.NRefactory
 		}
 	}
 }
-
-#endif

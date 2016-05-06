@@ -15,11 +15,11 @@
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-#if STANDALONE
+
 using System;
 using System.Globalization;
 
-namespace ICSharpCode.NRefactory
+namespace Mono.TextEditor
 {
 	/// <summary>
 	/// A line/column position.
@@ -186,4 +186,3 @@ namespace ICSharpCode.NRefactory
 		}
 	}
 }
-#endif

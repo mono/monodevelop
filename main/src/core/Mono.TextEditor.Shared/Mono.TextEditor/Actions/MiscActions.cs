@@ -30,25 +30,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Linq;
-using ICSharpCode.NRefactory;
-
 
 namespace Mono.TextEditor
 {
 	public static class MiscActions
 	{
-		public static void GotoMatchingBracket (TextEditorData data)
-		{
-			using (var undoGroup = data.OpenUndoGroup ()) {
-				int matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset);
-				if (matchingBracketOffset == -1 && data.Caret.Offset > 0)
-					matchingBracketOffset = data.Document.GetMatchingBracketOffset (data.Caret.Offset - 1);
-
-				if (matchingBracketOffset != -1)
-					data.Caret.Offset = matchingBracketOffset;
-			}
-		}
-
 		public static int RemoveTabInLine (TextEditorData data, DocumentLine line)
 		{
 			if (line.LengthIncludingDelimiter == 0)

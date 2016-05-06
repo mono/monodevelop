@@ -253,8 +253,6 @@ namespace Mono.TextEditor
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2), BookmarkActions.GotoNext);
 			keyBindings.Add (GetKeyCode (Gdk.Key.F2, Gdk.ModifierType.ShiftMask), BookmarkActions.GotoPrevious);
 			
-			keyBindings.Add (GetKeyCode (Gdk.Key.b, Gdk.ModifierType.ControlMask), MiscActions.GotoMatchingBracket);
-
 			keyBindings.Add (GetKeyCode (Gdk.Key.Escape), SelectionActions.ClearSelection);
 
 			//Non-mac selection actions

@@ -25,15 +25,13 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor
 {
 	class LazyLineSplitter : ILineSplitter
 	{
-		internal ITextSource src;
+		internal TextDocument src;
 		LineSegment[] lines;
 
 		sealed class LineSegment : DocumentLine

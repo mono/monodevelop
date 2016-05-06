@@ -15,10 +15,9 @@
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-#if STANDALONE
 using System;
 
-namespace ICSharpCode.NRefactory.Editor
+namespace Mono.TextEditor
 {
 	/// <summary>
 	/// The TextAnchor class references an offset (a position between two characters).
@@ -137,4 +136,3 @@ namespace ICSharpCode.NRefactory.Editor
 		AfterInsertion
 	}
 }
-#endif

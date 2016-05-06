@@ -28,8 +28,6 @@
 //
 
 using System;
-using ICSharpCode.NRefactory;
-
 
 namespace Mono.TextEditor
 {

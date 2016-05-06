@@ -41,9 +41,7 @@ using Mono.Addins;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
@@ -757,12 +755,6 @@ namespace MonoDevelop.SourceEditor
 		internal void OnScrollPageDown ()
 		{
 			RunAction (ScrollActions.PageDown);
-		}
-
-		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
-		internal void OnGotoMatchingBrace ()
-		{
-			RunAction (MiscActions.GotoMatchingBracket);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]

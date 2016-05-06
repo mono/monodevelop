@@ -46,9 +46,7 @@ using Services = MonoDevelop.Projects.Services;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.Ide.TextEditing;
 using System.Text;
@@ -231,7 +229,7 @@ namespace MonoDevelop.SourceEditor
 			TaskService.TaskToggled += HandleErrorListPadTaskToggled;
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
-			Document.AddAnnotation (this);
+			// Document.AddAnnotation (this);
 			if (document != null) {
 				Document.MimeType = document.MimeType;
 				Document.FileName = document.FileName;
@@ -1047,7 +1045,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnTextReplacing (object s, DocumentChangeEventArgs a)
 		{
-			oldReplaceText = a.RemovedText.Text;
+			oldReplaceText = a.RemovedText;
 		}
 		
 		void OnTextReplaced (object s, DocumentChangeEventArgs a)
@@ -1067,7 +1065,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (a.InsertedText != null) {
 				i = 0;
-				string sb = a.InsertedText.Text;
+				string sb = a.InsertedText;
 				while (i < sb.Length) {
 					if (sb [i] == '\n')
 						lines++;

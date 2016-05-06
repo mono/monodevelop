@@ -272,38 +272,39 @@ namespace Mono.TextEditor.Vi
 
 		static bool TryFindSymbolBlock (TextEditorData data, char command, out SymbolBlock result)
 		{
-			char end, begin;
-			if (!BeginToEndCharMap.TryGetValue (command, out end)) end = command;
-			if (!EndToBeginCharMap.TryGetValue (command, out begin)) begin = command;
+			// TODO - may be needed for a vi mode plugin.
+			//char end, begin;
+			//if (!BeginToEndCharMap.TryGetValue (command, out end)) end = command;
+			//if (!EndToBeginCharMap.TryGetValue (command, out begin)) begin = command;
 
-			var offset = data.Caret.Offset;
+			//var offset = data.Caret.Offset;
 
-			var startTokenOffset = ParseForChar(data, offset, 0, end, begin, false);
-			var endTokenOffset = ParseForChar(data, offset, data.Length, begin, end, true);
+			//var startTokenOffset = ParseForChar(data, offset, 0, end, begin, false);
+			//var endTokenOffset = ParseForChar(data, offset, data.Length, begin, end, true);
 
-			// Use the editor's FindMatchingBrace built-in functionality. It's better at handling erroneous braces
-			// inside quotes. We still need to do the above paragraph because we needed to find the braces.
-			var matchingStartBrace = endTokenOffset.HasValue ? data.Document.GetMatchingBracketOffset(
-				endTokenOffset.GetValueOrDefault ()) : -1;
-			if (matchingStartBrace >= 0 && (!startTokenOffset.HasValue 
-			                                || matchingStartBrace != startTokenOffset.GetValueOrDefault ()))
-				startTokenOffset = matchingStartBrace;
+			//// Use the editor's FindMatchingBrace built-in functionality. It's better at handling erroneous braces
+			//// inside quotes. We still need to do the above paragraph because we needed to find the braces.
+			//var matchingStartBrace = endTokenOffset.HasValue ? data.Document.GetMatchingBracketOffset(
+			//	endTokenOffset.GetValueOrDefault ()) : -1;
+			//if (matchingStartBrace >= 0 && (!startTokenOffset.HasValue 
+			//                                || matchingStartBrace != startTokenOffset.GetValueOrDefault ()))
+			//	startTokenOffset = matchingStartBrace;
 
-			var matchingEndBrace = startTokenOffset.HasValue && data.GetCharAt (offset) != end ? 
-				data.Document.GetMatchingBracketOffset(startTokenOffset.GetValueOrDefault ()) : -1;
-			if (matchingEndBrace >= 0 && (!endTokenOffset.HasValue 
-			                              || matchingEndBrace != endTokenOffset.GetValueOrDefault ()))
-				endTokenOffset = matchingEndBrace;
+			//var matchingEndBrace = startTokenOffset.HasValue && data.GetCharAt (offset) != end ? 
+			//	data.Document.GetMatchingBracketOffset(startTokenOffset.GetValueOrDefault ()) : -1;
+			//if (matchingEndBrace >= 0 && (!endTokenOffset.HasValue 
+			//                              || matchingEndBrace != endTokenOffset.GetValueOrDefault ()))
+			//	endTokenOffset = matchingEndBrace;
 
-			if (!startTokenOffset.HasValue || !endTokenOffset.HasValue) throw new Exception();
+			//if (!startTokenOffset.HasValue || !endTokenOffset.HasValue) throw new Exception();
 
-			result = new SymbolBlock 
-			{ 
-				StartOffset = startTokenOffset.GetValueOrDefault (),
-				EndOffset = endTokenOffset.GetValueOrDefault (),
-				StartLine = data.GetLineByOffset (startTokenOffset.GetValueOrDefault()),
-				EndLine = data.GetLineByOffset (endTokenOffset.GetValueOrDefault()),
-			};
+			result = new SymbolBlock ();
+			//{ 
+			//	StartOffset = startTokenOffset.GetValueOrDefault (),
+			//	EndOffset = endTokenOffset.GetValueOrDefault (),
+			//	StartLine = data.GetLineByOffset (startTokenOffset.GetValueOrDefault()),
+			//	EndLine = data.GetLineByOffset (endTokenOffset.GetValueOrDefault()),
+			//};
 			return true;
 		}
 

@@ -15,12 +15,11 @@
 // FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-#if STANDALONE
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ICSharpCode.NRefactory.Editor
+namespace Mono.TextEditor
 {
 	/// <summary>
 	/// Provides ITextSourceVersion instances.
@@ -94,7 +93,7 @@ namespace ICSharpCode.NRefactory.Editor
 					throw new ArgumentException("Versions do not belong to the same document.");
 				// We will allow overflows, but assume that the maximum distance between checkpoints is 2^31-1.
 				// This is guaranteed on x86 because so many checkpoints don't fit into memory.
-				return Math.Sign(unchecked( this.id - o.id ));
+				return System.Math.Sign(unchecked( this.id - o.id ));
 			}
 			
 			public IEnumerable<TextChangeEventArgs> GetChangesTo(ITextSourceVersion other)
@@ -128,4 +127,3 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 	}
 }
-#endif

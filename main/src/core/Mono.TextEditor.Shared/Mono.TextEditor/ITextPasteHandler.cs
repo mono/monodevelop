@@ -1,10 +1,9 @@
-//
-// TextSourceVersionWrapper.cs
+﻿// ITextPasteHandler.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +22,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Core.Text;
 
-namespace MonoDevelop.SourceEditor.Wrappers
+namespace Mono.TextEditor
 {
-	class TextChangeEventArgsWrapper : TextChangeEventArgs
+	/// <summary>
+	/// The text paste handler can do formattings to a text that is about to be pasted
+	/// into the text document.
+	/// </summary>
+	public interface ITextPasteHandler
 	{
-		public TextChangeEventArgsWrapper (Mono.TextEditor.TextChangeEventArgs change) : base (change.Offset, change.RemovedText, change.InsertedText)
-		{
-		}
+		/// <summary>
+		/// Formats plain text that is inserted at a specified offset.
+		/// </summary>
+		/// <returns>
+		/// The text that will get inserted at that position.
+		/// </returns>
+		/// <param name="offset">The offset where the text will be inserted.</param>
+		/// <param name="text">The text to be inserted.</param>
+		/// <param name="copyData">Additional data in case the text was copied from a Mono.TextEditor.</param>
+		string FormatPlainText (int offset, string text, byte [] copyData);
+
+		/// <summary>
+		/// Gets the copy data for a specific segment inside the document. This can contain additional information.
+		/// </summary>
+		/// <param name="segment">The text segment that is about to be copied.</param>
+		byte [] GetCopyData (TextSegment segment);
 	}
 }

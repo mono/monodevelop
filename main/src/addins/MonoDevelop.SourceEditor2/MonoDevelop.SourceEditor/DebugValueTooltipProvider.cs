@@ -35,11 +35,6 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Threading;

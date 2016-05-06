@@ -36,7 +36,6 @@ using Mono.TextEditor.Highlighting;
 using Gdk; 
 using Gtk;
 using System.Timers;
-using ICSharpCode.NRefactory;
 using System.Diagnostics;
 
 namespace Mono.TextEditor
@@ -1901,7 +1900,7 @@ namespace Mono.TextEditor
 						}
 					}
 					var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-					foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+					foreach (var marker in Document.GetTextSegmentMarkersAt (Document.LocationToOffset (locNotSnapped)).Where (m => m.IsVisible)) {
 						if (marker is IActionTextLineMarker) {
 							isHandled |= ((IActionTextLineMarker)marker).MousePressed (textEditor, args);
 							if (isHandled)
@@ -2037,7 +2036,7 @@ namespace Mono.TextEditor
 					}
 				}
 				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.LocationToOffset (locNotSnapped)).Where (m => m.IsVisible)) {
 					if (marker is IActionTextLineMarker) {
 						isHandled |= ((IActionTextLineMarker)marker).MouseReleased (textEditor, args);
 						if (isHandled)
@@ -2254,7 +2253,7 @@ namespace Mono.TextEditor
 				oldMarkers = newMarkers;
 				newMarkers = tmp;
 				var locNotSnapped = PointToLocation (args.X, args.Y, snapCharacters: false);
-				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.GetOffset (locNotSnapped)).Where (m => m.IsVisible)) {
+				foreach (var marker in Document.GetTextSegmentMarkersAt (Document.LocationToOffset (locNotSnapped)).Where (m => m.IsVisible)) {
 					if (marker is IActionTextLineMarker) {
 						((IActionTextLineMarker)marker).MouseHover (textEditor, args, hoverResult);
 					}

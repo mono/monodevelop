@@ -31,7 +31,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// An (Offset, Length) pair representing a text span.
 	/// </summary>
-	public struct TextSegment : IEquatable<TextSegment>, ICSharpCode.NRefactory.Editor.ISegment
+	public struct TextSegment : IEquatable<TextSegment>
 	{
 		public static readonly TextSegment Invalid = new TextSegment (-1, 0);
 
@@ -115,10 +115,6 @@ namespace Mono.TextEditor
 		{
 			this.offset = offset;
 			this.length = length;
-		}
-
-		public TextSegment (ICSharpCode.NRefactory.Editor.ISegment nrefactorySegment) : this (nrefactorySegment.Offset, nrefactorySegment.Length)
-		{
 		}
 
 		public static bool operator == (TextSegment left, TextSegment right)

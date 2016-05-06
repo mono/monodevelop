@@ -31,7 +31,6 @@ using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.Utils;
 using System.Linq;
 using System.ComponentModel;
-using ICSharpCode.NRefactory.Editor;
 using System.Threading.Tasks;
 using System.Threading;
 

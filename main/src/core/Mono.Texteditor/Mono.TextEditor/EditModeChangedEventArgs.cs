@@ -30,7 +30,6 @@ using Gtk;
 using System.IO;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
-using ICSharpCode.NRefactory.Editor;
 using Xwt.Drawing;
 
 namespace Mono.TextEditor

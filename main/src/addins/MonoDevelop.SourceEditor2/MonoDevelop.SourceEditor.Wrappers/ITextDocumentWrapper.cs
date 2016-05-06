@@ -89,14 +89,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			var handler = textChanging;
 			if (handler != null)
-				handler (this, new MonoDevelop.Core.Text.TextChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
+				handler (this, new MonoDevelop.Core.Text.TextChangeEventArgs (e.Offset, e.RemovedText, e.InsertedText));
 		}
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
 		{
 			var handler = textChanged;
 			if (handler != null)
-				handler (this, new MonoDevelop.Core.Text.TextChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
+				handler (this, new MonoDevelop.Core.Text.TextChangeEventArgs (e.Offset, e.RemovedText, e.InsertedText));
 		}
 		
 		#region ITextDocument implementation

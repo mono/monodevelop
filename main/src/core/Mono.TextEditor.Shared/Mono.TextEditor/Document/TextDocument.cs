@@ -32,13 +32,12 @@ using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.Utils;
 using System.Linq;
 using System.ComponentModel;
-using ICSharpCode.NRefactory.Editor;
 using System.Threading.Tasks;
 using System.Threading;
 
 namespace Mono.TextEditor
 {
-	public class TextDocument : ICSharpCode.NRefactory.AbstractAnnotatable, ICSharpCode.NRefactory.Editor.IDocument
+	public class TextDocument
 	{
 		ImmutableText buffer;
 		readonly ILineSplitter splitter;
@@ -242,7 +241,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void Insert (int offset, string text, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		public void Insert (int offset, string text, AnchorMovementType anchorMovementType = AnchorMovementType.Default)
 		{
 			Replace (offset, 0, text, anchorMovementType);
 		}
@@ -262,7 +261,7 @@ namespace Mono.TextEditor
 			Replace (offset, count, value, AnchorMovementType.Default);
 		}
 
-		public void Replace (int offset, int count, string value, ICSharpCode.NRefactory.Editor.AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		public void Replace (int offset, int count, string value, AnchorMovementType anchorMovementType = AnchorMovementType.Default)
 		{
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException (nameof (offset), "must be > 0, was: " + offset);
@@ -295,7 +294,7 @@ namespace Mono.TextEditor
 				EnsureSegmentIsUnfolded (offset, value.Length);
 			
 			OnTextReplacing (args);
-			value = args.InsertedText.Text;
+			value = args.InsertedText;
 
 			cachedText = null;
 			buffer = buffer.RemoveText(offset, count);
@@ -593,14 +592,14 @@ namespace Mono.TextEditor
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText.Text);
+				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText);
 				if (fireEvent)
 					OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText.Text);
+				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText);
 				if (fireEvent)
 					OnRedoDone ();
 			}
@@ -817,7 +816,7 @@ namespace Mono.TextEditor
 				undoStack.Push (keyUndo);
 				keyUndo = new KeyboardStackUndo ();
 			}
-			if (keyUndo.Args != null && keyUndo.Args.Offset + 1 != top.Args.Offset || !char.IsLetterOrDigit (top.Args.InsertedText.GetCharAt (0))) {
+			if (keyUndo.Args != null && keyUndo.Args.Offset + 1 != top.Args.Offset || !char.IsLetterOrDigit (top.Args.InsertedText[0])) {
 				keyUndo.IsClosed = true;
 				undoStack.Push (keyUndo);
 				keyUndo = new KeyboardStackUndo ();
@@ -865,7 +864,7 @@ namespace Mono.TextEditor
 			OnUndone (new UndoOperationEventArgs (operation));
 		}
 
-		public void RollbackTo (ICSharpCode.NRefactory.Editor.ITextSourceVersion version)
+		public void RollbackTo (ITextSourceVersion version)
 		{
 			var steps = Version.CompareAge (version);
 			if (steps < 0)
@@ -1627,53 +1626,6 @@ namespace Mono.TextEditor
 			return true;
 		}
 
-		
-		public int GetMatchingBracketOffset (int offset)
-		{
-			return GetMatchingBracketOffset (null, offset);
-		}
-		
-		public int GetMatchingBracketOffset (System.ComponentModel.BackgroundWorker worker, int offset)
-		{
-			if (offset < 0 || offset >= TextLength)
-				return -1;
-			char ch = GetCharAt (offset);
-			int bracket = openBrackets.IndexOf (ch);
-			int result;
-			if (bracket >= 0) {
-				result = SearchMatchingBracketForward (worker, offset + 1, bracket);
-			} else {
-				bracket = closingBrackets.IndexOf (ch);
-				if (bracket >= 0) {
-					result = SearchMatchingBracketBackward (worker, offset - 1, bracket);
-				} else {
-					result = -1;
-				}
-			}
-			return result;
-		}
-		IBracketMatcher bracketMatcher = new DefaultBracketMatcher ();
-		public IBracketMatcher BracketMatcher {
-			get {
-				return bracketMatcher;
-			}
-			set {
-				Debug.Assert (value != null);
-				bracketMatcher = value;
-			}
-		}
-
-		
-		int SearchMatchingBracketForward (System.ComponentModel.BackgroundWorker worker, int offset, int bracket)
-		{
-			return bracketMatcher.SearchMatchingBracketForward (worker, this, offset, closingBrackets[bracket], openBrackets[bracket]);
-		}
-		
-		int SearchMatchingBracketBackward (System.ComponentModel.BackgroundWorker worker, int offset, int bracket)
-		{
-			return bracketMatcher.SearchMatchingBracketBackward (worker, this, offset, openBrackets[bracket], closingBrackets[bracket]);
-		}
-	
 		public enum CharacterClass {
 			Unknown,
 
@@ -1826,127 +1778,7 @@ namespace Mono.TextEditor
 		}
 		#endregion
 
-		#region IDocument implementation
-		event EventHandler<ICSharpCode.NRefactory.Editor.TextChangeEventArgs> ICSharpCode.NRefactory.Editor.IDocument.TextChanging {
-			add {
-				// TODO
-			}
-			remove {
-				// TODO
-			}
-		}
-
-		event EventHandler<ICSharpCode.NRefactory.Editor.TextChangeEventArgs> ICSharpCode.NRefactory.Editor.IDocument.TextChanged {
-			add {
-				// TODO
-			}
-			remove {
-				// TODO
-			}
-		}
-
-		event EventHandler ICSharpCode.NRefactory.Editor.IDocument.ChangeCompleted {
-			add {
-				// TODO
-			}
-			remove {
-				// TODO
-			}
-		}
-
-		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocument.GetLineByNumber (int lineNumber)
-		{
-			return GetLine (lineNumber);
-		}
-
-		ICSharpCode.NRefactory.Editor.IDocumentLine ICSharpCode.NRefactory.Editor.IDocument.GetLineByOffset (int offset)
-		{
-			return GetLineByOffset (offset);
-		}
-
-		int ICSharpCode.NRefactory.Editor.IDocument.GetOffset (int line, int column)
-		{
-			return LocationToOffset (line, column);
-		}
-
-		public int GetOffset (ICSharpCode.NRefactory.TextLocation location)
-		{
-			return LocationToOffset (location.Line, location.Column);
-		}
-
-		ICSharpCode.NRefactory.TextLocation ICSharpCode.NRefactory.Editor.IDocument.GetLocation (int offset)
-		{
-			return OffsetToLocation (offset);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, ITextSource text)
-		{
-			Insert (offset, text.Text);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.Replace (int offset, int count, ITextSource text)
-		{
-			Replace (offset, count, text.Text);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text)
-		{
-			Insert (offset, text);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, ITextSource text, AnchorMovementType anchorMovementType)
-		{
-			Insert (offset, text.Text, anchorMovementType);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.Insert (int offset, string text, AnchorMovementType anchorMovementType)
-		{
-			Insert (offset, text, anchorMovementType);
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.StartUndoableAction ()
-		{
-			BeginAtomicUndo ();
-		}
-
-		void ICSharpCode.NRefactory.Editor.IDocument.EndUndoableAction ()
-		{
-			EndAtomicUndo ();
-		}
-
-		ICSharpCode.NRefactory.Editor.ITextAnchor ICSharpCode.NRefactory.Editor.IDocument.CreateAnchor (int offset)
-		{
-			throw new NotImplementedException ();
-		}
-		#endregion
-
-		#region IServiceProvider implementation
-		object IServiceProvider.GetService (Type serviceType)
-		{
-			throw new NotImplementedException ();
-		}
-		#endregion
-
 		#region ITextSource implementation
-		void ICSharpCode.NRefactory.Editor.ITextSource.WriteTextTo (System.IO.TextWriter writer)
-		{
-			throw new NotImplementedException ();
-		}
-
-		void ICSharpCode.NRefactory.Editor.ITextSource.WriteTextTo (System.IO.TextWriter writer, int offset, int length)
-		{
-			throw new NotImplementedException ();
-		}
-
-		ICSharpCode.NRefactory.Editor.ITextSource ICSharpCode.NRefactory.Editor.ITextSource.CreateSnapshot ()
-		{
-			throw new NotImplementedException ();
-		}
-
-		public ICSharpCode.NRefactory.Editor.ITextSource CreateSnapshot (int offset, int length)
-		{
-			throw new NotImplementedException ();
-		}
 
 		public System.IO.TextReader CreateReader ()
 		{
@@ -1958,25 +1790,9 @@ namespace Mono.TextEditor
 			return new ImmutableTextTextReader(buffer.GetText(offset, length));
 		}
 
-		string ICSharpCode.NRefactory.Editor.ITextSource.GetText (int offset, int length)
-		{
-			return GetTextAt (offset, length);
-		}
-
-		public string GetText (ICSharpCode.NRefactory.Editor.ISegment segment)
-		{
-			return GetTextAt (segment.Offset, segment.Length);
-		}
-
 		public virtual ITextSourceVersion Version {
 			get {
 				return versionProvider.CurrentVersion;
-			}
-		}
-
-		int ICSharpCode.NRefactory.Editor.ITextSource.TextLength {
-			get {
-				return TextLength;
 			}
 		}
 
@@ -2015,11 +1831,6 @@ namespace Mono.TextEditor
 		public ImmutableText GetImmutableText (int offset, int count)
 		{
 			return buffer.GetText (offset, count);
-		}
-
-		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
-		{
-			return new SnapshotDocument (this);
 		}
 
 		public void CopyTo (int sourceIndex, char [] destination, int destinationIndex, int count)
