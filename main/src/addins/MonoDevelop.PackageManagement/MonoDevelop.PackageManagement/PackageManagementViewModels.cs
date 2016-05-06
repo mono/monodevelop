@@ -50,14 +50,13 @@ namespace MonoDevelop.PackageManagement
 		{
 			CreateRegisteredPackageRepositories();
 			CreateSolution();
-			ThreadSafePackageManagementEvents packageManagementEvents = CreateThreadSafePackageManagementEvents();
-			PackagesViewModels packagesViewModels = CreatePackagesViewModels(packageManagementEvents);
+			PackagesViewModels packagesViewModels = CreatePackagesViewModels();
 
 			managePackagesViewModel = 
 				new ManagePackagesViewModel(
 					packagesViewModels,
 					new ManagePackagesViewTitle(solution),
-					packageManagementEvents);
+					PackageManagementServices.PackageManagementEvents);
 		}
 		
 		void CreateRegisteredPackageRepositories()
@@ -74,18 +73,12 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 		
-		ThreadSafePackageManagementEvents CreateThreadSafePackageManagementEvents()
-		{
-			return new ThreadSafePackageManagementEvents(
-				PackageManagementServices.PackageManagementEvents);
-		}
-		
-		PackagesViewModels CreatePackagesViewModels(IThreadSafePackageManagementEvents packageManagementEvents)
+		PackagesViewModels CreatePackagesViewModels()
 		{
 			return new PackagesViewModels(
 				solution,
 				registeredPackageRepositories,
-				packageManagementEvents,
+				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.PackageActionRunner,
 				new PackageManagementTaskFactory());
 		}

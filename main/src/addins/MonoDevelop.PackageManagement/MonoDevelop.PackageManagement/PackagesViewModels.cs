@@ -35,7 +35,7 @@ namespace MonoDevelop.PackageManagement
 		public PackagesViewModels(
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IThreadSafePackageManagementEvents packageManagementEvents,
+			IPackageManagementEvents packageManagementEvents,
 			IPackageActionRunner actionRunner,
 			ITaskFactory taskFactory)
 		{

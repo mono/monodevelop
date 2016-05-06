@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
 	{
-		IThreadSafePackageManagementEvents packageManagementEvents;
+		IPackageManagementEvents packageManagementEvents;
 		PackagesViewModels packagesViewModels;
 		ManagePackagesViewTitle viewTitle;
 		string message;
@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement
 		public ManagePackagesViewModel(
 			PackagesViewModels packagesViewModels,
 			ManagePackagesViewTitle viewTitle,
-			IThreadSafePackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.packagesViewModels = packagesViewModels;
 			this.viewTitle = viewTitle;
@@ -81,7 +81,6 @@ namespace MonoDevelop.PackageManagement
 			
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
 			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
-			packageManagementEvents.Dispose();
 		}
 		
 		void PackageOperationError(object sender, PackageOperationExceptionEventArgs e)

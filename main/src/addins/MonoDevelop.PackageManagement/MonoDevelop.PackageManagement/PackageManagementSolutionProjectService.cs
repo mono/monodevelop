@@ -59,11 +59,6 @@ namespace MonoDevelop.PackageManagement
 		public event EventHandler SolutionUnloaded;
 		#pragma warning restore 67
 
-		public IProjectBrowserUpdater CreateProjectBrowserUpdater ()
-		{
-			throw new NotImplementedException ();
-		}
-
 		public string GetDefaultCustomToolForFileName (ProjectFile projectItem)
 		{
 			throw new NotImplementedException ();

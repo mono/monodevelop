@@ -93,11 +93,6 @@ namespace MonoDevelop.PackageManagement
 			}
 			return new IDotNetProject [0];
 		}
-
-		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
-		{
-			return new ThreadSafeProjectBrowserUpdater();
-		}
 		
 		public string GetDefaultCustomToolForFileName(ProjectFile projectItem)
 		{

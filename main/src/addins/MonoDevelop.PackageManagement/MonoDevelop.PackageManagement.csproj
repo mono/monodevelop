@@ -196,7 +196,6 @@
     <Compile Include="MonoDevelop.PackageManagement\IPackageViewModelFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageViewModelParent.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IProcess.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IProjectBrowserUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPropertyService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IRecentPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IRegisteredPackageRepositories.cs" />
@@ -206,7 +205,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITaskFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IThreadSafePackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatePackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatePackageSettings.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
@@ -275,7 +273,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ParentPackageOperationEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProcessPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProcessPackageOperationsAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectBrowserUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFramework.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageInfo.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageRepository.cs" />
@@ -289,8 +286,6 @@
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryPath.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ThreadSafePackageManagementEvents.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ThreadSafeProjectBrowserUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackages.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesViewModel.cs" />
