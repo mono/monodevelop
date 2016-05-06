@@ -27,7 +27,6 @@ using System;
 using NUnit.Framework;
 using System.Linq;
 using Gtk;
-using ICSharpCode.NRefactory.Editor;
 
 namespace Mono.TextEditor.Tests
 {
@@ -41,7 +40,7 @@ namespace Mono.TextEditor.Tests
 			return "Hello World";
 		}
 
-		public byte[] GetCopyData (ISegment segment)
+		public byte[] GetCopyData (TextSegment segment)
 		{
 			return null;
 		}
