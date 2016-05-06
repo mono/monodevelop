@@ -24,8 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Instrumentation;
+using NuGet;
+using NuGet.PackageManagement;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -42,6 +47,84 @@ namespace MonoDevelop.PackageManagement
 		public virtual void IncrementUninstallPackageCounter (IDictionary<string, string> metadata)
 		{
 			UninstallPackageCounter.Inc (1, null, metadata);
+		}
+
+		public void InstrumentPackageAction (IPackageAction action) 
+		{
+			try {
+				var provider = action as INuGetProjectActionsProvider;
+				if (provider != null) {
+					InstrumentPackageActions (provider.GetNuGetProjectActions ());
+					return;
+				}
+
+				var addAction = action as InstallPackageAction;
+				if (addAction != null) {
+					InstrumentPackageOperations (addAction.Operations);
+					return;
+				}
+
+				var updateAction = action as UpdatePackageAction;
+				if (updateAction != null) {
+					InstrumentPackageOperations (updateAction.Operations);
+					return;
+				}
+
+				var removeAction = action as UninstallPackageAction;
+				if (removeAction != null) {
+					var metadata = new Dictionary<string, string> ();
+
+					metadata ["PackageId"] = removeAction.GetPackageId ();
+					var version = removeAction.GetPackageVersion ();
+					if (version != null)
+						metadata ["PackageVersion"] = version.ToString ();
+
+					IncrementUninstallPackageCounter (metadata);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Instrumentation Failure in PackageManagement", ex);
+			}
+		}
+
+		void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
+		{
+			foreach (var op in operations) {
+				var metadata = new Dictionary<string, string> ();
+				metadata ["PackageId"] = op.Package.Id;
+				metadata ["Package"] = op.Package.Id + " v" + op.Package.Version.ToString ();
+
+				switch (op.Action) {
+					case PackageAction.Install: 
+						IncrementInstallPackageCounter (metadata);
+					break;
+					case PackageAction.Uninstall:
+						IncrementUninstallPackageCounter (metadata);
+					break;
+				}
+			}
+		}
+
+		void InstrumentPackageActions (IEnumerable<NuGetProjectAction> actions)
+		{
+			foreach (NuGetProjectAction action in actions) {
+				var metadata = new Dictionary<string, string> ();
+				metadata["PackageId"] = action.PackageIdentity.Id;
+				metadata["Package"] = GetFullPackageInfo (action.PackageIdentity);
+
+				switch (action.NuGetProjectActionType) {
+					case NuGetProjectActionType.Install:
+						IncrementInstallPackageCounter (metadata);
+					break;
+					case NuGetProjectActionType.Uninstall:
+						IncrementUninstallPackageCounter (metadata);
+					break;
+				}
+			}
+		}
+
+		static string GetFullPackageInfo (PackageIdentity packageIdentity)
+		{
+			return string.Format ("{0} v{1}", packageIdentity.Id, packageIdentity.Version);
 		}
 	}
 }

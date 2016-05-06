@@ -178,57 +178,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (IPackageAction action in packageActions) {
 				action.Execute ();
-				InstrumentPackageAction (action);
+				instrumentationService.InstrumentPackageAction (action);
 				monitor.Step (1);
-			}
-		}
-
-		protected virtual void InstrumentPackageAction (IPackageAction action) 
-		{
-			try {
-				var addAction = action as InstallPackageAction;
-				if (addAction != null) {
-					InstrumentPackageOperations (addAction.Operations);
-					return;
-				}
-
-				var updateAction = action as UpdatePackageAction;
-				if (updateAction != null) {
-					InstrumentPackageOperations (updateAction.Operations);
-					return;
-				}
-
-				var removeAction = action as UninstallPackageAction;
-				if (removeAction != null) {
-					var metadata = new Dictionary<string, string> ();
-
-					metadata ["PackageId"] = removeAction.GetPackageId ();
-					var version = removeAction.GetPackageVersion ();
-					if (version != null)
-						metadata ["PackageVersion"] = version.ToString ();
-
-					instrumentationService.IncrementUninstallPackageCounter (metadata);
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Instrumentation Failure in PackageManagement", ex);
-			}
-		}
-
-		void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
-		{
-			foreach (var op in operations) {
-				var metadata = new Dictionary<string, string> ();
-				metadata ["PackageId"] = op.Package.Id;
-				metadata ["Package"] = op.Package.Id + " v" + op.Package.Version.ToString ();
-
-				switch (op.Action) {
-				case PackageAction.Install: 
-					instrumentationService.IncrementInstallPackageCounter (metadata);
-					break;
-				case PackageAction.Uninstall:
-					instrumentationService.IncrementUninstallPackageCounter (metadata);
-					break;
-				}
 			}
 		}
 

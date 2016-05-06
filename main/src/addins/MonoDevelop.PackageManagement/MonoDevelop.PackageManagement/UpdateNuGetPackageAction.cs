@@ -36,7 +36,7 @@ using NuGet.Resolver;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class UpdateNuGetPackageAction : INuGetPackageAction
+	internal class UpdateNuGetPackageAction : INuGetPackageAction, INuGetProjectActionsProvider
 	{
 		NuGetPackageManager packageManager;
 		IDotNetProject dotNetProject;
@@ -44,6 +44,7 @@ namespace MonoDevelop.PackageManagement
 		CancellationToken cancellationToken;
 		List<SourceRepository> primarySources;
 		ISourceRepositoryProvider sourceRepositoryProvider;
+		IEnumerable<NuGetProjectAction> actions;
 
 		public UpdateNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
@@ -82,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			INuGetProjectContext context = CreateProjectContext ();
 
-			var actions = await packageManager.PreviewUpdatePackagesAsync (
+			actions = await packageManager.PreviewUpdatePackagesAsync (
 				PackageId,
 				project,
 				CreateResolutionContext (),
@@ -91,7 +92,7 @@ namespace MonoDevelop.PackageManagement
 				new SourceRepository[0],
 				cancellationToken);
 
-			await CheckLicenses (actions);
+			await CheckLicenses ();
 
 			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
 				await packageManager.ExecuteNuGetProjectActionsAsync (
@@ -124,7 +125,7 @@ namespace MonoDevelop.PackageManagement
 			return new NuGetProjectContext (); 
 		}
 
-		Task CheckLicenses (IEnumerable<NuGetProjectAction> actions)
+		Task CheckLicenses ()
 		{
 			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
 		}
@@ -132,6 +133,11 @@ namespace MonoDevelop.PackageManagement
 		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
 		{
 			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
+		}
+
+		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
+		{
+			return actions;
 		}
 	}
 }

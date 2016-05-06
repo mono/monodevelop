@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.PackageManagement;
@@ -31,12 +32,13 @@ using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class UninstallNuGetPackageAction : INuGetPackageAction
+	internal class UninstallNuGetPackageAction : INuGetPackageAction, INuGetProjectActionsProvider
 	{
 		NuGetPackageManager packageManager;
 		IDotNetProject dotNetProject;
 		NuGetProject project;
 		CancellationToken cancellationToken;
+		IEnumerable<NuGetProjectAction> actions;
 
 		public UninstallNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
@@ -72,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			INuGetProjectContext context = CreateProjectContext ();
 
-			var actions = await packageManager.PreviewUninstallPackageAsync (
+			actions = await packageManager.PreviewUninstallPackageAsync (
 				project,
 				PackageId,
 				CreateUninstallationContext (),
@@ -101,6 +103,11 @@ namespace MonoDevelop.PackageManagement
 		UninstallationContext CreateUninstallationContext ()
 		{
 			return new UninstallationContext (false, ForceRemove);
+		}
+
+		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
+		{
+			return actions;
 		}
 	}
 }

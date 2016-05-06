@@ -39,7 +39,7 @@ using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class InstallNuGetPackageAction : INuGetPackageAction, IInstallNuGetPackageAction
+	internal class InstallNuGetPackageAction : INuGetPackageAction, IInstallNuGetPackageAction, INuGetProjectActionsProvider
 	{
 		List<SourceRepository> primarySources;
 		List<SourceRepository> secondarySources = new List<SourceRepository> ();
@@ -48,6 +48,7 @@ namespace MonoDevelop.PackageManagement
 		NuGetProjectContext context;
 		IDotNetProject dotNetProject;
 		CancellationToken cancellationToken;
+		IEnumerable<NuGetProjectAction> actions;
 
 		public InstallNuGetPackageAction (
 			SourceRepository sourceRepository,
@@ -110,7 +111,7 @@ namespace MonoDevelop.PackageManagement
 
 			var identity = new PackageIdentity (PackageId, Version);
 
-			var actions = await packageManager.PreviewInstallPackageAsync (
+			actions = await packageManager.PreviewInstallPackageAsync (
 				project,
 				identity,
 				CreateResolutionContext (),
@@ -120,7 +121,7 @@ namespace MonoDevelop.PackageManagement
 				cancellationToken);
 
 			if (LicensesMustBeAccepted) {
-				await CheckLicenses (actions);
+				await CheckLicenses ();
 			}
 
 			NuGetPackageManager.SetDirectInstall (identity, context);
@@ -168,7 +169,7 @@ namespace MonoDevelop.PackageManagement
 			return dotNetProject.DotNetProject == project;
 		}
 
-		Task CheckLicenses (IEnumerable<NuGetProjectAction> actions)
+		Task CheckLicenses ()
 		{
 			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
 		}
@@ -176,6 +177,11 @@ namespace MonoDevelop.PackageManagement
 		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
 		{
 			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
+		}
+
+		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
+		{
+			return actions;
 		}
 	}
 }

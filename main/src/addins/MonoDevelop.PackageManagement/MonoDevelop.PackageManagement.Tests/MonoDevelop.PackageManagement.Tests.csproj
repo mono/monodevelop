@@ -82,6 +82,12 @@
     </Reference>
     <Reference Include="System.Globalization" />
     <Reference Include="System.Security" />
+    <Reference Include="NuGet.PackageManagement">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.PackageManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Protocol.Core.Types">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Protocol.Core.Types.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -238,6 +244,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageNewImportsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageSourceProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\TestableInstrumentationService.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

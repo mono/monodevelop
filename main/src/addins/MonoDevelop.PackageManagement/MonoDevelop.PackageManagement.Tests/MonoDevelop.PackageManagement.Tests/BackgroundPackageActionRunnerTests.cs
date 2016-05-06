@@ -671,6 +671,23 @@ namespace MonoDevelop.PackageManagement.Tests
 			AssertUninstallCounterIncrementedForPackageOperation ("Foo", "1.1");
 			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
 		}
+
+		[Test]
+		public void Instrumentation_OnePackageInstalledWithOneInstallAndOneUninstallPackageActions_BothCountersIncremented ()
+		{
+			CreateRunner ();
+			var action = new FakeNuGetPackageAction {
+				PackageId = "Test"
+			};
+			action.AddNuGetProjectInstallAction ("Bar", "1.3");
+			action.AddNuGetProjectUninstallAction ("Foo", "1.1");
+			actions.Add (action);
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackageOperation ("Foo", "1.1");
+			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
+		}
 	}
 }
 
