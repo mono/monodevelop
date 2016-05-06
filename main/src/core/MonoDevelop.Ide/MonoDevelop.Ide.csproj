@@ -1348,6 +1348,18 @@
     <EmbeddedResource Include="icons\file-xml-16~dark~sel%402x.png">
       <LogicalName>file-xml-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~error.png">
+      <LogicalName>file-xml-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~error%402x.png">
+      <LogicalName>file-xml-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~dark~error.png">
+      <LogicalName>file-xml-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\file-xml-16~dark~error%402x.png">
+      <LogicalName>file-xml-16~dark~error@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-xml-32.png">
       <LogicalName>file-xml-32.png</LogicalName>
     </EmbeddedResource>
@@ -1491,6 +1503,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-16~dark~sel%402x.png">
       <LogicalName>package-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~error.png">
+      <LogicalName>package-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~error%402x.png">
+      <LogicalName>package-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark~error.png">
+      <LogicalName>package-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\package-16~dark~error%402x.png">
+      <LogicalName>package-16~dark~error@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\package-24.png">
       <LogicalName>package-24.png</LogicalName>
@@ -2722,6 +2746,18 @@
     <EmbeddedResource Include="icons\pad-application-output-16~dark~sel%402x.png">
       <LogicalName>pad-application-output-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~error.png">
+      <LogicalName>pad-application-output-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~error%402x.png">
+      <LogicalName>pad-application-output-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~dark~error.png">
+      <LogicalName>pad-application-output-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-application-output-16~dark~error%402x.png">
+      <LogicalName>pad-application-output-16~dark~error@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-classes-16.png">
       <LogicalName>pad-classes-16.png</LogicalName>
     </EmbeddedResource>
@@ -2793,6 +2829,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\pad-generic-16~dark~sel%402x.png">
       <LogicalName>pad-generic-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~error.png">
+      <LogicalName>pad-generic-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~error%402x.png">
+      <LogicalName>pad-generic-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~dark~error.png">
+      <LogicalName>pad-generic-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-generic-16~dark~error%402x.png">
+      <LogicalName>pad-generic-16~dark~error@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\file-resource-16.png">
       <LogicalName>file-resource-16.png</LogicalName>
@@ -4497,6 +4545,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\execute-16~dark~disabled%402x.png">
       <LogicalName>execute-16~dark~disabled@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16~error.png">
+      <LogicalName>execute-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16~error%402x.png">
+      <LogicalName>execute-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16~dark~error.png">
+      <LogicalName>execute-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\execute-16~dark~error%402x.png">
+      <LogicalName>execute-16~dark~error@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\execute-all-16.png">
       <LogicalName>execute-all-16.png</LogicalName>
