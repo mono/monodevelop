@@ -78,8 +78,8 @@ namespace MonoDevelop.Components.Commands
 		internal bool handlerFoundInMulticast;
 		Gtk.Widget lastActiveWidget;
 
-		Dictionary<string, List<Command>> conflicts = new Dictionary<string, List<Command>> ();
-		internal Dictionary<string, List<Command>> Conflicts { get { return conflicts; } }
+		Dictionary<Command, HashSet<Command>> conflicts = new Dictionary<Command, HashSet<Command>> ();
+		internal Dictionary<Command, HashSet<Command>> Conflicts { get { return conflicts; } }
 
 		public CommandManager (): this (null)
 		{
@@ -414,11 +414,15 @@ namespace MonoDevelop.Components.Commands
 			}
 
 			if (conflict.Count > 1) {
-				conflicts [binding.ToString ()] = conflict;
+				foreach (var item in conflict) {
+					HashSet<Command> itemConflicts;
+					if (!Conflicts.TryGetValue (item, out itemConflicts))
+						Conflicts [item] = itemConflicts = new HashSet<Command> ();
+					itemConflicts.UnionWith (conflict.Where (c => c != item));
+				}
 				if (KeyBindingFailed != null)
 					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}) has conflicts.", binding.ToString ())));
-			} else if (conflicts.ContainsKey (binding.ToString ()))
-				conflicts.Remove (binding.ToString ());
+			}
 
 			if (dispatched)
 				return result;

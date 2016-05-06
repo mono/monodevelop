@@ -63,6 +63,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		bool filterTimeoutRunning;
 
 		TreeViewColumn bindingTVCol;
+
+		Dictionary<string, HashSet<Command>> duplicates;
+		Dictionary<string, HashSet<Command>> conflicts;
 		
 		public KeyBindingsPanel ()
 		{
@@ -99,18 +102,18 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			CellRendererImage conflictWarningRenderer = new CellRendererImage ();
 			bindingTVCol.PackStart (conflictWarningRenderer, false);
 			bindingTVCol.SetCellDataFunc (conflictWarningRenderer, delegate (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter) {
-				string binding = (model.GetValue (iter, bindingCol) as string) ?? "";
+				var binding = (model.GetValue (iter, bindingCol) as string) ?? "";
+				var command = (model.GetValue (iter, commandCol) as Command);
 
-				if (duplicates?.Where (c => c.Key == binding).FirstOrDefault () != null) {
-					if (IdeApp.CommandService.Conflicts.ContainsKey (binding))
-						((CellRendererImage)cell).IconId = "md-warning";
-					else
-						((CellRendererImage)cell).IconId = "md-information";
-					return;
+				HashSet<Command> bindingConflicts;
+				if (conflicts.TryGetValue (binding, out bindingConflicts) && bindingConflicts.Contains (command))
+					((CellRendererImage)cell).IconId = "md-warning";
+				else if (duplicates.ContainsKey (binding))
+					((CellRendererImage)cell).IconId = "md-information";
+				else {
+					((CellRendererImage)cell).IconId = IconId.Null;
+					((CellRendererImage)cell).Image = CellRendererImage.NullImage;
 				}
-				((CellRendererImage)cell).IconId = IconId.Null;
-				((CellRendererImage)cell).Image = CellRendererImage.NullImage;
-
 			});
 			keyTreeView.AppendColumn (bindingTVCol);
 
@@ -189,9 +192,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					return;
 
 				string binding = (keyTreeView.Model.GetValue (iter, bindingCol) as string) ?? "";
-				var duplicate = duplicates?.Where (c => c.Key == binding).FirstOrDefault ();
-				if (duplicate != null) {
+				HashSet<Command> keyDuplicates = null;
+				if (duplicates.TryGetValue (binding, out keyDuplicates)) {
 					var command = keyTreeView.Model.GetValue (iter, commandCol) as Command;
+					var cmdDuplicates = keyDuplicates.Where (cmd => cmd != command);
+
 					var cellBounds = keyTreeView.GetCellArea (path, bindingTVCol);
 					int iconx, iconw;
 					bindingTVCol.CellGetPosition (bindingTVCol.CellRenderers[1], out iconx, out iconw);
@@ -207,12 +212,26 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					tooltipWindow.ShowArrow = true;
 					tooltipWindow.LeaveNotifyEvent += delegate { HideConflictTooltip (); };
 
-					bool hasConflict = IdeApp.CommandService.Conflicts.ContainsKey (binding) && IdeApp.CommandService.Conflicts [binding].Contains (command);
+					var text = string.Empty;
+					HashSet<Command> cmdConflicts = null;
+					bool hasConflict = false;
+					if (conflicts != null && conflicts.TryGetValue (binding, out cmdConflicts))
+						hasConflict = cmdConflicts.Contains (command);
 
-					var text = hasConflict ? "Conflict:" : "Duplicate:";
-					foreach (var cmd in duplicate.Commands)
-						if (command != cmd)
+					if (hasConflict) {
+						text += "Conflicts:";
+						foreach (var conflict in cmdConflicts.Where (cmd => cmd != command))
+							text += "\n\u2022 " + conflict.Category + " \u2013 " + conflict.DisplayName;
+						cmdDuplicates = cmdDuplicates.Except (cmdConflicts);
+					}
+					if (cmdDuplicates.Count () > 0) {
+						if (hasConflict)
+							text += "\n\n";
+						text += "Duplicates:";
+
+						foreach (var cmd in cmdDuplicates)
 							text += "\n\u2022 " + cmd.Category + " \u2013 " + cmd.DisplayName;
+					}
 
 					tooltipWindow.Text = text;
 					tooltipWindow.Severity = hasConflict ? Tasks.TaskSeverity.Warning : Tasks.TaskSeverity.Information;
@@ -503,13 +522,28 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			return false;
 		}
 
-		KeyBindingConflict [] duplicates;
-
 		void UpdateConflictsWarning ()
 		{
-			duplicates = currentBindings.CheckKeyBindingConflicts (IdeApp.CommandService.GetCommands ());
+			duplicates = currentBindings.CheckKeyBindingConflicts (IdeApp.CommandService.GetCommands ())
+			                            .ToDictionary (dup => dup.Key, dup => new HashSet<Command> (dup.Commands));
+			conflicts = new Dictionary<string, HashSet<Command>> ();
 
-			if (duplicates.Select (d => d.Key).Intersect(IdeApp.CommandService.Conflicts.Keys).Count () == 0) {
+			foreach (var dup in duplicates) {
+				foreach (var cmd in dup.Value) {
+					HashSet<Command> cmdDuplicates;
+					if (IdeApp.CommandService.Conflicts.TryGetValue (cmd, out cmdDuplicates)) {
+						cmdDuplicates = new HashSet<Command> (cmdDuplicates.Intersect (dup.Value));
+						if (cmdDuplicates.Count > 0) {
+							HashSet<Command> cmdConflicts;
+							if (!conflicts.TryGetValue (dup.Key, out cmdConflicts))
+								conflicts [dup.Key] = cmdConflicts = new HashSet<Command> ();
+							conflicts [dup.Key].UnionWith (cmdDuplicates);
+						}
+					}
+				}
+			}
+
+			if (conflicts.Count == 0) {
 				globalWarningBox.Hide ();
 				return;
 			}
@@ -520,15 +554,13 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				ContextMenu menu = new ContextMenu ();
 				bool first = true;
 
-				foreach (KeyBindingConflict conf in duplicates) {
-					if (!IdeApp.CommandService.Conflicts.ContainsKey (conf.Key))
-						continue;
+				foreach (var conf in conflicts) {
 					if (first == false) {
 						ContextMenuItem item = new SeparatorContextMenuItem ();
 						menu.Items.Add (item);
 					}
 
-					foreach (Command cmd in conf.Commands) {
+					foreach (Command cmd in conf.Value.OrderBy (cmd => cmd.DisplayName)) {
 						string txt = currentBindings.GetBinding (cmd) + " \u2013 " + cmd.DisplayName;
 						ContextMenuItem item = new ContextMenuItem (txt);
 						Command localCmd = cmd;
