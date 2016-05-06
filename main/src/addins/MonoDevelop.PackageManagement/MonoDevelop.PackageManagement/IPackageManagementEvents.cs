@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -65,9 +66,9 @@ namespace MonoDevelop.PackageManagement
 		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations);
 		void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project);
 		void OnParentPackagesUpdated(IEnumerable<IPackage> packages);
-		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
+		void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args);
 		bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects);
-		FileConflictResolution OnResolveFileConflict(string message);
+		FileConflictAction OnResolveFileConflict(string message);
 		void OnPackagesRestored();
 		void OnFileChanged(string path);
 		void OnUpdatedPackagesAvailable ();

@@ -29,8 +29,9 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using NuGet;
 using MonoDevelop.Projects;
+using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -102,7 +103,7 @@ namespace MonoDevelop.PackageManagement
 		
 		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		
-		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)
+		public void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args)
 		{
 			if (PackageOperationMessageLogged != null) {
 				var eventArgs = new PackageOperationMessageLoggedEventArgs(level, message, args);
@@ -124,14 +125,14 @@ namespace MonoDevelop.PackageManagement
 		
 		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		
-		public FileConflictResolution OnResolveFileConflict(string message)
+		public FileConflictAction OnResolveFileConflict(string message)
 		{
 			if (ResolveFileConflict != null) {
 				var eventArgs = new ResolveFileConflictEventArgs(message);
 				ResolveFileConflict(this, eventArgs);
 				return eventArgs.Resolution;
 			}
-			return FileConflictResolution.IgnoreAll;
+			return FileConflictAction.IgnoreAll;
 		}
 		
 		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;

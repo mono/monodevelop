@@ -88,6 +88,9 @@
     <Reference Include="NuGet.Protocol.Core.Types">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Protocol.Core.Types.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.ProjectManagement">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.ProjectManagement.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

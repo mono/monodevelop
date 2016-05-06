@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement
 		
 		public FileConflictResolution ResolveFileConflict(string message)
 		{
-			return packageManagementEvents.OnResolveFileConflict(message);
+			return FileConflictResolution.Ignore;
 		}
 
 		public void LogDebug (string data)

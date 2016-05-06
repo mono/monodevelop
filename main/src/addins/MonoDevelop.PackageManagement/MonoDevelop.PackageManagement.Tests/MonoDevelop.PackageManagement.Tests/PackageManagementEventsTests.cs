@@ -26,10 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
-using NuGet;
-using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using NuGet;
+using NuGet.ProjectManagement;
+using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -265,7 +265,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			object eventSender = null;
 			events.PackageOperationMessageLogged += (sender, e) => eventSender = sender;
 
-			events.OnPackageOperationMessageLogged (MessageLevel.Info, "Test");
+			events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, "Test");
 
 			Assert.AreEqual (events, eventSender);
 		}
@@ -274,7 +274,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void OnPackageOperationMessageLogged_NoEventSubscribers_NullReferenceExceptionIsNotThrown ()
 		{
 			CreateEvents ();
-			Assert.DoesNotThrow (() => events.OnPackageOperationMessageLogged (MessageLevel.Info, "Test"));
+			Assert.DoesNotThrow (() => events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, "Test"));
 		}
 
 		[Test]
@@ -284,9 +284,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageOperationMessageLoggedEventArgs eventArgs = null;
 			events.PackageOperationMessageLogged += (sender, e) => eventArgs = e;
 
-			events.OnPackageOperationMessageLogged (MessageLevel.Info, "Test");
+			events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, "Test");
 
-			Assert.AreEqual (MessageLevel.Info, eventArgs.Message.Level);
+			Assert.AreEqual (NuGet.MessageLevel.Info, eventArgs.Message.Level);
 		}
 
 		[Test]
@@ -297,7 +297,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			events.PackageOperationMessageLogged += (sender, e) => eventArgs = e;
 
 			string format = "Test {0}";
-			events.OnPackageOperationMessageLogged (MessageLevel.Info, format, "B");
+			events.OnPackageOperationMessageLogged (NuGet.MessageLevel.Info, format, "B");
 
 			string message = eventArgs.Message.ToString ();
 
@@ -401,26 +401,26 @@ namespace MonoDevelop.PackageManagement.Tests
 			events.ResolveFileConflict += (sender, e) => eventArgs = e;
 			events.OnResolveFileConflict ("message");
 
-			Assert.AreEqual (FileConflictResolution.Ignore, eventArgs.Resolution);
+			Assert.AreEqual (FileConflictAction.Ignore, eventArgs.Resolution);
 		}
 
 		[Test]
 		public void OnResolveFileConflict_OneEventSubscriberWhichChangesResolutionToOverwrite_ReturnsOverwrite ()
 		{
 			CreateEvents ();
-			events.ResolveFileConflict += (sender, e) => e.Resolution = FileConflictResolution.Overwrite;
-			FileConflictResolution resolution = events.OnResolveFileConflict ("message");
+			events.ResolveFileConflict += (sender, e) => e.Resolution = FileConflictAction.Overwrite;
+			FileConflictAction resolution = events.OnResolveFileConflict ("message");
 
-			Assert.AreEqual (FileConflictResolution.Overwrite, resolution);
+			Assert.AreEqual (FileConflictAction.Overwrite, resolution);
 		}
 
 		[Test]
 		public void OnResolveFileConflict_NoEventSubscribers_ReturnsIgnoreAll ()
 		{
 			CreateEvents ();
-			FileConflictResolution resolution = events.OnResolveFileConflict ("message");
+			FileConflictAction resolution = events.OnResolveFileConflict ("message");
 
-			Assert.AreEqual (FileConflictResolution.IgnoreAll, resolution);
+			Assert.AreEqual (FileConflictAction.IgnoreAll, resolution);
 		}
 
 		[Test]

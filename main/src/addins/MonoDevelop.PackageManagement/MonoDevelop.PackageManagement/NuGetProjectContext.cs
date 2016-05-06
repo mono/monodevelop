@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 
 		public FileConflictAction ResolveFileConflict (string message)
 		{
-			return FileConflictAction.Ignore;
+			return packageManagementEvents.OnResolveFileConflict (message);
 		}
 	}
 }
