@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
 using NuGet.Configuration;
 
@@ -36,37 +36,19 @@ namespace MonoDevelop.PackageManagement
 		public static void CreateDefaultPackageSourceSettingsIfMissing ()
 		{
 			try {
-				if (!NuGetConfigFileExists ()) {
-					CreateDefaultNuGetConfigFile ();
-				}
+				EnsureOnePackageSourceExistsInNuGetConfigFile ();
 			} catch (Exception ex) {
-				LoggingService.LogError ("Unable to create NuGet.Config file with default package sources.", ex);
+				LoggingService.LogError ("Unable to create NuGet.Config file with default package source.", ex);
 			}
 		}
 
-		static bool NuGetConfigFileExists ()
-		{
-			string configFilePath = GetNuGetConfigFilePath ();
-			if (configFilePath != null) {
-				return File.Exists (configFilePath);
-			}
-			return false;
-		}
-
-		static string GetNuGetConfigFilePath ()
-		{
-			string appDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-			if (!String.IsNullOrEmpty (appDataPath)) {
-				return Path.Combine (appDataPath, "NuGet", Settings.DefaultSettingsFileName);
-			}
-			return null;
-		}
-
-		static void CreateDefaultNuGetConfigFile ()
+		static void EnsureOnePackageSourceExistsInNuGetConfigFile ()
 		{
 			ISettings settings = Settings.LoadDefaultSettings (null, null, null);
 			var packageSourceProvider = new PackageSourceProvider (settings);
-			packageSourceProvider.SavePackageSources (new [] { GetDefaultPackageSource () });
+			if (!packageSourceProvider.LoadPackageSources ().Any ()) {
+				packageSourceProvider.SavePackageSources (new [] { GetDefaultPackageSource () });
+			}
 		}
 
 		static PackageSource GetDefaultPackageSource ()
