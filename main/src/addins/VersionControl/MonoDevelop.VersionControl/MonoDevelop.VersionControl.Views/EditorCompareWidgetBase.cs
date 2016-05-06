@@ -586,7 +586,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (var data in localUpdate.ToArray ()) {
 				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
+				data.Replace (e.Offset, e.RemovalLength, e.InsertedText);
 				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}
@@ -624,7 +624,7 @@ namespace MonoDevelop.VersionControl.Views
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
 			var editor = info.Document.ParentDocument.Editor;
-			editor.ReplaceText (e.Offset, e.RemovalLength, e.InsertedText.Text);
+			editor.ReplaceText (e.Offset, e.RemovalLength, e.InsertedText);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}

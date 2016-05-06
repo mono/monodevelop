@@ -111,7 +111,7 @@ namespace MonoDevelop.AspNet.Razor
 			completionBuilder = RazorCompletionBuilderService.GetBuilder ("C#");
 
 			defaultEditor.TextChanging += UnderlyingDocument_TextReplacing;
-			syntaxMode = new RazorSyntaxMode (DocumentContext);
+			syntaxMode = new RazorSyntaxMode (Editor, DocumentContext);
 			var textEditorData = DocumentContext.GetContent<TextEditorData> ();
 			if (textEditorData != null)
 				textEditorData.Document.SyntaxMode = syntaxMode;
@@ -131,7 +131,7 @@ namespace MonoDevelop.AspNet.Razor
 		}
 
 		// Handles text modifications in hidden document
-		void UnderlyingDocument_TextReplacing (object sender, TextChangeEventArgs e)
+		void UnderlyingDocument_TextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			if (razorDocument == null)
 				return;

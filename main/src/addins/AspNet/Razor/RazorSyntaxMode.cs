@@ -41,13 +41,16 @@ using MonoDevelop.Ide;
 using RazorSpan = System.Web.Razor.Parser.SyntaxTree.Span;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.AspNet.Razor
 {
 	public class RazorSyntaxMode : SyntaxMode, IDisposable
 	{
-		public RazorSyntaxMode (DocumentContext doc)
+		TextEditor editor;
+		public RazorSyntaxMode (TextEditor editor, DocumentContext doc)
 		{
+			this.editor = editor;
 			this.guiDocument = doc;
 			guiDocument.DocumentParsed += HandleDocumentParsed; 
 			ResourceStreamProvider provider = new ResourceStreamProvider (typeof (ResourceStreamProvider).Assembly, "RazorSyntaxMode.xml");
@@ -161,7 +164,8 @@ namespace MonoDevelop.AspNet.Razor
 
 		string GetStyleForEndBracket (CSharpSymbol symbol, int off)
 		{
-			int matchingOff = doc.GetMatchingBracketOffset (off);
+			
+			int matchingOff = SimpleBracketMatcher.GetMatchingBracketOffset (editor, off);
 			if (matchingOff == -1 || doc.GetCharAt (matchingOff - 1) != '@')
 				return "Plain Text";
 			else
