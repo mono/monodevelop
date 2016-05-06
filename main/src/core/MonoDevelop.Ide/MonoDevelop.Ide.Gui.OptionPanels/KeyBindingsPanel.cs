@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						hasConflict = cmdConflicts.Contains (command);
 
 					if (hasConflict) {
-						text += "Conflicts:";
+						text += GettextCatalog.GetString ("Conflicts:");
 						foreach (var conflict in cmdConflicts.Where (cmd => cmd != command))
 							text += "\n\u2022 " + conflict.Category + " \u2013 " + conflict.DisplayName;
 						cmdDuplicates = cmdDuplicates.Except (cmdConflicts);
@@ -227,7 +227,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					if (cmdDuplicates.Count () > 0) {
 						if (hasConflict)
 							text += "\n\n";
-						text += "Duplicates:";
+						text += GettextCatalog.GetString ("Duplicates:");
 
 						foreach (var cmd in cmdDuplicates)
 							text += "\n\u2022 " + cmd.Category + " \u2013 " + cmd.DisplayName;
