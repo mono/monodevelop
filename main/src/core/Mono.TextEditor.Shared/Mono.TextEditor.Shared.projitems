@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{FBAAD910-F29B-4AC5-9FC0-27F6EB36C495}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Mono.TextEditor.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DiffTracker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentChangeEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentLine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentLocation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentRegion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentUpdateRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\EmacsWordFindStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\FoldingType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\FoldSegment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\ILineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\IWordFindStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\LazyLineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\LineEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\LineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\OperationType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\PrimitiveLineSplitter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SegmentTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SharpDevelopWordFindStrategy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SyntaxModeChangeEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\TextDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\TextSegment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Vi\ViActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\AmbientColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Chunk.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ChunkStyle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\CloneableStack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ColorDescriptionAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ColorScheme.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\IStreamProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ISyntaxMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Keywords.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Marker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Match.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Rule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\SemanticRule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Span.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\SyntaxMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\SyntaxModeService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\XmlReadHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\Regex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\RegexMatch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\BookmarkActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\CaretMoveActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\ClipboardActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\DeleteActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\FoldActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\MiscActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\ScrollActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\SelectionActions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextSourceVersionProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLocation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextChangeEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextAnchor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextSourceVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UnicodeNewline.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextPasteHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\IIndentationTracker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Platform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISelectionSurroundingProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Selection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SearchRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SearchResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Vi\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\" />
+  </ItemGroup>
+</Project>
