@@ -1,5 +1,5 @@
 ﻿//
-// NuGetPackageNewImportsHandler.cs
+// FakeNuGetProjectContext.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,40 +25,35 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects.MSBuild;
+using System.Xml.Linq;
+using NuGet.Packaging;
 using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	internal class NuGetPackageNewImportsHandler : INuGetPackageNewImportsHandler
+	public class FakeNuGetProjectContext : INuGetProjectContext
 	{
-		string name;
-		string condition;
-		ImportLocation location;
+		public ExecutionContext ExecutionContext { get; set; }
 
-		public NuGetPackageNewImportsHandler ()
-		{
-			PackageManagementMSBuildExtension.NewImportsHandler = this;
+		public XDocument OriginalPackagesConfig { get; set; }
+
+		public PackageExtractionContext PackageExtractionContext { get; set; }
+
+		public ISourceControlManagerProvider SourceControlManagerProvider {
+			get { return null; }
 		}
 
-		public void Dispose ()
+		public void Log (MessageLevel level, string message, params object [] args)
 		{
-			PackageManagementMSBuildExtension.NewImportsHandler = null;
 		}
 
-		public void AddImportIfMissing (string name, string condition, ImportLocation location)
+		public void ReportError (string message)
 		{
-			this.name = name;
-			this.condition = condition;
-			this.location = location;
 		}
 
-		public void UpdateProject (MSBuildProject project)
+		public FileConflictAction ResolveFileConflict (string message)
 		{
-			if (String.IsNullOrEmpty (name))
-				return;
-
-			project.AddImportIfMissing (name, location, condition);
+			return FileConflictAction.Ignore;
 		}
 	}
 }

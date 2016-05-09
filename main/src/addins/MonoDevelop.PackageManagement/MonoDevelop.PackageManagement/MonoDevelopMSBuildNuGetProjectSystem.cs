@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class MonoDevelopMSBuildNuGetProjectSystem : IMSBuildNuGetProjectSystem
 	{
-		DotNetProject project;
+		IDotNetProject project;
 		NuGetFramework targetFramework;
 		string projectFullPath;
 		IPackageManagementEvents packageManagementEvents;
@@ -48,14 +48,30 @@ namespace MonoDevelop.PackageManagement
 		Func<Func<Task>,Task> guiSyncDispatcherFunc;
 
 		public MonoDevelopMSBuildNuGetProjectSystem (DotNetProject project, INuGetProjectContext context)
+			: this (
+				new DotNetProjectProxy (project),
+				context,
+				new PackageManagementFileService (),
+				PackageManagementServices.PackageManagementEvents,
+				DefaultGuiSyncDispatcher,
+				GuiSyncDispatchWithException)
+		{
+		}
+
+		public MonoDevelopMSBuildNuGetProjectSystem (
+			IDotNetProject project,
+			INuGetProjectContext context,
+			IPackageManagementFileService fileService,
+			IPackageManagementEvents packageManagementEvents,
+			Action<Action> guiSyncDispatcher,
+			Func<Func<Task>, Task> guiSyncDispatcherFunc)
 		{
 			this.project = project;
 			NuGetProjectContext = context;
-			guiSyncDispatcher = DefaultGuiSyncDispatcher;
-			guiSyncDispatcherFunc = GuiSyncDispatchWithException;
-
-			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
-			fileService = new PackageManagementFileService ();
+			this.fileService = fileService;
+			this.packageManagementEvents = packageManagementEvents;
+			this.guiSyncDispatcher = guiSyncDispatcher;
+			this.guiSyncDispatcherFunc = guiSyncDispatcherFunc;
 		}
 
 		public INuGetProjectContext NuGetProjectContext { get; private set; }
@@ -90,7 +106,7 @@ namespace MonoDevelop.PackageManagement
 
 		NuGetFramework GetTargetFramework()
 		{
-			var projectTargetFramework = new ProjectTargetFramework (new DotNetProjectProxy (project));
+			var projectTargetFramework = new ProjectTargetFramework (project);
 			return NuGetFramework.Parse (projectTargetFramework.TargetFrameworkName.FullName);
 		}
 
@@ -143,7 +159,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			ProjectFile fileItem = CreateFileProjectItem (path);
 			project.AddFile (fileItem);
-			await SaveAsync (project);
+			await project.SaveAsync ();
 		}
 
 		ProjectFile CreateFileProjectItem(string path)
@@ -185,8 +201,8 @@ namespace MonoDevelop.PackageManagement
 				string relativeTargetPath = GetRelativePath (targetFullPath);
 				string condition = GetCondition (relativeTargetPath);
 				using (var handler = CreateNewImportsHandler ()) {
-					handler.AddImportIfMissing (relativeTargetPath, condition, (NuGet.ProjectImportLocation)location);
-					await SaveAsync (project);
+					handler.AddImportIfMissing (relativeTargetPath, condition, location);
+					await project.SaveAsync ();
 				}
 			});
 		}
@@ -229,7 +245,7 @@ namespace MonoDevelop.PackageManagement
 		async Task AddReferenceToProject (ProjectReference assemblyReference)
 		{
 			project.References.Add (assemblyReference);
-			await SaveAsync (project);
+			await project.SaveAsync ();
 			LogAddedReferenceToProject (assemblyReference);
 		}
 
@@ -258,7 +274,7 @@ namespace MonoDevelop.PackageManagement
 			GuiSyncDispatch (async () => {
 				string directory = GetFullPath (path);
 				fileService.RemoveDirectory (directory);
-				await SaveAsync (project);
+				await project.SaveAsync ();
 				LogDeletedDirectory (path);
 			});
 		}
@@ -331,7 +347,7 @@ namespace MonoDevelop.PackageManagement
 		public bool IsSupportedFile (string path)
 		{
 			return GuiSyncDispatch (() => {
-				if (new DotNetProjectProxy (project).IsWebProject ()) {
+				if (project.IsWebProject ()) {
 					return !IsAppConfigFile (path);
 				}
 				return !IsWebConfigFile (path);
@@ -420,7 +436,7 @@ namespace MonoDevelop.PackageManagement
 				string fileName = GetFullPath (path);
 				project.Files.Remove (fileName);
 				fileService.RemoveFile (fileName);
-				await SaveAsync (project);
+				await project.SaveAsync ();
 				LogDeletedFileInfo (path);
 			});
 		}
@@ -455,10 +471,10 @@ namespace MonoDevelop.PackageManagement
 
 				using (var updater = new EnsureNuGetPackageBuildImportsTargetUpdater ()) {
 					updater.RemoveImport (relativeTargetPath);
-					await SaveAsync (project);
+					await project.SaveAsync ();
 				}
 
-				packageManagementEvents.OnImportRemoved (new DotNetProjectProxy (project), relativeTargetPath);
+				packageManagementEvents.OnImportRemoved (project, relativeTargetPath);
 			});
 		}
 
@@ -478,7 +494,7 @@ namespace MonoDevelop.PackageManagement
 				if (referenceProjectItem != null) {
 					packageManagementEvents.OnReferenceRemoving (referenceProjectItem);
 					project.References.Remove (referenceProjectItem);
-					await SaveAsync (project);
+					await project.SaveAsync ();
 					LogRemovedReferenceFromProject (referenceProjectItem);
 				}
 			});
@@ -531,13 +547,6 @@ namespace MonoDevelop.PackageManagement
 		void GuiSyncDispatch (Func<Task> func)
 		{
 			guiSyncDispatcherFunc (func).Wait ();
-		}
-
-		static async Task SaveAsync (DotNetProject project)
-		{
-			using (var monitor = new ProgressMonitor ()) {
-				await project.SaveAsync (monitor);
-			}
 		}
 	}
 }

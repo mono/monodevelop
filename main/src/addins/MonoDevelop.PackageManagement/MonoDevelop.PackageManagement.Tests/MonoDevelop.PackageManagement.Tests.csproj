@@ -248,6 +248,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\TestableInstrumentationService.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

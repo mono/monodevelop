@@ -408,7 +408,7 @@ namespace MonoDevelop.PackageManagement
 				string relativeTargetPath = GetRelativePath (targetPath);
 				string condition = GetCondition (relativeTargetPath);
 				using (var handler = CreateNewImportsHandler ()) {
-					handler.AddImportIfMissing (relativeTargetPath, condition, location);
+					handler.AddImportIfMissing (relativeTargetPath, condition, (NuGet.ProjectManagement.ImportLocation)location);
 					await project.SaveAsync ();
 				}
 			});

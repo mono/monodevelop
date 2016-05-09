@@ -49,6 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			References = new ProjectReferenceCollection ();
 			Files = new ProjectFileCollection ();
+			TargetFrameworkMoniker = new TargetFrameworkMoniker ("v4.5");
 			CreateEqualsAction ();
 		}
 
