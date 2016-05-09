@@ -889,9 +889,13 @@ namespace MonoDevelop.Core
 				}
 			}
 			if (del != null) {
-				Runtime.MainSynchronizationContext.Post (delegate {
+				if (Runtime.IsMainThread) {
 					del.DynamicInvoke (thisObj, args);
-				}, null);
+				} else {
+					Runtime.MainSynchronizationContext.Post (delegate {
+						del.DynamicInvoke (thisObj, args);
+					}, null);
+				}
 			}
 		}
 	}
