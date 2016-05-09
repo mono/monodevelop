@@ -46,6 +46,8 @@ namespace MonoDevelop.Ide.Commands
 		CopyPathName,
 		ToggleMaximize,
 		ReopenClosedTab,
+		CloseAllExceptPinned,
+		PinTab,
 	}
 	
 	class CloseAllHandler : CommandHandler
@@ -83,7 +85,77 @@ namespace MonoDevelop.Ide.Commands
 					doc.Close ();
 		}
 	}
-	
+
+	class PinnedCommandHandler : CommandHandler
+	{
+		protected Components.DockNotebook.DockNotebookTab GetSelectedTab () 
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null)
+				return null;
+				var activeWindow = (SdiWorkspaceWindow)active.Window;
+			var tabControl = activeWindow.TabControl;
+			return tabControl.Tabs.FirstOrDefault (item => (item.Content as SdiWorkspaceWindow).Equals (activeWindow));
+		}
+	}
+
+	class CloseAllExceptPinnedHandler : PinnedCommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = info.Enabled = IdePreferences.TabFeatureEnabled.Value;
+			if (!info.Visible)
+				return;
+
+			var selectedTab = GetSelectedTab ();
+			if (selectedTab != null) {
+				info.Text = (selectedTab.IsPinned) ? "Un_pin Tab" : "_Pin Tab";
+			}
+		}
+
+		protected override void Run ()
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null)
+				return;
+
+			var deleteCache = new System.Collections.Generic.List<Document> ();
+			var w1 = (SdiWorkspaceWindow)active.Window;
+			foreach (var item in w1.TabControl.Tabs.Where(s => !s.IsPinned)) {
+				var workspaceWindow = item.Content as SdiWorkspaceWindow; 
+				if (workspaceWindow != null && workspaceWindow.Document != null)
+					deleteCache.Add (workspaceWindow.Document);
+			}
+
+			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
+				if (deleteCache.Exists(d => d == doc))
+					doc.Close();
+			}
+		}
+	}
+
+	class PinTabHandler : PinnedCommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = info.Enabled = IdePreferences.TabFeatureEnabled.Value;
+			if (!info.Visible)
+				return;
+			
+			var selectedTab = GetSelectedTab ();
+			if (selectedTab != null) {
+				info.Text = (selectedTab.IsPinned) ? "Un_pin Tab" : "_Pin Tab";
+			}
+		}
+
+		protected override void Run ()
+		{
+			var selectedTab = GetSelectedTab (); 
+			if (selectedTab != null)
+				selectedTab.IsPinned = !selectedTab.IsPinned;
+		}
+	}
+
 	class CloseAllButThisHandler : CloseAllHandler
 	{
 		protected override ViewContent GetDocumentException ()

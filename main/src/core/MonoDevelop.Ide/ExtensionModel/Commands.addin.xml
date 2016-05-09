@@ -535,6 +535,18 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ReopenClosedTabHandler"
 			_label = "Reopen Closed Tab"
 			_description = "Opens the last tab that has been closed"/>
+	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllExceptPinned"
+			defaultHandler = "MonoDevelop.Ide.Commands.CloseAllExceptPinnedHandler"
+			_label = "Close All Except _Pinned"
+			_description = "Close all files except pinned"
+			shortcut = "Control|Shift|P"
+			macShortcut = "Meta|Shift|P" />
+	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.PinTab"
+			defaultHandler = "MonoDevelop.Ide.Commands.PinTabHandler"
+			_label = "_Pin Tab"
+			_description = "Pin/Unpin current Tab selected"
+			shortcut = "Control|Alt|P"
+			macShortcut = "Meta|Alt|P" />
 	</Category>
 
 	<!-- ViewCommands -->
