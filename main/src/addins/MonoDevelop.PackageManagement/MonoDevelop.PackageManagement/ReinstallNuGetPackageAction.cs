@@ -33,7 +33,6 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class ReinstallNuGetPackageAction : IPackageAction
 	{
-		NuGetPackageManager packageManager;
 		NuGetProjectContext context;
 		CancellationToken cancellationToken;
 		InstallNuGetPackageAction installAction;
@@ -47,15 +46,6 @@ namespace MonoDevelop.PackageManagement
 			this.cancellationToken = cancellationToken;
 			context = new NuGetProjectContext ();
 
-			var restartManager = new DeleteOnRestartManager ();
-
-			packageManager = new NuGetPackageManager (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
-				solutionManager.Settings,
-				solutionManager,
-				restartManager
-			);
-
 			CreateInstallAction (solutionManager, project);
 			CreateUninstallAction (solutionManager, project);
 		}
@@ -65,14 +55,22 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			using (IDisposable fileMonitor = CreateFileMonitor ()) {
-				uninstallAction.PackageId = PackageId;
-				uninstallAction.Execute ();
+			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+				using (IDisposable fileMonitor = CreateFileMonitor ()) {
+					uninstallAction.PackageId = PackageId;
+					uninstallAction.Execute ();
 
-				installAction.PackageId = PackageId;
-				installAction.Version = Version;
-				installAction.LicensesMustBeAccepted = false;
-				installAction.Execute ();
+					installAction.PackageId = PackageId;
+					installAction.Version = Version;
+					installAction.LicensesMustBeAccepted = false;
+
+					// Local copy references need to be preserved before the uninstall starts so
+					// we must disable this for the install action otherwise they will not be
+					// preserved.
+					installAction.PreserveLocalCopyReferences = false;
+
+					installAction.Execute ();
+				}
 			}
 		}
 
@@ -100,6 +98,11 @@ namespace MonoDevelop.PackageManagement
 				context,
 				cancellationToken
 			);
+		}
+
+		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
+		{
+			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
 		}
 
 		IDisposable CreateFileMonitor ()

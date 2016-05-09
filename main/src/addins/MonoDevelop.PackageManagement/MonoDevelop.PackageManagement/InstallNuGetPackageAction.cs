@@ -80,6 +80,7 @@ namespace MonoDevelop.PackageManagement
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
 			LicensesMustBeAccepted = true;
+			PreserveLocalCopyReferences = true;
 
 			var restartManager = new DeleteOnRestartManager ();
 
@@ -95,6 +96,7 @@ namespace MonoDevelop.PackageManagement
 		public NuGetVersion Version { get; set; }
 		public bool IncludePrerelease { get; set; }
 		public bool LicensesMustBeAccepted { get; set; }
+		public bool PreserveLocalCopyReferences { get; set; }
 
 		public void Execute ()
 		{
@@ -176,9 +178,13 @@ namespace MonoDevelop.PackageManagement
 			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
 		}
 
-		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
+		IDisposable CreateLocalCopyReferenceMaintainer ()
 		{
-			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
+			if (PreserveLocalCopyReferences) {
+				return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
+			}
+
+			return new NullDisposable ();
 		}
 
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
