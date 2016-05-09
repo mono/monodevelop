@@ -42,7 +42,6 @@ namespace MonoDevelop.PackageManagement
 	internal class InstallNuGetPackageAction : INuGetPackageAction, IInstallNuGetPackageAction, INuGetProjectActionsProvider
 	{
 		List<SourceRepository> primarySources;
-		List<SourceRepository> secondarySources = new List<SourceRepository> ();
 		NuGetPackageManager packageManager;
 		NuGetProject project;
 		NuGetProjectContext context;
@@ -119,7 +118,7 @@ namespace MonoDevelop.PackageManagement
 				CreateResolutionContext (),
 				context,
 				primarySources,
-				secondarySources,
+				null,
 				cancellationToken);
 
 			if (LicensesMustBeAccepted) {
