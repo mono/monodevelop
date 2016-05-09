@@ -140,7 +140,9 @@ namespace MonoDevelop.Refactoring
 			if (parsedDocument == null)
 				return ImmutableArray<string>.Empty;
 			var result = ImmutableArray<string>.Empty.ToBuilder ();
-			var sm = parsedDocument.GetAst<SemanticModel> (); 
+			var sm = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
+			if (sm == null)
+				return ImmutableArray<string>.Empty;
 			var node = (await sm.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false)).FindNode (TextSpan.FromBounds (offset, offset)); 
 			
 			while (node != null) {

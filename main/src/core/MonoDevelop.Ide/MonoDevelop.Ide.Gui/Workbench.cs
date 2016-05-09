@@ -1083,6 +1083,10 @@ namespace MonoDevelop.Ide.Gui
 						activeDoc = doc;
 				}
 
+				if (activeDoc == null) {
+					activeDoc = docViews.Select (t => WrapDocument (t.Item1.WorkbenchWindow)).FirstOrDefault ();
+				}
+
 				foreach (PadUserPrefs pi in prefs.Pads) {
 					foreach (Pad pad in IdeApp.Workbench.Pads) {
 

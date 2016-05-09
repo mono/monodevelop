@@ -126,8 +126,12 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndProgress ()
 		{
 			Window.IsWorking = false;
-			widget.ShowStatus (" " + GettextCatalog.GetString("Search completed") + " - " + 
-				string.Format (GettextCatalog.GetPluralString("{0} match.", "{0} matches.", widget.ResultCount), widget.ResultCount));
+			if (CancellationTokenSource.Token.IsCancellationRequested) {
+				widget.ShowStatus (" " + GettextCatalog.GetString ("Search cancelled"));
+			} else {
+				widget.ShowStatus (" " + GettextCatalog.GetString ("Search completed") + " - " +
+				string.Format (GettextCatalog.GetPluralString ("{0} match.", "{0} matches.", widget.ResultCount), widget.ResultCount));
+			}
 			widget.EndProgress ();
 			if (FocusPad) 
 				widget.FocusPad ();

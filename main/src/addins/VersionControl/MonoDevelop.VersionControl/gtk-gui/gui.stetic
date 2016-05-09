@@ -909,7 +909,6 @@
             <property name="MemberName" />
             <property name="Visible">False</property>
             <property name="Xalign">0</property>
-            <property name="LabelProp" translatable="no">&lt;small&gt;&lt;span color='red'&gt;Invalid URL&lt;/span&gt;&lt;/small&gt;</property>
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
@@ -1687,7 +1686,7 @@
                                       <widget class="Gtk.Label" id="labelAuthor">
                                         <property name="MemberName" />
                                         <property name="Xalign">0</property>
-                                        <property name="LabelProp">Author</property>
+                                        <property name="LabelProp" translatable="yes">Author</property>
                                         <property name="Selectable">True</property>
                                       </widget>
                                       <packing>
@@ -1701,7 +1700,7 @@
                                       <widget class="Gtk.Label" id="labelRevision">
                                         <property name="MemberName" />
                                         <property name="Xalign">1</property>
-                                        <property name="LabelProp">Revision</property>
+                                        <property name="LabelProp" translatable="yes">Revision</property>
                                         <property name="Selectable">True</property>
                                         <signal name="ButtonPressEvent" handler="OnLabelRevisionButtonPressEvent" />
                                       </widget>
@@ -1722,7 +1721,7 @@
                                   <widget class="Gtk.Label" id="labelDate">
                                     <property name="MemberName" />
                                     <property name="Xalign">0</property>
-                                    <property name="LabelProp">Date</property>
+                                    <property name="LabelProp" translatable="yes">Date</property>
                                     <property name="Selectable">True</property>
                                   </widget>
                                   <packing>

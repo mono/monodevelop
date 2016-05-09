@@ -157,7 +157,6 @@ namespace MonoDevelop.VersionControl
 			this.labelError = new global::Gtk.Label ();
 			this.labelError.Name = "labelError";
 			this.labelError.Xalign = 0F;
-			this.labelError.LabelProp = "<small><span color=\'red\'>Invalid URL</span></small>";
 			this.labelError.UseMarkup = true;
 			this.table1.Add (this.labelError);
 			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.table1 [this.labelError]));

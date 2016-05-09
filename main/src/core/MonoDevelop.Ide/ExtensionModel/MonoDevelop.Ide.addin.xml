@@ -170,11 +170,6 @@
 		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
-		<Description>Styles</Description>
-		<ExtensionNode name="SyntaxMode" type="MonoDevelop.Ide.Editor.Highlighting.SyntaxModeCodon"/>
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/EditorFactory" name = "Editor factories">
 		<Description>Allows providing a platform-specific implementation for the text editor</Description>
 		<ExtensionNode name="Class" />

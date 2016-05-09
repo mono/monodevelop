@@ -1060,6 +1060,7 @@ namespace Mono.TextEditor
 		readonly object syncObject = new object();
 
 		CancellationTokenSource foldSegmentSrc;
+		object foldSegmentTaskLock = new object ();
 		Task foldSegmentTask;
 
 		public void UpdateFoldSegments (List<FoldSegment> newSegments, bool startTask = false, bool useApplicationInvoke = false, CancellationToken masterToken = default(CancellationToken))
@@ -1067,38 +1068,39 @@ namespace Mono.TextEditor
 			if (newSegments == null) {
 				return;
 			}
-
-			InterruptFoldWorker ();
-			bool update;
-			if (!startTask) {
-				var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
-				if (useApplicationInvoke) {
-					Gtk.Application.Invoke (delegate {
+			lock (foldSegmentTaskLock) {
+				InterruptFoldWorker ();
+				bool update;
+				if (!startTask) {
+					var newFoldedSegments = UpdateFoldSegmentWorker (newSegments, out update);
+					if (useApplicationInvoke) {
+						Gtk.Application.Invoke (delegate {
+							foldedSegments = newFoldedSegments;
+							InformFoldTreeUpdated ();
+						});
+					} else {
 						foldedSegments = newFoldedSegments;
 						InformFoldTreeUpdated ();
-					});
-				} else {
-					foldedSegments = newFoldedSegments;
-					InformFoldTreeUpdated ();
-				}
-				return;
-			}
-			foldSegmentSrc = new CancellationTokenSource ();
-			masterToken.Register (InterruptFoldWorker); 
-			var token = foldSegmentSrc.Token;
-			foldSegmentTask = Task.Factory.StartNew (delegate {
-				var segments = UpdateFoldSegmentWorker (newSegments, out update, token);
-				if (token.IsCancellationRequested)
+					}
 					return;
-				Gtk.Application.Invoke (delegate {
+				}
+				foldSegmentSrc = new CancellationTokenSource ();
+				masterToken.Register (InterruptFoldWorker);
+				var token = foldSegmentSrc.Token;
+				foldSegmentTask = Task.Factory.StartNew (delegate {
+					var segments = UpdateFoldSegmentWorker (newSegments, out update, token);
 					if (token.IsCancellationRequested)
 						return;
 					foldedSegments = segments;
-					InformFoldTreeUpdated ();
-					if (update)
-						CommitUpdateAll ();
-				});
-			}, token);
+					Gtk.Application.Invoke (delegate {
+						if (token.IsCancellationRequested)
+							return;
+						InformFoldTreeUpdated ();
+						if (update)
+							CommitUpdateAll ();
+					});
+				}, token);
+			}
 		}
 		
 		void RemoveFolding (FoldSegment folding)
@@ -1275,27 +1277,15 @@ namespace Mono.TextEditor
 		
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
-			bool needUpdate = false;
 			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset && offset < f.EndOffset)) {
-				needUpdate = true;
 				fold.IsFolded = false;
-			}
-			if (needUpdate) {
-				RequestUpdate (new UpdateAll ());
-				CommitDocumentUpdate ();
 			}
 		}
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
-			bool needUpdate = false;
 			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
-				needUpdate = true;
 				fold.IsFolded = false;
-			}
-			if (needUpdate) {
-				RequestUpdate (new UpdateAll ());
-				CommitDocumentUpdate ();
 			}
 		}
 
@@ -1308,12 +1298,29 @@ namespace Mono.TextEditor
 		public event EventHandler FoldTreeUpdated;
 		
 		HashSet<FoldSegment> foldedSegments = new HashSet<FoldSegment> ();
+
 		public IEnumerable<FoldSegment> FoldedSegments {
 			get {
 				return foldedSegments;
 			}
 		}
+
 		internal void InformFoldChanged (FoldSegmentEventArgs args)
+		{
+			lock (foldSegmentTaskLock) {
+				if (foldSegmentTask != null) {
+					foldSegmentTask.ContinueWith (delegate {
+						Gtk.Application.Invoke (delegate {
+							InternalInformFoldChanged (args);	
+						});
+					});
+				} else {
+					InternalInformFoldChanged (args);
+				}
+			}
+		}
+
+		void InternalInformFoldChanged (FoldSegmentEventArgs args)
 		{
 			if (args.FoldSegment.IsFolded) {
 				foldedSegments.Add (args.FoldSegment);
@@ -1324,7 +1331,7 @@ namespace Mono.TextEditor
 			if (handler != null)
 				handler (this, args);
 		}
-		
+
 		public event EventHandler<FoldSegmentEventArgs> Folded;
 		#endregion
 

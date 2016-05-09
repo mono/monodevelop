@@ -219,6 +219,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void BeginProgress ()
 		{
 			oldFraction = 0.0;
+			progressLayer.RemoveAllAnimations ();
+
 			progressLayer.Hidden = false;
 			progressLayer.Opacity = 1;
 			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
@@ -273,8 +275,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void AttachFadeoutAnimation (CALayer progress, CAAnimation animation, Func<bool> fadeoutVerifier)
 		{
 			animation.AnimationStopped += (sender, e) => {
-				if (!fadeoutVerifier ())
+				if (!fadeoutVerifier ()) {
 					return;
+				}
+
+				if (!e.Finished) {
+					return;
+				}
 
 				CABasicAnimation fadeout = CABasicAnimation.FromKeyPath ("opacity");
 				fadeout.From = NSNumber.FromDouble (1);
@@ -286,9 +293,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (!e2.Finished)
 						return;
 
+					// Reset all the properties.
 					inProgress = false;
-					progress.Opacity = 0;
+
+					progress.Hidden = true;
+
+					progress.Opacity = 1;
+					progress.Frame = new CGRect (0, 0, 0, barHeight);
 					progress.RemoveAllAnimations ();
+					oldFraction = 0.0;
+
+					progress.Hidden = false;
 				};
 				progress.Name = ProgressLayerFadingId;
 				progress.AddAnimation (fadeout, "opacity");
@@ -609,6 +624,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void ShowReady ()
 		{
 			ShowMessage (null, "", false, MessageType.Ready);
+			SetMessageSourcePad (null);
 		}
 
 		static Pad sourcePad;

@@ -95,9 +95,9 @@ namespace MonoDevelop.AspNet.ProjectPad
 					outputFile = System.IO.Path.Combine (path, dialog.ControllerName) + ".cs";
 
 					if (System.IO.File.Exists (outputFile)) {
-						fileGood = MessageService.AskQuestion ("Overwrite file?",
-								String.Format ("The file '{0}' already exists.\n", dialog.ControllerName) +
-								"Would you like to overwrite it?", AlertButton.OverwriteFile, AlertButton.Cancel)
+						fileGood = MessageService.AskQuestion (GettextCatalog.GetString ("Overwrite file?"),
+							GettextCatalog.GetString ("The file '{0}' already exists.\n", dialog.ControllerName) +
+							GettextCatalog.GetString ("Would you like to overwrite it?"), AlertButton.OverwriteFile, AlertButton.Cancel)
 							!= AlertButton.Cancel;
 					} else
 						break;

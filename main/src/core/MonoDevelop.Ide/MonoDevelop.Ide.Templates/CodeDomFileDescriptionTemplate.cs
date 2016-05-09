@@ -59,7 +59,7 @@ namespace MonoDevelop.Ide.Templates
 		public override string CreateContent (Project project, Dictionary<string, string> tags, string language)
 		{
 			if (language == null || language == "")
-				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
+				throw new InvalidOperationException (GettextCatalog.GetString ("Language not defined in CodeDom based template."));
 			
 			var binding = GetLanguageBinding (language);
 			
@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Templates
 				provider = binding.GetCodeDomProvider ();
 			
 			if (provider == null)
-				throw new InvalidOperationException ("The language '" + language + "' does not have support for CodeDom.");
+				throw new InvalidOperationException (GettextCatalog.GetString ("The language '{0}' does not have support for CodeDom.", language));
 
 			var xcd = new XmlCodeDomReader ();
 			var cu = xcd.ReadCompileUnit (domContent);

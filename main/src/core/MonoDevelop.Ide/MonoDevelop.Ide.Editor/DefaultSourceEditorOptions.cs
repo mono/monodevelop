@@ -359,17 +359,6 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
-		
-		ConfigurationProperty<bool> underlineErrors = ConfigurationProperty.Create ("UnderlineErrors", true);
-		public bool UnderlineErrors {
-			get {
-				return underlineErrors; 
-			}
-			set {
-				if (underlineErrors.Set (value))
-					OnChanged (EventArgs.Empty);
-			}
-		}
 
 		ConfigurationProperty<IndentStyle> indentStyle = ConfigurationProperty.Create ("IndentStyle", IndentStyle.Smart);
 		public IndentStyle IndentStyle {
