@@ -294,14 +294,25 @@ namespace MonoDevelop.PackageManagement
 
 		public IEnumerable<string> GetDirectories (string path)
 		{
-			throw new NotImplementedException ();
+			string fullPath = GetFullPath (path);
+			return Directory.EnumerateDirectories (fullPath);
 		}
 
 		public IEnumerable<string> GetFiles (string path, string filter, bool recursive)
 		{
-			throw new NotImplementedException ();
+			if (recursive) {
+				// Visual Studio does not support recursive so we do the same.
+				throw new NotImplementedException ();
+			}
+
+			string fullPath = GetFullPath (path);
+			return Directory.EnumerateFiles (fullPath, filter, SearchOption.TopDirectoryOnly);
 		}
 
+		/// <summary>
+		/// This method is only used when adding/removing binding redirects which are not
+		/// currently supported.
+		/// </summary>
 		public IEnumerable<string> GetFullPaths (string fileName)
 		{
 			throw new NotImplementedException ();
@@ -408,6 +419,7 @@ namespace MonoDevelop.PackageManagement
 			GuiSyncDispatch (async () => {
 				string fileName = GetFullPath (path);
 				project.Files.Remove (fileName);
+				fileService.RemoveFile (fileName);
 				await SaveAsync (project);
 				LogDeletedFileInfo (path);
 			});
