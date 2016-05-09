@@ -164,5 +164,8 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId Execute = Gtk.Stock.Execute;
 		public static readonly IconId SearchboxSearch = "md-searchbox-search";
 		public static readonly IconId Updates = "md-updates";
+		public static readonly IconId PadDownload = "md-pad-download";
+		public static readonly IconId PadUpload = "md-pad-upload";
+		public static readonly IconId PadDeviceDeployment = "md-pad-device-deployment";
 	}
 }

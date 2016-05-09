@@ -3622,6 +3622,114 @@
     <EmbeddedResource Include="icons\pad-error-list-warnings-16~dark~sel%402x.png">
       <LogicalName>pad-error-list-warnings-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16.png">
+      <LogicalName>pad-device-deployment-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16%402x.png">
+      <LogicalName>pad-device-deployment-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~dark.png">
+      <LogicalName>pad-device-deployment-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~dark%402x.png">
+      <LogicalName>pad-device-deployment-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~sel.png">
+      <LogicalName>pad-device-deployment-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~sel%402x.png">
+      <LogicalName>pad-device-deployment-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~dark~sel.png">
+      <LogicalName>pad-device-deployment-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~dark~sel%402x.png">
+      <LogicalName>pad-device-deployment-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~error.png">
+      <LogicalName>pad-device-deployment-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~error%402x.png">
+      <LogicalName>pad-device-deployment-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~dark~error.png">
+      <LogicalName>pad-device-deployment-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-device-deployment-16~dark~error%402x.png">
+      <LogicalName>pad-device-deployment-16~dark~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16.png">
+      <LogicalName>pad-download-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16%402x.png">
+      <LogicalName>pad-download-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~dark.png">
+      <LogicalName>pad-download-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~dark%402x.png">
+      <LogicalName>pad-download-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~sel.png">
+      <LogicalName>pad-download-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~sel%402x.png">
+      <LogicalName>pad-download-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~dark~sel.png">
+      <LogicalName>pad-download-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~dark~sel%402x.png">
+      <LogicalName>pad-download-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~error.png">
+      <LogicalName>pad-download-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~error%402x.png">
+      <LogicalName>pad-download-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~dark~error.png">
+      <LogicalName>pad-download-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-download-16~dark~error%402x.png">
+      <LogicalName>pad-download-16~dark~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16.png">
+      <LogicalName>pad-upload-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16%402x.png">
+      <LogicalName>pad-upload-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~dark.png">
+      <LogicalName>pad-upload-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~dark%402x.png">
+      <LogicalName>pad-upload-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~sel.png">
+      <LogicalName>pad-upload-16~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~sel%402x.png">
+      <LogicalName>pad-upload-16~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~dark~sel.png">
+      <LogicalName>pad-upload-16~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~dark~sel%402x.png">
+      <LogicalName>pad-upload-16~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~error.png">
+      <LogicalName>pad-upload-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~error%402x.png">
+      <LogicalName>pad-upload-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~dark~error.png">
+      <LogicalName>pad-upload-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\pad-upload-16~dark~error%402x.png">
+      <LogicalName>pad-upload-16~dark~error@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\element-variable-16.png">
       <LogicalName>element-variable-16.png</LogicalName>
     </EmbeddedResource>
