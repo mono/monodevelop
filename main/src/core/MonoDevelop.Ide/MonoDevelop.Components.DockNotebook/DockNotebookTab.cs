@@ -31,6 +31,9 @@ namespace MonoDevelop.Components.DockNotebook
 {
 	class DockNotebookTab: IAnimatable
 	{
+		public System.Action<DockNotebookTab, bool> OnChangingPinned;
+		public System.Action<DockNotebookTab, bool> OnChangedPinned;
+
 		DockNotebook notebook;
 		readonly TabStrip strip;
 
@@ -41,6 +44,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal Gdk.Rectangle Allocation;
 		internal Cairo.Rectangle CloseButtonActiveArea;
+		internal Cairo.Rectangle PinButtonActiveArea;
 
 		public DockNotebook Notebook { get { return notebook; } }
 
@@ -58,6 +62,18 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public double DirtyStrength { get; set; }
 		
+		bool isPinned;
+		public bool IsPinned { 
+			get { return isPinned; }
+			set {
+				if (OnChangingPinned != null)
+					OnChangingPinned (this, value);
+				isPinned = value;
+				if (OnChangedPinned != null)
+					OnChangedPinned (this, value);
+			}
+		}
+
 		void IAnimatable.BatchBegin () { }
 		void IAnimatable.BatchCommit () { QueueDraw (); }
 
