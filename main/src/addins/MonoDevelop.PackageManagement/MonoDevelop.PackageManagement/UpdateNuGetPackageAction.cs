@@ -94,12 +94,14 @@ namespace MonoDevelop.PackageManagement
 
 			await CheckLicenses ();
 
-			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
-				await packageManager.ExecuteNuGetProjectActionsAsync (
-					project,
-					actions,
-					context,
-					cancellationToken);
+			using (IDisposable fileMonitor = CreateFileMonitor ()) {
+				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+					await packageManager.ExecuteNuGetProjectActionsAsync (
+						project,
+						actions,
+						context,
+						cancellationToken);
+				}
 			}
 
 			await project.RunPostProcessAsync (context, cancellationToken);
@@ -138,6 +140,13 @@ namespace MonoDevelop.PackageManagement
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
 		{
 			return actions;
+		}
+
+		IDisposable CreateFileMonitor ()
+		{
+			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
+				PackageManagementServices.PackageManagementEvents,
+				new FileRemover ());
 		}
 	}
 }

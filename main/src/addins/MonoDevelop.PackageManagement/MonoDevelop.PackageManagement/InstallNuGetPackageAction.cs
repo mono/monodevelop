@@ -126,12 +126,14 @@ namespace MonoDevelop.PackageManagement
 
 			NuGetPackageManager.SetDirectInstall (identity, context);
 
-			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
-				await packageManager.ExecuteNuGetProjectActionsAsync (
-					project,
-					actions,
-					context,
-					cancellationToken);
+			using (IDisposable fileMonitor = CreateFileMonitor ()) {
+				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+					await packageManager.ExecuteNuGetProjectActionsAsync (
+						project,
+						actions,
+						context,
+						cancellationToken);
+				}
 			}
 
 			NuGetPackageManager.ClearDirectInstall (context);
@@ -182,6 +184,13 @@ namespace MonoDevelop.PackageManagement
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
 		{
 			return actions;
+		}
+
+		IDisposable CreateFileMonitor ()
+		{
+			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
+				PackageManagementServices.PackageManagementEvents,
+				new FileRemover ());
 		}
 	}
 }

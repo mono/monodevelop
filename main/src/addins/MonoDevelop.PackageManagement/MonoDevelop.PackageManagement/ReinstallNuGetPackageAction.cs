@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Threading;
 using NuGet.PackageManagement;
 using NuGet.Versioning;
@@ -64,13 +65,15 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			uninstallAction.PackageId = PackageId;
-			uninstallAction.Execute ();
+			using (IDisposable fileMonitor = CreateFileMonitor ()) {
+				uninstallAction.PackageId = PackageId;
+				uninstallAction.Execute ();
 
-			installAction.PackageId = PackageId;
-			installAction.Version = Version;
-			installAction.LicensesMustBeAccepted = false;
-			installAction.Execute ();
+				installAction.PackageId = PackageId;
+				installAction.Version = Version;
+				installAction.LicensesMustBeAccepted = false;
+				installAction.Execute ();
+			}
 		}
 
 		public bool HasPackageScriptsToRun ()
@@ -97,6 +100,13 @@ namespace MonoDevelop.PackageManagement
 				context,
 				cancellationToken
 			);
+		}
+
+		IDisposable CreateFileMonitor ()
+		{
+			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
+				PackageManagementServices.PackageManagementEvents,
+				new FileRemover ());
 		}
 	}
 }
