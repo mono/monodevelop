@@ -67,7 +67,7 @@
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
 		<ItemSet id = "SelectionMode" _label = "Selection _Mode" >
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchSelectionMode" />
 		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 		

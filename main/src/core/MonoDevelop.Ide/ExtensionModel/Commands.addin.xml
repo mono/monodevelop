@@ -1083,6 +1083,10 @@
 			macShortcut = "Control|L" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
 			_label = "Toggle Block Selection Mode"
+			_description = "Toggles Normal/Block Selection Mode"/>
+	<!-- SwitchSelectionMode is only for the selection in the main menu and is not visible in the key bindings -->
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchSelectionMode"
+			_label = "Switch Selection Mode"
 			type="radio|array"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
