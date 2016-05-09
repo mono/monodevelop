@@ -105,6 +105,7 @@ namespace MonoDevelop.PackageManagement
 			imageLoader.Loaded -= ImageLoaded;
 			imageLoader.Dispose ();
 
+			RemoveSelectedPackagePropertyChangedEventHandler ();
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
 			viewModel.Dispose ();
 			DisposeExistingTimer ();
@@ -238,7 +239,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.packageInfoVBox.Visible = false;
 			this.packageVersionsHBox.Visible = false;
+		}
 
+		void RemoveSelectedPackagePropertyChangedEventHandler ()
+		{
 			if (viewModel.SelectedPackage != null) {
 				viewModel.SelectedPackage.PropertyChanged -= SelectedPackageViewModelChanged;
 				viewModel.SelectedPackage = null;
@@ -293,6 +297,8 @@ namespace MonoDevelop.PackageManagement
 
 		void ShowSelectedPackage ()
 		{
+			RemoveSelectedPackagePropertyChangedEventHandler ();
+
 			PackageSearchResultViewModel packageViewModel = GetSelectedPackageViewModel ();
 			if (packageViewModel != null) {
 				ShowPackageInformation (packageViewModel);
