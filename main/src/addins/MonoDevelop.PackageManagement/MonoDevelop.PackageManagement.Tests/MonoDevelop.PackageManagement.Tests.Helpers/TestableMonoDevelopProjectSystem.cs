@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -113,6 +114,40 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			NewImportsHandler = new FakeNuGetPackageNewImportsHandler ();
 			return NewImportsHandler;
+		}
+
+		Dictionary<string, IEnumerable<string>> enumeratedDirectories = new Dictionary<string, IEnumerable<string>> ();
+
+		public void AddDirectoriesForPath (string path, params string[] directories)
+		{
+			enumeratedDirectories[path] = directories;
+		}
+
+		protected override IEnumerable<string> EnumerateDirectories (string path)
+		{
+			IEnumerable<string> directories;
+			if (enumeratedDirectories.TryGetValue (path, out directories)) {
+				return directories;
+			}
+			return new string[0];
+		}
+
+		Dictionary<string, IEnumerable<string>> enumeratedFiles = new Dictionary<string, IEnumerable<string>> ();
+
+		public void AddFilesForPath (string path, string searchPattern, SearchOption searchOption, params string[] files)
+		{
+			string key = path + searchPattern + searchOption.ToString ();
+			enumeratedFiles[key] = files;
+		}
+
+		protected override IEnumerable<string> EnumerateFiles (string path, string searchPattern, SearchOption searchOption)
+		{
+			IEnumerable<string> files;
+			string key = path + searchPattern + searchOption.ToString ();
+			if (enumeratedFiles.TryGetValue (key, out files)) {
+				return files;
+			}
+			return new string[0];
 		}
 	}
 }

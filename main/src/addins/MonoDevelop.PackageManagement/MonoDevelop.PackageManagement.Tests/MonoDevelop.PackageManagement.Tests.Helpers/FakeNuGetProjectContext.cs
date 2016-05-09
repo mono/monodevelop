@@ -45,7 +45,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void Log (MessageLevel level, string message, params object [] args)
 		{
+			LastLogLevel = level;
+			LastMessageLogged = String.Format (message, args);
 		}
+
+		public MessageLevel? LastLogLevel { get; set; }
+		public string LastMessageLogged { get; set; }
 
 		public void ReportError (string message)
 		{

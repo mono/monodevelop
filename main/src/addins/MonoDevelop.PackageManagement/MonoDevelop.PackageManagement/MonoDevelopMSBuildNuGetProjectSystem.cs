@@ -311,7 +311,12 @@ namespace MonoDevelop.PackageManagement
 		public IEnumerable<string> GetDirectories (string path)
 		{
 			string fullPath = GetFullPath (path);
-			return Directory.EnumerateDirectories (fullPath);
+			return EnumerateDirectories (fullPath);
+		}
+
+		protected virtual IEnumerable<string> EnumerateDirectories (string path)
+		{
+			return Directory.EnumerateDirectories (path);
 		}
 
 		public IEnumerable<string> GetFiles (string path, string filter, bool recursive)
@@ -322,7 +327,12 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			string fullPath = GetFullPath (path);
-			return Directory.EnumerateFiles (fullPath, filter, SearchOption.TopDirectoryOnly);
+			return EnumerateFiles (fullPath, filter, SearchOption.TopDirectoryOnly);
+		}
+
+		protected virtual IEnumerable<string> EnumerateFiles (string path, string searchPattern, SearchOption searchOption)
+		{
+			return Directory.EnumerateFiles (path, searchPattern, searchOption);
 		}
 
 		/// <summary>

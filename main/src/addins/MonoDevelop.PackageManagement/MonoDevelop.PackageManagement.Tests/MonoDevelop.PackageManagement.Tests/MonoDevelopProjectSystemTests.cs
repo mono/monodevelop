@@ -28,12 +28,15 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
+using NuGet.Versioning;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -1215,6 +1218,85 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddImport (targetPath, ImportLocation.Bottom);
 
 			Assert.IsTrue (projectSystem.NewImportsHandler.IsDisposed);
+		}
+
+		[Test]
+		public void AddExistingFile_FileExists_AddsFileToProject ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
+			project.AddDefaultBuildAction (BuildAction.Compile, fileName);
+			CreateProjectSystem (project);
+
+			projectSystem.AddExistingFile (fileName);
+
+			ProjectFile fileItem = ProjectHelper.GetFile (project, fileName);
+			var expectedFileName = new FilePath (fileName);
+			Assert.AreEqual (expectedFileName, fileItem.FilePath);
+			Assert.AreEqual (BuildAction.Compile, fileItem.BuildAction);
+			Assert.IsNull (projectSystem.PathPassedToPhysicalFileSystemAddFile);
+			Assert.IsTrue (project.IsSaved);
+			Assert.AreEqual (1, project.FilesAddedWhenSavedCount);
+		}
+
+		[Test]
+		public async Task ExecuteScriptAsync_InitPowerShellScript_WarningLogged ()
+		{
+			CreateTestProject ();
+			CreateProjectSystem (project);
+			string scriptPath = @"init.ps1".ToNativePath ();
+			var package = new PackageIdentity ("Test", new NuGetVersion ("1.2"));
+			string expectedLogMessage = "WARNING: Test Package contains PowerShell script 'init.ps1' which will not be run.";
+
+			await projectSystem.ExecuteScriptAsync (package, null, scriptPath, null, false);
+
+			Assert.AreEqual (MessageLevel.Warning, projectSystem.FakeNuGetProjectContext.LastLogLevel);
+			Assert.AreEqual (expectedLogMessage, projectSystem.FakeNuGetProjectContext.LastMessageLogged);
+		}
+
+		[Test]
+		public void GetDirectories_TwoDirectories_ReturnsTwoDirectories ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			var expectedDirectories = new string[] {
+				@"d:\projects\MyProject\Scripts\One".ToNativePath (),
+				@"d:\projects\MyProject\Scripts\Two".ToNativePath (),
+			};
+			projectSystem.AddDirectoriesForPath (@"d:\projects\MyProject\Scripts".ToNativePath (), expectedDirectories);
+
+			string[] directories = projectSystem.GetDirectories (@"Scripts").ToArray ();
+
+			CollectionAssert.AreEqual (expectedDirectories, directories);
+		}
+
+		[Test]
+		public void GetFiles_Recursive_ThrowsNotImplementedException ()
+		{
+			CreateTestProject ();
+			CreateProjectSystem (project);
+
+			Assert.Throws<NotImplementedException> (() => projectSystem.GetFiles ("", "*.*", true));
+		}
+
+		[Test]
+		public void GetFiles_TwoFiles_ReturnsTwoFiles ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			var expectedFiles = new string[] {
+				@"d:\projects\MyProject\Scripts\one.js".ToNativePath (),
+				@"d:\projects\MyProject\Scripts\two.js".ToNativePath (),
+			};
+			projectSystem.AddFilesForPath (
+				@"d:\projects\MyProject\Scripts".ToNativePath (),
+				"*.*",
+				SearchOption.TopDirectoryOnly,
+				expectedFiles);
+
+			string[] files = projectSystem.GetFiles (@"Scripts", "*.*", false).ToArray ();
+
+			CollectionAssert.AreEqual (expectedFiles, files);
 		}
 	}
 }
