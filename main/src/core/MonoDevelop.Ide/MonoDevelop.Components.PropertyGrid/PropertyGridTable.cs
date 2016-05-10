@@ -292,6 +292,7 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		internal void Update (PropertyDescriptorCollection properties, object instance)
 		{
+			EndEditing ();
 			foreach (PropertyDescriptor pd in properties)
 				UpdateProperty (pd, instance, rows);
 			QueueDraw ();
