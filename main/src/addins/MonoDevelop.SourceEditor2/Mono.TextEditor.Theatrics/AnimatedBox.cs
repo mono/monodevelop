@@ -35,7 +35,7 @@ using MonoDevelop.Components;
 
 namespace Mono.TextEditor.Theatrics
 {
-	public abstract class AnimatedBox : Container
+	abstract class AnimatedBox : Container
 	{
 		private readonly Stage<AnimatedWidget> stage = new Stage<AnimatedWidget> ();
 		private readonly LinkedList<AnimatedWidget> children = new LinkedList<AnimatedWidget> ();

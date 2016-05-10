@@ -33,7 +33,7 @@ namespace Mono.TextEditor.Theatrics
 	/// <summary>
 	/// Tooltip that "bounces", then fades away.
 	/// </summary>
-	public abstract class BounceFadePopupWindow : Gtk.Window
+	abstract class BounceFadePopupWindow : Gtk.Window
 	{
 		Stage<BounceFadePopupWindow> stage = new Stage<BounceFadePopupWindow> ();
 		Gdk.Pixbuf textImage = null;
@@ -223,7 +223,7 @@ namespace Mono.TextEditor.Theatrics
 	/// <summary>
 	/// Tooltip that "bounces", then fades away.
 	/// </summary>
-	public abstract class BounceFadePopupWidget : Gtk.Widget
+	abstract class BounceFadePopupWidget : Gtk.Widget
 	{
 		Stage<BounceFadePopupWidget> stage = new Stage<BounceFadePopupWidget> ();
 		Gdk.Pixbuf textImage = null;

@@ -30,7 +30,7 @@ using System;
 
 namespace Mono.TextEditor.Theatrics
 {
-    public class SingleActorStage : Stage<object>
+    class SingleActorStage : Stage<object>
     {
         private object target = new object ();
 

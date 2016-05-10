@@ -32,7 +32,7 @@ namespace Mono.TextEditor.Theatrics
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class AnimatedVBox : AnimatedBox
+	class AnimatedVBox : AnimatedBox
 	{
 		public AnimatedVBox () : base(false)
 		{

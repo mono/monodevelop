@@ -10,7 +10,7 @@ namespace Mono.TextEditor.Theatrics
 	/// <summary>
 	/// A scrolled window with the ability to put widgets beside the scrollbars.
 	/// </summary>
-	public class SmartScrolledWindow : Bin
+	class SmartScrolledWindow : Bin
 	{
 		Adjustment vAdjustment;
 		Gtk.Widget vScrollBar;

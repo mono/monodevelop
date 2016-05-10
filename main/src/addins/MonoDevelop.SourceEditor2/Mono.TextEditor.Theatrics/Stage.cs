@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor.Theatrics
 {
-    public class Stage<T>
+    class Stage<T>
     {
         public delegate bool ActorStepHandler (Actor<T> actor);
 

@@ -30,7 +30,7 @@ using System;
 
 namespace Mono.TextEditor.Theatrics
 {
-    public class Pulsator<T> where T : class
+    class Pulsator<T> where T : class
     {
         private Stage<T> stage;
         public Stage<T> Stage {

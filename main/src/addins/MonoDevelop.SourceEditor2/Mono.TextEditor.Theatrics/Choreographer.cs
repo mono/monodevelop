@@ -30,12 +30,13 @@ using System;
 
 namespace Mono.TextEditor.Theatrics
 {
-    public enum Blocking
+    enum Blocking
     {
         Upstage,
         Downstage
     }
-    public enum Easing
+    
+	enum Easing
     {
         Linear,
         QuadraticIn,
@@ -47,7 +48,7 @@ namespace Mono.TextEditor.Theatrics
         Sine,
     }
 
-    public static class Choreographer
+    static class Choreographer
     {
         public static int PixelCompose (double percent, int size, Easing easing)
         {

@@ -370,7 +370,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public void AddAnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, int x, int y)
+		internal void AddAnimatedWidget (Widget widget, uint duration, Easing easing, Blocking blocking, int x, int y)
 		{
 			AnimatedWidget animated_widget = new AnimatedWidget (widget, duration, easing, blocking, false);
 			animated_widget.Parent = this;
