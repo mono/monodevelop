@@ -36,6 +36,7 @@ using Gtk;
 using Mono.TextEditor.Highlighting;
 using Mono.TextEditor.Utils;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {

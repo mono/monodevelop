@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Startup", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugging", "external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj", "{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.TextEditor", "src\core\Mono.Texteditor\Mono.TextEditor.csproj", "{A2329308-3751-4DBD-9A75-5F7B8B024625}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.Projects.Format.MSBuild", "MonoDevelop.Projects.Format.MSBuild", "{8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Projects.Formats.MSBuild", "src\core\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj", "{A437F1A3-78DF-4F00-8053-D32A8B1EB679}"
@@ -1198,22 +1196,6 @@ Global
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{9FBCC262-10DC-4E84-A5C4-17230BBF8862}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
-		{A2329308-3751-4DBD-9A75-5F7B8B024625}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{A2364D6A-00EF-417C-80A6-815726C70032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A2364D6A-00EF-417C-80A6-815726C70032}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2364D6A-00EF-417C-80A6-815726C70032}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1948,7 +1930,6 @@ Global
 		{27096E7F-C91C-4AC6-B289-6897A701DF21} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{DA8EDEA6-7DA8-435D-B1A0-F3A0CA07F424} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
-		{A2329308-3751-4DBD-9A75-5F7B8B024625} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
 		{A437F1A3-78DF-4F00-8053-D32A8B1EB679} = {8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF}
 		{DB96F55E-41C5-4330-A427-15A4EC028BBE} = {8F48ECA6-CFFF-4EBF-BC92-817199EDE9AF}
@@ -2085,7 +2066,7 @@ Global
 		$2.TabsToSpaces = False
 		$2.inheritsSet = null
 		$2.inheritsScope = text/plain
-		$2.scope = application/json
+		$2.scope = application/config+xml
 		$0.DotNetNamingPolicy = $3
 		$3.DirectoryNamespaceAssociation = Flat
 		$3.ResourceNamePolicy = FileName
@@ -2121,8 +2102,8 @@ Global
 		$12.inheritsSet = null
 		$12.scope = image/svg+xml
 		$0.XmlFormattingPolicy = $13
-		$13.inheritsSet = null
-		$13.scope = application/config+xml
+		$13.inheritsSet = Mono
+		$13.scope = application/xml
 		$13.inheritsScope = application/xml
 		$0.TextStylePolicy = $14
 		$14.TabsToSpaces = False

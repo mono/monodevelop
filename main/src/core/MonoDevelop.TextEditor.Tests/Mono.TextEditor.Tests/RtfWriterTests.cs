@@ -27,6 +27,7 @@ using System;
 using Mono.TextEditor.Utils;
 using NUnit.Framework;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core;
 
 namespace Mono.TextEditor.Tests
 {

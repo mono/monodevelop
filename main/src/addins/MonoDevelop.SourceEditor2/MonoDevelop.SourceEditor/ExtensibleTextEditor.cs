@@ -224,7 +224,7 @@ namespace MonoDevelop.SourceEditor
 			base.OptionsChanged (sender, args);
 		}
 
-		protected override string GetIdeColorStyleName ()
+		protected internal override string GetIdeColorStyleName ()
 		{
 			var scheme = Ide.Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
@@ -326,7 +326,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		protected override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
+		protected internal override bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			bool result = true;
 			if (key == Gdk.Key.Escape) {

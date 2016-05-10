@@ -34,6 +34,7 @@ using System.Text;
 using System.Xml;
 using Xwt.Drawing;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Components;
 
 namespace Mono.TextEditor.Highlighting
 {
