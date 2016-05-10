@@ -199,9 +199,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
 
 					if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark")
-						icon = icon.WithStyles ("mac-menu", "dark");
+						icon = icon.WithStyles ("dark");
 					else
-						icon = icon.WithStyles ("mac-menu", "-dark");
+						icon = icon.WithStyles ("-dark");
 					item.Image = icon.ToBitmap (scale).ToNSImage ();
 					item.Image.Template = true;
 				}
