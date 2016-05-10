@@ -465,9 +465,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (p == null)
 						continue;
 					AppendTypeReference (result, p.Type);
-					if (p.IsOut)
-						result.Append ("&");
-					if (p.IsRef) {
+					if (p.IsRef || p.IsOut) {
 						result.Append ("@");
 					}
 				}
