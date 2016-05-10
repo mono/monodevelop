@@ -272,6 +272,22 @@ type LanguageService(dirtyNotify) as x =
                     Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%")
             Path.Combine(dir, Path.GetFileName(path))
 
+    let projectInfoCache =
+        //cache 50 project infos, then start evicting the least recently used entries
+        ref (ExtCore.Caching.LruCache.create 50u)
+
+    member x.RemoveFromProjectInfoCache(projFilename:string, ?properties) =
+        let properties = defaultArg properties ["Configuration", "Debug"]
+        let key = (projFilename, properties)
+        LoggingService.logDebug "LanguageService: Removing %s from projectInfoCache" projFilename
+        match (!projectInfoCache).TryExtract(key) with
+        | Some _extractee, cache -> projectInfoCache := cache
+        | None, _unchangedCache -> ()
+
+    member x.ClearProjectInfoCache() =
+        LoggingService.logDebug "LanguageService: Clearing ProjectInfoCache"
+        projectInfoCache := ExtCore.Caching.LruCache.create 50u
+
     /// Constructs options for the interactive checker for the given file in the project under the given configuration.
     member x.GetCheckerOptions(fileName, projFilename, source) =
         let opts =
@@ -343,12 +359,26 @@ type LanguageService(dirtyNotify) as x =
         projectOptions
                 
     /// Constructs options for the interactive checker for a project under the given configuration.
-    member x.GetProjectCheckerOptions(projFilename) =
-        let project = (IdeApp.Workspace.GetAllProjects()
+    member x.GetProjectCheckerOptions(projFilename, ?properties) =
+        let properties = defaultArg properties ["Configuration", "Debug"]
+        let key = (projFilename, properties)
+        lock projectInfoCache (fun () ->
+            match (!projectInfoCache).TryFind (key) with
+            | Some entry, cache ->
+                LoggingService.logDebug "LanguageService: GetProjectCheckerOptions: Getting ProjectOptions from cache for:%s}" (Path.GetFileName(projFilename))
+                projectInfoCache := cache
+                entry
+            | _, cache ->
+                let project = (IdeApp.Workspace.GetAllProjects()
                               |> Seq.find (fun p -> p.FileName.FullPath.ToString() = projFilename))
                               :?> DotNetProject
 
-        x.GetProjectOptionsFromProjectFile project
+                let opts = x.GetProjectOptionsFromProjectFile project
+                projectInfoCache := cache.Add (key, opts)
+                // Print contents of check option for debugging purposes     
+                LoggingService.logDebug "GetProjectCheckerOptions: ProjectFileName: %s, ProjectFileNames: %A, ProjectOptions: %A, IsIncompleteTypeCheckEnvironment: %A, UseScriptResolutionRules: %A" 
+                    opts.ProjectFileName opts.ProjectFileNames opts.OtherOptions opts.IsIncompleteTypeCheckEnvironment opts.UseScriptResolutionRules
+                opts)
 
     member x.StartBackgroundCompileOfProject (projectFilename) =
         let opts = x.GetProjectCheckerOptions(projectFilename)
@@ -600,3 +630,4 @@ type LanguageService(dirtyNotify) as x =
         LoggingService.logDebug "LanguageService: Clearing root caches and finalizing transients"
         checker.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()
         checkProjectResultsCache.Clear()
+        x.ClearProjectInfoCache()

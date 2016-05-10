@@ -5,11 +5,13 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.Collections.Generic
 open System.IO
 open System.Diagnostics
 open System.Reflection
 open System.Globalization
 open System.Runtime.Versioning
+open System.Threading
 open Microsoft.FSharp.Reflection
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui
@@ -167,7 +169,6 @@ module CompilerArguments =
                                                Some (resolved.MainModule.FullyQualifiedName))
 
   let resolutionFailedMessage (n:string) = String.Format ("Resolution: Assembly resolution failed when trying to find default reference for: {0}", n)
-
   /// Generates references for the current project & configuration as a
   /// list of strings of the form [ "-r:<full-path>"; ... ]
   let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) =
@@ -203,6 +204,7 @@ module CompilerArguments =
                         
        let needsFacades () = 
            let referencedAssemblies = project.GetReferencedAssemblyProjects configSelector
+
            match referencedAssemblies |> Seq.tryFind Project.isPortable with
            | Some _ -> true
            | None -> project.References
@@ -212,6 +214,12 @@ module CompilerArguments =
                      |> Option.isSome
 
        let wrapf = if shouldWrap then wrapFile else id
+
+       let getReferencedAssemblies (project: DotNetProject) =
+            LoggingService.logDebug "Fetching referenced assemblies for %s " project.Name
+            async {
+                return! project.GetReferencedAssemblies configSelector |> Async.AwaitTask
+            } |> Async.RunSynchronously
 
        [
         let portableRefs =
@@ -226,13 +234,13 @@ module CompilerArguments =
           project.References
           |> Seq.collect Project.getAssemblyLocations
           |> Seq.append portableRefs
-          |> Seq.toList
+          |> Seq.append (getReferencedAssemblies project)
 
         let projectReferences =
             refs
             // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be
             // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
-            |> Seq.filter (fun (ref: string) -> not (ref.EndsWith("FSharp.Core")))
+            |> Seq.filter (fun (ref: string) -> not (ref.Contains("FSharp.Core")))
             |> set
 
         let find assemblyName=
