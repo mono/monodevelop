@@ -79,7 +79,7 @@ namespace MonoDevelop.Components
 			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled");
 
 			if (Core.Platform.IsMac) {
-				Xwt.Drawing.Context.RegisterStyles ("mac", "sel");
+				Xwt.Drawing.Context.RegisterStyles ("mac", "sel", "mac-menu");
 				Xwt.Drawing.Context.SetGlobalStyle ("mac");
 			} else if (Core.Platform.IsWindows) {
 				Xwt.Drawing.Context.RegisterStyles ("win");

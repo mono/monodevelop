@@ -193,7 +193,12 @@ namespace MonoDevelop.MacIntegration.MacMenu
 				var icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
 				if (icon != null) {
 					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
-					item.Image = icon.WithStyles ("sel").ToBitmap (scale).ToNSImage ();
+
+					if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark")
+						icon = icon.WithStyles ("mac-menu", "dark");
+					else
+						icon = icon.WithStyles ("mac-menu", "-dark");
+					item.Image = icon.ToBitmap (scale).ToNSImage ();
 				}
 			}
 
