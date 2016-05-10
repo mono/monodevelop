@@ -203,6 +203,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 					else
 						icon = icon.WithStyles ("mac-menu", "-dark");
 					item.Image = icon.ToBitmap (scale).ToNSImage ();
+					item.Image.Template = true;
 				}
 			}
 
