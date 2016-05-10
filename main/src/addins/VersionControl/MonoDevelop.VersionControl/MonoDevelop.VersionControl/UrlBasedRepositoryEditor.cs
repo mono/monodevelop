@@ -59,11 +59,17 @@ namespace MonoDevelop.VersionControl
 				return false;
 			
 			var tokens = url.Split (new [] { ':' }, 2);
+			if (tokens.Length < 2)
+				return false;
+			
 			if (!Uri.IsWellFormedUriString (tokens [0], UriKind.RelativeOrAbsolute) ||
 				!Uri.IsWellFormedUriString (tokens [1], UriKind.RelativeOrAbsolute))
 				return false;
 
-			var userAndHost = tokens [0].Split ('@');
+			var userAndHost = tokens [0].Split (new [] { '@' }, 2);
+			if (userAndHost.Length < 2)
+				return false;
+			
 			repositoryUserEntry.Text = userAndHost [0];
 			repositoryServerEntry.Text = userAndHost [1];
 			repositoryPortSpin.Value = 22;
