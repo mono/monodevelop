@@ -153,7 +153,7 @@ namespace MonoDevelop.Core
 				return Catalog.GetPluralString (singular, plural, number);
 			} catch (Exception e) {
 				LoggingService.LogError ("Failed to localize string", e);
-				return number == 0 ? singular : plural;
+				return number == 1 ? singular : plural;
 			}
 		}
 		

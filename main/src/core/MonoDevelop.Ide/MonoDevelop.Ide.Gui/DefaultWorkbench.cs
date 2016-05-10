@@ -45,6 +45,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.Components.DockNotebook;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -826,6 +827,20 @@ namespace MonoDevelop.Ide.Gui
 			initializing = false;
 		}
 
+		Task layoutChangedTask;
+		async void LayoutChanged (object o, EventArgs e)
+		{
+			if (layoutChangedTask != null) {
+				return;
+			}
+
+			layoutChangedTask = Task.Delay (10000);
+			await layoutChangedTask;
+			layoutChangedTask = null;
+
+			dock.SaveLayouts (configFile);
+		}
+
 		void CreateComponents ()
 		{
 			fullViewVBox = new VBox (false, 0);
@@ -842,23 +857,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
-			dock.LayoutChanged += (o, e) => {
-				if (saveTimer != null) {
-					saveTimer.Stop ();
-					saveTimer.Dispose ();
-				}
-
-				// Save the layout changes after 10 seconds.
-				saveTimer = new Timer (10000);
-				saveTimer.Elapsed += (s, ev) => {
-					Runtime.RunInMainThread (() => {
-						dock.SaveLayouts (configFile);
-						saveTimer.Dispose ();
-						saveTimer = null;
-					});
-				};
-				saveTimer.Start ();
-			};
+			dock.LayoutChanged += LayoutChanged;
 
 			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
 			IdeApp.Preferences.WorkbenchCompactness.Changed += delegate {

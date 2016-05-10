@@ -716,24 +716,6 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public async Task ReferenceWithVersion ()
-		{
-			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-
-			var p = (DotNetProject)sol.Items [0];
-			var reference = ProjectReference.CreateAssemblyReference ("System.Core, Version=4.0.0.0");
-			p.References.Add (reference);
-			Assert.AreEqual (string.Empty, reference.ValidationErrorMessage);
-			p.References.Remove (reference);
-
-
-			reference = ProjectReference.CreateAssemblyReference ("System.Core, Version=55.44.22.11");//non-existing version
-			p.References.Add (reference);
-			Assert.AreNotEqual (string.Empty, reference.ValidationErrorMessage);//Not equal...
-		}
-
-		[Test]
 		public async Task ChangeBuildAction ()
 		{
 			// Check that the in-memory project data is used when the builder is loaded for the first time.

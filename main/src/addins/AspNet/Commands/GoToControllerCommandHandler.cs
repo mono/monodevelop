@@ -65,7 +65,7 @@ namespace MonoDevelop.AspNet.Commands
 			if (controller != null)
 				await RefactoringService.RoslynJumpToDeclaration (controller, doc.Project);
 			else
-				MessageService.ShowError ("Matching controller cannot be found.");
+				MessageService.ShowError (GettextCatalog.GetString ("Matching controller cannot be found."));
 		}
 
 		async Task<INamedTypeSymbol> FindController (MonoDevelop.Projects.Project project, string name)

@@ -142,12 +142,13 @@ namespace MonoDevelop.PackageManagement
 		
 		protected virtual void LogAddedReferenceToProject(string referenceName, string projectName)
 		{
-			DebugLogFormat("Added reference '{0}' to project '{1}'.", referenceName, projectName);
+			string message = GettextCatalog.GetString ("Added reference '{0}' to project '{1}'.", referenceName, projectName);
+			DebugLog (message);
 		}
 		
-		void DebugLogFormat(string format, params object[] args)
+		void DebugLog (string message)
 		{
-			Logger.Log(MessageLevel.Debug, format, args);
+			Logger.Log (MessageLevel.Debug, message);
 		}
 		
 		public bool ReferenceExists(string name)
@@ -226,7 +227,8 @@ namespace MonoDevelop.PackageManagement
 		
 		protected virtual void LogRemovedReferenceFromProject(string referenceName, string projectName)
 		{
-			DebugLogFormat("Removed reference '{0}' from project '{1}'.", referenceName, projectName);
+			string message = GettextCatalog.GetString ("Removed reference '{0}' from project '{1}'.", referenceName, projectName);
+			DebugLog (message);
 		}
 		
 		public bool IsSupportedFile(string path)
@@ -334,7 +336,8 @@ namespace MonoDevelop.PackageManagement
 		
 		protected virtual void LogAddedFileToProject(string fileName, string projectName)
 		{
-			DebugLogFormat("Added file '{0}' to project '{1}'.", fileName, projectName);
+			string message = GettextCatalog.GetString ("Added file '{0}' to project '{1}'.", fileName, projectName);
+			DebugLog (message);
 		}
 		
 		public override void DeleteDirectory(string path, bool recursive)
@@ -360,7 +363,8 @@ namespace MonoDevelop.PackageManagement
 		
 		protected virtual void LogDeletedDirectory(string folder)
 		{
-			DebugLogFormat("Removed folder '{0}'.", folder);
+			string message = GettextCatalog.GetString ("Removed folder '{0}'.", folder);
+			DebugLog (message);
 		}
 		
 		void LogDeletedFileInfo(string path)
@@ -376,12 +380,14 @@ namespace MonoDevelop.PackageManagement
 		
 		protected virtual void LogDeletedFile(string fileName)
 		{
-			DebugLogFormat("Removed file '{0}'.", fileName);
+			string message = GettextCatalog.GetString ("Removed file '{0}'.", fileName);
+			DebugLog (message);
 		}
 		
 		protected virtual void LogDeletedFileFromDirectory(string fileName, string directory)
 		{
-			DebugLogFormat("Removed file '{0}' from folder '{1}'.", fileName, directory);
+			string message = GettextCatalog.GetString ("Removed file '{0}' from folder '{1}'.", fileName, directory);
+			DebugLog (message);
 		}
 		
 		public void AddFrameworkReference(string name)

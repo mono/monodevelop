@@ -521,7 +521,7 @@ namespace MonoDevelop.UnitTesting
 					clipboard.Text = last.StackTrace;
 					break;
 					default:
-					clipboard.Text = last.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + last.StackTrace;
+					clipboard.Text = last.Message + Environment.NewLine + GettextCatalog.GetString("Stack trace:") + Environment.NewLine + last.StackTrace;
 					break;
 				}
 			} else {
@@ -544,7 +544,7 @@ namespace MonoDevelop.UnitTesting
 					clipboard.Text = error.StackTrace;
 					break;
 				default:
-					clipboard.Text = error.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + error.StackTrace;
+					clipboard.Text = error.Message + Environment.NewLine + GettextCatalog.GetString("Stack trace:") + Environment.NewLine + error.StackTrace;
 					break;
 				}
 			}

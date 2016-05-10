@@ -65,8 +65,6 @@ namespace MonoDevelop.Components.Docking
 		static Xwt.Drawing.Image pixAutoHide;
 		static Xwt.Drawing.Image pixDock;
 
-		static double PixelScale = GtkWorkarounds.GetPixelScale ();
-
 		static readonly Xwt.WidgetSpacing TabPadding;
 		static readonly Xwt.WidgetSpacing TabActivePadding;
 
@@ -164,7 +162,7 @@ namespace MonoDevelop.Components.Docking
 			WidthRequest = r;
 
 			if (visualStyle != null)
-				HeightRequest = visualStyle.PadTitleHeight != null ? (int)(visualStyle.PadTitleHeight.Value * PixelScale) : -1;
+				HeightRequest = visualStyle.PadTitleHeight != null ? (int)(visualStyle.PadTitleHeight.Value) : -1;
 		}
 
 		public void SetLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)
@@ -300,7 +298,7 @@ namespace MonoDevelop.Components.Docking
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.TriggersContextMenu ()) {
-				item.ShowDockPopupMenu (evnt.Time);
+				item.ShowDockPopupMenu (this, evnt);
 				return false;
 			} else if (evnt.Button == 1) {
 				if (evnt.Type == Gdk.EventType.ButtonPress) {

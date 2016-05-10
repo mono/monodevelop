@@ -86,9 +86,6 @@ namespace MonoDevelop.Components
 		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 
-		[DllImport (PangoUtil.LIBQUARTZ)]
-		static extern bool gdk_window_has_embedded_nsview_focus (IntPtr window);
-
 		struct CGRect32
 		{
 			public float X, Y, Width, Height;
@@ -868,19 +865,6 @@ namespace MonoDevelop.Components
 			objc_msgSend_IntPtr (ptr, sel_invalidateShadow);
 		}
 
-		public static bool HasNSTextFieldFocus (Gdk.Window window)
-		{
-			if (Platform.IsMac) {
-				try {
-					return gdk_window_has_embedded_nsview_focus (window.Handle);
-				} catch (Exception) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-
 		[DllImport (PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_leak_fixed_marker ();
 
@@ -1245,21 +1229,6 @@ namespace MonoDevelop.Components
 		public static double GetScaleFactor ()
 		{
 			return GetScaleFactor (Gdk.Screen.Default, 0);
-		}
-
-		public static double GetPixelScale ()
-		{
-			if (Platform.IsWindows)
-				return GetScaleFactor ();
-			else
-				return 1d;
-		}
-
-		public static int ConvertToPixelScale (int size)
-		{
-			double scale = GetPixelScale ();
-
-			return (int)(size * scale);
 		}
 
 		public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)

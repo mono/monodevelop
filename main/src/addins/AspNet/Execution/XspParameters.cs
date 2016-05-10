@@ -80,7 +80,7 @@ namespace MonoDevelop.AspNet.Execution
 				try {
 					port = Convert.ToUInt16 (value);
 				} catch (InvalidCastException) {
-					throw new ArgumentException ("The port value is outside the permitted range");
+					throw new ArgumentException (GettextCatalog.GetString ("The port value is outside the permitted range"));
 				}
 			}
 		}
@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Execution
 					System.Net.IPAddress tempAdd = System.Net.IPAddress.Parse (value);
 					address = tempAdd.ToString ();
 				} catch(FormatException) {
-					throw new ArgumentException ("The IP address is invalid.");
+					throw new ArgumentException (GettextCatalog.GetString ("The IP address is invalid."));
 				}
 			}
 		}

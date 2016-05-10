@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		async Task UpdateErrorUndelines (DocumentContext ctx, ParsedDocument parsedDocument, CancellationToken token)
 		{
-			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null || isDisposed)
+			if (parsedDocument == null || isDisposed)
 				return;
 			try {
 				var errors = await parsedDocument.GetErrorsAsync(token).ConfigureAwait (false);
