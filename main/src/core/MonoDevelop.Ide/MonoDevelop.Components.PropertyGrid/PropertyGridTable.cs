@@ -162,6 +162,8 @@ namespace MonoDevelop.Components.PropertyGrid
 		}
 
 		Dictionary<object,List<string>> expandedStatus;
+		PropertyDescriptor lastEditedProperty;
+		EditSession lastEditSession;
 
 		class ReferenceEqualityComparer<T> : IEqualityComparer<T>
 		{
@@ -181,6 +183,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			//since the tree can be built dynamically, and there can be multiple instances of each type.
 			//make a best attempt using reference equality to match objects and the name to match their properties.
 			expandedStatus = new Dictionary<object,List<string>>(new ReferenceEqualityComparer<object> ());
+
 			foreach (var r in rows.Where (r => r.IsExpandable)) {
 				object key;
 				string val;
@@ -232,6 +235,49 @@ namespace MonoDevelop.Components.PropertyGrid
 
 			QueueDraw ();
 			QueueResize ();
+		}
+
+		internal void SaveEditSession ()
+		{
+			if (editSession == null)
+				return;
+
+			lastEditedProperty = editSession.Property;
+			lastEditSession = editSession;
+
+			// Set the edit session to null explicitly so Clear does not end the edit session.
+			editSession = null;
+		}
+
+		internal void RestoreEditSession ()
+		{
+			if (lastEditedProperty == null || lastEditSession == null)
+				return;
+			
+			var newEditRow = FindRow (rows, lastEditedProperty);
+			if (newEditRow != null) {
+				currentEditorRow = newEditRow;
+				editSession = lastEditSession;
+			} else {
+				editSession = lastEditSession;
+				EndEditing ();
+			}
+
+			lastEditedProperty = null;
+			lastEditSession = null;
+		}
+
+		static TableRow FindRow (IEnumerable<TableRow> rows, PropertyDescriptor property)
+		{
+			foreach (var row in rows) {
+				if (row.Property == property)
+					return row;
+
+				var childRes = FindRow (row.ChildRows, property);
+				if (childRes != null)
+					return childRes;
+			}
+			return null;
 		}
 
 		public virtual void Clear ()
@@ -782,7 +828,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			base.OnDragLeave (context, time_);
 		}
 
-		void EndEditing ()
+		internal void EndEditing ()
 		{
 			if (editSession != null) {
 				Remove (currentEditor);
@@ -818,7 +864,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				if (refresh == RefreshProperties.Repaint) {
 					parentGrid.Refresh ();
 				} else if (refresh == RefreshProperties.All) {
-					parentGrid.Populate();
+					parentGrid.Populate(saveEditSession: true);
 				}
 
 				if (Changed != null)
