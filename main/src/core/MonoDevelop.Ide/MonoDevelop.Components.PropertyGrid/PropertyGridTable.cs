@@ -786,6 +786,8 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			if (editSession != null) {
 				Remove (currentEditor);
+				var row = GetCell (currentEditorRow);
+				row.Container.GrabFocus ();
 				currentEditor.Destroy ();
 				currentEditor = null;
 				editSession.Dispose ();
