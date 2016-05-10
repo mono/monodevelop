@@ -173,6 +173,8 @@ namespace MonoDevelop.Components
 
 		public void GrabFocus ()
 		{
+			if (nativeWidget is Gtk.Widget)
+				((Gtk.Widget)nativeWidget).GrabFocus ();
 			// TODO
 		}
 
