@@ -48,8 +48,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			var updateAllPackages = new UpdateAllNuGetPackagesInSolution (GetSelectedSolution ());
 			List<IPackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
 
-			// TODO: No updates available message.
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage (updateAllPackages.GetProjects ());
 			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 		}
 

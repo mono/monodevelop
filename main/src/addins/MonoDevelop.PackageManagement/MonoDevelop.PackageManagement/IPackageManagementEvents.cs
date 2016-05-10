@@ -58,6 +58,7 @@ namespace MonoDevelop.PackageManagement
 		event EventHandler<PackageManagementEventArgs> PackageInstalled;
 		event EventHandler<PackageManagementEventArgs> PackageUninstalling;
 		event EventHandler<PackageManagementEventArgs> PackageUninstalled;
+		event EventHandler<DotNetProjectEventArgs> NoUpdateFound;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
@@ -77,6 +78,7 @@ namespace MonoDevelop.PackageManagement
 		void OnReferenceAdding (ProjectReference reference);
 		void OnReferenceRemoving (ProjectReference reference);
 		void OnImportRemoved (IDotNetProject project, string import);
+		void OnNoUpdateFound (IDotNetProject project);
 
 		[Obsolete]
 		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);

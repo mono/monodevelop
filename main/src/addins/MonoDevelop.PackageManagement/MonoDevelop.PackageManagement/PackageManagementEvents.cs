@@ -239,5 +239,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			PackageUninstalled?.Invoke (this, new PackageManagementEventArgs (project, e));
 		}
+
+		public event EventHandler<DotNetProjectEventArgs> NoUpdateFound;
+
+		public void OnNoUpdateFound (IDotNetProject project)
+		{
+			NoUpdateFound?.Invoke (this, new DotNetProjectEventArgs (project));
+		}
 	}
 }

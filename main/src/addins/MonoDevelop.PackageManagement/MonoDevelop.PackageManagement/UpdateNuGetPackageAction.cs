@@ -45,6 +45,7 @@ namespace MonoDevelop.PackageManagement
 		List<SourceRepository> primarySources;
 		ISourceRepositoryProvider sourceRepositoryProvider;
 		IEnumerable<NuGetProjectAction> actions;
+		IPackageManagementEvents packageManagementEvents;
 
 		public UpdateNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
@@ -57,6 +58,8 @@ namespace MonoDevelop.PackageManagement
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
 			var restartManager = new DeleteOnRestartManager ();
+
+			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
 			sourceRepositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
 			primarySources = sourceRepositoryProvider.GetRepositories ().ToList ();
@@ -91,6 +94,10 @@ namespace MonoDevelop.PackageManagement
 				primarySources,
 				new SourceRepository[0],
 				cancellationToken);
+
+			if (!actions.Any ()) {
+				packageManagementEvents.OnNoUpdateFound (dotNetProject);
+			}
 
 			await CheckLicenses ();
 

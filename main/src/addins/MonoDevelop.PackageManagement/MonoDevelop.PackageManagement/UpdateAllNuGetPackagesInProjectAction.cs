@@ -25,14 +25,11 @@
 // THE SOFTWARE.
 
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
@@ -46,7 +43,7 @@ namespace MonoDevelop.PackageManagement
 		PackageRestoreManager restoreManager;
 		IMonoDevelopSolutionManager solutionManager;
 		IPackageManagementEvents packageManagementEvents;
-		DotNetProject dotNetProject;
+		IDotNetProject dotNetProject;
 		NuGetProject project;
 		CancellationToken cancellationToken;
 		ISourceRepositoryProvider sourceRepositoryProvider;
@@ -59,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.solutionManager = solutionManager;
-			this.dotNetProject = dotNetProject;
+			this.dotNetProject = new DotNetProjectProxy (dotNetProject);
 			this.cancellationToken = cancellationToken;
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
@@ -106,6 +103,10 @@ namespace MonoDevelop.PackageManagement
 				sourceRepositoryProvider.GetRepositories ().ToList (),
 				new SourceRepository[0],
 				cancellationToken);
+
+			if (!actions.Any ()) {
+				packageManagementEvents.OnNoUpdateFound (dotNetProject);
+			}
 
 			await packageManager.ExecuteNuGetProjectActionsAsync (
 				project,

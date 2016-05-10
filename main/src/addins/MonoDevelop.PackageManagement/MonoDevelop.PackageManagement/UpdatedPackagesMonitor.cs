@@ -27,49 +27,43 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class UpdatedPackagesMonitor : IDisposable
 	{
-		List<IPackageManagementProject> projects;
-		bool packagesUpdated;
+		List<IDotNetProject> projects;
+		List<IDotNetProject> projectsNotUpdated = new List<IDotNetProject> ();
 
-		public UpdatedPackagesMonitor (IPackageManagementProject project)
-			: this (new IPackageManagementProject [] { project })
+		public UpdatedPackagesMonitor (IDotNetProject project)
+			: this (new IDotNetProject [] { project })
 		{
 		}
 
-		public UpdatedPackagesMonitor (IEnumerable<IPackageManagementProject> projects)
+		public UpdatedPackagesMonitor (IEnumerable<IDotNetProject> projects)
 		{
 			this.projects = projects.ToList ();
-			RegisterProjectEvents ();
+			PackageManagementServices.PackageManagementEvents.NoUpdateFound += NoUpdateFound;
 		}
 
-		void RegisterProjectEvents ()
+		void NoUpdateFound (object sender, DotNetProjectEventArgs e)
 		{
-			foreach (IPackageManagementProject project in projects) {
-				project.PackageReferenceAdded += PackageReferenceAdded;
-			}
-		}
-
-		void PackageReferenceAdded (object sender, PackageOperationEventArgs e)
-		{
-			packagesUpdated = true;
+			projectsNotUpdated.Add (e.Project);
 		}
 
 		public void Dispose ()
 		{
-			foreach (IPackageManagementProject project in projects) {
-				project.PackageReferenceAdded -= PackageReferenceAdded;
-			}
+			PackageManagementServices.PackageManagementEvents.NoUpdateFound -= NoUpdateFound;
 		}
 
 		public bool AnyPackagesUpdated ()
 		{
-			return packagesUpdated;
+			return projects.Any (project => IsProjectUpdated (project));
+		}
+
+		bool IsProjectUpdated (IDotNetProject project)
+		{
+			return !projectsNotUpdated.Any (project.Equals);
 		}
 	}
 }

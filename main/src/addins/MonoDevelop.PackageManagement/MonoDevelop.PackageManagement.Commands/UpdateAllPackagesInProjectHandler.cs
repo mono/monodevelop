@@ -43,10 +43,10 @@ namespace MonoDevelop.PackageManagement.Commands
 		void Update ()
 		{
 			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (GetSelectedSolution ());
-			var action = new UpdateAllNuGetPackagesInProjectAction (solutionManager, GetSelectedDotNetProject ());
+			var project = GetSelectedDotNetProject ();
+			var action = new UpdateAllNuGetPackagesInProjectAction (solutionManager, project);
 
-			//TODO: No updates available message.
-			var progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage ();
+			var progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (new DotNetProjectProxy (project));
 			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 		}
 

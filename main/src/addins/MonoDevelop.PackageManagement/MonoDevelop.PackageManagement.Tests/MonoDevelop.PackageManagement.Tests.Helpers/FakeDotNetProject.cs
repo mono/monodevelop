@@ -151,6 +151,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			IsProjectBuilderDisposed = true;
 		}
+
+		public void RefreshReferenceStatus ()
+		{
+		}
 	}
 }
 

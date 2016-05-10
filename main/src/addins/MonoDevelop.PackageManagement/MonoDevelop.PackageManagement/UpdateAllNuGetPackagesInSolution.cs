@@ -54,6 +54,11 @@ namespace MonoDevelop.PackageManagement
 					cancellationToken);
 			}
 		}
+
+		public IEnumerable<IDotNetProject> GetProjects ()
+		{
+			return new SolutionProxy (solution).GetAllProjects ();
+		}
 	}
 }
 

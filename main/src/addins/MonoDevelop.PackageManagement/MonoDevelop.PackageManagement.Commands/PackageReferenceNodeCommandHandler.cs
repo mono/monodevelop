@@ -93,9 +93,7 @@ namespace MonoDevelop.PackageManagement.Commands
 					IncludePrerelease = !packageReferenceNode.IsReleaseVersion ()
 				};
 
-				// TODO - No updates available status bar message.
-				//ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
-				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, packageReferenceNode.Project);
 				UpdatePackage (progressMessage, action);
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
