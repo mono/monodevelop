@@ -292,7 +292,6 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		internal void Update (PropertyDescriptorCollection properties, object instance)
 		{
-			EndEditing ();
 			foreach (PropertyDescriptor pd in properties)
 				UpdateProperty (pd, instance, rows);
 			QueueDraw ();
@@ -783,7 +782,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			base.OnDragLeave (context, time_);
 		}
 
-		void EndEditing ()
+		internal void EndEditing ()
 		{
 			if (editSession != null) {
 				Remove (currentEditor);
