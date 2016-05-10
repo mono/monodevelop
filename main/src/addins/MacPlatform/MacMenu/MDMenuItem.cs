@@ -190,7 +190,11 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 			if (!String.IsNullOrWhiteSpace (fileName)) {
 				item.ToolTip = fileName;
-				var icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
+				Xwt.Drawing.Image icon = null;
+				if (!info.Icon.IsNull)
+					icon = Ide.ImageService.GetIcon (info.Icon, Gtk.IconSize.Menu);
+				if (icon == null)
+					icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
 				if (icon != null) {
 					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
 
