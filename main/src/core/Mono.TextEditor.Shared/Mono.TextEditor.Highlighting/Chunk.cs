@@ -27,10 +27,11 @@
 
 using System;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class Chunk
+	public class Chunk : ISegment
 	{
 		public Chunk Next {
 			get;
@@ -81,11 +82,6 @@ namespace Mono.TextEditor
 			this.Length = length;
 		}
 
-		public static implicit operator TextSegment (Chunk chunk)
-		{
-			return new TextSegment (chunk.Offset, chunk.Length);
-		}
-		
 		public override string ToString ()
 		{
 			return string.Format ("[Chunk: Style={0}, Offset={1}, Length={2}]", Style, Offset, Length);

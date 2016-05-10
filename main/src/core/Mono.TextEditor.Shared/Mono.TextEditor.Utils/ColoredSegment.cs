@@ -30,6 +30,7 @@ using Mono.TextEditor.Highlighting;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
 {
@@ -44,7 +45,7 @@ namespace Mono.TextEditor.Utils
 			this.Text = doc.GetTextAt (chunk);
 		}
 
-		public static List<List<ColoredSegment>> GetChunks (TextEditorData data, TextSegment selectedSegment)
+		public static List<List<ColoredSegment>> GetChunks (TextEditorData data, ISegment selectedSegment)
 		{
 			int startLineNumber = data.OffsetToLineNumber (selectedSegment.Offset);
 			int endLineNumber = data.OffsetToLineNumber (selectedSegment.EndOffset);

@@ -30,13 +30,15 @@ using System.Text;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
 	/// <summary>
 	/// A line inside a <see cref="T:Mono.TextEditor.TextDocument"/>.
 	/// </summary>
-	public abstract class DocumentLine
+	public abstract class DocumentLine : IDocumentLine
 	{
 		List<TextLineMarker> markers;
 
@@ -125,11 +127,12 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Gets the text segment of the line including the line delimiter.
 		/// </summary>
-		public TextSegment SegmentIncludingDelimiter {
+		public ISegment SegmentIncludingDelimiter {
 			get {
 				return new TextSegment (Offset, LengthIncludingDelimiter);
 			}
 		}
+
 
 		/// <summary>
 		/// Gets the end offset of the line.
@@ -182,6 +185,19 @@ namespace Mono.TextEditor
 		/// Gets the previous line. Returns null if this is the first line in the document.
 		/// </summary>
 		public abstract DocumentLine PreviousLine { get; }
+
+
+		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.IDocumentLine.PreviousLine {
+			get {
+				return PreviousLine;
+			}
+		}
+
+		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.IDocumentLine.NextLine {
+			get {
+				return NextLine;
+			}
+		}
 
 		protected DocumentLine (int length, UnicodeNewline unicodeNewline)
 		{

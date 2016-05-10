@@ -30,12 +30,13 @@ using Mono.TextEditor.PopupWindow;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
 	class TextLink : IListDataProvider<string>
 	{
-		public TextSegment PrimaryLink {
+		public ISegment PrimaryLink {
 			get {
 				if (links.Count == 0)
 					return TextSegment.Invalid;
@@ -43,9 +44,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		List<TextSegment> links = new List<TextSegment> ();
+		List<ISegment> links = new List<ISegment> ();
 
-		public List<TextSegment> Links {
+		public List<ISegment> Links {
 			get {
 				return links;
 			}
@@ -101,7 +102,7 @@ namespace Mono.TextEditor
 			                      Values.Count);
 		}
 
-		public void AddLink (TextSegment segment)
+		public void AddLink (ISegment segment)
 		{
 			links.Add (segment);
 		}
@@ -221,7 +222,7 @@ namespace Mono.TextEditor
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			int caretOffset = Editor.Caret.Offset - baseOffset;
-			TextLink link = links.Find (l => !l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
+			TextLink link = links.Find (l => !l.PrimaryLink.IsInvalid () && l.PrimaryLink.Offset <= caretOffset && caretOffset <= l.PrimaryLink.EndOffset);
 			if (link != null && link.Count > 0 && link.IsEditable) {
 				if (window != null && window.DataProvider != link) {
 					DestroyWindow ();
@@ -251,7 +252,7 @@ namespace Mono.TextEditor
 		public void StartMode ()
 		{
 			foreach (TextLink link in links) {
-				if (!link.PrimaryLink.IsInvalid)
+				if (!link.PrimaryLink.IsInvalid ())
 					link.CurrentText = Editor.Document.GetTextAt (link.PrimaryLink.Offset + baseOffset, link.PrimaryLink.Length);
 				foreach (TextSegment segment in link.Links) {
 					Editor.Document.EnsureOffsetIsUnfolded (baseOffset + segment.Offset);
@@ -290,7 +291,7 @@ namespace Mono.TextEditor
 
 		void Setlink (TextLink link)
 		{
-			if (link.PrimaryLink.IsInvalid)
+			if (link.PrimaryLink.IsInvalid ())
 				return;
 			Editor.Caret.Offset = baseOffset + link.PrimaryLink.Offset;
 			Editor.ScrollToCaret ();
@@ -346,7 +347,7 @@ namespace Mono.TextEditor
 		void AdjustLinkOffsets (int offset, int delta)
 		{
 			foreach (TextLink link in links) {
-				var newLinks = new List<TextSegment> ();
+				var newLinks = new List<ISegment> ();
 				foreach (var s in link.Links) {
 					if (offset < s.Offset) {
 						newLinks.Add (new TextSegment (s.Offset + delta, s.Length));
@@ -502,7 +503,7 @@ namespace Mono.TextEditor
 			if (!link.IsEditable && link.Values.Count > 0) {
 				link.CurrentText = (string)link.Values [link.Values.Count - 1];
 			} else {
-				if (!link.PrimaryLink.IsInvalid) {
+				if (!link.PrimaryLink.IsInvalid ()) {
 					int offset = link.PrimaryLink.Offset + baseOffset;
 					if (offset >= 0 && link.PrimaryLink.Length >= 0)
 						link.CurrentText = Editor.Document.GetTextAt (offset, link.PrimaryLink.Length);
@@ -564,7 +565,7 @@ namespace Mono.TextEditor
 						x_pos = (int)(x_pos / Pango.Scale.PangoScale);
 						x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
 						Cairo.Color fillGc, rectangleGc;
-						if (segment == link.PrimaryLink) {
+						if (segment.Equals (link.PrimaryLink)) {
 							fillGc = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : editor.ColorStyle.PrimaryTemplate.SecondColor;
 							rectangleGc = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : editor.ColorStyle.PrimaryTemplate.SecondColor;
 						} else {

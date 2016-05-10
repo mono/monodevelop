@@ -1,12 +1,13 @@
 ﻿using Mono.TextEditor;
 using System;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor
 {
 	class SearchInSelectionMarker : TextSegmentMarker
 	{
 
-		public SearchInSelectionMarker (TextSegment textSegment) : base (textSegment)
+		public SearchInSelectionMarker (ISegment textSegment) : base (textSegment)
 		{
 		}
 

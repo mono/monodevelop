@@ -38,6 +38,7 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -717,7 +718,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public TextSegment SelectionRange {
+		public ISegment SelectionRange {
 			get {
 				return textArea.SelectionRange;
 			}
@@ -781,7 +782,7 @@ namespace Mono.TextEditor
 			textArea.Remove (region);
 		}
 		
-		public void Remove (TextSegment removeSegment)
+		public void Remove (ISegment removeSegment)
 		{
 			textArea.Remove (removeSegment);
 		}
@@ -1001,7 +1002,7 @@ namespace Mono.TextEditor
 			return Document.GetTextAt (offset, count);
 		}
 		
-		public string GetTextAt (TextSegment segment)
+		public string GetTextAt (ISegment segment)
 		{
 			return Document.GetTextAt (segment);
 		}
@@ -1126,7 +1127,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public TextSegment SearchRegion {
+		public ISegment SearchRegion {
 			get {
 				return textArea.SearchRegion;
 			}

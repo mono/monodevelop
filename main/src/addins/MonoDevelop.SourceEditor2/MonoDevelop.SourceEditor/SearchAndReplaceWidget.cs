@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 		const int  historyLimit = 20;
 		const string seachHistoryProperty = "MonoDevelop.FindReplaceDialogs.FindHistory";
 		const string replaceHistoryProperty = "MonoDevelop.FindReplaceDialogs.ReplaceHistory";
-		public TextSegment SelectionSegment {
+		public ISegment SelectionSegment {
 			get;
 			set;
 		}
@@ -632,7 +633,7 @@ But I leave it in in the case I've missed something. Mike
 		{
 			base.OnFocusChildSet (widget);
 			var mainResult = textEditor.TextViewMargin.MainSearchResult;
-			textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid &&
+			textEditor.TextViewMargin.HideSelection = widget == table && !mainResult.IsInvalid () &&
 				textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset == mainResult.Offset && textEditor.SelectionRange.EndOffset == mainResult.EndOffset;
 			
 			if (textEditor.TextViewMargin.HideSelection)
@@ -809,7 +810,7 @@ But I leave it in in the case I've missed something. Mike
 				int resultIndex = 0;
 				int foundIndex = -1;
 				int caretOffset = textEditor.Caret.Offset;
-				TextSegment foundSegment = TextSegment.Invalid;
+				ISegment foundSegment = TextSegment.Invalid;
 				foreach (var searchResult in textEditor.TextViewMargin.SearchResults) {
 					if (searchResult.Offset <= caretOffset && caretOffset <= searchResult.EndOffset) {
 						foundIndex = resultIndex + 1;

@@ -27,6 +27,7 @@ using System;
 using Cairo;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -49,7 +50,7 @@ namespace Mono.TextEditor
 		{
 		}
 
-		public TextSegmentMarker (TextSegment textSegment) : base (textSegment)
+		public TextSegmentMarker (ISegment textSegment) : base (textSegment)
 		{
 		}
 		
@@ -76,13 +77,13 @@ namespace Mono.TextEditor
 
 	public class UnderlineTextSegmentMarker : TextSegmentMarker
 	{
-		public UnderlineTextSegmentMarker (Cairo.Color color, TextSegment textSegment) : base (textSegment)
+		public UnderlineTextSegmentMarker (Cairo.Color color, ISegment textSegment) : base (textSegment)
 		{
 			this.Color = color;
 			this.Wave = true;
 		}
 
-		public UnderlineTextSegmentMarker (string colorName, TextSegment textSegment) : base (textSegment)
+		public UnderlineTextSegmentMarker (string colorName, ISegment textSegment) : base (textSegment)
 		{
 			this.ColorName = colorName;
 			this.Wave = true;

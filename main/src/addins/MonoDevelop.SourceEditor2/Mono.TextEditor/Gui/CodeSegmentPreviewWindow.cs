@@ -32,6 +32,7 @@ using Gdk;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -54,7 +55,7 @@ namespace Mono.TextEditor
 			private set;
 		}
 		
-		public TextSegment Segment {
+		public ISegment Segment {
 			get;
 			private set;
 		}
@@ -65,11 +66,11 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public CodeSegmentPreviewWindow (MonoTextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, bool removeIndent = true) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight, removeIndent)
+		public CodeSegmentPreviewWindow (MonoTextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, bool removeIndent = true) : this(editor, hideCodeSegmentPreviewInformString, segment, DefaultPreviewWindowWidth, DefaultPreviewWindowHeight, removeIndent)
 		{
 		}
 		
-		public CodeSegmentPreviewWindow (MonoTextEditor editor, bool hideCodeSegmentPreviewInformString, TextSegment segment, int width, int height, bool removeIndent = true) : base (Gtk.WindowType.Popup)
+		public CodeSegmentPreviewWindow (MonoTextEditor editor, bool hideCodeSegmentPreviewInformString, ISegment segment, int width, int height, bool removeIndent = true) : base (Gtk.WindowType.Popup)
 		{
 			this.HideCodeSegmentPreviewInformString = hideCodeSegmentPreviewInformString;
 			this.Segment = segment;
@@ -96,7 +97,7 @@ namespace Mono.TextEditor
 		
 		const int maxLines = 40;
 		
-		public void SetSegment (TextSegment segment, bool removeIndent)
+		public void SetSegment (ISegment segment, bool removeIndent)
 		{
 			int startLine = editor.Document.OffsetToLineNumber (segment.Offset);
 			int endLine = editor.Document.OffsetToLineNumber (segment.EndOffset);

@@ -26,6 +26,7 @@
 using System;
 using Mono.TextEditor;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Debugger;
 using Pango;
 
@@ -44,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public GenericUnderlineMarker (TextSegment segment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect) : base ("", segment)
+		public GenericUnderlineMarker (ISegment segment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect) : base ("", segment)
 		{
 			this.effect = effect;
 		}

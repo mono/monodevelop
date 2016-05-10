@@ -27,6 +27,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
 {

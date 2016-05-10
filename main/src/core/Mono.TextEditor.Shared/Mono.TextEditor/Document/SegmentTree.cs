@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -221,9 +222,9 @@ namespace Mono.TextEditor
 			return GetSegmentsOverlapping (offset, 0);
 		}
 		
-		public IEnumerable<T> GetSegmentsOverlapping (TextSegment segment)
+		public IEnumerable<T> GetSegmentsOverlapping (ISegment segment)
 		{
-			if (segment.IsInvalid)
+			if (segment.Offset < 0)
 				return Enumerable.Empty<T> ();
 			return GetSegmentsOverlapping (segment.Offset, segment.Length);
 		}
@@ -334,7 +335,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public TextSegment Segment {
+		public ISegment Segment {
 			get {
 				return new TextSegment (Offset, Length);
 			}
@@ -358,7 +359,7 @@ namespace Mono.TextEditor
 			Length = length;
 		}
 
-		public TreeSegment (TextSegment segment) : this (segment.Offset, segment.Length)
+		public TreeSegment (ISegment segment) : this (segment.Offset, segment.Length)
 		{
 		}
 
@@ -367,7 +368,7 @@ namespace Mono.TextEditor
 			return Offset <= offset && offset < EndOffset;
 		}
 
-		public bool Contains (TextSegment segment)
+		public bool Contains (ISegment segment)
 		{
 			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
 		}

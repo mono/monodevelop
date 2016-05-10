@@ -26,6 +26,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -208,7 +209,7 @@ namespace Mono.TextEditor
 					int offset = (fromOffset + i) % args.Text.Length;
 					if (worker != null && worker.CancellationPending)
 						return null; 
-					if (IsMatchAt (offset) && (searchRequest.SearchRegion.IsInvalid || searchRequest.SearchRegion.Contains (offset)))
+					if (IsMatchAt (offset) && (searchRequest.SearchRegion.IsInvalid () || searchRequest.SearchRegion.Contains (offset)))
 						return new SearchResult (offset, searchRequest.SearchPattern.Length, offset < fromOffset);
 				}
 			}
@@ -223,7 +224,7 @@ namespace Mono.TextEditor
 					int offset = (fromOffset + args.Text.Length * 2 - 1 - i) % args.Text.Length;
 					if (worker != null && worker.CancellationPending)
 						return null;
-					if (IsMatchAt (offset) && (searchRequest.SearchRegion.IsInvalid || searchRequest.SearchRegion.Contains (offset)))
+					if (IsMatchAt (offset) && (searchRequest.SearchRegion.IsInvalid () || searchRequest.SearchRegion.Contains (offset)))
 						return new SearchResult (offset, searchRequest.SearchPattern.Length, offset > fromOffset);
 				}
 			}
@@ -240,7 +241,7 @@ namespace Mono.TextEditor
 			var searchResults = new List<SearchResult> ();
 
 			int offset = 0;
-			if (!SearchRequest.SearchRegion.IsInvalid)
+			if (!SearchRequest.SearchRegion.IsInvalid ())
 				offset = SearchRequest.SearchRegion.Offset;
 			SearchResult searchResult; 
 			var text = textEditorData.Text;
@@ -383,7 +384,7 @@ namespace Mono.TextEditor
 			var searchResults = new List<SearchResult> ();
 
 			int offset = 0;
-			if (!SearchRequest.SearchRegion.IsInvalid)
+			if (!SearchRequest.SearchRegion.IsInvalid ())
 				offset = SearchRequest.SearchRegion.Offset;
 			SearchResult searchResult; 
 			var text = textEditorData.Text;

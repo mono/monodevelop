@@ -40,6 +40,7 @@ using Microsoft.CodeAnalysis;
 using Mono.TextEditor;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -269,7 +270,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (start == null || end == null) {
 					return base.OnMotionNotifyEvent (evnt);
 				}
-				var showSegment = new Mono.TextEditor.TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
+				var showSegment = new TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
 
 				if (previewWindow != null) {
 					previewWindow.SetSegment (showSegment, false);
@@ -400,10 +401,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		{
 
 			QuickTaskOverviewMode strip;
-			Mono.TextEditor.TextSegment segment;
+			ISegment segment;
 			int w, y;
 
-			public PreviewPopup (QuickTaskOverviewMode strip, Mono.TextEditor.TextSegment segment, int w, int y)
+			public PreviewPopup (QuickTaskOverviewMode strip, ISegment segment, int w, int y)
 			{
 				this.strip = strip;
 				this.segment = segment;
@@ -834,7 +835,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 
 
-		protected void DrawSearchResults (Cairo.Context cr, IEnumerator<TextSegment> searchResults, ref bool nextStep)
+		protected void DrawSearchResults (Cairo.Context cr, IEnumerator<ISegment> searchResults, ref bool nextStep)
 		{
 			if (!searchResults.MoveNext ()) {
 				nextStep = true;
@@ -844,7 +845,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			int line = TextEditor.OffsetToLineNumber (region.Offset);
 			double y = GetYPosition (line);
 			bool isMainSelection = false;
-			if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid)
+			if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid ())
 				isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
 			cr.SetSourceColor (isMainSelection ? TextEditor.ColorStyle.SearchResultMain.Color : TextEditor.ColorStyle.SearchResult.Color);
 			cr.Rectangle (barPadding, Math.Round (y) - 1, Allocation.Width - barPadding * 2, 2);
@@ -922,7 +923,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 
 			int drawingStep;
 			DiagnosticSeverity severity = DiagnosticSeverity.Hidden;
-			IEnumerator<TextSegment> searchResults;
+			IEnumerator<ISegment> searchResults;
 			IEnumerator<Usage> allUsages;
 			IEnumerator<QuickTask> allTasks;
 

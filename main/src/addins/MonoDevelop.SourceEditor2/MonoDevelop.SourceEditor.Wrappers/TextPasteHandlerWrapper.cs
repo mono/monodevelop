@@ -24,6 +24,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.TextEditor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -60,7 +61,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return textPasteHandler.FormatPlainText (offset, text, copyData);
 		}
 
-		byte[] Mono.TextEditor.ITextPasteHandler.GetCopyData (TextSegment segment)
+		byte[] Mono.TextEditor.ITextPasteHandler.GetCopyData (ISegment segment)
 		{
 			return textPasteHandler.GetCopyData (segment.Offset, segment.Length);
 		}

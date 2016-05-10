@@ -26,11 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using MonoDevelop.Core.Text;
+
 namespace Mono.TextEditor
 {
 	public class SearchResult
 	{
-		public TextSegment Segment { get; set; }
+		public ISegment Segment { get; set; }
 		public bool SearchWrapped { get; set; }
 		
 		public int Offset {
@@ -51,7 +53,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public SearchResult (TextSegment segment, bool searchWrapped)
+		public SearchResult (ISegment segment, bool searchWrapped)
 		{
 			this.Segment = segment;
 			this.SearchWrapped = searchWrapped;

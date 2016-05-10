@@ -28,6 +28,7 @@
 //
 
 using System;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {

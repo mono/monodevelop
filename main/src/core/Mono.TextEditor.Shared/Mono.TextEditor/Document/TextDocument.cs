@@ -34,6 +34,7 @@ using System.Linq;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -251,7 +252,7 @@ namespace Mono.TextEditor
 			Replace (offset, count, null);
 		}
 		
-		public void Remove (TextSegment segment)
+		public void Remove (ISegment segment)
 		{
 			Remove (segment.Offset, segment.Length);
 		}
@@ -350,7 +351,7 @@ namespace Mono.TextEditor
 			return GetTextAt (region.GetSegment (this));
 		}
 
-		public string GetTextAt (TextSegment segment)
+		public string GetTextAt (ISegment segment)
 		{
 			return GetTextAt (segment.Offset, segment.Length);
 		}
@@ -1466,7 +1467,7 @@ namespace Mono.TextEditor
 			return textSegmentMarkerTree.GetSegmentsOverlapping (line.Segment);
 		}
 
-		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (TextSegment segment)
+		public IEnumerable<TextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment)
 		{
 			return textSegmentMarkerTree.GetSegmentsOverlapping (segment);
 		}
@@ -1522,7 +1523,7 @@ namespace Mono.TextEditor
 			return new TextSegment (0, TextLength).Contains (offset);
 		}
 		
-		public bool Contains (TextSegment segment)
+		public bool Contains (ISegment segment)
 		{
 			return new TextSegment (0, TextLength).Contains (segment);
 		}

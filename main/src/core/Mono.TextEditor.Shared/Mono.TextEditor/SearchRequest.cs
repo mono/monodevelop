@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -70,8 +71,8 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		TextSegment searchRegion = TextSegment.Invalid;
-		public TextSegment SearchRegion {
+		ISegment searchRegion = TextSegment.Invalid;
+		public ISegment SearchRegion {
 			get {
 				return searchRegion;
 			}

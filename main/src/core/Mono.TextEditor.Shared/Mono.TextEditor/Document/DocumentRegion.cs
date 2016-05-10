@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -131,7 +132,7 @@ namespace Mono.TextEditor
 			return !left.Equals(right);
 		}
 
-		public TextSegment GetSegment (TextDocument document)
+		public ISegment GetSegment (TextDocument document)
 		{
 			if (document == null)
 				throw new System.ArgumentNullException ("document");

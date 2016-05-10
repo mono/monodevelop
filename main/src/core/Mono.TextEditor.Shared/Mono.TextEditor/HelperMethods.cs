@@ -32,12 +32,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
 	public static class PublicHelperMethods
 	{
-		public static TextSegment AdjustSegment (this TextSegment segment, DocumentChangeEventArgs args)
+		public static ISegment AdjustSegment (this ISegment segment, DocumentChangeEventArgs args)
 		{
 			if (args.Offset < segment.Offset)
 				return new TextSegment (segment.Offset + args.ChangeDelta, segment.Length);
@@ -45,7 +46,7 @@ namespace Mono.TextEditor
 				return new TextSegment (segment.Offset, segment.Length);
 			return segment;
 		}
-		public static IEnumerable<TextSegment> AdjustSegments (this IEnumerable<TextSegment> segments, DocumentChangeEventArgs args)
+		public static IEnumerable<ISegment> AdjustSegments (this IEnumerable<ISegment> segments, DocumentChangeEventArgs args)
 		{
 			foreach (var segment in segments) {
 				yield return segment.AdjustSegment (args);

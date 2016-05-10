@@ -31,6 +31,7 @@ using System.IO;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
 using Xwt.Drawing;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -450,7 +451,7 @@ namespace Mono.TextEditor
 			Replace (offset, count, null);
 		}
 		
-		public void Remove (TextSegment removeSegment)
+		public void Remove (ISegment removeSegment)
 		{
 			Remove (removeSegment.Offset, removeSegment.Length);
 		}
@@ -848,14 +849,14 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Gets or sets the selection range. If nothing is selected (Caret.Offset, 0) is returned.
 		/// </summary>
-		public TextSegment SelectionRange {
+		public ISegment SelectionRange {
 			get {
 				return !MainSelection.IsEmpty ? MainSelection.GetSelectionRange (this) : new TextSegment (Caret.Offset, 0);
 			}
 			set {
 				if (SelectionRange != value) {
 					OnSelectionChanging (EventArgs.Empty);
-					if (value.IsEmpty) {
+					if (value.Length == 0) {
 						MainSelection = Selection.Empty;
 					} else {
 						DocumentLocation loc1 = document.OffsetToLocation (value.Offset);
@@ -1378,7 +1379,7 @@ namespace Mono.TextEditor
 			return document.GetTextAt (region);
 		}
 
-		public string GetTextAt (TextSegment segment)
+		public string GetTextAt (ISegment segment)
 		{
 			return document.GetTextAt (segment);
 		}

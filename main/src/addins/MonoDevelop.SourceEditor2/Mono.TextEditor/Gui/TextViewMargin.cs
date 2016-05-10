@@ -39,6 +39,7 @@ using System.Timers;
 using System.Diagnostics;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -168,7 +169,7 @@ namespace Mono.TextEditor
 			}
 			
 			if (selectedRegions.Count > 0) {
-				this.selectedRegions = new List<TextSegment> (this.selectedRegions.AdjustSegments (e));
+				this.selectedRegions = new List<ISegment> (this.selectedRegions.AdjustSegments (e));
 				RefreshSearchMarker ();
 			}
 		}
@@ -207,7 +208,7 @@ namespace Mono.TextEditor
 
 			public int LastLine { get; set; }
 
-			public List<TextSegment> OldRegions { get; set; }
+			public List<ISegment> OldRegions { get; set; }
 
 			public ISearchEngine Engine { get; set; }
 
@@ -245,8 +246,8 @@ namespace Mono.TextEditor
 		{
 			SearchWorkerArguments args = (SearchWorkerArguments)e.Argument;
 			System.ComponentModel.BackgroundWorker worker = (System.ComponentModel.BackgroundWorker)sender;
-			List<TextSegment> newRegions = new List<TextSegment> ();
-			int offset = args.Engine.SearchRequest.SearchRegion.IsInvalid ? 0 : args.Engine.SearchRequest.SearchRegion.Offset;
+			var newRegions = new List<ISegment> ();
+			int offset = args.Engine.SearchRequest.SearchRegion.IsInvalid () ? 0 : args.Engine.SearchRequest.SearchRegion.Offset;
 			do {
 				if (worker.CancellationPending)
 					return;
@@ -297,11 +298,11 @@ namespace Mono.TextEditor
 			});
 		}
 
-		void UpdateRegions (IEnumerable<TextSegment> regions, SearchWorkerArguments args)
+		void UpdateRegions (IEnumerable<ISegment> regions, SearchWorkerArguments args)
 		{
 			HashSet<int> updateLines = new HashSet<int> ();
 
-			foreach (TextSegment region in regions) {
+			foreach (var region in regions) {
 				int lineNumber = Document.OffsetToLineNumber (region.Offset);
 				if (lineNumber > args.LastLine || lineNumber < args.FirstLine)
 					continue;
@@ -672,7 +673,7 @@ namespace Mono.TextEditor
 			selectionStart = -1;
 			selectionEnd = -1;
 			if (textEditor.IsSomethingSelected) {
-				TextSegment segment = textEditor.SelectionRange;
+				var segment = textEditor.SelectionRange;
 				selectionStart = segment.Offset;
 				selectionEnd = segment.EndOffset;
 
@@ -1636,11 +1637,11 @@ namespace Mono.TextEditor
 			}
 
 			// highlight search results
-			TextSegment firstSearch;
+			ISegment firstSearch;
 			int o = offset;
 			uint curIndex = 0, byteIndex = 0;
 			if (textEditor.HighlightSearchPattern) {
-				while (!(firstSearch = GetFirstSearchResult (o, offset + length)).IsInvalid) {
+				while (!(firstSearch = GetFirstSearchResult (o, offset + length)).IsInvalid ()) {
 					double x = position;
 					HandleSelection (lineOffset, logicalRulerColumn, selectionStartOffset, selectionEndOffset, System.Math.Max (lineOffset, firstSearch.Offset), System.Math.Min (lineOffset + line.Length, firstSearch.EndOffset), delegate(int start, int end) {
 						uint startIndex = (uint)(start - offset);
@@ -1656,7 +1657,7 @@ namespace Mono.TextEditor
 							int s = (int) System.Math.Floor (x1 / Pango.Scale.PangoScale + x);
 							double corner = System.Math.Min (4, width) * textEditor.Options.Zoom;
 
-							cr.SetSourceColor (MainSearchResult.IsInvalid || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchResult.Color : ColorStyle.SearchResultMain.Color);
+							cr.SetSourceColor (MainSearchResult.IsInvalid () || MainSearchResult.Offset != firstSearch.Offset ? ColorStyle.SearchResult.Color : ColorStyle.SearchResultMain.Color);
 							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, s, y, corner, w + 1, LineHeight);
 							cr.Fill ();
 						}
@@ -1766,7 +1767,7 @@ namespace Mono.TextEditor
 				layout.Dispose ();
 		}
 
-		TextSegment GetFirstSearchResult (int startOffset, int endOffset)
+		ISegment GetFirstSearchResult (int startOffset, int endOffset)
 		{
 			if (startOffset < endOffset && this.selectedRegions.Count > 0) {
 				var region = new TextSegment (startOffset, endOffset - startOffset);
@@ -1774,11 +1775,11 @@ namespace Mono.TextEditor
 				int max = selectedRegions.Count - 1;
 				do {
 					int mid = (min + max) / 2;
-					TextSegment segment = selectedRegions [mid];
+					var segment = selectedRegions [mid];
 					if (segment.Contains (startOffset) || segment.Contains (endOffset) || region.Contains (segment)) {
 						if (mid == 0)
 							return segment;
-						TextSegment prevSegment = selectedRegions [mid - 1];
+						var prevSegment = selectedRegions [mid - 1];
 						if (!(prevSegment.Contains (startOffset) || prevSegment.Contains (endOffset) || region.Contains (prevSegment)))
 							return segment;
 						max = mid - 1;
@@ -1985,7 +1986,7 @@ namespace Mono.TextEditor
 			
 			// disable middle click on windows.
 			if (!Platform.IsWindows && args.Button == 2 && this.textEditor.CanEdit (docLocation.Line)) {
-				TextSegment selectionRange = TextSegment.Invalid;
+				ISegment selectionRange = TextSegment.Invalid;
 				int offset = Document.LocationToOffset (docLocation);
 				if (!selection.IsEmpty)
 					selectionRange = selection.GetSelectionRange (this.textEditor.GetTextEditorData ());
@@ -2001,7 +2002,7 @@ namespace Mono.TextEditor
 
 				ClipboardActions.PasteFromPrimary (textEditor.GetTextEditorData (), offset);
 				textEditor.Caret.Offset = oldOffset;
-				if (!selectionRange.IsInvalid)
+				if (!selectionRange.IsInvalid ())
 					textEditor.SelectionRange = new TextSegment (oldVersion.MoveOffsetTo (Document.Version, selectionRange.Offset), selectionRange.Length);
 
 				if (autoScroll)
@@ -2108,13 +2109,13 @@ namespace Mono.TextEditor
 
 		uint codeSegmentTooltipTimeoutId = 0;
 
-		void ShowTooltip (TextSegment segment, Rectangle hintRectangle)
+		void ShowTooltip (ISegment segment, Rectangle hintRectangle)
 		{
-			if (previewWindow != null && previewWindow.Segment == segment)
+			if (previewWindow != null && previewWindow.Segment.Equals (segment))
 				return;
 			CancelCodeSegmentTooltip ();
 			HideCodeSegmentPreviewWindow ();
-			if (segment.IsInvalid || segment.Length == 0)
+			if (segment.IsInvalid () || segment.Length == 0)
 				return;
 			codeSegmentTooltipTimeoutId = GLib.Timeout.Add (650, delegate {
 				previewWindow = new CodeSegmentPreviewWindow (textEditor, false, segment);
@@ -2504,7 +2505,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		List<TextSegment> selectedRegions = new List<TextSegment> ();
+		List<ISegment> selectedRegions = new List<ISegment> ();
 
 		public int SearchResultMatchCount {
 			get {
@@ -2512,15 +2513,15 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public IEnumerable<TextSegment> SearchResults {
+		public IEnumerable<ISegment> SearchResults {
 			get {
 				return selectedRegions;
 			}
 		}
 
-		TextSegment mainSearchResult;
+		ISegment mainSearchResult;
 
-		public TextSegment MainSearchResult {
+		public ISegment MainSearchResult {
 			get {
 				return mainSearchResult;
 			}

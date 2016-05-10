@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Vi
 {
@@ -258,13 +259,13 @@ namespace Mono.TextEditor.Vi
 			public DocumentLine StartLine, EndLine;
 			bool IsSameLine { get { return StartLine == EndLine; } }
 
-			public TextSegment GetInnerTextSegment()
+			public ISegment GetInnerTextSegment()
 			{
 				var length = IsSameLine ? EndOffset - StartOffset : EndLine.PreviousLine.EndOffset - StartOffset;
 				return new TextSegment (StartOffset + 1, length - 1);
 			}
 
-			public TextSegment GetOuterTextSegment ()
+			public ISegment GetOuterTextSegment ()
 			{
 				return new TextSegment (StartOffset, (EndOffset - StartOffset) + 1);
 			}

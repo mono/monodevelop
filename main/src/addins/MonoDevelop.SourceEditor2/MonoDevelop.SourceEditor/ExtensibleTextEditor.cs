@@ -47,6 +47,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.SourceEditor.Wrappers;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -595,7 +596,7 @@ namespace MonoDevelop.SourceEditor
 				var result = template.InsertTemplateContents (editor, context);
 
 				var links = result.TextLinks.Select (l => new Mono.TextEditor.TextLink (l.Name) {
-					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList (),
+					Links = l.Links.Select (s => (ISegment)new TextSegment (s.Offset, s.Length)).ToList (),
 					IsEditable = l.IsEditable,
 					IsIdentifier = l.IsIdentifier
 				}).ToList ();

@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor
 
 		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
 			get {
-				return new DocumentLineWrapper (LineSegment);
+				return LineSegment;
 			}
 		}
 	}

@@ -68,21 +68,21 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			var handler = LineRemoved;
 			if (handler != null)
-				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (e.Line));
 		}
 
 		void Document_LineInserted (object sender, Mono.TextEditor.LineEventArgs e)
 		{
 			var handler = LineInserted;
 			if (handler != null)
-				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (e.Line));
 		}
 
 		void Document_LineChanged (object sender, Mono.TextEditor.LineEventArgs e)
 		{
 			var handler = LineChanged;
 			if (handler != null)
-				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (e.Line));
 		}
 
 		void HandleTextReplacing (object sender, DocumentChangeEventArgs e)
@@ -271,14 +271,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		IDocumentLine IReadonlyTextDocument.GetLine (int lineNumber)
 		{
-			var line = document.GetLine (lineNumber);
-			return line != null ? new DocumentLineWrapper (line) : null;
+			return document.GetLine (lineNumber);
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLineByOffset (int offset)
 		{
-			var line = document.GetLineByOffset (offset);
-			return line != null ? new DocumentLineWrapper (line) : null;
+			return document.GetLineByOffset (offset);
 		}
 
 		bool IReadonlyTextDocument.IsReadOnly {

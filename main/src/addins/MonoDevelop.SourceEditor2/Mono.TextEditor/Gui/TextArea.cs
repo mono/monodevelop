@@ -45,6 +45,7 @@ using GLib;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -2010,7 +2011,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public TextSegment SelectionRange {
+		public ISegment SelectionRange {
 			get {
 				return this.textEditorData.SelectionRange;
 			}
@@ -2074,7 +2075,7 @@ namespace Mono.TextEditor
 			textEditorData.Remove (region);
 		}
 		
-		public void Remove (TextSegment removeSegment)
+		public void Remove (ISegment removeSegment)
 		{
 			textEditorData.Remove (removeSegment);
 		}
@@ -2214,7 +2215,7 @@ namespace Mono.TextEditor
 		}
 
 
-		public string GetTextAt (TextSegment segment)
+		public string GetTextAt (ISegment segment)
 		{
 			return Document.GetTextAt (segment);
 		}
@@ -2347,7 +2348,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public TextSegment SearchRegion {
+		public ISegment SearchRegion {
 			get {
 				return this.textEditorData.SearchRequest.SearchRegion;
 			}
@@ -2549,7 +2550,7 @@ namespace Mono.TextEditor
 				return;
 			
 			TextViewMargin.MainSearchResult = result.Segment;
-			if (!TextViewMargin.MainSearchResult.IsInvalid) {
+			if (!TextViewMargin.MainSearchResult.IsInvalid ()) {
 				if (popupWindow != null) {
 					popupWindow.StopPlaying ();
 					popupWindow.Destroy ();
@@ -2789,7 +2790,7 @@ namespace Mono.TextEditor
 				if (xloc >= wx && xloc < tipX + ww && yloc >= tipY && yloc < tipY + 20 + wh)
 					return;
 			}
-			if (tipItem != null && !tipItem.ItemSegment.IsInvalid && !tipItem.ItemSegment.Contains (offset)) 
+			if (tipItem != null && !tipItem.ItemSegment.IsInvalid () && !tipItem.ItemSegment.Contains (offset)) 
 				HideTooltip ();
 			nextTipX = xloc;
 			nextTipY = yloc;

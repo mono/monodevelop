@@ -417,5 +417,12 @@ namespace MonoDevelop.Core.Text
 				yield return segment.AdjustSegment (args);
 			}
 		}
+
+		public static bool IsInvalid (this ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException (nameof (segment));
+			return segment.Offset < 0;
+		}
 	}
 }

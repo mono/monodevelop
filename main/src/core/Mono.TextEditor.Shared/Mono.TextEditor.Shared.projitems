@@ -29,7 +29,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SharpDevelopWordFindStrategy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SyntaxModeChangeEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\TextDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\TextSegment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Vi\ViActions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\AmbientColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Chunk.cs" />
@@ -64,7 +63,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextChangeEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextAnchor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextSourceVersion.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UnicodeNewline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextPasteHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\IIndentationTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISelectionSurroundingProvider.cs" />
@@ -98,7 +96,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SimpleEditMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Styles.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\StyleTextLineMarker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextEditorData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextEditorOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLineMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLinkEditMode.cs" />
@@ -106,6 +103,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextSegmentMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UnderlineMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UrlMarker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextEditorData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\" />

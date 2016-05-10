@@ -1,5 +1,6 @@
 using System;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
@@ -110,7 +111,7 @@ namespace Mono.TextEditor
 			return new Selection (Anchor, Lead, newSelectionMode);
 		}
 
-		public TextSegment GetSelectionRange (TextEditorData data)
+		public ISegment GetSelectionRange (TextEditorData data)
 		{
 			int anchorOffset = GetAnchorOffset (data);
 			int leadOffset = GetLeadOffset (data);

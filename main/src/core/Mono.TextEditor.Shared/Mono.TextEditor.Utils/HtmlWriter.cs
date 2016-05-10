@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
 {

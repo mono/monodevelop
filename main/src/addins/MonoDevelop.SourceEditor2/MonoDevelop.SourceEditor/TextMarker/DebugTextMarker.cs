@@ -265,7 +265,7 @@ namespace MonoDevelop.SourceEditor
 
 		public bool IsVisible { get { return IconMarker.IsVisible; } set { IconMarker.IsVisible = value; } }
 
-		IDocumentLine ITextLineMarker.Line { get { return new DocumentLineWrapper (IconMarker.LineSegment); } }
+		IDocumentLine ITextLineMarker.Line { get { return IconMarker.LineSegment; } }
 
 		public object Tag { get { return IconMarker.Tag; } set { IconMarker.Tag = value; } }
 	}

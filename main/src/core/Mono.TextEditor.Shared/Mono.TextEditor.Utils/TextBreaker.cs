@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
 {
@@ -49,7 +50,7 @@ namespace Mono.TextEditor.Utils
 		/// <param name='lineCount'>
 		/// The number of lines to get words from
 		/// </param>
-		public static List<TextSegment> BreakLinesIntoWords (MonoTextEditor editor, int startLine, int lineCount, bool includeDelimiter = true)
+		public static List<ISegment> BreakLinesIntoWords (MonoTextEditor editor, int startLine, int lineCount, bool includeDelimiter = true)
 		{
 			return BreakLinesIntoWords (editor.Document, startLine, lineCount, includeDelimiter);
 		}
@@ -71,9 +72,9 @@ namespace Mono.TextEditor.Utils
 		/// <param name='lineCount'>
 		/// The number of lines to get words from
 		/// </param>
-		public static List<TextSegment> BreakLinesIntoWords (TextDocument document, int startLine, int lineCount, bool includeDelimiter = true)
+		public static List<ISegment> BreakLinesIntoWords (TextDocument document, int startLine, int lineCount, bool includeDelimiter = true)
 		{
-			var result = new List<TextSegment> ();
+			var result = new List<ISegment> ();
 			for (int line = startLine; line < startLine + lineCount; line++) {
 				var lineSegment = document.GetLine (line);
 				int offset = lineSegment.Offset;

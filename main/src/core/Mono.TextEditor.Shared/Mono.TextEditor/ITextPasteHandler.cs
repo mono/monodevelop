@@ -23,6 +23,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core.Text;
+
 namespace Mono.TextEditor
 {
 	/// <summary>
@@ -46,6 +48,6 @@ namespace Mono.TextEditor
 		/// Gets the copy data for a specific segment inside the document. This can contain additional information.
 		/// </summary>
 		/// <param name="segment">The text segment that is about to be copied.</param>
-		byte [] GetCopyData (TextSegment segment);
+		byte [] GetCopyData (ISegment segment);
 	}
 }

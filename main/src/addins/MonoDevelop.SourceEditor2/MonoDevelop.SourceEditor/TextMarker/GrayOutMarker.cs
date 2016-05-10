@@ -28,12 +28,13 @@ using System;
 using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor
 {
 	class GrayOutMarker : UnderlineTextSegmentMarker, IChunkMarker, MonoDevelop.Ide.Editor.IGenericTextSegmentMarker
 	{
-		public GrayOutMarker (TextSegment segment) : base ("", segment)
+		public GrayOutMarker (ISegment segment) : base ("", segment)
 		{
 		}
 

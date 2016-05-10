@@ -38,6 +38,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -698,7 +699,7 @@ namespace MonoDevelop.SourceEditor
 
 		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
 			get {
-				return new DocumentLineWrapper (base.LineSegment);
+				return base.LineSegment;
 			}
 		}
 
