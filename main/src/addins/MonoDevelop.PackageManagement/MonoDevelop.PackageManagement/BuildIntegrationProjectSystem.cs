@@ -12,7 +12,6 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject
 	{
-		DotNetProject project;
 		IPackageManagementEvents packageManagementEvents;
 
 		public BuildIntegratedProjectSystem (
@@ -22,16 +21,14 @@ namespace MonoDevelop.PackageManagement
 			string uniqueName)
 			: base (jsonConfigPath, msbuildProjectSystem)
 		{
-			this.project = project;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 		}
 
 		public override Task<bool> ExecuteInitScriptAsync (PackageIdentity identity, string packageInstallPath, INuGetProjectContext projectContext, bool throwOnFailure)
 		{
-			// Not supported. Report this as a warning.
-			packageManagementEvents.OnPackageOperationMessageLogged (NuGet.MessageLevel.Warning, "PowerShell script init.ps1 is not supported.");
-
-			return Task.FromResult (true);
+			// Not supported. This gets called for every NuGet package
+			// even if they do not have an init.ps1 so do not report this.
+			return Task.FromResult (false);
 		}
 
 		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, System.Threading.CancellationToken token)
