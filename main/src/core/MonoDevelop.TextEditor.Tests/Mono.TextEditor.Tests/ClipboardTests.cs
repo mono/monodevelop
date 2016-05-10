@@ -27,6 +27,7 @@ using System;
 using NUnit.Framework;
 using System.Linq;
 using Gtk;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Tests
 {
@@ -40,7 +41,7 @@ namespace Mono.TextEditor.Tests
 			return "Hello World";
 		}
 
-		public byte[] GetCopyData (TextSegment segment)
+		public byte[] GetCopyData (ISegment segment)
 		{
 			return null;
 		}

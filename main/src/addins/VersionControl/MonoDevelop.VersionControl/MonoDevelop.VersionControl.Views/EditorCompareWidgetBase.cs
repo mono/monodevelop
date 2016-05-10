@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -274,12 +275,12 @@ namespace MonoDevelop.VersionControl.Views
 			diffCache.Clear ();
 		}
 		
-		static List<TextSegment> BreakTextInWords (MonoTextEditor editor, int start, int count)
+		static List<ISegment> BreakTextInWords (MonoTextEditor editor, int start, int count)
 		{
 			return TextBreaker.BreakLinesIntoWords(editor, start, count);
 		}
 		
-		static List<Cairo.Rectangle> CalculateChunkPath (MonoTextEditor editor, List<Hunk> diff, List<TextSegment> words, bool useRemove)
+		static List<Cairo.Rectangle> CalculateChunkPath (MonoTextEditor editor, List<Hunk> diff, List<ISegment> words, bool useRemove)
 		{
 			List<Cairo.Rectangle> result = new List<Cairo.Rectangle> ();
 			int startOffset = -1;

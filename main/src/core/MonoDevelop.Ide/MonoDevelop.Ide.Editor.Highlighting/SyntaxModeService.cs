@@ -248,7 +248,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxModeService ()
 		{
-			var textEditorAssembly = Assembly.Load ("Mono.TextEditor");
+			var textEditorAssembly = Assembly.Load ("MonoDevelop.SourceEditor");
 			if (textEditorAssembly != null) {
 				LoadStylesAndModes (textEditorAssembly);
 			} else {

@@ -26,6 +26,7 @@
 //
 
 using System;
+using MonoDevelop.Core.Text;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests.Actions

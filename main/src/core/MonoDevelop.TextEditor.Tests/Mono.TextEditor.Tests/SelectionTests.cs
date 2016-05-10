@@ -27,6 +27,7 @@
 
 using System;
 using System.Linq;
+using MonoDevelop.Core.Text;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests
@@ -39,7 +40,7 @@ namespace Mono.TextEditor.Tests
 			return new TextEditorData (new TextDocument (content));
 		}
 
-		static TextSegment GetSelection (TextEditorData data, bool reverse)
+		static ISegment GetSelection (TextEditorData data, bool reverse)
 		{
 			int offset1 = data.Document.Text.IndexOf ('[');
 			int offset2 = data.Document.Text.IndexOf (']');

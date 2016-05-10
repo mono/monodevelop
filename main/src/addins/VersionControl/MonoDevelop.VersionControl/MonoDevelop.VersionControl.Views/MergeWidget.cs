@@ -33,6 +33,7 @@ using Mono.TextEditor.Utils;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void Load (string fileName)
 		{
 			MainEditor.Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
-			MainEditor.Document.Text = TextFileUtility.ReadAllText (fileName);
+			MainEditor.Document.Text = StringTextSource.ReadFrom (fileName).Text;
 
 			this.CreateDiff ();
 			Show ();
@@ -150,14 +151,14 @@ namespace MonoDevelop.VersionControl.Views
 
 		class Conflict
 		{
-			public TextSegment MySegment;
-			public TextSegment TheirSegment;
+			public ISegment MySegment;
+			public ISegment TheirSegment;
 
-			public TextSegment StartSegment;
-			public TextSegment DividerSegment;
-			public TextSegment EndSegment;
+			public ISegment StartSegment;
+			public ISegment DividerSegment;
+			public ISegment EndSegment;
 
-			public Conflict (TextSegment mySegment, TextSegment theirSegment, TextSegment startSegment, TextSegment dividerSegment, TextSegment endSegment)
+			public Conflict (ISegment mySegment, ISegment theirSegment, ISegment startSegment, ISegment dividerSegment, ISegment endSegment)
 			{
 				this.MySegment = mySegment;
 				this.TheirSegment = theirSegment;

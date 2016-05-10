@@ -99,7 +99,7 @@ namespace Mono.TextEditor.Tests
 			Assert.AreEqual (document.Text, testText);
 			
 			document.Remove (0, document.TextLength);
-			DocumentLine line = document.GetLine (1);
+			var line = document.GetLine (1);
 			Assert.AreEqual (0, line.Offset);
 			Assert.AreEqual (0, line.LengthIncludingDelimiter);
 			Assert.AreEqual (0, document.TextLength);
@@ -118,7 +118,7 @@ namespace Mono.TextEditor.Tests
 			
 			document.Remove(0, document.TextLength);
 			
-			DocumentLine line = document.GetLine (1);
+			var line = document.GetLine (1);
 			Assert.AreEqual(0, line.Offset);
 			Assert.AreEqual(0, line.LengthIncludingDelimiter);
 			Assert.AreEqual(0, document.TextLength);
