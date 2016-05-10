@@ -86,9 +86,6 @@ namespace MonoDevelop.Components
 		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
 
-		[DllImport (PangoUtil.LIBQUARTZ)]
-		static extern bool gdk_window_has_embedded_nsview_focus (IntPtr window);
-
 		struct CGRect32
 		{
 			public float X, Y, Width, Height;
@@ -866,19 +863,6 @@ namespace MonoDevelop.Components
 
 			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
 			objc_msgSend_IntPtr (ptr, sel_invalidateShadow);
-		}
-
-		public static bool HasNSTextFieldFocus (Gdk.Window window)
-		{
-			if (Platform.IsMac) {
-				try {
-					return gdk_window_has_embedded_nsview_focus (window.Handle);
-				} catch (Exception) {
-					return false;
-				}
-			} else {
-				return false;
-			}
 		}
 
 		[DllImport (PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
