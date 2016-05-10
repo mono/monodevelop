@@ -176,9 +176,17 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 			string fileName = null;
 			var doc = info.DataItem as Ide.Gui.Document;
-			if (doc != null)
-				fileName = doc.FileName;
-			else if (info.DataItem is NavigationHistoryItem) {
+			if (doc != null) {
+				if (doc.IsFile)
+					fileName = doc.FileName;
+				else {
+					// Designer documents have no file bound to them, but the document name
+					// could be a valid path
+					var docName = doc.Name;
+					if (!string.IsNullOrEmpty (docName) && System.IO.Path.IsPathRooted (docName) && System.IO.File.Exists (docName))
+						fileName = docName;
+				}
+			} else if (info.DataItem is NavigationHistoryItem) {
 					var navDoc = ((NavigationHistoryItem)info.DataItem).NavigationPoint as DocumentNavigationPoint;
 					if (navDoc != null)
 						fileName = navDoc.FileName;
