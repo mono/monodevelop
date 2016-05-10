@@ -5,11 +5,13 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.Collections.Generic
 open System.IO
 open System.Diagnostics
 open System.Reflection
 open System.Globalization
 open System.Runtime.Versioning
+open System.Threading
 open Microsoft.FSharp.Reflection
 open MonoDevelop.Projects
 open MonoDevelop.Ide.Gui
@@ -56,11 +58,11 @@ module CompilerArguments =
 
       let getAssemblyLocations (reference:ProjectReference) =
           let tryGetFromHintPath() =
-              if reference.HintPath.IsNotNull then 
+              if reference.HintPath.IsNotNull then
                   let path = reference.HintPath.FullPath |> string
                   let path = path.Replace("/Library/Frameworks/Mono.framework/External",
                                           "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono")
-                  if File.Exists path then 
+                  if File.Exists path then
                       [path]
                   else
                       // try and resolve from GAC
@@ -74,9 +76,9 @@ module CompilerArguments =
           | ReferenceType.Package ->
               if isNull reference.Package then
                   tryGetFromHintPath()
-              else 
+              else
                   if reference.Include <> "System" then
-                      let assembly = 
+                      let assembly =
                               reference.Package.Assemblies
                               |> Seq.find (fun a -> a.Name = reference.Include)
                       [assembly.Location]
@@ -85,7 +87,7 @@ module CompilerArguments =
                       |> Seq.map (fun a -> a.Location)
                       |> List.ofSeq
 
-          | ReferenceType.Project -> 
+          | ReferenceType.Project ->
               let referencedProject = reference.Project :?> DotNetProject
               let reference =
                   referencedProject.GetReferencedAssemblyProjects (getCurrentConfigurationOrDefault referencedProject)
@@ -167,7 +169,6 @@ module CompilerArguments =
                                                Some (resolved.MainModule.FullyQualifiedName))
 
   let resolutionFailedMessage (n:string) = String.Format ("Resolution: Assembly resolution failed when trying to find default reference for: {0}", n)
-
   /// Generates references for the current project & configuration as a
   /// list of strings of the form [ "-r:<full-path>"; ... ]
   let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) =
@@ -186,11 +187,11 @@ module CompilerArguments =
                let hasTargetFrameworkProfile() =
                    try
                        assembly.GetCustomAttributes(true)
-                       |> Seq.tryFind (fun a -> 
+                       |> Seq.tryFind (fun a ->
                               match a with
-                              | :? TargetFrameworkAttribute as attr -> 
+                              | :? TargetFrameworkAttribute as attr ->
                                    let fn = new FrameworkName(attr.FrameworkName)
-                                   not (fn.Profile = "")             
+                                   not (fn.Profile = "")
                               | _ -> false)
                        |> Option.isSome
                    with
@@ -200,9 +201,10 @@ module CompilerArguments =
                referencesSystemRuntime() || hasTargetFrameworkProfile()
            with
            | _e -> false
-                        
-       let needsFacades () = 
+
+       let needsFacades () =
            let referencedAssemblies = project.GetReferencedAssemblyProjects configSelector
+
            match referencedAssemblies |> Seq.tryFind Project.isPortable with
            | Some _ -> true
            | None -> project.References
@@ -212,6 +214,12 @@ module CompilerArguments =
                      |> Option.isSome
 
        let wrapf = if shouldWrap then wrapFile else id
+
+       let getReferencedAssemblies (project: DotNetProject) =
+            LoggingService.logDebug "Fetching referenced assemblies for %s " project.Name
+            async {
+                return! project.GetReferencedAssemblies configSelector |> Async.AwaitTask
+            } |> Async.RunSynchronously
 
        [
         let portableRefs =
@@ -226,13 +234,13 @@ module CompilerArguments =
           project.References
           |> Seq.collect Project.getAssemblyLocations
           |> Seq.append portableRefs
-          |> Seq.toList
+          |> Seq.append (getReferencedAssemblies project)
 
         let projectReferences =
             refs
             // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be
             // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
-            |> Seq.filter (fun (ref: string) -> not (ref.EndsWith("FSharp.Core")))
+            |> Seq.filter (fun (ref: string) -> not (ref.Contains("FSharp.Core")))
             |> set
 
         let find assemblyName=
@@ -289,11 +297,11 @@ module CompilerArguments =
                 |> Seq.map(fun f -> f.Name)
 
     let defines = fsconfig.GetDefineSymbols()
-    [  
+    [
        yield "--simpleresolution"
        yield "--noframework"
        yield "--out:" + project.GetOutputFileName(configSelector).ToString()
-       if Project.isPortable project then 
+       if Project.isPortable project then
            yield "--targetprofile:netcore"
        yield "--platform:anycpu" //?
        yield "--fullpaths"
@@ -303,14 +311,14 @@ module CompilerArguments =
        yield if fsconfig.Optimize then "--optimize+" else "--optimize-"
        yield if fsconfig.GenerateTailCalls then "--tailcalls+" else "--tailcalls-"
        yield match project.CompileTarget with
-             | CompileTarget.Library -> "--target:library" 
-             | CompileTarget.Module -> "--target:module" 
+             | CompileTarget.Library -> "--target:library"
+             | CompileTarget.Module -> "--target:module"
              | _ -> "--target:exe"
        // TODO: This currently ignores escaping using "..."
        for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
-         yield arg 
-       yield! dashr 
-       yield! files] 
+         yield arg
+       yield! dashr
+       yield! files]
 
   let generateProjectOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let compilerOptions = generateCompilerOptions (project, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
@@ -449,13 +457,13 @@ module CompilerArguments =
       match MonoDevelop.Ide.IdeApp.Workspace with
             | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
             | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
-       
+
   let getArgumentsFromProject (proj:DotNetProject) =
         let config = getConfig()
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration
         let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
         generateProjectOptions (proj, fsconfig, None, getTargetFramework projConfig.TargetFramework.Id, config, false)
-        
+
   let getReferencesFromProject (proj:DotNetProject) =
         let config = getConfig()
         let projConfig = proj.GetConfiguration(config) :?> DotNetProjectConfiguration

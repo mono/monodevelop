@@ -4,7 +4,6 @@ open System
 open System.Collections.Generic
 open System.Linq
 open System.Diagnostics
-open MonoDevelop
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open MonoDevelop.Components
@@ -52,18 +51,13 @@ type FSharpPathExtension() as x =
         |> Option.bind (Option.condition ownerProjects.Contains)
         |> Option.iter x.DocumentContext.AttachToProject)
 
-    let getSolutions () =
-        ownerProjects
-        |> Seq.map (fun p -> p.ParentSolution |> Option.ofObj)
-        |> Seq.distinct
-
     let untrackStartupProjectChanges () =
-        for sol in getSolutions() do
-            sol |> Option.iter(fun sol -> sol.StartupItemChanged.RemoveHandler handleStartupProjectChanged)
+        for sol in (ownerProjects |> Seq.map (fun p -> p.ParentSolution) |> Seq.distinct) do
+            sol.StartupItemChanged.RemoveHandler handleStartupProjectChanged
 
     let trackStartupProjectChanges() =
-        for sol in getSolutions() do
-            sol |> Option.iter(fun sol -> sol.StartupItemChanged.RemoveHandler handleStartupProjectChanged)
+        for sol in (ownerProjects |> Seq.map (fun p -> p.ParentSolution) |> Seq.distinct) do
+            sol.StartupItemChanged.AddHandler handleStartupProjectChanged
 
     let setOwnerProjects (projects) =
         untrackStartupProjectChanges ()
@@ -191,7 +185,11 @@ type FSharpPathExtension() as x =
         | context when context.Name <> x.DocumentContext.Name -> ()
         | _ ->
       
-        let ast = x.DocumentContext.TryGetAst()
+        let ast =
+            maybe { let! context = x.DocumentContext |> Option.ofNull
+                    let! parsedDocument = context.ParsedDocument |> Option.ofNull
+                    let! ast = parsedDocument.Ast |> Option.tryCast<ParseAndCheckResults>
+                    return ast }
       
         let caretLocation = x.Editor.CaretLocation
         ast |> Option.iter (fun ast ->
