@@ -40,6 +40,13 @@
 			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/PreStartupHandlers" name = "Pre-startup handlers">
+		<Description>Commands to be automatically executed before the IDE UI is initialized. </Description>>
+		<ExtensionNode name="Class" objectType="MonoDevelop.Components.Commands.CommandHandler" customAttributeType="MonoDevelop.Ide.Extensions.StartupHandlerExtensionAttribute">
+			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
+		</ExtensionNode>
+	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/InitCompleteHandlers" name = "Post inialization handlers">
 		<Description>Commands to be automatically executed when the IDE finishes initalization.</Description>
