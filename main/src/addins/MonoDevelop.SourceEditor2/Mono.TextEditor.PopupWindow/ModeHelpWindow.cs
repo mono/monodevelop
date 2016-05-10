@@ -33,7 +33,7 @@ using MonoDevelop.Components;
 
 namespace Mono.TextEditor.PopupWindow
 {
-	public abstract class ModeHelpWindow : Gtk.EventBox
+	abstract class ModeHelpWindow : Gtk.EventBox
 	{
 		public string TitleText {
 			get;
@@ -75,7 +75,7 @@ namespace Mono.TextEditor.PopupWindow
 
 	}
 
-	public class TableLayoutModeHelpWindow : ModeHelpWindow
+	class TableLayoutModeHelpWindow : ModeHelpWindow
 	{
 		Pango.Layout layout;
 		
@@ -387,7 +387,7 @@ namespace Mono.TextEditor.PopupWindow
 		}
 	}
 
-	public class InsertionCursorLayoutModeHelpWindow : ModeHelpWindow
+	class InsertionCursorLayoutModeHelpWindow : ModeHelpWindow
 	{
 		Pango.Layout titleLayout;
 

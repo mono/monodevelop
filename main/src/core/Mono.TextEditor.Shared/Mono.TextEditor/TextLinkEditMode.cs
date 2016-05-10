@@ -33,7 +33,7 @@ using MonoDevelop.Components;
 
 namespace Mono.TextEditor
 {
-	public class TextLink : IListDataProvider<string>
+	class TextLink : IListDataProvider<string>
 	{
 		public TextSegment PrimaryLink {
 			get {
@@ -136,7 +136,7 @@ namespace Mono.TextEditor
 		General
 	}
 
-	public class TextLinkEditMode : HelpWindowEditMode
+	class TextLinkEditMode : HelpWindowEditMode
 	{
 		List<TextLink> links;
 		int baseOffset;
@@ -183,16 +183,12 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		TextLinkTooltipProvider tooltipProvider;
-
 		public TextLinkEditMode (MonoTextEditor editor, int baseOffset, List<TextLink> links)
 		{
 			this.editor = editor;
 			this.links = links;
 			this.baseOffset = baseOffset;
 			this.endOffset = editor.Caret.Offset;
-			tooltipProvider = new TextLinkTooltipProvider (this);
-			this.Editor.GetTextEditorData ().tooltipProviders.Insert (0, tooltipProvider);
 			this.SetCaretPosition = true;
 			this.SelectPrimaryLink = true;
 		}
@@ -317,7 +313,6 @@ namespace Mono.TextEditor
 			
 			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged -= HandlePositionChanged;
-			this.Editor.RemoveTooltipProvider (tooltipProvider);
 			if (undoDepth >= 0)
 				Editor.Document.StackUndoToDepth (undoDepth);
 			Editor.CurrentMode = OldMode;
@@ -535,30 +530,7 @@ namespace Mono.TextEditor
 		}
 	}
 
-	public class TextLinkTooltipProvider : TooltipProvider
-	{
-		TextLinkEditMode mode;
-
-		public TextLinkTooltipProvider (TextLinkEditMode mode)
-		{
-			this.mode = mode;
-		}
-		#region ITooltipProvider implementation 
-		public override Task<TooltipItem> GetItem (MonoTextEditor Editor, int offset, CancellationToken token = default(CancellationToken))
-		{
-			int o = offset - mode.BaseOffset;
-			for (int i = 0; i < mode.Links.Count; i++) {
-				TextLink l = mode.Links [i];
-				if (!l.PrimaryLink.IsInvalid && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset)
-					return Task.FromResult (new TooltipItem (l, l.PrimaryLink.Offset, l.PrimaryLink.Length));
-			}
-			return Task.FromResult<TooltipItem> (null);
-			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
-		}
-		#endregion
-	}
-
-	public class TextLinkMarker : MarginMarker
+	class TextLinkMarker : MarginMarker
 	{
 		TextLinkEditMode mode;
 

@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	public class HelpWindowEditMode : SimpleEditMode
+	class HelpWindowEditMode : SimpleEditMode
 	{
 		protected new MonoTextEditor editor;
 		
@@ -181,7 +181,7 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	public class InsertionCursorEditMode : HelpWindowEditMode
+	class InsertionCursorEditMode : HelpWindowEditMode
 	{
 		List<InsertionPoint> insertionPoints;
 		CursorDrawer drawer;

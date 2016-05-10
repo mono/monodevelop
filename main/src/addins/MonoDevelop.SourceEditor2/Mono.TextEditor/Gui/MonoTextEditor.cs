@@ -940,7 +940,7 @@ namespace Mono.TextEditor
 			remove { textArea.LinkRequest -= value; }
 		}
 
-		public void ShowListWindow<T> (ListWindow<T> window, DocumentLocation loc)
+		internal void ShowListWindow<T> (ListWindow<T> window, DocumentLocation loc)
 		{
 			textArea.ShowListWindow<T> (window, loc);
 		}

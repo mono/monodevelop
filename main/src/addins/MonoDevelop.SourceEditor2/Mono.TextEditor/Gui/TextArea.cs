@@ -433,7 +433,7 @@ namespace Mono.TextEditor
 		}
 		
 		
-		public void ShowListWindow<T> (ListWindow<T> window, DocumentLocation loc)
+		internal void ShowListWindow<T> (ListWindow<T> window, DocumentLocation loc)
 		{
 			var p = LocationToPoint (loc);
 			int ox = 0, oy = 0;

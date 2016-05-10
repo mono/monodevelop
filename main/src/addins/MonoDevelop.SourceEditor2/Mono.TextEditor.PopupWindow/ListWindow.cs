@@ -35,14 +35,14 @@ using Mono.TextEditor;
 namespace Mono.TextEditor.PopupWindow
 {
 	[Flags]
-	public enum ListWindowKeyAction { 
+	enum ListWindowKeyAction { 
 		Process = 1, 
 		Ignore = 2, 
 		CloseWindow = 4, 
 		Complete = 8 
 	}
 	
-	public class ListWindow<T> : Gtk.Window
+	class ListWindow<T> : Gtk.Window
 	{
 		ScrolledWindow scrollbar;
 		ListWidget<T> list;
