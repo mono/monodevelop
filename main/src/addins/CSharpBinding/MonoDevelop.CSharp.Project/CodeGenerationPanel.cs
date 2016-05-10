@@ -30,6 +30,8 @@ using System;
 using MonoDevelop.Components;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Dialogs;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.CSharp.Project
 {
@@ -47,13 +49,50 @@ namespace MonoDevelop.CSharp.Project
 			Build ();
 			xmlDocsEntry.DisplayAsRelativePath = true;
 		}
-		
+
+		//doing just original.Split(whitespaces).Distinct().Join(";") would make modifications to .csproj with " "(space) seperator
+		internal static string RemoveDuplicateDefinedSymbols (string original)
+		{
+			var whitespaces = new char [] { ';', ',', ' ', '\t' };
+			var symbols = new List<string> ();
+			string currentSymbol = "";
+			bool symbolStarted = false;
+			bool eatWhitespaces = false;
+			foreach (var c in original) {
+				var isWhitespace = whitespaces.Contains (c);
+				if (eatWhitespaces && !isWhitespace) {
+					symbols.Add (currentSymbol);
+					currentSymbol = "";
+					symbolStarted = true;
+					eatWhitespaces = false;
+				} else if (symbolStarted && isWhitespace) {
+					eatWhitespaces = true;
+				} else if (!symbolStarted && !isWhitespace) {
+					symbolStarted = true;
+				}
+				currentSymbol += c;
+			}
+			if (currentSymbol.Length > 0)
+				symbols.Add (currentSymbol);
+
+			string result = "";
+			var symbolDuplicates = new HashSet<string> ();
+			//since .targets files are adding new symbols and their seperaters at begining
+			//we want to remove symbols and seperators at begining of string and not at end
+			//to lower chance of changing seperators inside .csproj
+			for (int i = symbols.Count - 1; i >= 0; i--) {
+				if (symbolDuplicates.Add (symbols [i].Trim (whitespaces)))
+					result = symbols [i] + result;
+			}
+			return result;
+		}
+
 		public void Load (DotNetProjectConfiguration configuration)
 		{
 			this.configuration = configuration;
 			compilerParameters = (CSharpCompilerParameters) configuration.CompilationParameters;
 			
-			symbolsEntry.Text                          = compilerParameters.DefineSymbols;
+			symbolsEntry.Text                          = RemoveDuplicateDefinedSymbols (compilerParameters.DefineSymbols);
 			generateXmlOutputCheckButton.Active        = !string.IsNullOrEmpty (compilerParameters.DocumentationFile);
 			enableOptimizationCheckButton.Active       = compilerParameters.Optimize;
 			generateOverflowChecksCheckButton.Active   = compilerParameters.GenerateOverflowChecks;
