@@ -231,8 +231,6 @@
     <Compile Include="Mono.TextEditor.PopupWindow\ListWidget.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ListWindow.cs" />
     <Compile Include="Mono.TextEditor.PopupWindow\ModeHelpWindow.cs" />
-    <Compile Include="Mono.TextEditor.PopupWindow\TooltipWindow.cs" />
-    <Compile Include="Mono.TextEditor.PopupWindow\WindowTransparencyDecorator.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\Actor.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\AnimatedBox.cs" />
     <Compile Include="Mono.TextEditor.Theatrics\AnimatedVBox.cs" />

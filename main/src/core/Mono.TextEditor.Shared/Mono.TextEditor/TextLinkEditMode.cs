@@ -74,11 +74,6 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public string Tooltip {
-			get;
-			set;
-		}
-
 		public IListDataProvider<string> Values {
 			get;
 			set;
@@ -98,11 +93,10 @@ namespace Mono.TextEditor
 
 		public override string ToString ()
 		{
-			return string.Format ("[TextLink: Name={0}, Links={1}, IsEditable={2}, Tooltip={3}, CurrentText={4}, Values=({5})]", 
+			return string.Format ("[TextLink: Name={0}, Links={1}, IsEditable={2}, CurrentText={3}, Values=({4})]", 
 			                      Name, 
 			                      Links.Count, 
 			                      IsEditable, 
-			                      Tooltip, 
 			                      CurrentText, 
 			                      Values.Count);
 		}
@@ -560,24 +554,6 @@ namespace Mono.TextEditor
 			}
 			return Task.FromResult<TooltipItem> (null);
 			//return mode.Links.First (l => l.PrimaryLink != null && l.PrimaryLink.Offset <= o && o <= l.PrimaryLink.EndOffset);
-		}
-
-		public override Gtk.Window CreateTooltipWindow (MonoTextEditor Editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
-		{
-			TextLink link = item.Item as TextLink;
-			if (link == null || string.IsNullOrEmpty (link.Tooltip))
-				return null;
-
-			var window = new PopupWindow.TooltipWindow ();
-			window.Markup = link.Tooltip;
-			return window;
-		}
-
-		protected override void GetRequiredPosition (MonoTextEditor Editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
-		{
-			var win = (PopupWindow.TooltipWindow)tipWindow;
-			requiredWidth = win.SetMaxWidth (win.Screen.Width);
-			xalign = 0.5;
 		}
 		#endregion
 	}
