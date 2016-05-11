@@ -236,7 +236,7 @@ namespace MonoDevelop.VersionControl.Views
 			foreach (var editor in editors) {
 				editor.Document.IgnoreFoldings = true;
 				editor.Document.MimeType = mimeType;
-				editor.Document.ReadOnly = true;
+				editor.Document.IsReadOnly = true;
 
 				editor.Options.ShowFoldMargin = false;
 				editor.Options.ShowIconMargin = false;
@@ -613,7 +613,7 @@ namespace MonoDevelop.VersionControl.Views
 			var editor = info.Document.ParentDocument.Editor;
 			if (editor != null) {
 				data.Document.Text = editor.Text;
-				data.Document.ReadOnly = editor.IsReadOnly;
+				data.Document.IsReadOnly = editor.IsReadOnly;
 			}
 			
 			CreateDiff ();
@@ -640,7 +640,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			using (var undo = toEditor.OpenUndoGroup ()) {
 				var start = toEditor.Document.GetLine (hunk.InsertStart);
-				int toOffset = start != null ? start.Offset : toEditor.Document.TextLength;
+				int toOffset = start != null ? start.Offset : toEditor.Document.Length;
 
 				int replaceLength = 0;
 				if (start != null && hunk.Inserted > 0) {
@@ -700,7 +700,7 @@ namespace MonoDevelop.VersionControl.Views
 			Hunk selectedHunk = Hunk.Empty;
 			protected override bool OnMotionNotifyEvent (EventMotion evnt)
 			{
-				bool hideButton = widget.MainEditor.Document.ReadOnly;
+				bool hideButton = widget.MainEditor.Document.IsReadOnly;
 				Hunk selectedHunk = Hunk.Empty;
 				if (!hideButton) {
 					int delta = widget.MainEditor.Allocation.Y - Allocation.Y;
@@ -804,7 +804,7 @@ namespace MonoDevelop.VersionControl.Views
 
 			protected override bool OnExposeEvent (EventExpose evnt)
 			{
-				bool hideButton = widget.MainEditor.Document.ReadOnly;
+				bool hideButton = widget.MainEditor.Document.IsReadOnly;
 				using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
 					cr.Rectangle (evnt.Region.Clipbox.X, evnt.Region.Clipbox.Y, evnt.Region.Clipbox.Width, evnt.Region.Clipbox.Height);
 					cr.Clip ();

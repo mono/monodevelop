@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using Gtk;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {

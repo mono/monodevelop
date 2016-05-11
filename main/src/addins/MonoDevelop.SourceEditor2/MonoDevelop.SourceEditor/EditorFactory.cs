@@ -38,28 +38,28 @@ namespace MonoDevelop.SourceEditor
 
 		ITextDocument ITextEditorFactory.CreateNewDocument ()
 		{
-			return new TextDocumentWrapper (new TextDocument ());
+			return new TextDocument ();
 		}
 
 		ITextDocument ITextEditorFactory.CreateNewDocument (MonoDevelop.Core.Text.ITextSource textSource, string fileName, string mimeType)
 		{
-			return new TextDocumentWrapper (new TextDocument (textSource.Text) {
+			return new TextDocument (textSource.Text) {
 				Encoding = textSource.Encoding,
-				UseBom = textSource.UseBOM,
+				UseBOM = textSource.UseBOM,
 				MimeType = mimeType,
 				FileName = fileName
-			});
+			};
 		}
 
 		IReadonlyTextDocument ITextEditorFactory.CreateNewReadonlyDocument (MonoDevelop.Core.Text.ITextSource textSource, string fileName, string mimeType)
 		{
-			return new TextDocumentWrapper (new TextDocument (textSource.Text) {
+			return new TextDocument (textSource.Text) {
 				Encoding = textSource.Encoding,
-				UseBom = textSource.UseBOM,
-				ReadOnly = true,
+				UseBOM = textSource.UseBOM,
+				IsReadOnly = true,
 				MimeType = mimeType,
 				FileName = fileName
-			});
+			};
 		}
 
 		ITextEditorImpl ITextEditorFactory.CreateNewEditor ()

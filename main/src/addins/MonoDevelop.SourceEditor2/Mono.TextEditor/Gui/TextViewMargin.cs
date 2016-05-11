@@ -40,6 +40,7 @@ using System.Diagnostics;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -573,7 +574,7 @@ namespace Mono.TextEditor
 		{
 			var offset = Caret.Offset;
 			char caretChar;
-			if (offset >= 0 && offset < Document.TextLength) {
+			if (offset >= 0 && offset < Document.Length) {
 				caretChar = Document.GetCharAt (offset);
 			} else {
 				caretChar = '\0';
@@ -2090,7 +2091,7 @@ namespace Mono.TextEditor
 
 			StringBuilder textBuilder = new StringBuilder ();
 			int curOffset = previewSegment.Offset;
-			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.TextLength) {
+			while (curOffset >= 0 && curOffset < previewSegment.EndOffset && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				string lineText = Document.GetTextAt (curOffset, line.Offset + line.Length - curOffset);
 				textBuilder.Append (lineText);
@@ -2208,7 +2209,7 @@ namespace Mono.TextEditor
 
 		static int ScanWord (TextDocument doc, int offset, bool forwardDirection)
 		{
-			if (offset < 0 || offset >= doc.TextLength)
+			if (offset < 0 || offset >= doc.Length)
 				return offset;
 			var line = doc.GetLineByOffset (offset);
 			char first = doc.GetCharAt (offset);
@@ -2480,7 +2481,7 @@ namespace Mono.TextEditor
 						continue;
 
 					if (folding.IsCollapsed) {
-						var txt = Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.TextLength - offset)));
+						var txt = Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.Length - offset)));
 						calcTextLayout.SetText (txt);
 						calcTextLayout.GetSize (out width, out height);
 						xPos += width / Pango.Scale.PangoScale;
@@ -2628,7 +2629,7 @@ namespace Mono.TextEditor
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
-			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
+			defaultBgColor = Document.IsReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
 			var startLineNr = lineNr;
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.

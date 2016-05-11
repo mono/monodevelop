@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -321,7 +322,7 @@ namespace MonoDevelop.SourceEditor
 			SetSearchPattern (SearchAndReplaceOptions.SearchPattern);
 			textEditor.HighlightSearchPattern = true;
 			textEditor.TextViewMargin.RefreshSearchMarker ();
-			if (textEditor.Document.ReadOnly) {
+			if (textEditor.Document.IsReadOnly) {
 				buttonSearchMode.Visible = false;
 				IsReplaceMode = false;
 			}
@@ -624,7 +625,7 @@ But I leave it in in the case I've missed something. Mike
 				foreach (Widget widget in replaceWidgets) {
 					widget.Visible = isReplaceMode;
 				}
-				if (textEditor.Document.ReadOnly)
+				if (textEditor.Document.IsReadOnly)
 					buttonSearchMode.Visible = false;
 			}
 		}

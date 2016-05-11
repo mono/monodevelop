@@ -29,6 +29,7 @@
 
 using System;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -342,7 +343,7 @@ namespace Mono.TextEditor
 					data.DeleteSelectedText (data.MainSelection.SelectionMode != SelectionMode.Block);
 					return;
 				}
-				if (data.Caret.Offset >= data.Document.TextLength)
+				if (data.Caret.Offset >= data.Document.Length)
 					return;
 
 				data.EnsureCaretIsNotVirtual ();
@@ -365,7 +366,7 @@ namespace Mono.TextEditor
 						} 
 
 						data.Remove (line.EndOffsetIncludingDelimiter - line.DelimiterLength, deletionLength);
-						if (line.EndOffsetIncludingDelimiter == data.Document.TextLength)
+						if (line.EndOffsetIncludingDelimiter == data.Document.Length)
 							line.UnicodeNewline = UnicodeNewline.Unknown;
 					}
 				} else {

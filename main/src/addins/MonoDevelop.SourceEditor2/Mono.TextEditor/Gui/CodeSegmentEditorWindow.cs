@@ -66,7 +66,7 @@ namespace Mono.TextEditor
 			options.ShowIconMargin = false;
 			options.Zoom = 0.8;
 			codeSegmentEditor.Document.MimeType = editor.MimeType;
-			codeSegmentEditor.Document.ReadOnly = true;
+			codeSegmentEditor.Document.IsReadOnly = true;
 			codeSegmentEditor.Options = options;
 			
 			codeSegmentEditor.KeyPressEvent += delegate(object o, Gtk.KeyPressEventArgs args) {

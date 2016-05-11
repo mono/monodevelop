@@ -39,6 +39,7 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -969,7 +970,7 @@ namespace Mono.TextEditor
 
 		public int Length {
 			get {
-				return Document.TextLength;
+				return Document.Length;
 			}
 		}
 		

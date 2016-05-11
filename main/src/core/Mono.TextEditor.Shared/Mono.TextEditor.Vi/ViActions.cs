@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Vi
 {
@@ -38,7 +39,7 @@ namespace Mono.TextEditor.Vi
 		public static void MoveToNextEmptyLine (TextEditorData data)
 		{
 			if (data.Caret.Line == data.Document.LineCount) {
-				data.Caret.Offset = data.Document.TextLength;
+				data.Caret.Offset = data.Document.Length;
 				return;
 			}
 			
@@ -404,7 +405,7 @@ namespace Mono.TextEditor.Vi
 		internal static void RetreatFromLineEnd (TextEditorData data)
 		{
 			if (data.Caret.Mode == CaretMode.Block && !data.IsSomethingSelected && !data.Caret.PreserveSelection) {
-				while (DocumentLocation.MinColumn < data.Caret.Column && (data.Caret.Offset >= data.Document.TextLength
+				while (DocumentLocation.MinColumn < data.Caret.Column && (data.Caret.Offset >= data.Document.Length
 				                                 || IsEol (data.Document.GetCharAt (data.Caret.Offset)))) {
 					Left (data);
 				}

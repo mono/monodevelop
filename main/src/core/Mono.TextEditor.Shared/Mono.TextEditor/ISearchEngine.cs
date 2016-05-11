@@ -180,14 +180,14 @@ namespace Mono.TextEditor
 				return null;
 			var doc = textEditorData.Document;
 
-			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.TextLength && compiledPattern.Length > 0) {
+			if ((!string.IsNullOrEmpty (SearchRequest.SearchPattern)) && offset + searchRequest.SearchPattern.Length <= doc.Length && compiledPattern.Length > 0) {
 				if (searchRequest.CaseSensitive) {
-					for (int i = 0; i < compiledPattern.Length && offset + i < doc.TextLength; i++) {
+					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
 						if (doc.GetCharAt (offset + i) != compiledPattern [i])
 							return null;
 					}
 				} else {
-					for (int i = 0; i < compiledPattern.Length && offset + i < doc.TextLength; i++) {
+					for (int i = 0; i < compiledPattern.Length && offset + i < doc.Length; i++) {
 						if (Char.ToUpper (doc.GetCharAt (offset + i)) != compiledPattern [i])
 							return null;
 					}

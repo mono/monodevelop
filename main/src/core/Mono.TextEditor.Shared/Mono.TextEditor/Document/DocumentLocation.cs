@@ -26,111 +26,15 @@
 //
 
 using System;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public struct DocumentLocation : IComparable<DocumentLocation>, IEquatable<DocumentLocation>
-	{
-		public static readonly DocumentLocation Empty = new DocumentLocation (0, 0);
-		
-		public const int MinLine   = 1;
-		public const int MinColumn = 1;
-
-		readonly int line;
-		public int Line {
-			get {
-				return line;
-			}
-		}
-		
-		readonly int column;
-		public int Column {
-			get {
-				return column;
-			}
-		}
-		
-		public bool IsEmpty {
-			get {
-				return Line < MinLine && Column < MinColumn;
-			}
-		}
-		
-		public DocumentLocation (int line, int column) : this ()
-		{
-			this.line = line;
-			this.column = column;
-		}
-		
-		public override string ToString ()
-		{
-			return String.Format ("[DocumentLocation: Line={0}, Column={1}]", Line, Column);
-		}
-		
-		#region Operations
-		public static bool operator ==(DocumentLocation left, DocumentLocation right)
-		{
-			return left.Line == right.Line && left.Column == right.Column;
-		}
-		public static bool operator !=(DocumentLocation left, DocumentLocation right)
-		{
-			return !(left == right);
-		}
-		
-		public static bool operator <(DocumentLocation left, DocumentLocation right)
-		{
-			return left.Line < right.Line || left.Line == right.Line && left.Column < right.Column;
-		}
-		public static bool operator <=(DocumentLocation left, DocumentLocation right)
-		{
-			return !(left > right);
-		}
-		
-		public static bool operator >(DocumentLocation left, DocumentLocation right)
-		{
-			return right < left;
-		}
-		public static bool operator >=(DocumentLocation left, DocumentLocation right)
-		{
-			return !(left < right);
-		}
-
-		public override int GetHashCode()
-		{
-			return unchecked (Column.GetHashCode () * Line.GetHashCode ());
-		}
-		
-		public override bool Equals (object obj)
-		{
-			return obj is DocumentLocation && (DocumentLocation)obj == this; 
-		}
-
-		#region IEquatable implementation
-		public bool Equals (DocumentLocation other)
-		{
-			return Line == other.Line && Column == other.Column;
-		}
-		#endregion
-
-		#endregion
-		
-		#region IComparable<DocumentLocation> implementation
-		public int CompareTo (DocumentLocation loc)
-		{
-			if (this < loc)
-				return -1;
-			if (this > loc)
-				return 1;
-			return 0;
-		}
-		#endregion
-	}
-	
 	public class DocumentLocationEventArgs : System.EventArgs
 	{
 		readonly DocumentLocation location;
 		
-		public Mono.TextEditor.DocumentLocation Location {
+		public DocumentLocation Location {
 			get {
 				return location;
 			}

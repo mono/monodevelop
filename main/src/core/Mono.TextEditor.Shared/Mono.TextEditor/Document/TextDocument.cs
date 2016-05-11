@@ -35,10 +35,13 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core;
+using System.IO;
 
 namespace Mono.TextEditor
 {
-	public class TextDocument
+	public class TextDocument : ITextDocument
 	{
 		ImmutableText buffer;
 		readonly ILineSplitter splitter;
@@ -76,8 +79,8 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 
-		string fileName;
-		public string FileName {
+		FilePath fileName;
+		public FilePath FileName {
 			get {
 				return fileName;
 			}
@@ -101,7 +104,7 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public bool UseBom {
+		public bool UseBOM {
 			get {
 				return buffer.UseBOM;
 			}
@@ -193,7 +196,7 @@ namespace Mono.TextEditor
 			return new TextDocument (new ImmutableText (text), new PrimitiveLineSplitter ()) {
 				SuppressHighlightUpdate = suppressHighlighting,
 				Text = text,
-				ReadOnly = true
+				IsReadOnly = true
 			};
 		}
 
@@ -214,7 +217,7 @@ namespace Mono.TextEditor
 
 		#region Buffer implementation
 
-		public int TextLength {
+		public int Length {
 			get {
 				return buffer.Length;
 			}
@@ -251,40 +254,45 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public void Insert (int offset, string text, AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		public void InsertText (int offset, string text)
 		{
-			Replace (offset, 0, text, anchorMovementType);
-		}
-		
-		public void Remove (int offset, int count)
-		{
-			Replace (offset, count, null);
-		}
-		
-		public void Remove (ISegment segment)
-		{
-			Remove (segment.Offset, segment.Length);
+			ReplaceText (offset, 0, text);
 		}
 
-		public void Replace (int offset, int count, string value)
+		public void InsertText (int offset, ITextSource text)
 		{
-			Replace (offset, count, value, AnchorMovementType.Default);
+			ReplaceText (offset, 0, text);
 		}
 
-		public void Replace (int offset, int count, string value, AnchorMovementType anchorMovementType = AnchorMovementType.Default)
+		public void RemoveText (int offset, int count)
+		{
+			ReplaceText (offset, count, (string)null);
+		}
+		
+		public void RemoveText (ISegment segment)
+		{
+			RemoveText (segment.Offset, segment.Length);
+		}
+
+		public void ReplaceText (int offset, int count, ITextSource value)
+		{
+			ReplaceText (offset, count, value?.Text);
+		}
+
+		public void ReplaceText (int offset, int count, string value)
 		{
 			if (offset < 0)
 				throw new ArgumentOutOfRangeException (nameof (offset), "must be > 0, was: " + offset);
-			if (offset > TextLength)
-				throw new ArgumentOutOfRangeException (nameof (offset), "must be <= TextLength(" + TextLength +"), was: " + offset);
+			if (offset > Length)
+				throw new ArgumentOutOfRangeException (nameof (offset), "must be <= TextLength(" + Length +"), was: " + offset);
 			if (count < 0)
 				throw new ArgumentOutOfRangeException (nameof (count), "must be > 0, was: " + count);
-			if (ReadOnly)
+			if (IsReadOnly)
 				return;
 			InterruptFoldWorker ();
 
 			//int oldLineCount = LineCount;
-			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, anchorMovementType);
+			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, AnchorMovementType.Default);
 
 			UndoOperation operation = null;
 			bool endUndo = false;
@@ -323,11 +331,11 @@ namespace Mono.TextEditor
 		{
 			if (startOffset < 0)
 				throw new ArgumentException ("startOffset < 0");
-			if (startOffset > TextLength)
+			if (startOffset > Length)
 				throw new ArgumentException ("startOffset > Length");
 			if (endOffset < 0)
 				throw new ArgumentException ("startOffset < 0");
-			if (endOffset > TextLength)
+			if (endOffset > Length)
 				throw new ArgumentException ("endOffset > Length");
 			
 			return buffer.ToString (startOffset, endOffset - startOffset);
@@ -347,11 +355,11 @@ namespace Mono.TextEditor
 		{
 			if (offset < 0)
 				throw new ArgumentException ("startOffset < 0");
-			if (offset > TextLength)
+			if (offset > Length)
 				throw new ArgumentException ("startOffset > Length");
 			if (count < 0)
 				throw new ArgumentException ("count < 0");
-			if (offset + count > TextLength)
+			if (offset + count > Length)
 				throw new ArgumentException ("offset + count is beyond EOF");
 			return buffer.ToString (offset, count);
 		}
@@ -532,7 +540,7 @@ namespace Mono.TextEditor
 			if (location.Line > this.splitter.Count || location.Line < DocumentLocation.MinLine)
 				return -1;
 			DocumentLine line = GetLine (location.Line);
-			return System.Math.Min (TextLength, line.Offset + System.Math.Max (0, System.Math.Min (line.Length, location.Column - 1)));
+			return System.Math.Min (Length, line.Offset + System.Math.Max (0, System.Math.Min (line.Length, location.Column - 1)));
 		}
 		
 		public DocumentLocation OffsetToLocation (int offset)
@@ -564,12 +572,22 @@ namespace Mono.TextEditor
 			
 			return splitter.Get (lineNumber);
 		}
-		
+
+		IDocumentLine IReadonlyTextDocument.GetLine (int lineNumber)
+		{
+			return GetLine (lineNumber);
+		}
+
 		public DocumentLine GetLineByOffset (int offset)
 		{
 			return splitter.GetLineByOffset (offset);
 		}
-		
+
+		IDocumentLine IReadonlyTextDocument.GetLineByOffset (int offset)
+		{
+			return GetLineByOffset (offset);
+		}
+
 		public int OffsetToLineNumber (int offset)
 		{
 			return splitter.OffsetToLineNumber (offset);
@@ -603,14 +621,14 @@ namespace Mono.TextEditor
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText.Text);
+				doc.ReplaceText (args.Offset, args.InsertionLength, args.RemovedText.Text);
 				if (fireEvent)
 					OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText.Text);
+				doc.ReplaceText (args.Offset, args.RemovalLength, args.InsertedText.Text);
 				if (fireEvent)
 					OnRedoDone ();
 			}
@@ -1223,7 +1241,7 @@ namespace Mono.TextEditor
 		
 		public IEnumerable<FoldSegment> GetFoldingsFromOffset (int offset)
 		{
-			if (offset < 0 || offset >= TextLength)
+			if (offset < 0 || offset >= Length)
 				return new FoldSegment[0];
 			return foldSegmentTree.GetSegmentsAt (offset);
 		}
@@ -1572,12 +1590,12 @@ namespace Mono.TextEditor
 		
 		public bool Contains (int offset)
 		{
-			return new TextSegment (0, TextLength).Contains (offset);
+			return new TextSegment (0, Length).Contains (offset);
 		}
 		
 		public bool Contains (ISegment segment)
 		{
-			return new TextSegment (0, TextLength).Contains (segment);
+			return new TextSegment (0, Length).Contains (segment);
 		}
 		
 		
@@ -1592,7 +1610,7 @@ namespace Mono.TextEditor
 		// Use CanEdit (int lineNumber) instead for getting a request
 		// if a part of a document can be read. ReadOnly should generally not be used
 		// for deciding, if a document is readonly or not.
-		public bool ReadOnly {
+		public bool IsReadOnly {
 			get {
 				return readOnly;
 			}
@@ -1647,8 +1665,10 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler DocumentUpdated;
+		public event EventHandler<TextChangeEventArgs> TextChanging;
+		public event EventHandler<TextChangeEventArgs> TextChanged;
 		#endregion
-	
+
 		#region Helper functions
 		public const string openBrackets    = "([{<";
 		public const string closingBrackets = ")]}>";
@@ -1666,7 +1686,7 @@ namespace Mono.TextEditor
 		public bool IsWholeWordAt (int offset, int length)
 		{
 			return (offset == 0 || IsWordSeparator (GetCharAt (offset - 1))) &&
-				   (offset + length == TextLength || IsWordSeparator (GetCharAt (offset + length)));
+				   (offset + length == Length || IsWordSeparator (GetCharAt (offset + length)));
 		}
 		
 		public bool IsEmptyLine (DocumentLine line)
@@ -1849,6 +1869,15 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public char this [int offset] {
+			get {
+				return GetCharAt (offset);
+			}
+			set {
+				ReplaceText (offset, 1, value.ToString ());
+			}
+		}
+
 		public class SnapshotDocument : TextDocument
 		{
 			readonly ITextSourceVersion version;
@@ -1864,10 +1893,10 @@ namespace Mono.TextEditor
 				((LazyLineSplitter)splitter).src = this;
 				fileName = doc.fileName;
 				Encoding = doc.Encoding;
-				UseBom = doc.UseBom;
+				UseBOM = doc.UseBOM;
 				mimeType = doc.mimeType;
 
-				ReadOnly = true;
+				IsReadOnly = true;
 			}
 		}
 
@@ -1890,6 +1919,37 @@ namespace Mono.TextEditor
 		{
 			buffer.CopyTo (sourceIndex, destination, destinationIndex, count); 
 		}
+
+
+		ITextSource ITextSource.CreateSnapshot ()
+		{
+			return GetImmutableText ();
+		}
+
+		ITextSource ITextSource.CreateSnapshot (int offset, int length)
+		{
+			return GetImmutableText (offset, length);
+		}
+
+		IReadonlyTextDocument ITextDocument.CreateDocumentSnapshot ()
+		{
+			return CreateDocumentSnapshot ();
+		}
+
+		public void WriteTextTo (TextWriter writer)
+		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
+			writer.Write (Text);
+		}
+
+		public void WriteTextTo (TextWriter writer, int offset, int length)
+		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
+			writer.Write (GetTextAt (offset, length));
+		}
+
 		#endregion
 	}
 	

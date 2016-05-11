@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {

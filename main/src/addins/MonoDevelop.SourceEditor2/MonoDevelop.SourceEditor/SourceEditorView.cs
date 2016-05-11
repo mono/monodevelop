@@ -800,10 +800,8 @@ namespace MonoDevelop.SourceEditor
 
 		void UpdateTextDocumentEncoding ()
 		{
-			if (wrapper != null) {
-				wrapper.Document.Encoding = encoding;
-				wrapper.Document.UseBom = hadBom;
-			}
+			widget.Document.Encoding = encoding;
+			widget.Document.UseBOM = hadBom;
 		}
 
 		public Task Load (string fileName, Encoding loadEncoding, bool reload = false)
@@ -836,7 +834,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				text = ProcessLoadText (text);
 				if (reload) {
-					document.Replace (0, Document.TextLength, text);
+					document.ReplaceText (0, Document.Length, text);
 					document.DiffTracker.Reset ();
 				} else {
 					document.Text = text;
@@ -915,7 +913,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			UpdateMimeType (fileName);
 			
-			Document.Replace (0, Document.TextLength, content);
+			Document.ReplaceText (0, Document.Length, content);
 			Document.DiffTracker.Reset ();
 			encoding = enc;
 			ContentName = fileName;
@@ -1020,10 +1018,6 @@ namespace MonoDevelop.SourceEditor
 
 			RemoveMarkerQueue ();
 			widget.Dispose ();
-			if (wrapper != null) {
-				wrapper.Dispose ();
-				wrapper = null;
-			}
 			this.Project = null;
 		}
 
@@ -1395,7 +1389,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnIconButtonPress (object s, MarginMouseEventArgs args)
 		{
-			if (args.LineNumber < Mono.TextEditor.DocumentLocation.MinLine)
+			if (args.LineNumber < DocumentLocation.MinLine)
 				return;
 
 			if (args.TriggersContextMenu ()) {
@@ -1549,13 +1543,13 @@ namespace MonoDevelop.SourceEditor
 			set {
 				this.IsDirty = true;
 				var document = this.widget.TextEditor.Document;
-				document.Replace (0, document.TextLength, value);
+				document.ReplaceText (0, document.Length, value);
 			}
 		}
 		
 		public int Length { 
 			get {
-				return widget.TextEditor.Document.TextLength;
+				return widget.TextEditor.Document.Length;
 			}
 		}
 
@@ -1571,9 +1565,9 @@ namespace MonoDevelop.SourceEditor
 		public string GetText (int startPosition, int endPosition)
 		{
 			var doc = widget.TextEditor.Document;
-			if (startPosition < 0 ||  endPosition < 0 ||  startPosition > endPosition || startPosition >= doc.TextLength)
+			if (startPosition < 0 ||  endPosition < 0 ||  startPosition > endPosition || startPosition >= doc.Length)
 				return "";
-			var length = Math.Min (endPosition - startPosition, doc.TextLength - startPosition);
+			var length = Math.Min (endPosition - startPosition, doc.Length - startPosition);
 			return doc.GetTextAt (startPosition, length);
 		}
 		
@@ -1584,7 +1578,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
-			return widget.TextEditor.Document.LocationToOffset (new Mono.TextEditor.DocumentLocation (line, column));
+			return widget.TextEditor.Document.LocationToOffset (new DocumentLocation (line, column));
 		}
 
 		public void GetLineColumnFromPosition (int position, out int line, out int column)
@@ -1718,7 +1712,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public int TextLength {
 			get {
-				return Document.TextLength;
+				return Document.Length;
 			}
 		}
 
@@ -1791,7 +1785,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		public Gdk.Point DocumentToScreenLocation (Mono.TextEditor.DocumentLocation location)
+		public Gdk.Point DocumentToScreenLocation (DocumentLocation location)
 		{
 			var p = widget.TextEditor.LocationToPoint (location);
 			int tx, ty;
@@ -1874,7 +1868,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					int minColumn = Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
 					data.MainSelection = data.MainSelection.WithRange (
-						new Mono.TextEditor.DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn),
+						new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn),
 						data.Caret.Location
 					);
 
@@ -2456,20 +2450,9 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 
-		TextDocumentWrapper wrapper;
 		IReadonlyTextDocument ITextEditorImpl.Document {
 			get {
-				if (wrapper == null) {
-					wrapper = new TextDocumentWrapper (widget.TextEditor.Document);
-					if (encoding != null) {
-						wrapper.Document.Encoding = encoding;
-						wrapper.Document.UseBom = hadBom;
-					} else {
-						wrapper.Document.Encoding = Encoding.UTF8;
-						wrapper.Document.UseBom = true;
-					}
-				}
-				return wrapper;
+				return widget.TextEditor.Document;
 			}
 		}
 
@@ -2588,7 +2571,7 @@ namespace MonoDevelop.SourceEditor
 		void ITextEditorImpl.StartInsertionMode (InsertionModeOptions insertionModeOptions)
 		{
 			var mode = new InsertionCursorEditMode (TextEditor, insertionModeOptions.InsertionPoints.Select (ip => new Mono.TextEditor.InsertionPoint ( 
-				new Mono.TextEditor.DocumentLocation (ip.Location.Line, ip.Location.Column),
+				new DocumentLocation (ip.Location.Line, ip.Location.Column),
 				(Mono.TextEditor.NewLineInsertion)ip.LineBefore,
 				(Mono.TextEditor.NewLineInsertion)ip.LineAfter
 			)).ToList ());
@@ -2768,7 +2751,7 @@ namespace MonoDevelop.SourceEditor
 				return new MonoDevelop.Ide.Editor.DocumentLocation (loc.Line, loc.Column);
 			}
 			set {
-				TextEditor.Caret.Location = new Mono.TextEditor.DocumentLocation (value.Line, value.Column);
+				TextEditor.Caret.Location = new DocumentLocation (value.Line, value.Column);
 				TextEditor.ScrollToCaret ();
 			}
 		}
@@ -2880,7 +2863,7 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.SetIndentationTracker (IndentationTracker indentationTracker)
 		{
-			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker != null ? new IndentationTrackerWrapper (TextEditor.GetTextEditorData (), wrapper, indentationTracker) : null;
+			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker != null ? new IndentationTrackerWrapper (TextEditor.GetTextEditorData (), widget.Document, indentationTracker) : null;
 		}
 
 		void ITextEditorImpl.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)

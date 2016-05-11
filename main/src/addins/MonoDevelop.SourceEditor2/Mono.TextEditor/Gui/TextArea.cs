@@ -46,6 +46,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -387,7 +388,7 @@ namespace Mono.TextEditor
 			imContext.SurroundingDeleted += delegate (object o, SurroundingDeletedArgs args) {
 				//FIXME: UTF16 surrogates handling for offset and NChars? only matters for astral plane
 				var line = Document.GetLine (Caret.Line);
-				Document.Remove (line.Offset + args.Offset, args.NChars);
+				Document.RemoveText (line.Offset + args.Offset, args.NChars);
 				args.RetVal = true;
 			};
 			
@@ -527,7 +528,7 @@ namespace Mono.TextEditor
 		{
 			if (IsSomethingSelected) {
 				var selectionRange = MainSelection.GetSelectionRange (textEditorData);
-				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.TextLength) {
+				if (selectionRange.Offset >= 0 && selectionRange.EndOffset < Document.Length) {
 					ClipboardActions.CopyToPrimary (this.textEditorData);
 				} else {
 					ClipboardActions.ClearPrimary ();
@@ -2181,7 +2182,7 @@ namespace Mono.TextEditor
 		#region Document delegation
 		public int Length {
 			get {
-				return Document.TextLength;
+				return Document.Length;
 			}
 		}
 

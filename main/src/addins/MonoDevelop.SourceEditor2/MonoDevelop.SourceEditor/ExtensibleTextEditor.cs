@@ -295,7 +295,7 @@ namespace MonoDevelop.SourceEditor
 						if (isInBlockComment) {
 							if (pos > 0 && doc.GetCharAt (pos - 1) == '*') 
 								isInBlockComment = false;
-						} else  if (!isInString && !isInChar && pos + 1 < doc.TextLength) {
+						} else  if (!isInString && !isInChar && pos + 1 < doc.Length) {
 							char nextChar = doc.GetCharAt (pos + 1);
 							if (nextChar == '/')
 								isInLineComment = true;
@@ -476,10 +476,10 @@ namespace MonoDevelop.SourceEditor
 			int start = offset;
 			while (start > 0 && IsIdChar (Document.GetCharAt (start)))
 				start--;
-			while (offset < Document.TextLength && IsIdChar (Document.GetCharAt (offset)))
+			while (offset < Document.Length && IsIdChar (Document.GetCharAt (offset)))
 				offset++;
 			start++;
-			if (offset - start > 0 && start < Document.TextLength)
+			if (offset - start > 0 && start < Document.Length)
 				return Document.GetTextAt (start, offset - start);
 			else
 				return string.Empty;

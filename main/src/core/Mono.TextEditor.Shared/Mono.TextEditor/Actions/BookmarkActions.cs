@@ -43,7 +43,7 @@ namespace Mono.TextEditor
 		static int GetNextOffset (TextDocument document, int lineNumber)
 		{
 			int startLineNumber = lineNumber + 1;
-			if (startLineNumber > document.TextLength) 
+			if (startLineNumber > document.Length) 
 				startLineNumber = 0;
 			var line = document.GetLinesStartingAt (startLineNumber).FirstOrDefault (l => l.IsBookmarked);
 			return line != null ? line.Offset : -1;
@@ -62,7 +62,7 @@ namespace Mono.TextEditor
 		{
 			int startLineNumber = lineNumber - 1;
 			if (startLineNumber < 0) 
-				startLineNumber =  document.TextLength - 1;
+				startLineNumber =  document.Length - 1;
 			var line = document.GetLinesReverseStartingAt (startLineNumber - 1).FirstOrDefault (l => l.IsBookmarked);
 			return line != null ? line.Offset : -1;
 		}

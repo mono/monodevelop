@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {

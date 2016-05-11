@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Tests
 {

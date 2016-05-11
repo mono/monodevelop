@@ -60,11 +60,11 @@ namespace MonoDevelop.SourceEditor
 		static int GetNextNonWsCharOffset (TextEditorData data, int offset)
 		{
 			int result = offset;
-			if (result >= data.Document.TextLength)
+			if (result >= data.Document.Length)
 				return -1;
 			while (Char.IsWhiteSpace (data.Document.GetCharAt (result))) {
 				result++;
-				if (result >= data.Document.TextLength)
+				if (result >= data.Document.Length)
 					return -1;
 			}
 			return result;

@@ -70,7 +70,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 			if (doc == null || doc.SuppressHighlightUpdate)
 				return;
-			SyntaxModeService.StartUpdate (doc, this, 0, doc.TextLength);
+			SyntaxModeService.StartUpdate (doc, this, 0, doc.Length);
 		}
 
 		void HandleTextSet (object sender, EventArgs e)
@@ -435,7 +435,7 @@ namespace Mono.TextEditor.Highlighting
 
 			public void ParseSpans (int offset, int length)
 			{
-				if (offset < 0 || offset + length > doc.TextLength || length <= 0)
+				if (offset < 0 || offset + length > doc.Length || length <= 0)
 					return;
 				StartOffset = offset;
 				CurText = doc.GetTextAt (offset, length);
@@ -458,7 +458,7 @@ namespace Mono.TextEditor.Highlighting
 
 					}
 					if (!ScanSpan (ref i)) {
-						if (i < doc.TextLength)
+						if (i < doc.Length)
 							ParseChar (ref i, CurText [textIndex]);
 					}
 				}
@@ -675,7 +675,7 @@ namespace Mono.TextEditor.Highlighting
 			{
 				if (lineOffset < offset)
 					SyntaxModeService.ScanSpans (doc, mode, spanParser.CurRule, spanParser.SpanStack, lineOffset, offset);
-				length = System.Math.Min (doc.TextLength - offset, length);
+				length = System.Math.Min (doc.Length - offset, length);
 				curChunk = new Chunk (offset, 0, GetSpanStyle ());
 				spanParser.ParseSpans (offset, length);
 				curChunk.SpanStack = spanParser.SpanStack;

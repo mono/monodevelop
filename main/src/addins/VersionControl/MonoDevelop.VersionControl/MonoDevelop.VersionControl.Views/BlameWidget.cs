@@ -128,7 +128,7 @@ namespace MonoDevelop.VersionControl.Views
 			AddChild (hScrollBar);
 
 			var doc = new TextDocument (sourceEditor.TextEditor.Document.Text) {
-				ReadOnly = true,
+				IsReadOnly = true,
 				MimeType = sourceEditor.TextEditor.Document.MimeType,
 			};
 			editor = new MonoTextEditor (doc, sourceEditor.TextEditor.Options);

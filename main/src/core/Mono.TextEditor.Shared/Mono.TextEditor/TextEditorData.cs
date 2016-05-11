@@ -32,6 +32,7 @@ using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
 using Xwt.Drawing;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -384,7 +385,7 @@ namespace Mono.TextEditor
 			int curOffset = offset;
 
 			StringBuilder result = new StringBuilder ();
-			while (curOffset < offset + length && curOffset < Document.TextLength) {
+			while (curOffset < offset + length && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<ChunkStyle> ();
@@ -420,7 +421,7 @@ namespace Mono.TextEditor
 						result.Append (">");
 						styleStack.Push (chunkStyle);
 					}
-					result.Append (ConvertToPangoMarkup (Document.GetTextBetween (chunk.Offset, System.Math.Min (chunk.EndOffset, Document.TextLength)), replaceTabs));
+					result.Append (ConvertToPangoMarkup (Document.GetTextBetween (chunk.Offset, System.Math.Min (chunk.EndOffset, Document.Length)), replaceTabs));
 				}
 				while (styleStack.Count > 0) {
 					result.Append ("</span>");
@@ -507,7 +508,7 @@ namespace Mono.TextEditor
 		public int Replace (int offset, int count, string value)
 		{
 			string formattedString = FormatString (offset, value);
-			document.Replace (offset, count, formattedString);
+			document.ReplaceText (offset, count, formattedString);
 			return formattedString.Length;
 		}
 			
@@ -615,7 +616,7 @@ namespace Mono.TextEditor
 		
 		public bool CanEdit (int line)
 		{
-			if (document.ReadOnly)
+			if (document.IsReadOnly)
 				return false;
 			if (document.ReadOnlyCheckDelegate != null)
 				return document.ReadOnlyCheckDelegate (line);
@@ -735,7 +736,7 @@ namespace Mono.TextEditor
 			get {
 				// To be improved when we support read-only regions
 				if (IsSomethingSelected)
-					return !document.ReadOnly;
+					return !document.IsReadOnly;
 				return CanEdit (caret.Line);
 			}
 		}
@@ -964,7 +965,7 @@ namespace Mono.TextEditor
 			switch (selection.SelectionMode) {
 			case SelectionMode.Normal:
 				var segment = selection.GetSelectionRange (this);
-				int len = System.Math.Min (segment.Length, Document.TextLength - segment.Offset);
+				int len = System.Math.Min (segment.Length, Document.Length - segment.Offset);
 				var loc = selection.Anchor < selection.Lead ? selection.Anchor : selection.Lead;
 				caret.Location = loc;
 				EnsureCaretIsNotVirtual ();
@@ -1125,9 +1126,9 @@ namespace Mono.TextEditor
 			
 			int searchOffset;
 			if (startOffset < 0) {
-				searchOffset = Document.TextLength - 1;
+				searchOffset = Document.Length - 1;
 			} else {
-				searchOffset = (startOffset + Document.TextLength - 1) % Document.TextLength;
+				searchOffset = (startOffset + Document.Length - 1) % Document.Length;
 			}
 			SearchResult result = SearchBackward (searchOffset);
 			if (result != null) {
@@ -1335,7 +1336,7 @@ namespace Mono.TextEditor
 		#region Document delegation
 		public int Length {
 			get {
-				return document.TextLength;
+				return document.Length;
 			}
 		}
 

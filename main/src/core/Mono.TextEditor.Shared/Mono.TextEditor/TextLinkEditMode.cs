@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -518,7 +519,7 @@ namespace Mono.TextEditor
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
 				var s = link.Links [i];
 				int offset = s.Offset + baseOffset;
-				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.TextLength)
+				if (offset < 0 || s.Length < 0 || offset + s.Length > Editor.Document.Length)
 					continue;
 				if (Editor.Document.GetTextAt (offset, s.Length) != link.CurrentText) {
 					Editor.Replace (offset, s.Length, link.CurrentText);

@@ -74,13 +74,13 @@ namespace Mono.TextEditor
 		
 		public DocumentLine StartLine { 
 			get {
-				return doc.GetLineByOffset (System.Math.Min (doc.TextLength, System.Math.Max (0, Offset)));
+				return doc.GetLineByOffset (System.Math.Min (doc.Length, System.Math.Max (0, Offset)));
 			} 
 		}
 		
 		public DocumentLine EndLine {
 			get {
-				return doc.GetLineByOffset (System.Math.Min (doc.TextLength, System.Math.Max (0, EndOffset)));
+				return doc.GetLineByOffset (System.Math.Min (doc.Length, System.Math.Max (0, EndOffset)));
 			}
 		}
 

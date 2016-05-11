@@ -1,6 +1,7 @@
 using System;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {

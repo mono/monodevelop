@@ -36,6 +36,7 @@ using Gtk;
 using Mono.TextEditor.Highlighting;
 using System.Linq;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -210,7 +211,7 @@ namespace Mono.TextEditor
 						int offset = data.Document.LocationToOffset (line, col);
 						data.Caret.SetToOffsetWithDesiredColumn (MoveCaretOutOfFolding (data, offset));
 					} else {
-						data.Caret.Offset = data.Document.TextLength;
+						data.Caret.Offset = data.Document.Length;
 					}
 					return;
 				}
@@ -331,7 +332,7 @@ namespace Mono.TextEditor
 			using (var undo = data.OpenUndoGroup ()) {
 				if (!data.Caret.PreserveSelection)
 					data.ClearSelection ();
-				data.Caret.Offset = data.Document.TextLength;
+				data.Caret.Offset = data.Document.Length;
 			}
 		}
 				

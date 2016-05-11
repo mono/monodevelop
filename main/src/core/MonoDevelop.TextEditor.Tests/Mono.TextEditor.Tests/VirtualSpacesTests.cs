@@ -27,6 +27,7 @@
 using System;
 using NUnit.Framework;
 using Gtk;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Tests
 {

@@ -220,8 +220,8 @@ namespace Mono.TextEditor
 						break;
 					case SelectionMode.Block:
 						isBlockMode = true;
-						DocumentLocation visStart = data.LogicalToVisualLocation (selection.Anchor);
-						DocumentLocation visEnd = data.LogicalToVisualLocation (selection.Lead);
+						var visStart = data.LogicalToVisualLocation (selection.Anchor);
+						var visEnd = data.LogicalToVisualLocation (selection.Lead);
 						int startCol = System.Math.Min (visStart.Column, visEnd.Column);
 						int endCol = System.Math.Max (visStart.Column, visEnd.Column);
 						copiedColoredChunks = new List<List<ColoredSegment>> ();
@@ -288,7 +288,7 @@ namespace Mono.TextEditor
 			if (!data.CanEdit (data.Document.OffsetToLineNumber (insertionOffset)))
 				return result;
 			if (clipboard.WaitIsTargetAvailable (CopyOperation.MD_ATOM)) {
-				clipboard.RequestContents (CopyOperation.MD_ATOM, delegate(Clipboard clp, SelectionData selectionData) {
+				clipboard.RequestContents (CopyOperation.MD_ATOM, (ClipboardReceivedFunc)delegate (Clipboard clp, SelectionData selectionData) {
 					if (selectionData.Length > 0) {
 						byte[] selBytes = selectionData.Data;
 						var upperBound = System.Math.Max (0, System.Math.Min (selBytes [1], selBytes.Length - 2));
@@ -330,7 +330,7 @@ namespace Mono.TextEditor
 								result = 0;
 								for (int i = 0; i < lines.Count; i++) {
 									while (data.Document.LineCount <= lineNr + i) {
-										data.Insert (data.Document.TextLength, Environment.NewLine);
+										data.Insert ((int)data.Document.Length, Environment.NewLine);
 										result += Environment.NewLine.Length;
 									}
 									curLine = data.Document.GetLine (lineNr + i);

@@ -54,13 +54,13 @@ namespace Mono.TextEditor
 		bool inUpdate = false;
 		public override void Analyze (TextDocument doc, DocumentLine line, Chunk startChunk, int startOffset, int endOffset)
 		{
-			if (endOffset <= startOffset || startOffset >= doc.TextLength || inUpdate)
+			if (endOffset <= startOffset || startOffset >= doc.Length || inUpdate)
 				return;
 			if (startChunk.Style != Highlighting.ColorScheme.CommentsSingleLineKey && startChunk.Style != Highlighting.ColorScheme.CommentsBlockKey)
 				return;
 			inUpdate = true;
 			try {
-				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.TextLength) - startOffset);
+				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.Length) - startOffset);
 				int startColumn = startOffset - line.Offset;
 				var markers = new List <UrlMarker> (line.Markers.OfType<UrlMarker> ());
 				markers.ForEach (m => doc.RemoveMarker (m, false));

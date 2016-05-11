@@ -77,7 +77,7 @@ namespace MonoDevelop.SourceEditor
 				char openingBrace = openBrackets [braceIndex];
 
 				int count = 0;
-				foreach (char curCh in ExtensibleTextEditor.GetTextWithoutCommentsAndStrings(extEditor.Document, 0, extEditor.Document.TextLength)) {
+				foreach (char curCh in ExtensibleTextEditor.GetTextWithoutCommentsAndStrings(extEditor.Document, 0, extEditor.Document.Length)) {
 					if (curCh == openingBrace) {
 						count++;
 					} else if (curCh == closingBrace) {

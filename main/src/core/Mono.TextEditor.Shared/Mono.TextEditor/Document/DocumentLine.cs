@@ -265,7 +265,7 @@ namespace Mono.TextEditor
 		{
 			var result = new StringBuilder ();
 			int offset = Offset;
-			int max = System.Math.Min (offset + LengthIncludingDelimiter, doc.TextLength);
+			int max = System.Math.Min (offset + LengthIncludingDelimiter, doc.Length);
 			for (int i = offset; i < max; i++) {
 				char ch = doc.GetCharAt (i);
 				if (ch != ' ' && ch != '\t')
@@ -280,7 +280,7 @@ namespace Mono.TextEditor
 			int curVisualColumn = 1;
 			int offset = Offset;
 			int max = offset + Length;
-			var textLength = editor.Document.TextLength;
+			var textLength = editor.Document.Length;
 			int tabSize = editor.Options != null ? editor.Options.TabSize : 4;
 			for (int i = offset; i < max; i++) {
 				if (i < textLength && editor.Document.GetCharAt (i) == '\t') {

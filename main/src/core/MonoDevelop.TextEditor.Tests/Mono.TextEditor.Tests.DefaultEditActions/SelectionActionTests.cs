@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Ide.Editor;
 using NUnit.Framework;
 
 namespace Mono.TextEditor.Tests.Actions
@@ -145,7 +146,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.IsTrue (data.IsSomethingSelected);
 			
 			Assert.AreEqual (data.SelectionRange.Offset, 0);
-			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.TextLength);
+			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.Length);
 		}
 		
 		
@@ -183,7 +184,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.IsTrue (data.IsSomethingSelected);
 			
 			Assert.AreEqual (data.SelectionRange.Offset, 0);
-			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.TextLength);
+			Assert.AreEqual (data.SelectionRange.EndOffset, data.Document.Length);
 			Assert.AreEqual (loc, data.Caret.Location);
 		}
 

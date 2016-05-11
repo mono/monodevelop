@@ -179,7 +179,6 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ITextDocumentWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UsageSegmentMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
@@ -197,10 +196,8 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\SemanticHighlightingSyntaxMode.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ReadonlyDocumentSnapshot.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\ErrorMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SyntaxModeLoader.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ImmutableTextTextSource.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchInSelectionMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DefaultAutoInsertBracketHandler.cs" />
     <Compile Include="Mono.TextEditor\Gui\ActionMargin.cs" />

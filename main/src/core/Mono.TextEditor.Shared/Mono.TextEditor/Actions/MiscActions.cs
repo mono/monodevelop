@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
@@ -305,7 +306,7 @@ namespace Mono.TextEditor
 		
 		public static void Undo (TextEditorData data)
 		{
-			if (data.Document.ReadOnly)
+			if (data.Document.IsReadOnly)
 				return;
 			if (CancelPreEditMode (data))
 				return;
@@ -327,7 +328,7 @@ namespace Mono.TextEditor
 		
 		public static void Redo (TextEditorData data)
 		{
-			if (data.Document.ReadOnly)
+			if (data.Document.IsReadOnly)
 				return;
 			if (CancelPreEditMode (data))
 				return;
