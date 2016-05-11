@@ -2868,7 +2868,7 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
-			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = surroundingProvider != null ? new SelectionSurroundingProviderWrapper (surroundingProvider) : null;
+			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = surroundingProvider;
 		}
 		
 		void ITextEditorImpl.SetTextPasteHandler (TextPasteHandler textPasteHandler)

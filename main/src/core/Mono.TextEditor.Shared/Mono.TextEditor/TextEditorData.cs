@@ -119,14 +119,14 @@ namespace Mono.TextEditor
 			protected set;
 		}
 
-		ISelectionSurroundingProvider selectionSurroundingProvider = new DefaultSelectionSurroundingProvider ();
-		public ISelectionSurroundingProvider SelectionSurroundingProvider {
+		SelectionSurroundingProvider selectionSurroundingProvider;
+		public SelectionSurroundingProvider SelectionSurroundingProvider {
 			get {
 				return selectionSurroundingProvider;
 			}
 			set {
 				if (value == null)
-					throw new ArgumentNullException ("surrounding provider needs to be != null");
+					throw new ArgumentNullException (nameof (value), "surrounding provider needs to be != null");
 				selectionSurroundingProvider = value;
 			}
 		}
@@ -216,6 +216,7 @@ namespace Mono.TextEditor
 			HeightTree = new HeightTree (this);
 			HeightTree.Rebuild ();
 			IndentationTracker = new DefaultIndentationTracker (document);
+			selectionSurroundingProvider = new DefaultSelectionSurroundingProvider (this);
 		}
 
 		void AttachDocument ()
@@ -1194,7 +1195,8 @@ namespace Mono.TextEditor
 		
 		public string GetIndentationString (int offset)
 		{
-			return IndentationTracker.GetIndentationString (offset);
+			var lineNumber = OffsetToLineNumber (offset);
+			return IndentationTracker.GetIndentationString (lineNumber);
 		}
 		
 		public int GetVirtualIndentationColumn (DocumentLocation loc)
@@ -1209,7 +1211,7 @@ namespace Mono.TextEditor
 		
 		public int GetVirtualIndentationColumn (int offset)
 		{
-			return 1 + CountIndent (indentationTracker.GetIndentationString (offset));
+			return 1 + CountIndent (GetIndentationString (offset));
 		}
 
 		static int CountIndent (string str)

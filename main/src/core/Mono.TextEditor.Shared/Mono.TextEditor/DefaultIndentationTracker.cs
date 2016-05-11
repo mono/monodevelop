@@ -29,7 +29,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor
 {
-	class DefaultIndentationTracker : IndentationTracker
+	public class DefaultIndentationTracker : IndentationTracker
 	{
 		readonly TextDocument doc;
 			

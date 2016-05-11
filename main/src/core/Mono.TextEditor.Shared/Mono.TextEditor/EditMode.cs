@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 		bool IsSpecialKeyForSelection (uint unicodeKey)
 		{
 			string start, end;
-			return textEditorData.SelectionSurroundingProvider.GetSelectionSurroundings (textEditorData, unicodeKey, out start, out end);
+			return textEditorData.SelectionSurroundingProvider.GetSelectionSurroundings (unicodeKey, out start, out end);
 		}
 
 		protected void InsertCharacter (uint unicodeKey)
@@ -120,7 +120,7 @@ namespace Mono.TextEditor
 			HideMouseCursor ();
 
 			if (textEditorData.IsSomethingSelected && textEditorData.Options.EnableSelectionWrappingKeys && IsSpecialKeyForSelection (unicodeKey)) {
-				textEditorData.SelectionSurroundingProvider.HandleSpecialSelectionKey (textEditorData, unicodeKey);
+				textEditorData.SelectionSurroundingProvider.HandleSpecialSelectionKey (unicodeKey);
 				return;
 			}
 			using (var undo = Document.OpenUndoGroup ()) {

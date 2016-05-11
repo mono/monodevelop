@@ -25,47 +25,22 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor
 {
 	/// <summary>
-	/// A selection surrounding provider handles a special handling how the text editor behaves when the user
-	/// types a key with a selection. The selection can be surrounded instead of beeing replaced.
-	/// </summary>
-	public interface ISelectionSurroundingProvider	
-	{
-		/// <summary>
-		/// Gets the selection surroundings for a given unicode key.
-		/// </summary>
-		/// <returns>
-		/// true, if the key is valid for a surrounding action.
-		/// </returns>
-		/// <param name='unicodeKey'>
-		/// The key to handle.
-		/// </param>
-		/// <param name='start'>
-		/// The start of the surrounding
-		/// </param>
-		/// <param name='end'>
-		/// The end of the surrounding
-		/// </param>
-		bool GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end);
-
-		void HandleSpecialSelectionKey (TextEditorData textEditorData, uint unicodeKey);
-	}
-
-	/// <summary>
 	/// Null selection surrounding provider. Basically turns off that feature.
 	/// </summary>
-	public sealed class NullSelectionSurroundingProvider : ISelectionSurroundingProvider
+	sealed class NullSelectionSurroundingProvider : SelectionSurroundingProvider
 	{
-		public bool GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end)
+		public override bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
 		{
 			start = end = "";
 			return false;
 		}
 
-		public void HandleSpecialSelectionKey (TextEditorData textEditorData, uint unicodeKey)
+		public override void HandleSpecialSelectionKey (uint unicodeKey)
 		{
 			throw new NotSupportedException ();
 		}
@@ -74,9 +49,16 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// Default selection surrounding provider.
 	/// </summary>
-	public class DefaultSelectionSurroundingProvider : ISelectionSurroundingProvider
+	class DefaultSelectionSurroundingProvider : SelectionSurroundingProvider
 	{
-		public virtual bool GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end)
+		TextEditorData textEditorData;
+
+		public DefaultSelectionSurroundingProvider (TextEditorData textEditorData)
+		{
+			this.textEditorData = textEditorData;
+		}
+
+		public override bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
 		{
 			switch ((char)unicodeKey) {
 			case '"':
@@ -107,10 +89,10 @@ namespace Mono.TextEditor
 			}
 		}
 	
-		public virtual void HandleSpecialSelectionKey (TextEditorData textEditorData,uint unicodeKey)
+		public override void HandleSpecialSelectionKey (uint unicodeKey)
 		{
 			string start, end;
-			GetSelectionSurroundings (textEditorData, unicodeKey, out start, out end);
+			GetSelectionSurroundings (unicodeKey, out start, out end);
 			
 			if (textEditorData.MainSelection.SelectionMode == SelectionMode.Block) {
 				var selection = textEditorData.MainSelection;
