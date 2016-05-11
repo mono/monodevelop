@@ -314,7 +314,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		MonoDevelop.Core.Text.ITextSourceVersion MonoDevelop.Core.Text.ITextSource.Version {
 			get {
-				return new TextSourceVersionWrapper (document.Version);
+				return document.Version;
 			}
 		}
 
@@ -374,7 +374,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		ITextSource ITextSource.CreateSnapshot ()
 		{
-			return new ImmutableTextTextSource (document.GetImmutableText (), document.Encoding, document.UseBom, new TextSourceVersionWrapper (document.Version));
+			return document.GetImmutableText ();
 		}
 
 		ITextSource ITextSource.CreateSnapshot (int offset, int length)

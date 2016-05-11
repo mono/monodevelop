@@ -73,12 +73,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		void ITextSource.WriteTextTo (System.IO.TextWriter writer)
 		{
-			immutableText.WriteTo (writer, 0, immutableText.Length);
+			immutableText.WriteTextTo (writer, 0, immutableText.Length);
 		}
 
 		void ITextSource.WriteTextTo (System.IO.TextWriter writer, int offset, int length)
 		{
-			immutableText.WriteTo (writer, offset, length);
+			immutableText.WriteTextTo (writer, offset, length);
 		}
 
 		ITextSource ITextSource.CreateSnapshot ()

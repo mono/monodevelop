@@ -1045,7 +1045,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnTextReplacing (object s, DocumentChangeEventArgs a)
 		{
-			oldReplaceText = a.RemovedText;
+			oldReplaceText = a.RemovedText.Text;
 		}
 		
 		void OnTextReplaced (object s, DocumentChangeEventArgs a)
@@ -1065,7 +1065,7 @@ namespace MonoDevelop.SourceEditor
 
 			if (a.InsertedText != null) {
 				i = 0;
-				string sb = a.InsertedText;
+				string sb = a.InsertedText.Text;
 				while (i < sb.Length) {
 					if (sb [i] == '\n')
 						lines++;

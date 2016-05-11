@@ -62,6 +62,8 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
 {
@@ -80,7 +82,7 @@ namespace Mono.TextEditor.Utils
 	/// instead of <code>O[n]</code> for 
 	/// <code>StringBuffer/StringBuilder</code>.</i></p>
 	/// </summary>
-	public sealed class ImmutableText
+	public sealed class ImmutableText : ITextSource
 	{
 		/// <summary>Holds the default size for primitive blocks of characters.</summary>
 		const int BLOCK_SIZE = 1 << 6;
@@ -90,7 +92,7 @@ namespace Mono.TextEditor.Utils
 
 		static readonly LeafNode EMPTY_NODE = new Leaf8BitNode (new byte [0]);
 
-		public static readonly ImmutableText Empty = new ImmutableText (EMPTY_NODE);
+		public static readonly ImmutableText Empty = new ImmutableText (EMPTY_NODE, true, null);
 
 		readonly Node root;
 
@@ -101,6 +103,32 @@ namespace Mono.TextEditor.Utils
 		public int Length {
 			get {
 				return root.Length;
+			}
+		}
+
+		public ITextSourceVersion Version {
+			get;
+			internal set;
+		}
+
+		public bool UseBOM {
+			get;
+			internal set;
+		}
+
+		Encoding encoding;
+		public Encoding Encoding {
+			get {
+				return encoding ?? Encoding.UTF8;
+			}
+			internal set {
+				encoding = value;
+			}
+		}
+
+		public string Text {
+			get {
+				return ToString ();
 			}
 		}
 
@@ -124,9 +152,11 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		ImmutableText (Node node)
+		ImmutableText (Node node, bool useBom, Encoding encoding)
 		{
 			root = node;
+			UseBOM = useBom;
+			this.encoding = encoding;
 		}
 
 		public ImmutableText (string str)
@@ -149,7 +179,7 @@ namespace Mono.TextEditor.Utils
 		/// <returns><code>this + that</code></returns>
 		public ImmutableText Concat (ImmutableText that)
 		{
-			return that.Length == 0 ? this : Length == 0 ? that : new ImmutableText (ConcatNodes (EnsureChunked ().root, that.EnsureChunked ().root));
+			return that.Length == 0 ? this : Length == 0 ? that : new ImmutableText (ConcatNodes (EnsureChunked ().root, that.EnsureChunked ().root), UseBOM, encoding);
 		}
 
 		/// <summary>
@@ -201,7 +231,7 @@ namespace Mono.TextEditor.Utils
 				return Empty;
 			}
 
-			return new ImmutableText (root.SubNode (start, end));
+			return new ImmutableText (root.SubNode (start, end), UseBOM, encoding);
 		}
 
 		/// <summary>
@@ -293,7 +323,12 @@ namespace Mono.TextEditor.Utils
 			return new string (data);
 		}
 
-		public void WriteTo (TextWriter output, int index, int count)
+		public void WriteTextTo (TextWriter output)
+		{
+			WriteTextTo (output, 0, Length);
+		}
+
+		public void WriteTextTo (TextWriter output, int index, int count)
 		{
 			while (index < index + count) {
 				output.Write (this [index]);
@@ -392,7 +427,7 @@ namespace Mono.TextEditor.Utils
 		ImmutableText EnsureChunked ()
 		{
 			if (Length > BLOCK_SIZE && root is LeafNode) {
-				return new ImmutableText (NodeOf ((LeafNode)root, 0, Length));
+				return new ImmutableText (NodeOf ((LeafNode)root, 0, Length), UseBOM, encoding);
 			}
 			return this;
 		}
@@ -466,6 +501,36 @@ namespace Mono.TextEditor.Utils
 					node = composite.tail;
 				}
 			}
+		}
+
+		public char GetCharAt (int offset)
+		{
+			return this [offset];
+		}
+
+		TextReader ITextSource.CreateReader ()
+		{
+			return new ImmutableTextTextReader (this);
+		}
+
+		TextReader ITextSource.CreateReader (int offset, int length)
+		{
+			return new ImmutableTextTextReader (GetText (offset, length));
+		}
+
+		ITextSource ITextSource.CreateSnapshot ()
+		{
+			return this;
+		}
+
+		ITextSource ITextSource.CreateSnapshot (int offset, int length)
+		{
+			return GetText (offset, length);
+		}
+
+		string ITextSource.GetTextAt (int offset, int length)
+		{
+			return ToString (offset, length);
 		}
 
 		class InnerLeaf

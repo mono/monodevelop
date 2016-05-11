@@ -102,13 +102,21 @@ namespace Mono.TextEditor
 		}
 
 		public bool UseBom {
-			get;
-			set;
+			get {
+				return buffer.UseBOM;
+			}
+			set {
+				buffer.UseBOM = value;
+			}
 		}
 
 		public System.Text.Encoding Encoding {
-			get;
-			set;
+			get {
+				return buffer.Encoding;
+			}
+			set {
+				buffer.Encoding = value;
+			}
 		}
 
 		internal ILineSplitter Splitter {
@@ -236,6 +244,7 @@ namespace Mono.TextEditor
 				ClearFoldSegments ();
 				OnTextReplaced (args);
 				versionProvider = new TextSourceVersionProvider ();
+				buffer.Version = Version;
 				OnTextSet (EventArgs.Empty);
 				CommitUpdateAll ();
 				ClearUndoBuffer ();
@@ -295,7 +304,7 @@ namespace Mono.TextEditor
 				EnsureSegmentIsUnfolded (offset, value.Length);
 			
 			OnTextReplacing (args);
-			value = args.InsertedText;
+			value = args.InsertedText.Text;
 
 			cachedText = null;
 			buffer = buffer.RemoveText(offset, count);
@@ -304,6 +313,7 @@ namespace Mono.TextEditor
 			foldSegmentTree.UpdateOnTextReplace (this, args);
 			splitter.TextReplaced (this, args);
 			versionProvider.AppendChange (args);
+			buffer.Version = Version;
 			OnTextReplaced (args);
 			if (endUndo)
 				OnEndUndo (new UndoOperationEventArgs (operation));
@@ -593,14 +603,14 @@ namespace Mono.TextEditor
 
 			public virtual void Undo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText);
+				doc.Replace (args.Offset, args.InsertionLength, args.RemovedText.Text);
 				if (fireEvent)
 					OnUndoDone ();
 			}
 			
 			public virtual void Redo (TextDocument doc, bool fireEvent = true)
 			{
-				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText);
+				doc.Replace (args.Offset, args.RemovalLength, args.InsertedText.Text);
 				if (fireEvent)
 					OnRedoDone ();
 			}

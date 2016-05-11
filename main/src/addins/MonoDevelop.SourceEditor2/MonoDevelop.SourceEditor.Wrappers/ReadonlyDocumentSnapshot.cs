@@ -37,7 +37,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		public ReadonlyDocumentSnapshot (Mono.TextEditor.TextDocument textDocument)
 		{
 			snapshot = textDocument.CreateDocumentSnapshot ();
-			version = new TextSourceVersionWrapper (textDocument.Version);
+			version = textDocument.Version;
 		}
 
 		#region IReadonlyTextDocument implementation

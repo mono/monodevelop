@@ -587,7 +587,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			foreach (var data in localUpdate.ToArray ()) {
 				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
-				data.Replace (e.Offset, e.RemovalLength, e.InsertedText);
+				data.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
 				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}

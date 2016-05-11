@@ -58,11 +58,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\MiscActions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\ScrollActions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\SelectionActions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextSourceVersionProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLocation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextChangeEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextAnchor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextSourceVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextPasteHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\IIndentationTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISelectionSurroundingProvider.cs" />
