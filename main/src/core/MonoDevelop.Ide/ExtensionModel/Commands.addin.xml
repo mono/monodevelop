@@ -675,7 +675,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.CenterAndFocusCurrentDocumentHandler"
 			_displayName = "Center and Focus Document"
 			_label = "_Cursor Position"
-			shortcut = "Alt|Shift|C"
+			shortcut = "Control|L"
 			_description = "Focus and center current document" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage"
 			defaultHandler = "MonoDevelop.Ide.WelcomePage.ShowWelcomePageHandler"
@@ -1077,10 +1077,11 @@
 			_label = "Transpose characters"
 			_description = "Swaps the characters on either side of the caret"
 			macShortcut="Control|T" />
-	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.RecenterEditor"
+	<!-- This is a duplicate of CenterAndFocusCurrentDocument but doesn't use ITextEditorImpl -->
+	<!--<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.RecenterEditor"
 			_label = "Recenter editor"
 			_description = "Scrolls the editor so that the caret is centered"
-			macShortcut = "Control|L" />
+			macShortcut = "Control|L" />-->
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
 			_label = "Toggle Block Selection Mode"
 			type="radio|array"/>
