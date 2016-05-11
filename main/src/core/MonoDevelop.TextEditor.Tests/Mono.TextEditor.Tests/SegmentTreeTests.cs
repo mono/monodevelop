@@ -27,7 +27,7 @@ using System;
 using Mono.TextEditor;
 using NUnit.Framework;
 using System.Linq;
-
+using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Tests
 {
@@ -88,7 +88,7 @@ namespace Mono.TextEditor.Tests
 			collection.Add (new TreeSegment (92, 51));
 			collection.Add (new TreeSegment (42, 77));
 			collection.Add (new TreeSegment (36, 128));
-			collection.UpdateOnTextReplace (this, new DocumentChangeEventArgs (0, new string(' ', 355), null));
+			collection.UpdateOnTextReplace (this, new TextChangeEventArgs (0, new string(' ', 355), null));
 			
 			Assert.AreEqual (0, collection.Count);
 		}

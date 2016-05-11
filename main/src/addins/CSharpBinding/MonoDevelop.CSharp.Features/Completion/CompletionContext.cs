@@ -97,6 +97,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 
 		public CompletionContext (Document document, int position, SemanticModel semanticModel  = null)
 		{
+			System.Console.WriteLine ($"POS {position} doc : {document.GetSyntaxRootAsync ().Result.Span.Length}");
 			this.document = document;
 			this.semanticModel = semanticModel;
 			this.position = position;

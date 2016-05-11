@@ -331,7 +331,7 @@ namespace Mono.TextEditor
 			this.editor = editor;
 			textEditorData = new TextEditorData (doc);
 			textEditorData.RecenterEditor += TextEditorData_RecenterEditor; 
-			textEditorData.Document.TextReplaced += OnDocumentStateChanged;
+			textEditorData.Document.TextChanged += OnDocumentStateChanged;
 			textEditorData.Document.TextSet += OnTextSet;
 			textEditorData.Document.LineChanged += UpdateLinesOnTextMarkerHeightChange; 
 			textEditorData.Document.MarkerAdded += HandleTextEditorDataDocumentMarkerChange;
@@ -794,7 +794,7 @@ namespace Mono.TextEditor
 			Gtk.Key.SnooperRemove (snooperID);
 			HideTooltip ();
 			Document.EndUndo -= HandleDocumenthandleEndUndo;
-			Document.TextReplaced -= OnDocumentStateChanged;
+			Document.TextChanged -= OnDocumentStateChanged;
 			Document.TextSet -= OnTextSet;
 			Document.LineChanged -= UpdateLinesOnTextMarkerHeightChange; 
 			Document.MarkerAdded -= HandleTextEditorDataDocumentMarkerChange;
@@ -2926,7 +2926,7 @@ namespace Mono.TextEditor
 			nextTipOffset = -1;
 		}
 		
-		void OnDocumentStateChanged (object s, DocumentChangeEventArgs args)
+		void OnDocumentStateChanged (object s, TextChangeEventArgs args)
 		{
 			HideTooltip ();
 			var start = editor.Document.OffsetToLineNumber (args.Offset);

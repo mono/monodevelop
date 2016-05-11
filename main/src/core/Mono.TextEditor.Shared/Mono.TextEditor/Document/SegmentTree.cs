@@ -69,14 +69,14 @@ namespace Mono.TextEditor
 			if (ownerDocument != null)
 				throw new InvalidOperationException ("Segment tree already installed");
 			ownerDocument = doc;
-			doc.TextReplaced += UpdateOnTextReplace;
+			doc.TextChanged += UpdateOnTextReplace;
 		}
 
 		public void RemoveListener ()
 		{
 			if (ownerDocument == null)
 				throw new InvalidOperationException ("Segment tree is not installed");
-			ownerDocument.TextReplaced -= UpdateOnTextReplace;
+			ownerDocument.TextChanged -= UpdateOnTextReplace;
 			ownerDocument = null;
 		}
 		
@@ -86,7 +86,7 @@ namespace Mono.TextEditor
 			tree.Clear ();
 		}
 		
-		public void UpdateOnTextReplace (object sender, DocumentChangeEventArgs e)
+		public void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			IsDirty = true;
 			if (e.RemovalLength == 0) {

@@ -227,7 +227,7 @@ namespace Mono.TextEditor
 			document.EndUndo += OnEndUndo;
 			document.Undone += DocumentHandleUndone;
 			document.Redone += DocumentHandleRedone;
-			document.TextReplaced += HandleTextReplaced;
+			document.TextChanged += HandleTextReplaced;
 			document.TextSet += HandleDocTextSet;
 			document.Folded += HandleTextEditorDataDocumentFolded;
 			document.FoldTreeUpdated += HandleFoldTreeUpdated;
@@ -275,7 +275,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
+		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			caret.UpdateCaretPosition (e);
 		}
@@ -567,7 +567,7 @@ namespace Mono.TextEditor
 
 			document.Undone -= DocumentHandleUndone;
 			document.Redone -= DocumentHandleRedone;
-			document.TextReplaced -= HandleTextReplaced;
+			document.TextChanged -= HandleTextReplaced;
 
 			document.TextSet -= HandleDocTextSet;
 			document.Folded -= HandleTextEditorDataDocumentFolded;
@@ -1300,7 +1300,7 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Gets or sets the text paste handler.
 		/// </summary>
-		public ITextPasteHandler TextPasteHandler {
+		public TextPasteHandler TextPasteHandler {
 			get;
 			set;
 		}
@@ -1322,8 +1322,7 @@ namespace Mono.TextEditor
 						undoGroup = OpenUndoGroup ();
 					}
 					var result = Replace (offset, inserted, newText);
-					if (Paste != null)
-						Paste (offset, text, result);
+					TextPasteHandler.PostFomatPastedText (offset, result);
 					return result;
 				}
 			}
@@ -1332,14 +1331,11 @@ namespace Mono.TextEditor
 				undoGroup.Dispose ();
 				undoGroup = OpenUndoGroup ();
 			}
-			if (Paste != null)
-				Paste (offset, text, insertedChars);
+			if (TextPasteHandler != null) {
+				TextPasteHandler.PostFomatPastedText (offset, insertedChars);
+			}
 			return insertedChars;
 		}
-
-		public delegate void PasteCallback (int insertionOffset, string text, int insertedChars);
-		
-		public event PasteCallback Paste;
 		#endregion
 
 		#region Document delegation

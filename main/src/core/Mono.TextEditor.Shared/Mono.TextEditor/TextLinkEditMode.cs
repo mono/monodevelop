@@ -271,7 +271,7 @@ namespace Mono.TextEditor
 			}
 			
 			editor.Document.BeforeUndoOperation += HandleEditorDocumentBeginUndo;
-			Editor.Document.TextReplaced += UpdateLinksOnTextReplace;
+			Editor.Document.TextChanged += UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged += HandlePositionChanged;
 			this.UpdateTextLinks ();
 			this.HandlePositionChanged (null, null);
@@ -313,7 +313,7 @@ namespace Mono.TextEditor
 			if (SetCaretPosition && resetCaret)
 				Editor.Caret.Offset = endOffset;
 			
-			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
+			Editor.Document.TextChanged -= UpdateLinksOnTextReplace;
 			this.Editor.Caret.PositionChanged -= HandlePositionChanged;
 			if (undoDepth >= 0)
 				Editor.Document.StackUndoToDepth (undoDepth);
@@ -330,7 +330,7 @@ namespace Mono.TextEditor
 		bool isExited = false;
 		bool wasReplaced = false;
 
-		void UpdateLinksOnTextReplace (object sender, DocumentChangeEventArgs e)
+		void UpdateLinksOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			wasReplaced = true;
 			int offset = e.Offset - baseOffset;
@@ -515,7 +515,7 @@ namespace Mono.TextEditor
 
 		public void UpdateLinkText (TextLink link)
 		{
-			Editor.Document.TextReplaced -= UpdateLinksOnTextReplace;
+			Editor.Document.TextChanged -= UpdateLinksOnTextReplace;
 			for (int i = link.Links.Count - 1; i >= 0; i--) {
 				var s = link.Links [i];
 				int offset = s.Offset + baseOffset;
@@ -528,7 +528,7 @@ namespace Mono.TextEditor
 					Editor.Document.CommitLineUpdate (Editor.Document.OffsetToLineNumber (offset));
 				}
 			}
-			Editor.Document.TextReplaced += UpdateLinksOnTextReplace;
+			Editor.Document.TextChanged += UpdateLinksOnTextReplace;
 		}
 	}
 

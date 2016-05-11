@@ -36,24 +36,6 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public static class PublicHelperMethods
-	{
-		public static ISegment AdjustSegment (this ISegment segment, DocumentChangeEventArgs args)
-		{
-			if (args.Offset < segment.Offset)
-				return new TextSegment (segment.Offset + args.ChangeDelta, segment.Length);
-			if (args.Offset <= segment.EndOffset)
-				return new TextSegment (segment.Offset, segment.Length);
-			return segment;
-		}
-		public static IEnumerable<ISegment> AdjustSegments (this IEnumerable<ISegment> segments, DocumentChangeEventArgs args)
-		{
-			foreach (var segment in segments) {
-				yield return segment.AdjustSegment (args);
-			}
-		}
-	}
-
 	static class HelperMethods
 	{
 		public static T Kill<T>(this T gc) where T : IDisposable

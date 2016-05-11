@@ -47,7 +47,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public MergeWidget ()
 		{
-			MainEditor.Document.TextReplaced += UpdateConflictsOnTextReplace;
+			MainEditor.Document.TextChanged += UpdateConflictsOnTextReplace;
 		}
 
 		protected override void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
@@ -90,7 +90,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			base.OnDestroyed ();
 			if (MainEditor != null && MainEditor.Document != null)
-				MainEditor.Document.TextReplaced -= UpdateConflictsOnTextReplace;
+				MainEditor.Document.TextChanged -= UpdateConflictsOnTextReplace;
 		}
 		
 		public string GetResultText ()
@@ -240,7 +240,7 @@ namespace MonoDevelop.VersionControl.Views
 			UpdateDiff ();
 		}
 
-		void UpdateConflictsOnTextReplace (object sender, DocumentChangeEventArgs e)
+		void UpdateConflictsOnTextReplace (object sender, TextChangeEventArgs e)
 		{
 			this.UpdateDiff ();
 			foreach (var conflict in currentConflicts) {

@@ -93,7 +93,7 @@ namespace Mono.TextEditor
 			return lineNumber >= 1 ? Get (lineNumber) : null;
 		}
 
-		public void TextReplaced (object sender, DocumentChangeEventArgs args)
+		public void TextReplaced (object sender, TextChangeEventArgs args)
 		{
 			if (args.RemovalLength > 0)
 				TextRemove (args.Offset, args.RemovalLength);

@@ -180,7 +180,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			widget.TextEditor.Document.TextReplaced += HandleTextReplaced;
+			widget.TextEditor.Document.TextChanged += HandleTextReplaced;
 			widget.TextEditor.Document.LineChanged += HandleLineChanged;
 			widget.TextEditor.Document.LineInserted += HandleLineChanged;
 			widget.TextEditor.Document.LineRemoved += HandleLineChanged;
@@ -188,8 +188,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.BeginUndo += HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo += HandleEndUndo;
 
-			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
-			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
+			widget.TextEditor.Document.TextChanging += OnTextReplacing;
+			widget.TextEditor.Document.TextChanged += OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = CheckReadOnly;
 			widget.TextEditor.Document.TextSet += HandleDocumentTextSet;
 
@@ -269,7 +269,7 @@ namespace MonoDevelop.SourceEditor
 				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (e.Line));
 		}
 
-		void HandleTextReplaced (object sender, DocumentChangeEventArgs args)
+		void HandleTextReplaced (object sender, TextChangeEventArgs args)
 		{
 			if (Document.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;
@@ -809,7 +809,7 @@ namespace MonoDevelop.SourceEditor
 			var document = Document;
 			if (document == null)
 				return TaskUtil.Default<object> ();
-			document.TextReplaced -= OnTextReplaced;
+			document.TextChanged -= OnTextReplaced;
 			
 			if (warnOverwrite) {
 				warnOverwrite = false;
@@ -857,7 +857,7 @@ namespace MonoDevelop.SourceEditor
 				widget.EnsureCorrectEolMarker (fileName);
 			}
 			UpdateTextDocumentEncoding ();
-			document.TextReplaced += OnTextReplaced;
+			document.TextChanged += OnTextReplaced;
 			return TaskUtil.Default<object> ();
 		}
 		
@@ -975,14 +975,14 @@ namespace MonoDevelop.SourceEditor
 			
 			ClipbardRingUpdated -= UpdateClipboardRing;
 
-			widget.TextEditor.Document.TextReplaced -= HandleTextReplaced;
+			widget.TextEditor.Document.TextChanged -= HandleTextReplaced;
 			widget.TextEditor.Document.LineChanged -= HandleLineChanged;
 			widget.TextEditor.Document.BeginUndo -= HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo -= HandleEndUndo;
 			widget.TextEditor.Caret.PositionChanged -= HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed -= OnIconButtonPress;
-			widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
-			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
+			widget.TextEditor.Document.TextChanging -= OnTextReplacing;
+			widget.TextEditor.Document.TextChanged -= OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
 			widget.TextEditor.Options.Changed -= HandleWidgetTextEditorOptionsChanged;
 			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
@@ -1037,12 +1037,12 @@ namespace MonoDevelop.SourceEditor
 		
 		string oldReplaceText;
 		
-		void OnTextReplacing (object s, DocumentChangeEventArgs a)
+		void OnTextReplacing (object s, TextChangeEventArgs a)
 		{
 			oldReplaceText = a.RemovedText.Text;
 		}
 		
-		void OnTextReplaced (object s, DocumentChangeEventArgs a)
+		void OnTextReplaced (object s, TextChangeEventArgs a)
 		{
 			IsDirty = Document.IsDirty;
 			
@@ -2874,13 +2874,11 @@ namespace MonoDevelop.SourceEditor
 		void ITextEditorImpl.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
 			var data = TextEditor.GetTextEditorData ();
-			if (data.TextPasteHandler != null)
-				((TextPasteHandlerWrapper)data.TextPasteHandler).Dispose ();
 			if (textPasteHandler == null) {
 				data.TextPasteHandler = null;
 				return;
 			}
-			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
+			data.TextPasteHandler = textPasteHandler;
 		}
 
 		internal Stack<EditSession> editSessions = new Stack<EditSession> ();

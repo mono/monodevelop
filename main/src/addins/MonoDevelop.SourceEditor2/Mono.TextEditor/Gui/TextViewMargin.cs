@@ -129,7 +129,7 @@ namespace Mono.TextEditor
 				throw new ArgumentNullException ("textEditor");
 			this.textEditor = textEditor;
 
-			textEditor.Document.TextReplaced += HandleTextReplaced;
+			textEditor.Document.TextChanged += HandleTextReplaced;
 			base.cursor = xtermCursor;
 			textEditor.HighlightSearchPatternChanged += TextEditor_HighlightSearchPatternChanged;
 			textEditor.Document.LineChanged += TextEditorDocumentLineChanged;
@@ -160,7 +160,7 @@ namespace Mono.TextEditor
 			currentLineColor = ColorStyle.LineMarkerInactive;
 		}
 
-		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
+		void HandleTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			RemoveCachedLine (Document.GetLineByOffset (e.Offset));
 			if (mouseSelectionMode == MouseSelectionMode.Word && e.Offset < mouseWordStart) {
@@ -465,7 +465,7 @@ namespace Mono.TextEditor
 			textEditor.VScroll -= HandleVAdjustmentValueChanged;
 			textEditor.HighlightSearchPatternChanged -= TextEditor_HighlightSearchPatternChanged;
 
-			textEditor.Document.TextReplaced -= HandleTextReplaced;
+			textEditor.Document.TextChanged -= HandleTextReplaced;
 			textEditor.Document.LineChanged -= TextEditorDocumentLineChanged;
 			textEditor.TextArea.FocusInEvent -= HandleFocusInEvent;
 			textEditor.TextArea.FocusOutEvent -= HandleFocusOutEvent;

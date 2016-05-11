@@ -123,7 +123,7 @@ namespace Mono.TextEditor
 			return delimiters.Count;
 		}
 
-		public void TextReplaced (object sender, DocumentChangeEventArgs args)
+		public void TextReplaced (object sender, TextChangeEventArgs args)
 		{
 			throw new NotSupportedException ("Operation not supported on this line splitter.");
 		}

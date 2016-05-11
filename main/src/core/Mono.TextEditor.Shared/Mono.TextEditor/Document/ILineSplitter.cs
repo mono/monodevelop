@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core.Text;
+
 namespace Mono.TextEditor
 {
 	public interface ILineSplitter
@@ -30,7 +32,7 @@ namespace Mono.TextEditor
 		DocumentLine GetLineByOffset (int offset);
 		int OffsetToLineNumber (int offset);
 
-		void TextReplaced (object sender, DocumentChangeEventArgs args);
+		void TextReplaced (object sender, TextChangeEventArgs args);
 		void TextRemove (int offset, int length);
 		void TextInsert (int offset, string text);
 

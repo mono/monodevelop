@@ -212,7 +212,7 @@ namespace Mono.TextEditor
 						var pasteHandler = data.TextPasteHandler;
 						if (pasteHandler != null) {
 							try {
-								copyData = pasteHandler.GetCopyData (segment);
+								copyData = pasteHandler.GetCopyData (segment.Offset, segment.Length);
 							} catch (Exception e) {
 								Console.WriteLine ("Exception while getting copy data:" + e);
 							}

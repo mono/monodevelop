@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DiffTracker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentChangeEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentLine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentLocation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentRegion.cs" />
@@ -59,7 +58,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\SelectionActions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLocation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextAnchor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextPasteHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISelectionSurroundingProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Selection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SearchRequest.cs" />

@@ -30,6 +30,7 @@ using Mono.TextEditor;
 using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -77,7 +78,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			public Minimpap (QuickTaskStrip parent) : base (parent)
 			{
 				doc = parent.TextEditor.Document;
-				doc.TextReplaced += TextReplaced;
+				doc.TextChanged += TextReplaced;
 				doc.Folded += HandleFolded;
 			}
 
@@ -90,7 +91,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				RequestRedraw ();
 			}
 
-			void TextReplaced (object sender, DocumentChangeEventArgs args)
+			void TextReplaced (object sender, TextChangeEventArgs args)
 			{
 				RequestRedraw ();
 			}
@@ -171,7 +172,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			{
 				base.OnDestroyed ();
 				doc.Folded -= HandleFolded;
-				doc.TextReplaced -= TextReplaced;
+				doc.TextChanged -= TextReplaced;
 				RemoveRedrawTimer ();
 				DestroyBgBuffer ();
 			}

@@ -29,22 +29,29 @@ using System.Linq;
 using Gtk;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class ClipboardTests : TextEditorTestBase, ITextPasteHandler
+	public class ClipboardTests : TextEditorTestBase
 	{
 		#region ITextPasteHandler implementation
-
-		public string FormatPlainText (int offset, string text, byte[] copyData)
+		class TestPasteHandler : TextPasteHandler
 		{
-			return "Hello World";
-		}
+			public override string FormatPlainText (int offset, string text, byte [] copyData)
+			{
+				return "Hello World";
+			}
 
-		public byte[] GetCopyData (ISegment segment)
-		{
-			return null;
+			public override byte [] GetCopyData (int offset, int length)
+			{
+				return null;
+			}
+
+			public override void PostFomatPastedText (int offset, int length)
+			{
+			}
 		}
 
 		#endregion
@@ -58,7 +65,7 @@ namespace Mono.TextEditor.Tests
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
-			data.TextPasteHandler = this;
+			data.TextPasteHandler = new TestPasteHandler ();
 
 			ClipboardActions.Paste (data);
 
@@ -74,7 +81,7 @@ namespace Mono.TextEditor.Tests
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
-			data.TextPasteHandler = this;
+			data.TextPasteHandler = new TestPasteHandler ();
 
 			ClipboardActions.Paste (data);
 
@@ -94,7 +101,7 @@ namespace Mono.TextEditor.Tests
 			Clipboard clipboard = Clipboard.Get (Mono.TextEditor.ClipboardActions.CopyOperation.CLIPBOARD_ATOM);
 			clipboard.Text = "hello";
 
-			data.TextPasteHandler = this;
+			data.TextPasteHandler = new TestPasteHandler ();
 
 			ClipboardActions.Paste (data);
 

@@ -237,7 +237,7 @@ namespace Mono.TextEditor
 				return completeText;
 			}
 			set {
-				var args = new DocumentChangeEventArgs (0, Text, value);
+				var args = new TextChangeEventArgs (0, Text, value);
 				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
 				cachedText = null;
@@ -292,7 +292,7 @@ namespace Mono.TextEditor
 			InterruptFoldWorker ();
 
 			//int oldLineCount = LineCount;
-			var args = new DocumentChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value, AnchorMovementType.Default);
+			var args = new TextChangeEventArgs (offset, count > 0 ? GetTextAt (offset, count) : "", value);
 
 			UndoOperation operation = null;
 			bool endUndo = false;
@@ -476,20 +476,20 @@ namespace Mono.TextEditor
 			return Text.LastIndexOf (searchText, startIndex, count, comparisonType);
 		}
 
-		protected virtual void OnTextReplaced (DocumentChangeEventArgs args)
+		protected virtual void OnTextReplaced (TextChangeEventArgs args)
 		{
-			if (TextReplaced != null)
-				TextReplaced (this, args);
+			if (TextChanged != null)
+				TextChanged (this, args);
 		}
 		
-		public event EventHandler<DocumentChangeEventArgs> TextReplaced;
-		
-		protected virtual void OnTextReplacing (DocumentChangeEventArgs args)
+		public event EventHandler<TextChangeEventArgs> TextChanged;
+
+		protected virtual void OnTextReplacing (TextChangeEventArgs args)
 		{
-			if (TextReplacing != null)
-				TextReplacing (this, args);
+			if (TextChanging != null)
+				TextChanging (this, args);
 		}
-		public event EventHandler<DocumentChangeEventArgs> TextReplacing;
+		public event EventHandler<TextChangeEventArgs> TextChanging;
 		
 		protected virtual void OnTextSet (EventArgs e)
 		{
@@ -597,9 +597,9 @@ namespace Mono.TextEditor
 		#region Undo/Redo operations
 		public class UndoOperation
 		{
-			DocumentChangeEventArgs args;
+			TextChangeEventArgs args;
 
-			public virtual DocumentChangeEventArgs Args {
+			public virtual TextChangeEventArgs Args {
 				get {
 					return args;
 				}
@@ -614,7 +614,7 @@ namespace Mono.TextEditor
 			{
 			}
 
-			public UndoOperation (DocumentChangeEventArgs args)
+			public UndoOperation (TextChangeEventArgs args)
 			{
 				this.args = args;
 			}
@@ -665,7 +665,7 @@ namespace Mono.TextEditor
 				}
 			}
 			
-			public override DocumentChangeEventArgs Args {
+			public override TextChangeEventArgs Args {
 				get {
 					return null;
 				}
@@ -731,7 +731,7 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public override DocumentChangeEventArgs Args {
+			public override TextChangeEventArgs Args {
 				get {
 					return operations.Count > 0 ? operations [operations.Count - 1].Args : null;
 				}
@@ -1665,8 +1665,6 @@ namespace Mono.TextEditor
 		}
 		
 		public event EventHandler DocumentUpdated;
-		public event EventHandler<TextChangeEventArgs> TextChanging;
-		public event EventHandler<TextChangeEventArgs> TextChanged;
 		#endregion
 
 		#region Helper functions

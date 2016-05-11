@@ -32,6 +32,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using MonoDevelop.Components;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Mono.TextEditor.Highlighting
 {
@@ -46,12 +47,12 @@ namespace Mono.TextEditor.Highlighting
 			set {
 				if (doc != null) {
 					doc.TextSet -= HandleTextSet;
-					doc.TextReplaced -= HandleTextReplaced;
+					doc.TextChanged -= HandleTextReplaced;
 				}
 				doc = value;
 				if (doc != null) {
 					doc.TextSet += HandleTextSet;
-					doc.TextReplaced += HandleTextReplaced;
+					doc.TextChanged += HandleTextReplaced;
 				}
 				HandleTextSet (doc, EventArgs.Empty);
 				OnDocumentSet (EventArgs.Empty);
@@ -59,7 +60,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
+		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			if (doc == null || doc.SuppressHighlightUpdate || doc.CurrentAtomicUndoOperationType == OperationType.Format)
 				return;

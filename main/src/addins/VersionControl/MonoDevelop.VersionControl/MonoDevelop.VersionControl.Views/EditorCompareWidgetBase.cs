@@ -583,12 +583,12 @@ namespace MonoDevelop.VersionControl.Views
 
 		List<TextEditorData> localUpdate = new List<TextEditorData> ();
 
-		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
+		void HandleInfoDocumentTextEditorDataDocumentTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			foreach (var data in localUpdate.ToArray ()) {
-				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 				data.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
-				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+				data.Document.TextChanged += HandleDataDocumentTextReplaced;
 				data.Document.CommitUpdateAll ();
 			}
 		}
@@ -597,9 +597,9 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var text = info.Document.GetContent<ITextFile> ();
 			foreach (var data in dict.Values) {
-				data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+				data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 				data.Document.Text = text.Text;
-				data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+				data.Document.TextChanged += HandleDataDocumentTextReplaced;
 			}
 			CreateDiff ();
 		}
@@ -617,10 +617,10 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			
 			CreateDiff ();
-			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
+			data.Document.TextChanged += HandleDataDocumentTextReplaced;
 		}
 
-		void HandleDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)
+		void HandleDataDocumentTextReplaced (object sender, TextChangeEventArgs e)
 		{
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
@@ -633,7 +633,7 @@ namespace MonoDevelop.VersionControl.Views
 		public void RemoveLocal (TextEditorData data)
 		{
 			localUpdate.Remove (data);
-			data.Document.TextReplaced -= HandleDataDocumentTextReplaced;
+			data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 		}
 
 		protected virtual void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)

@@ -154,7 +154,7 @@ namespace Mono.TextEditor
 			return lines.Length;
 		}
 
-		public void TextReplaced (object sender, DocumentChangeEventArgs args)
+		public void TextReplaced (object sender, TextChangeEventArgs args)
 		{
 		}
 

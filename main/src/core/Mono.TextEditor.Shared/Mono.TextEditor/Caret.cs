@@ -356,12 +356,12 @@ namespace Mono.TextEditor
 			offsetVersion = doc.Version;
 		}
 
-		internal void UpdateCaretPosition (DocumentChangeEventArgs e)
+		internal void UpdateCaretPosition (TextChangeEventArgs e)
 		{
-			if (e.AnchorMovementType == AnchorMovementType.BeforeInsertion && caretOffset == e.Offset) {
-				offsetVersion = TextEditorData.Version;
-				return;
-			}
+			//if (e.AnchorMovementType == AnchorMovementType.BeforeInsertion && caretOffset == e.Offset) {
+			//	offsetVersion = TextEditorData.Version;
+			//	return;
+			//}
 			var curVersion = TextEditorData.Version;
 			if (offsetVersion == null) {
 				offsetVersion = curVersion;
