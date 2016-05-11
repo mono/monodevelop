@@ -2075,6 +2075,14 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
 		{
+			// This is to work around an issue in ContextMenuTreeView, when we set the
+			// SelectFunction to block selection then it doesn't seem to always get
+			// properly unset.
+			//   https://bugzilla.xamarin.com/show_bug.cgi?id=40469
+			tree.Selection.SelectFunction = (s, m, p, b) => {
+				return true;
+			};
+
 			ActivateCurrentItem ();
 		}
 
