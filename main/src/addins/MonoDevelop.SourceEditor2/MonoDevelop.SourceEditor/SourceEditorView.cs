@@ -1995,18 +1995,18 @@ namespace MonoDevelop.SourceEditor
 			bool toggle = true;
 
 			foreach (var segment in Document.FoldSegments) {
-				if (segment.FoldingType == Mono.TextEditor.FoldingType.TypeMember || segment.FoldingType == Mono.TextEditor.FoldingType.Comment)
-					if (segment.IsFolded)
+				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
+					if (segment.IsCollapsed)
 						toggle = false;
 			}
 
 
 			foreach (var segment in Document.FoldSegments) {
-				if (segment.FoldingType == Mono.TextEditor.FoldingType.TypeDefinition) {
-					segment.IsFolded = false;
+				if (segment.FoldingType == FoldingType.TypeDefinition) {
+					segment.IsCollapsed = false;
 				}
-				if (segment.FoldingType == Mono.TextEditor.FoldingType.TypeMember || segment.FoldingType == Mono.TextEditor.FoldingType.Comment)
-					segment.IsFolded = toggle;
+				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
+					segment.IsCollapsed = toggle;
 			}
 
 			widget.TextEditor.Caret.MoveCaretBeforeFoldings ();
@@ -2733,7 +2733,7 @@ namespace MonoDevelop.SourceEditor
 
 		IFoldSegment ITextEditorImpl.CreateFoldSegment (int offset, int length, bool isFolded)
 		{
-			return new FoldSegmentWrapper (TextEditor.Document, "...", offset, length, Mono.TextEditor.FoldingType.None) { IsFolded = isFolded };
+			return new FoldSegment (TextEditor.Document, "...", offset, length, FoldingType.Unknown) { IsCollapsed = isFolded };
 		}
 
 		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)

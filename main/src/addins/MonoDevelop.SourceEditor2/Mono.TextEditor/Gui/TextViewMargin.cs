@@ -1937,7 +1937,7 @@ namespace Mono.TextEditor
 					int lineNr = args.LineNumber;
 					foreach (var shownFolding in GetFoldRectangles (lineNr)) {
 						if (shownFolding.Item1.Contains ((int)(args.X + this.XOffset), (int)args.Y)) {
-							shownFolding.Item2.IsFolded = false;
+							shownFolding.Item2.IsCollapsed = false;
 							return;
 						}
 					}
@@ -2479,14 +2479,14 @@ namespace Mono.TextEditor
 					if (foldOffset < offset)
 						continue;
 
-					if (folding.IsFolded) {
+					if (folding.IsCollapsed) {
 						var txt = Document.GetTextAt (offset, System.Math.Max (0, System.Math.Min (foldOffset - offset, Document.TextLength - offset)));
 						calcTextLayout.SetText (txt);
 						calcTextLayout.GetSize (out width, out height);
 						xPos += width / Pango.Scale.PangoScale;
 						offset = folding.EndLine.Offset + folding.EndColumn;
 
-						calcFoldingLayout.SetText (folding.Description);
+						calcFoldingLayout.SetText (folding.CollapsedText);
 
 						calcFoldingLayout.GetSize (out width, out height);
 
@@ -2661,11 +2661,11 @@ namespace Mono.TextEditor
 				if (foldOffset < offset)
 					continue;
 
-				if (folding.IsFolded) {
+				if (folding.IsCollapsed) {
 					DrawLinePart (cr, line, lineNr, logicalRulerColumn, offset, foldOffset - offset, ref position, ref isSelectionDrawn, y, area.X + area.Width, _lineHeight);
 
 					offset = folding.EndLine.Offset + folding.EndColumn - 1;
-					markerLayout.SetText (folding.Description);
+					markerLayout.SetText (folding.CollapsedText);
 					int width, height;
 					markerLayout.GetPixelSize (out width, out height);
 
@@ -2707,12 +2707,12 @@ namespace Mono.TextEditor
 					cr.ShowLayout (markerLayout);
 					cr.Restore ();
 
-					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.Description)) {
+					if (caretOffset == foldOffset && !string.IsNullOrEmpty (folding.CollapsedText)) {
 						var cx = (int)position;
 						SetVisibleCaretPosition (cx, y, cx, y);
 					}
 					position += foldingRectangle.Width;
-					if (caretOffset == foldOffset + folding.Length && !string.IsNullOrEmpty (folding.Description)) {
+					if (caretOffset == foldOffset + folding.Length && !string.IsNullOrEmpty (folding.CollapsedText)) {
 						var cx = (int)position;
 						SetVisibleCaretPosition (cx, y, cx, y);
 					}
@@ -2949,7 +2949,7 @@ namespace Mono.TextEditor
 				try {
 					restart:
 					int logicalRulerColumn = line.GetLogicalColumn (margin.textEditor.GetTextEditorData (), margin.textEditor.Options.RulerColumn);
-					foreach (FoldSegment folding in foldings.Where(f => f.IsFolded)) {
+					foreach (FoldSegment folding in foldings.Where(f => f.IsCollapsed)) {
 						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 						if (foldOffset < offset)
 							continue;
@@ -2962,7 +2962,7 @@ namespace Mono.TextEditor
 						xPos += width * (int)Pango.Scale.PangoScale;
 						if (measueLayout == null) {
 							measueLayout = margin.textEditor.LayoutCache.RequestLayout ();
-							measueLayout.SetText (folding.Description);
+							measueLayout.SetText (folding.CollapsedText);
 							measueLayout.FontDescription = margin.textEditor.Options.Font;
 						}
 

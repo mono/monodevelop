@@ -1593,7 +1593,7 @@ namespace Mono.TextEditor
 			int start = e.FoldSegment.StartLine.LineNumber;
 			int end = e.FoldSegment.EndLine.LineNumber;
 			
-			if (e.FoldSegment.IsFolded) {
+			if (e.FoldSegment.IsCollapsed) {
 				if (e.FoldSegment.Marker != null)
 					HeightTree.Unfold (e.FoldSegment.Marker, start, end - start);
 				e.FoldSegment.Marker = HeightTree.Fold (start, end - start);

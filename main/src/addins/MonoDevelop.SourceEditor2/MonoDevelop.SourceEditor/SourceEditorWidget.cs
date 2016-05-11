@@ -489,7 +489,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, Mono.TextEditor.DocumentRegion region, Mono.TextEditor.FoldingType type)
+		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, Mono.TextEditor.DocumentRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)

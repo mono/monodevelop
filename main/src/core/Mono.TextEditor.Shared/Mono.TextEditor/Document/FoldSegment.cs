@@ -26,14 +26,15 @@
 //
 
 using System;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public class FoldSegment : TreeSegment, System.IComparable
+	public class FoldSegment : TreeSegment, System.IComparable, IFoldSegment
 	{
 		internal bool isFolded;
 		internal bool isAttached;
-		public bool IsFolded {
+		public bool IsCollapsed {
 			get {
 				return isFolded;
 			}
@@ -48,7 +49,7 @@ namespace Mono.TextEditor
 
 		public HeightTree.FoldMarker Marker { get; set;}
 		
-		public string Description { get; set; }
+		public string CollapsedText { get; set; }
 		
 		public int Column { get; set; }
 		public int EndColumn { get; set; }
@@ -96,21 +97,21 @@ namespace Mono.TextEditor
 		{
 			this.doc = doc;
 			this.isFolded = false;
-			this.Description = description;
+			this.CollapsedText = description;
 			this.FoldingType = foldingType;
 		}
 		
 		public FoldSegment (FoldSegment foldSegment) : base (foldSegment.Offset, foldSegment.Length)
 		{
 			this.doc = foldSegment.doc;
-			this.isFolded = foldSegment.IsFolded;
-			this.Description = foldSegment.Description;
+			this.isFolded = foldSegment.IsCollapsed;
+			this.CollapsedText = foldSegment.CollapsedText;
 			this.FoldingType = foldSegment.FoldingType;
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("[FoldSegment: IsFolded={0}, Description={1}, Column={2}, Offset={3}, Length={4}, StartLine={5}, EndLine={6}, EndColumn={7}, FoldingType={8}]", IsFolded, Description, Column, Offset, Length, StartLine, EndLine, EndColumn, FoldingType);
+			return string.Format("[FoldSegment: IsFolded={0}, Description={1}, Column={2}, Offset={3}, Length={4}, StartLine={5}, EndLine={6}, EndColumn={7}, FoldingType={8}]", IsCollapsed, CollapsedText, Column, Offset, Length, StartLine, EndLine, EndColumn, FoldingType);
 		}
 		
 		public int CompareTo (object obj)

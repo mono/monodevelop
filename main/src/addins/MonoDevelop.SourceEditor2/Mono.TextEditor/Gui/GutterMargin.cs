@@ -144,7 +144,7 @@ namespace Mono.TextEditor
 			
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in data.Document.GetStartFoldings (line)) {
-				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (result))) {
+				if (folding.IsCollapsed && folding.Contains (data.Document.LocationToOffset (result))) {
 					segment = folding;
 					break;
 				}

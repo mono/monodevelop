@@ -130,7 +130,7 @@ namespace Mono.TextEditor
 				return;
 
 			foreach (FoldSegment segment in editor.Document.GetStartFoldings (args.LineSegment)) {
-				segment.IsFolded = !segment.IsFolded; 
+				segment.IsCollapsed = !segment.IsCollapsed; 
 			}
 			editor.SetAdjustments ();
 			editor.Caret.MoveCaretBeforeFoldings ();
@@ -402,7 +402,7 @@ namespace Mono.TextEditor
 					bool isVisible         = true;
 					bool moreLinedOpenFold = false;
 					foreach (FoldSegment foldSegment in startFoldings) {
-						if (foldSegment.IsFolded) {
+						if (foldSegment.IsCollapsed) {
 							isVisible = false;
 						} else {
 							moreLinedOpenFold = foldSegment.EndLine.Offset > foldSegment.StartLine.Offset;
@@ -410,7 +410,7 @@ namespace Mono.TextEditor
 					}
 					bool isFoldEndFromUpperFold = false;
 					foreach (FoldSegment foldSegment in endFoldings) {
-						if (foldSegment.EndLine.Offset > foldSegment.StartLine.Offset && !foldSegment.IsFolded) 
+						if (foldSegment.EndLine.Offset > foldSegment.StartLine.Offset && !foldSegment.IsCollapsed) 
 							isFoldEndFromUpperFold = true;
 					}
 					DrawFoldSegment (cr, x, y, isVisible, isStartSelected);

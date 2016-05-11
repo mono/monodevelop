@@ -99,7 +99,7 @@ namespace Mono.TextEditor
 			var foldings = data.Document.GetStartFoldings (loc.Line);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (loc))) {
+				if (folding.IsCollapsed && folding.Contains (data.Document.LocationToOffset (loc))) {
 					segment = folding;
 					break;
 				}
@@ -119,7 +119,7 @@ namespace Mono.TextEditor
 			var foldings = data.Document.GetFoldingsFromOffset (line.Offset);
 			FoldSegment segment = null;
 			foreach (FoldSegment folding in foldings) {
-				if (folding.IsFolded) {
+				if (folding.IsCollapsed) {
 					if (segment != null && segment.Offset < folding.Offset)
 						continue;
 					segment = folding;

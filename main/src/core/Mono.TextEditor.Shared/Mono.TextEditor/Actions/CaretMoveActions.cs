@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 						}
 					} else {
 						int offset = data.Caret.Offset - 1;
-						foreach (var folding in data.Document.GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset)) {
+						foreach (var folding in data.Document.GetFoldingsFromOffset (offset).Where (f => f.IsCollapsed && f.Offset < offset)) {
 							offset = System.Math.Min (offset, folding.Offset);
 						}
 						data.Caret.Offset = offset;
@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 				IEnumerable<FoldSegment > foldings = data.Document.GetStartFoldings (line);
 				FoldSegment segment = null;
 				foreach (FoldSegment folding in foldings) {
-					if (folding.IsFolded && folding.Column == data.Caret.Column) {
+					if (folding.IsCollapsed && folding.Column == data.Caret.Column) {
 						segment = folding;
 						break;
 					}
@@ -178,7 +178,7 @@ namespace Mono.TextEditor
 		{
 			IEnumerable<FoldSegment > foldings = data.Document.GetFoldingsFromOffset (offset);
 			foreach (FoldSegment folding in foldings.Where (f => f.Offset < offset && offset < f.EndOffset)) {
-				if (folding.IsFolded) {
+				if (folding.IsCollapsed) {
 					if (moveToEnd) {
 						if (offset < folding.EndOffset)
 							offset = folding.EndOffset;
@@ -259,7 +259,7 @@ namespace Mono.TextEditor
 				IEnumerable<FoldSegment> foldings = data.Document.GetEndFoldings (line);
 				FoldSegment segment = null;
 				foreach (FoldSegment folding in foldings) {
-					if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
+					if (folding.IsCollapsed && folding.Contains (data.Document.LocationToOffset (newLocation))) {
 						segment = folding;
 						break;
 					}
@@ -299,7 +299,7 @@ namespace Mono.TextEditor
 				IEnumerable<FoldSegment> foldings = data.Document.GetStartFoldings (line);
 				FoldSegment segment = null;
 				foreach (FoldSegment folding in foldings) {
-					if (folding.IsFolded && folding.Contains (data.Document.LocationToOffset (newLocation))) {
+					if (folding.IsCollapsed && folding.Contains (data.Document.LocationToOffset (newLocation))) {
 						segment = folding;
 						break;
 					}

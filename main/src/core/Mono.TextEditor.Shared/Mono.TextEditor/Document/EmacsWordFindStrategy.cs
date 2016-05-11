@@ -79,7 +79,7 @@ namespace Mono.TextEditor
 				result++;
 			}
 			foreach (FoldSegment segment in doc.GetFoldingsFromOffset (result)) {
-				if (segment.IsFolded)
+				if (segment.IsCollapsed)
 					result = System.Math.Max (result, segment.EndLine.Offset + segment.EndColumn);
 			}
 			return result;
@@ -125,7 +125,7 @@ namespace Mono.TextEditor
 				result--;
 			}
 			foreach (FoldSegment segment in doc.GetFoldingsFromOffset (result)) {
-				if (segment.IsFolded)
+				if (segment.IsCollapsed)
 					result = System.Math.Min (result, segment.StartLine.Offset + segment.Column);
 			}
 			return result;

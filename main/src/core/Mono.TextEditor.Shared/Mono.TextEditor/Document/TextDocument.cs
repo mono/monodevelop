@@ -175,7 +175,7 @@ namespace Mono.TextEditor
 
 		void HandleFoldSegmentTreetreeNodeRemoved (object sender, RedBlackTree<FoldSegment>.RedBlackTreeNodeEventArgs e)
 		{
-			if (e.Node.IsFolded)
+			if (e.Node.IsCollapsed)
 				foldedSegments.Remove (e.Node);
 		}
 
@@ -1145,15 +1145,15 @@ namespace Mono.TextEditor
 				
 				if (oldIndex < oldSegments.Count && offset == oldSegments [oldIndex].Offset) {
 					FoldSegment curSegment = oldSegments [oldIndex];
-					if (curSegment.IsFolded && newFoldSegment.Length != curSegment.Length)
-						curSegment.IsFolded = newFoldSegment.IsFolded = false;
+					if (curSegment.IsCollapsed && newFoldSegment.Length != curSegment.Length)
+						curSegment.IsCollapsed = newFoldSegment.IsCollapsed = false;
 					curSegment.Length = newFoldSegment.Length;
-					curSegment.Description = newFoldSegment.Description;
+					curSegment.CollapsedText = newFoldSegment.CollapsedText;
 					curSegment.EndColumn = curSegment.EndOffset - curSegment.EndLine.Offset + 1;
 					curSegment.Column = offset - curSegment.StartLine.Offset + 1;
 
-					if (newFoldSegment.IsFolded) {
-						foldedSegmentAdded |= !curSegment.IsFolded;
+					if (newFoldSegment.IsCollapsed) {
+						foldedSegmentAdded |= !curSegment.IsCollapsed;
 						curSegment.isFolded = true;
 					}
 					if (curSegment.isFolded)
@@ -1167,11 +1167,11 @@ namespace Mono.TextEditor
 					if (startLine != null)
 						newFoldSegment.Column = offset - startLine.Offset + 1;
 					newFoldSegment.isAttached = true;
-					foldedSegmentAdded |= newFoldSegment.IsFolded;
+					foldedSegmentAdded |= newFoldSegment.IsCollapsed;
 					if (oldIndex < oldSegments.Count && newFoldSegment.Length == oldSegments [oldIndex].Length) {
-						newFoldSegment.isFolded = oldSegments [oldIndex].IsFolded;
+						newFoldSegment.isFolded = oldSegments [oldIndex].IsCollapsed;
 					}
-					if (newFoldSegment.IsFolded)
+					if (newFoldSegment.IsCollapsed)
 						newFoldedSegments.Add (newFoldSegment);
 					foldSegmentTree.Add (newFoldSegment);
 				}
@@ -1287,15 +1287,29 @@ namespace Mono.TextEditor
 		
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
+<<<<<<< HEAD
 			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset && offset < f.EndOffset)) {
 				fold.IsFolded = false;
+=======
+			bool needUpdate = false;
+			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsCollapsed && f.Offset < offset && offset < f.EndOffset)) {
+				needUpdate = true;
+				fold.IsCollapsed = false;
+>>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 			}
 		}
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
+<<<<<<< HEAD
 			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
 				fold.IsFolded = false;
+=======
+			bool needUpdate = false;
+			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsCollapsed)) {
+				needUpdate = true;
+				fold.IsCollapsed = false;
+>>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 			}
 		}
 
@@ -1317,6 +1331,7 @@ namespace Mono.TextEditor
 
 		internal void InformFoldChanged (FoldSegmentEventArgs args)
 		{
+<<<<<<< HEAD
 			lock (foldSegmentTaskLock) {
 				if (foldSegmentTask != null) {
 					foldSegmentTask.ContinueWith (delegate {
@@ -1333,6 +1348,9 @@ namespace Mono.TextEditor
 		void InternalInformFoldChanged (FoldSegmentEventArgs args)
 		{
 			if (args.FoldSegment.IsFolded) {
+=======
+			if (args.FoldSegment.IsCollapsed) {
+>>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 				foldedSegments.Add (args.FoldSegment);
 			} else {
 				foldedSegments.Remove (args.FoldSegment);

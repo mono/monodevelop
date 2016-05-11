@@ -261,7 +261,7 @@ namespace Mono.TextEditor
 
 			if (logicalDesiredColumn <= desiredLine.Length + 1) {
 				int possibleOffset = TextEditorData.LocationToOffset (desiredLineNumber, logicalDesiredColumn);
-				if (!TextEditorData.Document.GetFoldingsFromOffset (possibleOffset).Any (f => f.IsFolded))
+				if (!TextEditorData.Document.GetFoldingsFromOffset (possibleOffset).Any (f => f.IsCollapsed))
 					column = logicalDesiredColumn;
 			} else {
 				column = System.Math.Max (newColumn, desiredLine.Length + 1);
@@ -317,7 +317,7 @@ namespace Mono.TextEditor
 		{
 			int offset = Offset;
 			foreach (FoldSegment fold in TextEditorData.Document.GetFoldingsFromOffset (Offset)) {
-				if (fold.IsFolded)
+				if (fold.IsCollapsed)
 					offset = System.Math.Min (offset, fold.Offset);
 			}
 			Offset = offset;

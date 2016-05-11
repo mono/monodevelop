@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 			int lineNumber = data.LogicalToVisualLocation (data.Caret.Location).Line;
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
-					if (fold.IsFolded && data.LogicalToVisualLine (data.OffsetToLineNumber (fold.Offset)) == lineNumber && 
+					if (fold.IsCollapsed && data.LogicalToVisualLine (data.OffsetToLineNumber (fold.Offset)) == lineNumber && 
 					    fold.Offset <= startOffset && fold.EndOffset >= endOffset) {
 						currentFold = fold;
 						startOffset = fold.Offset;
@@ -72,7 +72,7 @@ namespace Mono.TextEditor
 			
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
-					if (!fold.IsFolded && 
+					if (!fold.IsCollapsed && 
 					    fold.Offset >= startOffset && fold.EndOffset <= endOffset) {
 						currentFold = fold;
 						startOffset = fold.Offset;
@@ -100,7 +100,7 @@ namespace Mono.TextEditor
 			FoldSegment currentFold = GetOutermostClosedFold (data);
 			
 			if (null != currentFold) {
-				currentFold.IsFolded = false;
+				currentFold.IsCollapsed = false;
 				Commit (data);
 			}
 		}
@@ -113,7 +113,7 @@ namespace Mono.TextEditor
 			FoldSegment currentFold = GetInnermostOpenedFold (data);
 			
 			if (null != currentFold) {
-				currentFold.IsFolded = true;
+				currentFold.IsCollapsed = true;
 				Commit (data);
 			}
 		}
@@ -144,7 +144,7 @@ namespace Mono.TextEditor
 				foreach (FoldSegment fold in data.Document.FoldSegments) {
 					if (fold.Offset >= currentFold.Offset && 
 					    fold.Offset <= currentFold.EndOffset) {
-						fold.IsFolded = false;
+						fold.IsCollapsed = false;
 					}
 				}
 				Commit (data);
@@ -160,7 +160,7 @@ namespace Mono.TextEditor
 			
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
-					fold.IsFolded = true;
+					fold.IsCollapsed = true;
 				}
 				Commit (data);
 			}
@@ -186,7 +186,7 @@ namespace Mono.TextEditor
 		/// </summary>
 		public static void ToggleAllFolds (TextEditorData data)
 		{
-			if (data.Document.FoldSegments.Any (s => s.IsFolded)) {
+			if (data.Document.FoldSegments.Any (s => s.IsCollapsed)) {
 				OpenAllFolds (data);
 			} else {
 				CloseAllFolds (data);
@@ -202,7 +202,7 @@ namespace Mono.TextEditor
 			IEnumerable<FoldSegment> folds = data.Document.FoldSegments;
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
-					fold.IsFolded = false;
+					fold.IsCollapsed = false;
 				}
 				Commit (data);
 			}
@@ -216,7 +216,7 @@ namespace Mono.TextEditor
 			IEnumerable<FoldSegment> folds = data.Document.FoldSegments;
 			if (null != folds) {
 				foreach (FoldSegment fold in folds) {
-					fold.IsFolded = true;
+					fold.IsCollapsed = true;
 				}
 				Commit (data);
 			}

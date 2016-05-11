@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentRegion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentUpdateRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\EmacsWordFindStrategy.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\FoldingType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\FoldSegment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\ILineSplitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\IWordFindStrategy.cs" />
