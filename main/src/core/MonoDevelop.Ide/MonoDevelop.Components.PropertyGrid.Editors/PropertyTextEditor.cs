@@ -36,7 +36,7 @@ using Gdk;
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 {
 	[PropertyEditorType (typeof (string))]
-	public class PropertyTextEditor: Gtk.HBox, IPropertyEditor
+	public class PropertyTextEditor: Gtk.HBox, IPropertyEditorWithReadOnly
 	{
 		EditSession session;
 		bool disposed;
@@ -231,6 +231,14 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 					entry.Text = val ?? string.Empty;
 					initialText = entry.Text;
 				}
+			}
+		}
+
+		public bool IsReadOnly {
+			get { return entry != null && !entry.IsEditable; }
+			set {
+				if (entry != null)
+					entry.IsEditable = !value;
 			}
 		}
 

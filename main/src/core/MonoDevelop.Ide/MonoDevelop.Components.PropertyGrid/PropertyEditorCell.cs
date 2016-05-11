@@ -235,6 +235,10 @@ namespace MonoDevelop.Components.PropertyGrid
 				currentEditor.Value = context.PropertyDescriptor.GetValue (Instance);
 			
 			currentEditor.ValueChanged += OnValueChanged;
+
+			var readOnlyEditor = currentEditor as IPropertyEditorWithReadOnly;
+			if (readOnlyEditor != null)
+				readOnlyEditor.IsReadOnly = context.PropertyDescriptor.IsReadOnly;
 		}
 		
 		public void Dispose ()
@@ -295,7 +299,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			if (!syncing) {
 				syncing = true;
+
 				currentEditor.Value = context.PropertyDescriptor.GetValue (context.Instance);
+
+				var readOnlyPropertyEditor = currentEditor as IPropertyEditorWithReadOnly;
+				if (readOnlyPropertyEditor != null)
+					readOnlyPropertyEditor.IsReadOnly = context.PropertyDescriptor.IsReadOnly;
+
 				syncing = false;
 			}
 		}
@@ -399,5 +409,10 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		// To be fired when the edited value changes.
 		event EventHandler ValueChanged;
+	}
+
+	public interface IPropertyEditorWithReadOnly : IPropertyEditor
+	{
+		bool IsReadOnly { get; set; }
 	}
 }

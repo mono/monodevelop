@@ -90,18 +90,22 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		}
 	}
 	
-	public class BooleanEditor : Gtk.CheckButton, IPropertyEditor 
+	public class BooleanEditor : Gtk.CheckButton, IPropertyEditorWithReadOnly 
 	{
 		public void Initialize (EditSession session)
 		{
 			if (session.Property.PropertyType != typeof(bool))
 				throw new ApplicationException ("Boolean editor does not support editing values of type " + session.Property.PropertyType);
-			Sensitive = !session.Property.IsReadOnly;
 		}
 		
 		public object Value { 
 			get { return Active; } 
 			set { Active = (bool) value; }
+		}
+
+		public bool IsReadOnly {
+			get { return Sensitive; }
+			set { Sensitive = value; }
 		}
 		
 		protected override void OnToggled ()
