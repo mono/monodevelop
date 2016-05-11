@@ -60,7 +60,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLocation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextAnchor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextPasteHandler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\IIndentationTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISelectionSurroundingProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Selection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SearchRequest.cs" />
@@ -100,6 +99,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UnderlineMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\UrlMarker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextEditorData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\DefaultIndentationTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Mono.TextEditor\" />

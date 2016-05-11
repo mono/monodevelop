@@ -33,6 +33,7 @@ using Mono.TextEditor.Highlighting;
 using Xwt.Drawing;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor
 {
@@ -1163,14 +1164,14 @@ namespace Mono.TextEditor
 		#endregion
 		
 		#region VirtualSpace Manager
-		IIndentationTracker indentationTracker = null;
+		IndentationTracker indentationTracker = null;
 		public bool HasIndentationTracker {
 			get {
 				return indentationTracker != null;	
 			}	
 		}
 
-		public IIndentationTracker IndentationTracker {
+		public IndentationTracker IndentationTracker {
 			get {
 				if (!HasIndentationTracker)
 					throw new InvalidOperationException ("Indentation tracker not installed.");
@@ -1183,12 +1184,12 @@ namespace Mono.TextEditor
 		
 		public string GetIndentationString (DocumentLocation loc)
 		{
-			return IndentationTracker.GetIndentationString (loc.Line, loc.Column);
+			return IndentationTracker.GetIndentationString (loc.Line);
 		}
 		
 		public string GetIndentationString (int lineNumber, int column)
 		{
-			return IndentationTracker.GetIndentationString (lineNumber, column);
+			return IndentationTracker.GetIndentationString (lineNumber);
 		}
 		
 		public string GetIndentationString (int offset)
@@ -1198,19 +1199,25 @@ namespace Mono.TextEditor
 		
 		public int GetVirtualIndentationColumn (DocumentLocation loc)
 		{
-			return IndentationTracker.GetVirtualIndentationColumn (loc.Line, loc.Column);
+			return 1 + CountIndent (GetIndentationString (loc));
 		}
 		
 		public int GetVirtualIndentationColumn (int lineNumber, int column)
 		{
-			return IndentationTracker.GetVirtualIndentationColumn (lineNumber, column);
+			return 1 + CountIndent (GetIndentationString (lineNumber, column));
 		}
 		
 		public int GetVirtualIndentationColumn (int offset)
 		{
-			return IndentationTracker.GetVirtualIndentationColumn (offset);
+			return 1 + CountIndent (indentationTracker.GetIndentationString (offset));
 		}
-		
+
+		static int CountIndent (string str)
+		{
+			// '\t' == 1 - virtual indent is here the character indent not the visual one.
+			return str.Length;
+		}
+
 		/// <summary>
 		/// Ensures the caret is not in a virtual position by adding whitespaces up to caret position.
 		/// That method should always be called in an undo group.

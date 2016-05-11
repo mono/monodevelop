@@ -25,41 +25,11 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor
 {
-	[Flags]
-	public enum IndentatitonTrackerFeatures {
-		None = 0,
-		SmartBackspace = 1,
-		All = SmartBackspace
-	}
-
-	public interface IIndentationTracker
-	{
-		IndentatitonTrackerFeatures SupportedFeatures { get; }
-
-		string GetIndentationString (int offset);
-		string GetIndentationString (int lineNumber, int column);
-		
-		int GetVirtualIndentationColumn (int offset);
-		int GetVirtualIndentationColumn (int lineNumber, int column);
-	}
-	
-	public static class IndentationTrackerExtensionMethods
-	{
-		public static string GetIndentationString (this IIndentationTracker thisObject, DocumentLocation loc)
-		{
-			return thisObject.GetIndentationString (loc.Line, loc.Column);
-		}
-		
-		public static int GetVirtualIndentationColumn (this IIndentationTracker thisObject, DocumentLocation loc)
-		{
-			return thisObject.GetVirtualIndentationColumn (loc.Line, loc.Column);
-		}
-	}
-	
-	public class DefaultIndentationTracker : IIndentationTracker
+	class DefaultIndentationTracker : IndentationTracker
 	{
 		readonly TextDocument doc;
 			
@@ -68,18 +38,12 @@ namespace Mono.TextEditor
 			this.doc = doc;
 		}
 
-		public IndentatitonTrackerFeatures SupportedFeatures {
-			get;
-			set;
-		}
-
-		public string GetIndentationString (int offset)
+		public override string GetIndentationString (int lineNumber)
 		{
-			var loc = doc.OffsetToLocation (offset);
-			return GetIndentationString (loc.Line, loc.Column);
+			return GetIndentationString (lineNumber, 1);
 		}
 		
-		public string GetIndentationString (int lineNumber, int column)
+		string GetIndentationString (int lineNumber, int column)
 		{
 			var line = doc.GetLine (lineNumber);
 			while (line != null) {
@@ -90,16 +54,6 @@ namespace Mono.TextEditor
 				return line.GetIndentation (doc);
 			}
 			return "";
-		}
-		
-		public int GetVirtualIndentationColumn (int offset)
-		{
-			return 1 + GetIndentationString (offset).Length;
-		}
-		
-		public int GetVirtualIndentationColumn (int lineNumber, int column)
-		{
-			return 1 + GetIndentationString (lineNumber, column).Length;
 		}
 
 	}

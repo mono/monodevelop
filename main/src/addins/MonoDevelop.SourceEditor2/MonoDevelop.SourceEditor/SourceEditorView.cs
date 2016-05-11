@@ -2858,12 +2858,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!TextEditor.GetTextEditorData ().HasIndentationTracker)
 				return TextEditor.GetLineIndent (lineNumber);
-			return TextEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (lineNumber, 1);
+			return TextEditor.GetTextEditorData ().GetIndentationString (lineNumber, 1);
 		}
 
 		void ITextEditorImpl.SetIndentationTracker (IndentationTracker indentationTracker)
 		{
-			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker != null ? new IndentationTrackerWrapper (TextEditor.GetTextEditorData (), widget.Document, indentationTracker) : null;
+			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker;
 		}
 
 		void ITextEditorImpl.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
