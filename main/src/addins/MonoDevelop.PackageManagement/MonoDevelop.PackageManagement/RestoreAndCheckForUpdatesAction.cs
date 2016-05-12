@@ -62,7 +62,7 @@ namespace MonoDevelop.PackageManagement
 
 			if (AnyProjectsUsingPackagesConfig ()) {
 				restoreManager = new PackageRestoreManager (
-					SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+					solutionManager.CreateSourceRepositoryProvider (),
 					solutionManager.Settings,
 					solutionManager
 				);
@@ -70,7 +70,7 @@ namespace MonoDevelop.PackageManagement
 
 			if (AnyProjectsUsingProjectJson ()) {
 				buildIntegratedRestorer = new MonoDevelopBuildIntegratedRestorer (
-					SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+					solutionManager.CreateSourceRepositoryProvider (),
 					solutionManager.Settings,
 					solution.BaseDirectory);
 			}

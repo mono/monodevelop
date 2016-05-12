@@ -72,8 +72,10 @@ namespace MonoDevelop.PackageManagement
 
 		UpdatedNuGetPackagesProvider CreateProvider (DotNetProject project)
 		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 			return new UpdatedNuGetPackagesProvider (
 				new DotNetProjectProxy (project),
+				solutionManager,
 				cancellationTokenSource.Token);
 		}
 

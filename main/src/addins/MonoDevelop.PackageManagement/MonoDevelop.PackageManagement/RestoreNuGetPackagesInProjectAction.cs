@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
 			restoreManager = new PackageRestoreManager (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+				solutionManager.CreateSourceRepositoryProvider (),
 				solutionManager.Settings,
 				solutionManager
 			);

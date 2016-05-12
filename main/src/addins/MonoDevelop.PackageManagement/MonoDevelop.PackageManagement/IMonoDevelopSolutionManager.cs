@@ -27,6 +27,7 @@
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -34,6 +35,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		ISettings Settings { get; }
 		NuGetProject GetNuGetProject (IDotNetProject project);
+		ISourceRepositoryProvider CreateSourceRepositoryProvider ();
 	}
 }
 

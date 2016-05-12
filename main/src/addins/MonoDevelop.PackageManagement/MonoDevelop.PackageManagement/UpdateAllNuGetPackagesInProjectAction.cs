@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 
 			var restartManager = new DeleteOnRestartManager ();
 
-			sourceRepositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
 
 			packageManager = new NuGetPackageManager (
 				sourceRepositoryProvider,
@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 			);
 
 			restoreManager = new PackageRestoreManager (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+				sourceRepositoryProvider,
 				solutionManager.Settings,
 				solutionManager
 			);

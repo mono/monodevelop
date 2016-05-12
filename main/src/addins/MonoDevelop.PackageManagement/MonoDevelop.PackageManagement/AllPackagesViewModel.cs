@@ -88,7 +88,7 @@ namespace MonoDevelop.PackageManagement
 			//if (PackageManagementServices.RegisteredPackageRepositories.PackageSources.HasMultipleEnabledPackageSources) {
 			//	yield return RegisteredPackageSourceSettings.AggregatePackageSource;
 			//}
-			ISourceRepositoryProvider provider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			ISourceRepositoryProvider provider = solutionManager.CreateSourceRepositoryProvider ();
 			packageSourceProvider = provider.PackageSourceProvider;
 			foreach (SourceRepository repository in provider.GetRepositories ()) {
 				yield return new SourceRepositoryViewModel (repository);

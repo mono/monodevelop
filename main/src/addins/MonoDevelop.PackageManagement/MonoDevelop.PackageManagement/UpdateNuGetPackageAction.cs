@@ -61,7 +61,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			sourceRepositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
 			primarySources = sourceRepositoryProvider.GetRepositories ().ToList ();
 
 			packageManager = new NuGetPackageManager (

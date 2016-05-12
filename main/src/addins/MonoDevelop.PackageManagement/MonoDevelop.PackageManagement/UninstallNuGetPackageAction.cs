@@ -53,7 +53,7 @@ namespace MonoDevelop.PackageManagement
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
 			packageManager = new NuGetPackageManager (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+				solutionManager.CreateSourceRepositoryProvider (),
 				solutionManager.Settings,
 				solutionManager,
 				restartManager

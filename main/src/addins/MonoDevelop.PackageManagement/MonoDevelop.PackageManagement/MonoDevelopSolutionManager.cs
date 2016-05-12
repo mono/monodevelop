@@ -33,6 +33,7 @@ using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -85,6 +86,7 @@ namespace MonoDevelop.PackageManagement
 			get { return Solution.BaseDirectory; }
 		}
 
+		#pragma warning disable 67
 		public event EventHandler<ActionsExecutedEventArgs> ActionsExecuted;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectAdded;
 		public event EventHandler<NuGetProjectEventArgs> NuGetProjectRemoved;
@@ -93,6 +95,7 @@ namespace MonoDevelop.PackageManagement
 		public event EventHandler SolutionClosing;
 		public event EventHandler SolutionOpened;
 		public event EventHandler SolutionOpening;
+		#pragma warning restore 67
 
 		public NuGetProject GetNuGetProject (string nuGetProjectSafeName)
 		{
@@ -130,6 +133,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			return new MonoDevelopNuGetProjectFactory (Settings)
 				.CreateNuGetProject (project);
+		}
+
+		public ISourceRepositoryProvider CreateSourceRepositoryProvider ()
+		{
+			return SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (Settings);
 		}
 	}
 }

@@ -38,8 +38,12 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static ISourceRepositoryProvider CreateSourceRepositoryProvider ()
 		{
-			// TODO - Needs to handle different settings for a solution.
 			var settings = Settings.LoadDefaultSettings (null, null, null);
+			return CreateSourceRepositoryProvider (settings);
+		}
+
+		public static ISourceRepositoryProvider CreateSourceRepositoryProvider (ISettings settings)
+		{
 			return new SourceRepositoryProvider (settings, GetResourceProviders ());
 		}
 

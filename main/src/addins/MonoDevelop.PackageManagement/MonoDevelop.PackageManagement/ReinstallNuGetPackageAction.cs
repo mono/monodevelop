@@ -92,7 +92,7 @@ namespace MonoDevelop.PackageManagement
 		void CreateInstallAction (IMonoDevelopSolutionManager solutionManager, IDotNetProject project)
 		{
 			installAction = new InstallNuGetPackageAction (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ().GetRepositories (),
+				solutionManager.CreateSourceRepositoryProvider ().GetRepositories (),
 				solutionManager,
 				project,
 				context,

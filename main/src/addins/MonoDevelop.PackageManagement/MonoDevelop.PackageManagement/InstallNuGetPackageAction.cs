@@ -84,7 +84,7 @@ namespace MonoDevelop.PackageManagement
 			var restartManager = new DeleteOnRestartManager ();
 
 			packageManager = new NuGetPackageManager (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+				solutionManager.CreateSourceRepositoryProvider (),
 				solutionManager.Settings,
 				solutionManager,
 				restartManager

@@ -52,7 +52,7 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
 			packageRestorer = new MonoDevelopBuildIntegratedRestorer (
-				SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (),
+				solutionManager.CreateSourceRepositoryProvider (),
 				solutionManager.Settings,
 				solutionManager.SolutionDirectory);
 		}
