@@ -163,6 +163,12 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			return !PackageReference.PackageIdentity.Version.IsPrerelease;
 		}
+
+		public bool NeedsRestoreBeforeUninstall ()
+		{
+			return !ParentNode.IsNuGetIntegratedProject () &&
+				!ParentNode.IsPackageInstalled (PackageReference);
+		}
 	}
 }
 

@@ -249,6 +249,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetProjectContext.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageUninstallerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

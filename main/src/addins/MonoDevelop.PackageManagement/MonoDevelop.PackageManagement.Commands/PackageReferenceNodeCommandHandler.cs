@@ -51,22 +51,23 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
-			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
-			var action = new UninstallNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
-				PackageId = packageReferenceNode.Id
-			};
-			// TODO - handle unrestored NuGet packages.
-			//if (action.Package != null) {
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-			//} else {
-			//	ShowMissingPackageError (progressMessage, packageReferenceNode);
-			//}
+			IPackageAction action = CreateUninstallPackageAction (packageReferenceNode);
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 		}
 
-		void ShowMissingPackageError (ProgressMonitorStatusMessage progressMessage, PackageReferenceNode packageReferenceNode)
+		IPackageAction CreateUninstallPackageAction (PackageReferenceNode packageReferenceNode)
 		{
-			string message = GettextCatalog.GetString ("Unable to find package {0} {1} to remove it from the project. Please restore the package first.", packageReferenceNode.Id, packageReferenceNode.Version);
-			PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, message);
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+			if (packageReferenceNode.NeedsRestoreBeforeUninstall ()) {
+				return new RestoreAndUninstallNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
+					PackageId = packageReferenceNode.Id,
+					Version = packageReferenceNode.Version
+				};
+			}
+
+			return new UninstallNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
+				PackageId = packageReferenceNode.Id
+			};
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]

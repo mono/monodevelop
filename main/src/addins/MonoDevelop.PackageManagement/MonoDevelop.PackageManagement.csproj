@@ -259,6 +259,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementOutputMessagesView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementInstrumentationService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPropertyService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementServices.cs" />
@@ -514,10 +515,12 @@
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageEventsMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\AnalyzerPackageMonitor.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementInstrumentationService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetProjectActionsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IFileConflictResolver.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NullDisposable.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreAndUninstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageUninstaller.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageForcedImportsRemover.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

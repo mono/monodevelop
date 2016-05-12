@@ -179,14 +179,19 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 				updatedPackages.GetUpdatedPackage (reference.PackageIdentity.Id));
 		}
 
-		protected virtual bool IsPackageInstalled (PackageReference reference)
+		public virtual bool IsPackageInstalled (PackageReference reference)
 		{
-			if (nugetProject is INuGetIntegratedProject) {
+			if (IsNuGetIntegratedProject ()) {
 				string path = packagePathResolver.GetHashPath (reference.PackageIdentity.Id, reference.PackageIdentity.Version);
 				return File.Exists (path);
 			}
 
 			return folder.PackageExists (reference.PackageIdentity);
+		}
+
+		public bool IsNuGetIntegratedProject ()
+		{
+			return nugetProject is INuGetIntegratedProject;
 		}
 
 		public event EventHandler PackageReferencesChanged;

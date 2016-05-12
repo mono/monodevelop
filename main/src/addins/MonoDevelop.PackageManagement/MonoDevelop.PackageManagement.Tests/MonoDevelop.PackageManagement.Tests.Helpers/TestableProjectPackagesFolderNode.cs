@@ -51,7 +51,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public List<PackageReference> PackageReferencesWithPackageInstalled = new List<PackageReference> ();
 
-		protected override bool IsPackageInstalled (PackageReference reference)
+		public override bool IsPackageInstalled (PackageReference reference)
 		{
 			return PackageReferencesWithPackageInstalled.Contains (reference);
 		}
