@@ -106,15 +106,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (projects == null) {
 				Runtime.RunInMainThread (() => {
-					projects = GetNuGetProjects (Solution).ToList ();
+					projects = GetNuGetProjects (Solution, Settings).ToList ();
 				}).Wait ();
 			}
 			return projects;
 		}
 
-		static IEnumerable<NuGetProject> GetNuGetProjects (Solution solution)
+		static IEnumerable<NuGetProject> GetNuGetProjects (Solution solution, ISettings settings)
 		{
-			var factory = new MonoDevelopNuGetProjectFactory ();
+			var factory = new MonoDevelopNuGetProjectFactory (settings);
 			foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
 				yield return factory.CreateNuGetProject (project);
 			}

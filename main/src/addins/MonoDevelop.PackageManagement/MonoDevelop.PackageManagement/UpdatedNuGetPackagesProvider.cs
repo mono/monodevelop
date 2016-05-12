@@ -52,7 +52,8 @@ namespace MonoDevelop.PackageManagement
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.dotNetProject = project;
-			this.project = new MonoDevelopNuGetProjectFactory ().CreateNuGetProject (project);
+			this.project = new MonoDevelopNuGetProjectFactory (solutionManager.Settings)
+				.CreateNuGetProject (project);
 
 			var sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
 			this.sourceRepositories = sourceRepositoryProvider.GetRepositories ().ToList ();
