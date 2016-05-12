@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 			return next.OnGetDefaultTargetPlatform (projectCreateInfo);
 		}
 
-		internal protected virtual Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
+		internal protected virtual Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			return next.OnGetReferencedAssemblies (configuration);
 		}
