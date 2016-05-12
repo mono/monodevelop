@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Projects
 			};
 			
 			searchEntry.WidthRequest = 150;
-			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search...");
+			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search…");
 			searchEntry.Changed += delegate {
 				templateView.SetSearchFilter (searchEntry.Entry.Text);
 			};

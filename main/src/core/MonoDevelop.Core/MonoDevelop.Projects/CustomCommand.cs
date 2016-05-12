@@ -292,7 +292,7 @@ namespace MonoDevelop.Projects
 				stopper.Dispose ();
 
 				if (oper.ExitCode != 0) {
-					monitor.ReportError ("Custom command failed (exit code: " + oper.ExitCode + ")", null);
+					monitor.ReportError (GettextCatalog.GetString ("Custom command failed (exit code: {0})", oper.ExitCode), null);
 				}
 			} catch (Win32Exception w32ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Failed to execute custom command '{0}': {1}",

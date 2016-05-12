@@ -1437,7 +1437,7 @@ namespace MonoDevelop.Projects
 			//copy references and files marked to "CopyToOutputDirectory"
 			CopySupportFiles (monitor, configuration);
 		
-			monitor.Log.WriteLine ("Performing main compilation...");
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Performing main compilation…"));
 			
 			BuildResult res = await DoBuild (monitor, configuration);
 
@@ -2129,7 +2129,7 @@ namespace MonoDevelop.Projects
 
 			string itemGuid = msproject.EvaluatedProperties.GetValue ("ProjectGuid");
 			if (itemGuid == null)
-				throw new UserException ("Project file doesn't have a valid ProjectGuid");
+				throw new UserException (GettextCatalog.GetString ("Project file doesn't have a valid ProjectGuid"));
 
 			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 			// of shared projects.
