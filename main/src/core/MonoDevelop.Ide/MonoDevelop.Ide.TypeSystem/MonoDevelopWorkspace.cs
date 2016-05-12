@@ -540,14 +540,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
 
 			try {
-				foreach (var file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
+				foreach (string file in await netProject.GetReferencedAssemblies (configurationSelector, false).ConfigureAwait (false)) {
 					if (token.IsCancellationRequested)
 						return result;
 					string fileName;
-					if (!Path.IsPathRooted (file.FilePath)) {
-						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file.FilePath);
+					if (!Path.IsPathRooted (file)) {
+						fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
 					} else {
-						fileName = file.FilePath.FullPath;
+						fileName = Path.GetFullPath (file);
 					}
 					if (hashSet.Contains (fileName))
 						continue;
