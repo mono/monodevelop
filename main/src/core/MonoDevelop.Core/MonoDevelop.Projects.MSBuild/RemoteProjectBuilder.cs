@@ -182,7 +182,7 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		RemoteBuildEngine engine;
 		IProjectBuilder builder;
-		Dictionary<string,string[]> referenceCache;
+		Dictionary<string,AssemblyReference[]> referenceCache;
 		AsyncCriticalSection referenceCacheLock = new AsyncCriticalSection ();
 		string file;
 		static int lastTaskId;
@@ -192,7 +192,7 @@ namespace MonoDevelop.Projects.MSBuild
 			this.file = file;
 			this.engine = engine;
 			builder = engine.LoadProject (file);
-			referenceCache = new Dictionary<string, string[]> ();
+			referenceCache = new Dictionary<string, AssemblyReference[]> ();
 		}
 
 		public event EventHandler Disconnected;
@@ -263,9 +263,9 @@ namespace MonoDevelop.Projects.MSBuild
 			return t;
 		}
 
-		public async Task<string[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
+		public async Task<AssemblyReference[]> ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations, CancellationToken cancellationToken)
 		{
-			string[] refs = null;
+			AssemblyReference[] refs = null;
 			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
 
 			using (await referenceCacheLock.EnterAsync ()) {
@@ -300,16 +300,17 @@ namespace MonoDevelop.Projects.MSBuild
 					} catch (Exception ex) {
 						CheckDisconnected ();
 						LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
-						return new string [0];
+						return new AssemblyReference [0];
 					} finally {
 						EndOperation ();
 					}
 
 					List<MSBuildEvaluatedItem> items;
 					if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-						refs = items.Select (i => i.ItemSpec).ToArray ();
+						string aliases;
+						refs = items.Select (i => new AssemblyReference (i.ItemSpec, i.Metadata.TryGetValue ("Aliases", out aliases) ? aliases : "")).ToArray ();
 					} else
-						refs = new string[0];
+						refs = new AssemblyReference [0];
 
 					referenceCache [id] = refs;
 				}
