@@ -136,7 +136,7 @@ namespace MonoDevelop.PackageManagement
 
 		Task CheckLicenses ()
 		{
-			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, cancellationToken);
+			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, packageManager, cancellationToken);
 		}
 
 		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()

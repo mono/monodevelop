@@ -40,37 +40,45 @@ namespace MonoDevelop.PackageManagement
 	internal class NuGetPackageLicenseAuditor
 	{
 		List<SourceRepository> sources;
+		NuGetPackageManager packageManager;
 		ILicenseAcceptanceService licenseAcceptanceService;
 
-		public NuGetPackageLicenseAuditor (IEnumerable<SourceRepository> sources)
+		public NuGetPackageLicenseAuditor (
+			IEnumerable<SourceRepository> sources,
+			NuGetPackageManager packageManager)
 			: this (
 				sources,
+				packageManager,
 				new LicenseAcceptanceService ())
 		{
 		}
 
 		public NuGetPackageLicenseAuditor (
 			IEnumerable<SourceRepository> sources,
+			NuGetPackageManager packageManager,
 			ILicenseAcceptanceService licenseAcceptanceService)
 		{
 			this.sources = sources.ToList ();
+			this.packageManager = packageManager;
 			this.licenseAcceptanceService = licenseAcceptanceService;
 		}
 
 		public static Task AcceptLicenses (
 			IEnumerable<SourceRepository> sources,
 			IEnumerable<NuGetProjectAction> actions,
+			NuGetPackageManager packageManager,
 			CancellationToken cancellationToken)
 		{
-			var auditor = new NuGetPackageLicenseAuditor (sources);
+			var auditor = new NuGetPackageLicenseAuditor (sources, packageManager);
 			return auditor.AcceptLicenses (actions, cancellationToken);
 		}
 
-		public async Task AcceptLicenses (
+		async Task AcceptLicenses (
 			IEnumerable<NuGetProjectAction> actions,
 			CancellationToken cancellationToken)
 		{
 			var licenses = await GetPackagesWithLicences (actions, cancellationToken);
+			licenses = RemovePackagesAlreadyInstalled (licenses);
 			if (licenses.Any ()) {
 				if (!licenseAcceptanceService.AcceptLicenses (licenses)) {
 					throw new ApplicationException (GettextCatalog.GetString ("Licenses not accepted."));
@@ -131,6 +139,11 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return packages;
+		}
+
+		IEnumerable<NuGetPackageLicense> RemovePackagesAlreadyInstalled (IEnumerable<NuGetPackageLicense> licenses)
+		{
+			return licenses.Where (license => !packageManager.PackageExistsInPackagesFolder (license.PackageIdentity));
 		}
 	}
 }

@@ -26,6 +26,7 @@
 
 using System;
 using NuGet;
+using NuGet.Packaging.Core;
 using NuGet.Protocol.VisualStudio;
 
 namespace MonoDevelop.PackageManagement
@@ -34,6 +35,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public NuGetPackageLicense (UIPackageMetadata metadata)
 		{
+			PackageIdentity = metadata.Identity;
 			PackageId = metadata.Identity.Id;
 			PackageTitle = metadata.Title;
 			PackageAuthor = metadata.Authors;
@@ -50,6 +52,7 @@ namespace MonoDevelop.PackageManagement
 			LicenseUrl = package.LicenseUrl;
 		}
 
+		public PackageIdentity PackageIdentity { get; private set; }
 		public string PackageId { get; private set; }
 		public string PackageTitle { get; private set; }
 		public string PackageAuthor { get; private set; }
