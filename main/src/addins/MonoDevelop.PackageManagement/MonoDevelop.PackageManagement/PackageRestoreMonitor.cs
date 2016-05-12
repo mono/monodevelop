@@ -76,7 +76,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			packageManagementEvents.OnPackageOperationMessageLogged (
 				NuGet.MessageLevel.Info,
-				"Package restore failed for project {0}: {1}",
+				GettextCatalog.GetString ("Package restore failed for project {0}: {1}"),
 				projectName,
 				exception.Message);
 		}
