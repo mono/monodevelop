@@ -99,8 +99,8 @@ module unitTestGatherer =
                 dnp.GetReferencedAssemblies(MonoDevelop.getConfig())
                 |> Async.AwaitTask
                 |> Async.RunSynchronously
-                |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)
-                                        || r.EndsWith ("GuiUnit.exe", StringComparison.InvariantCultureIgnoreCase)) 
+                |> Seq.exists (fun r -> r.FilePath.ToString().EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)
+                                        || r.FilePath.ToString().EndsWith ("GuiUnit.exe", StringComparison.InvariantCultureIgnoreCase)) 
             with ex ->
                 MonoDevelop.Core.LoggingService.LogInternalError ("FSharpUnitTestTextEditorExtension: GatherUnitTests failed", ex)
                 false
