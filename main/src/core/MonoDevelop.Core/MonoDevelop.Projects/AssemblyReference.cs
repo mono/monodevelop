@@ -28,7 +28,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects
 {
-	public class AssemblyReference
+	public sealed class AssemblyReference
 	{
 		public AssemblyReference (FilePath path, string aliases = null)
 		{
@@ -38,6 +38,19 @@ namespace MonoDevelop.Projects
 
 		public FilePath FilePath { get; private set; }
 		public string Aliases { get; private set; }
+
+		public override bool Equals (object obj)
+		{
+			var ar = obj as AssemblyReference;
+			return ar != null && ar.FilePath == FilePath && ar.Aliases == Aliases;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
+			}
+		}
 	}
 }
 
