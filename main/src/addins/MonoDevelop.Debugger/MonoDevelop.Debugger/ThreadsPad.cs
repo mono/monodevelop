@@ -37,7 +37,8 @@ using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
-
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Debugger
 {
@@ -81,6 +82,9 @@ namespace MonoDevelop.Debugger
 			this.ShadowType = ShadowType.None;
 
 			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(object), typeof(int), typeof(string));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Id","store_Name",
+				"store_Object", "store_Weight", "store_Location");
+			TypeDescriptor.AddAttributes (store, modelAttr);
 
 			tree = new PadTreeView (store);
 			tree.RulesHint = true;
