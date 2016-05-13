@@ -230,9 +230,24 @@ namespace MonoDevelop.Projects
 			return next.OnGetExecutionTargets (configuration);
 		}
 
+		internal protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, ExecutionScheme scheme)
+		{
+			return next.OnGetExecutionTargets (ctx, configuration, scheme);
+		}
+
 		internal protected virtual void OnExecutionTargetsChanged ()
 		{
 			next.OnExecutionTargetsChanged ();
+		}
+
+		internal protected virtual IEnumerable<ExecutionScheme> OnGetExecutionSchemes (OperationContext ctx, ConfigurationSelector configuration)
+		{
+			return next.OnGetExecutionSchemes (ctx, configuration);
+		}
+
+		internal protected virtual void OnExecutionSchemesChanged (OperationContext ctx)
+		{
+			next.OnExecutionSchemesChanged (ctx);
 		}
 
 		#endregion

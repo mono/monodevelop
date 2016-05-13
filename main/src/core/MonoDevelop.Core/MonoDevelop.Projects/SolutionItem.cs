@@ -72,6 +72,7 @@ namespace MonoDevelop.Projects
 		public event ConfigurationEventHandler DefaultConfigurationChanged;
 		public event ConfigurationEventHandler ConfigurationAdded;
 		public event ConfigurationEventHandler ConfigurationRemoved;
+		public EventHandler ExecutionSchemesChanged;
 
 		// When set, it means this item is saved as part of a global solution save operation
 		internal bool SavingSolution { get; set; }
@@ -971,10 +972,25 @@ namespace MonoDevelop.Projects
 		/// <param name="configuration">The configuration.</param>
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
 		{
+			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, GetDefaultExecutionScheme (configuration));
+		}
+
+		/// <summary>
+		/// Gets the execution targets.
+		/// </summary>
+		/// <returns>The execution targets.</returns>
+		/// <param name="configuration">The configuration.</param>
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration, ExecutionScheme scheme)
+		{
+			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, scheme);
+		}
+
+		protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration, ExecutionScheme scheme)
+		{
 			return ItemExtension.OnGetExecutionTargets (configuration);
 		}
 
-		protected void NotifyExecutionTargetsChanged ()
+		public void NotifyExecutionTargetsChanged ()
 		{
 			ItemExtension.OnExecutionTargetsChanged ();
 		}
@@ -986,6 +1002,39 @@ namespace MonoDevelop.Projects
 			if (ExecutionTargetsChanged != null)
 				ExecutionTargetsChanged (this, EventArgs.Empty);
 		}
+
+		/// <summary>
+		/// Gets the execution schemes.
+		/// </summary>
+		/// <returns>The execution targets.</returns>
+		/// <param name="configuration">The configuration.</param>
+		public IEnumerable<ExecutionScheme> GetExecutionSchemes (ConfigurationSelector configuration)
+		{
+			return ItemExtension.OnGetExecutionSchemes (new OperationContext (), configuration);
+		}
+
+		public ExecutionScheme GetDefaultExecutionScheme (ConfigurationSelector configuration)
+		{
+			var schemes = GetExecutionSchemes (configuration);
+			return schemes.FirstOrDefault (s => s.Name == "Default") ?? schemes.FirstOrDefault ();
+		}
+
+		public void NotifyExecutionSchemesChanged ()
+		{
+			ItemExtension.OnExecutionSchemesChanged (new OperationContext ());
+		}
+
+		protected virtual void OnExecutionSchemesChanged ()
+		{
+			if (ExecutionSchemesChanged != null)
+				ExecutionSchemesChanged (this, EventArgs.Empty);
+		}
+
+		protected virtual IEnumerable<ExecutionScheme>  OnGetExecutionSchemes (ConfigurationSelector configuration)
+		{
+			yield break;
+		}
+
 
 		protected virtual Task OnLoad (ProgressMonitor monitor)
 		{
@@ -1378,9 +1427,24 @@ namespace MonoDevelop.Projects
 				yield break;
 			}
 
+			internal protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, ExecutionScheme scheme)
+			{
+				return Item.OnGetExecutionTargets (configuration, scheme);
+			}
+
 			internal protected override void OnExecutionTargetsChanged ()
 			{
 				Item.OnExecutionTargetsChanged ();
+			}
+
+			internal protected override IEnumerable<ExecutionScheme> OnGetExecutionSchemes (OperationContext ctx, ConfigurationSelector configuration)
+			{
+				return Item.OnGetExecutionSchemes (configuration);
+			}
+
+			internal protected override void OnExecutionSchemesChanged (OperationContext ctx)
+			{
+				Item.OnExecutionSchemesChanged ();
 			}
 
 			internal protected override void OnReloadRequired (SolutionItemEventArgs args)

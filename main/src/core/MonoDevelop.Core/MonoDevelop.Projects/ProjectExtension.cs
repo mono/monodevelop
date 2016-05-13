@@ -60,6 +60,21 @@ namespace MonoDevelop.Projects
 			return next.SupportsFlavor (guid);
 		}
 
+		internal protected virtual ExecutionScheme OnCreateExecutionScheme (string name)
+		{
+			return next.OnCreateExecutionScheme (name);
+		}
+
+		internal protected virtual void OnReadExecutionScheme (ProgressMonitor monitor, ProjectExecutionScheme scheme, IPropertySet properties)
+		{
+			next.OnReadExecutionScheme (monitor, scheme, properties);
+		}
+
+		internal protected virtual void OnWriteExecutionScheme (ProgressMonitor monitor, ProjectExecutionScheme scheme, IPropertySet properties)
+		{
+			next.OnWriteExecutionScheme (monitor, scheme, properties);
+		}
+
 		internal protected virtual Task<TargetEvaluationResult> OnRunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context)
 		{
 			return next.OnRunTarget (monitor, target, configuration, context);
