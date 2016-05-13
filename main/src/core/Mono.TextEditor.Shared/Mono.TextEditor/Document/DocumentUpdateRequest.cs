@@ -27,12 +27,12 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public abstract class DocumentUpdateRequest
+	abstract class DocumentUpdateRequest
 	{
 		public abstract void Update (MonoTextEditor editor);
 	}
 	
-	public class SinglePositionUpdate : DocumentUpdateRequest
+	class SinglePositionUpdate : DocumentUpdateRequest
 	{
 		int line, column;
 		
@@ -48,7 +48,7 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	public class UpdateAll : DocumentUpdateRequest
+	class UpdateAll : DocumentUpdateRequest
 	{
 		public override void Update (MonoTextEditor editor)
 		{
@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	public class LineUpdate : DocumentUpdateRequest
+	class LineUpdate : DocumentUpdateRequest
 	{
 		int line;
 		
@@ -71,7 +71,7 @@ namespace Mono.TextEditor
 		}
 	}
 	
-	public class MultipleLineUpdate : DocumentUpdateRequest
+	class MultipleLineUpdate : DocumentUpdateRequest
 	{
 		int start, end;
 		

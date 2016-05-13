@@ -28,7 +28,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class SyntaxModeChangeEventArgs : EventArgs
+	class SyntaxModeChangeEventArgs : EventArgs
 	{
 		public ISyntaxMode OldMode {
 			get;

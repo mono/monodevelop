@@ -28,7 +28,7 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public class ActionMargin : Margin
+	class ActionMargin : Margin
 	{
 		readonly MonoTextEditor editor;
 

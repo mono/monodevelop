@@ -5,7 +5,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public struct Selection
+	struct Selection
 	{
 		public static readonly Selection Empty = new Selection (true);
 

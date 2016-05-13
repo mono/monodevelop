@@ -27,7 +27,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public enum IndentStyle
+	enum IndentStyle
 	{
 		/// <summary>
 		/// No indentation occurs

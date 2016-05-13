@@ -45,7 +45,7 @@ namespace Mono.TextEditor
 {
 	[System.ComponentModel.Category("Mono.TextEditor")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class MonoTextEditor : Container
+	class MonoTextEditor : Container
 	{
 		readonly TextArea textArea;
 
@@ -73,13 +73,13 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public MonoTextEditor (TextDocument doc, ITextEditorOptions options)
+		internal MonoTextEditor (TextDocument doc, ITextEditorOptions options)
 			: this (doc, options, new SimpleEditMode ())
 		{
 		}
 		Thread uiThread;
 
-		public MonoTextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode) 
+		internal MonoTextEditor (TextDocument doc, ITextEditorOptions options, EditMode initialMode) 
 		{
 			uiThread = Thread.CurrentThread;
 			GtkWorkarounds.FixContainerLeak (this);
@@ -441,7 +441,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public ITextEditorOptions Options {
+		internal ITextEditorOptions Options {
 			get {
 				return textArea.Options;
 			}
@@ -680,7 +680,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
+		internal Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get {
 				return textArea.ColorStyle;
 			}

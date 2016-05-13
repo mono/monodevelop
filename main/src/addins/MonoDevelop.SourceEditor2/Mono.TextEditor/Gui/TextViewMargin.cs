@@ -44,7 +44,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public class TextViewMargin : Margin
+	class TextViewMargin : Margin
 	{
 		readonly MonoTextEditor textEditor;
 		Pango.TabArray tabArray;
@@ -110,7 +110,7 @@ namespace Mono.TextEditor
 			get { return textEditor.Caret; }
 		}
 
-		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
+		internal Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get { return this.textEditor.ColorStyle; }
 		}
 
@@ -797,7 +797,7 @@ namespace Mono.TextEditor
 
 		Dictionary<DocumentLine, LayoutDescriptor> layoutDict = new Dictionary<DocumentLine, LayoutDescriptor> ();
 		
-		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
+		internal LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			textEditor.CheckUIThread ();
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
@@ -1193,7 +1193,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public IEnumerable<Chunk> Chunks {
+			internal IEnumerable<Chunk> Chunks {
 				get;
 				set;
 			}
@@ -1203,7 +1203,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			public CloneableStack<Mono.TextEditor.Highlighting.Span> EolSpanStack {
+			internal CloneableStack<Mono.TextEditor.Highlighting.Span> EolSpanStack {
 				get;
 				set;
 			}
@@ -1307,7 +1307,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
+		internal LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			return CreateLinePartLayout (mode, line, -1, offset, length, selectionStart, selectionEnd);
 		}

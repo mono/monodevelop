@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Vi
 {
-	public static class ViActions
+	static class ViActions
 	{
 		public static void MoveToNextEmptyLine (TextEditorData data)
 		{

@@ -34,7 +34,7 @@ using MonoDevelop.Components;
 
 namespace Mono.TextEditor
 {
-	public class FoldMarkerMargin : Margin
+	class FoldMarkerMargin : Margin
 	{
 		MonoTextEditor editor;
 		DocumentLine lineHover;

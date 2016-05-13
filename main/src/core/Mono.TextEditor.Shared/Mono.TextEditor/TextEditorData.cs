@@ -37,12 +37,12 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor
 {
-	public enum SelectionMode {
+	enum SelectionMode {
 		Normal,
 		Block
 	}
 	
-	public class TextEditorData : IDisposable
+	class TextEditorData : IDisposable
 	{
 		ITextEditorOptions    options;
 		TextDocument document; 
@@ -315,7 +315,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public ITextEditorOptions Options {
+		internal ITextEditorOptions Options {
 			get {
 				return options;
 			}
@@ -331,7 +331,7 @@ namespace Mono.TextEditor
 		}
 		
 		ColorScheme colorStyle;
-		public ColorScheme ColorStyle {
+		internal ColorScheme ColorStyle {
 			get {
 				return colorStyle ?? SyntaxModeService.DefaultColorStyle;
 			}
@@ -439,7 +439,7 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 
-		public IEnumerable<Chunk> GetChunks (DocumentLine line, int offset, int length)
+		internal IEnumerable<Chunk> GetChunks (DocumentLine line, int offset, int length)
 		{
 			return document.SyntaxMode.GetChunks (ColorStyle, line, offset, length);
 		}		

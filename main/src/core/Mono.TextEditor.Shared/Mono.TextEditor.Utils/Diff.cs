@@ -99,7 +99,7 @@ using System.Text.RegularExpressions;
 
 namespace Mono.TextEditor.Utils
 {
-	public struct Hunk
+	struct Hunk
 	{
 		public static readonly Hunk Empty = new Hunk (0, 0, 0, 0);
 
@@ -168,7 +168,7 @@ namespace Mono.TextEditor.Utils
 		}
 	}
 	
-	public sealed class Diff
+	sealed class Diff
 	{
 		/// <summary>
 		/// Shortest Middle Snake Return Data

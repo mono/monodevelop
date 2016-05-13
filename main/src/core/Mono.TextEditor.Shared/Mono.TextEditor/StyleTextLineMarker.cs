@@ -30,8 +30,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-
-	public class StyleTextLineMarker: TextLineMarker
+	class StyleTextLineMarker: TextLineMarker
 	{
 		[Flags]
 		public enum StyleFlag {
@@ -110,7 +109,7 @@ namespace Mono.TextEditor
 			return style;
 		}
 		
-		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			if (baseStyle == null || IncludedStyles == StyleFlag.None)
 				return baseStyle;

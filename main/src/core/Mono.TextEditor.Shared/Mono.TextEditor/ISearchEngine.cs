@@ -30,7 +30,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public interface ISearchEngine
+	interface ISearchEngine
 	{
 		SearchRequest SearchRequest {
 			get;
@@ -69,7 +69,7 @@ namespace Mono.TextEditor
 		ISearchEngine Clone ();
 	}
 
-	public abstract class AbstractSearchEngine : ISearchEngine
+	abstract class AbstractSearchEngine : ISearchEngine
 	{
 		protected SearchRequest searchRequest;
 		protected TextEditorData textEditorData;
@@ -148,7 +148,7 @@ namespace Mono.TextEditor
 		}
 	}
 
-	public class BasicSearchEngine : AbstractSearchEngine
+	class BasicSearchEngine : AbstractSearchEngine
 	{
 		string compiledPattern = "";
 
@@ -284,7 +284,7 @@ namespace Mono.TextEditor
 		}
 	}
 
-	public class RegexSearchEngine : AbstractSearchEngine
+	class RegexSearchEngine : AbstractSearchEngine
 	{
 		Regex regex;
 

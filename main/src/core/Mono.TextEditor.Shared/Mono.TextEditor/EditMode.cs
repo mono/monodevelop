@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public abstract class EditMode
+	abstract class EditMode
 	{
 		//NOTE: the behaviour of this class is actually stateless; these variables are used to make the API
 		// friendlier for subclassers of this class

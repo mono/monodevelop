@@ -37,7 +37,7 @@ using MonoDevelop.Components;
 namespace Mono.TextEditor.Highlighting
 {
 
-	public class ChunkStyle
+	class ChunkStyle
 	{
 		public string Name { get; set; }
 		public Cairo.Color Foreground { get; set; }

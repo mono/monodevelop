@@ -28,7 +28,7 @@ using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor
 {
-	public class DiffTracker
+	class DiffTracker
 	{
 		class LineChangeInfo
 		{

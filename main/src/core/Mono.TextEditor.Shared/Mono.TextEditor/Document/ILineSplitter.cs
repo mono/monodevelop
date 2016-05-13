@@ -6,7 +6,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public interface ILineSplitter
+	interface ILineSplitter
 	{
 		int Count { get; }
 

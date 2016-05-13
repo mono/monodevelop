@@ -46,7 +46,7 @@ namespace MonoDevelop.VersionControl.Views
 		ShowBlameBefore
 	}
 	
-	public class BlameWidget : Bin
+	class BlameWidget : Bin
 	{
 		Revision revision;
 		Adjustment vAdjustment;

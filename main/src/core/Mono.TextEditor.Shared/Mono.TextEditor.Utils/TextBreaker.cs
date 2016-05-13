@@ -32,7 +32,7 @@ namespace Mono.TextEditor.Utils
 	/// <summary>
 	/// A utility class for breaking up the text in TextEditors
 	/// </summary>
-	public class TextBreaker
+	class TextBreaker
 	{
 		/// <summary>
 		/// Breaks the lines into words in the form of a list of <see cref="TextSegment">TextSegments</see>. A 'word' is defined as an identifier (a series of letters, digits or underscores)

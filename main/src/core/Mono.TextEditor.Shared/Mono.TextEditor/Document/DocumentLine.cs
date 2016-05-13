@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// A line inside a <see cref="T:Mono.TextEditor.TextDocument"/>.
 	/// </summary>
-	public abstract class DocumentLine : IDocumentLine
+	abstract class DocumentLine : IDocumentLine
 	{
 		List<TextLineMarker> markers;
 
@@ -92,7 +92,7 @@ namespace Mono.TextEditor
 		CloneableStack<Span> startSpan;
 		static readonly CloneableStack<Span> EmptySpan = new CloneableStack<Span> ();
 
-		public CloneableStack<Span> StartSpan {
+		internal CloneableStack<Span> StartSpan {
 			get {
 				return startSpan ?? EmptySpan;
 			}

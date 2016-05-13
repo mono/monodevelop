@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class MiscActionsTest : TextEditorTestBase
+	class MiscActionsTest : TextEditorTestBase
 	{
 		/// <summary>
 		/// Bug 615191 - When using multiline selection to indent/outdent, the indenter selects too much

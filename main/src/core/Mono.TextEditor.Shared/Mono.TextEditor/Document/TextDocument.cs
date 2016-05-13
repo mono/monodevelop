@@ -41,7 +41,7 @@ using System.IO;
 
 namespace Mono.TextEditor
 {
-	public class TextDocument : ITextDocument
+	class TextDocument : ITextDocument
 	{
 		ImmutableText buffer;
 		readonly ILineSplitter splitter;
@@ -128,7 +128,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public ISyntaxMode SyntaxMode {
+		internal ISyntaxMode SyntaxMode {
 			get {
 				return syntaxMode ?? new SyntaxMode (this);
 			}
@@ -143,14 +143,14 @@ namespace Mono.TextEditor
 			}
 		}
 
-		protected virtual void OnSyntaxModeChanged (SyntaxModeChangeEventArgs e)
+		void OnSyntaxModeChanged (SyntaxModeChangeEventArgs e)
 		{
 			var handler = SyntaxModeChanged;
 			if (handler != null)
 				handler (this, e);
 		}
 
-		public event EventHandler<SyntaxModeChangeEventArgs> SyntaxModeChanged;
+		internal event EventHandler<SyntaxModeChangeEventArgs> SyntaxModeChanged;
 
 		public object Tag {
 			get;
@@ -1951,5 +1951,5 @@ namespace Mono.TextEditor
 		#endregion
 	}
 	
-	public delegate bool ReadOnlyCheckDelegate (int line);
+	delegate bool ReadOnlyCheckDelegate (int line);
 }

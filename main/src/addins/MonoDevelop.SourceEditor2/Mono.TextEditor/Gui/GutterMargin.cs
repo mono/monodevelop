@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public class GutterMargin : Margin
+	class GutterMargin : Margin
 	{
 		MonoTextEditor editor;
 		int width;

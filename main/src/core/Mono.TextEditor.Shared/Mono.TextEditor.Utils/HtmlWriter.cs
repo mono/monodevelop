@@ -38,7 +38,7 @@ namespace Mono.TextEditor.Utils
 	/// <summary>
 	/// This class is used for converting a highlighted document to html.
 	/// </summary>
-	public static class HtmlWriter
+	static class HtmlWriter
 	{
 		public static string GenerateHtml (TextEditorData data)
 		{

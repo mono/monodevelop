@@ -29,7 +29,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class LineEventArgs : System.EventArgs 
+	class LineEventArgs : System.EventArgs 
 	{
 		readonly DocumentLine line;
 		public DocumentLine Line {

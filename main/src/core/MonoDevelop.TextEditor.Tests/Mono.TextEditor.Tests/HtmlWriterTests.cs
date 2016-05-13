@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class HtmlWriterTests : TextEditorTestBase
+	class HtmlWriterTests : TextEditorTestBase
 	{
 		[Test]
 		public void TestSimpleCSharpHtml ()

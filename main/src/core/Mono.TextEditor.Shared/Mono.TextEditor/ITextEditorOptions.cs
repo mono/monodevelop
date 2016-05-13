@@ -29,7 +29,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public enum ShowWhitespaces
+	enum ShowWhitespaces
 	{
 		Never,
 		Selection,
@@ -37,7 +37,7 @@ namespace Mono.TextEditor
 	}
 
 	[Flags]
-	public enum IncludeWhitespaces
+	enum IncludeWhitespaces
 	{
 		None = 0,
 		Space = 1,
@@ -46,7 +46,7 @@ namespace Mono.TextEditor
 		All = Space | Tab | LineEndings
 	}
 
-	public interface ITextEditorOptions : IDisposable
+	interface ITextEditorOptions : IDisposable
 	{
 		double Zoom { get; set; }
 		bool CanZoomIn { get; }

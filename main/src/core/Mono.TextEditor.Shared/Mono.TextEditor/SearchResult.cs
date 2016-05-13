@@ -30,7 +30,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class SearchResult
+	class SearchResult
 	{
 		public ISegment Segment { get; set; }
 		public bool SearchWrapped { get; set; }

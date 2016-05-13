@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 	/// A segment tree contains overlapping segments and get all segments overlapping a segment. It's implemented as a augmented interval tree
 	/// described in Cormen et al. (2001, Section 14.3: Interval trees, pp. 311–317).
 	/// </summary>
-	public class SegmentTree<T> : TextSegmentTree where T : TreeSegment
+	class SegmentTree<T> : TextSegmentTree where T : TreeSegment
 	{
 		internal readonly RedBlackTree<T> tree = new RedBlackTree<T> ();
 		
@@ -292,7 +292,7 @@ namespace Mono.TextEditor
 		bool Remove (TreeSegment segment);
 	}
 	
-	public class TreeSegment : IRedBlackTreeNode
+	class TreeSegment : IRedBlackTreeNode
 	{
 		internal TextSegmentTree segmentTree;
 

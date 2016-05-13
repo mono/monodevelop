@@ -29,7 +29,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public static class ScrollActions
+	static class ScrollActions
 	{
 		public static void Up (TextEditorData data)
 		{

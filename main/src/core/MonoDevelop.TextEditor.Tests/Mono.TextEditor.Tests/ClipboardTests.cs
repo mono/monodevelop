@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor.Extension;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class ClipboardTests : TextEditorTestBase
+	class ClipboardTests : TextEditorTestBase
 	{
 		#region ITextPasteHandler implementation
 		class TestPasteHandler : TextPasteHandler

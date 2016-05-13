@@ -31,7 +31,7 @@ using Mono.TextEditor.Highlighting;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class SyntaxHighlightingTests : TextEditorTestBase
+	class SyntaxHighlightingTests : TextEditorTestBase
 	{
 		[Test]
 		public void ValidateSyntaxModes ()

@@ -132,7 +132,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			if (baseStyle == null)
 				return null;

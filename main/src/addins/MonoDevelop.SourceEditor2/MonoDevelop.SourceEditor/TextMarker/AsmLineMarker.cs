@@ -31,7 +31,7 @@ namespace MonoDevelop.SourceEditor
 {
 	class AsmLineMarker: TextLineMarker, MonoDevelop.Ide.Editor.ITextLineMarker
 	{
-		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal override ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			var st = new ChunkStyle (baseStyle);
 			st.Foreground = new Cairo.Color (125, 125, 125);

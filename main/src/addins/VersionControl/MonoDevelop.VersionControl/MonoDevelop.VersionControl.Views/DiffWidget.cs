@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.VersionControl.Views
 {
 	[System.ComponentModel.ToolboxItem(false)]
-	public partial class DiffWidget : Gtk.Bin
+	partial class DiffWidget : Gtk.Bin
 	{
 		VersionControlDocumentInfo info;
 		Mono.TextEditor.MonoTextEditor diffTextEditor;

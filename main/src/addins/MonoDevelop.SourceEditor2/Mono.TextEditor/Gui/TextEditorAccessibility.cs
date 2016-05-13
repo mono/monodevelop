@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
-	public class TextEditorAccessible : BaseWidgetAccessible, TextImplementor, EditableTextImplementor
+	class TextEditorAccessible : BaseWidgetAccessible, TextImplementor, EditableTextImplementor
 	{
 		TextEditor editor;
 		

@@ -32,7 +32,7 @@ using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class Keywords
+	class Keywords
 	{
 		List<string>  words = new List<string> ();
 		

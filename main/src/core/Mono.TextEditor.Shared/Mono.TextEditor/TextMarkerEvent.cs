@@ -27,7 +27,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class TextMarkerEvent : LineEventArgs
+	class TextMarkerEvent : LineEventArgs
 	{
 		public TextLineMarker TextMarker {
 			get;

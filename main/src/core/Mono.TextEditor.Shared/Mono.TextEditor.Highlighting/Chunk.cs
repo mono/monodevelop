@@ -31,7 +31,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class Chunk : ISegment
+	class Chunk : ISegment
 	{
 		public Chunk Next {
 			get;

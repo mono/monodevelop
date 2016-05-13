@@ -36,7 +36,7 @@ using MonoDevelop.AspNet.WebForms.Parser;
 
 namespace MonoDevelop.AspNet.WebForms
 {
-	public class WebFormsSyntaxMode : SyntaxMode
+	class WebFormsSyntaxMode : SyntaxMode
 	{
 	//	SyntaxMode charpMode;
 		

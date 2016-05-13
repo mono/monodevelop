@@ -56,8 +56,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\MiscActions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\ScrollActions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Actions\SelectionActions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\TextLocation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ITextAnchor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\ISelectionSurroundingProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Selection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\SearchRequest.cs" />

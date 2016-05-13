@@ -32,13 +32,13 @@ using System.Diagnostics;
 
 namespace Mono.TextEditor.Utils
 {
-	public enum RedBlackColor : byte
+	enum RedBlackColor : byte
 	{
 		Black = 0,
 		Red = 1
 	}
 	
-	public interface IRedBlackTreeNode
+	interface IRedBlackTreeNode
 	{
 		IRedBlackTreeNode Parent { get; set; }
 		IRedBlackTreeNode Left { get; set; }
@@ -49,7 +49,7 @@ namespace Mono.TextEditor.Utils
 		void UpdateAugmentedData ();
 	}
 	
-	public static class RedBlackTreeExtensionMethods
+	static class RedBlackTreeExtensionMethods
 	{
 		public static bool IsLeaf (this IRedBlackTreeNode node)
 		{
@@ -122,7 +122,7 @@ namespace Mono.TextEditor.Utils
 		}
 	}
 	
-	public class RedBlackTree<T> : ICollection<T> where T : class, IRedBlackTreeNode
+	class RedBlackTree<T> : ICollection<T> where T : class, IRedBlackTreeNode
 	{
 		public T Root { get; set; }
 		

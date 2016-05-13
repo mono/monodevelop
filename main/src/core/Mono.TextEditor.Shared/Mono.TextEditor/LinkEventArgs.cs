@@ -30,7 +30,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class LinkEventArgs : System.EventArgs
+	class LinkEventArgs : System.EventArgs
 	{
 		public string Link {
 			get;

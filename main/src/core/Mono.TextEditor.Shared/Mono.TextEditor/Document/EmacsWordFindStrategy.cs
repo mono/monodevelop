@@ -32,7 +32,7 @@ using SW = Mono.TextEditor.WordFindStrategy;
 
 namespace Mono.TextEditor
 {
-	public class EmacsWordFindStrategy : WordFindStrategy
+	class EmacsWordFindStrategy : WordFindStrategy
 	{
 		bool includeUnderscore;
 		

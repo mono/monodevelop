@@ -30,7 +30,7 @@ using System.IO;
 
 namespace Mono.TextEditor.Utils
 {
-	public sealed class ImmutableTextTextReader : TextReader
+	sealed class ImmutableTextTextReader : TextReader
 	{
 		readonly ImmutableText immutableText;
 

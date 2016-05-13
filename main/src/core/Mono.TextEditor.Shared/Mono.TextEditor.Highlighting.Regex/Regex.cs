@@ -3,7 +3,7 @@ using System;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class Regex
+	class Regex
 	{
 		public string Pattern {
 			get;

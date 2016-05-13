@@ -36,7 +36,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class SyntaxMode : Rule, ISyntaxMode
+	class SyntaxMode : Rule, ISyntaxMode
 	{
 		protected TextDocument doc;
 
@@ -786,12 +786,12 @@ namespace Mono.TextEditor.Highlighting
 		}
 	}
 
-	public interface ISyntaxModeProvider
+	interface ISyntaxModeProvider
 	{
 		SyntaxMode Create (TextDocument doc);
 	}
 	
-	public class ProtoTypeSyntaxModeProvider : ISyntaxModeProvider
+	class ProtoTypeSyntaxModeProvider : ISyntaxModeProvider
 	{
 		SyntaxMode prototype;
 		
@@ -856,7 +856,7 @@ namespace Mono.TextEditor.Highlighting
 		}
 	}
 	
-	public class SyntaxModeProvider : ISyntaxModeProvider
+	class SyntaxModeProvider : ISyntaxModeProvider
 	{
 		Func<TextDocument, SyntaxMode> createFunction;
 		

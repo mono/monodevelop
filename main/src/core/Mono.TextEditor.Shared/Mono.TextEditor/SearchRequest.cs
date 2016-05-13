@@ -30,7 +30,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class SearchRequest
+	class SearchRequest
 	{
 		bool wholeWordOnly;
 		public bool WholeWordOnly {

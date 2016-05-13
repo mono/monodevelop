@@ -33,7 +33,7 @@ using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class Rule
+	class Rule
 	{
 		internal protected List<Keywords> keywords = new List<Keywords> ();
 		internal protected Span[] spans = new Span[0];

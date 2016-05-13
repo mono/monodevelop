@@ -26,7 +26,7 @@
 using System;
 namespace Mono.TextEditor
 {
-	public abstract class MarginDrawer
+	abstract class MarginDrawer
 	{
 		public bool IsTransparent {
 			get {

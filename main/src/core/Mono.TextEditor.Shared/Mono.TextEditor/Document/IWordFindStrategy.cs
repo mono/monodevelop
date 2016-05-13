@@ -30,7 +30,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public interface IWordFindStrategy
+	interface IWordFindStrategy
 	{
 		int FindNextWordOffset (TextDocument doc, int offset);
 		int FindPrevWordOffset (TextDocument doc, int offset);
@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 		int FindCurrentWordEnd (TextDocument doc, int offset);
 	}
 	
-	public abstract class WordFindStrategy : IWordFindStrategy
+	abstract class WordFindStrategy : IWordFindStrategy
 	{
 		public enum CharacterClass {
 			Unknown,

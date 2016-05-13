@@ -30,7 +30,7 @@ using MonoDevelop.Components;
 
 namespace Mono.TextEditor
 {
-	public abstract class TooltipProvider
+	abstract class TooltipProvider
 	{
 		public abstract Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken));
 

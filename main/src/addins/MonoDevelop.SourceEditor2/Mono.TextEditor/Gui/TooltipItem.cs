@@ -30,7 +30,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class TooltipItem
+	class TooltipItem
 	{
 		public ISegment ItemSegment { get; set; }
 		public object Item { get; set; }

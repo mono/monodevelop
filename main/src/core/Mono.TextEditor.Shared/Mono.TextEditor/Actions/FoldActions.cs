@@ -35,7 +35,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// Actions for manipulating folds in a document
 	/// </summary>
-	public class FoldActions
+	class FoldActions
 	{
 		/// <summary>
 		/// Gets the outermost closed fold pertaining to the current caret position

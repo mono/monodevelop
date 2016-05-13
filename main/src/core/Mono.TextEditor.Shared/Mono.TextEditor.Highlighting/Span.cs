@@ -33,7 +33,7 @@ using System.Xml;
 namespace Mono.TextEditor.Highlighting
 {
 	[Flags]
-	public enum SpanBeginFlags
+	enum SpanBeginFlags
 	{
 		None = 0,
 		StartsLine = 1,
@@ -42,19 +42,19 @@ namespace Mono.TextEditor.Highlighting
 	}
 
 	[Flags]
-	public enum SpanExitFlags
+	enum SpanExitFlags
 	{
 		None = 0,
 		CancelSpan = 1
 	}
 	
 	[Flags]
-	public enum SpanEndFlags
+	enum SpanEndFlags
 	{
 		None = 0
 	}
 
-	public class Span
+	class Span
 	{
 		public Span ()
 		{

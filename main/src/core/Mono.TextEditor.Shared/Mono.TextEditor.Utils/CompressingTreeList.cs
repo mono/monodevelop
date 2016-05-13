@@ -31,7 +31,7 @@ using System.Diagnostics;
 
 namespace Mono.TextEditor.Utils
 {
-	public sealed class CompressingTreeList<T> : IList<T>
+	sealed class CompressingTreeList<T> : IList<T>
 	{
 		readonly Func<T, T, bool> comparisonFunc;
 

@@ -28,7 +28,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class DashedLineMargin : Margin
+	class DashedLineMargin : Margin
 	{
 		MonoTextEditor editor;
 		Cairo.Color color;

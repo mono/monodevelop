@@ -33,12 +33,12 @@ using System.Linq;
 
 namespace Mono.TextEditor
 {
-	public abstract class SemanticRule
+	abstract class SemanticRule
 	{
 		public abstract void Analyze (TextDocument doc, DocumentLine line, Chunk startChunk, int startOffset, int endOffset);
 	}
 	
-	public class HighlightUrlSemanticRule : SemanticRule
+	class HighlightUrlSemanticRule : SemanticRule
 	{
 		const string urlRegexStr = @"(http|ftp)s?\:\/\/[\w\d\.,;_/\-~%@()+:?&^=#!]*[\w\d/]";
 		

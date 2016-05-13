@@ -31,7 +31,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class TextSegmentMarker : TreeSegment
+	class TextSegmentMarker : TreeSegment
 	{
 		internal int insertId;
 		public virtual TextLineMarkerFlags Flags {
@@ -62,20 +62,20 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
 		{
 			return baseStyle;
 		}
 	}
 
-	public interface IChunkMarker
+	internal interface IChunkMarker
 	{
 		void TransformChunks (List<Chunk> chunks);
 
 		void ChangeForeColor (MonoTextEditor editor, Chunk chunk, ref Cairo.Color color);
 	}
 
-	public class UnderlineTextSegmentMarker : TextSegmentMarker
+	class UnderlineTextSegmentMarker : TextSegmentMarker
 	{
 		public UnderlineTextSegmentMarker (Cairo.Color color, ISegment textSegment) : base (textSegment)
 		{

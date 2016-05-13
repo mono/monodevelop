@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public static class MiscActions
+	static class MiscActions
 	{
 		public static int RemoveTabInLine (TextEditorData data, DocumentLine line)
 		{

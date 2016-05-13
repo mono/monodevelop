@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor.Extension;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class VirtualIndentModeTests
+	class VirtualIndentModeTests
 	{
 		public static TextEditorData CreateData (string content)
 		{

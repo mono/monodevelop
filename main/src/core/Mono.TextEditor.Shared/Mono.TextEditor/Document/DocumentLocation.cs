@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public class DocumentLocationEventArgs : System.EventArgs
+	class DocumentLocationEventArgs : System.EventArgs
 	{
 		readonly DocumentLocation location;
 		

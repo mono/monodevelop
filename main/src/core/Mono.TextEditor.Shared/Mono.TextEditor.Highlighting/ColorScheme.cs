@@ -38,7 +38,7 @@ using MonoDevelop.Components;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class StyleImportException : Exception
+	class StyleImportException : Exception
 	{
 		public ImportFailReason Reason { get; private set; }
 
@@ -53,7 +53,7 @@ namespace Mono.TextEditor.Highlighting
 		}
 
 	}
-	public sealed class ColorScheme
+	sealed class ColorScheme
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }

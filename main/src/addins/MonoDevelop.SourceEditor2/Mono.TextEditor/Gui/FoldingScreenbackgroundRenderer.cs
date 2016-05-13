@@ -30,7 +30,7 @@ using MonoDevelop.Components;
 
 namespace Mono.TextEditor
 {
-	public class FoldingScreenbackgroundRenderer : IBackgroundRenderer, IDisposable
+	class FoldingScreenbackgroundRenderer : IBackgroundRenderer, IDisposable
 	{
 		MonoTextEditor editor;
 		List<FoldSegment> foldSegments;

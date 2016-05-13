@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class Match
+	class Match
 	{
 		System.Text.RegularExpressions.Regex  regex;
 		public string Color {
@@ -132,7 +132,7 @@ namespace Mono.TextEditor.Highlighting
 		}
 	}
 	
-	public class CSharpNumberMatch : Match
+	class CSharpNumberMatch : Match
 	{
 		static bool ReadNonFloatEnd (string text, ref int i)
 		{

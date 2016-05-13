@@ -45,7 +45,7 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 	
-	public static class EditActions
+	static class EditActions
 	{
 		
 		public static void AdvancedBackspace (TextEditorData data)

@@ -50,7 +50,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public class TextArea : Container, ITextEditorDataProvider
+	class TextArea : Container, ITextEditorDataProvider
 	{
 
 		TextEditorData textEditorData;
@@ -154,7 +154,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public ITextEditorOptions Options {
+		internal ITextEditorOptions Options {
 			get {
 				return textEditorData.Options;
 			}
@@ -1973,7 +1973,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
+		internal Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
 			get {
 				return this.textEditorData?.ColorStyle;
 			}
@@ -3354,7 +3354,7 @@ namespace Mono.TextEditor
 
 	}
 
-	public interface ITextEditorDataProvider
+	interface ITextEditorDataProvider
 	{
 		TextEditorData GetTextEditorData ();
 	}

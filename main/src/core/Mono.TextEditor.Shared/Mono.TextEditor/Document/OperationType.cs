@@ -36,7 +36,7 @@ using System.Threading;
 
 namespace Mono.TextEditor
 {
-	public enum OperationType
+	enum OperationType
 	{
 		Undefined,
 		Format

@@ -35,7 +35,7 @@ using System.Reflection;
 namespace Mono.TextEditor.Highlighting
 {
 
-	public class AmbientColor
+	class AmbientColor
 	{
 		public string Name { get; private set; }
 		public readonly List<Tuple<string, Cairo.Color>> Colors = new List<Tuple<string, Cairo.Color>> ();

@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// Caches native pango layout objects.
 	/// </summary>
-	public class LayoutCache : IDisposable
+	class LayoutCache : IDisposable
 	{
 		readonly MonoTextEditor widget;
 		readonly Queue<LayoutProxy> layoutQueue = new Queue<LayoutProxy> ();

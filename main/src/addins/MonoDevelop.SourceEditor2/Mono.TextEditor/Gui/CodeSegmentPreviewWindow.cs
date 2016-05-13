@@ -36,7 +36,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class CodeSegmentPreviewWindow : Gtk.Window
+	class CodeSegmentPreviewWindow : Gtk.Window
 	{
 		const int DefaultPreviewWindowWidth = 320;
 		const int DefaultPreviewWindowHeight = 200;

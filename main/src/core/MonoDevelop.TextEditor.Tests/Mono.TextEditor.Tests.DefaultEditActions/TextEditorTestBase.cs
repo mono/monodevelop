@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor.Tests
 {
-	public class TextEditorTestBase
+	class TextEditorTestBase
 	{
 		static bool firstRun = true;
 		

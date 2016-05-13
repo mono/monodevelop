@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor.Utils
 {
-	public static class FileSettingsStore
+	static class FileSettingsStore
 	{
 		
 		public class Settings

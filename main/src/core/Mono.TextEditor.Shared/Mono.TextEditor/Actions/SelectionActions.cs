@@ -39,8 +39,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	
-	public static class SelectionActions
+	static class SelectionActions
 	{
 		public static Action<TextEditorData> FromMoveAction (Action<TextEditorData> moveAction)
 		{

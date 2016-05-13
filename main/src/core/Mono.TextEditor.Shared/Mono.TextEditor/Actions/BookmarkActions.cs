@@ -38,7 +38,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public static class BookmarkActions
+	static class BookmarkActions
 	{
 		static int GetNextOffset (TextDocument document, int lineNumber)
 		{

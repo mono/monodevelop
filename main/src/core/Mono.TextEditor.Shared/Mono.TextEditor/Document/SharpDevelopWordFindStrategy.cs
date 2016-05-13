@@ -30,7 +30,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class SharpDevelopWordFindStrategy : WordFindStrategy
+	class SharpDevelopWordFindStrategy : WordFindStrategy
 	{
 		int FindNextWordOffset (TextDocument doc, int offset, bool subword)
 		{

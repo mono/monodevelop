@@ -32,14 +32,14 @@ using Gtk;
 namespace Mono.TextEditor
 {
 	
-	public enum UrlType {
+	enum UrlType {
 		Unknown,
 		Url,
 		Email
 	}
 
 
-	public class UrlMarker : TextLineMarker, IDisposable
+	class UrlMarker : TextLineMarker, IDisposable
 	{
 		string url;
 		string style;

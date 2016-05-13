@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public class FoldSegment : TreeSegment, System.IComparable, IFoldSegment
+	class FoldSegment : TreeSegment, System.IComparable, IFoldSegment
 	{
 		internal bool isFolded;
 		internal bool isAttached;
@@ -122,7 +122,7 @@ namespace Mono.TextEditor
 	}
 	
 	[Serializable]
-	public sealed class FoldSegmentEventArgs : EventArgs
+	sealed class FoldSegmentEventArgs : EventArgs
 	{
 		public FoldSegment FoldSegment {
 			get;

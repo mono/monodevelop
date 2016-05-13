@@ -31,7 +31,7 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class InsertionModeTests : TextEditorTestBase
+	class InsertionModeTests : TextEditorTestBase
 	{
 		string CreateInsertionPoint (string input, string text, NewLineInsertion before, NewLineInsertion after)
 		{

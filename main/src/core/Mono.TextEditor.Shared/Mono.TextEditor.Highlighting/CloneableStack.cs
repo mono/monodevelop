@@ -35,7 +35,7 @@ namespace Mono.TextEditor.Highlighting
 	/// * equatable in constant time
 	/// * when enumerating the items go from top to bottom (the .NET stack implementation does the opposite)
 	/// </summary>
-	public class CloneableStack<T> : IEnumerable<T>, ICollection<T>, ICloneable, IEquatable<CloneableStack<T>>
+	class CloneableStack<T> : IEnumerable<T>, ICollection<T>, ICloneable, IEquatable<CloneableStack<T>>
 	{
 		int count;
 		StackItem top;

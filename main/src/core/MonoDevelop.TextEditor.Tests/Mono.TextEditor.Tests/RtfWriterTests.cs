@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture]
-	public class RtfWriterTests : TextEditorTestBase
+	class RtfWriterTests : TextEditorTestBase
 	{
 		[Test]
 		public void TestSimpleCSharpRtf ()

@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public abstract class Margin : IDisposable
+	abstract class Margin : IDisposable
 	{
 		public abstract double Width {
 			get;
@@ -122,7 +122,7 @@ namespace Mono.TextEditor
 		public event EventHandler MouseLeave;
 	}
 	
-	public class MarginMouseEventArgs : EventArgs
+	class MarginMouseEventArgs : EventArgs
 	{
 		public double X {
 			get;

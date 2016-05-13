@@ -34,7 +34,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public class LineSplitter : ILineSplitter
+	class LineSplitter : ILineSplitter
 	{
 		public IEnumerable<DocumentLine> Lines {
 			get {

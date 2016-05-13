@@ -29,7 +29,7 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public interface IAnimationDrawer
+	interface IAnimationDrawer
 	{
 		Gdk.Rectangle AnimationBounds {
 			get;

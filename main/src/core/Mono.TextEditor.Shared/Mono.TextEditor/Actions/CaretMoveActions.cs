@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public static class CaretMoveActions
+	static class CaretMoveActions
 	{
 		public static void Left (TextEditorData data)
 		{

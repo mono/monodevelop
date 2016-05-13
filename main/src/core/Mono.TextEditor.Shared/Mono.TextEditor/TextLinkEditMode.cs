@@ -132,7 +132,7 @@ namespace Mono.TextEditor
 		#endregion
 	}
 
-	public enum TextLinkMode
+	enum TextLinkMode
 	{
 		EditIdentifier,
 		General

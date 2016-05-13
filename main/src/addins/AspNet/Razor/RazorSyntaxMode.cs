@@ -45,7 +45,7 @@ using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.AspNet.Razor
 {
-	public class RazorSyntaxMode : SyntaxMode, IDisposable
+	class RazorSyntaxMode : SyntaxMode, IDisposable
 	{
 		TextEditor editor;
 		public RazorSyntaxMode (TextEditor editor, DocumentContext doc)

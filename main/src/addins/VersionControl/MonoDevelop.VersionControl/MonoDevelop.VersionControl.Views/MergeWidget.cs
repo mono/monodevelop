@@ -39,7 +39,7 @@ namespace MonoDevelop.VersionControl.Views
 {
 	public class MergeWidget : EditorCompareWidgetBase
 	{
-		protected internal override MonoTextEditor MainEditor {
+		internal override MonoTextEditor MainEditor {
 			get {
 				return editors != null && editors.Length >= 2 ? editors[1] : null;
 			}
@@ -50,7 +50,7 @@ namespace MonoDevelop.VersionControl.Views
 			MainEditor.Document.TextChanged += UpdateConflictsOnTextReplace;
 		}
 
-		protected override void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
+		internal override void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
 		{
 			base.UndoChange (fromEditor, toEditor, hunk);
 			int i = leftConflicts.IndexOf (hunk);

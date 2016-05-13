@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public static class SyntaxModeService
+	static class SyntaxModeService
 	{
 		static Dictionary<string, ISyntaxModeProvider> syntaxModes = new Dictionary<string, ISyntaxModeProvider> ();
 		static Dictionary<string, ColorScheme> styles      = new Dictionary<string, ColorScheme> ();

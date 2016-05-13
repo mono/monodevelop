@@ -35,7 +35,7 @@ namespace Mono.TextEditor.Utils
 	/// <summary>
 	/// This class handles text input from files, streams and byte arrays with auto-detect encoding.
 	/// </summary>
-	public static class TextFileUtility
+	static class TextFileUtility
 	{
 		readonly static int maxBomLength = 0;
 		readonly static Encoding[] encodingsWithBom;

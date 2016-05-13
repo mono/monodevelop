@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor
 {
-	public static class DeleteActions
+	static class DeleteActions
 	{
 		public static Action<TextEditorData> FromMoveAction (Action<TextEditorData> moveAction)
 		{

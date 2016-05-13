@@ -56,12 +56,12 @@ namespace MonoDevelop.VersionControl.Views
 		DiffScrollbar rightDiffScrollBar, leftDiffScrollBar;
 		MiddleArea[] middleAreas;
 
-		protected MonoTextEditor[] editors;
+		internal MonoTextEditor[] editors;
 		protected Widget[] headerWidgets;
 
 		
 		List<Hunk> leftDiff;
-		protected List<Hunk> LeftDiff {
+		internal List<Hunk> LeftDiff {
 			get { return leftDiff; }
 			set {
 				leftDiff = value;
@@ -70,7 +70,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 		
 		List<Hunk> rightDiff;
-		protected List<Hunk> RightDiff {
+		internal List<Hunk> RightDiff {
 			get { return rightDiff; }
 			set {
 				rightDiff = value;
@@ -78,11 +78,11 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		protected internal abstract MonoTextEditor MainEditor {
+		internal abstract MonoTextEditor MainEditor {
 			get;
 		}
 		
-		public MonoTextEditor FocusedEditor {
+		internal MonoTextEditor FocusedEditor {
 			get {
 				foreach (MonoTextEditor editor in editors) {
 					
@@ -252,7 +252,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		protected abstract void CreateComponents ();
 		
-		public static ICollection<Cairo.Rectangle> GetDiffRectangles (MonoTextEditor editor, int startOffset, int endOffset)
+		internal static ICollection<Cairo.Rectangle> GetDiffRectangles (MonoTextEditor editor, int startOffset, int endOffset)
 		{
 			ICollection<Cairo.Rectangle> rectangles = new List<Cairo.Rectangle> ();
 			var startLine = editor.GetLineByOffset (startOffset);
@@ -520,7 +520,7 @@ namespace MonoDevelop.VersionControl.Views
 			children.ForEach (child => child.Child.SizeRequest ());
 		}
 
-		public static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool border, double alpha)
+		internal static Cairo.Color GetColor (Hunk hunk, bool removeSide, bool border, double alpha)
 		{
 			Xwt.Drawing.Color result;
 			if (hunk.Removed > 0 && hunk.Inserted > 0) {
@@ -604,7 +604,7 @@ namespace MonoDevelop.VersionControl.Views
 			CreateDiff ();
 		}
 
-		public void SetLocal (TextEditorData data)
+		internal void SetLocal (TextEditorData data)
 		{
 			if (info == null)
 				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
@@ -630,13 +630,13 @@ namespace MonoDevelop.VersionControl.Views
 			UpdateDiff ();
 		}
 
-		public void RemoveLocal (TextEditorData data)
+		internal void RemoveLocal (TextEditorData data)
 		{
 			localUpdate.Remove (data);
 			data.Document.TextChanged -= HandleDataDocumentTextReplaced;
 		}
 
-		protected virtual void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
+		internal virtual void UndoChange (MonoTextEditor fromEditor, MonoTextEditor toEditor, Hunk hunk)
 		{
 			using (var undo = toEditor.OpenUndoGroup ()) {
 				var start = toEditor.Document.GetLine (hunk.InsertStart);

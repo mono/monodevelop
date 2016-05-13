@@ -41,7 +41,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	public static class ClipboardActions
+	static class ClipboardActions
 	{
 		public static void Cut (TextEditorData data)
 		{
@@ -153,7 +153,7 @@ namespace Mono.TextEditor
 			internal List<List<ColoredSegment>> copiedColoredChunks;
 			byte[] copyData;
 
-			public ColorScheme docStyle;
+			internal ColorScheme docStyle;
 			ITextEditorOptions options;
 
 			public static readonly TargetEntry[] TargetEntries;

@@ -31,14 +31,14 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public enum NewLineInsertion
+	enum NewLineInsertion
 	{
 		None,
 		Eol,
 		BlankLine
 	}
 	
-	public class InsertionPoint 
+	class InsertionPoint 
 	{
 		public DocumentLocation Location {
 			get;
@@ -375,7 +375,7 @@ namespace Mono.TextEditor
 	}
 	
 	[Serializable]
-	public sealed class InsertionCursorEventArgs : EventArgs
+	sealed class InsertionCursorEventArgs : EventArgs
 	{
 		public bool Success {
 			get;

@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
-	public static class GtkGestures
+	static class GtkGestures
 	{
 		const int GDK_GESTURE_MAGNIFY = 37;
 		const int GDK_GESTURE_ROTATE  = 38;

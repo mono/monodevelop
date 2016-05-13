@@ -31,7 +31,7 @@ using Gdk;
 
 namespace Mono.TextEditor
 {
-	public class IconMargin : Margin
+	class IconMargin : Margin
 	{
 		MonoTextEditor editor;
 		Cairo.Color backgroundColor, separatorColor;
@@ -134,7 +134,7 @@ namespace Mono.TextEditor
 		public EventHandler<BookmarkMarginDrawEventArgs> DrawEvent;
 	}
 	
-	public class BookmarkMarginDrawEventArgs : EventArgs
+	class BookmarkMarginDrawEventArgs : EventArgs
 	{
 		public MonoTextEditor Editor {
 			get;

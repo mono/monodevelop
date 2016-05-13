@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	public class Caret
+	class Caret
 	{
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
@@ -405,7 +405,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// Possible visual modes for the caret
 	/// </summary>
-	public enum CaretMode
+	enum CaretMode
 	{
 		Insert,
 		Block,

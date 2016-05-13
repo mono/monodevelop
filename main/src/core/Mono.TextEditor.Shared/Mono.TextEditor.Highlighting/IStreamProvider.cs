@@ -31,12 +31,12 @@ using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public interface IStreamProvider
+	interface IStreamProvider
 	{
 		Stream Open ();
 	}
 
-	public class ResourceStreamProvider : IStreamProvider
+	class ResourceStreamProvider : IStreamProvider
 	{
 		Assembly assembly;
 		string   manifestResourceName;
@@ -65,7 +65,7 @@ namespace Mono.TextEditor.Highlighting
 		}
 	}
 	
-	public class UrlStreamProvider : IStreamProvider
+	class UrlStreamProvider : IStreamProvider
 	{
 		string  url;
 		

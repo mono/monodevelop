@@ -242,7 +242,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.checkbuttonItalic.Sensitive = true;
 		}
 
-		public void SetSheme (ColorScheme style)
+		internal void SetSheme (ColorScheme style)
 		{
 			if (style == null)
 				throw new ArgumentNullException ("style");

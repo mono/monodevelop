@@ -33,7 +33,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// Contains all information about a margin draw event. This class is used inside <see cref="MarginMarker"/>.
 	/// </summary>
-	public class MarginDrawMetrics
+	class MarginDrawMetrics
 	{
 		/// <summary>
 		/// The margin that should be drawn.
@@ -102,7 +102,7 @@ namespace Mono.TextEditor
 	/// (If the margin supports custom drawing plugins)
 	/// Note: This is not used for the text view margin, which is handled by the basic TextLineMarker class.
 	/// </summary>
-	public class MarginMarker : TextLineMarker
+	class MarginMarker : TextLineMarker
 	{
 		/// <summary>
 		/// Determines whether this margin marker can draw the background of the specified margin.

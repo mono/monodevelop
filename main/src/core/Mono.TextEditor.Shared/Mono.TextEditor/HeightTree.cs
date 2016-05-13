@@ -38,7 +38,7 @@ namespace Mono.TextEditor
 	/// The height tree stores the heights of lines and provides a performant conversion between y and lineNumber.
 	/// It takes care of message bubble heights and the height of folded sections.
 	/// </summary>
-	public class HeightTree : IDisposable
+	class HeightTree : IDisposable
 	{
 		// TODO: Add support for line word wrap to the text editor - with the height tree this is possible.
 		internal RedBlackTree<HeightNode> tree = new RedBlackTree<HeightNode> ();

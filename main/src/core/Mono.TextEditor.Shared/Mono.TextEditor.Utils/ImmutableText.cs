@@ -82,7 +82,7 @@ namespace Mono.TextEditor.Utils
 	/// instead of <code>O[n]</code> for 
 	/// <code>StringBuffer/StringBuilder</code>.</i></p>
 	/// </summary>
-	public sealed class ImmutableText : ITextSource
+	sealed class ImmutableText : ITextSource
 	{
 		/// <summary>Holds the default size for primitive blocks of characters.</summary>
 		const int BLOCK_SIZE = 1 << 6;

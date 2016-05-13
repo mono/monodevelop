@@ -27,11 +27,11 @@ using System;
 using Mono.TextEditor.Highlighting;
 namespace Mono.TextEditor
 {
-	public class CodeSegmentEditorWindow : Gtk.Window
+	class CodeSegmentEditorWindow : Gtk.Window
 	{
 		MonoTextEditor codeSegmentEditor = new MonoTextEditor ();
 		
-		public ISyntaxMode SyntaxMode {
+		internal ISyntaxMode SyntaxMode {
 			get {
 				return codeSegmentEditor.Document.SyntaxMode;
 			}

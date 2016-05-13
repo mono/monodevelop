@@ -34,7 +34,7 @@ using System.Reflection;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class ColorDescriptionAttribute : Attribute
+	class ColorDescriptionAttribute : Attribute
 	{
 		public string Name { get; private set; }
 		public string Description { get; set; }

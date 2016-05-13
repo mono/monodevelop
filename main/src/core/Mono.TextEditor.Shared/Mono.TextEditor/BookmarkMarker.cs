@@ -31,7 +31,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-	public class BookmarkMarker : MarginMarker
+	class BookmarkMarker : MarginMarker
 	{
 		internal static BookmarkMarker Instance = new BookmarkMarker ();
 		

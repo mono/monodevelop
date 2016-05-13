@@ -10,7 +10,7 @@ namespace Mono.TextEditor
 	/// <summary>
 	/// A very fast line splitter for read-only documents that generates lines only on demand.
 	/// </summary>
-	public class PrimitiveLineSplitter : ILineSplitter
+	class PrimitiveLineSplitter : ILineSplitter
 	{
 		int textLength;
 		List<LineSplitter.Delimiter> delimiters = new List<LineSplitter.Delimiter> ();

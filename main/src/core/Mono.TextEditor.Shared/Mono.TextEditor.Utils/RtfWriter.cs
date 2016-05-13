@@ -31,7 +31,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
 {
-	public static class RtfWriter
+	static class RtfWriter
 	{
 		static string CreateColorTable (List<Cairo.Color> colorList)
 		{

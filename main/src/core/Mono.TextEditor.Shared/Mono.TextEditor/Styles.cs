@@ -29,7 +29,7 @@ using Xwt.Drawing;
 
 namespace Mono.TextEditor.PopupWindow
 {
-	public static class Styles
+	static class Styles
 	{
 		public static Color ModeHelpWindowTokenOutlineColor { get; internal set; }
 		public static Color ModeHelpWindowTokenTextColor { get; internal set; }

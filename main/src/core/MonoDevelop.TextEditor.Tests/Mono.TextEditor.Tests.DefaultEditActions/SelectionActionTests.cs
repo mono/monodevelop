@@ -31,7 +31,7 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class SelectionActionTests : TextEditorTestBase
+	class SelectionActionTests : TextEditorTestBase
 	{
 		[Test()]
 		public void TestMoveLeft ()

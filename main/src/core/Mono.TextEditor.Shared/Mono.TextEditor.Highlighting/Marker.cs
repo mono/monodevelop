@@ -31,7 +31,7 @@ using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class Marker
+	class Marker
 	{
 		public string Color {
 			get;

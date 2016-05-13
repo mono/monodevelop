@@ -34,7 +34,7 @@ using MonoDevelop.Core;
 
 namespace Mono.TextEditor
 {
-	public class SimpleEditMode : EditMode
+	class SimpleEditMode : EditMode
 	{
 		Dictionary<int, Action<TextEditorData>> keyBindings = new Dictionary<int, Action<TextEditorData>> ();
 		public Dictionary<int, Action<TextEditorData>> KeyBindings { get { return keyBindings; } }

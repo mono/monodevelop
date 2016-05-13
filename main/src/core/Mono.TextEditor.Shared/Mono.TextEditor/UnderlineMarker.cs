@@ -31,8 +31,7 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor
 {
-	
-	public class UnderlineMarker: TextLineMarker
+	class UnderlineMarker: TextLineMarker
 	{
 		protected UnderlineMarker ()
 		{}

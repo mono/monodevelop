@@ -30,8 +30,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-
-	public class LineBackgroundMarker: TextLineMarker
+	class LineBackgroundMarker: TextLineMarker
 	{
 		Cairo.Color color;
 		

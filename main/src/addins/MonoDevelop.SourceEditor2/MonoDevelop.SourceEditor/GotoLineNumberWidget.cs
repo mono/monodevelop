@@ -35,7 +35,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public partial class GotoLineNumberWidget : Gtk.Bin
+	partial class GotoLineNumberWidget : Gtk.Bin
 	{
 		readonly MonoTextEditor textEditor;
 		readonly Widget frame;

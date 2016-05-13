@@ -3,7 +3,7 @@ using System;
 
 namespace Mono.TextEditor
 {
-	public class RegexMatch
+	class RegexMatch
 	{
 		public static RegexMatch NoMatch = new RegexMatch (-1);
 		

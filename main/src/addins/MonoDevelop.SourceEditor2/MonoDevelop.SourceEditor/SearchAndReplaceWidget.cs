@@ -41,7 +41,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public partial class SearchAndReplaceWidget : Bin
+	partial class SearchAndReplaceWidget : Bin
 	{
 		const char historySeparator = '\n';
 		const int  historyLimit = 20;
@@ -143,7 +143,7 @@ namespace MonoDevelop.SourceEditor
 			return "(" + nextShortcut + ")";
 		}
 		
-		public SearchAndReplaceWidget (MonoTextEditor textEditor, Widget frame)
+		internal SearchAndReplaceWidget (MonoTextEditor textEditor, Widget frame)
 		{
 			if (textEditor == null)
 				throw new ArgumentNullException ("textEditor");
@@ -859,7 +859,7 @@ But I leave it in in the case I've missed something. Mike
 			textEditor.SearchPattern = searchPattern;
 		}
 
-		public static SearchResult FindNext (MonoTextEditor textEditor)
+		internal static SearchResult FindNext (MonoTextEditor textEditor)
 		{
 			textEditor.SearchPattern = SearchAndReplaceOptions.SearchPattern;
 			SearchResult result = textEditor.FindNext (true);

@@ -32,7 +32,7 @@ using System.Xml;
 
 namespace Mono.TextEditor.Highlighting
 {
-	public class JaySyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
+	class JaySyntaxMode : Mono.TextEditor.Highlighting.SyntaxMode
 	{
 		public JaySyntaxMode (TextDocument doc) : base (doc)
 		{

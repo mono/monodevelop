@@ -34,7 +34,7 @@ using Xwt.Drawing;
 
 namespace Mono.TextEditor
 {
-	public class EditModeChangedEventArgs : EventArgs
+	class EditModeChangedEventArgs : EventArgs
 	{
 		public EditMode OldMode { get; private set; }
 		public EditMode NewMode { get; private set; }

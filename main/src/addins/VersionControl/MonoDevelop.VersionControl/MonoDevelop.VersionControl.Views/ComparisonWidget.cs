@@ -39,7 +39,7 @@ using MonoDevelop.Ide.Gui;
 namespace MonoDevelop.VersionControl.Views
 {
 	[ToolboxItem (true)]
-	public class ComparisonWidget : EditorCompareWidgetBase
+	class ComparisonWidget : EditorCompareWidgetBase
 	{
 		internal DropDownBox originalComboBox, diffComboBox;
 		
@@ -55,7 +55,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		protected internal override MonoTextEditor MainEditor {
+		internal override MonoTextEditor MainEditor {
 			get {
 				return editors[1];
 			}

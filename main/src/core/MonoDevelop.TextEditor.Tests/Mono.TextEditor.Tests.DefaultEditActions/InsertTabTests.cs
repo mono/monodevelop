@@ -32,7 +32,7 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests.Actions
 {
 	[TestFixture()]
-	public class InsertTabTests : TextEditorTestBase
+	class InsertTabTests : TextEditorTestBase
 	{
 		public static TextEditorData Create (string input, bool reverse)
 		{

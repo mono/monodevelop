@@ -31,7 +31,7 @@ using Gtk;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class BlockSelectionModeTests : TextEditorTestBase
+	class BlockSelectionModeTests : TextEditorTestBase
 	{
 		[Test]
 		public void TestInsertAtCaret ()

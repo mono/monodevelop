@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 namespace Mono.TextEditor
 {
-	public interface IBackgroundRenderer
+	interface IBackgroundRenderer
 	{
 		void Draw (Cairo.Context cr, Cairo.Rectangle area);
 	}

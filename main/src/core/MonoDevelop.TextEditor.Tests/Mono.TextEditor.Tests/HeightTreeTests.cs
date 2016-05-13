@@ -29,7 +29,7 @@ using NUnit.Framework;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class HeightTreeTests 
+	class HeightTreeTests 
 	{
 		public static TextEditorData Create (string content)
 		{

@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Editor;
 namespace Mono.TextEditor.Tests
 {
 	[TestFixture()]
-	public class FoldingTests
+	class FoldingTests
 	{
 		public static TextEditorData Create (string content)
 		{
