@@ -196,7 +196,10 @@ namespace MonoDevelop.Core.Text
 		/// </returns>
 		public override bool Equals (object obj)
 		{
-			return obj is ISegment && Equals (this, (ISegment)obj);
+			var otherSegment = obj as ISegment;
+			if (otherSegment == null)
+				return false;
+			return Offset == otherSegment.Offset && length == otherSegment.Length;
 		}
 
 		/// <summary>
