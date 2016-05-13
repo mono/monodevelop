@@ -33,6 +33,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	public class FakeNuGetProjectContext : INuGetProjectContext
 	{
+		public NuGetActionType ActionType { get; set; }
+
 		public ExecutionContext ExecutionContext { get; set; }
 
 		public XDocument OriginalPackagesConfig { get; set; }

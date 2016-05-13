@@ -149,6 +149,7 @@ namespace MonoDevelop.PackageManagement
 				project,
 				CreateResolutionContext (),
 				primarySources,
+				new ProjectContextLogger (context),
 				cancellationToken);
 		}
 

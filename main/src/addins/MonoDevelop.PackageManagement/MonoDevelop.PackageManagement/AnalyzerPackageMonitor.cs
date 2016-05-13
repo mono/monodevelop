@@ -35,7 +35,7 @@ using NuGet.Packaging;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class AnalyzerPackageMonitor
+	internal class AnalyzerPackageMonitor
 	{
 		IPackageManagementEvents packageManagementEvents;
 		List<string> uninstalledFiles = new List<string> ();
@@ -93,7 +93,7 @@ namespace MonoDevelop.PackageManagement
 			using (var packageStream = File.OpenRead (e.PackageFilePath)) {
 				var zipArchive = new ZipArchive (packageStream); 
 
-				using (var packageReader = new PackageReader (zipArchive)) {
+				using (var packageReader = new PackageArchiveReader (zipArchive)) {
 					return packageReader
 						.GetFiles ()
 						.Select (file => Path.GetFullPath (Path.Combine (e.InstallPath, file)))

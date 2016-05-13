@@ -30,10 +30,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Logging;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;
-using NuGet.Protocol.VisualStudio;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -107,12 +107,13 @@ namespace MonoDevelop.PackageManagement
 			CancellationToken cancellationToken)
 		{
 			foreach (SourceRepository source in sources) {
-				var metadataResource = source.GetResource<UIMetadataResource> ();
+				var metadataResource = source.GetResource<PackageMetadataResource> ();
 				if (metadataResource != null) {
-					var packagesMetadata = await metadataResource.GetMetadata (
+					var packagesMetadata = await metadataResource.GetMetadataAsync (
 						package.Id,
 						includePrerelease: true,
 						includeUnlisted: true,
+						log: NullLogger.Instance,
 						token: cancellationToken);
 
 					var metadata = packagesMetadata.FirstOrDefault (p => p.Identity.Version == package.Version);

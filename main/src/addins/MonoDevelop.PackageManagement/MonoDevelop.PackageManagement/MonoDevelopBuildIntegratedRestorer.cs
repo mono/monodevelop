@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		List<SourceRepository> sourceRepositories;
 		string packagesFolder;
+		ExternalProjectReferenceContext context;
 
 		public MonoDevelopBuildIntegratedRestorer (
 			ISourceRepositoryProvider repositoryProvider,
@@ -59,7 +60,9 @@ namespace MonoDevelop.PackageManagement
 
 			packagesFolder = BuildIntegratedProjectUtility.GetEffectiveGlobalPackagesFolder (
 				solutionDirectory,
-				settings); 
+				settings);
+
+			context = CreateRestoreContext ();
 		}
 
 		public async Task RestorePackages (
@@ -77,7 +80,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			RestoreResult restoreResult = await BuildIntegratedRestoreUtility.RestoreAsync (
 				project,
-				CreateLogger (),
+				context,
 				sourceRepositories, 
 				packagesFolder, 
 				cancellationToken);
@@ -90,6 +93,11 @@ namespace MonoDevelop.PackageManagement
 		ILogger CreateLogger ()
 		{
 			return new PackageManagementLogger (packageManagementEvents);
+		}
+
+		ExternalProjectReferenceContext CreateRestoreContext ()
+		{
+			return new ExternalProjectReferenceContext (CreateLogger ());
 		}
 
 		void ReportRestoreError (RestoreResult restoreResult)
@@ -107,9 +115,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var pathResolver = new VersionFolderPathResolver (packagesFolder);
 			var projects = new BuildIntegratedNuGetProject[] { project };
-			bool restoreRequired = BuildIntegratedRestoreUtility.IsRestoreRequired (projects, pathResolver);
-
-			return Task.FromResult (restoreRequired);
+			return BuildIntegratedRestoreUtility.IsRestoreRequired (projects, pathResolver, context);
 		}
 
 		public async Task<IEnumerable<BuildIntegratedNuGetProject>> GetProjectsRequiringRestore (

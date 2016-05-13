@@ -45,15 +45,21 @@ namespace MonoDevelop.PackageManagement
 			this.packageSource = packageSource.Clone ();
 
 			Name = packageSource.Name;
+			Password = packageSource.Password;
 			IsValid = true;
 			ValidationFailureMessage = "";
 		}
 		
 		public PackageSource GetPackageSource()
 		{
+			// HACK: Workaround a NuGet 3.4.3 bug where it double encrypts the password when 
+			// it saves the NuGet.Config file. The PasswordText should hold the encrypted string 
+			// but instead we use the plain text password so it is only encrypted once.
+			// https://github.com/NuGet/Home/issues/2647
+
 			return new PackageSource (Source, Name, IsEnabled) {
 				UserName = UserName,
-				Password = Password,
+				PasswordText = Password,
 				ProtocolVersion = packageSource.ProtocolVersion
 			};
 		}
@@ -83,10 +89,7 @@ namespace MonoDevelop.PackageManagement
 			set { packageSource.UserName = value; }
 		}
 
-		public string Password {
-			get { return packageSource.Password; }
-			set { packageSource.Password = value; }
-		}
+		public string Password { get; set; }
 
 		public bool HasPassword ()
 		{

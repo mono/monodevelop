@@ -73,5 +73,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			Log (MessageLevel.Warning, data);
 		}
+
+		public void LogMinimal (string data)
+		{
+			LogInformation (data);
+		}
+
+		public void LogSummary (string data)
+		{
+			LogDebug (data);
+		}
 	}
 }

@@ -49,10 +49,8 @@ namespace MonoDevelop.PackageManagement
 
 		static IEnumerable<Lazy<INuGetResourceProvider>> GetResourceProviders ()
 		{
-			yield return new Lazy<INuGetResourceProvider> (() => new UISearchResourceV2Provider ());
-			yield return new Lazy<INuGetResourceProvider> (() => new UISearchResourceV3Provider ());
-			yield return new Lazy<INuGetResourceProvider>(() => new UIMetadataResourceV2Provider ());
-			yield return new Lazy<INuGetResourceProvider>(() => new UIMetadataResourceV3Provider ());
+			yield return new Lazy<INuGetResourceProvider> (() => new PackageMetadataResourceLocalProvider ());
+			yield return new Lazy<INuGetResourceProvider> (() => new PackageSearchResourceLocalProvider ());
 
 			foreach (var provider in Repository.Provider.GetCoreV2 ()) {
 				yield return provider;

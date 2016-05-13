@@ -150,6 +150,15 @@
     <Reference Include="NuGet.PackageManagement">
       <HintPath>..\..\..\external\nuget-binary\NuGet.PackageManagement.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Common">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Protocol.VisualStudio">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.VisualStudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Indexing">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Indexing.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -452,36 +461,18 @@
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageNewImportsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\AllPackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryProvider.cs" />
-    <Compile Include="NuGet.PackageManagement.UI\PackageLoader.cs" />
-    <Compile Include="NuGet.PackageManagement.UI\PackageLoaderOption.cs" />
-    <Compile Include="NuGet.PackageManagement.UI\LoadResult.cs" />
     <Compile Include="NuGet.PackageManagement.UI\SearchResult.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResource.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UIPackageMetadata.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UISearchMetadata.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\VersionInfo.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV3Provider.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV2Provider.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV2.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UISearchResourceV3.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResource.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV2.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV3.cs" />
     <Compile Include="NuGet.PackageManagement.UI\PackageItemListViewModel.cs" />
     <Compile Include="NuGet.PackageManagement.UI\PackageStatus.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\JObjectExtensions.cs" />
     <Compile Include="NuGet.PackageManagement.UI\DisplayVersion.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryViewModel.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV2Provider.cs" />
-    <Compile Include="NuGet.Protocol.VisualStudio\UIMetadataResourceV3Provider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\InstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopSolutionManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DeleteOnRestartManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetProjectContext.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCommonOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetProjectFactory.cs" />
-    <Compile Include="NuGet.PackageManagement.UI\ProjectJsonPathUtilties.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\BuildIntegrationProjectSystem.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
@@ -521,6 +512,16 @@
     <Compile Include="MonoDevelop.PackageManagement\RestoreAndUninstallNuGetPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageUninstaller.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageForcedImportsRemover.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageItemLoader.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\IItemLoader.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\LoadingStatus.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageLoadContext.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\IPackageFeed.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\MultiSourcePackageFeed.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\TaskCombinators.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\SourceRepositoryExtensions.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\FeedSearchContinuationToken.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\INuGetUILogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -667,7 +668,6 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
     <Folder Include="NuGet.PackageManagement.UI\" />
-    <Folder Include="NuGet.Protocol.VisualStudio\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">

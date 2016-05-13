@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using NuGet.Packaging;
-using NuGet.Protocol.VisualStudio;
+using NuGet.Common;
+using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace NuGet.PackageManagement.UI
@@ -150,30 +151,12 @@ namespace NuGet.PackageManagement.UI
 
 		public string Summary { get; set; }
 
-		// Indicates whether the background loader has started.
-		//private bool _backgroundLoaderRun;
-
-		private PackageStatus _status;
+		private PackageStatus _status = PackageStatus.NotInstalled;
 		public PackageStatus Status
 		{
 			get
 			{
-/*				if (!_backgroundLoaderRun)
-				{
-					_backgroundLoaderRun = true;
-
-					Task.Run(async () =>
-					{
-						var result = await BackgroundLoader.Value;
-
-						await NuGetUIThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-						Status = result.Status;
-						LatestVersion = result.LatestVersion;
-						InstalledVersion = result.InstalledVersion;
-					});
-				}
-*/
+				//TriggerStatusLoader();
 				return _status;
 			}
 
@@ -189,8 +172,7 @@ namespace NuGet.PackageManagement.UI
 			}
 		}
 
-/*
-		private bool _providersLoaderStarted;
+		/*private bool _providersLoaderStarted;
 
 		private AlternativePackageManagerProviders _providers;
 		public AlternativePackageManagerProviders Providers
@@ -220,7 +202,6 @@ namespace NuGet.PackageManagement.UI
 			}
 		}
 
-
 		private Lazy<Task<AlternativePackageManagerProviders>> _providersLoader;
 		internal Lazy<Task<AlternativePackageManagerProviders>> ProvidersLoader
 		{
@@ -239,33 +220,68 @@ namespace NuGet.PackageManagement.UI
 				_providersLoader = value;
 				OnPropertyChanged(nameof(Providers));
 			}
-		}
+		}*/
 
-		private Lazy<Task<BackgroundLoaderResult>> _backgroundLoader;
 
-		internal Lazy<Task<BackgroundLoaderResult>> BackgroundLoader
-		{
-			get
-			{
-				return _backgroundLoader;
-			}
-
-			set
-			{
-				if (_backgroundLoader != value)
-				{
-					_backgroundLoaderRun = false;
-				}
-
-				_backgroundLoader = value;
-
-				OnPropertyChanged(nameof(Status));
-			}
-		}
-*/
 		public Uri IconUrl { get; set; }
 
 		public Lazy<Task<IEnumerable<VersionInfo>>> Versions { get; set; }
+
+		public Task<IEnumerable<VersionInfo>> GetVersionsAsync() => Versions.Value;
+
+		/*private Lazy<Task<NuGetVersion>> _backgroundLoader;
+
+		private void TriggerStatusLoader()
+		{
+			if (!_backgroundLoader.IsValueCreated)
+			{
+				Task.Run(async () =>
+				{
+					var result = await _backgroundLoader.Value;
+
+					await NuGetUIThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+					LatestVersion = result;
+					Status = GetPackageStatus(LatestVersion, InstalledVersion);
+				});
+			}
+		}
+
+		public void UpdatePackageStatus(IEnumerable<PackageIdentity> installedPackages)
+		{
+			// Get the minimum version installed in any target project/solution
+			InstalledVersion = installedPackages
+				.GetPackageVersions(Id)
+				.MinOrDefault();
+
+			_backgroundLoader = AsyncLazy.New(
+				async () =>
+				{
+					var packageVersions = await GetVersionsAsync();
+					var latestAvailableVersion = packageVersions
+						.Select(p => p.Version)
+						.MaxOrDefault();
+
+					return latestAvailableVersion;
+				});
+
+			OnPropertyChanged(nameof(Status));
+		}
+
+		private static PackageStatus GetPackageStatus(NuGetVersion latestAvailableVersion, NuGetVersion installedVersion)
+		{
+			var status = PackageStatus.NotInstalled;
+			if (installedVersion != null)
+			{
+				status = PackageStatus.Installed;
+				if (VersionComparer.VersionRelease.Compare(installedVersion, latestAvailableVersion) < 0)
+				{
+					status = PackageStatus.UpdateAvailable;
+				}
+			}
+
+			return status;
+		}*/
 
 		protected void OnPropertyChanged(string propertyName)
 		{

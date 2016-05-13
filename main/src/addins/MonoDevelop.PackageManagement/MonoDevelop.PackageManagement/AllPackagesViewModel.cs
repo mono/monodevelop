@@ -42,14 +42,13 @@ using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class AllPackagesViewModel : ViewModelBase<AllPackagesViewModel>
+	internal class AllPackagesViewModel : ViewModelBase<AllPackagesViewModel>, INuGetUILogger
 	{
 		SourceRepositoryViewModel selectedPackageSource;
 		IPackageSourceProvider packageSourceProvider;
-		PackageLoader currentLoader;
+		PackageItemLoader currentLoader;
 		CancellationTokenSource cancellationTokenSource;
 		List<SourceRepositoryViewModel> packageSources;
-		int currentIndex;
 		bool includePrerelease;
 		bool ignorePackageCheckedChanged;
 		IMonoDevelopSolutionManager solutionManager;
@@ -164,7 +163,6 @@ namespace MonoDevelop.PackageManagement
 			IsDisposed = true;
 		}
 
-
 		protected virtual void OnDispose()
 		{
 		}
@@ -185,7 +183,7 @@ namespace MonoDevelop.PackageManagement
 
 			HasNextPage = false;
 			IsLoadingNextPage = false;
-			currentIndex = 0;
+			currentLoader = null;
 			StartReadPackagesTask ();
 		}
 
@@ -211,19 +209,30 @@ namespace MonoDevelop.PackageManagement
 
 		void CreateReadPackagesTask()
 		{
-			var option = new PackageLoaderOption (IncludePrerelease, Pages.DefaultPageSize);
-			var loader = new PackageLoader (
-				option,
-				false,
-				null,
-				new NuGetProject [0],
-				selectedPackageSource.SourceRepository,
-				SearchTerms
-			);
-			currentLoader = loader;
+			var loader = currentLoader ?? CreatePackageLoader ();
 			cancellationTokenSource = new CancellationTokenSource ();
-			loader.LoadItemsAsync (currentIndex, cancellationTokenSource.Token)
+			loader.LoadNextAsync (null, cancellationTokenSource.Token)
 				.ContinueWith (t => OnPackagesRead (t, loader), TaskScheduler.FromCurrentSynchronizationContext ());
+		}
+
+		PackageItemLoader CreatePackageLoader ()
+		{
+			var context = new PackageLoadContext (
+				new [] { selectedPackageSource.SourceRepository },
+				false,
+				nugetProject);
+			
+			var packageFeed = new MultiSourcePackageFeed (context.SourceRepositories, this);
+			var loader = new PackageItemLoader (
+				context,
+				packageFeed,
+				SearchTerms,
+				IncludePrerelease
+			);
+
+			currentLoader = loader;
+
+			return loader;
 		}
 
 		void ClearError ()
@@ -239,7 +248,7 @@ namespace MonoDevelop.PackageManagement
 			base.OnPropertyChanged (null);
 		}
 
-		void OnPackagesRead (Task<LoadResult> task, PackageLoader loader)
+		void OnPackagesRead (Task task, PackageItemLoader loader)
 		{
 			IsReadingPackages = false;
 			IsLoadingNextPage = false;
@@ -250,12 +259,12 @@ namespace MonoDevelop.PackageManagement
 				return;
 			} else {
 				SaveAnyWarnings ();
-				UpdatePackagesForSelectedPage (task.Result);
+				UpdatePackagesForSelectedPage (loader);
 			}
 			base.OnPropertyChanged (null);
 		}
 
-		bool IsCurrentQuery (PackageLoader loader)
+		bool IsCurrentQuery (PackageItemLoader loader)
 		{
 			return currentLoader == loader;
 		}
@@ -287,12 +296,11 @@ namespace MonoDevelop.PackageManagement
 			return String.Empty;
 		}
 
-		void UpdatePackagesForSelectedPage (LoadResult result)
+		void UpdatePackagesForSelectedPage (PackageItemLoader loader)
 		{
-			currentIndex = result.NextStartIndex;
-			HasNextPage = result.HasMoreItems;
+			HasNextPage = loader.State.LoadingStatus == LoadingStatus.Ready;
 
-			UpdatePackageViewModels (result.Items);
+			UpdatePackageViewModels (loader.GetCurrent ());
 		}
 
 		void UpdatePackageViewModels (IEnumerable<PackageItemListViewModel> newPackageViewModels)
@@ -410,6 +418,22 @@ namespace MonoDevelop.PackageManagement
 			} catch (Exception ex) {
 				LoggingService.LogError ("OnReadInstalledPackages", ex);
 			}
+		}
+
+		void INuGetUILogger.Log (MessageLevel level, string message, params object [] args)
+		{
+		}
+
+		void INuGetUILogger.ReportError (string message)
+		{
+		}
+
+		void INuGetUILogger.Start ()
+		{
+		}
+
+		void INuGetUILogger.End ()
+		{
 		}
 	}
 }

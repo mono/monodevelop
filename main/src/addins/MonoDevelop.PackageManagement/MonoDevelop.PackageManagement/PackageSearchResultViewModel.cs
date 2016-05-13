@@ -32,7 +32,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.PackageManagement.UI;
 using NuGet.Packaging.Core;
-using NuGet.Protocol.VisualStudio;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement

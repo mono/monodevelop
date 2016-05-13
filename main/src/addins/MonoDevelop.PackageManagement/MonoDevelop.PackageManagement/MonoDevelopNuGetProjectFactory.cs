@@ -68,13 +68,13 @@ namespace MonoDevelop.PackageManagement
 			Runtime.AssertMainThread ();
 
 			var projectSystem = new MonoDevelopMSBuildNuGetProjectSystem (project, context);
-			var projectName = projectSystem.ProjectName;
 
-			string jsonConfig = ProjectJsonPathUtilities.GetProjectConfigPath (project.BaseDirectory, project.Name);
+			string projectJsonPath = ProjectJsonPathUtilities.GetProjectConfigPath (project.BaseDirectory, project.Name);
 
-			if (File.Exists (jsonConfig)) {
+			if (File.Exists (projectJsonPath)) {
 				return new BuildIntegratedProjectSystem (
-					jsonConfig,
+					projectJsonPath,
+					project.FileName,
 					project,
 					projectSystem,
 					project.Name);

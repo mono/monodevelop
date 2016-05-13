@@ -29,11 +29,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Logging;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
-using NuGet.Protocol.VisualStudio;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -104,15 +104,16 @@ namespace MonoDevelop.PackageManagement
 
 		async Task<PackageIdentity> GetUpdates (SourceRepository sourceRepository, PackageReference packageReference)
 		{
-			var metadataResource = await sourceRepository.GetResourceAsync<UIMetadataResource> (cancellationToken);
+			var metadataResource = await sourceRepository.GetResourceAsync<PackageMetadataResource> (cancellationToken);
 
 			if (metadataResource == null)
 				return null;
 
-			var packages = await metadataResource.GetMetadata (
+			var packages = await metadataResource.GetMetadataAsync (
 				packageReference.PackageIdentity.Id,
 				includePrerelease: packageReference.PackageIdentity.Version.IsPrerelease,
 				includeUnlisted: false,
+				log: NullLogger.Instance,
 				token: cancellationToken);
 
 			var package = packages
@@ -132,7 +133,7 @@ namespace MonoDevelop.PackageManagement
 			LoggingService.LogError ("Check for updates error.", task.Exception);
 		}
 
-		bool IsPackageVersionAllowed (UIPackageMetadata package, PackageReference packageReference)
+		bool IsPackageVersionAllowed (IPackageSearchMetadata package, PackageReference packageReference)
 		{
 			if (!packageReference.HasAllowedVersions)
 				return true;

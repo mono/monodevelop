@@ -48,6 +48,7 @@ namespace MonoDevelop.PackageManagement
 			get { return executionContext; }
 		}
 
+		public NuGetActionType ActionType { get; set; }
 		public XDocument OriginalPackagesConfig { get; set; }
 		public PackageExtractionContext PackageExtractionContext { get; set; }
 

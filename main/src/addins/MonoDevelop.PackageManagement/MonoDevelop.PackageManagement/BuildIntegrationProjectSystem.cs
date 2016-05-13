@@ -7,6 +7,7 @@ using MonoDevelop.Projects;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
+using NuGet.ProjectModel;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -16,10 +17,11 @@ namespace MonoDevelop.PackageManagement
 
 		public BuildIntegratedProjectSystem (
 			string jsonConfigPath,
+			string msbuildProjectFilePath,
 			DotNetProject project,
 			IMSBuildNuGetProjectSystem msbuildProjectSystem,
 			string uniqueName)
-			: base (jsonConfigPath, msbuildProjectSystem)
+			: base (jsonConfigPath, msbuildProjectFilePath, msbuildProjectSystem)
 		{
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 		}
@@ -38,10 +40,10 @@ namespace MonoDevelop.PackageManagement
 			return base.PostProcessAsync (nuGetProjectContext, token);
 		}
 
-		public override Task<IReadOnlyList<BuildIntegratedProjectReference>> GetProjectReferenceClosureAsync (NuGet.Logging.ILogger logger)
+		public override Task<IReadOnlyList<ExternalProjectReference>> GetProjectReferenceClosureAsync (ExternalProjectReferenceContext context)
 		{
 			// TODO: Needs to be implemented.
-			return base.GetProjectReferenceClosureAsync (logger);
+			return base.GetProjectReferenceClosureAsync (context);
 		}
 	}
 }

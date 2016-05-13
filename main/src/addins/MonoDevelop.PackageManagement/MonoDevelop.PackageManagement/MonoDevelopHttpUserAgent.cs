@@ -51,9 +51,8 @@ namespace MonoDevelop.PackageManagement
 			Host = GetHost();
 			HttpUserAgent = HttpUtility.CreateUserAgentString(Client, Host);
 
-			UserAgent.UserAgentString = UserAgent.CreateUserAgentStringForVisualStudio (
-				Client,
-				Host);
+			var builder = new UserAgentStringBuilder (Client).WithVisualStudioSKU (Host);
+			UserAgent.SetUserAgentString (builder);
 		}
 
 		static string GetClient ()

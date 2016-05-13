@@ -1,17 +1,16 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Collections.Generic;
-
 namespace NuGet.PackageManagement.UI
 {
-	internal class LoadResult
+	public interface INuGetUILogger
 	{
-		public IReadOnlyList<PackageItemListViewModel> Items { get; set; }
+		void Log(ProjectManagement.MessageLevel level, string message, params object[] args);
 
-		public bool HasMoreItems { get; set; }
+		void ReportError(string message);
 
-		public int NextStartIndex { get; set; }
+		void Start();
+
+		void End();
 	}
 }
-

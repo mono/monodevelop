@@ -27,13 +27,13 @@
 using System;
 using NuGet;
 using NuGet.Packaging.Core;
-using NuGet.Protocol.VisualStudio;
+using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class NuGetPackageLicense
 	{
-		public NuGetPackageLicense (UIPackageMetadata metadata)
+		public NuGetPackageLicense (IPackageSearchMetadata metadata)
 		{
 			PackageIdentity = metadata.Identity;
 			PackageId = metadata.Identity.Id;
