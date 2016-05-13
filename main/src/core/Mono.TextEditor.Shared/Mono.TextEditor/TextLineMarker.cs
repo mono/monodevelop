@@ -30,7 +30,11 @@ using Mono.TextEditor.Highlighting;
 namespace Mono.TextEditor
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public interface IExtendingTextLineMarker 
+=======
+	interface IExtendingTextLineMarker
+>>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 =======
 	interface IExtendingTextLineMarker
 >>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
@@ -39,8 +43,13 @@ namespace Mono.TextEditor
 		void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 	public interface IActionTextLineMarker
+=======
+
+	interface IActionTextLineMarker
+>>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 =======
 
 	interface IActionTextLineMarker
@@ -60,6 +69,9 @@ namespace Mono.TextEditor
 =======
 
 	class TextLineMarkerHoverResult
+<<<<<<< HEAD
+>>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
+=======
 >>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 	{
 		bool isCursorSet;
@@ -154,8 +166,13 @@ namespace Mono.TextEditor
 		{
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
 		
 		public virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
+=======
+
+		internal virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
+>>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 =======
 
 		internal virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
