@@ -25,27 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Reflection;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using System.Text;
 
 using MonoDevelop.Core.Execution;
 using NUnit.Engine;
-using NUnit.Common;
-using System.Diagnostics.Contracts;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using System.Xml;
-using System.Net.Configuration;
 using System.Globalization;
 using MonoDevelop.UnitTesting.NUnit;
 
 namespace NUnit3Runner
 {
-	
+
 	class EventListenerWrapper: MarshalByRefObject, ITestEventListener
 	{
 		RemoteProcessServer server;
@@ -53,18 +42,6 @@ namespace NUnit3Runner
 		public EventListenerWrapper (RemoteProcessServer server)
 		{
 			this.server = server;
-		}
-		
-		public void RunFinished (Exception exception)
-		{
-		}
-		
-		public void RunFinished (TestResult results)
-		{
-		}
-		
-		public void RunStarted (string name, int testCount)
-		{
 		}
 		
 		public void SuiteFinished (XmlNode testResult)
