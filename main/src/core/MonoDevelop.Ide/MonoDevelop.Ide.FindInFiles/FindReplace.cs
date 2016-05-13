@@ -34,6 +34,7 @@ using Gtk;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -79,6 +80,22 @@ namespace MonoDevelop.Ide.FindInFiles
 			return true;
 		}
 
+		class FileSearchResult
+		{
+			public FileProvider Provider;
+			public TextReader Reader;
+			public List<SearchResult> Results;
+			public string Text { get; internal set; }
+
+			public FileSearchResult (FileProvider provider, TextReader reader, List<SearchResult> results)
+			{
+				Provider = provider;
+				Reader = reader;
+				Results = results;
+			}
+		}
+
+
 		public IEnumerable<SearchResult> FindAll (Scope scope, ProgressMonitor monitor, string pattern, string replacePattern, FilterOptions filter, CancellationToken token)
 		{
 			if (filter.RegexSearch) {
@@ -90,18 +107,20 @@ namespace MonoDevelop.Ide.FindInFiles
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
 			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 150);
+			Stopwatch sw = new Stopwatch ();
+			sw.Start ();
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
 
 
-				var contents = new List<Tuple<FileProvider, string, List<SearchResult>>>();
+				var contents = new List<FileSearchResult>();
 				foreach (var provider in scope.GetFiles (monitor, filter)) {
 					if (token.IsCancellationRequested)
 						return Enumerable.Empty<SearchResult> ();
 					try {
 						searchedFilesCount++;
-						contents.Add(Tuple.Create (provider, provider.ReadString (), new List<SearchResult> ()));
+						contents.Add(new FileSearchResult (provider, provider.ReadString (), new List<SearchResult> ()));
 						if (searchedFilesCount % step == 0)
 							monitor.Step (2); 
 					} catch (FileNotFoundException) {
@@ -114,7 +133,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					foreach (var content in contents) {
 						if (token.IsCancellationRequested)
 							return Enumerable.Empty<SearchResult> ();
-						results.AddRange (RegexSearch (monitor, content.Item1, content.Item2, replacePattern, filter));
+						results.AddRange (RegexSearch (monitor, content.Provider, content.Reader, replacePattern, filter));
 					}
 				} else {
 					var options = new ParallelOptions ();
@@ -125,11 +144,15 @@ namespace MonoDevelop.Ide.FindInFiles
 							return;
 						try {
 							Interlocked.Increment (ref searchedFilesCount);
-							content.Item3.AddRange(FindAll (monitor, content.Item1, content.Item2, pattern, replacePattern, filter));
-							lock (results) {
-								results.AddRange (content.Item3);
+							if (replacePattern != null) {
+								content.Text = content.Reader.ReadToEnd ();
+								content.Reader = new StringReader (content.Text);
 							}
-							FoundMatchesCount += content.Item3.Count;
+							content.Results.AddRange(FindAll (monitor, content.Provider, content.Reader, pattern, replacePattern, filter));
+							lock (results) {
+								results.AddRange (content.Results);
+							}
+							FoundMatchesCount += content.Results.Count;
 							if (searchedFilesCount % step == 0)
 								monitor.Step (1); 
 						} catch (Exception e) {
@@ -141,12 +164,12 @@ namespace MonoDevelop.Ide.FindInFiles
 						foreach (var content in contents) {
 							if (token.IsCancellationRequested)
 								return Enumerable.Empty<SearchResult> ();
-							if (content.Item3.Count == 0)
+							if (content.Results.Count == 0)
 								continue;
 							try {
-								content.Item1.BeginReplace (content.Item2);
-								Replace (content.Item1, content.Item3, replacePattern);
-								content.Item1.EndReplace ();
+								content.Provider.BeginReplace (content.Text);
+								Replace (content.Provider, content.Results, replacePattern);
+								content.Provider.EndReplace ();
 							} catch (Exception e) {
 								LoggingService.LogError("Exception during replace.", e);
 							}
@@ -157,11 +180,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				return results;
 			} finally {
 				monitor.EndTask ();
+				sw.Stop ();
+				Console.WriteLine ("Took:" + sw.ElapsedMilliseconds);
 				IsRunning = false;
 			}
 		}
 
-		IEnumerable<SearchResult> FindAll (ProgressMonitor monitor, FileProvider provider, string content, string pattern, string replacePattern, FilterOptions filter)
+		// Took: 17743
+
+		IEnumerable<SearchResult> FindAll (ProgressMonitor monitor, FileProvider provider, TextReader content, string pattern, string replacePattern, FilterOptions filter)
 		{
 			if (string.IsNullOrEmpty (pattern))
 				return Enumerable.Empty<SearchResult> ();
@@ -172,8 +199,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			return Search (provider, content, pattern, filter);
 		}
 
-		IEnumerable<SearchResult> RegexSearch (ProgressMonitor monitor, FileProvider provider, string content, string replacePattern, FilterOptions filter)
+		IEnumerable<SearchResult> RegexSearch (ProgressMonitor monitor, FileProvider provider, TextReader reader, string replacePattern, FilterOptions filter)
 		{
+			string content = reader.ReadToEnd ();
 			var results = new List<SearchResult> ();
 			if (replacePattern == null) {
 				foreach (Match match in regex.Matches (content)) {
@@ -212,18 +240,86 @@ namespace MonoDevelop.Ide.FindInFiles
 			return results;
 		}
 
-		public IEnumerable<SearchResult> Search (FileProvider provider, string content, string pattern, FilterOptions filter)
+		class RingBufferReader
 		{
-			if (string.IsNullOrEmpty (content))
-				yield break;
-			int idx = provider.SelectionStartPosition < 0 ? 0 : Math.Max (0, provider.SelectionStartPosition);
-			var comparison = filter.CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-			int end = provider.SelectionEndPosition < 0 ? content.Length : Math.Min (content.Length, provider.SelectionEndPosition);
-			while ((idx = content.IndexOf (pattern, idx, end - idx, comparison)) >= 0) {
-				if (!filter.WholeWordsOnly || FilterOptions.IsWholeWordAt (content, idx, pattern.Length)) {
-					yield return new SearchResult (provider, idx, pattern.Length);
+			int i, l;
+			char [] buffer;
+			TextReader reader;
+
+			public RingBufferReader (TextReader reader, int bufferSize)
+			{
+				this.reader = reader;
+				buffer = new char [bufferSize];
+			}
+
+			public int Next ()
+			{
+				if (l == 0) {
+					int ch = reader.Read ();
+					buffer [i] = (char)ch;
+					i = (i + 1) % buffer.Length;
+					return ch;
 				}
-				idx += pattern.Length;
+				l--;
+				var result = buffer [i];
+				i = (i + 1) % buffer.Length;
+				return result;
+			}
+
+			public void TakeBack (int num)
+			{
+				l += num;
+				i = (i + buffer.Length - num) % buffer.Length;
+			}
+		}
+
+		public IEnumerable<SearchResult> Search (FileProvider provider, TextReader reader, string pattern, FilterOptions filter)
+		{
+			if (reader == null)
+				yield break;
+			int i = provider.SelectionStartPosition < 0 ? 0 : Math.Max (0, provider.SelectionStartPosition);
+			var buffer = new RingBufferReader(reader, pattern.Length + 2);
+			bool wasSeparator = true;
+			if (!filter.CaseSensitive)
+				pattern = pattern.ToUpperInvariant ();
+			while (true) {
+				int next = buffer.Next ();
+				if (next < 0)
+					yield break;
+				char ch = (char)next;
+				if ((filter.CaseSensitive ? ch : char.ToUpperInvariant (ch)) == pattern [0] &&
+				    (!filter.WholeWordsOnly || wasSeparator)) {
+					bool isMatch = true;
+					for (int j = 1; j < pattern.Length; j++) {
+						next = buffer.Next ();
+						if (next < 0)
+							yield break;
+						if ((filter.CaseSensitive ? next : char.ToUpperInvariant ((char)next)) != pattern [j]) {
+							buffer.TakeBack (j);
+							isMatch = false;
+							break;
+						}
+					}
+					if (isMatch) {
+						if (filter.WholeWordsOnly) {
+							next = buffer.Next ();
+							if (next >= 0 && !FilterOptions.IsWordSeparator ((char)next)) {
+								buffer.TakeBack (pattern.Length);
+								i++;
+								continue;
+							}
+							buffer.TakeBack (1);
+						}
+
+						yield return new SearchResult (provider, i, pattern.Length);
+						i += pattern.Length - 1;
+					}
+				}
+
+				i++;
+				if (filter.WholeWordsOnly) {
+					wasSeparator = FilterOptions.IsWordSeparator ((char)ch);
+				}
 			}
 		}
 
