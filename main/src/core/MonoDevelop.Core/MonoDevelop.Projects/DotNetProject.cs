@@ -917,8 +917,11 @@ namespace MonoDevelop.Projects
 			// System.Core is an implicit reference
 			if (!noStdLib) {
 				var sa = AssemblyContext.GetAssemblies (TargetFramework).FirstOrDefault (a => a.Name == "System.Core" && a.Package.IsFrameworkPackage);
-				if (sa != null)
-					result.Add (new AssemblyReference (sa.Location));
+				if (sa != null) {
+					var ar = new AssemblyReference (sa.Location);
+					if (!result.Contains (ar))
+						result.Add (ar);
+				}
 			}
 			var addFacadeAssemblies = false;
 			foreach (var r in GetReferencedAssemblyProjects (configuration)) {
@@ -948,7 +951,9 @@ namespace MonoDevelop.Projects
 				foreach (var facade in facades) {
 					if (!File.Exists (facade))
 						continue;
-					result.Add (new AssemblyReference (facade));
+					var ar = new AssemblyReference (facade);
+					if (!result.Contains (ar))
+						result.Add (ar);
 				}
 			}
 			return result;
