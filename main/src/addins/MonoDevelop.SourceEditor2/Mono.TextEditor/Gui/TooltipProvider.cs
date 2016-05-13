@@ -32,7 +32,7 @@ namespace Mono.TextEditor
 {
 	abstract class TooltipProvider
 	{
-		public abstract Task<TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken));
+		public abstract Task<MonoDevelop.Ide.Editor.TooltipItem> GetItem (MonoTextEditor editor, int offset, CancellationToken token = default(CancellationToken));
 
 		public virtual bool IsInteractive (MonoTextEditor editor, Gtk.Window tipWindow)
 		{
@@ -45,12 +45,12 @@ namespace Mono.TextEditor
 			xalign = 0.5;
 		}
 
-		public virtual Gtk.Window CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public virtual Gtk.Window CreateTooltipWindow (MonoTextEditor editor, int offset, Gdk.ModifierType modifierState, MonoDevelop.Ide.Editor.TooltipItem item)
 		{
 			return null;
 		}
 
-		public virtual Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
+		public virtual Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, MonoDevelop.Ide.Editor.TooltipItem item)
 		{
 			int ox = 0, oy = 0;
 			if (editor.GdkWindow != null)

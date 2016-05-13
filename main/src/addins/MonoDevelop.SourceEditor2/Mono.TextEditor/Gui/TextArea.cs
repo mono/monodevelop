@@ -2791,7 +2791,7 @@ namespace Mono.TextEditor
 				if (xloc >= wx && xloc < tipX + ww && yloc >= tipY && yloc < tipY + 20 + wh)
 					return;
 			}
-			if (tipItem != null && !tipItem.ItemSegment.IsInvalid () && !tipItem.ItemSegment.Contains (offset)) 
+			if (tipItem != null && !tipItem.IsInvalid () && !tipItem.Contains (offset)) 
 				HideTooltip ();
 			nextTipX = xloc;
 			nextTipY = yloc;

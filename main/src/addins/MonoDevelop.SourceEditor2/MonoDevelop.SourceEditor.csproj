@@ -208,7 +208,6 @@
     <Compile Include="Mono.TextEditor\Gui\IAnimationDrawer.cs" />
     <Compile Include="Mono.TextEditor\Gui\IBackgroundRenderer.cs" />
     <Compile Include="Mono.TextEditor\Gui\IconMargin.cs" />
-    <Compile Include="Mono.TextEditor\Gui\TooltipItem.cs" />
     <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
     <Compile Include="Mono.TextEditor\Gui\Margin.cs" />
     <Compile Include="Mono.TextEditor\Gui\MarginDrawer.cs" />
