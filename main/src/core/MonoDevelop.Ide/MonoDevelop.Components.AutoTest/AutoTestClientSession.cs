@@ -304,6 +304,16 @@ namespace MonoDevelop.Components.AutoTest
 			return false;
 		}
 
+		public bool ClickElement (Func<AppQuery, AppQuery> query, double x, double y, bool wait = true)
+		{
+			AppResult [] results = Query (query);
+			if (results.Length > 0) {
+				return session.Click (results [0], x, y, wait);
+			}
+
+			return false;
+		}
+
 		public bool EnterText (Func<AppQuery, AppQuery> query, string text)
 		{
 			AppResult[] results = Query (query);
