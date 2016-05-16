@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			var ct2 = new CellRendererText ();
 			var col2 = treeviewConventions.AppendColumn (GettextCatalog.GetString ("Example"), ct2);
 			col2.Expand = true;
-			col2.SetCellDataFunc (ct2, NameConventionRuleNameDataFunc);
+			col2.SetCellDataFunc (ct2, NameConventionRulePreviewDataFunc);
 			
 			treeviewConventions.Model = treeStore;
 			treeviewConventions.Selection.Changed += HandleSelectionChanged;
@@ -77,6 +77,12 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 		{
 			var rule = (NameConventionRule)model.GetValue (iter, 0);
 			((CellRendererText)cell).Text = rule.Name;
+		}
+
+		static void NameConventionRulePreviewDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var rule = (NameConventionRule)model.GetValue (iter, 0);
+			((CellRendererText)cell).Text = rule.GetPreview ();
 		}
 
 		void HandleSelectionChanged (object sender, EventArgs e)
