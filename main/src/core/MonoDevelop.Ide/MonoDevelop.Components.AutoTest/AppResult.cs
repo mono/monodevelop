@@ -152,6 +152,7 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			var propertiesObject = new ObjectProperties ();
 			if (resultObject != null) {
+				propertiesObject.Add ("ToString", new ObjectResult (resultObject.ToString ()), null);
 				var properties = resultObject.GetType ().GetProperties (
 					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 				foreach (var property in properties) {
