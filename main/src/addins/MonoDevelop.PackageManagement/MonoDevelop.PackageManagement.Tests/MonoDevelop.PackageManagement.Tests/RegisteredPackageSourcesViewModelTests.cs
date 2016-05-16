@@ -507,7 +507,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateViewModelWithOnePackageSource ();
 			viewModel.Load ();
 			viewModel.SelectedPackageSourceViewModel = viewModel.PackageSourceViewModels [0];
-			viewModel.NewPackageSourceUrl  = "http://url";
+			viewModel.NewPackageSourceUrl = "http://url";
 			viewModel.NewPackageSourceName = "Test";
 
 			List<string> propertyNames = new List<string> ();
@@ -515,6 +515,42 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.AddPackageSource ();
 
 			Assert.IsTrue (propertyNames.Contains ("SelectedPackageSourceViewModel"));
+		}
+
+		[Test]
+		public void AddPackageSource_NewPackageSourceHasEmptyStringPassword_DoesNotThrowCryptographicExceptionAndNewPackageSourceAddedWithNullPassword ()
+		{
+			CreateViewModel ();
+			viewModel.Load ();
+			viewModel.NewPackageSourceUrl  = "http://url";
+			viewModel.NewPackageSourceName = "abc";
+			viewModel.NewPackageSourcePassword = "";
+
+			Assert.DoesNotThrow (() => viewModel.AddPackageSource ());
+
+			PackageSourceViewModel expectedViewModel = viewModel.PackageSourceViewModels [0];
+
+			Assert.IsNull (expectedViewModel.Password);
+			Assert.AreEqual ("abc", expectedViewModel.Name);
+			Assert.AreEqual ("http://url", expectedViewModel.Source);
+		}
+
+		[Test]
+		public void AddPackageSource_NewPackageSourceHasPassword_DoesNotThrowCryptographicExceptionAndNewPackageSourceAddedWithPassword ()
+		{
+			CreateViewModel ();
+			viewModel.Load ();
+			viewModel.NewPackageSourceUrl  = "http://url";
+			viewModel.NewPackageSourceName = "abc";
+			viewModel.NewPackageSourcePassword = "test";
+
+			Assert.DoesNotThrow (() => viewModel.AddPackageSource ());
+
+			PackageSourceViewModel expectedViewModel = viewModel.PackageSourceViewModels [0];
+
+			Assert.AreEqual ("test", expectedViewModel.Password);
+			Assert.AreEqual ("abc", expectedViewModel.Name);
+			Assert.AreEqual ("http://url", expectedViewModel.Source);
 		}
 	}
 }

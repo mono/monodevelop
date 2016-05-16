@@ -171,6 +171,20 @@ namespace MonoDevelop.PackageManagement
 
 			packageSourceChecker.Check (packageSourceViewModel);
 		}
+
+		void AddPackageSourceToViewModel (NuGet.Configuration.PackageSource packageSource, string password)
+		{
+			// HACK: Workaround NuGet 3.4.3 bug.
+			// Set the password text after the view model is created.
+			packageSource.PasswordText = null;
+
+			var packageSourceViewModel = new PackageSourceViewModel (packageSource);
+			packageSourceViewModel.Password = password;
+
+			packageSourceViewModels.Add(packageSourceViewModel);
+
+			packageSourceChecker.Check (packageSourceViewModel);
+		}
 		
 		public void Save()
 		{
@@ -204,7 +218,11 @@ namespace MonoDevelop.PackageManagement
 		public string NewPackageSourcePassword {
 			get { return newPackageSource.Password; }
 			set {
-				newPackageSource.Password = value;
+				if (String.IsNullOrEmpty (value)) {
+					newPackageSource.Password = null;
+				} else {
+					newPackageSource.Password = value;
+				}
 				OnPropertyChanged(viewModel => viewModel.NewPackageSourcePassword);
 			}
 		}
@@ -228,7 +246,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			var packageSource = newPackageSource.GetPackageSource ();
 			packageSource.IsEnabled = true;
-			AddPackageSourceToViewModel (packageSource);
+
+			AddPackageSourceToViewModel (packageSource, newPackageSource.Password);
 		}
 		
 		void SelectLastPackageSourceViewModel()
