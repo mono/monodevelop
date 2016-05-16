@@ -90,16 +90,18 @@ namespace MonoDevelop.Ide.Projects
 			SelectTemplateDefinedbyController ();
 		}
 
-		void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
+		static void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
+			var categoryTextRenderer = (GtkTemplateCategoryCellRenderer)renderer;
 			categoryTextRenderer.Category = (TemplateCategory)model.GetValue (it, TemplateCategoryColumn);
 			categoryTextRenderer.CategoryIcon = model.GetValue (it, TemplateCategoryIconColumn) as Xwt.Drawing.Image;
 			categoryTextRenderer.CategoryName = model.GetValue (it, TemplateCategoryNameColumn) as string;
 		}
 
-		void SetTemplateTextCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
+		static void SetTemplateTextCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			var template = (SolutionTemplate)model.GetValue (it, TemplateColumn);
+			var templateTextRenderer = (GtkTemplateCellRenderer)renderer;
 			templateTextRenderer.Template = template;
 			templateTextRenderer.TemplateIcon = model.GetValue (it, TemplateIconColumn) as Xwt.Drawing.Image;
 			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;

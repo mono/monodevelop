@@ -696,7 +696,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return info.GetValue (profile, null);
 		}
 		
-		static void RenderIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 
+		static void RenderIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var pixbufCellRenderer = (CellRendererImage)cell;
 			if (model.IterHasChild (iter)) {
@@ -706,7 +706,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 		
-		void ComboboxDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 
+		static void ComboboxDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var cellRenderer = (CellRendererCombo)cell;
 			var info = GetProperty (model, iter);
@@ -714,17 +714,21 @@ namespace MonoDevelop.CSharp.Formatting
 				cellRenderer.Text = "<invalid>";
 				return;
 			}
+
+			var profile = ((CSharpFormattingProfileDialog)col.TreeView.Toplevel).profile;
 			object value = info.GetValue (profile, null);
 			
 			cellRenderer.Text = value is Enum ? TranslateValue (value) : value.ToString ();
 		}
 		
-		void ToggleDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) 
+		static void ToggleDataFunc (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var cellRenderer = (CellRendererToggle)cell;
 			var info = GetProperty (model, iter);
 			if (info == null || info.PropertyType != typeof(bool)) 
 				return;
+
+			var profile = ((CSharpFormattingProfileDialog)col.TreeView.Toplevel).profile;
 			bool value = (bool)info.GetValue (profile, null);
 			cellRenderer.Active = value;
 		}
