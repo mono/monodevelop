@@ -231,10 +231,10 @@ module CompilerArguments =
                 Seq.empty
 
         let refs =
-          project.References
-          |> Seq.collect Project.getAssemblyLocations
-          |> Seq.append portableRefs
-          |> Seq.append (getReferencedAssemblies project |> Seq.map (fun a -> a.FilePath.FileName))
+            project.References
+            |> Seq.collect Project.getAssemblyLocations
+            |> Seq.append portableRefs
+            |> Seq.append (getReferencedAssemblies project |> Seq.map (fun a -> a.FilePath |> string))
 
         let projectReferences =
             refs
