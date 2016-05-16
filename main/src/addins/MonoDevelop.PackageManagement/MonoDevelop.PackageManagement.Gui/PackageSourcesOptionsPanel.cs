@@ -128,6 +128,7 @@ namespace MonoDevelop.PackageManagement.Gui
 				} else {
 					viewModel.Save ();
 				}
+				PackageManagementServices.Workspace.ReloadSettings ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unable to save NuGet.config changes", ex);
 				MessageService.ShowError (

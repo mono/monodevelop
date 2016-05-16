@@ -30,7 +30,6 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -66,7 +65,6 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-
 		void AddSolution (Solution solution)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (solution);
@@ -95,6 +93,15 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return new MonoDevelopSolutionManager (solution);
+		}
+
+		public void ReloadSettings ()
+		{
+			Runtime.AssertMainThread ();
+
+			foreach (IMonoDevelopSolutionManager solutionManager in solutionManagers) {
+				solutionManager.ReloadSettings ();
+			}
 		}
 	}
 }

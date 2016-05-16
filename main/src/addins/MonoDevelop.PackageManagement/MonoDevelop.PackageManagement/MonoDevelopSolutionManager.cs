@@ -49,8 +49,7 @@ namespace MonoDevelop.PackageManagement
 		public MonoDevelopSolutionManager (Solution solution)
 		{
 			Solution = solution;
-			string rootDirectory = Path.Combine (solution.BaseDirectory, ".nuget");
-			Settings = NuGet.Configuration.Settings.LoadDefaultSettings (rootDirectory, null, null);
+			LoadSettings ();
 		}
 
 		public Solution Solution { get; private set; }
@@ -138,6 +137,21 @@ namespace MonoDevelop.PackageManagement
 		public ISourceRepositoryProvider CreateSourceRepositoryProvider ()
 		{
 			return SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (Settings);
+		}
+
+		public void ReloadSettings ()
+		{
+			try {
+				LoadSettings ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to reload settings.", ex);
+			}
+		}
+
+		void LoadSettings ()
+		{
+			string rootDirectory = Path.Combine (Solution.BaseDirectory, ".nuget");
+			Settings = NuGet.Configuration.Settings.LoadDefaultSettings (rootDirectory, null, null);
 		}
 	}
 }
