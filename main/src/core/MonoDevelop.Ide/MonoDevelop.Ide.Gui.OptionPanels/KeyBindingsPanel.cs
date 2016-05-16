@@ -90,34 +90,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			bindingTVCol = new TreeViewColumn ();
 			bindingTVCol.Title = GettextCatalog.GetString ("Key Binding");
-			CellRendererText bindingRenderer = new CellRendererText ();
+			CellRendererKeyButtons bindingRenderer = new CellRendererKeyButtons (this);
+			bindingRenderer.KeyBindingSelected += BindingRenderer_KeyBindingSelected;
 			bindingTVCol.PackStart (bindingRenderer, false);
-			bindingTVCol.SetCellDataFunc (bindingRenderer, delegate (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter) {
-				string binding = (model.GetValue (iter, bindingCol) as string) ?? "";
-				((CellRendererText)cell).Text = binding.Length > 0
-					? KeyBindingManager.BindingToDisplayLabel (binding, false)
-					: binding;
-			});
-
-			CellRendererImage conflictWarningRenderer = new CellRendererImage ();
-			bindingTVCol.PackStart (conflictWarningRenderer, false);
-			bindingTVCol.SetCellDataFunc (conflictWarningRenderer, delegate (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var binding = (model.GetValue (iter, bindingCol) as string) ?? "";
-				var command = (model.GetValue (iter, commandCol) as Command);
-
-				HashSet<Command> bindingConflicts;
-				if (conflicts.TryGetValue (binding, out bindingConflicts) && bindingConflicts.Contains (command))
-					((CellRendererImage)cell).IconId = "md-warning";
-				else if (duplicates.ContainsKey (binding))
-					((CellRendererImage)cell).IconId = "md-information";
-				else {
-					((CellRendererImage)cell).IconId = IconId.Null;
-					((CellRendererImage)cell).Image = CellRendererImage.NullImage;
-				}
-			});
+			bindingTVCol.AddAttribute (bindingRenderer, "text", bindingCol);
+			bindingTVCol.AddAttribute (bindingRenderer, "command", commandCol);
 			keyTreeView.AppendColumn (bindingTVCol);
-
-			keyTreeView.MotionNotifyEvent += HandleMotionNotifyEvent;
 			
 			keyTreeView.AppendColumn (GettextCatalog.GetString ("Description"), new CellRendererText (), "text", descCol);
 			
@@ -129,6 +107,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				UpdateWarningLabel ();
 			};
 			updateButton.Clicked += OnUpdateButtonClick;
+			addButton.Clicked += OnAddButtonClick;
 
 			currentBindings = KeyBindingService.CurrentKeyBindingSet.Clone ();
 
@@ -165,80 +144,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			//HACK: workaround for MD Bug 608021: Stetic loses values assigned to "new" properties of custom widget
 			conflicButton.Label = GettextCatalog.GetString ("_View Conflicts");
 			conflicButton.UseUnderline = true;
-		}
-
-		TooltipPopoverWindow tooltipWindow;
-
-		void HideConflictTooltip ()
-		{
-			if (tooltipWindow != null) {
-				tooltipWindow.Destroy ();
-				tooltipWindow = null;
-			}
-		}
-
-		[GLib.ConnectBeforeAttribute]
-		void HandleMotionNotifyEvent (object o, MotionNotifyEventArgs args)
-		{
-			HideConflictTooltip ();
-
-			Gtk.TreePath path;
-			if (!keyTreeView.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path))
-				return;
-
-			if (path != null && duplicates != null) {
-				Gtk.TreeIter iter;
-				if (!keyTreeView.Model.GetIterFromString (out iter, path.ToString ()))
-					return;
-
-				string binding = (keyTreeView.Model.GetValue (iter, bindingCol) as string) ?? "";
-				HashSet<Command> keyDuplicates = null;
-				if (duplicates.TryGetValue (binding, out keyDuplicates)) {
-					var command = keyTreeView.Model.GetValue (iter, commandCol) as Command;
-					var cmdDuplicates = keyDuplicates.Where (cmd => cmd != command);
-
-					var cellBounds = keyTreeView.GetCellArea (path, bindingTVCol);
-					int iconx, iconw;
-					bindingTVCol.CellGetPosition (bindingTVCol.CellRenderers[1], out iconx, out iconw);
-					cellBounds.X += iconx;
-					cellBounds.Width = iconw;
-					cellBounds.Inflate (0, -(cellBounds.Height - 17)); // align to default icon size + 1
-
-					if (!cellBounds.Contains ((int)args.Event.X, (int)args.Event.Y))
-						return;
-					keyTreeView.ConvertBinWindowToWidgetCoords (cellBounds.X, cellBounds.Y, out cellBounds.X, out cellBounds.Y);
-
-					tooltipWindow = new TooltipPopoverWindow ();
-					tooltipWindow.ShowArrow = true;
-					tooltipWindow.LeaveNotifyEvent += delegate { HideConflictTooltip (); };
-
-					var text = string.Empty;
-					HashSet<Command> cmdConflicts = null;
-					bool hasConflict = false;
-					if (conflicts != null && conflicts.TryGetValue (binding, out cmdConflicts))
-						hasConflict = cmdConflicts.Contains (command);
-
-					if (hasConflict) {
-						text += GettextCatalog.GetString ("Conflicts:");
-						foreach (var conflict in cmdConflicts.Where (cmd => cmd != command))
-							text += "\n\u2022 " + conflict.Category + " \u2013 " + conflict.DisplayName;
-						cmdDuplicates = cmdDuplicates.Except (cmdConflicts);
-					}
-					if (cmdDuplicates.Count () > 0) {
-						if (hasConflict)
-							text += "\n\n";
-						text += GettextCatalog.GetString ("Duplicates:");
-
-						foreach (var cmd in cmdDuplicates)
-							text += "\n\u2022 " + cmd.Category + " \u2013 " + cmd.DisplayName;
-					}
-
-					tooltipWindow.Text = text;
-					tooltipWindow.Severity = hasConflict ? Tasks.TaskSeverity.Warning : Tasks.TaskSeverity.Information;
-
-					tooltipWindow.ShowPopup (keyTreeView, cellBounds, PopupPosition.Top);
-				}
-			}
 		}
 
 		void Refilter ()
@@ -361,7 +266,10 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					icat = keyStore.AppendValues (null, name, String.Empty, String.Empty, (int) Pango.Weight.Bold, null, false, true);
 				}
 				string label = cmd.DisplayName;
-				keyStore.AppendValues (icat, cmd, label, cmd.AccelKey != null ? cmd.AccelKey : String.Empty, cmd.Description, (int) Pango.Weight.Normal, (string)cmd.Icon, true, true);
+				string accels = cmd.AccelKey != null ? cmd.AccelKey : String.Empty;
+				if (cmd.AlternateAccelKeys != null && cmd.AlternateAccelKeys.Length > 0)
+					accels += " " + string.Join (" ", cmd.AlternateAccelKeys);
+				keyStore.AppendValues (icat, cmd, label, accels, cmd.Description, (int) Pango.Weight.Normal, (string)cmd.Icon, true, true);
 			}
 			UpdateConflictsWarning ();
 			Refilter ();
@@ -392,35 +300,50 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				keyStore.IterChildren (out citer, iter);
 				do {
 					command = (Command) keyStore.GetValue (citer, commandCol);
-					binding = currentBindings.GetBinding (command);
+					binding = string.Join (" ", currentBindings.GetBindings (command));
 					keyStore.SetValue (citer, bindingCol, binding);
 				} while (keyStore.IterNext (ref citer));
 			} while (keyStore.IterNext (ref iter));
 
 			UpdateConflictsWarning ();
 		}
-		
+
+		void BindingRenderer_KeyBindingSelected (object sender, KeyBindingSelectedEventArgs e)
+		{
+			accelComplete = false;
+
+			accelEntry.Sensitive = true;
+			CurrentSelectedBinding = e;
+			//grab focus AFTER the event, or focus gets screwy
+			GLib.Timeout.Add (10, delegate {
+				accelEntry.GrabFocus ();
+				return false;
+			});
+			accelIncomplete = false;
+			accelComplete = true;
+		}
+
 		void OnKeysTreeViewSelectionChange (object sender, EventArgs e)
 		{
 			TreeSelection sel = sender as TreeSelection;
 			TreeModel model;
 			TreeIter iter;
-			
-			accelComplete = false;
-			
-			if (sel.GetSelected (out model, out iter) && model.GetValue (iter,commandCol) != null) {
-				accelEntry.Sensitive = true;
-				CurrentBinding = (string) model.GetValue (iter, bindingCol);
-				//grab focus AFTER the selection event, or focus gets screwy
-				GLib.Timeout.Add (10, delegate {
-					accelEntry.GrabFocus ();
-					return false;
-				});
+			Command selCommand = null;
+			if (sel.GetSelected (out model, out iter) && model.GetValue (iter, commandCol) != null) {
+				selCommand = model.GetValue (iter, commandCol) as Command;
+				if (CurrentSelectedBinding?.Command == selCommand) // command is already selected
+					return;
+
+				accelComplete = false;
+				var binding = model.GetValue (iter, bindingCol) as string;
+				iter = filterModel.ConvertIterToChildIter (iter);
+				CurrentSelectedBinding = new KeyBindingSelectedEventArgs (binding.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries), 0, selCommand, iter);
 				accelIncomplete = false;
 				accelComplete = true;
+				accelEntry.Sensitive = true;
 			} else {
-				accelEntry.Sensitive = false;
-				CurrentBinding = string.Empty;
+				accelEntry.Sensitive = updateButton.Sensitive = addButton.Sensitive = false;
+				CurrentSelectedBinding = null;
 			}
 		}
 		
@@ -433,7 +356,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			e.RetVal = true;
 			
 			if (accelComplete) {
-				CurrentBinding = String.Empty;
+				CurrentKey = String.Empty;
 				accelIncomplete = false;
 				accelComplete = false;
 				chord = null;
@@ -446,7 +369,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			bool combinationComplete;
 			accel = KeyBindingManager.AccelLabelFromKey (e.Event, out combinationComplete);
 			if (combinationComplete) {
-				CurrentBinding = KeyBindingManager.Binding (chord, accel);
+				CurrentKey = KeyBindingManager.Binding (chord, accel);
 				accelIncomplete = false;
 				if (chord != null)
 					accelComplete = true;
@@ -455,71 +378,85 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			} else {
 				accel = (chord != null ? chord + "|" : string.Empty) + accel;
 				accelIncomplete = true;
-				CurrentBinding = accel;
+				CurrentKey = accel;
 			}
 		}
-		
-		string _realBinding;
-		string CurrentBinding {
+
+		string currentKey;
+		string CurrentKey {
 			get {
-				return _realBinding;
+				return currentKey ?? string.Empty;
 			}
 			set {
-				_realBinding = value;
-				accelEntry.Text = _realBinding == null? "" : KeyBindingManager.BindingToDisplayLabel (_realBinding, false, true);
+				currentKey = value;
+				accelEntry.Text = value == null? "" : KeyBindingManager.BindingToDisplayLabel (value, false, true);
+
+				if (CurrentSelectedBinding != null) {
+					if (string.IsNullOrEmpty (value))
+						updateButton.Label = GettextCatalog.GetString ("Delete");
+					else
+						updateButton.Label = GettextCatalog.GetString ("Apply");
+
+					if (CurrentSelectedBinding.AllKeys.Count == 0) {
+						updateButton.Sensitive = false;
+						addButton.Sensitive = true;
+					} else
+						updateButton.Sensitive = addButton.Sensitive = !CurrentSelectedBinding.AllKeys.Contains (value);
+				} else {
+					updateButton.Sensitive = addButton.Sensitive = false;
+				}
+			}
+		}
+
+		KeyBindingSelectedEventArgs currentSelectedBinding;
+		KeyBindingSelectedEventArgs CurrentSelectedBinding {
+			get { return currentSelectedBinding; }
+			set {
+				currentSelectedBinding = value;
+				if (value == null) {
+					accelEntry.Text = string.Empty;
+					return;
+				}
+
+				CurrentKey = currentSelectedBinding.AllKeys.Count > 0 ? currentSelectedBinding.AllKeys [currentSelectedBinding.SelectedKey] : String.Empty;
 			}
 		}
 		
 		void OnAccelEntryKeyRelease (object sender, KeyReleaseEventArgs e)
 		{
 			if (accelIncomplete)
-				CurrentBinding = chord != null ? chord : string.Empty;
+				CurrentKey = chord != null ? chord : string.Empty;
 		}
 		
 		void OnUpdateButtonClick (object sender, EventArgs e)
 		{
-			TreeIter iter;
-			Command cmd;
-			if (GetSelectedCommandIter (out iter, out cmd)) {
-				keyStore.SetValue (iter, bindingCol, CurrentBinding);
-				currentBindings.SetBinding (cmd, CurrentBinding);
+			if (CurrentSelectedBinding != null) {
+				if (string.IsNullOrEmpty (CurrentKey))
+					CurrentSelectedBinding.AllKeys.RemoveAt (CurrentSelectedBinding.SelectedKey);
+				else
+					CurrentSelectedBinding.AllKeys [CurrentSelectedBinding.SelectedKey] = CurrentKey;
+				var binding = string.Join (" ", CurrentSelectedBinding.AllKeys);
+				keyStore.SetValue (currentSelectedBinding.Iter, bindingCol, binding);
+				currentBindings.SetBinding (currentSelectedBinding.Command, CurrentSelectedBinding.AllKeys.ToArray ());
 				SelectCurrentScheme ();
 				keyTreeView.QueueDraw ();
 			}
 			UpdateConflictsWarning ();
 		}
-		
-		bool GetSelectedCommandIter (out TreeIter iter, out Command cmd)
+
+		void OnAddButtonClick (object sender, EventArgs e)
 		{
-			TreeSelection sel = keyTreeView.Selection;
-			if (!sel.GetSelected (out iter)) {
-				cmd = null;
-				return false;
+			if (CurrentSelectedBinding != null && !string.IsNullOrEmpty (CurrentKey)) {
+				CurrentSelectedBinding.AllKeys.Add (CurrentKey);
+
+				var binding = string.Join (" ", CurrentSelectedBinding.AllKeys);
+
+				keyStore.SetValue (currentSelectedBinding.Iter, bindingCol, binding);
+				currentBindings.SetBinding (currentSelectedBinding.Command, CurrentSelectedBinding.AllKeys.ToArray ());
+				SelectCurrentScheme ();
+				keyTreeView.QueueDraw ();
 			}
-			
-			cmd = (Command)filterModel.GetValue (iter, commandCol);
-			if (cmd == null)
-				return false;
-			
-			if (keyStore.GetIterFirst (out iter) && FindIterForCommand (cmd, iter, out iter))
-				return true;
-			
-			throw new Exception ("Did not find command in underlying model");
-		}
-		
-		bool FindIterForCommand (object cmd, TreeIter iter, out TreeIter found)
-		{
-			do {
-				TreeIter child;
-				if (keyStore.IterChildren (out child, iter) && FindIterForCommand (cmd, child, out found))
-					return true;
-				if (keyStore.GetValue (iter, commandCol) == cmd) {
-					found = iter;
-					return true;
-				}
-			} while (keyStore.IterNext (ref iter));
-			found = TreeIter.Zero;
-			return false;
+			UpdateConflictsWarning ();
 		}
 
 		void UpdateConflictsWarning ()
@@ -561,7 +498,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					}
 
 					foreach (Command cmd in conf.Value.OrderBy (cmd => cmd.DisplayName)) {
-						string txt = currentBindings.GetBinding (cmd) + " \u2013 " + cmd.DisplayName;
+						string txt = conf.Key + " \u2013 " + cmd.DisplayName;
 						ContextMenuItem item = new ContextMenuItem (txt);
 						Command localCmd = cmd;
 
@@ -602,7 +539,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void UpdateWarningLabel ()
 		{
-			if (CurrentBinding.Length == 0) {
+			if (CurrentKey.Length == 0) {
 				labelMessage.Visible = false;
 				return;
 			}
@@ -617,7 +554,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				return;
 			}
 			
-			var bindings = FindBindings (CurrentBinding);
+			var bindings = FindBindings (CurrentKey);
 			bindings.Remove (cmd);
 			
 			if (bindings.Count > 0) {
@@ -686,6 +623,290 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			keyStore.Dispose ();
 			filterModel.Dispose ();
 			base.OnDestroyed ();
+		}
+
+		class KeyBindingSelectedEventArgs : EventArgs
+		{
+			public int SelectedKey { get; private set; }
+			public List<string> AllKeys { get; private set; }
+			public Command Command { get; private set; }
+			public TreeIter Iter { get; private set; }
+
+			public KeyBindingSelectedEventArgs (IEnumerable<string> keys, int selectedKey, Command command, TreeIter iter)
+			{
+				if (command == null)
+					throw new ArgumentNullException (nameof (command));
+				AllKeys = new List<string> (keys);
+				if (selectedKey < 0 || ((selectedKey != 0 && AllKeys.Count != 0) && selectedKey >= AllKeys.Count))
+					throw new ArgumentOutOfRangeException (nameof (selectedKey));
+				SelectedKey =  selectedKey;
+				Command = command;
+				Iter = iter;
+			}
+		}
+
+		struct KeyBindingHitTestResult
+		{
+			public int SelectedKey { get; set; }
+			public List<string> AllKeys { get; set; }
+			public Command Command { get; set; }
+			public TreeIter Iter { get; set; }
+			public Gdk.Rectangle ButtonBounds { get; set; }
+		}
+
+		class CellRendererKeyButtons : CellRendererText
+		{
+			const int KeyVPadding = 0;
+			const int KeyHPadding = 6;
+			const int KeyBgRadius = 4;
+			const int Spacing = 6;
+			KeyBindingsPanel keyBindingsPanel;
+			TreeView keyBindingsTree;
+
+			TooltipPopoverWindow tooltipWindow;
+
+			[GLib.Property ("command")]
+			public Command Command { get; set; }
+
+			public event EventHandler<KeyBindingSelectedEventArgs> KeyBindingSelected;
+
+			public CellRendererKeyButtons (KeyBindingsPanel panel)
+			{
+				keyBindingsPanel = panel;
+				keyBindingsTree = panel.keyTreeView;
+				keyBindingsTree.ButtonPressEvent += HandleKeyTreeButtonPressEvent;
+				keyBindingsTree.MotionNotifyEvent += HandleKeyTreeMotionNotifyEvent;
+				Ypad = 0;
+			}
+
+			void HideConflictTooltip ()
+			{
+				if (tooltipWindow != null) {
+					tooltipWindow.Destroy ();
+					tooltipWindow = null;
+				}
+			}
+
+			[GLib.ConnectBefore ()]
+			void HandleKeyTreeMotionNotifyEvent (object o, MotionNotifyEventArgs args)
+			{
+				if (keyBindingsPanel.duplicates?.Count <= 0)
+					return;
+
+				var hit = HitTest (args.Event.X, args.Event.Y);
+				if (hit.ButtonBounds.IsEmpty) {
+					HideConflictTooltip ();
+					return;
+				}
+
+				if (hit.AllKeys.Count == 0)
+					return;
+
+				HashSet<Command> keyDuplicates = null;
+				if (keyBindingsPanel.duplicates.TryGetValue (hit.AllKeys [hit.SelectedKey], out keyDuplicates)) {
+
+					var cmdDuplicates = keyDuplicates.Where (cmd => cmd != hit.Command);
+					if (tooltipWindow == null) {
+						tooltipWindow = new TooltipPopoverWindow ();
+						tooltipWindow.ShowArrow = true;
+						tooltipWindow.LeaveNotifyEvent += delegate { HideConflictTooltip (); };
+					}
+
+					var text = string.Empty;
+					HashSet<Command> cmdConflicts = null;
+					bool hasConflict = false;
+					if (keyBindingsPanel.conflicts != null && keyBindingsPanel.conflicts.TryGetValue (hit.AllKeys [hit.SelectedKey], out cmdConflicts))
+						hasConflict = cmdConflicts.Contains (hit.Command);
+
+					if (hasConflict) {
+						text += GettextCatalog.GetString ("Conflicts:");
+						foreach (var conflict in cmdConflicts.Where (cmd => cmd != hit.Command))
+							text += "\n\u2022 " + conflict.Category + " \u2013 " + conflict.DisplayName;
+						cmdDuplicates = cmdDuplicates.Except (cmdConflicts);
+					}
+					if (cmdDuplicates.Count () > 0) {
+						if (hasConflict)
+							text += "\n\n";
+						text += GettextCatalog.GetString ("Duplicates:");
+
+						foreach (var cmd in cmdDuplicates)
+							text += "\n\u2022 " + cmd.Category + " \u2013 " + cmd.DisplayName;
+					}
+
+					tooltipWindow.Text = text;
+					tooltipWindow.Severity = hasConflict ? Tasks.TaskSeverity.Error : Tasks.TaskSeverity.Warning;
+
+					tooltipWindow.ShowPopup (keyBindingsTree, hit.ButtonBounds, PopupPosition.Top);
+				} else
+					HideConflictTooltip ();
+			}
+
+			[GLib.ConnectBefore ()]
+			void HandleKeyTreeButtonPressEvent (object o, ButtonPressEventArgs args)
+			{
+				var hit = HitTest (args.Event.X, args.Event.Y);
+				if (!hit.ButtonBounds.IsEmpty && KeyBindingSelected != null) {
+					var a = new KeyBindingSelectedEventArgs (hit.AllKeys, hit.SelectedKey, hit.Command, hit.Iter);
+					KeyBindingSelected (this, a);
+				}
+			}
+
+			KeyBindingHitTestResult HitTest (double mouseX, double mouseY)
+			{
+				KeyBindingHitTestResult result = new KeyBindingHitTestResult ();
+				TreeIter iter;
+				TreePath path;
+				int cellx, celly, mx, my;
+				mx = (int)mouseX;
+				my = (int)mouseY;
+
+				if (!GetCellPosition (mx, my, out cellx, out celly, out iter, out path))
+					return result;
+
+				Text = keyBindingsTree.Model.GetValue (iter, bindingCol) as string ?? string.Empty;
+				Command = keyBindingsTree.Model.GetValue (iter, commandCol) as Command;
+
+				var filter = keyBindingsTree.Model as TreeModelFilter;
+				if (filter != null)
+					iter = filter.ConvertIterToChildIter (iter);
+
+				result.Command = Command;
+				result.AllKeys = Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList ();
+				result.Iter = iter;
+
+				using (var layout = new Pango.Layout (keyBindingsTree.PangoContext)) {
+
+					var xpad = (int)Xpad;
+					int i = 0;
+					foreach (var key in result.AllKeys) {
+						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
+						layout.FontDescription = FontDesc;
+						layout.FontDescription.Family = Family;
+						int w, h;
+						layout.GetPixelSize (out w, out h);
+
+						int buttonWidth = w + (2 * KeyHPadding);
+
+						if (cellx > xpad + 1 && cellx <= xpad + buttonWidth + 2 &&
+						    celly > Ypad + 1 && celly <= Ypad + h + (2 * KeyVPadding) + 2) {
+							var cellBounds = keyBindingsTree.GetCellArea (path, keyBindingsPanel.bindingTVCol);
+							keyBindingsPanel.bindingTVCol.CellGetPosition (this, out cellx, out w);
+							// GetCellArea reports the outer bounds, therefore we need to add 1px
+							cellBounds.X += cellx + 2;
+							cellBounds.Y += 2;
+							keyBindingsTree.ConvertBinWindowToWidgetCoords (cellBounds.X, cellBounds.Y, out cellBounds.X, out cellBounds.Y);
+
+							result.SelectedKey = i;
+							result.ButtonBounds = new Gdk.Rectangle (cellBounds.X + xpad, cellBounds.Y + (int)Ypad, buttonWidth, h + KeyVPadding * 2);
+							result.ButtonBounds.Inflate (0, 2);
+							return result;
+						}
+
+						xpad += buttonWidth + Spacing;
+						i++;
+					}
+				}
+				return result;
+			}
+
+			bool GetCellPosition (int mx, int my, out int cellx, out int celly, out TreeIter iter, out TreePath path)
+			{
+				TreeViewColumn col;
+				iter = TreeIter.Zero;
+
+				if (!keyBindingsTree.GetPathAtPos (mx, my, out path, out col, out cellx, out celly))
+					return false;
+
+				if (!keyBindingsTree.Model.GetIterFromString (out iter, path.ToString ()))
+					return false;
+
+				int sp, w;
+				if (col.CellGetPosition (this, out sp, out w)) {
+					if (cellx >= sp && cellx < sp + w)
+						return true;
+				}
+				return false;
+			}
+
+			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+			{
+				if (string.IsNullOrEmpty (Text))
+					return;
+
+				using (var cr = Gdk.CairoHelper.Create (window)) {
+					using (var layout = new Pango.Layout (widget.PangoContext)) {
+						var ypad = (int)Ypad;
+						var xpad = (int)Xpad;
+						int w, h;
+						Cairo.Color bgColor, fgColor;
+						foreach (var key in Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
+
+							HashSet<Command> bindingConflicts;
+							if (keyBindingsPanel.conflicts.TryGetValue (key, out bindingConflicts) && bindingConflicts.Contains (Command)) {
+								bgColor = Styles.ErrorBoxBackgroundColor.ToCairoColor ();
+								fgColor = Styles.ErrorBoxForegroundColor.ToCairoColor ();
+							} else if (keyBindingsPanel.duplicates.ContainsKey (key)) {
+								bgColor = Styles.WarningBoxBackgroundColor.ToCairoColor ();
+								fgColor = Styles.WarningBoxForegroundColor.ToCairoColor ();
+							} else {
+								bgColor = Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ();
+								fgColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
+							}
+
+							layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
+							layout.FontDescription = FontDesc;
+							layout.FontDescription.Family = Family;
+							layout.GetPixelSize (out w, out h);
+
+							int buttonWidth = w + (2 * KeyHPadding);
+							cr.RoundedRectangle (
+								cell_area.X + xpad,
+								cell_area.Y + ypad + (cell_area.Height - h) / 2d,
+								buttonWidth,
+								h + KeyVPadding * 2,
+								KeyBgRadius);
+							cr.LineWidth = 1;
+							cr.SetSourceColor (bgColor);
+							cr.FillPreserve ();
+							cr.SetSourceColor (bgColor);
+							cr.Stroke ();
+
+							cr.SetSourceColor (fgColor);
+							cr.MoveTo (cell_area.X + KeyHPadding + xpad, cell_area.Y + ypad + (cell_area.Height - h) / 2d + KeyVPadding);
+							cr.ShowLayout (layout);
+							xpad += buttonWidth + Spacing;
+						}
+					}
+				}
+			}
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				x_offset = y_offset = 0;
+				if (string.IsNullOrEmpty (Text)) {
+					width = 0;
+					height = 0;
+					return;
+				}
+
+				using (var layout = new Pango.Layout (widget.PangoContext)) {
+					height = 0;
+					width = (int)Xpad;
+					int w, h, buttonWidth;
+					foreach (var key in Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
+						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
+						layout.FontDescription = FontDesc;
+						layout.FontDescription.Family = Family;
+						layout.GetPixelSize (out w, out h);
+						if (height == 0)
+							height = h + (KeyVPadding * 2) + (int)Ypad * 2;
+						
+						buttonWidth = w + (2 * KeyHPadding);
+						width += buttonWidth + Spacing;
+					}
+				}
+			}
 		}
 	}
 }
