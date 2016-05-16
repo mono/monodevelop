@@ -200,6 +200,8 @@ namespace MonoDevelop.PackageManagement
 			try {
 				if (task.IsFaulted) {
 					LoggingService.LogError ("Failed to read package versions.", task.Exception);
+				} else if (task.IsCanceled) {
+					// Ignore.
 				} else {
 					Versions.Clear ();
 					foreach (VersionInfo versionInfo in task.Result.OrderByDescending (v => v.Version)) {
