@@ -126,6 +126,22 @@ namespace MonoDevelop.Components.Commands
 		public void SetBinding (Command cmd, params string[] accelKeys)
 		{
 			string key = KeyBindingService.GetCommandKey (cmd);
+			accelKeys = accelKeys?.Distinct ().ToArray () ?? new string [0];
+			if (parent == null) {
+				if (accelKeys.Length == 0)
+					bindings.Remove (key);
+				else
+					bindings [key] = string.Join (" ", accelKeys);
+			} else {
+				// If the key is the same as the default, remove it from the scheme
+				var pbind = parent.GetBindings (cmd).Distinct ();
+				if (new HashSet<string> (accelKeys).SetEquals (pbind))
+					bindings.Remove (key);
+				else
+					bindings [key] = string.Join (" ", accelKeys);
+			}
+			return;
+
 			if (accelKeys == null || accelKeys.Length == 0) {
 				bindings.Remove (key);
 				return;
@@ -148,8 +164,10 @@ namespace MonoDevelop.Components.Commands
 		public void LoadBinding (Command cmd)
 		{
 			var cmdAccesls = GetBindings (cmd);
-			if (cmdAccesls == null || cmdAccesls.Length == 0)
+			if (cmdAccesls == null || cmdAccesls.Length == 0) {
+				cmd.AccelKey = String.Empty;
 				return;
+			}
 			
 			cmd.AccelKey = cmdAccesls [0];
 			if (cmdAccesls.Length > 1)
