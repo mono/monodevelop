@@ -24,26 +24,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
+using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class SourceRepositoryViewModel
 	{
-		public SourceRepositoryViewModel (SourceRepository sourceRepository)
-		{
-			SourceRepository = sourceRepository;
-			Name = sourceRepository.PackageSource.Name;
-		}
+		List<SourceRepository> sourceRepositories;
 
 		public SourceRepositoryViewModel (string name)
 		{
 			Name = name;
+			sourceRepositories = new List<SourceRepository> ();
+		}
+
+		public SourceRepositoryViewModel (SourceRepository sourceRepository)
+			: this (
+				new [] { sourceRepository },
+				sourceRepository.PackageSource)
+		{
+		}
+
+		protected SourceRepositoryViewModel (
+			IEnumerable<SourceRepository> sourceRepositories,
+			PackageSource packageSource)
+		{
+			this.sourceRepositories = sourceRepositories.ToList ();
+			PackageSource = packageSource;
+
+			if (IsAggregate) {
+				Name = GettextCatalog.GetString ("All Sources");
+			} else {
+				Name = packageSource.Name;
+			}
 		}
 
 		public string Name { get; private set; }
-		public SourceRepository SourceRepository { get; private set; }
+		public PackageSource PackageSource { get; private set; }
+
+		public IEnumerable<SourceRepository> GetSourceRepositories ()
+		{
+			return sourceRepositories;
+		}
+
+		public bool IsAggregate {
+			get { return sourceRepositories.Count > 1; }
+		}
 	}
 }
 

@@ -50,21 +50,6 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<NuGetProjectAction> actions;
 
 		public InstallNuGetPackageAction (
-			SourceRepository sourceRepository,
-			IMonoDevelopSolutionManager solutionManager,
-			IDotNetProject dotNetProject,
-			NuGetProjectContext projectContext,
-			CancellationToken cancellationToken = default(CancellationToken))
-			: this (
-				new [] { sourceRepository },
-				solutionManager,
-				dotNetProject,
-				projectContext,
-				cancellationToken)
-		{
-		}
-
-		public InstallNuGetPackageAction (
 			IEnumerable<SourceRepository> primarySources,
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,

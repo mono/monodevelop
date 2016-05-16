@@ -84,12 +84,15 @@ namespace MonoDevelop.PackageManagement
 
 		IEnumerable<SourceRepositoryViewModel> GetPackageSources ()
 		{
-			//if (PackageManagementServices.RegisteredPackageRepositories.PackageSources.HasMultipleEnabledPackageSources) {
-			//	yield return RegisteredPackageSourceSettings.AggregatePackageSource;
-			//}
 			ISourceRepositoryProvider provider = solutionManager.CreateSourceRepositoryProvider ();
 			packageSourceProvider = provider.PackageSourceProvider;
-			foreach (SourceRepository repository in provider.GetRepositories ()) {
+			var repositories = provider.GetRepositories ().ToList ();
+
+			if (repositories.Count > 1) {
+				yield return new AggregateSourceRepositoryViewModel (repositories);
+			}
+
+			foreach (SourceRepository repository in repositories) {
 				yield return new SourceRepositoryViewModel (repository);
 			}
 		}
@@ -132,7 +135,7 @@ namespace MonoDevelop.PackageManagement
 			if (selectedPackageSource == null || packageSourceProvider == null)
 				return;
 
-			packageSourceProvider.SaveActivePackageSource (selectedPackageSource.SourceRepository.PackageSource);
+			packageSourceProvider.SaveActivePackageSource (selectedPackageSource.PackageSource);
 		}
 
 		public ObservableCollection<PackageSearchResultViewModel> PackageViewModels { get; private set; }
@@ -218,7 +221,7 @@ namespace MonoDevelop.PackageManagement
 		PackageItemLoader CreatePackageLoader ()
 		{
 			var context = new PackageLoadContext (
-				new [] { selectedPackageSource.SourceRepository },
+				selectedPackageSource.GetSourceRepositories (),
 				false,
 				nugetProject);
 			
@@ -376,7 +379,7 @@ namespace MonoDevelop.PackageManagement
 		public IPackageAction CreateInstallPackageAction (PackageSearchResultViewModel packageViewModel)
 		{
 			return new InstallNuGetPackageAction (
-				SelectedPackageSource.SourceRepository,
+				SelectedPackageSource.GetSourceRepositories (),
 				solutionManager,
 				dotNetProject,
 				projectContext

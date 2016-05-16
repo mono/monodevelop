@@ -522,6 +522,7 @@
     <Compile Include="NuGet.PackageManagement.UI\SourceRepositoryExtensions.cs" />
     <Compile Include="NuGet.PackageManagement.UI\FeedSearchContinuationToken.cs" />
     <Compile Include="NuGet.PackageManagement.UI\INuGetUILogger.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AggregateSourceRepositoryViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
