@@ -203,7 +203,7 @@ namespace MonoDevelop.Components.Commands
 						binding = reader.GetAttribute (shortcutAttr);
 						
 						if (!string.IsNullOrEmpty (command))
-							bindings.Add (command, binding);
+							bindings.Add (command, KeyBindingManager.FixChordSeparators(binding));
 						
 						break;
 					}
