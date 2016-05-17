@@ -560,7 +560,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (metadataReference == null)
 						continue;
 					if (file.Aliases != null)
-						metadataReference = metadataReference.WithAliases (file.GetAliases ());
+						metadataReference = metadataReference.WithAliases (file.EnumerateAliases ());
 					result.Add (metadataReference);
 				}
 			} catch (Exception e) {

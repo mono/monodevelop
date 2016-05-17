@@ -54,10 +54,11 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public IEnumerable<string> GetAliases ()
+		/// <summary>
+		/// Returns an enumerable collection of aliases. 
+		/// </summary>
+		public IEnumerable<string> EnumerateAliases ()
 		{
-			if (Aliases == null)
-				return Enumerable.Empty<string> ();
 			return Aliases.Split (',', ';');
 		}
 	}
