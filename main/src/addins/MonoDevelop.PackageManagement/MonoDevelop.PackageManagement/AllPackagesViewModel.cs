@@ -56,6 +56,7 @@ namespace MonoDevelop.PackageManagement
 		IDotNetProject dotNetProject;
 		NuGetProjectContext projectContext;
 		List<PackageReference> packageReferences = new List<PackageReference> ();
+		AggregatePackageSourceErrorMessage aggregateErrorMessage;
 
 		public AllPackagesViewModel ()
 		{
@@ -252,6 +253,15 @@ namespace MonoDevelop.PackageManagement
 		{
 			HasError = false;
 			ErrorMessage = String.Empty;
+			aggregateErrorMessage = new AggregatePackageSourceErrorMessage (GetTotalPackageSources ());
+		}
+
+		int GetTotalPackageSources ()
+		{
+			if (selectedPackageSource != null) {
+				return selectedPackageSource.GetSourceRepositories ().Count ();
+			}
+			return 0;
 		}
 
 		public void ShowNextPage ()
@@ -435,18 +445,18 @@ namespace MonoDevelop.PackageManagement
 
 		void INuGetUILogger.Log (MessageLevel level, string message, params object [] args)
 		{
+			if (level == MessageLevel.Error) {
+				string fullErrorMessage = String.Format (message, args);
+				AppendErrorMessage (fullErrorMessage);
+			}
 		}
 
-		void INuGetUILogger.ReportError (string message)
+		void AppendErrorMessage (string message)
 		{
-		}
-
-		void INuGetUILogger.Start ()
-		{
-		}
-
-		void INuGetUILogger.End ()
-		{
+			aggregateErrorMessage.AddError (message);
+			ErrorMessage = aggregateErrorMessage.ErrorMessage;
+			HasError = true;
+			OnPropertyChanged (null);
 		}
 	}
 }

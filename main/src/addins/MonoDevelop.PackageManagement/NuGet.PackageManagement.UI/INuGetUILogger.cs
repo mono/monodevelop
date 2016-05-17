@@ -6,11 +6,5 @@ namespace NuGet.PackageManagement.UI
 	public interface INuGetUILogger
 	{
 		void Log(ProjectManagement.MessageLevel level, string message, params object[] args);
-
-		void ReportError(string message);
-
-		void Start();
-
-		void End();
 	}
 }

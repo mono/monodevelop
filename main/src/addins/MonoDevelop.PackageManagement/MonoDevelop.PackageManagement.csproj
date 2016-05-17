@@ -528,6 +528,7 @@
     <Compile Include="MonoDevelop.PackageManagement\AggregateSourceRepositoryViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementCredentialService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\HttpHandlerResourceV3Extensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AggregatePackageSourceErrorMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
