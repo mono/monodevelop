@@ -167,9 +167,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			toolboxWidget.QueueResize ();
 		}
 		
-		void toolboxAddButton_Clicked (object sender, EventArgs e)
+		async void toolboxAddButton_Clicked (object sender, EventArgs e)
 		{
-			toolboxService.AddUserItems ();
+			await toolboxService.AddUserItems ();
 		}
 		
 		void ShowPopup (Gdk.EventButton evt)
