@@ -29,31 +29,13 @@ using Mono.TextEditor.Highlighting;
 
 namespace Mono.TextEditor
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-	public interface IExtendingTextLineMarker 
-=======
 	interface IExtendingTextLineMarker
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
-=======
-	interface IExtendingTextLineMarker
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 	{
 		double GetLineHeight (MonoTextEditor editor);
 		void Draw (MonoTextEditor editor, Cairo.Context cr, int lineNr, Cairo.Rectangle lineArea);
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-	
-	public interface IActionTextLineMarker
-=======
 
 	interface IActionTextLineMarker
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
-=======
-
-	interface IActionTextLineMarker
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 	{
 		/// <returns>
 		/// true, if the mouse press was handled - false otherwise.
@@ -63,16 +45,8 @@ namespace Mono.TextEditor
 
 		void MouseHover (MonoTextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result);
 	}
-<<<<<<< HEAD
-	
-	public class TextLineMarkerHoverResult 
-=======
 
 	class TextLineMarkerHoverResult
-<<<<<<< HEAD
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
-=======
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 	{
 		bool isCursorSet;
 
@@ -165,18 +139,8 @@ namespace Mono.TextEditor
 		public virtual void Draw (MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 		}
-<<<<<<< HEAD
-<<<<<<< HEAD
-		
-		public virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
-=======
 
 		internal virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
-=======
-
-		internal virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
->>>>>>> a6f51ff... [SourceEditor] Text editor control implementation is now internal.
 		{
 			return baseStyle;
 		}

@@ -1305,49 +1305,19 @@ namespace Mono.TextEditor
 		
 		public void EnsureOffsetIsUnfolded (int offset)
 		{
-<<<<<<< HEAD
-<<<<<<< HEAD
-			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsFolded && f.Offset < offset && offset < f.EndOffset)) {
-				fold.IsFolded = false;
-=======
-=======
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 			bool needUpdate = false;
 			foreach (FoldSegment fold in GetFoldingsFromOffset (offset).Where (f => f.IsCollapsed && f.Offset < offset && offset < f.EndOffset)) {
 				needUpdate = true;
 				fold.IsCollapsed = false;
-<<<<<<< HEAD
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
-=======
-			}
-			if (needUpdate) {
-				RequestUpdate (new UpdateAll ());
-				CommitDocumentUpdate ();
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 			}
 		}
 
 		public void EnsureSegmentIsUnfolded (int offset, int length)
 		{
-<<<<<<< HEAD
-<<<<<<< HEAD
-			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsFolded)) {
-				fold.IsFolded = false;
-=======
-=======
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 			bool needUpdate = false;
 			foreach (var fold in GetFoldingContaining (offset, length).Where (f => f.IsCollapsed)) {
 				needUpdate = true;
 				fold.IsCollapsed = false;
-<<<<<<< HEAD
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
-=======
-			}
-			if (needUpdate) {
-				RequestUpdate (new UpdateAll ());
-				CommitDocumentUpdate ();
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 			}
 		}
 
@@ -1369,30 +1339,7 @@ namespace Mono.TextEditor
 
 		internal void InformFoldChanged (FoldSegmentEventArgs args)
 		{
-<<<<<<< HEAD
-<<<<<<< HEAD
-			lock (foldSegmentTaskLock) {
-				if (foldSegmentTask != null) {
-					foldSegmentTask.ContinueWith (delegate {
-						Gtk.Application.Invoke (delegate {
-							InternalInformFoldChanged (args);	
-						});
-					});
-				} else {
-					InternalInformFoldChanged (args);
-				}
-			}
-		}
-
-		void InternalInformFoldChanged (FoldSegmentEventArgs args)
-		{
-			if (args.FoldSegment.IsFolded) {
-=======
 			if (args.FoldSegment.IsCollapsed) {
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
-=======
-			if (args.FoldSegment.IsCollapsed) {
->>>>>>> 61f309c... [SourceEditor] Unified fold segment subsystems.
 				foldedSegments.Add (args.FoldSegment);
 			} else {
 				foldedSegments.Remove (args.FoldSegment);
