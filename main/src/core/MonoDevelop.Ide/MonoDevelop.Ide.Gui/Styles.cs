@@ -251,6 +251,16 @@ namespace MonoDevelop.Ide.Gui
 			public static Color SearchErrorForegroundColor { get; internal set; }
 		}
 
+		public static class KeyBindingsPanel
+		{
+			public static Color KeyBackgroundColor { get; internal set; }
+			public static Color KeyForegroundColor { get; internal set; }
+			public static Color KeyDuplicateBackgroundColor { get; internal set; }
+			public static Color KeyDuplicateForegroundColor { get; internal set; }
+			public static Color KeyConflictBackgroundColor { get; internal set; }
+			public static Color KeyConflictForegroundColor { get; internal set; }
+		}
+
 		// Helper methods
 
 		internal static Color Shift (Color color, double factor)
@@ -394,6 +404,14 @@ namespace MonoDevelop.Ide.Gui
 			Editor.SmartTagMarkerColorLight = Color.FromName ("#ff70fe").WithAlpha (.5);
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
 			Editor.SearchErrorForegroundColor = ErrorForegroundColor;
+
+
+			KeyBindingsPanel.KeyBackgroundColor = BackgroundColor;
+			KeyBindingsPanel.KeyForegroundColor = BaseForegroundColor;
+			KeyBindingsPanel.KeyDuplicateBackgroundColor = WarningBoxBackgroundColor;
+			KeyBindingsPanel.KeyDuplicateForegroundColor = WarningBoxForegroundColor;
+			KeyBindingsPanel.KeyConflictBackgroundColor = ErrorBoxBackgroundColor;
+			KeyBindingsPanel.KeyConflictForegroundColor = ErrorBoxForegroundColor;
 
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);

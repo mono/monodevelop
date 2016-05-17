@@ -843,14 +843,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 							HashSet<Command> bindingConflicts;
 							if (keyBindingsPanel.conflicts.TryGetValue (key, out bindingConflicts) && bindingConflicts.Contains (Command)) {
-								bgColor = Styles.ErrorBoxBackgroundColor.ToCairoColor ();
-								fgColor = Styles.ErrorBoxForegroundColor.ToCairoColor ();
+								bgColor = Styles.KeyBindingsPanel.KeyConflictBackgroundColor.ToCairoColor ();
+								fgColor = Styles.KeyBindingsPanel.KeyConflictForegroundColor.ToCairoColor ();
 							} else if (keyBindingsPanel.duplicates.ContainsKey (key)) {
-								bgColor = Styles.WarningBoxBackgroundColor.ToCairoColor ();
-								fgColor = Styles.WarningBoxForegroundColor.ToCairoColor ();
+								bgColor = Styles.KeyBindingsPanel.KeyDuplicateBackgroundColor.ToCairoColor ();
+								fgColor = Styles.KeyBindingsPanel.KeyDuplicateForegroundColor.ToCairoColor ();
 							} else {
-								bgColor = Styles.PopoverWindow.DefaultBackgroundColor.ToCairoColor ();
-								fgColor = Styles.PopoverWindow.DefaultTextColor.ToCairoColor ();
+								bgColor = Styles.KeyBindingsPanel.KeyBackgroundColor.ToCairoColor ();
+								fgColor = Styles.KeyBindingsPanel.KeyForegroundColor.ToCairoColor ();
 							}
 
 							layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
