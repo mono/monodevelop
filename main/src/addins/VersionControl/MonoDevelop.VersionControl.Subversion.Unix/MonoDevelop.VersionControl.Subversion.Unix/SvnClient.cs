@@ -1128,7 +1128,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return TextFile.ReadFile (sourcefile, data).Text;
 				// This outputs the contents of the base revision
 				// of a file to a stream.
-			} catch (SubversionException e) {
+			} catch (SubversionException) {
 				// This occurs when we don't have a base file for
 				// the target file. We have no way of knowing if
 				// a file has a base version therefore this will do.
@@ -1253,11 +1253,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static string BytesToSize (long kbytes)
 		{
 			if (kbytes < 1024)
-				return String.Format ("{0} KBytes", kbytes);
+				return GettextCatalog.GetString ("{0} KBytes", kbytes);
 			// 16 * 1024
 			if (kbytes < 16384)
-				return String.Format ("{0:0.0} MBytes", kbytes / 1024.0);
-			return String.Format ("{0} MBytes", kbytes / 1024);
+				return GettextCatalog.GetString ("{0:0.0} MBytes", kbytes / 1024.0);
+			return GettextCatalog.GetString ("{0} MBytes", kbytes / 1024);
 		}
 
 		ProgressData progressData;
@@ -1540,7 +1540,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			try {
 				localpool = TryStartOperation (null);
 				CheckError (svn.client_upgrade (path, ctx, localpool));
-			} catch (Exception e) {
+			} catch (Exception) {
 				tryParent = true;
 			} finally {
 				TryEndOperation (localpool);

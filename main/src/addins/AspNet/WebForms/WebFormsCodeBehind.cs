@@ -77,7 +77,7 @@ namespace MonoDevelop.AspNet.WebForms
 			//parse the ASP.NET file
 			var parsedDocument = TypeSystemService.ParseFile (project, file.FilePath).Result as WebFormsParsedDocument;
 			if (parsedDocument == null) {
-				result.AddError (string.Format ("Failed to parse file '{0}'", file.Name));
+				result.AddError (GettextCatalog.GetString ("Failed to parse file '{0}'", file.Name));
 				return result;
 			}
 
@@ -162,7 +162,7 @@ namespace MonoDevelop.AspNet.WebForms
 					LoggingService.LogWarning ("Error resolving master page type", ex);
 				}
 				if (string.IsNullOrEmpty (masterTypeName)) {
-					var msg = string.Format ("Could not find type for master '{0}'", document.Info.MasterPageTypeVPath);
+					var msg = GettextCatalog.GetString ("Could not find type for master '{0}'", document.Info.MasterPageTypeVPath);
 					result.AddError (filename, msg);
 					return result;
 				}

@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				var padColor = Gui.Styles.PadBackground.ToHexString (false);
 				var hoverColor = Gui.Styles.DockBarPrelightColor.ToHexString (false);
 
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 					BackgroundColor = bgColor;
 					InnerShadowColor = bgColor;
 

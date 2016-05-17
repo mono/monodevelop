@@ -16,6 +16,7 @@ using System.Web.Razor.Generator;
 using System.Web.Razor.Parser;
 using System.Web.Razor.Parser.SyntaxTree;
 using System.Web.Razor.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Razor.Generator
 {
@@ -41,7 +42,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 				if (split.Length == 1) {
 					return new PropertyCodeGenerator (split[0], "Model");
 				}
-				Context.OnError (l, string.Format ("The '{0}' directive requires exactly one argument", ModelKeyword));
+				Context.OnError (l, GettextCatalog.GetString ("The '{0}' directive requires exactly one argument", ModelKeyword));
 				return null;
 			});
 		}
@@ -53,7 +54,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 				if (split.Length == 2) {
 					return new PropertyCodeGenerator (split[0], split[1]);
 				}
-				Context.OnError (l, string.Format ("The '{0}' directive requires exactly two arguments", PropertyKeyword));
+				Context.OnError (l, GettextCatalog.GetString ("The '{0}' directive requires exactly two arguments", PropertyKeyword));
 				return null;
 			});
 		}
@@ -63,7 +64,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 			ValueDirective (ClassKeyword, true, (s, l) => {
 				var split = GetArgumentWords (s);
 				if (split.Length != 1 && split.Length != 2) {
-					Context.OnError (l, string.Format ("The '{0}' directive requires one or two arguments", ClassKeyword));
+					Context.OnError (l, GettextCatalog.GetString ("The '{0}' directive requires one or two arguments", ClassKeyword));
 					return null;
 				}
 				string name = null, access = null;
@@ -74,7 +75,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 				}
 				if (split.Length == 2) {
 					if (access == null) {
-						string err = "If '{0}' directive has two arguments, the first must be 'public' or 'internal'.";
+						string err = GettextCatalog.GetString ("If '{0}' directive has two arguments, the first must be 'public' or 'internal'.");
 						Context.OnError (l, string.Format (err, ClassKeyword));
 						return null;
 					}
@@ -97,12 +98,12 @@ namespace MonoDevelop.AspNet.Razor.Generator
 			if (checkOne && !directives.Add (keyword)) {
 				Context.OnError (
 					CurrentLocation,
-					string.Format ("Only one '{0}' directive is permitted", keyword)
+					GettextCatalog.GetString ("Only one '{0}' directive is permitted", keyword)
 					);
 			}
 			SourceLocation location = CurrentLocation;
 			BaseTypeDirective (
-				string.Format ("The '{0}' directive must have a value", keyword),
+				GettextCatalog.GetString ("The '{0}' directive must have a value", keyword),
 				s => s != null ? valueParsed (s, location) : null
 			);
 		}

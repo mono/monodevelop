@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 #endif
 
-		void SetIconCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
+		static void SetIconCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
 		{
 			if (model == null)
 				return;
@@ -317,7 +317,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			cell.OverlayTopRight = info.OverlayTopRight;
 		}
 
-		void SetTextCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
+		static void SetTextCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
 		{
 			if (model == null)
 				return;
@@ -325,10 +325,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (CustomCellRendererText)renderer;
 
-			if (info.DisabledStyle)
-				cell.TextMarkup = "<span foreground='gray'>" + info.Label + "</span>";
-			else
-				cell.TextMarkup = info.Label;
+			cell.DisabledStyle = info.DisabledStyle;
+			cell.TextMarkup = info.Label;
 
 			cell.StatusIcon = info.StatusIconInternal;
 		}
@@ -538,15 +536,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
 			HideStatusMessage ();
-		}
-
-		void HandleMenuHidden (object sender, EventArgs e)
-		{
-			if (sender is Gtk.Menu) {
-				((Gtk.Menu)sender).Hidden -= HandleMenuHidden;
-			}
-			text_render.Pushed = false;
-			widget.QueueDraw ();
 		}
 
 		internal void LockUpdates ()
@@ -2386,6 +2375,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				set { Markup = markup = value; }
 			}
 
+			public bool DisabledStyle { get; set; }
+
 			[GLib.Property ("status-icon")]
 			public Xwt.Drawing.Image StatusIcon { get; set; }
 
@@ -2419,7 +2410,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				return icon.WithSize (size);
 			}
 
-			void SetupLayout (Gtk.Widget widget)
+			void SetupLayout (Gtk.Widget widget, Gtk.CellRendererState flags = 0)
 			{
 				if (scaledFont == null) {
 					if (scaledFont != null)
@@ -2437,7 +2428,15 @@ namespace MonoDevelop.Ide.Gui.Components
 					layout.FontDescription = scaledFont;
 				}
 
-				layout.SetMarkup (TextMarkup);
+				if (DisabledStyle) {
+					Gdk.Color fgColor;
+					if (Platform.IsMac && flags.HasFlag (Gtk.CellRendererState.Selected)) 
+						fgColor = widget.Style.Text (IdeTheme.UserInterfaceTheme == Theme.Light ? Gtk.StateType.Selected : Gtk.StateType.Normal);
+					else
+						fgColor = widget.Style.Text (Gtk.StateType.Insensitive);
+					layout.SetMarkup ("<span foreground='" + fgColor.GetHex () + "'>" + TextMarkup + "</span>");
+				} else
+					layout.SetMarkup (TextMarkup);
 			}
 
 			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
@@ -2452,7 +2451,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if ((flags & Gtk.CellRendererState.Selected) != 0)
 					st = widget.HasFocus ? Gtk.StateType.Selected : Gtk.StateType.Active;
 
-				SetupLayout (widget);
+				SetupLayout (widget, flags);
 
 				int w, h;
 				layout.GetPixelSize (out w, out h);

@@ -156,37 +156,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return referencedSegment.Reference.ToString ();
 		}
 
-		class FastNonInterningProvider : InterningProvider
-		{
-			Dictionary<string, string> stringDict = new Dictionary<string, string>();
 
-			public override string Intern (string text)
-			{
-				if (text == null)
-					return null;
-
-				string output;
-				if (stringDict.TryGetValue(text, out output))
-					return output;
-				stringDict [text] = text;
-				return text;
-			}
-
-			public override ISupportsInterning Intern (ISupportsInterning obj)
-			{
-				return obj;
-			}
-
-			public override IList<T> InternList<T>(IList<T> list)
-			{
-				return list;
-			}
-
-			public override object InternValue (object obj)
-			{
-				return obj;
-			}
-		}
 
 		public AssemblyBrowserWidget ()
 		{
@@ -257,9 +227,6 @@ namespace MonoDevelop.AssemblyBrowser
 			languageCombobox.Active = Math.Min (2, Math.Max (0, PropertyService.Get ("AssemblyBrowser.Language", 0)));
 			languageCombobox.Changed += LanguageComboboxhandleChanged;
 #pragma warning disable 618
-			loader = new CecilLoader (true);
-			loader.InterningProvider = new FastNonInterningProvider ();
-			loader.IncludeInternalMembers = true;
 			TreeView = new AssemblyBrowserTreeView (new NodeBuilder[] { 
 				new ErrorNodeBuilder (),
 				new ProjectNodeBuilder (this),
@@ -498,9 +465,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (p == null)
 						continue;
 					AppendTypeReference (result, p.Type);
-					if (p.IsOut)
-						result.Append ("&");
-					if (p.IsRef) {
+					if (p.IsRef || p.IsOut) {
 						result.Append ("@");
 					}
 				}
@@ -1387,7 +1352,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		void OpenFromAssembly (string url, AssemblyLoader currentAssembly, bool expandNode = true)
 		{
-			var cecilObject = loader.GetCecilObject (currentAssembly.UnresolvedAssembly);
+			var cecilObject = currentAssembly.CecilLoader.GetCecilObject (currentAssembly.UnresolvedAssembly);
 			if (cecilObject == null)
 				return;
 
@@ -1426,7 +1391,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			var tasks = new List<Task> ();
 			foreach (var definition in definitions.ToArray ()) {
-				var cecilObject = loader.GetCecilObject (definition.UnresolvedAssembly);
+				var cecilObject = definition.CecilLoader.GetCecilObject (definition.UnresolvedAssembly);
 				if (cecilObject == null) {
 					LoggingService.LogWarning ("Assembly browser: Can't find assembly: " + definition.UnresolvedAssembly.FullAssemblyName + ".");
 					continue;
@@ -1474,7 +1439,7 @@ namespace MonoDevelop.AssemblyBrowser
 			AssemblyDefinition cu = null;
 			foreach (var unit in definitions) {
 				if (unit.UnresolvedAssembly.AssemblyName == fileName)
-					cu = loader.GetCecilObject (unit.UnresolvedAssembly);
+					cu = unit.CecilLoader.GetCecilObject (unit.UnresolvedAssembly);
 			}
 			if (cu == null)
 				return;
@@ -1558,7 +1523,6 @@ namespace MonoDevelop.AssemblyBrowser
 				this.UIManager = null;
 			}
 
-			this.loader = null;
 			this.languageCombobox.Changed -= LanguageComboboxhandleChanged;
 //			this.searchInCombobox.Changed -= SearchInComboboxhandleChanged;
 //			this.searchEntry.Changed -= SearchEntryhandleChanged;
@@ -1576,13 +1540,7 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		CecilLoader loader;
-		internal CecilLoader CecilLoader {
-			get {
-				return loader;
-			}
-		} 
-		
+
 		List<AssemblyLoader> definitions = new List<AssemblyLoader> ();
 		List<Project> projects = new List<Project> ();
 		

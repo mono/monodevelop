@@ -1540,7 +1540,7 @@ namespace Mono.TextEditor
 
 				//	int yMargin = 1 * this.LineHeight;
 				double caretPosition = editor.TextArea.LineToY (p.Line);
-				caretPosition -= editor.TextArea.textEditorData.VAdjustment.PageSize / 2;
+				caretPosition -= editor.TextArea.textEditorData.VAdjustment.PageSize / 3;
 
 				// Make sure the caret position is inside the bounds. This avoids an unnecessary bump of the scrollview.
 				// The adjustment does this check, but does it after assigning the value, so the value may be out of bounds for a while.

@@ -127,5 +127,10 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return false;
 			return Line.Offset == other.Offset && Line.Length == other.Length;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[DocumentLineWrapper: Line={0}]", Line);
+		}
 	}
 }

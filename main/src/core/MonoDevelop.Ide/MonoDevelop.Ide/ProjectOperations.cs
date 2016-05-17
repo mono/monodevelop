@@ -269,8 +269,8 @@ namespace MonoDevelop.Ide
 				if (metadataDllName == "CommonLanguageRuntimeLibrary")
 					metadataDllName = "corlib.dll";
 				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
-					if (assembly.IndexOf (metadataDllName) > 0) {
-						fileName = dn.GetAbsoluteChildPath (assembly);
+					if (assembly.FilePath.ToString ().IndexOf (metadataDllName, StringComparison.Ordinal) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
 					}
 				}
@@ -311,8 +311,11 @@ namespace MonoDevelop.Ide
 			
 			if (askIfMultipleLocations && locations.Length > 1) {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					foreach (var part in locations)
+					foreach (var part in locations) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							return;
 						monitor.ReportResult (GetJumpTypePartSearchResult (symbol, part));
+					}
 				}
 				return;
 			}
@@ -331,8 +334,8 @@ namespace MonoDevelop.Ide
 			var dn = project as DotNetProject;
 			if (dn != null) {
 				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
-					if (assembly.IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
-						fileName = dn.GetAbsoluteChildPath (assembly);
+					if (assembly.FilePath.ToString ().IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
 					}
 				}

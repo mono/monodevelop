@@ -149,31 +149,33 @@ namespace MonoDevelop.Ide.CodeTemplates
 			CodeTemplateService.Templates = templates;
 		}
 		
-		void RenderIcon (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		static void RenderIcon (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			CodeTemplate template = (CodeTemplate)templateStore.GetValue (iter, 0);
-			
+			CodeTemplate template = (CodeTemplate)model.GetValue (iter, 0);
+
+			var cri = (CellRendererImage)cell;
 			if (template == null) {
-				pixbufCellRenderer.Image = ImageService.GetIcon (treeviewCodeTemplates.GetRowExpanded (templateStore.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
+				cri.Image = ImageService.GetIcon (((TreeView)column.TreeView).GetRowExpanded (model.GetPath (iter)) ? MonoDevelop.Ide.Gui.Stock.OpenFolder : MonoDevelop.Ide.Gui.Stock.ClosedFolder, IconSize.Menu);
 			} else {
-				pixbufCellRenderer.Image = ImageService.GetIcon (template.Icon, IconSize.Menu);
+				cri.Image = ImageService.GetIcon (template.Icon, IconSize.Menu);
 			}
 				
 		}
 		
 		void RenderTemplateName (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			CodeTemplate template = (CodeTemplate)templateStore.GetValue (iter, 0);
+			CodeTemplate template = (CodeTemplate)model.GetValue (iter, 0);
+			var crt = (CellRendererText)cell;
 			if (template == null) {
-				templateCellRenderer.Markup = (string)templateStore.GetValue (iter, 2);
+				crt.Markup = (string)model.GetValue (iter, 2);
 				return;
 			}
 			
-			if (treeviewCodeTemplates.Selection.IterIsSelected (iter)) {
-				templateCellRenderer.Markup = GLib.Markup.EscapeText (template.Shortcut) + " (" + 
+			if (((TreeView)column.TreeView).Selection.IterIsSelected (iter)) {
+				crt.Markup = GLib.Markup.EscapeText (template.Shortcut) + " (" + 
 					GLib.Markup.EscapeText (GettextCatalog.GetString (template.Description)) + ")";
 			} else {
-				templateCellRenderer.Markup =  GLib.Markup.EscapeText (template.Shortcut) + " <span foreground=\"" + 
+				crt.Markup =  GLib.Markup.EscapeText (template.Shortcut) + " <span foreground=\"" + 
 					GetColorString (Style.Text (StateType.Insensitive)) + "\">(" 
 					+ GLib.Markup.EscapeText (GettextCatalog.GetString (template.Description)) + ")</span>";
 			}

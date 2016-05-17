@@ -61,7 +61,7 @@ namespace MonoDevelop.Debugger
 			ExceptionCaughtDialog = new ExceptionCaughtDialogStyle ();
 			ExceptionCaughtDialog.TreeBackgroundColor = Ide.Gui.Styles.BrowserPadBackground;
 
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#5294eb");
 				ObjectValueTreeValuesButtonBorder = Color.FromName ("#5294eb");

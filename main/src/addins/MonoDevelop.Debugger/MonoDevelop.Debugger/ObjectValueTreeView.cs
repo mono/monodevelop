@@ -329,26 +329,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (evaluateStatusCell, "image", EvaluateStatusIconColumn);
 			var crColorPreview = new CellRendererColorPreview ();
 			valueCol.PackStart (crColorPreview, false);
-			valueCol.SetCellDataFunc (crColorPreview, new TreeCellDataFunc ((tree_column, cell, model, iter) => {
-				var val = (ObjectValue) model.GetValue (iter, ObjectColumn);
-				Xwt.Drawing.Color? color;
-
-				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val)) {
-					try {
-						color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
-					} catch (Exception) {
-						color = null;
-					}
-				} else {
-					color = null;
-				}
-				if (color != null) {
-					((CellRendererColorPreview) cell).Color = (Xwt.Drawing.Color) color;
-					cell.Visible = true;
-				} else {
-					cell.Visible = false;
-				}
-			}));
+			valueCol.SetCellDataFunc (crColorPreview, ValueDataFunc);
 			crpButton = new CellRendererRoundedButton ();
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
@@ -416,6 +397,28 @@ namespace MonoDevelop.Debugger
 			horizontal_separator = (int)this.StyleGetProperty ("horizontal-separator");
 			grid_line_width = (int)this.StyleGetProperty ("grid-line-width");
 			focus_line_width = (int)this.StyleGetProperty ("focus-line-width") * 2;//we just use *2 version in GetMaxWidth
+		}
+
+		static void ValueDataFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			var val = (ObjectValue)model.GetValue (iter, ObjectColumn);
+			Xwt.Drawing.Color? color;
+
+			if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val)) {
+				try {
+					color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
+				} catch (Exception) {
+					color = null;
+				}
+			} else {
+				color = null;
+			}
+			if (color != null) {
+				((CellRendererColorPreview)cell).Color = (Xwt.Drawing.Color)color;
+				cell.Visible = true;
+			} else {
+				cell.Visible = false;
+			}
 		}
 
 		int expanderSize;

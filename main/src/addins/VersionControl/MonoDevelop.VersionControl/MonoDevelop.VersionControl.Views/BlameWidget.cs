@@ -602,7 +602,7 @@ namespace MonoDevelop.VersionControl.Views
 					foreach (Revision rev in history) {
 						if (rev == annotation.Revision) {
 							if (tooltip && annotation.HasEmail)
-								return String.Format ("Email: {0}{1}{2}", annotation.Email, Environment.NewLine, rev.Message);
+								return GettextCatalog.GetString ("Email: {0}{1}{2}", annotation.Email, Environment.NewLine, rev.Message);
 							return rev.Message;
 						}
 					}

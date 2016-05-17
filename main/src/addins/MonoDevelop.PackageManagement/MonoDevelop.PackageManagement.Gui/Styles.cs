@@ -53,7 +53,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static void LoadStyles ()
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				CellBackgroundColor = Ide.Gui.Styles.PadBackground;
 			} else {
 				CellBackgroundColor = Xwt.Drawing.Color.FromName ("#3c3c3c");

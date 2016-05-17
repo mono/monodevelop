@@ -29,6 +29,7 @@ using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl
 {
@@ -71,10 +72,10 @@ namespace MonoDevelop.VersionControl
 			if (format == null)
 				return;
 			ChangeLogWriter writer = new ChangeLogWriter ("./", uinfo);
-			string msg = "My changes made additional changes. This is sample documentation.";
-			writer.AddFile (msg, "./somedir/myfile.ext");
-			writer.AddFile (msg, "./yourfile.ext");
-			writer.AddFile ("Some additional changes on another file of the project.", "./otherfile.ext");
+			string msg = GettextCatalog.GetString ("My changes made additional changes. This is sample documentation.");
+			writer.AddFile (msg, GettextCatalog.GetString ("./somedir/myfile.ext"));
+			writer.AddFile (msg, GettextCatalog.GetString ("./yourfile.ext"));
+			writer.AddFile (GettextCatalog.GetString ("Some additional changes on another file of the project."), GettextCatalog.GetString ("./otherfile.ext"));
 			format.MaxColumns = 60;
 			writer.MessageFormat = format;
 			

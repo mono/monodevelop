@@ -551,6 +551,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void DisposeDocument ()
 		{
 			UnsubscibeAnalysisdocument ();
+			UnsubscribeRoslynWorkspace ();
 			UnloadAdhocProject ();
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -789,14 +790,24 @@ namespace MonoDevelop.Ide.Gui
 
 		Task EnsureAnalysisDocumentIsOpen ()
 		{
-			if (analysisDocument != null)
-				return SpecializedTasks.EmptyTask;
+			if (analysisDocument != null) {
+				Microsoft.CodeAnalysis.Document doc;
+				try {
+					 doc = RoslynWorkspace.CurrentSolution.GetDocument (analysisDocument);
+				} catch (Exception) {
+					doc = null;
+				}
+				if (doc != null)
+					return SpecializedTasks.EmptyTask;
+			}
 			if (Editor == null) {
 				UnsubscibeAnalysisdocument ();
 				return SpecializedTasks.EmptyTask;
 			}
 			if (Project != null && Editor.MimeType == "text/x-csharp" && !IsUnreferencedSharedProject(Project)) {
+				UnsubscribeRoslynWorkspace ();
 				RoslynWorkspace = TypeSystemService.GetWorkspace (this.Project.ParentSolution);
+				SubscribeRoslynWorkspace ();
 				analysisDocument = TypeSystemService.GetDocumentId (this.Project, this.FileName);
 				if (analysisDocument != null) {
 					TypeSystemService.InformDocumentOpen (analysisDocument, Editor);
@@ -832,7 +843,9 @@ namespace MonoDevelop.Ide.Gui
 						return TypeSystemService.Load (adhocSolution, new ProgressMonitor (), token).ContinueWith (task => {
 							if (token.IsCancellationRequested)
 								return;
+							UnsubscribeRoslynWorkspace ();
 							RoslynWorkspace = task.Result.FirstOrDefault(); // 1 solution loaded ->1 workspace as result
+							SubscribeRoslynWorkspace ();
 							analysisDocument = TypeSystemService.GetDocumentId (RoslynWorkspace, newProject, adHocFile);
 							TypeSystemService.InformDocumentOpen (RoslynWorkspace, analysisDocument, Editor);
 						});
@@ -840,6 +853,27 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 			return SpecializedTasks.EmptyTask;
+		}
+
+		void UnsubscribeRoslynWorkspace ()
+		{
+			var ws = RoslynWorkspace as MonoDevelopWorkspace;
+			if (ws != null) {
+				ws.ProjectReloaded -= HandleRoslynProjectReload;
+			}
+		}
+
+		void SubscribeRoslynWorkspace ()
+		{
+			var ws = RoslynWorkspace as MonoDevelopWorkspace;
+			if (ws != null) {
+				ws.ProjectReloaded += HandleRoslynProjectReload;
+			}
+		}
+
+		void HandleRoslynProjectReload (object sender, RoslynProjectEventArgs e)
+		{
+			StartReparseThread ();
 		}
 
 		bool IsUnreferencedSharedProject (Project project)

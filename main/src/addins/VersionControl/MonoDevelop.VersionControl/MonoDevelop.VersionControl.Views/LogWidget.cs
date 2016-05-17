@@ -719,7 +719,7 @@ namespace MonoDevelop.VersionControl.Views
 			} else
 				currentRevisionShortened = false;
 			
-			labelRevision.Text = GettextCatalog.GetString ("revision: {0}", rev);
+			labelRevision.Text = GettextCatalog.GetString ("Revision: {0}", rev);
 			textviewDetails.Buffer.Text = d.Message;
 			
 			if (select) {
@@ -789,7 +789,7 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			if (currentRevisionShortened) {
 				Revision d = SelectedRevision;
-				labelRevision.Text = GettextCatalog.GetString ("revision: {0}", d.Name);
+				labelRevision.Text = GettextCatalog.GetString ("Revision: {0}", d.Name);
 				currentRevisionShortened = false;
 			}
 		}

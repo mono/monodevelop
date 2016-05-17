@@ -560,6 +560,7 @@
     <Compile Include="MonoDevelop.Core.Execution\BinaryMessage.cs" />
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessConnection.cs" />
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessServer.cs" />
+    <Compile Include="MonoDevelop.Projects\AssemblyReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -50,6 +50,8 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
+using System.Runtime.InteropServices;
+using ObjCRuntime;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -283,7 +285,7 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			PatchGtkTheme ();
-			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Runtime.RunInMainThread (
+			NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
 				delegate {
 					Styles.LoadStyle();
 					PatchGtkTheme();
@@ -398,7 +400,7 @@ namespace MonoDevelop.MacIntegration
 					//OpenFiles may pump the mainloop, but can't do that from an AppleEvent, so use a brief timeout
 					GLib.Timeout.Add (10, delegate {
 						IdeApp.OpenFiles (e.Documents.Select (
-							doc => new FileOpenInformation (doc.Key, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
+							doc => new FileOpenInformation (doc.Key, null, doc.Value, 1, OpenDocumentOptions.DefaultInternal))
 						);
 						return false;
 					});
@@ -424,7 +426,7 @@ namespace MonoDevelop.MacIntegration
 								if (!Int32.TryParse (qs ["column"], out column))
 									column = 1;
 
-								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
+								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath), null,
 									line, column, OpenDocumentOptions.DefaultInternal);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
@@ -446,6 +448,9 @@ namespace MonoDevelop.MacIntegration
 				setupFail = true;
 			}
 		}
+
+		[DllImport ("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
+		public extern static IntPtr IntPtr_objc_msgSend_IntPtr (IntPtr receiver, IntPtr selector, IntPtr arg1);
 
 		static void SetupDockIcon ()
 		{
@@ -470,7 +475,11 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			if (File.Exists (iconFile)) {
-				NSApplication.SharedApplication.ApplicationIconImage = new NSImage (iconFile);
+				var image = new NSImage ();
+				var imageFile = new NSString (iconFile);
+
+				IntPtr p = IntPtr_objc_msgSend_IntPtr (image.Handle, Selector.GetHandle ("initByReferencingFile:"), imageFile.Handle);
+				NSApplication.SharedApplication.ApplicationIconImage = ObjCRuntime.Runtime.GetNSObject<NSImage> (p);
 			}
 		}
 

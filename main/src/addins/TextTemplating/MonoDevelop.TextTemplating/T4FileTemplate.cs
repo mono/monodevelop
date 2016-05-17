@@ -67,7 +67,7 @@ namespace MonoDevelop.TextTemplating
 					foreach (var err in host.Errors)
 						LoggingService.LogError ("Error in template generator: {0}", err.ToString());
 					var firstError = host.Errors.OfType<CompilerError> ().First (f => !f.IsWarning);
-					throw new Exception ("Failed to generate file: " + firstError.ErrorText);
+					throw new Exception (GettextCatalog.GetString ("Failed to generate file: {0}", firstError.ErrorText));
 				}
 				return output;
 			}

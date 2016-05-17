@@ -238,9 +238,9 @@ namespace MonoDevelop.Projects
 					foreach (FilePath f in newFiles) {
 						if (!f.IsChildPathOf (resolvedTargetPath)) {
 							if (obj is Solution)
-								monitor.ReportError ("The solution '" + obj.Name + "' is referencing the file '" + f.FileName + "' which is located outside the root solution directory.", null);
+								monitor.ReportError (GettextCatalog.GetString ("The solution '{0}' is referencing the file '{1}' which is located outside the root solution directory.", obj.Name, f.FileName), null);
 							else
-								monitor.ReportError ("The project '" + obj.Name + "' is referencing the file '" + f.FileName + "' which is located outside the project directory.", null);
+								monitor.ReportError (GettextCatalog.GetString ("The project '{0}' is referencing the file '{1}' which is located outside the project directory.", obj.Name, f.FileName), null);
 						}
 						oldFiles.Remove (f);
 					}
@@ -308,9 +308,9 @@ namespace MonoDevelop.Projects
 					if (ignoreExternalFiles)
 						continue;
 					if (obj is Solution)
-						monitor.ReportError ("The solution '" + obj.Name + "' is referencing the file '" + Path.GetFileName (file) + "' which is located outside the root solution directory.", null);
+						monitor.ReportError (GettextCatalog.GetString ("The solution '{0}' is referencing the file '{1}' which is located outside the root solution directory.", obj.Name, Path.GetFileName (file)), null);
 					else
-						monitor.ReportError ("The project '" + obj.Name + "' is referencing the file '" + Path.GetFileName (file) + "' which is located outside the project directory.", null);
+						monitor.ReportError (GettextCatalog.GetString ("The project '{0}' is referencing the file '{1}' which is located outside the project directory.", obj.Name, Path.GetFileName (file)), null);
 					return false;
 				}
 

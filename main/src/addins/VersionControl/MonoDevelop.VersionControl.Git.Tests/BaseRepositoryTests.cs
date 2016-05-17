@@ -651,6 +651,23 @@ namespace MonoDevelop.VersionControl.Tests
 
 			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache).Status);
 		}
+
+		[Test]
+		public virtual void MoveAndMoveBackCaseOnly ()
+		{
+			string srcFile = LocalPath.Combine ("testfile");
+			string dstFile = LocalPath.Combine ("TESTFILE");
+			AddFile ("testfile", "test", true, true);
+
+			Repo.MoveFile (srcFile, dstFile, true, new ProgressMonitor ());
+			Assert.AreEqual (VersionStatus.ScheduledAdd, Repo.GetVersionInfo (dstFile, VersionInfoQueryFlags.IgnoreCache).Status & VersionStatus.ScheduledAdd);
+			Assert.AreEqual (VersionStatus.ScheduledDelete, Repo.GetVersionInfo (srcFile, VersionInfoQueryFlags.IgnoreCache).Status & VersionStatus.ScheduledDelete);
+
+			Repo.MoveFile (dstFile, srcFile, true, new ProgressMonitor ());
+			Assert.AreEqual (VersionStatus.Unversioned, Repo.GetVersionInfo (dstFile, VersionInfoQueryFlags.IgnoreCache).Status);
+			Assert.AreEqual (VersionStatus.Versioned, Repo.GetVersionInfo (srcFile, VersionInfoQueryFlags.IgnoreCache).Status);
+			
+		}
 		#region Util
 
 		protected void Checkout (string path, string url)

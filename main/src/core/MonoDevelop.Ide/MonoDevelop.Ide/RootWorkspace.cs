@@ -362,30 +362,34 @@ namespace MonoDevelop.Ide
 		internal bool Close (bool saveWorkspacePreferencies, bool closeProjectFiles)
 		{
 			if (Items.Count > 0) {
-				
-				// Request permission for unloading the items
-				foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
-					if (!RequestItemUnload (it))
-						return false;
-				}
-				
-				if (saveWorkspacePreferencies)
-					SavePreferences ();
-
-				if (closeProjectFiles) {
-					foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
-						if (!doc.Close ())
+				ITimeTracker timer = Counters.CloseWorkspaceTimer.BeginTiming ();
+				try {
+					// Request permission for unloading the items
+					foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
+						if (!RequestItemUnload (it))
 							return false;
 					}
-				}
-				
-				foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
-					try {
-						Items.Remove (it);
-						it.Dispose ();
-					} catch (Exception ex) {
-						MessageService.ShowError (GettextCatalog.GetString ("Could not close solution '{0}'.", it.Name), ex);
+
+					if (saveWorkspacePreferencies)
+						SavePreferences ();
+
+					if (closeProjectFiles) {
+						foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
+							if (!doc.Close ())
+								return false;
+						}
 					}
+
+					foreach (WorkspaceItem it in new List<WorkspaceItem> (Items)) {
+						try {
+							Items.Remove (it);
+							it.Dispose ();
+						} catch (Exception ex) {
+							MessageService.ShowError (GettextCatalog.GetString ("Could not close solution '{0}'.", it.Name), ex);
+						}
+					}
+				} finally {
+					timer.End ();
 				}
 			}
 			return true;

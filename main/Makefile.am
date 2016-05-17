@@ -117,7 +117,7 @@ run: run-sgen
 endif
 
 run-bundle: $(PROGRAM)
-	$(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect
+	LANG= LC_ALL= $(MD_LAUNCH_SETUP) $(MD_LAUNCH_EXTRA_ENV) $(MD_BIN_PATH)/MonoDevelop --no-redirect
 run-64: run-sgen-64
 
 run-boehm: runmd
