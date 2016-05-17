@@ -112,6 +112,22 @@ $
 			Assert.AreEqual (indentString, engine.ThisLineIndent);
 			Assert.AreEqual (indentString, engine.NextLineIndent);
 		}
+
+		/// <summary>
+		/// Bug 40892 - json indenter should not indent multi-line strings
+		/// </summary>
+		[Test]
+		public void TestBug40892 ()
+		{
+			var engine = CreateEngine (
+				@"
+{
+	""test"":""
+$
+");
+			Assert.AreEqual ("", engine.ThisLineIndent);
+			Assert.AreEqual ("", engine.NextLineIndent);
+		}
 	}
 }
 
