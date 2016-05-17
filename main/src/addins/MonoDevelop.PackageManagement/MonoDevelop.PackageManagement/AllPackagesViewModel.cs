@@ -214,7 +214,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var loader = currentLoader ?? CreatePackageLoader ();
 			cancellationTokenSource = new CancellationTokenSource ();
-			loader.LoadNextAsync (null, cancellationTokenSource.Token)
+			LoadPackagesAsync (loader, cancellationTokenSource.Token)
 				.ContinueWith (t => OnPackagesRead (t, loader), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
@@ -236,6 +236,16 @@ namespace MonoDevelop.PackageManagement
 			currentLoader = loader;
 
 			return loader;
+		}
+
+		static async Task LoadPackagesAsync (PackageItemLoader loader, CancellationToken token)
+		{
+			await loader.LoadNextAsync (null, token);
+
+			while (loader.State.LoadingStatus == LoadingStatus.Loading) {
+				token.ThrowIfCancellationRequested ();
+				await loader.UpdateStateAsync (null, token);
+			}
 		}
 
 		void ClearError ()
