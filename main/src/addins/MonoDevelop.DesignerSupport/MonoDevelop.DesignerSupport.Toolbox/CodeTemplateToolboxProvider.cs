@@ -46,6 +46,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			var content = consumer as ViewContent;
 			if (content == null || !content.IsFile)
 				yield break;
+			// Hack: Ensure that this category is only filled if the current page is a text editor.
+			if (!(content is ITextEditorResolver))
+				yield break;
 			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (content.ContentName)) {
 				if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
 					continue;
