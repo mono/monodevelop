@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
@@ -51,6 +53,12 @@ namespace MonoDevelop.Projects
 				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
 			}
 		}
+
+		public IEnumerable<string> GetAliases ()
+		{
+			if (Aliases == null)
+				return Enumerable.Empty<string> ();
+			return Aliases.Split (',', ';');
+		}
 	}
 }
-
