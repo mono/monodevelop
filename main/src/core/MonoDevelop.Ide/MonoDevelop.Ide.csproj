@@ -7282,6 +7282,9 @@
     <EmbeddedResource Include="options\KeyBindingSchemeVisualStudio-mac.xml">
       <LogicalName>KeyBindingSchemeVisualStudio-mac.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="options\KeyBindingSchemeXCode.xml">
+      <LogicalName>KeyBindingSchemeXCode.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
