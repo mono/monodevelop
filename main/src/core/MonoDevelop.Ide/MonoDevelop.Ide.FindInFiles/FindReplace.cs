@@ -106,8 +106,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
 			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 150);
-			Stopwatch sw = new Stopwatch ();
-			sw.Start ();
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
@@ -179,8 +177,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				return results;
 			} finally {
 				monitor.EndTask ();
-				sw.Stop ();
-				Console.WriteLine ("Took:" + sw.ElapsedMilliseconds);
 				IsRunning = false;
 			}
 		}
