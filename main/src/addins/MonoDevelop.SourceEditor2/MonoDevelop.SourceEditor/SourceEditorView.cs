@@ -3399,6 +3399,11 @@ namespace MonoDevelop.SourceEditor
 			return new CurrentDebugLineTextMarker (TextEditor, offset, length);
 		}
 
+		ITextLineMarker ITextMarkerFactory.CreateCurrentMethodInfoMarker ()
+		{
+			return new MethodInfoMarker ();
+		}
+
 		ITextLineMarker ITextMarkerFactory.CreateAsmLineMarker (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			return new AsmLineMarker ();

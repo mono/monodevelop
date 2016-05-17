@@ -62,6 +62,10 @@ namespace MonoDevelop.Ide.Editor
 			return editor.TextMarkerFactory.CreateMessageBubbleLineMarker (editor);
 		}
 
+		public static ITextLineMarker CreateCurrentMethodInfoMarker (TextEditor editor)
+		{
+			return editor.TextMarkerFactory.CreateCurrentMethodInfoMarker ();
+		}
 
 		#endregion
 

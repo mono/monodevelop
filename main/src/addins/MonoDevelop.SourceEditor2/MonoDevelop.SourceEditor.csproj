@@ -218,6 +218,7 @@
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\ImmutableTextTextSource.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchInSelectionMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DefaultAutoInsertBracketHandler.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\MethodInfoMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
