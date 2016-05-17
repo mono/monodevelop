@@ -423,7 +423,7 @@ namespace MonoDevelop.PackageManagement
 			try {
 				packageSourceChecker.Dispose ();
 			} finally {
-				PackageManagementServices.InitializeCredentialProvider ();
+				PackageManagementServices.InitializeCredentialService ();
 			}
 		}
 

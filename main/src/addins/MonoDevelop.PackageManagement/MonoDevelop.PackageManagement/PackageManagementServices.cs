@@ -51,6 +51,7 @@ namespace MonoDevelop.PackageManagement
 		static readonly UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		static readonly PackageManagementProjectOperations projectOperations;
 		static readonly PackageManagementWorkspace workspace;
+		static readonly PackageManagementCredentialService credentialService;
 		static readonly AnalyzerPackageMonitor analyzerPackageMonitor;
 
 		static PackageManagementServices()
@@ -81,32 +82,17 @@ namespace MonoDevelop.PackageManagement
 
 			workspace = new PackageManagementWorkspace ();
 
-			InitializeCredentialProvider();
+			credentialService = new PackageManagementCredentialService ();
+			credentialService.Initialize ();
+
 			PackageManagementBackgroundDispatcher.Initialize ();
 
 			//analyzerPackageMonitor = new AnalyzerPackageMonitor ();
 		}
-		
-		internal static void InitializeCredentialProvider()
-		{
-			HttpClient.DefaultCredentialProvider = CreateSettingsCredentialProvider (new MonoDevelopCredentialProvider ());
-		}
 
-		static SettingsCredentialProvider CreateSettingsCredentialProvider (ICredentialProvider credentialProvider)
+		internal static void InitializeCredentialService ()
 		{
-			ISettings settings = LoadSettings ();
-			var packageSourceProvider = new PackageSourceProvider (settings);
-			return new SettingsCredentialProvider(credentialProvider, packageSourceProvider);
-		}
-
-		static ISettings LoadSettings ()
-		{
-			try {
-				return Settings.LoadDefaultSettings (null, null, null);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unable to load NuGet.Config.", ex);
-			}
-			return NullSettings.Instance;
+			credentialService.Initialize ();
 		}
 
 		internal static PackageManagementOptions Options {
