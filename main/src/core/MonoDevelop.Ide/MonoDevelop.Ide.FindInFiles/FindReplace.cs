@@ -34,7 +34,6 @@ using Gtk;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
