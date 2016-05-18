@@ -126,6 +126,22 @@ namespace MonoDevelop.Components.MainToolbar
 		event EventHandler<HandledEventArgs> RuntimeChanged;
 	}
 
+	public interface ISearchResultsDisplay
+	{
+		void PositionResultsDisplay (Gtk.Widget anchor);
+		void ShowResultsDisplay ();
+		void HideResultsDisplay ();
+		void DestroyResultsDisplay ();
+		void UpdateResults (SearchPopupSearchPattern pattern);
+		bool ProcessKey (Xwt.Key key, Xwt.ModifierKeys mods);
+		void OpenFile ();
+
+		bool IsVisible { get; }
+		bool SearchForMembers { get; set; }
+
+		event EventHandler Destroyed;
+	}
+
 	/// <summary>
 	/// Interface which specificies the minimum working base of a Search Bar.
 	/// </summary>
@@ -196,6 +212,12 @@ namespace MonoDevelop.Components.MainToolbar
 		/// </summary>
 		/// <value>The placeholder message.</value>
 		string SearchPlaceholderMessage { set; }
+
+		/// <summary>
+		/// The control that displays the results
+		/// </summary>
+		/// <value>The search results display.</value>
+		ISearchResultsDisplay CreateSearchResultsDisplay ();
 	}
 
 	/// <summary>

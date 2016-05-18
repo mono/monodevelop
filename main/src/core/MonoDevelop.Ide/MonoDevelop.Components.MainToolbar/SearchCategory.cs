@@ -79,7 +79,13 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public abstract Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token);
 
-		public virtual void Initialize (PopoverWindow popupWindow)
+		[Obsolete]
+		public virtual void Initialize (PopoverWindow window)
+		{
+			
+		}
+
+		public virtual void Initialize ()
 		{
 			
 		}

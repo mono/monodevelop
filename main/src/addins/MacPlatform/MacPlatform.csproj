@@ -131,7 +131,6 @@
     <Compile Include="ExtendedTitleBarDialogBackend.cs" />
     <Compile Include="MainToolbar\MainToolbar.cs" />
     <Compile Include="MainToolbar\RunButton.cs" />
-    <Compile Include="MainToolbar\SearchBar.cs" />
     <Compile Include="MainToolbar\ButtonBar.cs" />
     <Compile Include="MainToolbar\SelectorView.cs" />
     <Compile Include="MainToolbar\StatusBar.cs" />
@@ -142,6 +141,11 @@
     <Compile Include="MainToolbar\MultiResImage.cs" />
     <Compile Include="MimeMapLoader.cs" />
     <Compile Include="ScreenMonitor.cs" />
+    <Compile Include="Searchlight\Searchlight.cs" />
+    <Compile Include="Searchlight\SearchlightResultsDisplay.cs" />
+    <Compile Include="Searchlight\ResultCategoryView.cs" />
+    <Compile Include="Searchlight\ResultView.cs" />
+    <Compile Include="MacInterop\NSViewDebugExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
