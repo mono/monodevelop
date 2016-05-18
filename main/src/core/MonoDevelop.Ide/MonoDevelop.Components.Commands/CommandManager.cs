@@ -437,7 +437,7 @@ namespace MonoDevelop.Components.Commands
 				if (newConflict)
 					SaveConflicts ();
 				if (KeyBindingFailed != null)
-					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}) has conflicts.", binding.ToString ())));
+					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}) has conflicts.", KeyBindingManager.BindingToDisplayLabel (binding.ToString (), false))));
 			}
 
 			if (dispatched)
