@@ -113,6 +113,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			schemes = new List<KeyBindingScheme> (KeyBindingService.Schemes);
 			schemeCombo.AppendText (GettextCatalog.GetString ("Custom"));
+			if (schemes.Count > 0) {
+				schemeCombo.RowSeparatorFunc = (TreeModel model, TreeIter iter) => {
+					if (model.GetValue (iter, 0) as string == "---")
+						return true;
+					return false;
+				};
+				schemeCombo.AppendText ("---");
+			}
 			
 			foreach (KeyBindingScheme s in schemes)
 				schemeCombo.AppendText (s.Name);
@@ -203,7 +211,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				for (int n=0; n<schemes.Count; n++) {
 					KeyBindingScheme s = schemes [n];
 					if (currentBindings.Equals (s.GetKeyBindingSet ())) {
-						schemeCombo.Active = n + 1;
+						schemeCombo.Active = n + 2;
 						return;
 					}
 				}
