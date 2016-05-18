@@ -229,7 +229,7 @@
 		<Scheme id="VS14MAC" _name = "Visual Studio 2015" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
 		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
-		<Scheme id="Xcode" _name = "XCode" resource="KeyBindingSchemeXCode.xml" forMac="true"/>
+		<Scheme id="Xcode" _name = "Xcode" resource="KeyBindingSchemeXcode.xml" forMac="true"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TaskList/View">

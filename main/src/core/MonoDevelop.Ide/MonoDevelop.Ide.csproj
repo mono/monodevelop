@@ -7282,8 +7282,8 @@
     <EmbeddedResource Include="options\KeyBindingSchemeVisualStudio-mac.xml">
       <LogicalName>KeyBindingSchemeVisualStudio-mac.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="options\KeyBindingSchemeXCode.xml">
-      <LogicalName>KeyBindingSchemeXCode.xml</LogicalName>
+    <EmbeddedResource Include="options\KeyBindingSchemeXcode.xml">
+      <LogicalName>KeyBindingSchemeXcode.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
