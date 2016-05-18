@@ -36,19 +36,41 @@ namespace MonoDevelop.PackageManagement
 	internal class ProjectTemplateSourceRepositoryProvider
 	{
 		ISourceRepositoryProvider provider;
+		List<SourceRepository> projectTemplateRepositories;
+		SourceRepository nugetSourceRepository;
 
 		public ProjectTemplateSourceRepositoryProvider ()
 		{
 			provider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var packageSource = new PackageSource (NuGetConstants.V3FeedUrl);
+			nugetSourceRepository = provider.CreateRepository (packageSource);
 		}
 
-		public IEnumerable<SourceRepository> GetRepositories ()
+		public IEnumerable<SourceRepository> GetRepositories (bool local = false)
 		{
-			return GetPackageSources ()
-				.Select (packageSource => provider.CreateRepository (packageSource));
+			foreach (SourceRepository sourceRepository in GetProjectTemplateRepositories ()) {
+				if (!local || sourceRepository.PackageSource.IsLocal) {
+					yield return sourceRepository;
+				}
+			}
+
+			if (!local) {
+				yield return nugetSourceRepository;
+			}
 		}
 
-		IEnumerable<PackageSource> GetPackageSources ()
+		IEnumerable<SourceRepository> GetProjectTemplateRepositories ()
+		{
+			if (projectTemplateRepositories == null) {
+				projectTemplateRepositories = GetProjectTemplatePackageSources ()
+					.Select (packageSource => provider.CreateRepository (packageSource))
+					.ToList ();
+			}
+
+			return projectTemplateRepositories;
+		}
+
+		IEnumerable<PackageSource> GetProjectTemplatePackageSources ()
 		{
 			var packageSources = new List<PackageSource> ();
 
@@ -56,16 +78,7 @@ namespace MonoDevelop.PackageManagement
 				packageSources.Add (node.CreatePackageSource ());
 			}
 
-			packageSources.Add (CreateDefaultPackageSource ());
-
 			return packageSources;
-		}
-
-		PackageSource CreateDefaultPackageSource ()
-		{
-			return new PackageSource (
-				RegisteredPackageSources.DefaultPackageSourceUrl,
-				RegisteredPackageSources.DefaultPackageSourceName);
 		}
 	}
 }

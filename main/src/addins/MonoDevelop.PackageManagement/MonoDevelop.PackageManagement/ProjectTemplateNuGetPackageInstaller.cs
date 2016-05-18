@@ -70,14 +70,13 @@ namespace MonoDevelop.PackageManagement
 		List<IPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			var repositoryProvider = new ProjectTemplateSourceRepositoryProvider ();
-			var repositories = repositoryProvider.GetRepositories ().ToList ();
 
 			var installPackageActions = new List<IPackageAction> ();
 
 			foreach (PackageReferencesForCreatedProject packageReferences in packageReferencesForCreatedProjects) {
 				var project = solution.GetAllProjects ().FirstOrDefault (p => p.Name == packageReferences.ProjectName) as DotNetProject;
 				if (project != null) {
-					installPackageActions.AddRange (CreateInstallPackageActions (project, packageReferences, repositories));
+					installPackageActions.AddRange (CreateInstallPackageActions (project, packageReferences, repositoryProvider));
 				}
 			}
 
@@ -87,10 +86,10 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<InstallNuGetPackageAction> CreateInstallPackageActions (
 			DotNetProject dotNetProject,
 			PackageReferencesForCreatedProject projectPackageReferences,
-			IEnumerable<SourceRepository> repositories)
+			ProjectTemplateSourceRepositoryProvider repositoryProvider)
 		{
 			foreach (ProjectTemplatePackageReference packageReference in projectPackageReferences.PackageReferences) {
-				var action = CreateInstallNuGetPackageAction (dotNetProject, repositories);
+				var action = CreateInstallNuGetPackageAction (dotNetProject, repositoryProvider, packageReference);
 				action.PackageId = packageReference.Id;
 				action.Version = GetPackageVersion (packageReference);
 
@@ -100,13 +99,32 @@ namespace MonoDevelop.PackageManagement
 
 		InstallNuGetPackageAction CreateInstallNuGetPackageAction (
 			DotNetProject dotNetProject,
-			IEnumerable<SourceRepository> repositories)
+			ProjectTemplateSourceRepositoryProvider repositoryProvider,
+			ProjectTemplatePackageReference packageReference)
 		{
+			var primaryRepositories = repositoryProvider.GetRepositories (packageReference.IsLocalPackage);
+			var secondaryRepositories = GetSecondaryRepositories (primaryRepositories, packageReference.IsLocalPackage);
+
 			return new InstallNuGetPackageAction (
-				repositories,
+				primaryRepositories,
+				secondaryRepositories,
 				PackageManagementServices.Workspace.GetSolutionManager (dotNetProject.ParentSolution),
 				new DotNetProjectProxy (dotNetProject),
 				new NuGetProjectContext ());
+		}
+
+		/// <summary>
+		/// If the package is a local package then we prevent NuGet from using online package sources
+		/// defined in the NuGet.Config file by using the returning the primaryRepositories. 
+		/// Returning null allows all enabled package sources to be used when resolving dependencies.
+		/// </summary>
+		static IEnumerable<SourceRepository> GetSecondaryRepositories (
+			IEnumerable<SourceRepository> primaryRepositories, bool local)
+		{
+			if (local) {
+				return primaryRepositories;
+			}
+			return null;
 		}
 
 		NuGetVersion GetPackageVersion (ProjectTemplatePackageReference packageReference)

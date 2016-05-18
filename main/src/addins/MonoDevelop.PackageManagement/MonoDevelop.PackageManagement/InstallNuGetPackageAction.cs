@@ -42,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 	internal class InstallNuGetPackageAction : INuGetPackageAction, IInstallNuGetPackageAction, INuGetProjectActionsProvider
 	{
 		List<SourceRepository> primarySources;
+		List<SourceRepository> secondarySources;
 		NuGetPackageManager packageManager;
 		NuGetProject project;
 		NuGetProjectContext context;
@@ -55,8 +56,26 @@ namespace MonoDevelop.PackageManagement
 			IDotNetProject dotNetProject,
 			NuGetProjectContext projectContext,
 			CancellationToken cancellationToken = default(CancellationToken))
+			: this (
+				primarySources,
+				null,
+				solutionManager,
+				dotNetProject,
+				projectContext,
+				cancellationToken)
+		{
+		}
+
+		public InstallNuGetPackageAction (
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject dotNetProject,
+			NuGetProjectContext projectContext,
+			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			this.primarySources = primarySources.ToList ();
+			this.secondarySources = secondarySources?.ToList ();
 			this.cancellationToken = cancellationToken;
 			this.dotNetProject = dotNetProject;
 			this.context = projectContext;
@@ -103,7 +122,7 @@ namespace MonoDevelop.PackageManagement
 				CreateResolutionContext (),
 				context,
 				primarySources,
-				null,
+				secondarySources,
 				cancellationToken);
 
 			if (LicensesMustBeAccepted) {

@@ -36,13 +36,16 @@ namespace MonoDevelop.Ide.Templates
 			return new ProjectTemplatePackageReference {
 				Id = GetAttribute (xmlElement, "id"),
 				Version = GetAttribute (xmlElement, "version"),
-				CreateCondition = GetAttribute (xmlElement, "if")
+				CreateCondition = GetAttribute (xmlElement, "if"),
+				IsLocalPackage = GetBoolAttribute (xmlElement, "local")
 			};
 		}
 
 		public string Id { get; private set; }
 		public string Version { get; private set; }
 		public string CreateCondition { get; private set; }
+
+		internal bool IsLocalPackage { get; private set; }
 
 		static string GetAttribute (XmlElement xmlElement, string attributeName)
 		{
@@ -52,6 +55,17 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			return "";
+		}
+
+		static bool GetBoolAttribute (XmlElement xmlElement, string attributeName)
+		{
+			string attributeValue = GetAttribute (xmlElement, attributeName);
+
+			bool result = false;
+			if (bool.TryParse (attributeValue, out result))
+				return result;
+
+			return false;
 		}
 	}
 }
