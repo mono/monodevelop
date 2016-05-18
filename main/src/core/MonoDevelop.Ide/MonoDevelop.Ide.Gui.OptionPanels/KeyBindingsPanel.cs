@@ -676,6 +676,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				keyBindingsTree = panel.keyTreeView;
 				keyBindingsTree.ButtonPressEvent += HandleKeyTreeButtonPressEvent;
 				keyBindingsTree.MotionNotifyEvent += HandleKeyTreeMotionNotifyEvent;
+				keyBindingsTree.ScrollEvent += HandleKeyTreeScrollEvent;
 				Ypad = 0;
 			}
 
@@ -687,13 +688,23 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				}
 			}
 
+			void HandleKeyTreeScrollEvent (object o, ScrollEventArgs args)
+			{
+				HandleKeyTreeMotion (args.Event.X, args.Event.Y);
+			}
+
 			[GLib.ConnectBefore ()]
 			void HandleKeyTreeMotionNotifyEvent (object o, MotionNotifyEventArgs args)
+			{
+				HandleKeyTreeMotion (args.Event.X, args.Event.Y);
+			}
+
+			void HandleKeyTreeMotion (double mouseX, double mouseY)
 			{
 				if (keyBindingsPanel.duplicates?.Count <= 0)
 					return;
 
-				var hit = HitTest (args.Event.X, args.Event.Y);
+				var hit = HitTest (mouseX, mouseY);
 				if (hit.ButtonBounds.IsEmpty) {
 					HideConflictTooltip ();
 					return;
@@ -776,7 +787,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 				using (var layout = new Pango.Layout (keyBindingsTree.PangoContext)) {
 
-					var xpad = (int)Xpad;
+					// GetCellArea reports the outer cell bounds, therefore we need to add 2px
+					var xpad = (int)Xpad + 2;
+					var ypad = (int)Ypad + 2;
 					int i = 0;
 					foreach (var key in result.AllKeys) {
 						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
@@ -787,17 +800,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 						int buttonWidth = w + (2 * KeyHPadding);
 
-						if (cellx > xpad + 1 && cellx <= xpad + buttonWidth + 2 &&
-						    celly > Ypad + 1 && celly <= Ypad + h + (2 * KeyVPadding) + 2) {
+						if (cellx > xpad && cellx <= xpad + buttonWidth &&
+						    celly > ypad && celly <= ypad + h + (2 * KeyVPadding) + 2) {
 							var cellBounds = keyBindingsTree.GetCellArea (path, keyBindingsPanel.bindingTVCol);
 							keyBindingsPanel.bindingTVCol.CellGetPosition (this, out cellx, out w);
-							// GetCellArea reports the outer bounds, therefore we need to add 1px
-							cellBounds.X += cellx + 2;
-							cellBounds.Y += 2;
+							cellBounds.X += cellx;
 							keyBindingsTree.ConvertBinWindowToWidgetCoords (cellBounds.X, cellBounds.Y, out cellBounds.X, out cellBounds.Y);
 
 							result.SelectedKey = i;
-							result.ButtonBounds = new Gdk.Rectangle (cellBounds.X + xpad, cellBounds.Y + (int)Ypad, buttonWidth, h + KeyVPadding * 2);
+							result.ButtonBounds = new Gdk.Rectangle (cellBounds.X + xpad, cellBounds.Y + ypad, buttonWidth, h + 1 + KeyVPadding * 2);
 							result.ButtonBounds.Inflate (0, 2);
 							return result;
 						}
@@ -863,7 +874,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 								cell_area.X + xpad,
 								cell_area.Y + ypad + (cell_area.Height - h) / 2d,
 								buttonWidth,
-								h + KeyVPadding * 2,
+								h + 0.5 + KeyVPadding * 2,
 								KeyBgRadius);
 							cr.LineWidth = 1;
 							cr.SetSourceColor (bgColor);
@@ -900,7 +911,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						layout.FontDescription.Family = Family;
 						layout.GetPixelSize (out w, out h);
 						if (height == 0)
-							height = h + (KeyVPadding * 2) + (int)Ypad * 2;
+							height = h + (KeyVPadding * 2) + 1 + (int)Ypad * 2;
 						
 						buttonWidth = w + (2 * KeyHPadding);
 						width += buttonWidth + Spacing;
