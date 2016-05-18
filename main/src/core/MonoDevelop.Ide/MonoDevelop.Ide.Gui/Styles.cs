@@ -405,13 +405,14 @@ namespace MonoDevelop.Ide.Gui
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
 			Editor.SearchErrorForegroundColor = ErrorForegroundColor;
 
+			// Key Bindings Preferences
 
 			KeyBindingsPanel.KeyBackgroundColor = BackgroundColor;
 			KeyBindingsPanel.KeyForegroundColor = BaseForegroundColor;
-			KeyBindingsPanel.KeyDuplicateBackgroundColor = WarningBoxBackgroundColor;
-			KeyBindingsPanel.KeyDuplicateForegroundColor = WarningBoxForegroundColor;
-			KeyBindingsPanel.KeyConflictBackgroundColor = ErrorBoxBackgroundColor;
-			KeyBindingsPanel.KeyConflictForegroundColor = ErrorBoxForegroundColor;
+			KeyBindingsPanel.KeyDuplicateBackgroundColor = StatusWarningBackgroundColor;
+			KeyBindingsPanel.KeyDuplicateForegroundColor = StatusWarningTextColor;
+			KeyBindingsPanel.KeyConflictBackgroundColor = StatusErrorBackgroundColor;
+			KeyBindingsPanel.KeyConflictForegroundColor = StatusErrorTextColor;
 
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);
