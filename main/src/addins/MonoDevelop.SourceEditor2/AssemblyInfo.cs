@@ -16,3 +16,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo ("MonoDevelop.AspNet")]
 [assembly: InternalsVisibleTo ("MonoDevelop.AspNet.Tests")]
 [assembly: InternalsVisibleTo ("FSharpBinding")]
+[assembly: InternalsVisibleTo ("MonoDevelop.FSharp.Tests")]
