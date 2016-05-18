@@ -464,6 +464,9 @@ namespace MonoDevelop.Components.Commands
 
 			var file = UserProfile.Current.CacheDir.Combine ("CommandConflicts.xml");
 
+			if (!File.Exists (file))
+				return;
+
 			try {
 				using (var reader = new XmlTextReader (file)) {
 					bool foundConflicts = false;
