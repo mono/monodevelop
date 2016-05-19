@@ -74,7 +74,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void AddProjectType (Guid guid)
 		{
-			ExtendedProperties.Add ("ProjectTypeGuids", guid.ToString ());
+			AddFlavorGuid (guid.ToString ());
 		}
 
 		public int ReferencesWhenSavedCount;

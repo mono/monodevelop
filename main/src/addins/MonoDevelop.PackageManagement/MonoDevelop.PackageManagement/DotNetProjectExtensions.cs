@@ -53,18 +53,12 @@ namespace MonoDevelop.PackageManagement
 
 		public static bool HasProjectType(this IDotNetProject project, Guid projectTypeGuid)
 		{
-			foreach (string guid in project.GetProjectTypeGuids()) {
+			foreach (string guid in project.FlavorGuids) {
 				if (IsMatch(projectTypeGuid, guid)) {
 					return true;
 				}
 			}
 			return false;
-		}
-
-		public static string[] GetProjectTypeGuids(this IDotNetProject project)
-		{
-			string projectTypeGuids = project.GetProjectTypeGuidPropertyValue();
-			return projectTypeGuids.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
 		}
 
 		static bool IsMatch(Guid guid, string guidStringToMatch)
@@ -74,15 +68,6 @@ namespace MonoDevelop.PackageManagement
 				return guid == result;
 			}
 			return false;
-		}
-
-		public static string GetProjectTypeGuidPropertyValue (this IDotNetProject project)
-		{
-			string propertyValue = null;
-			if (project.ExtendedProperties.Contains("ProjectTypeGuids")) {
-				propertyValue = project.ExtendedProperties["ProjectTypeGuids"] as String;
-			}
-			return propertyValue ?? String.Empty;
 		}
 
 		public static bool HasPackages (this DotNetProject project)
