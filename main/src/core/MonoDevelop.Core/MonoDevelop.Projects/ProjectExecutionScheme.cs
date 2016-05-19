@@ -71,17 +71,17 @@ namespace MonoDevelop.Projects
 						mainPropertyGroup = new MSBuildPropertyGroup ();
 					else
 						mainPropertyGroup = ParentItem.MSBuildProject.CreatePropertyGroup ();
-					mainPropertyGroup.IgnoreDefaultValues = true;
 				}
 				return mainPropertyGroup;
 			}
 			set {
 				mainPropertyGroup = value;
-				mainPropertyGroup.IgnoreDefaultValues = true;
 			}
 		}
 
 		internal MSBuildProjectInstance ProjectInstance { get; set; }
+
+		public bool StoreInUserFile { get; set; }
 	}
 }
 

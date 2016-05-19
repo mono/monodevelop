@@ -564,6 +564,7 @@
     <Compile Include="MonoDevelop.Projects\ExecutionScheme.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectExecutionScheme.cs" />
     <Compile Include="MonoDevelop.Projects\ExecutionSchemeCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetExecutionScheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

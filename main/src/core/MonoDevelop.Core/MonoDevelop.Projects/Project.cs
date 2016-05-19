@@ -61,6 +61,7 @@ namespace MonoDevelop.Projects
 
 		string[] buildActions;
 		MSBuildProject sourceProject;
+		MSBuildProject userProject;
 
 		string productVersion;
 		string schemaVersion;
@@ -88,6 +89,10 @@ namespace MonoDevelop.Projects
 
 		public ProjectItemCollection Items {
 			get { return items; }
+		}
+
+		public ExecutionSchemeCollection ExecutionSchemes {
+			get { return executionSchemes; }
 		}
 
 		protected Project (params string[] flavorGuids): this()
@@ -554,6 +559,13 @@ namespace MonoDevelop.Projects
 
 			// Doesn't save the file to disk if the content did not change
 			if (await sourceProject.SaveAsync (FileName)) {
+				if (userProject != null) {
+					if (!userProject.GetAllObjects ().Any ())
+						File.Delete (userProject.FileName);
+					else
+						await userProject.SaveAsync (userProject.FileName);
+				}
+				
 				var pb = GetCachedProjectBuilder ();
 				if (pb != null) {
 					try {
@@ -2058,6 +2070,10 @@ namespace MonoDevelop.Projects
 
 		void ReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
+			if (File.Exists (msproject.FileName + ".user")) {
+				userProject = new MSBuildProject (msproject.EngineManager);
+				userProject.Load (msproject.FileName + ".user");
+			}
 			ProjectExtension.OnReadProjectHeader (monitor, msproject);
 			modifiedInMemory = false;
 			msbuildUpdatePending = false;
@@ -2118,7 +2134,7 @@ namespace MonoDevelop.Projects
 
 		class ConfigData
 		{
-			public ConfigData (string conf, string plt, IMSBuildPropertySet grp)
+			public ConfigData (string conf, string plt, MSBuildPropertyGroup grp)
 			{
 				Config = conf;
 				Platform = plt;
@@ -2127,7 +2143,7 @@ namespace MonoDevelop.Projects
 
 			public string Config;
 			public string Platform;
-			public IMSBuildPropertySet Group;
+			public MSBuildPropertyGroup Group;
 			public bool Exists;
 			public bool IsNew; // The group did not exist in the original file
 		}
@@ -2204,7 +2220,9 @@ namespace MonoDevelop.Projects
 
 			timer.Trace ("Read execution schemes");
 
-			List<ConfigData> schemeData = GetExecSchemeData (msproject, true);
+			List<ConfigData> schemeData = new List<ConfigData> ();
+			GetExecSchemeData (schemeData, msproject, true);
+			GetExecSchemeData (schemeData, userProject, true);
 
 			foreach (var cgrp in schemeData)
 				LoadExecutionScheme (monitor, cgrp, cgrp.Config);
@@ -2362,9 +2380,11 @@ namespace MonoDevelop.Projects
 			config.Read (grp);
 		}
 
-		List<ConfigData> GetExecSchemeData (MSBuildProject msproject, bool includeEvaluated)
+		void GetExecSchemeData (List<ConfigData> configData, MSBuildProject msproject, bool includeEvaluated)
 		{
-			List<ConfigData> configData = new List<ConfigData> ();
+			if (msproject == null)
+				return;
+			
 			foreach (MSBuildPropertyGroup cgrp in msproject.PropertyGroups) {
 				string schemeName;
 				if (ParseSchemeCondition (cgrp.Condition, out schemeName)) {
@@ -2377,15 +2397,13 @@ namespace MonoDevelop.Projects
 				}
 			}
 			if (includeEvaluated) {
-				var schemeValues = msproject.ConditionedProperties.GetCombinedPropertyValues ("ExecutionScheme");
+				var schemeValues = msproject.ConditionedProperties.GetAllPropertyValues ("ExecutionScheme");
 
-				foreach (var c in schemeValues.Select (v => v.GetValue ("ExecutionScheme"))) {
+				foreach (var c in schemeValues) {
 					if (!configData.Any (cd => cd.Config == c))
 						configData.Add (new ConfigData (c, "", null));
 				}
 			}
-
-			return configData;
 		}
 
 		bool ParseSchemeCondition (string cond, out string schemeName)
@@ -2394,7 +2412,7 @@ namespace MonoDevelop.Projects
 			int i = cond.IndexOf ("==", StringComparison.Ordinal);
 			if (i == -1)
 				return false;
-			if (cond.Substring (0, i).Trim () == "'$(SchemeName)'")
+			if (cond.Substring (0, i).Trim () == "'$(ExecutionScheme)'")
 				return ExtractConfigName (cond.Substring (i + 2), out schemeName);
 			return false;
 		}
@@ -2402,8 +2420,11 @@ namespace MonoDevelop.Projects
 		void LoadExecutionScheme (ProgressMonitor monitor, ConfigData cgrp, string schemeName)
 		{
 			var scheme = (ProjectExecutionScheme)CreateExecutionScheme (schemeName);
-			if (cgrp.Group != null)
-				scheme.MainPropertyGroup = (MSBuildPropertyGroup)cgrp.Group;
+			if (cgrp.Group != null) {
+				scheme.MainPropertyGroup = cgrp.Group;
+				if (cgrp.Group.ParentProject == userProject)
+					scheme.StoreInUserFile = true;
+			}
 			scheme.MainPropertyGroup.ResetIsNewFlags ();
 			InitExecutionScheme (scheme);
 			projectExtension.OnReadExecutionScheme (monitor, scheme, scheme.Properties);
@@ -2609,10 +2630,35 @@ namespace MonoDevelop.Projects
 		{
 			IMSBuildPropertySet globalGroup = msproject.GetGlobalPropertyGroup ();
 
-			// Configurations
+			WriteConfigurations (monitor, msproject, globalGroup);
 
+			WriteExecutionSchemes (monitor, msproject, globalGroup);
+
+			SaveProjectItems (monitor, msproject, usedMSBuildItems);
+
+			if (msproject.IsNewProject) {
+				foreach (var im in DefaultImports)
+					msproject.AddNewImport (im);
+			}
+
+			foreach (var im in importsAdded) {
+				if (msproject.GetImport (im.Name, im.Condition) == null)
+					msproject.AddNewImport (im.Name, im.Condition);
+			}
+			foreach (var im in importsRemoved) {
+				var i = msproject.GetImport (im.Name, im.Condition);
+				if (i != null)
+					msproject.RemoveImport (i);
+			}
+			importsAdded.Clear ();
+			importsRemoved.Clear ();
+			msproject.WriteExternalProjectProperties (this, GetType (), true);
+		}
+
+		void WriteConfigurations (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
+		{
 			if (Configurations.Count > 0) {
-				
+
 				List<ConfigData> configData = GetConfigData (msproject, false);
 
 				// Write configuration data, creating new property groups if necessary
@@ -2628,7 +2674,7 @@ namespace MonoDevelop.Projects
 						int i = Configurations.IndexOf (conf);
 						if (i != -1 && i + 1 < Configurations.Count)
 							nextConf = ((ProjectConfiguration)Configurations [i + 1]).MainPropertyGroup;
-						
+
 						msproject.AddPropertyGroup (pg, true, nextConf);
 						pg.Condition = BuildConfigCondition (conf.Name, conf.Platform);
 						cdata = new ConfigData (conf.Name, conf.Platform, pg);
@@ -2692,109 +2738,75 @@ namespace MonoDevelop.Projects
 				foreach (ProjectConfiguration config in Configurations)
 					config.MainPropertyGroup.ResetIsNewFlags ();
 			}
+		}
 
-			// Execution Schemes
+		void WriteExecutionSchemes (ProgressMonitor monitor, MSBuildProject msproject, IMSBuildPropertySet globalGroup)
+		{
+			List<ConfigData> schemeConfigData = new List<ConfigData> ();
+			GetExecSchemeData (schemeConfigData, msproject, false);
+			GetExecSchemeData (schemeConfigData, userProject, false);
 
 			if (executionSchemes.Count > 0) {
-
-				List<ConfigData> configData = GetExecSchemeData (msproject, false);
 
 				// Write scheme data, creating new property groups if necessary
 
 				foreach (ProjectExecutionScheme scheme in executionSchemes) {
 
 					MSBuildPropertyGroup pg = scheme.MainPropertyGroup;
-					ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
+					ConfigData cdata = schemeConfigData.FirstOrDefault (cd => cd.Group == pg);
+					var targetProject = scheme.StoreInUserFile ? userProject : msproject;
+
+					// Create the user project file if it doesn't yet exist
+					if (targetProject == null)
+						targetProject = userProject = CreateUserProject (msproject);
 
 					if (cdata == null) {
 						// Try to keep the groups in the same order as the config list
 						MSBuildObject nextScheme = null;
 						int i = executionSchemes.IndexOf (scheme);
-						if (i != -1 && i + 1 < Configurations.Count)
-							nextScheme = ((ProjectExecutionScheme)executionSchemes [i + 1]).MainPropertyGroup;
-
-						msproject.AddPropertyGroup (pg, true, nextScheme);
+						if (i != -1 && i + 1 < executionSchemes.Count)
+							nextScheme = executionSchemes.Skip (i).Cast<ProjectExecutionScheme> ().FirstOrDefault (s => s.MainPropertyGroup.ParentProject == targetProject)?.MainPropertyGroup;
+						targetProject.AddPropertyGroup (pg, true, nextScheme);
 						pg.Condition = BuildSchemeCondition (scheme.Name);
 						cdata = new ConfigData (scheme.Name, null, pg);
 						cdata.IsNew = true;
-						configData.Add (cdata);
+						schemeConfigData.Add (cdata);
 					} else {
 						// The configuration name may have changed
 						if (cdata.Config != scheme.Name) {
 							((MSBuildPropertyGroup)cdata.Group).Condition = BuildSchemeCondition (scheme.Name);
 							cdata.Config = scheme.Name;
 						}
+						var groupInUserProject = cdata.Group.ParentProject == userProject;
+						if (groupInUserProject != scheme.StoreInUserFile) {
+							cdata.Group.ParentProject.Remove (cdata.Group);
+							targetProject.AddPropertyGroup (cdata.Group);
+						}
 					}
 
 					cdata.Exists = true;
 					ProjectExtension.OnWriteExecutionScheme (monitor, scheme, scheme.Properties);
 				}
-
-				// Find the properties in all configurations that have the MergeToProject flag set
-				var mergeToProjectProperties = new HashSet<MergedProperty> (GetMergeToProjectProperties (configData));
-				var mergeToProjectPropertyValues = new Dictionary<string, MergedPropertyValue> ();
-
-				foreach (ProjectExecutionScheme scheme in executionSchemes) {
-					ConfigData cdata = FindPropertyGroup (configData, scheme);
-					var propGroup = (MSBuildPropertyGroup)cdata.Group;
-
-					// Get properties wit the MergeToProject flag, and check that the value they have matches the
-					// value all the other groups have so far. If one of the groups have a different value for
-					// the same property, then the property is discarded as mergeable to parent.
-					CollectMergetoprojectProperties (propGroup, mergeToProjectProperties, mergeToProjectPropertyValues);
-
-					// Remove properties that have been modified and have the default value. Usually such properties
-					// would be removed when assigning the value, but we set IgnoreDefaultValues=false so that
-					// we can collect MergeToProject properties, so in this case properties are not removed.
-					propGroup.PurgeDefaultProperties ();
-				}
-
-				// Move properties with common values from configurations to the main
-				// property group
-				foreach (KeyValuePair<string, MergedPropertyValue> prop in mergeToProjectPropertyValues) {
-					if (!prop.Value.IsDefault)
-						globalGroup.SetValue (prop.Key, prop.Value.XmlValue, valueType: prop.Value.ValueType);
-					else {
-						// if the value is default, only remove the property if it was not already the default to avoid unnecessary project file churn
-						globalGroup.SetValue (prop.Key, prop.Value.XmlValue, defaultValue: prop.Value.XmlValue, valueType: prop.Value.ValueType);
-					}
-				}
-				foreach (ProjectExecutionScheme scheme in executionSchemes) {
-					var propGroup = FindPropertyGroup (configData, scheme).Group;
-					foreach (string mp in mergeToProjectPropertyValues.Keys)
-						propGroup.RemoveProperty (mp);
-				}
-
-				// Remove groups corresponding to configurations that have been removed
-				// or groups which don't have any property and did not already exist
-				foreach (ConfigData cd in configData) {
-					if (!cd.Exists || (cd.IsNew && !cd.Group.GetProperties ().Any ()))
-						msproject.Remove ((MSBuildPropertyGroup)cd.Group);
-				}
-
-				foreach (ProjectExecutionScheme scheme in executionSchemes)
-					scheme.MainPropertyGroup.ResetIsNewFlags ();
 			}
 
-			SaveProjectItems (monitor, msproject, usedMSBuildItems);
-
-			if (msproject.IsNewProject) {
-				foreach (var im in DefaultImports)
-					msproject.AddNewImport (im);
+			// Remove groups corresponding to configurations that have been removed
+			// or groups which don't have any property and did not already exist
+			foreach (ConfigData cd in schemeConfigData) {
+				if (!cd.Exists || (cd.IsNew && !cd.Group.GetProperties ().Any ()))
+					cd.Group.ParentProject.Remove (cd.Group);
 			}
 
-			foreach (var im in importsAdded) {
-				if (msproject.GetImport (im.Name, im.Condition) == null)
-					msproject.AddNewImport (im.Name, im.Condition);
-			}
-			foreach (var im in importsRemoved) {
-				var i = msproject.GetImport (im.Name, im.Condition);
-				if (i != null)
-					msproject.RemoveImport (i);
-			}
-			importsAdded.Clear ();
-			importsRemoved.Clear ();
-			msproject.WriteExternalProjectProperties (this, GetType (), true);
+			foreach (ProjectExecutionScheme scheme in executionSchemes)
+				scheme.MainPropertyGroup.ResetIsNewFlags ();
+		}
+
+		MSBuildProject CreateUserProject (MSBuildProject msproject)
+		{
+			var p = new MSBuildProject (msproject.EngineManager);
+			// Remove the main property group
+			p.Remove (p.PropertyGroups.First ());
+			p.FileName = msproject.FileName + ".user";
+			return p;
 		}
 
 		protected virtual void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IPropertySet pset)

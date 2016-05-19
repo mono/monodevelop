@@ -173,13 +173,18 @@ namespace MonoDevelop.Projects.MSBuild
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context)
 		{
 			context.InitEvaluation (pi.Project);
-			EvaluateObjects (pi, context, pi.Project.GetAllObjects (), false);
-			EvaluateObjects (pi, context, pi.Project.GetAllObjects (), true);
+			var objects = pi.Project.GetAllObjects ();
+
+			// If there is a .user project file load it using a fake import item added at the end of the objects list
+			if (File.Exists (pi.Project.FileName + ".user"))
+				objects = objects.Concat (new MSBuildImport {Project = pi.Project.FileName + ".user" });
+
+			EvaluateObjects (pi, context, objects, false);
+			EvaluateObjects (pi, context, objects, true);
 		}
 
 		void EvaluateProject (ProjectInfo pi, MSBuildEvaluationContext context, bool evalItems)
 		{
-			// XmlDocument is not thread safe, so we need to lock while evaluating
 			context.InitEvaluation (pi.Project);
 			EvaluateObjects (pi, context, pi.Project.GetAllObjects (), evalItems);
 		}

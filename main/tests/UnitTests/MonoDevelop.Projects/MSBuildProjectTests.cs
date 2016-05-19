@@ -376,6 +376,16 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("Foo", p.EvaluatedProperties.GetValue ("Test1"));
 			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("Test2"));
 		}
+
+		[Test]
+		public void ImplicitImportOfUserProject ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-project-test", "test-user.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("TestProp"));
+		}
 	}
 }
 
