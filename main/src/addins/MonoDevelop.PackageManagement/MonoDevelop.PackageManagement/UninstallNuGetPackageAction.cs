@@ -37,16 +37,13 @@ namespace MonoDevelop.PackageManagement
 		NuGetPackageManager packageManager;
 		IDotNetProject dotNetProject;
 		NuGetProject project;
-		CancellationToken cancellationToken;
 		IEnumerable<NuGetProjectAction> actions;
 
 		public UninstallNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
-			IDotNetProject dotNetProject,
-			CancellationToken cancellationToken = default(CancellationToken))
+			IDotNetProject dotNetProject)
 		{
 			this.dotNetProject = dotNetProject;
-			this.cancellationToken = cancellationToken;
 
 			var restartManager = new DeleteOnRestartManager ();
 
@@ -65,12 +62,17 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
 			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
-				ExecuteAsync ().Wait ();
+				ExecuteAsync (cancellationToken).Wait ();
 			}
 		}
 
-		async Task ExecuteAsync ()
+		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			INuGetProjectContext context = CreateProjectContext ();
 

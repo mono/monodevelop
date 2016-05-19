@@ -40,15 +40,12 @@ namespace MonoDevelop.PackageManagement
 		PackageRestoreManager restoreManager;
 		NuGetProject nugetProject;
 		DotNetProject project;
-		CancellationToken cancellationToken;
 
 		public RestoreNuGetPackagesInProjectAction (
 			DotNetProject project,
 			NuGetProject nugetProject,
-			IMonoDevelopSolutionManager solutionManager,
-			CancellationToken cancellationToken = default(CancellationToken))
+			IMonoDevelopSolutionManager solutionManager)
 		{
-			this.cancellationToken = cancellationToken;
 			this.project = project;
 			this.nugetProject = nugetProject;
 			this.solutionManager = solutionManager;
@@ -64,7 +61,12 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
+			ExecuteAsync (cancellationToken).Wait ();
 		}
 
 		public bool HasPackageScriptsToRun ()
@@ -72,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		async Task ExecuteAsync ()
+		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			using (var monitor = new PackageRestoreMonitor (restoreManager)) {
 				await restoreManager.RestoreMissingPackagesAsync (

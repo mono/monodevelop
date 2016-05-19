@@ -43,17 +43,13 @@ namespace MonoDevelop.PackageManagement
 		IPackageRestoreManager restoreManager;
 		MonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
 		IMonoDevelopSolutionManager solutionManager;
-		CancellationToken cancellationToken;
 		IPackageManagementEvents packageManagementEvents;
 		Solution solution;
 		List<NuGetProject> nugetProjects;
 		List<BuildIntegratedNuGetProject> buildIntegratedProjectsToBeRestored;
 
-		public RestoreAndCheckForUpdatesAction (
-			Solution solution,
-			CancellationToken cancellationToken = default(CancellationToken))
+		public RestoreAndCheckForUpdatesAction (Solution solution)
 		{
-			this.cancellationToken = cancellationToken;
 			this.solution = solution;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
@@ -93,7 +89,7 @@ namespace MonoDevelop.PackageManagement
 
 		public bool CheckForUpdatesAfterRestore { get; set; }
 
-		public async Task<bool> HasMissingPackages ()
+		public async Task<bool> HasMissingPackages (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (restoreManager != null) {
 				var packages = await restoreManager.GetPackagesInSolutionAsync (
@@ -117,7 +113,11 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			RestorePackagesAsync ().Wait ();
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
+			RestorePackagesAsync (cancellationToken).Wait ();
 
 			if (CheckForUpdatesAfterRestore) {
 				CheckForUpdates ();
@@ -138,7 +138,7 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		async Task RestorePackagesAsync ()
+		async Task RestorePackagesAsync (CancellationToken cancellationToken)
 		{
 			if (restoreManager != null) {
 				using (var monitor = new PackageRestoreMonitor (restoreManager)) {

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Threading;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
@@ -54,6 +55,11 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public void Execute ()
+		{
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
 		{
 			// Queue the check for updates with the background dispatcher so
 			// the NuGet addin does not create another separate Package Console.

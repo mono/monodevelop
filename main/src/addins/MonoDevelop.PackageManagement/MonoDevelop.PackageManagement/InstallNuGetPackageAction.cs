@@ -47,22 +47,19 @@ namespace MonoDevelop.PackageManagement
 		NuGetProject project;
 		NuGetProjectContext context;
 		IDotNetProject dotNetProject;
-		CancellationToken cancellationToken;
 		IEnumerable<NuGetProjectAction> actions;
 
 		public InstallNuGetPackageAction (
 			IEnumerable<SourceRepository> primarySources,
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
-			NuGetProjectContext projectContext,
-			CancellationToken cancellationToken = default(CancellationToken))
+			NuGetProjectContext projectContext)
 			: this (
 				primarySources,
 				null,
 				solutionManager,
 				dotNetProject,
-				projectContext,
-				cancellationToken)
+				projectContext)
 		{
 		}
 
@@ -71,12 +68,10 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<SourceRepository> secondarySources,
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
-			NuGetProjectContext projectContext,
-			CancellationToken cancellationToken = default(CancellationToken))
+			NuGetProjectContext projectContext)
 		{
 			this.primarySources = primarySources.ToList ();
 			this.secondarySources = secondarySources?.ToList ();
-			this.cancellationToken = cancellationToken;
 			this.dotNetProject = dotNetProject;
 			this.context = projectContext;
 
@@ -103,15 +98,20 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
 			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
-				ExecuteAsync ().Wait ();
+				ExecuteAsync (cancellationToken).Wait ();
 			}
 		}
 
-		async Task ExecuteAsync ()
+		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			if (Version == null) {
-				Version = await GetLatestPackageVersion (PackageId);
+				Version = await GetLatestPackageVersion (PackageId, cancellationToken);
 			}
 
 			var identity = new PackageIdentity (PackageId, Version);
@@ -126,7 +126,7 @@ namespace MonoDevelop.PackageManagement
 				cancellationToken);
 
 			if (LicensesMustBeAccepted) {
-				await CheckLicenses ();
+				await CheckLicenses (cancellationToken);
 			}
 
 			NuGetPackageManager.SetDirectInstall (identity, context);
@@ -146,7 +146,7 @@ namespace MonoDevelop.PackageManagement
 			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
-		Task<NuGetVersion> GetLatestPackageVersion (string packageId)
+		Task<NuGetVersion> GetLatestPackageVersion (string packageId, CancellationToken cancellationToken)
 		{
 			return NuGetPackageManager.GetLatestVersionAsync (
 				packageId,
@@ -177,7 +177,7 @@ namespace MonoDevelop.PackageManagement
 			return dotNetProject.DotNetProject == project;
 		}
 
-		Task CheckLicenses ()
+		Task CheckLicenses (CancellationToken cancellationToken)
 		{
 			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, packageManager, cancellationToken);
 		}

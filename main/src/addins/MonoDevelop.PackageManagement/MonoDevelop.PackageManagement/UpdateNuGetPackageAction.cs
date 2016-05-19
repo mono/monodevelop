@@ -41,7 +41,6 @@ namespace MonoDevelop.PackageManagement
 		NuGetPackageManager packageManager;
 		IDotNetProject dotNetProject;
 		NuGetProject project;
-		CancellationToken cancellationToken;
 		List<SourceRepository> primarySources;
 		ISourceRepositoryProvider sourceRepositoryProvider;
 		IEnumerable<NuGetProjectAction> actions;
@@ -49,11 +48,9 @@ namespace MonoDevelop.PackageManagement
 
 		public UpdateNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
-			IDotNetProject dotNetProject,
-			CancellationToken cancellationToken = default(CancellationToken))
+			IDotNetProject dotNetProject)
 		{
 			this.dotNetProject = dotNetProject;
-			this.cancellationToken = cancellationToken;
 
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
@@ -77,12 +74,17 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
 			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
-				ExecuteAsync ().Wait ();
+				ExecuteAsync (cancellationToken).Wait ();
 			}
 		}
 
-		async Task ExecuteAsync ()
+		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			INuGetProjectContext context = CreateProjectContext ();
 
@@ -99,7 +101,7 @@ namespace MonoDevelop.PackageManagement
 				packageManagementEvents.OnNoUpdateFound (dotNetProject);
 			}
 
-			await CheckLicenses ();
+			await CheckLicenses (cancellationToken);
 
 			using (IDisposable fileMonitor = CreateFileMonitor ()) {
 				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
@@ -134,7 +136,7 @@ namespace MonoDevelop.PackageManagement
 			return new NuGetProjectContext (); 
 		}
 
-		Task CheckLicenses ()
+		Task CheckLicenses (CancellationToken cancellationToken)
 		{
 			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, packageManager, cancellationToken);
 		}

@@ -26,9 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -77,6 +77,11 @@ namespace MonoDevelop.PackageManagement
 		public void AddPackages(IEnumerable<IPackageFromRepository> packages)
 		{
 			this.packages.AddRange(packages);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
+			Execute ();
 		}
 		
 		public void Execute()

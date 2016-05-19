@@ -33,14 +33,10 @@ namespace MonoDevelop.PackageManagement
 	internal class UpdateAllNuGetPackagesInSolution
 	{
 		Solution solution;
-		CancellationToken cancellationToken;
 
-		public UpdateAllNuGetPackagesInSolution (
-			Solution solution,
-			CancellationToken cancellationToken = default(CancellationToken))
+		public UpdateAllNuGetPackagesInSolution (Solution solution)
 		{
 			this.solution = solution;
-			this.cancellationToken = cancellationToken;
 		}
 
 		public IEnumerable<IPackageAction> CreateActions ()
@@ -50,8 +46,7 @@ namespace MonoDevelop.PackageManagement
 			foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
 				yield return new UpdateAllNuGetPackagesInProjectAction (
 					solutionManager,
-					project,
-					cancellationToken);
+					project);
 			}
 		}
 

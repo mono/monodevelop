@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Threading;
 using NuGet.PackageManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -39,6 +40,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public string PackageId { get; set; }
 
 		public void Execute ()
+		{
+		}
+
+		public void Execute (CancellationToken cancellationToken)
 		{
 		}
 

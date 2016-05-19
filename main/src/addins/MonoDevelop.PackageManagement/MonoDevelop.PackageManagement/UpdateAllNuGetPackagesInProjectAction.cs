@@ -45,19 +45,16 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementEvents packageManagementEvents;
 		IDotNetProject dotNetProject;
 		NuGetProject project;
-		CancellationToken cancellationToken;
 		ISourceRepositoryProvider sourceRepositoryProvider;
 		bool includePrerelease;
 		string projectName;
 
 		public UpdateAllNuGetPackagesInProjectAction (
 			IMonoDevelopSolutionManager solutionManager,
-			DotNetProject dotNetProject,
-			CancellationToken cancellationToken = default(CancellationToken))
+			DotNetProject dotNetProject)
 		{
 			this.solutionManager = solutionManager;
 			this.dotNetProject = new DotNetProjectProxy (dotNetProject);
-			this.cancellationToken = cancellationToken;
 
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
@@ -85,16 +82,21 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			Execute (CancellationToken.None);
 		}
 
-		async Task ExecuteAsync ()
+		public void Execute (CancellationToken cancellationToken)
+		{
+			ExecuteAsync (cancellationToken).Wait ();
+		}
+
+		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			INuGetProjectContext context = CreateProjectContext ();
 
-			includePrerelease = await ProjectHasPrereleasePackages ();
+			includePrerelease = await ProjectHasPrereleasePackages (cancellationToken);
 
-			await RestoreAnyMissingPackages (context);
+			await RestoreAnyMissingPackages (context, cancellationToken);
 
 			var actions = await packageManager.PreviewUpdatePackagesAsync (
 				project,
@@ -115,7 +117,7 @@ namespace MonoDevelop.PackageManagement
 				cancellationToken);
 		}
 
-		async Task<bool> ProjectHasPrereleasePackages ()
+		async Task<bool> ProjectHasPrereleasePackages (CancellationToken cancellationToken)
 		{
 			var packageReferences = await project.GetInstalledPackagesAsync (cancellationToken);
 			return packageReferences.Any (packageReference => packageReference.PackageIdentity.Version.IsPrerelease);
@@ -141,7 +143,7 @@ namespace MonoDevelop.PackageManagement
 			return new NuGetProjectContext (); 
 		}
 
-		async Task RestoreAnyMissingPackages (INuGetProjectContext context)
+		async Task RestoreAnyMissingPackages (INuGetProjectContext context, CancellationToken cancellationToken)
 		{
 			var packages = await restoreManager.GetPackagesInSolutionAsync (
 				solutionManager.SolutionDirectory,

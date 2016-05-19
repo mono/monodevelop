@@ -45,15 +45,12 @@ namespace MonoDevelop.PackageManagement
 		IDotNetProject dotNetProject;
 		MSBuildNuGetProject nugetProject;
 		PackagePathResolver packagePathResolver;
-		CancellationToken cancellationToken;
 
 		public RestoreAndUninstallNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
-			IDotNetProject dotNetProject,
-			CancellationToken cancellationToken = default(CancellationToken))
+			IDotNetProject dotNetProject)
 		{
 			this.dotNetProject = dotNetProject;
-			this.cancellationToken = cancellationToken;
 
 			nugetProject = solutionManager.GetNuGetProject (dotNetProject) as MSBuildNuGetProject;
 			packagePathResolver = new PackagePathResolver (nugetProject.GetPackagesFolderPath (solutionManager));
@@ -61,10 +58,9 @@ namespace MonoDevelop.PackageManagement
 			restoreAction = new RestoreNuGetPackagesInProjectAction (
 				dotNetProject.DotNetProject,
 				nugetProject,
-				solutionManager,
-				cancellationToken);
+				solutionManager);
 
-			uninstallAction = new UninstallNuGetPackageAction (solutionManager, dotNetProject, cancellationToken);
+			uninstallAction = new UninstallNuGetPackageAction (solutionManager, dotNetProject);
 		}
 
 		public string PackageId { get; set; }
@@ -72,15 +68,20 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			Execute (CancellationToken.None);
 		}
 
-		async Task ExecuteAsync ()
+		public void Execute (CancellationToken cancellationToken)
+		{
+			ExecuteAsync (cancellationToken).Wait ();
+		}
+
+		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			try {
-				restoreAction.Execute ();
+				restoreAction.Execute (cancellationToken);
 			} catch (Exception ex) {
-				bool result = await OnRestoreFailure ();
+				bool result = await OnRestoreFailure (cancellationToken);
 				if (!result) {
 					throw ex;
 				}
@@ -88,7 +89,7 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			uninstallAction.PackageId = PackageId;
-			uninstallAction.Execute ();
+			uninstallAction.Execute (cancellationToken);
 		}
 
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
@@ -101,7 +102,7 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		async Task<bool> OnRestoreFailure ()
+		async Task<bool> OnRestoreFailure (CancellationToken cancellationToken)
 		{
 			bool result = await Runtime.RunInMainThread (async () => {
 				if (ShouldForceUninstall ()) {

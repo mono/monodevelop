@@ -34,16 +34,13 @@ namespace MonoDevelop.PackageManagement
 	internal class ReinstallNuGetPackageAction : IPackageAction
 	{
 		NuGetProjectContext context;
-		CancellationToken cancellationToken;
 		InstallNuGetPackageAction installAction;
 		UninstallNuGetPackageAction uninstallAction;
 
 		public ReinstallNuGetPackageAction (
 			IDotNetProject project,
-			IMonoDevelopSolutionManager solutionManager,
-			CancellationToken cancellationToken = default(CancellationToken))
+			IMonoDevelopSolutionManager solutionManager)
 		{
-			this.cancellationToken = cancellationToken;
 			context = new NuGetProjectContext ();
 
 			CreateInstallAction (solutionManager, project);
@@ -55,10 +52,15 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
 			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
 				using (IDisposable fileMonitor = CreateFileMonitor ()) {
 					uninstallAction.PackageId = PackageId;
-					uninstallAction.Execute ();
+					uninstallAction.Execute (cancellationToken);
 
 					installAction.PackageId = PackageId;
 					installAction.Version = Version;
@@ -69,7 +71,7 @@ namespace MonoDevelop.PackageManagement
 					// preserved.
 					installAction.PreserveLocalCopyReferences = false;
 
-					installAction.Execute ();
+					installAction.Execute (cancellationToken);
 				}
 			}
 		}
@@ -83,8 +85,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			uninstallAction = new UninstallNuGetPackageAction (
 				solutionManager,
-				project,
-				cancellationToken) {
+				project) {
 				ForceRemove = true
 			};
 		}
@@ -95,8 +96,7 @@ namespace MonoDevelop.PackageManagement
 				solutionManager.CreateSourceRepositoryProvider ().GetRepositories (),
 				solutionManager,
 				project,
-				context,
-				cancellationToken
+				context
 			);
 		}
 

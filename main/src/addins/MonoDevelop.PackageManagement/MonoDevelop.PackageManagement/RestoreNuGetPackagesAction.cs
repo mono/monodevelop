@@ -41,16 +41,12 @@ namespace MonoDevelop.PackageManagement
 		IPackageRestoreManager restoreManager;
 		MonoDevelopBuildIntegratedRestorer buildIntegratedRestorer;
 		IMonoDevelopSolutionManager solutionManager;
-		CancellationToken cancellationToken;
 		IPackageManagementEvents packageManagementEvents;
 		Solution solution;
 		List<NuGetProject> nugetProjects;
 
-		public RestoreNuGetPackagesAction (
-			Solution solution,
-			CancellationToken cancellationToken = default(CancellationToken))
+		public RestoreNuGetPackagesAction (Solution solution)
 		{
-			this.cancellationToken = cancellationToken;
 			this.solution = solution;
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
@@ -92,7 +88,12 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute ()
 		{
-			ExecuteAsync ().Wait ();
+			Execute (CancellationToken.None);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
+			ExecuteAsync (cancellationToken).Wait ();
 		}
 
 		public bool HasPackageScriptsToRun ()
@@ -100,7 +101,7 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		async Task ExecuteAsync ()
+		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
 			if (restoreManager != null) {
 				using (var monitor = new PackageRestoreMonitor (restoreManager)) {

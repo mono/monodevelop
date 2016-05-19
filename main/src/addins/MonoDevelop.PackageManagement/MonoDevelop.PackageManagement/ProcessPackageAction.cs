@@ -30,8 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
+using System.Threading;
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -69,6 +69,11 @@ namespace MonoDevelop.PackageManagement
 		protected void OnParentPackageUninstalled()
 		{
 			packageManagementEvents.OnParentPackageUninstalled(Package, Project);
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
+			Execute ();
 		}
 		
 		public void Execute()

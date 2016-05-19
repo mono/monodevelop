@@ -177,7 +177,7 @@ namespace MonoDevelop.PackageManagement
 		void RunActionsWithProgressMonitor (ProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
 			foreach (IPackageAction action in packageActions) {
-				action.Execute ();
+				action.Execute (monitor.CancellationToken);
 				instrumentationService.InstrumentPackageAction (action);
 				monitor.Step (1);
 			}
