@@ -103,6 +103,11 @@
 		<ExtensionNode name="Customizer" type="MonoDevelop.Ide.Execution.ExecutionCommandCustomizer" objectType="MonoDevelop.Ide.Execution.IExecutionCommandCustomizer"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/Ide/ExecutionSchemeEditors" name = "View Context Menu">
+		<Description>Widgets which allow editing execution schemes.</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.Execution.ExecutionSchemeEditorExtensionNode" objectType="MonoDevelop.Ide.Execution.ExecutionSchemeEditor"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeTemplates" name = "Code Templates">
 		<Description>Custom code templates.</Description>
 		<ExtensionNode name="CodeTemplate" type="MonoDevelop.Ide.CodeTemplates.CodeTemplateCodon"/>

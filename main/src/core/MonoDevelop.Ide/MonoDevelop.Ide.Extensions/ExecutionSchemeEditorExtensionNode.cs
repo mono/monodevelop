@@ -24,10 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Mono.Addins;
+
 namespace MonoDevelop.Ide.Extensions
 {
-	public class ExecutionSchemeEditorExtensionNode
+	public class ExecutionSchemeEditorExtensionNode: TypeExtensionNode
 	{
+		[NodeAttribute ("executionSchemeType")]
+		protected string executionSchemeType;
+	
 		public ExecutionSchemeEditorExtensionNode ()
 		{
 		}

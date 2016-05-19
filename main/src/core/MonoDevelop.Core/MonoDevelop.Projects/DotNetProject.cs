@@ -1022,6 +1022,10 @@ namespace MonoDevelop.Projects
 			return conf;
 		}
 
+		protected override ExecutionScheme OnCreateExecutionScheme (string name)
+		{
+			return new DotNetExecutionScheme (name);
+		}
 
 		protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)
 		{

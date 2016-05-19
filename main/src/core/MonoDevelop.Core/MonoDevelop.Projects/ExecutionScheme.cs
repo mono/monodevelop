@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
@@ -59,6 +60,16 @@ namespace MonoDevelop.Projects
 		public override string ToString ()
 		{
 			return Name;
+		}
+
+		public ExecutionCommand ConfigureCommand (ExecutionCommand command)
+		{
+			return OnConfigureCommand (command);
+		}
+
+		protected virtual ExecutionCommand OnConfigureCommand (ExecutionCommand command)
+		{
+			return command;
 		}
 	}
 }
