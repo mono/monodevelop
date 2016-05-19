@@ -324,16 +324,16 @@ namespace MonoDevelop.PackageManagement
 			this.packageAuthor.Text = packageViewModel.Author;
 			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
 			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
-			this.packageDescription.Text = packageViewModel.Summary;
+			this.packageDescription.Text = packageViewModel.Description;
 			this.packageId.Text = packageViewModel.Id;
 			this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
 			ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);
 			ShowUri (this.packageProjectPageLink, packageViewModel.ProjectUrl);
 			ShowUri (this.packageLicenseLink, packageViewModel.LicenseUrl);
 			this.packageDependenciesHBox.Visible = false;
-			//this.packageDependenciesListHBox.Visible = packageViewModel.HasDependencies;
-			//this.packageDependenciesNoneLabel.Visible = !packageViewModel.HasDependencies;
-			//this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();
+			this.packageDependenciesListHBox.Visible = false;
+			this.packageDependenciesNoneLabel.Visible = false;
+			this.packageDependenciesList.Text = String.Empty;
 
 			PopulatePackageVersions (packageViewModel);
 
@@ -342,6 +342,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageViewModel.PropertyChanged += SelectedPackageViewModelChanged;
 			packageViewModel.ReadVersions ();
+			viewModel.LoadPackageMetadata (packageViewModel);
 		}
 
 		void ShowUri (LinkLabel linkLabel, Uri uri, string label)
@@ -726,7 +727,12 @@ namespace MonoDevelop.PackageManagement
 		void SelectedPackageViewModelChanged (object sender, PropertyChangedEventArgs e)
 		{
 			try {
-				PopulatePackageVersions (viewModel.SelectedPackage);
+				if (e.PropertyName == "Versions") {
+					PopulatePackageVersions (viewModel.SelectedPackage);
+				} else {
+					packagePublishedDate.Text = viewModel.SelectedPackage.GetLastPublishedDisplayText ();
+					PopulatePackageDependencies (viewModel.SelectedPackage);
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error loading package versions.", ex);
 			}
@@ -762,6 +768,14 @@ namespace MonoDevelop.PackageManagement
 
 			viewModel.SelectedPackage.SelectedVersion = (NuGetVersion)packageVersionComboBox.SelectedItem;
 			UpdateAddPackagesButton ();
+		}
+
+		void PopulatePackageDependencies (PackageSearchResultViewModel packageViewModel)
+		{
+			this.packageDependenciesHBox.Visible = true;
+			this.packageDependenciesListHBox.Visible = packageViewModel.HasDependencies;
+			this.packageDependenciesNoneLabel.Visible = !packageViewModel.HasDependencies;
+			this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();
 		}
 	}
 }

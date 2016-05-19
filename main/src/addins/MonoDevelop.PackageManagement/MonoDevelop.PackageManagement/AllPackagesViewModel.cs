@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
+using NuGet.PackageManagement;
 using NuGet.PackageManagement.UI;
 using NuGet.Packaging;
 using NuGet.ProjectManagement;
@@ -57,6 +58,7 @@ namespace MonoDevelop.PackageManagement
 		NuGetProjectContext projectContext;
 		List<PackageReference> packageReferences = new List<PackageReference> ();
 		AggregatePackageSourceErrorMessage aggregateErrorMessage;
+		NuGetPackageManager packageManager;
 
 		public AllPackagesViewModel ()
 		{
@@ -68,8 +70,23 @@ namespace MonoDevelop.PackageManagement
 			projectContext = new NuGetProjectContext ();
 			dotNetProject = new DotNetProjectProxy ((DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject);
 
+			packageManager = new NuGetPackageManager (
+				solutionManager.CreateSourceRepositoryProvider (),
+				solutionManager.Settings,
+				solutionManager,
+				new DeleteOnRestartManager ()
+			);
+
 			nugetProject = solutionManager.GetNuGetProject (dotNetProject);
 			GetPackagesInstalledInProject ();
+		}
+
+		public NuGetProject NuGetProject { 
+			get { return nugetProject; }
+		}
+
+		public IDotNetProject Project {
+			get { return dotNetProject; }
 		}
 
 		public string SearchTerms { get; set; }
@@ -457,6 +474,17 @@ namespace MonoDevelop.PackageManagement
 			ErrorMessage = aggregateErrorMessage.ErrorMessage;
 			HasError = true;
 			OnPropertyChanged (null);
+		}
+
+		public void LoadPackageMetadata (PackageSearchResultViewModel packageViewModel)
+		{
+			var provider = new MultiSourcePackageMetadataProvider (
+				selectedPackageSource.GetSourceRepositories (),
+				packageManager.PackagesFolderSourceRepository,
+				packageManager.GlobalPackagesFolderSourceRepository,
+				new NuGet.Logging.NullLogger ());
+
+			packageViewModel.LoadPackageMetadata (provider, cancellationTokenSource.Token);
 		}
 	}
 }

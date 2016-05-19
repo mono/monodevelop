@@ -28,11 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using NuGet.PackageManagement.UI;
-using NuGet.Packaging.Core;
-using NuGet.Protocol.Core.Types;
+using NuGet.Frameworks;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
@@ -41,6 +42,8 @@ namespace MonoDevelop.PackageManagement
 	{
 		AllPackagesViewModel parent;
 		PackageItemListViewModel viewModel;
+		PackageDetailControlModel packageDetailModel;
+		List<PackageDependencyMetadata> dependencies;
 		bool isChecked;
 
 		public PackageSearchResultViewModel (
@@ -130,6 +133,10 @@ namespace MonoDevelop.PackageManagement
 			get { return viewModel.Summary; }
 		}
 
+		public string Description {
+			get { return viewModel.Description; }
+		}
+
 		public bool HasDownloadCount {
 			get { return viewModel.DownloadCount >= 0; }
 		}
@@ -185,17 +192,17 @@ namespace MonoDevelop.PackageManagement
 		public void ReadVersions ()
 		{
 			try {
-				if (!viewModel.Versions.IsValueCreated) {
-					viewModel.Versions.Value.ContinueWith (
-						task => OnVersionsRead (task),
-						TaskScheduler.FromCurrentSynchronizationContext ());
-				}
+				packageDetailModel = new PackageDetailControlModel (parent.NuGetProject);
+				packageDetailModel.SelectedVersion = new DisplayVersion (SelectedVersion, null);
+				packageDetailModel.SetCurrentPackage (viewModel).ContinueWith (
+					task => OnVersionsRead (task),
+					TaskScheduler.FromCurrentSynchronizationContext ());
 			} catch (Exception ex) {
 				LoggingService.LogError ("ReadVersions error.", ex);
 			}
 		}
 
-		void OnVersionsRead (Task<IEnumerable<VersionInfo>> task)
+		void OnVersionsRead (Task task)
 		{
 			try {
 				if (task.IsFaulted) {
@@ -204,8 +211,8 @@ namespace MonoDevelop.PackageManagement
 					// Ignore.
 				} else {
 					Versions.Clear ();
-					foreach (VersionInfo versionInfo in task.Result.OrderByDescending (v => v.Version)) {
-						Versions.Add (versionInfo.Version);
+					foreach (NuGetVersion version in packageDetailModel.AllPackageVersions.OrderByDescending (v => v.Version)) {
+						Versions.Add (version);
 					}
 					OnPropertyChanged (viewModel => viewModel.Versions);
 				}
@@ -241,6 +248,79 @@ namespace MonoDevelop.PackageManagement
 				Versions.Add (Version);
 				Versions.Add (SelectedVersion);
 			}
+		}
+
+		public void LoadPackageMetadata (IPackageMetadataProvider metadataProvider, CancellationToken token)
+		{
+			try {
+				packageDetailModel.LoadPackageMetadaAsync (metadataProvider, token).ContinueWith (
+					task => OnPackageMetadataLoaded (task),
+					TaskScheduler.FromCurrentSynchronizationContext ());
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error getting detailed package metadata.", ex);
+			}
+		}
+
+		void OnPackageMetadataLoaded (Task task)
+		{
+			try {
+				if (task.IsFaulted) {
+					LoggingService.LogError ("Failed to read package metadata.", task.Exception);
+				} else if (task.IsCanceled) {
+					// Ignore.
+				} else {
+					var metadata = packageDetailModel?.PackageMetadata;
+					if (metadata != null) {
+						viewModel.Published = metadata.Published;
+						OnPropertyChanged ("Dependencies");
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failed to read package metadata.", ex);
+			}
+		}
+
+		public bool HasDependencies {
+			get { return CompatibleDependencies.Any (); }
+		}
+
+		public bool HasNoDependencies {
+			get { return !HasDependencies; }
+		}
+
+		public string GetPackageDependenciesDisplayText ()
+		{
+			var displayText = new StringBuilder ();
+			foreach (PackageDependencyMetadata dependency in CompatibleDependencies) {
+				displayText.AppendLine (dependency.ToString ());
+			}
+			return displayText.ToString ();
+		}
+
+		public IEnumerable<PackageDependencyMetadata> CompatibleDependencies {
+			get {
+				if (dependencies == null) {
+					dependencies = GetCompatibleDependencies ().ToList ();
+				}
+				return dependencies;
+			}
+		}
+
+		IEnumerable<PackageDependencyMetadata> GetCompatibleDependencies ()
+		{
+			var metadata = packageDetailModel?.PackageMetadata;
+			if (metadata?.HasDependencies == true) {
+				var projectTargetFramework = new ProjectTargetFramework (parent.Project);
+				var targetFramework = NuGetFramework.Parse (projectTargetFramework.TargetFrameworkName.FullName);
+
+				foreach (var dependencySet in packageDetailModel.PackageMetadata.DependencySets) {
+					if (DefaultCompatibilityProvider.Instance.IsCompatible (targetFramework, dependencySet.TargetFramework)) {
+						return dependencySet.Dependencies;
+					}
+				}
+			}
+
+			return Enumerable.Empty<PackageDependencyMetadata> ();
 		}
 	}
 }

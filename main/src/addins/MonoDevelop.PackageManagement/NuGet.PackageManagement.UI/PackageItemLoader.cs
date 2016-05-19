@@ -272,6 +272,7 @@ namespace NuGet.PackageManagement.UI
 					Author = metadata.Authors,
 					DownloadCount = metadata.DownloadCount,
 					Summary = metadata.Summary,
+					Description = metadata.Description,
 					Title = metadata.Title,
 					LicenseUrl = metadata.LicenseUrl,
 					ProjectUrl = metadata.ProjectUrl,

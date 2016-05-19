@@ -301,5 +301,6 @@ namespace NuGet.PackageManagement.UI
 		public Uri LicenseUrl { get; set; }
 		public Uri ProjectUrl { get; set; }
 		public DateTimeOffset? Published { get; set; }
+		public string Description { get; set; }
 	}
 }

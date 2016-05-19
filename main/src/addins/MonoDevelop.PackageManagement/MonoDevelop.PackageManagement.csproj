@@ -529,6 +529,13 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementCredentialService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\HttpHandlerResourceV3Extensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\AggregatePackageSourceErrorMessage.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\DetailedPackageMetadata.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageDependentSetMetadata.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageDependencyMetadata.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\MultiSourcePackageMetadataProvider.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\IPackageMetadataProvider.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\DetailControlModel.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageDetailControlModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
