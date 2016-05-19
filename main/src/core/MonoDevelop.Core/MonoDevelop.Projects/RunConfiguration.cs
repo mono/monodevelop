@@ -1,5 +1,5 @@
 ﻿//
-// ExecutionSchemeCollection.cs
+// RunConfiguration.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,41 +24,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
-	public class ExecutionSchemeCollection: ItemCollection<ExecutionScheme>
+	public class RunConfiguration
 	{
-		SolutionItem parentItem;
+		public RunConfiguration (string name)
+		{
+			Name = name;
+		}
 
-		public ExecutionSchemeCollection ()
+		public SolutionItem ParentItem {
+			get;
+			internal set;
+		}
+
+		public string Name { get; private set; }
+
+		/// <summary>
+		/// Copies the data of a run configuration into this configuration
+		/// </summary>
+		/// <param name="config">Configuration from which to get the data.</param>
+		/// <param name="isRename">If true, it means that the copy is being made as a result of a rename or clone operation. In this case,
+		/// the overriden method may change the value of some properties that depend on the configuration name.</param>
+		public void CopyFrom (RunConfiguration config, bool isRename = false)
+		{
+			OnCopyFrom (config, isRename);
+		}
+
+		protected virtual void OnCopyFrom (RunConfiguration config, bool isRename)
 		{
 		}
 
-		internal ExecutionSchemeCollection (SolutionItem parentItem)
+		public override string ToString ()
 		{
-			this.parentItem = parentItem;
+			return Name;
 		}
 
-		protected override void OnItemsAdded (IEnumerable<ExecutionScheme> items)
+		public ExecutionCommand ConfigureCommand (ExecutionCommand command)
 		{
-			if (parentItem != null) {
-				foreach (var conf in items)
-					conf.ParentItem = parentItem;
-			}
-			base.OnItemsAdded (items);
-			(parentItem as Project)?.OnExecutionSchemesAdded (items);
+			return OnConfigureCommand (command);
 		}
 
-		protected override void OnItemsRemoved (IEnumerable<ExecutionScheme> items)
+		protected virtual ExecutionCommand OnConfigureCommand (ExecutionCommand command)
 		{
-			if (parentItem != null) {
-				foreach (var conf in items)
-					conf.ParentItem = null;
-			}
-			base.OnItemsRemoved (items);
-			(parentItem as Project)?.OnExecutionSchemesRemoved (items);
+			return command;
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿//
-// DotNetExecutionScheme.cs
+// DotNetRunConfiguration.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -35,11 +35,11 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
-	public class DotNetExecutionScheme: ProjectExecutionScheme
+	public class DotNetRunConfiguration: ProjectRunConfiguration
 	{
 		MonoExecutionParameters monoParameters = new MonoExecutionParameters ();
 
-		public DotNetExecutionScheme (string name): base (name)
+		public DotNetRunConfiguration (string name): base (name)
 		{
 		}
 
@@ -127,11 +127,11 @@ namespace MonoDevelop.Projects
 			get { return monoParameters; }
 		}
 
-		protected override void OnCopyFrom (ExecutionScheme scheme, bool isRename)
+		protected override void OnCopyFrom (RunConfiguration config, bool isRename)
 		{
-			base.OnCopyFrom (scheme, isRename);
+			base.OnCopyFrom (config, isRename);
 
-			var other = (DotNetExecutionScheme)scheme;
+			var other = (DotNetRunConfiguration)config;
 
 			StartArguments = other.StartArguments;
 			StartWorkingDirectory = other.StartWorkingDirectory;

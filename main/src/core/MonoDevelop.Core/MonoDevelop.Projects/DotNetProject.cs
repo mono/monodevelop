@@ -1022,9 +1022,9 @@ namespace MonoDevelop.Projects
 			return conf;
 		}
 
-		protected override ExecutionScheme OnCreateExecutionScheme (string name)
+		protected override RunConfiguration OnCreateRunConfiguration (string name)
 		{
-			return new DotNetExecutionScheme (name);
+			return new DotNetRunConfiguration (name);
 		}
 
 		protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)

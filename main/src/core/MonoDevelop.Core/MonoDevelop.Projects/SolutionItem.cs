@@ -72,7 +72,7 @@ namespace MonoDevelop.Projects
 		public event ConfigurationEventHandler DefaultConfigurationChanged;
 		public event ConfigurationEventHandler ConfigurationAdded;
 		public event ConfigurationEventHandler ConfigurationRemoved;
-		public EventHandler ExecutionSchemesChanged;
+		public EventHandler RunConfigurationsChanged;
 
 		// When set, it means this item is saved as part of a global solution save operation
 		internal bool SavingSolution { get; set; }
@@ -972,7 +972,7 @@ namespace MonoDevelop.Projects
 		/// <param name="configuration">The configuration.</param>
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
 		{
-			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, GetDefaultExecutionScheme (configuration));
+			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, GetDefaultRunConfiguration (configuration));
 		}
 
 		/// <summary>
@@ -980,12 +980,12 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		/// <returns>The execution targets.</returns>
 		/// <param name="configuration">The configuration.</param>
-		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration, ExecutionScheme scheme)
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration, RunConfiguration runConfig)
 		{
-			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, scheme);
+			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, runConfig);
 		}
 
-		protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration, ExecutionScheme scheme)
+		protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration, RunConfiguration runConfig)
 		{
 			return ItemExtension.OnGetExecutionTargets (configuration);
 		}
@@ -1004,33 +1004,33 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
-		/// Gets the execution schemes.
+		/// Gets the run configurations.
 		/// </summary>
 		/// <returns>The execution targets.</returns>
 		/// <param name="configuration">The configuration.</param>
-		public IEnumerable<ExecutionScheme> GetExecutionSchemes (ConfigurationSelector configuration)
+		public IEnumerable<RunConfiguration> GetRunConfigurations (ConfigurationSelector configuration)
 		{
-			return ItemExtension.OnGetExecutionSchemes (new OperationContext (), configuration);
+			return ItemExtension.OnGetRunConfigurations (new OperationContext (), configuration);
 		}
 
-		public ExecutionScheme GetDefaultExecutionScheme (ConfigurationSelector configuration)
+		public RunConfiguration GetDefaultRunConfiguration (ConfigurationSelector configuration)
 		{
-			var schemes = GetExecutionSchemes (configuration);
-			return schemes.FirstOrDefault (s => s.Name == "Default") ?? schemes.FirstOrDefault ();
+			var configs = GetRunConfigurations (configuration);
+			return configs.FirstOrDefault (s => s.Name == "Default") ?? configs.FirstOrDefault ();
 		}
 
-		public void NotifyExecutionSchemesChanged ()
+		public void NotifyRunConfigurationsChanged ()
 		{
-			ItemExtension.OnExecutionSchemesChanged (new OperationContext ());
+			ItemExtension.OnRunConfigurationsChanged (new OperationContext ());
 		}
 
-		protected virtual void OnExecutionSchemesChanged ()
+		protected virtual void OnRunConfigurationsChanged ()
 		{
-			if (ExecutionSchemesChanged != null)
-				ExecutionSchemesChanged (this, EventArgs.Empty);
+			if (RunConfigurationsChanged != null)
+				RunConfigurationsChanged (this, EventArgs.Empty);
 		}
 
-		protected virtual IEnumerable<ExecutionScheme>  OnGetExecutionSchemes (ConfigurationSelector configuration)
+		protected virtual IEnumerable<RunConfiguration>  OnGetRunConfigurations (ConfigurationSelector configuration)
 		{
 			yield break;
 		}
@@ -1427,9 +1427,9 @@ namespace MonoDevelop.Projects
 				yield break;
 			}
 
-			internal protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, ExecutionScheme scheme)
+			internal protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, RunConfiguration runConfig)
 			{
-				return Item.OnGetExecutionTargets (configuration, scheme);
+				return Item.OnGetExecutionTargets (configuration, runConfig);
 			}
 
 			internal protected override void OnExecutionTargetsChanged ()
@@ -1437,14 +1437,14 @@ namespace MonoDevelop.Projects
 				Item.OnExecutionTargetsChanged ();
 			}
 
-			internal protected override IEnumerable<ExecutionScheme> OnGetExecutionSchemes (OperationContext ctx, ConfigurationSelector configuration)
+			internal protected override IEnumerable<RunConfiguration> OnGetRunConfigurations (OperationContext ctx, ConfigurationSelector configuration)
 			{
-				return Item.OnGetExecutionSchemes (configuration);
+				return Item.OnGetRunConfigurations (configuration);
 			}
 
-			internal protected override void OnExecutionSchemesChanged (OperationContext ctx)
+			internal protected override void OnRunConfigurationsChanged (OperationContext ctx)
 			{
-				Item.OnExecutionSchemesChanged ();
+				Item.OnRunConfigurationsChanged ();
 			}
 
 			internal protected override void OnReloadRequired (SolutionItemEventArgs args)

@@ -1,5 +1,5 @@
 ﻿//
-// ProjectExecutionScheme.cs
+// RunConfigurationCollection.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,64 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Projects.MSBuild;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
-	public class ProjectExecutionScheme: ExecutionScheme
+	public class RunConfigurationCollection: ItemCollection<RunConfiguration>
 	{
-		IPropertySet properties;
-		MSBuildPropertyGroup mainPropertyGroup;
+		SolutionItem parentItem;
 
-		public ProjectExecutionScheme (string name): base (name)
+		public RunConfigurationCollection ()
 		{
 		}
 
-		public new Project ParentItem {
-			get { return (Project)base.ParentItem; }
-		}
-
-		internal protected virtual void Read (IPropertySet pset)
+		internal RunConfigurationCollection (SolutionItem parentItem)
 		{
-			properties = pset;
-			pset.ReadObjectProperties (this, GetType (), true);
+			this.parentItem = parentItem;
 		}
 
-		internal protected virtual void Write (IPropertySet pset)
+		protected override void OnItemsAdded (IEnumerable<RunConfiguration> items)
 		{
-			pset.WriteObjectProperties (this, GetType (), true);
+			if (parentItem != null) {
+				foreach (var conf in items)
+					conf.ParentItem = parentItem;
+			}
+			base.OnItemsAdded (items);
+			(parentItem as Project)?.OnRunConfigurationsAdded (items);
 		}
 
-		/// <summary>
-		/// Property set where the properties for this configuration are defined.
-		/// </summary>
-		public IPropertySet Properties {
-			get {
-				return properties ?? MainPropertyGroup;
+		protected override void OnItemsRemoved (IEnumerable<RunConfiguration> items)
+		{
+			if (parentItem != null) {
+				foreach (var conf in items)
+					conf.ParentItem = null;
 			}
-			internal set {
-				properties = value;
-			}
+			base.OnItemsRemoved (items);
+			(parentItem as Project)?.OnRunConfigurationRemoved (items);
 		}
-
-		internal MSBuildPropertyGroup MainPropertyGroup {
-			get {
-				if (mainPropertyGroup == null) {
-					if (ParentItem == null)
-						mainPropertyGroup = new MSBuildPropertyGroup ();
-					else
-						mainPropertyGroup = ParentItem.MSBuildProject.CreatePropertyGroup ();
-				}
-				return mainPropertyGroup;
-			}
-			set {
-				mainPropertyGroup = value;
-			}
-		}
-
-		internal MSBuildProjectInstance ProjectInstance { get; set; }
-
-		public bool StoreInUserFile { get; set; }
 	}
 }
 

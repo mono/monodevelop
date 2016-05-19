@@ -1,5 +1,5 @@
 ﻿//
-// ExecutionSchemes.cs
+// RunConfigurations.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -33,80 +33,80 @@ using System.Linq;
 namespace MonoDevelop.Projects
 {
 	[TestFixture]
-	public class ExecutionSchemes: TestBase
+	public class RunConfigurations: TestBase
 	{
 		[Test]
-		public async Task SaveSchemes ()
+		public async Task SaveRunConfigurations ()
 		{
-			string solFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject.sln");
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject.sln");
 			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 
-			var es = new ProjectExecutionScheme ("Test1");
+			var es = new ProjectRunConfiguration ("Test1");
 			es.Properties.SetValue ("SomeValue","Foo");
-			p.ExecutionSchemes.Add (es);
+			p.RunConfigurations.Add (es);
 
-			es = new ProjectExecutionScheme ("Test2");
+			es = new ProjectRunConfiguration ("Test2");
 			es.Properties.SetValue ("SomeValue", "Bar");
-			p.ExecutionSchemes.Add (es);
+			p.RunConfigurations.Add (es);
 
-			Assert.AreEqual (2, p.GetExecutionSchemes (p.DefaultConfiguration.Selector).Count ());
+			Assert.AreEqual (2, p.GetRunConfigurations (p.DefaultConfiguration.Selector).Count ());
 
 			await sol.SaveAsync (Util.GetMonitor ());
 
 			string projectXml = File.ReadAllText (p.FileName);
-			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.schemes-added"));
+			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.configs-added"));
 			Assert.AreEqual (newProjectXml, projectXml);
 		}
 
 		[Test]
-		public async Task LoadSchemes ()
+		public async Task LoadRunConfigurations ()
 		{
-			string projFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject", "ConsoleProject.schemes-added.csproj");
+			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-			Assert.AreEqual (2, p.ExecutionSchemes.Count);
+			Assert.AreEqual (2, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectExecutionScheme> (p.ExecutionSchemes [0]);
-			var es = (ProjectExecutionScheme)p.ExecutionSchemes [0];
+			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [0]);
+			var es = (ProjectRunConfiguration)p.RunConfigurations [0];
 			Assert.AreEqual (es.Name, "Test1");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Foo");
 
-			Assert.IsInstanceOf<ProjectExecutionScheme> (p.ExecutionSchemes [1]);
-			es = (ProjectExecutionScheme)p.ExecutionSchemes [1];
+			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
+			es = (ProjectRunConfiguration)p.RunConfigurations [1];
 			Assert.AreEqual (es.Name, "Test2");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Bar");
 		}
 
 		[Test]
-		public async Task UpdateSchemes ()
+		public async Task UpdateRunConfigurations ()
 		{
-			string solFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject", "ConsoleProject.schemes-added.csproj");
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (2, p.ExecutionSchemes.Count);
+			Assert.AreEqual (2, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectExecutionScheme> (p.ExecutionSchemes [1]);
-			var es = (ProjectExecutionScheme)p.ExecutionSchemes [1];
+			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
+			var es = (ProjectRunConfiguration)p.RunConfigurations [1];
 			es.Properties.SetValue ("SomeValue", "Time");
 			es.Properties.SetValue ("SomeValue2", "Time2");
 
 			await p.SaveAsync (Util.GetMonitor ());
 
 			string projectXml = File.ReadAllText (p.FileName);
-			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.schemes-modified"));
+			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.configs-modified"));
 			Assert.AreEqual (newProjectXml, projectXml);
 		}
 
 		[Test]
-		public async Task RemoveSchemes ()
+		public async Task RemoveRunConfigurations ()
 		{
-			string solFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject", "ConsoleProject.schemes-added.csproj");
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (2, p.ExecutionSchemes.Count);
+			Assert.AreEqual (2, p.RunConfigurations.Count);
 
-			p.ExecutionSchemes.Clear ();
+			p.RunConfigurations.Clear ();
 
 			await p.SaveAsync (Util.GetMonitor ());
 
@@ -116,96 +116,96 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
-		public async Task SaveSchemesToUserProject ()
+		public async Task SaveRunConfigurationsToUserProject ()
 		{
-			string solFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject.sln");
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject.sln");
 			Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject)sol.Items [0];
 
-			var es = new ProjectExecutionScheme ("Test1");
+			var es = new ProjectRunConfiguration ("Test1");
 			es.Properties.SetValue ("SomeValue", "Foo");
-			p.ExecutionSchemes.Add (es);
+			p.RunConfigurations.Add (es);
 
-			es = new ProjectExecutionScheme ("Test2");
+			es = new ProjectRunConfiguration ("Test2");
 			es.StoreInUserFile = true;
 			es.Properties.SetValue ("SomeValue", "Bar");
-			p.ExecutionSchemes.Add (es);
+			p.RunConfigurations.Add (es);
 
-			Assert.AreEqual (2, p.GetExecutionSchemes (p.DefaultConfiguration.Selector).Count ());
+			Assert.AreEqual (2, p.GetRunConfigurations (p.DefaultConfiguration.Selector).Count ());
 
 			await sol.SaveAsync (Util.GetMonitor ());
 
 			string projectXml = File.ReadAllText (p.FileName);
-			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.schemes-user-added"));
+			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.configs-user-added"));
 			Assert.AreEqual (newProjectXml, projectXml);
 
 			Assert.IsTrue (File.Exists (p.FileName + ".user"));
 
 			projectXml = File.ReadAllText (p.FileName + ".user");
-			newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.schemes-user-added") + ".user");
+			newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.configs-user-added") + ".user");
 			Assert.AreEqual (newProjectXml, projectXml);
 		}
 
 		[Test]
-		public async Task LoadSchemesFromUserProject ()
+		public async Task LoadRunConfigurationsFromUserProject ()
 		{
-			string projFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject", "ConsoleProject.schemes-user-added.csproj");
+			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-user-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-			Assert.AreEqual (2, p.ExecutionSchemes.Count);
+			Assert.AreEqual (2, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectExecutionScheme> (p.ExecutionSchemes [0]);
-			var es = (ProjectExecutionScheme)p.ExecutionSchemes [0];
+			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [0]);
+			var es = (ProjectRunConfiguration)p.RunConfigurations [0];
 			Assert.IsFalse (es.StoreInUserFile);
 			Assert.AreEqual (es.Name, "Test1");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Foo");
 
-			Assert.IsInstanceOf<ProjectExecutionScheme> (p.ExecutionSchemes [1]);
-			es = (ProjectExecutionScheme)p.ExecutionSchemes [1];
+			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
+			es = (ProjectRunConfiguration)p.RunConfigurations [1];
 			Assert.IsTrue (es.StoreInUserFile);
 			Assert.AreEqual (es.Name, "Test2");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Bar");
 		}
 
 		[Test]
-		public async Task SwitchUserSchemes ()
+		public async Task SwitchUserRunConfigurations ()
 		{
-			string projFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject", "ConsoleProject.schemes-user-added.csproj");
+			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-user-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-			Assert.AreEqual (2, p.ExecutionSchemes.Count);
+			Assert.AreEqual (2, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectExecutionScheme> (p.ExecutionSchemes [0]);
-			var es = (ProjectExecutionScheme)p.ExecutionSchemes [0];
+			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [0]);
+			var es = (ProjectRunConfiguration)p.RunConfigurations [0];
 			es.StoreInUserFile = true;
 
-			Assert.IsInstanceOf<ProjectExecutionScheme> (p.ExecutionSchemes [1]);
-			es = (ProjectExecutionScheme)p.ExecutionSchemes [1];
+			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
+			es = (ProjectRunConfiguration)p.RunConfigurations [1];
 			es.StoreInUserFile = false;
 
 			await p.SaveAsync (Util.GetMonitor ());
 
 			string projectXml = File.ReadAllText (p.FileName);
-			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.schemes-user-switched"));
+			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.configs-user-switched"));
 			Assert.AreEqual (newProjectXml, projectXml);
 
 			Assert.IsTrue (File.Exists (p.FileName + ".user"));
 
 			projectXml = File.ReadAllText (p.FileName + ".user");
-			newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.schemes-user-switched") + ".user");
+			newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.configs-user-switched") + ".user");
 			Assert.AreEqual (newProjectXml, projectXml);
 		}
 
 		[Test]
-		public async Task RemoveUserSchemes ()
+		public async Task RemoveUserRunConfigurations ()
 		{
-			string solFile = Util.GetSampleProject ("execution-schemes", "ConsoleProject", "ConsoleProject.schemes-user-added.csproj");
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-user-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (2, p.ExecutionSchemes.Count);
+			Assert.AreEqual (2, p.RunConfigurations.Count);
 			Assert.IsTrue (File.Exists (p.FileName + ".user"));
 
-			p.ExecutionSchemes.Clear ();
+			p.RunConfigurations.Clear ();
 
 			await p.SaveAsync (Util.GetMonitor ());
 

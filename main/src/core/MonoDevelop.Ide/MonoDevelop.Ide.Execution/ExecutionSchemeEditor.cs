@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Execution
 	public abstract class ExecutionSchemeEditor
 	{
 		public abstract Control CreateControl ();
-		public abstract void Load (ExecutionScheme scheme);
+		public abstract void Load (RunConfiguration scheme);
 		public abstract void Save ();
 	}
 }

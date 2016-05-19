@@ -1,5 +1,5 @@
 ﻿//
-// ExecutionScheme.cs
+// ProjectRunConfiguration.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,53 +24,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core.Execution;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Projects
 {
-	public class ExecutionScheme
+	public class ProjectRunConfiguration: RunConfiguration
 	{
-		public ExecutionScheme (string name)
+		IPropertySet properties;
+		MSBuildPropertyGroup mainPropertyGroup;
+
+		public ProjectRunConfiguration (string name): base (name)
 		{
-			Name = name;
 		}
 
-		public SolutionItem ParentItem {
-			get;
-			internal set;
+		public new Project ParentItem {
+			get { return (Project)base.ParentItem; }
 		}
 
-		public string Name { get; private set; }
+		internal protected virtual void Read (IPropertySet pset)
+		{
+			properties = pset;
+			pset.ReadObjectProperties (this, GetType (), true);
+		}
+
+		internal protected virtual void Write (IPropertySet pset)
+		{
+			pset.WriteObjectProperties (this, GetType (), true);
+		}
 
 		/// <summary>
-		/// Copies the data of an execution scheme into this execution scheme
+		/// Property set where the properties for this configuration are defined.
 		/// </summary>
-		/// <param name="scheme">Scheme from which to get the data.</param>
-		/// <param name="isRename">If true, it means that the copy is being made as a result of a rename or clone operation. In this case,
-		/// the overriden method may change the value of some properties that depend on the scheme name.</param>
-		public void CopyFrom (ExecutionScheme scheme, bool isRename = false)
-		{
-			OnCopyFrom (scheme, isRename);
+		public IPropertySet Properties {
+			get {
+				return properties ?? MainPropertyGroup;
+			}
+			internal set {
+				properties = value;
+			}
 		}
 
-		protected virtual void OnCopyFrom (ExecutionScheme scheme, bool isRename)
-		{
+		internal MSBuildPropertyGroup MainPropertyGroup {
+			get {
+				if (mainPropertyGroup == null) {
+					if (ParentItem == null)
+						mainPropertyGroup = new MSBuildPropertyGroup ();
+					else
+						mainPropertyGroup = ParentItem.MSBuildProject.CreatePropertyGroup ();
+				}
+				return mainPropertyGroup;
+			}
+			set {
+				mainPropertyGroup = value;
+			}
 		}
 
-		public override string ToString ()
-		{
-			return Name;
-		}
+		internal MSBuildProjectInstance ProjectInstance { get; set; }
 
-		public ExecutionCommand ConfigureCommand (ExecutionCommand command)
-		{
-			return OnConfigureCommand (command);
-		}
-
-		protected virtual ExecutionCommand OnConfigureCommand (ExecutionCommand command)
-		{
-			return command;
-		}
+		public bool StoreInUserFile { get; set; }
 	}
 }
 

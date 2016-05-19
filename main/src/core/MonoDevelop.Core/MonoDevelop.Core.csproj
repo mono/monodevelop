@@ -561,10 +561,10 @@
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessConnection.cs" />
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessServer.cs" />
     <Compile Include="MonoDevelop.Projects\AssemblyReference.cs" />
-    <Compile Include="MonoDevelop.Projects\ExecutionScheme.cs" />
-    <Compile Include="MonoDevelop.Projects\ProjectExecutionScheme.cs" />
-    <Compile Include="MonoDevelop.Projects\ExecutionSchemeCollection.cs" />
-    <Compile Include="MonoDevelop.Projects\DotNetExecutionScheme.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfigurationCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\MonoExecutionParameters.cs" />
   </ItemGroup>
   <ItemGroup>
