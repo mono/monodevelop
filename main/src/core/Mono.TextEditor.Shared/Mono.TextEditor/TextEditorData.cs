@@ -37,16 +37,11 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace Mono.TextEditor
 {
-	enum SelectionMode {
-		Normal,
-		Block
-	}
-	
 	class TextEditorData : IDisposable
 	{
 		ITextEditorOptions    options;
 		TextDocument document; 
-		readonly Caret        caret;
+		readonly CaretImpl        caret;
 		
 		static Adjustment emptyAdjustment = new Adjustment (0, 0, 0, 0, 0, 0);
 		
@@ -205,7 +200,7 @@ namespace Mono.TextEditor
 		{
 			LineHeight = 16;
 
-			caret = new Caret (this);
+			caret = new CaretImpl (this);
 			caret.PositionChanged += CaretPositionChanged;
 
 			options = TextEditorOptions.DefaultOptions;
@@ -324,7 +319,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Mono.TextEditor.Caret Caret {
+		public CaretImpl Caret {
 			get {
 				return caret;
 			}
@@ -519,12 +514,12 @@ namespace Mono.TextEditor
 			if (String.IsNullOrEmpty (text))
 				return;
 			using (var undo = OpenUndoGroup ()) {
-				DeleteSelectedText (IsSomethingSelected ? MainSelection.SelectionMode != SelectionMode.Block : true);
+				DeleteSelectedText (IsSomethingSelected ? MainSelection.SelectionMode != MonoDevelop.Ide.Editor.SelectionMode.Block : true);
 				// Needs to be called after delete text, delete text handles virtual caret postitions itself,
 				// but afterwards the virtual position may need to be restored.
 				EnsureCaretIsNotVirtual ();
 
-				if (IsSomethingSelected && MainSelection.SelectionMode == SelectionMode.Block) {
+				if (IsSomethingSelected && MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block) {
 					var visualInsertLocation = LogicalToVisualLocation (MainSelection.Anchor);
 					var selection = MainSelection;
 					Caret.PreserveSelection = true;
@@ -544,10 +539,10 @@ namespace Mono.TextEditor
 						Insert (lineSegment.Offset + insertOffset, textToInsert);
 					}
 					var visualColumn = GetLine (Caret.Location.Line).GetVisualColumn (this, Caret.Column);
-					MainSelection = new Selection (
+					MainSelection = new MonoDevelop.Ide.Editor.Selection (
 						new DocumentLocation (selection.Anchor.Line, GetLine (selection.Anchor.Line).GetLogicalColumn (this, visualColumn)),
 						new DocumentLocation (selection.Lead.Line, GetLine (selection.Lead.Line).GetLogicalColumn (this, visualColumn)),
-						SelectionMode.Block
+						MonoDevelop.Ide.Editor.SelectionMode.Block
 					);
 					Caret.PreserveSelection = false;
 					Document.CommitMultipleLineUpdate (selection.MinLine, selection.MaxLine);
@@ -657,7 +652,7 @@ namespace Mono.TextEditor
 
 		#region undo/redo handling
 		DocumentLocation savedCaretPos;
-		Selection savedSelection;
+		MonoDevelop.Ide.Editor.Selection savedSelection;
 		//List<TextEditorDataState> states = new List<TextEditorDataState> ();
 
 		void OnBeginUndo (object sender, EventArgs args)
@@ -690,14 +685,14 @@ namespace Mono.TextEditor
 		class TextEditorDataState
 		{
 			DocumentLocation undoCaretPos;
-			Selection undoSelection;
+			MonoDevelop.Ide.Editor.Selection undoSelection;
 
 			DocumentLocation redoCaretPos;
-			Selection redoSelection;
+			MonoDevelop.Ide.Editor.Selection redoSelection;
 			
 			TextEditorData editor;
 			
-			public TextEditorDataState (TextEditorData editor, DocumentLocation caretPos, Selection selection)
+			public TextEditorDataState (TextEditorData editor, DocumentLocation caretPos, MonoDevelop.Ide.Editor.Selection selection)
 			{
 				this.editor        = editor;
 				undoCaretPos  = caretPos;
@@ -765,9 +760,9 @@ namespace Mono.TextEditor
 				handler (this, e);
 		}
 		
-		public SelectionMode SelectionMode {
+		public MonoDevelop.Ide.Editor.SelectionMode SelectionMode {
 			get {
-				return !MainSelection.IsEmpty ? MainSelection.SelectionMode : SelectionMode.Normal;
+				return !MainSelection.IsEmpty ? MainSelection.SelectionMode : MonoDevelop.Ide.Editor.SelectionMode.Normal;
 			}
 			set {
 				if (MainSelection.IsEmpty)
@@ -776,8 +771,8 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		Selection mainSelection = Selection.Empty;
-		public Selection MainSelection {
+		MonoDevelop.Ide.Editor.Selection mainSelection = MonoDevelop.Ide.Editor.Selection.Empty;
+		public MonoDevelop.Ide.Editor.Selection MainSelection {
 			get {
 				return mainSelection;
 			}
@@ -792,23 +787,23 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public IEnumerable<Selection> Selections {
+		public IEnumerable<MonoDevelop.Ide.Editor.Selection> Selections {
 			get {
 				yield return MainSelection;
 			}
 		}
-		
-//		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
-//		{
-//			return LogicalToVisualLocation (this, location);
-//		}
-//		
-//		public DocumentLocation VisualToLogicalLocation (DocumentLocation location)
-//		{
-//			int line = VisualToLogicalLine (location.Line);
-//			int column = Document.GetLine (line).GetVisualColumn (this, location.Column);
-//			return new DocumentLocation (line, column);
-//		}
+
+		//		public DocumentLocation LogicalToVisualLocation (DocumentLocation location)
+		//		{
+		//			return LogicalToVisualLocation (this, location);
+		//		}
+		//		
+		//		public DocumentLocation VisualToLogicalLocation (DocumentLocation location)
+		//		{
+		//			int line = VisualToLogicalLine (location.Line);
+		//			int column = Document.GetLine (line).GetVisualColumn (this, location.Column);
+		//			return new DocumentLocation (line, column);
+		//		}
 		public int SelectionAnchor {
 			get {
 				if (MainSelection.IsEmpty)
@@ -818,7 +813,7 @@ namespace Mono.TextEditor
 			set {
 				DocumentLocation location = Document.OffsetToLocation (value);
 				if (mainSelection.IsEmpty) {
-					MainSelection = new Selection (location, location);
+					MainSelection = new MonoDevelop.Ide.Editor.Selection (location, location);
 				} else {
 					if (MainSelection.Lead == location) {
 						MainSelection = MainSelection.WithLead (MainSelection.Anchor);
@@ -838,7 +833,7 @@ namespace Mono.TextEditor
 			set {
 				DocumentLocation location = Document.OffsetToLocation (value);
 				if (mainSelection.IsEmpty) {
-					MainSelection = new Selection (location, location);
+					MainSelection = new MonoDevelop.Ide.Editor.Selection (location, location);
 				} else {
 					if (MainSelection.Anchor == location) {
 						MainSelection = MainSelection.WithAnchor (MainSelection.Lead);
@@ -860,19 +855,19 @@ namespace Mono.TextEditor
 				if (SelectionRange != value) {
 					OnSelectionChanging (EventArgs.Empty);
 					if (value.Length == 0) {
-						MainSelection = Selection.Empty;
+						MainSelection = MonoDevelop.Ide.Editor.Selection.Empty;
 					} else {
 						DocumentLocation loc1 = document.OffsetToLocation (value.Offset);
 						DocumentLocation loc2 = document.OffsetToLocation (value.EndOffset);
 						if (MainSelection.IsEmpty) {
-							MainSelection = new Selection (loc1, loc2);
+							MainSelection = new MonoDevelop.Ide.Editor.Selection (loc1, loc2);
 						} else {
 							if (MainSelection.Anchor == loc1) {
 								MainSelection = MainSelection.WithLead (loc2);
 							} else if (MainSelection.Anchor == loc2) {
 								MainSelection = MainSelection.WithLead (loc1);
 							} else {
-								MainSelection = new Selection (loc1, loc2);
+								MainSelection = new MonoDevelop.Ide.Editor.Selection (loc1, loc2);
 							}
 						}
 						
@@ -916,13 +911,13 @@ namespace Mono.TextEditor
 		
 		public void ClearSelection ()
 		{
-			MainSelection = Selection.Empty;
+			MainSelection = MonoDevelop.Ide.Editor.Selection.Empty;
 		}
 		
 		public void ExtendSelectionTo (DocumentLocation location)
 		{
 			if (MainSelection.IsEmpty) {
-				MainSelection = new Selection (location, location);
+				MainSelection = new MonoDevelop.Ide.Editor.Selection (location, location);
 			} else {
 				MainSelection = MainSelection.WithLead (location);
 			}
@@ -931,17 +926,17 @@ namespace Mono.TextEditor
 		public void SetSelection (int anchorOffset, int leadOffset)
 		{
 			if (anchorOffset == leadOffset) {
-				MainSelection = Selection.Empty;
+				MainSelection = MonoDevelop.Ide.Editor.Selection.Empty;
 				return;
 			}
 			var anchor = document.OffsetToLocation (anchorOffset);
 			var lead = document.OffsetToLocation (leadOffset);
-			MainSelection = new Selection (anchor, lead);
+			MainSelection = new MonoDevelop.Ide.Editor.Selection (anchor, lead);
 		}
 
 		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
 		{
-			MainSelection = anchor == lead ? Selection.Empty : new Selection (anchor, lead);
+			MainSelection = anchor == lead ? MonoDevelop.Ide.Editor.Selection.Empty : new MonoDevelop.Ide.Editor.Selection (anchor, lead);
 		}
 
 		public void SetSelection (int anchorLine, int anchorColumn, int leadLine, int leadColumn)
@@ -956,16 +951,16 @@ namespace Mono.TextEditor
 		
 		public void SetSelectLines (int from, int to)
 		{
-			MainSelection = new Selection (document.OffsetToLocation (Document.GetLine (from).Offset), 
+			MainSelection = new MonoDevelop.Ide.Editor.Selection (document.OffsetToLocation (Document.GetLine (from).Offset), 
 			                               document.OffsetToLocation (Document.GetLine (to).EndOffsetIncludingDelimiter));
 		}
 
-		internal void DeleteSelection (Selection selection)
+		internal void DeleteSelection (MonoDevelop.Ide.Editor.Selection selection)
 		{
 			if (selection.IsEmpty)
 				throw new ArgumentNullException ("selection was empty.");
 			switch (selection.SelectionMode) {
-			case SelectionMode.Normal:
+			case MonoDevelop.Ide.Editor.SelectionMode.Normal:
 				var segment = selection.GetSelectionRange (this);
 				int len = System.Math.Min (segment.Length, Document.Length - segment.Offset);
 				var loc = selection.Anchor < selection.Lead ? selection.Anchor : selection.Lead;
@@ -974,7 +969,7 @@ namespace Mono.TextEditor
 				if (len > 0)
 					Remove (segment.Offset, len);
 				break;
-			case SelectionMode.Block:
+			case MonoDevelop.Ide.Editor.SelectionMode.Block:
 				DocumentLocation visStart = LogicalToVisualLocation (selection.Anchor);
 				DocumentLocation visEnd = LogicalToVisualLocation (selection.Lead);
 				int startCol = System.Math.Min (visStart.Column, visEnd.Column);
@@ -1015,7 +1010,7 @@ namespace Mono.TextEditor
 			bool needUpdate = false;
 			using (var undo = OpenUndoGroup ()) {
 				EnsureCaretIsNotVirtual ();
-				foreach (Selection selection in Selections) {
+				foreach (var selection in Selections) {
 					EnsureIsNotVirtual (selection.Anchor);
 					EnsureIsNotVirtual (selection.Lead);
 					var segment = selection.GetSelectionRange (this);
@@ -1113,7 +1108,7 @@ namespace Mono.TextEditor
 			if (result != null) {
 				Caret.Offset = result.Offset + result.Length;
 				if (setSelection)
-					MainSelection = new Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
+					MainSelection = new MonoDevelop.Ide.Editor.Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
 			}
 			return result;
 		}
@@ -1137,7 +1132,7 @@ namespace Mono.TextEditor
 				result.SearchWrapped = result.EndOffset > startOffset;
 				Caret.Offset = result.Offset + result.Length;
 				if (setSelection)
-					MainSelection = new Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
+					MainSelection = new MonoDevelop.Ide.Editor.Selection (Document.OffsetToLocation (result.Offset), Caret.Location);
 			}
 			return result;
 		}

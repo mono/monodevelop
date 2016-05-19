@@ -130,6 +130,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		IEnumerable<Ide.Editor.Selection> ITextEditorImpl.Selections { get { return TextEditor.GetTextEditorData ().Selections; } }
 
 		string ITextEditorImpl.ContextMenuPath {
 			get { return TextEditor.ContextMenuPath; }
@@ -1719,7 +1720,7 @@ namespace MonoDevelop.SourceEditor
 		public int SelectedLength { 
 			get {
 				if (TextEditor.IsSomethingSelected) {
-					if (TextEditor.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block)
+					if (TextEditor.MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block)
 						return Math.Abs (TextEditor.MainSelection.Anchor.Column - TextEditor.MainSelection.Lead.Column);
 					return TextEditor.SelectionRange.Length;
 				}
@@ -1834,7 +1835,7 @@ namespace MonoDevelop.SourceEditor
 
 			bool blockMode = false;
 			if (data.IsSomethingSelected) {
-				blockMode = data.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block;
+				blockMode = data.MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block;
 				if (blockMode) {
 					data.Caret.PreserveSelection = true;
 					triggerOffset = data.Caret.Offset - length;
@@ -2745,14 +2746,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		MonoDevelop.Ide.Editor.DocumentLocation ITextEditorImpl.CaretLocation {
+		IReadOnlyList<Caret> ITextEditorImpl.Carets {
 			get {
-				var loc = TextEditor.Caret.Location;
-				return new MonoDevelop.Ide.Editor.DocumentLocation (loc.Line, loc.Column);
-			}
-			set {
-				TextEditor.Caret.Location = new DocumentLocation (value.Line, value.Column);
-				TextEditor.ScrollToCaret ();
+				return new Caret [] { TextEditor.Caret };
 			}
 		}
 
@@ -2817,7 +2813,7 @@ namespace MonoDevelop.SourceEditor
 				);
 			}
 			set {
-				TextEditor.MainSelection = new Mono.TextEditor.Selection (
+				TextEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (
 					value.BeginLine,
 					value.BeginColumn,
 					value.EndLine,
@@ -3339,7 +3335,7 @@ namespace MonoDevelop.SourceEditor
 
 		void IEditorActionHost.ToggleBlockSelectionMode ()
 		{
-			TextEditor.SelectionMode = TextEditor.SelectionMode == Mono.TextEditor.SelectionMode.Normal ? Mono.TextEditor.SelectionMode.Block : Mono.TextEditor.SelectionMode.Normal;
+			TextEditor.SelectionMode = TextEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Normal ? MonoDevelop.Ide.Editor.SelectionMode.Block : MonoDevelop.Ide.Editor.SelectionMode.Normal;
 			TextEditor.QueueDraw ();
 		}
 

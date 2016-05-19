@@ -1,9 +1,10 @@
-// DocumentLocation.cs
+﻿//
+// Caret.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2007 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,27 +23,46 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
-
 using System;
-using MonoDevelop.Ide.Editor;
 
-namespace Mono.TextEditor
+namespace MonoDevelop.Ide.Editor
 {
-	class DocumentLocationEventArgs : System.EventArgs
+	public abstract class Caret
 	{
-		readonly DocumentLocation location;
-		
-		public DocumentLocation Location {
+		public abstract DocumentLocation Location {
+			get;
+			set;
+		}
+
+		public virtual int Line {
 			get {
-				return location;
+				return Location.Line;
+			}
+			set {
+				Location = new DocumentLocation (value, Column);
 			}
 		}
-		
-		public DocumentLocationEventArgs (DocumentLocation location)
-		{
-			this.location = location;
+
+		public virtual int Column {
+			get {
+				return Location.Column;
+			}
+			set {
+				Location = new DocumentLocation (Line, value);
+			}
 		}
+
+		public abstract int Offset {
+			get;
+			set;
+		}
+
+		protected virtual void OnPositionChanged (DocumentLocationEventArgs args)
+		{
+			if (PositionChanged != null)
+				PositionChanged (this, args);
+		}
+
+		public event EventHandler<DocumentLocationEventArgs> PositionChanged;
 	}
 }

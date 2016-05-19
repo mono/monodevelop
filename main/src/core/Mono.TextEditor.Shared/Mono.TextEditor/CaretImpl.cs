@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {
-	class Caret
+	class CaretImpl : MonoDevelop.Ide.Editor.Caret
 	{
 		bool isInInsertMode = true;
 		bool autoScrollToCaret = true;
@@ -40,7 +40,7 @@ namespace Mono.TextEditor
 		CaretMode mode;
 		
 		int line = DocumentLocation.MinLine;
-		public int Line {
+		public override int Line {
 			get {
 				return line;
 			}
@@ -59,7 +59,7 @@ namespace Mono.TextEditor
 		}
 		
 		int column = DocumentLocation.MinColumn;
-		public int Column {
+		public override int Column {
 			get {
 				return column;
 			}
@@ -77,7 +77,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public DocumentLocation Location {
+		public override DocumentLocation Location {
 			get {
 				return new DocumentLocation (Line, Column);
 			}
@@ -99,7 +99,7 @@ namespace Mono.TextEditor
 
 		ITextSourceVersion offsetVersion;
 		int caretOffset;
-		public int Offset {
+		public override int Offset {
 			get {
 				return caretOffset;
 			}
@@ -193,7 +193,7 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		public Caret (TextEditorData editor)
+		public CaretImpl (TextEditorData editor)
 		{
 			TextEditorData = editor;
 			IsVisible = true;
@@ -323,14 +323,12 @@ namespace Mono.TextEditor
 			}
 			Offset = offset;
 		}
-		
-		protected virtual void OnPositionChanged (DocumentLocationEventArgs args)
+
+		protected override void OnPositionChanged (DocumentLocationEventArgs args)
 		{
 			TextEditorData.Document.EnsureOffsetIsUnfolded (Offset);
-			if (PositionChanged != null) 
-				PositionChanged (this, args);
+			base.OnPositionChanged (args);
 		}
-		public event EventHandler<DocumentLocationEventArgs> PositionChanged;
 		
 		protected virtual void OnModeChanged ()
 		{

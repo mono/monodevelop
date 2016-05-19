@@ -106,7 +106,7 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		Caret Caret {
+		CaretImpl Caret {
 			get { return textEditor.Caret; }
 		}
 
@@ -678,7 +678,7 @@ namespace Mono.TextEditor
 				selectionStart = segment.Offset;
 				selectionEnd = segment.EndOffset;
 
-				if (textEditor.SelectionMode == SelectionMode.Block) {
+				if (textEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block) {
 					DocumentLocation start = textEditor.MainSelection.Anchor;
 					DocumentLocation end = textEditor.MainSelection.Lead;
 
@@ -1597,7 +1597,7 @@ namespace Mono.TextEditor
 					endX = startX;
 				}
 
-				if (textEditor.MainSelection.SelectionMode == SelectionMode.Block && startX == endX) {
+				if (textEditor.MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block && startX == endX) {
 					endX = startX + 2;
 				}
 				if (startY == endY) {
@@ -1879,7 +1879,7 @@ namespace Mono.TextEditor
 			
 			InSelectionDrag = false;
 			inDrag = false;
-			Selection selection = textEditor.MainSelection;
+			var selection = textEditor.MainSelection;
 			int oldOffset = textEditor.Caret.Offset;
 
 			string link = GetLink != null ? GetLink (args) : null;
@@ -1930,7 +1930,7 @@ namespace Mono.TextEditor
 					mouseWordStart = data.FindCurrentWordStart (offset);
 					mouseWordEnd = data.FindCurrentWordEnd (offset);
 					Caret.Offset = mouseWordEnd;
-					textEditor.MainSelection = new Selection (textEditor.Document.OffsetToLocation (mouseWordStart), textEditor.Document.OffsetToLocation (mouseWordEnd));
+					textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (textEditor.Document.OffsetToLocation (mouseWordStart), textEditor.Document.OffsetToLocation (mouseWordEnd));
 					InSelectionDrag = true;
 					mouseSelectionMode = MouseSelectionMode.Word;
 
@@ -1964,7 +1964,7 @@ namespace Mono.TextEditor
 						InSelectionDrag = true;
 						Caret.PreserveSelection = true;
 						if (!textEditor.IsSomethingSelected) {
-							textEditor.MainSelection = new Selection (Caret.Location, clickLocation);
+							textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (Caret.Location, clickLocation);
 							Caret.Location = clickLocation;
 						} else {
 							Caret.Location = clickLocation;
@@ -1975,7 +1975,7 @@ namespace Mono.TextEditor
 						textEditor.ClearSelection ();
 						Caret.Location = clickLocation;
 						InSelectionDrag = true;
-						textEditor.MainSelection = new Selection (clickLocation, clickLocation);
+						textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (clickLocation, clickLocation);
 					}
 					textEditor.RequestResetCaretBlink ();
 				}
@@ -2014,7 +2014,7 @@ namespace Mono.TextEditor
 		bool IsInsideSelection (DocumentLocation clickLocation)
 		{
 			var selection = textEditor.MainSelection;
-			if (selection.SelectionMode == SelectionMode.Block) {
+			if (selection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block) {
 				int minColumn = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
 				int maxColumn = System.Math.Max (selection.Anchor.Column, selection.Lead.Column);
 
@@ -2325,9 +2325,9 @@ namespace Mono.TextEditor
 					}
 					if (!textEditor.MainSelection.IsEmpty) {
 						if (Caret.Offset < mouseWordStart) {
-							textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
+							textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (Document.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
 						} else {
-							textEditor.MainSelection = new Selection (Document.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
+							textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (Document.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
 						}
 					}
 				}
@@ -2340,9 +2340,9 @@ namespace Mono.TextEditor
 				Caret.Offset = o2;
 				if (!textEditor.MainSelection.IsEmpty) {
 					if (mouseWordStart < o2) {
-						textEditor.MainSelection = new Selection (textEditor.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
+						textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (textEditor.OffsetToLocation (mouseWordStart), Caret.Location, textEditor.MainSelection.SelectionMode);
 					} else {
-						textEditor.MainSelection = new Selection (textEditor.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
+						textEditor.MainSelection = new MonoDevelop.Ide.Editor.Selection (textEditor.OffsetToLocation (mouseWordEnd), Caret.Location, textEditor.MainSelection.SelectionMode);
 					}
 				}
 
@@ -2360,11 +2360,11 @@ namespace Mono.TextEditor
 				blockSelModifier |= (ModifierType.SuperMask | ModifierType.Mod4Mask);
 
 			if ((args.ModifierState & blockSelModifier) != 0) {
-				textEditor.SelectionMode = SelectionMode.Block;
+				textEditor.SelectionMode = MonoDevelop.Ide.Editor.SelectionMode.Block;
 			} else {
-				if (textEditor.SelectionMode == SelectionMode.Block)
+				if (textEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block)
 					Document.CommitMultipleLineUpdate (textEditor.MainSelection.MinLine, textEditor.MainSelection.MaxLine);
-				textEditor.SelectionMode = SelectionMode.Normal;
+				textEditor.SelectionMode = MonoDevelop.Ide.Editor.SelectionMode.Normal;
 			}
 			InSelectionDrag = true;
 			base.MouseHover (args);
@@ -2738,7 +2738,7 @@ namespace Mono.TextEditor
 			bool isEolSelected = 
 				!this.HideSelection && 
 				textEditor.IsSomethingSelected && 
-				textEditor.SelectionMode == SelectionMode.Normal && 
+				textEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Normal && 
 				textEditor.MainSelection.ContainsLine (lineNr) &&
 				textEditor.MainSelection.Contains (lineNr + 1, 1);
 
@@ -2748,7 +2748,7 @@ namespace Mono.TextEditor
 				textEditor.Allocation.Width - lx,
 				lineArea.Height);
 
-			if (textEditor.SelectionMode == SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.Length)) {
+			if (textEditor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (line.Offset + line.Length)) {
 				DocumentLocation start = textEditor.MainSelection.Anchor;
 				DocumentLocation end = textEditor.MainSelection.Lead;
 				DocumentLocation visStart = textEditor.LogicalToVisualLocation (start);

@@ -38,6 +38,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -380,11 +381,11 @@ namespace MonoDevelop.VersionControl.Views
 
 		internal static void CaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
-			Caret caret = (Caret)sender;
+			CaretImpl caret = (CaretImpl)sender;
 			UpdateCaretPosition (caret);
 		}
 
-		static void UpdateCaretPosition (Caret caret)
+		static void UpdateCaretPosition (CaretImpl caret)
 		{
 //			int offset = caret.Offset;
 //			if (offset < 0 || offset > caret.TextEditorData.Document.TextLength)

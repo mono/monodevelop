@@ -114,10 +114,10 @@ namespace Mono.TextEditor
 				DocumentLine line = args.LineSegment;
 				if (args.Type == EventType.TwoButtonPress) {
 					if (line != null)
-						editor.MainSelection = new Selection (loc, GetLineEndLocation (editor.GetTextEditorData (), lineNumber));
+						editor.MainSelection = new MonoDevelop.Ide.Editor.Selection (loc, GetLineEndLocation (editor.GetTextEditorData (), lineNumber));
 				} else if (extendSelection) {
 					if (!editor.IsSomethingSelected) {
-						editor.MainSelection = new Selection (loc, loc);
+						editor.MainSelection = new MonoDevelop.Ide.Editor.Selection (loc, loc);
 					} else {
 						editor.MainSelection = editor.MainSelection.WithLead (loc);
 					}
@@ -165,7 +165,7 @@ namespace Mono.TextEditor
 				int lineNumber = args.LineNumber >= DocumentLocation.MinLine ? args.LineNumber : editor.Document.LineCount;
 				editor.Caret.PreserveSelection = true;
 				editor.Caret.Location = new DocumentLocation (lineNumber, DocumentLocation.MinColumn);
-				editor.MainSelection = new Selection (anchorLocation, editor.Caret.Location);
+				editor.MainSelection = new MonoDevelop.Ide.Editor.Selection (anchorLocation, editor.Caret.Location);
 				editor.Caret.PreserveSelection = false;
 			}
 		}

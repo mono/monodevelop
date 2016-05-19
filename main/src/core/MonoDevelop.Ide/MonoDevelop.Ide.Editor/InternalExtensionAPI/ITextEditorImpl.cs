@@ -56,13 +56,11 @@ namespace MonoDevelop.Ide.Editor
 
 		IReadonlyTextDocument Document { get; }
 
-		DocumentLocation CaretLocation { get; set; }
-
 		SemanticHighlighting SemanticHighlighting { get; set; }
 
-		int CaretOffset { get; set; }
-
 		bool IsSomethingSelected { get; }
+
+		IEnumerable<Selection> Selections { get; }
 
 		SelectionMode SelectionMode { get; }
 
@@ -214,6 +212,7 @@ namespace MonoDevelop.Ide.Editor
 		void UpdateBraceMatchingResult (BraceMatchingResult? result);
 
 		IEnumerable<IDocumentLine> VisibleLines { get; }
+		IReadOnlyList<Caret> Carets { get; }
 
 		event EventHandler<LineEventArgs> LineShown;
 		event EventHandler FocusLost;

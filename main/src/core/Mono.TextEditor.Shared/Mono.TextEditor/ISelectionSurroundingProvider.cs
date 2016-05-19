@@ -107,10 +107,10 @@ namespace Mono.TextEditor
 						textEditorData.Insert (lineSegment.Offset + endCol, end);
 				}
 				
-				textEditorData.MainSelection = new Selection (
+				textEditorData.MainSelection = new MonoDevelop.Ide.Editor.Selection (
 					new DocumentLocation (selection.Anchor.Line, endCol == selection.Anchor.Column ? endCol + start.Length : startCol + 1 + start.Length),
 					new DocumentLocation (selection.Lead.Line, endCol == selection.Anchor.Column ? startCol + 1 + start.Length : endCol + start.Length),
-					Mono.TextEditor.SelectionMode.Block);
+					MonoDevelop.Ide.Editor.SelectionMode.Block);
 				textEditorData.Document.CommitMultipleLineUpdate (textEditorData.MainSelection.MinLine, textEditorData.MainSelection.MaxLine);
 			} else {
 				int anchorOffset = textEditorData.MainSelection.GetAnchorOffset (textEditorData);

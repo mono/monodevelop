@@ -380,7 +380,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public static void ExpandSelectionToLine (TextEditor textEditor)
 		{
-			// from Mono.TextEditor.SelectionActions.ExpandSelectionToLine
+			// from MonoDevelop.Ide.Editor.SelectionActions.ExpandSelectionToLine
 			using (var undoGroup = textEditor.OpenUndoGroup ()) {
 				var curLineSegment = textEditor.GetLine (textEditor.CaretLine).SegmentIncludingDelimiter;
 				var range = textEditor.SelectionRange;

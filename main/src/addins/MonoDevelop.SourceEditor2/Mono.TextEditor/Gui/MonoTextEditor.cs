@@ -422,7 +422,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public Mono.TextEditor.Caret Caret {
+		public Mono.TextEditor.CaretImpl Caret {
 			get {
 				return textArea.Caret;
 			}
@@ -701,7 +701,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public Selection MainSelection {
+		public MonoDevelop.Ide.Editor.Selection MainSelection {
 			get {
 				return textArea.MainSelection;
 			}
@@ -710,7 +710,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public SelectionMode SelectionMode {
+		public MonoDevelop.Ide.Editor.SelectionMode SelectionMode {
 			get {
 				return textArea.SelectionMode;
 			}

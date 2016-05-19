@@ -31,6 +31,7 @@ using System.Linq;
 using Gtk;
 using System.Timers;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {

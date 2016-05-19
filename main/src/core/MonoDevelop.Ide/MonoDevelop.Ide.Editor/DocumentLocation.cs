@@ -233,5 +233,21 @@ namespace MonoDevelop.Ide.Editor
 			return base.ConvertTo(context, culture, value, destinationType);
 		}
 	}
+
+	public class DocumentLocationEventArgs : System.EventArgs
+	{
+		readonly DocumentLocation location;
+
+		public DocumentLocation Location {
+			get {
+				return location;
+			}
+		}
+
+		public DocumentLocationEventArgs (DocumentLocation location)
+		{
+			this.location = location;
+		}
+	}
 }
 

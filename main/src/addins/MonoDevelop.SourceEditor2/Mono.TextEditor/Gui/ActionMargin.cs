@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor
 {

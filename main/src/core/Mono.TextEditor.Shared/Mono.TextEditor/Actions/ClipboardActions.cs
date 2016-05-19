@@ -196,7 +196,7 @@ namespace Mono.TextEditor
 				TargetList = new TargetList (TargetEntries);
 			}
 			
-			void CopyData (TextEditorData data, Selection selection)
+			void CopyData (TextEditorData data, MonoDevelop.Ide.Editor.Selection selection)
 			{
 				if (!selection.IsEmpty && data != null && data.Document != null) {
 					this.docStyle = data.ColorStyle;
@@ -205,7 +205,7 @@ namespace Mono.TextEditor
 
 
 					switch (selection.SelectionMode) {
-					case SelectionMode.Normal:
+					case MonoDevelop.Ide.Editor.SelectionMode.Normal:
 						isBlockMode = false;
 						var segment = selection.GetSelectionRange (data);
 						copiedColoredChunks = ColoredSegment.GetChunks (data, segment);
@@ -218,7 +218,7 @@ namespace Mono.TextEditor
 							}
 						}
 						break;
-					case SelectionMode.Block:
+					case MonoDevelop.Ide.Editor.SelectionMode.Block:
 						isBlockMode = true;
 						var visStart = data.LogicalToVisualLocation (selection.Anchor);
 						var visEnd = data.LogicalToVisualLocation (selection.Lead);
@@ -244,14 +244,14 @@ namespace Mono.TextEditor
 			
 			public void CopyData (TextEditorData data)
 			{
-				Selection selection;
+				MonoDevelop.Ide.Editor.Selection selection;
 				isLineSelectionMode = !data.IsSomethingSelected;
 				if (data.IsSomethingSelected) {
 					selection = data.MainSelection;
 				} else {
 					var start = DeleteActions.GetStartOfLineOffset (data, data.Caret.Location);
 					var end = DeleteActions.GetEndOfLineOffset (data, data.Caret.Location, false);
-					selection = new Selection (data.OffsetToLocation (start), data.OffsetToLocation (end));
+					selection = new MonoDevelop.Ide.Editor.Selection (data.OffsetToLocation (start), data.OffsetToLocation (end));
 				}
 				CopyData (data, selection);
 				
@@ -302,7 +302,7 @@ namespace Mono.TextEditor
 							using (var undo = data.OpenUndoGroup ()) {
 								var version = data.Document.Version;
 								if (!preserveSelection)
-									data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+									data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != MonoDevelop.Ide.Editor.SelectionMode.Block);
 								int startLine = data.Caret.Line;
 								data.EnsureCaretIsNotVirtual ();
 								insertionOffset = version.MoveOffsetTo (data.Document.Version, insertionOffset);
@@ -354,7 +354,7 @@ namespace Mono.TextEditor
 						} else if (pasteLine) {
 							using (var undo = data.OpenUndoGroup ()) {
 								if (!preserveSelection)
-									data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+									data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != MonoDevelop.Ide.Editor.SelectionMode.Block);
 								data.EnsureCaretIsNotVirtual ();
 
 								data.Caret.PreserveSelection = true;
@@ -393,10 +393,10 @@ namespace Mono.TextEditor
 			try {
 				var version = data.Document.Version;
 				if (!preserveSelection)
-					data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != SelectionMode.Block);
+					data.DeleteSelectedText (!data.IsSomethingSelected || data.MainSelection.SelectionMode != MonoDevelop.Ide.Editor.SelectionMode.Block);
 				int startLine = data.Caret.Line;
 				data.EnsureCaretIsNotVirtual ();
-				if (data.IsSomethingSelected && data.MainSelection.SelectionMode == SelectionMode.Block) {
+				if (data.IsSomethingSelected && data.MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block) {
 					var selection = data.MainSelection;
 					var visualInsertLocation = data.LogicalToVisualLocation (selection.Anchor);
 					for (int lineNumber = selection.MinLine; lineNumber <= selection.MaxLine; lineNumber++) {

@@ -220,7 +220,7 @@ namespace Mono.TextEditor
 						}
 
 						var visualColumn = data.GetLine (data.Caret.Location.Line).GetVisualColumn (data, col - 1);
-						data.MainSelection = new Selection (
+						data.MainSelection = new MonoDevelop.Ide.Editor.Selection (
 							new DocumentLocation (data.MainSelection.Anchor.Line, data.GetLine (data.MainSelection.Anchor.Line).GetLogicalColumn (data, visualColumn)),
 							new DocumentLocation (data.MainSelection.Lead.Line, data.GetLine (data.MainSelection.Lead.Line).GetLogicalColumn (data, visualColumn)),
 							SelectionMode.Block

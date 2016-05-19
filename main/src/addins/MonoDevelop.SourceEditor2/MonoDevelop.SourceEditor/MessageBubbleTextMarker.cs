@@ -598,7 +598,7 @@ namespace MonoDevelop.SourceEditor
 			var max = Math.Round (editor.TextViewMargin.XOffset + editor.LineHeight / 2);
 			double x2 = Math.Max (min, max);
 
-			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != Mono.TextEditor.SelectionMode.Block ? editor.SelectionRange.Contains (LineSegment.Offset + LineSegment.Length) : false;
+			bool isEolSelected = editor.IsSomethingSelected && editor.SelectionMode != MonoDevelop.Ide.Editor.SelectionMode.Block ? editor.SelectionRange.Contains (LineSegment.Offset + LineSegment.Length) : false;
 
 			int active = 0;
 			bool highlighted = active == 0 && isCaretInLine;
@@ -623,7 +623,7 @@ namespace MonoDevelop.SourceEditor
 						endX = startX;
 					}
 
-					if (editor.MainSelection.SelectionMode == Mono.TextEditor.SelectionMode.Block && startX == endX)
+					if (editor.MainSelection.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block && startX == endX)
 						endX = startX + 2;
 					startX += metrics.TextRenderStartPosition;
 					endX += metrics.TextRenderStartPosition;

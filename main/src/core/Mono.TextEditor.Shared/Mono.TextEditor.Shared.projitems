@@ -11,7 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DiffTracker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentLine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentLocation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentRegion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\DocumentUpdateRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\EmacsWordFindStrategy.cs" />
@@ -72,7 +71,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\RtfWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\TextBreaker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\BookmarkMarker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Caret.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\CaretImpl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\EditMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\EditModeChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\HeightTree.cs" />

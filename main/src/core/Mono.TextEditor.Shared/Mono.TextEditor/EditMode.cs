@@ -95,7 +95,7 @@ namespace Mono.TextEditor
 			mod = accels [0].Modifier;
 		}
 
-		protected Caret Caret { get { return textEditorData.Caret; } }
+		protected CaretImpl Caret { get { return textEditorData.Caret; } }
 		protected TextDocument Document { get { return textEditorData.Document; } }
 		protected MonoTextEditor Editor { get { return editor; } }
 		protected TextEditorData Data { get { return textEditorData; } }
@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 							}
 							var visualColumn = textEditorData.GetLine (Caret.Location.Line).GetVisualColumn (textEditorData, Caret.Column);
 
-							textEditorData.MainSelection = new Selection (
+							textEditorData.MainSelection = new MonoDevelop.Ide.Editor.Selection (
 								new DocumentLocation (selection.Anchor.Line, textEditorData.GetLine (selection.Anchor.Line).GetLogicalColumn (textEditorData, visualColumn)),
 								new DocumentLocation (selection.Lead.Line, textEditorData.GetLine (selection.Lead.Line).GetLogicalColumn (textEditorData, visualColumn)),
 								SelectionMode.Block

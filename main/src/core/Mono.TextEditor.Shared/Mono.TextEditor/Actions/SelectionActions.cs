@@ -63,7 +63,7 @@ namespace Mono.TextEditor
 		{
 			data.Caret.PreserveSelection = true;
 			if (!data.IsSomethingSelected) {
-				data.MainSelection = new Selection (data.Caret.Location, data.Caret.Location);
+				data.MainSelection = new MonoDevelop.Ide.Editor.Selection (data.Caret.Location, data.Caret.Location);
 			}
 			data.Caret.AutoScrollToCaret = false;
 		}
@@ -108,7 +108,7 @@ namespace Mono.TextEditor
 		{
 			data.Caret.PreserveSelection = true;
 			if (!data.IsSomethingSelected) {
-				data.MainSelection = new Selection (new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn), new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn));
+				data.MainSelection = new MonoDevelop.Ide.Editor.Selection (new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn), new DocumentLocation (data.Caret.Line, DocumentLocation.MinColumn));
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace Mono.TextEditor
 		public static void SelectAll (TextEditorData data)
 		{
 			data.Caret.PreserveSelection = true;
-			data.MainSelection = new Selection (new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn), data.OffsetToLocation (data.Length));
+			data.MainSelection = new MonoDevelop.Ide.Editor.Selection (new DocumentLocation (DocumentLocation.MinLine, DocumentLocation.MinColumn), data.OffsetToLocation (data.Length));
 			data.Caret.PreserveSelection = false;
 		}
 
