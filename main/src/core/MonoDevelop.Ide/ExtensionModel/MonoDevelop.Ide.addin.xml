@@ -40,6 +40,13 @@
 			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
 		</ExtensionNode>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/PreStartupHandlers" name = "Pre-startup handlers">
+		<Description>Commands to be automatically executed before the IDE UI is initialized. </Description>>
+		<ExtensionNode name="Class" objectType="MonoDevelop.Components.Commands.CommandHandler" customAttributeType="MonoDevelop.Ide.Extensions.StartupHandlerExtensionAttribute">
+			<Description>A subclass of MonoDevelop.Components.Commands.CommandHandler</Description>
+		</ExtensionNode>
+	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/InitCompleteHandlers" name = "Post inialization handlers">
 		<Description>Commands to be automatically executed when the IDE finishes initalization.</Description>
@@ -168,11 +175,6 @@
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
 		<Description>Styles</Description>
 		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
-		<Description>Styles</Description>
-		<ExtensionNode name="SyntaxMode" type="MonoDevelop.Ide.Editor.Highlighting.SyntaxModeCodon"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/EditorFactory" name = "Editor factories">

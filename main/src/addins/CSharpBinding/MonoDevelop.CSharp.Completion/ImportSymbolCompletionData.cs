@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (displayDescription == null) {
 				Initialize ();
 				if (generateUsing || insertNamespace) {
-					displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.ContainingNamespace.Name);
+					displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.ContainingNamespace.GetFullName ());
 				} else {
 					displayDescription = "";
 				}

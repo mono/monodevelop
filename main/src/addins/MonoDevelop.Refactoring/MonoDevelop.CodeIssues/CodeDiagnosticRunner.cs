@@ -54,7 +54,7 @@ namespace MonoDevelop.CodeIssues
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
 			try {
-				var model = input.ParsedDocument.GetAst<SemanticModel> ();
+				var model = await analysisDocument.DocumentContext.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
 				if (model == null)
 					return Enumerable.Empty<Result> ();
 				var compilation = model.Compilation;

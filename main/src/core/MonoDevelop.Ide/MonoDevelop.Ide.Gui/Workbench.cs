@@ -55,6 +55,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -145,9 +146,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return workbench.Close();
 		}
-		
+
 		public ImmutableList<Document> Documents {
 			get { return documents; }
+		}
+
+		/// <summary>
+		/// This is a wrapper for use with AutoTest
+		/// </summary>
+		internal bool DocumentsDirty {
+			get { return Documents.Any (d => d.IsDirty); }
 		}
 
 		public Document ActiveDocument {
@@ -316,12 +324,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SaveAll ()
 		{
-			// Make a copy of the list, since it may change during save
-			Document[] docs = new Document [Documents.Count];
-			Documents.CopyTo (docs, 0);
-			
-			foreach (Document doc in docs)
-				doc.Save ();
+			ITimeTracker tt = Counters.SaveAllTimer.BeginTiming ();
+			try {
+				// Make a copy of the list, since it may change during save
+				Document[] docs = new Document [Documents.Count];
+				Documents.CopyTo (docs, 0);
+
+				foreach (Document doc in docs)
+					doc.Save ();
+			} finally {
+				tt.End ();
+			}
 		}
 
 		internal bool SaveAllDirtyFiles ()

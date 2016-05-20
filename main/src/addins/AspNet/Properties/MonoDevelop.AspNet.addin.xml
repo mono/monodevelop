@@ -265,10 +265,6 @@
 		<NodeBuilder id="AspNetFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.ProjectPad.AspNetFolderNodeBuilderExtension"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
-		<SyntaxMode mimeTypes="application/x-aspx" class="MonoDevelop.AspNet.WebForms.WebFormsSyntaxMode"/>
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
 		<MimeType id="application/x-aspx" _description="ASP.NET page" icon="md-html-file-icon" isText="true">
 			<File pattern="*.aspx" />

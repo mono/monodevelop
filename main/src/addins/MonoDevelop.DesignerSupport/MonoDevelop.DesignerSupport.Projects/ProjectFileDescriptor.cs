@@ -57,7 +57,7 @@ namespace MonoDevelop.DesignerSupport
 
 			var grid = ((PropertyPad)pad.Content).PropertyGrid;
 			if (args.Any (arg => arg.ProjectFile == file))
-				grid.Refresh ();
+				grid.Populate (saveEditSession: false);
 		}
 
 		void IDisposable.Dispose ()

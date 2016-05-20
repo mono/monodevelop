@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
 			var doc = TextEditorFactory.CreateNewDocument ();
-			doc.Text = provider.ReadString ();
+			doc.Text = provider.ReadString ().ReadToEnd ();
 			int position = location.SourceSpan.Start;
 			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
@@ -269,8 +269,8 @@ namespace MonoDevelop.Ide
 				if (metadataDllName == "CommonLanguageRuntimeLibrary")
 					metadataDllName = "corlib.dll";
 				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
-					if (assembly.IndexOf (metadataDllName) > 0) {
-						fileName = dn.GetAbsoluteChildPath (assembly);
+					if (assembly.FilePath.ToString ().IndexOf (metadataDllName, StringComparison.Ordinal) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
 					}
 				}
@@ -334,8 +334,8 @@ namespace MonoDevelop.Ide
 			var dn = project as DotNetProject;
 			if (dn != null) {
 				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
-					if (assembly.IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
-						fileName = dn.GetAbsoluteChildPath (assembly);
+					if (assembly.FilePath.ToString ().IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
 					}
 				}
