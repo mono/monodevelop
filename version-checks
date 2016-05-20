@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=6f91cdabf6c505ff6d8e404f252ac6aae144196a
+DEP_NEEDED_VERSION[0]=0082828a0db5e0dc653bf586a64f967e0022b5d9
 DEP_BRANCH_AND_REMOTE[0]="combined-device-log origin/combined-device-log"
  
 # heap-shot
