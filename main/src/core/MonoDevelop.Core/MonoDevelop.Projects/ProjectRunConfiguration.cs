@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Projects.MSBuild;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -41,6 +43,22 @@ namespace MonoDevelop.Projects
 			get { return (Project)base.ParentItem; }
 		}
 
+		/// <summary>
+		/// Copies the data of a run configuration into this configuration
+		/// </summary>
+		/// <param name="config">Configuration from which to get the data.</param>
+		/// <param name="isRename">If true, it means that the copy is being made as a result of a rename or clone operation. In this case,
+		/// the overriden method may change the value of some properties that depend on the configuration name.</param>
+		public void CopyFrom (ProjectRunConfiguration config, bool isRename = false)
+		{
+			StoreInUserFile = config.StoreInUserFile;
+			OnCopyFrom (config, isRename);
+		}
+
+		protected virtual void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
+		{
+		}
+
 		internal protected virtual void Read (IPropertySet pset)
 		{
 			properties = pset;
@@ -50,6 +68,37 @@ namespace MonoDevelop.Projects
 		internal protected virtual void Write (IPropertySet pset)
 		{
 			pset.WriteObjectProperties (this, GetType (), true);
+		}
+
+		internal bool Equals (ProjectRunConfiguration other)
+		{
+			var dict1 = new Dictionary<string, string> ();
+			var dict2 = new Dictionary<string, string> ();
+
+			var thisData = new ProjectItemMetadata ();
+			Write (thisData);
+			GetProps (MainPropertyGroup, dict1);
+			GetProps (thisData, dict1);
+
+			var otherData = new ProjectItemMetadata ();
+			Write (otherData);
+			GetProps (other.MainPropertyGroup, dict2);
+			GetProps (otherData, dict2);
+
+			if (dict1.Count != dict2.Count)
+				return false;
+			foreach (var tp in dict1) {
+				string v;
+				if (!dict2.TryGetValue (tp.Key, out v) || tp.Value != v)
+					return false;
+			}
+			return true;
+		}
+
+		void GetProps (IPropertySet p, Dictionary<string,string> dict)
+		{
+			foreach (var prop in p.GetProperties ())
+				dict [prop.Name] = prop.Value;
 		}
 
 		/// <summary>
@@ -81,7 +130,7 @@ namespace MonoDevelop.Projects
 
 		internal MSBuildProjectInstance ProjectInstance { get; set; }
 
-		public bool StoreInUserFile { get; set; }
+		public bool StoreInUserFile { get; set; } = true;
 	}
 }
 

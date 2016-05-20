@@ -46,21 +46,18 @@ namespace MonoDevelop.Projects
 	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
+
 		SolutionFolder rootFolder;
 		string defaultConfiguration;
 		MSBuildFileFormat format;
 		bool loadingFromConstructor;
 
-		SolutionItem startupItem;
-		List<SolutionItem> startupItems; 
-		bool singleStartup = true;
+		SolutionRunConfiguration startupSolutionConfiguration;
 
-		// Used for serialization only
-		List<string> multiStartupItems;
-		string startItemFileName;
-		
 		ReadOnlyCollection<SolutionItem> solutionItems;
 		SolutionConfigurationCollection configurations;
+		SolutionRunConfigurationCollection runConfigurations;
+
 
 		MSBuildEngineManager msbuildEngineManager = new MSBuildEngineManager ();
 		
@@ -82,6 +79,7 @@ namespace MonoDevelop.Projects
 			loadingFromConstructor = loading;
 			Counters.SolutionsLoaded++;
 			configurations = new SolutionConfigurationCollection (this);
+			runConfigurations = new SolutionRunConfigurationCollection (this);
 			format = MSBuildFileFormat.DefaultFormat;
 			Initialize (this);
 		}
@@ -162,99 +160,51 @@ namespace MonoDevelop.Projects
 				return solutionItems;
 			}
 		}
-		
-		public SolutionItem StartupItem {
+
+		public SolutionRunConfiguration StartupConfiguration {
 			get {
-				if (startItemFileName != null) {
-					startupItem = FindSolutionItem (startItemFileName);
-					startItemFileName = null;
-					singleStartup = true;
-				}
-				if (startupItem == null && singleStartup) {
-					var its = GetAllItems<SolutionItem> ();
-					if (its.Any ())
-						startupItem = its.FirstOrDefault (it => it.SupportsExecute ());
-				}
-				return startupItem;
+				return startupSolutionConfiguration;
 			}
 			set {
-				startupItem = value;
-				startItemFileName = null;
-				NotifyModified ();
-				OnStartupItemChanged(null);
+				if (startupSolutionConfiguration != value) {
+					var oldIt = StartupItem;
+					startupSolutionConfiguration = value;
+					NotifyModified ();
+					OnStartupConfigurationChanged (null);
+					if (oldIt != StartupItem)
+						OnStartupItemChanged (null);
+				}
 			}
 		}
-		
-		public bool SingleStartup {
+
+		public SolutionItem StartupItem {
 			get {
-				if (startItemFileName != null)
-					return true;
-				if (multiStartupItems != null)
-					return false;
-				return singleStartup; 
+				return (StartupConfiguration as SingleItemSolutionRunConfiguration)?.Item;
 			}
 			set {
-				if (SingleStartup == value)
-					return;
-				singleStartup = value;
-				if (value) {
-					if (MultiStartupItems.Count > 0)
-						startupItem = startupItems [0];
-				} else {
-					MultiStartupItems.Clear ();
-					if (StartupItem != null)
-						MultiStartupItems.Add (StartupItem);
-				}
-				NotifyModified ();
-				OnStartupItemChanged(null);
+				StartupConfiguration = GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().FirstOrDefault (co => co.Item == value);
+			}
+		}
+
+		public bool SingleStartup {
+			get {
+				return StartupConfiguration is SingleItemSolutionRunConfiguration;
+			}
+			set {
+				LoggingService.LogWarning ("Solution.SingleStartup setter has no effect");
 			}
 		}
 		
 		public List<SolutionItem> MultiStartupItems {
 			get {
-				if (multiStartupItems != null) {
-					startupItems = new List<SolutionItem> ();
-					foreach (string file in multiStartupItems) {
-						SolutionItem it = FindSolutionItem (file);
-						if (it != null)
-							startupItems.Add (it);
-					}
-					multiStartupItems = null;
-					singleStartup = false;
-				}
-				else if (startupItems == null)
-					startupItems = new List<SolutionItem> ();
-				return startupItems;
-			}
-		}
-
-		// Used by serialization only
-		internal string StartupItemFileName {
-			get {
-				if (SingleStartup && StartupItem != null)
-					return StartupItem.FileName;
+				var c = StartupConfiguration as MultiItemSolutionRunConfiguration;
+				if (c != null)
+					return c.Items.ToList ();
 				else
-					return null ;
+					return new List<SolutionItem> ();
 			}
-			set { startItemFileName = value; }
 		}
 
-		internal List<string> MultiStartupItemFileNames {
-			get {
-				if (SingleStartup)
-					return null;
-				if (multiStartupItems != null)
-					return multiStartupItems;
-				List<string> files = new List<string> ();
-				foreach (SolutionItem item in MultiStartupItems)
-					files.Add (item.FileName);
-				return files;
-			}
-			set {
-				multiStartupItems = value;
-			}
-		}
-		
 		/// <summary>
 		/// Gets the author information for this solution. If no specific information is set for this solution, it
 		/// will return the author defined in the global settings.
@@ -296,21 +246,33 @@ namespace MonoDevelop.Projects
 		{
 			await base.OnLoadUserProperties ();
 			var sitem = UserProperties.GetValue<string> ("StartupItem");
-			if (!string.IsNullOrEmpty (sitem))
-				startItemFileName = GetAbsoluteChildPath (sitem);
+			if (!string.IsNullOrEmpty (sitem)) {
+				// Old StartupItem property. Find the corresponding SingleItemSolutionRunConfiguration instance.
+				var startItemFileName = GetAbsoluteChildPath (sitem);
+				var item = FindSolutionItem (startItemFileName);
+				if (item != null)
+					StartupConfiguration = GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().FirstOrDefault (c => c.Item == item);
+				UserProperties.RemoveValue ("StartupItem");
+			}
 
 			var sitems = UserProperties.GetValue<string[]> ("StartupItems");
-			if (sitems != null && sitems.Length > 0)
-				multiStartupItems = sitems.Select (p => (string) GetAbsoluteChildPath (p)).ToList ();
+			if (sitems != null && sitems.Length > 0) {
+				// Old StartupItems property. Create a corresponding MultiItemSolutionRunConfiguration.
+				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (file => FindSolutionItem (file)).Where (i => i!= null);
+				runConfigurations.Add (new MultiItemSolutionRunConfiguration ("Multi-Startup") { Items = multiStartupItems.ToArray () });
+				UserProperties.RemoveValue ("StartupItems");
+			}
+
+			var sconfig = UserProperties.GetValue<string> ("StartupConfiguration");
+			if (!string.IsNullOrEmpty (sconfig))
+				StartupConfiguration = GetRunConfigurations ().FirstOrDefault (c => c.Id == sconfig);
+			else
+				StartupConfiguration = GetRunConfigurations ().FirstOrDefault ();
 		}
 
 		protected override async Task OnSaveUserProperties ()
 		{
-			UserProperties.SetValue ("StartupItem", (string) GetRelativeChildPath (StartupItemFileName));
-			if (MultiStartupItemFileNames != null) {
-				UserProperties.SetValue ("StartupItems", MultiStartupItemFileNames.Select (p => (string)GetRelativeChildPath (p)).ToArray ());
-			} else
-				UserProperties.RemoveValue ("StartupItems");
+			UserProperties.SetValue ("StartupConfiguration", (string) StartupConfiguration?.Id);
 
 			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 			await base.OnSaveUserProperties ();
@@ -402,7 +364,7 @@ namespace MonoDevelop.Projects
 		{
 			return (SolutionConfiguration) configuration.GetConfiguration (this) ?? DefaultConfiguration;
 		}
-		
+
 		public SolutionFolderItem GetSolutionItem (string itemId)
 		{
 			foreach (SolutionFolderItem item in Items)
@@ -638,6 +600,21 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 
+		internal void OnRunConfigurationsAdded (IEnumerable<SolutionRunConfiguration> items)
+		{
+			NotifyRunConfigurationsChanged ();
+		}
+
+		internal void OnRunConfigurationRemoved (IEnumerable<SolutionRunConfiguration> items)
+		{
+			NotifyRunConfigurationsChanged ();
+		}
+
+		internal void NotifyRunConfigurationsChanged ()
+		{
+			RunConfigurationsChanged?.Invoke (this, EventArgs.Empty);
+		}
+
 		public Task<BuildResult> Clean (ProgressMonitor monitor, string configuration)
 		{
 			return Clean (monitor, (SolutionConfigurationSelector) configuration);
@@ -691,6 +668,26 @@ namespace MonoDevelop.Projects
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
 			return SolutionExtension.CanExecute (context, configuration);
+		}
+
+		public IEnumerable<SolutionRunConfiguration> GetRunConfigurations ()
+		{
+			return SolutionExtension.OnGetRunConfigurations ();
+		}
+
+		protected virtual IEnumerable<SolutionRunConfiguration> OnGetRunConfigurations ()
+		{
+			IEnumerable<SolutionRunConfiguration> res = runConfigurations;
+			foreach (var it in GetAllSolutionItems ().Where (i => i.SupportsExecute ())) {
+				var configs = it.GetRunConfigurations ().ToArray ();
+				if (!configs.Any ())
+					res = res.Concat (new SingleItemSolutionRunConfiguration (it, null));
+				else if (configs.Length == 1)
+					res = res.Concat (new SingleItemSolutionRunConfiguration (it, configs[0]));
+				else
+					res = res.Concat (it.GetRunConfigurations ().Select (c => new SingleItemSolutionRunConfiguration (it, c)));
+			}
+			return res;
 		}
 
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
@@ -777,6 +774,13 @@ namespace MonoDevelop.Projects
 			if (StartupItemChanged != null)
 				StartupItemChanged (this, e);
 		}
+
+		void OnStartupConfigurationChanged (EventArgs e)
+		{
+			if (StartupConfigurationChanged != null)
+				StartupConfigurationChanged (this, e);
+		}
+
 
 		[ThreadSafe]
 		public MSBuildFileFormat FileFormat {
@@ -1078,7 +1082,9 @@ namespace MonoDevelop.Projects
 #endregion
 		
 		public event EventHandler StartupItemChanged;
-		
+		public event EventHandler StartupConfigurationChanged;
+		public event EventHandler RunConfigurationsChanged;
+
 		public event SolutionItemChangeEventHandler SolutionItemAdded;
 		public event SolutionItemChangeEventHandler SolutionItemRemoved;
 		
@@ -1178,6 +1184,11 @@ namespace MonoDevelop.Projects
 			internal protected override void OnSetFormat (MSBuildFileFormat value)
 			{
 				Solution.OnSetFormat (value);
+			}
+
+			internal protected override IEnumerable<SolutionRunConfiguration> OnGetRunConfigurations ()
+			{
+				return Solution.OnGetRunConfigurations ();
 			}
 		}
 	}

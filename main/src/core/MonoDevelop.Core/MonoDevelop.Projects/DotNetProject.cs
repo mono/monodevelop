@@ -1022,7 +1022,7 @@ namespace MonoDevelop.Projects
 			return conf;
 		}
 
-		protected override RunConfiguration OnCreateRunConfiguration (string name)
+		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return new DotNetRunConfiguration (name);
 		}

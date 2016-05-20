@@ -1,5 +1,5 @@
 ﻿//
-// ExecutionSchemeEditorExtensionNode.cs
+// SingleItemSolutionRunConfiguration.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,18 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.Addins;
-
-namespace MonoDevelop.Ide.Extensions
+namespace MonoDevelop.Projects
 {
-	public class ExecutionSchemeEditorExtensionNode: TypeExtensionNode
+	public sealed class SingleItemSolutionRunConfiguration: SolutionRunConfiguration
 	{
-		[NodeAttribute ("executionSchemeType")]
-		protected string executionSchemeType;
-	
-		public ExecutionSchemeEditorExtensionNode ()
+		public SingleItemSolutionRunConfiguration (SolutionItem item, RunConfiguration config): base (item.ItemId + "|" + config?.Name)
 		{
+			Item = item;
+			RunConfiguration = config;
+			Name = item.Name + (config != null ? (" (" + config.Name + ")") : "");
 		}
+
+		public SolutionItem Item { get; private set; }
+		public RunConfiguration RunConfiguration { get; private set; }
 	}
 }
 

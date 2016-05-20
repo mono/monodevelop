@@ -103,9 +103,9 @@
 		<ExtensionNode name="Customizer" type="MonoDevelop.Ide.Execution.ExecutionCommandCustomizer" objectType="MonoDevelop.Ide.Execution.IExecutionCommandCustomizer"/>
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/Ide/ExecutionSchemeEditors" name = "View Context Menu">
-		<Description>Widgets which allow editing execution schemes.</Description>
-		<ExtensionNode name="Class" type="MonoDevelop.Ide.Execution.ExecutionSchemeEditorExtensionNode" objectType="MonoDevelop.Ide.Execution.ExecutionSchemeEditor"/>
+	<ExtensionPoint path = "/MonoDevelop/Ide/RunConfigurationEditors" name = "Run Configuration Editors">
+		<Description>Widgets which allow editing run configurations.</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Ide.Extensions.RunConfigurationEditorExtensionNode" objectType="MonoDevelop.Ide.Execution.RunConfigurationEditor"/>
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CodeTemplates" name = "Code Templates">
@@ -301,6 +301,10 @@
 	<Extension path = "/MonoDevelop/Ide/ExecutionCommandEditors">
 		<Customizer id="MonoDevelop.Ide.Execution.CustomArgsCustomizer" _name="Arguments" />
 		<Customizer id="MonoDevelop.Ide.Execution.MonoExecutionCustomizer" _name="Mono Options" />
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
+		<Class class="MonoDevelop.Ide.Projects.OptionPanels.DotNetRunConfigurationEditor" runConfigurationType="MonoDevelop.Projects.DotNetRunConfiguration" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/Fonts">

@@ -1,5 +1,5 @@
 ﻿//
-// RunConfigurationCollection.cs
+// XwtControl.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,41 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Components
 {
-	public class RunConfigurationCollection: ItemCollection<ProjectRunConfiguration>
+	public class XwtControl: Control
 	{
-		SolutionItem parentItem;
+		Xwt.Widget widget;
 
-		public RunConfigurationCollection ()
+		public XwtControl (Xwt.Widget widget)
 		{
+			this.widget = widget;
 		}
 
-		internal RunConfigurationCollection (SolutionItem parentItem)
+		protected override object CreateNativeWidget<T> ()
 		{
-			this.parentItem = parentItem;
+			return widget.Surface.NativeWidget;
 		}
 
-		protected override void OnItemsAdded (IEnumerable<ProjectRunConfiguration> items)
+		protected override void Dispose (bool disposing)
 		{
-			if (parentItem != null) {
-				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = parentItem;
-			}
-			base.OnItemsAdded (items);
-			(parentItem as Project)?.OnRunConfigurationsAdded (items);
-		}
-
-		protected override void OnItemsRemoved (IEnumerable<ProjectRunConfiguration> items)
-		{
-			if (parentItem != null) {
-				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = null;
-			}
-			base.OnItemsRemoved (items);
-			(parentItem as Project)?.OnRunConfigurationRemoved (items);
+			base.Dispose (disposing);
 		}
 	}
 }

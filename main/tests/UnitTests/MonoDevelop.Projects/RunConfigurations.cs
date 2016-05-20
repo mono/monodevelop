@@ -43,14 +43,16 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject)sol.Items [0];
 
 			var es = new ProjectRunConfiguration ("Test1");
+			es.StoreInUserFile = false;
 			es.Properties.SetValue ("SomeValue","Foo");
 			p.RunConfigurations.Add (es);
 
 			es = new ProjectRunConfiguration ("Test2");
+			es.StoreInUserFile = false;
 			es.Properties.SetValue ("SomeValue", "Bar");
 			p.RunConfigurations.Add (es);
 
-			Assert.AreEqual (2, p.GetRunConfigurations (p.DefaultConfiguration.Selector).Count ());
+			Assert.AreEqual (3, p.GetRunConfigurations ().Count ());
 
 			await sol.SaveAsync (Util.GetMonitor ());
 
@@ -65,15 +67,13 @@ namespace MonoDevelop.Projects
 			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-			Assert.AreEqual (2, p.RunConfigurations.Count);
+			Assert.AreEqual (3, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [0]);
-			var es = (ProjectRunConfiguration)p.RunConfigurations [0];
+			var es = p.RunConfigurations [1];
 			Assert.AreEqual (es.Name, "Test1");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Foo");
 
-			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
-			es = (ProjectRunConfiguration)p.RunConfigurations [1];
+			es = p.RunConfigurations [2];
 			Assert.AreEqual (es.Name, "Test2");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Bar");
 		}
@@ -84,10 +84,9 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (2, p.RunConfigurations.Count);
+			Assert.AreEqual (3, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
-			var es = (ProjectRunConfiguration)p.RunConfigurations [1];
+			var es = p.RunConfigurations [2];
 			es.Properties.SetValue ("SomeValue", "Time");
 			es.Properties.SetValue ("SomeValue2", "Time2");
 
@@ -104,7 +103,7 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (2, p.RunConfigurations.Count);
+			Assert.AreEqual (3, p.RunConfigurations.Count);
 
 			p.RunConfigurations.Clear ();
 
@@ -123,15 +122,15 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject)sol.Items [0];
 
 			var es = new ProjectRunConfiguration ("Test1");
+			es.StoreInUserFile = false;
 			es.Properties.SetValue ("SomeValue", "Foo");
 			p.RunConfigurations.Add (es);
 
 			es = new ProjectRunConfiguration ("Test2");
-			es.StoreInUserFile = true;
 			es.Properties.SetValue ("SomeValue", "Bar");
 			p.RunConfigurations.Add (es);
 
-			Assert.AreEqual (2, p.GetRunConfigurations (p.DefaultConfiguration.Selector).Count ());
+			Assert.AreEqual (3, p.GetRunConfigurations ().Count ());
 
 			await sol.SaveAsync (Util.GetMonitor ());
 
@@ -152,16 +151,14 @@ namespace MonoDevelop.Projects
 			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-user-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-			Assert.AreEqual (2, p.RunConfigurations.Count);
+			Assert.AreEqual (3, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [0]);
-			var es = (ProjectRunConfiguration)p.RunConfigurations [0];
+			var es = p.RunConfigurations [1];
 			Assert.IsFalse (es.StoreInUserFile);
 			Assert.AreEqual (es.Name, "Test1");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Foo");
 
-			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
-			es = (ProjectRunConfiguration)p.RunConfigurations [1];
+			es = p.RunConfigurations [2];
 			Assert.IsTrue (es.StoreInUserFile);
 			Assert.AreEqual (es.Name, "Test2");
 			Assert.AreEqual (es.Properties.GetValue ("SomeValue"), "Bar");
@@ -173,14 +170,12 @@ namespace MonoDevelop.Projects
 			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-user-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
 
-			Assert.AreEqual (2, p.RunConfigurations.Count);
+			Assert.AreEqual (3, p.RunConfigurations.Count);
 
-			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [0]);
-			var es = (ProjectRunConfiguration)p.RunConfigurations [0];
+			var es = p.RunConfigurations [1];
 			es.StoreInUserFile = true;
 
-			Assert.IsInstanceOf<ProjectRunConfiguration> (p.RunConfigurations [1]);
-			es = (ProjectRunConfiguration)p.RunConfigurations [1];
+			es = p.RunConfigurations [2];
 			es.StoreInUserFile = false;
 
 			await p.SaveAsync (Util.GetMonitor ());
@@ -202,7 +197,7 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.configs-user-added.csproj");
 			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
 
-			Assert.AreEqual (2, p.RunConfigurations.Count);
+			Assert.AreEqual (3, p.RunConfigurations.Count);
 			Assert.IsTrue (File.Exists (p.FileName + ".user"));
 
 			p.RunConfigurations.Clear ();
@@ -211,6 +206,55 @@ namespace MonoDevelop.Projects
 
 			string projectXml = File.ReadAllText (p.FileName);
 			string newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject"));
+			Assert.AreEqual (newProjectXml, projectXml);
+
+			Assert.IsFalse (File.Exists (p.FileName + ".user"));
+		}
+
+		[Test]
+		public async Task ModifyDefaultRunConfiguration ()
+		{
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.csproj");
+			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			Assert.AreEqual (1, p.RunConfigurations.Count);
+
+			var es = p.RunConfigurations [0];
+			Assert.AreEqual ("Default", es.Name);
+			es.Properties.SetValue ("SomeValue", "Time");
+
+			string projectXml = File.ReadAllText (p.FileName);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string newProjectXml = File.ReadAllText (p.FileName);
+			Assert.AreEqual (newProjectXml, projectXml);
+
+			Assert.IsTrue (File.Exists (p.FileName + ".user"));
+
+			projectXml = File.ReadAllText (p.FileName + ".user");
+			newProjectXml = File.ReadAllText (p.FileName.ChangeName ("ConsoleProject.default-modified") + ".user");
+			Assert.AreEqual (newProjectXml, projectXml);
+		}
+
+		[Test]
+		public async Task ResetDefaultRunConfiguration ()
+		{
+			string solFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.default-modified.csproj");
+			DotNetProject p = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), solFile);
+
+			Assert.AreEqual (1, p.RunConfigurations.Count);
+
+			var es = p.RunConfigurations [0];
+			Assert.AreEqual ("Default", es.Name);
+			Assert.AreEqual ("Time", es.Properties.GetValue ("SomeValue"));
+			es.Properties.RemoveProperty ("SomeValue");
+
+			string projectXml = File.ReadAllText (p.FileName);
+
+			await p.SaveAsync (Util.GetMonitor ());
+
+			string newProjectXml = File.ReadAllText (p.FileName);
 			Assert.AreEqual (newProjectXml, projectXml);
 
 			Assert.IsFalse (File.Exists (p.FileName + ".user"));

@@ -28,37 +28,37 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
-	public class RunConfigurationCollection: ItemCollection<ProjectRunConfiguration>
+	public class SolutionRunConfigurationCollection: ItemCollection<SolutionRunConfiguration>
 	{
-		SolutionItem parentItem;
+		Solution parentSolution;
 
-		public RunConfigurationCollection ()
+		public SolutionRunConfigurationCollection ()
 		{
 		}
 
-		internal RunConfigurationCollection (SolutionItem parentItem)
+		internal SolutionRunConfigurationCollection (Solution parentSolution)
 		{
-			this.parentItem = parentItem;
+			this.parentSolution = parentSolution;
 		}
 
-		protected override void OnItemsAdded (IEnumerable<ProjectRunConfiguration> items)
+		protected override void OnItemsAdded (IEnumerable<SolutionRunConfiguration> items)
 		{
-			if (parentItem != null) {
+			if (parentSolution != null) {
 				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = parentItem;
+					conf.ParentSolution = parentSolution;
 			}
 			base.OnItemsAdded (items);
-			(parentItem as Project)?.OnRunConfigurationsAdded (items);
+			parentSolution.OnRunConfigurationsAdded (items);
 		}
 
-		protected override void OnItemsRemoved (IEnumerable<ProjectRunConfiguration> items)
+		protected override void OnItemsRemoved (IEnumerable<SolutionRunConfiguration> items)
 		{
-			if (parentItem != null) {
+			if (parentSolution != null) {
 				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = null;
+					conf.ParentSolution = null;
 			}
 			base.OnItemsRemoved (items);
-			(parentItem as Project)?.OnRunConfigurationRemoved (items);
+			parentSolution.OnRunConfigurationRemoved (items);
 		}
 	}
 }

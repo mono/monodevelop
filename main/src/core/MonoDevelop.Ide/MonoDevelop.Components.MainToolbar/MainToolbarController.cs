@@ -83,6 +83,7 @@ namespace MonoDevelop.Components.MainToolbar
 			};
 
 			toolbarView.ConfigurationChanged += HandleConfigurationChanged;
+			toolbarView.RunConfigurationChanged += HandleRunConfigurationChanged;
 			toolbarView.RuntimeChanged += HandleRuntimeChanged;
 
 			IdeApp.Workbench.RootWindow.WidgetEvent += delegate(object o, WidgetEventArgs args) {
@@ -144,9 +145,10 @@ namespace MonoDevelop.Components.MainToolbar
 
 			ignoreConfigurationChangedCount++;
 			try {
-				ToolbarView.ConfigurationModel = Enumerable.Empty<IConfigurationModel> ();
 				if (!IdeApp.Workspace.IsOpen) {
+					ToolbarView.ConfigurationModel = Enumerable.Empty<IConfigurationModel> ();
 					ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
+					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();
 					return;
 				}
 
@@ -154,10 +156,17 @@ namespace MonoDevelop.Components.MainToolbar
 					.SolutionConfigurations
 					.Distinct ()
 					.Select (conf => new ConfigurationModel (conf));
+
+				if (currentSolution != null)
+					ToolbarView.RunConfigurationModel = currentSolution.GetRunConfigurations ().Select (rc => new RunConfigurationModel (rc));
+				else
+					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();
+				
 			} finally {
 				ignoreConfigurationChangedCount--;
 			}
 
+			SelectActiveRunConfiguration ();
 			FillRuntimes ();
 			SelectActiveConfiguration ();
 		}
@@ -275,6 +284,12 @@ namespace MonoDevelop.Components.MainToolbar
 				NotifyConfigurationChange ();
 		}
 
+		void HandleRunConfigurationChanged (object sender, EventArgs e)
+		{
+			if (ignoreConfigurationChangedCount == 0)
+				NotifyRunConfigurationChange ();
+		}
+
 		void UpdateBuildConfiguration ()
 		{
 			var config = ToolbarView.ActiveConfiguration;
@@ -304,6 +319,45 @@ namespace MonoDevelop.Components.MainToolbar
 
 			FillRuntimes ();
 			SelectActiveRuntime ();
+		}
+
+		void NotifyRunConfigurationChange ()
+		{
+			if (ToolbarView.ActiveRunConfiguration == null)
+				return;
+
+			var model = (RunConfigurationModel)ToolbarView.ActiveRunConfiguration;
+			currentSolution.StartupConfiguration = model.RunConfiguration;
+		}
+
+		void SelectActiveRunConfiguration ()
+		{
+			var sconf = currentSolution?.StartupConfiguration;
+
+			ignoreConfigurationChangedCount++;
+			try {
+				var confs = ToolbarView.RunConfigurationModel.Cast<RunConfigurationModel> ().ToList ();
+				if (confs.Count > 0) {
+					var defaultConfig = ToolbarView.ActiveRunConfiguration != null ? (RunConfigurationModel)ToolbarView.ActiveRunConfiguration : confs [0];
+					bool selected = false;
+
+					foreach (var item in confs) {
+						if (item.RunConfiguration.Id == sconf?.Id) {
+							ToolbarView.ActiveRunConfiguration = item;
+							selected = true;
+							break;
+						}
+					}
+
+					if (!selected) {
+						ToolbarView.ActiveRunConfiguration = ToolbarView.RunConfigurationModel.First ();
+						if (currentSolution != null)
+							currentSolution.StartupConfiguration = defaultConfig?.RunConfiguration;
+					}
+				}
+			} finally {
+				ignoreConfigurationChangedCount--;
+			}
 		}
 
 		void SelectActiveConfiguration ()
@@ -434,14 +488,14 @@ namespace MonoDevelop.Components.MainToolbar
 		void HandleCurrentSelectedSolutionChanged (object sender, SolutionEventArgs e)
 		{
 			if (currentSolution != null) {
-				currentSolution.StartupItemChanged -= HandleStartupItemChanged;
+				currentSolution.StartupConfigurationChanged -= HandleStartupItemChanged;
 				currentSolution.Saved -= HandleUpdateCombos;
 			}
 
 			currentSolution = e.Solution;
 
 			if (currentSolution != null) {
-				currentSolution.StartupItemChanged += HandleStartupItemChanged;
+				currentSolution.StartupConfigurationChanged += HandleStartupItemChanged;
 				currentSolution.Saved += HandleUpdateCombos;
 			}
 
@@ -476,7 +530,8 @@ namespace MonoDevelop.Components.MainToolbar
 		void HandleStartupItemChanged (object sender, EventArgs e)
 		{
 			TrackStartupProject ();
-			UpdateCombos ();
+			if (ignoreConfigurationChangedCount == 0)
+				UpdateCombos ();
 		}
 
 		void OnExtensionChanged (object sender, ExtensionEventArgs args)
@@ -929,6 +984,20 @@ namespace MonoDevelop.Components.MainToolbar
 				DisplayString = originalId.Replace ("|", " | ");
 			}
 
+			public string OriginalId { get; private set; }
+			public string DisplayString { get; private set; }
+		}
+
+		class RunConfigurationModel : IRunConfigurationModel
+		{
+			public RunConfigurationModel (SolutionRunConfiguration config)
+			{
+				RunConfiguration = config;
+				OriginalId = config.Id;
+				DisplayString = config.Name;
+			}
+
+			public SolutionRunConfiguration RunConfiguration { get; set; }
 			public string OriginalId { get; private set; }
 			public string DisplayString { get; private set; }
 		}

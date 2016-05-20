@@ -42,21 +42,6 @@ namespace MonoDevelop.Projects
 
 		public string Name { get; private set; }
 
-		/// <summary>
-		/// Copies the data of a run configuration into this configuration
-		/// </summary>
-		/// <param name="config">Configuration from which to get the data.</param>
-		/// <param name="isRename">If true, it means that the copy is being made as a result of a rename or clone operation. In this case,
-		/// the overriden method may change the value of some properties that depend on the configuration name.</param>
-		public void CopyFrom (RunConfiguration config, bool isRename = false)
-		{
-			OnCopyFrom (config, isRename);
-		}
-
-		protected virtual void OnCopyFrom (RunConfiguration config, bool isRename)
-		{
-		}
-
 		public override string ToString ()
 		{
 			return Name;
@@ -70,6 +55,10 @@ namespace MonoDevelop.Projects
 		protected virtual ExecutionCommand OnConfigureCommand (ExecutionCommand command)
 		{
 			return command;
+		}
+
+		public bool IsDefaultConfiguration {
+			get { return Name == "Default"; }
 		}
 	}
 }

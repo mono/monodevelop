@@ -47,10 +47,19 @@ namespace MonoDevelop.Projects
 		public string StartArguments { get; set; } = "";
 
 		[ItemProperty (DefaultValue = "")]
-		public string StartWorkingDirectory { get; set; } = "";
+		public FilePath StartWorkingDirectory { get; set; } = "";
 
 		[ItemProperty (DefaultValue = "")]
-		public string StartProgram { get; set; } = "";
+		public string StartAction { get; set; } = StartActions.Project;
+
+		[ItemProperty (DefaultValue = "")]
+		public FilePath StartProgram { get; set; } = "";
+
+		public class StartActions
+		{
+			public const string Project = "Project";
+			public const string Program = "Program";
+		}
 
 		internal protected override void Read (IPropertySet pset)
 		{
@@ -127,7 +136,7 @@ namespace MonoDevelop.Projects
 			get { return monoParameters; }
 		}
 
-		protected override void OnCopyFrom (RunConfiguration config, bool isRename)
+		protected override void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
 		{
 			base.OnCopyFrom (config, isRename);
 
@@ -136,6 +145,7 @@ namespace MonoDevelop.Projects
 			StartArguments = other.StartArguments;
 			StartWorkingDirectory = other.StartWorkingDirectory;
 			StartProgram = other.StartProgram;
+			StartAction = other.StartAction;
 			environmentVariables = new Dictionary<string, string> (other.environmentVariables);
 			monoParameters = other.monoParameters.Clone ();
 		}
@@ -145,7 +155,7 @@ namespace MonoDevelop.Projects
 			base.OnConfigureCommand (command);
 			var pcmd = (ProcessExecutionCommand)command;
 
-			if (!string.IsNullOrEmpty (StartProgram))
+			if (StartAction == DotNetRunConfiguration.StartActions.Program)
 				pcmd = Runtime.ProcessService.CreateCommand (StartProgram);
 			else {
 				var cmd = (DotNetExecutionCommand)command;

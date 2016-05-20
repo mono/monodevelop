@@ -1,5 +1,5 @@
 ﻿//
-// ExecutionSchemeEditorProvider.cs
+// SolutionRunConfiguration.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,16 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components;
-using MonoDevelop.Projects;
-
-namespace MonoDevelop.Ide.Execution
+namespace MonoDevelop.Projects
 {
-	public abstract class ExecutionSchemeEditor
+	public class SolutionRunConfiguration
 	{
-		public abstract Control CreateControl ();
-		public abstract void Load (RunConfiguration scheme);
-		public abstract void Save ();
+		public SolutionRunConfiguration (string id)
+		{
+			Id = id;
+		}
+
+		internal Solution ParentSolution { get; set; }
+
+		public string Id { get; private set; }
+		public string Name { get; set; }
+
+		internal protected virtual string GetTypeId ()
+		{
+			return GetType ().FullName;
+		}
 	}
 }
 

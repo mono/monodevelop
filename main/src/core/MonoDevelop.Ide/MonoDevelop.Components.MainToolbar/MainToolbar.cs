@@ -54,6 +54,9 @@ namespace MonoDevelop.Components.MainToolbar
 		ComboBox configurationCombo;
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(IConfigurationModel));
 
+		ComboBox runConfigurationCombo;
+		TreeStore runConfigurationStore = new TreeStore (typeof (string), typeof (IRunConfigurationModel));
+	
 		ComboBox runtimeCombo;
 		TreeStore runtimeStore = new TreeStore (typeof(IRuntimeModel));
 
@@ -133,17 +136,27 @@ namespace MonoDevelop.Components.MainToolbar
 			AddWidget (button);
 			AddSpace (8);
 
-			configurationCombo = new Gtk.ComboBox ();
-			configurationCombo.Model = configurationStore;
-			var ctx = new Gtk.CellRendererText ();
-			configurationCombo.PackStart (ctx, true);
-			configurationCombo.AddAttribute (ctx, "text", 0);
-
 			configurationCombosBox = new HBox (false, 8);
 
+			var ctx = new Gtk.CellRendererText ();
+		
+			configurationCombo = new Gtk.ComboBox ();
+			configurationCombo.Model = configurationStore;
+			configurationCombo.PackStart (ctx, true);
+			configurationCombo.AddAttribute (ctx, "text", 0);
+		
 			var configurationComboVBox = new VBox ();
 			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
 			configurationCombosBox.PackStart (configurationComboVBox, false, false, 0);
+
+			runConfigurationCombo = new Gtk.ComboBox ();
+			runConfigurationCombo.Model = runConfigurationStore;
+			runConfigurationCombo.PackStart (ctx, true);
+			runConfigurationCombo.AddAttribute (ctx, "text", 0);
+
+			var runConfigurationComboVBox = new VBox ();
+			runConfigurationComboVBox.PackStart (runConfigurationCombo, true, false, 0);
+			configurationCombosBox.PackStart (runConfigurationComboVBox, false, false, 0);
 
 			// bold attributes for running runtime targets / (emulators)
 			boldAttributes.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
@@ -233,6 +246,10 @@ namespace MonoDevelop.Components.MainToolbar
 				if (ConfigurationChanged != null)
 					ConfigurationChanged (o, e);
 			};
+			runConfigurationCombo.Changed += (o, e) => {
+				if (RunConfigurationChanged != null)
+					RunConfigurationChanged (o, e);
+			};
 			runtimeCombo.Changed += (o, e) => {
 				var ea = new HandledEventArgs ();
 				if (RuntimeChanged != null)
@@ -273,6 +290,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void SetDefaultSizes (int comboHeight, int height)
 		{
 			configurationCombo.SetSizeRequest (150, comboHeight);
+			runConfigurationCombo.SetSizeRequest (150, comboHeight);
 			// make the windows runtime slightly wider to accomodate select devices text
 			runtimeCombo.SetSizeRequest (Platform.IsWindows ? 175 : 150, comboHeight);
 			statusArea.SetSizeRequest (32, 32);
@@ -420,6 +438,32 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		public IRunConfigurationModel ActiveRunConfiguration {
+			get {
+				TreeIter iter;
+				if (!runConfigurationCombo.GetActiveIter (out iter))
+					return null;
+
+				return (IRunConfigurationModel)runConfigurationStore.GetValue (iter, 1);
+			}
+			set {
+				TreeIter iter;
+				bool found = false;
+				if (runConfigurationStore.GetIterFirst (out iter)) {
+					do {
+						if (value.OriginalId == ((IRunConfigurationModel)runConfigurationStore.GetValue (iter, 1)).OriginalId) {
+							found = true;
+							break;
+						}
+					} while (runConfigurationStore.IterNext (ref iter));
+				}
+				if (found)
+					runConfigurationCombo.SetActiveIter (iter);
+				else
+					runConfigurationCombo.Active = 0;
+			}
+		}
+
 		public IRuntimeModel ActiveRuntime {
 			get {
 				TreeIter iter;
@@ -458,6 +502,18 @@ namespace MonoDevelop.Components.MainToolbar
 				configurationStore.Clear ();
 				foreach (var item in value) {
 					configurationStore.AppendValues (item.DisplayString, item);
+				}
+			}
+		}
+
+		IEnumerable<IRunConfigurationModel> runConfigurationModel;
+		public IEnumerable<IRunConfigurationModel> RunConfigurationModel {
+			get { return runConfigurationModel; }
+			set {
+				runConfigurationModel = value;
+				runConfigurationStore.Clear ();
+				foreach (var item in value) {
+					runConfigurationStore.AppendValues (item.DisplayString, item);
 				}
 			}
 		}
@@ -544,6 +600,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		public event EventHandler ConfigurationChanged;
+		public event EventHandler RunConfigurationChanged;
 		public event EventHandler<HandledEventArgs> RuntimeChanged;
 
 		#endregion

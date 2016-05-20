@@ -240,9 +240,9 @@ namespace MonoDevelop.Projects
 			next.OnExecutionTargetsChanged ();
 		}
 
-		internal protected virtual IEnumerable<RunConfiguration> OnGetRunConfigurations (OperationContext ctx, ConfigurationSelector configuration)
+		internal protected virtual IEnumerable<RunConfiguration> OnGetRunConfigurations (OperationContext ctx)
 		{
-			return next.OnGetRunConfigurations (ctx, configuration);
+			return next.OnGetRunConfigurations (ctx);
 		}
 
 		internal protected virtual void OnRunConfigurationsChanged (OperationContext ctx)

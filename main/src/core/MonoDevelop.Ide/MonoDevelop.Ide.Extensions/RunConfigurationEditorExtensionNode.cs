@@ -1,5 +1,5 @@
 ﻿//
-// RunConfigurationCollection.cs
+// ExecutionSchemeEditorExtensionNode.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,41 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
+using Mono.Addins;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Ide.Extensions
 {
-	public class RunConfigurationCollection: ItemCollection<ProjectRunConfiguration>
+	public class RunConfigurationEditorExtensionNode: TypeExtensionNode
 	{
-		SolutionItem parentItem;
-
-		public RunConfigurationCollection ()
+		[NodeAttribute ("runConfigurationType")]
+		public string RunConfigurationType { get; internal set; }
+	
+		public RunConfigurationEditorExtensionNode ()
 		{
-		}
-
-		internal RunConfigurationCollection (SolutionItem parentItem)
-		{
-			this.parentItem = parentItem;
-		}
-
-		protected override void OnItemsAdded (IEnumerable<ProjectRunConfiguration> items)
-		{
-			if (parentItem != null) {
-				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = parentItem;
-			}
-			base.OnItemsAdded (items);
-			(parentItem as Project)?.OnRunConfigurationsAdded (items);
-		}
-
-		protected override void OnItemsRemoved (IEnumerable<ProjectRunConfiguration> items)
-		{
-			if (parentItem != null) {
-				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = null;
-			}
-			base.OnItemsRemoved (items);
-			(parentItem as Project)?.OnRunConfigurationRemoved (items);
 		}
 	}
 }

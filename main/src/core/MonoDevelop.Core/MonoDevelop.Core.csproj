@@ -566,6 +566,10 @@
     <Compile Include="MonoDevelop.Projects\RunConfigurationCollection.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\MonoExecutionParameters.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\SingleItemSolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\MultiItemSolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionRunConfigurationCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

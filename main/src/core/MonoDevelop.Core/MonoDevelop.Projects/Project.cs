@@ -296,19 +296,35 @@ namespace MonoDevelop.Projects
 			base.OnConfigurationRemoved (args);
 		}
 
-		public RunConfiguration CreateRunConfiguration (string name)
+		protected override void OnItemReady ()
+		{
+			base.OnItemReady ();
+
+			// If the project doesn't have a Default run configuration, create one
+			if (!RunConfigurations.Any (c => c.IsDefaultConfiguration))
+				RunConfigurations.Insert (0, CreateRunConfiguration ("Default"));
+		}
+
+		public ProjectRunConfiguration CreateRunConfiguration (string name)
 		{
 			return ProjectExtension.OnCreateRunConfiguration (name);
 		}
 
-		public RunConfiguration CloneRunConfiguration (RunConfiguration runConfig, string newName)
+		public ProjectRunConfiguration CloneRunConfiguration (ProjectRunConfiguration runConfig)
+		{
+			var clone = CreateRunConfiguration (runConfig.Name);
+			clone.CopyFrom (runConfig, false);
+			return clone;
+		}
+
+		public ProjectRunConfiguration CloneRunConfiguration (ProjectRunConfiguration runConfig, string newName)
 		{
 			var clone = CreateRunConfiguration (newName);
 			clone.CopyFrom (runConfig, true);
 			return clone;
 		}
 
-		protected override IEnumerable<RunConfiguration> OnGetRunConfigurations (ConfigurationSelector configuration)
+		protected override IEnumerable<RunConfiguration> OnGetRunConfigurations ()
 		{
 			return runConfigurations;
 		}
@@ -2422,8 +2438,7 @@ namespace MonoDevelop.Projects
 			var runConfig = (ProjectRunConfiguration)CreateRunConfiguration (configName);
 			if (cgrp.Group != null) {
 				runConfig.MainPropertyGroup = cgrp.Group;
-				if (cgrp.Group.ParentProject == userProject)
-					runConfig.StoreInUserFile = true;
+				runConfig.StoreInUserFile = cgrp.Group.ParentProject == userProject;
 			}
 			runConfig.MainPropertyGroup.ResetIsNewFlags ();
 			InitRunConfiguration (runConfig);
@@ -2461,7 +2476,7 @@ namespace MonoDevelop.Projects
 			return pi;
 		}
 
-		protected virtual RunConfiguration OnCreateRunConfiguration (string name)
+		protected virtual ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return new ProjectRunConfiguration (name);
 		}
@@ -2756,6 +2771,14 @@ namespace MonoDevelop.Projects
 					ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
 					var targetProject = runConfig.StoreInUserFile ? userProject : msproject;
 
+					if (runConfig.IsDefaultConfiguration && runConfig.Equals (CreateRunConfiguration ("Default"))) {
+						// If the default configuration has the default values, then there is no need to save it.
+						// If this configuration was added after loading the project, we are not adding it to the msproject and we are done.
+						// If this configuration was loaded from the project and later modified to the default values, we dont set cdata.Exists=true,
+						// so it will be removed from the msproject below.
+						continue;
+					}
+
 					// Create the user project file if it doesn't yet exist
 					if (targetProject == null)
 						targetProject = userProject = CreateUserProject (msproject);
@@ -2790,9 +2813,8 @@ namespace MonoDevelop.Projects
 			}
 
 			// Remove groups corresponding to configurations that have been removed
-			// or groups which don't have any property and did not already exist
 			foreach (ConfigData cd in configData) {
-				if (!cd.Exists || (cd.IsNew && !cd.Group.GetProperties ().Any ()))
+				if (!cd.Exists)
 					cd.Group.ParentProject.Remove (cd.Group);
 			}
 
@@ -3177,7 +3199,7 @@ namespace MonoDevelop.Projects
 				Project.OnGetTypeTags (types);
 			}
 
-			internal protected override RunConfiguration OnCreateRunConfiguration (string name)
+			internal protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 			{
 				return Project.OnCreateRunConfiguration (name);
 			}

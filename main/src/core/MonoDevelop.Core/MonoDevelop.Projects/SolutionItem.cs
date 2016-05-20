@@ -972,7 +972,7 @@ namespace MonoDevelop.Projects
 		/// <param name="configuration">The configuration.</param>
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
 		{
-			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, GetDefaultRunConfiguration (configuration));
+			return ItemExtension.OnGetExecutionTargets (new OperationContext (), configuration, GetDefaultRunConfiguration ());
 		}
 
 		/// <summary>
@@ -1007,21 +1007,22 @@ namespace MonoDevelop.Projects
 		/// Gets the run configurations.
 		/// </summary>
 		/// <returns>The execution targets.</returns>
-		/// <param name="configuration">The configuration.</param>
-		public IEnumerable<RunConfiguration> GetRunConfigurations (ConfigurationSelector configuration)
+		public IEnumerable<RunConfiguration> GetRunConfigurations ()
 		{
-			return ItemExtension.OnGetRunConfigurations (new OperationContext (), configuration);
+			return ItemExtension.OnGetRunConfigurations (new OperationContext ());
 		}
 
-		public RunConfiguration GetDefaultRunConfiguration (ConfigurationSelector configuration)
+		public RunConfiguration GetDefaultRunConfiguration ()
 		{
-			var configs = GetRunConfigurations (configuration);
+			var configs = GetRunConfigurations ();
 			return configs.FirstOrDefault (s => s.Name == "Default") ?? configs.FirstOrDefault ();
 		}
 
 		public void NotifyRunConfigurationsChanged ()
 		{
 			ItemExtension.OnRunConfigurationsChanged (new OperationContext ());
+			if (ParentSolution != null)
+				ParentSolution.NotifyRunConfigurationsChanged ();
 		}
 
 		protected virtual void OnRunConfigurationsChanged ()
@@ -1030,7 +1031,7 @@ namespace MonoDevelop.Projects
 				RunConfigurationsChanged (this, EventArgs.Empty);
 		}
 
-		protected virtual IEnumerable<RunConfiguration>  OnGetRunConfigurations (ConfigurationSelector configuration)
+		protected virtual IEnumerable<RunConfiguration>  OnGetRunConfigurations ()
 		{
 			yield break;
 		}
@@ -1437,9 +1438,9 @@ namespace MonoDevelop.Projects
 				Item.OnExecutionTargetsChanged ();
 			}
 
-			internal protected override IEnumerable<RunConfiguration> OnGetRunConfigurations (OperationContext ctx, ConfigurationSelector configuration)
+			internal protected override IEnumerable<RunConfiguration> OnGetRunConfigurations (OperationContext ctx)
 			{
-				return Item.OnGetRunConfigurations (configuration);
+				return Item.OnGetRunConfigurations ();
 			}
 
 			internal protected override void OnRunConfigurationsChanged (OperationContext ctx)

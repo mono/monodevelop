@@ -60,7 +60,7 @@ namespace MonoDevelop.Projects
 			return next.SupportsFlavor (guid);
 		}
 
-		internal protected virtual RunConfiguration OnCreateRunConfiguration (string name)
+		internal protected virtual ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
 			return next.OnCreateRunConfiguration (name);
 		}

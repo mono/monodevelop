@@ -8242,8 +8242,13 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\DefaultCommandTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditSession.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AutoInsertBracketTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.Ide.Execution\ExecutionSchemeEditor.cs" />
-    <Compile Include="MonoDevelop.Ide.Extensions\ExecutionSchemeEditorExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\RunConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\RunConfigurationEditorExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunConfigurationsPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunConfigurationPanel.cs" />
+    <Compile Include="MonoDevelop.Components\XwtControl.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\RunConfigurationService.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\DotNetRunConfigurationEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
