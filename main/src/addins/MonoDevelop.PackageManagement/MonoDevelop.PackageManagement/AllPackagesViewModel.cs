@@ -213,9 +213,9 @@ namespace MonoDevelop.PackageManagement
 			IsReadingPackages = true;
 			ClearError ();
 			if (clearPackages) {
+				CancelReadPackagesTask ();
 				ClearPackages ();
 			}
-			CancelReadPackagesTask ();
 			CreateReadPackagesTask ();
 		}
 
@@ -231,7 +231,7 @@ namespace MonoDevelop.PackageManagement
 		void CreateReadPackagesTask()
 		{
 			var loader = currentLoader ?? CreatePackageLoader ();
-			cancellationTokenSource = new CancellationTokenSource ();
+			cancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource ();
 			LoadPackagesAsync (loader, cancellationTokenSource.Token)
 				.ContinueWith (t => OnPackagesRead (t, loader), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
