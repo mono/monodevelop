@@ -149,6 +149,7 @@ namespace MonoDevelop.Components.MainToolbar
 					ToolbarView.ConfigurationModel = Enumerable.Empty<IConfigurationModel> ();
 					ToolbarView.RuntimeModel = Enumerable.Empty<IRuntimeModel> ();
 					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();
+					ToolbarView.RunConfigurationVisible = false;
 					return;
 				}
 
@@ -158,13 +159,15 @@ namespace MonoDevelop.Components.MainToolbar
 					.Select (conf => new ConfigurationModel (conf));
 
 				if (currentSolution != null)
-					ToolbarView.RunConfigurationModel = currentSolution.GetRunConfigurations ().Select (rc => new RunConfigurationModel (rc));
+					ToolbarView.RunConfigurationModel = currentSolution.GetRunConfigurations ().Select (rc => new RunConfigurationModel (rc)).ToArray ();
 				else
 					ToolbarView.RunConfigurationModel = Enumerable.Empty<IRunConfigurationModel> ();
 				
 			} finally {
 				ignoreConfigurationChangedCount--;
 			}
+
+			ToolbarView.RunConfigurationVisible = ToolbarView.RunConfigurationModel.Count () > 1;
 
 			SelectActiveRunConfiguration ();
 			FillRuntimes ();
@@ -489,14 +492,16 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (currentSolution != null) {
 				currentSolution.StartupConfigurationChanged -= HandleStartupItemChanged;
-				currentSolution.Saved -= HandleUpdateCombos;
+				currentSolution.Saved -= HandleUpdateCombosWidthDelay;
+				currentSolution.EntrySaved -= HandleUpdateCombosWidthDelay;
 			}
 
 			currentSolution = e.Solution;
 
 			if (currentSolution != null) {
 				currentSolution.StartupConfigurationChanged += HandleStartupItemChanged;
-				currentSolution.Saved += HandleUpdateCombos;
+				currentSolution.Saved += HandleUpdateCombosWidthDelay;
+				currentSolution.EntrySaved += HandleUpdateCombosWidthDelay;
 			}
 
 			TrackStartupProject ();
@@ -508,23 +513,30 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (currentStartupProject != null && ((currentSolution != null && currentStartupProject != currentSolution.StartupItem) || currentSolution == null)) {
 				currentStartupProject.ExecutionTargetsChanged -= executionTargetsChanged;
-				currentStartupProject.Saved -= HandleUpdateCombos;
 			}
 
 			if (currentSolution != null) {
 				currentStartupProject = currentSolution.StartupItem;
 				if (currentStartupProject != null) {
 					currentStartupProject.ExecutionTargetsChanged += executionTargetsChanged;
-					currentStartupProject.Saved += HandleUpdateCombos;
 				}
 			}
 			else
 				currentStartupProject = null;
 		}
 
-		void HandleUpdateCombos (object sender, EventArgs e)
+		bool updatingCombos;
+		void HandleUpdateCombosWidthDelay (object sender, EventArgs e)
 		{
-			UpdateCombos ();
+			if (!updatingCombos) {
+				updatingCombos = true;
+				GLib.Timeout.Add (100, () => {
+					updatingCombos = false;
+					Console.WriteLine ("Update Combos");
+					UpdateCombos ();
+					return false;
+				});
+			}
 		}
 
 		void HandleStartupItemChanged (object sender, EventArgs e)

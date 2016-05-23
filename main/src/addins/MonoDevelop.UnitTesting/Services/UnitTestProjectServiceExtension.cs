@@ -76,7 +76,7 @@ namespace MonoDevelop.UnitTesting
 			return unitTestFound;
 		}
 
-		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
+		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
 			bool defaultCanExecute;
 
@@ -90,7 +90,7 @@ namespace MonoDevelop.UnitTesting
 			}
 			if (defaultCanExecute) {
 				// It is executable by default
-				await base.OnExecute (monitor, context, configuration);
+				await base.OnExecute (monitor, context, configuration, runConfiguration);
 				return;
 			}
 			UnitTest test = FindRootTest ();
@@ -113,11 +113,11 @@ namespace MonoDevelop.UnitTesting
 			return sf;
 		}
 		
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			
-			var res = base.OnGetCanExecute (context, configuration);
+			var res = base.OnGetCanExecute (context, configuration, runConfiguration);
 			lock (canExecuteCheckLock) {
 				if (checkingCanExecute)
 					return res;
