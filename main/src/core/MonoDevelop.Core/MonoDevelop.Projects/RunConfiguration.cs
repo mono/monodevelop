@@ -47,16 +47,6 @@ namespace MonoDevelop.Projects
 			return Name;
 		}
 
-		public ExecutionCommand ConfigureCommand (ExecutionCommand command)
-		{
-			return OnConfigureCommand (command);
-		}
-
-		protected virtual ExecutionCommand OnConfigureCommand (ExecutionCommand command)
-		{
-			return command;
-		}
-
 		public bool IsDefaultConfiguration {
 			get { return Name == "Default"; }
 		}

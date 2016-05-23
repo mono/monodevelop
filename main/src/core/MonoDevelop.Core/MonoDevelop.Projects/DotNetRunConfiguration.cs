@@ -149,29 +149,6 @@ namespace MonoDevelop.Projects
 			environmentVariables = new Dictionary<string, string> (other.environmentVariables);
 			monoParameters = other.monoParameters.Clone ();
 		}
-
-		protected override ExecutionCommand OnConfigureCommand (ExecutionCommand command)
-		{
-			base.OnConfigureCommand (command);
-			var pcmd = (ProcessExecutionCommand)command;
-
-			if (StartAction == DotNetRunConfiguration.StartActions.Program)
-				pcmd = Runtime.ProcessService.CreateCommand (StartProgram);
-			else {
-				var cmd = (DotNetExecutionCommand)command;
-				string monoOptions;
-				monoParameters.GenerateOptions (cmd.EnvironmentVariables, out monoOptions);
-				cmd.RuntimeArguments = monoOptions;
-			}
-			
-			pcmd.Arguments = StartArguments;
-			pcmd.WorkingDirectory = StartWorkingDirectory;
-
-			foreach (var env in environmentVariables)
-				pcmd.EnvironmentVariables [env.Key] = env.Value;
-
-			return pcmd;
-		}
 	}
 }
 

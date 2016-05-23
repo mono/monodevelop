@@ -57,7 +57,8 @@ namespace MonoDevelop.Projects
 		ReadOnlyCollection<SolutionItem> solutionItems;
 		SolutionConfigurationCollection configurations;
 		SolutionRunConfigurationCollection runConfigurations;
-
+		MultiItemSolutionRunConfiguration multiStartupConfig = new MultiItemSolutionRunConfiguration (MultiStartupConfigId) { Name = "Multi-Startup" };
+		const string MultiStartupConfigId = "MonoDevelop.Projects.MultiStartup";
 
 		MSBuildEngineManager msbuildEngineManager = new MSBuildEngineManager ();
 		
@@ -182,7 +183,8 @@ namespace MonoDevelop.Projects
 				return (StartupConfiguration as SingleItemSolutionRunConfiguration)?.Item;
 			}
 			set {
-				StartupConfiguration = GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().FirstOrDefault (co => co.Item == value);
+				if (value != StartupItem)
+					StartupConfiguration = GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().FirstOrDefault (co => co.Item == value);
 			}
 		}
 
@@ -191,17 +193,21 @@ namespace MonoDevelop.Projects
 				return StartupConfiguration is SingleItemSolutionRunConfiguration;
 			}
 			set {
-				LoggingService.LogWarning ("Solution.SingleStartup setter has no effect");
+				if (value == SingleStartup)
+					return;
+				if (value) {
+					StartupItem = multiStartupConfig.Items.FirstOrDefault () ?? GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().Select (i => i.Item).FirstOrDefault ();
+				} else {
+					if (!runConfigurations.Contains (multiStartupConfig))
+						runConfigurations.Add (multiStartupConfig);
+					StartupConfiguration = multiStartupConfig;
+				}
 			}
 		}
 		
 		public List<SolutionItem> MultiStartupItems {
 			get {
-				var c = StartupConfiguration as MultiItemSolutionRunConfiguration;
-				if (c != null)
-					return c.Items.ToList ();
-				else
-					return new List<SolutionItem> ();
+				return multiStartupConfig.Items;
 			}
 		}
 
@@ -235,6 +241,44 @@ namespace MonoDevelop.Projects
 		{
 			await base.OnEndLoad ();
 			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
+
+			bool startupConfigSet = false;
+
+			var sitem = UserProperties.GetValue<string> ("StartupItem");
+			if (!string.IsNullOrEmpty (sitem)) {
+				// Old StartupItem property. Find the corresponding SingleItemSolutionRunConfiguration instance and get rid of the property.
+				var startItemFileName = GetAbsoluteChildPath (sitem);
+				var item = FindSolutionItem (startItemFileName);
+				if (item != null) {
+					StartupConfiguration = GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().FirstOrDefault (c => c.Item == item);
+					startupConfigSet = true;
+				}
+				UserProperties.RemoveValue ("StartupItem");
+			}
+
+			var sitems = UserProperties.GetValue<string []> ("StartupItems");
+			if (sitems != null && sitems.Length > 0) {
+				// Old StartupItems property. Create a corresponding MultiItemSolutionRunConfiguration.
+				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (file => FindSolutionItem (file)).Where (i => i != null);
+				multiStartupConfig.Items.Clear ();
+				multiStartupConfig.Items.AddRange (multiStartupItems.ToArray ());
+				runConfigurations.Add (multiStartupConfig);
+				if (!startupConfigSet) {
+					// If the config has not been set by StartupItem it means that this is an old solution that had been configured with multiple startup.
+					// Select the multi-startup config in this case.
+					StartupConfiguration = multiStartupConfig;
+					startupConfigSet = true;
+				}
+			}
+
+			if (!startupConfigSet) {
+				// Startup configuration has not been set by legacy properties. Do it now.
+				var sconfig = UserProperties.GetValue<string> ("StartupConfiguration");
+				if (!string.IsNullOrEmpty (sconfig))
+					StartupConfiguration = GetRunConfigurations ().FirstOrDefault (c => c.Id == sconfig);
+				else
+					StartupConfiguration = GetRunConfigurations ().FirstOrDefault ();
+			}
 		}
 
 		internal protected override Task OnSave (ProgressMonitor monitor)
@@ -242,37 +286,16 @@ namespace MonoDevelop.Projects
 			return FileFormat.WriteFile (FileName, this, monitor);
 		}
 
-		protected override async Task OnLoadUserProperties ()
-		{
-			await base.OnLoadUserProperties ();
-			var sitem = UserProperties.GetValue<string> ("StartupItem");
-			if (!string.IsNullOrEmpty (sitem)) {
-				// Old StartupItem property. Find the corresponding SingleItemSolutionRunConfiguration instance.
-				var startItemFileName = GetAbsoluteChildPath (sitem);
-				var item = FindSolutionItem (startItemFileName);
-				if (item != null)
-					StartupConfiguration = GetRunConfigurations ().OfType<SingleItemSolutionRunConfiguration> ().FirstOrDefault (c => c.Item == item);
-				UserProperties.RemoveValue ("StartupItem");
-			}
-
-			var sitems = UserProperties.GetValue<string[]> ("StartupItems");
-			if (sitems != null && sitems.Length > 0) {
-				// Old StartupItems property. Create a corresponding MultiItemSolutionRunConfiguration.
-				var multiStartupItems = sitems.Select (p => (string)GetAbsoluteChildPath (p)).Select (file => FindSolutionItem (file)).Where (i => i!= null);
-				runConfigurations.Add (new MultiItemSolutionRunConfiguration ("Multi-Startup") { Items = multiStartupItems.ToArray () });
-				UserProperties.RemoveValue ("StartupItems");
-			}
-
-			var sconfig = UserProperties.GetValue<string> ("StartupConfiguration");
-			if (!string.IsNullOrEmpty (sconfig))
-				StartupConfiguration = GetRunConfigurations ().FirstOrDefault (c => c.Id == sconfig);
-			else
-				StartupConfiguration = GetRunConfigurations ().FirstOrDefault ();
-		}
-
 		protected override async Task OnSaveUserProperties ()
 		{
-			UserProperties.SetValue ("StartupConfiguration", (string) StartupConfiguration?.Id);
+			UserProperties.SetValue ("StartupConfiguration", (string)StartupConfiguration?.Id);
+
+			// Save the multi-startup configuration only if it is the one that's selected 
+			var msc = StartupConfiguration as MultiItemSolutionRunConfiguration;
+			if (msc != null)
+				UserProperties.SetValue ("StartupItems", msc.Items.Select (p => (string)GetRelativeChildPath (p.FileName)).ToArray ());
+			else
+				UserProperties.RemoveValue ("StartupItems");
 
 			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 			await base.OnSaveUserProperties ();
@@ -647,27 +670,52 @@ namespace MonoDevelop.Projects
 
 		public Task Execute (ProgressMonitor monitor, ExecutionContext context, string configuration)
 		{
-			return Execute (monitor, context, (SolutionConfigurationSelector) configuration);
+			return Execute (monitor, context, (SolutionConfigurationSelector) configuration, StartupConfiguration);
 		}
 
 		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return SolutionExtension.Execute (monitor, context, configuration);
+			return Execute (monitor, context, configuration, StartupConfiguration);
+		}
+
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, string configuration, SolutionRunConfiguration runConfiguration)
+		{
+			return Execute (monitor, context, (SolutionConfigurationSelector)configuration, runConfiguration);
+		}
+
+		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
+		{
+			return SolutionExtension.Execute (monitor, context, configuration, runConfiguration);
 		}
 
 		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return SolutionExtension.PrepareExecution (monitor, context, configuration);
+			return PrepareExecution (monitor, context, configuration, StartupConfiguration);
+		}
+
+		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
+		{
+			return SolutionExtension.PrepareExecution (monitor, context, configuration, runConfiguration);
 		}
 
 		public bool CanExecute (ExecutionContext context, string configuration)
 		{
-			return CanExecute (context, (SolutionConfigurationSelector) configuration);
+			return CanExecute (context, (SolutionConfigurationSelector) configuration, StartupConfiguration);
 		}
 
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return SolutionExtension.CanExecute (context, configuration);
+			return CanExecute (context, configuration, StartupConfiguration);
+		}
+
+		public bool CanExecute (ExecutionContext context, string configuration, SolutionRunConfiguration runConfiguration)
+		{
+			return CanExecute (context, (SolutionConfigurationSelector)configuration, runConfiguration);
+		}
+
+		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
+		{
+			return SolutionExtension.CanExecute (context, configuration, runConfiguration);
 		}
 
 		public IEnumerable<SolutionRunConfiguration> GetRunConfigurations ()
@@ -692,15 +740,31 @@ namespace MonoDevelop.Projects
 
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration)
 		{
-			return GetExecutionTargets ((SolutionConfigurationSelector) configuration);
+			return GetExecutionTargets ((SolutionConfigurationSelector) configuration, StartupConfiguration);
 		}
 
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
 		{
+			return GetExecutionTargets (configuration, StartupConfiguration);
+		}
+
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (string configuration, SolutionRunConfiguration runConfiguration)
+		{
+			return GetExecutionTargets ((SolutionConfigurationSelector)configuration, runConfiguration);
+		}
+
+		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
+		{
+			return SolutionExtension.GetExecutionTargets (this, configuration, runConfiguration);
+		}
+
+		IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
+		{
 			return SolutionExtension.GetExecutionTargets (this, configuration);
 		}
 
-		/*protected virtual*/ Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
+		/*protected virtual*/
+		Task<BuildResult> OnBuild (ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
 			return RootFolder.Build (monitor, configuration, operationContext:operationContext);
 		}
@@ -715,35 +779,37 @@ namespace MonoDevelop.Projects
 			return RootFolder.Clean (monitor, configuration, operationContext);
 		}
 
-		/*protected virtual*/ bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration)
+		/*protected virtual*/ bool OnGetCanExecute(ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
-			if (SingleStartup) {
-				if (StartupItem == null)
-					return false;
-				return StartupItem.CanExecute (context, configuration);
-			} else {
-				foreach (SolutionItem it in MultiStartupItems) {
+			var ssc = runConfiguration as SingleItemSolutionRunConfiguration;
+			if (ssc != null)
+				return ssc.Item.CanExecute (context, configuration, ssc.RunConfiguration);
+
+			var msc = runConfiguration as MultiItemSolutionRunConfiguration;
+			if (msc != null) {
+				foreach (SolutionItem it in msc.Items) {
 					if (it.CanExecute (context, configuration))
 						return true;
 				}
 				return false;
 			}
+			return false;
 		}
 		
-		/*protected virtual*/ async Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		/*protected virtual*/ async Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
-			if (SingleStartup) {
-				if (StartupItem == null) {
-					monitor.ReportError (GettextCatalog.GetString ("Startup item not set"), null);
-					return;
-				}
-				await StartupItem.Execute (monitor, context, configuration);
-			} else {
+			var ssc = runConfiguration as SingleItemSolutionRunConfiguration;
+			if (ssc != null) {
+				await ssc.Item.Execute (monitor, context, configuration, ssc.RunConfiguration);
+				return;
+			}
+			var msc = runConfiguration as MultiItemSolutionRunConfiguration;
+			if (msc != null) {
 				var tasks = new List<Task> ();
 				var monitors = new List<AggregatedProgressMonitor> ();
 				monitor.BeginTask ("Executing projects", 1);
 				
-				foreach (SolutionItem it in MultiStartupItems) {
+				foreach (SolutionItem it in msc.Items) {
 					if (!it.CanExecute (context, configuration))
 						continue;
 					AggregatedProgressMonitor mon = new AggregatedProgressMonitor ();
@@ -764,7 +830,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		/*protected virtual*/ Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		/*protected virtual*/ Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
 			return Task.FromResult (0);
 		}
@@ -1126,19 +1192,19 @@ namespace MonoDevelop.Projects
 				return Solution.OnClean (monitor, configuration, operationContext);
 			}
 
-			internal protected override Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+			internal protected override Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 			{
-				return Solution.OnExecute (monitor, context, configuration);
+				return Solution.OnExecute (monitor, context, configuration, runConfiguration);
 			}
 
-			internal protected override Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+			internal protected override Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 			{
-				return Solution.OnPrepareExecution (monitor, context, configuration);
+				return Solution.OnPrepareExecution (monitor, context, configuration, runConfiguration);
 			}
 
-			internal protected override bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
+			internal protected override bool CanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 			{
-				return Solution.OnGetCanExecute (context, configuration);
+				return Solution.OnGetCanExecute (context, configuration, runConfiguration);
 			}
 
 			internal protected override void OnReadSolution (ProgressMonitor monitor, SlnFile file)
@@ -1169,6 +1235,11 @@ namespace MonoDevelop.Projects
 			internal protected override void OnReadSolutionFolderItemData (ProgressMonitor monitor, SlnPropertySet properties, SolutionFolderItem item)
 			{
 				Solution.OnReadSolutionFolderItemData (monitor, properties, item);
+			}
+
+			internal protected override IEnumerable<ExecutionTarget> GetExecutionTargets (Solution solution, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
+			{
+				return Solution.OnGetExecutionTargets (configuration, runConfiguration);
 			}
 
 			internal protected override IEnumerable<ExecutionTarget> GetExecutionTargets (Solution solution, ConfigurationSelector configuration)

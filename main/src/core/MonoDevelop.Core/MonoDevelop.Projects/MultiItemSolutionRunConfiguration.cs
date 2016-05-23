@@ -24,15 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+
 namespace MonoDevelop.Projects
 {
-	public class MultiItemSolutionRunConfiguration: SolutionRunConfiguration
+	class MultiItemSolutionRunConfiguration: SolutionRunConfiguration
 	{
 		public MultiItemSolutionRunConfiguration (string name): base (name)
 		{
+			Items = new List<SolutionItem> ();
 		}
 
-		public SolutionItem [] Items { get; set; }
+		public List<SolutionItem> Items { get; set; }
 	}
 }
 

@@ -1109,9 +1109,15 @@ namespace MonoDevelop.Projects
 				.Where (d => !string.IsNullOrEmpty (d)).ToList ();
 		}
 
+		[Obsolete("Use the overload that takes a RunConfiguration")]
 		public ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 		{
-			return ProjectExtension.OnCreateExecutionCommand (configSel, configuration);
+			return CreateExecutionCommand (configSel, configuration, GetDefaultRunConfiguration () as DotNetRunConfiguration);
+		}
+
+		public ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, DotNetRunConfiguration runConfiguration)
+		{
+			return ProjectExtension.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 		}
 
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
@@ -1124,16 +1130,69 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, DotNetRunConfiguration runConfiguration)
 		{
-			DotNetProjectConfiguration config = (DotNetProjectConfiguration) GetConfiguration (configuration);
+#pragma warning disable 618 // Type or member is obsolete
+			var rcmd = ProjectExtension.OnCreateExecutionCommand (configSel, configuration);
+#pragma warning restore 618 // Type or member is obsolete
+
+			var cmd = rcmd as DotNetExecutionCommand;
+			if (cmd == null)
+				return rcmd;
+
+			// Don't directly overwrite the settings, since those may have been set by the OnCreateExecutionCommand
+			// overload that doesn't take a runConfiguration.
+
+			string monoOptions;
+			runConfiguration.MonoParameters.GenerateOptions (cmd.EnvironmentVariables, out monoOptions);
+			cmd.RuntimeArguments = monoOptions;
+			if (!string.IsNullOrEmpty (runConfiguration.StartArguments))
+				cmd.Arguments = runConfiguration.StartArguments;
+			if (!runConfiguration.StartWorkingDirectory.IsNullOrEmpty)
+				cmd.WorkingDirectory = runConfiguration.StartWorkingDirectory;
+			foreach (var env in runConfiguration.EnvironmentVariables)
+				cmd.EnvironmentVariables [env.Key] = env.Value;
+
+			return cmd;
+		}
+
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		{
+			DotNetProjectConfiguration config = (DotNetProjectConfiguration)GetConfiguration (configuration);
 			if (config == null)
 				return false;
-			ExecutionCommand cmd = CreateExecutionCommand (configuration, config);
-			if (context.ExecutionTarget != null)
-				cmd.Target = context.ExecutionTarget;
+			
+			DotNetRunConfiguration runConfig = runConfiguration as DotNetRunConfiguration;
+			if (runConfig == null)
+				return false;
 
-			return (compileTarget == CompileTarget.Exe || compileTarget == CompileTarget.WinExe) && context.ExecutionHandler.CanExecute (cmd);
+			ExecutionCommand executionCommand;
+
+			if (runConfig.StartAction == DotNetRunConfiguration.StartActions.Program) {
+				executionCommand = Runtime.ProcessService.CreateCommand (runConfig.StartProgram);
+				// If it is command for executing an assembly, add runtime options
+				var dcmd = executionCommand as DotNetExecutionCommand;
+				if (dcmd != null) {
+					string monoOptions;
+					runConfig.MonoParameters.GenerateOptions (dcmd.EnvironmentVariables, out monoOptions);
+					dcmd.RuntimeArguments = monoOptions;
+				}
+				// If it is command for executing a process, add arguments, work directory and env vars
+				var pcmd = executionCommand as ProcessExecutionCommand;
+				if (pcmd != null) {
+					pcmd.Arguments = runConfig.StartArguments;
+					pcmd.WorkingDirectory = runConfig.StartWorkingDirectory;
+
+					foreach (var env in runConfig.EnvironmentVariables)
+						pcmd.EnvironmentVariables [env.Key] = env.Value;
+				}
+			} else {
+				executionCommand = CreateExecutionCommand (configuration, config, runConfig);
+				if (context.ExecutionTarget != null)
+					executionCommand.Target = context.ExecutionTarget;
+			}
+
+			return executionCommand != null && context.ExecutionHandler.CanExecute (executionCommand);
 		}
 
 		protected override ProjectFeatures OnGetSupportedFeatures ()
@@ -1141,7 +1200,10 @@ namespace MonoDevelop.Projects
 			var sf = base.OnGetSupportedFeatures ();
 
 			// Libraries are not executable by default, unless the project has a custom execution command
-			if (compileTarget == CompileTarget.Library && !Configurations.OfType<ProjectConfiguration> ().Any (c => c.CustomCommands.HasCommands (CustomCommandType.Execute)))
+			if (compileTarget == CompileTarget.Library
+			    && !Configurations.OfType<ProjectConfiguration> ().Any (c => c.CustomCommands.HasCommands (CustomCommandType.Execute))
+				&& !GetRunConfigurations ().OfType<DotNetRunConfiguration> ().Any (rc => rc.StartAction == DotNetRunConfiguration.StartActions.Program && !string.IsNullOrEmpty (rc.StartProgram))
+			   )
 				sf &= ~ProjectFeatures.Execute;
 			
 			return sf;
@@ -1504,7 +1566,7 @@ namespace MonoDevelop.Projects
 				CheckReferenceChange (ei.FileName);
 		}
 
-		protected async override Task DoExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
 			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			if (dotNetProjectConfig == null) {
@@ -1514,7 +1576,18 @@ namespace MonoDevelop.Projects
 
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
 
-			ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig);
+			var rc = (DotNetRunConfiguration)runConfiguration;
+
+			if (rc.StartAction == DotNetRunConfiguration.StartActions.Program) {
+				// Start an external program
+				var cons = dotNetProjectConfig.ExternalConsole ? 
+				                                  context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken) : 
+				                                  context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+				await Runtime.ProcessService.StartConsoleProcess (rc.StartProgram, rc.StartArguments, rc.StartWorkingDirectory, cons, rc.EnvironmentVariables).Task;
+				return;
+			}
+
+			ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig, rc);
 			if (context.ExecutionTarget != null)
 				executionCommand.Target = context.ExecutionTarget;
 
@@ -1651,9 +1724,16 @@ namespace MonoDevelop.Projects
 				return Project.OnGetReferencedAssemblyProjects (configuration);
 			}
 
+#pragma warning disable 672 // Member overrides obsolete member
 			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 			{
 				return Project.OnCreateExecutionCommand (configSel, configuration);
+			}
+#pragma warning restore 672 // Member overrides obsolete member
+
+			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, DotNetRunConfiguration runConfiguration)
+			{
+				return Project.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 			}
 
 			internal protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)

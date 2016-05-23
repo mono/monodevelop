@@ -32,7 +32,10 @@ namespace MonoDevelop.Projects
 		{
 			Item = item;
 			RunConfiguration = config;
-			Name = item.Name + (config != null ? (" (" + config.Name + ")") : "");
+			if (config != null && !config.IsDefaultConfiguration)
+				Name = item.Name + " (" + config.Name + ")";
+			else
+				Name = item.Name;
 		}
 
 		public SolutionItem Item { get; private set; }
