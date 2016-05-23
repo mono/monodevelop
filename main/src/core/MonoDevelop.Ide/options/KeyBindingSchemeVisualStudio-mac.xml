@@ -82,8 +82,12 @@
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.Replace" shortcut="Control+H" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles" shortcut="Control+Shift+H" />
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" shortcut="Control+K|Control+K" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="Control+Shift+L" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextSubword" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextWord" shortcut="Control+Delete" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevSubword" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord" shortcut="Control+BackSpace" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="Control+End" />
@@ -92,14 +96,18 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" shortcut="Control+]" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLineAtEnd" shortcut="Control+Shift+Return" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLinePreserveCaretPosition" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd" shortcut="End" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineStart" shortcut="Home" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineUp" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord" shortcut="Control+Right Meta+Right" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevWord" shortcut="Control+Left Meta+Left" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret" shortcut="F7 Escape" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown" shortcut="Control+Down Meta+Down" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp" shortcut="Control+Up Meta+Up" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown" shortcut="Shift+Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd" shortcut="Shift+End" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome" shortcut="Shift+Home" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft" shortcut="Shift+Left" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord" shortcut="Control+Shift+Right Shift+Meta+Right" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord" shortcut="Control+Shift+Left Shift+Meta+Left" />
