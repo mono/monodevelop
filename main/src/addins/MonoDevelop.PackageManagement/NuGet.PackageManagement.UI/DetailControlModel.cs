@@ -271,7 +271,8 @@ namespace NuGet.PackageManagement.UI
 			try
 			{
 				// load up the full details for each version
-				packages = await metadataProvider?.GetPackageMetadataListAsync(Id, true, false, token);
+				if (metadataProvider != null)
+					packages = await metadataProvider.GetPackageMetadataListAsync(Id, true, false, token);
 			}
 			catch (InvalidOperationException)
 			{

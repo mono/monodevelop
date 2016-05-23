@@ -116,7 +116,8 @@ namespace NuGet.PackageManagement.UI
 
 			if (result == null)
 			{
-				result = await _globalLocalRepository?.GetPackageMetadataFromLocalSourceAsync(identity, cancellationToken);
+				if (_globalLocalRepository != null)
+					result = await _globalLocalRepository.GetPackageMetadataFromLocalSourceAsync(identity, cancellationToken);
 
 				if (result == null)
 				{
