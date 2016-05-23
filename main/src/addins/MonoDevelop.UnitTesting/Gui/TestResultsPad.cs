@@ -473,7 +473,7 @@ namespace MonoDevelop.UnitTesting
 				int line = (int)failuresStore.GetValue (iter, 4);
 				try {
 					if (file != null && File.Exists (file)) {
-						IdeApp.Workbench.OpenDocument (file, line, -1);
+						IdeApp.Workbench.OpenDocument (file, null, line, -1);
 						return;
 					}
 				} catch (Exception) {
@@ -521,7 +521,7 @@ namespace MonoDevelop.UnitTesting
 					clipboard.Text = last.StackTrace;
 					break;
 					default:
-					clipboard.Text = last.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + last.StackTrace;
+					clipboard.Text = last.Message + Environment.NewLine + GettextCatalog.GetString("Stack trace:") + Environment.NewLine + last.StackTrace;
 					break;
 				}
 			} else {
@@ -544,7 +544,7 @@ namespace MonoDevelop.UnitTesting
 					clipboard.Text = error.StackTrace;
 					break;
 				default:
-					clipboard.Text = error.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + error.StackTrace;
+					clipboard.Text = error.Message + Environment.NewLine + GettextCatalog.GetString("Stack trace:") + Environment.NewLine + error.StackTrace;
 					break;
 				}
 			}
@@ -607,7 +607,7 @@ namespace MonoDevelop.UnitTesting
 			if (loc == null)
 				loc = test.SourceCodeLocation;
 			if (loc != null) {
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+				IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 			} else {
 				LoggingService.LogError ("Can't get source code location for test : "+ test);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));
@@ -622,7 +622,7 @@ namespace MonoDevelop.UnitTesting
 				return;
 			SourceCodeLocation loc = test.SourceCodeLocation;
 			if (loc != null) {
-				IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+				IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 			}  else {
 				LoggingService.LogError ("Can't get source code location for test : "+ test);
 				MessageService.ShowError (GettextCatalog.GetString ("Can't get source code location for :" + test.Name));

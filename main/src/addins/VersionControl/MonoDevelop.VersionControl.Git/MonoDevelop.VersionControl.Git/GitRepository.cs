@@ -658,14 +658,14 @@ namespace MonoDevelop.VersionControl.Git
 						// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
 						if (string.Equals (e.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
 							message = GettextCatalog.GetString ("Unable to authorize credentials for the repository.");
+						else if (e.Message.StartsWith ("Invalid Content-Type", StringComparison.OrdinalIgnoreCase))
+							message = GettextCatalog.GetString ("Not a valid git repository.");
 						else if (string.Equals (e.Message, "Received unexpected content-type", StringComparison.OrdinalIgnoreCase))
 							message = GettextCatalog.GetString ("Not a valid git repository.");
 						else
 							message = e.Message;
 
-						if (monitor != null)
-							monitor.ReportError (message, null);
-						retry = false;
+						throw new VersionControlException (message);
 					}
 				} while (retry);
 			}
@@ -1444,7 +1444,19 @@ namespace MonoDevelop.VersionControl.Git
 				dstRepo.Unstage (localDestPath);
 
 			if (srcRepo == dstRepo) {
-				srcRepo.Move (localSrcPath, localDestPath);
+				if (string.Equals (localSrcPath, localDestPath, StringComparison.OrdinalIgnoreCase)) {
+					try {
+						string temp = Path.GetTempFileName ();
+						File.Delete (temp);
+						File.Move (localSrcPath, temp);
+						DeleteFile (localSrcPath, true, monitor, false);
+						File.Move (temp, localDestPath);
+					} finally {
+						srcRepo.Stage (localDestPath);
+					}
+				} else {
+					srcRepo.Move (localSrcPath, localDestPath);
+				}
 				ClearCachedVersionInfo (localSrcPath, localDestPath);
 			} else {
 				File.Copy (localSrcPath, localDestPath);

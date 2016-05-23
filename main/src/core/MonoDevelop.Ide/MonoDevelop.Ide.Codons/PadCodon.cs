@@ -88,13 +88,12 @@ namespace MonoDevelop.Ide.Codons
 		{
 			if (content == null) {
 				content = CreatePad ();
-				content.Init (window);
-				ApplyPreferences ();
-			} else if (!initializeCalled) {
-				content.Init (window);
-				ApplyPreferences ();
 			}
-			initializeCalled = true;
+			if (!initializeCalled) {
+				content.Init (window);
+				ApplyPreferences ();
+				initializeCalled = true;
+			}
 			return content;
 		}
 			

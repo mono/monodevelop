@@ -48,8 +48,15 @@ namespace MonoDevelop.CSharp.Navigation
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					var foundSymbol = sym.OverriddenMember ();
 					while (foundSymbol != null) {
-						foreach (var loc in foundSymbol.Locations)
+						foreach (var loc in foundSymbol.Locations) {
+							if (monitor.CancellationToken.IsCancellationRequested)
+								return;
+
+							if (loc.SourceTree == null)
+								continue;
+							
 							monitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+						}
 						foundSymbol = foundSymbol.OverriddenMember ();
 					}
 				}

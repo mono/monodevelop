@@ -161,7 +161,7 @@ namespace MonoDevelop.UnitTesting
 //			UnitTestResult res = test.GetLastResult ();
 			loc = test.SourceCodeLocation;
 			if (loc != null)
-				await IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+				await IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 		}
 		
 		[CommandHandler (TestCommands.GoToFailure)]
@@ -175,7 +175,7 @@ namespace MonoDevelop.UnitTesting
 			if (loc == null)
 				loc = test.SourceCodeLocation;
 			if (loc != null)
-				await IdeApp.Workbench.OpenDocument (loc.FileName, loc.Line, loc.Column);
+				await IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 		}
 
 		[CommandUpdateHandler (TestCommands.GoToFailure)]

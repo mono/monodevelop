@@ -34,7 +34,6 @@ using AppKit;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;

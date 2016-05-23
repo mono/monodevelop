@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-12-15 15:35:25-0500\n"
-"PO-Revision-Date: 2016-02-06 10:23+0200\n"
+"PO-Revision-Date: 2016-04-17 10:43+0300\n"
 "Last-Translator: Olexandr Pylypchuk <pilipchukap@rambler.ru>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
 "Language: uk\n"
@@ -26,7 +26,7 @@ msgstr "{0} Зовнішня консоль"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:23
 msgid "The application was terminated by a signal: {0}"
-msgstr "Застосунок припинив роботу з кодом виходу: {0}"
+msgstr "Застосунок зупинено сигналом: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.Execution/ProcessService.cs:23
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:211
@@ -134,9 +134,8 @@ msgstr "Розширення цілі"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:77
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:87
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:90
-#, fuzzy
 msgid "Custom command execution failed"
-msgstr "Не вдалось виконати команду"
+msgstr "Не вдалось виконати власну команду"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:166
 msgid "Cannot create directory {0}, as a file with that name exists."
@@ -375,7 +374,7 @@ msgstr "Копіювати, якщо новіший"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:53
 msgid "Incompatible target framework: {0}"
-msgstr "Не сумісний цільовий фреймворк: {0}"
+msgstr "Несумісний цільовий фреймворк: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:205
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:4
@@ -522,7 +521,7 @@ msgid ""
 "targetting ({2})"
 msgstr ""
 "Проект '{0}' збережено у форматі '{1}', але ця версія Visual Studio не "
-"підтримує цыльового фреймворку проекту ({2})"
+"підтримує цільового фреймворку проекту ({2})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:6
 msgid "Saving solution: {0}"
@@ -554,8 +553,7 @@ msgstr ""
 msgid ""
 "{0}({1}): Projects with non-local source (http://...) not supported. '{2}'."
 msgstr ""
-"{0}({1}): Проекти з нелокальними сирцями (http://...) не пыдтримуються. "
-"'{2}'."
+"{0}({1}): Проекти з нелокальними сирцями (http://...) не підтримуються. '{2}'."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:58
 msgid "Invalid project path found in {0} : {1}"
@@ -732,19 +730,19 @@ msgstr "Тайське"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:2
 msgid "ApplicationName"
-msgstr "НазваЗастосунку"
+msgstr "ApplicationName"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:2
 msgid "SuiteName"
-msgstr ""
+msgstr "SuiteName"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:2
 msgid "ProfileDirectoryName"
-msgstr ""
+msgstr "ProfileDirectoryName"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core/BrandingService.cs:2
 msgid "StatusAreaSteadyIcon"
-msgstr ""
+msgstr "StatusAreaSteadyIcon"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Extensions/UnknownProjectTypeNode.cs:15
 msgid "This project type is not supported by MonoDevelop on {0}."
@@ -773,19 +771,19 @@ msgstr "Очищення: {0} ({1})"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild.Conditions/InvalidProjectFileException.cs:7
 msgid "errorCode"
-msgstr "кодПомилки"
+msgstr "errorCode"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild.Conditions/InvalidProjectFileException.cs:7
 msgid "errorSubcategory"
-msgstr "підкатегоріяПомилки"
+msgstr "errorSubcategory"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild.Conditions/InvalidProjectFileException.cs:7
 msgid "helpKeyword"
-msgstr "ключовеСловоДовідки"
+msgstr "helpKeyword"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild.Conditions/InvalidProjectFileException.cs:7
 msgid "projectFile"
-msgstr "файлПроекту"
+msgstr "projectFile"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Core.addin.xml:14
 msgid "Mono"
@@ -1060,7 +1058,7 @@ msgstr "Шаблон для винятку"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:5
 msgid "ExceptionName"
-msgstr ""
+msgstr "ExceptionName"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:5
 msgid "Template for an indexer"
@@ -1072,7 +1070,7 @@ msgstr "Повернути тип індексатора"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:5
 msgid "Type to index with"
-msgstr ""
+msgstr "Тип, яким індексувати"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:5
 msgid "Template for a short property"
@@ -1128,7 +1126,7 @@ msgstr "Вираз для оцінки препроцесором"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:6
 msgid "Template checked block"
-msgstr ""
+msgstr "Шаблон блоку checked"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:6
 msgid "Template for class declaration"
@@ -1277,7 +1275,7 @@ msgstr "Простір назв:"
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:25
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:26
 msgid "Template for try...catch"
-msgstr "Шаблон для 'try...catch'"
+msgstr "Шаблон для try...catch"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:10
 msgid "Template for parentheses"
@@ -2054,7 +2052,7 @@ msgstr "Закрити активне рішення або елемент ро�
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:17
 msgid "_Revert"
-msgstr "_Відновити"
+msgstr "_Відкотити"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 msgid "Revert to a saved version of the file"
@@ -2147,14 +2145,12 @@ msgid "Opens the folder that contains this file."
 msgstr "Відкрити теку, яка містить цей файл."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
-#, fuzzy
 msgid "Reveal in Finder"
-msgstr "Замінити у файлах"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
-#, fuzzy
 msgid "Reveals the file in Finder."
-msgstr "Відкрити теку в оглядачі файлів"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:15
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:7
@@ -2370,12 +2366,12 @@ msgstr "1 колонка"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:19
 #, fuzzy
 msgid "Move to Next Notebook"
-msgstr "_Перейти до наступного використання"
+msgstr "Перемістити до наступного Notebook"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:19
 #, fuzzy
 msgid "Move to Previous Notebook"
-msgstr "До попередньої закладки"
+msgstr "Перемістити до попереднього Notebook"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:19
 msgid "_Focus Document"
@@ -2413,12 +2409,11 @@ msgstr "Моніторинг інструментарію"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:23
 msgid "Start Session Recorder"
-msgstr ""
+msgstr "Розпочати запис сеансу"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:24
-#, fuzzy
 msgid "Replay Session..."
-msgstr "За_мінити..."
+msgstr "Програти сеанс..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:26
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:0
@@ -2955,6 +2950,8 @@ msgstr ""
 msgid ""
 "Cycles completing the current word from matching words in all open files"
 msgstr ""
+"Циклічно пропонує завершення поточного слова всіма підхожими словами зі всіх "
+"відкритих файлів"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
 msgid "Find caret"
@@ -3095,9 +3092,8 @@ msgid "Other"
 msgstr "Інші"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:7
-#, fuzzy
 msgid "Automated Feedback"
-msgstr "Повідомити про помилку"
+msgstr "Автоматичне повідомлення про помилку"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:7
 msgid "MonoDevelop Maintenance"
@@ -3220,7 +3216,7 @@ msgstr "_Виконання"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:11
 msgid "Session Recorder"
-msgstr ""
+msgstr "Записувач сеансу"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MainMenu.addin.xml:12
 msgid "_Window"
@@ -3350,9 +3346,8 @@ msgid "F# files"
 msgstr "Файли F#"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MimeTypes.addin.xml:2
-#, fuzzy
 msgid "MSBuild targets file"
-msgstr "Назва цілі побудови:"
+msgstr "цільові файли MSBuild"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:3
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:12
@@ -3458,14 +3453,12 @@ msgid "Mono Options"
 msgstr "Параметри Mono"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:14
-#, fuzzy
 msgid "General Pad Text"
-msgstr "Загальні"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:14
-#, fuzzy
 msgid "Output Pad Contents"
-msgstr "Панелі для виведення"
+msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Policies.addin.xml:2
 msgid "Text Style"
@@ -3726,7 +3719,7 @@ msgstr "Вміст"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:6
 msgid "Revert unsaved changes to document '{0}'?"
-msgstr ""
+msgstr "Скасувати незбережені зміни у документі '{0}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:6
 msgid "All changes made to the document will be permanently lost."
@@ -4103,11 +4096,8 @@ msgid "Unknown language '{0}'"
 msgstr "Невідома мова '{0}'"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:9
-#, fuzzy
 msgid "Invalid configuration mapping"
-msgstr ""
-"\n"
-"Неправильна конфігурація {0}. Правильні конфігурації : "
+msgstr "Неправильна карта конфігурації"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectNodeBuilder.cs:9
 msgid "Project not built in active configuration"
@@ -4483,14 +4473,12 @@ msgid "Create New Task"
 msgstr "Створити нове завдання"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:8
-#, fuzzy
 msgid "Copy Task"
 msgstr "Копіювати завдання"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:8
-#, fuzzy
 msgid "Copy Task Description"
-msgstr "Опис"
+msgstr "Копіювати опис завдання"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Tasks/UserTasksView.cs:8
 msgid "Delete Task"
@@ -5057,6 +5045,10 @@ msgid ""
 "the .NET runtime to be used for building and running applications when none "
 "is specifically selected."
 msgstr ""
+"Якщо ви маєте паралельно встановлену Mono, можна зареєструвати її тут, "
+"після чого її можна буде використовувати для побудови і запуску проектів. "
+"<b>Типовим середовищем</b> є .NET, яке використовується для побудови і "
+"запуску проектів, якщо не вказано інше."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
 msgid "Set as Default"
@@ -5065,7 +5057,7 @@ msgstr "Зробити стандартним"
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInfoView.cs:2
 msgid "label1"
-msgstr ""
+msgstr "label1"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:8
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchProgressMonitor.cs:6
@@ -5350,7 +5342,7 @@ msgstr "Символи GDB"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Profiler"
-msgstr ""
+msgstr "Профілювальник"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Verbose Level"
@@ -5419,7 +5411,7 @@ msgstr "Шляхи, нечутливі до регістру"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Managed Watcher"
-msgstr ""
+msgstr "Керований спостерігач"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "No SMP"
@@ -5455,7 +5447,7 @@ msgstr "XDebug"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Garbage Collector"
-msgstr "Прибиральник"
+msgstr "Збирач сміття"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid "Enable LLVM"
@@ -5624,6 +5616,8 @@ msgid ""
 "When set, System.IO.FileSystemWatcher will use the default managed "
 "implementation  (slow)."
 msgstr ""
+"Якщо встановити, System.IO.FileSystemWatcher використає типову керовану "
+"реалізацію (повільно)."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid ""
@@ -5676,6 +5670,8 @@ msgid ""
 "If set, an exception is thrown when a X11 error is encountered. By default a "
 "message is displayed but execution continues."
 msgstr ""
+"Якщо встановлено, кидається виняток при помилці X11. Типово "
+"виводиться повідомлення, але виконання продовжується."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid ""
@@ -5719,7 +5715,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:5
 msgid "Additional command line options to be provided to the Mono command."
-msgstr ""
+msgstr "Додаткові параметри командного рядка, які передаються команді Mono."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:5
 msgid "Disabled"
@@ -5918,11 +5914,11 @@ msgstr "Помилки при створенні файлу '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:27
 msgid "Errors in file generation."
-msgstr ""
+msgstr "Помилки при створенні файлу."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:27
 msgid "Warnings in file generation."
-msgstr ""
+msgstr "Попередження при створенні файлу."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:27
 msgid "Generated files successfully."
@@ -6036,7 +6032,7 @@ msgstr "Групувати за категоріями"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.PropertyGrid/PropertyGrid.cs:77
 msgid "Sort alphabetically"
-msgstr "Сортувати за алфавітом"
+msgstr "Упорядкувати за алфавітом"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.PropertyGrid.Editors/CollectionEditor.cs:58
 msgid "(Collection)"
@@ -6203,6 +6199,8 @@ msgid ""
 "Some files may need to be reloaded, and editing status for those files (such "
 "as the undo queue) will be lost."
 msgstr ""
+"Деякі файли можливо слід перезавантажити, і стан редагування для них "
+"(наприклад, черга скасування) буде втрачено."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:54
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/GuiBuilderProject.cs:8
@@ -6510,7 +6508,7 @@ msgstr "Зміни, зроблені у цих файлах, будуть пер
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:20
 msgid "The workspace already contains '{0}'."
-msgstr ""
+msgstr "Робочий простір вже містить '{0}'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:21
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:28
@@ -7306,12 +7304,11 @@ msgstr "Все одно продовжити"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:65
 msgid "CustomizerAssemblyPath"
-msgstr ""
+msgstr "CustomizerAssemblyPath"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:66
-#, fuzzy
 msgid "CustomizerType"
-msgstr "Власна"
+msgstr "CustomizerType"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/StringTagSelectorButton.cs:2
 msgid "More"
@@ -7720,6 +7717,8 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LogAgentOptionsPanel.cs:5
 msgid "Report errors and usage information to help {0} improve my experience."
 msgstr ""
+"Повідомляти про помилки та дані щодо використання, щоб допомогти {0} "
+"покращити роботу."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:4
 msgid "Do _Not Send"
@@ -8052,6 +8051,8 @@ msgid ""
 "Illegal project name.\n"
 "Name cannot contain a language keyword."
 msgstr ""
+"Неприпустима назва проекту.\n"
+"Назва не може бути ключовим словом мови."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:654
 msgid ""
@@ -8096,7 +8097,7 @@ msgstr "Назва рішення:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.GtkProjectConfigurationWidget.cs:113
 msgid "Create a .gitignore file to ignore inessential files."
-msgstr ""
+msgstr "Створити файл .gitignore для нехтування неважливих файлів."
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.GtkProjectConfigurationWidget.cs:129
 msgid "Create a project within the solution directory."
@@ -8138,9 +8139,8 @@ msgid "E_rrors only"
 msgstr "_Лише помилки"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:145
-#, fuzzy
 msgid "Illegal characters used in location."
-msgstr "Розпізнавання тексту"
+msgstr "В розташуванні використано недопустимі символи."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:150
 msgid ""
@@ -8160,7 +8160,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:162
 msgid "Illegal characters used in project location."
-msgstr ""
+msgstr "В розташуванні проекту використано недопустимі символи."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:16
 msgid "Search Files"
@@ -8176,16 +8176,15 @@ msgstr "Пошук членів"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 msgid "Press ‘{0}’ to search"
-msgstr ""
+msgstr "Для пошуку натисніть ‘{0}’"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:77
 msgid "Search solution"
 msgstr "Шукати рішення"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeAnalysisPanel.cs:12
-#, fuzzy
 msgid "Enable Code Analysis on Build"
-msgstr "Увімкнути аналіз коду відкритих файлів"
+msgstr "Увімкнути аналіз коду при побудові"
 
 #: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:44
 msgid "Use [%UP%] [%DOWN%] to move to another location."
@@ -8197,7 +8196,7 @@ msgstr "Натисни [ENTER], щоб вибрати розташування."
 
 #: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:44
 msgid "Press [ESC] to cancel this operation."
-msgstr ""
+msgstr "Щоб скасувати цю операцію, натисніть [ESC]."
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:0
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:0
@@ -8274,11 +8273,11 @@ msgstr "_Журнал"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:17
 msgid "_Review and Commit"
-msgstr "Переглянути і надіслати"
+msgstr "Переглянути і подати"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:17
 msgid "_Review Solution and Commit"
-msgstr "Переглянути _рішення і надіслати"
+msgstr "Переглянути _рішення і подати"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:17
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:41
@@ -8355,7 +8354,7 @@ msgstr "К_ерування версіями"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:25
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/VersionControl.addin.xml:26
 msgid "Commit Message Style"
-msgstr "Стиль додавання повідомлень"
+msgstr "Стиль повідомлення подачі"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogView.cs:2
 msgid "Log"
@@ -8373,11 +8372,11 @@ msgstr "Не вдалось виконати команду керування �
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:22
 msgid "Commit..."
-msgstr "Додавання..."
+msgstr "Подавання..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:22
 msgid "Revert"
-msgstr "Відновити"
+msgstr "Відкотити"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:22
 msgid "Show Remote Status"
@@ -8395,7 +8394,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:35
 msgid "Commit message:"
-msgstr "Додати повідомлення:"
+msgstr "Повідомлення подачі:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:55
 msgid "Create Patch"
@@ -8437,15 +8436,15 @@ msgstr "Немає файлів, змінених локально або від
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:97
 msgid "Commit message for file '{0}':"
-msgstr "Додати повідомлення для файлу '{0}':"
+msgstr "Повідомлення подачі для файлу '{0}':"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:97
 msgid "Commit message (multiple selection):"
-msgstr "Додати повідомлення (вибрано декілька файлів):"
+msgstr "Повідомлення подачі (вибрано декілька файлів):"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:117
 msgid "Some of the files in this commit do not have ChangeLog messages."
-msgstr ""
+msgstr "Деякі з файлів у цій подачі не мають повідомлень у журналі змін."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:117
 msgid "You may have forgotten to unselect items."
@@ -8479,15 +8478,15 @@ msgstr "Не вдалось отримати інформацію про від�
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:16
 msgid "You are trying to commit files which have unsaved changes."
-msgstr "Ви намагаєтесь надіслати файли, які мають незбережені зміни."
+msgstr "Ви намагаєтесь подати файли, які мають незбережені зміни."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:16
 msgid "Do you want to save the changes before committing?"
-msgstr "Бажаєте зберегти зміни перед надсиланням?"
+msgstr "Бажаєте зберегти зміни перед подаванням?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:19
 msgid "Some files could not be saved. Commit operation aborted"
-msgstr "Деякі файли неможливо зберегти. Операцію надсилання перервано"
+msgstr "Деякі файли неможливо зберегти. Операцію подавання перервано"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:3
 msgid "Repository"
@@ -8553,7 +8552,7 @@ msgstr "Вилучити файл"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:11
 msgid "Revert File"
-msgstr ""
+msgstr "Повернути файл"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/Commands.cs:11
 msgid "Lock File"
@@ -8565,11 +8564,11 @@ msgstr "Розблокувати файл"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:4
 msgid "Committing {0}..."
-msgstr "Надсилання {0}..."
+msgstr "Подавання {0}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/CommitCommand.cs:4
 msgid "Commit operation completed."
-msgstr "Операцію надсилання завершено."
+msgstr "Операцію подавання завершено."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:6
 msgid "Initial check-in of module {0}"
@@ -8601,12 +8600,12 @@ msgstr "Всі зміни, зроблені у вибраних файлах, б
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:6
 msgid "Reverting ..."
-msgstr "Скасування..."
+msgstr "Відкочування..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:6
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:6
 msgid "Revert operation completed."
-msgstr "Операцію скасування завершено."
+msgstr "Операцію відкоту завершено."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UpdateCommand.cs:2
 msgid "Updating..."
@@ -8725,19 +8724,19 @@ msgstr "<small><span color='red'>Неправильний URL</span></small>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:2
 msgid "Commit Files"
-msgstr "Надіслати зміни"
+msgstr "Подати зміни"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:2
 msgid "The following files will be committed:"
-msgstr "Надіслано буде такі файли:"
+msgstr "Буде подано такі файли:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:2
 msgid "Commit _message:"
-msgstr "Надіслати _повідомлення:"
+msgstr "_Повідомлення подачі:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:2
 msgid "1/1"
-msgstr ""
+msgstr "1/1"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/gtk-gui/MonoDevelop.VersionControl.Dialogs.CommitDialog.cs:2
 msgid "C_ommit"
@@ -8748,26 +8747,30 @@ msgid ""
 "Are you sure you want to revert the selected resources to the revision "
 "specified (all local changes will be discarded)?"
 msgstr ""
+"Справді повернути вказану ревізію для вибраних ресурсів "
+"(усі локальні зміни буде втрачено)?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:3
 msgid ""
 "Are you sure you want to revert the changes from the revision selected on "
 "these resources?"
-msgstr ""
+msgstr "Справді бажаєте повернути вибрану ревізію для цих ресурсів?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:3
 msgid ""
 "Note: The reversion will occur in your working copy, so you will still need "
 "to perform a commit to complete it."
 msgstr ""
+"Примітка: зміни з’являться у вашій робочій копії, тому для завершення "
+"потрібно буде подати їх."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:5
 msgid "Reverting to revision {0}..."
-msgstr "Повернення до версії {0}..."
+msgstr "Відкіт до ревізії {0}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:5
 msgid "Reverting revision {0}..."
-msgstr ""
+msgstr "Повернення ревізії {0}..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/LockCommand.cs:3
 msgid "Locking..."
@@ -8856,7 +8859,7 @@ msgstr "Отримання історії"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/MergeView.cs:3
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.MergeDialog.cs:2
 msgid "Merge"
-msgstr "Об'єднати"
+msgstr "Злиття"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/MergeWidget.cs:8
 msgid "My"
@@ -8872,7 +8875,7 @@ msgstr "Їхні"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.cs:69
 msgid "Revert this change"
-msgstr ""
+msgstr "Відкотити цю зміну"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffView.cs:3
 msgid "Changes"
@@ -8905,7 +8908,7 @@ msgstr "(робоча копія)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:3
 msgid "(base)"
-msgstr ""
+msgstr "(базовий)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffWidget.cs:3
 msgid "(revision {0})"
@@ -8939,7 +8942,7 @@ msgstr "сторінка2"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:5
 msgid "Revert changes from this revision"
-msgstr ""
+msgstr "Відкотити зміни до цієї ревізії"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:6
 msgid "Revert to this revision"
@@ -8963,7 +8966,7 @@ msgstr "Автор"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:10
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:97
 msgid "Revision"
-msgstr "Версія"
+msgstr "Ревізія"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:11
 msgid "Operation"
@@ -9146,7 +9149,7 @@ msgstr "Завжди приймати цей сертифікат"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs:1
 msgid "Accept this certificate temporarily for this session"
-msgstr "Прийняти цей сертифікат на час цієї сесії"
+msgstr "Прийняти цей сертифікат на час цього сеансу"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.SslServerTrustDialog.cs:1
 msgid "Do not accept this certificate and do not connect to this repository"
@@ -9154,19 +9157,18 @@ msgstr "Не приймати цього сертифікату і не з'єд�
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs:1
 msgid "Subversion"
-msgstr "SVN"
+msgstr "Subversion"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/gtk-gui/MonoDevelop.VersionControl.Subversion.Gui.UserPasswordDialog.cs:1
 msgid ""
 "<b>User credentials are required to access the Subversion repository.</b>"
 msgstr ""
-"<b>Для доступу до сховища SVN необхідно вказати реєстраційні дані "
+"<b>Для доступу до сховища Subversion необхідно вказати реєстраційні дані "
 "користувача.</b>"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:1
-#, fuzzy
 msgid "Upgrade working copy"
-msgstr "робоча копія"
+msgstr "Оновити робочу копію"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:1
 msgid "Disable version control"
@@ -9174,22 +9176,23 @@ msgstr "Вимкнути керування версіями"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:2
 msgid "The subversion working copy format is too old."
-msgstr ""
+msgstr "Формат робочої копії Subversion занадто старий."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:2
 msgid ""
 "Would you like to upgrade the working copy or disable subversion integration "
 "for this solution?"
 msgstr ""
+"Бажаєте оновити робочу копію чи вимкнути інтегрування Subversion "
+"для цього рішення?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:2
 msgid "The subversion working copy format is too new."
-msgstr ""
+msgstr "Формат робочої копії Subversion занадто новий."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/MonoDevelop.VersionControl.Subversion.Gui/WorkingCopyFormatDialog.cs:2
-#, fuzzy
 msgid "Subversion integration will be disabled for this solution."
-msgstr "Вимкнути керування версіями для цього рішення"
+msgstr "Інтегрування Subversion для цього рішення буде вимкнено."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:83
 msgid "Updating"
@@ -9201,7 +9204,7 @@ msgstr "Вибирання з '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:95
 msgid "You have uncommitted changes"
-msgstr "У вас є не надіслані зміни"
+msgstr "У вас є не подані зміни"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:95
 msgid "What do you want to do?"
@@ -9217,7 +9220,7 @@ msgstr "Відновлення локальних змін"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:103
 msgid "Rebasing"
-msgstr "Перенесення"
+msgstr "Перебазування"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:109
 msgid "Merging"
@@ -9225,11 +9228,11 @@ msgstr "Злиття"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:128
 msgid "Reverting files"
-msgstr ""
+msgstr "Відкіт файлів"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:153
 msgid "Push operation successfully completed."
-msgstr ""
+msgstr "Надсилання успішно завершено."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:176
 msgid "Switching to branch {0}"
@@ -9240,27 +9243,25 @@ msgid "Updating solution"
 msgstr "Оновлення рішення"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:14
-#, fuzzy
 msgid "Changes successfully stashed"
-msgstr "Мову '{0}' успішно додано."
+msgstr "Зміни успішно сховано"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:14
 msgid "No changes were available to stash"
-msgstr ""
+msgstr "Немає змін, доступних для ховання"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:16
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:18
-#, fuzzy
 msgid "Stash operation failed"
-msgstr "Запис завершився невдачею."
+msgstr "Сховати не вдалося."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs:1
 msgid "Push to Repository"
-msgstr ""
+msgstr "Надіслати у сховище"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs:1
 msgid "Push to:"
-msgstr ""
+msgstr "Надіслати у:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs:1
 msgid "Branch:"
@@ -9268,15 +9269,15 @@ msgstr "Гілка:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.PushDialog.cs:1
 msgid "Push Changes"
-msgstr ""
+msgstr "Надіслати зміни"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:7
 msgid "Pushing changes..."
-msgstr ""
+msgstr "Надсилання змін..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:9
 msgid "Rebasing branch '{0}'..."
-msgstr "Перенесення гілки '{0}'..."
+msgstr "Перебазування гілки '{0}'..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:9
 msgid "Merging branch '{0}'..."
@@ -9284,15 +9285,15 @@ msgstr "Злиття гілки '{0}'..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:12
 msgid "Stash operation failed."
-msgstr ""
+msgstr "Сховати не вдалося."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:13
 msgid "Stash applied with conflicts"
-msgstr ""
+msgstr "Сховано з конфліктами"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:13
 msgid "Stash successfully applied"
-msgstr ""
+msgstr "Сховано успішно"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.UserInfoConflictDialog.cs:1
 msgid "User Information Conflict"
@@ -9304,7 +9305,7 @@ msgid ""
 "user information configured in MonoDevelop. Which user information do you "
 "want to use?"
 msgstr ""
-"Ім'я та електронна адреса, вказані для репозитарію Git, не відповідають "
+"Ім'я та електронна адреса, вказані для сховища Git, не відповідають "
 "інформації про користувача, вказаній у MonoDevelop. Які дані про користувача "
 "використати?"
 
@@ -9334,7 +9335,7 @@ msgstr "Пропустити латку"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.ConflictResolutionDialog.cs:1
 msgid "Accept Merge"
-msgstr ""
+msgstr "Прийняти злиття"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/ConflictResolutionDialog.cs:4
 msgid "A merge conflict has been detected in file <b>{0}</b>"
@@ -9346,7 +9347,7 @@ msgstr "Гілка"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:8
 msgid "Tracking"
-msgstr ""
+msgstr "Стеження"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitConfigurationDialog.cs:19
 msgid "Tag"
@@ -9389,7 +9390,7 @@ msgstr "Гілки"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:2
 msgid "_Push"
-msgstr ""
+msgstr "_Надіслати"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:2
 msgid "Tags"
@@ -9397,7 +9398,7 @@ msgstr "Теги"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:2
 msgid "Track in Local Branch"
-msgstr ""
+msgstr "Стежити в локальній гілці"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitConfigurationDialog.cs:2
 msgid "Fetch"
@@ -9427,7 +9428,7 @@ msgstr "Властивості гілки"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:2
 msgid "Track a branch:"
-msgstr ""
+msgstr "Стежити за гілкою:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditRemoteDialog.cs:2
 msgid "Remote Source"
@@ -9435,7 +9436,7 @@ msgstr "Віддалене джерело"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditRemoteDialog.cs:2
 msgid "Push Url:"
-msgstr ""
+msgstr "Адреса надсилання:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditRemoteDialog.cs:2
 msgid "Import tags"
@@ -9447,31 +9448,31 @@ msgstr "Виберіть гілку для злиття з поточною гі
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.MergeDialog.cs:2
 msgid "Stash/unstash local changes before/after the merge"
-msgstr ""
+msgstr "Сховати/розкрити локальні зміни перед/після злиття"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/MergeDialog.cs:9
 msgid "Select the branch to which to rebase:"
-msgstr "Виберіть гілку, в яку перенести:"
+msgstr "Виберіть гілку, в яку перебазувати:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/MergeDialog.cs:9
 msgid "Stash/unstash local changes before/after rebasing"
-msgstr ""
+msgstr "Сховати/розкрити локальні зміни перед/після перебазування"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/MergeDialog.cs:9
 msgid "Rebase"
-msgstr "Перенесення"
+msgstr "Перебазування"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/MergeDialog.cs:21
 msgid "The branch <b>{1}</b> will be rebased to the branch <b>{0}</b>."
-msgstr "Гілка <b>{1}</b> буде перенесена у гілку <b>{0}</b>."
+msgstr "Гілку <b>{1}</b> буде перебазовано у гілку <b>{0}</b>."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/MergeDialog.cs:21
 msgid "The branch <b>{1}</b> will be rebased to the tag <b>{0}</b>."
-msgstr "Гілка <b>{1}</b> буде перенесена до тегу <b>{0}</b>."
+msgstr "Гілку <b>{1}</b> буде перебазовано до тегу <b>{0}</b>."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/MergeDialog.cs:21
 msgid "The branch <b>{1}</b> will be rebased to the remote branch <b>{0}</b>."
-msgstr "Гілка <b>{1}</b> буде перенесена до віддаленої гілки <b>{0}</b>."
+msgstr "Гілку <b>{1}</b> буде перебазовано до віддаленої гілки <b>{0}</b>."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/MergeDialog.cs:21
 msgid "The branch <b>{0}</b> will be merged into the branch <b>{1}</b>."
@@ -9504,7 +9505,7 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:1
 msgid "Automatically stash/unstash changes when switching branches"
-msgstr ""
+msgstr "Автоматично сховати/розкрити зміни при перемиканні гілок"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:1
 msgid "Behavior of the Update command:"
@@ -9512,11 +9513,11 @@ msgstr "Поведінка команди оновлення:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:1
 msgid "Use the Rebase option for merging"
-msgstr "Скористайтесь параметром \"Перенесення\" для злиття"
+msgstr "Скористайтесь параметром \"Перебазування\" для злиття"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitOptionsPanelWidget.cs:1
 msgid "Automatically stash/unstash local changes"
-msgstr ""
+msgstr "Автоматично сховати/розкрити локальні зміни"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/StashManagerDialog.cs:5
 msgid "Date/Time"
@@ -9529,7 +9530,7 @@ msgstr "Коментар"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/StashManagerDialog.cs:7
 msgid "Temporary stash created by {0}"
-msgstr ""
+msgstr "Тимчасовий сховок створено {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/StashManagerDialog.cs:7
 msgid "Local changes of branch '{0}'"
@@ -9537,7 +9538,7 @@ msgstr "Локальні зміни гілки '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs:2
 msgid "Stash Manager"
-msgstr ""
+msgstr "Керування сховками"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.StashManagerDialog.cs:2
 msgid "Apply and Remove"
@@ -9549,7 +9550,7 @@ msgstr "Перетворити на гілку"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.NewStashDialog.cs:1
 msgid "Stash"
-msgstr ""
+msgstr "Сховати"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.NewStashDialog.cs:1
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/gtk-gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:1
@@ -9558,11 +9559,11 @@ msgstr "Коментар:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs:1
 msgid "Push changes to remote repository after commit"
-msgstr ""
+msgstr "Після подання надіслати зміни до віддаленого сховища"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs:1
 msgid "Override the commit author"
-msgstr ""
+msgstr "Замістити автора подачі"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs:1
 msgid "Author e-mail:"
@@ -9585,6 +9586,8 @@ msgid ""
 "When using Git, it is not recommended to surpass the character count of {0} "
 "in the first line of the commit message"
 msgstr ""
+"При користуванні Git не рекомендується, щоб число символів у першому рядку "
+"повідомлення подачі перевищувало {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.UserGitConfigDialog.cs:49
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.Gui.SshFuseFileCopyConfigurationEditorWidget.cs:1
@@ -9609,7 +9612,7 @@ msgstr "Повідомлення тегу"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:2
 msgid "Push Changes..."
-msgstr ""
+msgstr "Надіслати зміни..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:2
 msgid "Manage Branches and Remotes"
@@ -9617,23 +9620,23 @@ msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:2
 msgid "Merge Branch..."
-msgstr ""
+msgstr "Приєднати гілку..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:2
 msgid "Rebase to Branch..."
-msgstr "Перенесення до гілки..."
+msgstr "Перебазування до гілки..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:2
 msgid "Stash..."
-msgstr ""
+msgstr "Сховати..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:2
 msgid "Pop stash"
-msgstr ""
+msgstr "Забрати зі сховку"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:2
 msgid "Manage stashes"
-msgstr ""
+msgstr "Керування сховками"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git.addin.xml:8
 msgid "Git"
@@ -9680,12 +9683,12 @@ msgstr "Відновлено '{0}'"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:742
 msgid "Reverted '{0}'"
-msgstr "Повернуто '{0}'"
+msgstr "Відкочено '{0}'"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:745
 msgid "Failed to revert '{0}' -- try updating instead."
-msgstr "Не вдалось повернути '{0}' -- спробуйте оновити."
+msgstr "Не вдалось відкотити '{0}' -- спробуйте оновити."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:150
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:748
@@ -10545,11 +10548,11 @@ msgstr "Тип зневадження:"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:1
 msgid "Define DEBUG:"
-msgstr ""
+msgstr "Визначити DEBUG:"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:1
 msgid "Define TRACE:"
-msgstr ""
+msgstr "Визначити TRACE:"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:1
 msgid "Optimize:"
@@ -10586,7 +10589,7 @@ msgstr "Генерувати документацію XML:"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:1
 msgid "Remove integer checks:"
-msgstr ""
+msgstr "Вилучити перевірки цілісності:"
 
 #: ../src/addins/VBNetBinding/gtk-gui/MonoDevelop.VBNetBinding.ConfigurationOptionsPanelWidget.cs:1
 msgid "Define constants:"
@@ -10708,7 +10711,7 @@ msgstr ""
 msgid ""
 "Some of the projects require that files have comments when they are "
 "committed."
-msgstr "Деякі проекти вимагають, щоб файли, що надсилаються, мали коментарі."
+msgstr "Деякі проекти вимагають, щоб файли, що подаються, мали коментарі."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:2
 msgid "Click on the 'Details' button for more info."
@@ -10781,6 +10784,10 @@ msgid ""
 "the commit directory). If none is found, a warning message will be shown. "
 "ChangeLog files will never be automatically created."
 msgstr ""
+"<b>Доповнити найближчий журнал змін</b>\n"
+"Буде доповнено журнал змін, найближчий у дереві тек (нижче теки подачі). "
+"Якщо такого не знайдено, буде виведено попередження. Файли журналів "
+"змін автоматично не створюватимуться."
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:1
 msgid "One ChangeLog in the project root directory"
@@ -10811,7 +10818,7 @@ msgstr "Інтегрувати з засобом керування _версі�
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:1
 msgid "_Require ChangeLog entries for all files when committing"
-msgstr ""
+msgstr "При подаванні вимагати для всіх файлів _записів у журналі змін"
 
 #: ../src/addins/ChangeLogAddIn/gtk-gui/MonoDevelop.ChangeLogAddIn.ProjectOptionPanelWidget.cs:1
 msgid "ChangeLog Generation"
@@ -10951,7 +10958,7 @@ msgstr "ID ресурсу"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:7
 msgid "Copy to output directory"
-msgstr "Скопіювати до вихідної теки"
+msgstr "Копіювання до вихідної теки"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:7
 msgid "Custom Tool"
@@ -11986,7 +11993,7 @@ msgstr "Оновити веб-посилання"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:3
 msgid "Update Web Reference"
-msgstr "Оновити веб-посилання"
+msgstr "Оновити веб-посилання (одне)"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:3
 msgid "Delete All"
@@ -12021,9 +12028,8 @@ msgid "S_how Code Generation Window"
 msgstr "Показати вікно _генерування коду"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:3
-#, fuzzy
 msgid "_Find reference usages"
-msgstr "_Знайти посилання"
+msgstr "_Знайти застосування посилання"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:3
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ExtractMethod/ExtractMethodCodeRefactoringProvider.cs:8
@@ -12031,7 +12037,6 @@ msgid "Extract Method"
 msgstr "Видобути метод"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:3
-#, fuzzy
 msgid "Extracts a method"
 msgstr "Видобути метод"
 
@@ -12102,7 +12107,6 @@ msgstr ""
 "Phone, Xamarin.iOS і Xamarin.Android."
 
 #: ../src/addins/CSharpBinding/templates/SharedAssetsProject.xpt.xml:0
-#, fuzzy
 msgid "Shared Project"
 msgstr "Спільний об'єкт"
 
@@ -12365,7 +12369,6 @@ msgid "Place members in anonymous types on new line"
 msgstr "Помістити члени в анонімних типах у новому рядку"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:17
-#, fuzzy
 msgid "Place query expression clauses on new line"
 msgstr "Помістити ініціалізатори масиву у новому рядку"
 
@@ -12376,7 +12379,7 @@ msgstr "Задати пропуски для оголошень методів"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:25
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:27
 msgid "Insert space between method name and its opening parenthesis"
-msgstr ""
+msgstr "Вставити пропуск між назвою методу і відкритою дужкою"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:26
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:27
@@ -12386,7 +12389,7 @@ msgstr ""
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:26
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:27
 msgid "Insert space within empty argument list parentheses"
-msgstr ""
+msgstr "Вставити пропуск між дужками порожнього списку аргументів"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:27
 msgid "Set spacing for method calls"
@@ -12413,14 +12416,12 @@ msgid "Insert space within parentheses of control flow statements"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:30
-#, fuzzy
 msgid "Insert space after casts"
-msgstr "Вставити розрив рядка після курсора"
+msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:30
-#, fuzzy
 msgid "Ignore spaces in declaration statements"
-msgstr "Порожнє оголошення простору назв є зайвим"
+msgstr "Нехтувати пропусками в інструкціях оголошення"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:31
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
@@ -12433,7 +12434,7 @@ msgstr "Вставити пропуск перед відкритою квадр
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:31
 msgid "Insert space within empty square brackets"
-msgstr ""
+msgstr "Вставити пропуск між порожніми квадратними дужками"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:31
 msgid "Insert space within square brackets"
@@ -12453,7 +12454,7 @@ msgstr "Вставити пропуск після крапки"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space after semicolon in \"for\" statement"
-msgstr ""
+msgstr "Вставити пропуск після крапки з комою в інструкції \"for\""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space before colon for base or interface in type declaration"
@@ -12469,11 +12470,11 @@ msgstr "Вставити пропуск перед крапкою"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space before semicolon in \"for\" statement"
-msgstr ""
+msgstr "Вставити пропуск перед крапкою з комою в інструкції \"for\""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:33
 msgid "Set spacing for operators"
-msgstr ""
+msgstr "Задати відступи для операторів"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:44
 msgid "Qualify member access with 'this'"
@@ -12484,9 +12485,8 @@ msgid "Use 'var' when generating locals"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:54
-#, fuzzy
 msgid "Leave block on single line"
-msgstr "Помістити 'else' у новому рядку"
+msgstr "Залишити блок в одному рядку"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:54
 msgid "Leave statements and member declarations on the same line"
@@ -12531,7 +12531,7 @@ msgstr "Виберіть члени, що будуть заміщені."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/PropertyGenerator.cs:2
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/ReadonlyPropertyGenerator.cs:2
 msgid "Select members which should be exposed."
-msgstr ""
+msgstr "Виберіть члени, які будуть відкриті."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/ToStringGenerator.cs:3
 msgid "ToString() implementation"
@@ -12611,7 +12611,7 @@ msgstr "Реалізувати необхідні члени протоколу"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/RoslynSymbolCompletionData.cs:15
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/RoslynParameterHintingFactory.cs:13
 msgid "Extension Method from"
-msgstr ""
+msgstr "Розширений метод з"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/RoslynParameterHintingFactory.cs:17
 msgid "Parameter"
@@ -12667,11 +12667,11 @@ msgstr "Методи"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Parser/CSharpParsedDocument.cs:26
 msgid "NotImplementedException({0}) thrown."
-msgstr ""
+msgstr "Кинуто NotImplementedException({0})."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Parser/CSharpParsedDocument.cs:26
 msgid "NotImplementedException thrown."
-msgstr ""
+msgstr "Кинуто NotImplementedException."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/ImportSymbolCompletionData.cs:8
 msgid "(from '{0}')"
@@ -12693,15 +12693,13 @@ msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:10
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:64
-#, fuzzy
 msgid "_Suppress with file"
-msgstr "Замінити вираз на 'false'"
+msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:11
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:64
-#, fuzzy
 msgid "_Configure Rule"
-msgstr "Конфігурувати"
+msgstr "Правило _конфігурування"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:13
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:67
@@ -12750,9 +12748,8 @@ msgid "Implement Abstract Class"
 msgstr "Реалізувати абстрактний rkfc"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/InlineTemporary/InlineTemporaryCodeRefactoringProvider.cs:12
-#, fuzzy
 msgid "Inline temporary variable"
-msgstr "Локальна змінна inline"
+msgstr "Тимчасова змінна inline"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/InlineTemporary/InlineTemporaryCodeRefactoringProvider.cs:21
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/InlineTemporary/InlineTemporaryCodeRefactoringProvider.cs:98
@@ -12760,9 +12757,8 @@ msgid "Conflict(s) detected."
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ExtractMethod/ExtractMethodCodeRefactoringProvider.cs:8
-#, fuzzy
 msgid "Extract Method + Local"
-msgstr "Видобути метод"
+msgstr "Видобути метод + локальні"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeFixes/SimplifyTypeNames/SimplifyTypeNamesCodeFixProvider.cs:11
 msgid "Simplify name '{0}'"
@@ -12778,26 +12774,21 @@ msgid "Remove 'this' qualification"
 msgstr "Вилучити кваліфікатор 'this'"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeFixes/RemoveUnnecessaryUsings/RemoveUnnecessaryUsingsCodeFixProvider.cs:7
-#, fuzzy
 msgid "Remove Unnecessary Usings"
-msgstr "Вилучити вираз"
+msgstr "Вилучити зайві using"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Diagnostics/RemoveUnnecessaryCast/RemoveUnnecessaryCastDiagnosticAnalyzerBase.cs:2
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeFixes/RemoveUnnecessaryCast/RemoveUnnecessaryCastCodeFixProvider.cs:7
-#, fuzzy
 msgid "Remove Unnecessary Cast"
-msgstr "Вилучити оголошення"
+msgstr "Вилучити зайвий виклик"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Diagnostics/RemoveUnnecessaryCast/RemoveUnnecessaryCastDiagnosticAnalyzerBase.cs:2
-#, fuzzy
 msgid "Cast is redundant."
-msgstr "Інструкція зайва"
+msgstr "Зайвий виклик."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Diagnostics/RemoveUnnecessaryImports/CSharpRemoveUnnecessaryImportsDiagnosticAnalyzer.cs:2
-#, fuzzy
 msgid "Using directive is unnecessary."
-msgstr ""
-"Директива using не використовується у коді і може бути безпечно вилучена."
+msgstr "Директива using не потрібна."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Diagnostics/SimplifyTypeNames/SimplifyTypeNamesDiagnosticAnalyzerBase.cs:2
 msgid "Name can be simplified."
@@ -12838,7 +12829,7 @@ msgstr "Назва переліку"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:15
 msgid "Warning: This may take a while..."
-msgstr ""
+msgstr "Попередження: це триватиме деякий час..."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Diagnostics/InconsistentNaming/NameConventionEditRuleDialog.cs:2
 msgid "Structs"
@@ -12967,11 +12958,11 @@ msgstr "Необов'язкові префікси:"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog.cs:2
 msgid "_Static member and types"
-msgstr ""
+msgstr "_Статичні члени і типи"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog.cs:2
 msgid "_Instance members and locals"
-msgstr ""
+msgstr "_Члени примірника і локальні об'єкти"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Diagnostics.InconsistentNaming.NameConventionEditRuleDialog.cs:2
 msgid "Static/Non Static"
@@ -13014,18 +13005,16 @@ msgid "Go to _Base Property"
 msgstr "Перейти до _базової властивості"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
-#, fuzzy
 msgid "Go to _Interface Property"
-msgstr "Створити властивість"
+msgstr "Перейти до властивості _інтерфейсу"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
 msgid "Go to _Base Event"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
-#, fuzzy
 msgid "Go to _Interface Event"
-msgstr "Назва інтерфейсу"
+msgstr "Перейти до події _інтерфейсу"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
 msgid "Go to _Base Method"
@@ -13306,7 +13295,7 @@ msgstr "Рядок ініціалізації каталогу має вигля
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:2
 msgid "<b>Init String</b>"
-msgstr ""
+msgstr "<b>Рядок ініціалізації</b>"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.TranslationProjectOptionsDialog.cs:2
 msgid "Settings"
@@ -13438,7 +13427,7 @@ msgstr "_Фільтр:"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:2
 msgid "Valid"
-msgstr ""
+msgstr "Правильний"
 
 #: ../src/addins/MonoDevelop.Gettext/gtk-gui/MonoDevelop.Gettext.POEditorWidget.cs:2
 msgid "_Translated (msgstr):"
@@ -13656,7 +13645,7 @@ msgstr "\\b"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Matches a backspace \\u0008 if in a [] character class."
-msgstr ""
+msgstr "Позначає забій \\u0008, якщо в символьному класі []."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "\\t"
@@ -13688,7 +13677,7 @@ msgstr "\\f"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Matches a form feed \\u000C."
-msgstr ""
+msgstr "Відповідає прокрутці аркуша \\u000C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "\\n"
@@ -13728,6 +13717,8 @@ msgid ""
 "Matches an ASCII character using hexadecimal representation\n"
 "(exactly two digits)."
 msgstr ""
+"Відповідає символу ASCII в шістнадцятковому поданні\n"
+"(рівно 2 цифри)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "\\cC"
@@ -13738,6 +13729,8 @@ msgid ""
 "Matches an ASCII control character;\n"
 "for example, \\cC is control-C."
 msgstr ""
+"Відповідає керувальному символу ASCII;\n"
+"наприклад, \\cC це Ctrl-C."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "\\u0020"
@@ -13748,6 +13741,8 @@ msgid ""
 "Matches a Unicode character using hexadecimal representation\n"
 "(exactly four digits)."
 msgstr ""
+"Відповідає символу Unicode в шістнадцятковому поданні\n"
+"(рівно 4 цифри)."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Substitutions"
@@ -14016,6 +14011,9 @@ msgid ""
 "the previous match ended. When used with Match.NextMatch(), \n"
 "this ensures that matches are all contiguous."
 msgstr ""
+"Вказує, що відповідник повинен бути розташований там, де закінчується\n"
+"попередній відповідник. При використанні з Match.NextMatch()\n"
+"це забезпечує, що відповідники розташовані ланцюжком."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid ""
@@ -14037,7 +14035,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Quantifiers"
-msgstr "Кількість"
+msgstr "Квантори"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "*"
@@ -14209,6 +14207,9 @@ msgid ""
 "and stores in group name1 the interval between the previously \n"
 "defined name2 group and the current group."
 msgstr ""
+"Вилучає визначення раніше визначеної групи назва2 \n"
+"і зберігає у групі назва1 інтервал між раніше визначеною\n"
+"групою назва2 і поточною групою."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "(?: subexpression)"
@@ -14219,14 +14220,16 @@ msgid ""
 "Noncapturing group. \n"
 "Does not capture the substring matched by the subexpression."
 msgstr ""
+"Незахоплювальна група. \n"
+"Не захоплює підрядок, що відповідає підвиразу."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "(?imnsx-imnsx: subexpression)"
-msgstr ""
+msgstr "(?imnsx-imnsx: підвираз)"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Applies or disables the specified options within the subexpression."
-msgstr ""
+msgstr "Приймає або відкидає задані параметри у підвиразі."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "(?= subexpression)"
@@ -14746,7 +14749,7 @@ msgstr "<b>Помилка</b>: {0}"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/ExtensibleTextEditor.cs:37
 msgid "_Input Methods"
-msgstr ""
+msgstr "_Методи введення"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:107
 msgid ""
@@ -15228,7 +15231,7 @@ msgstr "Показати лише _звичайні члени"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:15
 msgid "<i>EditorBrowsableState.Always</i>"
-msgstr ""
+msgstr "<i>EditorBrowsableState.Always</i>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:15
 msgid "Show Normal and _Advanced members"
@@ -15236,7 +15239,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel.cs:15
 msgid "<i>EditorBrowsableState.Always and EditorBrowsableState.Advanced</i>"
-msgstr ""
+msgstr "<i>EditorBrowsableState.Always і EditorBrowsableState.Advanced</i>"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/CompletionCharactersPanel.cs:6
 msgid "Complete on space"
@@ -15309,7 +15312,7 @@ msgstr "Показати _завдання"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:9
 msgid "Show _Minimap"
-msgstr ""
+msgstr "Показати _мінікарту"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:14
 msgid "Markers and Rulers"
@@ -15390,9 +15393,8 @@ msgid "Results"
 msgstr "Результати"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:58
-#, fuzzy
 msgid "Parent"
-msgstr "Круглі дужки"
+msgstr "Предок"
 
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:63
 msgid "Searching member..."
@@ -15537,7 +15539,7 @@ msgid ""
 "Include the file in deployment in addition to the files included "
 "automatically."
 msgstr ""
-"Включити файл у розгортання, додатково до файлів, включенихавтоматично."
+"Включити файл у розгортання, додатково до файлів, включених автоматично."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:3
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.addin.xml:1
@@ -15804,6 +15806,8 @@ msgid ""
 "the source file. You can keep the existing target file, or overwrite it with "
 "the source file."
 msgstr ""
+"У цільовій теці вже є файл з такою самою назвою, як джерельний файл. "
+"Можна залишити наявний цільовий файл або замінити його джерельним."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:1
 msgid "Modified:"
@@ -15814,6 +15818,8 @@ msgid ""
 "The source file will replace the existing target file if it has been "
 "modified more recently."
 msgstr ""
+"Якщо джерельний файл змінений пізніше, то він замінить "
+"наявний цільовий файл."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/gtk-gui/MonoDevelop.Deployment.FileReplaceDialog.cs:1
 msgid "Apply this decision to _all files in this operation"
@@ -15972,7 +15978,7 @@ msgstr "Засіб для профілювання"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "Applications like cvs or subversion"
-msgstr "Системи керування версіями"
+msgstr "Програми на зразок CVS чи Subversion"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
 msgid "A translation tool"
@@ -16477,7 +16483,7 @@ msgstr "Запуск стільничної програми"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/app.desktop.xft.xml:0
 msgid "Creates a Desktop Entry file."
-msgstr ""
+msgstr "Створити файл Desktop Entry"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/BasicOptionPanelWidget.cs:2
 msgid "Script name not provided"
@@ -18101,11 +18107,11 @@ msgstr "Не знайдено веб-сервер {0}. Переконайтес�
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:3
 msgid "Please enter the password for your private key for the XSP Web Server"
-msgstr ""
+msgstr "Введіть пароль для вашого приватного ключа для веб-сервера XSP"
 
 #: ../src/addins/AspNet/Execution/XspParameters.cs:3
 msgid "XSP Private Key Password"
-msgstr ""
+msgstr "Пароль приватного ключа XSP"
 
 #: ../src/addins/AspNet/Execution/BrowserLauncher.cs:2
 msgid "Error launching web browser"
@@ -18137,7 +18143,7 @@ msgstr "IP-адреса:"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:7
 msgid "(blank = localhost)"
-msgstr ""
+msgstr "(порожнє = localhost)"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:7
 msgid "(0 = random)"
@@ -18164,9 +18170,8 @@ msgid "Key type:"
 msgstr "Тип ключа:"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:13
-#, fuzzy
 msgid "Key file:"
-msgstr "Файли jay"
+msgstr "Ключовий файл:"
 
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:13
 msgid "Certificate file:"
@@ -18186,7 +18191,7 @@ msgstr "Оновлення файлу ASP.NET Designer..."
 
 #: ../src/addins/AspNet/WebForms/WebFormsEditorExtension.cs:30
 msgid "Required for ASP.NET controls.\n"
-msgstr ""
+msgstr "Необхідно для елементів керування ASP.NET.\n"
 
 #: ../src/addins/AspNet/WebForms/WebFormsEditorExtension.cs:30
 msgid ""
@@ -18221,7 +18226,7 @@ msgstr "Директива ASP.NET"
 
 #: ../src/addins/AspNet/WebForms/WebFormsEditorExtension.cs:32
 msgid "ASP.NET databinding expression"
-msgstr ""
+msgstr "Вираз зв’язування даних ASP.NET"
 
 #: ../src/addins/AspNet/WebForms/WebFormsEditorExtension.cs:32
 msgid "ASP.NET server-side comment"
@@ -18309,14 +18314,12 @@ msgid "Could not launch ASP.NET web server"
 msgstr "Не вдалось запустити веб-сервер ASP.NET"
 
 #: ../src/addins/AspNet/Projects/AspNetProjectTemplateWizardPage.cs:33
-#, fuzzy
 msgid "Configure your Web project"
-msgstr "Поточний проект"
+msgstr "Сконфігуруйте ваш веб-проект"
 
 #: ../src/addins/AspNet/gtk-gui/MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs:152
-#, fuzzy
 msgid "Include Unit Test Project"
-msgstr "Включити в проект"
+msgstr "Включити проект модульного тесту"
 
 #: ../src/addins/AspNet/gtk-gui/MonoDevelop.AspNet.Projects.GtkAspNetProjectTemplateWizardPageWidget.cs:178
 msgid ""
@@ -18554,9 +18557,8 @@ msgstr "Головна сторінка з суміжним кодом"
 #: ../src/addins/AspNet/Templates/WebForms/WebService-CodeBehind.xft.xml:1
 #: ../src/addins/AspNet/Templates/WebForms/WebHandler-Empty.xft.xml:1
 #: ../src/addins/AspNet/Templates/WebForms/WebContentForm-CodeBehind.xft.xml:1
-#, fuzzy
 msgid "ASP.NET Web Forms"
-msgstr "Створити веб-форму ASP.NET."
+msgstr "ASP.NET Web Forms"
 
 #: ../src/addins/AspNet/Templates/WebForms/MasterPage-CodeBehind.xft.xml:1
 msgid "Creates an ASP.NET Master Page with a CodeBehind class."
@@ -18701,19 +18703,16 @@ msgid "Creates an empty ASP.NET Web Project."
 msgstr "Створити порожній веб-проект ASP.NET"
 
 #: ../src/addins/AspNet/Templates/Projects/WebFormsProject.xpt.xml:1
-#, fuzzy
 msgid "ASP.NET Web Forms Project"
-msgstr "Проект ASP.NET MVC 2"
+msgstr "Проект ASP.NET Web Forms"
 
 #: ../src/addins/AspNet/Templates/Projects/WebFormsProject.xpt.xml:1
-#, fuzzy
 msgid "Creates a new ASP.NET Web Forms Project."
-msgstr "Створити веб-форму ASP.NET."
+msgstr "Створити новий проект ASP.NET Web Forms."
 
 #: ../src/addins/AspNet/Templates/GlobalAsax.xft.xml:1
-#, fuzzy
 msgid "ASP.NET Global.asax"
-msgstr "ASP.NET MVC 2 Global.asax"
+msgstr "ASP.NET Global.asax"
 
 #: ../src/addins/AspNet/Templates/GlobalAsax.xft.xml:1
 msgid "Creates an ASP.NET Global.asax file."
@@ -18728,24 +18727,20 @@ msgid "T4 Templates"
 msgstr "Шаблони T4"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.addin.xml:8
-#, fuzzy
 msgid "Process T4 Templates..."
-msgstr "Шаблон T4 для препроцесора"
+msgstr "Обробка шаблонів T4..."
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/MonoDevelop.TextTemplating.addin.xml:8
-#, fuzzy
 msgid "Process all T4 templates."
-msgstr "Шаблон T4 для препроцесора"
+msgstr "Обробити всі шаблони T4."
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/GenerateCommandHandler.cs:10
-#, fuzzy
 msgid "Process T4 Templates"
-msgstr "Шаблон T4 для препроцесора"
+msgstr "Обробити шаблони T4"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/GenerateCommandHandler.cs:11
-#, fuzzy
 msgid "Process T4 Template"
-msgstr "Шаблон T4 для препроцесора"
+msgstr "Обробити шаблон T4"
 
 #: ../src/addins/TextTemplating/MonoDevelop.TextTemplating/Templates/T4TemplateCSharp.xft.xml:1
 msgid "T4 Template"
@@ -18875,6 +18870,8 @@ msgid ""
 "The debugger runtime is not responding. You can wait for it to recover, or "
 "stop debugging."
 msgstr ""
+"Зневаджувач не відповідає. Можна почекати відновлення або "
+"зупинити зневадження."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebuggingService.cs:116
 msgid "Waiting for debugger to connect..."
@@ -18956,7 +18953,7 @@ msgstr "Розрахунок завершився невдало."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ImmediatePad.cs:23
 msgid "< More... (The first {0} items were displayed.) >"
-msgstr ""
+msgstr "< Більше... (Показано перші {0} елементів.) >"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ImmediatePad.cs:31
 msgid "Debugging stopped"
@@ -19033,11 +19030,11 @@ msgstr "<b>[Зовнішній код]</b>"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:77
 msgid "A <b>{0}</b> was thrown."
-msgstr ""
+msgstr "Було кинуто <b>{0}</b>."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:139
 msgid "<b>{0}</b> has been thrown"
-msgstr ""
+msgstr "Було кинуто <b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.Viewers.ValueVisualizerDialog.cs:2
 msgid "Value Visualizer"
@@ -19146,9 +19143,8 @@ msgid "And the following expression changes"
 msgstr "І змінилося значення такого виразу"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:60
-#, fuzzy
 msgid "Enter location"
-msgstr "Розташування ключа:"
+msgstr "Введіть розташування"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:60
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:63
@@ -19156,17 +19152,16 @@ msgid "File does not exist"
 msgstr "Файл не існує"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:60
-#, fuzzy
 msgid "Missing ':' for line declaration"
-msgstr "Перед оголошенням using:"
+msgstr "Пропущено ':' для оголошення рядка"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:60
 msgid "Line is not a number"
-msgstr ""
+msgstr "Рядок не є числом"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:61
 msgid "Column is not a number"
-msgstr ""
+msgstr "Стовпець не є числом"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:87
 msgid "Trace expression not specified"
@@ -19293,9 +19288,8 @@ msgid "New Function Breakpoint"
 msgstr "Нова контрольна точка функції"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-#, fuzzy
 msgid "New Exception Catchpoint"
-msgstr "Трапився виняток"
+msgstr "Нова точка перехоплення винятку"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
 msgid "View Breakpoints"
@@ -19354,14 +19348,12 @@ msgid "Run To Cursor"
 msgstr "Виконати до курсора"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-#, fuzzy
 msgid "Set Next Statement"
-msgstr "Інструкції"
+msgstr "Задати наступну інструкцію"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:11
-#, fuzzy
 msgid "Show Next Statement"
-msgstr "Показати наступне"
+msgstr "Показати наступну інструкцію"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:18
 msgid "Debugger"
@@ -19373,14 +19365,12 @@ msgid "Retargeting packages...{0}"
 msgstr "Перенацілення пакунків...{0}"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/AvailablePackagesViewModel.cs:211
-#, fuzzy
 msgid "All package sources could not be reached."
-msgstr "Не вдалось перейменувати проект."
+msgstr "Сирці всіх пакетів недосяжні."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/AvailablePackagesViewModel.cs:217
-#, fuzzy
 msgid "Some package sources could not be reached."
-msgstr "Не вдалось перейменувати проект."
+msgstr "Сирці деяких пакетів недосяжні."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProcessPackageAction.cs:142
 msgid "WARNING: {0} Package contains PowerShell scripts which will not be run."
@@ -19417,9 +19407,8 @@ msgid "Messages"
 msgstr "Повідомлення"
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackagesWidget.cs:165
-#, fuzzy
 msgid "Include Prerelease"
-msgstr "Включно з перевантаженнями"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackagesWidget.cs:182
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinManagerDialog.cs:2
@@ -19459,9 +19448,8 @@ msgid "License Agreements"
 msgstr "Ліцензійна угода"
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:36
-#, fuzzy
 msgid "The following package requires a click-to-accept license:"
-msgstr "Такі пакунки потрібно вилучити:"
+msgstr "Дані пакунки потребують згоди з ліцензією:"
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs:54
 msgid "The following packages require a click-to-accept license:"
@@ -19491,7 +19479,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/PackageSourcesOptionsPanel.cs:134
 msgid "Unable to save package source changes.{0}{0}{1}"
-msgstr ""
+msgstr "Не вдалось записати зміни сирців пакету.{0}{0}{1}"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/PackageSourcesOptionsPanel.cs:154
 msgid "Unable to read or write to \"{0}\"."
@@ -19605,9 +19593,8 @@ msgid "<b>Dependencies</b>"
 msgstr "<b>Залежності</b>"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:326
-#, fuzzy
 msgid "Show pre-release packages"
-msgstr "Вибрані пакети:"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageManagementEventsMonitor.cs:149
 msgid ""
@@ -19617,6 +19604,11 @@ msgid ""
 "also have license agreements.{2}Using this package and any dependencies "
 "constitutes your acceptance of these license agreements."
 msgstr ""
+"Пакунок {0} має ліцензійні умови, доступні на {1}{2} Будь ласка, ознайомтеся "
+"з ними і вилучіть пакунок, якщо ви не погоджуєтеся з умовами. {2}Перевірте "
+"залежності пакунка від інших, які можуть мати ліцензійні обмеження. "
+"{2}Користування цим пакунком та тими, від яких він залежить, означає "
+"що ви погодилися з цими ліцензійними умовами."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/PackageManagementProgressMonitorFactory.cs:58
 msgid "Package Console"
@@ -21296,7 +21288,7 @@ msgstr "Додати назву аргументу '{0}'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AddCatchTypeAction.cs:1
 msgid "Add type to general catch clause"
-msgstr ""
+msgstr "Додати тип до загальної секції catch"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AddCatchTypeAction.cs:2
 msgid "Add type specifier"
@@ -21308,11 +21300,11 @@ msgstr "Додати using"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AutoLinqSumAction.cs:1
 msgid "Convert loop to Linq expression"
-msgstr ""
+msgstr "Перетворити цикл на вираз Linq"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AutoLinqSumAction.cs:6
 msgid "Convert foreach loop to LINQ expression"
-msgstr ""
+msgstr "Перетворити цикл foreach на вираз LINQ"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ChangeAccessModifierAction.cs:1
 msgid "Change the access level of an entity declaration"
@@ -21499,11 +21491,11 @@ msgstr "Копіювати коментарі з інтерфейсу"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/CreateBackingStoreAction.cs:1
 msgid "Create backing store for auto property"
-msgstr ""
+msgstr "Створити допоміжне поле для автоматичної властивості"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/CreateBackingStoreAction.cs:3
 msgid "Create backing store"
-msgstr ""
+msgstr "Створити допоміжне поле"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/CreateChangedEventAction.cs:1
 msgid "Create changed event for property"
@@ -21613,7 +21605,7 @@ msgstr "Це - конструктор"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/CS1520MethodMustHaveAReturnTypeAction.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/CS1520MethodMustHaveAReturnTypeCodeFixProvider.cs:3
 msgid "This is a void method"
-msgstr ""
+msgstr "Цей метод повертає void"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/DeclareLocalVariableAction.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/DeclareLocalVariableAction.cs:6
@@ -21626,7 +21618,7 @@ msgstr "Оголосити локальну змінну (замінити '{0}'
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ExtensionMethodInvocationToStaticMethodInvocationAction.cs:1
 msgid "Invoke using static method syntax"
-msgstr ""
+msgstr "Виклик за допомогою синтаксису статичного методу"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ExtensionMethodInvocationToStaticMethodInvocationAction.cs:2
 msgid "Convert to static method call"
@@ -21677,7 +21669,7 @@ msgstr "Поміняти аргументи оператора '{0}'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/GenerateGetterAction.cs:2
 msgid "Generate getter"
-msgstr ""
+msgstr "Створити getter"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/GenerateGetterAction.cs:2
 msgid "Create getter"
@@ -21722,7 +21714,7 @@ msgstr "Явно реалізувати інтерфейс"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ImplementNotImplementedProperty.cs:2
 msgid "Create a backing field for a not implemented property"
-msgstr ""
+msgstr "Створити допоміжне поле для не реалізованої властивості"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ImplementNotImplementedProperty.cs:4
 msgid "Implement property"
@@ -21837,7 +21829,7 @@ msgstr "Перетворити на синтаксис запиту"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/MergeNestedIfAction.cs:2
 msgid "Merge nested 'if'"
-msgstr "Об'єднати вкладені 'if'"
+msgstr "Об'єднати вкладене 'if'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/MergeNestedIfAction.cs:5
 msgid "Merge nested 'if's"
@@ -21879,7 +21871,7 @@ msgstr "вставити в 'using'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/RemoveBackingStoreAction.cs:1
 msgid "Remove backing store for property"
-msgstr "Вилучити резервне сховище для властивості"
+msgstr "Вилучити допоміжне поле для властивості"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/RemoveBackingStoreAction.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertToAutoPropertyIssue.cs:6
@@ -21990,19 +21982,20 @@ msgstr "Замінити на '&='"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/LockThisIssue.cs:2
 msgid "Use of lock (this) or MethodImplOptions.Synchronized is discouraged"
 msgstr ""
+"Небажано використовувати lock (this) або MethodImplOptions.Synchronized"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/LockThisIssue.cs:5
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/LockThisIssue.cs:12
 msgid "Create private locker field"
-msgstr ""
+msgstr "Створити приватне поле блокування"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/LockThisIssue.cs:7
 msgid "Found [MethodImpl(MethodImplOptions.Synchronized)]"
-msgstr ""
+msgstr "Знайдено [MethodImpl(MethodImplOptions.Synchronized)]"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/LockThisIssue.cs:16
 msgid "Found lock (this)"
-msgstr ""
+msgstr "Знайдено lock (this)"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/NegativeRelationalExpressionIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/NegativeRelationalExpressionIssue.cs:11
@@ -22016,7 +22009,7 @@ msgstr "Показати NotImplementedExceptions"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/NotImplementedExceptionIssue.cs:3
 msgid "NotImplemented exception thrown"
-msgstr ""
+msgstr "Кинуто виняток NotImplemented"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantInternalIssue.cs:2
 msgid "Remove redundant 'internal' modifier"
@@ -22187,7 +22180,7 @@ msgstr "Замінити '?:' гілкою"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorIssue.cs:16
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorAnalyzer.cs:1
 msgid "Virtual member call in constructor"
-msgstr ""
+msgstr "Виклик віртуального члена у конструкторі"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorIssue.cs:16
 msgid "Make class '{0}' sealed"
@@ -22195,12 +22188,12 @@ msgstr "Зробити клас '{0}' ізольованим (sealed)"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/EmptyGeneralCatchClauseIssue.cs:1
 msgid "Empty general catch clause"
-msgstr ""
+msgstr "Порожня загальна секція catch"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/EmptyGeneralCatchClauseIssue.cs:5
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/EmptyGeneralCatchClauseAnalyzer.cs:1
 msgid "Empty general catch clause suppresses any error"
-msgstr ""
+msgstr "Порожня загальна секція catch приховує всі помилки"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/EqualExpressionComparisonIssue.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/EqualExpressionComparisonIssue.cs:2
@@ -22271,6 +22264,7 @@ msgstr ""
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OptionalParameterHierarchyMismatchIssue.cs:2
 msgid "Mismatch optional parameter value in overridden method"
 msgstr ""
+"Невідповідність значення необов'язкового параметра у методі, що заміщується"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OptionalParameterHierarchyMismatchIssue.cs:12
 msgid ""
@@ -22287,7 +22281,7 @@ msgstr "Змінити типове значення на {0}"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OptionalParameterHierarchyMismatchIssue.cs:12
 msgid "Parameter {0} has default value in base method '{1}'"
-msgstr ""
+msgstr "Параметр {0} має типове значення у базовому методі '{1}'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OptionalParameterHierarchyMismatchIssue.cs:12
 msgid "Add default value from base '{0}'"
@@ -22334,12 +22328,12 @@ msgstr "Статичне поле у загальному (generic) типі"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ThreadStaticAtInstanceFieldIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ThreadStaticAtInstanceFieldAnalyzer.cs:1
 msgid "[ThreadStatic] doesn't work with instance fields"
-msgstr ""
+msgstr "[ThreadStatic] не працює з полями примірника"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ThreadStaticAtInstanceFieldIssue.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ThreadStaticAtInstanceFieldAnalyzer.cs:1
 msgid "ThreadStatic does nothing on instance fields"
-msgstr ""
+msgstr "ThreadStatic нічого не робить з полями примірника"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ThreadStaticAtInstanceFieldIssue.cs:5
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ThreadStaticAtInstanceFieldCodeFixProvider.cs:4
@@ -22509,7 +22503,7 @@ msgstr "Лямбда-вираз можна спростити до групи м
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertClosureToMethodGroupIssue.cs:10
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertClosureToMethodGroupCodeFixProvider.cs:4
 msgid "Replace with method group"
-msgstr ""
+msgstr "Замінити групою методів"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingAnalyzer.cs:1
@@ -22586,7 +22580,7 @@ msgstr "Виклик статичного методу через тип-нащ�
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/AccessToStaticMemberViaDerivedTypeIssue.cs:9
 msgid "Use base qualifier"
-msgstr ""
+msgstr "Використати кваліфікатор base"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/BaseMemberHasParamsAnalyzer.cs:1
@@ -22596,7 +22590,7 @@ msgstr "Базовий параметр має модифікатор 'params', 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:3
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/BaseMemberHasParamsAnalyzer.cs:1
 msgid "Base method '{0}' has a 'params' modifier"
-msgstr ""
+msgstr "Базовий метод '{0}' має модифікатор 'params'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:3
 msgid "Add 'params' modifier"
@@ -22796,7 +22790,7 @@ msgstr "Замінити одиничним викликом Any(...)"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAnyIssue.cs:4
 msgid "Redundant Where() call with predicate followed by {0}()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде {0}()"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAnyIssue.cs:4
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAverageIssue.cs:8
@@ -22895,7 +22889,7 @@ msgstr "Використати метод 'Any()'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseMethodAnyIssue.cs:6
 msgid "Use 'Any()' for increased performance."
-msgstr ""
+msgstr "Використати 'Any()' для підвищення продуктивності."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseMethodAnyIssue.cs:6
 msgid "Replace with call to '!Any()'"
@@ -23205,12 +23199,12 @@ msgstr "Вилучити порожній простір назв"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntIssue.cs:1
 msgid "Underlying type of enum is int"
-msgstr ""
+msgstr "Базовим типом для enum є int"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntIssue.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntAnalyzer.cs:1
 msgid "Default underlying type of enums is already int"
-msgstr ""
+msgstr "Типовим базовим типом для переліків вже є int"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntIssue.cs:6
 msgid "Remove redundant ': int'"
@@ -23218,7 +23212,7 @@ msgstr "Видалити зайві ': int'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntIssue.cs:7
 msgid "Remove redundant underlying type"
-msgstr ""
+msgstr "Вилучити зайві базові типи"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/LocalVariableNotUsedIssue.cs:2
 msgid "Unused local variable"
@@ -23340,7 +23334,7 @@ msgstr "Вилучити зайві виклики методу"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/ExceptionRethrowIssue.cs:3
 msgid "The exception is rethrown with explicit usage of the variable"
-msgstr ""
+msgstr "Виняток кинуто повторно з явним використанням змінної"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/ExceptionRethrowIssue.cs:3
 msgid "Change to 'throw;'"
@@ -23378,7 +23372,7 @@ msgstr "Додати виняток до документації XML"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/DontUseLinqWhenItsVerboseAndInefficientIssue.cs:21
 msgid "Use of Linq method when there's a better alternative"
-msgstr ""
+msgstr "Використати метод Linq, якщо є краща альтернатива"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/DontUseLinqWhenItsVerboseAndInefficientIssue.cs:21
 msgid "Replace method by simpler version"
@@ -24104,11 +24098,11 @@ msgstr "{0}"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:1
 msgid "Redundant catch clause"
-msgstr "Зайвий пункт 'catch'"
+msgstr "Зайва секція catch"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:4
 msgid "Remove all '{0}' redundant 'catch' clauses"
-msgstr "Вилучити всі '{0}' зайві пункти 'catch'"
+msgstr "Вилучити всі '{0}' зайві секції 'catch'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:4
 msgid "Remove 'catch'"
@@ -24116,7 +24110,7 @@ msgstr "Вилучити 'catch'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:4
 msgid "Catch clause with a single 'throw' statement is redundant."
-msgstr "Пункт 'catch' з одиничним виразом 'throw' є зайвим"
+msgstr "Секція catch з одиничним виразом 'throw' є зайвою"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:6
 msgid "Remove 'try' statement"
@@ -24425,11 +24419,11 @@ msgstr "Параметр '{0}' не вдалось розв'язати"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/NotResolvedInTextIssue.cs:21
 msgid "Swap parameter."
-msgstr ""
+msgstr "Замінити параметр."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/NotResolvedInTextIssue.cs:21
 msgid "The parameter name is on the wrong argument."
-msgstr ""
+msgstr "Назва параметра у неправильному аргументі."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/NotResolvedInTextIssue.cs:22
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/NotResolvedInTextIssueCodeFixProvider.cs:8
@@ -24729,7 +24723,7 @@ msgstr "Замінити одиничним викликом Average(...)"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAverageIssue.cs:8
 msgid "Redundant Select() call with predicate followed by {0}()"
-msgstr ""
+msgstr "Зайвий виклик Select() з предикатом, після якого йде {0}()"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSumIssue.cs:1
 msgid "Replace with single call to Sum(...)"
@@ -24752,9 +24746,8 @@ msgid "Add exception description"
 msgstr "Додати опис винятку"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/AddNewFormatItemCodeRefactoringProvider.cs:4
-#, fuzzy
 msgid "Insert format argument"
-msgstr "Запитувати _аргументи"
+msgstr "Вставити аргумент формату"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertAnonymousMethodToLambdaCodeRefactoringProvider.cs:3
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertLambdaStatementToExpressionCodeRefactoringProvider.cs:6
@@ -24833,9 +24826,8 @@ msgid "Flip '{0}' operands"
 msgstr "Поміняти операнди '{0}'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/FlipRelationalOperatorArgumentsCodeRefactoringProvider.cs:3
-#, fuzzy
 msgid "Flip '{0}' operator to '{1}'"
-msgstr "Поміняти аргументи оператора '{0}'"
+msgstr "Поміняти оператор '{0}' на '{1}'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/InsertAnonymousMethodSignatureCodeRefactoringProvider.cs:2
 msgid "Insert signature"
@@ -24864,7 +24856,7 @@ msgstr "Видалити директиви region/endregion"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceAutoPropertyWithPropertyAndBackingFieldCodeRefactoringProvider.cs:3
 msgid "To property with backing field"
-msgstr ""
+msgstr "На властивість з допоміжним полем"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertAutoPropertyToPropertyCodeRefactoringProvider.cs:3
 msgid "To computed property"
@@ -24893,9 +24885,8 @@ msgid "Split declaration and assignment"
 msgstr "Розділити оголошення та присвоєння"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertHasFlagsToBitwiseFlagComparisonCodeRefactoringProvider.cs:3
-#, fuzzy
 msgid "To bitwise flag comparison"
-msgstr "Використати порівняння за порядком"
+msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertBitwiseFlagComparisonToHasFlagsCodeRefactoringProvider.cs:4
 msgid "To 'Enum.HasFlag'"
@@ -24992,10 +24983,11 @@ msgstr "Перетворити на вираз '&&'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/LockThisAnalyzer.cs:1
 msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
 msgstr ""
+"Попереджувати про використання lock (this) або MethodImplOptions.Synchronized"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NotImplementedExceptionAnalyzer.cs:1
 msgid "Shows NotImplementedException throws in the quick task bar"
-msgstr ""
+msgstr "Показує кидки NotImplementedException у швидкій панелі завдань"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NotImplementedExceptionAnalyzer.cs:1
 msgid "Not implemented"
@@ -25005,40 +24997,37 @@ msgstr "Не реалізовано"
 msgid ""
 "Value assigned to a variable or parameter is not used in all execution path"
 msgstr ""
+"Значення, присвоєне змінній або параметру, не використовується протягом "
+"всього виконання"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:1
-#, fuzzy
 msgid "Removes 'internal' modifiers that are not required"
-msgstr "Видалити модифікатор 'internal'"
+msgstr "Видалити не потрібні модифікатори 'internal'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:1
-#, fuzzy
 msgid "'internal' modifier is redundant"
-msgstr "Зайвий модифікатор 'unsafe'."
+msgstr "Зайвий модифікатор 'internal'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantPrivateAnalyzer.cs:1
 msgid "Removes 'private' modifiers that are not required"
-msgstr ""
+msgstr "Вилучає непотрібні модифікатори 'private'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantPrivateAnalyzer.cs:1
-#, fuzzy
 msgid "'private' modifier is redundant"
-msgstr "Зайвий модифікатор 'unsafe'."
+msgstr "Зайвий модифікатор 'private'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:1
 msgid "Checks if static events are removed"
-msgstr ""
+msgstr "Перевіряє чи не вилучено статичні події"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:1
-#, fuzzy
 msgid ""
 "Subscription to static events without unsubscription may cause memory leaks"
 msgstr ""
 "Підписування на статичні події без відписування може спричинити втрати "
-"пам'яті."
+"пам'яті"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/XmlDocAnalyzer.cs:1
-#, fuzzy
 msgid "Validate Xml docs"
 msgstr "Перевірити документацію XML"
 
@@ -25047,49 +25036,46 @@ msgid "Bitwise operation on enum not marked with [Flags] attribute"
 msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorAnalyzer.cs:1
-#, fuzzy
 msgid "Comparison of floating point numbers with equality operator"
-msgstr ""
-"Порівняння чисел з рухомою комою за допомогою оператора порівняння. "
-"Використайте метод 'IsNegativeInfinity'."
+msgstr "Порівняння чисел з рухомою комою за допомогою оператора порівняння"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorAnalyzer.cs:1
 msgid ""
 "Warns about calls to virtual member functions occuring in the constructor"
 msgstr ""
+"Попередження про наявність у конструкторі викликів функцій віртуальних членів"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/EmptyGeneralCatchClauseAnalyzer.cs:1
 msgid "A catch clause that catches System.Exception and has an empty body"
-msgstr ""
+msgstr "Секція catch, яка обробляє System.Exception, порожня"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/EqualExpressionComparisonAnalyzer.cs:1
 msgid "Comparing equal expression for equality is usually useless"
-msgstr ""
+msgstr "Перевірка рівних виразів на рівність здебільшого не потрібна"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FormatStringProblemAnalyzer.cs:1
-#, fuzzy
 msgid "The string format index is out of bounds of the passed arguments"
-msgstr "Індекс '{0}' за межами переліку переданих аргументів"
+msgstr "Індекс у рядку формату за межами переліку переданих аргументів"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FunctionNeverReturnsAnalyzer.cs:1
 msgid ""
 "Function does not reach its end or a 'return' statement by any of possible "
 "execution paths"
 msgstr ""
+"Функція не досягає кінця або інструкції 'return' за всіх можливих шляхів "
+"виконання"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FunctionNeverReturnsAnalyzer.cs:1
-#, fuzzy
 msgid "{0} never reaches its end or a 'return' statement"
-msgstr "Перетворити на інструкцію 'return'"
+msgstr "{0} не досягає кінця або інструкції 'return'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:1
 msgid "Local variable has the same name as a member and hides it"
 msgstr "Назва локальної змінної збігається з назвою члена і приховує його"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:1
-#, fuzzy
 msgid "Local variable '{0}' hides {1} '{2}'"
-msgstr "Локальна змінна '{0}' приховує поле '{1}'"
+msgstr "Локальна змінна '{0}' приховує {1} '{2}'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LongLiteralEndingLowerLAnalyzer.cs:1
 msgid "Lowercase 'l' is often confused with '1'"
@@ -25100,9 +25086,8 @@ msgid "{0} with optional parameter is hidden by overload"
 msgstr "{0} з необов'язковим параметром прихований перевантаженням"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/NotResolvedInTextAnalyzer.cs:2
-#, fuzzy
 msgid "The parameter name is on the wrong argument"
-msgstr "Параметр-тип не використовується"
+msgstr "Назва параметра у неправильному аргументі"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OperatorIsCanBeUsedAnalyzer.cs:1
 msgid ""
@@ -25138,14 +25123,12 @@ msgid ""
 msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/PossibleAssignmentToReadonlyFieldAnalyzer.cs:1
-#, fuzzy
 msgid "Check if a readonly field is used as assignment target"
-msgstr "Поле лише для читання не може бути цільовим при присвоєнні."
+msgstr "Виявляти, якщо поле лише для читання є цільовим при присвоєнні"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/StaticFieldInGenericTypeAnalyzer.cs:1
-#, fuzzy
 msgid "Warns about static fields in generic types"
-msgstr "Статичне поле у загальному (generic) типі"
+msgstr "Попереджувати про статичні поля у загальному (generic) типі"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ValueParameterNotUsedAnalyzer.cs:1
 msgid ""
@@ -25155,7 +25138,7 @@ msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ValueParameterNotUsedAnalyzer.cs:1
 msgid "The {0} does not use the 'value' parameter"
-msgstr ""
+msgstr "{0} не використовує параметр 'значення'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ValueParameterNotUsedAnalyzer.cs:5
 msgid "setter"
@@ -25170,14 +25153,13 @@ msgid "remove accessor"
 msgstr "метод доступу remove"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CompilerWarnings/UnassignedReadonlyFieldAnalyzer.cs:1
-#, fuzzy
 msgid "Readonly field is never assigned"
-msgstr "Полю лише для читання '{0}' не надано значення"
+msgstr "Полю лише для читання не надано значення"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/Diagnostics/Synced/NUnit/NonPublicMethodWithTestAttributeAnalyzer.cs:1
 msgid "Non public methods are not found by NUnit"
-msgstr ""
+msgstr "NUnit не знайшов не загальнодоступних методів"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:1
 msgid "Convert 'if' to '??'"
@@ -25188,9 +25170,8 @@ msgid "Convert 'Nullable<T>' to the short form 'T?'"
 msgstr "Перетворити 'Nullable<T>' на коротку форму 'T?'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertNullableToShortFormAnalyzer.cs:1
-#, fuzzy
 msgid "Nullable type can be simplified"
-msgstr "Тип можна спростити до '{0}?'"
+msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToLambdaExpressionAnalyzer.cs:1
 msgid "Convert to lambda with expression"
@@ -25204,7 +25185,7 @@ msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:1
 msgid "Foreach loops are more efficient"
-msgstr ""
+msgstr "Цикли foreach більш ефективні"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/InvokeAsExtensionMethodAnalyzer.cs:1
 msgid ""
@@ -25212,36 +25193,35 @@ msgid ""
 msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/SuggestUseVarKeywordEvidentAnalyzer.cs:1
-#, fuzzy
 msgid "Use 'var' keyword when possible"
-msgstr "Використати ключове слово 'var'"
+msgstr "Використати ключове слово 'var', якщо можливо"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:1
-#, fuzzy
 msgid "An empty public constructor without paramaters is redundant."
-msgstr "Порожній конструктор є зайвим."
+msgstr ""
+"Порожній загальнодоступний (public) конструктор без параметрів є зайвим."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:1
-#, fuzzy
 msgid "Empty constructor is redundant"
-msgstr "Порожній конструктор є зайвим."
+msgstr "Порожній конструктор є зайвим"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntAnalyzer.cs:1
 msgid ""
 "The default underlying type of enums is int, so defining it explicitly is "
 "redundant."
 msgstr ""
+"Типовим базовим типом для переліків є int, тому явне вказання цього "
+"є зайвим."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartAnalyzer.cs:1
 msgid "Class is declared partial but has only one part"
-msgstr ""
+msgstr "Клас оголошено як частковий (partial), але він має лише одну частину"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantBaseConstructorCallAnalyzer.cs:1
 msgid "This is generated by the compiler and can be safely removed"
-msgstr ""
+msgstr "Це згенеровано компілятором і може бути безпечно вилучено"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/RedundantDefaultFieldInitializerAnalyzer.cs:1
-#, fuzzy
 msgid "Initializing field with default value is redundant"
 msgstr "Ініціалізація поля стандартним значенням є зайвою"
 
@@ -25250,21 +25230,20 @@ msgid ""
 "The override of a virtual member is redundant because it consists of only a "
 "call to the base"
 msgstr ""
+"Заміщення віртуального члена є зайвим, оскільки він містить лише "
+"звернення до бази"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:1
-#, fuzzy
 msgid "'sealed' modifier is redundant in sealed classes"
-msgstr "Ключове слово 'sealed' зайве в ізольованих класах."
+msgstr "Ключове слово 'sealed' зайве в ізольованих класах"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/UnusedParameterAnalyzer.cs:1
-#, fuzzy
 msgid "Parameter is never used"
-msgstr "Параметр '{0}' не використовується"
+msgstr "Параметр не використовується"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/UnusedTypeParameterAnalyzer.cs:1
-#, fuzzy
 msgid "Type parameter '{0}' is never used"
-msgstr "Параметр-тип не використовується"
+msgstr "Параметр-тип '{0}' не використовується"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ArrayCreationCanBeReplacedWithArrayInitializerAnalyzer.cs:1
 msgid ""
@@ -25311,7 +25290,7 @@ msgstr "Зайва мітка 'case'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCatchClauseAnalyzer.cs:1
 msgid "Catch clause with a single 'throw' statement is redundant"
-msgstr "Пункт catch з одиничним виразом 'throw' є зайвим"
+msgstr "Секція catch з одиничним виразом 'throw' є зайвою"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCheckBeforeAssignmentAnalyzer.cs:1
 msgid ""
@@ -25334,9 +25313,8 @@ msgid "Remove the redundant size indicator"
 msgstr "Вилучити зайвий індикатор size"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitNullableCreationAnalyzer.cs:1
-#, fuzzy
 msgid "Value types are implicitly convertible to nullables"
-msgstr "Тип елемента колекції '{0}' не можна неявно перетворити на '{1}'"
+msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExtendsListEntryAnalyzer.cs:1
 msgid ""
@@ -25363,6 +25341,8 @@ msgid ""
 "Finds calls to ToString() which would be generated automatically by the "
 "compiler"
 msgstr ""
+"Шукає виклики ToString() які будуть автоматично згенеровані "
+"компілятором"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantToStringCallAnalyzer.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantToStringCallAnalyzer.cs:2
@@ -25374,6 +25354,8 @@ msgid ""
 "Unsafe modifier in redundant in unsafe context or when no unsafe constructs "
 "are used"
 msgstr ""
+"Модифікатор unsafe є зайвим в небезпечному контексті або якщо не "
+"використовуються небезпечні конструкції"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantUnsafeContextAnalyzer.cs:1
 msgid "'unsafe' modifier is redundant"
@@ -25382,6 +25364,7 @@ msgstr "Зайвий модифікатор 'unsafe'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:1
 msgid "Detects when no delegate parameter is used in the anonymous method body"
 msgstr ""
+"Виявляє, якщо параметр-делегат не використовується в тілі анонімного методу"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:1
 msgid "Replace usages of 'Count()' with call to 'Any()'"
@@ -25389,7 +25372,7 @@ msgstr "Замінити використання 'Count()' викликом 'An
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:1
 msgid "Use '{0}' for increased performance"
-msgstr ""
+msgstr "Використати '{0}' для підвищення продуктивності"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:1
 msgid "'is' operator can be used"
@@ -25398,6 +25381,8 @@ msgstr "Можна використати оператор 'is'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringStartsWithIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'StartsWith' call is used by default."
 msgstr ""
+"Попереджувати, якщо типово використовується виклик культурозалежного "
+"'StartsWith'."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringStartsWithIsCultureSpecificAnalyzer.cs:1
 msgid "'StartsWith' is culture-aware and missing a StringComparison argument"
@@ -25406,6 +25391,8 @@ msgstr "'StartsWith' є культурозалежним і пропущено �
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringLastIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'LastIndexOf' call is used by default."
 msgstr ""
+"Попереджувати, якщо типово використовується виклик культурозалежного "
+"'LastIndexOf'."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringLastIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "'LastIndexOf' is culture-aware and missing a StringComparison argument"
@@ -25414,6 +25401,8 @@ msgstr "'LastIndexOf' є культурозалежним і пропущено 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'IndexOf' call is used by default."
 msgstr ""
+"Попереджувати, якщо типово використовується виклик культурозалежного "
+"'IndexOf'."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "'IndexOf' is culture-aware and missing a StringComparison argument"
@@ -25422,6 +25411,8 @@ msgstr "'IndexOf' є культурозалежним і пропущено ар
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringEndsWithIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'EndsWith' call is used by default."
 msgstr ""
+"Попереджувати, якщо типово використовується виклик культурозалежного "
+"'EndsWith'."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringEndsWithIsCultureSpecificAnalyzer.cs:1
 msgid "'EndsWith' is culture-aware and missing a StringComparison argument"
@@ -25430,10 +25421,13 @@ msgstr "'EndsWith' є культурозалежним і пропущено а�
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'string.CompareTo' call is used by default"
 msgstr ""
+"Попереджувати, якщо типово використовується виклик культурозалежного "
+"'string.CompareTo'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'Compare' call is used by default"
 msgstr ""
+"Попереджувати, якщо типово використовується виклик культурозалежного 'Compare'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyConditionalTernaryExpressionAnalyzer.cs:1
 msgid "Conditional expression can be simplified"
@@ -25449,7 +25443,7 @@ msgstr "Вираз можна замінити на '{0}'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSingleOrDefaultAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by SingleOrDefault()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде SingleOrDefault()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSingleOrDefaultAnalyzer.cs:1
 msgid "Replace with single call to 'SingleOrDefault()'"
@@ -25457,7 +25451,7 @@ msgstr "Замінити одиничним викликом 'SingleOrDefault()'
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSingleAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Single()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде Single()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSingleAnalyzer.cs:1
 msgid "Replace with single call to 'Single()'"
@@ -25465,7 +25459,7 @@ msgstr "Замінити одиничним викликом 'Single()'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLongCountAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by LongCount()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде LongCount()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLongCountAnalyzer.cs:1
 msgid "Replace with single call to 'LongCount()'"
@@ -25473,7 +25467,7 @@ msgstr "Замінити одиничним викликом 'LongCount()'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastOrDefaultAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by LastOrDefault()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде LastOrDefault()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastOrDefaultAnalyzer.cs:1
 msgid "Replace with single call to 'LastOrDefault()'"
@@ -25481,7 +25475,7 @@ msgstr "Замінити одиничним викликом 'LastOrDefault()'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Last()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде Last()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastAnalyzer.cs:1
 msgid "Replace with single call to 'Last()'"
@@ -25489,7 +25483,7 @@ msgstr "Замінити одиничним викликом 'Last()'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstOrDefaultAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by FirstOrDefault()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде FirstOrDefault()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstOrDefaultAnalyzer.cs:1
 msgid "Replace with single call to 'FirstOrDefault()'"
@@ -25497,7 +25491,7 @@ msgstr "Замінити одиничним викликом 'FirstOrDefault()'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by First()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде First()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstAnalyzer.cs:1
 msgid "Replace with single call to 'First()'"
@@ -25505,7 +25499,7 @@ msgstr "Замінити одиничним викликом 'First()'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToCountAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Count()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде Count()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToCountAnalyzer.cs:1
 msgid "Replace with single call to 'Count()'"
@@ -25513,7 +25507,7 @@ msgstr "Замінити одиничним викликом 'Count()'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAnyAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Any()"
-msgstr ""
+msgstr "Зайвий виклик Where() з предикатом, після якого йде Any()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAnyAnalyzer.cs:1
 msgid "Replace with single call to 'Any()'"
@@ -25604,9 +25598,8 @@ msgid "Replace with call to FirstOrDefault<T>()"
 msgstr "Замінити викликом FirstOrDefault<T>()"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeAnalyzer.cs:4
-#, fuzzy
 msgid "Finds parameters that can be demoted to a base class"
-msgstr "Параметр можна оголосити з базовим типом"
+msgstr "Шукати параметри, які можна оголосити з базовим типом"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfToOrExpressionAnalyzer.cs:1
 msgid "Convert 'if' to '||' expression"
@@ -25619,6 +25612,7 @@ msgstr "Перетворити 'if-do-while' на інструкцію 'while'"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/AccessToStaticMemberViaDerivedTypeAnalyzer.cs:1
 msgid "Suggests using the class declaring a static function when calling it"
 msgstr ""
+"Пропонує використати клас з оголошенням статичної функцію при її виклику"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertStatementBodyToExpressionBodyCodeRefactoringProvider.cs:8
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertStatementBodyToExpressionBodyCodeRefactoringProvider.cs:9
@@ -25643,10 +25637,9 @@ msgstr "Перевіряти 'if ({0}.Count > {1})'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/CheckDictionaryKeyValueCodeRefactoringProvider.cs:3
 msgid "Use 'if ({0}.TryGetValue({1}, out val))'"
-msgstr ""
+msgstr "Використати 'if ({0}.TryGetValue({1}, out val))'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ReverseDirectionForForLoopCodeRefactoringProvider.cs:6
-#, fuzzy
 msgid "Reverse 'for' loop'"
 msgstr "Обернути цикл 'for'"
 
@@ -25684,9 +25677,8 @@ msgid "Remove redundant code"
 msgstr "Прибрати зайвий код"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/NotResolvedInTextIssueCodeFixProvider.cs:6
-#, fuzzy
 msgid "Swap parameter"
-msgstr "Параметр-тип"
+msgstr "Замінити параметр"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/FieldCanBeMadeReadOnlyCodeFixProvider.cs:3
 msgid "To 'readonly'"
@@ -25706,27 +25698,23 @@ msgstr "На 'nameof({0})'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleAnalyzer.cs:2
 msgid "Sample analyzer: Class name should not have a 'C' prefix."
-msgstr ""
+msgstr "Аналізатор зразка: назва класу не повинна мати префікса 'C'."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleCodeRefactoringProvider.cs:9
-#, fuzzy
 msgid "Sample: Prepend with 'I'"
-msgstr "Замінити вираз на '{0}'"
+msgstr "Приклад: спереду 'I'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertInterpolatedStringToStringFormatCodeRefactoringProvider.cs:1
-#, fuzzy
 msgid "To format string"
-msgstr "Форматування коду"
+msgstr "На рядок формату"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertStringFormatToInterpolatedStringCodeRefactoringProvider.cs:2
-#, fuzzy
 msgid "To interpolated string"
-msgstr "Перекладений рядок"
+msgstr "На інтерпольований рядок"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ImportStaticClassWithUsingCodeRefactoringProvider.cs:5
-#, fuzzy
 msgid "Import static class with using"
-msgstr "Частковий (partial) клас з однією частиною"
+msgstr "Імпортувати статичний клас з using"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CheckIfParameterIsNothingCodeRefactoringProvider.cs:2
 msgid "Add 'Is Nothing' check for parameter"

@@ -281,8 +281,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				
 			Gtk.Application.Invoke (delegate {
 				if (ex != null) {
-					store.AppendValues (piter, null, "ERROR: " + ex.Message, "", true);
-					LoggingService.LogError (ex.ToString ());
+					LoggingService.LogError ("Failed to load connected repositories.", ex.ToString ());
 				}
 				else {
 					foreach (Repository rep in repos)

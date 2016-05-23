@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide
 		}
 		
 		string ISystemInformationProvider.Title {
-			get { return BrandingService.ApplicationName; }
+			get { return BrandingService.ApplicationLongName; }
 		}
 
 		string ISystemInformationProvider.Description {

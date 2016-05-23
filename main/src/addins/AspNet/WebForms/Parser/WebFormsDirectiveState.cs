@@ -29,6 +29,7 @@
 using System;
 using System.Diagnostics;
 
+using MonoDevelop.Core;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Dom;
@@ -69,7 +70,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 			}
 			
 			if (c == '<') {
-				context.LogError ("Unexpected '<' in directive.");
+				context.LogError (GettextCatalog.GetString ("Unexpected '<' in directive."));
 				rollback = string.Empty;
 				return Parent;
 			}
@@ -88,7 +89,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 					context.Nodes.Pop ();
 					
 					if (!directive.IsNamed) {
-						context.LogError ("Directive closed prematurely.");
+						context.LogError (GettextCatalog.GetString ("Directive closed prematurely."));
 					} else {
 						directive.End (context.Location);
 						if (context.BuildTree) {
@@ -110,7 +111,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 				return null;
 			
 			rollback = string.Empty;
-			context.LogError ("Unexpected character '" + c + "' in tag.");
+			context.LogError (GettextCatalog.GetString ("Unexpected character '{0}' in tag.", c));
 			return Parent;
 		}
 	}

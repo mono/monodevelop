@@ -61,12 +61,12 @@ namespace MonoDevelop.Debugger
 		bool editing;
 
 		// Groupings for sensitivity
-		HBox hboxFunction = new HBox (){ MarginLeft = 18 };
+		HBox hboxFunction = new HBox () { MarginLeft = 18 };
 		HBox hboxLocation = new HBox ();
 		HBox hboxException = new HBox ();
 		HBox hboxCondition = new HBox ();
-		VBox vboxException = new VBox (){ MarginLeft = 18 };
-		VBox vboxLocation = new VBox (){ MarginLeft = 18 };
+		VBox vboxException = new VBox () { MarginLeft = 18 };
+		VBox vboxLocation = new VBox () { MarginLeft = 18 };
 		// Breakpoint Action radios.
 		readonly RadioButton breakpointActionPause = new RadioButton (GettextCatalog.GetString ("Pause the program"));
 		readonly RadioButton breakpointActionPrint = new RadioButton (GettextCatalog.GetString ("Print a message and continue"));
@@ -77,10 +77,10 @@ namespace MonoDevelop.Debugger
 		readonly RadioButton stopOnException = new RadioButton (GettextCatalog.GetString ("When an exception is thrown"));
 
 		// Text entries
-		readonly TextEntry entryFunctionName = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.Object.ToString") };
-		readonly TextEntry entryLocationFile = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. Program.cs:15:5") };
-		readonly TextEntryWithCodeCompletion entryExceptionType = new TextEntryWithCodeCompletion (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.InvalidOperationException") };
-		readonly TextEntry entryConditionalExpression = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. colorName == \"Red\"") };
+		readonly TextEntry entryFunctionName = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. System.Object.ToString") };
+		readonly TextEntry entryLocationFile = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. Program.cs:15:5") };
+		readonly TextEntryWithCodeCompletion entryExceptionType = new TextEntryWithCodeCompletion () { PlaceholderText = GettextCatalog.GetString ("e.g. System.InvalidOperationException") };
+		readonly TextEntry entryConditionalExpression = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. colorName == \"Red\"") };
 		readonly TextEntry entryPrintExpression = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. Value of 'name' is {name}") };
 
 		// Warning icon
@@ -133,7 +133,7 @@ namespace MonoDevelop.Debugger
 					tooltipWindow.Text = tip;
 					var rect = this.ScreenBounds;
 					tooltipWindow.ShowPopup ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (this),
-						new Gdk.Rectangle ((int)(ParentWindow.X - rect.X), (int)(ParentWindow.Y - rect.Y), (int)rect.Width, (int)rect.Height), 
+						new Gdk.Rectangle ((int)(ParentWindow.X - rect.X), (int)(ParentWindow.Y - rect.Y), (int)rect.Width, (int)rect.Height),
 						MonoDevelop.Components.PopupPosition.Bottom);
 				}
 				return false;
@@ -197,7 +197,7 @@ namespace MonoDevelop.Debugger
 		ParsedLocation breakpointLocation = new ParsedLocation ();
 
 		BreakEvent be;
-		string[] parsedParamTypes;
+		string [] parsedParamTypes;
 		string parsedFunction;
 		readonly HashSet<string> classes = new HashSet<string> ();
 
@@ -228,9 +228,14 @@ namespace MonoDevelop.Debugger
 
 		void Initialize ()
 		{
-			Title = GettextCatalog.GetString (be == null ? "Create a Breakpoint" : "Edit Breakpoint");
-			var buttonLabel = GettextCatalog.GetString (be == null ? "Create" : "Apply");
-
+			string buttonLabel;
+			if (be == null) {
+				Title = GettextCatalog.GetString ("Create a Breakpoint");
+				buttonLabel = GettextCatalog.GetString ("Create");
+			} else {
+				Title = GettextCatalog.GetString ("Edit Breakpoint");
+				buttonLabel = GettextCatalog.GetString ("Apply");
+			}
 			var actionGroup = new RadioButtonGroup ();
 			breakpointActionPause.Group = actionGroup;
 			breakpointActionPrint.Group = actionGroup;
@@ -357,7 +362,7 @@ namespace MonoDevelop.Debugger
 				DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.ConditionalBreakpoints);
 
 				bool canTrace = DebuggingService.IsFeatureSupported (project, DebuggerFeatures.Tracepoints) ||
-				                DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.Tracepoints);
+								DebuggingService.IsFeatureSupported (startup, DebuggerFeatures.Tracepoints);
 
 				breakpointActionPause.Sensitive = canTrace;
 				entryPrintExpression.Sensitive = canTrace;
@@ -417,8 +422,8 @@ namespace MonoDevelop.Debugger
 				checkIncludeSubclass.Active = true;
 
 				if (IdeApp.Workbench.ActiveDocument != null &&
-				    IdeApp.Workbench.ActiveDocument.Editor != null &&
-				    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
+					IdeApp.Workbench.ActiveDocument.Editor != null &&
+					IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
 						IdeApp.Workbench.ActiveDocument.Editor.CaretLine,
 						IdeApp.Workbench.ActiveDocument.Editor.CaretColumn);
@@ -449,7 +454,7 @@ namespace MonoDevelop.Debugger
 				if (!File.Exists (splitted [0])) {
 					//Maybe it's C:\filepath.ext
 					if (splitted.Length > 1 && File.Exists (splitted [0] + ":" + splitted [1])) {
-						var newSplitted = new string[splitted.Length - 1];
+						var newSplitted = new string [splitted.Length - 1];
 						newSplitted [0] = splitted [0] + ":" + splitted [1];
 						for (int i = 2; i < splitted.Length; i++) {
 							newSplitted [i - 1] = splitted [i];
@@ -661,7 +666,7 @@ namespace MonoDevelop.Debugger
 			return result;
 		}
 
-		static bool TryParseFunction (string signature, out string function, out string[] paramTypes)
+		static bool TryParseFunction (string signature, out string function, out string [] paramTypes)
 		{
 			int paramListStart = signature.IndexOf ('(');
 			int paramListEnd = signature.IndexOf (')');

@@ -638,6 +638,10 @@ namespace MonoDevelop.Projects
 			BuildResult cres = new BuildResult ();
 			cres.BuildCount = 0;
 
+			// Limit the number of concurrent builders to processors / 2
+
+			var slotScheduler = new TaskSlotScheduler (Environment.ProcessorCount / 2);
+
 			// Create a dictionary with the status objects of all items
 
 			var buildStatus = ImmutableDictionary<SolutionItem, BuildStatus>.Empty;
@@ -672,7 +676,8 @@ namespace MonoDevelop.Projects
 					if (!ignoreFailed && (refStatus.Any (bs => bs.Failed) || t.IsFaulted)) {
 						myStatus.Failed = true;
 					} else {
-						myStatus.Result = await buildAction (myMonitor, item);
+						using (await slotScheduler.GetTaskSlot ())
+							myStatus.Result = await buildAction (myMonitor, item);
 						myStatus.Failed = myStatus.Result != null && myStatus.Result.ErrorCount > 0;
 					}
 					myMonitor.Dispose ();
@@ -1109,6 +1114,66 @@ namespace MonoDevelop.Projects
 
 		public FilePath File {
 			get { return this.file; }
+		}
+	}
+
+	/// <summary>
+	/// Keeps track of slots available for executing an operation
+	/// </summary>
+	class TaskSlotScheduler
+	{
+		int freeSlots;
+		Queue<TaskCompletionSource<IDisposable>> waitQueue = new Queue<TaskCompletionSource<IDisposable>> ();
+
+		class Slot: IDisposable
+		{
+			public TaskSlotScheduler TaskSlotScheduler;
+
+			public void Dispose ()
+			{
+				if (TaskSlotScheduler != null) {
+					TaskSlotScheduler.FreeSlot ();
+					TaskSlotScheduler = null;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.Projects.TaskSlotScheduler"/> class.
+		/// </summary>
+		/// <param name="slots">Initial number of slots available</param>
+		public TaskSlotScheduler (int slots)
+		{
+			freeSlots = Math.Max (slots, 1);
+		}
+
+		/// <summary>
+		/// Gets a slot, to be disposed when done with the operation
+		/// </summary>
+		/// <returns>The task slot.</returns>
+		public Task<IDisposable> GetTaskSlot ()
+		{
+			lock (waitQueue) {
+				if (freeSlots > 0) {
+					freeSlots--;
+					return Task.FromResult ((IDisposable)new Slot { TaskSlotScheduler = this });
+				} else {
+					var cs = new TaskCompletionSource<IDisposable> ();
+					waitQueue.Enqueue (cs);
+					return cs.Task;
+				}
+			}
+		}
+
+		void FreeSlot ()
+		{
+			lock (waitQueue) {
+				if (waitQueue.Count > 0) {
+					var cs = waitQueue.Dequeue ();
+					cs.SetResult (new Slot { TaskSlotScheduler = this });
+				} else
+					freeSlots++;
+			}
 		}
 	}
 }

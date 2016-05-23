@@ -23,9 +23,9 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "EmptyVBProject" resource = "EmptyVBProject.xpt.xml"/>
-		<ProjectTemplate id = "VBConsoleApplicationProject" resource = "VBConsoleApplicationProject.xpt.xml"/>
-		<ProjectTemplate id = "VBGtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.VBNet.EmptyProject" resource = "EmptyVBProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.VBNet.ConsoleProject" resource = "VBConsoleApplicationProject.xpt.xml"/>
+		<ProjectTemplate id = "MonoDevelop.VBNet.GtkSharp2Project" resource = "VBGtkSharp2Project.xpt.xml"/>
 	</Extension>
   
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Build/General">

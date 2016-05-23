@@ -66,9 +66,9 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 			if (label.Layout.GetLine (1) != null) {
 				label.Justify = Gtk.Justification.Left;
-				var line15 = label.Layout.GetLine (15);
-				if (line15 != null) {
-					label.Text = value.Substring (0, line15.StartIndex).TrimEnd ('\r', '\n') + "\n…";
+				var trimmedLine = label.Layout.GetLine (50);
+				if (trimmedLine != null) {
+					label.Text = value.Substring (0, trimmedLine.StartIndex).TrimEnd ('\r', '\n') + "\n…";
 				}
 			}
 
@@ -88,7 +88,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 				var rawString = val.GetRawValue (ops) as RawValueString;
 				var length = rawString.Length;
 				if (length > 0) {
-					return rawString.Substring (0, Math.Min (length, 4096));
+					return Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (rawString.Substring (0, Math.Min (length, 4096)));
 				} else {
 					return "";
 				}
@@ -96,7 +96,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 				var rawArray = val.GetRawValue (ops) as RawValueArray;
 				var length = rawArray.Length;
 				if (length > 0) {
-					return new string (rawArray.GetValues (0, Math.Min (length, 4096)) as char[]);
+					return Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (new string (rawArray.GetValues (0, Math.Min (length, 4096)) as char []));
 				} else {
 					return "";
 				}

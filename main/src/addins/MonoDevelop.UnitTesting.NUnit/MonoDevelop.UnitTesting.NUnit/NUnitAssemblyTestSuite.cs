@@ -444,10 +444,11 @@ namespace MonoDevelop.UnitTesting.NUnit
 					result = UnitTestResult.CreateFailure (GettextCatalog.GetString ("Canceled"), null);
 				}
 			} finally {
+				// Dispose the runner before the console, to make sure the console is available until the runner is disposed.
+				runner.Dispose ();
 				if (console != null)
 					console.Dispose ();
 				cancelReg.Dispose ();
-				runner.Dispose ();
 				File.Delete (crashLogFile);
 			}
 			
@@ -502,6 +503,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 					tcpListener = new MonoDevelop.UnitTesting.NUnit.External.TcpTestListener (localMonitor, suiteName);
 					cmd.Arguments += " -port=" + tcpListener.Port;
 				}
+				cmd.WorkingDirectory = Path.GetDirectoryName (AssemblyPath);
 
 				// Note that we always dispose the tcp listener as we don't want it listening
 				// forever if the test runner does not try to connect to it

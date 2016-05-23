@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Pads;
@@ -44,8 +45,8 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class ProgressMonitorManager : GuiSyncObject
 	{
-		ArrayList searchMonitors = new ArrayList ();
-		ArrayList outputMonitors = new ArrayList ();
+		List<Pad> searchMonitors = new List<Pad> ();
+		List<Pad> outputMonitors = new List<Pad> ();
 		
 		/******************************/
 
@@ -73,7 +74,7 @@ namespace MonoDevelop.Ide.Gui
 			Pad pad = IdeApp.Workbench.GetPad<ErrorListPad> ();
 			ErrorListPad errorPad = (ErrorListPad) pad.Content;
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (errorPad.GetBuildProgressMonitor ());
-			mon.AddSlaveMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad));
+			mon.AddFollowerMonitor (GetStatusProgressMonitor (statusText, Stock.StatusBuild, false, true, false, pad));
 			return mon;
 		}
 		
@@ -157,6 +158,8 @@ namespace MonoDevelop.Ide.Gui
 		/// </remarks>
 		public Pad GetPadForMonitor (ProgressMonitor monitor)
 		{
+			Runtime.AssertMainThread ();
+
 			foreach (Pad pad in outputMonitors) {
 				DefaultMonitorPad p = (DefaultMonitorPad) pad.Content;
 				if (p.CurrentMonitor == monitor)
@@ -216,7 +219,9 @@ namespace MonoDevelop.Ide.Gui
 			
 			monitorPad.StatusSourcePad = pad;
 			pad.Sticky = true;
-			outputMonitors.Add (pad);
+			lock (outputMonitors) {
+				outputMonitors.Add (pad);
+			}
 			
 			if (instanceCount > 0) {
 				// Additional output pads will be destroyed when hidden
@@ -237,7 +242,9 @@ namespace MonoDevelop.Ide.Gui
 
 		void DestroyPad (Pad pad)
 		{
-			outputMonitors.Remove (pad);
+			lock (outputMonitors) {
+				outputMonitors.Remove (pad);
+			}
 			pad.Destroy ();
 		}
 		
@@ -280,11 +287,12 @@ namespace MonoDevelop.Ide.Gui
 			lock (searchMonitors) {
 				searchMonitors.Add (pad);
 
-				if (searchMonitors.Count > 1) {
+				if (searchMonitors.Count > 1) {					// This is needed due to ContextBoundObject not being able to do a reflection access on private fields
+					var searchMonitorsCopy = searchMonitors;
 					// Additional search pads will be destroyed when hidden
 					pad.Window.PadHidden += delegate {
-						lock (searchMonitors) {
-							searchMonitors.Remove (pad);
+						lock (searchMonitorsCopy) {
+							searchMonitorsCopy.Remove (pad);
 						}
 						pad.Destroy ();
 					};

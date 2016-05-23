@@ -80,6 +80,8 @@ namespace MonoDevelop.CSharp.Navigation
 					if (implementingType == null)
 						return;
 					foreach (var interfaceMember in interfaceType.GetMembers ()) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							return;
 						var impl = implementingType.FindImplementationForInterfaceMember (interfaceMember);
 						if (impl == null)
 							continue;
@@ -89,6 +91,9 @@ namespace MonoDevelop.CSharp.Navigation
 					foreach (var iFace in interfaceType.AllInterfaces) {
 					
 						foreach (var interfaceMember in iFace.GetMembers ()) {
+							if (monitor.CancellationToken.IsCancellationRequested)
+								return;
+
 							var impl = implementingType.FindImplementationForInterfaceMember (interfaceMember);
 							if (impl == null)
 								continue;

@@ -238,7 +238,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 		void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
 		{
-			Console.WriteLine ("received");
 			if (args.Info != (uint) TargetList.UriList)
 				return;
 			string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);

@@ -26,7 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
+using MonoDevelop.Core;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
@@ -79,7 +79,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 					return null;
 				}
 				if (c == '@') {
-					context.LogError ("Invalid directive location");
+					context.LogError (GettextCatalog.GetString ("Invalid directive location"));
 					rollback = "<%";
 					return Parent;
 				}
@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 					SetTag (context, AttState.Comment);
 					return null;
 				}
-				context.LogError ("Malformed server comment");
+				context.LogError (GettextCatalog.GetString ("Malformed server comment"));
 				rollback = "<%-";
 				return Parent;
 			case AttState.Expression:

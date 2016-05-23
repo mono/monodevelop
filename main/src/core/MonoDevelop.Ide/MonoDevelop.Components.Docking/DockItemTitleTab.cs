@@ -65,8 +65,6 @@ namespace MonoDevelop.Components.Docking
 		static Xwt.Drawing.Image pixAutoHide;
 		static Xwt.Drawing.Image pixDock;
 
-		static double PixelScale = GtkWorkarounds.GetPixelScale ();
-
 		static readonly Xwt.WidgetSpacing TabPadding;
 		static readonly Xwt.WidgetSpacing TabActivePadding;
 
@@ -129,7 +127,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			double inactiveIconAlpha;
 
-			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceSkin == Skin.Light)
+			if (IdeApp.Preferences == null || IdeApp.Preferences.UserInterfaceTheme == Theme.Light)
 				inactiveIconAlpha = 0.8;
 			else
 				inactiveIconAlpha = 0.6;
@@ -164,7 +162,7 @@ namespace MonoDevelop.Components.Docking
 			WidthRequest = r;
 
 			if (visualStyle != null)
-				HeightRequest = visualStyle.PadTitleHeight != null ? (int)(visualStyle.PadTitleHeight.Value * PixelScale) : -1;
+				HeightRequest = visualStyle.PadTitleHeight != null ? (int)(visualStyle.PadTitleHeight.Value) : -1;
 		}
 
 		public void SetLabel (Gtk.Widget page, Xwt.Drawing.Image icon, string label)
@@ -190,6 +188,7 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.UseMarkup = true;
+				labelWidget.Name = label;
 				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
@@ -207,6 +206,7 @@ namespace MonoDevelop.Components.Docking
 			btnDock.Clicked += OnClickDock;
 			btnDock.ButtonPressEvent += (o, args) => args.RetVal = true;
 			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
+			btnDock.Name = string.Format("btnDock_{0}", label ?? string.Empty);
 
 			btnClose = new ImageButton ();
 			btnClose.Image = pixClose;
@@ -218,6 +218,7 @@ namespace MonoDevelop.Components.Docking
 				item.Visible = false;
 			};
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
+			btnClose.Name = string.Format ("btnClose_{0}", label ?? string.Empty);
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
 			HBox btnBox = new HBox (false, 0);
@@ -300,7 +301,7 @@ namespace MonoDevelop.Components.Docking
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			if (evnt.TriggersContextMenu ()) {
-				item.ShowDockPopupMenu (evnt.Time);
+				item.ShowDockPopupMenu (this, evnt);
 				return false;
 			} else if (evnt.Button == 1) {
 				if (evnt.Type == Gdk.EventType.ButtonPress) {

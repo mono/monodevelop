@@ -31,16 +31,9 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 
-using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using NUnit.Engine;
 using System.Xml;
-using NUnit.Common;
-using NUnit.Engine.Internal;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.UnitTesting.NUnit;
 
@@ -55,15 +48,6 @@ namespace NUnit3Runner
 		public NUnitTestRunner (RemoteProcessServer server)
 		{
 			this.server = server;
-
-			// Note: We need to load all nunit.*.dll assemblies before we do *anything* else in this class
-			// This is to ensure that we always load the assemblies from the monodevelop directory and not
-			// from the directory of the assembly under test. For example we wnat to load
-			// /Applications/MonoDevelop/lib/Addins/nunit.framework.dll and not /user/app/foo/bin/debug/nunit.framework.dll
-			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
-			string nunitPath = Path.Combine (path, "nunit.framework.dll");
-			Assembly.LoadFrom (nunitPath);
-
 			Initialize ();
 		}
 

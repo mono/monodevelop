@@ -81,11 +81,11 @@
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id   = "AspNet-EmptyProject"
+		<ProjectTemplate id   = "MonoDevelop.AspNet.EmptyProject"
 		                 file = "Templates/Projects/EmptyProject.xpt.xml" />
-		<ProjectTemplate id   = "AspNet-MvcProject"
+		<ProjectTemplate id   = "MonoDevelop.AspNet.MvcProject"
 		                 file = "Templates/Projects/MvcProject.xpt.xml" />
-		<ProjectTemplate id   = "AspNet-WebApplication"
+		<ProjectTemplate id   = "MonoDevelop.AspNet.WebApplication"
 		                 file = "Templates/Projects/WebFormsProject.xpt.xml"/>
 	</Extension>
 
@@ -263,10 +263,6 @@
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
 		<NodeBuilder id="AspNetProjectNodeBuilderExtension" class = "MonoDevelop.AspNet.ProjectPad.AspNetProjectNodeBuilderExtension"/>
 		<NodeBuilder id="AspNetFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.ProjectPad.AspNetFolderNodeBuilderExtension"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
-		<SyntaxMode mimeTypes="application/x-aspx" class="MonoDevelop.AspNet.WebForms.WebFormsSyntaxMode"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/MimeTypes">

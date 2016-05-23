@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SolutionFolderFileNode file = (SolutionFolderFileNode) dataObject;
 			nodeInfo.Label = file.FileName.FileName;
 			if (!System.IO.File.Exists (file.FileName))
-				nodeInfo.Label = "<span foreground='red'>" + nodeInfo.Label + "</span>";
+				nodeInfo.Label = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + nodeInfo.Label + "</span>";
 			nodeInfo.Icon = DesktopService.GetIconForFile (file.FileName, Gtk.IconSize.Menu);
 		}
 		

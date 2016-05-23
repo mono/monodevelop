@@ -35,7 +35,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html.Parser;
-using MonoDevelop.Core.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -67,7 +67,7 @@ namespace MonoDevelop.AspNet.Html
 		{
 			foreach (XNode node in doc.Nodes) {
 				if (node is XElement && !Object.ReferenceEquals (node, doc.RootElement)) {
-					yield return new Error (ErrorType.Warning, "More than one root element", node.Region);
+					yield return new Error (ErrorType.Warning, GettextCatalog.GetString ("More than one root element"), node.Region);
 				}
 			}
 		}

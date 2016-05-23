@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -49,7 +48,7 @@ namespace MonoDevelop.DocFood
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 
-		public override Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			if (descriptor.KeyChar != '/')
 				return base.KeyPress (descriptor);
@@ -104,7 +103,7 @@ namespace MonoDevelop.DocFood
 				if (SelectSummary (offset, insertedLength, documentation) == false)
 					Editor.CaretOffset = offset + insertedLength;
 			}
-			return Task.FromResult (false);
+			return false;
 		}
 
 		/// <summary>

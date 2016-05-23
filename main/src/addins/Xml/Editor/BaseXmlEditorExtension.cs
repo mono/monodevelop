@@ -234,11 +234,11 @@ namespace MonoDevelop.Xml.Editor
 		{
 		}
 		
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
 				var newLine = Editor.CaretLine + 1;
-				var ret = await base.KeyPress (descriptor);
+				var ret = base.KeyPress (descriptor);
 				if (descriptor.SpecialKey == SpecialKey.Return && Editor.CaretLine == newLine) {
 					string indent = GetLineIndent (newLine);
 					var oldIndent = Editor.GetLineIndent (newLine);
@@ -251,7 +251,7 @@ namespace MonoDevelop.Xml.Editor
 				}
 				return ret;
 			}
-			return await base.KeyPress (descriptor);
+			return base.KeyPress (descriptor);
 		}
 		
 		#region Code completion

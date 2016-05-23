@@ -51,6 +51,14 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageManager (IProject project, PackageReferenceRepositoryHelper packageRefRepositoryHelper)
 		{
+			CreatePackageManager (project, packageRefRepositoryHelper, new FakePackageRepository ());
+		}
+
+		void CreatePackageManager (
+			IProject project,
+			PackageReferenceRepositoryHelper packageRefRepositoryHelper,
+			IPackageRepository sourceRepository)
+		{
 			options = new TestablePackageManagementOptions ();
 			options.PackagesDirectory = "packages";
 
@@ -59,7 +67,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			fakeFileSystem = new FakeFileSystem ();
 
-			fakeFeedSourceRepository = new FakePackageRepository ();
+			fakeFeedSourceRepository = sourceRepository as FakePackageRepository;
 			fakeSolutionSharedRepository = packageRefRepositoryHelper.FakeSharedSourceRepository;
 
 			fakePackageOperationResolverFactory = new FakePackageOperationResolverFactory ();
@@ -70,7 +78,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			fakeSolutionPackageRepository.PackagePathResolver = pathResolver;
 			fakeSolutionPackageRepository.FakeSharedRepository = fakeSolutionSharedRepository;
 
-			packageManager = new MonoDevelopPackageManager (fakeFeedSourceRepository,
+			packageManager = new MonoDevelopPackageManager (sourceRepository,
 				packageRefRepositoryHelper.FakeProjectSystem,
 				fakeSolutionPackageRepository,
 				fakePackageOperationResolverFactory);
@@ -78,9 +86,14 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageManager ()
 		{
+			CreatePackageManager (new FakePackageRepository ());
+		}
+
+		void CreatePackageManager (IPackageRepository sourceRepository)
+		{
 			CreateTestProject ();
 			CreatePackageReferenceRepositoryHelper ();
-			CreatePackageManager (project, packageRefRepositoryHelper);
+			CreatePackageManager (project, packageRefRepositoryHelper, sourceRepository);
 		}
 
 		void CreatePackageReferenceRepositoryHelper ()
@@ -342,6 +355,17 @@ namespace MonoDevelop.PackageManagement.Tests
 				() => eventArgs.ToList ().ForEach (eventArg => projectManager.FirePackageReferenceRemoved (eventArg)));
 		}
 
+		void RaisePackageAddedEventWhenPackageReferenceUpdated (
+			FakeProjectManager projectManager,
+			FakePackage updatedPackage,
+			params PackageOperationEventArgs[] eventArgs)
+		{
+			projectManager.WhenUpdatePackageReferenceCalled (
+				updatedPackage.Id,
+				updatedPackage.Version,
+				() => eventArgs.ToList ().ForEach (eventArg => projectManager.FirePackageReferenceAdded (eventArg)));
+		}
+
 		void RaisePackageRemovedEventWhenPackageReferenceAdded (
 			FakeProjectManager projectManager,
 			FakePackage newPackage,
@@ -353,11 +377,44 @@ namespace MonoDevelop.PackageManagement.Tests
 				() => eventArgs.ToList ().ForEach (eventArg => projectManager.FirePackageReferenceRemoved (eventArg)));
 		}
 
+		void RaisePackageAddedEventWhenPackageReferenceAdded (
+			FakeProjectManager projectManager,
+			FakePackage newPackage,
+			params PackageOperationEventArgs[] eventArgs)
+		{
+			projectManager.WhenAddPackageReferenceCalled (
+				newPackage.Id,
+				newPackage.Version,
+				() => eventArgs.ToList ().ForEach (eventArg => projectManager.FirePackageReferenceAdded (eventArg)));
+		}
+
 		[Test]
-		public void ProjectManager_InstanceCreated_SourceRepositoryIsSharedRepositoryPassedToPackageManager ()
+		public void ProjectManager_InstanceCreated_SourceRepositoryIsAggregrateRepositoryContainingSharedRepositoryPassedToPackageManager ()
 		{
 			CreatePackageManager ();
-			Assert.AreEqual (fakeSolutionSharedRepository, packageManager.ProjectManager.SourceRepository);
+
+			var aggregateRepository = packageManager.ProjectManager.SourceRepository as AggregateRepository;
+			var secondaryRepository = aggregateRepository.Repositories.Last () as FakePackageRepository;
+			Assert.AreEqual (2, aggregateRepository.Repositories.Count ());
+			Assert.AreEqual (fakeSolutionSharedRepository, aggregateRepository.Repositories.First ());
+			Assert.IsTrue (secondaryRepository.IsCloneOf (fakeFeedSourceRepository));
+		}
+
+		[Test]
+		public void ProjectManager_LocalRepositoryIsFallbackRepository_SourceRepositoryIsFallbackContainingSharedRepositoryPassedToPackageManager ()
+		{
+			var primaryRepository = new FakePackageRepository ();
+			var dependencyResolver = new FakePackageRepository ();
+			var fallbackRepository = new FallbackRepository (primaryRepository, dependencyResolver);
+			CreatePackageManager (fallbackRepository);
+
+			var sourceRepository = packageManager.ProjectManager.SourceRepository as FallbackRepository;
+			var aggregateRepository = sourceRepository.SourceRepository as AggregateRepository;
+			Assert.AreEqual (dependencyResolver, sourceRepository.DependencyResolver);
+			var secondaryRepository = aggregateRepository.Repositories.Last () as FakePackageRepository;
+			Assert.AreEqual (2, aggregateRepository.Repositories.Count ());
+			Assert.AreEqual (fakeSolutionSharedRepository, aggregateRepository.Repositories.First ());
+			Assert.IsTrue (secondaryRepository.IsCloneOf (primaryRepository));
 		}
 
 		[Test]
@@ -1132,6 +1189,84 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManager.InstallPackage (newPackage, installAction);
 
 			Assert.IsTrue (fakeSolutionSharedRepository.FakePackages.Contains (installedPackage));
+		}
+
+		[Test]
+		public void InstallPackage_PackageReferenceIsAddedForPackageNotInstalledInLocalRepository_PackageIsInstalled ()
+		{
+			CreatePackageManager ();
+			var fakeProjectManager = new FakeProjectManager ();
+			packageManager.ProjectManager = fakeProjectManager;
+			var packageReferenced = new FakePackage ("FooBar", "1.0");
+			FakePackage newPackage = fakeFeedSourceRepository.AddFakePackageWithVersion ("MyPackage", "1.1");
+			var eventArgs = new PackageOperationEventArgs (packageReferenced, null, null);
+			RaisePackageAddedEventWhenPackageReferenceAdded (fakeProjectManager, newPackage, eventArgs);
+			var installAction = new FakeInstallPackageAction {
+				Operations = new List<PackageOperation> ()
+			};
+
+			packageManager.InstallPackage (newPackage, installAction);
+
+			Assert.IsTrue (fakeSolutionSharedRepository.PackagesAdded.Contains (packageReferenced));
+		}
+
+		[Test]
+		public void InstallPackage_PackageReferenceIsAddedForPackageInstalledInLocalRepository_PackageIsNotInstalledToLocalRepositoryAgain ()
+		{
+			CreatePackageManager ();
+			var fakeProjectManager = new FakeProjectManager ();
+			packageManager.ProjectManager = fakeProjectManager;
+			var packageReferenced = new FakePackage ("FooBar", "1.0");
+			fakeSolutionSharedRepository.FakePackages.Add (packageReferenced);
+			FakePackage newPackage = fakeFeedSourceRepository.AddFakePackageWithVersion ("MyPackage", "1.1");
+			var eventArgs = new PackageOperationEventArgs (packageReferenced, null, null);
+			RaisePackageAddedEventWhenPackageReferenceAdded (fakeProjectManager, newPackage, eventArgs);
+			var installAction = new FakeInstallPackageAction {
+				Operations = new List<PackageOperation> ()
+			};
+
+			packageManager.InstallPackage (newPackage, installAction);
+
+			Assert.IsFalse (fakeSolutionSharedRepository.PackagesAdded.Contains (packageReferenced));
+		}
+
+		[Test]
+		public void UpdatePackage_PackageReferenceIsAddedForPackageNotInstalledInLocalRepository_PackageIsInstalled ()
+		{
+			CreatePackageManager ();
+			var fakeProjectManager = new FakeProjectManager ();
+			packageManager.ProjectManager = fakeProjectManager;
+			var packageReferenced = new FakePackage ("FooBar", "1.0");
+			FakePackage newPackage = fakeFeedSourceRepository.AddFakePackageWithVersion ("MyPackage", "1.1");
+			var eventArgs = new PackageOperationEventArgs (packageReferenced, null, null);
+			RaisePackageAddedEventWhenPackageReferenceUpdated (fakeProjectManager, newPackage, eventArgs);
+			var updateAction = new FakeUpdatePackageAction {
+				Operations = new List<PackageOperation> ()
+			};
+
+			packageManager.UpdatePackage (newPackage, updateAction);
+
+			Assert.IsTrue (fakeSolutionSharedRepository.PackagesAdded.Contains (packageReferenced));
+		}
+
+		[Test]
+		public void UpdatePackage_PackageReferenceIsAddedForPackageInstalledInLocalRepository_PackageIsNotInstalledAgainInLocalRepository ()
+		{
+			CreatePackageManager ();
+			var fakeProjectManager = new FakeProjectManager ();
+			packageManager.ProjectManager = fakeProjectManager;
+			var packageReferenced = new FakePackage ("FooBar", "1.0");
+			fakeSolutionSharedRepository.FakePackages.Add (packageReferenced);
+			FakePackage newPackage = fakeFeedSourceRepository.AddFakePackageWithVersion ("MyPackage", "1.1");
+			var eventArgs = new PackageOperationEventArgs (packageReferenced, null, null);
+			RaisePackageAddedEventWhenPackageReferenceUpdated (fakeProjectManager, newPackage, eventArgs);
+			var updateAction = new FakeUpdatePackageAction {
+				Operations = new List<PackageOperation> ()
+			};
+
+			packageManager.UpdatePackage (newPackage, updateAction);
+
+			Assert.IsFalse (fakeSolutionSharedRepository.PackagesAdded.Contains (packageReferenced));
 		}
 	}
 }

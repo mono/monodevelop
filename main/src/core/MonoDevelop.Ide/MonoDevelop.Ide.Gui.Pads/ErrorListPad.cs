@@ -271,7 +271,15 @@ namespace MonoDevelop.Ide.Gui.Pads
 				AddTask (t);
 			}
 
-			control.FocusChain = new Gtk.Widget [] { sw };
+			control.FocusChain = new Gtk.Widget [] { outputView };
+		}
+
+		public override void Dispose ()
+		{
+			IdeApp.Workspace.FirstWorkspaceItemOpened -= OnCombineOpen;
+			IdeApp.Workspace.LastWorkspaceItemClosed -= OnCombineClosed;
+
+			base.Dispose ();
 		}
 		
 		void HandleSwSizeAllocated (object o, SizeAllocatedArgs args)
@@ -554,10 +562,10 @@ namespace MonoDevelop.Ide.Gui.Pads
 
 		void OnTaskJumpto (object o, EventArgs args)
 		{
-			TreeIter iter;
+			TreeIter iter, sortedIter;
 			TreeModel model;
-			if (view.Selection.GetSelected (out model, out iter)) {
-				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (iter));
+			if (view.Selection.GetSelected (out model, out sortedIter)) {
+				iter = filter.ConvertIterToChildIter (sort.ConvertIterToChildIter (sortedIter));
 				store.SetValue (iter, DataColumns.Read, true);
 				TaskListEntry task = store.GetValue (iter, DataColumns.Task) as TaskListEntry;
 				if (task != null) {
@@ -915,8 +923,9 @@ namespace MonoDevelop.Ide.Gui.Pads
 		private void ItemToggled (object o, ToggledArgs args)
 		{
 			Gtk.TreeIter iter;
-			if (store.GetIterFromString (out iter, args.Path)) {
-				TaskListEntry task = (TaskListEntry)store.GetValue (iter, DataColumns.Task);
+
+			if (view.Model.GetIterFromString (out iter, args.Path)) {
+				TaskListEntry task = (TaskListEntry)view.Model.GetValue (iter, DataColumns.Task);
 				task.Completed = !task.Completed;
 				TaskService.FireTaskToggleEvent (this, new TaskEventArgs (task));
 			}
@@ -950,6 +959,12 @@ namespace MonoDevelop.Ide.Gui.Pads
 			return (aTask != null && zTask != null) ?
 			       aTask.FileName.CompareTo (zTask.FileName) :
 			       0;
+		}
+
+		internal void FocusOutputView ()
+		{
+			logBtn.Active = true;
+			HandleLogBtnToggled (this, EventArgs.Empty);
 		}
 		
 		void HandleLogBtnToggled (object sender, EventArgs e)

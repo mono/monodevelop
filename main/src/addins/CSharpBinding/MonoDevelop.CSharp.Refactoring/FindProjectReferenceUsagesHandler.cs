@@ -81,27 +81,39 @@ namespace MonoDevelop.CSharp.Refactoring
 					using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 						monitor.BeginTask (GettextCatalog.GetString ("Analyzing project"), analysisProject.Documents.Count ());
 						Parallel.ForEach (analysisProject.Documents, async document => {
-							var model = await document.GetSemanticModelAsync ().ConfigureAwait (false);
-							var root = await model.SyntaxTree.GetRootAsync ().ConfigureAwait (false);
-							root.DescendantNodes (node => {
-								var expr = node as ExpressionSyntax;
-								if (expr != null) {
-									var info = model.GetSymbolInfo (expr);
-									if (info.Symbol == null || info.Symbol.ContainingAssembly == null)
-										return true;
-									if (projectRef.Reference.IndexOf (',') >= 0) {
-										if (!string.Equals (info.Symbol.ContainingAssembly.ToString (), projectRef.Reference, StringComparison.OrdinalIgnoreCase))
+							try {
+								var model = await document.GetSemanticModelAsync (monitor.CancellationToken).ConfigureAwait (false);
+								if (monitor.CancellationToken.IsCancellationRequested)
+									return;
+								
+								var root = await model.SyntaxTree.GetRootAsync (monitor.CancellationToken).ConfigureAwait (false);
+								if (monitor.CancellationToken.IsCancellationRequested)
+									return;
+								
+								root.DescendantNodes (node => {
+									if (monitor.CancellationToken.IsCancellationRequested)
+										return false;
+
+									var expr = node as ExpressionSyntax;
+									if (expr != null) {
+										var info = model.GetSymbolInfo (expr);
+										if (info.Symbol == null || info.Symbol.ContainingAssembly == null)
 											return true;
-									} else {
-										if (!info.Symbol.ContainingAssembly.ToString ().StartsWith (projectRef.Reference, StringComparison.OrdinalIgnoreCase))
-											return true;
+										if (projectRef.Reference.IndexOf (',') >= 0) {
+											if (!string.Equals (info.Symbol.ContainingAssembly.ToString (), projectRef.Reference, StringComparison.OrdinalIgnoreCase))
+												return true;
+										} else {
+											if (!info.Symbol.ContainingAssembly.ToString ().StartsWith (projectRef.Reference, StringComparison.OrdinalIgnoreCase))
+												return true;
+										}
+										monitor.ReportResult (new MemberReference (info.Symbol, document.FilePath, node.Span.Start, node.Span.Length));
+										return false;
 									}
-									monitor.ReportResult (new MemberReference (info.Symbol, document.FilePath, node.Span.Start, node.Span.Length));
-									return false;
-								}
-								return true;
-							}).Count ();
-							monitor.Step ();
+									return true;
+								}).Count ();
+							} finally {
+								monitor.Step ();
+							}
 						});
 						monitor.EndTask ();
 					}

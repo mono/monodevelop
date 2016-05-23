@@ -183,5 +183,32 @@ using System.Reflection;
 [assembly: AssemblyTitle(S$$)]
 ", "System");
 		}
+
+		/// <summary>
+		/// Bug 40413 - Incorrect number of method overloads
+		/// </summary>
+		[Test]
+		public void TestBug40413 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+
+class Test
+{
+    static object Foo(int arg, int arg2) { return null; }
+    static object Foo(object arg, object arg2) { return null; }
+
+    public static void Main(string[] args)
+    {
+        Func<int, int, object> o = $F$
+    }
+}", usePreviousCharAsTrigger: true);
+			Assert.IsNotNull (provider, "provider was not created.");
+			var data = provider.Find ("Foo");
+			Assert.IsNotNull (data);
+			Assert.AreEqual (2, data.OverloadedData.Count);
+		}
+
 	}
 }

@@ -148,8 +148,9 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
-			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
-			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
+			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
+			var assembly = assemblyLoader.UnresolvedAssembly;
+			var compilationUnit = assemblyLoader.CecilLoader.GetCecilObject (assembly);
 			if (compilationUnit == null) {
 				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
 				return new List<ReferenceSegment> ();
@@ -160,8 +161,9 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
-			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
-			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
+			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
+			var assembly = assemblyLoader.UnresolvedAssembly;
+			var compilationUnit = assemblyLoader.CecilLoader.GetCecilObject (assembly);
 			if (compilationUnit == null) {
 				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
 				return new List<ReferenceSegment> ();
@@ -174,8 +176,9 @@ namespace MonoDevelop.AssemblyBrowser
 
 		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
-			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
-			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
+			var assemblyLoader = (AssemblyLoader)navigator.DataItem;
+			var assembly = assemblyLoader.UnresolvedAssembly;
+			var compilationUnit = assemblyLoader.CecilLoader.GetCecilObject (assembly);
 			if (compilationUnit == null) {
 				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
 				return new List<ReferenceSegment> ();

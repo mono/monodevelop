@@ -25,27 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Reflection;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using System.Text;
 
 using MonoDevelop.Core.Execution;
 using NUnit.Engine;
-using NUnit.Common;
-using System.Diagnostics.Contracts;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using System.Xml;
-using System.Net.Configuration;
 using System.Globalization;
 using MonoDevelop.UnitTesting.NUnit;
 
 namespace NUnit3Runner
 {
-	
+
 	class EventListenerWrapper: MarshalByRefObject, ITestEventListener
 	{
 		RemoteProcessServer server;
@@ -53,18 +42,6 @@ namespace NUnit3Runner
 		public EventListenerWrapper (RemoteProcessServer server)
 		{
 			this.server = server;
-		}
-		
-		public void RunFinished (Exception exception)
-		{
-		}
-		
-		public void RunFinished (TestResult results)
-		{
-		}
-		
-		public void RunStarted (string name, int testCount)
-		{
 		}
 		
 		public void SuiteFinished (XmlNode testResult)
@@ -118,12 +95,22 @@ namespace NUnit3Runner
 			RemoteTestResult res = new RemoteTestResult ();
 
 			if (e.LocalName == "test-suite") {
-				res.Failures = int.Parse (e.GetAttribute ("failed"));
-				res.Errors = 0;
-				res.Ignored = int.Parse (e.GetAttribute ("skipped"));
-				res.Inconclusive = int.Parse (e.GetAttribute ("inconclusive"));
+				int r;
+				if (int.TryParse (e.GetAttribute ("failed"), out r))
+					res.Failures = r;
+
+				if (int.TryParse (e.GetAttribute ("skipped"), out r))
+					res.Ignored = r;
+
+				if (int.TryParse (e.GetAttribute ("inconclusive"), out r))
+					res.Inconclusive = r;
+
+				if (int.TryParse (e.GetAttribute ("passed"), out r))
+					res.Passed = r;
+			
 				res.NotRunnable = 0;
-				res.Passed = int.Parse (e.GetAttribute ("passed"));
+				res.Errors = 0;
+
 			} else if (e.LocalName == "test-case") {
 				var runResult = e.GetAttribute ("result");
 				if (runResult == "Passed")
@@ -150,7 +137,9 @@ namespace NUnit3Runner
 				}
 			}
 
-			res.Time = TimeSpan.FromSeconds (double.Parse (e.GetAttribute ("duration"), CultureInfo.InvariantCulture));
+			double d;
+			if (double.TryParse (e.GetAttribute ("duration"), NumberStyles.Any, CultureInfo.InvariantCulture, out d))
+				res.Time = TimeSpan.FromSeconds (d);
 
 			var output = e.SelectSingleNode ("output");
 			if (output != null) {

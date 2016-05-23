@@ -41,11 +41,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 	[Register]
 	class ButtonBar : NSSegmentedControl
 	{
-		class DarkSkinSegmentedCell : NSSegmentedCell
+		class DarkThemeSegmentedCell : NSSegmentedCell
 		{
 			public override void DrawWithFrame (CGRect cellFrame, NSView inView)
 			{
-				if (IdeApp.Preferences.UserInterfaceSkin == Skin.Dark) {
+				if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
 					var inset = cellFrame.Inset (0.25f, 0.25f);
 					inset = new CGRect (inset.X, inset.Y + 2, inset.Width, inset.Height - 2);
 
@@ -86,7 +86,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public ButtonBar (IEnumerable<IButtonBarButton> buttons)
 		{
-			Cell = new DarkSkinSegmentedCell ();
+			Cell = new DarkThemeSegmentedCell ();
 
 			this.buttons = buttons.ToList ();
 

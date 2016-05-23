@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.Extensions
 						globalPattern.Append ('|');
 					globalPattern.Append (pattern);
 				}
-				return new Regex (globalPattern.ToString ());
+				return new Regex (globalPattern.ToString (), RegexOptions.IgnoreCase);
 			}
 			public bool SupportsFile (string fileName)
 			{
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Extensions
 			public bool SupportsFile (string fileName)
 			{
 				foreach (var ending in endings)
-					if (fileName.EndsWith (ending, StringComparison.Ordinal))
+					if (fileName.EndsWith (ending, StringComparison.OrdinalIgnoreCase))
 						return true;
 				return false;
 			}
