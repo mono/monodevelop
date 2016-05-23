@@ -1505,7 +1505,7 @@ namespace MonoDevelop.Projects
 				CheckReferenceChange (ei.FileName);
 		}
 
-		protected async override Task DoExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			if (dotNetProjectConfig == null) {
