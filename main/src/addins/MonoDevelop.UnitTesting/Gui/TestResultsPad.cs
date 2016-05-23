@@ -45,6 +45,8 @@ using MonoDevelop.Components;
 using System.Threading;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -118,6 +120,10 @@ namespace MonoDevelop.UnitTesting
 			failuresTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView { Name = "testResultsTree" };
 			failuresTreeView.HeadersVisible = false;
 			failuresStore = new TreeStore (typeof(Xwt.Drawing.Image), typeof(string), typeof(object), typeof(string), typeof(int), typeof(int));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Image", "store__Message","store__RootTest",
+				"store__FileName", "store__FileNumber", "store__ErrorOrStackTrace");
+			TypeDescriptor.AddAttributes (failuresStore, modelAttr);
+			
 			var pr = new CellRendererImage ();
 			CellRendererText tr = new CellRendererText ();
 			TreeViewColumn col = new TreeViewColumn ();
