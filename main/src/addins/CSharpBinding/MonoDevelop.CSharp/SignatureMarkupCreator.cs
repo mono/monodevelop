@@ -976,7 +976,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.AddKeyword:
 				result.SignatureMarkup = Highlight ("add", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} { accessor-body }", Highlight ("add", colorStyle.KeywordContext)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} {{ accessor-body }}", Highlight ("add", colorStyle.KeywordContext)));
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define a custom accessor for when an event is subscribed to. If supplied, a remove accessor must also be supplied.", Highlight ("add", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.AscendingKeyword:
@@ -1027,7 +1027,7 @@ namespace MonoDevelop.CSharp
 				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
 					result.SummaryMarkup = GettextCatalog.GetString ("The {0} constraint specifies that the type argument must be a reference type; this applies also to any class, interface, delegate, or array type.", Highlight ("class", colorStyle.KeywordDeclaration));
 				} else {
-					result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-list] { class-body }[;]", Highlight ("class", colorStyle.KeywordDeclaration)));
+					result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-list] {{ class-body }}[;]", Highlight ("class", colorStyle.KeywordDeclaration)));
 					result.SummaryMarkup = GettextCatalog.GetString ("Classes are declared using the keyword {0}.", Highlight ("class", colorStyle.KeywordDeclaration));
 				}
 				break;
@@ -1094,12 +1094,12 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.EnumKeyword:
 				result.SignatureMarkup = Highlight ("enum", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-type] {enumerator-list} [;]", Highlight ("enum", colorStyle.KeywordDeclaration)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-type] {{ enumerator-list }} [;]", Highlight ("enum", colorStyle.KeywordDeclaration)));
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to declare an enumeration, a distinct type consisting of a set of named constants called the enumerator list.", Highlight ("enum", colorStyle.KeywordDeclaration));
 				break;
 			case SyntaxKind.EventKeyword:
 				result.SignatureMarkup = Highlight ("event", colorStyle.KeywordModifiers) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} type declarator;\n[attributes] [modifiers] {0} type member-name {accessor-declarations};", Highlight ("event", colorStyle.KeywordModifiers)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} type declarator;\n[attributes] [modifiers] {0} type member-name {{ accessor-declarations }};", Highlight ("event", colorStyle.KeywordModifiers)));
 				result.SummaryMarkup = GettextCatalog.GetString ("Specifies an event.");
 				break;
 			case SyntaxKind.ExplicitKeyword:
@@ -1138,7 +1138,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.GetKeyword:
 				result.SignatureMarkup = Highlight ("get", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} [ { accessor-body } ]", Highlight ("get", colorStyle.KeywordContext)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} [ {{ accessor-body }} ]", Highlight ("get", colorStyle.KeywordContext)));
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define an accessor method to retrieve the value of the property or indexer element.", Highlight ("get", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.GlobalKeyword:
@@ -1194,13 +1194,13 @@ namespace MonoDevelop.CSharp
 					}
 				}
 				result.AddCategory (GettextCatalog.GetString ("Form"),
-									GettextCatalog.GetString ("{0} (type identifier {1} expression) statement\n\nor\n\n{0} range-variable {1} data-source [query clauses] {2} product-expression\n\nor\n\n{3} IMyInterface&lt;{1} T&gt; {}",
+				                    GettextCatalog.GetString ("{0} (type identifier {1} expression) statement\n\nor\n\n{0} range-variable {1} data-source [query clauses] {2} product-expression\n\nor\n\n{3} IMyInterface&lt;{1} T&gt; {{}}",
 															 Highlight ("foreach", colorStyle.KeywordIteration), Highlight ("in", colorStyle.KeywordIteration), Highlight ("select", colorStyle.KeywordContext), Highlight ("interface", colorStyle.KeywordDeclaration))
 				);
 				break;
 			case SyntaxKind.InterfaceKeyword:
 				result.SignatureMarkup = Highlight ("interface", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-list] {interface-body}[;]", Highlight ("interface", colorStyle.KeywordDeclaration)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-list] {{interface-body}}[;]", Highlight ("interface", colorStyle.KeywordDeclaration)));
 				result.SummaryMarkup = GettextCatalog.GetString ("An interface defines a contract. A class or struct that implements an interface must adhere to its contract.");
 				break;
 			case SyntaxKind.InternalKeyword:
@@ -1230,7 +1230,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.NamespaceKeyword:
 				result.SignatureMarkup = Highlight ("namespace", colorStyle.KeywordNamespace) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} name[.name1] ...] {\ntype-declarations\n }", Highlight ("namespace", colorStyle.KeywordNamespace)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} name[.name1] ...] {{\ntype-declarations\n }}", Highlight ("namespace", colorStyle.KeywordNamespace)));
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to declare a scope.", Highlight ("namespace", colorStyle.KeywordNamespace));
 				break;
 			case SyntaxKind.NewKeyword:
@@ -1276,7 +1276,7 @@ namespace MonoDevelop.CSharp
 				}
 
 				result.AddCategory (GettextCatalog.GetString ("Form"),
-				                    GettextCatalog.GetString ("{0} parameter-name\n\nor\n\n{1} IMyInterface&lt;{0} T&gt; {}",
+				                    GettextCatalog.GetString ("{0} parameter-name\n\nor\n\n{1} IMyInterface&lt;{0} T&gt; {{}}",
 				                                              Highlight ("out", colorStyle.KeywordParameter), Highlight ("interface", colorStyle.KeywordDeclaration)));
 				break;
 			case SyntaxKind.OverrideKeyword:
@@ -1324,7 +1324,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.RemoveKeyword:
 				result.SignatureMarkup = Highlight ("remove", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} { accessor-body }", Highlight ("remove", colorStyle.KeywordContext)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} {{ accessor-body }}", Highlight ("remove", colorStyle.KeywordContext)));
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define a custom accessor for when an event is unsubscribed from. If supplied, an add accessor must also be supplied.", Highlight ("remove", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.ReturnKeyword:
@@ -1343,7 +1343,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.SetKeyword:
 				result.SignatureMarkup = Highlight ("set", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} [ { accessor-body } ]", Highlight ("set", colorStyle.KeywordContext)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} [ {{ accessor-body }} ]", Highlight ("set", colorStyle.KeywordContext)));
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define an accessor method to assign to the value of the property or indexer element.", Highlight ("set", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.SizeOfKeyword:
@@ -1371,7 +1371,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.SwitchKeyword:
 				result.SignatureMarkup = Highlight ("switch", colorStyle.KeywordSelection) + keywordSign;
-				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (expression)\n {\n  {1} constant-expression:\n  statement\n  jump-statement\n  [{2}:\n  statement\n  jump-statement]\n }", Highlight ("switch", colorStyle.KeywordSelection), Highlight ("case ", colorStyle.KeywordSelection), Highlight ("default", colorStyle.KeywordSelection)));
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (expression)\n {{\n  {1} constant-expression:\n  statement\n  jump-statement\n  [{2}:\n  statement\n  jump-statement]\n }}", Highlight ("switch", colorStyle.KeywordSelection), Highlight ("case ", colorStyle.KeywordSelection), Highlight ("default", colorStyle.KeywordSelection)));
 				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement is a control statement that handles multiple selections by passing control to one of the {1} statements within its body.", Highlight ("switch", colorStyle.KeywordSelection), Highlight ("case", colorStyle.KeywordSelection));
 				break;
 			case SyntaxKind.ThisKeyword:
