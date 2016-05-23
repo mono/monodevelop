@@ -535,6 +535,11 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		public bool RunConfigurationVisible {
+			get { return runConfigurationCombo.Visible; }
+			set { runConfigurationCombo.Visible = value; }
+		}
+
 		public bool SearchSensivitity {
 			set { matchEntry.Sensitive = value; }
 		}

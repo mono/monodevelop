@@ -222,14 +222,18 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set { selectorView.Enabled = value; }
 		}
 
+		public bool RunConfigurationVisible {
+			get { return selectorView.RunConfigurationVisible; }
+			set { selectorView.RunConfigurationVisible = value; }
+		}
+
 		public event EventHandler ConfigurationChanged;
 		public event EventHandler RunConfigurationChanged;
 		public event EventHandler<HandledEventArgs> RuntimeChanged;
 
 		public bool PlatformSensitivity {
 			set {
-				var cell = (NSPathCell)selectorView.Cell;
-				cell.PathComponentCells [SelectorView.RuntimeIdx].Enabled = value;
+				selectorView.PlatformSensitivity = value;
 			}
 		}
 

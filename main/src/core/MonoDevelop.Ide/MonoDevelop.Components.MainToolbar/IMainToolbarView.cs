@@ -128,6 +128,12 @@ namespace MonoDevelop.Components.MainToolbar
 		IEnumerable<IRuntimeModel> RuntimeModel { get; set; }
 
 		/// <summary>
+		/// Gets or sets the run configuration selector is visible.
+		/// </summary>
+		/// <value>The run configuration visible.</value>
+		bool RunConfigurationVisible { get; set; }
+
+		/// <summary>
 		/// Occurs when the configuration changed.
 		/// </summary>
 		event EventHandler ConfigurationChanged;
