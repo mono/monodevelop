@@ -112,8 +112,7 @@ namespace MonoDevelop.Ide.Gui
 			// which will add the content control to the subview notebook. In that case, we don't need to add it to box
 			if (subViewNotebook == null)
 				box.PackStart (content.Control);
-			
-			content.ContentNameChanged += new EventHandler(SetTitleEvent);
+			content.ContentNameChanged += SetTitleEvent;
 			content.DirtyChanged       += HandleDirtyChanged;
 			box.Show ();
 			Add (box);
@@ -485,7 +484,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			if (content != null) {
-				content.ContentNameChanged -= new EventHandler(SetTitleEvent);
+				content.ContentNameChanged -= SetTitleEvent;
 				content.DirtyChanged       -= HandleDirtyChanged;
 				content.WorkbenchWindow     = null;
 				content.Dispose ();
