@@ -30,6 +30,10 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
 
     /// Check if the datatip has multiple overloads
     override x.HasOverloads = not (List.isEmpty overloads)
+    override x.GetRightSideDescription _selected =
+        SymbolTooltips.returnType symbol
+        |> Option.map (fun t -> "<small>" + syntaxHighlight (t.Format symbol.DisplayContext) + "</small>")
+        |> Option.fill ""
 
     /// Split apart the elements into separate overloads
     override x.OverloadedData =

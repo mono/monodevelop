@@ -754,6 +754,14 @@ module SymbolTooltips =
       match findVal with
       | Some v -> v
       | None -> apc.Group.OverallType.Format displayContext
+    
+    let returnType (symbol:FSharpSymbolUse) =
+        match symbol with
+        | MemberFunctionOrValue m ->
+            LoggingService.logDebug "%s" m.DisplayName
+            Some m.ReturnParameter.Type
+        //| Entity c ->
+        | _ -> None
 
     let footerForType (entity:FSharpSymbolUse) =
         match entity with
