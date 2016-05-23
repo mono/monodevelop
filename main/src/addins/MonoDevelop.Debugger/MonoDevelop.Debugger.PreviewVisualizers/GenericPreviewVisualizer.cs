@@ -42,11 +42,14 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 		public override Control GetVisualizerWidget (ObjectValue val)
 		{
+			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			ops.AllowTargetInvoke = true;
+			ops.ChunkRawStrings = true;
+			ops.EllipsizedLength = 5000;//Preview window can hold aprox. 4700 chars
+			val.Refresh (ops);//Refresh DebuggerDisplay/String value with full length instead of ellipsized
 			string value = val.Value;
 			Gdk.Color col = Styles.PreviewVisualizerTextColor.ToGdkColor ();
 
-			if (!val.IsNull && (val.TypeName == "string" || val.TypeName == "char[]"))
-				value = '"' + GetString (val) + '"';
 			if (DebuggingService.HasInlineVisualizer (val))
 				value = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
 
@@ -78,33 +81,6 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		}
 
 		#endregion
-
-		string GetString (ObjectValue val)
-		{
-			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-			ops.AllowTargetInvoke = true;
-			ops.ChunkRawStrings = true;
-			if (val.TypeName == "string") {
-				var rawString = val.GetRawValue (ops) as RawValueString;
-				var length = rawString.Length;
-				if (length > 0) {
-					return Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (rawString.Substring (0, Math.Min (length, 4096)));
-				} else {
-					return "";
-				}
-			} else if (val.TypeName == "char[]") {
-				var rawArray = val.GetRawValue (ops) as RawValueArray;
-				var length = rawArray.Length;
-				if (length > 0) {
-					return Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (new string (rawArray.GetValues (0, Math.Min (length, 4096)) as char []));
-				} else {
-					return "";
-				}
-
-			} else {
-				throw new InvalidOperationException ();
-			}
-		}
 	}
 }
 
