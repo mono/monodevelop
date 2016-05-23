@@ -105,17 +105,17 @@ namespace MonoDevelop.UnitTesting
 		{
 			UnitTestService.TestSuiteChanged += new EventHandler (OnTestSuiteChanged);
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceItemClosed;
-			
-			panel = new VBox ();
+
+			panel = new VBox { Name = "testResultBox" };
 			
 			// Results notebook
 			
 			book = new HPaned ();
 			panel.PackStart (book, true, true, 0);
 			panel.FocusChain = new Gtk.Widget [] { book };
-			
+
 			// Failures tree
-			failuresTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
+			failuresTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView { Name = "testResultsTree" };
 			failuresTreeView.HeadersVisible = false;
 			failuresStore = new TreeStore (typeof(Xwt.Drawing.Image), typeof(string), typeof(object), typeof(string), typeof(int), typeof(int));
 			var pr = new CellRendererImage ();
@@ -132,8 +132,8 @@ namespace MonoDevelop.UnitTesting
 			sw.ShadowType = ShadowType.None;
 			sw.Add (failuresTreeView);
 			book.Pack1 (sw, true, true);
-			
-			outputView = new MonoDevelop.Ide.Gui.Components.LogView.LogTextView ();
+
+			outputView = new MonoDevelop.Ide.Gui.Components.LogView.LogTextView { Name = "testResultOutput" };
 			outputView.ModifyFont (FontService.MonospaceFont);
 			outputView.Editable = false;
 			bold = new TextTag ("bold");

@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			this.icon = icon;
 
-			logView = new LogView ();
+			logView = new LogView { Name = "applicationOutput" };
 
 			IdeApp.Workspace.FirstWorkspaceItemOpened += OnCombineOpen;
 			IdeApp.Workspace.LastWorkspaceItemClosed += OnCombineClosed;
