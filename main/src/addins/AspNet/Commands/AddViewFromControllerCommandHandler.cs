@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.Projects;
@@ -82,9 +83,9 @@ namespace MonoDevelop.AspNet.Commands
 					outputFile = System.IO.Path.Combine (path, dialog.ViewName) + ext;
 
 					if (System.IO.File.Exists (outputFile)) {
-						fileGood = MessageService.AskQuestion ("Overwrite file?",
-							String.Format ("The file '{0}' already exists.\n", dialog.ViewName) +
-							"Would you like to overwrite it?", AlertButton.OverwriteFile, AlertButton.Cancel)
+						fileGood = MessageService.AskQuestion (GettextCatalog.GetString ("Overwrite file?"),
+							GettextCatalog.GetString ("The file '{0}' already exists.\n", dialog.ViewName) +
+							GettextCatalog.GetString ("Would you like to overwrite it?"), AlertButton.OverwriteFile, AlertButton.Cancel)
 							!= AlertButton.Cancel;
 					} else
 						break;

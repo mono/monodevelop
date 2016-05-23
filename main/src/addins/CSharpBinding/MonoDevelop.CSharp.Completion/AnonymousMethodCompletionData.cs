@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.CSharp.Formatting;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -50,16 +49,14 @@ namespace MonoDevelop.CSharp.Completion
 			return DisplayText.CompareTo(anonymousMethodCompletionData.DisplayText);
 		}
 
-		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, Ide.Editor.Extension.KeyDescriptor descriptor)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Ide.Editor.Extension.KeyDescriptor descriptor)
 		{
-			ka = await base.InsertCompletionText (window, ka, descriptor);
-
+			base.InsertCompletionText (window, ref ka, descriptor);
 			factory.Ext.Editor.GetContent<CSharpTextEditorIndentation> ().DoReSmartIndent ();
 			if (this.CompletionText.Contains ("\n")) {
-
+				
 				factory.Ext.Editor.GetContent<CSharpTextEditorIndentation> ().DoReSmartIndent (factory.Ext.Editor.GetLine (factory.Ext.Editor.CaretLine).NextLine.Offset);
 			}
-			return ka;
 		}
 
 

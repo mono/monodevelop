@@ -792,7 +792,6 @@
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
 			defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"
 			_label = "_About"
-			icon = "md-about"
 			_description = "Show about dialog" />
 	<Command id  = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates"
 			defaultHandler = "MonoDevelop.Ide.Updater.CheckForUpdatesHandler"
@@ -1088,6 +1087,10 @@
 			macShortcut = "Control|L" />-->
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleBlockSelectionMode"
 			_label = "Toggle Block Selection Mode"
+			_description = "Toggles Normal/Block Selection Mode"/>
+	<!-- SwitchSelectionMode is only for the selection in the main menu and is not visible in the key bindings -->
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchSelectionMode"
+			_label = "Switch Selection Mode"
 			type="radio|array"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
@@ -1112,11 +1115,12 @@
 			defaultHandler = "MonoDevelop.Ide.Editor.HideIssuesHandler"
 			_label = "_None"
 			_displayName = "Show/Hide Inline Messages"
-			_description = "Toggles the visibility of Inline Messages"/>
+			_description = "Toggles the visibility of Inline Messages"
+			type="radio"/>
 	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues"
 			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
 			_label = "Toggle Issues"
-			type="array"/>
+			type="radio|array"/>
 	</Category>
 </Extension>
 </ExtensionModel>

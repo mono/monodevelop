@@ -105,6 +105,8 @@ namespace MonoDevelop.Refactoring
 
 		static async Task<RefactoringSymbolInfo> InternalGetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
+			if (document == null)
+				return RefactoringSymbolInfo.Empty;
 			var unit = await document.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);

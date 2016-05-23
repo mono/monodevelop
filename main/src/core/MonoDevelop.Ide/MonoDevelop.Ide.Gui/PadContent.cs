@@ -75,6 +75,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual void Dispose ()
 		{
+			Control?.Dispose ();
 		}
 	}
 }

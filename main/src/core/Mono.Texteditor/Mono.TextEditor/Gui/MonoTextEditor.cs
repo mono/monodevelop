@@ -36,7 +36,6 @@ using Mono.TextEditor.Theatrics;
 
 using Gdk;
 using Gtk;
-using System.Threading.Tasks;
 
 namespace Mono.TextEditor
 {
@@ -877,10 +876,10 @@ namespace Mono.TextEditor
 		/// <remarks>
 		/// The Key may be null if it has been handled by the IMContext. In such cases, the char is the value.
 		/// </remarks>
-		protected internal virtual Task<bool> OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
+		protected internal virtual bool OnIMProcessedKeyPressEvent (Gdk.Key key, uint ch, Gdk.ModifierType state)
 		{
 			SimulateKeyPress (key, ch, state);
-			return Task.FromResult (true);
+			return true;
 		}
 
 		public void SimulateKeyPress (Gdk.Key key, uint unicodeChar, ModifierType modifier)

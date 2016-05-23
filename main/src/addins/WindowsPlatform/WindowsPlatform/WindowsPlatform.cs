@@ -89,9 +89,8 @@ namespace MonoDevelop.Platform
         internal override void AttachMainToolbar (Gtk.VBox parent, Components.MainToolbar.IMainToolbarView toolbar)
 		{
 			titleBar = new TitleBar ();
-			var topMenu = new GtkWPFWidget (titleBar) {
-				HeightRequest = System.Windows.Forms.SystemInformation.CaptionHeight,
-			};
+			var topMenu = new WPFTitlebar (titleBar);
+
 			//commandManager.IncompleteKeyPressed += (sender, e) => {
 			//	if (e.Key == Gdk.Key.Alt_L) {
 			//		Keyboard.Focus(titleBar.DockTitle.Children[0]);
@@ -134,6 +133,29 @@ namespace MonoDevelop.Platform
 			};
 		}
 		#endregion
+
+		public override bool GetIsFullscreen (Components.Window window)
+		{
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = Marshal.SizeOf (lpwndpl);
+
+			Gtk.Window controlWindow = window;
+			IntPtr handle = GdkWin32.HgdiobjGet (controlWindow.GdkWindow);
+			Win32.GetWindowPlacement (handle, ref lpwndpl);
+			return lpwndpl.showCmd == Win32.SW_SHOWMAXIMIZED;
+		}
+
+		public override void SetIsFullscreen (Components.Window window, bool isFullscreen)
+		{
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = Marshal.SizeOf (lpwndpl);
+
+			Gtk.Window controlWindow = window;
+			IntPtr handle = GdkWin32.HgdiobjGet (controlWindow.GdkWindow);
+			Win32.GetWindowPlacement (handle, ref lpwndpl);
+			lpwndpl.showCmd = isFullscreen ? Win32.SW_SHOWMAXIMIZED : Win32.SW_SHOWNORMAL;
+			Win32.SetWindowPlacement (handle, ref lpwndpl);
+		}
 
 		internal static Xwt.Toolkit WPFToolkit;
 

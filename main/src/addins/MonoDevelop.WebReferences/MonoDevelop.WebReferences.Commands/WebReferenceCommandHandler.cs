@@ -27,11 +27,12 @@ namespace MonoDevelop.WebReferences.Commands
 			// Check and switch the runtime environment for the current project
 			if (project.TargetFramework.Id == TargetFrameworkMoniker.NET_1_1)
 			{
-				string question = "The current runtime environment for your project is set to version 1.0.";
-				question += "Web Service is not supported in this version.";
-				question += "Do you want switch the runtime environment for this project version 2.0 ?";
+				string msg1 = GettextCatalog.GetString ("The current runtime environment for your project is set to version 1.0.");
+				string msg2 = GettextCatalog.GetString ("Web Service is not supported in this version.");
+				string msg3 = GettextCatalog.GetString ("Do you want switch the runtime environment for this project version 2.0?");
+				string question = $"{msg1} {msg2} {msg3}";
 				
-				var switchButton = new AlertButton ("_Switch to .NET2"); 
+				var switchButton = new AlertButton (GettextCatalog.GetString ("_Switch to .NET 2.0")); 
 				if (MessageService.AskQuestion(question, AlertButton.Cancel, switchButton) == switchButton)
 					project.TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_2_0);					
 				else
@@ -48,7 +49,7 @@ namespace MonoDevelop.WebReferences.Commands
 				await dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
 				await IdeApp.ProjectOperations.SaveAsync(project);
 			} catch (Exception exception) {
-				MessageService.ShowError ("The web reference could not be added", exception);
+				MessageService.ShowError (GettextCatalog.GetString ("The web reference could not be added"), exception);
 			} finally {
 				dialog.Destroy ();
 				dialog.Dispose ();
@@ -119,7 +120,7 @@ namespace MonoDevelop.WebReferences.Commands
 				return;
 			item.Delete();
 			IdeApp.ProjectOperations.SaveAsync (item.Project);
-			IdeApp.Workbench.StatusBar.ShowMessage("Deleted Web Reference " + item.Name);
+			IdeApp.Workbench.StatusBar.ShowMessage(GettextCatalog.GetString ("Deleted Web Reference {0}", item.Name));
 		}
 		
 		/// <summary>Execute the command for removing all web references from a project.</summary>
@@ -139,7 +140,7 @@ namespace MonoDevelop.WebReferences.Commands
 				item.Delete();
 
 			IdeApp.ProjectOperations.SaveAsync(project);
-			IdeApp.Workbench.StatusBar.ShowMessage("Deleted all Web References");
+			IdeApp.Workbench.StatusBar.ShowMessage(GettextCatalog.GetString ("Deleted all Web References"));
 		}
 
 		[CommandUpdateHandler (WebReferenceCommands.Configure)]

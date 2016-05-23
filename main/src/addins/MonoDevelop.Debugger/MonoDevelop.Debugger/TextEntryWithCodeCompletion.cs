@@ -66,7 +66,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		[GLib.ConnectBeforeAttribute]
-		async void HandleKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		void HandleKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
 		{
 			keyHandled = false;
 
@@ -80,17 +80,17 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (list != null)
-				args.RetVal = keyHandled = await CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 		}
 
-		async void HandleKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
+		void HandleKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
 		{
 			if (keyHandled)
 				return;
 
 			string text = ctx == null ? Text : Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, Text.Length)));
 			CompletionWindowManager.UpdateWordSelection (text);
-			await CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 

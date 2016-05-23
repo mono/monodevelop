@@ -210,10 +210,10 @@ namespace MonoDevelop.Ide.Tasks
 			TaskService.UserTasks.Add (task);
 			updating = false;
 			TreeIter iter = store.AppendValues (GettextCatalog.GetString (Enum.GetName (typeof (TaskPriority), task.Priority)), task.Completed, task.Description, task, GetColorByPriority (task.Priority), task.Completed ? (int)Pango.Weight.Light : (int)Pango.Weight.Bold);
-			view.Selection.SelectIter (iter);
-			TreePath path = store.GetPath (iter);
-			view.ScrollToCell (path, view.Columns[(int)Columns.Description], true, 0, 0);
-			view.SetCursorOnCell (path, view.Columns[(int)Columns.Description], cellRendDesc, true);
+			view.Selection.SelectIter (sortModel.ConvertChildIterToIter (iter));
+			TreePath sortedPath = sortModel.ConvertChildPathToPath (store.GetPath (iter));
+			view.ScrollToCell (sortedPath, view.Columns[(int)Columns.Description], true, 0, 0);
+			view.SetCursorOnCell (sortedPath, view.Columns[(int)Columns.Description], cellRendDesc, true);
 			TaskService.SaveUserTasks (task.WorkspaceObject);
 		}
 
@@ -241,7 +241,8 @@ namespace MonoDevelop.Ide.Tasks
 			if (view.Selection.CountSelectedRows () > 0)
 			{
 				TreeIter iter;
-				if (store.GetIter (out iter, view.Selection.GetSelectedRows ()[0]))
+				Gtk.TreePath path = sortModel.ConvertPathToChildPath (view.Selection.GetSelectedRows () [0]);
+				if (store.GetIter (out iter, path))
 				{
 					TaskListEntry task = (TaskListEntry) store.GetValue (iter, (int)Columns.UserTask);
 					updating = true;

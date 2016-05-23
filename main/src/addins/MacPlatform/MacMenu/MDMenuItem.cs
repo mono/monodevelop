@@ -176,9 +176,17 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 			string fileName = null;
 			var doc = info.DataItem as Ide.Gui.Document;
-			if (doc != null)
-				fileName = doc.FileName;
-			else if (info.DataItem is NavigationHistoryItem) {
+			if (doc != null) {
+				if (doc.IsFile)
+					fileName = doc.FileName;
+				else {
+					// Designer documents have no file bound to them, but the document name
+					// could be a valid path
+					var docName = doc.Name;
+					if (!string.IsNullOrEmpty (docName) && System.IO.Path.IsPathRooted (docName) && System.IO.File.Exists (docName))
+						fileName = docName;
+				}
+			} else if (info.DataItem is NavigationHistoryItem) {
 					var navDoc = ((NavigationHistoryItem)info.DataItem).NavigationPoint as DocumentNavigationPoint;
 					if (navDoc != null)
 						fileName = navDoc.FileName;
@@ -190,10 +198,20 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 			if (!String.IsNullOrWhiteSpace (fileName)) {
 				item.ToolTip = fileName;
-				var icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
+				Xwt.Drawing.Image icon = null;
+				if (!info.Icon.IsNull)
+					icon = Ide.ImageService.GetIcon (info.Icon, Gtk.IconSize.Menu);
+				if (icon == null)
+					icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
 				if (icon != null) {
 					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
-					item.Image = icon.WithStyles ("sel").ToBitmap (scale).ToNSImage ();
+
+					if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark")
+						icon = icon.WithStyles ("dark");
+					else
+						icon = icon.WithStyles ("-dark");
+					item.Image = icon.ToBitmap (scale).ToNSImage ();
+					item.Image.Template = true;
 				}
 			}
 

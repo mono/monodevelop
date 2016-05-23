@@ -72,11 +72,15 @@ namespace MonoDevelop.Ide
 		static EventHandler initializedEvent;
 		public static event EventHandler Initialized {
 			add {
-				if (isInitialized) value (null, EventArgs.Empty);
-				else initializedEvent += value;
+				Runtime.RunInMainThread (() => {
+					if (isInitialized) value (null, EventArgs.Empty);
+					else initializedEvent += value;
+				});
 			}
-			remove { 
-				initializedEvent -= value;
+			remove {
+				Runtime.RunInMainThread (() => {
+					initializedEvent -= value;
+				});
 			}
 		}
 
@@ -194,10 +198,15 @@ namespace MonoDevelop.Ide
 			
 			FileService.ErrorHandler = FileServiceErrorHandler;
 		
-			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			Counters.Initialization.Trace ("Loading Commands");
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
+			monitor.Step (1);
+
+			// Before startup commands.
+			Counters.Initialization.Trace ("Running Pre-Startup Commands");
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/PreStartupHandlers", OnExtensionChanged);
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Initializing Workbench");

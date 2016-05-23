@@ -73,14 +73,12 @@ namespace MonoDevelop.Components.DockNotebook
 		public Button NextButton;
 		public MenuButton DropDownButton;
 
-		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
-		static readonly int TotalHeight = (int)(32 * PixelScale);
+		static readonly int TotalHeight = 32;
 		static readonly Xwt.WidgetSpacing TabPadding;
 		static readonly Xwt.WidgetSpacing TabActivePadding;
-		static readonly int LeftBarPadding = (int)(44 * PixelScale);
-		static readonly int RightBarPadding = (int)(22 * PixelScale);
-		static readonly int VerticalTextSize = (int)(11 * PixelScale);
-		// static readonly int ButtonSize = (int)(16 * PixelScale);
+		static readonly int LeftBarPadding = 44;
+		static readonly int RightBarPadding = 22;
+		static readonly int VerticalTextSize = 11;
 		const int TabSpacing = 0;
 		const int LeanWidth = 12;
 		const double CloseButtonMarginRight = 0;
@@ -166,6 +164,7 @@ namespace MonoDevelop.Components.DockNotebook
 			var alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			PreviousButton = new Button (alignment);
+			PreviousButton.TooltipText = Core.GettextCatalog.GetString ("Switch to previous document");
 			PreviousButton.Relief = ReliefStyle.None;
 			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
 
@@ -175,10 +174,12 @@ namespace MonoDevelop.Components.DockNotebook
 			alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			NextButton = new Button (alignment);
+			NextButton.TooltipText = Core.GettextCatalog.GetString ("Switch to next document");
 			NextButton.Relief = ReliefStyle.None;
 			NextButton.CanDefault = NextButton.CanFocus = false;
 
 			DropDownButton = new MenuButton ();
+			DropDownButton.TooltipText = Core.GettextCatalog.GetString ("Document List"); 
 			DropDownButton.Relief = ReliefStyle.None;
 			DropDownButton.CanDefault = DropDownButton.CanFocus = false;
 
@@ -837,7 +838,7 @@ namespace MonoDevelop.Components.DockNotebook
 					Pango.CairoHelper.ShowLayout (ctx, la.GetLine (0).Layout);
 				}
 			}
-			la.Dispose ();
+            la.Dispose ();
 		}
 
 		static void DrawTabBackground (Widget widget, Context ctx, Gdk.Rectangle allocation, int contentWidth, int px, bool active = true)

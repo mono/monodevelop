@@ -79,7 +79,7 @@ namespace MonoDevelop.VersionControl
 
 		public static void LoadStyles ()
 		{
-			if (IdeApp.Preferences.UserInterfaceSkin == Skin.Light) {
+			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				BlameView = new BlameViewStyle {
 					AnnotationMarkColor = Color.FromName ("#e5f1ff"),
 					AnnotationMarkModifiedColor = Color.FromName ("#ffff00"),

@@ -173,6 +173,8 @@ namespace MonoDevelop.Components
 
 		public void GrabFocus ()
 		{
+			if (nativeWidget is Gtk.Widget)
+				((Gtk.Widget)nativeWidget).GrabFocus ();
 			// TODO
 		}
 
@@ -192,6 +194,7 @@ namespace MonoDevelop.Components
 			var gtkWidget = nativeWidget as Gtk.Widget;
 			if (gtkWidget != null) {
 				gtkWidget.Destroy ();
+				gtkWidget.Dispose ();
 			}
 #if MAC
 			else if (nativeWidget is NSView)

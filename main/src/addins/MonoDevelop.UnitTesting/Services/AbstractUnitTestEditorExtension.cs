@@ -193,47 +193,47 @@ namespace MonoDevelop.UnitTesting
 					return;
 				var menu = new ContextMenu ();
 				if (unitTest.IsFixture) {
-					var menuItem = new ContextMenuItem ("_Run All");
+					var menuItem = new ContextMenuItem (GettextCatalog.GetString("_Run All"));
 					menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, false).Run;
 					menu.Add (menuItem);
 					if (debugModeSet != null) {
-						menuItem = new ContextMenuItem ("_Debug All");
+						menuItem = new ContextMenuItem (GettextCatalog.GetString("_Debug All"));
 						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, true).Run;
 						menu.Add (menuItem);
 					}
-					menuItem = new ContextMenuItem ("_Select in Test Pad");
+					menuItem = new ContextMenuItem (GettextCatalog.GetString("_Select in Test Pad"));
 					menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, true).Select;
 					menu.Add (menuItem);
 				} else {
 					if (unitTest.TestCases.Count == 0) {
-						var menuItem = new ContextMenuItem ("_Run");
+						var menuItem = new ContextMenuItem (GettextCatalog.GetString("_Run"));
 						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
-							menuItem = new ContextMenuItem ("_Debug");
+							menuItem = new ContextMenuItem (GettextCatalog.GetString ("_Debug"));
 							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, true).Run;
 							menu.Add (menuItem);
 						}
-						menuItem = new ContextMenuItem ("_Select in Test Pad");
+						menuItem = new ContextMenuItem (GettextCatalog.GetString ("_Select in Test Pad"));
 						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, true).Select;
 						menu.Add (menuItem);
 					} else {
-						var menuItem = new ContextMenuItem ("_Run All");
+						var menuItem = new ContextMenuItem (GettextCatalog.GetString ("_Run All"));
 						menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
-							menuItem = new ContextMenuItem ("_Debug All");
+							menuItem = new ContextMenuItem (GettextCatalog.GetString ("_Debug All"));
 							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier, project, true).Run;
 							menu.Add (menuItem);
 						}
 						menu.Add (new SeparatorContextMenuItem ());
 						foreach (var id in unitTest.TestCases) {
 							var submenu = new ContextMenu ();
-							menuItem = new ContextMenuItem ("_Run");
+							menuItem = new ContextMenuItem (GettextCatalog.GetString ("_Run"));
 							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, project, false).Run;
 							submenu.Add (menuItem);
 							if (debugModeSet != null) {
-								menuItem = new ContextMenuItem ("_Debug");
+								menuItem = new ContextMenuItem (GettextCatalog.GetString ("_Debug"));
 								menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, project, true).Run;
 								submenu.Add (menuItem);
 							}
@@ -249,7 +249,7 @@ namespace MonoDevelop.UnitTesting
 								}
 							}
 
-							menuItem = new ContextMenuItem ("_Select in Test Pad");
+							menuItem = new ContextMenuItem (GettextCatalog.GetString ("_Select in Test Pad"));
 							menuItem.Clicked += new TestRunner (unitTest.UnitTestIdentifier + id, project, true).Select;
 							submenu.Add (menuItem);
 

@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Projects
 				try {
 					pset.SaveToFile (file);
 				} catch (Exception ex) {
-					MessageService.ShowError ("The policy file could not be saved", ex);
+					MessageService.ShowError (GettextCatalog.GetString ("The policy file could not be saved"), ex);
 					return;
 				}
 			}

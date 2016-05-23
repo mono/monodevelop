@@ -36,6 +36,7 @@ using Microsoft.CodeAnalysis.Simplification;
 using ICSharpCode.NRefactory6.CSharp;
 using Gtk;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -115,8 +116,16 @@ namespace MonoDevelop.CodeGeneration
 				foreach (IPropertySymbol property in Options.EnclosingType.GetMembers ().OfType<IPropertySymbol> ()) {
 					if (property.IsImplicitlyDeclared)
 						continue;
-					if (property.SetMethod == null)
-						continue;
+					if (property.SetMethod == null) {
+						if (property.GetMethod == null)
+							continue;
+						var r = property.GetMethod.DeclaringSyntaxReferences.FirstOrDefault ();
+						if (r == null)
+							continue;
+						var node = r.SyntaxTree.GetRoot ().FindNode (r.Span) as AccessorDeclarationSyntax;
+						if (node == null || node.GetBlockBody () != null)
+							continue;
+					}
 					yield return property;
 				}
 			}

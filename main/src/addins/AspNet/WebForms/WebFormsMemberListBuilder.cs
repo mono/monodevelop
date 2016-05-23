@@ -68,7 +68,8 @@ namespace MonoDevelop.AspNet.WebForms
 				foreach (XElement el in xDocument.Nodes.OfType<XElement> ())
 					AddMember (el);
 			} catch (Exception ex) {
-				Errors.Add (new Error (ErrorType.Error, "Unknown parser error: " + ex));
+				LoggingService.LogError ("Unknown parser error: {0}", ex);
+				Errors.Add (new Error (ErrorType.Error, GettextCatalog.GetString ("Unknown parser error: {0}", ex.Message)));
 			}
 		}
 		

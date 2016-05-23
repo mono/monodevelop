@@ -55,6 +55,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -145,9 +146,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return workbench.Close();
 		}
-		
+
 		public ImmutableList<Document> Documents {
 			get { return documents; }
+		}
+
+		/// <summary>
+		/// This is a wrapper for use with AutoTest
+		/// </summary>
+		internal bool DocumentsDirty {
+			get { return Documents.Any (d => d.IsDirty); }
 		}
 
 		public Document ActiveDocument {
@@ -316,12 +324,17 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SaveAll ()
 		{
-			// Make a copy of the list, since it may change during save
-			Document[] docs = new Document [Documents.Count];
-			Documents.CopyTo (docs, 0);
-			
-			foreach (Document doc in docs)
-				doc.Save ();
+			ITimeTracker tt = Counters.SaveAllTimer.BeginTiming ();
+			try {
+				// Make a copy of the list, since it may change during save
+				Document[] docs = new Document [Documents.Count];
+				Documents.CopyTo (docs, 0);
+
+				foreach (Document doc in docs)
+					doc.Save ();
+			} finally {
+				tt.End ();
+			}
 		}
 
 		internal bool SaveAllDirtyFiles ()
@@ -1083,6 +1096,10 @@ namespace MonoDevelop.Ide.Gui
 						activeDoc = doc;
 				}
 
+				if (activeDoc == null) {
+					activeDoc = docViews.Select (t => WrapDocument (t.Item1.WorkbenchWindow)).FirstOrDefault ();
+				}
+
 				foreach (PadUserPrefs pi in prefs.Pads) {
 					foreach (Pad pad in IdeApp.Workbench.Pads) {
 
@@ -1305,20 +1322,31 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		System.Timers.Timer tabsChangedTimer = null;
+
+		void DisposeTimerAndSave (object o, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => {
+				tabsChangedTimer.Stop ();
+				tabsChangedTimer.Elapsed -= DisposeTimerAndSave;
+				tabsChangedTimer.Dispose ();
+				tabsChangedTimer = null;
+
+				IdeApp.Workspace.SavePreferences ();
+			});
+		}
+
 		void WorkbenchTabsChanged (object sender, EventArgs ev)
 		{
 			if (tabsChangedTimer != null) {
-				tabsChangedTimer.Stop ();
-				tabsChangedTimer.Dispose ();
+				// Timer already started, and we want to allow it to complete
+				// so it can't be interrupted by triggering WorkbenchTabsChanged
+				// every few seconds.
+				return;
 			}
 
 			tabsChangedTimer = new System.Timers.Timer (10000);
-			tabsChangedTimer.Elapsed += async (s, e) => {
-				await IdeApp.Workspace.SaveAsync ();
-				tabsChangedTimer.Stop ();
-				tabsChangedTimer.Dispose ();
-				tabsChangedTimer = null;
-			};
+			tabsChangedTimer.AutoReset = false;
+			tabsChangedTimer.Elapsed += DisposeTimerAndSave;
 			tabsChangedTimer.Start ();
 		}
 	}

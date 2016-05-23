@@ -60,6 +60,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 			this.ShowAll ();
 		}
 
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+
+			IdeApp.Workspace.WorkspaceItemOpened -= OnOpenCombine;
+			IdeApp.Workspace.WorkspaceItemClosed -= OnCloseCombine;
+		}
+
 		void OnOpenCombine (object sender, WorkspaceItemEventArgs e)
 		{
 			treeView.LoadTree (e.Item);

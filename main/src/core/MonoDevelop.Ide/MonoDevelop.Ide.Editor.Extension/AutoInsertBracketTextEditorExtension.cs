@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor.Extension
@@ -57,9 +56,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 			});
 		}
 
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			var result = await base.KeyPress (descriptor);
+			var result = base.KeyPress (descriptor);
 
 			if (DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket && !Editor.IsSomethingSelected) {
 				var handler = allHandlers.FirstOrDefault(h => h.CanHandle (Editor));

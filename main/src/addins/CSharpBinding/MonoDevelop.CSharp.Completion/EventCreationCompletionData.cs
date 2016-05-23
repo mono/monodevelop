@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.Icon = "md-newmethod";
 		}
 
-		public override async Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			// insert add/remove event handler code after +=/-=
 			var editor = factory.Ext.Editor;
@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.Completion
 
 
 			var document = IdeApp.Workbench.ActiveDocument;
-			var parsedDocument = await document.UpdateParseDocument ();
+			var parsedDocument = document.UpdateParseDocument ().Result;
 			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
 
 			var declaringType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, default(CancellationToken));
@@ -140,7 +140,7 @@ namespace MonoDevelop.CSharp.Completion
 			);
 
 			editor.StartInsertionMode (options);
-			return ka;
+
 		}
 
 		public override bool IsOverload (CompletionData other)

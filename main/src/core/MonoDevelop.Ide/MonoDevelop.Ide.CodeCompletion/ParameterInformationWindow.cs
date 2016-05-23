@@ -97,8 +97,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ContentBox.Add (vb2);
 
 			UpdateStyle ();
-			Styles.Changed += HandleSkinChanged;
-			IdeApp.Preferences.ColorScheme.Changed += HandleSkinChanged;
+			Styles.Changed += HandleThemeChanged;
+			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
@@ -107,8 +107,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void UpdateStyle ()
 		{
 			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			if (!scheme.FitsIdeSkin (IdeApp.Preferences.UserInterfaceSkin))
-				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceSkin);
+			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
+				scheme = SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 			
 			Theme.SetSchemeColors (scheme);
 			Theme.Font = FontService.SansFont.CopyModified (Styles.FontScale11);
@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				QueueDraw ();
 		}
 
-		void HandleSkinChanged (object sender, EventArgs e)
+		void HandleThemeChanged (object sender, EventArgs e)
 		{
 			UpdateStyle ();
 		}
@@ -130,8 +130,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			Styles.Changed -= HandleSkinChanged;
-			IdeApp.Preferences.ColorScheme.Changed -= HandleSkinChanged;
+			Styles.Changed -= HandleThemeChanged;
+			IdeApp.Preferences.ColorScheme.Changed -= HandleThemeChanged;
 		}
 
 		int lastParam = -2;

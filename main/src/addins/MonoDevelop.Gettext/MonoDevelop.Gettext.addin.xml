@@ -86,7 +86,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
-		<ProjectTemplate id = "MonoDevelop.Gettext.TranslationInfo" resource = "TranslationProject.xpt.xml" />
+		<ProjectTemplate id = "MonoDevelop.Gettext.TranslationProject" resource = "TranslationProject.xpt.xml" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TemplateImages">

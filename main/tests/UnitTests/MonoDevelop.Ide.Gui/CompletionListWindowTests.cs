@@ -33,7 +33,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -135,7 +134,7 @@ namespace MonoDevelop.Ide.Gui
 			StringBuilder sb = new StringBuilder ();
 		}
 		
-		static async Task SimulateInput (CompletionListWindow listWindow, string input)
+		static void SimulateInput (CompletionListWindow listWindow, string input)
 		{
 			var testCompletionWidget = ((TestCompletionWidget)listWindow.CompletionWidget);
 			bool isClosed = false;
@@ -145,38 +144,38 @@ namespace MonoDevelop.Ide.Gui
 			foreach (char ch in input) {
 				switch (ch) {
 				case '8':
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
 					break;
 				case '2':
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
 					break;
 				case '4':
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
 					break;
 				case '6':
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
 					break;
 				case '\t':
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
 					break;
 				case '\b':
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
 					testCompletionWidget.Backspace ();
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
 					break;
 				case '\n':
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 					break;
 				default:
-					await listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
 					testCompletionWidget.AddChar (ch);
-					await listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
 					break;
 				}
 				// window closed.
@@ -195,12 +194,12 @@ namespace MonoDevelop.Ide.Gui
 			public string[] CompletionData { get; set; }
 		}
 		
-		static Task<string> RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, params string[] completionData)
+		static string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, params string[] completionData)
 		{
 			return RunSimulation (partialWord, simulatedInput, autoSelect, completeWithSpaceOrPunctuation, true, completionData);
 		}
 		
-		static Task<string> RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string[] completionData)
+		static string RunSimulation (string partialWord, string simulatedInput, bool autoSelect, bool completeWithSpaceOrPunctuation, bool autoCompleteEmptyMatch, params string[] completionData)
 		{
 			return RunSimulation (new SimulationSettings () {
 				SimulatedInput = simulatedInput,
@@ -211,11 +210,11 @@ namespace MonoDevelop.Ide.Gui
 			});
 		}
 		
-		static async Task<string> RunSimulation (SimulationSettings settings)
+		static string RunSimulation (SimulationSettings settings)
 		{
 			CompletionListWindow listWindow = CreateListWindow (settings);
 			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
-			await SimulateInput (listWindow, settings.SimulatedInput);
+			SimulateInput (listWindow, settings.SimulatedInput);
 			return testCompletionWidget.CompletedWord;
 		}
 
@@ -233,7 +232,7 @@ namespace MonoDevelop.Ide.Gui
 				AutoCompleteEmptyMatch = settings.AutoCompleteEmptyMatch,
 				DefaultCompletionString = settings.DefaultCompletionString
 			};
-			listWindow.List.FilterWords ();
+			listWindow.FilterWords ();
 			listWindow.UpdateWordSelection ();
 			listWindow.ResetSizes ();
 			return listWindow;
@@ -241,23 +240,23 @@ namespace MonoDevelop.Ide.Gui
 
 		
 		[Test()]
-		public async Task TestPunctuationCompletion ()
+		public void TestPunctuationCompletion ()
 		{
-			string output = await RunSimulation ("", "aaa ", true, true, 
+			string output = RunSimulation ("", "aaa ", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAbAb", output);
 			
-			output = await RunSimulation ("", "aa.", true, true, 
+			output = RunSimulation ("", "aa.", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAb", output);
 			
-			output = await RunSimulation ("", "AbAbA.", true, true, 
+			output = RunSimulation ("", "AbAbA.", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -266,9 +265,9 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		[Test()]
-		public async Task TestTabCompletion ()
+		public void TestTabCompletion ()
 		{
-			string output = await RunSimulation ("", "aaa\t", true, false, 
+			string output = RunSimulation ("", "aaa\t", true, false, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -277,9 +276,9 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestTabCompletionWithAutoSelectOff ()
+		public void TestTabCompletionWithAutoSelectOff ()
 		{
-			string output = await RunSimulation ("", "aaa\t", false, false, 
+			string output = RunSimulation ("", "aaa\t", false, false, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -288,9 +287,9 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestReturnCompletion ()
+		public void TestReturnCompletion ()
 		{
-			string output = await RunSimulation ("", "aaa\n", true, false, 
+			string output = RunSimulation ("", "aaa\n", true, false, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -300,9 +299,9 @@ namespace MonoDevelop.Ide.Gui
 
 		[Ignore("\n now always commits")]
 		[Test()]
-		public async Task TestReturnCompletionWithAutoSelectOff ()
+		public void TestReturnCompletionWithAutoSelectOff ()
 		{
-			string output = await RunSimulation ("", "aaa\n", false, false, 
+			string output = RunSimulation ("", "aaa\n", false, false, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -311,10 +310,10 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestAutoSelectionOn ()
+		public void TestAutoSelectionOn ()
 		{
 			// shouldn't select anything since auto select is disabled.
-			string output = await RunSimulation ("", "aaa ", true, true, 
+			string output = RunSimulation ("", "aaa ", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -322,7 +321,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("AbAbAb", output);
 			
 			// now with cursor down
-			output = await RunSimulation ("", "aaa2 ", true, true, 
+			output = RunSimulation ("", "aaa2 ", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -331,10 +330,10 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestAutoSelectionOff ()
+		public void TestAutoSelectionOff ()
 		{
 			// shouldn't select anything since auto select is disabled.
-			string output = await RunSimulation ("", "aaa ", false, true, 
+			string output = RunSimulation ("", "aaa ", false, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -342,7 +341,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.IsNull (output);
 			
 			// now with cursor down (shouldn't change selection)
-			output = await RunSimulation ("", "aaa2 ", false, true, 
+			output = RunSimulation ("", "aaa2 ", false, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -350,7 +349,7 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("AbAbAb", output);
 			
 			// now with 2x cursor down - shold select next item.
-			output = await RunSimulation ("", "aaa22 ", false, true, 
+			output = RunSimulation ("", "aaa22 ", false, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb",
@@ -360,23 +359,23 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestBackspace ()
+		public void TestBackspace ()
 		{
-			string output = await RunSimulation ("", "aaaa\b\t", true, true, 
+			string output = RunSimulation ("", "aaaa\b\t", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAbAb", output);
 			
-			output = await RunSimulation ("", "aaaa\b\b\b\t", true, true, 
+			output = RunSimulation ("", "aaaa\b\b\b\t", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAb", output);
 			
-			output = await RunSimulation ("", "aaaa\b\b\baaa\t", true, true, 
+			output = RunSimulation ("", "aaaa\b\b\baaa\t", true, true, 
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -385,9 +384,9 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestBackspacePreserveAutoSelect ()
+		public void TestBackspacePreserveAutoSelect ()
 		{
-			string output = await RunSimulation ("", "c\bc ", false, true, 
+			string output = RunSimulation ("", "c\bc ", false, true, 
 				"a",
 				"b", 
 				"c");
@@ -396,16 +395,16 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestAutoCompleteEmptyMatchOn ()
+		public void TestAutoCompleteEmptyMatchOn ()
 		{
-			string output = await RunSimulation ("", " ", true, true, true,
+			string output = RunSimulation ("", " ", true, true, true,
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAb", output);
 			
-			output = await RunSimulation ("", "\t", true, true, true,
+			output = RunSimulation ("", "\t", true, true, true,
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -415,13 +414,13 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestAutoCompleteFileNames ()
+		public void TestAutoCompleteFileNames ()
 		{
-			string output = await RunSimulation ("", "Doc.cs ", true, true, true, "Document.cs");
+			string output = RunSimulation ("", "Doc.cs ", true, true, true, "Document.cs");
 
 			Assert.AreEqual ("Document.cs", output);
 			
-			output = await RunSimulation ("", "cwid.cs ", true, true, true,
+			output = RunSimulation ("", "cwid.cs ", true, true, true,
 				"Test.txt",
 				"CompletionWidget.cs", 
 				"CommandWindow.cs");
@@ -430,23 +429,23 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		[Test()]
-		public async Task TestAutoCompleteEmptyMatchOff ()
+		public void TestAutoCompleteEmptyMatchOff ()
 		{
-			string output = await RunSimulation ("", " ", true, true, false,
+			string output = RunSimulation ("", " ", true, true, false,
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
 			
 			Assert.AreEqual (null, output);
 			
-			output = await RunSimulation ("", "\t", true, true, false,
+			output = RunSimulation ("", "\t", true, true, false,
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
 			
 			Assert.AreEqual ("AbAb", output);
 			
-			output = await RunSimulation ("", "a ", true, true, false,
+			output = RunSimulation ("", "a ", true, true, false,
 				"AbAb",
 				"AbAbAb", 
 				"AbAbAbAb");
@@ -466,66 +465,66 @@ namespace MonoDevelop.Ide.Gui
 		};
 
 		[Test]
-		public async Task TestMatchPunctuation ()
+		public void TestMatchPunctuation ()
 		{
-			string output = await RunSimulation ("", "/\n", true, false, false, punctuationData);
+			string output = RunSimulation ("", "/\n", true, false, false, punctuationData);
 			Assert.AreEqual ("/AbAb", output);
 		}
 
 		[Test]
-		public async Task TestMatchPunctuationCase2 ()
+		public void TestMatchPunctuationCase2 ()
 		{
-			string output = await RunSimulation ("", "A\n", true, false, false, punctuationData);
+			string output = RunSimulation ("", "A\n", true, false, false, punctuationData);
 			Assert.AreEqual ("AbAb", output);
 		}
 
 		[Test]
-		public async Task TestMatchPunctuationCase3 ()
+		public void TestMatchPunctuationCase3 ()
 		{
-			string output = await RunSimulation ("", ",A..\n", true, false, false, punctuationData);
+			string output = RunSimulation ("", ",A..\n", true, false, false, punctuationData);
 			Assert.AreEqual (",A..bAb", output);
 		}
 		
 		[Test]
-		public async Task TestMatchPunctuationCommitOnSpaceAndPunctuation ()
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation ()
 		{
-			string output = await RunSimulation ("", "Ac ", true, true, false, punctuationData);
+			string output = RunSimulation ("", "Ac ", true, true, false, punctuationData);
 			Assert.AreEqual ("Accc", output);
 		}
 
 		[Test]
-		public async Task TestMatchPunctuationCommitOnSpaceAndPunctuation2 ()
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation2 ()
 		{
-			var output = await RunSimulation ("", "/ ", true, true, false, punctuationData);
+			var output = RunSimulation ("", "/ ", true, true, false, punctuationData);
 			Assert.AreEqual ("/AbAb", output);
 		}
 
 		[Ignore]
 		[Test]
-		public async Task TestMatchPunctuationCommitOnSpaceAndPunctuation3 ()
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation3 ()
 		{
-			var output = await RunSimulation ("", ".", true, true, false, punctuationData);
+			var output = RunSimulation ("", ".", true, true, false, punctuationData);
 			Assert.AreEqual (null, output);
 		}
 
 		[Test]
-		public async Task TestMatchPunctuationCommitOnSpaceAndPunctuation4 ()
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation4 ()
 		{
-			var output = await RunSimulation ("", "A ", true, true, false, punctuationData);
+			var output = RunSimulation ("", "A ", true, true, false, punctuationData);
 			Assert.AreEqual ("AbAb", output);
 		}
 
 		[Test]
-		public async Task TestMatchPunctuationCommitOnSpaceAndPunctuation5 ()
+		public void TestMatchPunctuationCommitOnSpaceAndPunctuation5 ()
 		{
-			var output = await RunSimulation ("", ",A.b ", true, true, false, punctuationData);
+			var output = RunSimulation ("", ",A.b ", true, true, false, punctuationData);
 			Assert.AreEqual (",A.bAb", output);
 		}
 		
 		[Test]
-		public async Task TestDefaultCompletionString ()
+		public void TestDefaultCompletionString ()
 		{
-			string output = await RunSimulation (new SimulationSettings {
+			string output = RunSimulation (new SimulationSettings {
 				SimulatedInput = "\t",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
@@ -540,7 +539,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			Assert.AreEqual ("C", output);
 			
-			output = await RunSimulation (new SimulationSettings {
+			output = RunSimulation (new SimulationSettings {
 				SimulatedInput = " ",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
@@ -578,9 +577,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 543923 - Completion window should deselect when word is deleted
 		/// </summary>
 		[Test]
-		public async Task TestBug543923 ()
+		public void TestBug543923 ()
 		{
-			string output = await RunSimulation (new SimulationSettings {
+			string output = RunSimulation (new SimulationSettings {
 				SimulatedInput = "i\b ",
 				AutoSelect = true,
 				CompleteWithSpaceOrPunctuation = true,
@@ -595,13 +594,13 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 543938 - Completion list up/down broken with single entry
 		/// </summary>
 		[Test]
-		public async Task TestBug543938 ()
+		public void TestBug543938 ()
 		{
-			string output = await RunSimulation ("", "2 ", true, true, false, "singleEntry");
+			string output = RunSimulation ("", "2 ", true, true, false, "singleEntry");
 			
 			Assert.AreEqual ("singleEntry", output);
 			
-			output = await RunSimulation ("", " ", true, true, false, "singleEntry");
+			output = RunSimulation ("", " ", true, true, false, "singleEntry");
 			Assert.IsTrue (string.IsNullOrEmpty (output));
 		}
 		
@@ -609,30 +608,30 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 543984 – Completion window should only accept punctuation when it's an exact match
 		/// </summary>
 		[Test]
-		public async Task TestBug543984 ()
+		public void TestBug543984 ()
 		{
-			string output = await RunSimulation ("", "foo#b\n", true, true, false, "foo#bar", "foo#bar#baz");
+			string output = RunSimulation ("", "foo#b\n", true, true, false, "foo#bar", "foo#bar#baz");
 			Assert.AreEqual ("foo#bar", output);
 		}
 		
 		[Test]
-		public async Task TestBug595240 ()
+		public void TestBug595240 ()
 		{
-			string output = await RunSimulation ("", "A\t", true, true, false, "AbCdEf");
+			string output = RunSimulation ("", "A\t", true, true, false, "AbCdEf");
 			Assert.AreEqual ("AbCdEf", output);
 		}
 
 		[Test]
-		public async Task TestBug595240Case2 ()
+		public void TestBug595240Case2 ()
 		{
-			var output = await RunSimulation ("", "Cd\t", true, true, false, "AbCdEf");
+			var output = RunSimulation ("", "Cd\t", true, true, false, "AbCdEf");
 			Assert.AreEqual ("AbCdEf", output);
 		}
 
 		[Test]
-		public async Task TestBug595240Case3 ()
+		public void TestBug595240Case3 ()
 		{
-			var output = await RunSimulation ("", "bC\t", true, true, false, "AbCdEf");
+			var output = RunSimulation ("", "bC\t", true, true, false, "AbCdEf");
 			Assert.AreNotEqual ("AbCdEf", output);
 		}
 		
@@ -640,9 +639,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 613539 - DOBa does not complete to DynamicObjectBase
 		/// </summary>
 		[Test]
-		public async Task TestBug613539 ()
+		public void TestBug613539 ()
 		{
-			string output = await RunSimulation ("", "DOB ", true, true, false, "DynamicObject", "DynamicObjectBase");
+			string output = RunSimulation ("", "DOB ", true, true, false, "DynamicObject", "DynamicObjectBase");
 			Assert.AreEqual ("DynamicObjectBase", output);
 		}
 		
@@ -650,9 +649,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 629361 - Exact completion matches should take account of case
 		/// </summary>
 		[Test]
-		public async Task TestBug629361 ()
+		public void TestBug629361 ()
 		{
-			string output = await RunSimulation ("", "unit\t", true, true, false, "Unit", "unit");
+			string output = RunSimulation ("", "unit\t", true, true, false, "Unit", "unit");
 			Assert.IsTrue (output == null || "unit" == output);
 		}
 		
@@ -660,64 +659,64 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 668136 - Subword matching in completion does not work well for xml
 		/// </summary>
 		[Test]
-		public async Task TestBug668136 ()
+		public void TestBug668136 ()
 		{
-			string output = await RunSimulation ("", "bar\t", true, true, false, "foo:test", "foo:bar", "foo:foo");
+			string output = RunSimulation ("", "bar\t", true, true, false, "foo:test", "foo:bar", "foo:foo");
 			Assert.AreEqual ("foo:bar", output);
 		}
 		
 		[Test]
-		public async Task TestSubstringMatch ()
+		public void TestSubstringMatch ()
 		{
-			string output = await RunSimulation ("", "comcoll\n", true, true, false, "CustomCommandCollection");
+			string output = RunSimulation ("", "comcoll\n", true, true, false, "CustomCommandCollection");
 			Assert.AreEqual ("CustomCommandCollection", output);
 			
-			output = await RunSimulation ("", "cuscoll\n", true, true, false, "CustomCommandCollection");
+			output = RunSimulation ("", "cuscoll\n", true, true, false, "CustomCommandCollection");
 			Assert.AreEqual ("CustomCommandCollection", output);
 			
-			output = await RunSimulation ("", "commandcollection\n", true, true, false, "CustomCommandCollection");
+			output = RunSimulation ("", "commandcollection\n", true, true, false, "CustomCommandCollection");
 			Assert.AreEqual ("CustomCommandCollection", output);
 		}
 		
 		[Test]
-		public async Task TestUpperCase1 ()
+		public void TestUpperCase1 ()
 		{
-			string output = await RunSimulation ("", "WR\t", true, true, false, "WriteLine");
+			string output = RunSimulation ("", "WR\t", true, true, false, "WriteLine");
 			Assert.AreEqual ("WriteLine", output);
 		}
 		
 		[Test]
-		public async Task TestUpperCase2 ()
+		public void TestUpperCase2 ()
 		{
-			string output = await RunSimulation ("", "WR\t", true, true, false, "WriteLine", "WriteRaw");
+			string output = RunSimulation ("", "WR\t", true, true, false, "WriteLine", "WriteRaw");
 			Assert.AreEqual ("WriteRaw", output);
 		}
 		
 		[Test]
-		public async Task TestDigitSelection ()
+		public void TestDigitSelection ()
 		{
-			string output = await RunSimulation ("", "v1\t", true, true, false, "var", "var1");
+			string output = RunSimulation ("", "v1\t", true, true, false, "var", "var1");
 			Assert.AreEqual ("var1", output);
 		}
 
 		[Test]
-		public async Task TestSelectFirst ()
+		public void TestSelectFirst ()
 		{
-			string output = await RunSimulation ("", "Are\t", true, true, false, "AreDifferent", "Differenx", "AreDiffereny");
+			string output = RunSimulation ("", "Are\t", true, true, false, "AreDifferent", "Differenx", "AreDiffereny");
 			Assert.AreEqual ("AreDifferent", output);
 		}
 
 		[Test]
-		public async Task TestPreferStart ()
+		public void TestPreferStart ()
 		{
-			string output = await RunSimulation ("", "InC\t", true, true, false, "Equals", "InvariantCultureIfo", "GetInvariantCulture");
+			string output = RunSimulation ("", "InC\t", true, true, false, "Equals", "InvariantCultureIfo", "GetInvariantCulture");
 			Assert.AreEqual ("InvariantCultureIfo", output);
 		}
 
 		[Test]
-		public async Task TestPreProcessorDirective ()
+		public void TestPreProcessorDirective ()
 		{
-			string output = await RunSimulation ("", "if\t", true, true, false, "#if", "if");
+			string output = RunSimulation ("", "if\t", true, true, false, "#if", "if");
 			Assert.AreEqual ("if", output);
 		}
 
@@ -725,24 +724,24 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 4732 - [Regression] Broken intellisense again 
 		/// </summary>
 		[Test]
-		public async Task TestBug4732 ()
+		public void TestBug4732 ()
 		{
-			string output = await RunSimulation ("", "a\t", true, true, false, "_AppDomain", "A");
+			string output = RunSimulation ("", "a\t", true, true, false, "_AppDomain", "A");
 			Assert.AreEqual ("A", output);
 		}
 
 
 		[Test]
-		public async Task TestFavorFirstSubword ()
+		public void TestFavorFirstSubword ()
 		{
-			string output = await RunSimulation ("", "button\t", true, true, false, "AnotherTestButton", "Button");
+			string output = RunSimulation ("", "button\t", true, true, false, "AnotherTestButton", "Button");
 			Assert.AreEqual ("Button", output);
 		}
 
 		[Test]
-		public async Task TestFavorExactMatch ()
+		public void TestFavorExactMatch ()
 		{
-			string output = await RunSimulation ("", "View\t", true, true, false, "view", "View");
+			string output = RunSimulation ("", "View\t", true, true, false, "view", "View");
 			Assert.AreEqual ("View", output);
 		}
 
@@ -750,16 +749,16 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 6897 - Case insensitive matching issues
 		/// </summary>
 		[Test]
-		public async Task TestBug6897 ()
+		public void TestBug6897 ()
 		{
-			string output = await RunSimulation ("", "io\t", true, true, false, "InvalidOperationException", "IO");
+			string output = RunSimulation ("", "io\t", true, true, false, "InvalidOperationException", "IO");
 			Assert.AreEqual ("IO", output);
 		}
 
 		[Test]
-		public async Task TestBug6897Case2 ()
+		public void TestBug6897Case2 ()
 		{
-			string output = await RunSimulation ("", "io\t", true, true, false, "InvalidOperationException", "IOException");
+			string output = RunSimulation ("", "io\t", true, true, false, "InvalidOperationException", "IOException");
 			Assert.AreEqual ("IOException", output);
 		}
 
@@ -767,9 +766,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 7288 - Completion not selecting the correct entry
 		/// </summary>
 		[Test]
-		public async Task TestBug7288 ()
+		public void TestBug7288 ()
 		{
-			string output = await RunSimulation ("", "pages\t", true, true, false, "pages", "PageSystem");
+			string output = RunSimulation ("", "pages\t", true, true, false, "pages", "PageSystem");
 			Assert.AreEqual ("pages", output);
 		}
 
@@ -777,12 +776,12 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 7420 - Prefer properties over named parameters
 		/// </summary>
 		[Test]
-		public async Task TestBug7420 ()
+		public void TestBug7420 ()
 		{
-			string output = await RunSimulation ("", "val\t", true, true, false, "Value", "value:");
+			string output = RunSimulation ("", "val\t", true, true, false, "Value", "value:");
 			Assert.AreEqual ("Value", output);
 
-			output = await RunSimulation ("", "val\t", true, true, false, "Value", "value", "value:");
+			output = RunSimulation ("", "val\t", true, true, false, "Value", "value", "value:");
 			Assert.AreEqual ("value", output);
 		}
 
@@ -790,9 +789,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 7522 - Code completion list should give preference to shorter words
 		/// </summary>
 		[Test]
-		public async Task TestBug7522 ()
+		public void TestBug7522 ()
 		{
-			string output = await RunSimulation ("", "vis\t", true, true, false, "VisibilityNotifyEvent", "Visible");
+			string output = RunSimulation ("", "vis\t", true, true, false, "VisibilityNotifyEvent", "Visible");
 			Assert.AreEqual ("Visible", output);
 		}
 
@@ -800,9 +799,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 8257 - Incorrect entry selected in code completion list
 		/// </summary>
 		[Test]
-		public async Task TestBug8257 ()
+		public void TestBug8257 ()
 		{
-			string output = await RunSimulation ("", "childr\t", true, true, false, "children", "ChildRequest");
+			string output = RunSimulation ("", "childr\t", true, true, false, "children", "ChildRequest");
 			Assert.AreEqual ("children", output);
 		}
 
@@ -811,9 +810,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 9114 - Code completion fumbles named parameters 
 		/// </summary>
 		[Test]
-		public async Task TestBug9114 ()
+		public void TestBug9114 ()
 		{
-			string output = await RunSimulation ("", "act\t", true, true, false, "act:", "Action");
+			string output = RunSimulation ("", "act\t", true, true, false, "act:", "Action");
 			Assert.AreEqual ("act:", output);
 		}
 
@@ -821,9 +820,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 36451 - Text input is weird.
 		/// </summary>
 		[Test]
-		public async Task TestBug36451 ()
+		public void TestBug36451 ()
 		{
-			string output = await RunSimulation ("", "x\"", true, true, false, "X");
+			string output = RunSimulation ("", "x\"", true, true, false, "X");
 			Assert.AreEqual ("X", output);
 		}
 
@@ -831,9 +830,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 17779 - Symbol names with multiple successive letters are filtered out too early
 		/// </summary>
 		[Test]
-		public async Task TestBug17779 ()
+		public void TestBug17779 ()
 		{
-			string output = await RunSimulation ("", "ID11\t", true, true, false, "ID11Tag");
+			string output = RunSimulation ("", "ID11\t", true, true, false, "ID11Tag");
 			Assert.AreEqual ("ID11Tag", output);
 		}
 
@@ -841,16 +840,16 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 21121 - Aggressive completion for delegates
 		/// </summary>
 		[Test]
-		public async Task TestBug21121 ()
+		public void TestBug21121 ()
 		{
-			string output = await RunSimulation ("", "d)", true, true, false, "d", "delegate ()");
+			string output = RunSimulation ("", "d)", true, true, false, "d", "delegate ()");
 			Assert.AreEqual ("d", output);
 		}
 
 		[Test]
-		public async Task TestSpaceCommits ()
+		public void TestSpaceCommits ()
 		{
-			string output = await RunSimulation ("", "over ", true, true, 
+			string output = RunSimulation ("", "over ", true, true, 
 				"override",
 				"override foo");
 
@@ -860,29 +859,27 @@ namespace MonoDevelop.Ide.Gui
 
 
 		[Test]
-		public async Task TestNumberInput ()
+		public void TestNumberInput ()
 		{
-			string output = await RunSimulation ("", "1.", true, true, false, "foo1");
+			string output = RunSimulation ("", "1.", true, true, false, "foo1");
 			Assert.IsTrue (string.IsNullOrEmpty (output), "output was " + output);
 		}
 
-		static async Task<TestCompletionWidget> ContinueSimulation (CompletionListWindow listWindow, ICompletionDataList list, string simulatedInput)
+		static void ContinueSimulation (CompletionListWindow listWindow, ICompletionDataList list, ref TestCompletionWidget testCompletionWidget, string simulatedInput)
 		{
-			TestCompletionWidget testCompletionWidget;
 			listWindow.ResetState ();
 			listWindow.CodeCompletionContext = new CodeCompletionContext ();
 			listWindow.CompletionDataList = list;
 			listWindow.CompletionWidget = testCompletionWidget = new TestCompletionWidget ();
-			listWindow.List.FilterWords ();
+			listWindow.FilterWords ();
 			listWindow.ResetSizes ();
 			listWindow.UpdateWordSelection ();
-			await SimulateInput (listWindow, simulatedInput);
-			await listWindow.CompleteWord ();
-			return testCompletionWidget;
+			SimulateInput (listWindow, simulatedInput);
+			listWindow.CompleteWord ();
 		}
 
 		[Test]
-		public async Task TestMruSimpleLastItem ()
+		public void TestMruSimpleLastItem ()
 		{
 			var settings = new SimulationSettings () {
 				AutoSelect = true,
@@ -895,18 +892,18 @@ namespace MonoDevelop.Ide.Gui
 			var list = listWindow.CompletionDataList;
 			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
 
-			await SimulateInput (listWindow, "FooBar\t");
+			SimulateInput (listWindow, "FooBar\t");
 			Assert.AreEqual ("FooBar1", testCompletionWidget.CompletedWord);
 
-			testCompletionWidget = await ContinueSimulation (listWindow, list, "FooFoo\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "FooFoo\t");
 			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
 
-			testCompletionWidget = await ContinueSimulation (listWindow, list, "F\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
 			Assert.AreEqual ("FooFoo2", testCompletionWidget.CompletedWord);
 		}
 
 		[Test]
-		public async Task TestMruEmptyMatch ()
+		public void TestMruEmptyMatch ()
 		{
 			var settings = new SimulationSettings () {
 				AutoSelect = true,
@@ -918,28 +915,28 @@ namespace MonoDevelop.Ide.Gui
 			var listWindow = CreateListWindow (settings);
 			var list = listWindow.CompletionDataList;
 			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
-			await SimulateInput (listWindow, "Foo\t");
-			testCompletionWidget = await ContinueSimulation (listWindow, list, "F\t");
+			SimulateInput (listWindow, "Foo\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "F\t");
 			Assert.AreEqual ("Foo", testCompletionWidget.CompletedWord);
 
-			testCompletionWidget = await ContinueSimulation (listWindow, list, "Bar\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "Bar\t");
 			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
 
-			testCompletionWidget = await ContinueSimulation (listWindow, list, "\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "\t");
 			Assert.AreEqual ("Bar", testCompletionWidget.CompletedWord);
 		}
 
 		[Test]
-		public async Task TestCloseWithPunctiation ()
+		public void TestCloseWithPunctiation ()
 		{
-			var output = await RunSimulation ("", "\"\t", true, true, false, punctuationData);
+			var output = RunSimulation ("", "\"\t", true, true, false, punctuationData);
 			Assert.AreEqual (null, output);
 		}
 
 		[Test]
-		public async Task TestPreference ()
+		public void TestPreference ()
 		{
-			string output = await RunSimulation ("", "expr\t", true, true, false, "expression", "PostfixExpressionStatementSyntax");
+			string output = RunSimulation ("", "expr\t", true, true, false, "expression", "PostfixExpressionStatementSyntax");
 			Assert.AreEqual ("expression", output);
 		}
 
@@ -947,9 +944,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 30591 - [Roslyn] Enum code-completion doesn't generate type on "."(dot)
 		/// </summary>
 		[Test]
-		public async Task TestBug0591 ()
+		public void TestBug30591 ()
 		{
-			var output = await RunSimulation ("", ".", false, false, false, new [] { "foo" } );
+			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" } );
 			Assert.AreEqual ("foo", output);
 		}
 
@@ -957,9 +954,9 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 37985 - Code completion is selecting 'int32' instead of letting me type '2' 
 		/// </summary>
 		[Test]
-		public async Task TestBug37985 ()
+		public void TestBug37985 ()
 		{
-			var output = await RunSimulation ("", "3\t", false, false, false, new [] { "Int32" } );
+			var output = RunSimulation ("", "3\t", false, false, false, new [] { "Int32" } );
 			Assert.AreEqual (null, output);
 		}
 
@@ -967,7 +964,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Bug 38180 - Code completion should be case sensitive 
 		/// </summary>
 		[Test]
-		public async Task TestBug38180 ()
+		public void TestBug38180 ()
 		{
 			var settings = new SimulationSettings () {
 				AutoSelect = true,
@@ -980,13 +977,13 @@ namespace MonoDevelop.Ide.Gui
 			var list = listWindow.CompletionDataList;
 			var testCompletionWidget = (TestCompletionWidget)listWindow.CompletionWidget;
 
-			await SimulateInput (listWindow, "test\t");
+			SimulateInput (listWindow, "test\t");
 			Assert.AreEqual ("test", testCompletionWidget.CompletedWord);
 
-			testCompletionWidget = await ContinueSimulation (listWindow, list, "t\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "t\t");
 			Assert.AreEqual ("test", testCompletionWidget.CompletedWord);
 
-			testCompletionWidget = await ContinueSimulation (listWindow, list, "T\t");
+			ContinueSimulation (listWindow, list, ref testCompletionWidget, "T\t");
 			Assert.AreEqual ("Test", testCompletionWidget.CompletedWord);
 		}
 

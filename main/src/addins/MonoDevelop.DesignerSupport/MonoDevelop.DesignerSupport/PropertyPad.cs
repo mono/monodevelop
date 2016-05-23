@@ -87,6 +87,7 @@ namespace MonoDevelop.DesignerSupport
 		public override void Dispose()
 		{
 			DesignerSupport.Service.SetPad (null);
+			base.Dispose ();
 		}
 		
 		#endregion

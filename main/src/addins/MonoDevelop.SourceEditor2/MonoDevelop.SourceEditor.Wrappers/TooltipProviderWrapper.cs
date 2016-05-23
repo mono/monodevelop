@@ -57,8 +57,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		static MonoDevelop.Ide.Editor.TextEditor WrapEditor (MonoTextEditor editor)
 		{
 			foreach (var doc in IdeApp.Workbench.Documents) {
-				if (doc.FileName == editor.FileName)
-					return doc.Editor;
+				var textEditor = doc.Editor;
+				if (textEditor == null)
+					continue;
+				if (textEditor.FileName == editor.FileName)
+					return textEditor;
 			}
 			return null;
 		}

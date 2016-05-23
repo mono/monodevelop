@@ -43,6 +43,8 @@ using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Rename;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -106,24 +108,41 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var editor = doc.Editor;
+			var oldVersion = editor.Version;
 			
 			var links = new List<TextLink> ();
 			var link = new TextLink ("name");
 
-			var cd = changes [0];
-			var oldDoc = projectChange.OldProject.GetDocument (cd);
-			var newDoc = projectChange.NewProject.GetDocument (cd);
-			var oldVersion = editor.Version;
-			foreach (var textChange in await oldDoc.GetTextChangesAsync (newDoc)) {
-				var segment = new TextSegment (textChange.Span.Start, textChange.Span.Length);
-				if (segment.Offset <= editor.CaretOffset && editor.CaretOffset <= segment.EndOffset) {
-					link.Links.Insert (0, segment); 
-				} else {
-					link.AddLink (segment);
+			var documents = ImmutableHashSet.Create (doc.AnalysisDocument);
+
+			foreach (var loc in symbol.Locations) {
+				if (loc.IsInSource && FilePath.PathComparer.Equals (loc.SourceTree.FilePath, doc.FileName)) {
+					link.AddLink (new TextSegment (loc.SourceSpan.Start, loc.SourceSpan.Length));
 				}
 			}
 
+			foreach (var mref in await SymbolFinder.FindReferencesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, documents, default(CancellationToken))) {
+				foreach (var loc in mref.Locations) {
+					TextSpan span = loc.Location.SourceSpan;
+					var root = loc.Location.SourceTree.GetRoot ();
+					var node = root.FindNode (loc.Location.SourceSpan);
+					var trivia = root.FindTrivia (loc.Location.SourceSpan.Start);
+					if (!trivia.IsKind (SyntaxKind.SingleLineDocumentationCommentTrivia)) {
+						span = node.Span;
+					}
+					if (span.Start != loc.Location.SourceSpan.Start) {
+						span = loc.Location.SourceSpan;
+					}
+					var segment = new TextSegment (span.Start, span.Length);
+					if (segment.Offset <= editor.CaretOffset && editor.CaretOffset <= segment.EndOffset) {
+						link.Links.Insert (0, segment);
+					} else {
+						link.AddLink (segment);
+					}
+				}
+			}
 			links.Add (link);
+
 			editor.StartTextLinkMode (new TextLinkModeOptions (links, (arg) => {
 				//If user cancel renaming revert changes
 				if (!arg.Success) {
@@ -160,18 +179,20 @@ namespace MonoDevelop.Refactoring.Rename
 
 			var newSolution = await Renamer.RenameSymbolAsync (ws.CurrentSolution, symbol, properties.NewName, ws.Options);
 			var changes = new List<Change> ();
-
+			var documents = new List<DocumentId> ();
 			foreach (var projectChange in newSolution.GetChanges (ws.CurrentSolution).GetProjectChanges ()) {
-				foreach (var changedDoc in projectChange.GetChangedDocuments ()) {
-					var newDoc = newSolution.GetDocument (changedDoc);
-					foreach (var textChange in await newDoc.GetTextChangesAsync (ws.CurrentSolution.GetDocument (changedDoc))) {
-						changes.Add (new TextReplaceChange () {
-							FileName = newDoc.FilePath,
-							Offset = textChange.Span.Start,
-							RemovedChars = textChange.Span.Length,
-							InsertedText = textChange.NewText
-						});
-					}
+				documents.AddRange (projectChange.GetChangedDocuments ());
+			}
+			FilterDuplicateLinkedDocs (newSolution, documents);
+			foreach (var changedDoc in documents) {
+				var newDoc = newSolution.GetDocument (changedDoc);
+				foreach (var textChange in await newDoc.GetTextChangesAsync (ws.CurrentSolution.GetDocument (changedDoc))) {
+					changes.Add (new TextReplaceChange () {
+						FileName = newDoc.FilePath,
+						Offset = textChange.Span.Start,
+						RemovedChars = textChange.Span.Length,
+						InsertedText = textChange.NewText
+					});
 				}
 			}
 
@@ -211,7 +232,25 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 			return changes;
 		}
-		
+
+		static void FilterDuplicateLinkedDocs (Solution newSolution, List<DocumentId> documents)
+		{
+			foreach (var doc in documents) {
+				var newDoc = newSolution.GetDocument (doc);
+				bool didRemove = false;
+				foreach (var link in newDoc.GetLinkedDocumentIds ()) {
+					if (documents.Contains (link)) {
+						documents.Remove (link);
+						didRemove = true;
+					}
+				}
+				if (didRemove) {
+					FilterDuplicateLinkedDocs (newSolution, documents);
+					return;
+				}
+			}
+		}
+
 		static string GetFullFileName (string fileName, string oldFullFileName, int tryCount)
 		{
 			var name = new StringBuilder (fileName);

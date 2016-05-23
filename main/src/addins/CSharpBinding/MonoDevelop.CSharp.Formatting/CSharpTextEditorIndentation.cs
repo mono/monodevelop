@@ -45,7 +45,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Options;
 using MonoDevelop.Refactoring;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -367,7 +366,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		public override async Task<bool> KeyPress (KeyDescriptor descriptor)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			completionWindowWasVisible = CompletionWindowManager.IsVisible;
 			cursorPositionBeforeKeyPress = Editor.CaretOffset;
@@ -383,7 +382,7 @@ namespace MonoDevelop.CSharp.Formatting
 				    "SmartSemicolonPlacement",
 				    false
 			    ) && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
-				var retval = await base.KeyPress (descriptor);
+				bool retval = base.KeyPress (descriptor);
 				var curLine = Editor.GetLine (Editor.CaretLine);
 				string text = Editor.GetTextAt (curLine);
 				if (!(text.EndsWith (";", StringComparison.Ordinal) || text.Trim ().StartsWith ("for", StringComparison.Ordinal))) {
@@ -394,13 +393,13 @@ namespace MonoDevelop.CSharp.Formatting
 							Editor.RemoveText (Editor.CaretOffset - 1, 1);
 							Editor.CaretOffset = guessedOffset;
 							lastInsertedSemicolon = Editor.CaretOffset + 1;
-							retval = await base.KeyPress (descriptor);
+							retval = base.KeyPress (descriptor);
 						}
 					}
 				}
 				using (var undo = Editor.OpenUndoGroup ()) {
 					if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-						await OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
+						OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 					}
 				}
 				return retval;
@@ -428,7 +427,7 @@ namespace MonoDevelop.CSharp.Formatting
 			SafeUpdateIndentEngine (Editor.CaretOffset);
 			if (!stateTracker.IsInsideOrdinaryCommentOrString) {
 				if (descriptor.KeyChar == '@') {
-					var retval = await base.KeyPress (descriptor);
+					var retval = base.KeyPress (descriptor);
 					int cursor = Editor.CaretOffset;
 					if (cursor < Editor.Length && Editor.GetCharAt (cursor) == '"')
 						ConvertNormalToVerbatimString (Editor, cursor + 1);
@@ -462,7 +461,7 @@ namespace MonoDevelop.CSharp.Formatting
 				bool automaticReindent;
 				// need to be outside of an undo group - otherwise it interferes with other text editor extension
 				// esp. the documentation insertion undo steps.
-				retval = await base.KeyPress (descriptor);
+				retval = base.KeyPress (descriptor);
 
 				
 				//handle inserted characters
@@ -516,7 +515,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				await HandleOnTheFlyFormatting (descriptor);
+				HandleOnTheFlyFormatting (descriptor);
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				lastCharInserted = '\0';
 				CheckXmlCommentCloseTag (descriptor.KeyChar);
@@ -524,7 +523,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 			if (Editor.Options.IndentStyle == IndentStyle.Auto && DefaultSourceEditorOptions.Instance.TabIsReindent && descriptor.SpecialKey == SpecialKey.Tab) {
-				bool retval = await base.KeyPress (descriptor);
+				bool retval = base.KeyPress (descriptor);
 				DoReSmartIndent ();
 				CheckXmlCommentCloseTag (descriptor.KeyChar);
 				return retval;
@@ -532,7 +531,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 			//pass through to the base class, which actually inserts the character
 			//and calls HandleCodeCompletion etc to handles completion
-			var result = await base.KeyPress (descriptor);
+			var result = base.KeyPress (descriptor);
 
 			if (!indentationDisabled && (descriptor.SpecialKey == SpecialKey.Return)) {
 				DoReSmartIndent ();
@@ -540,12 +539,12 @@ namespace MonoDevelop.CSharp.Formatting
 
 			CheckXmlCommentCloseTag (descriptor.KeyChar);
 
-			await HandleOnTheFlyFormatting (descriptor);
+			HandleOnTheFlyFormatting (descriptor);
 			
 			return result;
 		}
 
-		async Task HandleOnTheFlyFormatting (KeyDescriptor descriptor)
+		void HandleOnTheFlyFormatting (KeyDescriptor descriptor)
 		{
 			if (descriptor.KeyChar == '{')
 				return;
@@ -566,7 +565,7 @@ namespace MonoDevelop.CSharp.Formatting
 						return;
 					using (var undo = Editor.OpenUndoGroup ()) {
 						if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-							await OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
+							OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation, optionSet: optionSet);
 						}
 					}
 				}

@@ -74,7 +74,7 @@ namespace UserInterfaceTests
 
 		public bool SelectFileTypeCategory (string fileTypeCategory, string fileTypeCategoryRoot = "C#")
 		{
-			var openChild = Session.ClickElement (c => categoryViewQuery (c).Text (fileTypeCategoryRoot));
+			Session.ClickElement (c => categoryViewQuery (c).Text (fileTypeCategoryRoot));
 			var resultParent = Session.SelectElement (c => categoryViewQuery (c).Text (fileTypeCategoryRoot).Children ().Text (fileTypeCategory));
 			var result = Session.SelectElement (c => categoryViewQuery (c).Text (fileTypeCategory)) &&
 				Session.WaitForElement (c => categoryViewQuery (c).Text (fileTypeCategory).Selected ()).Length > 0;

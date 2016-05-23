@@ -35,7 +35,6 @@ using MonoDevelop.DesignerSupport;
 using System.Linq;
 using MonoDevelop.Ide.Editor.Extension;
 using Microsoft.CodeAnalysis;
-using System.Threading.Tasks;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -76,14 +75,14 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		public override Task<KeyActions> InsertCompletionText (CompletionListWindow window, KeyActions ka, KeyDescriptor descriptor)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			//insert the method name
 			var buf = window.CompletionWidget;
 			if (buf != null) {
 				buf.Replace (window.CodeCompletionContext.TriggerOffset, buf.CaretOffset - window.CodeCompletionContext.TriggerOffset, methodInfo.Name);
 			}
-
+			
 			//generate the codebehind method
 
 			// TODO: Roslyn port.
@@ -91,7 +90,6 @@ namespace MonoDevelop.AspNet.WebForms
 //				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClassLocation, methodInfo, false);
 //			else
 //				BindingService.AddMemberToClass (project, codeBehindClass, codeBehindClass.Locations.First (), methodInfo, false);
-			return Task.FromResult (ka);
 		}
 	}
 }
