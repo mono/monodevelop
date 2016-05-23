@@ -11,7 +11,7 @@ MDTOOL = mono '../../build/bin/mdtool.exe'
 # (MDVERSION4) can be set to something like (3.0.4, 3.0.4.7) to compile
 # against the dependencies/... binaries for a specific version of MonoDevelop. This allows
 # us to prepare new editions of the binding for several different versions of MonoDevelop.
-MDVERSION4=6.0
+MDVERSION4=6.1
 
 MDROOT=../../build
 
@@ -31,7 +31,7 @@ build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj MonoDevelop.FSharpBin
 pack: build
 	-rm -fr pack/$(config)
 	@-mkdir -p pack/$(config)
-	$(MDTOOL) setup pack bin/FSharpBinding.dll -d:pack/$(config)
+	$(MDTOOL) setup pack ../../../main/build/Addins/BackendBindings/FSharpBinding.dll -d:pack/$(config)
 
 install: pack
 	$(MDTOOL) setup install -y pack/$(config)/MonoDevelop.FSharpBinding_$(MDVERSION4).mpack 
