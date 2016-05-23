@@ -113,6 +113,8 @@ namespace MonoDevelop.PackageManagement
 				}
 			}
 
+			project.OnAfterExecuteActions (actions);
+
 			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 

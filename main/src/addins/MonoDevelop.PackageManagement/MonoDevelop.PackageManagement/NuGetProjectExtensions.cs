@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
@@ -61,6 +62,22 @@ namespace MonoDevelop.PackageManagement
 			}
 
 			return Task.FromResult (0);
+		}
+
+		public static void OnAfterExecuteActions (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
+		{
+			var buildIntegratedProject = project as BuildIntegratedProjectSystem;
+			if (buildIntegratedProject != null) {
+				buildIntegratedProject.OnAfterExecuteActions (actions);
+			}
+		}
+
+		public static void OnBeforeUninstall (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
+		{
+			var buildIntegratedProject = project as BuildIntegratedProjectSystem;
+			if (buildIntegratedProject != null) {
+				buildIntegratedProject.OnBeforeUninstall (actions);
+			}
 		}
 	}
 }

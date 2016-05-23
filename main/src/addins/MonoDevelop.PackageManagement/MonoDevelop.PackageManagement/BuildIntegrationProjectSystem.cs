@@ -31,7 +31,9 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.Common;
+using NuGet.Configuration;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
@@ -41,19 +43,24 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject
 	{
-		DotNetProject dotNetProject;
-		IPackageManagementEvents packageManagementEvents;
+		IDotNetProject dotNetProject;
+		PackageManagementEvents packageManagementEvents;
+		VersionFolderPathResolver packagePathResolver;
 
 		public BuildIntegratedProjectSystem (
 			string jsonConfigPath,
 			string msbuildProjectFilePath,
 			DotNetProject dotNetProject,
 			IMSBuildNuGetProjectSystem msbuildProjectSystem,
-			string uniqueName)
+			string uniqueName,
+			ISettings settings)
 			: base (jsonConfigPath, msbuildProjectFilePath, msbuildProjectSystem)
 		{
-			this.dotNetProject = dotNetProject;
-			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
+			this.dotNetProject = new DotNetProjectProxy (dotNetProject);
+			packageManagementEvents = (PackageManagementEvents)PackageManagementServices.PackageManagementEvents;
+
+			string path = SettingsUtility.GetGlobalPackagesFolder (settings);
+			packagePathResolver = new VersionFolderPathResolver (path, normalizePackageId: false);
 		}
 
 		public override Task<bool> ExecuteInitScriptAsync (PackageIdentity identity, string packageInstallPath, INuGetProjectContext projectContext, bool throwOnFailure)
@@ -68,6 +75,54 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.OnFileChanged (JsonConfigPath);
 
 			return base.PostProcessAsync (nuGetProjectContext, token);
+		}
+
+		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)
+		{
+			ProcessActions (actions, OnPackageInstalled, OnPackageUninstalled);
+		}
+
+		public void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions)
+		{
+			ProcessActions (actions, identity => {}, OnPackageUninstalling);
+		}
+
+		void ProcessActions (
+			IEnumerable<NuGetProjectAction> actions,
+			Action<PackageIdentity> installAction,
+			Action<PackageIdentity> uninstallAction)
+		{
+			foreach (var action in actions) {
+				if (action.NuGetProjectActionType == NuGetProjectActionType.Install) {
+					installAction (action.PackageIdentity);
+				} else if (action.NuGetProjectActionType == NuGetProjectActionType.Uninstall) {
+					uninstallAction (action.PackageIdentity);
+				}
+			}
+		}
+
+		void OnPackageInstalled (PackageIdentity identity)
+		{
+			var eventArgs = CreatePackageEventArgs (identity);
+			packageManagementEvents.OnPackageInstalled (dotNetProject, eventArgs);
+		}
+
+		PackageEventArgs CreatePackageEventArgs (PackageIdentity identity)
+		{
+			string installPath = packagePathResolver.GetInstallPath (identity.Id, identity.Version);
+			return new PackageEventArgs (this, identity, installPath);
+		}
+
+		void OnPackageUninstalling (PackageIdentity identity)
+		{
+			var eventArgs = CreatePackageEventArgs (identity);
+			packageManagementEvents.OnPackageUninstalling (dotNetProject, eventArgs);
+		}
+
+		void OnPackageUninstalled (PackageIdentity identity)
+		{
+			var eventArgs = CreatePackageEventArgs (identity);
+			packageManagementEvents.OnPackageUninstalled (dotNetProject, eventArgs);
 		}
 
 		public override Task<IReadOnlyList<ExternalProjectReference>> GetProjectReferenceClosureAsync (ExternalProjectReferenceContext context)
@@ -95,7 +150,7 @@ namespace MonoDevelop.PackageManagement
 			string rootProjectPath = dotNetProject.FileName;
 
 			// start with the current project
-			toProcess.Push (new DotNetProjectReference (dotNetProject, rootProjectPath));
+			toProcess.Push (new DotNetProjectReference (dotNetProject.DotNetProject, rootProjectPath));
 
 			var uniqueNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 

@@ -83,11 +83,15 @@ namespace MonoDevelop.PackageManagement
 				context,
 				cancellationToken);
 
+			project.OnBeforeUninstall (actions);
+
 			await packageManager.ExecuteNuGetProjectActionsAsync (
 				project,
 				actions,
 				context,
 				cancellationToken);
+
+			project.OnAfterExecuteActions (actions);
 
 			await project.RunPostProcessAsync (context, cancellationToken);
 		}

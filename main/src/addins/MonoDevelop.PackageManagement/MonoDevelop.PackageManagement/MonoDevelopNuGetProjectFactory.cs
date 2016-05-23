@@ -77,7 +77,8 @@ namespace MonoDevelop.PackageManagement
 					project.FileName,
 					project,
 					projectSystem,
-					project.Name);
+					project.Name,
+					settings);
 			}
 
 			string baseDirectory = GetBaseDirectory (project);

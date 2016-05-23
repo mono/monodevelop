@@ -143,6 +143,8 @@ namespace MonoDevelop.PackageManagement
 
 			NuGetPackageManager.ClearDirectInstall (context);
 
+			project.OnAfterExecuteActions (actions);
+
 			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
