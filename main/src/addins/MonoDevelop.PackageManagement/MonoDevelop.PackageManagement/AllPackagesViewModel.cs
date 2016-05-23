@@ -520,6 +520,7 @@ namespace MonoDevelop.PackageManagement
 			var recentPackages = GetRecentPackages ().ToList ();
 
 			foreach (PackageSearchResultViewModel package in recentPackages) {
+				package.ResetDetailedPackageMetadata ();
 				yield return package;
 			}
 

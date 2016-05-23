@@ -326,10 +326,8 @@ namespace MonoDevelop.PackageManagement
 			ShowUri (this.packageIdLink, packageViewModel.GalleryUrl, packageViewModel.Id);
 			ShowUri (this.packageProjectPageLink, packageViewModel.ProjectUrl);
 			ShowUri (this.packageLicenseLink, packageViewModel.LicenseUrl);
-			this.packageDependenciesHBox.Visible = false;
-			this.packageDependenciesListHBox.Visible = false;
-			this.packageDependenciesNoneLabel.Visible = false;
-			this.packageDependenciesList.Text = String.Empty;
+
+			PopulatePackageDependencies (packageViewModel);
 
 			PopulatePackageVersions (packageViewModel);
 
@@ -760,10 +758,17 @@ namespace MonoDevelop.PackageManagement
 
 		void PopulatePackageDependencies (PackageSearchResultViewModel packageViewModel)
 		{
-			this.packageDependenciesHBox.Visible = true;
-			this.packageDependenciesListHBox.Visible = packageViewModel.HasDependencies;
-			this.packageDependenciesNoneLabel.Visible = !packageViewModel.HasDependencies;
-			this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();
+			if (packageViewModel.IsDependencyInformationAvailable) {
+				this.packageDependenciesHBox.Visible = true;
+				this.packageDependenciesListHBox.Visible = packageViewModel.HasDependencies;
+				this.packageDependenciesNoneLabel.Visible = !packageViewModel.HasDependencies;
+				this.packageDependenciesList.Text = packageViewModel.GetPackageDependenciesDisplayText ();
+			} else {
+				this.packageDependenciesHBox.Visible = false;
+				this.packageDependenciesListHBox.Visible = false;
+				this.packageDependenciesNoneLabel.Visible = false;
+				this.packageDependenciesList.Text = String.Empty;
+			}
 		}
 	}
 }

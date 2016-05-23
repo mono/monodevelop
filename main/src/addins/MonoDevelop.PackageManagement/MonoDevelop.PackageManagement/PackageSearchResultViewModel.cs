@@ -302,6 +302,10 @@ namespace MonoDevelop.PackageManagement
 
 		public void LoadPackageMetadata (IPackageMetadataProvider metadataProvider, CancellationToken cancellationToken)
 		{
+			if (packageDetailModel != null) {
+				return;
+			}
+
 			if (IsRecentPackage) {
 				ReadVersions (cancellationToken).ContinueWith (
 					task => LoadPackageMetadataFromPackageDetailModel (metadataProvider, cancellationToken),
@@ -334,6 +338,7 @@ namespace MonoDevelop.PackageManagement
 					var metadata = packageDetailModel?.PackageMetadata;
 					if (metadata != null) {
 						viewModel.Published = metadata.Published;
+						dependencies = GetCompatibleDependencies ().ToList ();
 						OnPropertyChanged ("Dependencies");
 					}
 				}
@@ -360,12 +365,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public IEnumerable<PackageDependencyMetadata> CompatibleDependencies {
-			get {
-				if (dependencies == null) {
-					dependencies = GetCompatibleDependencies ().ToList ();
-				}
-				return dependencies;
-			}
+			get { return dependencies ?? new List<PackageDependencyMetadata> (); }
 		}
 
 		IEnumerable<PackageDependencyMetadata> GetCompatibleDependencies ()
@@ -385,7 +385,16 @@ namespace MonoDevelop.PackageManagement
 			return Enumerable.Empty<PackageDependencyMetadata> ();
 		}
 
+		public bool IsDependencyInformationAvailable {
+			get { return dependencies != null; }
+		}
+
 		public bool IsRecentPackage { get; set; }
+
+		public void ResetDetailedPackageMetadata ()
+		{
+			packageDetailModel = null;
+		}
 	}
 }
 
