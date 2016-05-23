@@ -32,6 +32,8 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class AddPackagesDialogRunner
 	{
+		static RecentNuGetPackagesRepository recentPackagesRepository = new RecentNuGetPackagesRepository ();
+
 		public void Run (string initialSearch = null)
 		{
 			try {
@@ -54,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 
 		AddPackagesDialog CreateDialog (string initialSearch)
 		{
-			var viewModel = new AllPackagesViewModel ();
+			var viewModel = new AllPackagesViewModel (recentPackagesRepository);
 			return new AddPackagesDialog (
 				viewModel,
 				initialSearch);

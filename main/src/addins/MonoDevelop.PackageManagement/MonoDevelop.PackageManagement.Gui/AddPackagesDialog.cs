@@ -42,7 +42,6 @@ namespace MonoDevelop.PackageManagement
 	internal partial class AddPackagesDialog
 	{
 		IBackgroundPackageActionRunner backgroundActionRunner;
-		IRecentPackageRepository recentPackageRepository;
 		AllPackagesViewModel viewModel;
 		List<SourceRepositoryViewModel> packageSources;
 		DataField<bool> packageHasBackgroundColorField = new DataField<bool> ();
@@ -65,20 +64,17 @@ namespace MonoDevelop.PackageManagement
 			: this (
 				viewModel,
 				initialSearch,
-				PackageManagementServices.BackgroundPackageActionRunner,
-				PackageManagementServices.RecentPackageRepository)
+				PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
 		public AddPackagesDialog (
 			AllPackagesViewModel viewModel,
 			string initialSearch,
-			IBackgroundPackageActionRunner backgroundActionRunner,
-			IRecentPackageRepository recentPackageRepository)
+			IBackgroundPackageActionRunner backgroundActionRunner)
 		{
 			this.viewModel = viewModel;
 			this.backgroundActionRunner = backgroundActionRunner;
-			this.recentPackageRepository = recentPackageRepository;
 
 			Build ();
 
@@ -341,7 +337,6 @@ namespace MonoDevelop.PackageManagement
 			this.packageVersionsHBox.Visible = true;
 
 			packageViewModel.PropertyChanged += SelectedPackageViewModelChanged;
-			packageViewModel.ReadVersions ();
 			viewModel.LoadPackageMetadata (packageViewModel);
 		}
 
@@ -517,18 +512,11 @@ namespace MonoDevelop.PackageManagement
 		void InstallPackages (List<IPackageAction> packageActions)
 		{
 			if (packageActions.Count > 0) {
-				AddRecentPackages (packageActions);
+				viewModel.OnInstallingSelectedPackages ();
 
 				ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (packageActions);
 				backgroundActionRunner.Run (progressMessage, packageActions);
 				Close ();
-			}
-		}
-
-		void AddRecentPackages (List<IPackageAction> packageActions)
-		{
-			foreach (InstallPackageAction action in packageActions.OfType<InstallPackageAction> ()) {
-				recentPackageRepository.AddPackage (action.Package);
 			}
 		}
 

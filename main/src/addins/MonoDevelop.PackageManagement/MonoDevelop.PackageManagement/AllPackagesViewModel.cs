@@ -59,9 +59,11 @@ namespace MonoDevelop.PackageManagement
 		List<PackageReference> packageReferences = new List<PackageReference> ();
 		AggregatePackageSourceErrorMessage aggregateErrorMessage;
 		NuGetPackageManager packageManager;
+		RecentNuGetPackagesRepository recentPackagesRepository;
 
-		public AllPackagesViewModel ()
+		public AllPackagesViewModel (RecentNuGetPackagesRepository recentPackagesRepository)
 		{
+			this.recentPackagesRepository = recentPackagesRepository;
 			PackageViewModels = new ObservableCollection<PackageSearchResultViewModel> ();
 			CheckedPackageViewModels = new ObservableCollection<PackageSearchResultViewModel> ();
 			ErrorMessage = String.Empty;
@@ -345,7 +347,10 @@ namespace MonoDevelop.PackageManagement
 
 		void UpdatePackageViewModels (IEnumerable<PackageItemListViewModel> newPackageViewModels)
 		{
-			foreach (PackageSearchResultViewModel packageViewModel in ConvertToPackageViewModels (newPackageViewModels)) {
+			var packages = ConvertToPackageViewModels (newPackageViewModels).ToList ();
+			packages = PrioritizePackages (packages).ToList ();
+
+			foreach (PackageSearchResultViewModel packageViewModel in packages) {
 				PackageViewModels.Add (packageViewModel);
 			}
 		}
@@ -485,6 +490,55 @@ namespace MonoDevelop.PackageManagement
 				new NuGet.Logging.NullLogger ());
 
 			packageViewModel.LoadPackageMetadata (provider, cancellationTokenSource.Token);
+		}
+
+		public void OnInstallingSelectedPackages ()
+		{
+			try {
+				UpdateRecentPackages ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unable to update recent packages", ex);
+			}
+		}
+
+		void UpdateRecentPackages ()
+		{
+			if (SelectedPackageSource == null)
+				return;
+
+			if (CheckedPackageViewModels.Any ()) {
+				foreach (PackageSearchResultViewModel packageViewModel in CheckedPackageViewModels) {
+					recentPackagesRepository.AddPackage (packageViewModel, SelectedPackageSource.Name);
+				}
+			} else {
+				recentPackagesRepository.AddPackage (SelectedPackage, SelectedPackageSource.Name);
+			}
+		}
+
+		IEnumerable<PackageSearchResultViewModel> PrioritizePackages (IEnumerable<PackageSearchResultViewModel> packages)
+		{
+			var recentPackages = GetRecentPackages ().ToList ();
+
+			foreach (PackageSearchResultViewModel package in recentPackages) {
+				yield return package;
+			}
+
+			foreach (PackageSearchResultViewModel package in packages) {
+				if (!recentPackages.Contains (package, PackageSearchResultViewModelComparer.Instance)) {
+					yield return package;
+				}
+			}
+		}
+
+		IEnumerable<PackageSearchResultViewModel> GetRecentPackages ()
+		{
+			if (PackageViewModels.Count == 0 &&
+				String.IsNullOrEmpty (SearchTerms) &&
+				selectedPackageSource != null) {
+				return recentPackagesRepository.GetPackages (SelectedPackageSource.Name);
+			}
+
+			return Enumerable.Empty<PackageSearchResultViewModel> ();
 		}
 	}
 }

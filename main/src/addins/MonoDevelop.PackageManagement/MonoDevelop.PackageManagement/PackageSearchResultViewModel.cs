@@ -32,7 +32,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using NuGet.Common;
 using NuGet.PackageManagement.UI;
+using NuGet.Packaging.Core;
+using NuGet.Protocol.Core.Types;
 using NuGet.Frameworks;
 using NuGet.Versioning;
 
@@ -189,17 +192,64 @@ namespace MonoDevelop.PackageManagement
 		public NuGetVersion SelectedVersion { get; set; }
 		public ObservableCollection<NuGetVersion> Versions { get; private set; }
 
-		public void ReadVersions ()
+		Task ReadVersions (CancellationToken cancellationToken)
 		{
 			try {
 				packageDetailModel = new PackageDetailControlModel (parent.NuGetProject);
 				packageDetailModel.SelectedVersion = new DisplayVersion (SelectedVersion, null);
-				packageDetailModel.SetCurrentPackage (viewModel).ContinueWith (
+				return ReadVersionsFromPackageDetailControlModel (cancellationToken).ContinueWith (
 					task => OnVersionsRead (task),
 					TaskScheduler.FromCurrentSynchronizationContext ());
 			} catch (Exception ex) {
 				LoggingService.LogError ("ReadVersions error.", ex);
 			}
+			return Task.FromResult (0);
+		}
+
+		Task ReadVersionsFromPackageDetailControlModel (CancellationToken cancellationToken)
+		{
+			if (!IsRecentPackage) {
+				return packageDetailModel.SetCurrentPackage (viewModel);
+			}
+
+			return ReadVersionsForRecentPackage (cancellationToken);
+		}
+
+		async Task ReadVersionsForRecentPackage (CancellationToken cancellationToken)
+		{
+			var identity = new PackageIdentity (viewModel.Id, viewModel.Version);
+			foreach (var sourceRepository in parent.SelectedPackageSource.GetSourceRepositories ()) {
+				try {
+					var metadata = await sourceRepository.GetPackageMetadataAsync (identity, viewModel.Version.IsPrerelease, cancellationToken);
+					if (metadata != null) {
+						var packageViewModel = CreatePackageItemListViewModel (metadata);
+						await packageDetailModel.SetCurrentPackage (packageViewModel);
+						return;
+					}
+				} catch (Exception ex) {
+					LoggingService.LogError (
+						String.Format ("Unable to get metadata for {0} from source {1}.", identity, sourceRepository.PackageSource.Name),
+						ex);
+				}
+			}
+		}
+
+		PackageItemListViewModel CreatePackageItemListViewModel (IPackageSearchMetadata metadata)
+		{
+			return new PackageItemListViewModel {
+				Id = metadata.Identity.Id,
+				Version = metadata.Identity.Version,
+				IconUrl = metadata.IconUrl,
+				Author = metadata.Authors,
+				DownloadCount = metadata.DownloadCount,
+				Summary = metadata.Summary,
+				Description = metadata.Description,
+				Title = metadata.Title,
+				LicenseUrl = metadata.LicenseUrl,
+				ProjectUrl = metadata.ProjectUrl,
+				Published = metadata.Published,
+				Versions = AsyncLazy.New (() => metadata.GetVersionsAsync ())
+			};
 		}
 
 		void OnVersionsRead (Task task)
@@ -250,10 +300,22 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		public void LoadPackageMetadata (IPackageMetadataProvider metadataProvider, CancellationToken token)
+		public void LoadPackageMetadata (IPackageMetadataProvider metadataProvider, CancellationToken cancellationToken)
+		{
+			if (IsRecentPackage) {
+				ReadVersions (cancellationToken).ContinueWith (
+					task => LoadPackageMetadataFromPackageDetailModel (metadataProvider, cancellationToken),
+					TaskScheduler.FromCurrentSynchronizationContext ());
+			} else {
+				ReadVersions (cancellationToken);
+				LoadPackageMetadataFromPackageDetailModel (metadataProvider, cancellationToken);
+			}
+		}
+
+		void LoadPackageMetadataFromPackageDetailModel (IPackageMetadataProvider metadataProvider, CancellationToken cancellationToken)
 		{
 			try {
-				packageDetailModel.LoadPackageMetadaAsync (metadataProvider, token).ContinueWith (
+				packageDetailModel.LoadPackageMetadaAsync (metadataProvider, cancellationToken).ContinueWith (
 					task => OnPackageMetadataLoaded (task),
 					TaskScheduler.FromCurrentSynchronizationContext ());
 			} catch (Exception ex) {
@@ -322,6 +384,8 @@ namespace MonoDevelop.PackageManagement
 
 			return Enumerable.Empty<PackageDependencyMetadata> ();
 		}
+
+		public bool IsRecentPackage { get; set; }
 	}
 }
 

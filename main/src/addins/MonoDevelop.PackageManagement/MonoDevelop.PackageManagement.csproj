@@ -536,6 +536,8 @@
     <Compile Include="NuGet.PackageManagement.UI\IPackageMetadataProvider.cs" />
     <Compile Include="NuGet.PackageManagement.UI\DetailControlModel.cs" />
     <Compile Include="NuGet.PackageManagement.UI\PackageDetailControlModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RecentNuGetPackagesRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModelComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
