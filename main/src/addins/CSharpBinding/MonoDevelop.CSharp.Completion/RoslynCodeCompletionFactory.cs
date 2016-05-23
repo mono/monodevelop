@@ -138,7 +138,7 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				if (rightSideDescription == null) {
 					try {
-						rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
+						rightSideDescription = "<span size='small'>" + string.Format ("{0:" + format + "}", example) + "</span>";
 					} catch (Exception e) {
 						rightSideDescription = "";
 						LoggingService.LogError ("Format error.", e);
