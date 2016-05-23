@@ -1202,11 +1202,27 @@ namespace MonoDevelop.Projects
 			// Libraries are not executable by default, unless the project has a custom execution command
 			if (compileTarget == CompileTarget.Library
 			    && !Configurations.OfType<ProjectConfiguration> ().Any (c => c.CustomCommands.HasCommands (CustomCommandType.Execute))
-				&& !GetRunConfigurations ().OfType<DotNetRunConfiguration> ().Any (rc => rc.StartAction == DotNetRunConfiguration.StartActions.Program && !string.IsNullOrEmpty (rc.StartProgram))
+			    && !GetRunConfigurations ().Any ()
 			   )
 				sf &= ~ProjectFeatures.Execute;
 			
 			return sf;
+		}
+
+		protected override IEnumerable<RunConfiguration> OnGetRunConfigurations ()
+		{
+			var configs = base.OnGetRunConfigurations ();
+			if (compileTarget == CompileTarget.Library) {
+				// A library project can't run by itself, so discard configurations which have "Project" as startup action
+				foreach (var c in configs) {
+					var dc = c as DotNetRunConfiguration;
+					if (dc != null && (dc.StartAction == DotNetRunConfiguration.StartActions.Project || string.IsNullOrEmpty (dc.StartProgram)))
+						continue;
+					yield return c;
+				}
+			} else
+				foreach (var c in configs)
+					yield return c;
 		}
 
 		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
