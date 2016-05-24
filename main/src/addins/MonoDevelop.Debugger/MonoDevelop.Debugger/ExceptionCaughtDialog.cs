@@ -348,11 +348,30 @@ namespace MonoDevelop.Debugger
 		}
 
 		TreeStore InnerExceptionsStore;
-		TreeView InnerExceptionsTreeView;
+
+		class InnerExceptionsTree : TreeView
+		{
+			public InnerExceptionsTree ()
+			{
+				Events |= Gdk.EventMask.PointerMotionMask;
+			}
+
+			protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
+			{
+				TreePath path;
+				//We want effect that when user has mouse button pressed and is moving over tree to autoselect exception
+				if (evnt.State == Gdk.ModifierType.Button1Mask && GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path)) {
+					Selection.SelectPath (path);
+				}
+				return base.OnMotionNotifyEvent (evnt);
+			}
+		}
+
+		InnerExceptionsTree InnerExceptionsTreeView;
 
 		Widget CreateInnerExceptionsTree ()
 		{
-			InnerExceptionsTreeView = new TreeView ();
+			InnerExceptionsTreeView = new InnerExceptionsTree ();
 			InnerExceptionsTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // background
 			InnerExceptionsTreeView.ModifyBase (StateType.Selected, Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.ToGdkColor ()); // selected
 			InnerExceptionsTreeView.HeadersVisible = false;
