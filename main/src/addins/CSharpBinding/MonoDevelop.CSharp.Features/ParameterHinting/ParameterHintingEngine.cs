@@ -264,9 +264,13 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var info = semanticModel.GetSymbolInfo(node, cancellationToken);
 			var result = new ParameterHintingResult(node.SpanStart);
 			var resolvedMethod = info.Symbol as IMethodSymbol;
-			if (resolvedMethod != null)
-				result.AddData(factory.CreateConstructorProvider(resolvedMethod));
-			result.AddRange(info.CandidateSymbols.OfType<IMethodSymbol>().Select (m => factory.CreateConstructorProvider(m)));
+			if (resolvedMethod != null) {
+				foreach (var c in resolvedMethod.ContainingType.GetMembers ().OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Constructor)) {
+					result.AddData (factory.CreateConstructorProvider (c));
+				}
+			} else {
+				result.AddRange (info.CandidateSymbols.OfType<IMethodSymbol> ().Select (m => factory.CreateConstructorProvider (m)));
+			}
 			return result;
 		}
 		
