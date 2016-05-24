@@ -7,5 +7,6 @@
         SpaceAfterSemicolon="True"
         IndentOnTryWith="False"
         ReorderOpenDeclaration="False"
+		TabsToSpaces="True"
         SpaceAroundDelimiter="True" />
 </FSharpFormattingPolicy>
