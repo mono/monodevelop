@@ -2804,8 +2804,10 @@ namespace Mono.TextEditor
 					}
 				} else {
 					double xPos = position;
-					if (line.Length == 0 && Caret.Column > 1)
+					if (line.Length == 0 && Caret.Column > 1) {
+						wrapper = GetLayout (line);
 						DrawIndent (cr, wrapper, line, lx, y);
+					}
 					DrawCaretLineMarker (cr, xPos, y, lineArea.X + lineArea.Width - xPos, _lineHeight);
 				}
 			}

@@ -18,6 +18,7 @@ COMPAT_ADDIN_VERSION=m4_esyscmd_s([grep ^CompatVersion ../version.config|cut -d 
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, mcs)
+AC_PATH_PROG(FSHARPC, fsharpc)
 
 if test "x$MONO" = "x" ; then
 	AC_MSG_ERROR([Can't find "mono" in your PATH])
@@ -25,6 +26,10 @@ fi
 
 if test "x$MCS" = "x" ; then
   AC_MSG_ERROR([Can't find "mcs" in your PATH])
+fi
+
+if test "x$FSHARPC" = "x" ; then
+  AC_MSG_ERROR([Can't find "fsharpc" in your PATH])
 fi
 
 dnl Find pkg-config

@@ -166,13 +166,20 @@ namespace MonoDevelop.JSon
 		#endregion
 
 		#region IDocumentIndentEngine implementation
-
+		Indent savedStringIndent;
 		public void Push (char ch)
 		{
 			var isNewLine = NewLine.IsNewLine (ch);
 			if (!isNewLine) {
-				if (ch == '"')
+				if (ch == '"') {
 					isInString = !IsInsideString;
+					if (isInString) {
+						savedStringIndent = nextLineIndent;
+						nextLineIndent = new Indent (ctx.GetOptionSet ());
+					} else {
+						nextLineIndent = savedStringIndent;
+					}
+				}
 				if (ch == '{' || ch == '[') {
 					nextLineIndent.Push (IndentType.Block);
 				} else if (ch == '}' || ch == ']') {

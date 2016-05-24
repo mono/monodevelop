@@ -70,6 +70,7 @@ PACKAGES = \
 	build/AddIns/MonoDevelop.SourceEditor.addin.xml \
 	build/AddIns/BackendBindings/BooBinding.addin.xml \
 	build/AddIns/BackendBindings/CSharpBinding.addin.xml \
+	external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml \
 	build/AddIns/BackendBindings/ILAsmBinding.addin.xml \
 	build/AddIns/BackendBindings/JavaBinding.addin.xml \
 	build/AddIns/BackendBindings/VBNetBinding.addin.xml \
