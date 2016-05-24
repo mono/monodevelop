@@ -140,25 +140,6 @@ namespace MonoDevelop.Components.Commands
 				else
 					bindings [key] = string.Join (" ", accelKeys);
 			}
-			return;
-
-			if (accelKeys == null || accelKeys.Length == 0) {
-				bindings.Remove (key);
-				return;
-			}
-
-			accelKeys = accelKeys.Distinct ().ToArray ();
-			
-			if (parent == null)
-				bindings [key] = string.Join (" ", accelKeys);
-			else {
-				// If the key is the same as the default, remove it from the scheme
-				var pbind = parent.GetBindings (cmd).Distinct ();
-				if (new HashSet<string> (accelKeys).SetEquals (pbind))
-					bindings.Remove (key);
-				else
-					bindings[key] = string.Join (" ", accelKeys);
-			}
 		}
 		
 		public void LoadBinding (Command cmd)
@@ -166,12 +147,15 @@ namespace MonoDevelop.Components.Commands
 			var cmdAccesls = GetBindings (cmd);
 			if (cmdAccesls == null || cmdAccesls.Length == 0) {
 				cmd.AccelKey = String.Empty;
+				cmd.AlternateAccelKeys = null;
 				return;
 			}
 			
 			cmd.AccelKey = cmdAccesls [0];
 			if (cmdAccesls.Length > 1)
 				cmd.AlternateAccelKeys = cmdAccesls.Skip (1).ToArray ();
+			else
+				cmd.AlternateAccelKeys = null;
 		}
 		
 		public string [] GetBindings (Command cmd)
@@ -247,7 +231,15 @@ namespace MonoDevelop.Components.Commands
 			writer.WriteStartElement ("scheme");
 			writer.WriteAttributeString ("name", id);
 			
-			foreach (KeyValuePair<string, string> binding in bindings) { 
+			foreach (KeyValuePair<string, string> binding in bindings) {
+
+				string pbind;
+				if (parent?.bindings != null && parent.bindings.TryGetValue (binding.Key, out pbind)) {
+					if (binding.Value == pbind)
+						continue;
+				} else if (string.IsNullOrEmpty (binding.Value))
+					continue;
+
 				writer.WriteStartElement ("binding");
 				writer.WriteAttributeString (commandAttr, binding.Key);
 				writer.WriteAttributeString (shortcutAttr, binding.Value);
