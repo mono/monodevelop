@@ -271,24 +271,6 @@
             id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
             macShortcut="Meta|Control|C"
             shortcut="Ctrl|Alt|C" />
-
-	    <Command id="MonoDevelop.FSharp.InteractiveCut"
-            _label = "Cut"
-            shortcut="Control|X"
-            macShortcut="Meta|X"
-            defaultHandler="MonoDevelop.FSharp.InteractiveCut" />
-				
-		<Command id="MonoDevelop.FSharp.InteractiveCopy"
-            _label = "Copy"
-            shortcut="Control|C"
-            macShortcut="Meta|C"
-            defaultHandler="MonoDevelop.FSharp.InteractiveCopy" />
-				
-		<Command id="MonoDevelop.FSharp.InteractivePaste"
-            _label = "Paste"
-            shortcut="Control|V"
-            macShortcut="Meta|V"
-            defaultHandler="MonoDevelop.FSharp.InteractivePaste" />
       </Category>
     </ComplexCondition>
   </Extension>
