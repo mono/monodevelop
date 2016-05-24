@@ -23,6 +23,12 @@
     <binding command="MonoDevelop.Debugger.DebugCommands.StepOver" shortcut="F10" />
     <binding command="MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" shortcut="F9" />
     <binding command="MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles" shortcut="" />
+    <binding command="MonoDevelop.FSharp.FSharpCommands.ClearFsi" shortcut="" />
+    <binding command="MonoDevelop.FSharp.FSharpCommands.RestartFsi" shortcut="" />
+    <binding command="MonoDevelop.FSharp.FSharpCommands.SendLine" shortcut="" />
+    <binding command="MonoDevelop.FSharp.FSharpCommands.SendReferences" shortcut="" />
+    <binding command="MonoDevelop.FSharp.FSharpCommands.SendSelection" shortcut="" />
+    <binding command="MonoDevelop.FSharp.FSharpCommands.ShowFSharpInteractive" shortcut="" />
     <binding command="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" shortcut="Alt+F8" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Meta+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Meta+X" />
@@ -144,6 +150,7 @@
     <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchNextDocument" shortcut="Control+Down" />
     <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchPreviousDocument" shortcut="" />
     <binding command="MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues" shortcut="Meta+F1" />
+    <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers" shortcut="" />
     <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow" shortcut="" />
     <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow" shortcut="Meta+M" />
     <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.ZoomWindow" shortcut="Control+Meta+=" />
