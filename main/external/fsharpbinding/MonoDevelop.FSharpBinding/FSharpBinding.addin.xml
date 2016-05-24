@@ -227,7 +227,7 @@
             type="check"
             _description="Show F# Interactive pad."
             shortcut="Control|Alt|F"
-            macShortcut="Meta|Control|F"
+            macShortcut="Control|Alt|F"
             defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
 
         <Command id="MonoDevelop.FSharp.FSharpCommands.SendFile"
@@ -248,28 +248,28 @@
             _label = "Send line to F# Interactive"
             _description="Send the current line to F# Interactive"
             shortcut="Ctrl|Alt|L"
-            macShortcut="Meta|Control|L"
+            macShortcut="Ctrl|Alt|L"
             defaultHandler="MonoDevelop.FSharp.SendLine" />
 
         <Command _description="Send the current project references to F# Interactive"
             _label="Send references to F# Interactive"
             defaultHandler="MonoDevelop.FSharp.SendReferences"
             id="MonoDevelop.FSharp.FSharpCommands.SendReferences"
-            macShortcut="Meta|Control|P"
+            macShortcut="Ctrl|Alt|P"
             shortcut="Ctrl|Alt|P" />
 
         <Command _description="Restart F# Interactive"
             _label="Restart F# Interactive"
             defaultHandler="MonoDevelop.FSharp.RestartFsi"
             id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
-            macShortcut="Meta|Control|R"
+            macShortcut="Ctrl|Alt|R"
             shortcut="Ctrl|Alt|R" />
 
         <Command _description="Clear F# Interactive"
             _label="Clear F# Interactive"
             defaultHandler="MonoDevelop.FSharp.ClearFsi"
             id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
-            macShortcut="Meta|Control|C"
+            macShortcut="Ctrl|Alt|C"
             shortcut="Ctrl|Alt|C" />
       </Category>
     </ComplexCondition>
