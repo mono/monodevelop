@@ -2574,7 +2574,7 @@ namespace MonoDevelop.Projects
 				}
 			}
 
-			if (runConfigurations.Count > 0) {
+/*			if (runConfigurations.Count > 0) {
 				// Set the default configuration of the project.
 				// First of the properties that defines the default run configuration
 				var defaultConfProp = globalGroup.GetProperties ().FirstOrDefault (p => p.Name == "RunConfiguration" && IsDefaultSetter (p));
@@ -2586,7 +2586,7 @@ namespace MonoDevelop.Projects
 						globalGroup.SetValue ("RunConfiguration", runConfig.Name, condition: " '$(RunConfiguration)' == '' ");
 					}
 				}
-			}
+			}*/
 
 			if (TypeGuid == MSBuildProjectService.GenericItemGuid) {
 				DataType dt = MSBuildProjectService.DataContext.GetConfigurationDataType (GetType ());

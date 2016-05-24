@@ -55,6 +55,9 @@ namespace MonoDevelop.Projects
 		[ItemProperty (DefaultValue = "")]
 		public FilePath StartProgram { get; set; } = "";
 
+		[ItemProperty (SkipEmpty = true)]
+		public EnvironmentVariableCollection EnvironmentVariables { get; private set; } = new EnvironmentVariableCollection ();
+
 		public class StartActions
 		{
 			public const string Project = "Project";
@@ -64,72 +67,13 @@ namespace MonoDevelop.Projects
 		internal protected override void Read (IPropertySet pset)
 		{
 			base.Read (pset);
-
-			var svars = pset.GetValue ("EnvironmentVariables");
-			ParseEnvironmentVariables (svars, environmentVariables);
-
-			// Kep a clone of the loaded env vars, so we can check if they have changed when saving
-			loadedEnvironmentVariables = new Dictionary<string, string> (environmentVariables);
-
 			pset.ReadObjectProperties (monoParameters, monoParameters.GetType (), false);
-		}
-
-		void ParseEnvironmentVariables (string xml, Dictionary<string, string> dict)
-		{
-			if (string.IsNullOrEmpty (xml)) {
-				dict.Clear ();
-				return;
-			}
-			var vars = XElement.Parse (xml);
-			if (vars != null) {
-				foreach (var val in vars.Elements (XName.Get ("Variable", MSBuildProject.Schema))) {
-					var name = (string)val.Attribute ("name");
-					if (name != null)
-						dict [name] = (string)val.Attribute ("value");
-				}
-			}
 		}
 
 		internal protected override void Write (IPropertySet pset)
 		{
 			pset.WriteObjectProperties (monoParameters, monoParameters.GetType (), false);
-
-			// Save the env vars only if the dictionary has changed.
-
-			if (loadedEnvironmentVariables == null || loadedEnvironmentVariables.Count != environmentVariables.Count || loadedEnvironmentVariables.Any (e => !environmentVariables.ContainsKey (e.Key) || environmentVariables [e.Key] != e.Value)) {
-				if (environmentVariables.Count > 0) {
-					XElement e = new XElement (XName.Get ("EnvironmentVariables", MSBuildProject.Schema));
-					foreach (var v in environmentVariables) {
-						var val = new XElement (XName.Get ("Variable", MSBuildProject.Schema));
-						val.SetAttributeValue ("name", v.Key);
-						val.SetAttributeValue ("value", v.Value);
-						e.Add (val);
-					}
-					pset.SetValue ("EnvironmentVariables", e.ToString (SaveOptions.DisableFormatting));
-				} else
-					pset.RemoveProperty ("EnvironmentVariables");
-				loadedEnvironmentVariables = new Dictionary<string, string> (environmentVariables);
-			}
-
 			base.Write (pset);
-		}
-
-		Dictionary<string, string> loadedEnvironmentVariables;
-		Dictionary<string, string> environmentVariables = new Dictionary<string, string> ();
-		public Dictionary<string, string> EnvironmentVariables {
-			get { return environmentVariables; }
-		}
-
-		public Dictionary<string, string> GetParsedEnvironmentVariables ()
-		{
-			if (ParentItem == null)
-				return environmentVariables;
-
-			StringTagModel tagSource = ParentItem.GetStringTagModel (ParentItem.DefaultConfiguration.Selector);
-			Dictionary<string, string> vars = new Dictionary<string, string> ();
-			foreach (var v in environmentVariables)
-				vars [v.Key] = StringParserService.Parse (v.Value, tagSource);
-			return vars;
 		}
 
 		public MonoExecutionParameters MonoParameters {
@@ -146,7 +90,7 @@ namespace MonoDevelop.Projects
 			StartWorkingDirectory = other.StartWorkingDirectory;
 			StartProgram = other.StartProgram;
 			StartAction = other.StartAction;
-			environmentVariables = new Dictionary<string, string> (other.environmentVariables);
+			EnvironmentVariables = new EnvironmentVariableCollection (other.EnvironmentVariables);
 			monoParameters = other.monoParameters.Clone ();
 		}
 	}
