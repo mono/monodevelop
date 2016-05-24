@@ -34,7 +34,6 @@ using Foundation;
 using Xwt;
 
 using MonoDevelop.Components.MainToolbar;
-using MacInterop;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 
