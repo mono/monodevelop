@@ -15,6 +15,7 @@ open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
+open MonoDevelop.Ide.Commands
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui.Content
@@ -398,10 +399,13 @@ type FSharpInteractivePad() =
 
     member x.ClearFsi() = editor.Text <- ""
 
+    [<CommandHandler (EditCommands.Cut)>]
     member x.Cut() = clipboardHandler.Cut()
 
+    [<CommandHandler (EditCommands.Copy)>]
     member x.Copy() = clipboardHandler.Copy()
 
+    [<CommandHandler (EditCommands.Paste)>]
     member x.Paste() = clipboardHandler.Paste()
 
     member x.Save() =
@@ -499,15 +503,6 @@ type FSharpFsiEditorCompletion() =
       override x.Update(info:CommandInfo) =
           info.Enabled <- true
           info.Visible <- true
-
-  type InteractiveCut() =
-      inherit InteractiveCommand(fun fsi -> fsi.Cut())
-
-  type InteractiveCopy() =
-      inherit InteractiveCommand(fun fsi -> fsi.Copy())
-
-  type InteractivePaste() =
-      inherit InteractiveCommand(fun fsi -> fsi.Paste())
 
   type SendSelection() =
       inherit InteractiveCommand(fun fsi -> fsi.SendSelection())
