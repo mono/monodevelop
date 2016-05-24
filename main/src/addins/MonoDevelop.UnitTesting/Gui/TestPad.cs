@@ -46,6 +46,8 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.Commands;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MonoDevelop.Components.AutoTest;
+using SCM = System.ComponentModel;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -188,11 +190,14 @@ namespace MonoDevelop.UnitTesting
 			
 			Frame tf = new Frame ();
 			ScrolledWindow sw = new ScrolledWindow ();
-			detailsTree = new TreeView ();
+			detailsTree = new TreeView { Name = "testPadDetailsTree" };
 			
 			detailsTree.HeadersVisible = true;
 			detailsTree.RulesHint = true;
 			detailsStore = new ListStore (typeof(object), typeof(string), typeof (string), typeof (string), typeof (string));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__UnitTest", "store__Name","store__Passed",
+				"store__ErrorsAndFailures", "store__Ignored");
+			SCM.TypeDescriptor.AddAttributes (detailsStore, modelAttr);
 			
 			CellRendererText trtest = new CellRendererText ();
 			CellRendererText tr;
@@ -251,10 +256,12 @@ namespace MonoDevelop.UnitTesting
 			tf = new Frame ();
 			sw = new ScrolledWindow ();
 			tf.Add (sw);
-			regressionTree = new TreeView ();
+			regressionTree = new TreeView { Name = "testPadRegressionTree" };
 			regressionTree.HeadersVisible = false;
 			regressionTree.RulesHint = true;
 			regressionStore = new ListStore (typeof(object), typeof(string), typeof (Xwt.Drawing.Image));
+			SemanticModelAttribute regressionModelAttr = new SemanticModelAttribute ("store__UnitTest", "store__Name", "store__Icon");
+			SCM.TypeDescriptor.AddAttributes (detailsStore, regressionModelAttr);
 			
 			CellRendererText trtest2 = new CellRendererText ();
 			var pr = new CellRendererImage ();
@@ -280,6 +287,8 @@ namespace MonoDevelop.UnitTesting
 			failedTree.HeadersVisible = false;
 			failedTree.RulesHint = true;
 			failedStore = new ListStore (typeof(object), typeof(string), typeof (Xwt.Drawing.Image));
+			SemanticModelAttribute failedModelAttr = new SemanticModelAttribute ("store__UnitTest", "store__Name", "store__Icon");
+			SCM.TypeDescriptor.AddAttributes (failedStore, failedModelAttr);
 			
 			trtest2 = new CellRendererText ();
 			pr = new CellRendererImage ();
