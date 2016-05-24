@@ -232,6 +232,7 @@
 		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
 		<Scheme id="Xcode" _name = "Xcode" resource="KeyBindingSchemeXcode.xml" forMac="true"/>
+		<Scheme id="VSCodeMAC" _name = "Visual Studio Code" resource="KeyBindingSchemeVSCode-mac.xml" forMac="true"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TaskList/View">
