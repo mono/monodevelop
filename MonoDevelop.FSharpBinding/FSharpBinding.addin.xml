@@ -299,9 +299,9 @@
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.ClearFsi" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.RestartFsi" />
     <SeparatorItem id = "Separator1" />
-    <CommandItem id = "MonoDevelop.FSharp.InteractiveCut" />
-    <CommandItem id = "MonoDevelop.FSharp.InteractiveCopy" />
-    <CommandItem id = "MonoDevelop.FSharp.InteractivePaste" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Cut" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+	<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Paste" />
   </Extension>
 	
   <Extension path = "/MonoDevelop/Ide/MainMenu/Edit">

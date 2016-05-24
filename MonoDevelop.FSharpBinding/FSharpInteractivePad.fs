@@ -399,14 +399,26 @@ type FSharpInteractivePad() =
 
     member x.ClearFsi() = editor.Text <- ""
 
-    [<CommandHandler (EditCommands.Cut)>]
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Cut")>]
     member x.Cut() = clipboardHandler.Cut()
 
-    [<CommandHandler (EditCommands.Copy)>]
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Cut")>]
+    member x.CanCut(ci:CommandInfo) =
+        ci.Enabled <- clipboardHandler.EnableCut
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Copy")>]
     member x.Copy() = clipboardHandler.Copy()
 
-    [<CommandHandler (EditCommands.Paste)>]
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Copy")>]
+    member x.CanCopy(ci:CommandInfo) =
+        ci.Enabled <- clipboardHandler.EnableCopy
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Paste")>]
     member x.Paste() = clipboardHandler.Paste()
+
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Paste")>]
+    member x.CanPaste(ci:CommandInfo) =
+        ci.Enabled <- clipboardHandler.EnablePaste
 
     member x.Save() =
         let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as script"), MonoDevelop.Components.FileChooserAction.Save)
