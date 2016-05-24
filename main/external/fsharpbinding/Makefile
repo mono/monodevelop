@@ -31,7 +31,7 @@ build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj MonoDevelop.FSharpBin
 pack: build
 	-rm -fr pack/$(config)
 	@-mkdir -p pack/$(config)
-	$(MDTOOL) setup pack ../../../main/build/Addins/BackendBindings/FSharpBinding.dll -d:pack/$(config)
+	$(MDTOOL) setup pack ../../../main/build/AddIns/BackendBindings/FSharpBinding.dll -d:pack/$(config)
 
 install: pack
 	$(MDTOOL) setup install -y pack/$(config)/MonoDevelop.FSharpBinding_$(MDVERSION4).mpack 
