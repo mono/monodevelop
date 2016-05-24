@@ -156,5 +156,30 @@
 			<Include regex='\[\s*ContextAction\s*\(\s*"(.*?[^\\])".*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='TranslateString\s*\(\s*"(.*?[^\\])"\s*[\)]' regexOptions="Singleline" escapeMode="CSharp"/>
 		</RegexScanner>
+		<RegexScanner extension="fs">
+			<Exclude regex='@".*?"' />	                  <!-- Strings starting with @ -->
+			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
+			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
+			<Exclude regex='(\*(?:.|\n)*?\*)' />          <!-- Block comments -->
+
+			<Include regex='\[&lt;\s*LocalizedDisplayName?\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='\[&lt;\s*LocalizedDescription\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='\[&lt;\s*LocalizedCategory\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='GetString\s*\(\s*@"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
+			<Include regex='GetPluralString\s*\(\s*@"(.*?[^\\])"\s*,\s*@"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
+			<Transform regex='([^\\])"\s*\+\s*"' value='$1' regexOptions="Singleline"/><!-- strip out "+" concatenations -->
+			
+			<Include regex='\[&lt;\s*IssueDescription\s*\(\s*"(.*?[^\\])".*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='\[&lt;\s*ContextAction\s*\(\s*"(.*?[^\\])".*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='TranslateString\s*\(\s*"(.*?[^\\])"\s*[\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+		</RegexScanner>
 	</Extension>
 </ExtensionModel>
