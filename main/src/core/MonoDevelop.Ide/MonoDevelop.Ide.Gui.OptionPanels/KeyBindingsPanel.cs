@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				UpdateWarningLabel ();
 			};
 			updateButton.Clicked += OnUpdateButtonClick;
-			addButton.Clicked += OnAddButtonClick;
+			addButton.Clicked += OnAddRemoveButtonClick;
 
 			currentBindings = KeyBindingService.CurrentKeyBindingSet.Clone ();
 
@@ -399,21 +399,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			set {
 				currentKey = value;
 				accelEntry.Text = value == null? "" : KeyBindingManager.BindingToDisplayLabel (value, false, true);
-
-				if (CurrentSelectedBinding != null) {
-					if (string.IsNullOrEmpty (value))
-						updateButton.Label = GettextCatalog.GetString ("Delete");
-					else
-						updateButton.Label = GettextCatalog.GetString ("Apply");
-
-					if (CurrentSelectedBinding.AllKeys.Count == 0) {
-						updateButton.Sensitive = false;
-						addButton.Sensitive = true;
-					} else
-						updateButton.Sensitive = addButton.Sensitive = !CurrentSelectedBinding.AllKeys.Contains (value);
-				} else {
-					updateButton.Sensitive = addButton.Sensitive = false;
-				}
+				UpdateButtons ();
 			}
 		}
 
@@ -436,12 +422,36 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (accelIncomplete)
 				CurrentKey = chord != null ? chord : string.Empty;
 		}
+
+		void UpdateButtons ()
+		{
+			if (CurrentSelectedBinding != null) {
+
+				if (CurrentSelectedBinding.AllKeys.Count == 0 && string.IsNullOrEmpty (currentKey)) {
+					updateButton.Sensitive = false;
+					addButton.Sensitive = false;
+				} else {
+					if (CurrentSelectedBinding.AllKeys.Contains (currentKey)) {
+						addButton.Sensitive = true;
+						addButton.Label = GettextCatalog.GetString ("Delete");
+					} else {
+						addButton.Sensitive = true;
+						addButton.Label = GettextCatalog.GetString ("Add");
+					}
+					updateButton.Sensitive = !CurrentSelectedBinding.AllKeys.Contains (currentKey);
+				}
+			} else {
+				updateButton.Sensitive = addButton.Sensitive = false;
+			}
+		}
 		
 		void OnUpdateButtonClick (object sender, EventArgs e)
 		{
 			if (CurrentSelectedBinding != null) {
 				if (string.IsNullOrEmpty (CurrentKey))
 					CurrentSelectedBinding.AllKeys.RemoveAt (CurrentSelectedBinding.SelectedKey);
+				else if (CurrentSelectedBinding.AllKeys.Count == 0)
+					CurrentSelectedBinding.AllKeys.Add (CurrentKey);
 				else
 					CurrentSelectedBinding.AllKeys [CurrentSelectedBinding.SelectedKey] = CurrentKey;
 				var binding = string.Join (" ", CurrentSelectedBinding.AllKeys);
@@ -449,21 +459,25 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				currentBindings.SetBinding (currentSelectedBinding.Command, CurrentSelectedBinding.AllKeys.ToArray ());
 				SelectCurrentScheme ();
 				keyTreeView.QueueDraw ();
+				UpdateButtons ();
 			}
 			UpdateConflictsWarning ();
 		}
 
-		void OnAddButtonClick (object sender, EventArgs e)
+		void OnAddRemoveButtonClick (object sender, EventArgs e)
 		{
-			if (CurrentSelectedBinding != null && !string.IsNullOrEmpty (CurrentKey)) {
-				CurrentSelectedBinding.AllKeys.Add (CurrentKey);
+			if (CurrentSelectedBinding != null) {
+				if (string.IsNullOrEmpty (CurrentKey) || CurrentSelectedBinding.AllKeys.Contains (CurrentKey))
+					CurrentSelectedBinding.AllKeys.RemoveAt (CurrentSelectedBinding.SelectedKey);
+				else
+					CurrentSelectedBinding.AllKeys.Add (CurrentKey);
 
 				var binding = string.Join (" ", CurrentSelectedBinding.AllKeys);
-
 				keyStore.SetValue (currentSelectedBinding.Iter, bindingCol, binding);
 				currentBindings.SetBinding (currentSelectedBinding.Command, CurrentSelectedBinding.AllKeys.ToArray ());
 				SelectCurrentScheme ();
 				keyTreeView.QueueDraw ();
+				UpdateButtons ();
 			}
 			UpdateConflictsWarning ();
 		}
