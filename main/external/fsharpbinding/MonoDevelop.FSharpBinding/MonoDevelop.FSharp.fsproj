@@ -18,7 +18,7 @@
     <DebugSymbols>True</DebugSymbols>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>..\..\..\build\Addins\BackendBindings</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\BackendBindings</OutputPath>
     <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <Externalconsole>true</Externalconsole>
@@ -44,7 +44,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>..\..\..\build\Addins\BackendBindings</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\BackendBindings</OutputPath>
     <DefineConstants>TRACE;$(DefineConstants)</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <OptimizeCode>true</OptimizeCode>
