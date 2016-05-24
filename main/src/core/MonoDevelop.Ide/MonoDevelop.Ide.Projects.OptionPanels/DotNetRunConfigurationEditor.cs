@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		TextEntry appEntry;
 		TextEntry argumentsEntry;
 		TextEntry workingDir;
+		EnvironmentVariableCollectionEditor envVars;
 		DotNetRunConfiguration config;
 
 		public DotNetRunConfigurationEditorWidget ()
@@ -92,9 +93,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			PackStart (new HSeparator () { MarginTop = 12, MarginBottom = 12 });
 
 			PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
-			var list = new ListView ();
+			envVars = new EnvironmentVariableCollectionEditor ();
 
-			PackStart (list, true);
+			PackStart (envVars, true);
 
 			radioStartProject.ActiveChanged += (sender, e) => UpdateStatus ();
 		}
@@ -110,7 +111,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			appEntry.Text = config.StartProgram.ToString ();
 			argumentsEntry.Text = config.StartArguments;
 			workingDir.Text = config.StartWorkingDirectory;
-
+			envVars.LoadValues (config.EnvironmentVariables);
 			UpdateStatus ();
 		}
 
@@ -128,6 +129,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			config.StartProgram = appEntry.Text;
 			config.StartArguments = argumentsEntry.Text;
 			config.StartWorkingDirectory = workingDir.Text;
+			envVars.StoreValues (config.EnvironmentVariables);
 
 		}
 	}
