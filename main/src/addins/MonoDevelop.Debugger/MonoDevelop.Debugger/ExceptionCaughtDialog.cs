@@ -133,7 +133,7 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionValueTreeView = new ObjectValueTreeView ();
 			ExceptionValueTreeView.Frame = DebuggingService.CurrentFrame;
-			ExceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ());
+			ExceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
 			ExceptionValueTreeView.AllowPopupMenu = false;
 			ExceptionValueTreeView.AllowExpanding = true;
 			ExceptionValueTreeView.AllowPinning = false;
@@ -376,7 +376,7 @@ namespace MonoDevelop.Debugger
 			var eventBox = new EventBox ();
 			eventBox.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // top and bottom padders
 			var vbox = new VBox ();
-			vbox.PackStart (InnerExceptionsTreeView, true, true, 9);
+			vbox.PackStart (InnerExceptionsTreeView, true, true, 12);
 			eventBox.Add (vbox);
 			eventBox.ShowAll ();
 			return eventBox;
@@ -550,7 +550,7 @@ namespace MonoDevelop.Debugger
 					layout.SetMarkup ("<b>" + Text + "</b>");
 					layout.GetPixelExtents (out ink, out logical);
 					width = logical.Width + 10;
-					height = logical.Height + 6;
+					height = logical.Height + 2;
 
 					x_offset = 0;
 					y_offset = 0;
@@ -570,22 +570,21 @@ namespace MonoDevelop.Debugger
 											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Green,
 											 Styles.ExceptionCaughtDialog.TreeSelectedBackgroundColor.Blue); // selected
 							cr.Fill ();
-							cr.SetSourceColor (new Cairo.Color (Ide.Gui.Styles.BaseForegroundColor.Red,
-																Ide.Gui.Styles.BaseForegroundColor.Green,
-																Ide.Gui.Styles.BaseForegroundColor.Blue));
-							layout.SetMarkup ("<b>" + Text + "</b>");
+							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Red,
+											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Green,
+											 Styles.ExceptionCaughtDialog.TreeSelectedTextColor.Blue);
 						} else {
 							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeBackgroundColor.Red,
 											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Green,
 											 Styles.ExceptionCaughtDialog.TreeBackgroundColor.Blue); // background
 							cr.Fill ();
-							cr.SetSourceColor (new Cairo.Color (Ide.Gui.Styles.BaseForegroundColor.Red,
-																Ide.Gui.Styles.BaseForegroundColor.Green,
-																Ide.Gui.Styles.BaseForegroundColor.Blue));
-							layout.SetMarkup (Text);
+							cr.SetSourceRGB (Styles.ExceptionCaughtDialog.TreeTextColor.Red,
+											 Styles.ExceptionCaughtDialog.TreeTextColor.Green,
+											 Styles.ExceptionCaughtDialog.TreeTextColor.Blue);
 						}
 
-						cr.Translate (cell_area.X + 10, cell_area.Y + 3);
+						layout.SetMarkup (Text);
+						cr.Translate (cell_area.X + 10, cell_area.Y + 1);
 						cr.ShowLayout (layout);
 					}
 				}

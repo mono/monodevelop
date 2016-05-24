@@ -46,8 +46,11 @@ namespace MonoDevelop.Debugger
 		public class ExceptionCaughtDialogStyle
 		{
 			public Color TreeBackgroundColor { get; internal set; }
+			public Color TreeTextColor { get; internal set; }
 			public Color LineNumberTextColor { get; internal set; }
 			public Color TreeSelectedBackgroundColor { get; internal set; }
+			public Color TreeSelectedTextColor { get; internal set; }
+			public Color ValueTreeBackgroundColor { get; internal set; }
 		}
 
 		static Styles ()
@@ -60,6 +63,10 @@ namespace MonoDevelop.Debugger
 		{
 			ExceptionCaughtDialog = new ExceptionCaughtDialogStyle ();
 			ExceptionCaughtDialog.TreeBackgroundColor = Ide.Gui.Styles.BrowserPadBackground;
+			ExceptionCaughtDialog.TreeTextColor = Ide.Gui.Styles.BaseForegroundColor;
+			ExceptionCaughtDialog.TreeSelectedBackgroundColor = Ide.Gui.Styles.BaseSelectionBackgroundColor;
+			ExceptionCaughtDialog.TreeSelectedTextColor = Ide.Gui.Styles.BaseSelectionTextColor;
+			ExceptionCaughtDialog.ValueTreeBackgroundColor = Ide.Gui.Styles.PadBackground;
 
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#e9f2fc");
@@ -69,7 +76,6 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueModifiedText = Color.FromName ("#1FAECE");
 
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#BBBBBB");
-				ExceptionCaughtDialog.TreeSelectedBackgroundColor = ExceptionCaughtDialog.TreeBackgroundColor.WithIncreasedLight (-0.1);
 			} else {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#7c8695");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
@@ -77,8 +83,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueDisabledText = Color.FromName ("#5a5a5a");
 				ObjectValueTreeValueModifiedText = Color.FromName ("#4FCAE6");
 
-				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#BBBBBB");
-				ExceptionCaughtDialog.TreeSelectedBackgroundColor = ExceptionCaughtDialog.TreeBackgroundColor.WithIncreasedLight (0.1);
+				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#888888");
 			}
 
 			// Shared
