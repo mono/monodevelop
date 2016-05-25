@@ -562,26 +562,28 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void UpdateWarningLabel ()
 		{
-			if (CurrentKey.Length == 0) {
+			if (CurrentKey.Length == 0 || CurrentSelectedBinding?.Command == null) {
 				labelMessage.Visible = false;
 				return;
 			}
 
-			Command cmd = null;
-			TreeIter iter;
-			if (keyTreeView.Selection.GetSelected (out iter))
-				cmd = (Command) keyTreeView.Model.GetValue (iter, commandCol);
-			
-			if (cmd == null) {
-				labelMessage.Visible = false;
-				return;
-			}
-			
 			var bindings = FindBindings (CurrentKey);
-			bindings.Remove (cmd);
+			bindings.Remove (CurrentSelectedBinding.Command);
 			
 			if (bindings.Count > 0) {
-				labelMessage.Markup = "<b>" + GettextCatalog.GetString ("This key combination is already bound to command '{0}'", bindings [0].DisplayName) + "</b>";
+				HashSet<Command> cmdConflicts = null;
+				if (IdeApp.CommandService.Conflicts.TryGetValue (CurrentSelectedBinding.Command, out cmdConflicts)) {
+					foreach (var confl in cmdConflicts) {
+						if (bindings.Contains (confl)) {
+							var conflName = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + confl.DisplayName + "</span>";
+							labelMessage.Markup = "<b>" + GettextCatalog.GetString ("This key combination is already bound to command '{0}' in the same context", conflName) + "</b>";
+							labelMessage.Visible = true;
+							return;
+						}
+					}
+				}
+				var cmdname = "<span foreground='" + Styles.WarningForegroundColor.ToHexString (false) + "'>" + bindings [0].DisplayName + "</span>";
+				labelMessage.Markup = "<b>" + GettextCatalog.GetString ("This key combination is already bound to command '{0}'", cmdname) + "</b>";
 				labelMessage.Visible = true;
 			}
 			else
@@ -753,10 +755,15 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						hasConflict = cmdConflicts.Contains (hit.Command);
 
 					if (hasConflict) {
+						var acmdConflicts = cmdConflicts.Where (cmd => cmd != hit.Command).ToArray ();
+						text += GettextCatalog.GetPluralString (
+							"This shortcut is assigned to another command that is available\nin the same context. Please set a different shortcut.",
+							"This shortcut is assigned to other commands that are available\nin the same context. Please set a different shortcut.",
+							acmdConflicts.Length) + "\n\n";
 						text += GettextCatalog.GetString ("Conflicts:");
-						foreach (var conflict in cmdConflicts.Where (cmd => cmd != hit.Command))
+						foreach (var conflict in acmdConflicts)
 							text += "\n\u2022 " + conflict.Category + " \u2013 " + conflict.DisplayName;
-						cmdDuplicates = cmdDuplicates.Except (cmdConflicts);
+						cmdDuplicates = cmdDuplicates.Except (acmdConflicts);
 					}
 					if (cmdDuplicates.Count () > 0) {
 						if (hasConflict)
