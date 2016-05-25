@@ -785,11 +785,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			[GLib.ConnectBefore ()]
 			void HandleKeyTreeButtonPressEvent (object o, ButtonPressEventArgs args)
 			{
+				if (KeyBindingSelected == null)
+					return;
 				var hit = HitTest (args.Event.X, args.Event.Y);
-				if (!hit.ButtonBounds.IsEmpty && KeyBindingSelected != null) {
-					var a = new KeyBindingSelectedEventArgs (hit.AllKeys, hit.SelectedKey, hit.Command, hit.Iter);
-					KeyBindingSelected (this, a);
-				}
+				var a = new KeyBindingSelectedEventArgs (hit.AllKeys, hit.SelectedKey, hit.Command, hit.Iter);
+				KeyBindingSelected (this, a);
 			}
 
 			KeyBindingHitTestResult HitTest (double mouseX, double mouseY)
