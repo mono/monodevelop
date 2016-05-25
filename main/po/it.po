@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: monodevelop 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-24 23:01:09+0300\n"
+"POT-Creation-Date: 2016-05-25 18:39:03+0300\n"
 "PO-Revision-Date: 2009-04-05 18:18+0200\n"
 "Last-Translator: Milo Casagrande <milo@ubuntu.com>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -6472,6 +6472,7 @@ msgstr "_Esplora..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/ConsoleView.cs:9
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/Services/FSharpConsoleView.fs:39
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 #, fuzzy
 msgid "Clear"
 msgstr "_Pulisci"
@@ -9268,6 +9269,7 @@ msgid "Create Patch"
 msgstr "Crea pacchetto"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:58
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 #, fuzzy
 msgid "Open"
 msgstr "_Apri"
@@ -13453,6 +13455,7 @@ msgstr "Sal_va ed esci"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:5
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:30
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:69
 #, fuzzy
 msgid "_Go to Declaration"
 msgstr "Vai alla _dichiarazione"
@@ -15103,11 +15106,14 @@ msgid "In _Document"
 msgstr "Documenti"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:27
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:65
 #, fuzzy
 msgid "Refactor"
 msgstr "Refactory"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:30
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:69
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:71
 msgid "{0}, Line {1}"
 msgstr "{0}, riga {1}"
 
@@ -15415,31 +15421,37 @@ msgid "Resolving symbol…"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Type"
 msgstr "Vai alla _base"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Property"
 msgstr "Vai alla _base"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Interface Property"
 msgstr "Rinomina proprietà"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Event"
 msgstr "Vai alla _base"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Interface Event"
 msgstr "Metodo interfaccia"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Method"
 msgstr "Vai alla _base"
@@ -15451,6 +15463,8 @@ msgid "Go to _Interface Method"
 msgstr "Metodo interfaccia"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:71
 #, fuzzy
 msgid "Go to _Base Symbol"
 msgstr "Vai alla _base"
@@ -15751,6 +15765,7 @@ msgid "Sort and remove usings"
 msgstr "Collegamenti di supporto"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindMemberOverloadsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:75
 #, fuzzy
 msgid "Find Method Overloads"
 msgstr "Cerca ri_ferimenti"
@@ -15761,21 +15776,25 @@ msgid "Find Indexer Overloads"
 msgstr "Cerca ri_ferimenti"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Implementing Types"
 msgstr "Trova classi _implementor"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Derived Types"
 msgstr "Definisci simboli:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Implementing Symbols"
 msgstr "Definisci simboli:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Derived Symbols"
 msgstr "Definisci simboli:"
@@ -24499,10 +24518,25 @@ msgstr "Esegui il progetto corrente"
 msgid "Build current startup project"
 msgstr "Genera il progetto corrente"
 
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:74
 #, fuzzy
 msgid "Save as script"
 msgstr "Selezionare script di produzione"
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
+msgid "Reset"
+msgstr ""
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
+#, fuzzy
+msgid "Find overriden Symbols"
+msgstr "Definisci simboli:"
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:76
+#, fuzzy
+msgid "Find Type Extensions"
+msgstr "Estensione file"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:2
 #, fuzzy

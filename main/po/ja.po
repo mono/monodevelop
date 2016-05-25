@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-24 23:01:09+0300\n"
+"POT-Creation-Date: 2016-05-25 18:39:03+0300\n"
 "PO-Revision-Date: 2012-11-22 23:11:05+0900\n"
 "Last-Translator: Atsushi Eno <atsushi@ximian.com>\n"
 "Language-Team: Atsushi Enomoto <atsushi@ximian.com>\n"
@@ -6360,6 +6360,7 @@ msgstr "ブラウズ... (_B)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/ConsoleView.cs:9
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/Services/FSharpConsoleView.fs:39
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 msgid "Clear"
 msgstr "クリア"
 
@@ -9124,6 +9125,7 @@ msgid "Create Patch"
 msgstr "パッチの作成"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:58
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 msgid "Open"
 msgstr "開く"
 
@@ -13311,6 +13313,7 @@ msgstr "using文の並べ替えと削除 (_E)"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:5
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:30
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:69
 #, fuzzy
 msgid "_Go to Declaration"
 msgstr "宣言に移動 (_G)"
@@ -14952,10 +14955,13 @@ msgid "In _Document"
 msgstr "ドキュメント"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:27
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:65
 msgid "Refactor"
 msgstr "リファクタリング"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:30
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:69
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:71
 msgid "{0}, Line {1}"
 msgstr "{0}, {1}行目"
 
@@ -15259,31 +15265,37 @@ msgid "Resolving symbol…"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Type"
 msgstr "基底クラスに移動 (_b)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Property"
 msgstr "基底クラスに移動 (_b)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Interface Property"
 msgstr "プロパティ名の変更"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Event"
 msgstr "基底クラスに移動 (_b)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Interface Event"
 msgstr "インターフェースメソッド"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Method"
 msgstr "基底クラスに移動 (_b)"
@@ -15295,6 +15307,8 @@ msgid "Go to _Interface Method"
 msgstr "インターフェースメソッド"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:71
 #, fuzzy
 msgid "Go to _Base Symbol"
 msgstr "基底クラスに移動 (_b)"
@@ -15596,6 +15610,7 @@ msgid "Sort and remove usings"
 msgstr "using文を並べ替え (_S)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindMemberOverloadsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:75
 #, fuzzy
 msgid "Find Method Overloads"
 msgstr "参照を探す (_F)"
@@ -15606,21 +15621,25 @@ msgid "Find Indexer Overloads"
 msgstr "参照を探す (_F)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Implementing Types"
 msgstr "実装したクラスを検索 (_i)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Derived Types"
 msgstr "シンボルを定義:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Implementing Symbols"
 msgstr "シンボルを定義:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Derived Symbols"
 msgstr "シンボルを定義:"
@@ -24279,10 +24298,25 @@ msgstr "現在のプロジェクトを実行"
 msgid "Build current startup project"
 msgstr "現在のプロジェクトをビルド"
 
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:74
 #, fuzzy
 msgid "Save as script"
 msgstr "デプロイ スクリプトの選択"
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
+msgid "Reset"
+msgstr ""
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
+#, fuzzy
+msgid "Find overriden Symbols"
+msgstr "シンボルを定義:"
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:76
+#, fuzzy
+msgid "Find Type Extensions"
+msgstr "ファイル拡張子"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:2
 #, fuzzy

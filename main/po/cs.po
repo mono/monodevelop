@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-24 23:01:09+0300\n"
+"POT-Creation-Date: 2016-05-25 18:39:03+0300\n"
 "PO-Revision-Date: 2010-05-28 16:54:24+0200\n"
 "Last-Translator: David Makovský <yakeen@sannyas-on.net>\n"
 "Language-Team: cs <cs@li.org>\n"
@@ -6237,6 +6237,7 @@ msgstr "_Procházet..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/ConsoleView.cs:9
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/Services/FSharpConsoleView.fs:39
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 msgid "Clear"
 msgstr "Vyčistit"
 
@@ -8956,6 +8957,7 @@ msgid "Create Patch"
 msgstr "Vytvořit patch"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:58
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 msgid "Open"
 msgstr "Otevřít"
 
@@ -13089,6 +13091,7 @@ msgstr "Ode_brat a setřídit using řádky"
 
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:5
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:30
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:69
 #, fuzzy
 msgid "_Go to Declaration"
 msgstr "_Jít na deklaraci"
@@ -14722,10 +14725,13 @@ msgid "In _Document"
 msgstr "Dokument"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:27
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:65
 msgid "Refactor"
 msgstr "Refaktorovat"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:30
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:69
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:71
 msgid "{0}, Line {1}"
 msgstr "{0}, řádek {1}"
 
@@ -15032,31 +15038,37 @@ msgid "Resolving symbol…"
 msgstr ""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Type"
 msgstr "Jít na _bázovou třídu"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Property"
 msgstr "Jít na _bázovou třídu"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Interface Property"
 msgstr "Přejmenovat vlastnost"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Event"
 msgstr "Jít na _bázovou třídu"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Interface Event"
 msgstr "Metodu rozhraní"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
 #, fuzzy
 msgid "Go to _Base Method"
 msgstr "Jít na _bázovou třídu"
@@ -15068,6 +15080,8 @@ msgid "Go to _Interface Method"
 msgstr "Metodu rozhraní"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/GotoBaseDeclarationHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:70
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:71
 #, fuzzy
 msgid "Go to _Base Symbol"
 msgstr "Jít na _bázovou třídu"
@@ -15370,6 +15384,7 @@ msgid "Sort and remove usings"
 msgstr "_Setřídit using řádky"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindMemberOverloadsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:75
 #, fuzzy
 msgid "Find Method Overloads"
 msgstr "_Najít reference"
@@ -15380,21 +15395,25 @@ msgid "Find Indexer Overloads"
 msgstr "_Najít reference"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Implementing Types"
 msgstr "Hledat _implementující třídy"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Derived Types"
 msgstr "Definovat symboly:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Implementing Symbols"
 msgstr "Definovat symboly:"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Navigation/FindDerivedSymbolsHandler.cs:1
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
 #, fuzzy
 msgid "Find Derived Symbols"
 msgstr "Definovat symboly:"
@@ -24009,10 +24028,25 @@ msgstr "Spustit aktuální projekt"
 msgid "Build current startup project"
 msgstr "Sestavit aktuální projekt"
 
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:74
 #, fuzzy
 msgid "Save as script"
 msgstr "Popis"
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpInteractivePad.fs:67
+msgid "Reset"
+msgstr ""
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:74
+#, fuzzy
+msgid "Find overriden Symbols"
+msgstr "Definovat symboly:"
+
+#: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:76
+#, fuzzy
+msgid "Find Type Extensions"
+msgstr "Přípona souboru"
 
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/FSharpFormattingPolicy.fs:2
 #, fuzzy
