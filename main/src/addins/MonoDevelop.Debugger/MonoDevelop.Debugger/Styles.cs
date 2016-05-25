@@ -48,6 +48,7 @@ namespace MonoDevelop.Debugger
 			public Color TreeBackgroundColor { get; internal set; }
 			public Color TreeTextColor { get; internal set; }
 			public Color LineNumberTextColor { get; internal set; }
+			public Color ExternalCodeTextColor { get; internal set; }
 			public Color TreeSelectedBackgroundColor { get; internal set; }
 			public Color TreeSelectedTextColor { get; internal set; }
 			public Color ValueTreeBackgroundColor { get; internal set; }
@@ -76,6 +77,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueModifiedText = Color.FromName ("#1FAECE");
 
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#BBBBBB");
+				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#BBBBBB");
 			} else {
 				ObjectValueTreeValuesButtonBackground = Color.FromName ("#7c8695");
 				ObjectValueTreeValuesButtonText = Color.FromName ("#cbe5ff");
@@ -84,6 +86,7 @@ namespace MonoDevelop.Debugger
 				ObjectValueTreeValueModifiedText = Color.FromName ("#4FCAE6");
 
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#888888");
+				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#888888");
 			}
 
 			// Shared

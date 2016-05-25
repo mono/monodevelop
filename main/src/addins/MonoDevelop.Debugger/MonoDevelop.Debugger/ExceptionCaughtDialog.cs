@@ -40,11 +40,13 @@ using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Fonts;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger
 {
-	class ExceptionCaughtDialog : Gtk.Dialog
+	class ExceptionCaughtDialog : Gtk.Window
 	{
+		VBox VBox;
 		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("toolbar-icon.png");
 		static readonly Xwt.Drawing.Image WarningIconPixbufInner = Xwt.Drawing.Image.FromResource ("exception-outline-16.png");
 
@@ -72,7 +74,10 @@ namespace MonoDevelop.Debugger
 		}
 
 		public ExceptionCaughtDialog (ExceptionInfo ex, ExceptionCaughtMessage msg)
+			: base (WindowType.Toplevel)
 		{
+			this.Child = VBox = new VBox ();
+			VBox.Show ();
 			this.Name = "wizard_dialog";
 			this.ApplyTheme ();
 			selected = exception = ex;
@@ -164,6 +169,13 @@ namespace MonoDevelop.Debugger
 		Expander WrapInExpander (string title, Widget widget)
 		{
 			var expander = new Expander (string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (title)));
+			expander.Name = "exception_dialog_expander";
+			Gtk.Rc.ParseString (@"style ""exception-dialog-expander""
+{
+	GtkExpander::expander-spacing = 10
+}
+widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
+");
 			expander.Child = widget;
 			expander.Spacing = 0;
 			expander.Show ();
@@ -267,8 +279,10 @@ namespace MonoDevelop.Debugger
 		void Build ()
 		{
 			Title = GettextCatalog.GetString ("Exception Caught");
-			HeightRequest = 500;
-			WidthRequest = 600;
+			DefaultWidth = 500;
+			DefaultHeight = 500;
+			HeightRequest = 350;
+			WidthRequest = 350;
 			VBox.Foreach (VBox.Remove);
 			VBox.PackStart (CreateExceptionHeader (), false, true, 0);
 			paned = new VPaned ();
@@ -293,12 +307,13 @@ namespace MonoDevelop.Debugger
 				box.PackStart (whiteBackground, true, true, 0);
 				box.Show ();
 				VBox.PackStart (box, true, true, 0);
-				WidthRequest = 900;
-				HeightRequest = 700;
+				DefaultWidth = 900;
+				DefaultHeight = 700;
+				WidthRequest = 550;
+				HeightRequest = 450;
 			} else {
 				VBox.PackStart (whiteBackground, true, true, 0);
 			}
-
 			var actionArea = new HBox (false, 0) { BorderWidth = 14 };
 
 			OnlyShowMyCodeCheckbox = new CheckButton (GettextCatalog.GetString ("_Only show my code."));
@@ -315,7 +330,6 @@ namespace MonoDevelop.Debugger
 			actionArea.ShowAll ();
 
 			VBox.PackStart (actionArea, false, true, 0);
-			ActionArea.Hide ();
 		}
 
 		Label InnerExceptionTypeLabel;
@@ -369,6 +383,8 @@ namespace MonoDevelop.Debugger
 
 		InnerExceptionsTree InnerExceptionsTreeView;
 
+		Dictionary<ExceptionInfo, ExceptionInfo> ReverseInnerExceptions = new Dictionary<ExceptionInfo, ExceptionInfo> ();
+
 		Widget CreateInnerExceptionsTree ()
 		{
 			InnerExceptionsTreeView = new InnerExceptionsTree ();
@@ -406,7 +422,9 @@ namespace MonoDevelop.Debugger
 			TreeIter iter;
 			if (parentIter.Equals (TreeIter.Zero)) {
 				iter = store.AppendValues (exception);
+				ReverseInnerExceptions [exception] = null;
 			} else {
+				ReverseInnerExceptions [exception] = (ExceptionInfo)store.GetValue (parentIter, 0);
 				iter = store.AppendValues (parentIter, exception);
 			}
 			var updateInnerExceptions = new System.Action (() => {
@@ -466,22 +484,25 @@ namespace MonoDevelop.Debugger
 			bool external = false;
 
 			model.Clear ();
+			var parentException = ex;
+			while (parentException != null) {
+				foreach (var frame in parentException.StackTrace) {
+					bool isUserCode = IsUserCode (frame);
 
-			foreach (var frame in ex.StackTrace) {
-				bool isUserCode = IsUserCode (frame);
+					if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
+						if (!external) {
+							var str = "<b>" + GettextCatalog.GetString ("[External Code]") + "</b>";
+							model.AppendValues (null, str, false);
+							external = true;
+						}
 
-				if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
-					if (!external) {
-						var str = "<b>" + GettextCatalog.GetString ("[External Code]") + "</b>";
-						model.AppendValues (null, str, false);
-						external = true;
+						continue;
 					}
 
-					continue;
+					model.AppendValues (frame, null, isUserCode);
+					external = false;
 				}
-
-				model.AppendValues (frame, null, isUserCode);
-				external = false;
+				parentException = ReverseInnerExceptions [parentException];
 			}
 			ExceptionValueTreeView.ClearAll ();
 			if (!ex.IsEvaluating && ex.Instance != null) {
@@ -629,19 +650,21 @@ namespace MonoDevelop.Debugger
 		string GetMethodMarkup (bool selected)
 		{
 			if (Markup != null)
-				return Markup;
+				return $"<span foreground='{Styles.ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false)}'>{Markup}</span>";
 			var methodText = Frame.DisplayText;
 			var endOfMethodName = methodText.IndexOf ('(');
 			var methodName = methodText.Remove (endOfMethodName).Trim ();
 			var endOfParameters = methodText.IndexOf (')') + 1;
 			var parameters = methodText.Substring (endOfMethodName, endOfParameters - endOfMethodName).Trim ();
 
-			var markup = string.Format ("<b>{0}</b> {1}", GLib.Markup.EscapeText (methodName), GLib.Markup.EscapeText (parameters));
+			var markup = $"<b>{GLib.Markup.EscapeText (methodName)}</b> {GLib.Markup.EscapeText (parameters)}";
 
 			if (selected)
-				markup = "<span foreground='#FFFFFF'>" + markup + "</span>";
-			else
-				markup = "<span foreground='" + Ide.Gui.Styles.BaseForegroundColor.ToHexString (false) + "'>" + markup + "</span>";
+				markup = $"<span foreground='#FFFFFF'>{markup}</span>";
+			else {
+				var textColor = IsUserCode ? Ide.Gui.Styles.BaseForegroundColor.ToHexString (false) : Styles.ExceptionCaughtDialog.ExternalCodeTextColor.ToHexString (false);
+				markup = $"<span foreground='{textColor}'>{markup}</span>";
+			}
 
 			return markup;
 		}
@@ -732,15 +755,28 @@ namespace MonoDevelop.Debugger
 		public void ShowDialog ()
 		{
 			if (dialog == null) {
-				using (dialog = new ExceptionCaughtDialog (ex, this))
-					MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
+				dialog = new ExceptionCaughtDialog (ex, this);
+				IdeApp.CommandService.RegisterTopWindow (dialog);
+				dialog.TransientFor = IdeApp.Workbench.RootWindow;
+				dialog.Show ();
+				MessageService.PlaceDialog (dialog, IdeApp.Workbench.RootWindow);
+				dialog.Destroyed += Dialog_Destroyed;;
+			}
+		}
+
+		void Dialog_Destroyed (object sender, EventArgs e)
+		{
+			if (dialog != null) {
+				dialog.Destroyed -= Dialog_Destroyed;
 				dialog = null;
 			}
 		}
 
+
 		public void ShowButton ()
 		{
 			if (dialog != null) {
+				dialog.Destroyed -= Dialog_Destroyed;
 				dialog.Destroy ();
 				dialog = null;
 			}
@@ -758,6 +794,7 @@ namespace MonoDevelop.Debugger
 		public void ShowMiniButton ()
 		{
 			if (dialog != null) {
+				dialog.Destroyed -= Dialog_Destroyed;
 				dialog.Destroy ();
 				dialog = null;
 			}
