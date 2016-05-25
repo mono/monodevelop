@@ -381,16 +381,16 @@ type FSharpInteractivePad() =
         ctx.Editor <- editor
         let toolbar = container.GetToolbar(DockPositionType.Right)
 
-        let addButton icon action tooltip =
+        let addButton(icon, action, tooltip) =
             let button = new DockToolButton(icon)
             button.Clicked.Add(action)
-            button.TooltipText <- GettextCatalog.GetString(tooltip)
+            button.TooltipText <- tooltip
             toolbar.Add(button)
 
-        addButton "gtk-save" (fun _ -> x.Save()) "Save as script"
-        addButton "gtk-open" (fun _ -> x.OpenScript()) "Open"
-        addButton "gtk-clear" (fun _ -> editor.Text <- "") "Clear"
-        addButton "gtk-refresh" (fun _ -> x.RestartFsi()) "Reset"
+        addButton ("gtk-save", (fun _ -> x.Save()), GettextCatalog.GetString ("Save as script"))
+        addButton ("gtk-open", (fun _ -> x.OpenScript()), GettextCatalog.GetString ("Open"))
+        addButton ("gtk-clear", (fun _ -> editor.Text <- ""), GettextCatalog.GetString ("Clear"))
+        addButton ("gtk-refresh", (fun _ -> x.RestartFsi()), GettextCatalog.GetString ("Reset"))
 
         toolbar.ShowAll()
 
