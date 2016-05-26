@@ -81,7 +81,7 @@ namespace MonoDevelop.Refactoring
 						LoggingService.LogError ("Exception in diagnostic analyzer " + diag.Id + ":" + diag.GetMessage (), exception);
 					},
 					null,
-					false,
+					true,
 					false
 				);
 
