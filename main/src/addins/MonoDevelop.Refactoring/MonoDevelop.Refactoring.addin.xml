@@ -103,6 +103,10 @@
 					defaultHandler = "MonoDevelop.Refactoring.AnalyzeCurrentProjectHandler"
 					_label = "_Current Project" 
 					/>
+		<Command id = "MonoDevelop.Refactoring.AnalyzeSource"
+					defaultHandler = "MonoDevelop.Refactoring.AnalyzeSourceHandler"
+					_label = "_Analyze Source" 
+					/>
 		</Category>
 	</Extension>
 	
@@ -178,10 +182,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<ItemSet id = "Analyze" _label = "_Analyze">
-			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeWholeSolution" />
-			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeCurrentProject" />
-		</ItemSet>
+		<CommandItem id = "MonoDevelop.Refactoring.AnalyzeSource" insertbefore="MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 	</Extension>
 
 

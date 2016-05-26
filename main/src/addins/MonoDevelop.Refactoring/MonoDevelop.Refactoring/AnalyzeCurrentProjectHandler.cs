@@ -63,6 +63,11 @@ namespace MonoDevelop.Refactoring
 
 		protected async override void Run ()
 		{
+			Execute ();
+		}
+
+		internal static async void Execute ()
+		{
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject;
 			if (project == null)
 				return;
@@ -70,7 +75,7 @@ namespace MonoDevelop.Refactoring
 			if (analysisProject == null)
 				return;
 			try {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false)) {
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing project"), null, false)) {
 					CancellationToken token = monitor.CancellationToken;
 					var allDiagnostics = await Task.Run (async delegate {
 						var diagnosticList = new List<Diagnostic> ();

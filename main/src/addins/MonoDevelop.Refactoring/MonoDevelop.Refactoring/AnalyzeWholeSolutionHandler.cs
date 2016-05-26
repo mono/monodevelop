@@ -41,6 +41,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Pads;
 using System.Collections.Immutable;
 using System.Linq;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.Refactoring
 {
@@ -99,6 +100,23 @@ namespace MonoDevelop.Refactoring
 
 		protected override async void Run ()
 		{
+			Execute ();
+		}
+
+		static TaskSeverity GetSeverity (Diagnostic diagnostic)
+		{
+			switch (diagnostic.Severity) {
+			case DiagnosticSeverity.Warning:
+				return TaskSeverity.Warning;
+			case DiagnosticSeverity.Error:
+				return TaskSeverity.Error;
+			default:
+				return TaskSeverity.Information;
+			}
+		}
+
+		internal static async void Execute ()
+		{
 			var workspace = TypeSystemService.Workspace;
 			try {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false)) {
@@ -124,18 +142,6 @@ namespace MonoDevelop.Refactoring
 				ae.Flatten ().Handle (ix => ix is OperationCanceledException);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while running diagnostics.", e);
-			}
-		}
-
-		static TaskSeverity GetSeverity (Diagnostic diagnostic)
-		{
-			switch (diagnostic.Severity) {
-			case DiagnosticSeverity.Warning:
-				return TaskSeverity.Warning;
-			case DiagnosticSeverity.Error:
-				return TaskSeverity.Error;
-			default:
-				return TaskSeverity.Information;
 			}
 		}
 
@@ -220,5 +226,17 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 #pragma warning restore RECS0083 // Shows NotImplementedException throws in the quick task bar
+	}
+
+	class AnalyzeSourceHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			if (IdeApp.ProjectOperations.CurrentSelectedProject == null){
+				AnalyzeWholeSolutionHandler.Execute ();
+			} else {
+				AnalyzeCurrentProjectHandler.Execute ();
+			}
+		}
 	}
 }
