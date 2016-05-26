@@ -64,7 +64,9 @@ namespace MonoDevelop.Debugger
 		readonly ExceptionInfo exception;
 		ExceptionInfo selected;
 		bool destroyed;
-		VPaned paned;
+		VPanedThin paned;
+		Expander expanderProperties;
+		Expander expanderStacktrace;
 
 		protected enum ModelColumn
 		{
@@ -160,15 +162,29 @@ namespace MonoDevelop.Debugger
 			scrolled.Add (ExceptionValueTreeView);
 			scrolled.Show ();
 			var vbox = new VBox ();
-			vbox.Show ();
-			vbox.PackStart (CreateSeparator (), false, true, 7);
-			vbox.PackStart (WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled), true, true, 0);
+			expanderProperties = WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled);
+			vbox.PackStart (new VBox (), false, false, 5);
+			vbox.PackStart (expanderProperties, true, true, 0);
+			vbox.ShowAll ();
 			return vbox;
+		}
+
+		class ExpanderWithMinSize : Expander
+		{
+			public ExpanderWithMinSize (string label) : base (label)
+			{
+			}
+
+			protected override void OnSizeRequested (ref Requisition requisition)
+			{
+				base.OnSizeRequested (ref requisition);
+				requisition.Height = 28;
+			}
 		}
 
 		Expander WrapInExpander (string title, Widget widget)
 		{
-			var expander = new Expander (string.Format ("<b>{0}</b>", GLib.Markup.EscapeText (title)));
+			var expander = new ExpanderWithMinSize ($"<b>{GLib.Markup.EscapeText (title)}</b>");
 			expander.Name = "exception_dialog_expander";
 			Gtk.Rc.ParseString (@"style ""exception-dialog-expander""
 {
@@ -189,7 +205,12 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 		void Expander_Activated (object sender, EventArgs e)
 		{
-			paned.PositionSet = false;
+			if (expanderProperties.Expanded && expanderStacktrace.Expanded)
+				paned.PositionSet = false;
+			else if (expanderStacktrace.Expanded)
+				paned.Position = paned.MaxPosition;
+			else
+				paned.Position = paned.MinPosition;
 		}
 
 		static void StackFrameLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
@@ -237,7 +258,8 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			vbox.PackStart (scrolled, true, true, 0);
 			vbox.Show ();
 
-			return WrapInExpander (GettextCatalog.GetString ("Stacktrace"), vbox);
+			expanderStacktrace = WrapInExpander (GettextCatalog.GetString ("Stacktrace"), vbox);
+			return expanderStacktrace;
 		}
 
 		Widget CreateButtonBox ()
@@ -285,9 +307,10 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			WidthRequest = 350;
 			VBox.Foreach (VBox.Remove);
 			VBox.PackStart (CreateExceptionHeader (), false, true, 0);
-			paned = new VPaned ();
-			paned.Pack1 (CreateStackTraceTreeView (), true, true);
-			paned.Pack2 (CreateExceptionValueTreeView (), true, true);
+			paned = new VPanedThin ();
+			paned.GrabAreaSize = 10;
+			paned.Pack1 (CreateStackTraceTreeView (), true, false);
+			paned.Pack2 (CreateExceptionValueTreeView (), true, false);
 			paned.Show ();
 			var vbox = new VBox (false, 0);
 			var whiteBackground = new EventBox ();
