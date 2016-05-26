@@ -59,6 +59,10 @@ namespace MonoDevelop.PackageManagement
 		bool loadingMessageVisible;
 		bool ignorePackageVersionChanges;
 		const string IncludePrereleaseUserPreferenceName = "NuGet.AddPackagesDialog.IncludePrerelease";
+		TimeSpan populatePackageVersionsDelayTimeSpan = TimeSpan.FromMilliseconds (500);
+		int packageVersionsAddedCount;
+		IDisposable populatePackageVersionsTimer;
+		const int MaxVersionsToPopulate = 100;
 
 		public AddPackagesDialog (AllPackagesViewModel viewModel, string initialSearch = null)
 			: this (
@@ -105,6 +109,7 @@ namespace MonoDevelop.PackageManagement
 			viewModel.PropertyChanged -= ViewModelPropertyChanged;
 			viewModel.Dispose ();
 			DisposeExistingTimer ();
+			DisposePopulatePackageVersionsTimer ();
 			packageStore.Clear ();
 			viewModel = null;
 			base.Dispose (disposing);
@@ -394,6 +399,7 @@ namespace MonoDevelop.PackageManagement
 			UpdatePackageListViewSelectionColor ();
 			ShowLoadingMessage ();
 			ShrinkImageCache ();
+			DisposePopulatePackageVersionsTimer ();
 		}
 
 		void ResetPackagesListViewScroll ()
@@ -726,11 +732,23 @@ namespace MonoDevelop.PackageManagement
 
 		void PopulatePackageVersions (PackageSearchResultViewModel packageViewModel)
 		{
+			DisposePopulatePackageVersionsTimer ();
+
 			ignorePackageVersionChanges = true;
 			try {
 				packageVersionComboBox.Items.Clear ();
 				if (packageViewModel.Versions.Any ()) {
+					int count = 0;
 					foreach (NuGetVersion version in packageViewModel.Versions) {
+						count++;
+						if (count > MaxVersionsToPopulate) {
+							packageVersionsAddedCount = count - 1;
+							if (version >= packageViewModel.SelectedVersion) {
+								AddPackageVersionToComboBox (packageViewModel.SelectedVersion);
+							}
+							PopulatePackageVersionsAfterDelay ();
+							break;
+						}
 						AddPackageVersionToComboBox (version);
 					}
 				} else {
@@ -769,6 +787,41 @@ namespace MonoDevelop.PackageManagement
 				this.packageDependenciesNoneLabel.Visible = false;
 				this.packageDependenciesList.Text = String.Empty;
 			}
+		}
+
+		void PopulatePackageVersionsAfterDelay ()
+		{
+			populatePackageVersionsTimer = Application.TimeoutInvoke (populatePackageVersionsDelayTimeSpan, PopulateMorePackageVersions);
+		}
+
+		void DisposePopulatePackageVersionsTimer ()
+		{
+			if (populatePackageVersionsTimer != null) {
+				populatePackageVersionsTimer.Dispose ();
+				populatePackageVersionsTimer = null;
+			}
+		}
+
+		bool PopulateMorePackageVersions ()
+		{
+			PackageSearchResultViewModel packageViewModel = viewModel?.SelectedPackage;
+			if (populatePackageVersionsTimer == null || packageViewModel == null) {
+				return false;
+			}
+
+			int count = 0;
+			foreach (NuGetVersion version in packageViewModel.Versions.Skip (packageVersionsAddedCount)) {
+				count++;
+
+				if (count > MaxVersionsToPopulate) {
+					packageVersionsAddedCount += count - 1;
+					return true;
+				}
+
+				AddPackageVersionToComboBox (version);
+			}
+
+			return false;
 		}
 	}
 }
