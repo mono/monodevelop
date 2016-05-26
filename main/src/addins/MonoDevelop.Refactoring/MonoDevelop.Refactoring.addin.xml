@@ -71,7 +71,7 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindReferences"
 					_label = "_Find References" 
 					shortcut = "Shift|F12"
-					macShortcut = "Shift|Meta|R"/>
+					macShortcut = "Shift|Meta|R Shift|F12"/>
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.FindAllReferences"
 					_label = "_Find References of All Overloads" />
 		</Category>

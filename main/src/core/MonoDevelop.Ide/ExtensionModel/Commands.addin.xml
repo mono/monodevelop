@@ -67,7 +67,7 @@
 			_label = "Re_name..."
 			_description = "Rename the selection"
 			shortcut = "F2"
-			macShortcut = "Meta|R"/>
+			macShortcut = "Meta|R F2"/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Undo"
 			_label = "_Undo"
 			icon = "gtk-undo"
@@ -167,16 +167,16 @@
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding"
 			_label = "_Toggle Fold"
 			shortcut = "Control|Shift|M"
-			macShortcut = "Control|Shift|M Control+M|Control+M"
+			macShortcut = "Alt+Shift+Meta+Left"
 			_description = "Toggles the folding at caret position."/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings"
 			_label = "Toggle _All Folds"
 			shortcut = "Control|Shift|A"
-			macShortcut = "Alt|Shift|Meta|Right"
+			macShortcut = "Alt+Shift+Meta+Up"
 			_description = "Toggles all the foldings in the document."/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
 			_label = "Toggle _Definitions"
-			macShortcut = "Alt|Shift|Meta|Left"
+			macShortcut = "Alt+Shift+Meta+Down"
 			_description = "Toggles foldings of all method and property bodies."/>
 
 	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
@@ -259,14 +259,14 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.BuildSolutionHandler"
 			_label = "_Build All"
 			shortcut = "F8"
-			macShortcut = "Meta|B"
+			macShortcut = "Meta|B F6"
 			_description = "Build all projects of all solutions"
 			icon  = "md-build-combine" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Build"
 			defaultHandler = "MonoDevelop.Ide.Commands.BuildHandler"
 			_label = "Buil_d"
 			shortcut = "F7"
-			macShortcut = "Meta|K"
+			macShortcut = "Meta|K Shift+F6"
 			_description = "Build the current project"
 			icon  = "md-build-current-selected-project" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution"
@@ -287,7 +287,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.RunHandler"
 			icon = "gtk-execute"
 			shortcut = "Control|F5"
-			macShortcut = "Alt|Meta|Return"
+			macShortcut = "Alt|Meta|Return Control|F5"
 			_description = "Start program without debugging"
 			_label = "Start Without Debugging" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList"
@@ -321,7 +321,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Stop"
 			defaultHandler = "MonoDevelop.Ide.Commands.StopHandler"
 			icon = "gtk-stop"
-			macShortcut = "Shift|Meta|Return"
+			macShortcut = "Shift|Meta|Return Shift|F5"
 			shortcut = "Shift|F5"
 			_description = "Stop current build or application execution"
 			_label = "_Stop" />
@@ -672,6 +672,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
 			_label = "_Focus Document"
 			shortcut = "Alt|C"
+			macShortcut = "F7 Escape"
 			_description = "Focus current document" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.CenterAndFocusCurrentDocumentHandler"
@@ -826,13 +827,13 @@
 			icon = "md-find-next"
 			_description = "Search forwards for the same text"
 			shortcut = "Control|G"
-			macShortcut = "Meta|G" />
+			macShortcut = "Meta|G F3" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious"
 			_label = "Find _Previous"
 			icon = "md-find-prev"
 			_description = "Search backwards for the same text"
 			shortcut = "Control|Shift|G"
-			macShortcut = "Meta|Shift|G" />
+			macShortcut = "Meta|Shift|G Shift|F3" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindNext"
 			_label = "Find _Next (Emacs behavior)"
@@ -847,11 +848,12 @@
 			_label = "Find Next Like Selection"
 			_description = "Search forwards for the selected text"
 			shortcut = "Control|F3"
-			macShortcut = "Meta|E" />
+			macShortcut = "Meta|E Control|F3" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection"
 			_label = "Find Previous Like Selection"
 			_description = "Search backwards for the selected text"
-			shortcut = "Shift|Control|F3" />
+			shortcut = "Shift|Control|F3"
+			macShortcut = "Shift|Control|F3" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
 			defaultHandler = "MonoDevelop.Ide.FindInFiles.FindInFilesHandler"
@@ -946,9 +948,9 @@
 			_label = "_Surround With..."
 			_displayName = "Surround Selection With..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd"
-			_label = "Go to end of line" macShortcut = "Meta+Right"/>
+			_label = "Go to end of line" macShortcut = "Meta+Right Control+E"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.LineStart"
-			_label = "Go to beginning of line" macShortcut = "Meta+Left"/>
+			_label = "Go to beginning of line" macShortcut = "Meta+Left Control+A"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar"
 			_label = "Delete left character" macShortcut="Control+H" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar"
@@ -1010,7 +1012,8 @@
 			_displayName = "Go to Matching Brace"
 			icon = "md-go-to-matching-brace"
 			_description = "Go to Matching Brace"
-			shortcut = "Control|B" />
+			shortcut = "Control|B"
+			macShortcut = "Shift+Meta+\" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft"
 			_label = "Expand selection to the left" macShortcut="Shift+Left" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveRight"
@@ -1040,9 +1043,9 @@
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd"
 			_label = "Expand selection to line end" macShortcut = "Shift|End Shift+Meta+Right"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentStart"
-			_label = "Expand selection to document start" macShortcut="Control+Shift+Home" />
+			_label = "Expand selection to document start" macShortcut="Shift+Meta+Up Shift+Meta+Home" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd"
-			_label = "Expand selection to document end" macShortcut="Control+Shift+End" />
+			_label = "Expand selection to document end" macShortcut="Shift+Meta+Down Shift+Meta+End" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelectionToLine"
 			_label = "Expand selection to line" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchCaretMode"

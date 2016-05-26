@@ -58,7 +58,7 @@
 				defaultHandler = "MonoDevelop.Debugger.DebugHandler"
 				icon = "md-bug"
 				shortcut = "F5"
-				macShortcut = "Meta|Return"
+				macShortcut = "Meta|Return F5"
 				_description = "Start debugging"
 				_label = "Start _Debugging" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DebugEntry"
@@ -86,7 +86,7 @@
 				shortcut = "Control|Break"
 				_label = "Pause"
 				_description = "Pause Execution"
-				macShortcut = "Alt|Meta|P"
+				macShortcut = "Alt|Meta|P Alt+Meta+F15"
 				icon="md-pause-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.Continue"
 				defaultHandler = "MonoDevelop.Debugger.ContinueDebugHandler"
@@ -98,21 +98,21 @@
 				_label = "Step Over"
 				_description = "Step Over"
 				shortcut = "F10"
-				macShortcut = "Shift|Meta|O"
+				macShortcut = "Shift|Meta|O F10"
 				icon="md-step-over-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepInto"
 				defaultHandler = "MonoDevelop.Debugger.StepIntoHandler"
 				_label = "Step Into"
 				_description = "Step Into"
 				shortcut = "F11"
-				macShortcut = "Shift|Meta|I"
+				macShortcut = "Shift|Meta|I Meta+F11"
 				icon="md-step-into-debug" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.StepOut"
 				defaultHandler = "MonoDevelop.Debugger.StepOutHandler"
 				_label = "Step Out"
 				_description = "Step Out"
 				shortcut = "Shift|F11"
-				macShortcut = "Shift|Meta|U"
+				macShortcut = "Shift|Meta|U Shift+Meta+F11"
 				icon="md-step-out-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.NewBreakpointHandler"
@@ -129,7 +129,8 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpoints"
 				defaultHandler = "MonoDevelop.Debugger.ShowBreakpointsHandler"
 				_label = "View Breakpoints"
-				icon = "md-view-debug-breakpoints" />
+				icon = "md-view-debug-breakpoints"
+				macShortcut = "Alt+Meta+B" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.RemoveBreakpointHandler"
 				_label = "Remove Breakpoint" />
@@ -141,13 +142,13 @@
 				icon = "md-breakpoint"
 				defaultHandler = "MonoDevelop.Debugger.ToggleBreakpointHandler"
 				shortcut = "F9"
-				macShortcut = "Meta|\" />
+				macShortcut = "Meta|\ F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint"
 				_label = "Enable/Disable Breakpoint"
 				defaultHandler = "MonoDevelop.Debugger.EnableDisableBreakpointHandler"
 				icon = "md-breakpoint-on-off"
 				shortcut = "Control|F9"
-				macShortcut = "Alt|Meta|/" />
+				macShortcut = "Alt|Meta|/ Meta+F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints"
 				_label = "Enable or Disable All Breakpoints"
 				icon = "md-breakpoint-disable-all"
@@ -155,7 +156,8 @@
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints"
 				defaultHandler = "MonoDevelop.Debugger.ClearAllBreakpointsHandler"
 				icon = "md-clear"
-				_label = "Clear All Breakpoints" />
+				_label = "Clear All Breakpoints"
+				macShortcut = "Shift+Meta+F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowDisassembly"
 				_label = "Show Disassembly"
 				defaultHandler = "MonoDevelop.Debugger.ShowDisassemblyHandler" />
@@ -179,15 +181,18 @@
 				defaultHandler = "MonoDevelop.Debugger.RunToCursorHandler"
 				_label = "Run To Cursor"
 				_description = "Run To Cursor"
-				shortcut = "Control|F10" />
+				shortcut = "Control|F10"
+				macShortcut = "Meta+F10" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement"
 				defaultHandler = "MonoDevelop.Debugger.SetNextStatementHandler"
 				_label = "Set Next Statement"
 				_description = "Set Next Statement"
-				shortcut = "Control|Shift|F10" />
+				shortcut = "Control|Shift|F10"
+				macShortcut = "Shift+Meta+F10" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement"
 				_label = "Show Next Statement"
-				defaultHandler = "MonoDevelop.Debugger.ShowNextStatementHandler" />
+				defaultHandler = "MonoDevelop.Debugger.ShowNextStatementHandler"
+				macShortcut = "Alt+*" />
 		</Category>
 	</Extension>
 
