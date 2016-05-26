@@ -142,7 +142,7 @@ namespace MonoDevelop.Refactoring
 		internal static void Report (ProgressMonitor monitor, List<Diagnostic> allDiagnostics)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Reporting results..."), allDiagnostics.Count);
-
+			TaskService.Errors.Clear ();
 			TaskService.Errors.AddRange (allDiagnostics.Select (diagnostic => {
 				var startLinePosition = diagnostic.Location.GetLineSpan ().StartLinePosition;
 				return new TaskListEntry (
