@@ -40,6 +40,7 @@ using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Pads;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace MonoDevelop.Refactoring
 {
@@ -141,17 +142,17 @@ namespace MonoDevelop.Refactoring
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Reporting results..."), allDiagnostics.Count);
 
-			foreach (var diagnostic in allDiagnostics) {
-
+			TaskService.Errors.AddRange (allDiagnostics.Select (diagnostic => {
 				var startLinePosition = diagnostic.Location.GetLineSpan ().StartLinePosition;
-				TaskService.Errors.Add (new TaskListEntry (
+				return new TaskListEntry (
 					diagnostic.Location.SourceTree.FilePath,
 					diagnostic.GetMessage (),
 					startLinePosition.Character + 1,
 					startLinePosition.Line + 1,
 					GetSeverity (diagnostic)
-				));
-			}
+				);
+			}));
+
 			monitor.EndTask ();
 			ShowAnalyzationResults ();
 		}
