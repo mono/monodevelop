@@ -105,15 +105,16 @@ namespace MonoDevelop.Refactoring
 					CancellationToken token = monitor.CancellationToken;
 					var allDiagnostics = await Task.Run (async delegate {
 						var diagnosticList = new List<Diagnostic> ();
+						monitor.BeginTask ("Analyzing solution", workspace.CurrentSolution.Projects.Count ());
 						foreach (var project in workspace.CurrentSolution.Projects) {
 							var providers = await GetProviders (project);
-							monitor.BeginTask (GettextCatalog.GetString ("Analyzing {0}", project.Name), 1);
+							monitor.BeginStep (GettextCatalog.GetString ("Analyzing {0}", project.Name), 1);
 							diagnosticList.AddRange (await GetDiagnostics (project, providers, token));
-							monitor.EndTask ();
+							monitor.EndStep ();
 						}
+						monitor.EndTask ();
 						return diagnosticList;
 					}).ConfigureAwait (false);
-
 					await Runtime.RunInMainThread (delegate {
 						Report (monitor, allDiagnostics);
 					}).ConfigureAwait (false);
