@@ -181,7 +181,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 
 				if (!FileService.IsValidPath (newPath) || ProjectFolderCommandHandler.ContainsDirectorySeparator (newName)) {
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-				} else if ((newProjectFile != null && newProjectFile != file) || File.Exists (file.FilePath.ParentDirectory.Combine (newName))) {
+				} else if ((newProjectFile != null && newProjectFile != file) || FileExistsCaseSensitive (file.FilePath.ParentDirectory, newName)) {
 					// If there is already a file under the newPath which is *different*, then throw an exception
 					MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
 				} else {
@@ -194,6 +194,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			} catch (IOException ex) {
 				MessageService.ShowError (GettextCatalog.GetString ("There was an error renaming the file."), ex);
 			}
+		}
+
+		static bool FileExistsCaseSensitive (FilePath parentDirectory, string fileName)
+		{
+			if (!Directory.Exists (parentDirectory))
+				return false;
+
+			return Directory.GetFiles (parentDirectory, fileName)
+				.Any (file => Path.GetFileName (file) == fileName);
 		}
 		
 		public override void ActivateItem ()

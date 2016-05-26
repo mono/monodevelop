@@ -57,7 +57,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		protected override string StartingMessageFormat {
-			get { return "Retargeting {0}..." + Environment.NewLine; }
+			get { return GettextCatalog.GetString ("Retargeting {0}...") + Environment.NewLine; }
 		}
 
 		protected override void ExecuteCore ()

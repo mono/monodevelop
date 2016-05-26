@@ -181,6 +181,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return true;
 		}
 
+		public override bool Click (double x, double y)
+		{
+			return Click ();
+		}
+
 		NSEvent MakeEvent (string c, NSEventType type, double epochTime, nint winID)
 		{
 			return NSEvent.KeyEvent (type, CoreGraphics.CGPoint.Empty, 

@@ -42,11 +42,14 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 		public override Control GetVisualizerWidget (ObjectValue val)
 		{
+			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			ops.AllowTargetInvoke = true;
+			ops.ChunkRawStrings = true;
+			ops.EllipsizedLength = 5000;//Preview window can hold aprox. 4700 chars
+			val.Refresh (ops);//Refresh DebuggerDisplay/String value with full length instead of ellipsized
 			string value = val.Value;
 			Gdk.Color col = Styles.PreviewVisualizerTextColor.ToGdkColor ();
 
-			if (!val.IsNull && (val.TypeName == "string" || val.TypeName == "char[]"))
-				value = '"' + GetString (val) + '"';
 			if (DebuggingService.HasInlineVisualizer (val))
 				value = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
 
@@ -66,9 +69,9 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 			if (label.Layout.GetLine (1) != null) {
 				label.Justify = Gtk.Justification.Left;
-				var line15 = label.Layout.GetLine (15);
-				if (line15 != null) {
-					label.Text = value.Substring (0, line15.StartIndex).TrimEnd ('\r', '\n') + "\n…";
+				var trimmedLine = label.Layout.GetLine (50);
+				if (trimmedLine != null) {
+					label.Text = value.Substring (0, trimmedLine.StartIndex).TrimEnd ('\r', '\n') + "\n…";
 				}
 			}
 
@@ -78,33 +81,6 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		}
 
 		#endregion
-
-		string GetString (ObjectValue val)
-		{
-			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-			ops.AllowTargetInvoke = true;
-			ops.ChunkRawStrings = true;
-			if (val.TypeName == "string") {
-				var rawString = val.GetRawValue (ops) as RawValueString;
-				var length = rawString.Length;
-				if (length > 0) {
-					return rawString.Substring (0, Math.Min (length, 4096));
-				} else {
-					return "";
-				}
-			} else if (val.TypeName == "char[]") {
-				var rawArray = val.GetRawValue (ops) as RawValueArray;
-				var length = rawArray.Length;
-				if (length > 0) {
-					return new string (rawArray.GetValues (0, Math.Min (length, 4096)) as char[]);
-				} else {
-					return "";
-				}
-
-			} else {
-				throw new InvalidOperationException ();
-			}
-		}
 	}
 }
 

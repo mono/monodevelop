@@ -37,6 +37,8 @@ using Mono.Debugging.Client;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Debugger
 {
@@ -101,6 +103,9 @@ namespace MonoDevelop.Debugger
 			// The breakpoint list
 			
 			store = new TreeStore (typeof(string), typeof (bool), typeof(string), typeof(object), typeof(string), typeof(string), typeof(string), typeof(string));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Selected","store_FileName",
+				"store_Breakpoint", "store_Condition", "store_TraceExp", "store_HitCount", "store_LastTrace");
+			TypeDescriptor.AddAttributes (store, modelAttr);
 
 			tree = new PadTreeView ();
 			tree.Model = store;

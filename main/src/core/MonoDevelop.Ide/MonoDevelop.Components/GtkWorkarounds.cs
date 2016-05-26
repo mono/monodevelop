@@ -39,6 +39,9 @@ using System.Text.RegularExpressions;
 using AppKit;
 using MonoDevelop.Components.Mac;
 #endif
+#if WIN32
+using System.Windows.Input;
+#endif
 
 namespace MonoDevelop.Components
 {
@@ -82,9 +85,6 @@ namespace MonoDevelop.Components
 
 		[DllImport (PangoUtil.LIBQUARTZ)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
-
-		[DllImport (PangoUtil.LIBQUARTZ)]
-		static extern bool gdk_window_has_embedded_nsview_focus (IntPtr window);
 
 		struct CGRect32
 		{
@@ -379,6 +379,19 @@ namespace MonoDevelop.Components
 
 		public static Gdk.ModifierType GetCurrentKeyModifiers ()
 		{
+			#if WIN32
+			Gdk.ModifierType mtype = Gdk.ModifierType.None;
+			ModifierKeys mod = Keyboard.Modifiers;
+			if ((mod & ModifierKeys.Shift) > 0)
+				mtype |= Gdk.ModifierType.ShiftMask;
+			if ((mod & ModifierKeys.Control) > 0)
+				mtype |= Gdk.ModifierType.ControlMask;
+			if ((mod & ModifierKeys.Alt) > 0)
+				mtype |= Gdk.ModifierType.Mod1Mask; // Alt key
+			if ((mod & ModifierKeys.Windows) > 0)
+				mtype |= Gdk.ModifierType.Mod2Mask; // Command key
+			return mtype;
+			#else
 			if (Platform.IsMac) {
 				Gdk.ModifierType mtype = Gdk.ModifierType.None;
 				ulong mod;
@@ -402,6 +415,7 @@ namespace MonoDevelop.Components
 				Gtk.Global.GetCurrentEventState (out mtype);
 				return mtype;
 			}
+			#endif
 		}
 
 		public static void GetPageScrollPixelDeltas (this Gdk.EventScroll evt, double pageSizeX, double pageSizeY,
@@ -851,19 +865,6 @@ namespace MonoDevelop.Components
 			objc_msgSend_IntPtr (ptr, sel_invalidateShadow);
 		}
 
-		public static bool HasNSTextFieldFocus (Gdk.Window window)
-		{
-			if (Platform.IsMac) {
-				try {
-					return gdk_window_has_embedded_nsview_focus (window.Handle);
-				} catch (Exception) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
-
 		[DllImport (PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_leak_fixed_marker ();
 
@@ -1228,21 +1229,6 @@ namespace MonoDevelop.Components
 		public static double GetScaleFactor ()
 		{
 			return GetScaleFactor (Gdk.Screen.Default, 0);
-		}
-
-		public static double GetPixelScale ()
-		{
-			if (Platform.IsWindows)
-				return GetScaleFactor ();
-			else
-				return 1d;
-		}
-
-		public static int ConvertToPixelScale (int size)
-		{
-			double scale = GetPixelScale ();
-
-			return (int)(size * scale);
 		}
 
 		public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)

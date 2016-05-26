@@ -143,7 +143,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			base.PackEnd (vpaned);
 			base.FocusChain = new Gtk.Widget [] { vpaned };
 			
-			Populate ();
+			Populate (saveEditSession: false);
 			UpdateTabs ();
 		}
 
@@ -188,7 +188,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				TabRadioToolButton button = (TabRadioToolButton) sender;
 				if (selectedTab == button.Tab) return;
 				selectedTab = button.Tab;
-				Populate ();
+				Populate (saveEditSession: true);
 			}
 			// If the tree is re-populated while a value is being edited, the focus that the value editor had
 			// is not returned back to the tree. We need to explicitly get it.
@@ -200,7 +200,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			set {
 				if (value != propertySort) {
 					propertySort = value;
-					Populate ();
+					Populate (saveEditSession: true);
 				}
 			}
 		}
@@ -262,7 +262,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			this.currentObject = obj;
 			this.propertyProviders = propertyProviders;
 			UpdateTabs ();
-			Populate();
+			Populate(saveEditSession: false);
 		}
 		
 		public void CommitPendingChanges ()
@@ -286,12 +286,18 @@ namespace MonoDevelop.Components.PropertyGrid
 			Update (); 
 			QueueDraw ();
 		}
+
+		internal bool IsEditing {
+			get { return tree.IsEditing; } 
+		}
 		
-		internal void Populate ()
+		internal void Populate (bool saveEditSession)
 		{
 			PropertyDescriptorCollection properties;
 			
 			tree.SaveStatus ();
+			if (saveEditSession)
+				tree.SaveEditSession ();
 			tree.Clear ();
 			tree.PropertySort = propertySort;
 			
@@ -306,6 +312,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				}
 			}
 			tree.RestoreStatus ();
+			tree.RestoreEditSession ();
 		}
 		
 		void Update ()

@@ -1088,7 +1088,8 @@ namespace MonoDevelop.VersionControl.Views
 					Gtk.Application.Invoke (delegate { if (!disposed) FillDifs (); });
 				});
 			} else if (info.Exception != null) {
-				text = new [] { GettextCatalog.GetString ("Could not get diff information. ") + info.Exception.Message };
+				text = new [] { GettextCatalog.GetString ("Could not get diff information. ") };
+				LoggingService.LogError ("Could not get diff information", info.Exception);
 			} else if (info.Diff.Value == null || string.IsNullOrEmpty (info.Diff.Value.Content)) {
 				text = new [] { GettextCatalog.GetString ("No differences found") };
 			} else {

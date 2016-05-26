@@ -346,7 +346,7 @@
               <widget class="Gtk.Label" id="labelTop">
                 <property name="MemberName" />
                 <property name="Xalign">0</property>
-                <property name="LabelProp">A merge conflict has been detected in file &lt;b&gt;SomeFile.txt&lt;/b&gt;</property>
+                <property name="LabelProp" translatable="yes">A merge conflict has been detected in file &lt;b&gt;SomeFile.txt&lt;/b&gt;</property>
                 <property name="UseMarkup">True</property>
               </widget>
               <packing>
@@ -936,7 +936,7 @@
                   <widget class="Gtk.Label" id="labelError">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">Error</property>
+                    <property name="LabelProp" translatable="yes">Error</property>
                   </widget>
                   <packing>
                     <property name="TopAttach">1</property>

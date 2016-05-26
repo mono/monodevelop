@@ -208,7 +208,7 @@ namespace MonoDevelop.AspNet.Projects
 					});
 				}
 
-				monitor.Log.WriteLine ("Running web server...");
+				monitor.Log.WriteLine (GettextCatalog.GetString ("Running web server..."));
 
 				var op = context.ExecutionHandler.Execute (cmd, console);
 
@@ -222,13 +222,13 @@ namespace MonoDevelop.AspNet.Projects
 				using (monitor.CancellationToken.Register (op.Cancel))
 					await op.Task;
 
-				monitor.Log.WriteLine ("The web server exited with code: {0}", op.ExitCode);
+				monitor.Log.WriteLine (GettextCatalog.GetString ("The web server exited with code: {0}", op.ExitCode));
 
 			} catch (Exception ex) {
 				if (!(ex is UserException)) {
 					LoggingService.LogError ("Could not launch ASP.NET web server.", ex);
 				}
-				monitor.ReportError ("Could not launch web server.", ex);
+				monitor.ReportError (GettextCatalog.GetString ("Could not launch web server."), ex);
 			} finally {
 				if (console != null)
 					console.Dispose ();

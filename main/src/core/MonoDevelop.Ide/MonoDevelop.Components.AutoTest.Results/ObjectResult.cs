@@ -98,6 +98,11 @@ namespace MonoDevelop.Components.AutoTest.Results
 			return false;
 		}
 
+		public override bool Click (double x, double y)
+		{
+			return false;
+		}
+
 		public override bool TypeKey (char key, string state = "")
 		{
 			return false;

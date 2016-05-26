@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.Templates
 		public IEnumerable<SolutionItem> CreateProjects (SolutionFolderItem policyParent, ProjectCreateInformation cInfo)
 		{
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
-				throw new InvalidOperationException ("Solution template doesn't have any project templates");
+				throw new InvalidOperationException (GettextCatalog.GetString ("Solution template doesn't have any project templates"));
 
 			var solutionEntryItems = new List<SolutionItem> ();
 			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();

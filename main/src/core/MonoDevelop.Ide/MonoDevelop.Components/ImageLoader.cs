@@ -184,8 +184,9 @@ namespace MonoDevelop.Components
 				lock (mutex) {
 					if (Downloading)
 						completed += value;
+					else
+						value (this, EventArgs.Empty);
 				}
-				value (this, EventArgs.Empty);
 			}
 			remove {
 				lock (mutex) {

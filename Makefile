@@ -8,11 +8,19 @@ MONO_AOT:=MONO_PATH=$(AOT_DIRECTORIES):$(MONO_PATH) mono --aot --debug
 
 all: update_submodules all-recursive
 
-update_submodules:
+GIT_FOUND = $$(echo $$(which git))
+SYNC_SUBMODULES = \
 	if test -d ".git"; then \
+		if [ "x$(GIT_FOUND)" = "x" ]; then \
+			echo "git not found; please install it first"; \
+			exit 1; \
+		fi; \
 		git submodule sync; \
 		git submodule update --init --recursive || exit 1; \
 	fi
+
+update_submodules:
+	@$(SYNC_SUBMODULES)
 
 top_srcdir=.
 include $(top_srcdir)/config.make

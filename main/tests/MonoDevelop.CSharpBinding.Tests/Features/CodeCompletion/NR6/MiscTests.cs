@@ -27,6 +27,7 @@ using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
+using System.Reflection.Metadata.Ecma335.Blobs;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {
@@ -210,5 +211,58 @@ class Test
 			Assert.AreEqual (2, data.OverloadedData.Count);
 		}
 
+		/// <summary>
+		/// Bug 41245 - Attribute code completion not showing all constructors and showing too many things
+		/// </summary>
+		[Ignore("Need to think about/discuss it - would maybe kill implement by usage oportunities.")]
+		[Test]
+		public void TestBug41245 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+
+namespace cp654fz7
+{
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false)]
+	public sealed class JsonPropertyAttribute : Attribute
+	{
+		internal bool? _isReference;
+		internal int? _order;
+		public bool IsReference
+		{
+			get { return _isReference ?? default(bool); }
+			set { _isReference = value; }
+		}
+		public int Order
+		{
+			get { return _order ?? default(int); }
+			set { _order = value; }
+		}
+		public string PropertyName { get; set; }
+		public JsonPropertyAttribute()
+		{
+		}
+
+		public JsonPropertyAttribute(string propertyName)
+		{
+			PropertyName = propertyName;
+		}
+	}
+
+	class MainClass
+	{
+		[JsonProperty(""Hello"", $$)]
+		public object MyProperty { get; set; }
+
+		public static void Main(string[] args)
+		{
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.IsNull (provider.Find ("MainClass"));
+		}
 	}
 }

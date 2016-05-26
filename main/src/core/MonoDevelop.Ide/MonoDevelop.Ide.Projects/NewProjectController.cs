@@ -427,7 +427,7 @@ namespace MonoDevelop.Ide.Projects
 				if (template != null) {
 					return template;
 				}
-				throw new ApplicationException (String.Format ("No template found matching condition '{0}'.", SelectedTemplate.Condition));
+				throw new ApplicationException (GettextCatalog.GetString ("No template found matching condition '{0}'.", SelectedTemplate.Condition));
 			}
 			return GetSelectedTemplateForSelectedLanguage ();
 		}

@@ -447,7 +447,6 @@ namespace MonoDevelop.Ide
 			return GetStockIdForImageSpec (addin, filename, iconSize);
 		}
 
-
 		static void AddToAnimatedIconFactory (string stockId, AnimatedIcon aicon)
 		{
 			animationFactory [stockId] = aicon;

@@ -72,6 +72,19 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
+			textEditorImpl.ViewContent.ContentNameChanged += ViewContent_ContentNameChanged;
+			textEditorImpl.ViewContent.DirtyChanged += ViewContent_DirtyChanged; ;
+
+		}
+
+		void ViewContent_ContentNameChanged (object sender, EventArgs e)
+		{
+			this.ContentName = textEditorImpl.ViewContent.ContentName;
+		}
+
+		void ViewContent_DirtyChanged (object sender, EventArgs e)
+		{
+			OnDirtyChanged ();
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -181,13 +194,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		protected override void OnContentNameChanged ()
-		{
-			base.OnContentNameChanged ();
-			textEditorImpl.ContentName = ContentName;
-		}
-
-
 		#region IViewFContent implementation
 
 		public override async Task Load (FileOpenInformation fileOpenInformation)
@@ -290,6 +296,14 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public override bool IsDirty {
+			get { return textEditorImpl.ViewContent.IsDirty; }
+			set {
+				textEditorImpl.ViewContent.IsDirty = value;
+			}
+		}
+
+
 		#endregion
 
 		#region IDisposable implementation
@@ -307,6 +321,8 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ViewContent.DirtyChanged -= HandleDirtyChanged;
 			textEditor.MimeTypeChanged -= UpdateTextEditorOptions;
 			textEditor.TextChanged -= HandleTextChanged;
+			textEditorImpl.ViewContent.ContentNameChanged -= ViewContent_ContentNameChanged;
+			textEditorImpl.ViewContent.DirtyChanged -= ViewContent_DirtyChanged; ;
 
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();

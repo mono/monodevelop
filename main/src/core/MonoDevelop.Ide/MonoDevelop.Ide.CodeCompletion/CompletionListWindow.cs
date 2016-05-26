@@ -440,12 +440,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			WindowTransparencyDecorator.Attach (this);
 			DataProvider = facade;
 			HideDeclarationView ();
+			VisibilityNotifyEvent += (object sender, VisibilityNotifyEventArgs e) => {
+				if (!Visible)
+					HideDeclarationView ();
+			};
 			List.ListScrolled += (object sender, EventArgs e) => {
 				HideDeclarationView ();
 				UpdateDeclarationView ();
 			};
 			List.WordsFiltered += delegate {
-				RepositionDeclarationViewWindow ();
+				HideDeclarationView ();
+				UpdateDeclarationView ();
+			};
+			List.VisibilityNotifyEvent += (object sender, VisibilityNotifyEventArgs e) => {
+				if (!List.Visible)
+					HideDeclarationView ();
 			};
 		}
 
@@ -947,8 +956,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.GdkWindow.GetOrigin (out ox, out oy);
 			declarationviewwindow.MaximumYTopBound = oy;
 			int y = rect.Y + Theme.Padding - (int)List.vadj.Value;
-			declarationviewwindow.ShowPopup (this, new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height), PopupPosition.Left);
-			declarationViewHidden = false;
+			if (!declarationViewHidden && Visible && List.Visible && completionDataList != null &&
+				List.SelectionFilterIndex < completionDataList.Count && List.SelectionFilterIndex != -1)
+				declarationviewwindow.ShowPopup (
+					this,
+					new Gdk.Rectangle (0, Math.Min (Allocation.Height, Math.Max (0, y)), Allocation.Width, rect.Height),
+					PopupPosition.Left);
+			if (declarationViewHidden || !Visible || !List.Visible || completionDataList == null ||
+				List.SelectionFilterIndex >= completionDataList.Count || List.SelectionFilterIndex == -1)
+				HideDeclarationView();
 		}
 
 		bool DelayedTooltipShow ()
@@ -1009,6 +1025,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 
 			if (declarationViewHidden && Visible) {
+				declarationViewHidden = false;
 				RepositionDeclarationViewWindow ();
 			}
 			

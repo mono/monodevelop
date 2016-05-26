@@ -76,10 +76,10 @@ namespace MonoDevelop.Projects
 			return new TargetFrameworkMoniker (".NETPortable", "4.5", "Profile78");
 		}
 
-		internal protected override async Task<List<string>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
+		internal protected override async Task<List<AssemblyReference>> OnGetReferencedAssemblies (ConfigurationSelector configuration)
 		{
 			var res = await base.OnGetReferencedAssemblies (configuration);
-			var asms = Project.TargetRuntime.AssemblyContext.GetAssemblies (Project.TargetFramework).Where (a => a.Package.IsFrameworkPackage).Select (a => a.Location);
+			var asms = Project.TargetRuntime.AssemblyContext.GetAssemblies (Project.TargetFramework).Where (a => a.Package.IsFrameworkPackage).Select (a => new AssemblyReference (a.Location));
 			res.AddRange (asms);
 			return res;
 		}

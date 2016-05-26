@@ -660,7 +660,7 @@ namespace MonoDevelop.CodeActions
 				if (RefactoringService.OptionSetCreation != null)
 					documentContext.RoslynWorkspace.Options = RefactoringService.OptionSetCreation (editor, documentContext);
 				using (var undo = editor.OpenUndoGroup ()) {
-					foreach (var operation in act.GetOperationsAsync (token).Result) {
+					foreach (var operation in await act.GetOperationsAsync (token)) {
 						var applyChanges = operation as ApplyChangesOperation;
 						if (applyChanges == null) {
 							operation.Apply (documentContext.RoslynWorkspace, token);

@@ -692,8 +692,8 @@ namespace SubversionAddinWindows
 		static string BytesToSize (long kbytes)
 		{
 			if (kbytes < 1024)
-				return String.Format ("{0} KBytes", kbytes);
-			return String.Format ("{0:0.00} MBytes", kbytes / 1024.0);
+				return GettextCatalog.GetString ("{0} KBytes", kbytes);
+			return GettextCatalog.GetString ("{0:0.00} MBytes", kbytes / 1024.0);
 		}
 
 		static void ProgressWork (SvnProgressEventArgs e, ProgressData data, ProgressMonitor monitor)

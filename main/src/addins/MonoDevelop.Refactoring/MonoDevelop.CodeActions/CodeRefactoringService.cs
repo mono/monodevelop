@@ -39,6 +39,7 @@ using Mono.Addins;
 using RefactoringEssentials;
 using MonoDevelop.Core.Text;
 using System.Linq;
+using System.ComponentModel;
 
 namespace MonoDevelop.CodeActions
 {
@@ -101,7 +102,7 @@ namespace MonoDevelop.CodeActions
 			var actions = new List<ValidCodeAction> ();
 			if (parsedDocument == null)
 				return actions;
-			var model = parsedDocument.GetAst<SemanticModel> ();
+			var model = await doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken);
 			if (model == null)
 				return actions;
 			var root = await model.SyntaxTree.GetRootAsync(cancellationToken).ConfigureAwait (false);

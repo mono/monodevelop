@@ -223,7 +223,7 @@ namespace MonoDevelop.PackageManagement
 		
 		void ThrowPackageNotFoundError(string packageId)
 		{
-			string message = String.Format("Unable to find package '{0}'.", packageId);
+			string message = GettextCatalog.GetString ("Unable to find package '{0}'.", packageId);
 			throw new ApplicationException(message);
 		}
 		
