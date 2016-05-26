@@ -286,6 +286,10 @@ namespace MonoDevelop.Components.PropertyGrid
 			Update (); 
 			QueueDraw ();
 		}
+
+		internal bool IsEditing {
+			get { return tree.IsEditing; } 
+		}
 		
 		internal void Populate (bool saveEditSession)
 		{

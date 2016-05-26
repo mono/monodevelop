@@ -24,11 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Projects
 {
-	public class AssemblyReference
+	public sealed class AssemblyReference
 	{
 		public AssemblyReference (FilePath path, string aliases = null)
 		{
@@ -38,6 +40,26 @@ namespace MonoDevelop.Projects
 
 		public FilePath FilePath { get; private set; }
 		public string Aliases { get; private set; }
+
+		public override bool Equals (object obj)
+		{
+			var ar = obj as AssemblyReference;
+			return ar != null && ar.FilePath == FilePath && ar.Aliases == Aliases;
+		}
+
+		public override int GetHashCode ()
+		{
+			unchecked {
+				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
+			}
+		}
+
+		/// <summary>
+		/// Returns an enumerable collection of aliases. 
+		/// </summary>
+		public IEnumerable<string> EnumerateAliases ()
+		{
+			return Aliases.Split (',', ';').Where (a => !string.IsNullOrEmpty (a));
+		}
 	}
 }
-

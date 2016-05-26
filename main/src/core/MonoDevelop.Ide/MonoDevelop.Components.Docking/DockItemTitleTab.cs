@@ -188,6 +188,7 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.UseMarkup = true;
+				labelWidget.Name = label;
 				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
@@ -205,6 +206,7 @@ namespace MonoDevelop.Components.Docking
 			btnDock.Clicked += OnClickDock;
 			btnDock.ButtonPressEvent += (o, args) => args.RetVal = true;
 			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
+			btnDock.Name = string.Format("btnDock_{0}", label ?? string.Empty);
 
 			btnClose = new ImageButton ();
 			btnClose.Image = pixClose;
@@ -216,6 +218,7 @@ namespace MonoDevelop.Components.Docking
 				item.Visible = false;
 			};
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
+			btnClose.Name = string.Format ("btnClose_{0}", label ?? string.Empty);
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
 			HBox btnBox = new HBox (false, 0);

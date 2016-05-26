@@ -329,7 +329,7 @@ namespace MonoDevelop.Debugger
 
 				if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
 					if (!external) {
-						var str = GettextCatalog.GetString ("<b>[External Code]</b>");
+						var str = "<b>" + GettextCatalog.GetString ("[External Code]") + "</b>";
 						model.AppendValues (null, str, false);
 						external = true;
 					}
