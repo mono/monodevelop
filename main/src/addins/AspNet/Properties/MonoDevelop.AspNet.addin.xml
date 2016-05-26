@@ -375,6 +375,10 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
-		<Image id="md-aspnet-empty-project" resource="aspnet-empty-project.png" />
+		<Image id="md-aspnet-empty-project" resource="project-aspnet-template.png" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-aspnet-empty-project" resource="project-aspnet-32.png" size="Dnd" />
 	</Extension>
 </ExtensionModel>

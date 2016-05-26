@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>ASP.NET Web Forms Project</_Name>
 		<Category>other/aspnet/general</Category>
-		<Icon>md-project-web</Icon>
+		<Icon>md-aspnet-empty-project</Icon>
 		<Image id="md-aspnet-empty-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a new ASP.NET Web Forms Project.</_Description>
