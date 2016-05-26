@@ -258,8 +258,12 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			vbox.PackStart (scrolled, true, true, 0);
 			vbox.Show ();
 
+			var vbox2 = new VBox ();
 			expanderStacktrace = WrapInExpander (GettextCatalog.GetString ("Stacktrace"), vbox);
-			return expanderStacktrace;
+			vbox2.PackStart (new VBox (), false, false, 5);
+			vbox2.PackStart (expanderStacktrace, true, true, 0);
+			vbox2.ShowAll ();
+			return vbox2;
 		}
 
 		Widget CreateButtonBox ()
@@ -319,7 +323,9 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			whiteBackground.Add (vbox);
 			hadInnerException = HasInnerException ();
 			if (hadInnerException) {
-				vbox.PackStart (CreateInnerExceptionMessage (), false, true, 12);
+				vbox.PackStart (new VBox (), false, false, 6);
+				vbox.PackStart (CreateInnerExceptionMessage (), false, true, 0);
+				vbox.ShowAll ();
 			}
 			vbox.PackStart (paned, true, true, 0);
 			vbox.Show ();
@@ -525,7 +531,8 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 					model.AppendValues (frame, null, isUserCode);
 					external = false;
 				}
-				parentException = ReverseInnerExceptions [parentException];
+				if (!ReverseInnerExceptions.TryGetValue (parentException, out parentException))
+					parentException = null;
 			}
 			ExceptionValueTreeView.ClearAll ();
 			if (!ex.IsEvaluating && ex.Instance != null) {
