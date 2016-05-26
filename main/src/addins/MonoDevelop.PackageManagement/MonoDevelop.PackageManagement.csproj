@@ -504,7 +504,6 @@
     <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopSolutionManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreMonitor.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\DefaultPackageSourceSettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageEventsMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEventArgs.cs" />
@@ -538,6 +537,8 @@
     <Compile Include="NuGet.PackageManagement.UI\PackageDetailControlModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentNuGetPackagesRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModelComparer.cs" />
+    <Compile Include="SettingsLoader.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageSourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

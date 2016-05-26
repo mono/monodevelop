@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 using NuGet.Protocol.Core.v2;
@@ -38,13 +39,14 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static ISourceRepositoryProvider CreateSourceRepositoryProvider ()
 		{
-			var settings = Settings.LoadDefaultSettings (null, null, null);
+			var settings = SettingsLoader.LoadDefaultSettings ();
 			return CreateSourceRepositoryProvider (settings);
 		}
 
 		public static ISourceRepositoryProvider CreateSourceRepositoryProvider (ISettings settings)
 		{
-			return new SourceRepositoryProvider (settings, GetResourceProviders ());
+			var packageSourceProvider = new MonoDevelopPackageSourceProvider (settings);
+			return new SourceRepositoryProvider (packageSourceProvider, GetResourceProviders ());
 		}
 
 		static IEnumerable<Lazy<INuGetResourceProvider>> GetResourceProviders ()

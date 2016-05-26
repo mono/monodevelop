@@ -57,11 +57,6 @@ namespace MonoDevelop.PackageManagement
 		PackageSourceViewModel selectedPackageSourceViewModel;
 		bool isEditingSelectedPackageSource;
 
-		public RegisteredPackageSourcesViewModel ()
-			: this (SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ())
-		{
-		}
-
 		public RegisteredPackageSourcesViewModel (ISourceRepositoryProvider sourceRepositoryProvider)
 			: this (sourceRepositoryProvider.PackageSourceProvider, new FolderBrowser ())
 		{

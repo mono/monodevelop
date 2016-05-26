@@ -112,7 +112,6 @@ namespace MonoDevelop.PackageManagement
 			List<INuGetPackageAction> actions = null;
 
 			Runtime.RunInMainThread (() => {
-				var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
 				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
 				var dotNetProject = new DotNetProjectProxy ((DotNetProject)project);
 				var context = new NuGetProjectContext ();

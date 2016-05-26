@@ -44,7 +44,9 @@ namespace MonoDevelop.PackageManagement.Gui
 
 		public override Control CreatePanelWidget()
 		{
-			viewModel = new RegisteredPackageSourcesViewModel ();
+			var settings = SettingsLoader.LoadDefaultSettings (reportError: true);
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider (settings);
+			viewModel = new RegisteredPackageSourcesViewModel (repositoryProvider);
 			viewModel.Load ();
 			
 			packageSourcesWidget = new PackageSourcesWidget (viewModel);

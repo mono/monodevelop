@@ -56,8 +56,6 @@ namespace MonoDevelop.PackageManagement
 
 		static PackageManagementServices()
 		{
-			DefaultPackageSourceSettingsProvider.CreateDefaultPackageSourceSettingsIfMissing ();
-
 			options = new PackageManagementOptions();
 			packageRepositoryCache = new PackageRepositoryCache (options);
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();

@@ -151,7 +151,7 @@ namespace MonoDevelop.PackageManagement
 		void LoadSettings ()
 		{
 			string rootDirectory = Path.Combine (Solution.BaseDirectory, ".nuget");
-			Settings = NuGet.Configuration.Settings.LoadDefaultSettings (rootDirectory, null, null);
+			Settings = SettingsLoader.LoadDefaultSettings (rootDirectory, reportError: true);
 		}
 	}
 }
