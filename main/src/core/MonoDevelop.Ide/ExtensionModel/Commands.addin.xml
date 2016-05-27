@@ -926,8 +926,7 @@
 	<Category _name = "Text Editor" id = "TextEditor">
 
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
-			_label = "Completion List..."
-			_displayName = "Show Completion List..."
+			_label = "Show Completion List"
 			macShortcut="Control|space"
 			shortcut = "Control|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
@@ -997,8 +996,7 @@
 			shortcut="Alt|Down"
 			macShortcut="Alt|Down" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow"
-			_label = "Parameter List..."
-			_displayName = "Show Parameter List..."
+			_label = "Show Parameter List"
 			macShortcut = "Control|Shift|space"
 			shortcut = "Control|Shift|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace"
