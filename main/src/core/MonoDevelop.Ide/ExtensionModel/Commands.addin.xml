@@ -590,13 +590,13 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
 			_label = "Show Next"
 			_description = "Move cursor to next error or search match"
-			macShortcut = "Alt|Meta|Down"
+			macShortcut = "Alt|Meta|Down F8"
 			shortcut = "F4" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious"
 			defaultHandler = "MonoDevelop.Ide.Commands.ShowPreviousHandler"
 			_label = "Show Previous"
 			_description = "Move cursor to previous error or search match"
-			macShortcut = "Alt|Meta|Up"
+			macShortcut = "Alt|Meta|Up Shift+F8"
 			shortcut = "Shift|F4" />
 
 	<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
@@ -726,14 +726,14 @@
 			icon = "gtk-go-forward"
 			_description = "Show next document"
 			shortcut = "Control|Page_Down"
-			macShortcut = "Meta|}" />
+			macShortcut = "Meta|} Control+F6" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrevDocumentHandler"
 			_label = "_Previous Document"
 			icon = "gtk-go-back"
 			_description = "Show previous document"
 			shortcut = "Control|Page_Up"
-			macShortcut = "Meta|{" />
+			macShortcut = "Meta|{ Control+Shift+F6" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.OpenDocumentList"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenDocumentListHandler"
 			type="radio|array"
