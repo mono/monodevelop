@@ -128,9 +128,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementOptionsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\RecentPackageInfoCollectionAssert.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RegisteredPackageRepositoriesTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementOptionsViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMachineCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProcess.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSourceViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RegisteredPackageSourcesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageSourceCollectionAssert.cs" />
