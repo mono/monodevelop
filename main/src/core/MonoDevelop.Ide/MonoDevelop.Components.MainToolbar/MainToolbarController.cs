@@ -493,31 +493,32 @@ namespace MonoDevelop.Components.MainToolbar
 				GettextCatalog.GetString ("Search solution");
 		}
 
-		SearchPopupWindow popup = null;
+		ISearchResultsDisplay resultsDisplay = null;
 		static readonly SearchPopupSearchPattern emptyColonPattern = SearchPopupSearchPattern.ParsePattern (":");
 		void PositionPopup ()
 		{
-			if (popup == null)
+			if (resultsDisplay == null)
 				return;
 
-			popup.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
+			resultsDisplay.PositionResultsDisplay (ToolbarView.PopupAnchor);
+			//resultsDisplay.ShowPopup (ToolbarView.PopupAnchor, PopupPosition.TopRight);
 
-			var window = ToolbarView.PopupAnchor.GdkWindow;
-			if (window == null) {
-				if (popup.IsRealized) {
-					popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
-				} else {
-					popup.Realized += (sender, e) =>
-						popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
-				}
-			}
+			//var window = ToolbarView.PopupAnchor.GdkWindow;
+			//if (window == null) {
+			//	if (resultsDisplay.IsRealized) {
+			//		resultsDisplay.MovePopup (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
+			//	} else {
+			//		resultsDisplay.Realized += (sender, e) =>
+			//			popup.Move (ToolbarView.PopupAnchor.Allocation.Width - popup.Allocation.Width, ToolbarView.PopupAnchor.Allocation.Y);
+			//	}
+			//}
 		}
 
 		void DestroyPopup ()
 		{
-			if (popup != null) {
-				popup.Destroy ();
-				popup = null;
+			if (resultsDisplay != null) {
+				resultsDisplay.DestroyResultsDisplay ();
+				resultsDisplay = null;
 			}
 		}
 
@@ -525,34 +526,35 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (!string.IsNullOrEmpty (ToolbarView.SearchText))
 				lastSearchText = ToolbarView.SearchText;
-			
-			if (string.IsNullOrEmpty (ToolbarView.SearchText)){
+
+			if (string.IsNullOrEmpty (ToolbarView.SearchText)) {
 				DestroyPopup ();
 				return;
 			}
+
 			var pattern = SearchPopupSearchPattern.ParsePattern (ToolbarView.SearchText);
 			if (pattern.Pattern == null && pattern.LineNumber > 0 || pattern == emptyColonPattern) {
-				if (popup != null) {
-					popup.Hide ();
+				if (resultsDisplay != null) {
+					resultsDisplay.HideResultsDisplay ();
 				}
 				return;
 			} else {
-				if (popup != null && !popup.Visible)
-					popup.Show ();
+				if (resultsDisplay != null && !resultsDisplay.IsVisible)
+					resultsDisplay.ShowResultsDisplay ();
 			}
 
-			if (popup == null) {
-				popup = new SearchPopupWindow ();
-				popup.SearchForMembers = SearchForMembers;
-				popup.Destroyed += delegate {
-					popup = null;
+			if (resultsDisplay == null) {
+				resultsDisplay = ToolbarView.CreateSearchResultsDisplay ();
+				resultsDisplay.SearchForMembers = SearchForMembers;
+				resultsDisplay.Destroyed += delegate {
+					resultsDisplay = null;
 					ToolbarView.SearchText = "";
 				};
 				PositionPopup ();
-				popup.ShowAll ();
+				resultsDisplay.ShowResultsDisplay ();
 			}
 
-			popup.Update (pattern);
+			resultsDisplay.UpdateResults (pattern);
 		}
 
 		void HandleSearchEntryActivated (object sender, EventArgs e)
@@ -569,8 +571,8 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				return;
 			}
-			if (popup != null)
-				popup.OpenFile ();
+			if (resultsDisplay != null)
+				resultsDisplay.OpenFile ();
 		}
 
 		void HandleSearchEntryKeyPressed (object sender, Xwt.KeyEventArgs e)
@@ -583,8 +585,8 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 				return;
 			}
-			if (popup != null) {
-				e.Handled = popup.ProcessKey (e.Key, e.Modifiers);
+			if (resultsDisplay != null) {
+				e.Handled = resultsDisplay.ProcessKey (e.Key, e.Modifiers);
 			}
 		}
 

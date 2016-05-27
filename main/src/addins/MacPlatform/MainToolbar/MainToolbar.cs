@@ -33,7 +33,7 @@ using AppKit;
 using CoreGraphics;
 using Foundation;
 using MonoDevelop.Ide;
-using MonoDevelop.MacIntegration;
+using MonoDevelop.MacIntegration.OverlaySearch;
 using Xwt;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
@@ -65,30 +65,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			get { return awesomeBar.SelectorView.RealSelectorView; }
 		}
 
-		SearchBar searchEntry {
-			get { return awesomeBar.SearchBar; }
-		}
-
-		void AttachToolbarEvents (SearchBar bar)
-		{
-			bar.Changed += (o, e) => {
-				if (SearchEntryChanged != null)
-					SearchEntryChanged (o, e);
-			};
-			bar.KeyPressed += (o, e) => {
-				if (SearchEntryKeyPressed != null)
-					SearchEntryKeyPressed (o, e);
-			};
-			bar.LostFocus += (o, e) => {
-				if (SearchEntryLostFocus != null)
-					SearchEntryLostFocus (o, e);
-			};
-			bar.SelectionActivated += (o, e) => {
-				if (SearchEntryActivated != null)
-					SearchEntryActivated (o, e);
-			};
-		}
-
 		public MainToolbar (Gtk.Window window)
 		{
 			gtkWindow = window;
@@ -101,12 +77,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (RunButtonClicked != null)
 					RunButtonClicked (o, e);
 			};
-
-			// Remove the focus from the Gtk system when Cocoa has focus
-			// Fixes BXC #29601
-			awesomeBar.SearchBar.GainedFocus += (o, e) => IdeApp.Workbench.RootWindow.Focus = null;
-
-			AttachToolbarEvents (awesomeBar.SearchBar);
 
 			selectorView.ConfigurationChanged += (sender, e) => {
 				if (ConfigurationChanged != null)
@@ -166,22 +136,43 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		#region IMainToolbarView implementation
 		public event EventHandler RunButtonClicked;
 		public event EventHandler SearchEntryChanged;
+#pragma warning disable 0067
 		public event EventHandler<Xwt.KeyEventArgs> SearchEntryKeyPressed;
 		public event EventHandler SearchEntryLostFocus;
 
-		#pragma warning disable 0067
 		public event EventHandler SearchEntryActivated;
 		public event EventHandler SearchEntryResized;
-		#pragma warning restore 0067
+#pragma warning restore 0067
 
+		Searchlight searchWindow;
 		public void FocusSearchBar ()
 		{
-			searchEntry.Focus ();
+			searchWindow = new Searchlight ();
+			searchWindow.WindowWasDismissed += EndModal;
+			searchWindow.SearchRequested += DoSearch;
 
-			var entry = searchEntry;
-			if (!string.IsNullOrEmpty (entry.StringValue)) {
-				entry.SelectText (entry);
-			}
+			NSWindow nswin = GtkMacInterop.GetNSWindow (gtkWindow);
+			CGRect parentRect = nswin.Frame;
+			searchWindow.SetFrame (new CGRect ((parentRect.X + parentRect.Width) / 2 - 325.0f, (parentRect.Y + parentRect.Height) / 4 * 3, 650.0f, 40.0f), true);
+
+			searchWindow.MakeKeyAndOrderFront (null);
+			nswin.AddChildWindow (searchWindow, NSWindowOrderingMode.Above);
+		}
+
+		void DoSearch (object sender, EventArgs args)
+		{
+			SearchEntryChanged?.Invoke (sender, args);
+		}
+
+		void EndModal (object sender, EventArgs args)
+		{
+			NSWindow nswin = GtkMacInterop.GetNSWindow (gtkWindow);
+			nswin.RemoveChildWindow (searchWindow);
+			searchWindow.WindowWasDismissed -= EndModal;
+			searchWindow.SearchRequested -= DoSearch;
+
+			searchWindow.OrderOut (null);
+			searchWindow = null;
 		}
 
 		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
@@ -248,7 +239,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 
 		public bool SearchSensivitity {
-			set { searchEntry.Enabled = value; }
+			set { }
 		}
 
 		public bool ButtonBarSensitivity {
@@ -261,72 +252,39 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public IEnumerable<ISearchMenuModel> SearchMenuItems {
 			set {
-				var menu = new NSMenu {
-					AutoEnablesItems = false,
-				};
-				foreach (var item in value)
-					menu.AddItem (new NSMenuItem (item.DisplayString, (o, e) => item.NotifyActivated ()));
-				searchEntry.SearchMenuTemplate = menu;
 			}
 		}
 
 		public string SearchCategory {
 			set {
-				var entry = searchEntry;
-				entry.SelectText (entry);
-				entry.StringValue = value;
-				entry.CurrentEditor.SelectedRange = new Foundation.NSRange (value.Length, 0);
 			}
 		}
 
 		public string SearchText {
 			get {
-				return searchEntry.StringValue;
+				return searchWindow == null ? "" : searchWindow.SearchString;
 			}
 			set {
-				searchEntry.StringValue = value;
 			}
+		}
+
+		public ISearchResultsDisplay CreateSearchResultsDisplay ()
+		{
+			return searchWindow.ResultsDisplay;
 		}
 
 		public Gtk.Widget PopupAnchor {
 			get {
-				var entry = searchEntry;
-				var widget = entry.gtkWidget;
-				var window = GtkMacInterop.GetGtkWindow (entry.Window);
-
-				// window will be null if the app is fullscreen.
-				if (window != null) {
-					widget.GdkWindow = window.GdkWindow;
-
-					// We need to adjust the position of the frame so the popup will line up correctly
-					var abFrameInWindow = awesomeBar.ConvertRectToView (awesomeBar.Frame, null);
-					widget.Allocation = new Gdk.Rectangle ((int)(entry.Frame.X + abFrameInWindow.X - 8), (int)entry.Frame.Y, (int)entry.Frame.Width, 0);
-				} else {
-					// Reset the Gtk Widget each time since we can't set the GdkWindow to null.
-					widget.Dispose ();
-					widget = entry.gtkWidget = GtkMacInterop.NSViewToGtkWidget (entry);
-
-					var nsWindows = NSApplication.SharedApplication.Windows;
-					var fullscreenToolbarNsWindow = nsWindows.FirstOrDefault (nswin =>
-						nswin.IsVisible && nswin.Description.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal));
-
-					CGPoint gdkOrigin = ScreenMonitor.GdkPointForNSScreen (searchEntry.Window.Screen);
-
-					widget.Allocation = new Gdk.Rectangle (0, (int)(gdkOrigin.Y + fullscreenToolbarNsWindow.Frame.Height - 20),
-						(int)(gdkOrigin.X + fullscreenToolbarNsWindow.Frame.Width - 16), 0);
-				}
-				return widget;
+				return null;
 			}
 		}
 
 		public string SearchPlaceholderMessage {
-			// Analysis disable once ValueParameterNotUsed
 			set {
-				searchEntry.PlaceholderText = value;
 			}
 		}
 
-		public MonoDevelop.Ide.StatusBar StatusBar {
+		public Ide.StatusBar StatusBar {
 			get { return statusBar; }
 		}
 		#endregion

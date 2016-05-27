@@ -40,7 +40,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		internal RunButton RunButton { get; set; }
 		internal SelectorView SelectorView { get; set; }
 		internal StatusBar StatusBar { get; set; }
-		internal SearchBar SearchBar { get; set; }
+		//internal SearchBar SearchBar { get; set; }
 		internal ButtonBarContainer ButtonBarContainer { get; private set; }
 
 		public AwesomeBar ()
@@ -59,15 +59,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			StatusBar = new StatusBar ();
 			AddSubview (StatusBar);
 
-			SearchBar = new SearchBar ();
-			AddSubview (SearchBar);
-
 			Ide.Gui.Styles.Changed +=  (o, e) => UpdateLayout ();
 		}
 
 		const float toolbarPadding = 8.0f;
-		const float maxSearchBarWidth = 270.0f;
-		const float minSearchBarWidth = 150.0f;
 		const float maxStatusBarWidth = 700.0f;
 		const float minStatusBarWidth = 220.0f;
 		const float runButtonWidth = 38.0f;
@@ -158,34 +153,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			RunButton.Frame = new CGRect (toolbarPadding, 0, runButtonWidth, ToolbarWidgetHeight);
 			var statusbarWidth = Math.Max (Math.Min (Math.Round ( Frame.Width * 0.3), maxStatusBarWidth), minStatusBarWidth);
-			var searchbarWidth = maxSearchBarWidth;
-			if (statusbarWidth < searchbarWidth) {
-				searchbarWidth = minSearchBarWidth;
-			}
 
 			// We only need to work out the width on the left side of the window because the statusbar is centred
 			// Gap + RunButton.Width + Gap + ButtonBar.Width + Gap + Half of StatusBar.Width
 			var spaceLeft = (Frame.Width / 2) - (toolbarPadding + runButtonWidth + toolbarPadding + ButtonBarContainer.Frame.Width + toolbarPadding + (statusbarWidth / 2));
 
 			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth - 2, ToolbarWidgetHeight);
-
-			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth, 0, searchbarWidth, ToolbarWidgetHeight);
-			} else {
-				nfloat elcapYOffset = 0;
-				nfloat elcapHOffset = 0;
-
-				if (MacSystemInformation.OsVersion >= MacSystemInformation.ElCapitan) {
-					nfloat scaleFactor = 1;
-
-					if (Window != null && Window.Screen != null) {
-						scaleFactor = Window.Screen.BackingScaleFactor;
-					}
-					elcapYOffset = scaleFactor == 2 ? -0.5f : -1;
-					elcapHOffset = 1.0f;
-				}
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);
-			}
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));
 

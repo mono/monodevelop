@@ -527,6 +527,11 @@ namespace MonoDevelop.Components.MainToolbar
 			set { matchEntry.EmptyMessage = value; }
 		}
 
+		public ISearchResultsDisplay CreateSearchResultsDisplay ()
+		{
+			return new SearchPopupWindow ();
+		}
+
 		public void RebuildToolbar (IEnumerable<IButtonBarButton> buttons)
 		{
 			if (!buttons.Any ()) {
