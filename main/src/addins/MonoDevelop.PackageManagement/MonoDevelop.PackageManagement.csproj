@@ -503,8 +503,8 @@
     <Compile Include="NuGet.PackageManagement.UI\PackageDetailControlModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentNuGetPackagesRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModelComparer.cs" />
-    <Compile Include="SettingsLoader.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageSourceProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SettingsLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
