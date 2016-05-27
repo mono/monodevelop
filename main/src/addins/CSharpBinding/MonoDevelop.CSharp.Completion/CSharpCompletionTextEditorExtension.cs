@@ -481,7 +481,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
-			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
+			if (Editor.EditMode == MonoDevelop.Ide.Editor.EditMode.CursorInsertion)
 				return Task.FromResult ((ICompletionDataList)null);
 //			var data = Editor;
 //			if (data.CurrentMode is TextLinkEditMode) {
