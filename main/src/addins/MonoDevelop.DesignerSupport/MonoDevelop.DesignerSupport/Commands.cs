@@ -42,9 +42,9 @@ namespace MonoDevelop.DesignerSupport
 	
 	public class SelectItemsCommandHandler: CommandHandler
 	{
-		protected override void Run ()
+		protected override async void Run ()
 		{
-			MonoDevelop.DesignerSupport.DesignerSupport.Service.ToolboxService.AddUserItems ();
+			await MonoDevelop.DesignerSupport.DesignerSupport.Service.ToolboxService.AddUserItems ();
 		}
 	}
 }

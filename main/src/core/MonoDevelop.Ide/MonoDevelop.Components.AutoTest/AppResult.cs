@@ -59,6 +59,7 @@ namespace MonoDevelop.Components.AutoTest
 		// Actions
 		public abstract bool Select ();
 		public abstract bool Click ();
+		public abstract bool Click (double x, double y);
 		public abstract bool TypeKey (char key, string state = "");
 		public abstract bool TypeKey (string keyString, string state = "");
 		public abstract bool EnterText (string text);
@@ -151,6 +152,7 @@ namespace MonoDevelop.Components.AutoTest
 		{
 			var propertiesObject = new ObjectProperties ();
 			if (resultObject != null) {
+				propertiesObject.Add ("ToString", new ObjectResult (resultObject.ToString ()), null);
 				var properties = resultObject.GetType ().GetProperties (
 					BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic);
 				foreach (var property in properties) {

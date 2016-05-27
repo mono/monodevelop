@@ -232,11 +232,30 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
+			widget.TextEditor.Document.MimeTypeChanged += Document_MimeTypeChanged;
 			if (document != null) {
 				Document.MimeType = document.MimeType;
 				Document.FileName = document.FileName;
 			}
 			FileRegistry.Add (this);
+		}
+
+		void Document_MimeTypeChanged (object sender, EventArgs e)
+		{
+			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
+			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
+			if (sm != null && sm.MimeType == null) {
+				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
+					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
+					if (syntaxMode != null) {
+						Document.SyntaxMode = syntaxMode;
+						break;
+					}
+				}
+			}
+			if (Document.MimeType != null) {
+				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
+			}
 		}
 
 		void HandleDocumentTextSet (object sender, EventArgs e)
@@ -747,7 +766,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				lastSaveTimeUtc = File.GetLastWriteTimeUtc (fileName);
 				try {
-					if (attributes != null)
+					if (attributes != null) 
 						DesktopService.SetFileAttributes (fileName, attributes);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't set file attributes", e);
@@ -757,16 +776,17 @@ namespace MonoDevelop.SourceEditor
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
 			}
 
-//			if (encoding != null)
-//				se.Buffer.SourceEncoding = encoding;
-//			TextFileService.FireCommitCountChanges (this);
-			
-			ContentName = fileName;
-			if (Document != null) {
-				UpdateMimeType (fileName);
-				Document.SetNotDirtyState ();
-			}
-			IsDirty = false;
+			//			if (encoding != null)
+			//				se.Buffer.SourceEncoding = encoding;
+			//			TextFileService.FireCommitCountChanges (this);
+			await Runtime.RunInMainThread (delegate {
+				Document.FileName = ContentName = fileName;
+				if (Document != null) {
+					UpdateMimeType (fileName);
+					Document.SetNotDirtyState ();
+				}
+				IsDirty = false;
+			});
 		}
 		
 		public void InformLoadComplete ()
@@ -933,21 +953,6 @@ namespace MonoDevelop.SourceEditor
 		void UpdateMimeType (string fileName)
 		{
 			Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
-
-			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
-			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
-			if (sm != null && sm.MimeType == null) {
-				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
-					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
-					if (syntaxMode != null) {
-						Document.SyntaxMode = syntaxMode;
-						break;
-					}
-				}
-			}
-			if (Document.MimeType != null) {
-				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
-			}
 		}
 		
 		public Encoding SourceEncoding {
@@ -992,6 +997,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
 			widget.TextEditor.Document.TextSet -= HandleDocumentTextSet;
+			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
 
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;

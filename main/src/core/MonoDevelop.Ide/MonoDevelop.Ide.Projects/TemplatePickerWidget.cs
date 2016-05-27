@@ -118,7 +118,7 @@ namespace MonoDevelop.Ide.Projects
 			};
 			
 			searchEntry.WidthRequest = 150;
-			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search...");
+			searchEntry.EmptyMessage = GettextCatalog.GetString ("Search…");
 			searchEntry.Changed += delegate {
 				templateView.SetSearchFilter (searchEntry.Entry.Text);
 			};
@@ -536,7 +536,7 @@ namespace MonoDevelop.Ide.Projects
 				return filterFunc (item);
 			}
 
-			void CellDataFuncText (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+			static void CellDataFuncText (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
 			{
 				var item = (TemplateItem) model.GetValue (iter, 0);
 				string name = GLib.Markup.EscapeText (item.Name);
@@ -546,7 +546,7 @@ namespace MonoDevelop.Ide.Projects
 				((CellRendererText)cell).Markup = name;
 			}
 			
-			void CellDataFuncIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
+			static void CellDataFuncIcon (TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter)
 			{
 				var item = (TemplateItem) model.GetValue (iter, 0);
 				var id = item.Template.Icon.IsNull ? "md-project" : item.Template.Icon.ToString ();

@@ -108,10 +108,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (packagesRestored == 0) {
 				Log (GettextCatalog.GetString ("All packages are already restored."));
-			} else if (packagesRestored == 1) {
-				Log (GettextCatalog.GetString ("1 package restored successfully."));
 			} else if (packagesRestored > 0) {
-				Log (GettextCatalog.GetString ("{0} packages restored successfully.", packagesRestored));
+				Log (GettextCatalog.GetPluralString ("1 package restored successfully.", "{0} packages restored successfully.", packagesRestored, packagesRestored));
 			}
 		}
 

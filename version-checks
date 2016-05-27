@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=650ba947d2af18504b1ad66b6eabecb6d739690b
+DEP_NEEDED_VERSION[0]=ce3b29448832bf285269a4685044c36e28de2855
 DEP_BRANCH_AND_REMOTE[0]="master origin/add-pad-error-icons"
 
 # heap-shot

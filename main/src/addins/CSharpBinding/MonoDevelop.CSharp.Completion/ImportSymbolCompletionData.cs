@@ -23,18 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 using Microsoft.CodeAnalysis;
-using GLib;
-using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using MonoDevelop.Ide.Editor;
 using System.Text;
-using ICSharpCode.NRefactory.MonoCSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -87,7 +81,7 @@ namespace MonoDevelop.CSharp.Completion
 			if (displayDescription == null) {
 				Initialize ();
 				if (generateUsing || insertNamespace) {
-					displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.ContainingNamespace.Name);
+					displayDescription = string.Format (GettextCatalog.GetString ("(from '{0}')"), type.ContainingNamespace.GetFullName ());
 				} else {
 					displayDescription = "";
 				}
@@ -101,12 +95,18 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			Initialize ();
 			var doc = completionExt.DocumentContext;
-
+			var offset = completionExt.CurrentCompletionContext.TriggerOffset;
 			base.InsertCompletionText (window, ref ka, descriptor);
 
 			using (var undo = completionExt.Editor.OpenUndoGroup ()) {
 				if (!window.WasShiftPressed && generateUsing) {
-					AddGlobalNamespaceImport (completionExt.Editor, doc, type.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+					AddGlobalNamespaceImport (completionExt.Editor, doc, type.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat));
+				} else {
+					doc.AnalysisDocument.GetSemanticModelAsync ().ContinueWith (t => {
+						Runtime.RunInMainThread (delegate {
+							completionExt.Editor.InsertText (offset, type.ContainingNamespace.ToMinimalDisplayString (t.Result, offset, SymbolDisplayFormat.CSharpErrorMessageFormat) + ".");
+						});
+					});
 				}
 			}
 			ka |= KeyActions.Ignore;

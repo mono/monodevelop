@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger
 		double typeColWidth;
 
 		readonly CellRendererTextWithIcon crtExp;
-		readonly CellRendererText crtValue;
+		readonly ValueCellRenderer crtValue;
 		readonly CellRendererText crtType;
 		readonly CellRendererRoundedButton crpButton;
 		readonly CellRendererImage crpPin;
@@ -178,7 +178,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		class CellRendererTextUrl : CellRendererText{
+		class ValueCellRenderer : CellRendererText
+		{
+			public bool Compact;
+
 			[GLib.Property ("texturl")]
 			public string TextUrl {
 				get {
@@ -194,6 +197,15 @@ namespace MonoDevelop.Debugger
 					}
 					Text = value;
 				}
+			}
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				if (Compact)
+					this.Ellipsize = Pango.EllipsizeMode.None;
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				if (Compact)
+					this.Ellipsize = Pango.EllipsizeMode.End;
 			}
 		}
 
@@ -329,26 +341,7 @@ namespace MonoDevelop.Debugger
 			valueCol.AddAttribute (evaluateStatusCell, "image", EvaluateStatusIconColumn);
 			var crColorPreview = new CellRendererColorPreview ();
 			valueCol.PackStart (crColorPreview, false);
-			valueCol.SetCellDataFunc (crColorPreview, new TreeCellDataFunc ((tree_column, cell, model, iter) => {
-				var val = (ObjectValue) model.GetValue (iter, ObjectColumn);
-				Xwt.Drawing.Color? color;
-
-				if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val)) {
-					try {
-						color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
-					} catch (Exception) {
-						color = null;
-					}
-				} else {
-					color = null;
-				}
-				if (color != null) {
-					((CellRendererColorPreview) cell).Color = (Xwt.Drawing.Color) color;
-					cell.Visible = true;
-				} else {
-					cell.Visible = false;
-				}
-			}));
+			valueCol.SetCellDataFunc (crColorPreview, ValueDataFunc);
 			crpButton = new CellRendererRoundedButton ();
 			valueCol.PackStart (crpButton, false);
 			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
@@ -357,7 +350,8 @@ namespace MonoDevelop.Debugger
 			crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
-			crtValue = new CellRendererTextUrl ();
+			crtValue = new ValueCellRenderer ();
+			crtValue.Ellipsize = Pango.EllipsizeMode.End;
 			valueCol.PackStart (crtValue, true);
 			valueCol.AddAttribute (crtValue, "texturl", ValueColumn);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableColumn);
@@ -403,9 +397,7 @@ namespace MonoDevelop.Debugger
 			crtValue.EditingStarted += OnValueEditing;
 			crtValue.Edited += OnValueEdited;
 			crtValue.EditingCanceled += OnEditingCancelled;
-			
-			this.EnableAutoTooltips ();
-			
+
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
@@ -416,6 +408,28 @@ namespace MonoDevelop.Debugger
 			horizontal_separator = (int)this.StyleGetProperty ("horizontal-separator");
 			grid_line_width = (int)this.StyleGetProperty ("grid-line-width");
 			focus_line_width = (int)this.StyleGetProperty ("focus-line-width") * 2;//we just use *2 version in GetMaxWidth
+		}
+
+		static void ValueDataFunc (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		{
+			var val = (ObjectValue)model.GetValue (iter, ObjectColumn);
+			Xwt.Drawing.Color? color;
+
+			if (val != null && !val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val)) {
+				try {
+					color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
+				} catch (Exception) {
+					color = null;
+				}
+			} else {
+				color = null;
+			}
+			if (color != null) {
+				((CellRendererColorPreview)cell).Color = (Xwt.Drawing.Color)color;
+				cell.Visible = true;
+			} else {
+				cell.Visible = false;
+			}
 		}
 
 		int expanderSize;
@@ -748,6 +762,7 @@ namespace MonoDevelop.Debugger
 					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
 					valueCol.MaxWidth = int.MaxValue;
 				}
+				crtValue.Compact = compact;
 				typeCol.Visible = !compact;
 				crtExp.FontDesc = newFont;
 				crtValue.FontDesc = newFont;
@@ -1591,13 +1606,8 @@ namespace MonoDevelop.Debugger
 				if (obj.IsNull)
 					return false;
 				if (obj.IsPrimitive) {
-					if (obj.TypeName != "string") {
-						return false;
-					} else {
-						if (obj.Value.Length < DebuggingService.DebuggerSession.EvaluationOptions.EllipsizedLength + 3) {//3=2x"(qoute) and 1x "…"
-							return false;
-						}
-					}
+					//obj.DisplayValue.Contains ("|") is special case to detect enum with [Flags]
+					return obj.TypeName == "string" || obj.DisplayValue.Contains ("|");
 				}
 				if (string.IsNullOrEmpty (obj.TypeName))
 					return false;

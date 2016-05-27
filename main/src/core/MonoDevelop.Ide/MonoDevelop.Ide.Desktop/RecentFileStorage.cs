@@ -40,6 +40,7 @@ using System.Threading;
 using System.Xml;
 using System.Linq;
 using MonoDevelop.Core;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Desktop
 {
@@ -55,7 +56,8 @@ namespace MonoDevelop.Ide.Desktop
 		
 		string filePath;
 		FileSystemWatcher watcher;
-		List<RecentItem> cachedItemList;
+		object cacheLock = new object ();
+		List<RecentItem> cachedItemList = new List<RecentItem> ();
 		
 		public static string DefaultPath {
 			get {
@@ -66,6 +68,25 @@ namespace MonoDevelop.Ide.Desktop
 		public RecentFileStorage (string filePath)
 		{
 			this.filePath = filePath;
+
+			// Kick off loading the recent item store in the background in the background.
+			AcquireFileExclusive (filePath).ContinueWith (t => {
+				if (t.IsFaulted) {
+					Exception ex = t.Exception;
+					while (ex is AggregateException && ex.InnerException != null) {
+						ex = ex.InnerException;
+					}
+
+					LoggingService.LogError ("Failed to acquire recent items lock", t.Exception);
+					return;
+				}
+
+				var stream = t.Result;
+				lock (cacheLock) {
+					cachedItemList = ReadStore (stream);
+					cachedItemList.Sort ();
+				}
+			});
 		}
 		
 		void EnableWatching ()
@@ -98,12 +119,12 @@ namespace MonoDevelop.Ide.Desktop
 		
 		void FileChanged (object sender, FileSystemEventArgs e)
 		{
-			OnRecentFilesChanged (null);
+			OnRecentFilesChanged (cachedItemList);
 		}
 		
 		void HandleWatcherRenamed (object sender, RenamedEventArgs e)
 		{
-			OnRecentFilesChanged (null);
+			OnRecentFilesChanged (cachedItemList);
 		}
 		
 		public bool RemoveItem (string uri)
@@ -144,15 +165,10 @@ namespace MonoDevelop.Ide.Desktop
 			if (!File.Exists (filePath)) {
 				 return new RecentItem[0];
 			}
-			
-			var c = cachedItemList;
-			if (c == null) {
-				using (var fs = AcquireFileExclusive (filePath)) {
-					c = cachedItemList = ReadStore (fs);
-				}
+
+			lock (cacheLock) {
+				return cachedItemList.Where (item => item.IsInGroup (group)).ToArray ();
 			}
-			c.Sort ();
-			return c.Where (item => item.IsInGroup (group)).ToArray ();
 		}
 		
 		public void RemoveMissingFiles (params string[] groups)
@@ -191,6 +207,7 @@ namespace MonoDevelop.Ide.Desktop
 				if (list[i].IsInGroup (group) && (++count > limit)) {
 					list.RemoveAt (i);
 					i--;
+					modified = true;
 				}
 			}
 			return modified;
@@ -207,22 +224,59 @@ namespace MonoDevelop.Ide.Desktop
 			}
 			return modified;
 		}
-		
+
+		Task recentSaveTask;
+		List<Func<List<RecentItem>, bool>> modifyList = new List<Func<List<RecentItem>, bool>> ();
+		object modifyListLock = new object ();
 		bool ModifyStore (Func<List<RecentItem>,bool> modify)
 		{
-			List<RecentItem> list;
-			using (var fs = AcquireFileExclusive (filePath)) {
-				list = ReadStore (fs);
-				if (!modify (list)) {
-					return false;
+			lock (modifyListLock) {
+				modifyList.Add (modify);
+
+				// This makes recent file changed event to happen as late as possible, but it shouldn't be a problem.
+				// We keep both multiple-instance concurrency via AcquireFileExclusive lock
+				// And we batch as many modifications as possible in a 1 second window.
+				if (recentSaveTask == null) {
+					recentSaveTask = Task.Run (async () => {
+						await Task.Delay (1000);
+						await SaveRecentFiles ();
+					});
 				}
-				fs.Position = 0;
-				fs.SetLength (0);
-				WriteStore (fs, list);
 			}
-			//TODO: can we suppress duplicate event from the FSW?
-			OnRecentFilesChanged (list);
-			return true;
+			lock (cacheLock) {
+				return modify (cachedItemList);
+			}
+		}
+
+		async Task SaveRecentFiles ()
+		{
+			List<Func<List<RecentItem>, bool>> localModifyList;
+
+			lock (modifyListLock) {
+				localModifyList = modifyList;
+				modifyList = new List<Func<List<RecentItem>, bool>> ();
+				recentSaveTask = null;
+			}
+
+			using (var fs = await AcquireFileExclusive (filePath)) {
+				var list = ReadStore (fs);
+				bool modified = false;
+
+				foreach (var modify in localModifyList) {
+					if (!modify (list)) {
+						continue;
+					}
+
+					modified = true;
+				}
+
+				if (modified) {
+					fs.Position = 0;
+					fs.SetLength (0);
+					WriteStore (fs, list);
+					OnRecentFilesChanged (list);
+				}
+			}
 		}
 		
 		static List<RecentItem> ReadStore (FileStream file)
@@ -266,7 +320,7 @@ namespace MonoDevelop.Ide.Desktop
 		}
 		
 		//FIXME: should we P/Invoke lockf on POSIX or is Mono's FileShare.None sufficient?
-		static FileStream AcquireFileExclusive (string filePath)
+		static async Task<FileStream> AcquireFileExclusive (string filePath)
 		{
 			const int MAX_WAIT_TIME = 1000;
 			const int RETRY_WAIT = 50;
@@ -279,7 +333,7 @@ namespace MonoDevelop.Ide.Desktop
 				} catch (Exception ex) {
 					//FIXME: will it work on Mono if we check that it's an access conflict, i.e. HResult is 0x80070020?
 					if (ex is IOException && remainingTries > 0) {
-						Thread.Sleep (RETRY_WAIT);
+						await Task.Delay (RETRY_WAIT);
 						remainingTries--;
 						continue;
 					}
@@ -293,9 +347,12 @@ namespace MonoDevelop.Ide.Desktop
 			return fileName.StartsWith ("file://") ? fileName : "file://" + fileName;
 		}
 		
-		void OnRecentFilesChanged (List<RecentItem> cachedItemList)
+		void OnRecentFilesChanged (List<RecentItem> list)
 		{
-			this.cachedItemList = cachedItemList;
+			lock (cacheLock) {
+				cachedItemList = list;
+			}
+
 			Runtime.RunInMainThread (() => {
 				if (changed != null)
 					changed (this, EventArgs.Empty);
