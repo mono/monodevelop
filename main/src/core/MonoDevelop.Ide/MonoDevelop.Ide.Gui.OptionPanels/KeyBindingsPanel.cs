@@ -683,9 +683,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			static Pango.FontDescription KeySymbolFont = Styles.DefaultFont.Copy ();
 			
-			const int KeyVPadding = 0;
+			const int KeyVPadding = 1;
 			const int KeyHPadding = 6;
-			const int KeyBgRadius = 4;
+			const int KeyBgRadius = 3;
 			const int Spacing = 6;
 			KeyBindingsPanel keyBindingsPanel;
 			TreeView keyBindingsTree;
@@ -703,6 +703,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				// and only Lucida Grande with an appropriate symbol size
 				if (Platform.IsMac)
 					KeySymbolFont.Family = "Lucida Grande";
+				KeySymbolFont.Size -= (int) Pango.Scale.PangoScale * 2;
 			}
 
 			public CellRendererKeyButtons (KeyBindingsPanel panel)
@@ -712,7 +713,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				keyBindingsTree.ButtonPressEvent += HandleKeyTreeButtonPressEvent;
 				keyBindingsTree.MotionNotifyEvent += HandleKeyTreeMotionNotifyEvent;
 				keyBindingsTree.ScrollEvent += HandleKeyTreeScrollEvent;
-				Ypad = 0;
 			}
 
 			void HideConflictTooltip ()
@@ -829,7 +829,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 					// GetCellArea reports the outer cell bounds, therefore we need to add 2px
 					var xpad = (int)Xpad + 2;
-					var ypad = (int)Ypad + 2;
+					var cellBounds = keyBindingsTree.GetCellArea (path, keyBindingsPanel.bindingTVCol);
+					keyBindingsTree.ConvertBinWindowToWidgetCoords (cellBounds.X, cellBounds.Y, out cellBounds.X, out cellBounds.Y);
 					int i = 0;
 					foreach (var key in result.AllKeys) {
 						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
@@ -838,16 +839,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						layout.GetPixelSize (out w, out h);
 
 						int buttonWidth = w + (2 * KeyHPadding);
+						int buttonHeight = h + (2 * KeyVPadding);
+						var ypad = 2 + ((cellBounds.Height / 2) - (buttonHeight / 2));
 
 						if (cellx > xpad && cellx <= xpad + buttonWidth &&
-						    celly > ypad && celly <= ypad + h + (2 * KeyVPadding) + 2) {
-							var cellBounds = keyBindingsTree.GetCellArea (path, keyBindingsPanel.bindingTVCol);
+						    celly > ypad && celly <= ypad + buttonHeight) {
 							keyBindingsPanel.bindingTVCol.CellGetPosition (this, out cellx, out w);
 							cellBounds.X += cellx;
-							keyBindingsTree.ConvertBinWindowToWidgetCoords (cellBounds.X, cellBounds.Y, out cellBounds.X, out cellBounds.Y);
 
 							result.SelectedKey = i;
-							result.ButtonBounds = new Gdk.Rectangle (cellBounds.X + xpad, cellBounds.Y + ypad, buttonWidth, h + 1 + KeyVPadding * 2);
+							result.ButtonBounds = new Gdk.Rectangle (cellBounds.X + xpad, cellBounds.Y + ypad, buttonWidth, buttonHeight);
 							result.ButtonBounds.Inflate (0, 2);
 							return result;
 						}
@@ -885,7 +886,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 				using (var cr = Gdk.CairoHelper.Create (window)) {
 					using (var layout = new Pango.Layout (widget.PangoContext)) {
-						var ypad = (int)Ypad;
 						var xpad = (int)Xpad;
 						int w, h;
 						Cairo.Color bgColor, fgColor;
@@ -908,12 +908,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 							layout.GetPixelSize (out w, out h);
 
 							int buttonWidth = w + (2 * KeyHPadding);
-							cr.RoundedRectangle (
-								cell_area.X + xpad,
-								cell_area.Y + ypad + (cell_area.Height - h) / 2d,
-								buttonWidth,
-								h + 0.5 + KeyVPadding * 2,
-								KeyBgRadius);
+							int buttonHeight = h + (2 * KeyVPadding);
+							int x = cell_area.X + xpad;
+							double y = cell_area.Y + ((cell_area.Height / 2) - (buttonHeight / 2));
+
+							cr.RoundedRectangle (x, y, buttonWidth, buttonHeight, KeyBgRadius);
 							cr.LineWidth = 1;
 							cr.SetSourceColor (bgColor);
 							cr.FillPreserve ();
@@ -921,7 +920,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 							cr.Stroke ();
 
 							cr.SetSourceColor (fgColor);
-							cr.MoveTo (cell_area.X + KeyHPadding + xpad, cell_area.Y + ypad + (cell_area.Height - h) / 2d + KeyVPadding);
+							cr.MoveTo (x + KeyHPadding, y + KeyVPadding);
 							cr.ShowLayout (layout);
 							xpad += buttonWidth + Spacing;
 						}
@@ -948,7 +947,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						layout.FontDescription = KeySymbolFont;
 						layout.GetPixelSize (out w, out h);
 						if (height == 0)
-							height = h + (KeyVPadding * 2) + 1 + (int)Ypad * 2;
+							height = h + (KeyVPadding * 2) + 1;
 						
 						buttonWidth = w + (2 * KeyHPadding);
 						width += buttonWidth + Spacing;
