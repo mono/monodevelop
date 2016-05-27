@@ -126,6 +126,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
 		</ItemSet>
 		<ItemSet id = "Folding" _label = "F_olding">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.EnableDisableFolding" />
+			<SeparatorItem id = "FoldingSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" />
 			<SeparatorItem id = "FoldDefinitionsSeparator" />

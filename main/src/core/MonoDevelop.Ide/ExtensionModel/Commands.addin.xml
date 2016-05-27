@@ -163,6 +163,9 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.InsertStandardHeaderHandler"
 			_description = "Add the user defined header to the top of the file"/>
 
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.EnableDisableFolding"
+			_label = "Enable _Folding"
+			_displayName = "Enable/Disable Code Folding"/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding"
 			_label = "_Toggle Fold"
 			shortcut = "Control|Shift|M"

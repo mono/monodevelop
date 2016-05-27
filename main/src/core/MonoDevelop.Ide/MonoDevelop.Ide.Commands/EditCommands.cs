@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.Commands
 		DefaultPolicies,
 		InsertStandardHeader,
 		
+		EnableDisableFolding,
 		ToggleFolding,
 		ToggleAllFoldings,
 		FoldDefinitions,
