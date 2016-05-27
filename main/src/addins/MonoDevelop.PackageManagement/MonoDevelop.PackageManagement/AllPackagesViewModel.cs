@@ -224,8 +224,17 @@ namespace MonoDevelop.PackageManagement
 		void CancelReadPackagesTask()
 		{
 			if (cancellationTokenSource != null) {
-				cancellationTokenSource.Cancel ();
-				cancellationTokenSource.Dispose ();
+				// Cancel on another thread since CancellationTokenSource.Cancel can sometimes
+				// take up to a second on Mono and we do not want to block the UI thread.
+				var tokenSource = cancellationTokenSource;
+				Task.Run (() => {
+					try {
+						tokenSource.Cancel ();
+						tokenSource.Dispose ();
+					} catch (Exception ex) {
+						LoggingService.LogError ("Unable to cancel task.", ex);
+					}
+				});
 				cancellationTokenSource = null;
 			}
 		}
@@ -258,14 +267,16 @@ namespace MonoDevelop.PackageManagement
 			return loader;
 		}
 
-		static async Task LoadPackagesAsync (PackageItemLoader loader, CancellationToken token)
+		static Task LoadPackagesAsync (PackageItemLoader loader, CancellationToken token)
 		{
-			await loader.LoadNextAsync (null, token);
+			return Task.Run (async () => {
+				await loader.LoadNextAsync (null, token);
 
-			while (loader.State.LoadingStatus == LoadingStatus.Loading) {
-				token.ThrowIfCancellationRequested ();
-				await loader.UpdateStateAsync (null, token);
-			}
+				while (loader.State.LoadingStatus == LoadingStatus.Loading) {
+					token.ThrowIfCancellationRequested ();
+					await loader.UpdateStateAsync (null, token);
+				}
+			});
 		}
 
 		void ClearError ()
