@@ -27,7 +27,6 @@
 
 using System;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -105,26 +104,9 @@ namespace MonoDevelop.Ide.Commands
 	
 	public class ToggleCompletionSuggestionModeHandler : CommandHandler
 	{
-		protected override void Run (object dataItem)
+		protected override void Run ()
 		{
-			if (dataItem == null)
-				IdeApp.Preferences.ForceSuggestionMode.Value = !IdeApp.Preferences.ForceSuggestionMode;
-			else
-				IdeApp.Preferences.ForceSuggestionMode.Value = (bool)dataItem;
-		}
-
-		protected override void Update (CommandArrayInfo ainfo)
-		{
-			var doc = IdeApp.Workbench.ActiveDocument;
-			bool enabled = doc != null && doc.Editor != null;
-
-			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Complete"), false);
-			info.Checked = !IdeApp.Preferences.ForceSuggestionMode.Value;
-			info.Enabled = enabled;
-
-			info = ainfo.Add (GettextCatalog.GetString ("_Suggest"), true);
-			info.Checked = IdeApp.Preferences.ForceSuggestionMode.Value;
-			info.Enabled = enabled;
+			IdeApp.Preferences.ForceSuggestionMode.Value = !IdeApp.Preferences.ForceSuggestionMode;
 		}
 	}
 }
