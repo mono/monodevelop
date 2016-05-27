@@ -165,7 +165,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\ManagePackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\AcceptLicensesEventArgs.cs" />
@@ -211,7 +210,6 @@
     <Compile Include="MonoDevelop.PackageManagement\IPropertyService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IRecentPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IRegisteredPackageRepositories.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISelectProjectsService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISettingsFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepositoryFactory.cs" />
@@ -256,7 +254,6 @@
     <Compile Include="MonoDevelop.PackageManagement\SelectedProjectsForInstalledPackages.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SelectedProjectsForUpdatedPackages.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SelectProjectsEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SelectProjectsService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SelectProjectsViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MarkupString.cs" />
     <Compile Include="MonoDevelop.PackageManagement\OpenDotNetProjects.cs" />
@@ -311,26 +308,14 @@
     <Compile Include="MonoDevelop.PackageManagement\UserAgentGeneratorForRepositoryRequests.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ViewModelBase.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.ManagePackagesDialog.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackagesWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackagesWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.HyperlinkWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\HyperlinkWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseAcceptanceDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageLicenseWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageLicenseWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\SelectProjectsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.SelectProjectsDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PagedResultsWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PagedResultsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\AddPackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.UI.cs">
