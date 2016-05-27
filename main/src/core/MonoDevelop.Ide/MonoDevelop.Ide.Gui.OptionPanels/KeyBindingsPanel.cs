@@ -681,6 +681,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		class CellRendererKeyButtons : CellRendererText
 		{
+			static Pango.FontDescription KeySymbolFont = Styles.DefaultFont.Copy ();
+			
 			const int KeyVPadding = 0;
 			const int KeyHPadding = 6;
 			const int KeyBgRadius = 4;
@@ -694,6 +696,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			public Command Command { get; set; }
 
 			public event EventHandler<KeyBindingSelectedEventArgs> KeyBindingSelected;
+
+			static CellRendererKeyButtons ()
+			{
+				// only a couple of OSX fonts support the home/end keys
+				// and only Lucida Grande with an appropriate symbol size
+				if (Platform.IsMac)
+					KeySymbolFont.Family = "Lucida Grande";
+			}
 
 			public CellRendererKeyButtons (KeyBindingsPanel panel)
 			{
@@ -823,8 +833,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					int i = 0;
 					foreach (var key in result.AllKeys) {
 						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
-						layout.FontDescription = FontDesc;
-						layout.FontDescription.Family = Family;
+						layout.FontDescription = KeySymbolFont;
 						int w, h;
 						layout.GetPixelSize (out w, out h);
 
@@ -895,8 +904,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 							}
 
 							layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
-							layout.FontDescription = FontDesc;
-							layout.FontDescription.Family = Family;
+							layout.FontDescription = KeySymbolFont;
 							layout.GetPixelSize (out w, out h);
 
 							int buttonWidth = w + (2 * KeyHPadding);
@@ -937,8 +945,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					int w, h, buttonWidth;
 					foreach (var key in Text.Split (new char [] { ' ' }, StringSplitOptions.RemoveEmptyEntries)) {
 						layout.SetText (KeyBindingManager.BindingToDisplayLabel (key, false));
-						layout.FontDescription = FontDesc;
-						layout.FontDescription.Family = Family;
+						layout.FontDescription = KeySymbolFont;
 						layout.GetPixelSize (out w, out h);
 						if (height == 0)
 							height = h + (KeyVPadding * 2) + 1 + (int)Ypad * 2;

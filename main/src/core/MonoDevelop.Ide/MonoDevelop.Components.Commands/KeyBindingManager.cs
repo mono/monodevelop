@@ -806,9 +806,13 @@ namespace MonoDevelop.Components.Commands
 			case Gdk.Key.Delete:
 				return '⌦';
 			case Gdk.Key.Home:
-				return '⇱';
+				return '\u2196';    // ↖
+				//return '\u21F1';  // ⇱
+				//return '⇱';
 			case Gdk.Key.End:
-				return '⇲';
+				return '\u2198';    // ↘
+				//return '\u21F2';  // ⇲
+				//return '⇲';
 			case Gdk.Key.Page_Up:
 				return '⇞';
 			case Gdk.Key.Page_Down:
