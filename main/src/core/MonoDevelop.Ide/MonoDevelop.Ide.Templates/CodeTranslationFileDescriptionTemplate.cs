@@ -84,21 +84,20 @@ namespace MonoDevelop.Ide.Templates
 		{
 			//get target language's ICodeGenerator
 			if (language == null || language == "")
-				throw new InvalidOperationException ("Language not defined in CodeDom based template.");
+				throw new InvalidOperationException (GettextCatalog.GetString ("Language not defined in CodeDom based template."));
 			
 			CodeDomProvider provider = GetCodeDomProvider (language);
 			
 			//parse the source code
 			if (tempSubstitutedContent == null)
-				throw new Exception ("Expected ModifyTags to be called before CreateContent");
+				throw new Exception (GettextCatalog.GetString ("Expected ModifyTags to be called before CreateContent"));
 			
 			CodeCompileUnit ccu;
 			using (StringReader sr = new StringReader (tempSubstitutedContent)) {
 				try {
 					ccu = parserProvider.Parse (sr);
 				} catch (NotImplementedException) {
-					throw new InvalidOperationException ("Invalid Code Translation template: the CodeDomProvider of the source language '"
-					                                     + language + "' has not implemented the Parse method.");
+					throw new InvalidOperationException (GettextCatalog.GetString ("Invalid Code Translation template: the CodeDomProvider of the source language '{0}' has not implemented the Parse method.", language));
 				} catch (Exception ex) {
 					LoggingService.LogError ("Unparseable template: '" + tempSubstitutedContent + "'.", ex);
 					throw;
@@ -158,11 +157,11 @@ namespace MonoDevelop.Ide.Templates
 			System.CodeDom.Compiler.CodeDomProvider provider = null;
 			var binding = GetLanguageBinding (language);
 			if (binding == null)
-				throw new InvalidOperationException ("No LanguageBinding was found for the language '" + language + "'.");
+				throw new InvalidOperationException (GettextCatalog.GetString ("No LanguageBinding was found for the language '{0}'.", language));
 			
 			provider = binding.GetCodeDomProvider ();
 			if (provider == null)
-				throw new InvalidOperationException ("No CodeDomProvider was found for the language '" + language + "'.");
+				throw new InvalidOperationException (GettextCatalog.GetString ("No CodeDomProvider was found for the language '{0}'.", language));
 			return provider;
 		}
 		

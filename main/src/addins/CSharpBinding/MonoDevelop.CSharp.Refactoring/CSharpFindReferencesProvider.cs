@@ -206,6 +206,9 @@ namespace MonoDevelop.CSharp.Refactoring
 					}
 
 					foreach (var loc in lookup.Symbol.Locations) {
+						if (token.IsCancellationRequested)
+							break;
+						
 						if (!loc.IsInSource)
 							continue;
 						var fileName = loc.SourceTree.FilePath;
@@ -223,6 +226,8 @@ namespace MonoDevelop.CSharp.Refactoring
 
 					foreach (var mref in await SymbolFinder.FindReferencesAsync (lookup.Symbol, lookup.Solution).ConfigureAwait (false)) {
 						foreach (var loc in mref.Locations) {
+							if (token.IsCancellationRequested)
+								break;
 							var fileName = loc.Document.FilePath;
 							var offset = loc.Location.SourceSpan.Start;
 							string projectedName;

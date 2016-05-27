@@ -512,6 +512,21 @@ namespace MonoDevelop.Components.AutoTest
 			return success;
 		}
 
+		public bool Click (AppResult result, double x, double y, bool wait = true)
+		{
+			bool success = false;
+
+			try {
+				ExecuteOnIdle (() => {
+					success = result.Click (x, y);
+				}, wait);
+			} catch (TimeoutException e) {
+				ThrowOperationTimeoutException ("Click", result.SourceQuery, result, e);
+			}
+
+			return success;
+		}
+
 		public bool EnterText (AppResult result, string text)
 		{
 			try {

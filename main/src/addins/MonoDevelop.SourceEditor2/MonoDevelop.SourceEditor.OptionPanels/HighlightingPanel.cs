@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	{
 		string schemeName;
 		ListStore styleStore = new ListStore (typeof (string), typeof (Mono.TextEditor.Highlighting.ColorScheme), typeof(bool));
-		Lazy<Gdk.Pixbuf> errorPixbuf = new Lazy<Gdk.Pixbuf> (() => ImageService.GetIcon (Stock.DialogError, IconSize.Menu).ToPixbuf ());
+		static Lazy<Gdk.Pixbuf> errorPixbuf = new Lazy<Gdk.Pixbuf> (() => ImageService.GetIcon (Stock.DialogError, IconSize.Menu).ToPixbuf ());
 
 		public HighlightingPanel ()
 		{
@@ -49,11 +49,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var col = new TreeViewColumn ();
 			var crpixbuf = new CellRendererPixbuf ();
 			col.PackStart (crpixbuf, false);
-			col.SetCellDataFunc (crpixbuf, (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter) => {
-				var isError = (bool)styleStore.GetValue (iter, 2);
-				crpixbuf.Visible = isError;
-				crpixbuf.Pixbuf = isError ? errorPixbuf.Value : null;
-			});
+			col.SetCellDataFunc (crpixbuf, ImageDataFunc);
 			var crtext = new CellRendererText ();
 			col.PackEnd (crtext, true);
 			col.SetAttributes (crtext, "markup", 0);
@@ -61,6 +57,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.Model = styleStore;
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
 			MonoDevelop.Ide.Gui.Styles.Changed += HandleThemeChanged;
+		}
+
+		static void ImageDataFunc (TreeViewColumn tree_column, CellRenderer cell, TreeModel tree_model, TreeIter iter)
+		{
+
+			var isError = (bool)tree_model.GetValue (iter, 2);
+			var crpixbuf = (CellRendererPixbuf)cell;
+			crpixbuf.Visible = isError;
+			crpixbuf.Pixbuf = isError ? errorPixbuf.Value : null;
 		}
 
 		void HandleThemeChanged (object sender, EventArgs e)

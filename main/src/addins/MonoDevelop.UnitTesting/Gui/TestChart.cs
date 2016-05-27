@@ -31,6 +31,7 @@ using System.Collections;
 using Gtk;
 using Gdk;
 using MonoDevelop.Components.Chart;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -89,14 +90,14 @@ namespace MonoDevelop.UnitTesting
 			SetAutoScale (AxisDimension.Y, false, true);
 			StartY = 0;
 			
-			serieFailed = new Serie ("Failed tests");
+			serieFailed = new Serie (GettextCatalog.GetString("Failed tests"));
 			serieFailed.Color = new Cairo.Color (1, 0, 0);
-			serieSuccess = new Serie ("Successful tests");
+			serieSuccess = new Serie (GettextCatalog.GetString("Successful tests"));
 			serieSuccess.Color = new Cairo.Color (0, 0.65, 0);
-			serieIgnored = new Serie ("Ignored tests");
+			serieIgnored = new Serie (GettextCatalog.GetString("Ignored tests"));
 			serieIgnored.Color = new Cairo.Color (0.8, 0.8, 0);
 			
-			serieTime = new Serie ("Time");
+			serieTime = new Serie (GettextCatalog.GetString("Time"));
 			serieTime.Color = new Cairo.Color (0, 0, 1);
 			
 			UpdateMode ();

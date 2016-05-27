@@ -1253,11 +1253,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static string BytesToSize (long kbytes)
 		{
 			if (kbytes < 1024)
-				return String.Format ("{0} KBytes", kbytes);
+				return GettextCatalog.GetString ("{0} KBytes", kbytes);
 			// 16 * 1024
 			if (kbytes < 16384)
-				return String.Format ("{0:0.0} MBytes", kbytes / 1024.0);
-			return String.Format ("{0} MBytes", kbytes / 1024);
+				return GettextCatalog.GetString ("{0:0.0} MBytes", kbytes / 1024.0);
+			return GettextCatalog.GetString ("{0} MBytes", kbytes / 1024);
 		}
 
 		ProgressData progressData;

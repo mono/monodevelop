@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Gtk;
 
 using MonoDevelop.Core;
@@ -9,7 +10,6 @@ namespace MonoDevelop.VersionControl
 	internal abstract class VersionControlTask 
 	{
 		ProgressMonitor tracker;
-		ThreadNotify threadnotify;
 
 		protected VersionControlOperationType OperationType { get; set; }
 		
@@ -27,7 +27,6 @@ namespace MonoDevelop.VersionControl
 		protected VersionControlTask()
 		{
 			OperationType = VersionControlOperationType.Other;
-			threadnotify = new ThreadNotify(new ReadyEvent(Wakeup));
 		}
 		
 		protected ProgressMonitor Monitor {
@@ -42,21 +41,25 @@ namespace MonoDevelop.VersionControl
 		public void Start() {
 			tracker = CreateProgressMonitor ();
 			tracker.BeginTask(GetDescription(), 1);
-			ThreadPool.QueueUserWorkItem (BackgroundWorker);
+
+			// Sync invoke background worker which will end up doing async invoke on the internal run.
+			BackgroundWorker ();
 		}
 		
-		void BackgroundWorker (object state)
+		async void BackgroundWorker ()
 		{
 			try {
-				Run();
+				await Task.Run (() => Run ());
 			} catch (DllNotFoundException e) {
 				string msg = GettextCatalog.GetString ("The operation could not be completed because a shared library is missing: ");
-				tracker.ReportError(msg + e.Message, null);
+				tracker.ReportError (msg + e.Message, null);
+				LoggingService.LogError ("Version Control command failed: ", e);
 			} catch (Exception e) {
 				string msg = GettextCatalog.GetString ("Version control operation failed: ");
 				tracker.ReportError (msg, e);
-			} finally {			
-				threadnotify.WakeupMain();
+				LoggingService.LogError ("Version Control command failed: ", e);
+			} finally {
+				Wakeup ();
 			}
 		}
 	

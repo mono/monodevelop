@@ -72,11 +72,14 @@ namespace MonoDevelop.CSharp.Navigation
 			if (symType == null)
 				return;
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				foreach (var type in compilation.Assembly.GlobalNamespace.GetAllTypes ()) {
+				foreach (var type in compilation.Assembly.GlobalNamespace.GetAllTypes (monitor.CancellationToken)) {
 					if (!type.MightContainExtensionMethods)
 						continue;
 
 					foreach (var extMethod in type.GetMembers ().OfType<IMethodSymbol> ().Where (method => method.IsExtensionMethod)) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							break;
+
 						var reducedMethod = extMethod.ReduceExtensionMethod (symType);
 						if (reducedMethod != null) {
 							var loc = extMethod.Locations.First ();

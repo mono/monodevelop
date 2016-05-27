@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet.Razor.Generator
 		static void GenerateInternal (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
 		{
 			if (file.Project.SupportedLanguages.All (l => l != "C#")) {
-				const string msg = "Razor templates are only supported in C# projects";
+				string msg = GettextCatalog.GetString ("Razor templates are only supported in C# projects");
 				result.Errors.Add (new CompilerError (file.Name, -1, -1, null, msg));
 				monitor.Log.WriteLine (msg);
 				return;

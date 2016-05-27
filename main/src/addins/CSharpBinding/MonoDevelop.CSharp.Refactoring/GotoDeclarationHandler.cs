@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
 			var doc = TextEditorFactory.CreateNewDocument ();
-			doc.Text = provider.ReadString ();
+			doc.Text = provider.ReadString ().ReadToEnd ();
 			int position = location.SourceSpan.Start;
 			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)

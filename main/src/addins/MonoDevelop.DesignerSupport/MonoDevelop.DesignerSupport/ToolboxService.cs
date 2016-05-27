@@ -45,6 +45,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.DesignerSupport.Toolbox;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -123,9 +124,13 @@ namespace MonoDevelop.DesignerSupport
 			OnToolboxContentsChanged ();
 		}
 		
-		public void AddUserItems ()
+		public async Task AddUserItems ()
 		{
-			using (ComponentSelectorDialog dlg = new ComponentSelectorDialog (currentConsumer)) {
+			using (ComponentSelectorDialog dlg = new ComponentSelectorDialog ()) {
+				bool initialized = await dlg.Initialize (currentConsumer);
+				if (!initialized)
+					return;
+
 				dlg.Fill ();
 				MessageService.ShowCustomDialog (dlg);
 			}
@@ -541,7 +546,7 @@ namespace MonoDevelop.DesignerSupport
 			throw new InvalidOperationException ("Unexpected ToolboxItemFilterType value.");
 		}
 		
-		internal ComponentIndex GetComponentIndex (ProgressMonitor monitor)
+		internal async Task<ComponentIndex> GetComponentIndex (ProgressMonitor monitor)
 		{
 			// Returns an index of all components that can be added to the toolbox.
 			
@@ -584,12 +589,16 @@ namespace MonoDevelop.DesignerSupport
 				monitor.BeginTask (GettextCatalog.GetString ("Looking for components..."), toupdate.Count);
 				LoaderContext ctx = new LoaderContext ();
 				try {
-					foreach (ComponentIndexFile ia in toupdate) {
-						ia.Update (ctx);
-						monitor.Step (1);
-						if (monitor.CancellationToken.IsCancellationRequested)
-							return index;
-					}
+					await Task.Run (() => {
+						foreach (ComponentIndexFile ia in toupdate) {
+							ia.Update (ctx);
+							monitor.Step (1);
+							if (monitor.CancellationToken.IsCancellationRequested)
+								return;
+						}
+					});
+					if (monitor.CancellationToken.IsCancellationRequested)
+						return index;
 				} finally {
 					ctx.Dispose ();
 					monitor.EndTask ();
@@ -601,7 +610,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			return index;
 		}
-		
+
 		#endregion
 	}
 	

@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public bool IsUntitled {
-			get { return (contentName == null); }
+			get { return (ContentName == null); }
 		}
 
 		public virtual bool IsDirty {
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual Task Save ()
 		{
-			return Save (contentName);
+			return Save (ContentName);
 		}
 		
 		public Task Save (FilePath fileName)

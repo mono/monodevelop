@@ -1148,6 +1148,53 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("a as C");
 			Assert.AreEqual ("null", val.Value);
 			Assert.AreEqual ("C", val.TypeName);
+
+			val = Eval ("a as string");
+			Assert.AreEqual ("null", val.Value);
+			Assert.AreEqual ("System.String", val.TypeName);
+
+
+			// Is operator
+
+			val = Eval ("c is A");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("c is B");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("c is C");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("b is A");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("b is B");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("b is C");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is A");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is B");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is C");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is string");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
 			
 			// Enum cast
 			

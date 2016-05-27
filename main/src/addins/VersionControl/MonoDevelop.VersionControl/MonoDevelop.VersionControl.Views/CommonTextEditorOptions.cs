@@ -160,14 +160,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public bool UnderlineErrors {
-			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UnderlineErrors; 
-			}
-			set {
-			}
-		}
-
 		public override IndentStyle IndentStyle {
 			get {
 				return (IndentStyle)MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.IndentStyle;
