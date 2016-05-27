@@ -97,7 +97,6 @@ namespace MonoDevelop.Ide.Commands
 		
 		ToggleCompletionSuggestionMode,
 		ToggleBlockSelectionMode,
-		SwitchSelectionMode,
 
 		DynamicAbbrev,
 

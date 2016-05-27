@@ -621,18 +621,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 		[CommandHandler (TextEditorCommands.ToggleBlockSelectionMode)]
-		void OnToggleBlockSelectionMode ()
-		{
-			EditActions.ToggleBlockSelectionMode (Editor);
-		}
-
-		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]
-		void OnUpdateBlockSelectionMode (CommandInfo info)
-		{
-			info.Enabled = Editor != null && Editor.IsSomethingSelected;
-		}
-
-		[CommandHandler (TextEditorCommands.SwitchSelectionMode)]
 		void OnToggleBlockSelectionMode (string optionId)
 		{
 			SelectionMode newMode;
@@ -640,19 +628,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 				EditActions.ToggleBlockSelectionMode (Editor);
 		}
 
-		[CommandUpdateHandler (TextEditorCommands.SwitchSelectionMode)]
+		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]
 		void OnUpdateBlockSelectionMode (CommandArrayInfo ainfo)
 		{
-			var binding = IdeApp.CommandService.GetCommand (TextEditorCommands.ToggleBlockSelectionMode)?.AccelKey ?? String.Empty;
 			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Normal"), SelectionMode.Normal.ToString ());
 			info.Checked = Editor.SelectionMode == SelectionMode.Normal;
 			info.Enabled = Editor.IsSomethingSelected;
-			info.AccelKey = binding;
 
 			info = ainfo.Add (GettextCatalog.GetString ("_Block"), SelectionMode.Block.ToString ());
 			info.Checked = Editor.SelectionMode == SelectionMode.Block;
 			info.Enabled = Editor.IsSomethingSelected;
-			info.AccelKey = binding;
 		}
 
 		[CommandHandler (EditCommands.IndentSelection)]
