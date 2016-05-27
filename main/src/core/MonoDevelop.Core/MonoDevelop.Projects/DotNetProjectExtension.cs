@@ -88,7 +88,7 @@ namespace MonoDevelop.Projects
 			return next.OnCreateExecutionCommand (configSel, configuration);
 		}
 
-		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, DotNetRunConfiguration runConfiguration)
+		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
 			return next.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 		}

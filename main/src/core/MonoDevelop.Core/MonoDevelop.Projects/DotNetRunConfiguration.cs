@@ -64,6 +64,10 @@ namespace MonoDevelop.Projects
 			public const string Program = "Program";
 		}
 
+		public bool IsEmpty {
+			get { return string.IsNullOrEmpty (StartArguments) && string.IsNullOrEmpty (StartWorkingDirectory) && StartAction == StartActions.Project && EnvironmentVariables.Count == 0; }
+		}
+
 		internal protected override void Read (IPropertySet pset)
 		{
 			base.Read (pset);

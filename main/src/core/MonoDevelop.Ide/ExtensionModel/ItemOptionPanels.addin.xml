@@ -88,7 +88,7 @@
 			<Section id = "StartupOptionsPanel" _label = "Startup Project" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.StartupOptionsPanel"/>
 		</Condition>
 		<Condition id="ItemType" value="SolutionItem">
-			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel" />
+<!--			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.ExecutionCustomCommandPanel" />-->
 		</Condition>
 	</Section>
 	<Section id="SourceCode" _label="Source Code">

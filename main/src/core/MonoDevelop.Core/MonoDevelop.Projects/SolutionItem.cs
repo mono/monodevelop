@@ -487,12 +487,17 @@ namespace MonoDevelop.Projects
 			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.Configurations);
 		}
 
+		public bool SupportsRunConfigurations ()
+		{
+			return ItemExtension.OnGetSupportedFeatures ().HasFlag (ProjectFeatures.RunConfigurations);
+		}
+
 		protected virtual ProjectFeatures OnGetSupportedFeatures ()
 		{
 			if (IsUnsupportedProject)
 				return ProjectFeatures.Configurations;
 			else
-				return ProjectFeatures.Execute | ProjectFeatures.Build | ProjectFeatures.Configurations;
+				return ProjectFeatures.Execute | ProjectFeatures.Build | ProjectFeatures.Configurations | ProjectFeatures.RunConfigurations;
 		}
 
 		/// <summary>

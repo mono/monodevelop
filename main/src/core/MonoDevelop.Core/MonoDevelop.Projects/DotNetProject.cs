@@ -1135,7 +1135,7 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 
-		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, DotNetRunConfiguration runConfiguration)
+		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
 #pragma warning disable 618 // Type or member is obsolete
 			var rcmd = ProjectExtension.OnCreateExecutionCommand (configSel, configuration);
@@ -1145,19 +1145,21 @@ namespace MonoDevelop.Projects
 			if (cmd == null)
 				return rcmd;
 
-			// Don't directly overwrite the settings, since those may have been set by the OnCreateExecutionCommand
-			// overload that doesn't take a runConfiguration.
+			var rc = runConfiguration as DotNetRunConfiguration;
+			if (rc != null) {
+				// Don't directly overwrite the settings, since those may have been set by the OnCreateExecutionCommand
+				// overload that doesn't take a runConfiguration.
 
-			string monoOptions;
-			runConfiguration.MonoParameters.GenerateOptions (cmd.EnvironmentVariables, out monoOptions);
-			cmd.RuntimeArguments = monoOptions;
-			if (!string.IsNullOrEmpty (runConfiguration.StartArguments))
-				cmd.Arguments = runConfiguration.StartArguments;
-			if (!runConfiguration.StartWorkingDirectory.IsNullOrEmpty)
-				cmd.WorkingDirectory = runConfiguration.StartWorkingDirectory;
-			foreach (var env in runConfiguration.EnvironmentVariables)
-				cmd.EnvironmentVariables [env.Key] = env.Value;
-
+				string monoOptions;
+				rc.MonoParameters.GenerateOptions (cmd.EnvironmentVariables, out monoOptions);
+				cmd.RuntimeArguments = monoOptions;
+				if (!string.IsNullOrEmpty (rc.StartArguments))
+					cmd.Arguments = rc.StartArguments;
+				if (!rc.StartWorkingDirectory.IsNullOrEmpty)
+					cmd.WorkingDirectory = rc.StartWorkingDirectory;
+				foreach (var env in rc.EnvironmentVariables)
+					cmd.EnvironmentVariables [env.Key] = env.Value;
+			}
 			return cmd;
 		}
 
@@ -1752,7 +1754,7 @@ namespace MonoDevelop.Projects
 			}
 #pragma warning restore 672 // Member overrides obsolete member
 
-			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, DotNetRunConfiguration runConfiguration)
+			internal protected override ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 			{
 				return Project.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 			}

@@ -54,12 +54,20 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			Project = (Project)dataObject;
 
+			if (!Project.SupportsRunConfigurations ())
+				return;
+			
 			foreach (var rc in Project.RunConfigurations)
 				configs.Add (new RunConfigInfo { ProjectConfig = rc, EditedConfig = Project.CloneRunConfiguration (rc, rc.Name) });
 		
 			foreach (var c in configs)
 				AddPanel (c);
 
+		}
+
+		public override bool IsVisible ()
+		{
+			return Project.SupportsRunConfigurations ();
 		}
 
 		public Project Project { get; set; }
