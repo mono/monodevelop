@@ -94,11 +94,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 		</ItemSet>
 		<SeparatorItem id = "Separator5" />
-		
-		<ItemSet id = "CodeCompletion" _label = "Code Completion">
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
-		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 		<SeparatorItem id = "optionssep5" />
 		<Condition id="Platform" value="linux">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />

@@ -11,7 +11,7 @@
 		<Category _name = "Edit" id="Edit">
 			
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
-				_label = "Show Code _Generation List"
+				_label = "Show Code _Generation"
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
 		</Category>
