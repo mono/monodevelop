@@ -39,7 +39,7 @@ namespace MonoDevelop.PackageManagement
 
 		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
 		{
-			if (e.Project.HasPackages ()) {
+			if (e.Project.HasPackagesConfig ()) {
 				var runner = new PackageCompatibilityRunner (e.Project);
 				runner.Run ();
 			}

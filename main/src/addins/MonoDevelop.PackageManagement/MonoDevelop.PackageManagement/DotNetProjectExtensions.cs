@@ -85,6 +85,11 @@ namespace MonoDevelop.PackageManagement
 			return AnyFileExists (GetPossiblePackagesConfigOrProjectJsonFilePaths (project.BaseDirectory, project.Name));
 		}
 
+		public static bool HasPackagesConfig (this IDotNetProject project)
+		{
+			return FileExists (GetPackagesConfigFilePath (project));
+		}
+
 		static bool HasPackages (string projectDirectory, string projectName)
 		{
 			return AnyFileExists (GetPossiblePackagesConfigOrProjectJsonFilePaths (projectDirectory, projectName));
