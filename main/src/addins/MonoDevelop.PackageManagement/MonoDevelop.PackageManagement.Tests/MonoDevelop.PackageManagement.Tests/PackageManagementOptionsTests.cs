@@ -101,13 +101,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			properties.Write (writer);
 		}
 
-		RecentPackageInfo AddRecentPackageToOptions (string id, string version)
-		{
-			var recentPackage = new RecentPackageInfo (id, new SemanticVersion (version));
-			options.RecentPackages.Add (recentPackage);
-			return recentPackage;
-		}
-
 		void EnablePackageRestoreInSettings ()
 		{
 			fakeSettings.SetPackageRestoreSetting (true);
@@ -320,33 +313,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void RecentPackages_OneRecentPackageAddedAndOptionsReloadedFromSavedProperties_ContainsOneRecentPackageThatWasSavedPreviously ()
-		{
-			CreateOptions ();
-			var package = new FakePackage ("Test");
-			var recentPackage = new RecentPackageInfo (package);
-			options.RecentPackages.Add (recentPackage);
-			CreateOptions (properties);
-
-			IList<RecentPackageInfo> recentPackages = options.RecentPackages;
-
-			var expectedRecentPackages = new RecentPackageInfo[] {
-				new RecentPackageInfo (package)
-			};
-
-			RecentPackageInfoCollectionAssert.AreEqual (expectedRecentPackages, recentPackages);
-		}
-
-		[Test]
-		public void RecentPackages_SaveRecentPackages_DoesNotThrowInvalidOperationException ()
-		{
-			CreateOptions ();
-			AddRecentPackageToOptions ("id", "1.0");
-
-			Assert.DoesNotThrow (() => SaveOptions ());
-		}
-
-		[Test]
 		public void ActivePackageSource_AggregatePackageSourceIsActivePackageSourceInSettings_ReturnsAggregatePackageSource ()
 		{
 			CreateSettings ();
@@ -435,67 +401,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			IList<SettingValue> actualSavedPackageSourceSettings = 
 				fakeSettings.GetValuesPassedToSetValuesForDisabledPackageSourcesSection ();
 			Assert.AreEqual (0, actualSavedPackageSourceSettings.Count);
-		}
-
-		[Test]
-		public void IsPackageRestoreEnabled_EnabledInSettings_ReturnsTrue ()
-		{
-			CreateSettings ();
-			EnablePackageRestoreInSettings ();
-			CreateOptions (fakeSettings);
-
-			bool enabled = options.IsPackageRestoreEnabled;
-
-			Assert.IsTrue (enabled);
-		}
-
-		[Test]
-		public void IsPackageRestoreEnabled_PackageRestoreNotInSettings_ReturnsTrue ()
-		{
-			CreateOptions ();
-
-			bool enabled = options.IsPackageRestoreEnabled;
-
-			Assert.IsTrue (enabled);
-		}
-
-		[Test]
-		public void IsPackageRestoreEnabled_NotInSettingsOriginallyButSetToTrue_PackageRestoreEnabledInSettings ()
-		{
-			CreateOptions ();
-
-			options.IsPackageRestoreEnabled = true;
-
-			SettingValue setting = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection ();
-
-			Assert.AreEqual ("enabled", setting.Key);
-			Assert.AreEqual ("True", setting.Value);
-		}
-
-		[Test]
-		public void IsPackageRestoreEnabled_OriginallyEnabledInSettingsButSetToTrue_PackageRestoreSectionIsNotDeletedFromSettings ()
-		{
-			CreateSettings ();
-			EnablePackageRestoreInSettings ();
-			CreateOptions (fakeSettings);
-
-			options.IsPackageRestoreEnabled = false;
-
-			bool deleted = fakeSettings.IsPackageRestoreSectionDeleted;
-			Assert.IsFalse (deleted);
-		}
-
-		[Test]
-		public void IsPackageRestoreEnabled_OriginallyEnabledInSettingsButSetToTrue_PackageRestoreIsFalseInSettings ()
-		{
-			CreateSettings ();
-			EnablePackageRestoreInSettings ();
-			CreateOptions (fakeSettings);
-
-			options.IsPackageRestoreEnabled = false;
-
-			SettingValue setting = fakeSettings.GetValuePassedToSetValueForPackageRestoreSection ();
-			Assert.AreEqual ("False", setting.Value);
 		}
 
 		[Test]

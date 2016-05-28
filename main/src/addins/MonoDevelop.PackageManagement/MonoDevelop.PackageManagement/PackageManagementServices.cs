@@ -76,7 +76,7 @@ namespace MonoDevelop.PackageManagement
 
 			updatedPackagesInWorkspace = new UpdatedNuGetPackagesInWorkspace (packageManagementEvents);
 
-			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
+			projectOperations = new PackageManagementProjectOperations (solution, backgroundPackageActionRunner, packageManagementEvents);
 
 			workspace = new PackageManagementWorkspace ();
 
@@ -131,10 +131,6 @@ namespace MonoDevelop.PackageManagement
 
 		internal static IPackageManagementProgressMonitorFactory ProgressMonitorFactory {
 			get { return progressMonitorFactory; }
-		}
-
-		internal static IRecentPackageRepository RecentPackageRepository {
-			get { return packageRepositoryCache.RecentPackageRepository; }
 		}
 
 		internal static IProgressProvider ProgressProvider {

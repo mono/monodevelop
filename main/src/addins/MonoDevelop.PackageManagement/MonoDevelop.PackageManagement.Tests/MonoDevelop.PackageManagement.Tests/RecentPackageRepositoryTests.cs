@@ -39,23 +39,11 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		RecentPackageRepository repository;
 		FakePackageRepository aggregateRepository;
-		List<RecentPackageInfo> recentPackages;
 
 		void CreateRepository ()
 		{
-			CreateRecentPackages ();
-			CreateRepository (recentPackages);
-		}
-
-		void CreateRecentPackages ()
-		{
-			recentPackages = new List<RecentPackageInfo> ();
 			aggregateRepository = new FakePackageRepository ();
-		}
-
-		void CreateRepository (IList<RecentPackageInfo> recentPackages)
-		{
-			repository = new RecentPackageRepository (recentPackages, aggregateRepository);
+			repository = new RecentPackageRepository (aggregateRepository);
 		}
 
 		FakePackage AddOnePackageToRepository (string id)
@@ -77,16 +65,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			yield return AddOnePackageToRepository ("Test.Package.2");
 			yield return AddOnePackageToRepository ("Test.Package.3");
 			yield return AddOnePackageToRepository ("Test.Package.4");
-		}
-
-		FakePackage CreateRepositoryWithOneRecentPackageSavedInOptions ()
-		{
-			CreateRecentPackages ();
-			var package = new FakePackage ("Test");
-			aggregateRepository.FakePackages.Add (package);
-			recentPackages.Add (new RecentPackageInfo (package));
-			CreateRepository (recentPackages);
-			return package;
 		}
 
 		[Test]
@@ -167,50 +145,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			};
 
 			PackageCollectionAssert.AreEqual (expectedPackages, repository.GetPackages ());
-		}
-
-		public void Clear_OneRecentPackage_PackagesRemoved ()
-		{
-			CreateRepository ();
-			AddOnePackageToRepository ("Test1");
-
-			repository.Clear ();
-
-			int count = repository.GetPackages ().Count ();
-
-			Assert.AreEqual (0, count);
-		}
-
-		[Test]
-		public void Clear_OneRecentPackageInOptions_RecentPackagesAreRemovedFromOptions ()
-		{
-			CreateRepositoryWithOneRecentPackageSavedInOptions ();
-
-			repository.Clear ();
-
-			int count = recentPackages.Count;
-
-			Assert.AreEqual (0, count);
-		}
-
-		[Test]
-		public void HasRecentPackages_NoSavedRecentPackages_ReturnsFalse ()
-		{
-			CreateRepository ();
-
-			bool hasRecentPackages = repository.HasRecentPackages;
-
-			Assert.IsFalse (hasRecentPackages);
-		}
-
-		[Test]
-		public void HasRecentPackages_OneSavedRecentPackages_ReturnsTrue ()
-		{
-			CreateRepositoryWithOneRecentPackageSavedInOptions ();
-
-			bool hasRecentPackages = repository.HasRecentPackages;
-
-			Assert.IsTrue (hasRecentPackages);
 		}
 
 		[Test]

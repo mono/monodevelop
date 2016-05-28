@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
 
@@ -86,14 +85,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public FakeRecentPackageRepository FakeRecentPackageRepository = new FakeRecentPackageRepository ();
-		public IList<RecentPackageInfo> RecentPackagesPassedToCreateRecentPackageRepository;
 		public IPackageRepository AggregateRepositoryPassedToCreateRecentPackageRepository;
 
 		public IRecentPackageRepository CreateRecentPackageRepository (
-			IList<RecentPackageInfo> recentPackages,
 			IPackageRepository aggregateRepository)
 		{
-			RecentPackagesPassedToCreateRecentPackageRepository = recentPackages;
 			AggregateRepositoryPassedToCreateRecentPackageRepository = aggregateRepository;
 			return FakeRecentPackageRepository;
 		}

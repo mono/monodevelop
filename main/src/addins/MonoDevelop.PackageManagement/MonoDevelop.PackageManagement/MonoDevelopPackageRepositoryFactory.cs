@@ -44,10 +44,9 @@ namespace MonoDevelop.PackageManagement
 		}
 		
 		public IRecentPackageRepository CreateRecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
 			IPackageRepository aggregateRepository)
 		{
-			return new RecentPackageRepository(recentPackages, aggregateRepository);
+			return new RecentPackageRepository (aggregateRepository);
 		}
 		
 		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)

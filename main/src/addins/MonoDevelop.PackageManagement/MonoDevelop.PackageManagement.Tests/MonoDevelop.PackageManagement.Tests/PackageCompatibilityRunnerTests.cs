@@ -43,7 +43,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		TestablePackageCompatibilityRunner runner;
 		FakeDotNetProject project;
 		FakePackageManagementSolution solution;
-		FakeRegisteredPackageRepositories registeredRepositories;
 		FakeProgressMonitorFactory progressMonitorFactory;
 		PackageManagementEvents packageManagementEvents;
 		PackageManagementProgressProvider progressProvider;
@@ -56,7 +55,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.Name = "MyProject";
 			project.TargetFrameworkMoniker = new TargetFrameworkMoniker ("4.5");
 			solution = new FakePackageManagementSolution ();
-			registeredRepositories = new FakeRegisteredPackageRepositories ();
 			progressMonitorFactory = new FakeProgressMonitorFactory ();
 			progressMonitor = progressMonitorFactory.ProgressMonitor;
 			packageManagementEvents = new PackageManagementEvents ();
@@ -69,7 +67,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			runner = new TestablePackageCompatibilityRunner (
 				project,
 				solution,
-				registeredRepositories,
 				progressMonitorFactory,
 				packageManagementEvents,
 				progressProvider);

@@ -119,7 +119,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution (@"d:\projects\Test\MySolution\MyProject.sln");
 			CreateOptions ();
-			options.PackagesDirectory = "MyPackages";
 			CreateRepository (solution, options);
 
 			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.0.1.40");
@@ -127,7 +126,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string installPath = repository.GetInstallPath (package);
 
 			string expectedInstallPath = 
-				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.0.1.40".ToNativePath ();
+				@"d:\projects\Test\MySolution\packages\MyPackage.1.0.1.40".ToNativePath ();
 
 			Assert.AreEqual (expectedInstallPath, installPath);
 		}

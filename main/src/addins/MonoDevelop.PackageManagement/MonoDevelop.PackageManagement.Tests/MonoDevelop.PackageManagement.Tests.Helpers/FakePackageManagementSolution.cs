@@ -221,6 +221,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public IPackageManagementProject GetProject (IDotNetProject project)
 		{
+			FakePackageManagementProject fakeProject = null;
+			if (FakeProjectsToReturnFromGetProject.TryGetValue (project.Name, out fakeProject)) {
+				return fakeProject;
+			}
 			return FakeActiveProject;
 		}
 	}

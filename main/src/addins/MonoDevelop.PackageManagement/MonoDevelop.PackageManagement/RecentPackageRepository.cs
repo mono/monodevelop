@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using NuGet;
@@ -39,17 +38,11 @@ namespace MonoDevelop.PackageManagement
 		
 		List<IPackage> packages = new List<IPackage>();
 		int maximumPackagesCount = DefaultMaximumPackagesCount;
-		IList<RecentPackageInfo> savedRecentPackages;
 		IPackageRepository aggregateRepository;
 
-		public RecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository)
+		public RecentPackageRepository (IPackageRepository aggregateRepository)
 		{
-			this.savedRecentPackages = recentPackages;
 			this.aggregateRepository = aggregateRepository;
-
-			//UpdatePackages ();
 		}
 		
 		public string Source {
@@ -61,7 +54,6 @@ namespace MonoDevelop.PackageManagement
 			RemovePackageIfAlreadyAdded(package);
 			AddPackageAtBeginning(package);
 			RemoveLastPackageIfCurrentPackageCountExceedsMaximum();
-			//UpdateRecentPackagesInOptions();
 		}
 		
 		void RemovePackageIfAlreadyAdded(IPackage package)
@@ -94,39 +86,14 @@ namespace MonoDevelop.PackageManagement
 			packages.RemoveAt(packages.Count - 1);
 		}
 		
-		void UpdateRecentPackagesInOptions()
-		{
-			savedRecentPackages.Clear();
-			savedRecentPackages.AddRange(GetRecentPackagesInfo());
-		}
-		
-		List<RecentPackageInfo> GetRecentPackagesInfo()
-		{
-			List<RecentPackageInfo> allRecentPackages = new List<RecentPackageInfo>();
-			foreach (IPackage package in packages) {
-				var recentPackageInfo = new RecentPackageInfo(package);
-				allRecentPackages.Add(recentPackageInfo);
-			}
-			return allRecentPackages;
-		}
-		
 		public void RemovePackage(IPackage package)
 		{
 		}
 		
 		public IQueryable<IPackage> GetPackages()
 		{
-			//UpdatePackages();
 			RemoveInvalidPackages ();
 			return packages.AsQueryable();
-		}
-		
-		void UpdatePackages()
-		{
-			if (!HasRecentPackagesBeenRead() && HasRecentPackages) {
-				IEnumerable<IPackage> recentPackages = GetRecentPackages();
-				packages.AddRange(recentPackages);
-			}
 		}
 
 		void RemoveInvalidPackages ()
@@ -140,56 +107,9 @@ namespace MonoDevelop.PackageManagement
 			return (packageFromRepository != null) && packageFromRepository.IsValid;
 		}
 		
-		bool HasRecentPackagesBeenRead()
-		{
-			return packages.Count > 0;
-		}
-		
-		public bool HasRecentPackages {
-			get { return savedRecentPackages.Count > 0; }
-		}
-		
-		IEnumerable<IPackage> GetRecentPackages()
-		{
-			IEnumerable<IPackage> recentPackages = GetRecentPackagesFilteredById();
-			return GetRecentPackagesFilteredByVersion(recentPackages);
-		}
-		
-		IEnumerable<IPackage> GetRecentPackagesFilteredById()
-		{
-			IEnumerable<string> recentPackageIds = GetRecentPackageIds();
-			return aggregateRepository.FindPackages(recentPackageIds);
-		}
-				
-		IEnumerable<string> GetRecentPackageIds()
-		{
-			foreach (RecentPackageInfo recentPackageInfo in savedRecentPackages) {
-				yield return recentPackageInfo.Id;
-			}
-		}
-		
-		IEnumerable<IPackage> GetRecentPackagesFilteredByVersion(IEnumerable<IPackage> recentPackages)
-		{
-			List<IPackage> filteredRecentPackages = new List<IPackage>();
-			foreach (IPackage recentPackage in recentPackages) {
-				foreach (RecentPackageInfo savedRecentPackageInfo in savedRecentPackages) {
-					if (savedRecentPackageInfo.IsMatch(recentPackage)) {
-						filteredRecentPackages.Add(recentPackage);
-					}
-				}
-			}
-			return filteredRecentPackages;
-		}
-		
 		public int MaximumPackagesCount {
 			get { return maximumPackagesCount; }
 			set { maximumPackagesCount = value; }
-		}
-		
-		public void Clear()
-		{
-			packages.Clear();
-			UpdateRecentPackagesInOptions();
 		}
 		
 		public bool SupportsPrereleasePackages {

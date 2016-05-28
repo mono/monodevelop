@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
 using NuGet;
 using MonoDevelop.Core;
 
@@ -39,18 +37,15 @@ namespace MonoDevelop.PackageManagement
 	internal class PackageCompatibilityChecker
 	{
 		IPackageManagementSolution solution;
-		IRegisteredPackageRepositories registeredRepositories;
 		List<IPackage> packagesRequiringReinstallation = new List<IPackage> ();
 		PackageReferenceFile packageReferenceFile;
 		List<PackageReference> packageReferences;
 		ProjectPackagesCompatibilityReport compatibilityReport;
 
 		public PackageCompatibilityChecker (
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories)
+			IPackageManagementSolution solution)
 		{
 			this.solution = solution;
-			this.registeredRepositories = registeredRepositories;
 		}
 
 		public string PackageReferenceFileName {
@@ -59,7 +54,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void CheckProjectPackages (IDotNetProject project)
 		{
-			IPackageManagementProject packageManagementProject = solution.GetProject (registeredRepositories.ActiveRepository, project);
+			IPackageManagementProject packageManagementProject = solution.GetProject (project);
 
 			packageReferenceFile = CreatePackageReferenceFile (project.GetPackagesConfigFilePath ());
 			packageReferences = packageReferenceFile.GetPackageReferences ().ToList ();

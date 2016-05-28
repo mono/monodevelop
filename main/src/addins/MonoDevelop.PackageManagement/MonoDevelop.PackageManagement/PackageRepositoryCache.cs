@@ -39,7 +39,6 @@ namespace MonoDevelop.PackageManagement
 		IMonoDevelopPackageRepositoryFactory factory;
 		RegisteredPackageSources packageSources;
 		PackageManagementOptions options;
-		IList<RecentPackageInfo> recentPackages;
 		IRecentPackageRepository recentPackageRepository;
 		IPackageRepository machineCache;
 		ConcurrentDictionary<string, IPackageRepository> repositories =
@@ -53,7 +52,6 @@ namespace MonoDevelop.PackageManagement
 			this.options = options;
 			this.machineCache = machineCache;
 			this.factory = factory;
-			this.recentPackages = options.RecentPackages;
 		}
 
 		public PackageRepositoryCache (
@@ -73,12 +71,9 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public PackageRepositoryCache (
-			RegisteredPackageSources packageSources,
-			IList<RecentPackageInfo> recentPackages)
+		public PackageRepositoryCache (RegisteredPackageSources packageSources)
 		{
 			this.factory = new MonoDevelopPackageRepositoryFactory ();
-			this.recentPackages = recentPackages;
 			this.packageSources = packageSources;
 		}
 
@@ -161,16 +156,15 @@ namespace MonoDevelop.PackageManagement
 		void CreateRecentPackageRepository()
 		{
 			if (recentPackageRepository == null) {
-				CreateRecentPackageRepository(recentPackages, NuGet.MachineCache.Default);
+				CreateRecentPackageRepository (NuGet.MachineCache.Default);
 			}
 		}
 		
 		public IRecentPackageRepository CreateRecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
 			IPackageRepository aggregateRepository)
 		{
 			if (recentPackageRepository == null) {
-				recentPackageRepository = factory.CreateRecentPackageRepository(recentPackages, aggregateRepository);
+				recentPackageRepository = factory.CreateRecentPackageRepository (aggregateRepository);
 			}
 			return recentPackageRepository;
 		}

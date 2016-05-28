@@ -60,7 +60,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			IPackageRepository sourceRepository)
 		{
 			options = new TestablePackageManagementOptions ();
-			options.PackagesDirectory = "packages";
 
 			repositoryPaths = new SolutionPackageRepositoryPath (project, options);
 			var pathResolver = new DefaultPackagePathResolver (repositoryPaths.PackageRepositoryPath);

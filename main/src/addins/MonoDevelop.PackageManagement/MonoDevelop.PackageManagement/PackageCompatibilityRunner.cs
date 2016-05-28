@@ -25,11 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -38,7 +34,6 @@ namespace MonoDevelop.PackageManagement
 	{
 		IDotNetProject project;
 		IPackageManagementSolution solution;
-		IRegisteredPackageRepositories registeredRepositories;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		ProgressMonitorStatusMessage progressMessage;
 		ProgressMonitor progressMonitor;
@@ -48,14 +43,12 @@ namespace MonoDevelop.PackageManagement
 		public PackageCompatibilityRunner (
 			IDotNetProject project,
 			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
 			this.project = project;
 			this.solution = solution;
-			this.registeredRepositories = registeredRepositories;
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
@@ -65,7 +58,6 @@ namespace MonoDevelop.PackageManagement
 			: this (
 				project,
 				PackageManagementServices.Solution,
-				PackageManagementServices.RegisteredPackageRepositories,
 				PackageManagementServices.ProgressMonitorFactory,
 				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.ProgressProvider)
@@ -122,7 +114,7 @@ namespace MonoDevelop.PackageManagement
 
 		void CheckCompatibility ()
 		{
-			PackageCompatibilityChecker checker = CreatePackageCompatibilityChecker (solution, registeredRepositories);
+			PackageCompatibilityChecker checker = CreatePackageCompatibilityChecker (solution);
 			checker.CheckProjectPackages (project);
 
 			if (checker.AnyPackagesRequireReinstallation ()) {
@@ -136,9 +128,9 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker (IPackageManagementSolution solution, IRegisteredPackageRepositories registeredRepositories)
+		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker (IPackageManagementSolution solution)
 		{
-			return new PackageCompatibilityChecker (solution, registeredRepositories);
+			return new PackageCompatibilityChecker (solution);
 		}
 
 		void MarkPackagesForReinstallation (PackageCompatibilityChecker checker)

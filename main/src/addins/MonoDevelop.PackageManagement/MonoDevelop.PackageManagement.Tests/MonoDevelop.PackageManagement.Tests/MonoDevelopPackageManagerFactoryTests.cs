@@ -78,38 +78,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_SharedLocalRepositoryFileSystemRootIsSolutionFolder ()
-		{
-			CreateFactory ();
-			CreateTestProject ();
-			options.PackagesDirectory = "MyPackages";
-			CreatePackageManager ();
-
-			string expectedRoot = @"c:\projects\MyProject\MyPackages".ToNativePath ();
-			string actualRoot = fakePackageRepositoryFactory.FileSystemPassedToCreateSharedRepository.Root;
-			Assert.AreEqual (expectedRoot, actualRoot);
-		}
-
-		[Test]
-		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_SharedLocalRepositoryPackagePathResolverCreatedWithPackagesFolderInsideSolutionFolder ()
-		{
-			CreateFactory ();
-			CreateTestProject ();
-			options.PackagesDirectory = "MyPackages";
-			CreatePackageManager ();
-
-			FakePackage package = new FakePackage ("Test.Package");
-			package.Version = new SemanticVersion (1, 0, 0, 0);
-			string expectedDirectory = @"c:\projects\MyProject\MyPackages\Test.Package.1.0.0.0".ToNativePath ();
-			string actualDirectory = 
-				fakePackageRepositoryFactory
-					.PathResolverPassedToCreateSharedRepository
-					.GetInstallPath (package);
-
-			Assert.AreEqual (expectedDirectory, actualDirectory);
-		}
-
-		[Test]
 		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_LocalRepositoryFileSystemIsPackageManagerFileSystem ()
 		{
 			CreateFactory ();
@@ -117,24 +85,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageManager ();
 
 			Assert.AreEqual (packageManager.FileSystem, fakePackageRepositoryFactory.FileSystemPassedToCreateSharedRepository);
-		}
-
-		[Test]
-		public void CreatePackageManager_PackagesSolutionFolderDefinedInOptions_PackageManagerPathResolverUsesPackagesFolderInsideSolutionFolder ()
-		{
-			CreateFactory ();
-			CreateTestProject ();
-			options.PackagesDirectory = "packages";
-			CreatePackageManager ();
-
-			var package = new FakePackage ("TestPackage", "1.0.0.0");
-
-			string expectedDirectory = @"c:\projects\MyProject\packages\TestPackage.1.0.0.0".ToNativePath ();
-
-			MonoDevelopPackageManager monoDevelopPackageManager = packageManager as MonoDevelopPackageManager;
-			string actualDirectory = monoDevelopPackageManager.PathResolver.GetInstallPath (package);
-
-			Assert.AreEqual (expectedDirectory, actualDirectory);
 		}
 	}
 }

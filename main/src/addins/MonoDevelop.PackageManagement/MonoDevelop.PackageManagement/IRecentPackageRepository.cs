@@ -26,14 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal interface IRecentPackageRepository : IPackageRepository
 	{
-		void Clear();
-		bool HasRecentPackages { get; }
 	}
 }

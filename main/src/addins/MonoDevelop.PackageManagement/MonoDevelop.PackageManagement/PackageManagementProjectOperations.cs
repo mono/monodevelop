@@ -43,17 +43,14 @@ namespace MonoDevelop.PackageManagement
 	internal class PackageManagementProjectOperations : IPackageManagementProjectOperations
 	{
 		IPackageManagementSolution solution;
-		IRegisteredPackageRepositories registeredPackageRepositories;
 		BackgroundPackageActionRunner backgroundActionRunner;
 
 		public PackageManagementProjectOperations (
 			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories,
 			BackgroundPackageActionRunner backgroundActionRunner,
 			IPackageManagementEvents packageManagementEvents)
 		{
 			this.solution = solution;
-			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.backgroundActionRunner = backgroundActionRunner;
 
 			packageManagementEvents.PackageInstalled += PackageInstalled;

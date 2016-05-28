@@ -26,12 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -45,8 +41,6 @@ namespace MonoDevelop.PackageManagement
 
 		RegisteredPackageSourceSettings registeredPackageSourceSettings;
 		Properties properties;
-		List<RecentPackageInfo> recentPackages;
-		PackageRestoreConsent packageRestoreConsent;
 
 		public PackageManagementOptions (
 			Properties properties,
@@ -54,7 +48,6 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.properties = properties;
 			registeredPackageSourceSettings = new RegisteredPackageSourceSettings (settingsProvider);
-			packageRestoreConsent = new PackageRestoreConsent (settingsProvider.LoadSettings());
 		}
 
 		public PackageManagementOptions (Properties properties)
@@ -65,11 +58,6 @@ namespace MonoDevelop.PackageManagement
 		public PackageManagementOptions()
 			: this(PropertyService.Get("PackageManagementSettings", new Properties()))
 		{
-		}
-		
-		public bool IsPackageRestoreEnabled {
-			get { return packageRestoreConsent.IsGrantedInSettings; }
-			set { packageRestoreConsent.IsGrantedInSettings = value; }
 		}
 
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled {
@@ -86,29 +74,9 @@ namespace MonoDevelop.PackageManagement
 			get { return registeredPackageSourceSettings.PackageSources; }
 		}
 		
-		public string PackagesDirectory {
-			get { return properties.Get(PackageDirectoryPropertyName, "packages"); }
-			set { properties.Set(PackageDirectoryPropertyName, value); }
-		}
-		
 		public PackageSource ActivePackageSource {
 			get { return registeredPackageSourceSettings.ActivePackageSource; }
 			set { registeredPackageSourceSettings.ActivePackageSource = value; }
-		}
-		
-		public IList<RecentPackageInfo> RecentPackages {
-			get {
-				if (recentPackages == null) {
-					ReadRecentPackages();
-				}
-				return recentPackages;
-			}
-		}
-		
-		void ReadRecentPackages()
-		{
-			var defaultRecentPackages = new List<RecentPackageInfo>();
-			recentPackages = properties.Get<List<RecentPackageInfo>>(RecentPackagesPropertyName, defaultRecentPackages);
 		}
 
 		public string GetCustomPackagesDirectory ()
