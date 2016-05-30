@@ -7,7 +7,8 @@
 	<TemplateConfiguration>
 		<_Name>NUnit assembly test collection</_Name>
 		<_Category>NUnit</_Category>
-		<Icon>md-project|res:project-nunit-overlay-32.png</Icon>
+		<Icon>md-test-project</Icon>
+		<Image id="md-test-project" />
 		<_Description>Create an NUnit assembly test collection</_Description>
 		<DefaultFilename>NUnitAssemblyGroup</DefaultFilename>
 	</TemplateConfiguration>
