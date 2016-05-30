@@ -185,19 +185,21 @@ namespace MonoDevelop.Ide.Gui
 			TextReader [] results = new TextReader [filenames.Count];
 
 			int idx = 0;
-			foreach (var f in filenames) {
-				var fullPath = (FilePath)FileService.GetFullPath (f);
-				//var r = documentsByFilePath [fullPath];
+			lock (documentsByFilePath) {
+				foreach (var f in filenames) {
+					var fullPath = (FilePath)FileService.GetFullPath (f);
+					//var r = documentsByFilePath [fullPath];
 
-				Document r;
-				bool present = documentsByFilePath.TryGetValue (fullPath, out r);
-				if (present && r.Editor != null) {
-					results [idx] = r.Editor.CreateReader ();
-				} else {
-					results [idx] = null;
+					Document r;
+					bool present = documentsByFilePath.TryGetValue (fullPath, out r);
+					if (present && r.Editor != null) {
+						results [idx] = r.Editor.CreateReader ();
+					} else {
+						results [idx] = null;
+					}
+
+					idx++;
 				}
-
-				idx++;
 			}
 
 			return results;
@@ -815,8 +817,11 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;
 			documents = documents.Add (doc);
-			documentsByFilePath [(FilePath)FileService.GetFullPath (doc.Name)] = doc;
-			
+
+			lock (documentsByFilePath){
+				documentsByFilePath [(FilePath)FileService.GetFullPath (doc.Name)] = doc;
+			}
+
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
 			
@@ -872,7 +877,10 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
 			documents = documents.Remove (doc);
-			documentsByFilePath.Remove ((FilePath)FileService.GetFullPath (doc.Name));
+
+			lock (documentsByFilePath) {
+				documentsByFilePath.Remove ((FilePath)FileService.GetFullPath (doc.Name));
+			}
 
 			OnDocumentClosed (doc);
 			doc.DisposeDocument ();

@@ -106,6 +106,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
 			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 150);
+
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
@@ -128,10 +129,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					}
 				}
 
-				TextReader [] readers = null;
-				var task = GetSearchDocumentsReaders (filenames);
-				if (task.Wait (1000))
-					readers = task.Result;
+				var readers = IdeApp.Workbench.GetDocumentReaders (filenames);
 
 				int idx = 0;
 				if (readers != null) {
