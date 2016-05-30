@@ -112,17 +112,48 @@ namespace MonoDevelop.Ide.FindInFiles
 
 
 				var contents = new List<FileSearchResult>();
+				var filenames = new List<string> ();
 				foreach (var provider in scope.GetFiles (monitor, filter)) {
 					if (token.IsCancellationRequested)
 						return Enumerable.Empty<SearchResult> ();
 					try {
 						searchedFilesCount++;
-						contents.Add(new FileSearchResult (provider, provider.ReadString (), new List<SearchResult> ()));
+						contents.Add(new FileSearchResult (provider, /*provider.ReadString ()*/null, new List<SearchResult> ()));
+
+						filenames.Add (Path.GetFullPath (provider.FileName));
+
 						if (searchedFilesCount % step == 0)
 							monitor.Step (2); 
 					} catch (FileNotFoundException) {
 						MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
 					}
+				}
+
+				TextReader [] readers = null;
+				var task = GetSearchDocumentsReaders (filenames);
+				if (task.Wait (1000))
+					readers = task.Result;
+
+				int idx = 0;
+				if (readers != null) {
+					foreach (var r in readers) {
+						contents [idx].Reader = r;
+
+						idx++;
+					}
+				}
+
+				idx = 0;
+				int c = 0;
+				int t = 0;
+				foreach (var result in contents) {
+					if (readers == null || readers [idx] == null) {
+						result.Reader = result.Provider.GetReaderForFileName ();
+					} else {
+						result.Reader = readers [idx];
+						c++;
+					}
+					t++;
 				}
 
 				var results = new List<SearchResult>();
@@ -179,6 +210,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				monitor.EndTask ();
 				IsRunning = false;
 			}
+		}
+
+		async Task<TextReader[]> GetSearchDocumentsReaders (List<string> filenames)
+		{
+			return await Runtime.RunInMainThread (() => IdeApp.Workbench.GetDocumentReaders (filenames));
 		}
 
 		// Took: 17743
