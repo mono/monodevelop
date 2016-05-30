@@ -8,7 +8,7 @@
 		<_Name>Blank Solution</_Name>
 		<Category>other/misc/generic</Category>
 		<Icon>md-solution</Icon>
-		<Image id="md-blank-solution" />
+		<Image id="md-solution" />
 		<LanguageName/>
 		<_Description>A blank solution</_Description>
 	</TemplateConfiguration>
