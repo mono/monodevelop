@@ -201,6 +201,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.labelMessage.Name = "labelMessage";
 			this.labelMessage.Xalign = 0F;
 			this.labelMessage.UseMarkup = true;
+			this.labelMessage.Ellipsize = Pango.EllipsizeMode.End;
 			this.vbox.Add (this.labelMessage);
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox [this.labelMessage]));
 			w17.Position = 5;

@@ -400,6 +400,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				currentKey = value;
 				accelEntry.Text = value == null? "" : KeyBindingManager.BindingToDisplayLabel (value, false, true);
 				UpdateButtons ();
+				UpdateWarningLabel ();
 			}
 		}
 
