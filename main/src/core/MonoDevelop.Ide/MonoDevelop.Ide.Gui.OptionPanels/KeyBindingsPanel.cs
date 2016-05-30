@@ -714,6 +714,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				keyBindingsTree.ButtonPressEvent += HandleKeyTreeButtonPressEvent;
 				keyBindingsTree.MotionNotifyEvent += HandleKeyTreeMotionNotifyEvent;
 				keyBindingsTree.ScrollEvent += HandleKeyTreeScrollEvent;
+				keyBindingsTree.LeaveNotifyEvent += HandleKeyTreeLeaveNotifyEvent;
+				keyBindingsTree.Unrealized += HandleKeyTreeUnrealized;
 			}
 
 			void HideConflictTooltip ()
@@ -722,6 +724,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					tooltipWindow.Destroy ();
 					tooltipWindow = null;
 				}
+			}
+
+			void HandleKeyTreeLeaveNotifyEvent (object o, LeaveNotifyEventArgs args)
+			{
+				HideConflictTooltip ();
+			}
+
+			void HandleKeyTreeUnrealized (object sender, EventArgs e)
+			{
+				HideConflictTooltip ();
 			}
 
 			void HandleKeyTreeScrollEvent (object o, ScrollEventArgs args)
@@ -954,6 +966,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 						width += buttonWidth + Spacing;
 					}
 				}
+			}
+
+			public override void Destroy ()
+			{
+				HideConflictTooltip ();
+				base.Destroy ();
 			}
 		}
 	}
