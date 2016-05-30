@@ -698,14 +698,12 @@ namespace MonoDevelop.Ide.Gui
 			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
 				return;
 			UnloadAdhocProject ();
-			if (adhocProject == null) 
+			if (adhocProject == null)
 				UnsubscibeAnalysisdocument ();
-			if (Window.ViewContent.ProjectReloadCapability != ProjectReloadCapability.None) {
-				// Unsubscribe project events
-				if (Window.ViewContent.Project != null)
-					Window.ViewContent.Project.Modified -= HandleProjectModified;
-				Window.ViewContent.Project = project;
-			}
+			// Unsubscribe project events
+			if (Window.ViewContent.Project != null)
+				Window.ViewContent.Project.Modified -= HandleProjectModified;
+			Window.ViewContent.Project = project;
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
