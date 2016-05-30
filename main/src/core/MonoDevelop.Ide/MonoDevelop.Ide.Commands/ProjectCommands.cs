@@ -320,23 +320,15 @@ namespace MonoDevelop.Ide.Commands
 		{
 			SolutionItem item = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as SolutionItem;
 			if (item != null) {
-				ExecutionModeCommandService.GenerateExecutionModeCommands (
-				    item,
-				    delegate (IExecutionHandler h) {
-						return IdeApp.ProjectOperations.CanExecute (item, h);
-					},
-				    info);
+				ExecutionModeCommandService.GenerateExecutionModeCommands (item, info);
 			}
 		}
 
 		protected override void Run (object dataItem)
 		{
-			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
-			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			if (h == null || !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
-				return;
-
-			IdeApp.ProjectOperations.Execute (target, h);
+			SolutionItem item = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as SolutionItem;
+			if (item != null)
+				ExecutionModeCommandService.ExecuteCommand (item, dataItem);
 		}
 	}
 
