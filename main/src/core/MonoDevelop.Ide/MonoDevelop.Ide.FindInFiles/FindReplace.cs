@@ -110,7 +110,6 @@ namespace MonoDevelop.Ide.FindInFiles
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
 
-
 				var contents = new List<FileSearchResult>();
 				var filenames = new List<string> ();
 				foreach (var provider in scope.GetFiles (monitor, filter)) {
@@ -118,7 +117,7 @@ namespace MonoDevelop.Ide.FindInFiles
 						return Enumerable.Empty<SearchResult> ();
 					try {
 						searchedFilesCount++;
-						contents.Add(new FileSearchResult (provider, /*provider.ReadString ()*/null, new List<SearchResult> ()));
+						contents.Add(new FileSearchResult (provider, null, new List<SearchResult> ()));
 
 						filenames.Add (Path.GetFullPath (provider.FileName));
 
