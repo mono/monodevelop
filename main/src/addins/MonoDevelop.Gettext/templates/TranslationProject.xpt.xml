@@ -5,7 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>Translation Project</_Name>
 		<Category>other/misc/generic</Category>
-		<Icon>md-project-locale</Icon>
+		<Icon>md-locale-project</Icon>
 		<Image id="md-locale-project" />
 		<_Description>Creates a translation project.</_Description>
 		<DefaultFilename>TranslationProject</DefaultFilename>
