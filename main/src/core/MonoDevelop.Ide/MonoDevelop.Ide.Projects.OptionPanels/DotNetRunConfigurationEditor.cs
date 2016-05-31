@@ -61,9 +61,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	{
 		RadioButton radioStartProject;
 		RadioButton radioStartApp;
-		TextEntry appEntry;
+		Xwt.FileSelector appEntry;
 		TextEntry argumentsEntry;
-		TextEntry workingDir;
+		FolderSelector workingDir;
 		EnvironmentVariableCollectionEditor envVars;
 		DotNetRunConfiguration config;
 
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			table.Add (radioStartProject = new RadioButton (GettextCatalog.GetString ("Start project")), 0, 0);
 			table.Add (radioStartApp = new RadioButton (GettextCatalog.GetString ("Start external program:")), 0, 1);
-			table.Add (appEntry = new TextEntry (), 1, 1, hexpand: true);
+			table.Add (appEntry = new Xwt.FileSelector (), 1, 1, hexpand: true);
 			radioStartProject.Group = radioStartApp.Group;
 			table.MarginLeft = 12;
 			PackStart (table);
@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.Add (argumentsEntry = new TextEntry (), 1, 0, hexpand:true);
 
 			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
-			table.Add (workingDir = new TextEntry (), 1, 1, hexpand: true);
+			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
 		
 			PackStart (table);
 
@@ -108,9 +108,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			else
 				radioStartApp.Active = true;
 			
-			appEntry.Text = config.StartProgram.ToString ();
+			appEntry.FileName = config.StartProgram.ToString ();
 			argumentsEntry.Text = config.StartArguments;
-			workingDir.Text = config.StartWorkingDirectory;
+			workingDir.Folder = config.StartWorkingDirectory;
 			envVars.LoadValues (config.EnvironmentVariables);
 			UpdateStatus ();
 		}
@@ -126,9 +126,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				config.StartAction = DotNetRunConfiguration.StartActions.Project;
 			else if (radioStartApp.Active)
 				config.StartAction = DotNetRunConfiguration.StartActions.Program;
-			config.StartProgram = appEntry.Text;
+			config.StartProgram = appEntry.FileName;
 			config.StartArguments = argumentsEntry.Text;
-			config.StartWorkingDirectory = workingDir.Text;
+			config.StartWorkingDirectory = workingDir.Folder;
 			envVars.StoreValues (config.EnvironmentVariables);
 
 		}
