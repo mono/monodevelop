@@ -1692,8 +1692,9 @@ namespace MonoDevelop.Projects
 					var drc = (DotNetRunConfiguration)config;
 					var cmd = defaultConf.CustomCommands.FirstOrDefault (cc => cc.Type == CustomCommandType.Execute);
 					if (cmd != null) {
-						drc.StartArguments = cmd.GetCommandArgs (this, defaultConf.Selector);
+						drc.StartAction = DotNetRunConfiguration.StartActions.Program;
 						drc.StartProgram = cmd.GetCommandFile (this, defaultConf.Selector);
+						drc.StartArguments = cmd.GetCommandArgs (this, defaultConf.Selector);
 						foreach (var v in cmd.EnvironmentVariables)
 							drc.EnvironmentVariables.Add (v.Key, v.Value);
 						drc.StartWorkingDirectory = cmd.GetCommandWorkingDir (this, defaultConf.Selector);
