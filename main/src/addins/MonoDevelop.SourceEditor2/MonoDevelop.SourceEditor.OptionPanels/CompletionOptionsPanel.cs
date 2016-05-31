@@ -42,7 +42,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			insertParenthesesCheckbutton.Toggled += InsertParensToggled;
 			autoCodeCompletionCheckbutton.Toggled += AutomaticCompletionToggled;
 			includeKeywordsCheckbutton.Visible = includeCodeSnippetsCheckbutton.Visible = false;
-			suggestionOnlyModeCheckbutton.Sensitive = false;
+			suggestionModeHbox.Sensitive = false;
 			hbox4.Visible = hbox5.Visible = false;
 
 		}
@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			showImportsCheckbutton.Active = IdeApp.Preferences.AddImportedItemsToCompletionList;
 			includeKeywordsCheckbutton.Active = IdeApp.Preferences.IncludeKeywordsInCompletionList;
 			includeCodeSnippetsCheckbutton.Active = IdeApp.Preferences.IncludeCodeSnippetsInCompletionList;
-			suggestionOnlyModeCheckbutton.Active = IdeApp.Preferences.ForceSuggestionMode;
+			completeOnEnterRadiobutton.Active = IdeApp.Preferences.ForceSuggestionMode;
 
 			insertParenthesesCheckbutton.Active = IdeApp.Preferences.AddParenthesesAfterCompletion;
 			openingRadiobutton.Active = IdeApp.Preferences.AddOpeningOnly;
@@ -78,7 +78,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void AutomaticCompletionToggled (object sender, EventArgs e)
 		{
 			includeKeywordsCheckbutton.Sensitive = includeCodeSnippetsCheckbutton.Sensitive = !autoCodeCompletionCheckbutton.Active;
-			suggestionOnlyModeCheckbutton.Sensitive = autoCodeCompletionCheckbutton.Active;
+			suggestionModeHbox.Sensitive = autoCodeCompletionCheckbutton.Active;
 		}
 
 		bool IOptionsPanel.IsVisible ()
@@ -97,7 +97,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = showImportsCheckbutton.Active;
 			IdeApp.Preferences.IncludeKeywordsInCompletionList.Value = includeKeywordsCheckbutton.Active;
 			IdeApp.Preferences.IncludeCodeSnippetsInCompletionList.Value = includeCodeSnippetsCheckbutton.Active;
-			IdeApp.Preferences.ForceSuggestionMode.Value = suggestionOnlyModeCheckbutton.Active;
+			IdeApp.Preferences.ForceSuggestionMode.Value = completeOnEnterRadiobutton.Active;
 
 			IdeApp.Preferences.AddParenthesesAfterCompletion.Value = insertParenthesesCheckbutton.Active;
 			IdeApp.Preferences.AddOpeningOnly.Value = openingRadiobutton.Active;
