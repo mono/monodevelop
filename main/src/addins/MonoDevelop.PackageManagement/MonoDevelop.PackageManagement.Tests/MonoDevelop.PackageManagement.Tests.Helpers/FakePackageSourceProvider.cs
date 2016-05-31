@@ -35,7 +35,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public List<PackageSource> PackageSources = new List<PackageSource> ();
 		public List<PackageSource> SavedPackageSources;
-		public PackageSource ActivatePackageSource;
+		public PackageSource ActivePackageSource;
 
 		public string ActivePackageSourceName { get; set; }
 
@@ -62,7 +62,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void SaveActivePackageSource (PackageSource source)
 		{
-			ActivatePackageSource = source;
+			ActivePackageSource = source;
 			ActivePackageSourceName = source?.Name;
 		}
 

@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 
 		AddPackagesDialog CreateDialog (string initialSearch)
 		{
-			var viewModel = new AllPackagesViewModel (recentPackagesRepository);
+			var viewModel = AllPackagesViewModel.Create (recentPackagesRepository);
 			return new AddPackagesDialog (
 				viewModel,
 				initialSearch);

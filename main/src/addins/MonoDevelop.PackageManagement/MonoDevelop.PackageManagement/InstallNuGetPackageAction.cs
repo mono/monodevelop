@@ -45,7 +45,7 @@ namespace MonoDevelop.PackageManagement
 		List<SourceRepository> secondarySources;
 		NuGetPackageManager packageManager;
 		NuGetProject project;
-		NuGetProjectContext context;
+		INuGetProjectContext context;
 		IDotNetProject dotNetProject;
 		IEnumerable<NuGetProjectAction> actions;
 
@@ -53,7 +53,7 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<SourceRepository> primarySources,
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
-			NuGetProjectContext projectContext)
+			INuGetProjectContext projectContext)
 			: this (
 				primarySources,
 				null,
@@ -68,7 +68,7 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<SourceRepository> secondarySources,
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
-			NuGetProjectContext projectContext)
+			INuGetProjectContext projectContext)
 		{
 			this.primarySources = primarySources.ToList ();
 			this.secondarySources = secondarySources?.ToList ();

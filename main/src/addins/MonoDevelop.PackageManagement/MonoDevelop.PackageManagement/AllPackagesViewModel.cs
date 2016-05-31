@@ -55,22 +55,44 @@ namespace MonoDevelop.PackageManagement
 		IMonoDevelopSolutionManager solutionManager;
 		NuGetProject nugetProject;
 		IDotNetProject dotNetProject;
-		NuGetProjectContext projectContext;
+		INuGetProjectContext projectContext;
 		List<PackageReference> packageReferences = new List<PackageReference> ();
 		AggregatePackageSourceErrorMessage aggregateErrorMessage;
 		NuGetPackageManager packageManager;
 		RecentNuGetPackagesRepository recentPackagesRepository;
 
-		public AllPackagesViewModel (RecentNuGetPackagesRepository recentPackagesRepository)
+		public static AllPackagesViewModel Create (RecentNuGetPackagesRepository recentPackagesRepository)
 		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
+			var dotNetProject = new DotNetProjectProxy ((DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject);
+			return new AllPackagesViewModel (solutionManager, dotNetProject, recentPackagesRepository);
+		}
+
+		public AllPackagesViewModel (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject dotNetProject,
+			RecentNuGetPackagesRepository recentPackagesRepository)
+			: this (
+				solutionManager,
+				dotNetProject,
+				new NuGetProjectContext (),
+				recentPackagesRepository)
+		{
+		}
+
+		public AllPackagesViewModel (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject dotNetProject,
+			INuGetProjectContext projectContext,
+			RecentNuGetPackagesRepository recentPackagesRepository)
+		{
+			this.solutionManager = solutionManager;
+			this.dotNetProject = dotNetProject;
+			this.projectContext = projectContext;
 			this.recentPackagesRepository = recentPackagesRepository;
 			PackageViewModels = new ObservableCollection<PackageSearchResultViewModel> ();
 			CheckedPackageViewModels = new ObservableCollection<PackageSearchResultViewModel> ();
 			ErrorMessage = String.Empty;
-
-			solutionManager = PackageManagementServices.Workspace.GetSolutionManager (IdeApp.ProjectOperations.CurrentSelectedSolution);
-			projectContext = new NuGetProjectContext ();
-			dotNetProject = new DotNetProjectProxy ((DotNetProject)IdeApp.ProjectOperations.CurrentSelectedProject);
 
 			packageManager = new NuGetPackageManager (
 				solutionManager.CreateSourceRepositoryProvider (),
@@ -147,7 +169,7 @@ namespace MonoDevelop.PackageManagement
 				}
 			}
 
-			return packageSources.FirstOrDefault ();
+			return packageSources.FirstOrDefault (packageSource => !packageSource.IsAggregate);
 		}
 
 		void SaveActivePackageSource ()
@@ -239,11 +261,11 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void CreateReadPackagesTask()
+		protected virtual Task CreateReadPackagesTask()
 		{
 			var loader = currentLoader ?? CreatePackageLoader ();
 			cancellationTokenSource = cancellationTokenSource ?? new CancellationTokenSource ();
-			LoadPackagesAsync (loader, cancellationTokenSource.Token)
+			return LoadPackagesAsync (loader, cancellationTokenSource.Token)
 				.ContinueWith (t => OnPackagesRead (t, loader), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
@@ -254,10 +276,9 @@ namespace MonoDevelop.PackageManagement
 				false,
 				nugetProject);
 			
-			var packageFeed = new MultiSourcePackageFeed (context.SourceRepositories, this);
 			var loader = new PackageItemLoader (
 				context,
-				packageFeed,
+				CreatePackageFeed (context.SourceRepositories),
 				SearchTerms,
 				IncludePrerelease
 			);
@@ -267,7 +288,12 @@ namespace MonoDevelop.PackageManagement
 			return loader;
 		}
 
-		static Task LoadPackagesAsync (PackageItemLoader loader, CancellationToken token)
+		protected virtual IPackageFeed CreatePackageFeed (IEnumerable<SourceRepository> sourceRepositories)
+		{
+			return new MultiSourcePackageFeed (sourceRepositories, this);
+		}
+
+		protected virtual Task LoadPackagesAsync (PackageItemLoader loader, CancellationToken token)
 		{
 			return Task.Run (async () => {
 				await loader.LoadNextAsync (null, token);
@@ -456,9 +482,9 @@ namespace MonoDevelop.PackageManagement
 				packageReference.PackageIdentity.Version < version;
 		}
 
-		void GetPackagesInstalledInProject ()
+		protected virtual Task GetPackagesInstalledInProject ()
 		{
-			nugetProject
+			return nugetProject
 				.GetInstalledPackagesAsync (CancellationToken.None)
 				.ContinueWith (task => OnReadInstalledPackages (task), TaskScheduler.FromCurrentSynchronizationContext ());
 		}
