@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects
 		[ItemProperty (DefaultValue = false)]
 		public bool ExternalConsole { get; set; } = false;
 
-		[ItemProperty (SkipEmpty = true)]
+		[ItemProperty (SkipEmpty = true, WrapObject = false)]
 		public EnvironmentVariableCollection EnvironmentVariables { get; private set; } = new EnvironmentVariableCollection ();
 
 		public class StartActions

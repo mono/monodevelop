@@ -92,7 +92,7 @@ namespace MonoDevelop.Projects.MSBuild
 						var data = prop.Serialize (ser.SerializationContext, ob, val);
 						if (data != null) {
 							var elem = cwriter.Write (xdoc, data);
-							pset.SetValue (prop.Name, elem.InnerXml);
+							pset.SetValue (prop.Name, prop.WrapObject ? elem.OuterXml : elem.InnerXml);
 						} else
 							pset.RemoveProperty (prop.Name);
 					} else
@@ -132,7 +132,9 @@ namespace MonoDevelop.Projects.MSBuild
 					var val = pset.GetValue (prop.Name);
 					if (!string.IsNullOrEmpty (val)) {
 						try {
-							var data = XmlConfigurationReader.DefaultReader.Read (new XmlTextReader (new StringReader ("<a> " + val + "</a>")));
+							if (!prop.WrapObject)
+								val = "<a>" + val + "</a>";
+							var data = XmlConfigurationReader.DefaultReader.Read (new XmlTextReader (new StringReader (val)));
 							if (prop.HasSetter && prop.DataType.CanCreateInstance) {
 								readVal = prop.Deserialize (ser.SerializationContext, ob, data);
 							} else if (prop.DataType.CanReuseInstance) {
