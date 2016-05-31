@@ -81,7 +81,7 @@ namespace MonoDevelop.Projects
 			GetProps (thisData, dict1);
 
 			var otherData = new ProjectItemMetadata ();
-			Write (otherData);
+			other.Write (otherData);
 			GetProps (other.MainPropertyGroup, dict2);
 			GetProps (otherData, dict2);
 
