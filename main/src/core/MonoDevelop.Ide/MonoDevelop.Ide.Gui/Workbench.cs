@@ -179,6 +179,27 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 
+		internal TextReader[] GetDocumentReaders (List<string> filenames)
+		{
+			TextReader [] results = new TextReader [filenames.Count];
+
+			int idx = 0;
+			foreach (var f in filenames) {
+				var fullPath = (FilePath)FileService.GetFullPath (f);
+
+				Document doc = documents.Find (d => d.Editor != null && (fullPath == FileService.GetFullPath (d.Name)));
+				if (doc != null) {
+					results [idx] = doc.Editor.CreateReader ();
+				} else {
+					results [idx] = null;
+				}
+
+				idx++;
+			}
+
+			return results;
+		}
+
 		public PadCollection Pads {
 			get {
 				if (pads == null) {
@@ -791,7 +812,7 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing += OnWindowClosing;
 			window.Closed += OnWindowClosed;
 			documents = documents.Add (doc);
-			
+
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
 			
@@ -846,7 +867,8 @@ namespace MonoDevelop.Ide.Gui
 			var doc = FindDocument (window);
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
-			documents = documents.Remove (doc); 
+			documents = documents.Remove (doc);
+
 			OnDocumentClosed (doc);
 			doc.DisposeDocument ();
 		}
