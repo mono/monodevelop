@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using Xwt;
+using System.Linq;
 namespace MonoDevelop.Components
 {
 	public class EnvironmentVariableCollectionEditor: VBox
@@ -75,7 +76,7 @@ namespace MonoDevelop.Components
 					store.RemoveRow (row);
 					if (row < store.RowCount)
 						list.SelectRow (row);
-					if (store.RowCount > 0)
+					else if (store.RowCount > 0)
 						list.SelectRow (store.RowCount - 1);
 					UpdateButtons ();
 				}
@@ -101,12 +102,18 @@ namespace MonoDevelop.Components
 
 		public void StoreValues (IDictionary<string, string> values)
 		{
+			var keys = new HashSet<string> ();
 			for (int n = 0; n < store.RowCount; n++) {
 				string var = store.GetValue (n, keyField);
 				string val = store.GetValue (n, valueField);
-				if (var.Length > 0)
+				if (var.Length > 0) {
 					values [var] = val;
+					keys.Add (var);
+				}
 			}
+			foreach (var k in values.Keys.ToArray ())
+				if (!keys.Contains (k))
+					values.Remove (k);
 		}
 
 		void CrtTextChanged (object sender, WidgetEventArgs e)

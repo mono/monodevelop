@@ -232,10 +232,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			removeButton.Sensitive = selection;
 			copyButton.Sensitive = selection;
 			renameButton.Sensitive = selection;
-			var config = listStore.GetValue (list.SelectedRow, configCol);
-			if (config != null && config.IsDefaultConfiguration) {
-				removeButton.Sensitive = false;
-				renameButton.Sensitive = false;
+			if (selection) {
+				var config = listStore.GetValue (list.SelectedRow, configCol);
+				if (config != null && config.IsDefaultConfiguration) {
+					removeButton.Sensitive = false;
+					renameButton.Sensitive = false;
+				}
 			}
 		}
 

@@ -47,16 +47,25 @@ namespace MonoDevelop.Projects
 
 		void ICustomDataItem.Deserialize (ITypeSerializer handler, DataCollection data)
 		{
-			foreach (var v in data.OfType<DataValue> ())
-				this [v.Name] = v.Value;
+			foreach (var v in data.OfType<DataItem> ()) {
+				var name = v.ItemData ["name"] as DataValue;
+				var value = v.ItemData ["value"] as DataValue;
+				if (name != null && value != null)
+					this [name.Value] = value.Value;
+			}
 		}
 
 		DataCollection ICustomDataItem.Serialize (ITypeSerializer handler)
 		{
 			// Add known keys first, then new keys
 			var col = new DataCollection ();
-			foreach (var ev in dict)
-				col.Add (new DataValue (ev.Key, ev.Value) { StoreAsAttribute = false});
+			foreach (var ev in dict) {
+				var vi = new DataItem ();
+				vi.Name = "Variable";
+				vi.ItemData.Add (new DataValue ("name", ev.Key) { StoreAsAttribute = true });
+				vi.ItemData.Add (new DataValue ("value", ev.Value) { StoreAsAttribute = true });
+				col.Add (vi);
+			}
 			return col;
 		}
 
