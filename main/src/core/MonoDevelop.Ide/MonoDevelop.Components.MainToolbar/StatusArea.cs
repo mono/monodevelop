@@ -38,6 +38,7 @@ using MonoDevelop.Ide.Gui.Components;
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
 using MonoDevelop.Ide.Fonts;
+using System.Threading;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -870,6 +871,10 @@ namespace MonoDevelop.Components.MainToolbar
 					}
 				}
 			}
+		}
+
+		public void SetCancellationTokenSource (CancellationTokenSource source)
+		{
 		}
 		#endregion
 	}

@@ -55,6 +55,7 @@ namespace MonoDevelop.Ide.Gui
 			icon = iconName;
 			statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
 			statusBar.StatusSourcePad = statusSourcePad;
+			statusBar.CancellationTokenSource = CancellationTokenSource;
 			statusBar.BeginProgress (iconName, title);
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
