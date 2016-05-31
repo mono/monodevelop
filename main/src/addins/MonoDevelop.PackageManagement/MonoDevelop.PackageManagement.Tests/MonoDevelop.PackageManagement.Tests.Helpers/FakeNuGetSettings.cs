@@ -52,6 +52,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public event EventHandler SettingsChanged;
 
+		void OnSettingsChanged (object sender, EventArgs e)
+		{
+			SettingsChanged?.Invoke (sender, e);
+		}
+
 		public bool DeleteSection (string section)
 		{
 			throw new NotImplementedException ();

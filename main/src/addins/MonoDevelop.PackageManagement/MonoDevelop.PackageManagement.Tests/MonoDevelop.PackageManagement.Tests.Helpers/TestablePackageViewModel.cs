@@ -12,10 +12,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakeLogger FakeLogger;
 
 		public TestablePackageViewModel (
-			IPackageViewModelParent parent,
 			FakePackageManagementSolution solution)
 			: this (
-				parent,
 				new FakePackage ("Test"),
 				new PackageManagementSelectedProjects (solution),
 				new PackageManagementEvents (),
@@ -25,13 +23,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public TestablePackageViewModel (
-			IPackageViewModelParent parent,
 			FakePackage package,
 			PackageManagementSelectedProjects selectedProjects,
 			PackageManagementEvents packageManagementEvents,
 			FakeLogger logger)
 			: base (
-				parent,
 				package,
 				selectedProjects,
 				packageManagementEvents,
