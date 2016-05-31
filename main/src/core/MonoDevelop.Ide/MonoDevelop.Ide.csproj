@@ -1612,150 +1612,6 @@
     <EmbeddedResource Include="icons\project-16~dark~sel%402x.png">
       <LogicalName>project-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32.png">
-      <LogicalName>project-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32%402x.png">
-      <LogicalName>project-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32~dark.png">
-      <LogicalName>project-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32~dark%402x.png">
-      <LogicalName>project-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32~sel.png">
-      <LogicalName>project-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32~sel%402x.png">
-      <LogicalName>project-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32~dark~sel.png">
-      <LogicalName>project-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-32~dark~sel%402x.png">
-      <LogicalName>project-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32.png">
-      <LogicalName>project-console-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32%402x.png">
-      <LogicalName>project-console-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32~dark.png">
-      <LogicalName>project-console-overlay-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32~dark%402x.png">
-      <LogicalName>project-console-overlay-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32~sel.png">
-      <LogicalName>project-console-overlay-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32~sel%402x.png">
-      <LogicalName>project-console-overlay-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32~dark~sel.png">
-      <LogicalName>project-console-overlay-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-console-overlay-32~dark~sel%402x.png">
-      <LogicalName>project-console-overlay-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32.png">
-      <LogicalName>project-gtk2-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32%402x.png">
-      <LogicalName>project-gtk2-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark.png">
-      <LogicalName>project-gtk2-overlay-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark%402x.png">
-      <LogicalName>project-gtk2-overlay-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32~sel.png">
-      <LogicalName>project-gtk2-overlay-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32~sel%402x.png">
-      <LogicalName>project-gtk2-overlay-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark~sel.png">
-      <LogicalName>project-gtk2-overlay-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-gtk2-overlay-32~dark~sel%402x.png">
-      <LogicalName>project-gtk2-overlay-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32.png">
-      <LogicalName>project-library-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32%402x.png">
-      <LogicalName>project-library-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32~dark.png">
-      <LogicalName>project-library-overlay-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32~dark%402x.png">
-      <LogicalName>project-library-overlay-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32~sel.png">
-      <LogicalName>project-library-overlay-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32~sel%402x.png">
-      <LogicalName>project-library-overlay-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32~dark~sel.png">
-      <LogicalName>project-library-overlay-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-library-overlay-32~dark~sel%402x.png">
-      <LogicalName>project-library-overlay-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32.png">
-      <LogicalName>project-shared-assets-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32%402x.png">
-      <LogicalName>project-shared-assets-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32~dark.png">
-      <LogicalName>project-shared-assets-overlay-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32~dark%402x.png">
-      <LogicalName>project-shared-assets-overlay-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32~sel.png">
-      <LogicalName>project-shared-assets-overlay-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32~sel%402x.png">
-      <LogicalName>project-shared-assets-overlay-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32~dark~sel.png">
-      <LogicalName>project-shared-assets-overlay-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-assets-overlay-32~dark~sel%402x.png">
-      <LogicalName>project-shared-assets-overlay-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32.png">
-      <LogicalName>project-package-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32%402x.png">
-      <LogicalName>project-package-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32~dark.png">
-      <LogicalName>project-package-overlay-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32~dark%402x.png">
-      <LogicalName>project-package-overlay-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32~sel.png">
-      <LogicalName>project-package-overlay-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32~sel%402x.png">
-      <LogicalName>project-package-overlay-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32~dark~sel.png">
-      <LogicalName>project-package-overlay-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-package-overlay-32~dark~sel%402x.png">
-      <LogicalName>project-package-overlay-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\new-project-16.png">
       <LogicalName>new-project-16.png</LogicalName>
     </EmbeddedResource>
@@ -1851,30 +1707,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-16~dark~sel%402x.png">
       <LogicalName>solution-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32.png">
-      <LogicalName>solution-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32%402x.png">
-      <LogicalName>solution-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32~dark.png">
-      <LogicalName>solution-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32~dark%402x.png">
-      <LogicalName>solution-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32~sel.png">
-      <LogicalName>solution-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32~sel%402x.png">
-      <LogicalName>solution-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32~dark~sel.png">
-      <LogicalName>solution-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\solution-32~dark~sel%402x.png">
-      <LogicalName>solution-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\new-solution-folder-16.png">
       <LogicalName>new-solution-folder-16.png</LogicalName>
@@ -2068,30 +1900,6 @@
     <EmbeddedResource Include="icons\element-static-overlay-16~dark~sel%402x.png">
       <LogicalName>element-static-overlay-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32.png">
-      <LogicalName>project-web-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32%402x.png">
-      <LogicalName>project-web-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32~dark.png">
-      <LogicalName>project-web-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32~dark%402x.png">
-      <LogicalName>project-web-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32~sel.png">
-      <LogicalName>project-web-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32~sel%402x.png">
-      <LogicalName>project-web-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32~dark~sel.png">
-      <LogicalName>project-web-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-web-32~dark~sel%402x.png">
-      <LogicalName>project-web-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-16.png">
       <LogicalName>workspace-16.png</LogicalName>
     </EmbeddedResource>
@@ -2115,30 +1923,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\workspace-16~dark~sel%402x.png">
       <LogicalName>workspace-16~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32.png">
-      <LogicalName>workspace-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32%402x.png">
-      <LogicalName>workspace-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32~dark.png">
-      <LogicalName>workspace-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32~dark%402x.png">
-      <LogicalName>workspace-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32~sel.png">
-      <LogicalName>workspace-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32~sel%402x.png">
-      <LogicalName>workspace-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32~dark~sel.png">
-      <LogicalName>workspace-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\workspace-32~dark~sel%402x.png">
-      <LogicalName>workspace-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9.png">
       <LogicalName>pad-minimize-9.png</LogicalName>
@@ -6124,102 +5908,6 @@
     <EmbeddedResource Include="icons\platform-other-16~dark~sel%402x.png">
       <LogicalName>platform-other-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project.png">
-      <LogicalName>project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project%402x.png">
-      <LogicalName>project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project~dark.png">
-      <LogicalName>project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project~dark%402x.png">
-      <LogicalName>project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\solution.png">
-      <LogicalName>solution.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\solution%402x.png">
-      <LogicalName>solution@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\solution~dark.png">
-      <LogicalName>solution~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\solution~dark%402x.png">
-      <LogicalName>solution~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\console-project.png">
-      <LogicalName>console-project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\console-project%402x.png">
-      <LogicalName>console-project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\console-project~dark.png">
-      <LogicalName>console-project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\console-project~dark%402x.png">
-      <LogicalName>console-project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\library-project.png">
-      <LogicalName>library-project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\library-project%402x.png">
-      <LogicalName>library-project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\library-project~dark.png">
-      <LogicalName>library-project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\library-project~dark%402x.png">
-      <LogicalName>library-project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\pcl-project.png">
-      <LogicalName>pcl-project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\pcl-project%402x.png">
-      <LogicalName>pcl-project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\pcl-project~dark.png">
-      <LogicalName>pcl-project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\pcl-project~dark%402x.png">
-      <LogicalName>pcl-project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\shared-project.png">
-      <LogicalName>shared-project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\shared-project%402x.png">
-      <LogicalName>shared-project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\shared-project~dark.png">
-      <LogicalName>shared-project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\shared-project~dark%402x.png">
-      <LogicalName>shared-project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\workspace.png">
-      <LogicalName>workspace.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\workspace%402x.png">
-      <LogicalName>workspace@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\workspace~dark.png">
-      <LogicalName>workspace~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\workspace~dark%402x.png">
-      <LogicalName>workspace~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\gtk2-project.png">
-      <LogicalName>gtk2-project.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\gtk2-project%402x.png">
-      <LogicalName>gtk2-project@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\gtk2-project~dark.png">
-      <LogicalName>gtk2-project~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\gtk2-project~dark%402x.png">
-      <LogicalName>gtk2-project~dark@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\preview-active-16.png">
       <LogicalName>preview-active-16.png</LogicalName>
     </EmbeddedResource>
@@ -6297,30 +5985,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\live-16~sel%402x.png">
       <LogicalName>live-16~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32.png">
-      <LogicalName>project-nunit-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32%402x.png">
-      <LogicalName>project-nunit-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32~dark.png">
-      <LogicalName>project-nunit-overlay-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32~dark%402x.png">
-      <LogicalName>project-nunit-overlay-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32~sel.png">
-      <LogicalName>project-nunit-overlay-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32~sel%402x.png">
-      <LogicalName>project-nunit-overlay-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32~dark~sel.png">
-      <LogicalName>project-nunit-overlay-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-nunit-overlay-32~dark~sel%402x.png">
-      <LogicalName>project-nunit-overlay-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\status-instrumentation-16.png">
       <LogicalName>status-instrumentation-16.png</LogicalName>
@@ -7300,6 +6964,377 @@
     <EmbeddedResource Include="icons\redo-16~dark~disabled%402x.png">
       <LogicalName>redo-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\workspace-template.png">
+      <LogicalName>workspace-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace-template%402x.png">
+      <LogicalName>workspace-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace-template~dark.png">
+      <LogicalName>workspace-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace-template~dark%402x.png">
+      <LogicalName>workspace-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32.png">
+      <LogicalName>workspace-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32%402x.png">
+      <LogicalName>workspace-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32~dark.png">
+      <LogicalName>workspace-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32~dark%402x.png">
+      <LogicalName>workspace-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32~sel.png">
+      <LogicalName>workspace-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32~sel%402x.png">
+      <LogicalName>workspace-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32~dark~sel.png">
+      <LogicalName>workspace-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\workspace-32~dark~sel%402x.png">
+      <LogicalName>workspace-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\solution-template.png">
+      <LogicalName>solution-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\solution-template%402x.png">
+      <LogicalName>solution-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\solution-template~dark.png">
+      <LogicalName>solution-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\solution-template~dark%402x.png">
+      <LogicalName>solution-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32.png">
+      <LogicalName>solution-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32%402x.png">
+      <LogicalName>solution-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32~dark.png">
+      <LogicalName>solution-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32~dark%402x.png">
+      <LogicalName>solution-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32~sel.png">
+      <LogicalName>solution-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32~sel%402x.png">
+      <LogicalName>solution-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32~dark~sel.png">
+      <LogicalName>solution-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\solution-32~dark~sel%402x.png">
+      <LogicalName>solution-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-template.png">
+      <LogicalName>project-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-template%402x.png">
+      <LogicalName>project-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-template~dark.png">
+      <LogicalName>project-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-template~dark%402x.png">
+      <LogicalName>project-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32.png">
+      <LogicalName>project-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32%402x.png">
+      <LogicalName>project-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~dark.png">
+      <LogicalName>project-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~dark%402x.png">
+      <LogicalName>project-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~sel.png">
+      <LogicalName>project-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~sel%402x.png">
+      <LogicalName>project-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~dark~sel.png">
+      <LogicalName>project-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-32~dark~sel%402x.png">
+      <LogicalName>project-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-shared-template.png">
+      <LogicalName>project-shared-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-shared-template%402x.png">
+      <LogicalName>project-shared-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-shared-template~dark.png">
+      <LogicalName>project-shared-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-shared-template~dark%402x.png">
+      <LogicalName>project-shared-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32.png">
+      <LogicalName>project-shared-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32%402x.png">
+      <LogicalName>project-shared-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32~dark.png">
+      <LogicalName>project-shared-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32~dark%402x.png">
+      <LogicalName>project-shared-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32~sel.png">
+      <LogicalName>project-shared-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32~sel%402x.png">
+      <LogicalName>project-shared-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32~dark~sel.png">
+      <LogicalName>project-shared-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-shared-32~dark~sel%402x.png">
+      <LogicalName>project-shared-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-library-template.png">
+      <LogicalName>project-library-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-library-template%402x.png">
+      <LogicalName>project-library-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-library-template~dark.png">
+      <LogicalName>project-library-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-library-template~dark%402x.png">
+      <LogicalName>project-library-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32.png">
+      <LogicalName>project-library-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32%402x.png">
+      <LogicalName>project-library-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32~dark.png">
+      <LogicalName>project-library-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32~dark%402x.png">
+      <LogicalName>project-library-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32~sel.png">
+      <LogicalName>project-library-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32~sel%402x.png">
+      <LogicalName>project-library-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32~dark~sel.png">
+      <LogicalName>project-library-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-library-32~dark~sel%402x.png">
+      <LogicalName>project-library-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-pcl-template.png">
+      <LogicalName>project-pcl-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-pcl-template%402x.png">
+      <LogicalName>project-pcl-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-pcl-template~dark.png">
+      <LogicalName>project-pcl-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-pcl-template~dark%402x.png">
+      <LogicalName>project-pcl-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32.png">
+      <LogicalName>project-pcl-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32%402x.png">
+      <LogicalName>project-pcl-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32~dark.png">
+      <LogicalName>project-pcl-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32~dark%402x.png">
+      <LogicalName>project-pcl-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32~sel.png">
+      <LogicalName>project-pcl-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32~sel%402x.png">
+      <LogicalName>project-pcl-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32~dark~sel.png">
+      <LogicalName>project-pcl-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-pcl-32~dark~sel%402x.png">
+      <LogicalName>project-pcl-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-gui-template.png">
+      <LogicalName>project-gui-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-gui-template%402x.png">
+      <LogicalName>project-gui-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-gui-template~dark.png">
+      <LogicalName>project-gui-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-gui-template~dark%402x.png">
+      <LogicalName>project-gui-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32.png">
+      <LogicalName>project-gui-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32%402x.png">
+      <LogicalName>project-gui-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32~dark.png">
+      <LogicalName>project-gui-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32~dark%402x.png">
+      <LogicalName>project-gui-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32~sel.png">
+      <LogicalName>project-gui-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32~sel%402x.png">
+      <LogicalName>project-gui-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32~dark~sel.png">
+      <LogicalName>project-gui-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-gui-32~dark~sel%402x.png">
+      <LogicalName>project-gui-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-console-template.png">
+      <LogicalName>project-console-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-console-template%402x.png">
+      <LogicalName>project-console-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-console-template~dark.png">
+      <LogicalName>project-console-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-console-template~dark%402x.png">
+      <LogicalName>project-console-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32.png">
+      <LogicalName>project-console-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32%402x.png">
+      <LogicalName>project-console-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32~dark.png">
+      <LogicalName>project-console-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32~dark%402x.png">
+      <LogicalName>project-console-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32~sel.png">
+      <LogicalName>project-console-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32~sel%402x.png">
+      <LogicalName>project-console-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32~dark~sel.png">
+      <LogicalName>project-console-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-console-32~dark~sel%402x.png">
+      <LogicalName>project-console-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-test-template.png">
+      <LogicalName>project-test-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-test-template%402x.png">
+      <LogicalName>project-test-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-test-template~dark.png">
+      <LogicalName>project-test-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-test-template~dark%402x.png">
+      <LogicalName>project-test-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32.png">
+      <LogicalName>project-test-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32%402x.png">
+      <LogicalName>project-test-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32~dark.png">
+      <LogicalName>project-test-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32~dark%402x.png">
+      <LogicalName>project-test-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32~sel.png">
+      <LogicalName>project-test-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32~sel%402x.png">
+      <LogicalName>project-test-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32~dark~sel.png">
+      <LogicalName>project-test-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-test-32~dark~sel%402x.png">
+      <LogicalName>project-test-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
+    <EmbeddedResource Include="templates\images\project-package-template.png">
+      <LogicalName>project-package-template.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-template%402x.png">
+      <LogicalName>project-package-template@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-template~dark.png">
+      <LogicalName>project-package-template~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-template~dark%402x.png">
+      <LogicalName>project-package-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32.png">
+      <LogicalName>project-package-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32%402x.png">
+      <LogicalName>project-package-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32~dark.png">
+      <LogicalName>project-package-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32~dark%402x.png">
+      <LogicalName>project-package-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32~sel.png">
+      <LogicalName>project-package-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32~sel%402x.png">
+      <LogicalName>project-package-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32~dark~sel.png">
+      <LogicalName>project-package-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\project-package-32~dark~sel%402x.png">
+      <LogicalName>project-package-32~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+	
     <EmbeddedResource Include="templates\AppManifest.xft.xml">
       <LogicalName>AppManifest.xft.xml</LogicalName>
     </EmbeddedResource>

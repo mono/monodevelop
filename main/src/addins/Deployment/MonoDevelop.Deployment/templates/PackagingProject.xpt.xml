@@ -5,8 +5,8 @@
 	<TemplateConfiguration>
 		<_Name>Packaging project</_Name>
 		<Category>other/misc/generic</Category>
-		<Icon>md-project-package</Icon>
-		<Image id="md-packaging-project" />
+		<Icon>md-package-project</Icon>
+		<Image id="md-package-project" />
 		<FileExtension>.mdproj</FileExtension>
 		<_Description>Create a project which can generate packages for a solution</_Description>
 	</TemplateConfiguration>
