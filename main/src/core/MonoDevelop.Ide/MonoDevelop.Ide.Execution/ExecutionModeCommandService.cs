@@ -436,7 +436,7 @@ namespace MonoDevelop.Ide.Execution
 		public static void GenerateExecutionModeCommands (SolutionItem item, CommandArrayInfo info)
 		{
 			foreach (var c in ExecutionModeCommandService.GetExecutionConfigurations (item)) {
-				info.Add (c.ModeSet.Name + " " + c.RunConfiguration.Name, c);
+				info.Add (c.ModeSet.Name + " — " + c.RunConfiguration.Name, c);
 			}
 			info.AddSeparator ();
 			info.Add (GettextCatalog.GetString ("Custom Configuration..."), "selector");
@@ -452,24 +452,23 @@ namespace MonoDevelop.Ide.Execution
 						if (cmd.Id == "run") {
 
 							// Store the configuration for quick reuse
-							if (!dlg.SelectedConfiguration.IsDefaultConfiguration || (dlg.SelectedExecutionMode.Id != "Run" && dlg.SelectedExecutionMode.Id != "Debug")) {
-								var ec = new ExecutionConfiguration (dlg.SelectedConfiguration, null, dlg.SelectedExecutionMode);
-								var list = ExecutionModeCommandService.GetExecutionConfigurations (item).ToList ();
-								list.Remove (ec);
-								list.Insert (0, ec);
-								while (list.Count > 10)
-									list.RemoveAt (list.Count - 1);
-								ExecutionModeCommandService.SetExecutionConfigurations (item, list.ToArray ());
-							}
+							var ec = new ExecutionConfiguration (dlg.SelectedConfiguration, dlg.SelectedExecutionModeSet, dlg.SelectedExecutionMode);
+							var list = ExecutionModeCommandService.GetExecutionConfigurations (item).ToList ();
+							list.Remove (ec);
+							list.Insert (0, ec);
+							while (list.Count > 10)
+								list.RemoveAt (list.Count - 1);
+							ExecutionModeCommandService.SetExecutionConfigurations (item, list.ToArray ());
 
 							// Run the configuration
-							IdeApp.ProjectOperations.Execute (item, dlg.SelectedExecutionMode.ExecutionHandler);
+							IdeApp.ProjectOperations.Execute (item, dlg.SelectedExecutionMode.ExecutionHandler, IdeApp.Workspace.ActiveConfiguration, dlg.SelectedConfiguration);
 						}
+						return;
 					}
 				}
 			}
 			var c = (ExecutionConfiguration)data;
-			IdeApp.ProjectOperations.Execute (item, c.Mode.ExecutionHandler);
+			IdeApp.ProjectOperations.Execute (item, c.Mode.ExecutionHandler, IdeApp.Workspace.ActiveConfiguration, c.RunConfiguration);
 		}
 
 		internal static ExecutionConfiguration[] GetExecutionConfigurations (SolutionItem item)
@@ -506,7 +505,7 @@ namespace MonoDevelop.Ide.Execution
 			executionModeId = mode.Id;
 		}
 
-		internal bool Resolve (SolutionItem item)
+		internal bool Resolve (IRunTarget item)
 		{
 			if (RunConfiguration != null && Mode != null)
 				return true;

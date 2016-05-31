@@ -26,21 +26,40 @@
 using System;
 namespace MonoDevelop.Projects
 {
-	public class SolutionRunConfiguration
+	public class SolutionRunConfiguration: RunConfiguration
 	{
+		string id;
+		string name;
+
 		public SolutionRunConfiguration (string id)
 		{
-			Id = id;
+			this.name = this.id = id;
+		}
+
+		public SolutionRunConfiguration (string id, string name)
+		{
+			this.id = id;
+			this.name = name;
 		}
 
 		internal Solution ParentSolution { get; set; }
 
-		public string Id { get; private set; }
-		public string Name { get; set; }
+		public sealed override string Name {
+			get { return name; }
+		}
 
-		internal protected virtual string GetTypeId ()
+		public sealed override string Id {
+			get { return id; }
+		}
+
+		protected void SetName (string name)
 		{
-			return GetType ().FullName;
+			this.name = name;
+		}
+
+		public override string ToString ()
+		{
+			return Name;
 		}
 	}
 }

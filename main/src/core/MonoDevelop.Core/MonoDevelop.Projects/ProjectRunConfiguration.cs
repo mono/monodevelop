@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
-	public class ProjectRunConfiguration: RunConfiguration
+	public class ProjectRunConfiguration: SolutionItemRunConfiguration
 	{
 		IPropertySet properties;
 		MSBuildPropertyGroup mainPropertyGroup;

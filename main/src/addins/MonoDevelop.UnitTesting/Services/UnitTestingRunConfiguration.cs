@@ -29,7 +29,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class UnitTestingRunConfiguration: RunConfiguration
+	public class UnitTestingRunConfiguration: SolutionItemRunConfiguration
 	{
 		public UnitTestingRunConfiguration (): base (GettextCatalog.GetString ("Unit Tests"))
 		{

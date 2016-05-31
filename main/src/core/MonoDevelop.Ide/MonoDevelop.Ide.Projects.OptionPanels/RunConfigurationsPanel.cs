@@ -152,7 +152,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 		
 		//this is used by the options dialog to look up the icon as needed, at required scales
-		public RunConfiguration RunConfiguration { get; private set; }
+		public SolutionItemRunConfiguration RunConfiguration { get; private set; }
 	}
 	
 	partial class RunConfigurationsPanelWidget: Xwt.VBox

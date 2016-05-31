@@ -1117,10 +1117,10 @@ namespace MonoDevelop.Projects
 		[Obsolete("Use the overload that takes a RunConfiguration")]
 		public ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)
 		{
-			return CreateExecutionCommand (configSel, configuration, GetDefaultRunConfiguration () as DotNetRunConfiguration);
+			return CreateExecutionCommand (configSel, configuration, GetDefaultRunConfiguration () as ProjectRunConfiguration);
 		}
 
-		public ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, DotNetRunConfiguration runConfiguration)
+		public ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
 			return ProjectExtension.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
 		}
@@ -1163,7 +1163,7 @@ namespace MonoDevelop.Projects
 			return cmd;
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			DotNetProjectConfiguration config = (DotNetProjectConfiguration)GetConfiguration (configuration);
 			if (config == null)
@@ -1216,7 +1216,7 @@ namespace MonoDevelop.Projects
 			return sf;
 		}
 
-		protected override IEnumerable<RunConfiguration> OnGetRunConfigurations ()
+		protected override IEnumerable<SolutionItemRunConfiguration> OnGetRunConfigurations ()
 		{
 			var configs = base.OnGetRunConfigurations ();
 			if (compileTarget == CompileTarget.Library) {
@@ -1589,7 +1589,7 @@ namespace MonoDevelop.Projects
 				CheckReferenceChange (ei.FileName);
 		}
 
-		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			DotNetProjectConfiguration dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
 			if (dotNetProjectConfig == null) {
@@ -1599,9 +1599,8 @@ namespace MonoDevelop.Projects
 
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
 
-			var rc = (DotNetRunConfiguration)runConfiguration;
-
-			if (rc.StartAction == DotNetRunConfiguration.StartActions.Program) {
+			var rc = runConfiguration as DotNetRunConfiguration;
+			if (rc != null && rc.StartAction == DotNetRunConfiguration.StartActions.Program) {
 				// Start an external program
 				var cons = dotNetProjectConfig.ExternalConsole ? 
 				                                  context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken) : 
@@ -1610,7 +1609,7 @@ namespace MonoDevelop.Projects
 				return;
 			}
 
-			ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig, rc);
+			ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig, runConfiguration as ProjectRunConfiguration);
 			if (context.ExecutionTarget != null)
 				executionCommand.Target = context.ExecutionTarget;
 

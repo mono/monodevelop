@@ -324,7 +324,7 @@ namespace MonoDevelop.Projects
 			return clone;
 		}
 
-		protected override IEnumerable<RunConfiguration> OnGetRunConfigurations ()
+		protected override IEnumerable<SolutionItemRunConfiguration> OnGetRunConfigurations ()
 		{
 			return runConfigurations;
 		}
@@ -1789,7 +1789,7 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 
-		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null)
@@ -2467,7 +2467,7 @@ namespace MonoDevelop.Projects
 			runConfig.Read (grp);
 		}
 
-		internal void OnRunConfigurationsAdded (IEnumerable<RunConfiguration> items)
+		internal void OnRunConfigurationsAdded (IEnumerable<SolutionItemRunConfiguration> items)
 		{
 			// Initialize the property group only if the project is not being loaded (in which case it will
 			// be initialized by the ReadProject method) or if the project is new (because it will be initialized
@@ -2478,7 +2478,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		internal void OnRunConfigurationRemoved (IEnumerable<RunConfiguration> items)
+		internal void OnRunConfigurationRemoved (IEnumerable<SolutionItemRunConfiguration> items)
 		{
 
 		}

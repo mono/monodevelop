@@ -30,7 +30,7 @@ namespace MonoDevelop.Projects
 {
 	class MultiItemSolutionRunConfiguration: SolutionRunConfiguration
 	{
-		public MultiItemSolutionRunConfiguration (string name): base (name)
+		public MultiItemSolutionRunConfiguration (string id, string name): base (id, name)
 		{
 			Items = new List<SolutionItem> ();
 		}

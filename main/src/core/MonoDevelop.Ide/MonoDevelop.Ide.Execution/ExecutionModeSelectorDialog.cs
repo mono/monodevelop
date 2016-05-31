@@ -34,8 +34,9 @@ namespace MonoDevelop.Ide.Execution
 {
 	class ExecutionModeSelectorDialog: Dialog
 	{
-		SolutionItem item;
+		IRunTarget item;
 
+		DialogButton runButton;
 		ListView listConfigs;
 		TreeView treeModes;
 		
@@ -46,6 +47,7 @@ namespace MonoDevelop.Ide.Execution
 		DataField<RunConfiguration> configField = new DataField<RunConfiguration> ();
 		DataField<string> modeNameField = new DataField<string> ();
 		DataField<IExecutionMode> modeField = new DataField<IExecutionMode> ();
+		DataField<IExecutionModeSet> modeSetField = new DataField<IExecutionModeSet> ();
 
 		public ExecutionModeSelectorDialog ()
 		{
@@ -67,19 +69,22 @@ namespace MonoDevelop.Ide.Execution
 
 			box.PackStart (new Label (GettextCatalog.GetString ("Execution Modes:")));
 
-			storeModes = new TreeStore (modeNameField, modeField);
+			storeModes = new TreeStore (modeNameField, modeField, modeSetField);
 			treeModes = new TreeView (storeModes);
 			treeModes.Columns.Add (GettextCatalog.GetString ("Name"), modeNameField);
 			treeModes.HeightRequest = 130;
 			box.PackStart (treeModes);
 
+			runButton = new DialogButton (new Command ("run", GettextCatalog.GetString ("Run")));
+
 			Buttons.Add (Command.Cancel);
-			Buttons.Add (new Command ("run", GettextCatalog.GetString ("Run")));
+			Buttons.Add (runButton);
 
 			listConfigs.SelectionChanged += (sender, e) => LoadModes ();
+			treeModes.SelectionChanged += OnModeChanged;
 		}
 
-		public void Load (SolutionItem item)
+		public void Load (IRunTarget item)
 		{
 			this.item = item;
 			storeConfigs.Clear ();
@@ -96,7 +101,7 @@ namespace MonoDevelop.Ide.Execution
 			storeModes.Clear ();
 			var currentMode = SelectedExecutionMode;
 			bool nodeSelected = false;
-			var ctx = new CommandExecutionContext (item, h => item.CanExecute (new ExecutionContext (h, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration));
+			var ctx = new CommandExecutionContext (item, h => item.CanExecute (new ExecutionContext (h, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration, SelectedConfiguration));
 			foreach (var modeSet in Runtime.ProcessService.GetExecutionModes ()) {
 				TreeNavigator setNode = null;
 				foreach (var mode in modeSet.ExecutionModes) {
@@ -105,6 +110,7 @@ namespace MonoDevelop.Ide.Execution
 							setNode = storeModes.AddNode ();
 							setNode.SetValue (modeNameField, modeSet.Name);
 							setNode.SetValue (modeField, mode);
+							setNode.SetValue (modeSetField, modeSet);
 							if (mode.Id == currentMode?.Id) {
 								treeModes.SelectRow (setNode.CurrentPosition);
 								nodeSelected = true;
@@ -113,6 +119,7 @@ namespace MonoDevelop.Ide.Execution
 						var node = storeModes.AddNode (setNode.CurrentPosition);
 						node.SetValue (modeNameField, mode.Name);
 						node.SetValue (modeField, mode);
+						node.SetValue (modeSetField, modeSet);
 						if (!nodeSelected && mode.Id == currentMode?.Id) {
 							treeModes.SelectRow (node.CurrentPosition);
 							nodeSelected = true;
@@ -126,8 +133,13 @@ namespace MonoDevelop.Ide.Execution
 						pos.Remove ();
 				}
 			}
-			if (!nodeSelected && storeModes.GetFirstNode () != null)
+			if (!nodeSelected && storeModes.GetFirstNode ()?.CurrentPosition != null)
 				treeModes.SelectRow (storeModes.GetFirstNode ().CurrentPosition);
+		}
+
+		void OnModeChanged (object sender, EventArgs e)
+		{
+			UpdateButtons ();
 		}
 
 		protected override void OnCommandActivated (Command cmd)
@@ -137,6 +149,15 @@ namespace MonoDevelop.Ide.Execution
 				return;
 			}
 			base.OnCommandActivated (cmd);
+		}
+
+		void UpdateButtons ()
+		{
+			runButton.Sensitive = SelectedConfiguration != null && SelectedExecutionMode != null;
+			if (SelectedExecutionMode != null)
+				runButton.Label = SelectedExecutionModeSet.Name;
+			else
+				runButton.Label = GettextCatalog.GetString ("Run");
 		}
 
 		public RunConfiguration SelectedConfiguration {
@@ -150,6 +171,13 @@ namespace MonoDevelop.Ide.Execution
 			get {
 				var n = treeModes.SelectedRow;
 				return n != null ? storeModes.GetNavigatorAt (n).GetValue (modeField) : null;
+			}
+		}
+
+		public IExecutionModeSet SelectedExecutionModeSet {
+			get {
+				var n = treeModes.SelectedRow;
+				return n != null ? storeModes.GetNavigatorAt (n).GetValue (modeSetField) : null;
 			}
 		}
 	}

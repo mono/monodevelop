@@ -213,22 +213,22 @@ namespace MonoDevelop.Projects
 		[Obsolete ("Use overload that takes a RunConfiguration")]
 		internal protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return next.OnPrepareExecution (monitor, context, configuration, (RunConfiguration)context.RunConfiguration);
+			return next.OnPrepareExecution (monitor, context, configuration, (SolutionItemRunConfiguration)context.RunConfiguration);
 		}
 
 		[Obsolete ("Use overload that takes a RunConfiguration")]
 		internal protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return next.OnExecute (monitor, context, configuration, (RunConfiguration)context.RunConfiguration);
+			return next.OnExecute (monitor, context, configuration, (SolutionItemRunConfiguration)context.RunConfiguration);
 		}
 
 		[Obsolete ("Use overload that takes a RunConfiguration")]
 		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return next.OnGetCanExecute (context, configuration, (RunConfiguration)context.RunConfiguration);
+			return next.OnGetCanExecute (context, configuration, (SolutionItemRunConfiguration)context.RunConfiguration);
 		}
 
-		internal protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		internal protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			context.RunConfiguration = runConfiguration;
 #pragma warning disable 618 // Type or member is obsolete
@@ -236,7 +236,7 @@ namespace MonoDevelop.Projects
 #pragma warning restore 618 // Type or member is obsolete
 		}
 
-		internal protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		internal protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			context.RunConfiguration = runConfiguration;
 #pragma warning disable 618 // Type or member is obsolete
@@ -244,7 +244,7 @@ namespace MonoDevelop.Projects
 #pragma warning restore 618 // Type or member is obsolete
 		}
 
-		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		internal protected virtual bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			context.RunConfiguration = runConfiguration;
 #pragma warning disable 618 // Type or member is obsolete
@@ -257,7 +257,7 @@ namespace MonoDevelop.Projects
 			return next.OnGetExecutionTargets (configuration);
 		}
 
-		internal protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, RunConfiguration runConfig)
+		internal protected virtual IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfig)
 		{
 			return next.OnGetExecutionTargets (ctx, configuration, runConfig);
 		}
@@ -267,7 +267,7 @@ namespace MonoDevelop.Projects
 			next.OnExecutionTargetsChanged ();
 		}
 
-		internal protected virtual IEnumerable<RunConfiguration> OnGetRunConfigurations (OperationContext ctx)
+		internal protected virtual IEnumerable<SolutionItemRunConfiguration> OnGetRunConfigurations (OperationContext ctx)
 		{
 			return next.OnGetRunConfigurations (ctx);
 		}

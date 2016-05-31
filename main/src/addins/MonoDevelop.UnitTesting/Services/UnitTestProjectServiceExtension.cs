@@ -81,7 +81,7 @@ namespace MonoDevelop.UnitTesting
 
 		static UnitTestingRunConfiguration unitTestingRunConfigurationInstance = new UnitTestingRunConfiguration ();
 
-		protected override IEnumerable<RunConfiguration> OnGetRunConfigurations (OperationContext ctx)
+		protected override IEnumerable<SolutionItemRunConfiguration> OnGetRunConfigurations (OperationContext ctx)
 		{
 			var configs = base.OnGetRunConfigurations (ctx);
 
@@ -92,7 +92,7 @@ namespace MonoDevelop.UnitTesting
 			return configs;
 		}
 
-		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			if (runConfiguration == unitTestingRunConfigurationInstance) {
 				// The user selected to run the tests
@@ -106,7 +106,7 @@ namespace MonoDevelop.UnitTesting
 				await base.OnExecute (monitor, context, configuration, runConfiguration);
 		}
 
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			if (runConfiguration == unitTestingRunConfigurationInstance) {
 				UnitTest test = FindRootTest ();

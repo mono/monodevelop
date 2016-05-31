@@ -367,7 +367,7 @@ namespace MonoDevelop.Autotools
 			return BuildResult.CreateSuccess ();
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			if (data != null && data.SupportsIntegration && !String.IsNullOrEmpty (data.ExecuteTargetName))
 				return true;
@@ -375,7 +375,7 @@ namespace MonoDevelop.Autotools
 		}
 
 
-		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			if (data == null || !data.SupportsIntegration || String.IsNullOrEmpty (data.ExecuteTargetName)) {
 				await base.OnExecute (monitor, context, configuration, runConfiguration);

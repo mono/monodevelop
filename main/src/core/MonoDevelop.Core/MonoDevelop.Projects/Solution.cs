@@ -43,7 +43,7 @@ using MonoDevelop.Projects.MSBuild;
 namespace MonoDevelop.Projects
 {
 	[ProjectModelDataItem]
-	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject
+	public class Solution: WorkspaceItem, IConfigurationTarget, IPolicyProvider, IBuildTarget, IMSBuildFileObject, IRunTarget
 	{
 		internal object MemoryProbe = Counters.SolutionsInMemory.CreateMemoryProbe ();
 
@@ -57,7 +57,7 @@ namespace MonoDevelop.Projects
 		ReadOnlyCollection<SolutionItem> solutionItems;
 		SolutionConfigurationCollection configurations;
 		SolutionRunConfigurationCollection runConfigurations;
-		MultiItemSolutionRunConfiguration multiStartupConfig = new MultiItemSolutionRunConfiguration (MultiStartupConfigId) { Name = "Multi-Startup" };
+		MultiItemSolutionRunConfiguration multiStartupConfig = new MultiItemSolutionRunConfiguration (MultiStartupConfigId, "Multi-Startup");
 		const string MultiStartupConfigId = "MonoDevelop.Projects.MultiStartup";
 
 		MSBuildEngineManager msbuildEngineManager = new MSBuildEngineManager ();
@@ -685,7 +685,14 @@ namespace MonoDevelop.Projects
 
 		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
-			return SolutionExtension.Execute (monitor, context, configuration, runConfiguration);
+			return SolutionExtension.Execute (monitor, context, configuration, runConfiguration ?? StartupConfiguration);
+		}
+
+		Task IRunTarget.Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		{
+			if (runConfiguration != null && !(runConfiguration is SolutionRunConfiguration))
+				throw new ArgumentException ("Invalid configuration type");
+			return Execute (monitor, context, configuration, (SolutionRunConfiguration)runConfiguration);
 		}
 
 		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
@@ -696,6 +703,13 @@ namespace MonoDevelop.Projects
 		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
 			return SolutionExtension.PrepareExecution (monitor, context, configuration, runConfiguration);
+		}
+
+		Task IRunTarget.PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		{
+			if (runConfiguration != null && !(runConfiguration is SolutionRunConfiguration))
+				throw new ArgumentException ("Invalid configuration type");
+			return PrepareExecution (monitor, context, configuration, (SolutionRunConfiguration)runConfiguration);
 		}
 
 		public bool CanExecute (ExecutionContext context, string configuration)
@@ -718,9 +732,21 @@ namespace MonoDevelop.Projects
 			return SolutionExtension.CanExecute (context, configuration, runConfiguration);
 		}
 
+		bool IRunTarget.CanExecute (ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		{
+			if (runConfiguration != null && !(runConfiguration is SolutionRunConfiguration))
+				throw new ArgumentException ("Invalid configuration type");
+			return CanExecute (context, configuration, (SolutionRunConfiguration)runConfiguration);
+		}
+
 		public IEnumerable<SolutionRunConfiguration> GetRunConfigurations ()
 		{
 			return SolutionExtension.OnGetRunConfigurations ();
+		}
+
+		IEnumerable<RunConfiguration> IRunTarget.GetRunConfigurations ()
+		{
+			return GetRunConfigurations ();
 		}
 
 		protected virtual IEnumerable<SolutionRunConfiguration> OnGetRunConfigurations ()
@@ -756,6 +782,13 @@ namespace MonoDevelop.Projects
 		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
 			return SolutionExtension.GetExecutionTargets (this, configuration, runConfiguration);
+		}
+
+		IEnumerable<ExecutionTarget> IRunTarget.GetExecutionTargets (ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		{
+			if (runConfiguration != null && !(runConfiguration is SolutionRunConfiguration))
+				throw new ArgumentException ("Invalid configuration type");
+			return SolutionExtension.GetExecutionTargets (this, configuration, (SolutionRunConfiguration)runConfiguration);
 		}
 
 		IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)

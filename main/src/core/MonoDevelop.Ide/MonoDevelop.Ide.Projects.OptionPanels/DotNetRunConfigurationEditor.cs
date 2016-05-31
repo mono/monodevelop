@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return new XwtControl (widget);
 		}
 
-		public override void Load (Project project, RunConfiguration config)
+		public override void Load (Project project, SolutionItemRunConfiguration config)
 		{
 			widget.Load ((DotNetRunConfiguration)config);
 		}

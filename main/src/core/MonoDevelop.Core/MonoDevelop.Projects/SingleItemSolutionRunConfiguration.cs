@@ -28,18 +28,18 @@ namespace MonoDevelop.Projects
 {
 	public sealed class SingleItemSolutionRunConfiguration: SolutionRunConfiguration
 	{
-		public SingleItemSolutionRunConfiguration (SolutionItem item, RunConfiguration config): base (item.ItemId + "|" + config?.Name)
+		public SingleItemSolutionRunConfiguration (SolutionItem item, SolutionItemRunConfiguration config): base (item.ItemId + "|" + config?.Name)
 		{
 			Item = item;
 			RunConfiguration = config;
 			if (config != null && !config.IsDefaultConfiguration)
-				Name = item.Name + " (" + config.Name + ")";
+				SetName (item.Name + " (" + config.Name + ")");
 			else
-				Name = item.Name;
+				SetName (item.Name);
 		}
 
 		public SolutionItem Item { get; private set; }
-		public RunConfiguration RunConfiguration { get; private set; }
+		public SolutionItemRunConfiguration RunConfiguration { get; private set; }
 	}
 }
 

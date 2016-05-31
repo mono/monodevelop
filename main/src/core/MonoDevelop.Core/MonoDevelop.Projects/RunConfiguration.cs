@@ -24,34 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core.Execution;
-
 namespace MonoDevelop.Projects
 {
-	public class RunConfiguration
+	public abstract class RunConfiguration
 	{
-		public RunConfiguration (string name)
-		{
-			Name = name;
-		}
+		public abstract string Name { get; }
 
-		public SolutionItem ParentItem {
-			get;
-			internal set;
-		}
-
-		public string Name { get; private set; }
-
-		public string Id { get; private set; }
-
-		public override string ToString ()
-		{
-			return Name;
-		}
-
-		public bool IsDefaultConfiguration {
-			get { return Name == "Default"; }
-		}
+		public abstract string Id { get; }
 	}
 }
 

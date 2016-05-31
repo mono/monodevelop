@@ -159,13 +159,13 @@ namespace MonoDevelop.AspNet.Projects
 			};
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			var cmd = CreateExecutionCommand (configuration, GetConfiguration (configuration));
 			return context.ExecutionHandler.CanExecute (cmd);
 		}
 
-		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			//check XSP is available
 

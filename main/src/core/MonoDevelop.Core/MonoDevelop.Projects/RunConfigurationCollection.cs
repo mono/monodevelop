@@ -45,7 +45,7 @@ namespace MonoDevelop.Projects
 		{
 			if (parentItem != null) {
 				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = parentItem;
+					((SolutionItemRunConfiguration)conf).ParentItem = parentItem;
 			}
 			base.OnItemsAdded (items);
 			(parentItem as Project)?.OnRunConfigurationsAdded (items);
@@ -55,7 +55,7 @@ namespace MonoDevelop.Projects
 		{
 			if (parentItem != null) {
 				foreach (var conf in items)
-					((RunConfiguration)conf).ParentItem = null;
+					((SolutionItemRunConfiguration)conf).ParentItem = null;
 			}
 			base.OnItemsRemoved (items);
 			(parentItem as Project)?.OnRunConfigurationRemoved (items);
