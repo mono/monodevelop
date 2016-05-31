@@ -331,7 +331,7 @@ namespace MonoDevelop.Ide.Gui
 			SubTabBarSeparatorColor = SubTabBarTextColor;
 			InactiveBrowserPadBackground = InactivePadBackground;
 			SecondaryTextColor = Color.FromName ("#808080");
-			SecondarySelectionTextColor = Color.FromName ("#d3d3d3");
+			SecondarySelectionTextColor = Color.FromName ("#93cbff");
 
 			// Tabs
 
