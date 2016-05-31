@@ -228,6 +228,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void SetProgressFraction (double work)
 		{
+			if (oldFraction == work)
+				return;
+
 			progressMarks.Push (work);
 			if (!inProgress) {
 				inProgress = true;
