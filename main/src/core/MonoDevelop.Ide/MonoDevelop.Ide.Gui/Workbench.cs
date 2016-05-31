@@ -66,7 +66,6 @@ namespace MonoDevelop.Ide.Gui
 	{
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		ImmutableList<Document> documents = ImmutableList<Document>.Empty;
-		Dictionary<FilePath, Document> documentsByFilePath = new Dictionary<FilePath, Document> ();
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -185,21 +184,17 @@ namespace MonoDevelop.Ide.Gui
 			TextReader [] results = new TextReader [filenames.Count];
 
 			int idx = 0;
-			lock (documentsByFilePath) {
-				foreach (var f in filenames) {
-					var fullPath = (FilePath)FileService.GetFullPath (f);
-					//var r = documentsByFilePath [fullPath];
+			foreach (var f in filenames) {
+				var fullPath = (FilePath)FileService.GetFullPath (f);
 
-					Document r;
-					bool present = documentsByFilePath.TryGetValue (fullPath, out r);
-					if (present && r.Editor != null) {
-						results [idx] = r.Editor.CreateReader ();
-					} else {
-						results [idx] = null;
-					}
-
-					idx++;
+				Document doc = documents.Find (d => d.Editor != null && (fullPath == FileService.GetFullPath (d.Name)));
+				if (doc != null) {
+					results [idx] = doc.Editor.CreateReader ();
+				} else {
+					results [idx] = null;
 				}
+
+				idx++;
 			}
 
 			return results;
@@ -818,10 +813,6 @@ namespace MonoDevelop.Ide.Gui
 			window.Closed += OnWindowClosed;
 			documents = documents.Add (doc);
 
-			lock (documentsByFilePath){
-				documentsByFilePath [(FilePath)FileService.GetFullPath (doc.Name)] = doc;
-			}
-
 			doc.OnDocumentAttached ();
 			OnDocumentOpened (new DocumentEventArgs (doc));
 			
@@ -877,10 +868,6 @@ namespace MonoDevelop.Ide.Gui
 			window.Closing -= OnWindowClosing;
 			window.Closed -= OnWindowClosed;
 			documents = documents.Remove (doc);
-
-			lock (documentsByFilePath) {
-				documentsByFilePath.Remove ((FilePath)FileService.GetFullPath (doc.Name));
-			}
 
 			OnDocumentClosed (doc);
 			doc.DisposeDocument ();

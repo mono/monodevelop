@@ -209,11 +209,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 
-		async Task<TextReader[]> GetSearchDocumentsReaders (List<string> filenames)
-		{
-			return await Runtime.RunInMainThread (() => IdeApp.Workbench.GetDocumentReaders (filenames));
-		}
-
 		// Took: 17743
 
 		IEnumerable<SearchResult> FindAll (ProgressMonitor monitor, FileProvider provider, TextReader content, string pattern, string replacePattern, FilterOptions filter)
