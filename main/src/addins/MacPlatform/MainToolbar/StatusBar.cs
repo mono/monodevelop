@@ -250,18 +250,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		CAAnimation CreateMoveAndGrowAnimation (CALayer progress, double growToFraction)
 		{
-			CAAnimationGroup grp = CAAnimationGroup.CreateAnimation ();
-			grp.Duration = 0.2;
-			grp.FillMode = CAFillMode.Forwards;
-			grp.RemovedOnCompletion = false;
-
 			CABasicAnimation grow = CABasicAnimation.FromKeyPath ("bounds");
+			grow.Duration = 0.2;
+			grow.FillMode = CAFillMode.Forwards;
+			grow.RemovedOnCompletion = false;
 			grow.From = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)oldFraction, barHeight));
 			grow.To = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)growToFraction, barHeight));
-			grp.Animations = new [] {
-				grow,
-			};
-			return grp;
+			return grow;
 		}
 
 		CAAnimation CreateAutoPulseAnimation ()
