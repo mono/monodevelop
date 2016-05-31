@@ -563,7 +563,7 @@
     <Compile Include="MonoDevelop.Projects\SolutionItemRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\RunConfigurationCollection.cs" />
-    <Compile Include="MonoDevelop.Projects\DotNetRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\AssemblyRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\MonoExecutionParameters.cs" />
     <Compile Include="MonoDevelop.Projects\SolutionRunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\SingleItemSolutionRunConfiguration.cs" />

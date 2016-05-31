@@ -304,7 +304,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
-		<Class class="MonoDevelop.Ide.Projects.OptionPanels.DotNetRunConfigurationEditor" runConfigurationType="MonoDevelop.Projects.DotNetRunConfiguration" />
+		<Class class="MonoDevelop.Ide.Projects.OptionPanels.AssemblyRunConfigurationEditor" runConfigurationType="MonoDevelop.Projects.AssemblyRunConfiguration" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/Fonts">

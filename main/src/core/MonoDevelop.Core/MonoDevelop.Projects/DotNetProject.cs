@@ -1029,7 +1029,7 @@ namespace MonoDevelop.Projects
 
 		protected override ProjectRunConfiguration OnCreateRunConfiguration (string name)
 		{
-			return new DotNetRunConfiguration (name);
+			return new AssemblyRunConfiguration (name);
 		}
 
 		protected override FilePath OnGetOutputFileName (ConfigurationSelector configuration)
@@ -1145,7 +1145,7 @@ namespace MonoDevelop.Projects
 			if (cmd == null)
 				return rcmd;
 
-			var rc = runConfiguration as DotNetRunConfiguration;
+			var rc = runConfiguration as AssemblyRunConfiguration;
 			if (rc != null) {
 				// Don't directly overwrite the settings, since those may have been set by the OnCreateExecutionCommand
 				// overload that doesn't take a runConfiguration.
@@ -1171,13 +1171,13 @@ namespace MonoDevelop.Projects
 			if (config == null)
 				return false;
 			
-			DotNetRunConfiguration runConfig = runConfiguration as DotNetRunConfiguration;
+			AssemblyRunConfiguration runConfig = runConfiguration as AssemblyRunConfiguration;
 			if (runConfig == null)
 				return false;
 
 			ExecutionCommand executionCommand;
 
-			if (runConfig.StartAction == DotNetRunConfiguration.StartActions.Program) {
+			if (runConfig.StartAction == AssemblyRunConfiguration.StartActions.Program) {
 				executionCommand = Runtime.ProcessService.CreateCommand (runConfig.StartProgram);
 				// If it is command for executing an assembly, add runtime options
 				var dcmd = executionCommand as DotNetExecutionCommand;
@@ -1224,8 +1224,8 @@ namespace MonoDevelop.Projects
 			if (compileTarget == CompileTarget.Library) {
 				// A library project can't run by itself, so discard configurations which have "Project" as startup action
 				foreach (var c in configs) {
-					var dc = c as DotNetRunConfiguration;
-					if (dc != null && (dc.StartAction == DotNetRunConfiguration.StartActions.Project || string.IsNullOrEmpty (dc.StartProgram)))
+					var dc = c as AssemblyRunConfiguration;
+					if (dc != null && (dc.StartAction == AssemblyRunConfiguration.StartActions.Project || string.IsNullOrEmpty (dc.StartProgram)))
 						continue;
 					yield return c;
 				}
@@ -1601,8 +1601,8 @@ namespace MonoDevelop.Projects
 
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
 
-			var rc = runConfiguration as DotNetRunConfiguration;
-			if (rc != null && rc.StartAction == DotNetRunConfiguration.StartActions.Program) {
+			var rc = runConfiguration as AssemblyRunConfiguration;
+			if (rc != null && rc.StartAction == AssemblyRunConfiguration.StartActions.Program) {
 				// Start an external program
 				var cons = rc.ExternalConsole ? 
 				                                  context.ExternalConsoleFactory.CreateConsole (!rc.PauseConsoleOutput, monitor.CancellationToken) : 
@@ -1686,13 +1686,13 @@ namespace MonoDevelop.Projects
 		internal override void ImportDefaultRunConfiguration (ProjectRunConfiguration config)
 		{
 			base.ImportDefaultRunConfiguration (config);
-			if (config is DotNetRunConfiguration) {
+			if (config is AssemblyRunConfiguration) {
 				var defaultConf = (DefaultConfiguration ?? Configurations.FirstOrDefault<SolutionItemConfiguration> ()) as DotNetProjectConfiguration;
 				if (defaultConf != null) {
-					var drc = (DotNetRunConfiguration)config;
+					var drc = (AssemblyRunConfiguration)config;
 					var cmd = defaultConf.CustomCommands.FirstOrDefault (cc => cc.Type == CustomCommandType.Execute);
 					if (cmd != null) {
-						drc.StartAction = DotNetRunConfiguration.StartActions.Program;
+						drc.StartAction = AssemblyRunConfiguration.StartActions.Program;
 						drc.StartProgram = cmd.GetCommandFile (this, defaultConf.Selector);
 						drc.StartArguments = cmd.GetCommandArgs (this, defaultConf.Selector);
 						foreach (var v in cmd.EnvironmentVariables)

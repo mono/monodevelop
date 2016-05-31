@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -35,11 +36,11 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
-	public class DotNetRunConfiguration: ProjectRunConfiguration
+	public class AssemblyRunConfiguration: ProjectRunConfiguration
 	{
 		MonoExecutionParameters monoParameters = new MonoExecutionParameters ();
 
-		public DotNetRunConfiguration (string name): base (name)
+		public AssemblyRunConfiguration (string name): base (name)
 		{
 		}
 
@@ -94,7 +95,7 @@ namespace MonoDevelop.Projects
 		{
 			base.OnCopyFrom (config, isRename);
 
-			var other = (DotNetRunConfiguration)config;
+			var other = (AssemblyRunConfiguration)config;
 
 			StartArguments = other.StartArguments;
 			StartWorkingDirectory = other.StartWorkingDirectory;

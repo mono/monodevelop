@@ -32,11 +32,11 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
-	class DotNetRunConfigurationEditor: RunConfigurationEditor
+	class AssemblyRunConfigurationEditor: RunConfigurationEditor
 	{
 		DotNetRunConfigurationEditorWidget widget;
 
-		public DotNetRunConfigurationEditor ()
+		public AssemblyRunConfigurationEditor ()
 		{
 			widget = new DotNetRunConfigurationEditorWidget ();
 		}
@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		public override void Load (Project project, SolutionItemRunConfiguration config)
 		{
-			widget.Load ((DotNetRunConfiguration)config);
+			widget.Load ((AssemblyRunConfiguration)config);
 		}
 
 		public override void Save ()
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		TextEntry argumentsEntry;
 		FolderSelector workingDir;
 		EnvironmentVariableCollectionEditor envVars;
-		DotNetRunConfiguration config;
+		AssemblyRunConfiguration config;
 		CheckBox externalConsole;
 		CheckBox pauseConsole;
 
@@ -108,10 +108,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			externalConsole.Toggled += (sender, e) => UpdateStatus ();
 		}
 
-		public void Load (DotNetRunConfiguration config)
+		public void Load (AssemblyRunConfiguration config)
 		{
 			this.config = config;
-			if (config.StartAction == DotNetRunConfiguration.StartActions.Project)
+			if (config.StartAction == AssemblyRunConfiguration.StartActions.Project)
 				radioStartProject.Active = true;
 			else
 				radioStartApp.Active = true;
@@ -134,9 +134,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public void Save ()
 		{
 			if (radioStartProject.Active)
-				config.StartAction = DotNetRunConfiguration.StartActions.Project;
+				config.StartAction = AssemblyRunConfiguration.StartActions.Project;
 			else if (radioStartApp.Active)
-				config.StartAction = DotNetRunConfiguration.StartActions.Program;
+				config.StartAction = AssemblyRunConfiguration.StartActions.Program;
 			config.StartProgram = appEntry.FileName;
 			config.StartArguments = argumentsEntry.Text;
 			config.StartWorkingDirectory = workingDir.Folder;
