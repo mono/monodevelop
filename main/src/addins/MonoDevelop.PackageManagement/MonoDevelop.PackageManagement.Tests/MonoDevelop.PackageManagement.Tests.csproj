@@ -91,6 +91,9 @@
     <Reference Include="NuGet.ProjectManagement">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.ProjectManagement.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Common">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Common.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
