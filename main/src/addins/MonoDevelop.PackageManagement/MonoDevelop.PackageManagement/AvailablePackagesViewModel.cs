@@ -41,12 +41,12 @@ namespace MonoDevelop.PackageManagement
 		ISolutionPackageRepository solutionPackageRepository;
 		IPackageRepository repository;
 		string errorMessage;
-		IRecentPackageRepository recentPackageRepository;
+		IPackageRepository recentPackageRepository;
 		
 		public AvailablePackagesViewModel (
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IRecentPackageRepository recentPackageRepository,
+			IPackageRepository recentPackageRepository,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)

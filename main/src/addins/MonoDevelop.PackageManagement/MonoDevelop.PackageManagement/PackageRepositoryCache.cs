@@ -39,7 +39,6 @@ namespace MonoDevelop.PackageManagement
 		IMonoDevelopPackageRepositoryFactory factory;
 		RegisteredPackageSources packageSources;
 		PackageManagementOptions options;
-		IRecentPackageRepository recentPackageRepository;
 		IPackageRepository machineCache;
 		ConcurrentDictionary<string, IPackageRepository> repositories =
 			new ConcurrentDictionary<string, IPackageRepository>();
@@ -144,29 +143,6 @@ namespace MonoDevelop.PackageManagement
 		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
 		{
 			return factory.CreateAggregateRepository(repositories);
-		}
-		
-		public IRecentPackageRepository RecentPackageRepository {
-			get {
-				CreateRecentPackageRepository();
-				return recentPackageRepository;
-			}
-		}
-		
-		void CreateRecentPackageRepository()
-		{
-			if (recentPackageRepository == null) {
-				CreateRecentPackageRepository (NuGet.MachineCache.Default);
-			}
-		}
-		
-		public IRecentPackageRepository CreateRecentPackageRepository(
-			IPackageRepository aggregateRepository)
-		{
-			if (recentPackageRepository == null) {
-				recentPackageRepository = factory.CreateRecentPackageRepository (aggregateRepository);
-			}
-			return recentPackageRepository;
 		}
 
 		public IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ()

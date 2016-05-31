@@ -41,7 +41,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackageRepositoryFactory fakePackageRepositoryFactory;
 		PackageSource nuGetPackageSource;
 		OneRegisteredPackageSourceHelper packageSourcesHelper;
-		FakePackageRepository fakeAggregateRepositoryPassedToCreateRecentPackageRepository;
 		FakePackageRepository machineCache;
 
 		void CreateCache ()
@@ -71,14 +70,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackageRepository AddFakePackageRepositoryForPackageSource (string source)
 		{
 			return fakePackageRepositoryFactory.AddFakePackageRepositoryForPackageSource (source);
-		}
-
-		IPackageRepository CreateRecentPackageRepositoryPassingAggregateRepository ()
-		{
-			fakeAggregateRepositoryPassedToCreateRecentPackageRepository = new FakePackageRepository ();
-
-			return cache.CreateRecentPackageRepository (
-				fakeAggregateRepositoryPassedToCreateRecentPackageRepository);
 		}
 
 		[Test]
@@ -254,72 +245,6 @@ namespace MonoDevelop.PackageManagement.Tests
 				fakePackageRepositoryFactory.RepositoriesPassedToCreateAggregateRepository;
 
 			Assert.AreEqual (repositories, repositoriesUsedToCreateAggregateRepository);
-		}
-
-		[Test]
-		public void RecentPackageRepository_NoRecentPackages_ReturnsRecentRepositoryCreatedByFactory ()
-		{
-			CreateCache ();
-			IRecentPackageRepository repository = cache.RecentPackageRepository;
-			FakeRecentPackageRepository expectedRepository = fakePackageRepositoryFactory.FakeRecentPackageRepository;
-
-			Assert.AreEqual (expectedRepository, repository);
-		}
-
-		[Test]
-		public void RecentPackageRepository_NoRecentPackages_CreatedWithAggregateRepository ()
-		{
-			CreateCache ();
-			IRecentPackageRepository repository = cache.RecentPackageRepository;
-
-			IPackageRepository expectedRepository = MachineCache.Default;
-			IPackageRepository actualRepository = fakePackageRepositoryFactory.AggregateRepositoryPassedToCreateRecentPackageRepository;
-
-			Assert.AreEqual (expectedRepository, actualRepository);
-		}
-
-		[Test]
-		public void RecentPackageRepository_PropertyAccessedTwice_AggregateRepositoryCreatedOnce ()
-		{
-			CreateCache ();
-			IRecentPackageRepository repository = cache.RecentPackageRepository;
-			fakePackageRepositoryFactory.RepositoriesPassedToCreateAggregateRepository = null;
-			repository = cache.RecentPackageRepository;
-
-			Assert.IsNull (fakePackageRepositoryFactory.RepositoriesPassedToCreateAggregateRepository);
-		}
-
-		[Test]
-		public void CreateRecentPackageRepository_AggregateRepositoryPassedAndNoRecentPackagesPassed_UsesFactoryToCreateRepository ()
-		{
-			CreateCache ();
-			IPackageRepository repository = CreateRecentPackageRepositoryPassingAggregateRepository ();
-
-			FakeRecentPackageRepository expectedRepository = fakePackageRepositoryFactory.FakeRecentPackageRepository;
-
-			Assert.AreEqual (expectedRepository, repository);
-		}
-
-		[Test]
-		public void CreateRecentPackageRepository_AggregateRepositoryPassedAndNoRecentPackagesPassed_AggregateIsUsedToCreateRepository ()
-		{
-			CreateCache ();
-			CreateRecentPackageRepositoryPassingAggregateRepository ();
-
-			IPackageRepository actualRepository = fakePackageRepositoryFactory.AggregateRepositoryPassedToCreateRecentPackageRepository;
-
-			Assert.AreEqual (fakeAggregateRepositoryPassedToCreateRecentPackageRepository, actualRepository);
-		}
-
-		[Test]
-		public void CreateRecentPackageRepository_MethodCalledTwice_RecentPackageRepositoryCreatedOnce ()
-		{
-			CreateCache ();
-			CreateRecentPackageRepositoryPassingAggregateRepository ();
-			fakePackageRepositoryFactory.AggregateRepositoryPassedToCreateRecentPackageRepository = null;
-			CreateRecentPackageRepositoryPassingAggregateRepository ();
-
-			Assert.IsNull (fakePackageRepositoryFactory.AggregateRepositoryPassedToCreateRecentPackageRepository);
 		}
 
 		[Test]

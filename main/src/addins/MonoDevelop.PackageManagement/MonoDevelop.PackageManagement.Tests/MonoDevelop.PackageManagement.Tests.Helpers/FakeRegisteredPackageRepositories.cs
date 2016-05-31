@@ -51,12 +51,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 		}
 
-		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository ();
-
-		public IRecentPackageRepository RecentPackageRepository {
-			get { return FakeRecentPackageRepository; }
-		}
-
 		public bool HasMultiplePackageSources { get; set; }
 
 		public PackageSource ActivePackageSource { get; set; }

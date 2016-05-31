@@ -48,10 +48,6 @@ namespace MonoDevelop.PackageManagement
 			this.options = options;
 		}
 		
-		public IRecentPackageRepository RecentPackageRepository {
-			get { return repositoryCache.RecentPackageRepository; }
-		}
-		
 		public IPackageRepository CreateRepository(PackageSource source)
 		{
 			return repositoryCache.CreateRepository(source.Source);

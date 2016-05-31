@@ -33,7 +33,6 @@ namespace MonoDevelop.PackageManagement
 {
 	internal interface IPackageRepositoryCache : IMonoDevelopPackageRepositoryFactory
 	{
-		IRecentPackageRepository RecentPackageRepository { get; }
 		IPackageRepository CreateAggregateRepository();
 		IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ();
 	}

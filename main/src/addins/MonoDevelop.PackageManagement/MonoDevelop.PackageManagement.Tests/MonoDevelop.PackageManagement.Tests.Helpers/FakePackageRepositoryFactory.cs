@@ -84,16 +84,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return FakeAggregateRepository;
 		}
 
-		public FakeRecentPackageRepository FakeRecentPackageRepository = new FakeRecentPackageRepository ();
-		public IPackageRepository AggregateRepositoryPassedToCreateRecentPackageRepository;
-
-		public IRecentPackageRepository CreateRecentPackageRepository (
-			IPackageRepository aggregateRepository)
-		{
-			AggregateRepositoryPassedToCreateRecentPackageRepository = aggregateRepository;
-			return FakeRecentPackageRepository;
-		}
-
 		public IEnumerable<IPackageRepository> RepositoriesPassedToCreateAggregateRepository;
 		public Func<IEnumerable<IPackageRepository>, IPackageRepository> CreateAggregrateRepositoryAction;
 
@@ -108,10 +98,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			var repository = new FakePackageRepository ();
 			FakePackageRepositories.Add (source, repository);
 			return repository;
-		}
-
-		public IRecentPackageRepository RecentPackageRepository {
-			get { return FakeRecentPackageRepository; }
 		}
 
 		public FakePackageRepository FakePriorityPackageRepository = new FakePackageRepository ();

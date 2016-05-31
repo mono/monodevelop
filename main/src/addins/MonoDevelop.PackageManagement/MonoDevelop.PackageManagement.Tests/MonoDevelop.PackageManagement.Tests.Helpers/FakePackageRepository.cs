@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageRepository : IRecentPackageRepository, IProgressProvider, ICloneableRepository
+	public class FakePackageRepository : IPackageRepository, IProgressProvider, ICloneableRepository
 	{
 		public List<FakePackage> FakePackages = new List<FakePackage> ();
 		public bool IsRemovePackageCalled;
