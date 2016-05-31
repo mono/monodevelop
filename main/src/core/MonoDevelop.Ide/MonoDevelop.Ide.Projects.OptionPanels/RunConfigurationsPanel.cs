@@ -204,6 +204,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Fill ();
 
 			this.PackStart (box, false);
+
+			list.SelectionChanged += (sender, e) => UpdateButtons ();
+			UpdateButtons ();
 		}
 
 		void Fill ()
@@ -229,6 +232,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			removeButton.Sensitive = selection;
 			copyButton.Sensitive = selection;
 			renameButton.Sensitive = selection;
+			var config = listStore.GetValue (list.SelectedRow, configCol);
+			if (config != null && config.IsDefaultConfiguration) {
+				removeButton.Sensitive = false;
+				renameButton.Sensitive = false;
+			}
 		}
 
 		void OnAddConfiguration (object sender, EventArgs e)
@@ -272,7 +280,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnRemoveConfiguration (object sender, EventArgs e)
 		{
 			var config = listStore.GetValue (list.SelectedRow, configCol);
-			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the configuration '{0}'?", config.Name), AlertButton.Delete)) {
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the configuration '{0}'?", config.Name), AlertButton.Delete)) {
 				panel.RemoveConfiguration (config);
 				Fill ();
 			}
