@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void OnAddConfiguration (object sender, EventArgs e)
 		{
-			using (var dlg = new RunConfigurationNameDialog ("", new Command (GettextCatalog.GetString ("New")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, "", new Command (GettextCatalog.GetString ("New")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("New Configuration");
 				if (dlg.Run () != Command.Cancel) {
 					var config = panel.Project.CreateRunConfiguration (dlg.NewName);
@@ -254,7 +254,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnCopyConfiguration (object sender, EventArgs e)
 		{
 			var config = listStore.GetValue (list.SelectedRow, configCol);
-			using (var dlg = new RunConfigurationNameDialog (config.Name, new Command (GettextCatalog.GetString ("Copy")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Copy")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("Copy Configuration");
 				if (dlg.Run () != Command.Cancel) {
 					var copy = panel.Project.CloneRunConfiguration (config, dlg.NewName);
@@ -267,7 +267,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnRenameConfiguration (object sender, EventArgs e)
 		{
 			var config = listStore.GetValue (list.SelectedRow, configCol);
-			using (var dlg = new RunConfigurationNameDialog (config.Name, new Command (GettextCatalog.GetString ("Rename")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Rename")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("Rename Configuration");
 				if (dlg.Run () != Command.Cancel) {
 					var copy = panel.Project.CloneRunConfiguration (config, dlg.NewName);
@@ -294,8 +294,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		Label errorLabel;
 		IEnumerable<string> invalidNames;
 
-		public RunConfigurationNameDialog (string name, Command action, IEnumerable<string> invalidNames)
+		public RunConfigurationNameDialog (Xwt.WindowFrame parent, string name, Command action, IEnumerable<string> invalidNames)
 		{
+			TransientFor = parent;
 			Resizable = false;
 			this.invalidNames = invalidNames;
 			mainBox = new VBox ();
