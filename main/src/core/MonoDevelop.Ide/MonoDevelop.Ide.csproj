@@ -8266,7 +8266,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\DefaultCommandTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditSession.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AutoInsertBracketTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.Ide.Extensions\IErrorDocumentationProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\ErrorDocumentationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

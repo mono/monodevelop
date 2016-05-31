@@ -241,8 +241,7 @@ namespace MonoDevelop.Ide.Tasks
 
 		public bool HasDocumentationLink ()
 		{
-			var extensions = Mono.Addins.AddinManager.GetExtensionObjects<Extensions.IErrorDocumentationProvider> ("/MonoDevelop/Ide/IErrorDocumentationProvider", false);
-			foreach (var ext in extensions) {
+			foreach (Extensions.ErrorDocumentationProvider ext in Mono.Addins.AddinManager.GetExtensionNodes ("/MonoDevelop/Ide/ErrorDocumentationProvider")) {
 				var link = ext.GetDocumentationLink (description);
 				if (!string.IsNullOrEmpty (link)) {
 					DocumentationLink = link;
