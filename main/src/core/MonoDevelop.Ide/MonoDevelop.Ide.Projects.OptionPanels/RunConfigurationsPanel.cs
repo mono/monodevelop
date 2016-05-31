@@ -83,6 +83,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void AddPanel (RunConfigInfo configInfo)
 		{
+			configInfo.Project = Project;
 			var sec = new RunConfigurationOptionsDialogSection (configInfo);
 			sec.Fill = true;
 			sections [configInfo] = sec;
@@ -139,6 +140,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 	class RunConfigInfo
 	{
+		public Project Project { get; set; }
 		public ProjectRunConfiguration ProjectConfig { get; set; }
 		public ProjectRunConfiguration EditedConfig { get; set; }
 	}

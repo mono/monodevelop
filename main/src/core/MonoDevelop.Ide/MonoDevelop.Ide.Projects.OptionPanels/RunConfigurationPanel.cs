@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public override Control CreatePanelWidget ()
 		{
 			if (editor != null) {
-				editor.Load (config.ProjectConfig.ParentItem, config.EditedConfig);
+				editor.Load (config.Project, config.EditedConfig);
 				var c = editor.CreateControl ();
 				box.PackStart (c.GetNativeWidget<Gtk.Widget> (), true, true, 0);
 				userConf.Active = config.EditedConfig.StoreInUserFile;
