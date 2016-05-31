@@ -34,7 +34,14 @@ namespace MonoDevelop.PackageManagement
 	{
 		public const int DefaultMaximumPackagesCount = 20;
 
+		int maximumPackagesCount = DefaultMaximumPackagesCount;
+
 		List<RecentPackage> packages = new List<RecentPackage> ();
+
+		public int MaximumPackagesCount {
+			get { return maximumPackagesCount; }
+			set { maximumPackagesCount = value; }
+		}
 
 		public IEnumerable<PackageSearchResultViewModel> GetPackages (string source)
 		{
@@ -77,7 +84,7 @@ namespace MonoDevelop.PackageManagement
 
 		void RemoveLastPackageIfCurrentPackageCountExceedsMaximum()
 		{
-			if (packages.Count > DefaultMaximumPackagesCount) {
+			if (packages.Count > maximumPackagesCount) {
 				RemoveLastPackage ();
 			}
 		}

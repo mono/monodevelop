@@ -107,7 +107,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageOperationMessageTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageFilesTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\IPackageExtensionsTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\RecentPackageInfoTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageRepositoryCacheTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSharedPackageRepository.cs" />
@@ -126,7 +125,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUninstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageOperation.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementOptionsTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\RecentPackageInfoCollectionAssert.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RegisteredPackageRepositoriesTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeMachineCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSourceViewModelTests.cs" />
@@ -138,7 +136,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\InstallPackageActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\InstallPackageHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageOperationHelper.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\RecentPackageRepositoryTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\RecentNuGetPackagesRepositoryTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageCollectionAssert.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\AvailablePackagesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeRegisteredPackageRepositories.cs" />
