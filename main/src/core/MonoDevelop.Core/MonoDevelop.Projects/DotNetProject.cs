@@ -1159,6 +1159,8 @@ namespace MonoDevelop.Projects
 					cmd.WorkingDirectory = rc.StartWorkingDirectory;
 				foreach (var env in rc.EnvironmentVariables)
 					cmd.EnvironmentVariables [env.Key] = env.Value;
+				cmd.PauseConsoleOutput = rc.PauseConsoleOutput;
+				cmd.ExternalConsole = rc.ExternalConsole;
 			}
 			return cmd;
 		}
@@ -1602,8 +1604,8 @@ namespace MonoDevelop.Projects
 			var rc = runConfiguration as DotNetRunConfiguration;
 			if (rc != null && rc.StartAction == DotNetRunConfiguration.StartActions.Program) {
 				// Start an external program
-				var cons = dotNetProjectConfig.ExternalConsole ? 
-				                                  context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken) : 
+				var cons = rc.ExternalConsole ? 
+				                                  context.ExternalConsoleFactory.CreateConsole (!rc.PauseConsoleOutput, monitor.CancellationToken) : 
 				                                  context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
 				await Runtime.ProcessService.StartConsoleProcess (rc.StartProgram, rc.StartArguments, rc.StartWorkingDirectory, cons, rc.EnvironmentVariables).Task;
 				return;
@@ -1628,15 +1630,18 @@ namespace MonoDevelop.Projects
 
 		protected virtual async Task OnExecuteCommand (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, ExecutionCommand executionCommand)
 		{
+			bool externalConsole = false, pauseConsole = false;
+
 			var dotNetExecutionCommand = executionCommand as DotNetExecutionCommand;
 			if (dotNetExecutionCommand != null) {
 				dotNetExecutionCommand.UserAssemblyPaths = GetUserAssemblyPaths (configuration);
+				externalConsole = dotNetExecutionCommand.ExternalConsole;
+				pauseConsole = dotNetExecutionCommand.PauseConsoleOutput;
 			}
 
-			var dotNetProjectConfig = GetConfiguration (configuration) as DotNetProjectConfiguration;
-			var console = dotNetProjectConfig.ExternalConsole
-			                                                  ? context.ExternalConsoleFactory.CreateConsole (!dotNetProjectConfig.PauseConsoleOutput, monitor.CancellationToken)
-			                                                  : context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+			var console = externalConsole ? context.ExternalConsoleFactory.CreateConsole (!pauseConsole, monitor.CancellationToken)
+												   : context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
+		
 			using (console) {
 				ProcessAsyncOperation asyncOp = context.ExecutionHandler.Execute (executionCommand, console);
 
@@ -1676,6 +1681,32 @@ namespace MonoDevelop.Projects
 			}
 
 			TargetFramework = Runtime.SystemAssemblyService.GetTargetFramework (targetFx);
+		}
+
+		internal override void ImportDefaultRunConfiguration (ProjectRunConfiguration config)
+		{
+			base.ImportDefaultRunConfiguration (config);
+			if (config is DotNetRunConfiguration) {
+				var defaultConf = (DefaultConfiguration ?? Configurations.FirstOrDefault<SolutionItemConfiguration> ()) as DotNetProjectConfiguration;
+				if (defaultConf != null) {
+					var drc = (DotNetRunConfiguration)config;
+					var cmd = defaultConf.CustomCommands.FirstOrDefault (cc => cc.Type == CustomCommandType.Execute);
+					if (cmd != null) {
+						drc.StartArguments = cmd.GetCommandArgs (this, defaultConf.Selector);
+						drc.StartProgram = cmd.GetCommandFile (this, defaultConf.Selector);
+						foreach (var v in cmd.EnvironmentVariables)
+							drc.EnvironmentVariables.Add (v.Key, v.Value);
+						drc.StartWorkingDirectory = cmd.GetCommandWorkingDir (this, defaultConf.Selector);
+						drc.ExternalConsole = cmd.ExternalConsole;
+						drc.PauseConsoleOutput = cmd.PauseExternalConsole;
+						defaultConf.CustomCommands.Remove (cmd);
+					} else if (defaultConf.Properties.HasProperty ("ExternalConsole")) {
+						drc.PauseConsoleOutput = defaultConf.PauseConsoleOutput;
+						drc.ExternalConsole = defaultConf.ExternalConsole;
+						defaultConf.Properties.RemoveProperty ("ExternalConsole");
+					}
+				}
+			}
 		}
 
 		protected override void OnWriteProjectHeader (ProgressMonitor monitor, MSBuildProject msproject)

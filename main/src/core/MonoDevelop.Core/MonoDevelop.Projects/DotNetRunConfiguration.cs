@@ -55,6 +55,12 @@ namespace MonoDevelop.Projects
 		[ItemProperty (DefaultValue = "")]
 		public FilePath StartProgram { get; set; } = "";
 
+		[ItemProperty ("ConsolePause", DefaultValue = true)]
+		public bool PauseConsoleOutput { get; set; } = true;
+
+		[ItemProperty (DefaultValue = false)]
+		public bool ExternalConsole { get; set; } = false;
+
 		[ItemProperty (SkipEmpty = true)]
 		public EnvironmentVariableCollection EnvironmentVariables { get; private set; } = new EnvironmentVariableCollection ();
 
@@ -96,6 +102,8 @@ namespace MonoDevelop.Projects
 			StartAction = other.StartAction;
 			EnvironmentVariables = new EnvironmentVariableCollection (other.EnvironmentVariables);
 			monoParameters = other.monoParameters.Clone ();
+			ExternalConsole = other.ExternalConsole;
+			PauseConsoleOutput = other.PauseConsoleOutput;
 		}
 	}
 }

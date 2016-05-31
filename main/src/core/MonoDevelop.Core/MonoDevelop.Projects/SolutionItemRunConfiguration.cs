@@ -65,6 +65,8 @@ namespace MonoDevelop.Projects
 		public bool IsDefaultConfiguration {
 			get { return Id == "Default"; }
 		}
+
+		public ExecutionTarget ExecutionTarget { get; set; }
 	}
 }
 

@@ -66,10 +66,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		FolderSelector workingDir;
 		EnvironmentVariableCollectionEditor envVars;
 		DotNetRunConfiguration config;
+		CheckBox externalConsole;
+		CheckBox pauseConsole;
 
 		public DotNetRunConfigurationEditorWidget ()
 		{
-			PackStart (new Label (GettextCatalog.GetString ("Start Action")));
+			PackStart (new Label { Markup = GettextCatalog.GetString ("Start Action") });
 			var table = new Table ();
 			
 			table.Add (radioStartProject = new RadioButton (GettextCatalog.GetString ("Start project")), 0, 0);
@@ -79,7 +81,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.MarginLeft = 12;
 			PackStart (table);
 
-			PackStart (new HSeparator () { MarginTop = 12, MarginBottom = 12 });
+			PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 			table = new Table ();
 
 			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
@@ -90,14 +92,20 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 			PackStart (table);
 
-			PackStart (new HSeparator () { MarginTop = 12, MarginBottom = 12 });
+			PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
 			PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
 			envVars = new EnvironmentVariableCollectionEditor ();
 
 			PackStart (envVars, true);
 
+			PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
+
+			PackStart (externalConsole = new CheckBox (GettextCatalog.GetString ("Run on external console")));
+			PackStart (pauseConsole = new CheckBox (GettextCatalog.GetString ("Pause console output")));
+
 			radioStartProject.ActiveChanged += (sender, e) => UpdateStatus ();
+			externalConsole.Toggled += (sender, e) => UpdateStatus ();
 		}
 
 		public void Load (DotNetRunConfiguration config)
@@ -112,12 +120,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			argumentsEntry.Text = config.StartArguments;
 			workingDir.Folder = config.StartWorkingDirectory;
 			envVars.LoadValues (config.EnvironmentVariables);
+			externalConsole.Active = config.ExternalConsole;
+			pauseConsole.Active = config.PauseConsoleOutput;
 			UpdateStatus ();
 		}
 
 		void UpdateStatus ()
 		{
 			appEntry.Sensitive = radioStartApp.Active;
+			pauseConsole.Sensitive = externalConsole.Active;
 		}
 
 		public void Save ()
@@ -129,6 +140,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			config.StartProgram = appEntry.FileName;
 			config.StartArguments = argumentsEntry.Text;
 			config.StartWorkingDirectory = workingDir.Folder;
+			config.ExternalConsole = externalConsole.Active;
+			config.PauseConsoleOutput = pauseConsole.Active;
 			envVars.StoreValues (config.EnvironmentVariables);
 
 		}
