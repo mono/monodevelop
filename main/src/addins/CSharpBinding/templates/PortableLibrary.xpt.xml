@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Portable Library</_Name>
 		<Category>multiplat/library/general</Category>
-		<Icon>md-project-library</Icon>
+		<Icon>md-pcl-project</Icon>
 		<Image id="md-pcl-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a C# library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>

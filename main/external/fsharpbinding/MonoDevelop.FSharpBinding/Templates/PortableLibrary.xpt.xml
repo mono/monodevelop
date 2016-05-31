@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Portable Library</_Name>
 		<Category>crossplat/library/general</Category>
-		<Icon>md-project-library</Icon>
+		<Icon>md-pcl-project</Icon>
 		<Image id="md-pcl-project" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates a F# PCL library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
