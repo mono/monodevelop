@@ -8251,6 +8251,7 @@
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\AssemblyRunConfigurationEditor.cs" />
     <Compile Include="MonoDevelop.Components\EnvironmentVariableCollectionEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\ExecutionModeSelectorDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunConfigurationsList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

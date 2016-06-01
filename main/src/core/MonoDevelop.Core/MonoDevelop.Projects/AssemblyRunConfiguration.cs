@@ -71,6 +71,40 @@ namespace MonoDevelop.Projects
 			public const string Program = "Program";
 		}
 
+		public override string Summary {
+			get {
+				string envVars = null;
+				if (EnvironmentVariables.Count > 0) {
+					var v = EnvironmentVariables.First ();
+					envVars = v.Key + "=" + v.Value;
+					if (EnvironmentVariables.Count > 1)
+						envVars += "...";
+				}
+				if (StartAction == StartActions.Project) {
+					if (!string.IsNullOrEmpty (StartArguments) && envVars != null)
+						return GettextCatalog.GetString ("Start the project with arguments '{0}' and environment variables '{1}'", StartArguments, envVars);
+					else if (!string.IsNullOrEmpty (StartArguments))
+						return GettextCatalog.GetString ("Start the project with arguments '{0}'", StartArguments);
+					else if (envVars != null)
+						return GettextCatalog.GetString ("Start the project with environment variables '{0}''", envVars);
+					else
+						return GettextCatalog.GetString ("Start the project with no additional arguments");
+				} else {
+					if (StartProgram.IsNullOrEmpty)
+						return GettextCatalog.GetString ("Selected startup program is not valid");
+					var app = StartProgram.FileName;
+					if (!string.IsNullOrEmpty (StartArguments) && EnvironmentVariables.Count > 0)
+						return GettextCatalog.GetString ("Run {0} with arguments '{1}' and custom environment variables '{2}'", app, StartArguments, envVars);
+					else if (!string.IsNullOrEmpty (StartArguments))
+						return GettextCatalog.GetString ("Run {0} with arguments '{1}'", app, StartArguments);
+					else if (envVars != null)
+						return GettextCatalog.GetString ("Run {0} with environment variables '{1}'", app, envVars);
+					else
+						return GettextCatalog.GetString ("Run {0}", app);
+				}
+			}
+		}
+
 		public bool IsEmpty {
 			get { return string.IsNullOrEmpty (StartArguments) && string.IsNullOrEmpty (StartWorkingDirectory) && StartAction == StartActions.Project && EnvironmentVariables.Count == 0; }
 		}

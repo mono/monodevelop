@@ -29,6 +29,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Execution;
 using System.Linq;
+using MonoDevelop.Ide.Projects.OptionPanels;
 
 namespace MonoDevelop.Ide.Execution
 {
@@ -37,10 +38,9 @@ namespace MonoDevelop.Ide.Execution
 		IRunTarget item;
 
 		DialogButton runButton;
-		ListView listConfigs;
+		RunConfigurationsList listConfigs;
 		TreeView treeModes;
 		
-		ListStore storeConfigs;
 		TreeStore storeModes;
 
 		DataField<string> configNameField = new DataField<string> ();
@@ -53,27 +53,24 @@ namespace MonoDevelop.Ide.Execution
 		{
 			Title = GettextCatalog.GetString ("Execution Mode Selector");
 			
-			Width = 400;
-			Height = 300;
+			Width = 500;
+			Height = 400;
 
 			var box = new VBox ();
 			Content = box;
 
 			box.PackStart (new Label (GettextCatalog.GetString ("Run Configurations:")));
 		
-			storeConfigs = new ListStore (configNameField, configField);
-			listConfigs = new ListView (storeConfigs);
-			listConfigs.Columns.Add (GettextCatalog.GetString ("Name"), configNameField);
-			listConfigs.HeightRequest = 130;
-			box.PackStart (listConfigs);
+			listConfigs = new RunConfigurationsList ();
+			box.PackStart (listConfigs, true);
 
 			box.PackStart (new Label (GettextCatalog.GetString ("Execution Modes:")));
 
 			storeModes = new TreeStore (modeNameField, modeField, modeSetField);
 			treeModes = new TreeView (storeModes);
+			treeModes.HeadersVisible = false;
 			treeModes.Columns.Add (GettextCatalog.GetString ("Name"), modeNameField);
-			treeModes.HeightRequest = 130;
-			box.PackStart (treeModes);
+			box.PackStart (treeModes, true);
 
 			runButton = new DialogButton (new Command ("run", GettextCatalog.GetString ("Run")));
 
@@ -87,12 +84,9 @@ namespace MonoDevelop.Ide.Execution
 		public void Load (IRunTarget item)
 		{
 			this.item = item;
-			storeConfigs.Clear ();
-			foreach (var c in item.GetRunConfigurations ()) {
-				var r = storeConfigs.AddRow ();
-				storeConfigs.SetValues (r, configNameField, c.Name, configField, c);
-			}
-			listConfigs.SelectRow (0);
+			var configs = item.GetRunConfigurations ().ToArray ();
+			listConfigs.Fill (configs);
+			listConfigs.SelectedConfiguration = configs.FirstOrDefault ();
 			LoadModes ();
 		}
 
@@ -162,8 +156,7 @@ namespace MonoDevelop.Ide.Execution
 
 		public RunConfiguration SelectedConfiguration {
 			get {
-				var r = listConfigs.SelectedRow;
-				return r != -1 ? storeConfigs.GetValue (r, configField) : null;
+				return listConfigs.SelectedConfiguration;
 			}
 		}
 

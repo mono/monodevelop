@@ -34,6 +34,12 @@ namespace MonoDevelop.UnitTesting
 		public UnitTestingRunConfiguration (): base (GettextCatalog.GetString ("Unit Tests"))
 		{
 		}
+
+		public override string Summary {
+			get {
+				return GettextCatalog.GetString ("Runs the unit tests of the project");
+			}
+		}
 	}
 }
 

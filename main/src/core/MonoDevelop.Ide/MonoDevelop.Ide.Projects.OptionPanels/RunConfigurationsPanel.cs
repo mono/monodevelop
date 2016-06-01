@@ -160,10 +160,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 	partial class RunConfigurationsPanelWidget: Xwt.VBox
 	{
 		RunConfigurationsPanel panel;
-		Xwt.ListView list;
-		Xwt.ListStore listStore;
-		Xwt.DataField<ProjectRunConfiguration> configCol = new Xwt.DataField<ProjectRunConfiguration> ();
-		Xwt.DataField<string> configNameCol = new Xwt.DataField<string> ();
+		RunConfigurationsList list;
 
 		Xwt.Button removeButton;
 		Xwt.Button copyButton;
@@ -176,10 +173,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.Margin = 6;
 			Spacing = 6;
 
-			listStore = new Xwt.ListStore (configCol, configNameCol);
-			list = new Xwt.ListView (listStore);
-			list.Columns.Add (GettextCatalog.GetString ("Name"), configNameCol);
-
+			list = new RunConfigurationsList ();
 			this.PackStart (list, true);
 
 			var box = new Xwt.HBox ();
@@ -211,30 +205,17 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void Fill ()
 		{
-			var currentRow = list.SelectedRow;
-			listStore.Clear ();
-			foreach (var c in panel.Configurations) {
-				var r = listStore.AddRow ();
-				listStore.SetValues (r, configCol, c.EditedConfig, configNameCol, c.EditedConfig.Name);
-			}
-			if (currentRow != -1) {
-				if (currentRow < listStore.RowCount)
-					list.SelectRow (currentRow);
-				else
-					list.SelectRow (listStore.RowCount - 1);
-			} else if (listStore.RowCount > 0)
-				list.SelectRow (0);
+			list.Fill (panel.Configurations.Select (c => c.EditedConfig).ToArray ());
 		}
 
 		void UpdateButtons ()
 		{
-			var selection = list.SelectedRow != -1;
+			var selection = list.SelectedConfiguration != null;
 			removeButton.Sensitive = selection;
 			copyButton.Sensitive = selection;
 			renameButton.Sensitive = selection;
 			if (selection) {
-				var config = listStore.GetValue (list.SelectedRow, configCol);
-				if (config != null && config.IsDefaultConfiguration) {
+				if (((ProjectRunConfiguration)list.SelectedConfiguration).IsDefaultConfiguration) {
 					removeButton.Sensitive = false;
 					renameButton.Sensitive = false;
 				}
@@ -255,7 +236,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void OnCopyConfiguration (object sender, EventArgs e)
 		{
-			var config = listStore.GetValue (list.SelectedRow, configCol);
+			var config = (ProjectRunConfiguration)list.SelectedConfiguration;
 			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Copy")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("Copy Configuration");
 				if (dlg.Run () != Command.Cancel) {
@@ -268,7 +249,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void OnRenameConfiguration (object sender, EventArgs e)
 		{
-			var config = listStore.GetValue (list.SelectedRow, configCol);
+			var config = (ProjectRunConfiguration)list.SelectedConfiguration;
 			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Rename")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("Rename Configuration");
 				if (dlg.Run () != Command.Cancel) {
@@ -281,7 +262,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void OnRemoveConfiguration (object sender, EventArgs e)
 		{
-			var config = listStore.GetValue (list.SelectedRow, configCol);
+			var config = (ProjectRunConfiguration)list.SelectedConfiguration;
 			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the configuration '{0}'?", config.Name), AlertButton.Delete)) {
 				panel.RemoveConfiguration (config);
 				Fill ();

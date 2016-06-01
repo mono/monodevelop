@@ -23,14 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+
 namespace MonoDevelop.Projects
 {
 	public abstract class RunConfiguration
 	{
+		/// <summary>
+		/// Display name of the configuration
+		/// </summary>
 		public abstract string Name { get; }
 
+		/// <summary>
+		/// Unique id of the configuration
+		/// </summary>
 		public abstract string Id { get; }
+
+		/// <summary>
+		/// Icon
+		/// </summary>
+		public virtual string IconId {
+			get { return null; }
+		}
+
+		/// <summary>
+		/// One line description of the configuration
+		/// </summary>
+		/// <value>The summary.</value>
+		public virtual string Summary {
+			get { return string.Empty; }
+		}
 	}
 }
 
