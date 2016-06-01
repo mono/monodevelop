@@ -155,6 +155,7 @@ namespace MonoDevelop.Debugger
 		{
 			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
 			StackTraceTreeView = new TreeView (store);
+			StackTraceTreeView.SearchColumn = -1; // disable the interactive search
 			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;

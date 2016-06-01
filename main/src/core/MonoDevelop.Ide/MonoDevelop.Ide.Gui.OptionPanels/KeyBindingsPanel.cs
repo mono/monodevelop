@@ -132,7 +132,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					});
 				};
 			};
-			
+
+			keyTreeView.SearchColumn = -1; // disable the interactive search
+
 			//HACK: workaround for MD Bug 608021: Stetic loses values assigned to "new" properties of custom widget
 			conflicButton.Label = GettextCatalog.GetString ("_View Conflicts");
 			conflicButton.UseUnderline = true;
@@ -154,6 +156,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (keyStore.GetIterFirst (out iter))
 				Refilter (iter, allVisible);
 			keyTreeView.Model = filterModel;
+			keyTreeView.SearchColumn = -1; // disable the interactive search
 			keyTreeView.ExpandAll ();
 			keyTreeView.ColumnsAutosize ();
 		}

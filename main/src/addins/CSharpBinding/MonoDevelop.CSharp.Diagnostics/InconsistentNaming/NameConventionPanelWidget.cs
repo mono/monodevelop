@@ -64,6 +64,7 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			col2.SetCellDataFunc (ct2, NameConventionRulePreviewDataFunc);
 			
 			treeviewConventions.Model = treeStore;
+			treeviewConventions.SearchColumn = -1; // disable the interactive search
 			treeviewConventions.Selection.Changed += HandleSelectionChanged;
 			treeviewConventions.RowActivated += (o, args) => EditSelectedEntry ();
 			buttonEdit.Clicked += (o, s) => EditSelectedEntry ();
