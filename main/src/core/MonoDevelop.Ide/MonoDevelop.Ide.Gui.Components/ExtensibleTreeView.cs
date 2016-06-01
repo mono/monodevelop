@@ -327,6 +327,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			cell.DisabledStyle = info.DisabledStyle;
 			cell.TextMarkup = info.Label;
+			cell.SecondaryTextMarkup = info.SecondaryLabel;
 
 			cell.StatusIcon = info.StatusIconInternal;
 		}
@@ -2346,6 +2347,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			Gdk.Rectangle buttonScreenRect;
 			Gdk.Rectangle buttonAllocation;
 			string markup;
+			string secondarymarkup;
 
 			const int StatusIconSpacing = 4;
 
@@ -2372,7 +2374,25 @@ namespace MonoDevelop.Ide.Gui.Components
 			[GLib.Property ("text-markup")]
 			public string TextMarkup {
 				get { return markup; }
-				set { Markup = markup = value; }
+				set {
+					markup = value;
+					if (!string.IsNullOrEmpty (secondarymarkup))
+						Markup = markup + " " + secondarymarkup;
+					else
+						Markup = markup;
+				}
+			}
+
+			[GLib.Property ("secondary-text-markup")]
+			public string SecondaryTextMarkup {
+				get { return secondarymarkup; }
+				set {
+					secondarymarkup = value;
+					if (!string.IsNullOrEmpty (secondarymarkup))
+						Markup = markup + " " + secondarymarkup;
+					else
+						Markup = markup;
+				}
 			}
 
 			public bool DisabledStyle { get; set; }
@@ -2428,15 +2448,24 @@ namespace MonoDevelop.Ide.Gui.Components
 					layout.FontDescription = scaledFont;
 				}
 
+				string newmarkup = TextMarkup;
 				if (DisabledStyle) {
 					Gdk.Color fgColor;
-					if (Platform.IsMac && flags.HasFlag (Gtk.CellRendererState.Selected)) 
+					if (Platform.IsMac && flags.HasFlag (Gtk.CellRendererState.Selected))
 						fgColor = widget.Style.Text (IdeTheme.UserInterfaceTheme == Theme.Light ? Gtk.StateType.Selected : Gtk.StateType.Normal);
 					else
 						fgColor = widget.Style.Text (Gtk.StateType.Insensitive);
-					layout.SetMarkup ("<span foreground='" + fgColor.GetHex () + "'>" + TextMarkup + "</span>");
-				} else
-					layout.SetMarkup (TextMarkup);
+					newmarkup = "<span foreground='" + fgColor.GetHex () + "'>" + TextMarkup + "</span>";
+				}
+
+				if (!string.IsNullOrEmpty (SecondaryTextMarkup)) {
+					if (Platform.IsMac && flags.HasFlag (Gtk.CellRendererState.Selected))
+						newmarkup += " <span foreground='" + Styles.SecondarySelectionTextColor.ToHexString (false) + "'>" + SecondaryTextMarkup + "</span>";
+					else
+						newmarkup += " <span foreground='" + Styles.SecondaryTextColor.ToHexString (false) + "'>" + SecondaryTextMarkup + "</span>";
+				}
+
+				layout.SetMarkup (newmarkup);
 			}
 
 			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
