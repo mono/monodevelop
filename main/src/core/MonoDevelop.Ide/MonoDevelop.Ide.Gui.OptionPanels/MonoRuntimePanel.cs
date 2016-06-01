@@ -65,6 +65,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			this.Build();
 			
+			textview1.SetMarkup (textview1.Buffer.Text);
+			
 			labelRunning.Markup = GettextCatalog.GetString (
 				"{0} is currently running on <b>{1}</b>.",
 				BrandingService.ApplicationName,
