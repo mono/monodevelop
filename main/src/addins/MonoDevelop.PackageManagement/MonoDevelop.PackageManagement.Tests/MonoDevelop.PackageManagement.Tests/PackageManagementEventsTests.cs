@@ -45,12 +45,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			events = new PackageManagementEvents ();
 		}
 
-		PackageManagementSelectedProjects CreateSelectedProjects ()
-		{
-			var solution = new FakePackageManagementSolution ();
-			return new PackageManagementSelectedProjects (solution);
-		}
-
 		[Test]
 		public void OnPackageOperationsStarting_OneEventSubscriber_PackageOperationsStartingFired ()
 		{
@@ -303,72 +297,6 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			string expectedMessage = "Test B";
 			Assert.AreEqual (expectedMessage, message);
-		}
-
-		[Test]
-		public void OnSelectProjects_OneEventSubscriber_EventArgsHasSelectedProjects ()
-		{
-			CreateEvents ();
-			IEnumerable<IPackageManagementSelectedProject> selectedProjects = null;
-			events.SelectProjects += (sender, e) => selectedProjects = e.SelectedProjects;
-
-			var expectedSelectedProjects = new List<IPackageManagementSelectedProject> ();
-			events.OnSelectProjects (expectedSelectedProjects);
-
-			Assert.AreEqual (expectedSelectedProjects, selectedProjects);
-		}
-
-		[Test]
-		public void OnSelectProjects_OneEventSubscriber_SenderIsPackageEvents ()
-		{
-			CreateEvents ();
-			object eventSender = null;
-			events.SelectProjects += (sender, e) => eventSender = sender;
-			var selectedProjects = new List<IPackageManagementSelectedProject> ();
-			events.OnSelectProjects (selectedProjects);
-
-			Assert.AreEqual (events, eventSender);
-		}
-
-		[Test]
-		public void OnSelectProjects_NoEventSubscribers_NullReferenceExceptionIsNotThrown ()
-		{
-			CreateEvents ();
-			var selectedProjects = new List<IPackageManagementSelectedProject> ();
-
-			Assert.DoesNotThrow (() => events.OnSelectProjects (selectedProjects));
-		}
-
-		[Test]
-		public void OnSelectProjects_NoEventSubscribers_ReturnsTrue ()
-		{
-			CreateEvents ();
-			var selectedProjects = new List<IPackageManagementSelectedProject> ();
-			bool result = events.OnSelectProjects (selectedProjects);
-
-			Assert.IsTrue (result);
-		}
-
-		[Test]
-		public void OnSelectProjects_EventArgIsAcceptedIsSetToFalse_ReturnsFalse ()
-		{
-			CreateEvents ();
-			events.SelectProjects += (sender, e) => e.IsAccepted = false;
-			var selectedProjects = new List<IPackageManagementSelectedProject> ();
-			bool result = events.OnSelectProjects (selectedProjects);
-
-			Assert.IsFalse (result);
-		}
-
-		[Test]
-		public void OnSelectProjects_EventArgIsAcceptedIsSetToTrue_ReturnsTrue ()
-		{
-			CreateEvents ();
-			events.SelectProjects += (sender, e) => e.IsAccepted = true;
-			var selectedProjects = new List<IPackageManagementSelectedProject> ();
-			bool result = events.OnSelectProjects (selectedProjects);
-
-			Assert.IsTrue (result);
 		}
 
 		[Test]

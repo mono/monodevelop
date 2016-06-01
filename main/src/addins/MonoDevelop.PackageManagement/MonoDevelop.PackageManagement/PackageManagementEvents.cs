@@ -111,18 +111,6 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 		
-		public event EventHandler<SelectProjectsEventArgs> SelectProjects;
-		
-		public bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> projects)
-		{
-			if (SelectProjects != null) {
-				var eventArgs = new SelectProjectsEventArgs(projects);
-				SelectProjects(this, eventArgs);
-				return eventArgs.IsAccepted;
-			}
-			return true;
-		}
-		
 		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		
 		public FileConflictAction OnResolveFileConflict(string message)

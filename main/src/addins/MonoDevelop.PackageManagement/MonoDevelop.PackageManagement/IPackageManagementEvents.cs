@@ -40,7 +40,6 @@ namespace MonoDevelop.PackageManagement
 		event EventHandler PackageOperationsStarting;
 		event EventHandler PackageOperationsFinished;
 		event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
-		event EventHandler<SelectProjectsEventArgs> SelectProjects;
 		event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
@@ -68,7 +67,6 @@ namespace MonoDevelop.PackageManagement
 		void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project);
 		void OnParentPackagesUpdated(IEnumerable<IPackage> packages);
 		void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args);
-		bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects);
 		FileConflictAction OnResolveFileConflict(string message);
 		void OnPackagesRestored();
 		void OnFileChanged(string path);
