@@ -200,6 +200,11 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/ErrorDocumentationProvider" name = "Link to documentation">
+		<Description>Send users to the appropriate documentation for errors in the error pad.</Description>
+		<ExtensionNode name = "ErrorDocumentationProvider" type = "MonoDevelop.Ide.Extensions.ErrorDocumentationProvider" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

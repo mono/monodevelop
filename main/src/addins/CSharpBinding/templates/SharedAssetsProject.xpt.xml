@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Shared Project</_Name>
 		<Category>multiplat/library/general</Category>
-		<Icon>md-project-shared-assets</Icon>
+		<Icon>md-shared-project</Icon>
 		<Image id="md-shared-project" />
 		<_Description>Creates a project that allows sharing files between projects</_Description>
 		<DefaultFilename>Shared</DefaultFilename>
