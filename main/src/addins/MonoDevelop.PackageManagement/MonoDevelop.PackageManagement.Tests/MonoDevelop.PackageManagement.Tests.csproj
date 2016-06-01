@@ -249,6 +249,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetSettings.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FakePackageFeed.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableAllPackagesViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSearchResultViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

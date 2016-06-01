@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement
 		PackageItemListViewModel viewModel;
 		PackageDetailControlModel packageDetailModel;
 		List<PackageDependencyMetadata> dependencies;
+		string summary;
 		bool isChecked;
 
 		public PackageSearchResultViewModel (
@@ -133,7 +134,24 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public string Summary {
-			get { return viewModel.Summary; }
+			get {
+				if (summary == null) {
+					summary = StripNewLinesAndIndentation (GetSummaryOrDescription ());
+				}
+				return summary;
+			}
+		}
+
+		string GetSummaryOrDescription ()
+		{
+			if (String.IsNullOrEmpty (viewModel.Summary))
+				return viewModel.Description;
+			return viewModel.Summary;
+		}
+
+		string StripNewLinesAndIndentation (string text)
+		{
+			return PackageListViewTextFormatter.Format (text);
 		}
 
 		public string Description {
