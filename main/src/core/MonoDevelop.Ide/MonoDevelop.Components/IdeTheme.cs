@@ -76,7 +76,7 @@ namespace MonoDevelop.Components
 
 		internal static void SetupXwtTheme ()
 		{
-			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled");
+			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled", "error");
 
 			if (Core.Platform.IsMac) {
 				Xwt.Drawing.Context.RegisterStyles ("mac", "sel");

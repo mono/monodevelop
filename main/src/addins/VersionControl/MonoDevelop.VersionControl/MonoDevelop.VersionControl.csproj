@@ -688,6 +688,18 @@
     <EmbeddedResource Include="icons\version-control-16~dark%402x.png">
       <LogicalName>version-control-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\version-control-16~error.png">
+      <LogicalName>version-control-16~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\version-control-16~error%402x.png">
+      <LogicalName>version-control-16~error@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\version-control-16~dark~error.png">
+      <LogicalName>version-control-16~dark~error.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\version-control-16~dark~error%402x.png">
+      <LogicalName>version-control-16~dark~error@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\log-16.png">
       <LogicalName>log-16.png</LogicalName>
     </EmbeddedResource>
