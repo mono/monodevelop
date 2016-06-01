@@ -175,11 +175,9 @@
     <Compile Include="MonoDevelop.PackageManagement\FileConflictResolver.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FolderBrowser.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ICommand.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ICompilerMessageView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IFolderBrowser.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ILicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMachinePackageCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMessageViewCategory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\InstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageActionRunner.cs" />
@@ -188,7 +186,6 @@
     <Compile Include="MonoDevelop.PackageManagement\IPackageFromRepositoryExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementFileService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageManagementOutputMessagesView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProjectService.cs" />
@@ -236,13 +233,10 @@
     <Compile Include="MonoDevelop.PackageManagement\OpenDotNetProjects.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageFiles.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageFilesForOperations.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementCompilerMessageView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementFileService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementLogger.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementMessageViewCategory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementOptions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementOutputMessagesView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementInstrumentationService.cs" />

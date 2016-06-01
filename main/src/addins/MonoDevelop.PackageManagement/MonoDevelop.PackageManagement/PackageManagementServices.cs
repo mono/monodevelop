@@ -39,7 +39,6 @@ namespace MonoDevelop.PackageManagement
 		static readonly RegisteredPackageRepositories registeredPackageRepositories;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
-		static readonly PackageManagementOutputMessagesView outputMessagesView;
 		static readonly PackageActionRunner packageActionRunner;
 		static readonly PackageRepositoryCache packageRepositoryCache;
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
@@ -63,7 +62,6 @@ namespace MonoDevelop.PackageManagement
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
 
-			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			solution = new PackageManagementSolution (registeredPackageRepositories, projectService, packageManagementEvents);
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
 
@@ -111,10 +109,6 @@ namespace MonoDevelop.PackageManagement
 		
 		internal static IPackageManagementEvents PackageManagementEvents {
 			get { return packageManagementEvents; }
-		}
-		
-		internal static IPackageManagementOutputMessagesView OutputMessagesView {
-			get { return outputMessagesView; }
 		}
 		
 		internal static IPackageManagementProjectService ProjectService {
