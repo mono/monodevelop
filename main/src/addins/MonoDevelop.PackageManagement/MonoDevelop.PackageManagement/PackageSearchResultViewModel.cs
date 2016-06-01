@@ -210,7 +210,7 @@ namespace MonoDevelop.PackageManagement
 		public NuGetVersion SelectedVersion { get; set; }
 		public ObservableCollection<NuGetVersion> Versions { get; private set; }
 
-		Task ReadVersions (CancellationToken cancellationToken)
+		protected virtual Task ReadVersions (CancellationToken cancellationToken)
 		{
 			try {
 				packageDetailModel = new PackageDetailControlModel (parent.NuGetProject);
@@ -337,12 +337,19 @@ namespace MonoDevelop.PackageManagement
 		void LoadPackageMetadataFromPackageDetailModel (IPackageMetadataProvider metadataProvider, CancellationToken cancellationToken)
 		{
 			try {
-				packageDetailModel.LoadPackageMetadaAsync (metadataProvider, cancellationToken).ContinueWith (
-					task => OnPackageMetadataLoaded (task),
-					TaskScheduler.FromCurrentSynchronizationContext ());
+				LoadPackageMetadataFromPackageDetailModelAsync (metadataProvider, cancellationToken);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error getting detailed package metadata.", ex);
 			}
+		}
+
+		protected virtual Task LoadPackageMetadataFromPackageDetailModelAsync (
+			IPackageMetadataProvider metadataProvider,
+			CancellationToken cancellationToken)
+		{
+			return packageDetailModel.LoadPackageMetadaAsync (metadataProvider, cancellationToken).ContinueWith (
+				task => OnPackageMetadataLoaded (task),
+				TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
 		void OnPackageMetadataLoaded (Task task)
@@ -382,7 +389,7 @@ namespace MonoDevelop.PackageManagement
 			return displayText.ToString ();
 		}
 
-		public IEnumerable<PackageDependencyMetadata> CompatibleDependencies {
+		IEnumerable<PackageDependencyMetadata> CompatibleDependencies {
 			get { return dependencies ?? new List<PackageDependencyMetadata> (); }
 		}
 
