@@ -1028,7 +1028,7 @@ namespace MonoDevelop.Ide
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 
 			var cs = new CancellationTokenSource ();
-			return new AsyncOperation (ExecuteAsync (entry, context, cs, IdeApp.Workspace.ActiveConfiguration, null, buildBeforeExecuting), cs);
+			return new AsyncOperation (ExecuteAsync (entry, context, cs, configuration, runConfiguration, buildBeforeExecuting), cs);
 		}
 
 		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, ConfigurationSelector configuration, RunConfiguration runConfiguration, bool buildBeforeExecuting)
