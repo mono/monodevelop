@@ -139,15 +139,6 @@ namespace MonoDevelop.Components.MainToolbar
 			configurationCombosBox = new HBox (false, 8);
 
 			var ctx = new Gtk.CellRendererText ();
-		
-			configurationCombo = new Gtk.ComboBox ();
-			configurationCombo.Model = configurationStore;
-			configurationCombo.PackStart (ctx, true);
-			configurationCombo.AddAttribute (ctx, "text", 0);
-		
-			var configurationComboVBox = new VBox ();
-			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
-			configurationCombosBox.PackStart (configurationComboVBox, false, false, 0);
 
 			runConfigurationCombo = new Gtk.ComboBox ();
 			runConfigurationCombo.Model = runConfigurationStore;
@@ -157,6 +148,15 @@ namespace MonoDevelop.Components.MainToolbar
 			var runConfigurationComboVBox = new VBox ();
 			runConfigurationComboVBox.PackStart (runConfigurationCombo, true, false, 0);
 			configurationCombosBox.PackStart (runConfigurationComboVBox, false, false, 0);
+		
+			configurationCombo = new Gtk.ComboBox ();
+			configurationCombo.Model = configurationStore;
+			configurationCombo.PackStart (ctx, true);
+			configurationCombo.AddAttribute (ctx, "text", 0);
+		
+			var configurationComboVBox = new VBox ();
+			configurationComboVBox.PackStart (configurationCombo, true, false, 0);
+			configurationCombosBox.PackStart (configurationComboVBox, false, false, 0);
 
 			// bold attributes for running runtime targets / (emulators)
 			boldAttributes.Insert (new Pango.AttrWeight (Pango.Weight.Bold));
@@ -450,10 +450,10 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			set {
 				TreeIter iter;
-				if (FindIter<IRunConfigurationModel> (configurationStore, it => value.OriginalId == it.OriginalId, out iter))
-					configurationCombo.SetActiveIter (iter);
+				if (FindIter<IRunConfigurationModel> (runConfigurationStore, it => value.OriginalId == it.OriginalId, out iter))
+					runConfigurationCombo.SetActiveIter (iter);
 				else
-					configurationCombo.Active = 0;
+					runConfigurationCombo.Active = 0;
 			}
 		}
 

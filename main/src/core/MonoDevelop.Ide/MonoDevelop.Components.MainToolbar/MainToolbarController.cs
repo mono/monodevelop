@@ -532,7 +532,6 @@ namespace MonoDevelop.Components.MainToolbar
 				updatingCombos = true;
 				GLib.Timeout.Add (100, () => {
 					updatingCombos = false;
-					Console.WriteLine ("Update Combos");
 					UpdateCombos ();
 					return false;
 				});
