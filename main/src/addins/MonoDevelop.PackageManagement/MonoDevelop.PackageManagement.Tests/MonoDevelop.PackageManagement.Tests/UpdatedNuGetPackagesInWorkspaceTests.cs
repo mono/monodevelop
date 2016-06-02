@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -59,6 +60,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			};
 			var sourceRepository = new SourceRepository (source, providers);
 			taskRunner.SolutionManager.SourceRepositoryProvider.Repositories.Add (sourceRepository);
+		}
+
+		SourceRepository CreateExceptionThrowingSourceRepository (Exception ex)
+		{
+			var metadataResourceProvider = new FakePackageMetadataResourceProvider ();
+			var metadataResource = new ExceptionThrowingPackageMetadataResource (ex);
+			metadataResourceProvider.PackageMetadataResource = metadataResource;
+			var source = new PackageSource ("http://test.com");
+			var providers = new INuGetResourceProvider[] {
+				metadataResourceProvider
+			};
+			return new SourceRepository (source, providers);
 		}
 
 		FakeNuGetProject AddNuGetProjectToSolution ()
@@ -490,6 +503,26 @@ namespace MonoDevelop.PackageManagement.Tests
 			var updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (dotNetProject);
 
 			CollectionAssert.AreEqual (expectedPackages, updatedPackages.GetPackages ());
+		}
+
+		[Test]
+		public async Task CheckForUpdates_TwoSourceRepositoriesAndFirstOneThrowsException_UpdatedPackageFoundFromNonFailingSourceRepository ()
+		{
+			CreateUpdatedPackagesInWorkspace ();
+			FakeNuGetProject project = AddNuGetProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			packageMetadataResource.AddPackageMetadata ("MyPackage", "1.1");
+			var ex = new ApplicationException ("Error");
+			var sourceRepository = CreateExceptionThrowingSourceRepository (ex);
+			taskRunner.SolutionManager.SourceRepositoryProvider.Repositories.Insert (0, sourceRepository);
+
+			await CheckForUpdates ();
+
+			var updatedPackages = updatedPackagesInWorkspace.GetUpdatedPackages (dotNetProject);
+
+			var package = updatedPackages.GetPackages ().Single ();
+			Assert.AreEqual ("MyPackage", package.Id);
+			Assert.AreEqual ("1.1", package.Version.ToString ());
 		}
 	}
 }

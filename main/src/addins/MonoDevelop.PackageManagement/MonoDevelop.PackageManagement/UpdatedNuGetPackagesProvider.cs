@@ -87,11 +87,19 @@ namespace MonoDevelop.PackageManagement
 					.Select (sourceRepository => GetUpdates (sourceRepository, packageReference))
 					.ToList ();
 
-				var ignored = tasks
+				tasks
 					.Select (task => task.ContinueWith (LogError, TaskContinuationOptions.OnlyOnFaulted))
 					.ToArray ();
 
-				var updatedPackage = (await Task.WhenAll (tasks))
+				try {
+					await Task.WhenAll (tasks);
+				} catch {
+					// Ignore any failures.
+				}
+
+				var updatedPackage = tasks
+					.Where (task => task.Exception == null)
+					.Select (task => task.Result)
 					.Where (package => package != null)
 					.OrderByDescending (package => package.Version)
 					.FirstOrDefault ();
@@ -130,7 +138,7 @@ namespace MonoDevelop.PackageManagement
 
 		void LogError (Task<PackageIdentity> task)
 		{
-			LoggingService.LogError ("Check for updates error.", task.Exception);
+			LoggingService.LogError ("Check for updates error.", task.Exception.GetBaseException ());
 		}
 
 		bool IsPackageVersionAllowed (IPackageSearchMetadata package, PackageReference packageReference)
