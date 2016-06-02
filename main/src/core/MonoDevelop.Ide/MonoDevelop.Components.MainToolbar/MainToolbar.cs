@@ -412,6 +412,17 @@ namespace MonoDevelop.Components.MainToolbar
 			set { configurationCombosBox.Sensitive = value; }
 		}
 
+		static bool FindIter<T> (TreeStore store, Func<T, bool> match, out TreeIter iter)
+		{
+			if (store.GetIterFirst (out iter)) {
+				do {
+					if (match((T)store.GetValue (iter, 1)))
+						return true;
+				} while (store.IterNext (ref iter));
+			}
+			return false;
+		}
+
 		public IConfigurationModel ActiveConfiguration {
 			get {
 				TreeIter iter;
@@ -422,16 +433,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			set {
 				TreeIter iter;
-				bool found = false;
-				if (configurationStore.GetIterFirst (out iter)) {
-					do {
-						if (value.OriginalId == ((IConfigurationModel)configurationStore.GetValue (iter, 1)).OriginalId) {
-							found = true;
-							break;
-						}
-					} while (configurationStore.IterNext (ref iter));
-				}
-				if (found)
+				if (FindIter<IConfigurationModel> (configurationStore, it => value.OriginalId == it.OriginalId, out iter))
 					configurationCombo.SetActiveIter (iter);
 				else
 					configurationCombo.Active = 0;
@@ -448,19 +450,10 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 			set {
 				TreeIter iter;
-				bool found = false;
-				if (runConfigurationStore.GetIterFirst (out iter)) {
-					do {
-						if (value.OriginalId == ((IRunConfigurationModel)runConfigurationStore.GetValue (iter, 1)).OriginalId) {
-							found = true;
-							break;
-						}
-					} while (runConfigurationStore.IterNext (ref iter));
-				}
-				if (found)
-					runConfigurationCombo.SetActiveIter (iter);
+				if (FindIter<IRunConfigurationModel> (configurationStore, it => value.OriginalId == it.OriginalId, out iter))
+					configurationCombo.SetActiveIter (iter);
 				else
-					runConfigurationCombo.Active = 0;
+					configurationCombo.Active = 0;
 			}
 		}
 
