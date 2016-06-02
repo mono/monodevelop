@@ -92,12 +92,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			currentTheme = IdeApp.Preferences.UserInterfaceThemeName;
 
-			for (int n = 1; n < isoCodes.Length; n += 2)
-				comboLanguage.AppendText (GettextCatalog.GetString (isoCodes [n]));
+			foreach (var localeSet in LocalizationService.CurrentLocaleSet)
+				comboLanguage.AppendText (localeSet.DisplayName);
 
-			int i = Array.IndexOf (isoCodes, IdeApp.Preferences.UserInterfaceLanguage);
+			int i = LocalizationService.CurrentLocaleSet.FindIndex (ls => ls.Culture == IdeApp.Preferences.UserInterfaceLanguage);
 			if (i == -1) i = 0;
-			comboLanguage.Active = i / 2;
+			comboLanguage.Active = i;
 
 			if (Platform.IsLinux)
 				comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
@@ -174,7 +174,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store()
 		{
-			string lc = isoCodes [comboLanguage.Active * 2];
+			string lc = LocalizationService.CurrentLocaleSet [comboLanguage.Active].Culture;
 			if (lc != IdeApp.Preferences.UserInterfaceLanguage) {
 				IdeApp.Preferences.UserInterfaceLanguage.Value = lc;
 				MessageService.ShowMessage (
@@ -195,33 +195,5 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				);
 			}
 		}
-
-		static string[] isoCodes = new string[] {
-			"", "(Default)",
-			"ca", "Catalan",
-			"zh_CN", "Chinese - China",
-			"zh_TW", "Chinese - Taiwan",
-			"cs", "Czech",
-			"da", "Danish",
-			"nl", "Dutch",
-			"fr", "French",
-			"gl", "Galician",
-			"de", "German",
-			"en", "English",
-			"hu", "Hungarian",
-			"id", "Indonesian",
-			"it", "Italian",
-			"ja", "Japanese",
-			"ko", "Korean",
-			"pl", "Polish",
-			"pt", "Portuguese",
-			"pt_BR", "Portuguese - Brazil",
-			"ru", "Russian",
-			"sl", "Slovenian",
-			"es", "Spanish",
-			"sv", "Swedish",
-			"tr", "Turkish"
-		};
-		
 	}
 }
