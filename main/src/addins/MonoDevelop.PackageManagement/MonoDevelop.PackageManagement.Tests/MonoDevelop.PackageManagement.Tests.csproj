@@ -109,7 +109,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\CollectionAssert.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageOperationMessageTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageFilesTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\IPackageExtensionsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageRepositoryCacheTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSharedPackageRepository.cs" />
@@ -207,9 +206,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallPackageActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallProjectPackagesActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageCompatibilityTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedPackagesTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedPackagesInSolutionTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackagesFolderNodeTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackagesFolderNode.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatedPackagesInWorkspace.cs" />
@@ -227,7 +223,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatePackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FilePathExtensionsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetProjectExtensionsTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableCheckForUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MinClientVersionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeLicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageNewImportsHandler.cs" />

@@ -43,10 +43,6 @@ namespace MonoDevelop.PackageManagement
 			get { return packageLicense.PackageId; }
 		}
 		
-		public string Summary {
-			get { return packageLicense.PackageSummary; }
-		}
-		
 		public Uri LicenseUrl {
 			get { return packageLicense.LicenseUrl; }
 		}

@@ -71,26 +71,6 @@ namespace MonoDevelop.PackageManagement
 				.FirstOrDefault (package => package.Id == packageId);
 		}
 
-		public void RemovePackage (PackageIdentity package)
-		{
-			int index = packages.FindIndex (existingPackageName => existingPackageName.Id == package.Id);
-			if (index >= 0) {
-				packages.RemoveAt (index);
-			}
-		}
-
-		public void RemoveUpdatedPackages (IEnumerable<NuGet.PackageReference> packageReferences)
-		{
-			RemoveUpdatedPackages (packageReferences.Select (packageReference => CreatePackageReference (packageReference)));
-		}
-
-		PackageReference CreatePackageReference (NuGet.PackageReference packageReference)
-		{
-			var version = new NuGetVersion (packageReference.Version.ToString ());
-			var identity = new PackageIdentity (packageReference.Id, version);
-			return new PackageReference (identity, null);
-		}
-
 		public void RemoveUpdatedPackages (IEnumerable<PackageReference> packageReferences)
 		{
 			foreach (PackageReference packageReference in packageReferences) {

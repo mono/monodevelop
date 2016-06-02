@@ -39,7 +39,6 @@ namespace MonoDevelop.PackageManagement
 			PackageId = metadata.Identity.Id;
 			PackageTitle = metadata.Title;
 			PackageAuthor = metadata.Authors;
-			PackageSummary = metadata.Summary;
 			LicenseUrl = metadata.LicenseUrl;
 		}
 
@@ -48,7 +47,6 @@ namespace MonoDevelop.PackageManagement
 			PackageId = package.Id;
 			PackageTitle = package.Title;
 			PackageAuthor = GetAuthor (package);
-			PackageSummary = package.SummaryOrDescription ();
 			LicenseUrl = package.LicenseUrl;
 		}
 
@@ -56,7 +54,6 @@ namespace MonoDevelop.PackageManagement
 		public string PackageId { get; private set; }
 		public string PackageTitle { get; private set; }
 		public string PackageAuthor { get; private set; }
-		public string PackageSummary { get; private set; }
 		public Uri LicenseUrl { get; private set; }
 
 		static string GetAuthor (IPackage package)

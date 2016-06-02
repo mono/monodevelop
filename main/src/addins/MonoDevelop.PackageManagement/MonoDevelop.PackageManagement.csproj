@@ -181,7 +181,6 @@
     <Compile Include="MonoDevelop.PackageManagement\InstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageActionRunner.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageFromRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageFromRepositoryExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementEvents.cs" />
@@ -212,7 +211,6 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageFromRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageLicenseViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementEnumerableExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementOptionsViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementTaskFactory.cs" />
@@ -260,10 +258,8 @@
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryPath.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UninstallPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackages.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdateSolutionPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UserAgentGeneratorForRepositoryRequests.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ViewModelBase.cs" />
     <Compile Include="gtk-gui\generated.cs" />
@@ -353,9 +349,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackagesCompatibilityReport.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageManagementStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
@@ -377,8 +370,6 @@
     <Compile Include="MonoDevelop.PackageManagement\MSBuildTargetsRestoredMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Refactoring\PackageCodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReloadedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\OpenPackageReadmeMonitor.cs" />
