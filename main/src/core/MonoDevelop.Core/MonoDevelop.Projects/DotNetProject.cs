@@ -1172,28 +1172,30 @@ namespace MonoDevelop.Projects
 			if (config == null)
 				return false;
 			
-			AssemblyRunConfiguration runConfig = runConfiguration as AssemblyRunConfiguration;
+			var runConfig = runConfiguration as ProjectRunConfiguration;
 			if (runConfig == null)
 				return false;
 
+			var asmRunConfig = runConfiguration as AssemblyRunConfiguration;
+		
 			ExecutionCommand executionCommand;
 
-			if (runConfig.StartAction == AssemblyRunConfiguration.StartActions.Program) {
-				executionCommand = Runtime.ProcessService.CreateCommand (runConfig.StartProgram);
+			if (asmRunConfig != null && asmRunConfig.StartAction == AssemblyRunConfiguration.StartActions.Program) {
+				executionCommand = Runtime.ProcessService.CreateCommand (asmRunConfig.StartProgram);
 				// If it is command for executing an assembly, add runtime options
 				var dcmd = executionCommand as DotNetExecutionCommand;
 				if (dcmd != null) {
 					string monoOptions;
-					runConfig.MonoParameters.GenerateOptions (dcmd.EnvironmentVariables, out monoOptions);
+					asmRunConfig.MonoParameters.GenerateOptions (dcmd.EnvironmentVariables, out monoOptions);
 					dcmd.RuntimeArguments = monoOptions;
 				}
 				// If it is command for executing a process, add arguments, work directory and env vars
 				var pcmd = executionCommand as ProcessExecutionCommand;
 				if (pcmd != null) {
-					pcmd.Arguments = runConfig.StartArguments;
-					pcmd.WorkingDirectory = runConfig.StartWorkingDirectory;
+					pcmd.Arguments = asmRunConfig.StartArguments;
+					pcmd.WorkingDirectory = asmRunConfig.StartWorkingDirectory;
 
-					foreach (var env in runConfig.EnvironmentVariables)
+					foreach (var env in asmRunConfig.EnvironmentVariables)
 						pcmd.EnvironmentVariables [env.Key] = env.Value;
 				}
 			} else {
