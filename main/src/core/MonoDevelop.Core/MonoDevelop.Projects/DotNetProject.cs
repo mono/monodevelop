@@ -1161,6 +1161,7 @@ namespace MonoDevelop.Projects
 					cmd.EnvironmentVariables [env.Key] = env.Value;
 				cmd.PauseConsoleOutput = rc.PauseConsoleOutput;
 				cmd.ExternalConsole = rc.ExternalConsole;
+				cmd.TargetRuntime = Runtime.SystemAssemblyService.GetTargetRuntime (rc.TargetRuntimeId);
 			}
 			return cmd;
 		}

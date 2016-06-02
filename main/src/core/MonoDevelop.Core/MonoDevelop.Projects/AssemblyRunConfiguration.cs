@@ -36,7 +36,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
-	public class AssemblyRunConfiguration: ProjectRunConfiguration
+	public class AssemblyRunConfiguration: ProcessRunConfiguration
 	{
 		MonoExecutionParameters monoParameters = new MonoExecutionParameters ();
 
@@ -45,25 +45,10 @@ namespace MonoDevelop.Projects
 		}
 
 		[ItemProperty (DefaultValue = "")]
-		public string StartArguments { get; set; } = "";
-
-		[ItemProperty (DefaultValue = "")]
-		public FilePath StartWorkingDirectory { get; set; } = "";
-
-		[ItemProperty (DefaultValue = "")]
 		public string StartAction { get; set; } = StartActions.Project;
 
 		[ItemProperty (DefaultValue = "")]
 		public FilePath StartProgram { get; set; } = "";
-
-		[ItemProperty ("ConsolePause", DefaultValue = true)]
-		public bool PauseConsoleOutput { get; set; } = true;
-
-		[ItemProperty (DefaultValue = false)]
-		public bool ExternalConsole { get; set; } = false;
-
-		[ItemProperty (SkipEmpty = true, WrapObject = false)]
-		public EnvironmentVariableCollection EnvironmentVariables { get; private set; } = new EnvironmentVariableCollection ();
 
 		public class StartActions
 		{
@@ -88,7 +73,7 @@ namespace MonoDevelop.Projects
 					else if (envVars != null)
 						return GettextCatalog.GetString ("Start the project with environment variables '{0}''", envVars);
 					else
-						return GettextCatalog.GetString ("Start the project with no additional arguments");
+						return GettextCatalog.GetString ("Start the project");
 				} else {
 					if (StartProgram.IsNullOrEmpty)
 						return GettextCatalog.GetString ("Selected startup program is not valid");
@@ -106,7 +91,7 @@ namespace MonoDevelop.Projects
 		}
 
 		public bool IsEmpty {
-			get { return string.IsNullOrEmpty (StartArguments) && string.IsNullOrEmpty (StartWorkingDirectory) && StartAction == StartActions.Project && EnvironmentVariables.Count == 0; }
+			get { return string.IsNullOrEmpty (StartArguments) && string.IsNullOrEmpty (StartWorkingDirectory) && StartAction == StartActions.Project && EnvironmentVariables.Count == 0 && string.IsNullOrEmpty (TargetRuntimeId); }
 		}
 
 		internal protected override void Read (IPropertySet pset)
@@ -123,7 +108,11 @@ namespace MonoDevelop.Projects
 
 		public MonoExecutionParameters MonoParameters {
 			get { return monoParameters; }
+			set { monoParameters = value; }
 		}
+
+		[ItemProperty (DefaultValue = "")]
+		public string TargetRuntimeId { get; set; } = "";
 
 		protected override void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
 		{
@@ -131,14 +120,10 @@ namespace MonoDevelop.Projects
 
 			var other = (AssemblyRunConfiguration)config;
 
-			StartArguments = other.StartArguments;
-			StartWorkingDirectory = other.StartWorkingDirectory;
 			StartProgram = other.StartProgram;
 			StartAction = other.StartAction;
-			EnvironmentVariables = new EnvironmentVariableCollection (other.EnvironmentVariables);
 			monoParameters = other.monoParameters.Clone ();
-			ExternalConsole = other.ExternalConsole;
-			PauseConsoleOutput = other.PauseConsoleOutput;
+			TargetRuntimeId = other.TargetRuntimeId;
 		}
 	}
 }

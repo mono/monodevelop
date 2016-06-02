@@ -572,6 +572,7 @@
     <Compile Include="MonoDevelop.Projects\EnvironmentVariableCollection.cs" />
     <Compile Include="MonoDevelop.Projects\RunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\IRunTarget.cs" />
+    <Compile Include="MonoDevelop.Projects\ProcessRunConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
