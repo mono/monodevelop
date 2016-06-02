@@ -259,13 +259,15 @@
 	<StockIcon stockid="md-workspace" resource="workspace-32.png" size="Dnd" />
 	<StockIcon stockid="md-solution" resource="solution-32.png" size="Dnd" />
 	<StockIcon stockid="md-project" resource="project-32.png" size="Dnd" />
-	<StockIcon stockid="md-shared-project" resource="project-shared-32.png" size="Dnd" />
+	
 	<StockIcon stockid="md-library-project" resource="project-library-32.png" size="Dnd" />
-	<StockIcon stockid="md-pcl-project" resource="project-pcl-32.png" size="Dnd" />
 	<StockIcon stockid="md-gui-project" resource="project-gui-32.png" size="Dnd" />
 	<StockIcon stockid="md-console-project" resource="project-console-32.png" size="Dnd" />
 	<StockIcon stockid="md-test-project" resource="project-test-32.png" size="Dnd" />
 	<StockIcon stockid="md-package-project" resource="project-package-32.png" size="Dnd" />
+	
+	<StockIcon stockid="md-crossplatform-pcl-project" resource="project-crossplatform-pcl-32.png" size="Dnd" />
+	<StockIcon stockid="md-crossplatform-shared-project" resource="project-crossplatform-shared-32.png" size="Dnd" />
 
 	<!-- All sizes icons -->
 	<StockIcon stockid="gtk-dialog-error" resource="error-16.png" />

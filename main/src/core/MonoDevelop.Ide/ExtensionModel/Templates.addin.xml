@@ -127,13 +127,15 @@
 	<Image id="md-workspace" resource="workspace-template.png" />
 	<Image id="md-solution" resource="solution-template.png" />
 	<Image id="md-project" resource="project-template.png" />
-	<Image id="md-shared-project" resource="project-shared-template.png" />
+	
 	<Image id="md-library-project" resource="project-library-template.png" />
-	<Image id="md-pcl-project" resource="project-pcl-template.png" />
 	<Image id="md-gui-project" resource="project-gui-template.png" />
 	<Image id="md-console-project" resource="project-console-template.png" />
 	<Image id="md-test-project" resource="project-test-template.png" />
 	<Image id="md-package-project" resource="project-package-template.png" />
+	
+	<Image id="md-crossplatform-pcl-project" resource="project-crossplatform-pcl-template.png" />
+	<Image id="md-crossplatform-shared-project" resource="project-crossplatform-shared-template.png" />
 </Extension>
 
 </ExtensionModel>

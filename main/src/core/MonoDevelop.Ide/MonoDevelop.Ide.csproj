@@ -7316,41 +7316,41 @@
       <LogicalName>project-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
 	
-    <EmbeddedResource Include="templates\images\project-shared-template.png">
-      <LogicalName>project-shared-template.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-template.png">
+      <LogicalName>project-crossplatform-shared-template.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-shared-template%402x.png">
-      <LogicalName>project-shared-template@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-template%402x.png">
+      <LogicalName>project-crossplatform-shared-template@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-shared-template~dark.png">
-      <LogicalName>project-shared-template~dark.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-template~dark.png">
+      <LogicalName>project-crossplatform-shared-template~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-shared-template~dark%402x.png">
-      <LogicalName>project-shared-template~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-template~dark%402x.png">
+      <LogicalName>project-crossplatform-shared-template~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32.png">
-      <LogicalName>project-shared-32.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32.png">
+      <LogicalName>project-crossplatform-shared-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32%402x.png">
-      <LogicalName>project-shared-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32%402x.png">
+      <LogicalName>project-crossplatform-shared-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32~dark.png">
-      <LogicalName>project-shared-32~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32~dark.png">
+      <LogicalName>project-crossplatform-shared-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32~dark%402x.png">
-      <LogicalName>project-shared-32~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32~dark%402x.png">
+      <LogicalName>project-crossplatform-shared-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32~sel.png">
-      <LogicalName>project-shared-32~sel.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32~sel.png">
+      <LogicalName>project-crossplatform-shared-32~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32~sel%402x.png">
-      <LogicalName>project-shared-32~sel@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32~sel%402x.png">
+      <LogicalName>project-crossplatform-shared-32~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32~dark~sel.png">
-      <LogicalName>project-shared-32~dark~sel.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32~dark~sel.png">
+      <LogicalName>project-crossplatform-shared-32~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-shared-32~dark~sel%402x.png">
-      <LogicalName>project-shared-32~dark~sel@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-shared-32~dark~sel%402x.png">
+      <LogicalName>project-crossplatform-shared-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
 	
     <EmbeddedResource Include="templates\images\project-library-template.png">
@@ -7390,41 +7390,41 @@
       <LogicalName>project-library-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
 	
-    <EmbeddedResource Include="templates\images\project-pcl-template.png">
-      <LogicalName>project-pcl-template.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template.png">
+      <LogicalName>project-crossplatform-pcl-template.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-pcl-template%402x.png">
-      <LogicalName>project-pcl-template@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template%402x.png">
+      <LogicalName>project-crossplatform-pcl-template@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-pcl-template~dark.png">
-      <LogicalName>project-pcl-template~dark.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template~dark.png">
+      <LogicalName>project-crossplatform-pcl-template~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\project-pcl-template~dark%402x.png">
-      <LogicalName>project-pcl-template~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template~dark%402x.png">
+      <LogicalName>project-crossplatform-pcl-template~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32.png">
-      <LogicalName>project-pcl-32.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32.png">
+      <LogicalName>project-crossplatform-pcl-32.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32%402x.png">
-      <LogicalName>project-pcl-32@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32%402x.png">
+      <LogicalName>project-crossplatform-pcl-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32~dark.png">
-      <LogicalName>project-pcl-32~dark.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32~dark.png">
+      <LogicalName>project-crossplatform-pcl-32~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32~dark%402x.png">
-      <LogicalName>project-pcl-32~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32~dark%402x.png">
+      <LogicalName>project-crossplatform-pcl-32~dark@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32~sel.png">
-      <LogicalName>project-pcl-32~sel.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32~sel.png">
+      <LogicalName>project-crossplatform-pcl-32~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32~sel%402x.png">
-      <LogicalName>project-pcl-32~sel@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32~sel%402x.png">
+      <LogicalName>project-crossplatform-pcl-32~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32~dark~sel.png">
-      <LogicalName>project-pcl-32~dark~sel.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32~dark~sel.png">
+      <LogicalName>project-crossplatform-pcl-32~dark~sel.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-pcl-32~dark~sel%402x.png">
-      <LogicalName>project-pcl-32~dark~sel@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\project-crossplatform-pcl-32~dark~sel%402x.png">
+      <LogicalName>project-crossplatform-pcl-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
 	
     <EmbeddedResource Include="templates\images\project-gui-template.png">
