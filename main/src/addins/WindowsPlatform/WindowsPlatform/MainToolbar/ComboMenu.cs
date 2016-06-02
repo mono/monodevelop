@@ -170,8 +170,7 @@ namespace WindowsPlatform.MainToolbar
 			var item = (ConfigurationMenuItem)sender;
 			var old = active;
 
-			if (SelectionChanged != null)
-				SelectionChanged (this, new SelectionChangedEventArgs<IConfigurationModel> (item.Model, old));
+			SelectionChanged?.Invoke (this, new SelectionChangedEventArgs<IConfigurationModel> (item.Model, old));
         }
 
 		class ConfigurationMenuItem : SimpleMenuItem
@@ -248,8 +247,7 @@ namespace WindowsPlatform.MainToolbar
 			var item = (ConfigurationMenuItem)sender;
 			var old = active;
 
-			if (SelectionChanged != null)
-				SelectionChanged (this, new SelectionChangedEventArgs<IRunConfigurationModel> (item.Model, old));
+			SelectionChanged?.Invoke (this, new SelectionChangedEventArgs<IRunConfigurationModel> (item.Model, old));
 		}
 
 		class ConfigurationMenuItem : SimpleMenuItem
@@ -342,8 +340,7 @@ namespace WindowsPlatform.MainToolbar
 		{
 			var item = (RuntimeMenuItem)sender;
 
-			if (SelectionChanged != null)
-				SelectionChanged (this, new SelectionChangedEventArgs<IRuntimeModel> (item.Model, Active));
+			SelectionChanged?.Invoke (this, new SelectionChangedEventArgs<IRuntimeModel> (item.Model, Active));
 		}
 
 		void FillSource (ItemCollection source, IEnumerable<IRuntimeModel> model)
