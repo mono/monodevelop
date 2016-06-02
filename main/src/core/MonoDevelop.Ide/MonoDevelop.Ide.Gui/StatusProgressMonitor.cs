@@ -40,11 +40,12 @@ namespace MonoDevelop.Ide.Gui
 		bool showErrorDialogs;
 		bool showTaskTitles;
 		bool lockGui;
+		bool showCancelButton;
 		string title;
 		StatusBarContext statusBar;
 		Pad statusSourcePad;
 		
-		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad): base (Runtime.MainSynchronizationContext)
+		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad, bool showCancelButton): base (Runtime.MainSynchronizationContext)
 		{
 
 			this.lockGui = lockGui;
@@ -52,10 +53,12 @@ namespace MonoDevelop.Ide.Gui
 			this.showTaskTitles = showTaskTitles;
 			this.title = title;
 			this.statusSourcePad = statusSourcePad;
+			this.showCancelButton = showCancelButton;
 			icon = iconName;
 			statusBar = IdeApp.Workbench.StatusBar.CreateContext ();
 			statusBar.StatusSourcePad = statusSourcePad;
-			statusBar.CancellationTokenSource = CancellationTokenSource;
+			if (showCancelButton)
+				statusBar.CancellationTokenSource = CancellationTokenSource;
 			statusBar.BeginProgress (iconName, title);
 			if (lockGui)
 				IdeApp.Workbench.LockGui ();
