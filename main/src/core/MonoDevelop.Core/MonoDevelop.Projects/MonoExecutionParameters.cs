@@ -218,7 +218,25 @@ namespace MonoDevelop.Projects
 			}
 			return val;
 		}
-		
+
+		public string GenerateDescription ()
+		{
+			StringBuilder ops = new StringBuilder ();
+
+			foreach (PropertyInfo prop in GetType ().GetProperties ()) {
+				ItemPropertyAttribute propAttr = (ItemPropertyAttribute)Attribute.GetCustomAttribute (prop, typeof (ItemPropertyAttribute));
+				var pval = prop.GetValue (this, null);
+				if (object.Equals (pval, propAttr.DefaultValue))
+					continue;
+				if (ops.Length > 0)
+					ops.Append (", ");
+				var nameAttr = (LocalizedDisplayNameAttribute)Attribute.GetCustomAttribute (prop, typeof (LocalizedDisplayNameAttribute));
+				ops.Append (nameAttr.DisplayName);
+				if (!(pval is bool))
+					ops.Append (": " + GetValue (pval));
+			}
+			return ops.ToString ();
+		}		
 		public MonoExecutionParameters Clone ()
 		{
 			return (MonoExecutionParameters) MemberwiseClone ();

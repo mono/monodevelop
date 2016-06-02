@@ -436,7 +436,7 @@ namespace MonoDevelop.Ide.Execution
 		public static void GenerateExecutionModeCommands (SolutionItem item, CommandArrayInfo info)
 		{
 			foreach (var c in ExecutionModeCommandService.GetExecutionConfigurations (item)) {
-				info.Add (c.ModeSet.Name + " — " + c.RunConfiguration.Name, c);
+				info.Add (c.ModeSet.Name + " – " + c.RunConfiguration.Name, c);
 			}
 			info.AddSeparator ();
 			info.Add (GettextCatalog.GetString ("Custom Configuration..."), "selector");
@@ -449,8 +449,7 @@ namespace MonoDevelop.Ide.Execution
 					using (var dlg = new ExecutionModeSelectorDialog ()) {
 						dlg.Load (item);
 						var cmd = dlg.Run ();
-						if (cmd.Id == "run") {
-
+						if (cmd?.Id == "run") {
 							// Store the configuration for quick reuse
 							var ec = new ExecutionConfiguration (dlg.SelectedConfiguration, dlg.SelectedExecutionModeSet, dlg.SelectedExecutionMode);
 							var list = ExecutionModeCommandService.GetExecutionConfigurations (item).ToList ();

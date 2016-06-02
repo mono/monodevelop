@@ -283,19 +283,15 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (sol != null) {
-				ExecutionModeCommandService.GenerateExecutionModeCommands (
-				    sol.StartupItem as Project,
-				    RunHandler.CanRun,
-				    info);
-			}
+			if (sol != null && sol.StartupItem != null)
+				ExecutionModeCommandService.GenerateExecutionModeCommands (sol.StartupItem, info);
 		}
 
 		protected override void Run (object dataItem)
 		{
-			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
-			if (h != null)
-				RunHandler.RunMethod (h);
+			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol != null && sol.StartupItem != null)
+				ExecutionModeCommandService.ExecuteCommand (sol.StartupItem, dataItem);
 		}
 	}
 

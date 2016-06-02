@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 	}
 
-	class DotNetRunConfigurationEditorWidget: VBox
+	class DotNetRunConfigurationEditorWidget: Notebook
 	{
 		RadioButton radioStartProject;
 		RadioButton radioStartApp;
@@ -68,10 +68,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		AssemblyRunConfiguration config;
 		CheckBox externalConsole;
 		CheckBox pauseConsole;
+		ComboBox runtimesCombo;
+		TextEntry monoSettingsEntry;
 
 		public DotNetRunConfigurationEditorWidget ()
 		{
-			PackStart (new Label { Markup = GettextCatalog.GetString ("Start Action") });
+			VBox mainBox = new VBox ();
+
+			mainBox.Margin = 12;
+			mainBox.PackStart (new Label { Markup = GettextCatalog.GetString ("Start Action") });
 			var table = new Table ();
 			
 			table.Add (radioStartProject = new RadioButton (GettextCatalog.GetString ("Start project")), 0, 0);
@@ -79,9 +84,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.Add (appEntry = new Xwt.FileSelector (), 1, 1, hexpand: true);
 			radioStartProject.Group = radioStartApp.Group;
 			table.MarginLeft = 12;
-			PackStart (table);
+			mainBox.PackStart (table);
 
-			PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
+			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 			table = new Table ();
 
 			table.Add (new Label (GettextCatalog.GetString ("Arguments:")), 0, 0);
@@ -90,22 +95,75 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.Add (new Label (GettextCatalog.GetString ("Run in directory:")), 0, 1);
 			table.Add (workingDir = new FolderSelector (), 1, 1, hexpand: true);
 		
-			PackStart (table);
+			mainBox.PackStart (table);
 
-			PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
+			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
-			PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
+			mainBox.PackStart (new Label (GettextCatalog.GetString ("Environment Variables")));
 			envVars = new EnvironmentVariableCollectionEditor ();
 
-			PackStart (envVars, true);
+			mainBox.PackStart (envVars, true);
 
-			PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
+			mainBox.PackStart (new HSeparator () { MarginTop = 8, MarginBottom = 8 });
 
-			PackStart (externalConsole = new CheckBox (GettextCatalog.GetString ("Run on external console")));
-			PackStart (pauseConsole = new CheckBox (GettextCatalog.GetString ("Pause console output")));
+			HBox cbox = new HBox ();
+			cbox.PackStart (externalConsole = new CheckBox (GettextCatalog.GetString ("Run on external console")));
+			cbox.PackStart (pauseConsole = new CheckBox (GettextCatalog.GetString ("Pause console output")));
+			mainBox.PackStart (cbox);
 
+			Add (mainBox, GettextCatalog.GetString ("General"));
+
+			var adBox = new VBox ();
+			adBox.Margin = 12;
+
+			table = new Table ();
+			table.Add (new Label (GettextCatalog.GetString ("Execute in .NET Runtime:")), 0, 0);
+			table.Add (runtimesCombo = new ComboBox (), 1, 0, hexpand:true);
+
+			table.Add (new Label (GettextCatalog.GetString ("Mono runtime settings:")), 0, 1);
+
+			var box = new HBox ();
+			Button monoSettingsButton = new Button (GettextCatalog.GetString ("..."));
+			box.PackStart (monoSettingsEntry = new TextEntry { PlaceholderText = GettextCatalog.GetString ("Default settings")}, true);
+			box.PackStart (monoSettingsButton);
+			monoSettingsEntry.ReadOnly = true;
+			table.Add (box, 1, 1, hexpand: true);
+			adBox.PackStart (table);
+
+			Add (adBox, GettextCatalog.GetString ("Advanced"));
+
+			monoSettingsButton.Clicked += EditRuntimeClicked;
 			radioStartProject.ActiveChanged += (sender, e) => UpdateStatus ();
 			externalConsole.Toggled += (sender, e) => UpdateStatus ();
+
+			LoadRuntimes ();
+		}
+
+		void LoadRuntimes ()
+		{
+			runtimesCombo.Items.Add ("", GettextCatalog.GetString ("(Default runtime)"));
+			foreach (var r in Runtime.SystemAssemblyService.GetTargetRuntimes ())
+				runtimesCombo.Items.Add (r.Id, r.DisplayName);
+		}
+
+		void EditRuntimeClicked (object sender, EventArgs e)
+		{
+			using (var dlg = new Xwt.Dialog ()) {
+				dlg.Title = GettextCatalog.GetString ("Mono Runtime Settings");
+				dlg.Width = 700;
+				dlg.Height = 500;
+				var w = new MonoExecutionParametersWidget ();
+				var mparams = config.MonoParameters.Clone ();
+				w.Load (mparams);
+				w.ShowAll ();
+				dlg.Content = Surface.ToolkitEngine.WrapWidget (w);
+				dlg.Buttons.Add (Command.Ok, Command.Cancel);
+				dlg.TransientFor = ParentWindow;
+				if (dlg.Run () == Command.Ok) {
+					config.MonoParameters = mparams;
+					monoSettingsEntry.Text = config.MonoParameters.GenerateDescription ();
+				}
+			}
 		}
 
 		public void Load (AssemblyRunConfiguration config)
@@ -122,6 +180,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			envVars.LoadValues (config.EnvironmentVariables);
 			externalConsole.Active = config.ExternalConsole;
 			pauseConsole.Active = config.PauseConsoleOutput;
+			runtimesCombo.SelectedItem = config.TargetRuntimeId;
+			monoSettingsEntry.Text = config.MonoParameters.GenerateDescription ();
 			UpdateStatus ();
 		}
 
@@ -142,6 +202,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			config.StartWorkingDirectory = workingDir.Folder;
 			config.ExternalConsole = externalConsole.Active;
 			config.PauseConsoleOutput = pauseConsole.Active;
+			config.TargetRuntimeId = (string) runtimesCombo.SelectedItem;
 			envVars.StoreValues (config.EnvironmentVariables);
 
 		}
