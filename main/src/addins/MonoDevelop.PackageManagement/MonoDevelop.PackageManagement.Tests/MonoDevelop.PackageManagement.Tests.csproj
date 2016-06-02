@@ -250,6 +250,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageSearchResultViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataResource.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageMetadataResourceProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedNuGetPackagesInWorkspaceTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatedNuGetPackagesInWorkspace.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableCheckForNuGetPackageUpdatesTaskRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

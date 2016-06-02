@@ -47,13 +47,13 @@ namespace MonoDevelop.PackageManagement
 		List<PackageIdentity> updatedPackages = new List<PackageIdentity> ();
 
 		public UpdatedNuGetPackagesProvider (
-			IDotNetProject project,
+			IDotNetProject dotNetProject,
 			IMonoDevelopSolutionManager solutionManager,
+			NuGetProject project,
 			CancellationToken cancellationToken = default(CancellationToken))
 		{
-			this.dotNetProject = project;
-			this.project = new MonoDevelopNuGetProjectFactory (solutionManager.Settings)
-				.CreateNuGetProject (project);
+			this.dotNetProject = dotNetProject;
+			this.project = project;
 
 			var sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
 			this.sourceRepositories = sourceRepositoryProvider.GetRepositories ().ToList ();

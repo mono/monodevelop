@@ -1,5 +1,5 @@
 ﻿//
-// FakePackageMetadataResource.cs
+// TestableUpdatedNuGetPackagesInWorkspace.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,47 +25,35 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.Logging;
-using NuGet.Packaging.Core;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageMetadataResource : PackageMetadataResource
+	class TestableUpdatedNuGetPackagesInWorkspace : UpdatedNuGetPackagesInWorkspace
 	{
-		public override Task<IEnumerable<IPackageSearchMetadata>> GetMetadataAsync (string packageId, bool includePrerelease, bool includeUnlisted, ILogger log, CancellationToken token)
+		public IPackageManagementEvents PackageManagementEvents;
+		public TestableCheckForNuGetPackageUpdatesTaskRunner TaskRunner;
+
+		public TestableUpdatedNuGetPackagesInWorkspace ()
+			: this (new PackageManagementEvents ())
 		{
-			var packages = packageMetadataList.Where (p => IsMatch (p, packageId, includePrerelease));
-			return Task.FromResult (packages);
 		}
 
-		static bool IsMatch (IPackageSearchMetadata package, string packageId, bool includePrerelease)
+		public TestableUpdatedNuGetPackagesInWorkspace (
+			IPackageManagementEvents packageManagementEvents)
+			: base (packageManagementEvents)
 		{
-			if (package.Identity.Id == packageId) {
-				if (package.Identity.Version.IsPrerelease) {
-					return includePrerelease;
-				}
-				return true;
-			}
-			return false;
+			PackageManagementEvents = packageManagementEvents;
 		}
 
-		List<IPackageSearchMetadata> packageMetadataList = new List<IPackageSearchMetadata> ();
-
-		public FakePackageSearchMetadata AddPackageMetadata (string id, string version)
+		protected override CheckForNuGetPackageUpdatesTaskRunner CreateTaskRunner ()
 		{
-			var metadata = new FakePackageSearchMetadata {
-				Identity = new PackageIdentity (id, new NuGetVersion (version))
-			};
+			TaskRunner = new TestableCheckForNuGetPackageUpdatesTaskRunner (this);
+			return TaskRunner;
+		}
 
-			packageMetadataList.Add (metadata);
-
-			return metadata;
+		protected override void GuiDispatch (Action action)
+		{
+			action.Invoke ();
 		}
 	}
 }

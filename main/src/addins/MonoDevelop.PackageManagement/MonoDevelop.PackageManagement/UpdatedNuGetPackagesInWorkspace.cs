@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -43,7 +42,12 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagementEvents packageManagementEvents)
 		{
 			this.packageManagementEvents = packageManagementEvents;
-			this.taskRunner = new CheckForNuGetPackageUpdatesTaskRunner (this);
+			this.taskRunner = CreateTaskRunner ();
+		}
+
+		protected virtual CheckForNuGetPackageUpdatesTaskRunner CreateTaskRunner ()
+		{
+			return new CheckForNuGetPackageUpdatesTaskRunner (this);
 		}
 
 		public void Clear ()
@@ -68,14 +72,14 @@ namespace MonoDevelop.PackageManagement
 					return;
 				}
 
-				taskRunner.Start (GetProjects (solution.Solution));
+				taskRunner.Start (GetProjects (solution));
 			});
 		}
 
-		IEnumerable<DotNetProject> GetProjects (Solution solution)
+		IEnumerable<IDotNetProject> GetProjects (ISolution solution)
 		{
 			if (solution != null) {
-				foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
+				foreach (IDotNetProject project in solution.GetAllProjects ()) {
 					yield return project;
 				}
 			}

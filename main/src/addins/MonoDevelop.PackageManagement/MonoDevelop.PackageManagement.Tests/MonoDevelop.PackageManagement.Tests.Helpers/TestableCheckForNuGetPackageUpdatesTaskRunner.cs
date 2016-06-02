@@ -1,5 +1,5 @@
 ﻿//
-// FakePackageMetadataResource.cs
+// TestableCheckForNuGetPackageUpdatesTaskRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,46 +26,50 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Logging;
-using NuGet.Packaging.Core;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageMetadataResource : PackageMetadataResource
+	class TestableCheckForNuGetPackageUpdatesTaskRunner : CheckForNuGetPackageUpdatesTaskRunner
 	{
-		public override Task<IEnumerable<IPackageSearchMetadata>> GetMetadataAsync (string packageId, bool includePrerelease, bool includeUnlisted, ILogger log, CancellationToken token)
+		public TestableCheckForNuGetPackageUpdatesTaskRunner (
+			UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
+			: base (updatedPackagesInWorkspace)
 		{
-			var packages = packageMetadataList.Where (p => IsMatch (p, packageId, includePrerelease));
-			return Task.FromResult (packages);
 		}
 
-		static bool IsMatch (IPackageSearchMetadata package, string packageId, bool includePrerelease)
+		public FakeSolutionManager SolutionManager = new FakeSolutionManager ();
+
+		protected override IMonoDevelopSolutionManager GetSolutionManager (ISolution solution)
 		{
-			if (package.Identity.Id == packageId) {
-				if (package.Identity.Version.IsPrerelease) {
-					return includePrerelease;
-				}
-				return true;
-			}
-			return false;
+			return SolutionManager;
 		}
 
-		List<IPackageSearchMetadata> packageMetadataList = new List<IPackageSearchMetadata> ();
-
-		public FakePackageSearchMetadata AddPackageMetadata (string id, string version)
+		protected override NuGetProject CreateNuGetProject (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject project)
 		{
-			var metadata = new FakePackageSearchMetadata {
-				Identity = new PackageIdentity (id, new NuGetVersion (version))
-			};
+			return nugetProjects[project];
+		}
 
-			packageMetadataList.Add (metadata);
+		Dictionary<IDotNetProject, NuGetProject> nugetProjects = new Dictionary<IDotNetProject, NuGetProject> ();
 
-			return metadata;
+		public FakeNuGetProject AddNuGetProject (IDotNetProject project)
+		{
+			var nugetProject = new FakeNuGetProject (project);
+			nugetProjects[project] = nugetProject;
+			return nugetProject;
+		}
+
+		public Task CheckForUpdatesTask;
+		public Action AfterCheckForUpdatesAction = () => { };
+
+		protected override Task CheckForUpdates (IEnumerable<IDotNetProject> projects)
+		{
+			CheckForUpdatesTask = base.CheckForUpdates (projects);
+			AfterCheckForUpdatesAction ();
+			return CheckForUpdatesTask;
 		}
 	}
 }

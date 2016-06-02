@@ -64,10 +64,18 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			throw new NotImplementedException ();
 		}
 
-		public void AddPackageReference (string id, string version)
+		public void AddPackageReference (string id, string version, VersionRange versionRange = null)
 		{
 			var packageId = new PackageIdentity (id, new NuGetVersion (version));
-			InstalledPackages.Add (new PackageReference (packageId, new NuGetFramework ("net45")));
+			var packageReference = new PackageReference (
+				packageId,
+				new NuGetFramework ("net45"),
+				true,
+				false,
+				false,
+				versionRange
+			);
+			InstalledPackages.Add (packageReference);
 		}
 	}
 }

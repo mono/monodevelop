@@ -30,7 +30,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -49,20 +49,20 @@ namespace MonoDevelop.PackageManagement
 			get { return cancellationTokenSource != null; }
 		}
 
-		public void Start (IEnumerable<DotNetProject> projects)
+		public void Start (IEnumerable<IDotNetProject> projects)
 		{
 			Stop ();
 			CheckForUpdates (projects);
 		}
 
-		void CheckForUpdates (IEnumerable<DotNetProject> projects)
+		protected virtual Task CheckForUpdates (IEnumerable<IDotNetProject> projects)
 		{
 			cancellationTokenSource = new CancellationTokenSource ();
 
 			var providers = projects.Select (project => CreateProvider (project)).ToList ();
 			currentProviders = providers;
 
-			Task.Run (
+			return Task.Run (
 				() => CheckForUpdates (currentProviders, cancellationTokenSource.Token),
 				cancellationTokenSource.Token
 			).ContinueWith (
@@ -70,13 +70,28 @@ namespace MonoDevelop.PackageManagement
 				TaskScheduler.FromCurrentSynchronizationContext ());
 		}
 
-		UpdatedNuGetPackagesProvider CreateProvider (DotNetProject project)
+		UpdatedNuGetPackagesProvider CreateProvider (IDotNetProject project)
 		{
-			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			var solutionManager = GetSolutionManager (project.ParentSolution);
+			var nugetProject = CreateNuGetProject (solutionManager, project);
 			return new UpdatedNuGetPackagesProvider (
-				new DotNetProjectProxy (project),
+				project,
 				solutionManager,
+				nugetProject,
 				cancellationTokenSource.Token);
+		}
+
+		protected virtual IMonoDevelopSolutionManager GetSolutionManager (ISolution solution)
+		{
+			return PackageManagementServices.Workspace.GetSolutionManager (solution);
+		}
+
+		protected virtual NuGetProject CreateNuGetProject (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject project)
+		{
+			return new MonoDevelopNuGetProjectFactory (solutionManager.Settings)
+				.CreateNuGetProject (project);
 		}
 
 		List<UpdatedNuGetPackagesInProject> CheckForUpdates (List<UpdatedNuGetPackagesProvider> providers, CancellationToken cancellationToken)
