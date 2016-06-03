@@ -893,5 +893,31 @@ namespace MonoDevelop.MacIntegration
 				NSWorkspace.SharedWorkspace.ActivateFileViewer (selectFiles.Select ((f) => NSUrl.FromFilename (f)).ToArray ());
 			}
 		}
+
+		public override bool RestartIde (bool reopenWorkspace)
+		{
+			FilePath bundlePath = NSBundle.MainBundle.BundlePath;
+
+			if (bundlePath.Extension != ".app")
+				return base.RestartIde (reopenWorkspace);
+
+			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
+
+			if (IdeApp.Exit ()) {
+				var asi = new ApplicationStartInfo (bundlePath) {
+					Async = true,
+					NewInstance = true,
+				};
+
+				var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+
+				if (!string.IsNullOrEmpty (recentWorkspace))
+					asi.Args = new string [] { recentWorkspace };
+
+				LaunchServices.OpenApplication (asi);
+				return true;
+			}
+			return false;
+		}
 	}
 }
