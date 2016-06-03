@@ -2377,7 +2377,7 @@ namespace MonoDevelop.Debugger.Tests
 				val.Refresh (options);
 				val = val.Sync ();
 			}
-			Assert.AreEqual ("System.MonoType", val.TypeName);//Should this be System.Type?
+			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			Assert.AreEqual ("{A}", val.Value);
 		
 			val = Eval ("this.GetType()");
@@ -2389,7 +2389,7 @@ namespace MonoDevelop.Debugger.Tests
 				val.Refresh (options);
 				val = val.Sync ();
 			}
-			Assert.AreEqual ("System.MonoType", val.TypeName);//Should this be System.Type?
+			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluationChild}", val.Value);
 		}
 
