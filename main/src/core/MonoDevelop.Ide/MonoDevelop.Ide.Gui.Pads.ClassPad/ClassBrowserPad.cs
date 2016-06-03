@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassBrowser
 		{
 			base.Initialize (container);
 			this.widget = new ClassBrowserPadWidget (base.TreeView, container); 
+			base.TreeView.Tree.Name = "classBrowserTree";
 		}
 
 	}

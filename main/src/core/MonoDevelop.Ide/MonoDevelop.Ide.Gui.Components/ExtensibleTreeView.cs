@@ -43,6 +43,9 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
 using System.Linq;
 using MonoDevelop.Ide.Tasks;
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("MonoDevelop.UnitTesting")]
 
 namespace MonoDevelop.Ide.Gui.Components
 {
