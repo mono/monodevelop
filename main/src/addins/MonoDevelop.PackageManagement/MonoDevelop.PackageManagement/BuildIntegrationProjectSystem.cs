@@ -41,7 +41,7 @@ using NuGet.ProjectModel;
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject
+	internal class BuildIntegratedProjectSystem : BuildIntegratedNuGetProject, IBuildIntegratedNuGetProject
 	{
 		IDotNetProject dotNetProject;
 		PackageManagementEvents packageManagementEvents;

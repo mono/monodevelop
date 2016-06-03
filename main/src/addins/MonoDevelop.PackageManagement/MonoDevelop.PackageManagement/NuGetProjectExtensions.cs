@@ -56,7 +56,7 @@ namespace MonoDevelop.PackageManagement
 		/// </summary>
 		public static Task RunPostProcessAsync (this NuGetProject project, INuGetProjectContext context, CancellationToken token)
 		{
-			var buildIntegratedProject = project as BuildIntegratedNuGetProject;
+			var buildIntegratedProject = project as IBuildIntegratedNuGetProject;
 			if (buildIntegratedProject != null) {
 				return buildIntegratedProject.PostProcessAsync (context, token);
 			}
@@ -66,7 +66,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static void OnAfterExecuteActions (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
 		{
-			var buildIntegratedProject = project as BuildIntegratedProjectSystem;
+			var buildIntegratedProject = project as IBuildIntegratedNuGetProject;
 			if (buildIntegratedProject != null) {
 				buildIntegratedProject.OnAfterExecuteActions (actions);
 			}

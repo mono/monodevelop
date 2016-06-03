@@ -43,7 +43,8 @@ namespace MonoDevelop.PackageManagement
 	{
 		List<SourceRepository> primarySources;
 		List<SourceRepository> secondarySources;
-		NuGetPackageManager packageManager;
+		INuGetPackageManager packageManager;
+		IPackageManagementEvents packageManagementEvents;
 		NuGetProject project;
 		INuGetProjectContext context;
 		IDotNetProject dotNetProject;
@@ -69,25 +70,37 @@ namespace MonoDevelop.PackageManagement
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject,
 			INuGetProjectContext projectContext)
+			: this (
+				primarySources,
+				secondarySources,
+				solutionManager,
+				dotNetProject,
+				projectContext,
+				new MonoDevelopNuGetPackageManager (solutionManager),
+				PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public InstallNuGetPackageAction (
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject dotNetProject,
+			INuGetProjectContext projectContext,
+			INuGetPackageManager packageManager,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.primarySources = primarySources.ToList ();
 			this.secondarySources = secondarySources?.ToList ();
 			this.dotNetProject = dotNetProject;
 			this.context = projectContext;
+			this.packageManager = packageManager;
+			this.packageManagementEvents = packageManagementEvents;
 
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
 			LicensesMustBeAccepted = true;
 			PreserveLocalCopyReferences = true;
-
-			var restartManager = new DeleteOnRestartManager ();
-
-			packageManager = new NuGetPackageManager (
-				solutionManager.CreateSourceRepositoryProvider (),
-				solutionManager.Settings,
-				solutionManager,
-				restartManager
-			);
 		}
 
 		public string PackageId { get; set; }
@@ -103,7 +116,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute (CancellationToken cancellationToken)
 		{
-			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
+			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject, packageManagementEvents)) {
 				ExecuteAsync (cancellationToken).Wait ();
 			}
 		}
@@ -129,7 +142,7 @@ namespace MonoDevelop.PackageManagement
 				await CheckLicenses (cancellationToken);
 			}
 
-			NuGetPackageManager.SetDirectInstall (identity, context);
+			packageManager.SetDirectInstall (identity, context);
 
 			using (IDisposable fileMonitor = CreateFileMonitor ()) {
 				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
@@ -141,7 +154,7 @@ namespace MonoDevelop.PackageManagement
 				}
 			}
 
-			NuGetPackageManager.ClearDirectInstall (context);
+			packageManager.ClearDirectInstall (context);
 
 			project.OnAfterExecuteActions (actions);
 
@@ -150,10 +163,10 @@ namespace MonoDevelop.PackageManagement
 
 		Task<NuGetVersion> GetLatestPackageVersion (string packageId, CancellationToken cancellationToken)
 		{
-			return NuGetPackageManager.GetLatestVersionAsync (
+			return packageManager.GetLatestVersionAsync (
 				packageId,
 				project,
-				CreateResolutionContext (),
+				CreateResolutionContext (includeUnlisted: false),
 				primarySources,
 				new ProjectContextLogger (context),
 				cancellationToken);
@@ -164,12 +177,12 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		ResolutionContext CreateResolutionContext ()
+		ResolutionContext CreateResolutionContext (bool includeUnlisted = true)
 		{
 			return new ResolutionContext (
 				DependencyBehavior.Lowest,
 				IncludePrerelease,
-				true,
+				includeUnlisted,
 				VersionConstraints.None
 			);
 		}
@@ -181,13 +194,23 @@ namespace MonoDevelop.PackageManagement
 
 		Task CheckLicenses (CancellationToken cancellationToken)
 		{
-			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, packageManager, cancellationToken);
+			return NuGetPackageLicenseAuditor.AcceptLicenses (
+				primarySources,
+				actions,
+				packageManager,
+				GetLicenseAcceptanceService (),
+				cancellationToken);
+		}
+
+		protected virtual ILicenseAcceptanceService GetLicenseAcceptanceService ()
+		{
+			return new LicenseAcceptanceService ();
 		}
 
 		IDisposable CreateLocalCopyReferenceMaintainer ()
 		{
 			if (PreserveLocalCopyReferences) {
-				return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
+				return new LocalCopyReferenceMaintainer (packageManagementEvents);
 			}
 
 			return new NullDisposable ();
@@ -201,8 +224,13 @@ namespace MonoDevelop.PackageManagement
 		IDisposable CreateFileMonitor ()
 		{
 			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
-				PackageManagementServices.PackageManagementEvents,
-				new FileRemover ());
+				packageManagementEvents,
+				GetFileRemover ());
+		}
+
+		protected virtual IFileRemover GetFileRemover ()
+		{
+			return new FileRemover ();
 		}
 	}
 }

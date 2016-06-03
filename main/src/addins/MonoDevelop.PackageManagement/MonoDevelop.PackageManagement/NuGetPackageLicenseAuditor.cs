@@ -40,12 +40,12 @@ namespace MonoDevelop.PackageManagement
 	internal class NuGetPackageLicenseAuditor
 	{
 		List<SourceRepository> sources;
-		NuGetPackageManager packageManager;
+		INuGetPackageManager packageManager;
 		ILicenseAcceptanceService licenseAcceptanceService;
 
 		public NuGetPackageLicenseAuditor (
 			IEnumerable<SourceRepository> sources,
-			NuGetPackageManager packageManager)
+			INuGetPackageManager packageManager)
 			: this (
 				sources,
 				packageManager,
@@ -55,7 +55,7 @@ namespace MonoDevelop.PackageManagement
 
 		public NuGetPackageLicenseAuditor (
 			IEnumerable<SourceRepository> sources,
-			NuGetPackageManager packageManager,
+			INuGetPackageManager packageManager,
 			ILicenseAcceptanceService licenseAcceptanceService)
 		{
 			this.sources = sources.ToList ();
@@ -69,7 +69,22 @@ namespace MonoDevelop.PackageManagement
 			NuGetPackageManager packageManager,
 			CancellationToken cancellationToken)
 		{
-			var auditor = new NuGetPackageLicenseAuditor (sources, packageManager);
+			return AcceptLicenses (
+				sources,
+				actions,
+				new MonoDevelopNuGetPackageManager (packageManager),
+				new LicenseAcceptanceService (),
+				cancellationToken);
+		}
+
+		public static Task AcceptLicenses (
+			IEnumerable<SourceRepository> sources,
+			IEnumerable<NuGetProjectAction> actions,
+			INuGetPackageManager packageManager,
+			ILicenseAcceptanceService licenseAcceptanceService,
+			CancellationToken cancellationToken)
+		{
+			var auditor = new NuGetPackageLicenseAuditor (sources, packageManager, licenseAcceptanceService);
 			return auditor.AcceptLicenses (actions, cancellationToken);
 		}
 

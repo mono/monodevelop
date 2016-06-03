@@ -1,5 +1,5 @@
 ﻿//
-// FakeLicenseAcceptanceService.cs
+// IBuildIntegratedNuGetProject.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,31 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Collections.Generic;
-using NuGet;
+using System.Threading;
+using System.Threading.Tasks;
+using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	class FakeLicenseAcceptanceService : ILicenseAcceptanceService
+	internal interface IBuildIntegratedNuGetProject
 	{
-		public bool AcceptLicensesReturnValue = true;
-		public List<IPackage> PackagesAccepted;
-
-		public bool AcceptLicenses (IEnumerable<IPackage> packages)
-		{
-			PackagesAccepted = packages.ToList ();
-			return AcceptLicensesReturnValue;
-		}
-
-		public List<NuGetPackageLicense> PackageLicensesAccepted;
-
-		public bool AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
-		{
-			PackageLicensesAccepted = licenses.ToList ();
-			return AcceptLicensesReturnValue;
-		}
+		void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions);
+		Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token);
 	}
 }
 

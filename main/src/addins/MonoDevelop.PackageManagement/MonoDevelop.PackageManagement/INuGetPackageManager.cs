@@ -1,5 +1,5 @@
 ﻿//
-// FakeNuGetProjectAction.cs
+// INuGetPackageManager.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,28 +24,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using NuGet.Logging;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	class FakeNuGetProjectAction : NuGetProjectAction
+	internal interface INuGetPackageManager
 	{
-		public FakeNuGetProjectAction (
-			string packageId,
-			string packageVersion,
-			NuGetProjectActionType actionType)
-			: base (
-				CreatePackageIdentity (packageId, packageVersion),
-				actionType)
-		{
-		}
+		Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (
+			NuGetProject nuGetProject,
+			PackageIdentity packageIdentity,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token);
 
-		static PackageIdentity CreatePackageIdentity (string packageId, string packageVersion)
-		{
-			var nuGetVersion = new NuGetVersion (packageVersion);
-			return new PackageIdentity (packageId, nuGetVersion);
-		}
+		Task<NuGetVersion> GetLatestVersionAsync (
+			string packageId,
+			NuGetProject project,
+			ResolutionContext resolutionContext,
+			IEnumerable<SourceRepository> sources,
+			ILogger log,
+			CancellationToken token);
+
+		Task ExecuteNuGetProjectActionsAsync (
+			NuGetProject nuGetProject,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token);
+
+		void SetDirectInstall (PackageIdentity directInstall, INuGetProjectContext nuGetProjectContext);
+		void ClearDirectInstall (INuGetProjectContext nuGetProjectContext);
+
+		bool PackageExistsInPackagesFolder (PackageIdentity packageIdentity);
 	}
 }
+

@@ -94,6 +94,9 @@
     <Reference Include="NuGet.Common">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Common.dll</HintPath>
     </Reference>
+    <Reference Include="NuGet.Resolver">
+      <HintPath>..\..\..\..\external\nuget-binary\NuGet.Resolver.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -249,6 +252,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatedNuGetPackagesInWorkspace.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableCheckForNuGetPackageUpdatesTaskRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingPackageMetadataResource.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\InstallNuGetPackageActionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableInstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeNuGetPackageManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

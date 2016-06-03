@@ -30,6 +30,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NuGet.Frameworks;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
@@ -38,7 +39,7 @@ using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class FakeNuGetProject : NuGetProject
+	class FakeNuGetProject : NuGetProject, IBuildIntegratedNuGetProject
 	{
 		public FakeNuGetProject (IDotNetProject project)
 		{
@@ -76,6 +77,24 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				versionRange
 			);
 			InstalledPackages.Add (packageReference);
+		}
+
+		public List<NuGetProjectAction> ActionsPassedToOnAfterExecuteActions;
+
+		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)
+		{
+			ActionsPassedToOnAfterExecuteActions = actions.ToList ();
+		}
+
+		public INuGetProjectContext PostProcessProjectContext;
+		public CancellationToken PostProcessCancellationToken;
+
+		public override Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token)
+		{
+			PostProcessProjectContext = nuGetProjectContext;
+			PostProcessCancellationToken = token;
+
+			return Task.FromResult (0);
 		}
 	}
 }

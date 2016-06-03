@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -39,8 +38,17 @@ namespace MonoDevelop.PackageManagement
 		public NuGetPackageEventsMonitor (IDotNetProject project)
 			: this (
 				project,
-				new PackageEventsProvider (),
 				PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public NuGetPackageEventsMonitor (
+			IDotNetProject project,
+			IPackageManagementEvents packageManagementEvents)
+			: this (
+				project,
+				new PackageEventsProvider (),
+				packageManagementEvents)
 		{
 		}
 
