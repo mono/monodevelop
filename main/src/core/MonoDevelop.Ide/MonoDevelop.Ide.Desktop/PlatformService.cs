@@ -507,5 +507,35 @@ namespace MonoDevelop.Ide.Desktop
 			window.Move (x, y);
 			window.Resize (width, height);
 		}
+
+		/// <summary>
+		/// Restarts MonoDevelop
+		/// </summary>
+		/// <returns> false if the user cancels exiting. </returns>
+		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
+		public virtual bool RestartIde (bool reopenWorkspace)
+		{
+			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
+
+			if (IdeApp.Exit ()) {
+				var proc = new Process ();
+
+				var path = ((FilePath)typeof (IdeStartup).Assembly.Location).ParentDirectory;
+				var psi = new ProcessStartInfo (path.Combine ("MonoDevelop.exe")) {
+					CreateNoWindow = true,
+					UseShellExecute = false,
+					WorkingDirectory = Environment.CurrentDirectory,
+				};
+
+				var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+				if (!string.IsNullOrEmpty (recentWorkspace))
+					psi.Arguments = recentWorkspace;
+				
+				proc.StartInfo = psi;
+				proc.Start ();
+				return true;
+			}
+			return false;
+		}
 	}
 }

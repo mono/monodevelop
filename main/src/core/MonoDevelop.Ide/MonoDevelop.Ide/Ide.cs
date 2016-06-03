@@ -397,6 +397,20 @@ namespace MonoDevelop.Ide
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Restarts MonoDevelop
+		/// </summary>
+		/// <returns> false if the user cancels exiting. </returns>
+		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
+		/// <remarks>
+		/// Starts a new MonoDevelop instance in a new process and 
+		/// stops the current MonoDevelop instance.
+		/// </remarks>
+		public static bool Restart (bool reopenWorkspace = false)
+		{
+			return DesktopService.RestartIde (reopenWorkspace);
+		}
 		
 		internal static bool OnExit ()
 		{

@@ -370,5 +370,15 @@ namespace MonoDevelop.Ide
 		{
 			PlatformService.PlaceWindow (window, x, y, width, height);
 		}
+
+		/// <summary>
+		/// Restarts MonoDevelop
+		/// </summary>
+		/// <returns> false if the user cancels exiting. </returns>
+		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
+		public static bool RestartIde (bool reopenWorkspace)
+		{
+			return PlatformService.RestartIde (reopenWorkspace);
+		}
 	}
 }
