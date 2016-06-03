@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -120,6 +122,26 @@ namespace MonoDevelop.PackageManagement
 		public bool PackageExistsInPackagesFolder (PackageIdentity packageIdentity)
 		{
 			return packageManager.PackageExistsInPackagesFolder (packageIdentity);
+		}
+
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			string packageId,
+			NuGetProject nuGetProject,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			return packageManager.PreviewUpdatePackagesAsync (
+				packageId,
+				nuGetProject,
+				resolutionContext,
+				nuGetProjectContext,
+				primarySources,
+				secondarySources,
+				token
+			);
 		}
 	}
 }

@@ -274,6 +274,24 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void Execute_LicensesMustBeAcceptedButPackageAlreadyInstalled_UserNotPromptedToAcceptLicenses ()
+		{
+			CreateAction ("Test", "1.2");
+			action.LicensesMustBeAccepted = false;
+			action.LicenseAcceptanceService.AcceptLicensesReturnValue = false;
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			var metadata = packageMetadataResource.AddPackageMetadata ("Test", "1.2");
+			metadata.RequireLicenseAcceptance = true;
+			metadata.LicenseUrl = new Uri ("http://test.com/license");
+			action.LicenseAcceptanceService.PackageLicensesAccepted = null;
+			packageManager.AddPackageToPackagesFolder ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.IsNull (action.LicenseAcceptanceService.PackageLicensesAccepted);
+		}
+
+		[Test]
 		public void Execute_PackageAlreadyExistsWhenInstallingItAgainAndReferenceBeingInstalledOriginallyHadLocalCopyFalse_ReferenceAddedHasLocalCopyFalse ()
 		{
 			CreateAction ();

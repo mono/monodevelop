@@ -38,35 +38,43 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class UpdateNuGetPackageAction : INuGetPackageAction, INuGetProjectActionsProvider
 	{
-		NuGetPackageManager packageManager;
+		INuGetPackageManager packageManager;
 		IDotNetProject dotNetProject;
 		NuGetProject project;
 		List<SourceRepository> primarySources;
 		ISourceRepositoryProvider sourceRepositoryProvider;
 		IEnumerable<NuGetProjectAction> actions;
 		IPackageManagementEvents packageManagementEvents;
+		INuGetProjectContext context;
 
 		public UpdateNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject)
+			: this (
+				solutionManager,
+				dotNetProject,
+				new NuGetProjectContext (),
+				new MonoDevelopNuGetPackageManager (solutionManager),
+				PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public UpdateNuGetPackageAction (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject dotNetProject,
+			INuGetProjectContext projectContext,
+			INuGetPackageManager packageManager,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.dotNetProject = dotNetProject;
+			this.context = projectContext;
+			this.packageManager = packageManager;
+			this.packageManagementEvents = packageManagementEvents;
 
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
-			var restartManager = new DeleteOnRestartManager ();
-
-			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
-
 			sourceRepositoryProvider = solutionManager.CreateSourceRepositoryProvider ();
 			primarySources = sourceRepositoryProvider.GetRepositories ().ToList ();
-
-			packageManager = new NuGetPackageManager (
-				sourceRepositoryProvider,
-				solutionManager.Settings,
-				solutionManager,
-				restartManager
-			);
 		}
 
 		public string PackageId { get; set; }
@@ -79,15 +87,13 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute (CancellationToken cancellationToken)
 		{
-			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
+			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject, packageManagementEvents)) {
 				ExecuteAsync (cancellationToken).Wait ();
 			}
 		}
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
-			INuGetProjectContext context = CreateProjectContext ();
-
 			actions = await packageManager.PreviewUpdatePackagesAsync (
 				PackageId,
 				project,
@@ -99,6 +105,7 @@ namespace MonoDevelop.PackageManagement
 
 			if (!actions.Any ()) {
 				packageManagementEvents.OnNoUpdateFound (dotNetProject);
+				return;
 			}
 
 			await CheckLicenses (cancellationToken);
@@ -133,19 +140,24 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
-		INuGetProjectContext CreateProjectContext ()
-		{
-			return new NuGetProjectContext (); 
-		}
-
 		Task CheckLicenses (CancellationToken cancellationToken)
 		{
-			return NuGetPackageLicenseAuditor.AcceptLicenses (primarySources, actions, packageManager, cancellationToken);
+			return NuGetPackageLicenseAuditor.AcceptLicenses (
+				primarySources,
+				actions,
+				packageManager,
+				GetLicenseAcceptanceService (),
+				cancellationToken);
+		}
+
+		protected virtual ILicenseAcceptanceService GetLicenseAcceptanceService ()
+		{
+			return new LicenseAcceptanceService ();
 		}
 
 		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
 		{
-			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
+			return new LocalCopyReferenceMaintainer (packageManagementEvents);
 		}
 
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
@@ -156,8 +168,13 @@ namespace MonoDevelop.PackageManagement
 		IDisposable CreateFileMonitor ()
 		{
 			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
-				PackageManagementServices.PackageManagementEvents,
-				new FileRemover ());
+				packageManagementEvents,
+				GetFileRemover ());
+		}
+
+		protected virtual IFileRemover GetFileRemover ()
+		{
+			return new FileRemover ();
 		}
 	}
 }

@@ -140,6 +140,41 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return PackagesInPackagesFolder.Contains (packageIdentity);
 		}
+
+		public List<FakeNuGetProjectAction> UpdateActions = new List<FakeNuGetProjectAction> ();
+
+		public NuGetProject PreviewUpdateProject;
+		public string PreviewUpdatePackageId;
+		public ResolutionContext PreviewUpdateResolutionContext;
+		public List<SourceRepository> PreviewUpdatePrimarySources;
+		public IEnumerable<SourceRepository> PreviewUpdateSecondarySources;
+		public CancellationToken PreviewUpdateCancellationToken;
+
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			string packageId,
+			NuGetProject nuGetProject,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			PreviewUpdateProject = nuGetProject;
+			PreviewUpdatePackageId = packageId;
+			PreviewUpdateResolutionContext = resolutionContext;
+			PreviewUpdatePrimarySources = primarySources.ToList ();
+			PreviewUpdateSecondarySources = secondarySources;
+			PreviewUpdateCancellationToken = token;
+
+			IEnumerable<NuGetProjectAction> actions = UpdateActions.ToArray ();
+			return Task.FromResult (actions);
+		}
+
+		public void AddPackageToPackagesFolder (string packageId, string version)
+		{
+			var package = new PackageIdentity (packageId, new NuGetVersion (version));
+			PackagesInPackagesFolder.Add (package);
+		}
 	}
 }
 
