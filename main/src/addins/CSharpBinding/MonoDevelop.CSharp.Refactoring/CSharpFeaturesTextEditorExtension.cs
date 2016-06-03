@@ -101,13 +101,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		[CommandHandler (TextEditorCommands.ExpandSelection)]
 		public void ExpandSelection ()
 		{
-			new ExpandSelectionHandler ().Run ();
+			ExpandSelectionHandler.Run ();
 		}
 
 		[CommandHandler (TextEditorCommands.ShrinkSelection)]
 		public void ShrinkSelection ()
 		{
-			new ShrinkSelectionHandler ().Run ();
+			ShrinkSelectionHandler.Run ();
 		}
 
 		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]
