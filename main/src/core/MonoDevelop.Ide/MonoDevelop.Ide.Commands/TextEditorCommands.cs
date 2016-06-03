@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.Commands
 		SelectionMoveToDocumentStart,
 		SelectionMoveToDocumentEnd,
 		ExpandSelectionToLine,
+		ExpandSelection,
+		ShrinkSelection,
 		SwitchCaretMode,
 		InsertTab,
 		RemoveTab,

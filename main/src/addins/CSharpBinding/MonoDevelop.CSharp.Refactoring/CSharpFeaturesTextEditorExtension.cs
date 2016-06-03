@@ -98,6 +98,18 @@ namespace MonoDevelop.CSharp.Refactoring
 			await new RenameHandler ().Run (Editor, DocumentContext);
 		}
 
+		[CommandHandler (TextEditorCommands.ExpandSelection)]
+		public void ExpandSelection ()
+		{
+			new ExpandSelectionHandler ().Run ();
+		}
+
+		[CommandHandler (TextEditorCommands.ShrinkSelection)]
+		public void ShrinkSelection ()
+		{
+			new ShrinkSelectionHandler ().Run ();
+		}
+
 		[CommandUpdateHandler (RefactoryCommands.GotoDeclaration)]
 		public async void GotoDeclaration_Update (CommandInfo ci)
 		{

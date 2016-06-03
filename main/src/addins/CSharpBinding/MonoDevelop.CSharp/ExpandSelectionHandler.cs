@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharp
 		ShrinkSelection
 	}
 	
-	class ExpandSelectionHandler : CommandHandler
+	class ExpandSelectionHandler
 	{
 		internal class ExpandSelectionAnnotation
 		{
@@ -69,7 +69,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 
-		protected override void Run ()
+		internal void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
@@ -100,7 +100,7 @@ namespace MonoDevelop.CSharp
 		}
 	}
 	
-	class ShrinkSelectionHandler : CommandHandler
+	class ShrinkSelectionHandler
 	{
 		internal static bool IsSelected (MonoDevelop.Ide.Editor.TextEditor editor, Microsoft.CodeAnalysis.Text.TextSpan span)
 		{
@@ -108,7 +108,7 @@ namespace MonoDevelop.CSharp
 			return selection.Offset == span.Start && selection.Length == span.Length;
 		}
 
-		protected async override void Run ()
+		internal async void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
