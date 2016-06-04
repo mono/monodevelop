@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide
 		const string path = "/MonoDevelop/Ide/LocaleSet";
 		static readonly List<LocaleSet[]> locales = new List<LocaleSet[]> ();
 
-		public static void Initialize ()
+		internal static void Initialize ()
 		{
 			AddinManager.AddExtensionNodeHandler (path, OnExtensionChanged);
 		}
