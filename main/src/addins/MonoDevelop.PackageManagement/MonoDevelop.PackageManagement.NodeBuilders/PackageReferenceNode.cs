@@ -99,25 +99,30 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetLabel ()
 		{
+			return Id;
+		}
+
+		public string GetSecondaryLabel ()
+		{
 			if (UpdatedVersion != null) {
-				return Id + GetUpdatedVersionLabelText ();
+				return GetUpdatedVersionLabelText ();
 			}
 			if (IsInstallPending) {
-				return Id + GetInstallingLabelText ();
+				return GetInstallingLabelText ();
 			}
-			return Id;
+			return string.Empty;
 		}
 
 		string GetUpdatedVersionLabelText ()
 		{
-			return String.Format (" <span color='grey'>({0} {1})</span>",
+			return String.Format ("({0} {1})",
 				UpdatedVersion,
 				GettextCatalog.GetString ("available"));
 		}
 
 		string GetInstallingLabelText ()
 		{
-			return String.Format (" ({0})", GettextCatalog.GetString ("installing"));
+			return String.Format ("({0})", GettextCatalog.GetString ("installing"));
 		}
 
 		public IconId GetIconId ()

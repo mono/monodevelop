@@ -274,7 +274,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			store = new Gtk.ListStore (typeof(MimeTypePanelData), typeof(Xwt.Drawing.Image), typeof(string));
 			tree.Model = store;
-			
+			tree.SearchColumn = -1; // disable the interactive search
+
 			boxButtons.Visible = panel.DataObject is PolicySet;
 			Gtk.CellRendererText crt = new Gtk.CellRendererText ();
 			CellRendererImage crp = new CellRendererImage ();

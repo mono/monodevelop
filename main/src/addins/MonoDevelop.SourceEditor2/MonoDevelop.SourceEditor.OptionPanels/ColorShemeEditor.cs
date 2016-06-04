@@ -53,6 +53,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.treeviewColors.AppendColumn (GettextCatalog.GetString ("Name"), new Gtk.CellRendererText (), new CellLayoutDataFunc (SyntaxCellRenderer));
 			this.treeviewColors.HeadersVisible = false;
 			this.treeviewColors.Model = colorStore;
+			this.treeviewColors.SearchColumn = -1; // disable the interactive search
 			this.treeviewColors.Selection.Changed += HandleTreeviewColorsSelectionChanged;
 			this.hpaned1.Position = 250;
 			this.SetSizeRequest (1024, 768);

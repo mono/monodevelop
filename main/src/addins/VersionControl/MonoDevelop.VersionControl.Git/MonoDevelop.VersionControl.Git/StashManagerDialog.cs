@@ -48,6 +48,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			store = new ListStore (typeof(Stash), typeof(string), typeof(string));
 			list.Model = store;
+			list.SearchColumn = -1; // disable the interactive search
 
 			list.AppendColumn (GettextCatalog.GetString ("Date/Time"), new CellRendererText (), "text", 1);
 			list.AppendColumn (GettextCatalog.GetString ("Comment"), new CellRendererText (), "text", 2);

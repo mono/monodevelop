@@ -304,6 +304,7 @@ namespace MonoDevelop.Debugger
 		{
 			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string));
 			Model = store;
+			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
 			EnableSearch = false;
 			AllowPopupMenu = true;

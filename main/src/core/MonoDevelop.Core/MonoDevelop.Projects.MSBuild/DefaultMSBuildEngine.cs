@@ -407,8 +407,8 @@ namespace MonoDevelop.Projects.MSBuild
 		void Evaluate (ProjectInfo project, MSBuildEvaluationContext context, MSBuildProperty prop)
 		{
 			if (string.IsNullOrEmpty (prop.Condition) || SafeParseAndEvaluate (project, context, prop.Condition, true)) {
-				var val = context.EvaluateString (prop.Value);
-				project.Properties [prop.Name] = new PropertyInfo { Name = prop.Name, Value = prop.Value, FinalValue = val };
+				var val = context.EvaluateString (prop.UnevaluatedValue);
+				project.Properties [prop.Name] = new PropertyInfo { Name = prop.Name, Value = prop.UnevaluatedValue, FinalValue = val };
 				context.SetPropertyValue (prop.Name, val);
 			}
 		}

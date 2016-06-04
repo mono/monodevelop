@@ -88,7 +88,7 @@ namespace MonoDevelop.WebReferences.Commands
 				return;
 			try {
 				updatingReferences = true;
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetPluralString ("Updating web reference", "Updating web references", items.Count), MonoDevelop.Ide.Gui.Stock.StatusDownload, true)) {
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetPluralString ("Updating web reference", "Updating web references", items.Count), MonoDevelop.Ide.Gui.Stock.PadDownload, true)) {
 					monitor.BeginTask (GettextCatalog.GetPluralString ("Updating web reference", "Updating web references", items.Count), items.Count);
 
 					for (int i = 0; i < items.Count; i++) {

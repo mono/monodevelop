@@ -45,6 +45,8 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
 		public static Color LinkForegroundColor { get; internal set; }
+		public static Color SecondaryTextColor { get; internal set; }
+		public static Color SecondarySelectionTextColor { get; internal set; }
 
 		public static Color ErrorForegroundColor { get; internal set; }
 		public static Color WarningForegroundColor { get; internal set; }
@@ -328,6 +330,8 @@ namespace MonoDevelop.Ide.Gui
 			SubTabBarActiveTextColor = BaseSelectionTextColor;
 			SubTabBarSeparatorColor = SubTabBarTextColor;
 			InactiveBrowserPadBackground = InactivePadBackground;
+			SecondaryTextColor = Color.FromName ("#808080");
+			SecondarySelectionTextColor = Color.FromName ("#93cbff");
 
 			// Tabs
 

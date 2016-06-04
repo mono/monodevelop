@@ -54,6 +54,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			storeBranches = new ListStore (typeof(Branch), typeof(string), typeof(string), typeof(string));
 			listBranches.Model = storeBranches;
+			listBranches.SearchColumn = -1; // disable the interactive search
 			listBranches.HeadersVisible = true;
 
 			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("storeBranches__Branch", "storeBranches__DisplayName", "storeBranches__Tracking", "storeBranches__Name");
@@ -80,6 +81,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			storeRemotes = new TreeStore (typeof(Remote), typeof(string), typeof(string), typeof(string), typeof(string));
 			treeRemotes.Model = storeRemotes;
+			treeRemotes.SearchColumn = -1; // disable the interactive search
 			treeRemotes.HeadersVisible = true;
 
 			SemanticModelAttribute remotesModelAttr = new SemanticModelAttribute ("storeRemotes__Remote", "storeRemotes__Name", "storeRemotes__Url", "storeRemotes__BranchName", "storeRemotes__FullName");
@@ -105,6 +107,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			storeTags = new ListStore (typeof(string));
 			listTags.Model = storeTags;
+			listTags.SearchColumn = -1; // disable the interactive search
 			listTags.HeadersVisible = true;
 
 			SemanticModelAttribute tagsModelAttr = new SemanticModelAttribute ("storeTags__Name");

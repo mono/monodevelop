@@ -112,6 +112,7 @@ namespace MonoDevelop.VersionControl.Views
 			
 			filestore = new TreeStore (typeof (Xwt.Drawing.Image), typeof (string), typeof (string[]), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof (bool), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string));
 			filelist.Model = filestore;
+			filelist.SearchColumn = -1; // disable the interactive search
 			filelist.TestExpandRow += new Gtk.TestExpandRowHandler (OnTestExpandRow);
 			
 			ShowAll();
