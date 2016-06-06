@@ -264,6 +264,199 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("Package restore failed for project MyProject: RestoreErrorMessage", messageLogged);
 			Assert.AreEqual ("Package restore failed.", ex.GetBaseException ().Message);
 		}
+
+		[Test]
+		public void Execute_PackagesConfigFileDeletedDuringUpdate_FileServicePackagesConfigFileDeletionIsCancelled ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			string expectedFileName = @"d:\projects\MyProject\packages.config".ToNativePath ();
+			bool? fileRemovedResult = null;
+			packageManager.BeforeExecuteAction = () => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (expectedFileName);
+			};
+
+			action.Execute ();
+
+			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
+			Assert.IsFalse (fileRemovedResult.Value);
+		}
+
+		[Test]
+		public void Execute_ScriptFileDeletedDuringUpdate_FileDeletionIsNotCancelled ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			string fileName = @"d:\projects\MyProject\scripts\myscript.js".ToNativePath ();
+			bool? fileRemovedResult = null;
+			packageManager.BeforeExecuteAction = () => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (fileName);
+			};
+
+			action.Execute ();
+
+			Assert.IsTrue (fileRemovedResult.Value);
+			Assert.IsNull (fileRemover.FileRemoved);
+		}
+
+		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyTrue_ReferenceAddedHasLocalCopyTrue ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			packageManager.BeforeExecuteAction = () => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = true;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsTrue (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyTrueButCaseIsDifferent_ReferenceAddedHasLocalCopyTrue ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			packageManager.BeforeExecuteAction = () => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+				referenceBeingRemoved.LocalCopy = true;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsTrue (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyFalse_ReferenceAddedHasLocalCopyFalse ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			firstReferenceBeingAdded.LocalCopy = true;
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			packageManager.BeforeExecuteAction = () => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+				referenceBeingRemoved.LocalCopy = false;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_ReferenceBeingUpdatedHasLocalCopyFalseButCaseIsDifferent_ReferenceAddedHasLocalCopyFalse ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			var firstReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NewAssembly");
+			firstReferenceBeingAdded.LocalCopy = true;
+			var secondReferenceBeingAdded = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "NUnit.Framework");
+			packageManager.BeforeExecuteAction = () => {
+				var referenceBeingRemoved = ProjectReference.CreateCustomReference (ReferenceType.Assembly, "nunit.framework");
+				referenceBeingRemoved.LocalCopy = false;
+				packageManagementEvents.OnReferenceRemoving (referenceBeingRemoved);
+				packageManagementEvents.OnReferenceAdding (firstReferenceBeingAdded);
+				packageManagementEvents.OnReferenceAdding (secondReferenceBeingAdded);
+			};
+
+			action.Execute ();
+
+			Assert.IsTrue (firstReferenceBeingAdded.LocalCopy);
+			Assert.IsFalse (secondReferenceBeingAdded.LocalCopy);
+		}
+
+		[Test]
+		public void Execute_PackagesConfigFileNamedAfterProjectDeletedDuringUpdate_FileServicePackagesConfigFileDeletionIsCancelled ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			string expectedFileName = @"d:\projects\MyProject\packages.MyProject.config".ToNativePath ();
+			bool? fileRemovedResult = null;
+			packageManager.BeforeExecuteAction = () => {
+				fileRemovedResult = packageManagementEvents.OnFileRemoving (expectedFileName);
+			};
+			action.Execute ();
+
+			Assert.AreEqual (expectedFileName, fileRemover.FileRemoved);
+			Assert.IsFalse (fileRemovedResult.Value);
+		}
+
+		[Test]
+		public void Execute_NuGetProjectIsBuildIntegratedProject_OnAfterExecuteActionsIsCalled ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.AreEqual (packageManager.UpdateActions, nugetProject.ActionsPassedToOnAfterExecuteActions);
+		}
+
+		[Test]
+		public void Execute_NuGetProjectIsBuildIntegratedProject_PostProcessingIsRun ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.AreEqual (action.ProjectContext, nugetProject.PostProcessProjectContext);
+		}
+
+		[Test]
+		public void Execute_PackageHasALicenseToBeAcceptedWhichIsAccepted_UserPromptedToAcceptLicenses ()
+		{
+			CreateAction ();
+			action.LicenseAcceptanceService.AcceptLicensesReturnValue = true;
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			var metadata = packageMetadataResource.AddPackageMetadata ("Test", "1.2");
+			metadata.RequireLicenseAcceptance = true;
+			metadata.LicenseUrl = new Uri ("http://test.com/license");
+
+			action.Execute ();
+
+			var license = action.LicenseAcceptanceService.PackageLicensesAccepted.Single ();
+			Assert.AreEqual ("Test", license.PackageId);
+			Assert.AreEqual (metadata.LicenseUrl, license.LicenseUrl);
+			Assert.AreEqual (metadata.Authors, license.PackageAuthor);
+			Assert.AreEqual (metadata.Title, license.PackageTitle);
+			Assert.AreEqual ("Test", license.PackageIdentity.Id);
+			Assert.AreEqual ("1.2", license.PackageIdentity.Version.ToString ());
+		}
+
+		[Test]
+		public void Execute_PackageHasALicenseToBeAcceptedWhichIsNotAccepted_ExceptionThrown ()
+		{
+			CreateAction ();
+			action.LicenseAcceptanceService.AcceptLicensesReturnValue = false;
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			var metadata = packageMetadataResource.AddPackageMetadata ("Test", "1.2");
+			metadata.RequireLicenseAcceptance = true;
+			metadata.LicenseUrl = new Uri ("http://test.com/license");
+
+			Exception ex = Assert.Throws (typeof(AggregateException), () => action.Execute ());
+
+			Assert.AreEqual ("Licenses not accepted.", ex.GetBaseException ().Message);
+		}
 	}
 }
 

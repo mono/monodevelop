@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement
 		IDotNetProject dotNetProject;
 		NuGetProject project;
 		IEnumerable<NuGetProjectAction> actions;
-		List<SourceRepository> repositories;
+		List<SourceRepository> primarySources;
 		bool includePrerelease;
 		string projectName;
 
@@ -80,7 +80,7 @@ namespace MonoDevelop.PackageManagement
 			this.restoreManager = restoreManager;
 			this.packageManagementEvents = packageManagementEvents;
 
-			repositories = solutionManager.CreateSourceRepositoryProvider ().GetRepositories ().ToList ();
+			primarySources = solutionManager.CreateSourceRepositoryProvider ().GetRepositories ().ToList ();
 
 			project = solutionManager.GetNuGetProject (dotNetProject);
 
@@ -107,7 +107,7 @@ namespace MonoDevelop.PackageManagement
 				project,
 				CreateResolutionContext (),
 				context,
-				repositories,
+				primarySources,
 				new SourceRepository[0],
 				cancellationToken);
 
@@ -116,11 +116,21 @@ namespace MonoDevelop.PackageManagement
 				return;
 			}
 
-			await packageManager.ExecuteNuGetProjectActionsAsync (
-				project,
-				actions,
-				context,
-				cancellationToken);
+			await CheckLicenses (cancellationToken);
+
+			using (IDisposable fileMonitor = CreateFileMonitor ()) {
+				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
+					await packageManager.ExecuteNuGetProjectActionsAsync (
+						project,
+						actions,
+						context,
+						cancellationToken);
+				}
+			}
+
+			project.OnAfterExecuteActions (actions);
+
+			await project.RunPostProcessAsync (context, cancellationToken);
 		}
 
 		async Task<bool> ProjectHasPrereleasePackages (CancellationToken cancellationToken)
@@ -176,9 +186,41 @@ namespace MonoDevelop.PackageManagement
 			return Runtime.RunInMainThread (action);
 		}
 
+		Task CheckLicenses (CancellationToken cancellationToken)
+		{
+			return NuGetPackageLicenseAuditor.AcceptLicenses (
+				primarySources,
+				actions,
+				packageManager,
+				GetLicenseAcceptanceService (),
+				cancellationToken);
+		}
+
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
 		{
 			return actions;
+		}
+
+		protected virtual ILicenseAcceptanceService GetLicenseAcceptanceService ()
+		{
+			return new LicenseAcceptanceService ();
+		}
+
+		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
+		{
+			return new LocalCopyReferenceMaintainer (packageManagementEvents);
+		}
+
+		IDisposable CreateFileMonitor ()
+		{
+			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
+				packageManagementEvents,
+				GetFileRemover ());
+		}
+
+		protected virtual IFileRemover GetFileRemover ()
+		{
+			return new FileRemover ();
 		}
 	}
 }

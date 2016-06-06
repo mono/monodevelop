@@ -69,7 +69,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 			PackageManagementEvents = packageManagementEvents;
 		}
-		/*
+
 		protected override ILicenseAcceptanceService GetLicenseAcceptanceService ()
 		{
 			return LicenseAcceptanceService;
@@ -78,7 +78,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		protected override IFileRemover GetFileRemover ()
 		{
 			return FileRemover;
-		}*/
+		}
 	}
 }
 
