@@ -44,7 +44,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		static PackageIdentity CreatePackageIdentity (string packageId, string packageVersion)
 		{
-			var nuGetVersion = new NuGetVersion (packageVersion);
+			NuGetVersion nuGetVersion = null;
+			if (packageVersion != null) {
+				nuGetVersion = new NuGetVersion (packageVersion);
+			}
 			return new PackageIdentity (packageId, nuGetVersion);
 		}
 	}

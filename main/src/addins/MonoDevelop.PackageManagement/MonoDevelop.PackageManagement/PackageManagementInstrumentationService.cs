@@ -109,7 +109,9 @@ namespace MonoDevelop.PackageManagement
 			foreach (NuGetProjectAction action in actions) {
 				var metadata = new Dictionary<string, string> ();
 				metadata["PackageId"] = action.PackageIdentity.Id;
-				metadata["Package"] = GetFullPackageInfo (action.PackageIdentity);
+				if (action.PackageIdentity.HasVersion) {
+					metadata["Package"] = GetFullPackageInfo (action.PackageIdentity);
+				}
 
 				switch (action.NuGetProjectActionType) {
 					case NuGetProjectActionType.Install:
