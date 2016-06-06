@@ -44,8 +44,14 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		internal protected override void Initialize (Project project)
+		{
+			base.Initialize (project);
+			StartAction = StartActions.Project;
+		}
+
 		[ItemProperty (DefaultValue = "")]
-		public string StartAction { get; set; } = StartActions.Project;
+		public string StartAction { get; set; }
 
 		[ItemProperty (DefaultValue = "")]
 		public FilePath StartProgram { get; set; } = "";
@@ -102,6 +108,7 @@ namespace MonoDevelop.Projects
 
 		internal protected override void Write (IPropertySet pset)
 		{
+			pset.SetPropertyOrder ("StartAction", "StartProgram", "StartArguments", "StartWorkingDirectory", "ExternalConsole", "ConsolePause", "EnvironmentVariables");
 			pset.WriteObjectProperties (monoParameters, monoParameters.GetType (), false);
 			base.Write (pset);
 		}

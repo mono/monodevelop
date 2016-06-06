@@ -39,6 +39,22 @@ namespace MonoDevelop.Projects
 		{
 		}
 
+		internal protected virtual void Initialize (Project project)
+		{
+			var t = System.Diagnostics.Stopwatch.StartNew ();
+			using (var pi = project.MSBuildProject.CreateInstance ()) {
+				pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
+				pi.SetGlobalProperty ("RunConfiguration", "");
+				pi.OnlyEvaluateProperties = true;
+				pi.Evaluate ();
+				var lg = pi.GetPropertiesLinkedToGroup (MainPropertyGroup);
+				Read (lg);
+				properties = MainPropertyGroup;
+				MainPropertyGroup.UnlinkFromProjectInstance ();
+			}
+			Console.WriteLine ("Init Config " + Name + ": " + t.ElapsedMilliseconds);
+		}
+
 		public new Project ParentItem {
 			get { return (Project)base.ParentItem; }
 		}
@@ -120,11 +136,13 @@ namespace MonoDevelop.Projects
 						mainPropertyGroup = new MSBuildPropertyGroup ();
 					else
 						mainPropertyGroup = ParentItem.MSBuildProject.CreatePropertyGroup ();
+					mainPropertyGroup.IgnoreDefaultValues = true;
 				}
 				return mainPropertyGroup;
 			}
 			set {
 				mainPropertyGroup = value;
+				mainPropertyGroup.IgnoreDefaultValues = true;
 			}
 		}
 

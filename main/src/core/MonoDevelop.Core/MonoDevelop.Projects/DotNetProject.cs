@@ -1704,10 +1704,6 @@ namespace MonoDevelop.Projects
 						drc.ExternalConsole = cmd.ExternalConsole;
 						drc.PauseConsoleOutput = cmd.PauseExternalConsole;
 						defaultConf.CustomCommands.Remove (cmd);
-					} else if (defaultConf.Properties.HasProperty ("ExternalConsole")) {
-						drc.PauseConsoleOutput = defaultConf.PauseConsoleOutput;
-						drc.ExternalConsole = defaultConf.ExternalConsole;
-						defaultConf.Properties.RemoveProperty ("ExternalConsole");
 					}
 				}
 			}

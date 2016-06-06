@@ -69,6 +69,7 @@ namespace MonoDevelop.Projects
 		bool msbuildUpdatePending;
 		ProjectExtension projectExtension;
 		RunConfigurationCollection runConfigurations;
+		bool defaultRunConfigurationCreated;
 
 		List<string> defaultImports;
 
@@ -92,7 +93,10 @@ namespace MonoDevelop.Projects
 		}
 
 		public RunConfigurationCollection RunConfigurations {
-			get { return runConfigurations; }
+			get {
+				CreateDefaultConfiguration ();
+				return runConfigurations; 
+			}
 		}
 
 		protected Project (params string[] flavorGuids): this()
@@ -299,42 +303,70 @@ namespace MonoDevelop.Projects
 		protected override void OnItemReady ()
 		{
 			base.OnItemReady ();
-
-			// If the project doesn't have a Default run configuration, create one
-			if (!RunConfigurations.Any (c => c.IsDefaultConfiguration)) {
-				var rc = CreateRunConfiguration ("Default");
-				ImportDefaultRunConfiguration (rc);
-				RunConfigurations.Insert (0, rc);
-			}
 		}
 
 		internal virtual void ImportDefaultRunConfiguration (ProjectRunConfiguration config)
 		{
-			
 		}
 
 		public ProjectRunConfiguration CreateRunConfiguration (string name)
+		{
+			var c = CreateRunConfigurationInternal (name);
+
+			// When creating a ProcessRunConfiguration, set the value of ExternalConsole and PauseConsoleOutput from the default configuration
+			var pc = c as ProcessRunConfiguration;
+			if (pc != null) {
+				var dc = RunConfigurations.FirstOrDefault (rc => rc.IsDefaultConfiguration) as ProcessRunConfiguration;
+				if (dc != null) {
+					pc.ExternalConsole = dc.ExternalConsole;
+					pc.PauseConsoleOutput = dc.PauseConsoleOutput;
+				}
+			}
+			return c;
+		}
+
+		ProjectRunConfiguration CreateRunConfigurationInternal (string name)
+		{
+			var c = CreateUninitializedRunConfiguration (name);
+			c.Initialize (this);
+			return c;
+		}
+
+		public ProjectRunConfiguration CreateUninitializedRunConfiguration (string name)
 		{
 			return ProjectExtension.OnCreateRunConfiguration (name);
 		}
 
 		public ProjectRunConfiguration CloneRunConfiguration (ProjectRunConfiguration runConfig)
 		{
-			var clone = CreateRunConfiguration (runConfig.Name);
+			var clone = CreateUninitializedRunConfiguration (runConfig.Name);
 			clone.CopyFrom (runConfig, false);
 			return clone;
 		}
 
 		public ProjectRunConfiguration CloneRunConfiguration (ProjectRunConfiguration runConfig, string newName)
 		{
-			var clone = CreateRunConfiguration (newName);
+			var clone = CreateUninitializedRunConfiguration (newName);
 			clone.CopyFrom (runConfig, true);
 			return clone;
 		}
 
+		void CreateDefaultConfiguration ()
+		{
+			// If the project doesn't have a Default run configuration, create one
+			if (!defaultRunConfigurationCreated) {
+				defaultRunConfigurationCreated = true;
+				if (!runConfigurations.Any (c => c.IsDefaultConfiguration)) {
+					var rc = CreateRunConfigurationInternal ("Default");
+					ImportDefaultRunConfiguration (rc);
+					runConfigurations.Insert (0, rc);
+				}
+			}
+		}
+
 		protected override IEnumerable<SolutionItemRunConfiguration> OnGetRunConfigurations ()
 		{
-			return runConfigurations;
+			return RunConfigurations;
 		}
 
 		protected virtual void OnGetDefaultImports (List<string> imports)
@@ -2424,7 +2456,7 @@ namespace MonoDevelop.Projects
 
 		void LoadRunConfiguration (ProgressMonitor monitor, ConfigData cgrp, string configName)
 		{
-			var runConfig = (ProjectRunConfiguration)CreateRunConfiguration (configName);
+			var runConfig = (ProjectRunConfiguration)CreateUninitializedRunConfiguration (configName);
 			if (cgrp.Group != null) {
 				runConfig.MainPropertyGroup = cgrp.Group;
 				runConfig.StoreInUserFile = cgrp.Group.ParentProject == userProject;
@@ -2750,17 +2782,19 @@ namespace MonoDevelop.Projects
 			GetRunConfigData (configData, msproject, false);
 			GetRunConfigData (configData, userProject, false);
 
-			if (runConfigurations.Count > 0) {
+			if (RunConfigurations.Count > 0) {
 
 				// Write configuration data, creating new property groups if necessary
 
-				foreach (ProjectRunConfiguration runConfig in runConfigurations) {
+				var defaultConfig = CreateRunConfigurationInternal ("Default");
+
+				foreach (ProjectRunConfiguration runConfig in RunConfigurations) {
 
 					MSBuildPropertyGroup pg = runConfig.MainPropertyGroup;
 					ConfigData cdata = configData.FirstOrDefault (cd => cd.Group == pg);
 					var targetProject = runConfig.StoreInUserFile ? userProject : msproject;
 
-					if (runConfig.IsDefaultConfiguration && runConfig.Equals (CreateRunConfiguration ("Default"))) {
+					if (runConfig.IsDefaultConfiguration && runConfig.Equals (defaultConfig)) {
 						// If the default configuration has the default values, then there is no need to save it.
 						// If this configuration was added after loading the project, we are not adding it to the msproject and we are done.
 						// If this configuration was loaded from the project and later modified to the default values, we dont set cdata.Exists=true,
@@ -2798,6 +2832,7 @@ namespace MonoDevelop.Projects
 
 					cdata.Exists = true;
 					ProjectExtension.OnWriteRunConfiguration (monitor, runConfig, runConfig.Properties);
+					runConfig.MainPropertyGroup.PurgeDefaultProperties ();
 				}
 			}
 

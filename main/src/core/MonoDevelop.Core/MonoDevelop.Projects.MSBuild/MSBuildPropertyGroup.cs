@@ -259,6 +259,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal IPropertyGroupListener PropertyGroupListener { get; set; }
 
+		internal void UnlinkFromProjectInstance ()
+		{
+			PropertyGroupListener = null;
+		}
+
 		MSBuildProperty FindExistingProperty (int index, int inc)
 		{
 			while (index >= 0 && index < propertyOrder.Count) {
