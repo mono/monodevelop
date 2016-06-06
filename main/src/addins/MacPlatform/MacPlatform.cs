@@ -895,36 +895,33 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		public override bool RestartIde (bool reopenWorkspace)
+		internal override void RestartIde (bool reopenWorkspace)
 		{
 			FilePath bundlePath = NSBundle.MainBundle.BundlePath;
 
-			if (bundlePath.Extension != ".app")
-				return base.RestartIde (reopenWorkspace);
+			if (bundlePath.Extension != ".app") {
+				base.RestartIde (reopenWorkspace);
+				return;
+			}
 
 			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
 
-			if (IdeApp.Exit ()) {
+			var proc = new Process ();
 
-				var proc = new Process ();
+			var path = bundlePath.Combine ("Contents", "MacOS");
+			var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
+				CreateNoWindow = true,
+				UseShellExecute = false,
+				WorkingDirectory = path,
+				Arguments = "--start-app-bundle",
+			};
 
-				var path = bundlePath.Combine ("Contents", "MacOS");
-				var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
-					CreateNoWindow = true,
-					UseShellExecute = false,
-					WorkingDirectory = path,
-					Arguments = "--start-app-bundle",
-				};
+			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			if (!string.IsNullOrEmpty (recentWorkspace))
+				psi.Arguments += " " + recentWorkspace;
 
-				var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
-				if (!string.IsNullOrEmpty (recentWorkspace))
-					psi.Arguments += " " + recentWorkspace;
-
-				proc.StartInfo = psi;
-				proc.Start ();
-				return true;
-			}
-			return false;
+			proc.StartInfo = psi;
+			proc.Start ();
 		}
 	}
 }

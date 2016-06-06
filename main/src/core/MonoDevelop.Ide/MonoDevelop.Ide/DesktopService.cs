@@ -376,9 +376,9 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		/// <returns> false if the user cancels exiting. </returns>
 		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
-		public static bool RestartIde (bool reopenWorkspace)
+		internal static void RestartIde (bool reopenWorkspace)
 		{
-			return PlatformService.RestartIde (reopenWorkspace);
+			PlatformService.RestartIde (reopenWorkspace);
 		}
 	}
 }

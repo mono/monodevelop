@@ -409,7 +409,11 @@ namespace MonoDevelop.Ide
 		/// </remarks>
 		public static bool Restart (bool reopenWorkspace = false)
 		{
-			return DesktopService.RestartIde (reopenWorkspace);
+			if (Exit ()) {
+				DesktopService.RestartIde (reopenWorkspace);
+				return true;
+			}
+			return false;
 		}
 		
 		internal static bool OnExit ()

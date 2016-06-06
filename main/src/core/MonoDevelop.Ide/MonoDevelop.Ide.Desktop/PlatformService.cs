@@ -511,9 +511,8 @@ namespace MonoDevelop.Ide.Desktop
 		/// <summary>
 		/// Restarts MonoDevelop
 		/// </summary>
-		/// <returns> false if the user cancels exiting. </returns>
 		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
-		public virtual bool RestartIde (bool reopenWorkspace)
+		internal virtual void RestartIde (bool reopenWorkspace)
 		{
 			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
 
@@ -522,26 +521,22 @@ namespace MonoDevelop.Ide.Desktop
 				path = path.ChangeExtension (null);
 
 			if (!File.Exists (path))
-				return false;
+				return;
 
-			if (IdeApp.Exit ()) {
-				var proc = new Process ();
+			var proc = new Process ();
 				
-				var psi = new ProcessStartInfo (path) {
-					CreateNoWindow = true,
-					UseShellExecute = false,
-					WorkingDirectory = Environment.CurrentDirectory,
-				};
+			var psi = new ProcessStartInfo (path) {
+				CreateNoWindow = true,
+				UseShellExecute = false,
+				WorkingDirectory = Environment.CurrentDirectory,
+			};
 
-				var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
-				if (!string.IsNullOrEmpty (recentWorkspace))
-					psi.Arguments = recentWorkspace;
-				
-				proc.StartInfo = psi;
-				proc.Start ();
-				return true;
-			}
-			return false;
+			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			if (!string.IsNullOrEmpty (recentWorkspace))
+				psi.Arguments = recentWorkspace;
+			
+			proc.StartInfo = psi;
+			proc.Start ();
 		}
 	}
 }
