@@ -52,6 +52,7 @@ using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
+using System.Diagnostics;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -904,17 +905,23 @@ namespace MonoDevelop.MacIntegration
 			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
 
 			if (IdeApp.Exit ()) {
-				var asi = new ApplicationStartInfo (bundlePath) {
-					Async = true,
-					NewInstance = true,
+
+				var proc = new Process ();
+
+				var path = bundlePath.Combine ("Contents", "MacOS");
+				var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
+					CreateNoWindow = true,
+					UseShellExecute = false,
+					WorkingDirectory = path,
+					Arguments = "--start-app-bundle",
 				};
 
 				var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
-
 				if (!string.IsNullOrEmpty (recentWorkspace))
-					asi.Args = new string [] { recentWorkspace };
+					psi.Arguments += " " + recentWorkspace;
 
-				LaunchServices.OpenApplication (asi);
+				proc.StartInfo = psi;
+				proc.Start ();
 				return true;
 			}
 			return false;
