@@ -1,5 +1,5 @@
 ﻿//
-// IBuildIntegratedNuGetProject.cs
+// TestableUninstallNuGetPackageAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,19 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using NuGet.PackageManagement;
-using NuGet.ProjectManagement;
-
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	internal interface IBuildIntegratedNuGetProject
+	class TestableUninstallNuGetPackageAction : UninstallNuGetPackageAction
 	{
-		void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions);
-		void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions);
-		Task PostProcessAsync (INuGetProjectContext nuGetProjectContext, CancellationToken token);
+		public FakeNuGetProjectContext ProjectContext;
+		public FakeNuGetPackageManager PackageManager;
+		public PackageManagementEvents PackageManagementEvents;
+
+		public TestableUninstallNuGetPackageAction (
+			FakeSolutionManager solutionManager,
+			FakeDotNetProject project)
+			: this (
+				solutionManager,
+				project,
+				new FakeNuGetProjectContext (),
+				new FakeNuGetPackageManager (),
+				new PackageManagementEvents ())
+		{
+		}
+
+		public TestableUninstallNuGetPackageAction (
+			FakeSolutionManager solutionManager,
+			FakeDotNetProject dotNetProject,
+			FakeNuGetProjectContext projectContext,
+			FakeNuGetPackageManager packageManager,
+			PackageManagementEvents packageManagementEvents)
+			: base (
+				solutionManager,
+				dotNetProject,
+				projectContext,
+				packageManager,
+				packageManagementEvents)
+		{
+			ProjectContext = projectContext;
+			PackageManager = packageManager;
+
+			PackageManagementEvents = packageManagementEvents;
+		}
 	}
 }
 

@@ -34,27 +34,38 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class UninstallNuGetPackageAction : INuGetPackageAction, INuGetProjectActionsProvider
 	{
-		NuGetPackageManager packageManager;
+		INuGetPackageManager packageManager;
 		IDotNetProject dotNetProject;
 		NuGetProject project;
+		INuGetProjectContext context;
+		IPackageManagementEvents packageManagementEvents;
 		IEnumerable<NuGetProjectAction> actions;
 
 		public UninstallNuGetPackageAction (
 			IMonoDevelopSolutionManager solutionManager,
 			IDotNetProject dotNetProject)
+			: this (
+				solutionManager,
+				dotNetProject,
+				new NuGetProjectContext (),
+				new MonoDevelopNuGetPackageManager (solutionManager),
+				PackageManagementServices.PackageManagementEvents)
+		{
+		}
+
+		public UninstallNuGetPackageAction (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject dotNetProject,
+			INuGetProjectContext projectContext,
+			INuGetPackageManager packageManager,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.dotNetProject = dotNetProject;
-
-			var restartManager = new DeleteOnRestartManager ();
+			this.context = projectContext;
+			this.packageManager = packageManager;
+			this.packageManagementEvents = packageManagementEvents;
 
 			project = solutionManager.GetNuGetProject (dotNetProject);
-
-			packageManager = new NuGetPackageManager (
-				solutionManager.CreateSourceRepositoryProvider (),
-				solutionManager.Settings,
-				solutionManager,
-				restartManager
-			);
 		}
 
 		public string PackageId { get; set; }
@@ -67,15 +78,13 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute (CancellationToken cancellationToken)
 		{
-			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject)) {
+			using (var monitor = new NuGetPackageEventsMonitor (dotNetProject, packageManagementEvents)) {
 				ExecuteAsync (cancellationToken).Wait ();
 			}
 		}
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
-			INuGetProjectContext context = CreateProjectContext ();
-
 			actions = await packageManager.PreviewUninstallPackageAsync (
 				project,
 				PackageId,
@@ -99,11 +108,6 @@ namespace MonoDevelop.PackageManagement
 		public bool HasPackageScriptsToRun ()
 		{
 			return false;
-		}
-
-		INuGetProjectContext CreateProjectContext ()
-		{
-			return new NuGetProjectContext (); 
 		}
 
 		UninstallationContext CreateUninstallationContext ()

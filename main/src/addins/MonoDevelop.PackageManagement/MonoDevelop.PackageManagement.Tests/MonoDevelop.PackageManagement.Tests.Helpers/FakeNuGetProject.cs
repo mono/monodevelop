@@ -79,6 +79,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			InstalledPackages.Add (packageReference);
 		}
 
+		public List<NuGetProjectAction> ActionsPassedToOnBeforeUninstall;
+
+		public void OnBeforeUninstall (IEnumerable<NuGetProjectAction> actions)
+		{
+			ActionsPassedToOnBeforeUninstall = actions.ToList ();
+		}
+
 		public List<NuGetProjectAction> ActionsPassedToOnAfterExecuteActions;
 
 		public void OnAfterExecuteActions (IEnumerable<NuGetProjectAction> actions)

@@ -175,6 +175,31 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			var package = new PackageIdentity (packageId, new NuGetVersion (version));
 			PackagesInPackagesFolder.Add (package);
 		}
+
+		public List<FakeNuGetProjectAction> UninstallActions = new List<FakeNuGetProjectAction> ();
+
+		public NuGetProject PreviewUninstallProject;
+		public string PreviewUninstallPackageId;
+		public UninstallationContext PreviewUninstallContext;
+		public INuGetProjectContext PreviewUninstallProjectContext;
+		public CancellationToken PreviewUninstallCancellationToken;
+
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUninstallPackageAsync (
+			NuGetProject nuGetProject,
+			string packageId,
+			UninstallationContext uninstallationContext,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			PreviewUninstallProject = nuGetProject;
+			PreviewUninstallPackageId = packageId;
+			PreviewUninstallContext = uninstallationContext;
+			PreviewUninstallProjectContext = nuGetProjectContext;
+			PreviewUninstallCancellationToken = token;
+
+			IEnumerable<NuGetProjectAction> actions = UninstallActions.ToArray ();
+			return Task.FromResult (actions);
+		}
 	}
 }
 

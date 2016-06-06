@@ -74,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 
 		public static void OnBeforeUninstall (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)
 		{
-			var buildIntegratedProject = project as BuildIntegratedProjectSystem;
+			var buildIntegratedProject = project as IBuildIntegratedNuGetProject;
 			if (buildIntegratedProject != null) {
 				buildIntegratedProject.OnBeforeUninstall (actions);
 			}

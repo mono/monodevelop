@@ -143,6 +143,22 @@ namespace MonoDevelop.PackageManagement
 				token
 			);
 		}
+
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUninstallPackageAsync (
+			NuGetProject nuGetProject,
+			string packageId,
+			UninstallationContext uninstallationContext,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			return packageManager.PreviewUninstallPackageAsync (
+				nuGetProject,
+				packageId,
+				uninstallationContext,
+				nuGetProjectContext,
+				token
+			);
+		}
 	}
 }
 
