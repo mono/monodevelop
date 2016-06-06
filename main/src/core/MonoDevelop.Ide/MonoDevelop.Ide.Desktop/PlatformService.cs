@@ -521,7 +521,7 @@ namespace MonoDevelop.Ide.Desktop
 				path = path.ChangeExtension (null);
 
 			if (!File.Exists (path))
-				return;
+				throw new Exception (path + " not found");
 
 			var proc = new Process ();
 				

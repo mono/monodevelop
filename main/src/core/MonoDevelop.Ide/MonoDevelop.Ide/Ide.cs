@@ -410,7 +410,13 @@ namespace MonoDevelop.Ide
 		public static bool Restart (bool reopenWorkspace = false)
 		{
 			if (Exit ()) {
-				DesktopService.RestartIde (reopenWorkspace);
+				try {
+					DesktopService.RestartIde (reopenWorkspace);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Restarting IDE failed", ex);
+				}
+				// return true here even if DesktopService.RestartIde has failed,
+				// because the Ide has already been closed.
 				return true;
 			}
 			return false;
