@@ -76,6 +76,17 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void Execute_PackageIdAndVersionIsSet_ActionsAvailableForInstrumentation ()
+		{
+			CreateAction ();
+			AddUninstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.AreEqual (action.GetNuGetProjectActions(), packageManager.UninstallActions);
+		}
+
+		[Test]
 		public void Execute_PackageIdAndVersionIsSet_InstallsPackageUsingResolvedActions ()
 		{
 			CreateAction ("Test");

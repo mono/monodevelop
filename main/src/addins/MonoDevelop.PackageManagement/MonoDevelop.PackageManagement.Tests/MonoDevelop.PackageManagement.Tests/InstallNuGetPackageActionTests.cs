@@ -111,6 +111,17 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void Execute_PackageIdAndVersionIsSet_ActionsAvailableForInstrumentation ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.AreEqual (action.GetNuGetProjectActions(), packageManager.InstallActions);
+		}
+
+		[Test]
 		public void Execute_PackageIdAndVersionIsSet_DirectInstallSetAndCleared ()
 		{
 			CreateAction ("Test", "1.2");

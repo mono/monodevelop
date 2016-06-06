@@ -474,6 +474,7 @@
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetPackageManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IBuildIntegratedNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRestoreManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

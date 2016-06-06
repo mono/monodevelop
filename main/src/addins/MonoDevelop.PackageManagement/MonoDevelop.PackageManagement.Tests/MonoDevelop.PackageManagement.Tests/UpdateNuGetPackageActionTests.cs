@@ -33,7 +33,6 @@ using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Resolver;
-using NuGet.Versioning;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -87,7 +86,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_PackageIdAndVersionIsSet_ActionsResolvedFromNuGetPackageManager ()
+		public void Execute_PackageId_ActionsResolvedFromNuGetPackageManager ()
 		{
 			CreateAction ("Test");
 			AddInstallPackageIntoProjectAction ("Test", "1.2");
@@ -102,6 +101,17 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (VersionConstraints.None, packageManager.PreviewUpdateResolutionContext.VersionConstraints);
 			Assert.IsFalse (packageManager.PreviewUpdateResolutionContext.IncludeUnlisted);
 			Assert.AreEqual (DependencyBehavior.Lowest, packageManager.PreviewUpdateResolutionContext.DependencyBehavior);
+		}
+
+		[Test]
+		public void Execute_PackageIdIsSet_ActionsAvailableForInstrumentation ()
+		{
+			CreateAction ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.AreEqual (action.GetNuGetProjectActions(), packageManager.UpdateActions);
 		}
 
 		[Test]
@@ -371,6 +381,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.Execute ();
 
 			Assert.IsNull (packageManager.ExecutedActions);
+			Assert.AreEqual (project, noUpdateFoundForProject);
 		}
 	}
 }

@@ -170,6 +170,25 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return Task.FromResult (actions);
 		}
 
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			NuGetProject nuGetProject,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			return PreviewUpdatePackagesAsync (
+				null,
+				nuGetProject,
+				resolutionContext,
+				nuGetProjectContext,
+				primarySources,
+				secondarySources,
+				token
+			);
+		}
+
 		public void AddPackageToPackagesFolder (string packageId, string version)
 		{
 			var package = new PackageIdentity (packageId, new NuGetVersion (version));

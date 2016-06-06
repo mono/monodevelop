@@ -144,6 +144,24 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			NuGetProject nuGetProject,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token)
+		{
+			return packageManager.PreviewUpdatePackagesAsync (
+				nuGetProject,
+				resolutionContext,
+				nuGetProjectContext,
+				primarySources,
+				secondarySources,
+				token
+			);
+		}
+
 		public Task<IEnumerable<NuGetProjectAction>> PreviewUninstallPackageAsync (
 			NuGetProject nuGetProject,
 			string packageId,
