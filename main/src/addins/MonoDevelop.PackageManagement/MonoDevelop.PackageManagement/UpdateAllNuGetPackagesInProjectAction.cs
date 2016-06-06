@@ -32,6 +32,8 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using NuGet.PackageManagement;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Resolver;
@@ -49,6 +51,7 @@ namespace MonoDevelop.PackageManagement
 		NuGetProject project;
 		IEnumerable<NuGetProjectAction> actions;
 		List<SourceRepository> primarySources;
+		IEnumerable<PackageReference> packageReferences;
 		bool includePrerelease;
 		string projectName;
 
@@ -131,11 +134,13 @@ namespace MonoDevelop.PackageManagement
 			project.OnAfterExecuteActions (actions);
 
 			await project.RunPostProcessAsync (context, cancellationToken);
+
+			await OpenReadmeFiles (cancellationToken);
 		}
 
 		async Task<bool> ProjectHasPrereleasePackages (CancellationToken cancellationToken)
 		{
-			var packageReferences = await project.GetInstalledPackagesAsync (cancellationToken);
+			packageReferences = await project.GetInstalledPackagesAsync (cancellationToken);
 			return packageReferences.Any (packageReference => packageReference.PackageIdentity.Version.IsPrerelease);
 		}
 
@@ -221,6 +226,19 @@ namespace MonoDevelop.PackageManagement
 		protected virtual IFileRemover GetFileRemover ()
 		{
 			return new FileRemover ();
+		}
+
+		Task OpenReadmeFiles (CancellationToken cancellationToken)
+		{
+			var packages = GetPackagesUpdated ().ToList ();
+			return packageManager.OpenReadmeFiles (project, packages, context, cancellationToken);
+		}
+
+		IEnumerable<PackageIdentity> GetPackagesUpdated ()
+		{
+			return actions
+				.Where (action => action.NuGetProjectActionType == NuGetProjectActionType.Install)
+				.Select (action => action.PackageIdentity);
 		}
 	}
 }

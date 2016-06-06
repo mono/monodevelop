@@ -89,6 +89,12 @@ namespace MonoDevelop.PackageManagement
 		void ClearDirectInstall (INuGetProjectContext nuGetProjectContext);
 
 		bool PackageExistsInPackagesFolder (PackageIdentity packageIdentity);
+
+		Task OpenReadmeFiles (
+			NuGetProject project,
+			IEnumerable<PackageIdentity> packages,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token);
 	}
 }
 

@@ -85,6 +85,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManager.UpdateActions.Add (projectAction);
 		}
 
+		void AddUninstallPackageFromProjectAction (string packageId, string version)
+		{
+			var projectAction = new FakeNuGetProjectAction (packageId, version, NuGetProjectActionType.Uninstall);
+			packageManager.UpdateActions.Add (projectAction);
+		}
+
 		[Test]
 		public void Execute_PackageId_ActionsResolvedFromNuGetPackageManager ()
 		{
@@ -382,6 +388,36 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsNull (packageManager.ExecutedActions);
 			Assert.AreEqual (project, noUpdateFoundForProject);
+		}
+
+		/// <summary>
+		/// Must call NuGetPackageManager.SetDirectInstall to ensure that any
+		/// readme.txt is opened for a package when it is updated.
+		/// </summary>
+		[Test]
+		public void Execute_PackageIdIsSet_DirectInstallSetAndCleared ()
+		{
+			CreateAction ("Test");
+			AddUninstallPackageFromProjectAction ("Test", "1.0");
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.AreEqual ("Test", packageManager.SetDirectInstallPackageIdentity.Id);
+			Assert.AreEqual ("1.2", packageManager.SetDirectInstallPackageIdentity.Version.ToString ());
+			Assert.AreEqual (action.ProjectContext, packageManager.SetDirectInstallProjectContext);
+			Assert.AreSame (action.ProjectContext, packageManager.ClearDirectInstallProjectContext);
+		}
+
+		[Test]
+		public void Execute_ProjectJsonDoesNotUpdatePackage_NullReferenceNotThrownWhenSettingDirectInstall ()
+		{
+			CreateAction ("Test");
+			AddUninstallPackageFromProjectAction ("Test", "1.0");
+
+			Assert.DoesNotThrow (() => action.Execute ());
+
+			Assert.IsNull (packageManager.SetDirectInstallPackageIdentity);
 		}
 	}
 }

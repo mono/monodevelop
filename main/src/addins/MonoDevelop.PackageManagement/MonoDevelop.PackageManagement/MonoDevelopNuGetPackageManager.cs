@@ -4,34 +4,36 @@
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// OpenReadmeFiles based on NuGet.Clients
+// src/NuGet.Core/NuGet.PackageManagement/NuGetPackageManager.cs
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
+// Copyright (c) 2016 Xamarin Inc.
+// Copyright (c) .NET Foundation. All rights reserved.
 //
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using NuGet.Configuration;
 using NuGet.Logging;
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
+using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
@@ -40,14 +42,17 @@ namespace MonoDevelop.PackageManagement
 	internal class MonoDevelopNuGetPackageManager : INuGetPackageManager
 	{
 		NuGetPackageManager packageManager;
+		ISettings settings;
 
 		public MonoDevelopNuGetPackageManager (IMonoDevelopSolutionManager solutionManager)
 		{
 			var restartManager = new DeleteOnRestartManager ();
 
+			settings = solutionManager.Settings;
+
 			packageManager = new NuGetPackageManager (
 				solutionManager.CreateSourceRepositoryProvider (),
-				solutionManager.Settings,
+				settings,
 				solutionManager,
 				restartManager
 			);
@@ -176,6 +181,51 @@ namespace MonoDevelop.PackageManagement
 				nuGetProjectContext,
 				token
 			);
+		}
+
+		public async Task OpenReadmeFiles (
+			NuGetProject nuGetProject,
+			IEnumerable<PackageIdentity> packages,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			var executionContext = nuGetProjectContext.ExecutionContext;
+			if (executionContext != null) {
+				foreach (var package in packages) {
+					await OpenReadmeFiles (nuGetProject, package, executionContext, token);
+				}
+			}
+		}
+
+		Task OpenReadmeFiles (
+			NuGetProject nuGetProject,
+			PackageIdentity package,
+			NuGet.ProjectManagement.ExecutionContext executionContext,
+			CancellationToken token)
+		{
+			//packagesPath is different for project.json vs Packages.config scenarios. So check if the project is a build-integrated project
+			var buildIntegratedProject = nuGetProject as BuildIntegratedNuGetProject;
+			var readmeFilePath = String.Empty;
+
+			if (buildIntegratedProject != null) {
+				var packageFolderPath = BuildIntegratedProjectUtility.GetPackagePathFromGlobalSource (
+					SettingsUtility.GetGlobalPackagesFolder (settings),
+					package);
+
+				if (Directory.Exists (packageFolderPath)) {
+					readmeFilePath = Path.Combine (packageFolderPath, Constants.ReadmeFileName);
+				}
+			} else {
+				var packagePath = packageManager.PackagesFolderNuGetProject.GetInstalledPackageFilePath (package);
+				if (File.Exists(packagePath)) {
+					readmeFilePath = Path.Combine (Path.GetDirectoryName (packagePath), Constants.ReadmeFileName);
+				}
+			}
+
+			if (File.Exists (readmeFilePath) && !token.IsCancellationRequested) {
+				return executionContext.OpenFile (readmeFilePath);
+			}
+			return Task.FromResult (0);
 		}
 	}
 }

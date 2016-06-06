@@ -219,6 +219,25 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			IEnumerable<NuGetProjectAction> actions = UninstallActions.ToArray ();
 			return Task.FromResult (actions);
 		}
+
+		public NuGetProject OpenReadmeFilesForProject;
+		public List<PackageIdentity> OpenReadmeFilesForPackages;
+		public INuGetProjectContext OpenReadmeFilesWithProjectContext;
+		public CancellationToken OpenReadmeFilesWithCancellationToken;
+
+		public Task OpenReadmeFiles (
+			NuGetProject project,
+			IEnumerable<PackageIdentity> packages,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token)
+		{
+			OpenReadmeFilesForProject = project;
+			OpenReadmeFilesForPackages = packages.ToList ();
+			OpenReadmeFilesWithProjectContext = nuGetProjectContext;
+			OpenReadmeFilesWithCancellationToken = token;
+
+			return Task.FromResult (0);
+		}
 	}
 }
 

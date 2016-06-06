@@ -85,6 +85,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManager.UpdateActions.Add (projectAction);
 		}
 
+		void AddUninstallPackageFromProjectAction (string packageId, string version)
+		{
+			var projectAction = new FakeNuGetProjectAction (packageId, version, NuGetProjectActionType.Uninstall);
+			packageManager.UpdateActions.Add (projectAction);
+		}
+
 		void AddPackageToProject (string packageId, string version)
 		{
 			nugetProject.AddPackageReference (packageId, version);
@@ -456,6 +462,23 @@ namespace MonoDevelop.PackageManagement.Tests
 			Exception ex = Assert.Throws (typeof(AggregateException), () => action.Execute ());
 
 			Assert.AreEqual ("Licenses not accepted.", ex.GetBaseException ().Message);
+		}
+
+		[Test]
+		public void Execute_OnePackageIsUpdated_OpenReadmeFileForPackageIfItExists ()
+		{
+			CreateAction ();
+			AddPackageToProject ("Test", "1.0");
+			AddUninstallPackageFromProjectAction ("Test", "1.0");
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			var packageIdentity = packageManager.OpenReadmeFilesForPackages.Single ();
+			Assert.AreEqual (nugetProject, packageManager.OpenReadmeFilesForProject);
+			Assert.AreEqual (action.ProjectContext, packageManager.OpenReadmeFilesWithProjectContext);
+			Assert.AreEqual ("Test", packageIdentity.Id);
+			Assert.AreEqual ("1.2", packageIdentity.Version.ToString ());
 		}
 	}
 }

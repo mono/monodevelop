@@ -110,6 +110,8 @@ namespace MonoDevelop.PackageManagement
 
 			await CheckLicenses (cancellationToken);
 
+			SetDirectInstall ();
+
 			using (IDisposable fileMonitor = CreateFileMonitor ()) {
 				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
 					await packageManager.ExecuteNuGetProjectActionsAsync (
@@ -119,6 +121,8 @@ namespace MonoDevelop.PackageManagement
 						cancellationToken);
 				}
 			}
+
+			packageManager.ClearDirectInstall (context);
 
 			project.OnAfterExecuteActions (actions);
 
@@ -148,6 +152,20 @@ namespace MonoDevelop.PackageManagement
 				packageManager,
 				GetLicenseAcceptanceService (),
 				cancellationToken);
+		}
+
+		void SetDirectInstall ()
+		{
+			var matchedAction = actions.FirstOrDefault (IsInstallActionForPackageBeingUpdated);
+			if (matchedAction != null) {
+				packageManager.SetDirectInstall (matchedAction.PackageIdentity, context);
+			}
+		}
+
+		bool IsInstallActionForPackageBeingUpdated (NuGetProjectAction action)
+		{
+			return action.PackageIdentity.Id == PackageId &&
+				action.NuGetProjectActionType == NuGetProjectActionType.Install;
 		}
 
 		protected virtual ILicenseAcceptanceService GetLicenseAcceptanceService ()
