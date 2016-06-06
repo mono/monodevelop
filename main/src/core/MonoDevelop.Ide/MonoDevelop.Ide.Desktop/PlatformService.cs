@@ -517,11 +517,17 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
 
+			FilePath path = Environment.GetCommandLineArgs ()[0];
+			if (Platform.IsMac && path.Extension == ".exe")
+				path = path.ChangeExtension (null);
+
+			if (!File.Exists (path))
+				return false;
+
 			if (IdeApp.Exit ()) {
 				var proc = new Process ();
-
-				var path = ((FilePath)typeof (IdeStartup).Assembly.Location).ParentDirectory;
-				var psi = new ProcessStartInfo (path.Combine ("MonoDevelop.exe")) {
+				
+				var psi = new ProcessStartInfo (path) {
 					CreateNoWindow = true,
 					UseShellExecute = false,
 					WorkingDirectory = Environment.CurrentDirectory,
