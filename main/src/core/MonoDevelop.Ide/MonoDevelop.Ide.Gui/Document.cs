@@ -510,9 +510,12 @@ namespace MonoDevelop.Ide.Gui
 
 		public void CancelParseTimeout ()
 		{
-			if (parseTimeout != 0) {
-				GLib.Source.Remove (parseTimeout);
-				parseTimeout = 0;
+			lock (reparseTimeoutLock) {
+				var timeout = parseTimeout;
+				if (timeout != 0) {
+					GLib.Source.Remove (timeout);
+					parseTimeout = 0;
+				}
 			}
 		}
 		
@@ -902,18 +905,22 @@ namespace MonoDevelop.Ide.Gui
 			parseTokenSource = new CancellationTokenSource ();
 		}
 
+		object reparseTimeoutLock = new object ();
+
 		internal void StartReparseThread ()
 		{
 			string currentParseFile = GetCurrentParseFileName ();
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
-			CancelParseTimeout ();
+			lock (reparseTimeoutLock) {
+				CancelParseTimeout ();
 
-			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
-				StartReparseThreadDelayed (currentParseFile);
-				parseTimeout = 0;
-				return false;
-			});
+				parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
+					StartReparseThreadDelayed (currentParseFile);
+					parseTimeout = 0;
+					return false;
+				});
+			}
 		}
 
 		string GetCurrentParseFileName ()
