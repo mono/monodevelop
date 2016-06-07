@@ -25,26 +25,45 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
-using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
+using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class ReinstallNuGetPackageAction : IPackageAction
 	{
-		NuGetProjectContext context;
+		INuGetProjectContext context;
 		InstallNuGetPackageAction installAction;
 		UninstallNuGetPackageAction uninstallAction;
+		IPackageManagementEvents packageManagementEvents;
 
 		public ReinstallNuGetPackageAction (
 			IDotNetProject project,
 			IMonoDevelopSolutionManager solutionManager)
+			: this (
+				project,
+				solutionManager,
+				new NuGetProjectContext (),
+				PackageManagementServices.PackageManagementEvents)
 		{
-			context = new NuGetProjectContext ();
+		}
 
-			CreateInstallAction (solutionManager, project);
-			CreateUninstallAction (solutionManager, project);
+		public ReinstallNuGetPackageAction (
+			IDotNetProject project,
+			IMonoDevelopSolutionManager solutionManager,
+			INuGetProjectContext projectContext,
+			IPackageManagementEvents packageManagementEvents)
+		{
+			this.context = projectContext;
+			this.packageManagementEvents = packageManagementEvents;
+
+			var repositories = solutionManager.CreateSourceRepositoryProvider ().GetRepositories ();
+
+			installAction = CreateInstallAction (solutionManager, project, repositories);
+			uninstallAction = CreateUninstallAction (solutionManager, project);
 		}
 
 		public string PackageId { get; set; }
@@ -60,6 +79,7 @@ namespace MonoDevelop.PackageManagement
 			using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {
 				using (IDisposable fileMonitor = CreateFileMonitor ()) {
 					uninstallAction.PackageId = PackageId;
+					uninstallAction.ForceRemove = true;
 					uninstallAction.Execute (cancellationToken);
 
 					installAction.PackageId = PackageId;
@@ -81,19 +101,21 @@ namespace MonoDevelop.PackageManagement
 			return false;
 		}
 
-		void CreateUninstallAction (IMonoDevelopSolutionManager solutionManager, IDotNetProject project)
+		protected virtual UninstallNuGetPackageAction CreateUninstallAction (IMonoDevelopSolutionManager solutionManager, IDotNetProject project)
 		{
-			uninstallAction = new UninstallNuGetPackageAction (
+			return new UninstallNuGetPackageAction (
 				solutionManager,
 				project) {
-				ForceRemove = true
 			};
 		}
 
-		void CreateInstallAction (IMonoDevelopSolutionManager solutionManager, IDotNetProject project)
+		protected virtual InstallNuGetPackageAction CreateInstallAction (
+			IMonoDevelopSolutionManager solutionManager,
+			IDotNetProject project,
+			IEnumerable<SourceRepository> repositories)
 		{
-			installAction = new InstallNuGetPackageAction (
-				solutionManager.CreateSourceRepositoryProvider ().GetRepositories (),
+			return new InstallNuGetPackageAction (
+				repositories,
 				solutionManager,
 				project,
 				context
@@ -102,14 +124,19 @@ namespace MonoDevelop.PackageManagement
 
 		LocalCopyReferenceMaintainer CreateLocalCopyReferenceMaintainer ()
 		{
-			return new LocalCopyReferenceMaintainer (PackageManagementServices.PackageManagementEvents);
+			return new LocalCopyReferenceMaintainer (packageManagementEvents);
 		}
 
 		IDisposable CreateFileMonitor ()
 		{
 			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
-				PackageManagementServices.PackageManagementEvents,
-				new FileRemover ());
+				packageManagementEvents,
+				GetFileRemover ());
+		}
+
+		protected virtual IFileRemover GetFileRemover ()
+		{
+			return new FileRemover ();
 		}
 	}
 }
