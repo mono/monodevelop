@@ -41,7 +41,10 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual void Initialize (Project project)
 		{
-			var t = System.Diagnostics.Stopwatch.StartNew ();
+			// There may be run configuration properties defined in the
+			// main property group in the project. Those values have to
+			// be initially loaded in new run configurations.
+
 			using (var pi = project.MSBuildProject.CreateInstance ()) {
 				pi.SetGlobalProperty ("BuildingInsideVisualStudio", "true");
 				pi.SetGlobalProperty ("RunConfiguration", "");
@@ -52,7 +55,6 @@ namespace MonoDevelop.Projects
 				properties = MainPropertyGroup;
 				MainPropertyGroup.UnlinkFromProjectInstance ();
 			}
-			Console.WriteLine ("Init Config " + Name + ": " + t.ElapsedMilliseconds);
 		}
 
 		public new Project ParentItem {
