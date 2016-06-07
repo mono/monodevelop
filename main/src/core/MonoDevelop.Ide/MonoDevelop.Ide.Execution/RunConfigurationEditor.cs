@@ -32,8 +32,22 @@ namespace MonoDevelop.Ide.Execution
 	public abstract class RunConfigurationEditor
 	{
 		public abstract Control CreateControl ();
+
 		public abstract void Load (Project project, SolutionItemRunConfiguration config);
+
 		public abstract void Save ();
+
+		public virtual bool IsValid {
+			get { return true; }
+		}
+
+		public event EventHandler Changed;
+
+		protected void NotifyChanged ()
+		{
+			if (Changed != null)
+				Changed (this, EventArgs.Empty);
+		}
 	}
 }
 
