@@ -122,7 +122,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 		ParameterHintingResult HandleInvocationExpression(SemanticModel semanticModel, InvocationExpressionSyntax node, CancellationToken cancellationToken)
 		{
-			var info = semanticModel.GetSymbolInfo(node, cancellationToken);
+			var info = semanticModel.GetSymbolInfo (node, cancellationToken);
 			var result = new ParameterHintingResult(node.SpanStart);
 
 			var targetTypeInfo = semanticModel.GetTypeInfo (node.Expression);
@@ -133,12 +133,17 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 			var within = semanticModel.GetEnclosingNamedTypeOrAssembly(node.SpanStart, cancellationToken);
 			ITypeSymbol type;
-			var ma = node.Expression as MemberAccessExpressionSyntax;
 			string name = null;
 			bool staticLookup = false;
-			if (ma != null) {
+			var ma = node.Expression as MemberAccessExpressionSyntax;
+			var mb = node.Expression as MemberBindingExpressionSyntax;
+			if (mb != null) {
+				info = semanticModel.GetSymbolInfo (mb, cancellationToken);
+				type = (info.Symbol ?? info.CandidateSymbols.FirstOrDefault ())?.ContainingType;
+				name = mb.Name.Identifier.ValueText;
+			} else if (ma != null) {
 				staticLookup = semanticModel.GetSymbolInfo (ma.Expression).Symbol is ITypeSymbol;
-				type = semanticModel.GetTypeInfo (ma.Expression).Type; 
+				type = semanticModel.GetTypeInfo (ma.Expression).Type;
 				name = info.Symbol?.Name ?? ma.Name.Identifier.ValueText;
 			} else {
 				type = within as ITypeSymbol;
