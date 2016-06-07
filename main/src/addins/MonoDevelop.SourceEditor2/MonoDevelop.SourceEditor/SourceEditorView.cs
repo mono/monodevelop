@@ -741,7 +741,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				lastSaveTimeUtc = File.GetLastWriteTimeUtc (fileName);
 				try {
-					if (attributes != null)
+					if (attributes != null) 
 						DesktopService.SetFileAttributes (fileName, attributes);
 				} catch (Exception e) {
 					LoggingService.LogError ("Can't set file attributes", e);
@@ -751,16 +751,17 @@ namespace MonoDevelop.SourceEditor
 				MessageService.ShowError (GettextCatalog.GetString ("Can't save file - access denied"), e.Message);
 			}
 
-//			if (encoding != null)
-//				se.Buffer.SourceEncoding = encoding;
-//			TextFileService.FireCommitCountChanges (this);
-			
-			ContentName = fileName;
-			if (Document != null) {
-				UpdateMimeType (fileName);
-				Document.SetNotDirtyState ();
-			}
-			IsDirty = false;
+			//			if (encoding != null)
+			//				se.Buffer.SourceEncoding = encoding;
+			//			TextFileService.FireCommitCountChanges (this);
+			await Runtime.RunInMainThread (delegate {
+				Document.FileName = ContentName = fileName;
+				if (Document != null) {
+					UpdateMimeType (fileName);
+					Document.SetNotDirtyState ();
+				}
+				IsDirty = false;
+			});
 		}
 		
 		public void InformLoadComplete ()
