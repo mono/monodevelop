@@ -174,12 +174,22 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			var path = Path.Combine (monoDir, toolsVersion);
-			if (File.Exists (Path.Combine (path, "xbuild.exe")))
-				return path;
-			//HACK: Mono puts xbuild 4.0 in 4.5 directory, even though there is no such thing as ToolsVersion 4.5
-			if (toolsVersion == "4.0")
-				return GetMSBuildBinPath ("4.5");
+			//TODO make this a PropertyService property and expose in prefs
+			const bool monoUseMSBuild = true;
+
+			if (monoUseMSBuild) {
+				var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
+				if (File.Exists (Path.Combine (path, "MSBuild.exe"))) {
+					return path;
+				}
+			}
+
+			//fall back to xbuild. it only has one version, which lives in Mono's 4.5 directory.
+			var xbpath = Path.Combine (monoDir, "4.5");
+			if (File.Exists (Path.Combine (xbpath, "xbuild.exe"))) {
+				return xbpath;
+			}
+
 			return null;
 		}
 		
