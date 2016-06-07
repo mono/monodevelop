@@ -64,7 +64,10 @@ namespace MonoDevelop.SourceEditor
 
 		void TargetProcessExited (object sender, EventArgs e)
 		{
-			if (tooltip != null) {
+			if (tooltip == null)
+				return;
+			var debuggerSession = tooltip.tree.Frame?.DebuggerSession;
+			if (debuggerSession == null || debuggerSession == sender) {
 				tooltip.Destroy ();
 				tooltip = null;
 			}

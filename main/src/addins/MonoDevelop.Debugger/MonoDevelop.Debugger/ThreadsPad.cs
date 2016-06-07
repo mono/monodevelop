@@ -178,7 +178,7 @@ namespace MonoDevelop.Debugger
 				return;
 
 			try {
-				var processes = DebuggingService.DebuggerSession.GetProcesses ();
+				var processes = DebuggingService.GetProcesses ();
 				
 				if (processes.Length == 1) {
 					AppendThreads (TreeIter.Zero, processes[0]);

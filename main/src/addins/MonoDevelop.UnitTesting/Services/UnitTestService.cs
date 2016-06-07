@@ -154,7 +154,7 @@ namespace MonoDevelop.UnitTesting
 			OnTestSessionStarting (new TestSessionEventArgs { Session = session, Test = test });
 
 			if (checkCurrentRunOperation)
-				IdeApp.ProjectOperations.CurrentRunOperation = session;
+				IdeApp.ProjectOperations.AddRunOperation (session);
 			
 			try {
 				await session.Start ();

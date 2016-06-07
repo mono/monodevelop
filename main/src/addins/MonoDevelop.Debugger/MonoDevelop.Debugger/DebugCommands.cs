@@ -72,31 +72,18 @@ namespace MonoDevelop.Debugger
 
 	class DebugHandler: CommandHandler
 	{
-		internal static IBuildTarget GetRunTarget ()
+		internal static IEnumerable<IBuildTarget> GetRunTargets ()
 		{
-			return IdeApp.ProjectOperations.CurrentSelectedSolution ?? IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-		}
+			var selectedSolution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (selectedSolution == null)
+				yield return IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 
-		internal async static void BuildAndDebug ()
-		{
-			if (!DebuggingService.IsDebuggingSupported && !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-				MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
-				await IdeApp.ProjectOperations.CurrentRunOperation.Task;
-			}
-
-			if (IdeApp.Workspace.IsOpen) {
-				var it = GetRunTarget ();
-				ExecuteSolution (it);
-				return;
-			}
-		}
-
-		static void ExecuteSolution (IBuildTarget target)
-		{
-			if (IdeApp.ProjectOperations.CanDebug (target))
-				IdeApp.ProjectOperations.Debug (target);
+			var multi = selectedSolution.MultiStartupItems.ToArray ();
+			if (multi.Length == 0)
+				yield return selectedSolution.StartupItem ?? IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 			else
-				IdeApp.ProjectOperations.Execute (target);
+				foreach (var target in multi)
+					yield return target;
 		}
 
 		protected override void Run ()
@@ -106,41 +93,37 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 
-			BuildAndDebug ();
+			if (IdeApp.Workspace.IsOpen) {
+				foreach (var target in GetRunTargets ())
+					if (target != null)
+						IdeApp.ProjectOperations.Debug (target);
+			}
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
-			if (DebuggingService.IsRunning) {
+			if (!IdeApp.Workspace.IsOpen || !DebuggingService.IsDebuggingSupported) {
 				info.Enabled = false;
 				return;
 			}
-			
 			if (DebuggingService.IsPaused) {
 				info.Enabled = true;
 				info.Text = GettextCatalog.GetString ("_Continue Debugging");
 				info.Description = GettextCatalog.GetString ("Continue the execution of the application");
 				return;
 			}
-			
-			// If there are no debugger installed, this command will not debug, it will
-			// just run, so the label has to be changed accordingly.
-			if (!DebuggingService.IsDebuggingSupported) {
-				info.Text = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted ? GettextCatalog.GetString ("Start Without Debugging") : GettextCatalog.GetString ("Restart Without Debugging");
-				info.Icon = Stock.RunProgramIcon;
-			}
-
-			if (IdeApp.Workspace.IsOpen) {
-				var target = GetRunTarget ();
-				bool canExecute = target != null && (
-					IdeApp.ProjectOperations.CanDebug (target) ||
-					(!DebuggingService.IsDebuggingSupported && IdeApp.ProjectOperations.CanExecute (target))
-				);
-
-				info.Enabled = canExecute && (IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted || !DebuggingService.IsDebuggingSupported);
-			} else {
+			if (DebuggingService.IsDebugging) {
 				info.Enabled = false;
+				return;
 			}
+
+			foreach (var target in GetRunTargets ()) {
+				if (target != null && IdeApp.ProjectOperations.CanDebug (target)) {
+					info.Enabled = true;
+					return;
+				}
+			}
+			info.Enabled = false;
 		}
 	}
 	
@@ -156,9 +139,7 @@ namespace MonoDevelop.Debugger
 		protected override void Update (CommandInfo info)
 		{
 			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			info.Enabled = target != null &&
-					!(target is Workspace) && IdeApp.ProjectOperations.CanDebug (target) &&
-					IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
+			info.Enabled = target != null && !(target is Workspace) && IdeApp.ProjectOperations.CanDebug (target);
 		}
 	}
 	
@@ -207,8 +188,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.DebugFile);
+			info.Enabled = info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.DebugFile);
 		}
 	}
 	
@@ -229,8 +209,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted;
-			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Attaching);
+			info.Enabled = info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Attaching);
 		}
 	}
 	
@@ -315,7 +294,7 @@ namespace MonoDevelop.Debugger
 		
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = !DebuggingService.IsRunning;
+			info.Visible = DebuggingService.IsPaused;
 			info.Enabled = DebuggingService.IsConnected && DebuggingService.IsPaused;
 		}
 	}
@@ -557,33 +536,35 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 
-			var bp = new RunToCursorBreakpoint (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
-			DebuggingService.Breakpoints.Add (bp);
-			DebugHandler.BuildAndDebug ();
+			if (IdeApp.Workspace.IsOpen) {
+				var bp = new RunToCursorBreakpoint (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
+				DebuggingService.Breakpoints.Add (bp);
+				foreach (var target in DebugHandler.GetRunTargets ())
+					if (target != null)
+						IdeApp.ProjectOperations.Debug (target);
+			}
 		}
 
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = true;
 
-			if (!DebuggingService.IsDebuggingSupported || !DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) || DebuggingService.Breakpoints.IsReadOnly) {
+			if (!IdeApp.Workspace.IsOpen || !DebuggingService.IsDebuggingSupported || !DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) || DebuggingService.Breakpoints.IsReadOnly) {
 				info.Enabled = false;
 				return;
 			}
 
 			var doc = IdeApp.Workbench.ActiveDocument;
 
-			if (doc != null && doc.Editor != null && doc.FileName != FilePath.Null) {
-				if (IdeApp.Workspace.IsOpen) {
-					var target = DebugHandler.GetRunTarget ();
-
-					info.Enabled =  target != null && IdeApp.ProjectOperations.CanDebug (target);
-				} else {
-					info.Enabled = false;
+			if (doc?.Editor != null && doc.FileName != FilePath.Null) {
+				foreach (var target in DebugHandler.GetRunTargets ()) {
+					if (target != null && IdeApp.ProjectOperations.CanDebug (target)) {
+						info.Enabled = true;
+						return;
+					}
 				}
-			} else {
-				info.Enabled = false;
 			}
+			info.Enabled = false;
 		}
 	}
 	

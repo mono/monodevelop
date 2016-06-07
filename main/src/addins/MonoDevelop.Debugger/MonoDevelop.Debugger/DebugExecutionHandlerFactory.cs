@@ -56,9 +56,11 @@ namespace MonoDevelop.Debugger
 	class DebugAsyncOperation: ProcessAsyncOperation
 	{
 		TaskCompletionSource<int> taskSource;
+		DebuggerSession session;
 
-		public DebugAsyncOperation ()
+		public DebugAsyncOperation (DebuggerSession session)
 		{
+			this.session = session;
 			taskSource = new TaskCompletionSource<int> ();
 			DebuggingService.StoppedEvent += OnStopDebug;
 			CancellationTokenSource = new CancellationTokenSource ();
@@ -73,11 +75,12 @@ namespace MonoDevelop.Debugger
 				taskSource = null;
 			}
 			DebuggingService.StoppedEvent -= OnStopDebug;
+			session = null;
 		}
 
 		void OnStopDebug (object sender, EventArgs args)
 		{
-			if (taskSource != null) {
+			if (taskSource != null && session == sender) {
 				taskSource.SetResult (0);
 				taskSource = null;
 			}
