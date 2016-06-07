@@ -53,6 +53,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Content = list;
 
 			list.SelectionChanged += (s, o) => SelectionChanged?.Invoke (this, o);
+			list.RowActivated += (s, o) => RowActivated?.Invoke (this, o);
 		}
 
 		public void Fill (IEnumerable<RunConfiguration> configurations)
@@ -91,6 +92,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 
 		public event EventHandler SelectionChanged;
+		public event EventHandler RowActivated;
 	}
 }
 

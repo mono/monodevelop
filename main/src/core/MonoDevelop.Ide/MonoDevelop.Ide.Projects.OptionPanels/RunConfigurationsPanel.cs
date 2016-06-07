@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 			foreach (var c in configs)
 				AddPanel (c);
-
+			ParentDialog.ExpandChildren (this);
 		}
 
 		public override bool IsVisible ()
@@ -121,6 +121,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			AddPanel (newc);
 		}
 
+		internal void ShowConfiguration (ProjectRunConfiguration editedConfig)
+		{
+			var rc = configs.First (ci => ci.EditedConfig == editedConfig);
+			var section = sections [rc];
+			ParentDialog.ShowPage (section);
+		}
+
 		public override Control CreatePanelWidget ()
 		{
 			widget = new RunConfigurationsPanelWidget (this, ParentDialog);
@@ -151,6 +158,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			this.RunConfiguration = configInfo.EditedConfig;
 			Label = configInfo.EditedConfig.Name;
+			HeaderLabel = GettextCatalog.GetString ("Run Configuration: " + configInfo.EditedConfig.Name);
 		}
 		
 		//this is used by the options dialog to look up the icon as needed, at required scales
@@ -179,11 +187,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var box = new Xwt.HBox ();
 			box.Spacing = 6;
 
-			var btn = new Xwt.Button (GettextCatalog.GetString ("Add"));
+			var btn = new Xwt.Button (GettextCatalog.GetString ("New"));
 			btn.Clicked += OnAddConfiguration;
 			box.PackStart (btn, false);
 
-			copyButton = new Xwt.Button (GettextCatalog.GetString ("Copy"));
+			copyButton = new Xwt.Button (GettextCatalog.GetString ("Duplicate"));
 			copyButton.Clicked += OnCopyConfiguration;
 			box.PackStart (copyButton, false);
 
@@ -200,6 +208,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.PackStart (box, false);
 
 			list.SelectionChanged += (sender, e) => UpdateButtons ();
+			list.RowActivated += (sender, e) => panel.ShowConfiguration ((ProjectRunConfiguration)list.SelectedConfiguration);
 			UpdateButtons ();
 		}
 
@@ -224,7 +233,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void OnAddConfiguration (object sender, EventArgs e)
 		{
-			using (var dlg = new RunConfigurationNameDialog (ParentWindow, "", new Command (GettextCatalog.GetString ("New")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, "", new Command (GettextCatalog.GetString ("Create")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("New Configuration");
 				if (dlg.Run () != Command.Cancel) {
 					var config = panel.Project.CreateRunConfiguration (dlg.NewName);
@@ -237,8 +246,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnCopyConfiguration (object sender, EventArgs e)
 		{
 			var config = (ProjectRunConfiguration)list.SelectedConfiguration;
-			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Copy")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
-				dlg.Title = GettextCatalog.GetString ("Copy Configuration");
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Create")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+				dlg.Title = GettextCatalog.GetString ("Duplicate Configuration");
 				if (dlg.Run () != Command.Cancel) {
 					var copy = panel.Project.CloneRunConfiguration (config, dlg.NewName);
 					panel.AddConfiguration (copy);
@@ -276,10 +285,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		TextEntry entry;
 		Label errorLabel;
 		IEnumerable<string> invalidNames;
+		DialogButton okButton;
 
 		public RunConfigurationNameDialog (Xwt.WindowFrame parent, string name, Command action, IEnumerable<string> invalidNames)
 		{
 			TransientFor = parent;
+			this.Resizable = false;
 			Resizable = false;
 			this.invalidNames = invalidNames;
 			mainBox = new VBox ();
@@ -292,7 +303,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			Content = mainBox;
 
 			Buttons.Add (new DialogButton (Command.Cancel));
-			Buttons.Add (new DialogButton (action));
+			Buttons.Add (okButton = new DialogButton (action));
+
+			entry.Changed += (s, o) => UpdateControls ();
+			UpdateControls ();
+		}
+
+		void UpdateControls ()
+		{
+			okButton.Sensitive = entry.Text.Length > 0;
 		}
 
 		public string NewName {
