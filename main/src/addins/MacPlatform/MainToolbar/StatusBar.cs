@@ -337,6 +337,34 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 	}
 
+	class CancelButton : NSButton
+	{
+		readonly NSImage stopIcon = MultiResImage.CreateMultiResImage ("status-stop-16", string.Empty);
+		readonly NSImage stopIconHover = MultiResImage.CreateMultiResImage ("status-stop-16", "hover");
+
+		public CancelButton ()
+		{
+			Image = stopIcon;
+			Hidden = true;
+			Bordered = false;
+			ImagePosition = NSCellImagePosition.ImageOnly;
+			SetButtonType (NSButtonType.MomentaryChange);
+			AddTrackingArea (new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.InVisibleRect, this, null));
+		}
+
+		public override void MouseEntered (NSEvent theEvent)
+		{
+			Image = stopIconHover;
+			base.MouseEntered (theEvent);
+		}
+
+		public override void MouseExited (NSEvent theEvent)
+		{
+			Image = stopIcon;
+			base.MouseExited (theEvent);
+		}
+	}
+
 	[Register]
 	class StatusBar : NSButton, MonoDevelop.Ide.StatusBar
 	{
@@ -359,7 +387,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		AnimatedIcon iconAnimation;
 		IDisposable xwtAnimation;
 		readonly BuildResultsView buildResults;
-		readonly NSButton cancelButton;
+		readonly CancelButton cancelButton;
 
 		NSAttributedString GetStatusString (string text, NSColor color)
 		{
@@ -423,12 +451,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			buildResults = new BuildResultsView ();
 			buildResults.Hidden = true;
 
-			cancelButton = new NSButton () {
-				Image = ImageService.GetIcon (Stock.Stop, Gtk.IconSize.Menu).ToNSImage (),
-				Hidden = true,
-				Bordered = false,
-				ImagePosition = NSCellImagePosition.ImageOnly,
-			};
+			cancelButton = new CancelButton ();
 			cancelButton.Activated += (o, e) => {
 				cts?.Cancel ();
 			};
