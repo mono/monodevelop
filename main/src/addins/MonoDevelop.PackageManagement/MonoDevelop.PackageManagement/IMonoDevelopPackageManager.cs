@@ -35,17 +35,8 @@ namespace MonoDevelop.PackageManagement
 	{
 		IMonoDevelopProjectManager ProjectManager { get; }
 		
-		void InstallPackage(IPackage package, InstallPackageAction installAction);
-		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
-		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
-		void UpdatePackages(UpdatePackagesAction updateAction);
-		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
 		void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions);
 
-		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
-		IEnumerable<PackageOperation> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
-		ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages);
-		
 		void RunPackageOperations(IEnumerable<PackageOperation> operations);
 
 		void InstallPackageIntoSolutionRepository (IPackage package);

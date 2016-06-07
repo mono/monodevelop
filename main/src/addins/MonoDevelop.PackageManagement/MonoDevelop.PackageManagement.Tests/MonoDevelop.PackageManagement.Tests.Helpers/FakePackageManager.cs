@@ -40,10 +40,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool IgnoreDependenciesPassedToInstallPackage;
 		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 
-		public IPackage PackagePassedToUninstallPackage;
-
-		public UpdatePackagesAction UpdatePackagesActionsPassedToUpdatePackages;
-
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
 		public event EventHandler<PackageOperationEventArgs> PackageInstalling;
@@ -74,55 +70,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			SourceRepository = FakeSourceRepository;
 		}
 
-		public bool ForceRemovePassedToUninstallPackage;
-		public bool RemoveDependenciesPassedToUninstallPackage;
-
-		public void UninstallPackage (IPackage package, UninstallPackageAction uninstallAction)
-		{
-			PackagePassedToUninstallPackage = package;
-			ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
-			RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
-		}
-
 		public void UninstallPackage (IPackage package, bool forceRemove, bool removeDependencies)
 		{
 			throw new NotImplementedException ();
-		}
-
-		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
-
-		public void InstallPackage (IPackage package, InstallPackageAction installAction)
-		{
-			PackagePassedToInstallPackage = package;
-
-			IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
-			PackageOperationsPassedToInstallPackage = installAction.Operations;
-			AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
-		}
-
-		public List<PackageOperation> PackageOperationsToReturnFromGetInstallPackageOperations = new List<PackageOperation> ();
-		public IPackage PackagePassedToGetInstallPackageOperations;
-		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
-		public bool AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
-
-		public IEnumerable<PackageOperation> GetInstallPackageOperations (IPackage package, InstallPackageAction installAction)
-		{
-			PackagePassedToGetInstallPackageOperations = package;
-			IgnoreDependenciesPassedToGetInstallPackageOperations = installAction.IgnoreDependencies;
-			AllowPrereleaseVersionsPassedToGetInstallPackageOperations = installAction.AllowPrereleaseVersions;
-			return PackageOperationsToReturnFromGetInstallPackageOperations;
-		}
-
-		public IPackage PackagePassedToUpdatePackage;
-		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
-		public bool UpdateDependenciesPassedToUpdatePackage;
-
-		public void UpdatePackage (IPackage package, UpdatePackageAction updateAction)
-		{
-			PackagePassedToUpdatePackage = package;
-			PackageOperationsPassedToUpdatePackage = updateAction.Operations;
-			UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
-			AllowPrereleaseVersionsPassedToInstallPackage = updateAction.AllowPrereleaseVersions;
 		}
 
 		public void FirePackageInstalled (PackageOperationEventArgs e)
@@ -181,36 +131,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			throw new NotImplementedException ();
 		}
 
-		public void UpdatePackages (UpdatePackagesAction updateAction)
-		{
-			UpdatePackagesActionsPassedToUpdatePackages = updateAction;
-		}
-
-		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackageOperations = new List<PackageOperation> ();
-		public IUpdatePackageSettings SettingsPassedToGetUpdatePackageOperations;
-		public IEnumerable<IPackage> PackagesPassedToGetUpdatePackageOperations;
-
-		public IEnumerable<PackageOperation> GetUpdatePackageOperations (IEnumerable<IPackage> packages, IUpdatePackageSettings settings)
-		{
-			SettingsPassedToGetUpdatePackageOperations = settings;
-			PackagesPassedToGetUpdatePackageOperations = packages;
-			return PackageOperationsToReturnFromGetUpdatePackageOperations;
-		}
-
 		public List<PackageOperation> PackageOperationsPassedToRunPackageOperations;
 
 		public void RunPackageOperations (IEnumerable<PackageOperation> operations)
 		{
 			PackageOperationsPassedToRunPackageOperations = operations.ToList ();
-		}
-
-		public IPackage PackagePassedToUpdatePackageReference;
-		public IUpdatePackageSettings SettingsPassedToUpdatePackageReference;
-
-		public void UpdatePackageReference (IPackage package, IUpdatePackageSettings settings)
-		{
-			PackagePassedToUpdatePackageReference = package;
-			SettingsPassedToUpdatePackageReference = settings;
 		}
 
 		public bool IgnoreWalkInfoPassedToInstallPackage;
@@ -246,11 +171,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			set {
 				throw new NotImplementedException ();
 			}
-		}
-
-		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
-		{
-			throw new NotImplementedException ();
 		}
 
 		public void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)

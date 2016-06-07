@@ -62,13 +62,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			SolutionPackageRepository solutionPackageRepository = CreateSolutionPackageRepository (project.ParentSolution);
 			IProjectSystem projectSystem = CreateProjectSystem (project.DotNetProject);
-			PackageOperationsResolverFactory packageOperationResolverFactory = new PackageOperationsResolverFactory();
-			
+
 			return new MonoDevelopPackageManager(
 				sourceRepository,
 				projectSystem,
-				solutionPackageRepository,
-				packageOperationResolverFactory);
+				solutionPackageRepository);
 		}
 		
 		SolutionPackageRepository CreateSolutionPackageRepository (ISolution solution)

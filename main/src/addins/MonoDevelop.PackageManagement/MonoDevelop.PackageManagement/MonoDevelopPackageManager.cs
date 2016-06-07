@@ -34,13 +34,11 @@ namespace MonoDevelop.PackageManagement
 	internal class MonoDevelopPackageManager : PackageManager, IMonoDevelopPackageManager
 	{
 		IProjectSystem projectSystem;
-		IPackageOperationResolverFactory packageOperationResolverFactory;
-		
+
 		public MonoDevelopPackageManager(
 			IPackageRepository sourceRepository,
 			IProjectSystem projectSystem,
-			ISolutionPackageRepository solutionPackageRepository,
-			IPackageOperationResolverFactory packageOperationResolverFactory)
+			ISolutionPackageRepository solutionPackageRepository)
 			: base(
 				sourceRepository,
 				solutionPackageRepository.PackagePathResolver,
@@ -48,7 +46,6 @@ namespace MonoDevelop.PackageManagement
 				solutionPackageRepository.Repository)
 		{
 			this.projectSystem = projectSystem;
-			this.packageOperationResolverFactory = packageOperationResolverFactory;
 			CreateProjectManager();
 		}
 		
@@ -102,12 +99,6 @@ namespace MonoDevelop.PackageManagement
 			InstallPackage(package, ignoreDependencies, allowPreleaseVersions);
 		}
 		
-		public void InstallPackage(IPackage package, InstallPackageAction installAction)
-		{
-			RunPackageOperations(installAction.Operations);
-			AddPackageReference(package, installAction.IgnoreDependencies, installAction.AllowPrereleaseVersions);
-		}
-		
 		public void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			var monitor = new PackageReferenceMonitor (ProjectManager, this);
@@ -122,11 +113,6 @@ namespace MonoDevelop.PackageManagement
 		{
 			base.InstallPackage(package, ignoreDependencies, allowPrereleaseVersions);
 			AddPackageReference(package, ignoreDependencies, allowPrereleaseVersions);
-		}
-		
-		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
-		{
-			UninstallPackage(package, uninstallAction.ForceRemove, uninstallAction.RemoveDependencies);
 		}
 		
 		public override void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
@@ -156,96 +142,12 @@ namespace MonoDevelop.PackageManagement
 			var sharedRepository = LocalRepository as ISharedPackageRepository;
 			return sharedRepository.IsReferenced(package.Id, package.Version);
 		}
-		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
-		{
-			IPackageOperationResolver resolver = CreateInstallPackageOperationResolver(installAction);
-			return resolver.ResolveOperations(package);
-		}
-		
-		IPackageOperationResolver CreateInstallPackageOperationResolver(InstallPackageAction installAction)
-		{
-			return packageOperationResolverFactory.CreateInstallPackageOperationResolver(
-				LocalRepository,
-				SourceRepository,
-				Logger,
-				installAction);
-		}
-		
-		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
-		{
-			RunPackageOperations(updateAction.Operations);
-			UpdatePackageReference(package, updateAction);
-		}
-		
-		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
-		{
-			UpdatePackageReference(package, settings.UpdateDependencies, settings.AllowPrereleaseVersions);
-		}
-		
-		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
-		{
-			var monitor = new PackageReferenceMonitor (ProjectManager, this);
-			using (monitor) {
-				ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);
-			}
-			
-			monitor.PackagesRemoved.ForEach(packageRemoved => UninstallPackageFromSolutionRepository(packageRemoved));
-		}
-		
-		public void UpdatePackages(UpdatePackagesAction updateAction)
-		{
-			RunPackageOperations(updateAction.Operations);
-			foreach (IPackage package in updateAction.Packages) {
-				UpdatePackageReference(package, updateAction);
-			}
-		}
-		
-		public IEnumerable<PackageOperation> GetUpdatePackageOperations(
-			IEnumerable<IPackage> packages,
-			IUpdatePackageSettings settings)
-		{
-			IPackageOperationResolver resolver = CreateUpdatePackageOperationResolver(settings);
-			
-			var reducedOperations = new ReducedPackageOperations(resolver, packages);
-			reducedOperations.Reduce();
-			return reducedOperations.Operations;
-		}
-		
-		IPackageOperationResolver CreateUpdatePackageOperationResolver(IUpdatePackageSettings settings)
-		{
-			return packageOperationResolverFactory.CreateUpdatePackageOperationResolver(
-				LocalRepository,
-				SourceRepository,
-				Logger,
-				settings);
-		}
-		
+
 		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
 		{
 			foreach (PackageOperation operation in operations) {
 				Execute(operation);
 			}
-		}
-
-		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
-		{
-			var installWalker = new InstallWalker (
-				LocalRepository,
-				SourceRepository,
-				ProjectManager.Project.TargetFramework,
-				ProjectManager.Logger,
-				ignoreDependencies: true,
-				allowPrereleaseVersions: false,
-				dependencyVersion: DependencyVersion.Lowest);
-
-			IList<IPackage> packagesInDependencyOrder;
-			IList<PackageOperation> operations = installWalker.ResolveOperations (
-				packages,
-				out packagesInDependencyOrder,
-				allowPrereleaseVersionsBasedOnPackage: true);
-
-			return new ReinstallPackageOperations (operations, packagesInDependencyOrder);
 		}
 	}
 }

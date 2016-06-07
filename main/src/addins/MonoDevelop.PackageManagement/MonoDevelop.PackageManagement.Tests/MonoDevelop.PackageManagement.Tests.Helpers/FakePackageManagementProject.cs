@@ -43,54 +43,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageManagementProject (string name)
 		{
-			FakeUninstallPackageAction = new FakeUninstallPackageAction (this) {
-				Logger = new FakeLogger ()
-			};
-
 			FindPackageAction = packageId => {
 				return FakePackages.FirstOrDefault (package => package.Id == packageId);
 			};
-
-			InstallPackageAction = (package, installAction) => {
-				PackagePassedToInstallPackage = package;
-				PackageOperationsPassedToInstallPackage = installAction.Operations;
-				IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
-				AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
-			};
-
-			UpdatePackageAction = (package, updateAction) => {
-				PackagePassedToUpdatePackage = package;
-				PackageOperationsPassedToUpdatePackage = updateAction.Operations;
-				UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
-				AllowPrereleaseVersionsPassedToUpdatePackage = updateAction.AllowPrereleaseVersions;
-				IsUpdatePackageCalled = true;
-			};
-
-			UninstallPackageAction = (package, uninstallAction) => {
-				PackagePassedToUninstallPackage = package;
-				ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
-				RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
-			};
-
-			CreateUninstallPackageActionFunc = () => FakeUninstallPackageAction;
 
 			this.Name = name;
 
 			ConstraintProvider = NullConstraintProvider.Instance;
 		}
-
-		public FakeUninstallPackageAction FakeUninstallPackageAction;
-
-		public FakeUpdatePackageAction FirstFakeUpdatePackageActionCreated {
-			get { return FakeUpdatePackageActionsCreated [0]; }
-		}
-
-		public FakeUpdatePackageAction SecondFakeUpdatePackageActionCreated {
-			get { return FakeUpdatePackageActionsCreated [1]; }
-		}
-
-		public List<FakeUpdatePackageAction> FakeUpdatePackageActionsCreated = 
-			new List<FakeUpdatePackageAction> ();
 
 		public string Name {
 			get { return FakeDotNetProject.Name; }
@@ -114,103 +74,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return FakePackages.AsQueryable ();
 		}
 
-		public List<FakePackageOperation> FakeInstallOperations = new List<FakePackageOperation> ();
-		public IPackage PackagePassedToGetInstallPackageOperations;
-		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
-		public bool AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
-
-		public virtual IEnumerable<PackageOperation> GetInstallPackageOperations (IPackage package, InstallPackageAction installAction)
-		{
-			PackagePassedToGetInstallPackageOperations = package;
-			IgnoreDependenciesPassedToGetInstallPackageOperations = installAction.IgnoreDependencies;
-			AllowPrereleaseVersionsPassedToGetInstallPackageOperations = installAction.AllowPrereleaseVersions;
-
-			return FakeInstallOperations;
-		}
-
 		public ILogger Logger { get; set; }
-
-		public IPackage PackagePassedToInstallPackage;
-		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
-		public bool IgnoreDependenciesPassedToInstallPackage;
-		public bool AllowPrereleaseVersionsPassedToInstallPackage;
-
-		public Action<IPackage, InstallPackageAction> InstallPackageAction;
-
-		public void InstallPackage (IPackage package, InstallPackageAction installAction)
-		{
-			InstallPackageAction (package, installAction);
-		}
-
-		public FakePackageOperation AddFakeInstallOperation ()
-		{
-			var package = new FakePackage ("MyPackage");
-			var operation = new FakePackageOperation (package, PackageAction.Install);
-			FakeInstallOperations.Add (operation);
-			return operation;
-		}
-
-		public FakePackageOperation AddFakeUninstallOperation ()
-		{
-			var package = new FakePackage ("MyPackage");
-			var operation = new FakePackageOperation (package, PackageAction.Uninstall);
-			FakeInstallOperations.Add (operation);
-			return operation;
-		}
 
 		public FakePackageRepository FakeSourceRepository = new FakePackageRepository ();
 
 		public IPackageRepository SourceRepository {
 			get { return FakeSourceRepository; }
-		}
-
-		public IPackage PackagePassedToUninstallPackage;
-		public bool ForceRemovePassedToUninstallPackage;
-		public bool RemoveDependenciesPassedToUninstallPackage;
-
-		public void UninstallPackage (IPackage package, UninstallPackageAction uninstallAction)
-		{
-			UninstallPackageAction (package, uninstallAction);
-		}
-
-		public Action<IPackage, UninstallPackageAction> UninstallPackageAction;
-
-		public IPackage PackagePassedToUpdatePackage;
-		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
-		public bool UpdateDependenciesPassedToUpdatePackage;
-		public bool AllowPrereleaseVersionsPassedToUpdatePackage;
-		public bool IsUpdatePackageCalled;
-
-		public void UpdatePackage (IPackage package, UpdatePackageAction updateAction)
-		{
-			UpdatePackageAction (package, updateAction);
-		}
-
-		public Action<IPackage, UpdatePackageAction> UpdatePackageAction;
-
-		public FakeInstallPackageAction LastInstallPackageCreated;
-
-		public Action InstallPackageExecuteAction = () => { };
-
-		public virtual InstallPackageAction CreateInstallPackageAction ()
-		{
-			LastInstallPackageCreated = new FakeInstallPackageAction (this);
-			LastInstallPackageCreated.ExecuteAction = InstallPackageExecuteAction;
-			return LastInstallPackageCreated;
-		}
-
-		public virtual UninstallPackageAction CreateUninstallPackageAction ()
-		{
-			return CreateUninstallPackageActionFunc ();
-		}
-
-		public Func<UninstallPackageAction> CreateUninstallPackageActionFunc;
-
-		public UpdatePackageAction CreateUpdatePackageAction ()
-		{
-			var action = new FakeUpdatePackageAction (this);
-			FakeUpdatePackageActionsCreated.Add (action);
-			return action;
 		}
 
 		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
@@ -283,44 +152,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return FakeSourceRepository.AddFakePackageWithVersion (packageId, version);
 		}
 
-		public void UpdatePackages (UpdatePackagesAction action)
-		{
-		}
-
-		public List<UpdatePackagesAction> UpdatePackagesActionsCreated = 
-			new List<UpdatePackagesAction> ();
-
-		public UpdatePackagesAction CreateUpdatePackagesAction ()
-		{
-			var action = new UpdatePackagesAction (this, null);
-			UpdatePackagesActionsCreated.Add (action);
-			return action;
-		}
-
-		public UpdatePackagesAction UpdatePackagesActionPassedToGetUpdatePackagesOperations;
-		public IUpdatePackageSettings SettingsPassedToGetUpdatePackagesOperations;
-		public List<IPackage> PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations;
-		public List<PackageOperation> PackageOperationsToReturnFromGetUpdatePackagesOperations =
-			new List<PackageOperation> ();
-
-		public IEnumerable<PackageOperation> GetUpdatePackagesOperations (
-			IEnumerable<IPackage> packages,
-			IUpdatePackageSettings settings)
-		{
-			SettingsPassedToGetUpdatePackagesOperations = settings;
-			PackagesOnUpdatePackagesActionPassedToGetUpdatePackagesOperations = packages.ToList ();
-			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
-		}
-
-		public ReinstallPackageOperations ReinstallOperations;
-		public IEnumerable<IPackage> PackagesPassedToGetReinstallPackageOperations;
-
-		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
-		{
-			PackagesPassedToGetReinstallPackageOperations = packages;
-			return ReinstallOperations;
-		}
-
 		public IEnumerable<PackageOperation> PackageOperationsRun;
 
 		public void RunPackageOperations (IEnumerable<PackageOperation> operations)
@@ -335,11 +166,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				return matchedPackage.Version < package.Version;
 			}
 			return false;
-		}
-
-		public void UpdatePackageReference (IPackage package, IUpdatePackageSettings settings)
-		{
-			throw new NotImplementedException ();
 		}
 
 		#pragma warning disable 0067
@@ -360,15 +186,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				throw new NotImplementedException ();
 			}
 		}
-
-		public ReinstallPackageAction CreateReinstallPackageAction ()
-		{
-			var action = new ReinstallPackageAction (this, new PackageManagementEvents ());
-			ReinstallPackageActionsCreated.Add (action);
-			return action;
-		}
-
-		public List<ReinstallPackageAction> ReinstallPackageActionsCreated = new List<ReinstallPackageAction> ();
 
 		public List<IPackage> PackageReferencesAdded = new List<IPackage> ();
 

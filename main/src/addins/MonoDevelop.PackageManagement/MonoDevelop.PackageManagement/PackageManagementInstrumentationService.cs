@@ -55,52 +55,9 @@ namespace MonoDevelop.PackageManagement
 				var provider = action as INuGetProjectActionsProvider;
 				if (provider != null) {
 					InstrumentPackageActions (provider.GetNuGetProjectActions ());
-					return;
-				}
-
-				var addAction = action as InstallPackageAction;
-				if (addAction != null) {
-					InstrumentPackageOperations (addAction.Operations);
-					return;
-				}
-
-				var updateAction = action as UpdatePackageAction;
-				if (updateAction != null) {
-					InstrumentPackageOperations (updateAction.Operations);
-					return;
-				}
-
-				var removeAction = action as UninstallPackageAction;
-				if (removeAction != null) {
-					var metadata = new Dictionary<string, string> ();
-
-					metadata ["PackageId"] = removeAction.GetPackageId ();
-					var version = removeAction.GetPackageVersion ();
-					if (version != null)
-						metadata ["PackageVersion"] = version.ToString ();
-
-					IncrementUninstallPackageCounter (metadata);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Instrumentation Failure in PackageManagement", ex);
-			}
-		}
-
-		void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
-		{
-			foreach (var op in operations) {
-				var metadata = new Dictionary<string, string> ();
-				metadata ["PackageId"] = op.Package.Id;
-				metadata ["Package"] = op.Package.Id + " v" + op.Package.Version.ToString ();
-
-				switch (op.Action) {
-					case PackageAction.Install: 
-						IncrementInstallPackageCounter (metadata);
-					break;
-					case PackageAction.Uninstall:
-						IncrementUninstallPackageCounter (metadata);
-					break;
-				}
 			}
 		}
 

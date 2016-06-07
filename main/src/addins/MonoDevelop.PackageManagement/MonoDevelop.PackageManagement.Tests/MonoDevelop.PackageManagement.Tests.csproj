@@ -125,9 +125,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementEventsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeInstallPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatePackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUninstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageOperation.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementOptionsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RegisteredPackageRepositoriesTests.cs" />
@@ -135,11 +132,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSourceViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RegisteredPackageSourcesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageSourceCollectionAssert.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\ProcessPackageActionTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProcessPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingProcessPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\InstallPackageActionTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\InstallPackageHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageOperationHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\RecentNuGetPackagesRepositoryTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageCollectionAssert.cs" />
@@ -149,13 +141,8 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeLogger.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeServiceBasedRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\UninstallPackageActionTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\UninstallPackageHelper.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatePackageActionTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\UpdatePackageHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UserAgentGeneratorForRepositoryRequestsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithHttpClientEvents.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\ReducedPackageOperationsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestPackageHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageOperationResolver.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\SolutionPackageRepositoryPathTests.cs" />
@@ -171,7 +158,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeDotNetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageReferenceRepositoryHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageOperationResolverFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopPackageManagerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeWebRequest.cs" />
@@ -206,8 +192,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityChecker.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeBackgroundPackageActionRunner.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallPackageActionTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallProjectPackagesActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageCompatibilityTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackagesFolderNodeTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackagesFolderNode.cs" />
@@ -221,9 +205,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildTargetsRestoredMonitorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\EnsureNuGetPackageBuildImportsTargetUpdaterTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingSolutionPackageRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\OpenPackageReadMeMonitorTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableInstallPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatePackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FilePathExtensionsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\DotNetProjectExtensionsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MinClientVersionTests.cs" />

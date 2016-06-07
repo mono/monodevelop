@@ -220,8 +220,8 @@ namespace MonoDevelop.PackageManagement
 		static PackageManagementPackageReference CreatePackageReference (IInstallNuGetPackageAction installAction)
 		{
 			return new PackageManagementPackageReference (
-				installAction.GetPackageId (), 
-				GetNuGetVersionString (installAction.GetPackageVersion ()));
+				installAction.PackageId, 
+				GetNuGetVersionString (installAction.Version));
 		}
 
 		static string GetNuGetVersionString (NuGetVersion version)

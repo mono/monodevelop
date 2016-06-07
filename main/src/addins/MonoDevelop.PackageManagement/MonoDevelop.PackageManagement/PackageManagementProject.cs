@@ -140,42 +140,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			return projectManager.LocalRepository.GetPackages();
 		}
-		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
-		{
-			return packageManager.GetInstallPackageOperations(package, installAction);
-		}
-		
-		public void InstallPackage(IPackage package, InstallPackageAction installAction)
-		{
-			packageManager.InstallPackage(package, installAction);
-		}
-		
-		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
-		{
-			packageManager.UninstallPackage(package, uninstallAction);
-		}
-		
-		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
-		{
-			packageManager.UpdatePackage(package, updateAction);
-		}
-		
-		public InstallPackageAction CreateInstallPackageAction()
-		{
-			return new InstallPackageAction(this, packageManagementEvents);
-		}
-		
-		public UninstallPackageAction CreateUninstallPackageAction()
-		{
-			return new UninstallPackageAction(this, packageManagementEvents);
-		}
-		
-		public UpdatePackageAction CreateUpdatePackageAction()
-		{
-			return new UpdatePackageAction(this, packageManagementEvents);
-		}
-		
+
 		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
 		{
 			var packageSorter = new PackageSorter(null);
@@ -183,34 +148,7 @@ namespace MonoDevelop.PackageManagement
 				.GetPackagesByDependencyOrder(projectManager.LocalRepository)
 				.Reverse();
 		}
-		
-		public void UpdatePackages(UpdatePackagesAction updateAction)
-		{
-			packageManager.UpdatePackages(updateAction);
-		}
-		
-		public UpdatePackagesAction CreateUpdatePackagesAction()
-		{
-			return new UpdatePackagesAction(this, packageManagementEvents);
-		}
 
-		public ReinstallPackageAction CreateReinstallPackageAction ()
-		{
-			return new ReinstallPackageAction (this, packageManagementEvents);
-		}
-		
-		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
-			IEnumerable<IPackage> packages,
-			IUpdatePackageSettings settings)
-		{
-			return packageManager.GetUpdatePackageOperations(packages, settings);
-		}
-
-		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
-		{
-			return packageManager.GetReinstallPackageOperations (packages);
-		}
-		
 		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
 		{
 			packageManager.RunPackageOperations(operations);
@@ -219,11 +157,6 @@ namespace MonoDevelop.PackageManagement
 		public bool HasOlderPackageInstalled(IPackage package)
 		{
 			return projectManager.HasOlderPackageInstalled(package);
-		}
-		
-		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
-		{
-			packageManager.UpdatePackageReference(package, settings);
 		}
 
 		public void AddPackageReference (IPackage package)

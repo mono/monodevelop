@@ -78,7 +78,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			List<PackageReferenceNode> nodes = projectPackagesNode.GetPackageReferencesNodes ().ToList ();
 
 			foreach (IInstallNuGetPackageAction installAction in GetPendingInstallActions (projectPackagesNode.DotNetProject)) {
-				if (!nodes.Any (node => node.Id == installAction.GetPackageId ())) {
+				if (!nodes.Any (node => node.Id == installAction.PackageId)) {
 					nodes.Add (CreatePackageReferenceNode (projectPackagesNode, installAction));
 				}
 			}
@@ -97,7 +97,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			return new PackageReferenceNode (
 				parentNode,
-				new PackageReference (new PackageIdentity (installAction.GetPackageId (), installAction.GetPackageVersion ()), null),
+				new PackageReference (new PackageIdentity (installAction.PackageId, installAction.Version), null),
 				false,
 				true);
 		}

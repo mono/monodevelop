@@ -32,7 +32,6 @@ using System.Runtime.Versioning;
 using System.Linq;
 
 using NuGet;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
@@ -62,25 +61,9 @@ namespace MonoDevelop.PackageManagement
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		IPackage FindPackage(string packageId);
 		bool AnyUnrestoredPackages ();
-		
-		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
-		IEnumerable<PackageOperation> GetUpdatePackagesOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
-		ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages);
 
-		void InstallPackage(IPackage package, InstallPackageAction installAction);
-		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
-		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
-		void UpdatePackages(UpdatePackagesAction action);
-		
-		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
 		void AddPackageReference (IPackage package);
 		IEnumerable<PackageReference> GetPackageReferences ();
-
-		InstallPackageAction CreateInstallPackageAction();
-		UninstallPackageAction CreateUninstallPackageAction();
-		UpdatePackageAction CreateUpdatePackageAction();
-		UpdatePackagesAction CreateUpdatePackagesAction();
-		ReinstallPackageAction CreateReinstallPackageAction ();
 
 		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
 	}

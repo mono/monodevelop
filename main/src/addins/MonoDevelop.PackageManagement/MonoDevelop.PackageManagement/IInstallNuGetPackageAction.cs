@@ -31,32 +31,9 @@ namespace MonoDevelop.PackageManagement
 {
 	internal interface IInstallNuGetPackageAction
 	{
-		//string PackageId { get; }
-		//NuGetVersion Version { get; }
+		string PackageId { get; }
+		NuGetVersion Version { get; }
 		bool IsForProject (DotNetProject project);
-	}
-
-	internal static class IInstallNuGetPackageActionExtensions
-	{
-		public static string GetPackageId (this IInstallNuGetPackageAction action)
-		{
-			var installPackageAction = action as InstallPackageAction;
-			if (installPackageAction != null) {
-				return installPackageAction.GetPackageId ();
-			}
-			var installNuGetPackageAction = (InstallNuGetPackageAction)action;
-			return installNuGetPackageAction.PackageId;
-		}
-
-		public static NuGetVersion GetPackageVersion (this IInstallNuGetPackageAction action)
-		{
-			var installNuGetPackageAction = action as InstallNuGetPackageAction;
-			if (installNuGetPackageAction != null) {
-				return installNuGetPackageAction.Version;
-			}
-			var installPackageAction = action as InstallPackageAction;
-			return new NuGetVersion (installPackageAction.GetPackageVersion ().ToString ());
-		}
 	}
 }
 
