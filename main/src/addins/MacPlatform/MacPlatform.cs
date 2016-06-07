@@ -52,6 +52,7 @@ using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
+using Xwt.Mac;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -290,9 +291,28 @@ namespace MonoDevelop.MacIntegration
 					Styles.LoadStyle();
 					PatchGtkTheme();
 				}));
+
+
+			Styles.Changed += (s, a) => {
+				var colorPanel = NSColorPanel.SharedColorPanel;
+				IdeTheme.ApplyTheme (colorPanel.ContentView.Superview.Window);
+				// The subviews of the shared NSColorPanel do not inherit the appearance of the main panel window
+				// and need to be updated recursively.
+				UpdateColorPanelSubviewsAppearance (colorPanel.ContentView.Superview, colorPanel.ContentView.Superview.Window.Appearance);
+			};
 			
 			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
+		}
+
+		static void UpdateColorPanelSubviewsAppearance (NSView view, NSAppearance appearance)
+		{
+			if (view.Class.Name == "NSPageableTableView")
+					((NSTableView)view).BackgroundColor = Styles.BackgroundColor.ToNSColor ();
+			view.Appearance = appearance;
+
+			foreach (var subview in view.Subviews)
+				UpdateColorPanelSubviewsAppearance (subview, appearance);
 		}
 
 		static string GetAboutCommandText ()

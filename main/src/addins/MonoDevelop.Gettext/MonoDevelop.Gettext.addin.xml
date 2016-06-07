@@ -135,6 +135,7 @@
 			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
 			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
 			<Exclude regex='/\*(?:.|\n)*?\*/' />          <!-- Block comments -->
+			<Exclude regex='ResourceManager\.GetString' />
 			
 			<Include regex='\[\s*LocalizedDisplayName?\s*\(\s*"(.*?[^\\])"\s*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='\[\s*LocalizedDescription\s*\(\s*"(.*?[^\\])"\s*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
@@ -157,6 +158,7 @@
 			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
 			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
 			<Exclude regex='(\*(?:.|\n)*?\*)' />          <!-- Block comments -->
+			<Exclude regex='ResourceManager\.GetString' />
 
 			<Include regex='\[&lt;\s*LocalizedDisplayName?\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='\[&lt;\s*LocalizedDescription\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
