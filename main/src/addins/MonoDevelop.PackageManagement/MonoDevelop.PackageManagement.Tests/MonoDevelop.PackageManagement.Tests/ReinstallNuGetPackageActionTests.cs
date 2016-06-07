@@ -182,6 +182,20 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (fileRemovedResult.Value);
 			Assert.IsNull (fileRemover.FileRemoved);
 		}
+
+		[Test]
+		public void Execute_PackageExists_PackageIsInstalledWithoutReOpeningReadmeFile ()
+		{
+			CreateAction ("MyPackage", "1.2.3.4");
+			AddInstallPackageIntoProjectAction ("MyPackage", "1.2.3.4");
+
+			action.Execute ();
+
+			var executedAction = installPackageManager.ExecutedActions.Single ();
+			Assert.AreEqual ("MyPackage", executedAction.PackageIdentity.Id);
+			Assert.AreEqual ("MyPackage", action.InstallAction.PackageId);
+			Assert.IsFalse (action.InstallAction.OpenReadmeFile);
+		}
 	}
 }
 

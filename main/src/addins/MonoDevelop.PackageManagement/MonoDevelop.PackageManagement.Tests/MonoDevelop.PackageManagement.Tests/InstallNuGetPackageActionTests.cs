@@ -376,6 +376,25 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (fileRemovedResult.Value);
 			Assert.IsNull (fileRemover.FileRemoved);
 		}
+
+		[Test]
+		public void Execute_OpenReadmeFileIsFalse_DirectInstallIsNotSetWhichPreventsReadmeFileBeingOpened ()
+		{
+			CreateAction ("Test", "1.2");
+			action.OpenReadmeFile = false;
+
+			action.Execute ();
+
+			Assert.IsNull (packageManager.SetDirectInstallPackageIdentity);
+		}
+
+		[Test]
+		public void OpenReadmeFile_NewAction_IsTrueByDefault ()
+		{
+			CreateAction ("Test", "1.2");
+
+			Assert.IsTrue (action.OpenReadmeFile);
+		}
 	}
 }
 

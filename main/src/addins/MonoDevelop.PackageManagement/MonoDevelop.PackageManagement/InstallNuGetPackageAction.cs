@@ -101,6 +101,7 @@ namespace MonoDevelop.PackageManagement
 
 			LicensesMustBeAccepted = true;
 			PreserveLocalCopyReferences = true;
+			OpenReadmeFile = true;
 		}
 
 		public string PackageId { get; set; }
@@ -108,6 +109,7 @@ namespace MonoDevelop.PackageManagement
 		public bool IncludePrerelease { get; set; }
 		public bool LicensesMustBeAccepted { get; set; }
 		public bool PreserveLocalCopyReferences { get; set; }
+		public bool OpenReadmeFile { get; set; }
 
 		public void Execute ()
 		{
@@ -142,7 +144,9 @@ namespace MonoDevelop.PackageManagement
 				await CheckLicenses (cancellationToken);
 			}
 
-			packageManager.SetDirectInstall (identity, context);
+			if (OpenReadmeFile) {
+				packageManager.SetDirectInstall (identity, context);
+			}
 
 			using (IDisposable fileMonitor = CreateFileMonitor ()) {
 				using (IDisposable referenceMaintainer = CreateLocalCopyReferenceMaintainer ()) {

@@ -85,6 +85,7 @@ namespace MonoDevelop.PackageManagement
 					installAction.PackageId = PackageId;
 					installAction.Version = Version;
 					installAction.LicensesMustBeAccepted = false;
+					installAction.OpenReadmeFile = false;
 
 					// Local copy references need to be preserved before the uninstall starts so
 					// we must disable this for the install action otherwise they will not be
