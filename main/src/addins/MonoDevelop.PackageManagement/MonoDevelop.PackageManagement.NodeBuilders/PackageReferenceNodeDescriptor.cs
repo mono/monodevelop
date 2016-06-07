@@ -50,8 +50,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		[LocalizedCategory ("Package")]
 		[LocalizedDisplayName ("Version")]
 		[LocalizedDescription ("Package version.")]
-		public NuGetVersion Version {
-			get { return packageReferenceNode.Version; }
+		public string Version {
+			get { return packageReferenceNode.GetPackageDisplayVersion (); }
 		}
 
 		[LocalizedCategory ("Package")]

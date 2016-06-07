@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.PackageManagement.NodeBuilders;
+using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
 using NuGet.Packaging;
 using MonoDevelop.Core;
@@ -51,11 +52,19 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreatePackageReference (
 			string packageId = "Id",
+			string packageVersion = "1.2.3",
 			bool requireReinstallation = false)
 		{
-			var version = new NuGetVersion ("1.2.3");
+			var version = new NuGetVersion (packageVersion);
 			var identity = new PackageIdentity (packageId, version);
 			packageReference = new PackageReference (identity, null, true, false, requireReinstallation);
+		}
+
+		void CreatePackageReferenceWithProjectJsonWildcardVersion (string packageId, string version)
+		{
+			packageReference = TestPackageReferenceFactory.CreatePackageReferenceWithProjectJsonWildcardVersion (
+				packageId,
+				version);
 		}
 
 		[Test]
@@ -287,6 +296,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			string message = node.GetStatusMessage ();
 
 			Assert.IsNull (message);
+		}
+
+		[Test]
+		public void GetVersionLabel_SpecificVersionInstalled_ReturnsVersion ()
+		{
+			CreatePackageReference ("MyPackage", "1.2.3");
+			CreatePackageReferenceNode ();
+
+			string label = node.GetPackageVersionLabel ();
+
+			Assert.AreEqual (label, "Version 1.2.3");
+		}
+
+		[Test]
+		public void GetVersionLabel_FloatingVersionVersion_ReturnsFloatingVersion ()
+		{
+			CreatePackageReferenceWithProjectJsonWildcardVersion ("MyPackage", "1.2.3-*");
+			CreatePackageReferenceNode ();
+
+			string label = node.GetPackageVersionLabel ();
+
+			Assert.AreEqual (label, "Version 1.2.3-*");
 		}
 	}
 }

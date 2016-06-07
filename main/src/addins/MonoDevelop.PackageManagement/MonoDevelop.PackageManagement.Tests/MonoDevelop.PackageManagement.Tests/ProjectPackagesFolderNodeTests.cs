@@ -63,6 +63,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			return packageReference;
 		}
 
+		PackageReference AddFloatingPackageReferenceToProject (
+			string packageId,
+			string version)
+		{
+			var packageReference = TestPackageReferenceFactory.CreatePackageReferenceWithProjectJsonWildcardVersion (
+				packageId,
+				version
+			);
+			packagesFolderNode.PackageReferences.Add (packageReference);
+			return packageReference;
+		}
+
 		void AddUpdatedPackageForProject (string packageId, string version)
 		{
 			var packageName = new PackageIdentity (packageId, new NuGetVersion (version));
@@ -234,6 +246,21 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual ("Packages", labelBeforeInstalledPackagesRead);
 			Assert.AreEqual ("Packages <span color='grey'>(1 update)</span>", labelAfterInstalledPackagesRead);
+		}
+
+		[Test]
+		public async Task GetLabel_ProjectJsonPackageReferenceUsesWildcardAndPackageIsNotInstalled_PackageIsShownAsInstalled ()
+		{
+			CreateNode ();
+			AddFloatingPackageReferenceToProject ("MyPackage", "1.2.3-*");
+			NoUpdatedPackages ();
+			await RefreshNodePackages ();
+
+			var referenceNode = packagesFolderNode.GetPackageReferencesNodes ().Single ();
+
+			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
+			Assert.AreEqual ("Version 1.2.3-*", referenceNode.GetPackageVersionLabel ());
+			Assert.IsTrue (referenceNode.Installed);
 		}
 	}
 }

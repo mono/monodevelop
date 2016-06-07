@@ -97,6 +97,9 @@
     <Reference Include="NuGet.Resolver">
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Resolver.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -245,6 +248,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRestoreManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallNuGetPackageActionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableReinstallNuGetPackageActionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestPackageReferenceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -270,5 +274,8 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.PackageManagement.Tests\" />
     <Folder Include="MonoDevelop.PackageManagement.Tests.Helpers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

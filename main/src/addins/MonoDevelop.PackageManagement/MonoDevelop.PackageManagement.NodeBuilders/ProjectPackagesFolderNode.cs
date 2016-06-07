@@ -171,10 +171,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference, UpdatedNuGetPackagesInProject updatedPackages)
 		{
+			// Floating package references (e.g. 1.0.1-*) are shown as installed.
+			// Currently the version being used can be found in the project.lock.json but
+			// reading this is not currently supported. So for now the package is shown
+			// as installed since without the full version it is not possible to check
+			// the NuGet package exists.
+			bool installed = reference.IsFloating () || IsPackageInstalled (reference);
+
 			return new PackageReferenceNode (
 				this,
 				reference,
-				IsPackageInstalled (reference),
+				installed,
 				false,
 				updatedPackages.GetUpdatedPackage (reference.PackageIdentity.Id));
 		}

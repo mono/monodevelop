@@ -61,6 +61,11 @@ namespace MonoDevelop.PackageManagement
 
 			return String.IsNullOrEmpty (packageReference.Version.SpecialVersion);
 		}
+
+		public static bool IsFloating (this NuGet.Packaging.PackageReference packageReference)
+		{
+			return packageReference.HasAllowedVersions && packageReference.AllowedVersions.IsFloating;
+		}
 	}
 }
 

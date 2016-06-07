@@ -126,9 +126,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return Stock.Reference;
 		}
 
+		public string GetPackageDisplayVersion ()
+		{
+			if (PackageReference.IsFloating ()) {
+				return PackageReference.AllowedVersions.Float.ToString ();
+			}
+			return Version.ToString ();
+		}
+
 		public string GetPackageVersionLabel ()
 		{
-			return GettextCatalog.GetString ("Version {0}", Version);
+			return GettextCatalog.GetString ("Version {0}", GetPackageDisplayVersion ());
 		}
 
 		public TaskSeverity? GetStatusSeverity ()
