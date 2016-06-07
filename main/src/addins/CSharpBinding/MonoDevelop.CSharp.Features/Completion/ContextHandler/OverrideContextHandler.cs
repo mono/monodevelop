@@ -170,7 +170,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				overridableMembers = FilterOverrides (overridableMembers, returnType);
 			}
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, cancellationToken);
-			var declarationBegin = afterKeyword ? startToken.Parent.SpanStart : position - 1;
+			var declarationBegin = afterKeyword ? (startToken.Parent.AncestorsAndSelf ().OfType<IncompleteMemberSyntax> ().FirstOrDefault () ?? startToken.Parent).SpanStart : position - 1;
 			foreach (var m in overridableMembers) {
 				var data = engine.Factory.CreateNewOverrideCompletionData (this, declarationBegin, curType, m, afterKeyword);
 				result.Add (data);
