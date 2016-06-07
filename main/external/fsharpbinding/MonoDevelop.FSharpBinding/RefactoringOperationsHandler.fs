@@ -182,6 +182,32 @@ module Refactoring =
             ()
         } |> Async.Start
 
+    let findDeclarationSymbol documentationIdString (symbols: FSharpSymbolUse seq) =
+        symbols
+        |> Seq.tryFind (fun s -> s.Symbol.XmlDocSig = documentationIdString && s.IsFromDefinition)
+
+    let jumpToDocIdInFSharp documentationIdString =
+        async {
+            let findById = findDeclarationSymbol documentationIdString
+            let result =
+                Search.getAllSymbolsInAllProjects()
+                |> AsyncSeq.toSeq
+                |> findById
+
+            match result with
+            | Some symbol -> let location = symbol.RangeAlternate
+                             let project = Search.getAllFSharpProjects()
+                                           |> Seq.find(fun p -> p.Files |> Seq.exists (fun f -> f.FilePath.ToString () = location.FileName))
+                             
+                             let context = System.Threading.SynchronizationContext.Current
+                             do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
+                             IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), project, Line = location.StartLine, Column = location.StartColumn + 1))
+                             |> ignore
+                             do! Async.SwitchToContext(context)
+                             return true
+            | _ -> return false
+        }
+
     let jumpTo (editor:TextEditor, ctx:DocumentContext, symbol, location:Range.range) =
         match getSymbolDeclarationLocation symbol editor.FileName ctx.Project.ParentSolution with
         | SymbolDeclarationLocation.CurrentFile ->
@@ -642,23 +668,8 @@ type FSharpJumpToDeclarationHandler () =
                 match IdeApp.Workbench.ActiveDocument with
                 | null -> return false
                 | doc when FileService.supportedFileName (doc.FileName.ToString()) -> return false
-                | _doc ->
-                    let result =
-                        Search.getAllSymbolsInAllProjects()
-                        |> AsyncSeq.toSeq
-                        |> Seq.tryFind (fun s -> s.Symbol.XmlDocSig = documentationIdString)
-                    match result with
-                    | Some symbol -> let location = symbol.RangeAlternate
-                                     let project = Search.getAllFSharpProjects()
-                                                   |> Seq.find(fun p -> p.Files |> Seq.exists (fun f -> f.FilePath.ToString () = location.FileName))
-                                     
-                                     let context = System.Threading.SynchronizationContext.Current
-                                     do! Async.SwitchToContext(Runtime.MainSynchronizationContext)
-                                     IdeApp.Workbench.OpenDocument (Gui.FileOpenInformation (FilePath(location.FileName), project, Line = location.StartLine, Column = location.StartColumn + 1))
-                                     |> ignore
-                                     do! Async.SwitchToContext(context)
-                                     return true
-                    | _ -> return false
+                | _doc -> return! Refactoring.jumpToDocIdInFSharp documentationIdString
+
             }
         Async.StartAsTask(computation = computation, cancellationToken = token)
 
