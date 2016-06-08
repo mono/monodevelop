@@ -173,6 +173,7 @@
     <Compile Include="MonoDevelop.Refactoring\AnalyzeCurrentProjectHandler.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ProjectCodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring.NodeBuilders\ExceptionNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewTooltipWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
