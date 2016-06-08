@@ -45,6 +45,12 @@ namespace MonoDevelop.Projects.MSBuild
 				base.Read (reader);
 		}
 
+		internal override bool ContentRequiredForEvaluation {
+			get {
+				return false;
+			}
+		}
+
 		internal override string GetElementName ()
 		{
 			return "ProjectExtensions";

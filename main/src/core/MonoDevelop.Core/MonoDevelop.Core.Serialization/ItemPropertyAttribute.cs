@@ -98,7 +98,9 @@ namespace MonoDevelop.Core.Serialization
 			get { return writeOnly; }
 			set { writeOnly = value; }
 		}
-		
+
+		public bool WrapObject { get; set; } = true;
+
 		public Type FallbackType {
 			get { return fallbackType; }
 			set { fallbackType = value; }

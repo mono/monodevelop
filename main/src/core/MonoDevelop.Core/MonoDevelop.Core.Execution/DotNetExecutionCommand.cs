@@ -74,5 +74,9 @@ namespace MonoDevelop.Core.Execution
 		public string RuntimeArguments { get; set; }
 		
 		public IList<string> UserAssemblyPaths { get; set; }
+
+		public bool PauseConsoleOutput { get; set; }
+
+		public bool ExternalConsole { get; set; }
 	}
 }

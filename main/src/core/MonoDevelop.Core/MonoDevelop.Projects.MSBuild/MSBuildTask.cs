@@ -50,6 +50,12 @@ namespace MonoDevelop.Projects.MSBuild
 			this.Name = name;
 		}
 
+		internal override bool ContentRequiredForEvaluation {
+			get {
+				return false;
+			}
+		}
+
 		static readonly string [] knownAttributes = { "Condition", "Label" };
 
 		internal override string [] GetKnownAttributes ()
