@@ -78,7 +78,7 @@
 		</Condition>
 	</Section>
 	<Section id="Run" _label="Run">
-		<Section id="General" _label="Configurations" icon="md-prefs-play">
+		<Section id="General" _label="Configurations">
 			<Condition id="ItemType" value="Project">
 <!--				<Panel id = "RunOptionsPanel" _label = "Run" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunOptionsPanel"/>-->
 				<Panel id = "RunConfigurationsPanel" _label = "Run Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.RunConfigurationsPanel"/>

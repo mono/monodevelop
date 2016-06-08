@@ -61,13 +61,13 @@ namespace MonoDevelop.Projects
 						envVars += "...";
 				}
 				if (!string.IsNullOrEmpty (StartArguments) && envVars != null)
-					return GettextCatalog.GetString ("Start the project with arguments '{0}' and environment variables '{1}'", StartArguments, envVars);
+					return GettextCatalog.GetString ("Run with arguments '{0}' and environment variables '{1}'", StartArguments, envVars);
 				else if (!string.IsNullOrEmpty (StartArguments))
-					return GettextCatalog.GetString ("Start the project with arguments '{0}'", StartArguments);
+					return GettextCatalog.GetString ("Run with arguments '{0}'", StartArguments);
 				else if (envVars != null)
-					return GettextCatalog.GetString ("Start the project with environment variables '{0}''", envVars);
+					return GettextCatalog.GetString ("Run with environment variables '{0}''", envVars);
 				else
-					return GettextCatalog.GetString ("Start the project with no additional arguments");
+					return GettextCatalog.GetString ("Run with no additional arguments");
 			}
 		}
 

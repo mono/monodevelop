@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public ProcessRunConfigurationEditor ()
 		{
 			widget = new ProcessRunConfigurationEditorWidget ();
+			widget.Changed += (sender, e) => NotifyChanged ();
 		}
 
 		public override Control CreateControl ()
@@ -94,6 +95,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			cbox.PackStart (externalConsole = new CheckBox (GettextCatalog.GetString ("Run on external console")));
 			cbox.PackStart (pauseConsole = new CheckBox (GettextCatalog.GetString ("Pause console output")));
 			mainBox.PackStart (cbox);
+
+			argumentsEntry.Changed += (s, a) => NotifyChanged ();
+			workingDir.FolderChanged += (s, a) => NotifyChanged ();
+			envVars.Changed += (s, a) => NotifyChanged ();
+			externalConsole.Toggled += (s, a) => NotifyChanged ();
+			pauseConsole.Toggled += (s, a) => NotifyChanged ();
 		}
 
 		public void Load (ProcessRunConfiguration config)
@@ -120,6 +127,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			config.PauseConsoleOutput = pauseConsole.Active;
 			envVars.StoreValues (config.EnvironmentVariables);
 		}
+
+		void NotifyChanged ()
+		{
+			Changed?.Invoke (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Changed;
 	}
 }
 

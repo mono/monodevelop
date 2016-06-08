@@ -81,6 +81,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			base.Dispose ();
 		}
 
+		public void RefreshList ()
+		{
+			if (widget != null)
+				widget.RefreshList ();
+		}
+
 		void AddPanel (RunConfigInfo configInfo)
 		{
 			configInfo.Project = Project;
@@ -159,6 +165,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.RunConfiguration = configInfo.EditedConfig;
 			Label = configInfo.EditedConfig.Name;
 			HeaderLabel = GettextCatalog.GetString ("Run Configuration: " + configInfo.EditedConfig.Name);
+			Icon = "md-prefs-play";
 		}
 		
 		//this is used by the options dialog to look up the icon as needed, at required scales
@@ -215,6 +222,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void Fill ()
 		{
 			list.Fill (panel.Configurations.Select (c => c.EditedConfig).ToArray ());
+		}
+
+		public void RefreshList ()
+		{
+			Fill ();
+			UpdateButtons ();
 		}
 
 		void UpdateButtons ()

@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			foreach (var c in configurations) {
 				var r = listStore.AddRow ();
 				var txt = "<b>" + c.Name + "</b>\n" + c.Summary;
-				var icon = !string.IsNullOrEmpty (c.IconId) ? ImageService.GetIcon (c.IconId) : ImageService.GetIcon ("md-project", Gtk.IconSize.Dnd);
+				var icon = !string.IsNullOrEmpty (c.IconId) ? ImageService.GetIcon (c.IconId) : ImageService.GetIcon ("md-prefs-play", Gtk.IconSize.Dnd);
 				listStore.SetValues (r, configCol, c, configNameCol, txt, configIconCol, icon);
 			}
 			if (currentRow != -1) {

@@ -56,6 +56,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			box.PackEnd (userConf, false, false, 0);
 			box.PackEnd (new Gtk.HSeparator (), false, false, 0);
 			box.ShowAll ();
+
+			editor.Changed += Editor_Changed;
+		}
+
+		public override bool ValidateChanges ()
+		{
+			return editor.Validate ();
 		}
 
 		public override void ApplyChanges ()
@@ -78,6 +85,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 			else
 				return new Gtk.Label ("");
+		}
+
+		void Editor_Changed (object sender, EventArgs e)
+		{
+			editor.Save ();
+			var panel = ParentDialog.GetPanel<RunConfigurationsPanel> ("General");
+			panel.RefreshList ();
 		}
 	}
 }

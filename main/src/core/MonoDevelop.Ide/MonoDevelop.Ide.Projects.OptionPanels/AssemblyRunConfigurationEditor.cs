@@ -29,6 +29,7 @@ using MonoDevelop.Ide.Execution;
 using MonoDevelop.Projects;
 using Xwt;
 using MonoDevelop.Core;
+using System.IO;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -39,6 +40,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public AssemblyRunConfigurationEditor ()
 		{
 			widget = new DotNetRunConfigurationEditorWidget ();
+			widget.Changed += (sender, e) => NotifyChanged ();
 		}
 
 		public override Control CreateControl ()
@@ -55,6 +57,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		{
 			widget.Save ();
 		}
+
+		public override bool Validate ()
+		{
+			return widget.Validate ();
+		}
 	}
 
 	class DotNetRunConfigurationEditorWidget: Notebook
@@ -70,6 +77,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		CheckBox pauseConsole;
 		ComboBox runtimesCombo;
 		TextEntry monoSettingsEntry;
+		InformationPopoverWidget appEntryInfoIcon;
 
 		public DotNetRunConfigurationEditorWidget ()
 		{
@@ -82,6 +90,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			table.Add (radioStartProject = new RadioButton (GettextCatalog.GetString ("Start project")), 0, 0);
 			table.Add (radioStartApp = new RadioButton (GettextCatalog.GetString ("Start external program:")), 0, 1);
 			table.Add (appEntry = new Xwt.FileSelector (), 1, 1, hexpand: true);
+			table.Add (appEntryInfoIcon = new InformationPopoverWidget (), 2, 1);
+			appEntryInfoIcon.Hide ();
 			radioStartProject.Group = radioStartApp.Group;
 			table.MarginLeft = 12;
 			mainBox.PackStart (table);
@@ -137,6 +147,16 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			externalConsole.Toggled += (sender, e) => UpdateStatus ();
 
 			LoadRuntimes ();
+
+			appEntry.FileChanged += (sender, e) => NotifyChanged ();
+			argumentsEntry.Changed += (sender, e) => NotifyChanged ();
+			workingDir.FolderChanged += (sender, e) => NotifyChanged ();
+			envVars.Changed += (sender, e) => NotifyChanged ();
+			externalConsole.Toggled += (sender, e) => NotifyChanged ();
+			pauseConsole.Toggled += (sender, e) => NotifyChanged ();
+			runtimesCombo.SelectionChanged += (sender, e) => NotifyChanged ();
+			monoSettingsEntry.Changed += (sender, e) => NotifyChanged ();
+
 		}
 
 		void LoadRuntimes ()
@@ -193,6 +213,18 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			pauseConsole.Sensitive = externalConsole.Active;
 		}
 
+		public bool Validate ()
+		{
+/*			if (radioStartApp.Active && string.IsNullOrEmpty (appEntry.FileName)) {
+				appEntryInfoIcon.Severity = Tasks.TaskSeverity.Error;
+				appEntryInfoIcon.Message = GettextCatalog.GetString ("Application file not provided");
+				appEntryInfoIcon.Show ();
+				return false;
+			}*/
+			appEntryInfoIcon.Hide ();
+			return true;
+		}
+
 		public void Save ()
 		{
 			if (radioStartProject.Active)
@@ -206,8 +238,14 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			config.PauseConsoleOutput = pauseConsole.Active;
 			config.TargetRuntimeId = (string) runtimesCombo.SelectedItem;
 			envVars.StoreValues (config.EnvironmentVariables);
-
 		}
+
+		void NotifyChanged ()
+		{
+			Changed?.Invoke (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Changed;
 	}
 }
 

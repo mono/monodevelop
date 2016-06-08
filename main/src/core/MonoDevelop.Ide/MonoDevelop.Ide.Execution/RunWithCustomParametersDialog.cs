@@ -102,7 +102,7 @@ namespace MonoDevelop.Ide.Execution
 
 		void UpdateStatus ()
 		{
-			runButton.Sensitive = editor.IsValid && modeCombo.SelectedItem != null;
+			runButton.Sensitive = editor.Validate () && modeCombo.SelectedItem != null;
 			if (SelectedExecutionModeSet != null)
 				runButton.Label = SelectedExecutionModeSet.Name;
 		}

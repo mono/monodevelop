@@ -37,13 +37,18 @@ namespace MonoDevelop.Ide.Execution
 
 		public abstract void Save ();
 
-		public virtual bool IsValid {
-			get { return true; }
+		/// <summary>
+		/// Validates that the editor contains valid data. If the data is valid the method returns True.
+		/// If the data is not valid, the editor can show error messages to the user and return False.
+		/// </summary>
+		public virtual bool Validate ()
+		{
+			return true;
 		}
 
 		public event EventHandler Changed;
 
-		protected void NotifyChanged ()
+		public void NotifyChanged ()
 		{
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);

@@ -50,12 +50,14 @@ namespace MonoDevelop.Components
 			crt.TextField = keyField;
 			var col = list.Columns.Add (GettextCatalog.GetString ("Variable"), crt);
 			col.CanResize = true;
+			crt.TextChanged += (s,a) => NotifyChanged ();
 
 			valueCell = new TextCellView ();
 			valueCell.Editable = true;
 			valueCell.TextField = valueField;
 			col = list.Columns.Add (GettextCatalog.GetString ("Value"), valueCell);
 			col.CanResize = true;
+			valueCell.TextChanged += (s, a) => NotifyChanged ();
 
 			var box = new HBox ();
 
@@ -79,6 +81,7 @@ namespace MonoDevelop.Components
 					else if (store.RowCount > 0)
 						list.SelectRow (store.RowCount - 1);
 					UpdateButtons ();
+					NotifyChanged ();
 				}
 			};
 			box.PackStart (deleteButton);
@@ -106,7 +109,7 @@ namespace MonoDevelop.Components
 			for (int n = 0; n < store.RowCount; n++) {
 				string var = store.GetValue (n, keyField);
 				string val = store.GetValue (n, valueField);
-				if (var.Length > 0) {
+				if (!string.IsNullOrEmpty (var)) {
 					values [var] = val;
 					keys.Add (var);
 				}
@@ -121,10 +124,18 @@ namespace MonoDevelop.Components
 			var crt = (TextCellView)sender;
 			crt.TextChanged -= CrtTextChanged;
 			var r = list.CurrentEventRow;
+			NotifyChanged ();
 			Xwt.Application.TimeoutInvoke (100, delegate {
 				list.StartEditingCell (r, valueCell); return false;
 			});
 		}
+
+		void NotifyChanged ()
+		{
+			Changed?.Invoke (this, EventArgs.Empty);
+		}
+
+		public event EventHandler Changed;
 	}
 }
 
