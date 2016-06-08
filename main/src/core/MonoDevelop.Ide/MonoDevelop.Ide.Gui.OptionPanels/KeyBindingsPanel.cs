@@ -811,6 +811,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				if (KeyBindingSelected == null)
 					return;
 				var hit = HitTest (args.Event.X, args.Event.Y);
+				if (hit.Command == null)
+					return;
 				var a = new KeyBindingSelectedEventArgs (hit.AllKeys, hit.SelectedKey, hit.Command, hit.Iter);
 				KeyBindingSelected (this, a);
 			}
