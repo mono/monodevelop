@@ -179,8 +179,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ILicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMachinePackageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageFromRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageFromRepositoryExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementFileService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProject.cs" />
@@ -203,7 +201,6 @@
     <Compile Include="MonoDevelop.PackageManagement\MachinePackageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MSBuildProjectExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageFromRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageLicenseViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementOptionsViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementTask.cs" />
@@ -216,8 +213,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ResolveFileConflictEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MarkupString.cs" />
     <Compile Include="MonoDevelop.PackageManagement\OpenDotNetProjects.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageFiles.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageFilesForOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementFileService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementLogger.cs" />

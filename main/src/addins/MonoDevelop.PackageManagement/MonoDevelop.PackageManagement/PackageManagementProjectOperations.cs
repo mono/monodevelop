@@ -42,15 +42,12 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class PackageManagementProjectOperations : IPackageManagementProjectOperations
 	{
-		IPackageManagementSolution solution;
 		BackgroundPackageActionRunner backgroundActionRunner;
 
 		public PackageManagementProjectOperations (
-			IPackageManagementSolution solution,
 			BackgroundPackageActionRunner backgroundActionRunner,
 			IPackageManagementEvents packageManagementEvents)
 		{
-			this.solution = solution;
 			this.backgroundActionRunner = backgroundActionRunner;
 
 			packageManagementEvents.PackageInstalled += PackageInstalled;

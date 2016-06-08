@@ -72,7 +72,7 @@ namespace MonoDevelop.PackageManagement
 
 			updatedPackagesInWorkspace = new UpdatedNuGetPackagesInWorkspace (packageManagementEvents);
 
-			projectOperations = new PackageManagementProjectOperations (solution, backgroundPackageActionRunner, packageManagementEvents);
+			projectOperations = new PackageManagementProjectOperations (backgroundPackageActionRunner, packageManagementEvents);
 
 			workspace = new PackageManagementWorkspace ();
 

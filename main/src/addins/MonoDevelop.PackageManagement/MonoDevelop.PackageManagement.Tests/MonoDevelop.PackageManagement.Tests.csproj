@@ -107,14 +107,11 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\DelegateCommandTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ViewModelBaseTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableViewModelBase.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageFromRepositoryTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackage.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageFromRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageAssemblyReference.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\CollectionAssert.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageOperationMessageTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageFilesTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageRepositoryCacheTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSharedPackageRepository.cs" />
@@ -139,7 +136,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\RecentNuGetPackagesRepositoryTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageCollectionAssert.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeRegisteredPackageRepositories.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeTaskFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeLogger.cs" />
@@ -176,7 +172,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopPackageManagerFactoryTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopProjectManagerTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeOperationAwareRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementSolutionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectFactory.cs" />
