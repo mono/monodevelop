@@ -61,6 +61,11 @@ namespace MonoDevelop.PackageManagement
 			SelectedVersion = Version;
 		}
 
+		public AllPackagesViewModel Parent {
+			get { return parent; }
+			set { parent = value; }
+		}
+
 		public string Id {
 			get { return viewModel.Id; }
 		}

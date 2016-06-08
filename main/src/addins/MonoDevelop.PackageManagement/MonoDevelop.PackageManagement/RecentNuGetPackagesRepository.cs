@@ -79,6 +79,7 @@ namespace MonoDevelop.PackageManagement
 
 		void AddPackageAtBeginning (RecentPackage package)
 		{
+			package.PackageViewModel.Parent = null;
 			packages.Insert (0, package);
 		}
 

@@ -32,7 +32,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class TestablePackageSearchResultViewModel : PackageSearchResultViewModel
 	{
-		public TestableAllPackagesViewModel Parent;
 		public FakeDotNetProject Project;
 		public FakeSolutionManager SolutionManager;
 
@@ -50,7 +49,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PackageItemListViewModel viewModel)
 			: base (parent, viewModel)
 		{
-			Parent = parent;
 		}
 
 		public TestablePackageSearchResultViewModel (

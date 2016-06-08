@@ -558,6 +558,7 @@ namespace MonoDevelop.PackageManagement
 
 			foreach (PackageSearchResultViewModel package in recentPackages) {
 				package.ResetDetailedPackageMetadata ();
+				package.Parent = this;
 				package.IsChecked = false;
 				yield return package;
 			}

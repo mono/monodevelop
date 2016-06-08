@@ -110,7 +110,13 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.SelectedPackageSource = secondPackageSource;
 		}
 
-		PackageSearchResultViewModel AddRecentPackage (string packageId, string packageVersion, string packageSource)
+		void AddRecentPackage (string packageId, string packageVersion, string packageSource)
+		{
+			var searchResultViewModel = CreateRecentPackage (packageId, packageVersion, packageSource);
+			viewModel.RecentPackagesRepository.AddPackage (searchResultViewModel, packageSource);
+		}
+
+		PackageSearchResultViewModel CreateRecentPackage (string packageId, string packageVersion, string packageSource)
 		{
 			var allPackagesViewModelForRecentPackages = new TestableAllPackagesViewModel (
 				new FakeSolutionManager (),
@@ -119,9 +125,7 @@ namespace MonoDevelop.PackageManagement.Tests
 				Id = packageId,
 				Version = new NuGetVersion (packageVersion)
 			};
-			var searchResultViewModel = new PackageSearchResultViewModel (allPackagesViewModelForRecentPackages, recentPackage);
-			viewModel.RecentPackagesRepository.AddPackage (searchResultViewModel, packageSource);
-			return searchResultViewModel;
+			return new PackageSearchResultViewModel (allPackagesViewModelForRecentPackages, recentPackage);
 		}
 
 		FakeNuGetProject CreateNuGetProjectForProject ()
@@ -868,14 +872,68 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProject ();
 			var packageSource = AddOnePackageSourceToRegisteredSources ();
 			CreateViewModel ();
-			var recentPackage = AddRecentPackage ("Recent", "2.1", packageSource.Name);
+			var recentPackage = CreateRecentPackage ("Recent", "2.1", packageSource.Name);
 			recentPackage.IsChecked = true;
+			viewModel.RecentPackagesRepository.AddPackage (recentPackage, packageSource.Name);
 			viewModel.ReadPackages ();
 			await viewModel.ReadPackagesTask;
 
 			Assert.AreEqual (1, viewModel.PackageViewModels.Count);
 			Assert.AreEqual ("Recent", viewModel.PackageViewModels[0].Id);
 			Assert.IsFalse (recentPackage.IsChecked);
+		}
+
+		[Test]
+		public async Task ReadPackages_OneRecentPackageIsChecked_RecentPackageIsInCheckedPackagesList ()
+		{
+			CreateProject ();
+			var packageSource = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			AddRecentPackage ("Recent", "2.1", packageSource.Name);
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+			var package = viewModel.PackageViewModels.Single ();
+			package.IsChecked = true;
+
+			var checkedPackage = viewModel.CheckedPackageViewModels.Single ();
+			Assert.AreEqual ("Recent", package.Id);
+			Assert.AreEqual ("Recent", checkedPackage.Id);
+		}
+
+		[Test]
+		public async Task OnInstallingSelectedPackages_OnePackageChecked_RecentPackageParentIsCleared ()
+		{
+			CreateProject ();
+			var source = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			viewModel.PackageFeed.AddPackage ("A", "1.0");
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+			viewModel.PackageViewModels[0].IsChecked = true;
+
+			viewModel.OnInstallingSelectedPackages ();
+
+			var package = viewModel.RecentPackagesRepository.GetPackages (source.Name).Single ();
+			Assert.AreEqual ("A", package.Id);
+			Assert.IsNull (package.Parent);
+		}
+
+		[Test]
+		public async Task OnInstallingSelectedPackages_OnePackageSelected_RecentPackageParentIsCleared ()
+		{
+			CreateProject ();
+			var source = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			viewModel.PackageFeed.AddPackage ("A", "1.0");
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+			viewModel.SelectedPackage = viewModel.PackageViewModels.Single ();
+
+			viewModel.OnInstallingSelectedPackages ();
+
+			var package = viewModel.RecentPackagesRepository.GetPackages (source.Name).Single ();
+			Assert.AreEqual ("A", package.Id);
+			Assert.IsNull (package.Parent);
 		}
 	}
 }
