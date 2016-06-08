@@ -29,9 +29,9 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
-using NuGet;
 using MonoDevelop.Projects;
+using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -40,7 +40,6 @@ namespace MonoDevelop.PackageManagement
 		event EventHandler PackageOperationsStarting;
 		event EventHandler PackageOperationsFinished;
 		event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
-		event EventHandler<SelectProjectsEventArgs> SelectProjects;
 		event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
@@ -56,6 +55,10 @@ namespace MonoDevelop.PackageManagement
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceAdding;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceRemoving;
 		event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
+		event EventHandler<PackageManagementEventArgs> PackageInstalled;
+		event EventHandler<PackageManagementEventArgs> PackageUninstalling;
+		event EventHandler<PackageManagementEventArgs> PackageUninstalled;
+		event EventHandler<DotNetProjectEventArgs> NoUpdateFound;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
@@ -65,9 +68,8 @@ namespace MonoDevelop.PackageManagement
 		void OnParentPackageUninstalling(IPackage package, IPackageManagementProject project);
 		void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project);
 		void OnParentPackagesUpdated(IEnumerable<IPackage> packages);
-		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
-		bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> selectedProjects);
-		FileConflictResolution OnResolveFileConflict(string message);
+		void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args);
+		FileConflictAction OnResolveFileConflict(string message);
 		void OnPackagesRestored();
 		void OnFileChanged(string path);
 		void OnUpdatedPackagesAvailable ();
@@ -76,6 +78,7 @@ namespace MonoDevelop.PackageManagement
 		void OnReferenceAdding (ProjectReference reference);
 		void OnReferenceRemoving (ProjectReference reference);
 		void OnImportRemoved (IDotNetProject project, string import);
+		void OnNoUpdateFound (IDotNetProject project);
 
 		[Obsolete]
 		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);

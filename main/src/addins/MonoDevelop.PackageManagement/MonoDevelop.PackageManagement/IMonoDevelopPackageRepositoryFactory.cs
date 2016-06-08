@@ -39,10 +39,6 @@ namespace MonoDevelop.PackageManagement
 			IFileSystem fileSystem,
 			IFileSystem configSettingsFileSystem);
 		
-		IRecentPackageRepository CreateRecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository);
-		
 		IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories);
 	}
 }

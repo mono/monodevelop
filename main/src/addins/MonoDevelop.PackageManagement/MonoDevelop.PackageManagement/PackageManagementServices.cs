@@ -39,10 +39,7 @@ namespace MonoDevelop.PackageManagement
 		static readonly RegisteredPackageRepositories registeredPackageRepositories;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
-		static readonly PackageManagementOutputMessagesView outputMessagesView;
 		static readonly PackageActionRunner packageActionRunner;
-		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
-		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
 		static readonly PackageRepositoryCache packageRepositoryCache;
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
 		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
@@ -50,8 +47,11 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementProgressProvider progressProvider;
 		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
 		static readonly PackageCompatibilityHandler packageCompatibilityHandler;
-		static readonly UpdatedPackagesInSolution updatedPackagesInSolution;
+		static readonly UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
 		static readonly PackageManagementProjectOperations projectOperations;
+		static readonly PackageManagementWorkspace workspace;
+		static readonly PackageManagementCredentialService credentialService;
+		static readonly AnalyzerPackageMonitor analyzerPackageMonitor;
 
 		static PackageManagementServices()
 		{
@@ -61,10 +61,7 @@ namespace MonoDevelop.PackageManagement
 			userAgentGenerator.Register (packageRepositoryCache);
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
-			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
-			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(projectTemplatePackageSources);
-			
-			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
+
 			solution = new PackageManagementSolution (registeredPackageRepositories, projectService, packageManagementEvents);
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
 
@@ -75,34 +72,23 @@ namespace MonoDevelop.PackageManagement
 			packageCompatibilityHandler = new PackageCompatibilityHandler ();
 			packageCompatibilityHandler.MonitorTargetFrameworkChanges (projectTargetFrameworkMonitor);
 
-			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
+			updatedPackagesInWorkspace = new UpdatedNuGetPackagesInWorkspace (packageManagementEvents);
 
-			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
+			projectOperations = new PackageManagementProjectOperations (solution, backgroundPackageActionRunner, packageManagementEvents);
 
-			InitializeCredentialProvider();
+			workspace = new PackageManagementWorkspace ();
+
+			credentialService = new PackageManagementCredentialService ();
+			credentialService.Initialize ();
+
 			PackageManagementBackgroundDispatcher.Initialize ();
-		}
-		
-		internal static void InitializeCredentialProvider()
-		{
-			HttpClient.DefaultCredentialProvider = CreateSettingsCredentialProvider (new MonoDevelopCredentialProvider ());
+
+			analyzerPackageMonitor = new AnalyzerPackageMonitor ();
 		}
 
-		static SettingsCredentialProvider CreateSettingsCredentialProvider (ICredentialProvider credentialProvider)
+		internal static void InitializeCredentialService ()
 		{
-			ISettings settings = LoadSettings ();
-			var packageSourceProvider = new PackageSourceProvider (settings);
-			return new SettingsCredentialProvider(credentialProvider, packageSourceProvider);
-		}
-
-		static ISettings LoadSettings ()
-		{
-			try {
-				return Settings.LoadDefaultSettings (null, null, null);
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unable to load NuGet.Config.", ex);
-			}
-			return NullSettings.Instance;
+			credentialService.Initialize ();
 		}
 
 		internal static PackageManagementOptions Options {
@@ -125,24 +111,12 @@ namespace MonoDevelop.PackageManagement
 			get { return packageManagementEvents; }
 		}
 		
-		internal static IPackageManagementOutputMessagesView OutputMessagesView {
-			get { return outputMessagesView; }
-		}
-		
 		internal static IPackageManagementProjectService ProjectService {
 			get { return projectService; }
 		}
 		
 		internal static IPackageActionRunner PackageActionRunner {
 			get { return packageActionRunner; }
-		}
-		
-		internal static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
-			get { return projectTemplatePackageRepositoryCache; }
-		}
-		
-		internal static RegisteredPackageSources ProjectTemplatePackageSources {
-			get { return projectTemplatePackageSources.PackageSources; }
 		}
 
 		internal static IBackgroundPackageActionRunner BackgroundPackageActionRunner {
@@ -153,20 +127,20 @@ namespace MonoDevelop.PackageManagement
 			get { return progressMonitorFactory; }
 		}
 
-		internal static IRecentPackageRepository RecentPackageRepository {
-			get { return packageRepositoryCache.RecentPackageRepository; }
-		}
-
 		internal static IProgressProvider ProgressProvider {
 			get { return progressProvider; }
 		}
 
-		internal static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
-			get { return updatedPackagesInSolution; }
+		internal static IUpdatedNuGetPackagesInWorkspace UpdatedPackagesInWorkspace {
+			get { return updatedPackagesInWorkspace; }
 		}
 
 		public static IPackageManagementProjectOperations ProjectOperations {
 			get { return projectOperations; }
+		}
+
+		internal static PackageManagementWorkspace Workspace {
+			get { return workspace; }
 		}
 	}
 }

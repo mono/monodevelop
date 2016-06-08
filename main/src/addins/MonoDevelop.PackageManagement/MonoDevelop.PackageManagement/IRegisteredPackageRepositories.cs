@@ -35,7 +35,6 @@ namespace MonoDevelop.PackageManagement
 	internal interface IRegisteredPackageRepositories
 	{
 		IPackageRepository ActiveRepository { get; }
-		IRecentPackageRepository RecentPackageRepository { get; }
 		
 		IPackageRepository CreateRepository(PackageSource source);
 		IPackageRepository CreateAggregateRepository();

@@ -24,39 +24,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	internal class ProjectReferencesFromPackagesFolderNode
 	{
+		public static readonly string NodeName = "From Packages";
+
+		public ProjectReferencesFromPackagesFolderNode (
+			ProjectPackagesFolderNode packagesFolder,
+			ProjectReferenceCollection projectReferences)
+			: this (
+				packagesFolder.DotNetProject,
+				projectReferences,
+				packagesFolder.PackagesFolderPath)
+		{
+		}
+
 		public ProjectReferencesFromPackagesFolderNode (
 			DotNetProject project,
-			ProjectReferenceCollection projectReferences)
+			ProjectReferenceCollection projectReferences,
+			FilePath packagesFolderPath)
 		{
 			Project = project;
 			References = projectReferences;
+			PackagesFolderPath = packagesFolderPath;
 		}
 
 		public DotNetProject Project { get; private set; }
 		public ProjectReferenceCollection References { get; private set; }
+		public FilePath PackagesFolderPath { get; private set; }
 
-		public bool AnyReferencesFromPackages ()
-		{
-			return GetReferencesFromPackages ().Any ();
-		}
+		public bool AnyReferencesFromPackages () 
+		{ 
+			return GetReferencesFromPackages ().Any (); 
+		} 
 
 		public IEnumerable<ProjectReference> GetReferencesFromPackages ()
 		{
-			if (Project.HasPackages ()) {
-				foreach (ProjectReference projectReference in References.Where (reference => reference.IsReferenceFromPackage ())) {
-					yield return projectReference;
-				}
+			foreach (ProjectReference projectReference in References.Where (IsReferenceFromPackage)) {
+				yield return projectReference;
 			}
+		}
+
+		bool IsReferenceFromPackage (ProjectReference reference)
+		{
+			return reference.IsReferenceFromPackage (PackagesFolderPath);
 		}
 	}
 }

@@ -43,13 +43,6 @@ namespace MonoDevelop.PackageManagement
 			return new SharedPackageRepository(pathResolver, fileSystem, configSettingsFileSystem);
 		}
 		
-		public IRecentPackageRepository CreateRecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository)
-		{
-			return new RecentPackageRepository(recentPackages, aggregateRepository);
-		}
-		
 		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
 		{
 			return new MonoDevelopAggregateRepository (repositories);

@@ -71,31 +71,11 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
-		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInSolutionMessage (IEnumerable<IPackageManagementProject> projects)
+		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInSolutionMessage (IEnumerable<IDotNetProject> projects)
 		{
 			ProgressMonitorStatusMessage message = CreateUpdatingPackagesInSolutionMessage ();
 			return new UpdatePackagesProgressMonitorStatusMessage (
 				projects,
-				GettextCatalog.GetString ("Packages are up to date."),
-				GettextCatalog.GetString ("No updates found but warnings were reported."),
-				message);
-		}
-
-		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage (int count)
-		{
-			return new ProgressMonitorStatusMessage (
-				GettextCatalog.GetString ("Updating {0} packages in project...", count),
-				GettextCatalog.GetString ("{0} packages successfully updated.", count),
-				GettextCatalog.GetString ("Could not update packages."),
-				GettextCatalog.GetString ("{0} packages updated with warnings.", count)
-			);
-		}
-
-		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage (int count, IPackageManagementProject project)
-		{
-			ProgressMonitorStatusMessage message = CreateUpdatingPackagesInProjectMessage (count);
-			return new UpdatePackagesProgressMonitorStatusMessage (
-				project,
 				GettextCatalog.GetString ("Packages are up to date."),
 				GettextCatalog.GetString ("No updates found but warnings were reported."),
 				message);
@@ -111,6 +91,16 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage (IDotNetProject project)
+		{
+			ProgressMonitorStatusMessage message = CreateUpdatingPackagesInProjectMessage ();
+			return new UpdatePackagesProgressMonitorStatusMessage (
+				project,
+				GettextCatalog.GetString ("Packages are up to date."),
+				GettextCatalog.GetString ("No updates found but warnings were reported."),
+				message);
+		}
+
 		public static ProgressMonitorStatusMessage CreateUpdatingSinglePackageMessage (string packageId)
 		{
 			return new ProgressMonitorStatusMessage (
@@ -121,7 +111,7 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
-		public static ProgressMonitorStatusMessage CreateUpdatingSinglePackageMessage (string packageId, IPackageManagementProject project)
+		public static ProgressMonitorStatusMessage CreateUpdatingSinglePackageMessage (string packageId, IDotNetProject project)
 		{
 			ProgressMonitorStatusMessage message = CreateUpdatingSinglePackageMessage (packageId);
 			return new UpdatePackagesProgressMonitorStatusMessage (

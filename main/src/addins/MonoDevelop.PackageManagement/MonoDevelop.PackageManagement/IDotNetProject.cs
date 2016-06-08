@@ -48,6 +48,7 @@ namespace MonoDevelop.PackageManagement
 		bool Equals (IDotNetProject project);
 		void RefreshProjectBuilder ();
 		void DisposeProjectBuilder ();
+		void RefreshReferenceStatus ();
 	}
 }
 

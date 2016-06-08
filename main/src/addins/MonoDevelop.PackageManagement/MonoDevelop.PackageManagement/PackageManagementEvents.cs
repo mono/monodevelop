@@ -29,9 +29,9 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using NuGet;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
+using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -112,7 +112,7 @@ namespace MonoDevelop.PackageManagement
 
 		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		
-		public void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args)
+		public void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args)
 		{
 			if (PackageOperationMessageLogged != null) {
 				var eventArgs = new PackageOperationMessageLoggedEventArgs(level, message, args);
@@ -120,28 +120,16 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 		
-		public event EventHandler<SelectProjectsEventArgs> SelectProjects;
-		
-		public bool OnSelectProjects(IEnumerable<IPackageManagementSelectedProject> projects)
-		{
-			if (SelectProjects != null) {
-				var eventArgs = new SelectProjectsEventArgs(projects);
-				SelectProjects(this, eventArgs);
-				return eventArgs.IsAccepted;
-			}
-			return true;
-		}
-		
 		public event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		
-		public FileConflictResolution OnResolveFileConflict(string message)
+		public FileConflictAction OnResolveFileConflict(string message)
 		{
 			if (ResolveFileConflict != null) {
 				var eventArgs = new ResolveFileConflictEventArgs(message);
 				ResolveFileConflict(this, eventArgs);
 				return eventArgs.Resolution;
 			}
-			return FileConflictResolution.IgnoreAll;
+			return FileConflictAction.IgnoreAll;
 		}
 		
 		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
@@ -226,6 +214,34 @@ namespace MonoDevelop.PackageManagement
 			if (ImportRemoved != null) {
 				ImportRemoved (this, new DotNetProjectImportEventArgs (project, import));
 			}
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageInstalled;
+
+		public void OnPackageInstalled (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
+		{
+			PackageInstalled?.Invoke (this, new PackageManagementEventArgs (project, e));
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageUninstalling;
+
+		public void OnPackageUninstalling (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
+		{
+			PackageUninstalling?.Invoke (this, new PackageManagementEventArgs (project, e));
+		}
+
+		public event EventHandler<PackageManagementEventArgs> PackageUninstalled;
+
+		public void OnPackageUninstalled (IDotNetProject project, NuGet.ProjectManagement.PackageEventArgs e)
+		{
+			PackageUninstalled?.Invoke (this, new PackageManagementEventArgs (project, e));
+		}
+
+		public event EventHandler<DotNetProjectEventArgs> NoUpdateFound;
+
+		public void OnNoUpdateFound (IDotNetProject project)
+		{
+			NoUpdateFound?.Invoke (this, new DotNetProjectEventArgs (project));
 		}
 	}
 }

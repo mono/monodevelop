@@ -28,7 +28,7 @@
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -49,7 +49,7 @@ namespace MonoDevelop.PackageManagement
 		const int NoButtonIndex = 2;
 		const int NoToAllButtonIndex = 3;
 		
-		public FileConflictResolution ResolveFileConflict(string message)
+		public FileConflictAction ResolveFileConflict (string message)
 		{
 			AlertButton result = MessageService.AskQuestion(
 				GettextCatalog.GetString ("File Conflict"),
@@ -59,16 +59,16 @@ namespace MonoDevelop.PackageManagement
 			return MapResultToFileConflictResolution(result);
 		}
 		
-		FileConflictResolution MapResultToFileConflictResolution(AlertButton result)
+		FileConflictAction MapResultToFileConflictResolution (AlertButton result)
 		{
 			if (result == AlertButton.Yes) {
-				return FileConflictResolution.Overwrite;
+				return FileConflictAction.Overwrite;
 			} else if (result == YesToAllButton) {
-				return FileConflictResolution.OverwriteAll;
+				return FileConflictAction.OverwriteAll;
 			} else if (result == NoToAllButton) {
-				return FileConflictResolution.IgnoreAll;
+				return FileConflictAction.IgnoreAll;
 			} else {
-				return FileConflictResolution.Ignore;
+				return FileConflictAction.Ignore;
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-﻿//
+//
 // PackageReferenceNodeTests.cs
 //
 // Author:
@@ -27,10 +27,12 @@
 using System;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using NUnit.Framework;
-using NuGet;
+using NuGet.Packaging;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -43,7 +45,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreatePackageReferenceNode (
 			bool installed = true,
 			bool installPending = false,
-			PackageName updatedPackage = null)
+			PackageIdentity updatedPackage = null)
 		{
 			node = new PackageReferenceNode (null, packageReference, installed, installPending, updatedPackage);
 		}
@@ -52,8 +54,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			string packageId = "Id",
 			bool requireReinstallation = false)
 		{
-			var version = new SemanticVersion ("1.2.3");
-			packageReference = new PackageReference (packageId, version, null, null, false, requireReinstallation);
+			var version = new NuGetVersion ("1.2.3");
+			var identity = new PackageIdentity (packageId, version);
+			packageReference = new PackageReference (identity, null, true, false, requireReinstallation);
 		}
 
 		[Test]
@@ -167,7 +170,7 @@ namespace MonoDevelop.PackageManagement.Tests
 				requireReinstallation: true);
 			CreatePackageReferenceNode (
 				installed: true,
-				updatedPackage: new PackageName ("MyPackage", new SemanticVersion ("1.2.3.4")));
+				updatedPackage: new PackageIdentity ("MyPackage", new NuGetVersion ("1.2.3.4")));
 
 			string label = node.GetLabel ();
 			string secondaryLabel = node.GetSecondaryLabel ();

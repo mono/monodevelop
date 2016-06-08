@@ -34,23 +34,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	static class PackageCollectionAssert
 	{
-		public static void AreEqual (IEnumerable<IPackage> expectedPackages, IEnumerable<PackageViewModel> actualViewModels)
-		{
-			var expectedPackagesAsList = new List<IPackage> (expectedPackages);
-			List<IPackage> actualPackages = ConvertToPackageList (actualViewModels);
-
-			CollectionAssert.AreEqual (expectedPackagesAsList, actualPackages);
-		}
-
-		static List<IPackage> ConvertToPackageList (IEnumerable<PackageViewModel> viewModels)
-		{
-			var packages = new List<IPackage> ();
-			foreach (PackageViewModel viewModel in viewModels) {
-				packages.Add (viewModel.GetPackage ());
-			}
-			return packages;
-		}
-
 		public static void AreEqual (IEnumerable<IPackage> expectedPackages, IEnumerable<IPackage> actualPackages)
 		{
 			var expectedPackagesAsList = new List<IPackage> (expectedPackages);

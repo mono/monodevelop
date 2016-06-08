@@ -3,7 +3,7 @@ using System;
 using System.Xml;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects.MSBuild;
-using NuGet;
+using NuGet.ProjectManagement;
 using NUnit.Framework;
 using System.Linq;
 
@@ -21,12 +21,12 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AddImportIfMissingAtBottom (string importFile, string condition = "")
 		{
-			project.AddImportIfMissing (importFile, ProjectImportLocation.Bottom, condition);
+			project.AddImportIfMissing (importFile, ImportLocation.Bottom, condition);
 		}
 
 		void AddImportIfMissingAtTop (string importFile, string condition = "")
 		{
-			project.AddImportIfMissing (importFile, ProjectImportLocation.Top, condition);
+			project.AddImportIfMissing (importFile, ImportLocation.Top, condition);
 		}
 
 		void AssertLastMSBuildImportElementHasProjectAttributeValue (string expectedAttributeValue)

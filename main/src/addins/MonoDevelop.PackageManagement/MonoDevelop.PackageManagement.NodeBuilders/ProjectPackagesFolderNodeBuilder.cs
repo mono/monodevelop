@@ -27,14 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Gdk;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.PackageManagement.Commands;
 using MonoDevelop.Projects;
-using NuGet;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -46,7 +43,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "Packages";
+			return ProjectPackagesFolderNode.NodeName;
 		}
 
 		public override Type CommandHandlerType {
@@ -81,7 +78,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 			List<PackageReferenceNode> nodes = projectPackagesNode.GetPackageReferencesNodes ().ToList ();
 
-			foreach (InstallPackageAction installAction in GetPendingInstallActions (projectPackagesNode.DotNetProject)) {
+			foreach (IInstallNuGetPackageAction installAction in GetPendingInstallActions (projectPackagesNode.DotNetProject)) {
 				if (!nodes.Any (node => node.Id == installAction.GetPackageId ())) {
 					nodes.Add (CreatePackageReferenceNode (projectPackagesNode, installAction));
 				}
@@ -92,16 +89,16 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			}
 		}
 
-		IEnumerable<InstallPackageAction> GetPendingInstallActions (DotNetProject project)
+		IEnumerable<IInstallNuGetPackageAction> GetPendingInstallActions (DotNetProject project)
 		{
 			return PackageManagementServices.BackgroundPackageActionRunner.PendingInstallActionsForProject (project);
 		}
 
-		PackageReferenceNode CreatePackageReferenceNode (ProjectPackagesFolderNode parentNode, InstallPackageAction installAction)
+		PackageReferenceNode CreatePackageReferenceNode (ProjectPackagesFolderNode parentNode, IInstallNuGetPackageAction installAction)
 		{
 			return new PackageReferenceNode (
 				parentNode,
-				new PackageReference (installAction.GetPackageId (), installAction.GetPackageVersion (), null, null, false),
+				new PackageReference (new PackageIdentity (installAction.GetPackageId (), installAction.GetPackageVersion ()), null),
 				false,
 				true);
 		}
@@ -109,6 +106,32 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			treeBuilder.AddChildren (GetPackageReferencesNodes (dataObject));
+		}
+
+		public override void OnNodeAdded (object dataObject)
+		{
+			var projectPackagesNode = (ProjectPackagesFolderNode)dataObject;
+			projectPackagesNode.PackageReferencesChanged += OnPackageReferencesChanged;
+		}
+
+		public override void OnNodeRemoved (object dataObject)
+		{
+			var projectPackagesNode = (ProjectPackagesFolderNode)dataObject;
+			projectPackagesNode.PackageReferencesChanged -= OnPackageReferencesChanged;
+		}
+
+		void OnPackageReferencesChanged (object sender, EventArgs e)
+		{
+			var projectPackagesNode = (ProjectPackagesFolderNode)sender;
+			ITreeBuilder builder = Context.GetTreeBuilder (projectPackagesNode);
+			if (builder != null) {
+				builder.UpdateAll ();
+				builder.MoveToParent ();
+			}
+
+			if (builder.MoveToChild ("References", typeof (ProjectReferenceCollection))) {
+				builder.UpdateAll ();
+			}
 		}
 	}
 }

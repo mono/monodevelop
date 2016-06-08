@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal interface INuGetPackageNewImportsHandler : IDisposable
 	{
-		void AddImportIfMissing (string name, string condition, ProjectImportLocation location);
+		void AddImportIfMissing (string name, string condition, ImportLocation location);
 	}
 }
 

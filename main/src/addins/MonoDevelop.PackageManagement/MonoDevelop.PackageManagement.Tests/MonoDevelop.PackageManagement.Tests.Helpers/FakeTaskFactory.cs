@@ -36,10 +36,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool IsCreateTaskCalled;
 		public bool RunTasksSynchronously;
 
-		public FakeTask<PackagesForSelectedPageResult> FirstFakeTaskCreated { 
-			get { return FakeTasksCreated [0] as FakeTask<PackagesForSelectedPageResult>; }
-		}
-
 		public List<object> FakeTasksCreated = new List<object> ();
 
 		public ITask<TResult> CreateTask<TResult> (
@@ -52,24 +48,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return task;
 		}
 
-		public void ExecuteAllFakeTasks ()
-		{
-			foreach (FakeTask<PackagesForSelectedPageResult> task in FakeTasksCreated) {
-				task.ExecuteTaskCompletely ();
-			}
-		}
-
 		public void ExecuteAllTasks<T> ()
 		{
 			foreach (FakeTask<T> task in FakeTasksCreated) {
 				task.ExecuteTaskCompletely ();
 			}
-		}
-
-		public void ExecuteTask (int index)
-		{
-			var task = FakeTasksCreated [index] as FakeTask<PackagesForSelectedPageResult>;
-			task.ExecuteTaskCompletely ();
 		}
 
 		public void ClearAllFakeTasks ()

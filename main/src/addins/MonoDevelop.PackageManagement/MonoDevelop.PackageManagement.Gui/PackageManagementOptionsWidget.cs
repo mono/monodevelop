@@ -27,7 +27,6 @@
 //
 
 using System;
-using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {

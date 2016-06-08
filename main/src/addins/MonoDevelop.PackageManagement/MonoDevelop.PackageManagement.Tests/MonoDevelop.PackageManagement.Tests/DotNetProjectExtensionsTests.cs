@@ -130,6 +130,38 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (result);
 		}
+
+		[Test]
+		public void HasPackagesConfig_PackagesConfigFileDoesNotExist_ReturnsFalse ()
+		{
+			CreateProject (@"d:\projects\MyProject.csproj", "MyProject");
+
+			bool result = project.HasPackagesConfig ();
+
+			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void HasPackagesConfig_PackagesConfigFileExistsInProjectDirectory_ReturnsTrue ()
+		{
+			CreateProject (@"d:\projects\MyProject.csproj", "MyProject");
+			AddExistingFile (@"d:\projects\packages.config");
+
+			bool result = project.HasPackagesConfig ();
+
+			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public void HasPackages_PackagesJsonFileExistsInProjectDirectory_ReturnsTrue ()
+		{
+			CreateProject (@"d:\projects\MyProject.csproj", "MyProject");
+			AddExistingFile (@"d:\projects\project.json");
+
+			bool result = project.HasPackages ();
+
+			Assert.IsTrue (result);
+		}
 	}
 }
 

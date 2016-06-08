@@ -25,10 +25,8 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -39,14 +37,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestablePackageCompatibilityRunner (
 			IDotNetProject project,
 			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 			: base (
 				project,
 				solution,
-				registeredRepositories,
 				progressMonitorFactory,
 				packageManagementEvents,
 				progressProvider)
@@ -84,10 +80,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ProgressMonitorStatusMessage ProgressStatusMessage;
 
 		protected override PackageCompatibilityChecker CreatePackageCompatibilityChecker (
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories)
+			IPackageManagementSolution solution)
 		{
-			return new TestablePackageCompatibilityChecker (solution, registeredRepositories) {
+			return new TestablePackageCompatibilityChecker (solution) {
 				PackageReferenceFile = PackageReferenceFile
 			};
 		}

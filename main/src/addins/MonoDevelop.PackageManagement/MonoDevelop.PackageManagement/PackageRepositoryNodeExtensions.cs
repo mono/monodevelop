@@ -24,17 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using Mono.Addins;
-using MonoDevelop.Core;
-using NuGet;
+using NuGet.Configuration;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.PackageManagement
 {
 	static class PackageRepositoryNodeExtensions
 	{
-		public static PackageSource GetPackageSource (this PackageRepositoryNode node)
+		public static NuGet.PackageSource GetPackageSource (this PackageRepositoryNode node)
+		{
+			return new NuGet.PackageSource (node.Source, node.Id);
+		}
+
+		public static PackageSource CreatePackageSource (this PackageRepositoryNode node)
 		{
 			return new PackageSource (node.Source, node.Id);
 		}

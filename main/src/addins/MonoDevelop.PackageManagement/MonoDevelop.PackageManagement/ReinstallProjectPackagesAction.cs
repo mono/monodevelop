@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
+using System.Threading;
 using MonoDevelop.Core;
 using NuGet;
 
@@ -70,6 +70,11 @@ namespace MonoDevelop.PackageManagement
 				return;
 
 			GetProjectPackagesToReinstall ();
+		}
+
+		public void Execute (CancellationToken cancellationToken)
+		{
+			Execute ();
 		}
 
 		public void Execute ()

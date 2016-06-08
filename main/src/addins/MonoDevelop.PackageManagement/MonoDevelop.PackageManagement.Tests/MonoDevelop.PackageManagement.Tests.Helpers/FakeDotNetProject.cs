@@ -49,6 +49,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			References = new ProjectReferenceCollection ();
 			Files = new ProjectFileCollection ();
+			TargetFrameworkMoniker = new TargetFrameworkMoniker ("v4.5");
 			CreateEqualsAction ();
 		}
 
@@ -73,7 +74,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void AddProjectType (Guid guid)
 		{
-			ExtendedProperties.Add ("ProjectTypeGuids", guid.ToString ());
+			AddFlavorGuid (guid.ToString ());
 		}
 
 		public int ReferencesWhenSavedCount;
@@ -149,6 +150,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void DisposeProjectBuilder ()
 		{
 			IsProjectBuilderDisposed = true;
+		}
+
+		public void RefreshReferenceStatus ()
+		{
 		}
 	}
 }

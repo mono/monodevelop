@@ -53,15 +53,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			return solution.GetAllProjects ();
 		}
-
+		#pragma warning disable 67
 		public event EventHandler<ProjectReloadedEventArgs> ProjectReloaded;
 		public event EventHandler SolutionLoaded;
 		public event EventHandler SolutionUnloaded;
-
-		public IProjectBrowserUpdater CreateProjectBrowserUpdater ()
-		{
-			throw new NotImplementedException ();
-		}
+		#pragma warning restore 67
 
 		public string GetDefaultCustomToolForFileName (ProjectFile projectItem)
 		{

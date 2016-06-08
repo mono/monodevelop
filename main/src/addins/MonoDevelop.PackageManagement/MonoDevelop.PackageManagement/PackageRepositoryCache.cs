@@ -39,8 +39,6 @@ namespace MonoDevelop.PackageManagement
 		IMonoDevelopPackageRepositoryFactory factory;
 		RegisteredPackageSources packageSources;
 		PackageManagementOptions options;
-		IList<RecentPackageInfo> recentPackages;
-		IRecentPackageRepository recentPackageRepository;
 		IPackageRepository machineCache;
 		ConcurrentDictionary<string, IPackageRepository> repositories =
 			new ConcurrentDictionary<string, IPackageRepository>();
@@ -53,7 +51,6 @@ namespace MonoDevelop.PackageManagement
 			this.options = options;
 			this.machineCache = machineCache;
 			this.factory = factory;
-			this.recentPackages = options.RecentPackages;
 		}
 
 		public PackageRepositoryCache (
@@ -73,12 +70,9 @@ namespace MonoDevelop.PackageManagement
 		{
 		}
 
-		public PackageRepositoryCache (
-			RegisteredPackageSources packageSources,
-			IList<RecentPackageInfo> recentPackages)
+		public PackageRepositoryCache (RegisteredPackageSources packageSources)
 		{
 			this.factory = new MonoDevelopPackageRepositoryFactory ();
-			this.recentPackages = recentPackages;
 			this.packageSources = packageSources;
 		}
 
@@ -149,30 +143,6 @@ namespace MonoDevelop.PackageManagement
 		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
 		{
 			return factory.CreateAggregateRepository(repositories);
-		}
-		
-		public IRecentPackageRepository RecentPackageRepository {
-			get {
-				CreateRecentPackageRepository();
-				return recentPackageRepository;
-			}
-		}
-		
-		void CreateRecentPackageRepository()
-		{
-			if (recentPackageRepository == null) {
-				CreateRecentPackageRepository(recentPackages, NuGet.MachineCache.Default);
-			}
-		}
-		
-		public IRecentPackageRepository CreateRecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository)
-		{
-			if (recentPackageRepository == null) {
-				recentPackageRepository = factory.CreateRecentPackageRepository(recentPackages, aggregateRepository);
-			}
-			return recentPackageRepository;
 		}
 
 		public IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ()

@@ -69,16 +69,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void RecentPackageRepository_PropertyAccessed_ReturnsRecentPackageRepositoryFromCache ()
-		{
-			CreateRegisteredPackageRepositories ();
-			IRecentPackageRepository recentRepository = registeredRepositories.RecentPackageRepository;
-			FakeRecentPackageRepository expectedRepository = fakeRepositoryCache.FakeRecentPackageRepository;
-
-			Assert.AreEqual (expectedRepository, recentRepository);
-		}
-
-		[Test]
 		public void CreateRepository_PackageSourceSpecified_CreatesRepositoryFromCache ()
 		{
 			CreateRegisteredPackageRepositories ();

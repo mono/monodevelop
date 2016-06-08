@@ -66,7 +66,7 @@ namespace MonoDevelop.PackageManagement
 				return Path.GetFullPath (customPath);
 			}
 
-			return Path.Combine (solution.BaseDirectory, options.PackagesDirectory);
+			return Path.Combine (solution.BaseDirectory, "packages");
 		}
 		
 		public string PackageRepositoryPath { get; private set; }

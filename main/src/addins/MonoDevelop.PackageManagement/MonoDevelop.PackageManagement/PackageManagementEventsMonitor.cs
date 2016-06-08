@@ -27,11 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using NuGet;
-using MonoDevelop.Ide.TypeSystem;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -40,21 +39,32 @@ namespace MonoDevelop.PackageManagement
 		ProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
-		FileConflictResolution lastFileConflictResolution;
+		FileConflictAction lastFileConflictResolution;
 		IFileConflictResolver fileConflictResolver = new FileConflictResolver ();
 		string currentProgressOperation;
 		List<FileEventArgs> fileChangedEvents = new List<FileEventArgs> ();
 		List<IPackageManagementProject> projectsRequiringTypeSystemRefresh = new List<IPackageManagementProject> ();
 		ISolution solutionContainingProjectBuildersToDispose;
+		TaskCompletionSource<bool> taskCompletionSource;
 
 		public PackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
+			: this (progressMonitor, packageManagementEvents, progressProvider, null)
+		{
+		}
+
+		public PackageManagementEventsMonitor (
+			ProgressMonitor progressMonitor,
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider,
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
 			this.progressMonitor = progressMonitor;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
+			this.taskCompletionSource = taskCompletionSource;
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
@@ -95,8 +105,8 @@ namespace MonoDevelop.PackageManagement
 		bool UserPreviouslySelectedOverwriteAllOrIgnoreAll()
 		{
 			return
-				(lastFileConflictResolution == FileConflictResolution.IgnoreAll) ||
-				(lastFileConflictResolution == FileConflictResolution.OverwriteAll);
+				(lastFileConflictResolution == FileConflictAction.IgnoreAll) ||
+				(lastFileConflictResolution == FileConflictAction.OverwriteAll);
 		}
 
 		protected virtual void GuiSyncDispatch (Action action)
@@ -106,7 +116,7 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
 		{
-			if (e.Message.Level == MessageLevel.Warning) {
+			if (e.Message.Level == NuGet.MessageLevel.Warning) {
 				ReportWarning (e.Message.ToString ());
 			} else {
 				LogMessage (e.Message.ToString ());
@@ -134,6 +144,10 @@ namespace MonoDevelop.PackageManagement
 				progressMonitor.ReportWarning (progressMessage.Warning);
 			} else {
 				progressMonitor.ReportSuccess (progressMessage.Success);
+			}
+
+			if (taskCompletionSource != null) {
+				taskCompletionSource.TrySetResult (true);
 			}
 		}
 
@@ -193,10 +207,24 @@ namespace MonoDevelop.PackageManagement
 		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex)
 		{
 			LoggingService.LogError (progressMessage.Error, ex);
-			progressMonitor.Log.WriteLine (ex.Message);
+			progressMonitor.Log.WriteLine (GetErrorMessageForPackageConsole (ex));
 			progressMonitor.ReportError (progressMessage.Error, null);
 			ShowPackageConsole (progressMonitor);
 			packageManagementEvents.OnPackageOperationError (ex);
+
+			if (taskCompletionSource != null) {
+				taskCompletionSource.TrySetException (ExceptionUtility.Unwrap (ex));
+			}
+		}
+
+		static string GetErrorMessageForPackageConsole (Exception ex)
+		{
+			var aggregateEx = ex as AggregateException;
+			if (aggregateEx != null) {
+				var message = new AggregateExceptionErrorMessage (aggregateEx);
+				return message.ToString ();
+			}
+			return ex.Message;
 		}
 
 		protected virtual void ShowPackageConsole (ProgressMonitor progressMonitor)

@@ -50,11 +50,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return OpenProjects;
 		}
 
-		public IProjectBrowserUpdater CreateProjectBrowserUpdater ()
-		{
-			throw new NotImplementedException ();
-		}
-
 		Dictionary<string, string> defaultCustomTools = new Dictionary<string, string> ();
 
 		public void AddDefaultCustomToolForFileName (string fileName, string customTool)

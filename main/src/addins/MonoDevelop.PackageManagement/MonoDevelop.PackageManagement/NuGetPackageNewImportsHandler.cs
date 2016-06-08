@@ -26,7 +26,7 @@
 
 using System;
 using MonoDevelop.Projects.MSBuild;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		string name;
 		string condition;
-		ProjectImportLocation location;
+		ImportLocation location;
 
 		public NuGetPackageNewImportsHandler ()
 		{
@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement
 			PackageManagementMSBuildExtension.NewImportsHandler = null;
 		}
 
-		public void AddImportIfMissing (string name, string condition, ProjectImportLocation location)
+		public void AddImportIfMissing (string name, string condition, ImportLocation location)
 		{
 			this.name = name;
 			this.condition = condition;

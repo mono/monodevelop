@@ -80,11 +80,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution (@"d:\projects\MyProject\MySolution.sln");
 			solution.BaseDirectory = @"d:\projects\MyProject\".ToNativePath ();
 			project.ParentSolution = solution;
-			options.PackagesDirectory = "MyPackages";
 			CreateSolutionPackageRepositoryPath ();
 
 			string path = repositoryPath.PackageRepositoryPath;
-			string expectedPath = @"d:\projects\MyProject\MyPackages".ToNativePath ();
+			string expectedPath = @"d:\projects\MyProject\packages".ToNativePath ();
 
 			Assert.AreEqual (expectedPath, path);
 		}
@@ -94,11 +93,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateOptions ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
-			options.PackagesDirectory = "Packages";
 			CreateSolutionPackageRepositoryPath (solution);
 
 			string path = repositoryPath.PackageRepositoryPath;
-			string expectedPath = @"d:\projects\MySolution\Packages".ToNativePath ();
+			string expectedPath = @"d:\projects\MySolution\packages".ToNativePath ();
 
 			Assert.AreEqual (expectedPath, path);
 		}
@@ -108,7 +106,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateOptions ();
 			CreateSolution (@"d:\projects\Test\MySolution\MyProject.sln");
-			options.PackagesDirectory = "MyPackages";
 			CreateSolutionPackageRepositoryPath (solution);
 
 			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.2.1.40");
@@ -116,7 +113,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string installPath = repositoryPath.GetInstallPath (package);
 
 			string expectedInstallPath = 
-				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.2.1.40".ToNativePath ();
+				@"d:\projects\Test\MySolution\packages\MyPackage.1.2.1.40".ToNativePath ();
 
 			Assert.AreEqual (expectedInstallPath, installPath);
 		}
@@ -126,7 +123,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateOptions ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
-			options.PackagesDirectory = "Packages";
 			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\Team\MyPackages");
 			CreateSolutionPackageRepositoryPath (solution);
 			string expectedPath = @"d:\Team\MyPackages".ToNativePath ();
@@ -141,7 +137,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateOptions ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
-			options.PackagesDirectory = "Packages";
 			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\projects\MySolution\..\..\Team\MyPackages");
 			CreateSolutionPackageRepositoryPath (solution);
 			string expectedPath = @"d:\Team\MyPackages".ToNativePath ();

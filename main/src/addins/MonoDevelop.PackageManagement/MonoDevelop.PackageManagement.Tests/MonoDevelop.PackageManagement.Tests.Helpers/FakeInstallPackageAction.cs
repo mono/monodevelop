@@ -33,6 +33,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class FakeInstallPackageAction : InstallPackageAction
 	{
+		List<PackageOperation> operations;
+
 		public FakeInstallPackageAction ()
 			: this (null)
 		{
@@ -57,8 +59,23 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			FileRemover = fileRemover;
 			LicenseAcceptanceService = licenseAcceptanceService;
-			Operations = new List<PackageOperation> ();
+			operations = new List<PackageOperation> ();
+			Operations = operations;
 			Logger = new FakeLogger ();
+		}
+
+		public void AddInstallPackageOperation (string packageId, string packageVersion)
+		{
+			var package = new FakePackage (packageId, packageVersion);
+			operations.Add (new PackageOperation (package, PackageAction.Install));
+			Operations = operations;
+		}
+
+		public void AddUninstallPackageOperation (string packageId, string packageVersion)
+		{
+			var package = new FakePackage (packageId, packageVersion);
+			operations.Add (new PackageOperation (package, PackageAction.Uninstall));
+			Operations = operations;
 		}
 
 		public bool IsExecuteCalled;

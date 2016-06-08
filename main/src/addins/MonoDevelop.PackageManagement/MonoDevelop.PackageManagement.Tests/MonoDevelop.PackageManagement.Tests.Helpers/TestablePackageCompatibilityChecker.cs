@@ -34,9 +34,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
 	{
 		public TestablePackageCompatibilityChecker (
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories)
-			: base (solution, registeredRepositories)
+			IPackageManagementSolution solution)
+			: base (solution)
 		{
 		}
 
