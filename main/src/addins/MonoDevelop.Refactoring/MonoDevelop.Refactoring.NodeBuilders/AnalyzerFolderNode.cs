@@ -1,10 +1,10 @@
-﻿//
-// AssemblyReference.cs
+//
+// AnalyzerFolderNode.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,28 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using MonoDevelop.Projects;
+using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
-using MonoDevelop.Core;
+using MonoDevelop.CodeIssues;
 using System.Linq;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Refactoring.NodeBuilders
 {
-	public sealed class AssemblyReference
+	class AnalyzerFolderNode
 	{
-		public AssemblyReference (FilePath path, string aliases = null)
-		{
-			FilePath = path;
-			Aliases = aliases ?? "";
-		}
+		public DotNetProject DotNetProject { get; private set; }
 
-		public FilePath FilePath { get; private set; }
-		public string Aliases { get; private set; }
-
-		public override bool Equals (object obj)
-		{
-			var ar = obj as AssemblyReference;
-			return ar != null && ar.FilePath == FilePath && ar.Aliases == Aliases;
-		}
-
-		public override int GetHashCode ()
-		{
-			unchecked {
-				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
+		public IEnumerable<AnalyzerProjectItem> Analyzers {
+			get {
+				return DotNetProject.Items.OfType<AnalyzerProjectItem> ();
 			}
 		}
 
-		/// <summary>
-		/// Returns an enumerable collection of aliases. 
-		/// </summary>
-		public IEnumerable<string> EnumerateAliases ()
+		public AnalyzerFolderNode (DotNetProject dotNetProject)
 		{
-			return Aliases.Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+			DotNetProject = dotNetProject;
 		}
 	}
 }

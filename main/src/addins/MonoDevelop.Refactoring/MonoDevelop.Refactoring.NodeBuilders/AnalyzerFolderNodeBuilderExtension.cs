@@ -1,10 +1,10 @@
 ﻿//
-// AssemblyReference.cs
+// AnalyzerFolderNodeBuilderExtension.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,43 +23,44 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core;
 using System.Linq;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Refactoring.NodeBuilders
 {
-	public sealed class AssemblyReference
+	class AnalyzerFolderNodeBuilderExtension : NodeBuilderExtension
 	{
-		public AssemblyReference (FilePath path, string aliases = null)
+		public override bool CanBuildNode (Type dataType)
 		{
-			FilePath = path;
-			Aliases = aliases ?? "";
+			return typeof(ProjectReferenceCollection).IsAssignableFrom (dataType);
 		}
 
-		public FilePath FilePath { get; private set; }
-		public string Aliases { get; private set; }
-
-		public override bool Equals (object obj)
+		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			var ar = obj as AssemblyReference;
-			return ar != null && ar.FilePath == FilePath && ar.Aliases == Aliases;
+			return ProjectHasAnalyzers (builder);
 		}
 
-		public override int GetHashCode ()
+		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			unchecked {
-				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
+			if (ProjectHasAnalyzers (treeBuilder)) {
+				treeBuilder.AddChild (new AnalyzerFolderNode (GetProject (treeBuilder)));
 			}
 		}
 
-		/// <summary>
-		/// Returns an enumerable collection of aliases. 
-		/// </summary>
-		public IEnumerable<string> EnumerateAliases ()
+		DotNetProject GetProject (ITreeBuilder builder)
 		{
-			return Aliases.Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+			return builder.GetParentDataItem (typeof(DotNetProject), false) as DotNetProject;
+		}
+
+		bool ProjectHasAnalyzers (ITreeBuilder builder)
+		{
+			var project = GetProject (builder);
+			if (project == null)
+				return false;
+			return project.Items.OfType<AnalyzerProjectItem> ().Any ();
 		}
 	}
 }

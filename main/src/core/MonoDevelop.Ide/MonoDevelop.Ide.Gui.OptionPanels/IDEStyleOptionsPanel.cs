@@ -113,6 +113,27 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			comboTheme.Active = sel;
 			comboTheme.Changed += ComboThemeChanged;
+			tableRestart.Visible = separatorRestart.Visible = false;
+			labelRestart.LabelProp = GettextCatalog.GetString ("These preferences will take effect next time you start {0}", BrandingService.ApplicationName);
+			btnRestart.Label = GettextCatalog.GetString ("Restart {0}", BrandingService.ApplicationName);
+
+			comboLanguage.Changed += UpdateRestartMessage;
+			comboTheme.Changed += UpdateRestartMessage;
+		}
+
+		void RestartClicked (object sender, System.EventArgs e)
+		{
+			Store ();
+			IdeApp.Restart (true);
+		}
+
+		void UpdateRestartMessage (object sender, EventArgs e)
+		{
+			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value ||
+			    LocalizationService.CurrentLocaleSet [comboLanguage.Active].Culture != IdeApp.Preferences.UserInterfaceLanguage) {
+				tableRestart.Visible = separatorRestart.Visible = true;
+			} else
+				tableRestart.Visible = separatorRestart.Visible = false;
 		}
 
 		void ComboThemeChanged (object sender, EventArgs e)
@@ -175,25 +196,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		public void Store()
 		{
 			string lc = LocalizationService.CurrentLocaleSet [comboLanguage.Active].Culture;
-			if (lc != IdeApp.Preferences.UserInterfaceLanguage) {
+			if (lc != IdeApp.Preferences.UserInterfaceLanguage)
 				IdeApp.Preferences.UserInterfaceLanguage.Value = lc;
-				MessageService.ShowMessage (
-					GettextCatalog.GetString (
-						"The user interface language change will take effect the next time you start {0}",
-						BrandingService.ApplicationName
-					)
-				);
-			}
 
-			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value) {
+			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value)
 				IdeApp.Preferences.UserInterfaceThemeName.Value = currentTheme;
-				MessageService.ShowMessage (
-					GettextCatalog.GetString (
-						"The user interface theme change will take effect the next time you start {0}",
-						BrandingService.ApplicationName
-					)
-				);
-			}
 		}
 	}
 }

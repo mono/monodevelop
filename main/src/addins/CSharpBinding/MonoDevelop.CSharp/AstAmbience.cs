@@ -101,7 +101,11 @@ namespace MonoDevelop.CSharp
 					} else {
 						first = false;
 					}
-					AppendEscaped (sb, param.ToString ());
+					foreach (var mod in param.Modifiers)
+						sb.Append (mod + " ");
+					AppendEscaped (sb, StripTrivia(param.Type.ToString ()));
+					sb.Append (" ");
+					AppendEscaped (sb, param.Identifier.ToString ());
 				}
 			}
 
@@ -110,7 +114,18 @@ namespace MonoDevelop.CSharp
 			//	sb.Append (" ");
 			sb.Append (")");
 		}
-		
+
+		string StripTrivia (string str)
+		{
+			var result = new StringBuilder ();
+			foreach (char ch in str) {
+				if (char.IsWhiteSpace (ch))
+					continue;
+				result.Append (ch);
+			}
+			return result.ToString ();
+		}
+
 		static void AppendEscaped (StringBuilder result, string text)
 		{
 			if (text == null)

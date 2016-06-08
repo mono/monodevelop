@@ -1,10 +1,10 @@
 ﻿//
-// AssemblyReference.cs
+// AnalyzerProjectItem.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,42 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
 using MonoDevelop.Core;
-using System.Linq;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Refactoring
 {
-	public sealed class AssemblyReference
+	[ExportProjectItemType ("Analyzer")]
+	public class AnalyzerProjectItem : ProjectItem
 	{
-		public AssemblyReference (FilePath path, string aliases = null)
-		{
-			FilePath = path;
-			Aliases = aliases ?? "";
-		}
-
-		public FilePath FilePath { get; private set; }
-		public string Aliases { get; private set; }
-
-		public override bool Equals (object obj)
-		{
-			var ar = obj as AssemblyReference;
-			return ar != null && ar.FilePath == FilePath && ar.Aliases == Aliases;
-		}
-
-		public override int GetHashCode ()
-		{
-			unchecked {
-				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
+		public FilePath FilePath {
+			get {
+				if (Project != null) {
+					return MSBuildProjectService.FromMSBuildPath (Project.BaseDirectory, Include);
+				}
+				return Include;
 			}
-		}
-
-		/// <summary>
-		/// Returns an enumerable collection of aliases. 
-		/// </summary>
-		public IEnumerable<string> EnumerateAliases ()
-		{
-			return Aliases.Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+			set {
+				if (Project != null) {
+					Include = MSBuildProjectService.ToMSBuildPath (Project.BaseDirectory, value);
+				} else {
+					Include = value;
+				}
+			}
 		}
 	}
 }

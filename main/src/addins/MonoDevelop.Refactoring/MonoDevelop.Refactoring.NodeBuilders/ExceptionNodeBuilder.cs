@@ -1,10 +1,10 @@
 ﻿//
-// AssemblyReference.cs
+// ExceptionNodeBuilder.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
+// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,42 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.IO;
+using MonoDevelop.CodeIssues;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.Refactoring.NodeBuilders
 {
-	public sealed class AssemblyReference
+	class ExceptionNodeBuilder : TypeNodeBuilder
 	{
-		public AssemblyReference (FilePath path, string aliases = null)
-		{
-			FilePath = path;
-			Aliases = aliases ?? "";
+		public override Type NodeDataType {
+			get { return typeof (Exception); }
 		}
 
-		public FilePath FilePath { get; private set; }
-		public string Aliases { get; private set; }
-
-		public override bool Equals (object obj)
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			var ar = obj as AssemblyReference;
-			return ar != null && ar.FilePath == FilePath && ar.Aliases == Aliases;
+			return "Exception";
 		}
 
-		public override int GetHashCode ()
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			unchecked {
-				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
-			}
-		}
-
-		/// <summary>
-		/// Returns an enumerable collection of aliases. 
-		/// </summary>
-		public IEnumerable<string> EnumerateAliases ()
-		{
-			return Aliases.Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+			var e = (Exception)dataObject;
+			nodeInfo.Label = string.Format (GettextCatalog.GetString ("Error: {0}"), e.Message);
+			nodeInfo.Icon = Context.GetIcon ("md-error");
 		}
 	}
 }
+

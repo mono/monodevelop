@@ -52,6 +52,7 @@ using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
+using System.Diagnostics;
 using Xwt.Mac;
 
 namespace MonoDevelop.MacIntegration
@@ -912,6 +913,35 @@ namespace MonoDevelop.MacIntegration
 			} else {
 				NSWorkspace.SharedWorkspace.ActivateFileViewer (selectFiles.Select ((f) => NSUrl.FromFilename (f)).ToArray ());
 			}
+		}
+
+		internal override void RestartIde (bool reopenWorkspace)
+		{
+			FilePath bundlePath = NSBundle.MainBundle.BundlePath;
+
+			if (bundlePath.Extension != ".app") {
+				base.RestartIde (reopenWorkspace);
+				return;
+			}
+
+			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
+
+			var proc = new Process ();
+
+			var path = bundlePath.Combine ("Contents", "MacOS");
+			var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
+				CreateNoWindow = true,
+				UseShellExecute = false,
+				WorkingDirectory = path,
+				Arguments = "--start-app-bundle",
+			};
+
+			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			if (!string.IsNullOrEmpty (recentWorkspace))
+				psi.Arguments += " " + recentWorkspace;
+
+			proc.StartInfo = psi;
+			proc.Start ();
 		}
 	}
 }

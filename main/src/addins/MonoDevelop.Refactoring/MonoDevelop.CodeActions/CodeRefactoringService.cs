@@ -48,8 +48,9 @@ namespace MonoDevelop.CodeActions
 		readonly static List<CodeDiagnosticProvider> providers = new List<CodeDiagnosticProvider> ();
 
 		static CodeRefactoringService ()
-		{	
+		{
 			providers.Add (new BuiltInCodeDiagnosticProvider ());
+			providers.Add (new ProjectCodeDiagnosticProvider ());
 
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeDiagnosticProvider", delegate(object sender, ExtensionNodeEventArgs args) {
 				var node = (TypeExtensionNode)args.ExtensionNode;
