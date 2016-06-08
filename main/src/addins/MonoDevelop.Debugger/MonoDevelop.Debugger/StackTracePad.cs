@@ -42,6 +42,8 @@ using MonoDevelop.Components.Commands;
 using Stock = MonoDevelop.Ide.Gui.Stock;
 using MonoDevelop.Components;
 using System.Linq;
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Debugger
 {
@@ -91,6 +93,9 @@ namespace MonoDevelop.Debugger
 			this.ShadowType = ShadowType.None;
 
 			store = new ListStore (typeof(bool), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(Pango.Style), typeof(object), typeof(int), typeof(bool));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Method","store_File",
+				"store_Lang", "store_Addr", "store_Foreground", "store_Style", "store_Frame", "store_FrameIndex");
+			TypeDescriptor.AddAttributes (store, modelAttr);
 
 			tree = new PadTreeView (store);
 			tree.RulesHint = true;

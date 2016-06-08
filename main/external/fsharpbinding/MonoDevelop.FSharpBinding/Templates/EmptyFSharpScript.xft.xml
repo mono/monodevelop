@@ -1,0 +1,18 @@
+﻿<?xml version="1.0"?>
+<Template Originator="Community" Language="F#" Created="10/6/2010" LastModified="10/6/2010">
+  <TemplateConfiguration>
+    <_Name>F# Script File</_Name>
+    <Icon>md-text-file-icon</Icon>
+    <_Description>Creates an empty F# script file.</_Description>
+    <_Category>General</_Category>
+    <LanguageName>F#</LanguageName>
+    <DefaultFilename>Script.fsx</DefaultFilename>
+  </TemplateConfiguration>
+
+  <TemplateFiles>
+    <UnformattedFile DefaultExtension=".fsx" DefaultName="source" AddStandardHeader="True" BuildAction="None">
+    </UnformattedFile>
+  </TemplateFiles>
+
+  <FileOptions/>
+</Template>

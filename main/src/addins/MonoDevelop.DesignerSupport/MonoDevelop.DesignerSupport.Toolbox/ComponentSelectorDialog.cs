@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Components;
 using MonoDevelop.Ide;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -55,12 +56,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool showCategories;
 		Dictionary<ItemToolboxNode, ItemToolboxNode> currentItems = new Dictionary<ItemToolboxNode, ItemToolboxNode> ();
 		
-		public ComponentSelectorDialog (IToolboxConsumer currentConsumer)
+		public ComponentSelectorDialog ()
 		{
-			using (ProgressMonitor monitor = new MessageDialogProgressMonitor (true, true, false, true)) {
-				index = DesignerSupport.Service.ToolboxService.GetComponentIndex (monitor);
-			}
-
 			this.ApplyTheme ();
 			this.Build();
 			
@@ -103,10 +100,23 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			store.SetSortColumnId (ColName, SortType.Ascending);
 			listView.SearchColumn = ColName;
 			listView.Model = store;
-			
+			listView.SearchColumn = -1; // disable the interactive search
+
 			foreach (ItemToolboxNode it in DesignerSupport.Service.ToolboxService.UserItems)
 				currentItems [it] = it;
-			
+
+			comboType.AppendText (GettextCatalog.GetString ("All"));
+			comboType.Active = 0;
+		}
+
+		public async Task<bool> Initialize (IToolboxConsumer currentConsumer)
+		{
+			using (ProgressMonitor monitor = new MessageDialogProgressMonitor (true, true, false, true)) {
+				index = await DesignerSupport.Service.ToolboxService.GetComponentIndex (monitor);
+				if (monitor.CancellationToken.IsCancellationRequested)
+					return false;
+			}
+
 			List<string> list = new List<string> ();
 			foreach (ComponentIndexFile ifile in index.Files) {
 				foreach (ItemToolboxNode co in ifile.Components) {
@@ -114,20 +124,18 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						list.Add (co.ItemDomain);
 				}
 			}
-			
+
 			string defaultDomain = null;
 			if (currentConsumer != null)
 				defaultDomain = currentConsumer.DefaultItemDomain;
-			
-			comboType.AppendText (GettextCatalog.GetString ("All"));
-			comboType.Active = 0;
 
-			for (int n=0; n<list.Count; n++) {
+			for (int n = 0; n < list.Count; n++) {
 				string s = list [n];
 				comboType.AppendText (s);
 				if (s == defaultDomain)
-					comboType.Active = n+1;
+					comboType.Active = n + 1;
 			}
+			return true;
 		}
 		
 		public void Fill ()

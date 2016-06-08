@@ -66,30 +66,30 @@ namespace MonoDevelop.AspNet.WebForms
 			CompletionDataList list = new CompletionDataList ();
 			
 			if (type == WebSubtype.WebForm) {
-				list.Add ("Implements", null, "Declare that this page implements an interface.");
-				list.Add ("Page", null, "Define properties of this page.");
-				list.Add ("PreviousPageType", null, "Strongly type the page's PreviousPage property.");
-				list.Add ("MasterType", null, "Strongly type the page's Master property.");
+				list.Add ("Implements", null, GettextCatalog.GetString ("Declare that this page implements an interface."));
+				list.Add ("Page", null, GettextCatalog.GetString ("Define properties of this page."));
+				list.Add ("PreviousPageType", null, GettextCatalog.GetString ("Strongly type the page's PreviousPage property."));
+				list.Add ("MasterType", null, GettextCatalog.GetString ("Strongly type the page's Master property."));
 			} else if (type == WebSubtype.MasterPage) {
-				list.Add ("Implements", null, "Declare that this master page implements an interface.");
-				list.Add ("Master", null, "Define properties of this master page.");
-				list.Add ("MasterType", null, "Strongly type the page's Master property.");
+				list.Add ("Implements", null, GettextCatalog.GetString ("Declare that this master page implements an interface."));
+				list.Add ("Master", null, GettextCatalog.GetString ("Define properties of this master page."));
+				list.Add ("MasterType", null, GettextCatalog.GetString ("Strongly type the page's Master property."));
 			} else if (type == WebSubtype.WebControl) {
-				list.Add ("Control", null, "Define properties of this user control.");
-				list.Add ("Implements", null, "Declare that this control implements an interface.");
+				list.Add ("Control", null, GettextCatalog.GetString ("Define properties of this user control."));
+				list.Add ("Implements", null, GettextCatalog.GetString ("Declare that this control implements an interface."));
 			} else {
 				return null;
 			}
 			
-			list.Add ("Assembly", null, "Reference an assembly.");
-			list.Add ("Import", null, "Import a namespace.");
+			list.Add ("Assembly", null, GettextCatalog.GetString ("Reference an assembly."));
+			list.Add ("Import", null, GettextCatalog.GetString ("Import a namespace."));
 			
 			if (type != WebSubtype.MasterPage) {
-				list.Add ("OutputCache", null, "Set output caching behaviour.");
+				list.Add ("OutputCache", null, GettextCatalog.GetString ("Set output caching behaviour."));
 			}
 			
-			list.Add ("Reference", null, "Reference a page or user control.");
-			list.Add ("Register", null, "Register a user control or custom web controls.");
+			list.Add ("Reference", null, GettextCatalog.GetString ("Reference a page or user control."));
+			list.Add ("Register", null, GettextCatalog.GetString ("Register a user control or custom web controls."));
 			
 			return list.Count > 0? list : null;
 		}

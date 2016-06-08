@@ -459,7 +459,7 @@ namespace MonoDevelop.CSharp
 			if (t == null)
 				throw new ArgumentNullException ("t");
 			if (t.TypeKind == TypeKind.Error)
-				return "Type can not be resolved.";
+				return GettextCatalog.GetString ("Type can not be resolved.");
 			if (t.TypeKind == TypeKind.Delegate)
 				return GetDelegateMarkup ((INamedTypeSymbol)t);
 			if (t.TypeKind == TypeKind.TypeParameter)
@@ -967,125 +967,104 @@ namespace MonoDevelop.CSharp
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 
-			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
+			var keywordSign = "<span foreground=\"" + colorString + "\"> " + GettextCatalog.GetString ("(keyword)") + "</span>";
 
 			switch (node.Kind ()) {
 			case SyntaxKind.AbstractKeyword:
 				result.SignatureMarkup = Highlight ("abstract", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("abstract", colorStyle.KeywordModifiers) + " modifier can be used with classes, methods, properties, indexers, and events.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} modifier can be used with classes, methods, properties, indexers, and events.", Highlight ("abstract", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.AddKeyword:
 				result.SignatureMarkup = Highlight ("add", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Form", "[modifiers] " + Highlight ("add", colorStyle.KeywordContext) + " { accessor-body }");
-				result.SummaryMarkup = "The " + Highlight ("add", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is subscribed to. If supplied, a remove accessor must also be supplied.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} {{ accessor-body }}", Highlight ("add", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define a custom accessor for when an event is subscribed to. If supplied, a remove accessor must also be supplied.", Highlight ("add", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.AscendingKeyword:
 				result.SignatureMarkup = Highlight ("ascending", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight ("ascending", colorStyle.KeywordContext));
-				result.SummaryMarkup = "The " + Highlight ("ascending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from smallest to largest in a query expression. This is the default behaviour.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), GettextCatalog.GetString ("{0} ordering-statement {1}", Highlight ("orderby", colorStyle.KeywordContext), Highlight ("ascending", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to set the sorting order from smallest to largest in a query expression. This is the default behaviour.", Highlight ("ascending", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.AsyncKeyword:
 				result.SignatureMarkup = Highlight ("async", colorStyle.KeywordContext) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("async", colorStyle.KeywordContext) + " modifier is used to specify that a class method, anonymous method, or lambda expression is asynchronous.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} modifier is used to specify that a class method, anonymous method, or lambda expression is asynchronous.", Highlight ("async", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.AsKeyword:
 				result.SignatureMarkup = Highlight ("as", colorStyle.KeywordOperators) + keywordSign;
-				result.AddCategory ("Form", "expression " + Highlight ("as", colorStyle.KeywordOperators) + " type");
-				result.SummaryMarkup = "The " + Highlight ("as", colorStyle.KeywordOperators) + " operator is used to perform conversions between compatible types. ";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("expression {0} type", Highlight ("as", colorStyle.KeywordOperators)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} operator is used to perform conversions between compatible types.", Highlight ("as", colorStyle.KeywordOperators));
 				break;
 			case SyntaxKind.AwaitKeyword:
 				result.SignatureMarkup = Highlight ("await", colorStyle.KeywordContext) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("await", colorStyle.KeywordContext) + " operator is used to specify that an " + Highlight ("async", colorStyle.KeywordContext) + " method is to have its execution suspended until the " + Highlight ("await", colorStyle.KeywordContext) +
-				" task has completed.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} operator is used to specify that an {1} method is to have its execution suspended until the {0} task has completed.", Highlight ("await", colorStyle.KeywordContext), Highlight ("async", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.BaseKeyword:
 				result.SignatureMarkup = Highlight ("base", colorStyle.KeywordAccessors) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("base", colorStyle.KeywordAccessors) + " keyword is used to access members of the base class from within a derived class.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to access members of the base class from within a derived class.", Highlight ("base", colorStyle.KeywordAccessors));
 				break;
 			case SyntaxKind.BreakKeyword:
 				result.SignatureMarkup = Highlight ("break", colorStyle.KeywordJump) + keywordSign;
-				result.AddCategory ("Form", Highlight ("break", colorStyle.KeywordJump) + ";");
-				result.SummaryMarkup = "The " + Highlight ("break", colorStyle.KeywordJump) + " statement terminates the closest enclosing loop or switch statement in which it appears.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), Highlight ("break", colorStyle.KeywordJump) + ";");
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement terminates the closest enclosing loop or switch statement in which it appears.", Highlight ("break", colorStyle.KeywordJump));
 				break;
 			case SyntaxKind.CaseKeyword:
 				result.SignatureMarkup = Highlight ("case", colorStyle.KeywordSelection) + keywordSign;
-				result.AddCategory ("Form", Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-				"  statement" + Environment.NewLine +
-				"  jump-statement");
+				result.AddCategory (GettextCatalog.GetString ("Form"), 
+				                    GettextCatalog.GetString ("{0} constant-expression:\n  statement\n  jump-statement", Highlight ("case", colorStyle.KeywordSelection)));
 				result.SummaryMarkup = "";
 				break;
 			case SyntaxKind.CatchKeyword:
 				result.SignatureMarkup = Highlight ("catch", colorStyle.KeywordException) + keywordSign;
-				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block" + Environment.NewLine +
-				"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1" + Environment.NewLine +
-				"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-2) catch-block-2" + Environment.NewLine +
-				"  ..." + Environment.NewLine +
-				Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} try-block\n  {1} (exception-declaration-1) catch-block-1\n  {1} (exception-declaration-2) catch-block-2\n  ...\n{0} try-block {1} catch-block", Highlight ("try", colorStyle.KeywordException), Highlight ("catch", colorStyle.KeywordException)));
 				result.SummaryMarkup = "";
 				break;
 			case SyntaxKind.CheckedKeyword:
 				result.SignatureMarkup = Highlight ("checked", colorStyle.KeywordOther) + keywordSign;
-				result.AddCategory ("Form", Highlight ("checked", colorStyle.KeywordOther) + " block" + Environment.NewLine +
-				"or" + Environment.NewLine +
-				Highlight ("checked", colorStyle.KeywordOther) + " (expression)");
-				result.SummaryMarkup = "The " + Highlight ("checked", colorStyle.KeywordOther) + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions. It can be used as an operator or a statement.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} block\nor\n{0} (expression)", Highlight ("checked", colorStyle.KeywordOther)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions. It can be used as an operator or a statement.", Highlight ("checked", colorStyle.KeywordOther));
 				break;
 			case SyntaxKind.ClassKeyword:
 				result.SignatureMarkup = Highlight ("class", colorStyle.KeywordDeclaration) + keywordSign;
 				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
-					result.SummaryMarkup = "The " + Highlight ("class", colorStyle.KeywordDeclaration) + " constraint specifies that the type argument must be a reference type; this applies also to any class, interface, delegate, or array type.";
+					result.SummaryMarkup = GettextCatalog.GetString ("The {0} constraint specifies that the type argument must be a reference type; this applies also to any class, interface, delegate, or array type.", Highlight ("class", colorStyle.KeywordDeclaration));
 				} else {
-					result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("class", colorStyle.KeywordDeclaration) + " identifier [:base-list] { class-body }[;]");
-					result.SummaryMarkup = "Classes are declared using the keyword " + Highlight ("class", colorStyle.KeywordDeclaration) + ".";
+					result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-list] {{ class-body }}[;]", Highlight ("class", colorStyle.KeywordDeclaration)));
+					result.SummaryMarkup = GettextCatalog.GetString ("Classes are declared using the keyword {0}.", Highlight ("class", colorStyle.KeywordDeclaration));
 				}
 				break;
 			case SyntaxKind.ConstKeyword:
 				result.SignatureMarkup = Highlight ("const", colorStyle.KeywordModifiers) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("const", colorStyle.KeywordModifiers) + " type declarators;");
-				result.SummaryMarkup = "The " + Highlight ("const", colorStyle.KeywordModifiers) + " keyword is used to modify a declaration of a field or local variable. It specifies that the value of the field or the local variable cannot be modified. ";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} type declarators;", Highlight ("const", colorStyle.KeywordModifiers)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to modify a declaration of a field or local variable. It specifies that the value of the field or the local variable cannot be modified.", Highlight ("const", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.ContinueKeyword:
 				result.SignatureMarkup = Highlight ("continue", colorStyle.KeywordJump) + keywordSign;
-				result.AddCategory ("Form", Highlight ("continue", colorStyle.KeywordJump) + ";");
-				result.SummaryMarkup = "The " + Highlight ("continue", colorStyle.KeywordJump) + " statement passes control to the next iteration of the enclosing iteration statement in which it appears.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), Highlight ("continue", colorStyle.KeywordJump) + ";");
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement passes control to the next iteration of the enclosing iteration statement in which it appears.", Highlight ("continue", colorStyle.KeywordJump));
 				break;
 			case SyntaxKind.DefaultKeyword:
 				result.SignatureMarkup = Highlight ("default", colorStyle.KeywordSelection) + keywordSign;
 				result.SummaryMarkup = "";
 				if (node.Parent != null) {
 					if (node.Parent is DefaultExpressionSyntax) {
-						result.AddCategory ("Form",
-							Highlight ("default", colorStyle.KeywordSelection) + " (Type)");
+						result.AddCategory (GettextCatalog.GetString ("Form"),
+						                    GettextCatalog.GetString ("{0} (Type)", Highlight ("default", colorStyle.KeywordSelection)));
 						break;
 					} else if (node.Parent is SwitchStatementSyntax) {
-						result.AddCategory ("Form",
-							Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { " + Environment.NewLine +
-							"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-							"    statement" + Environment.NewLine +
-							"    jump-statement" + Environment.NewLine +
-							"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
-							"    statement" + Environment.NewLine +
-							"    jump-statement]" + Environment.NewLine +
-							"}");
+						result.AddCategory (GettextCatalog.GetString ("Form"),
+						                    GettextCatalog.GetString ("{0} (expression) { \n  {1} constant-expression:\n    statement\n    jump-statement\n  [{2}:\n    statement\n    jump-statement]\n}",
+						                    Highlight ("switch", colorStyle.KeywordSelection), Highlight ("case", colorStyle.KeywordSelection), Highlight ("default", colorStyle.KeywordSelection)));
 						break;
 					}
 				}
-				result.AddCategory ("Form",
-					Highlight ("default", colorStyle.KeywordSelection) + " (Type)" + Environment.NewLine + Environment.NewLine +
-					"or" + Environment.NewLine + Environment.NewLine +
-					Highlight ("switch", colorStyle.KeywordSelection) + " (expression) { " + Environment.NewLine +
-					"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-					"    statement" + Environment.NewLine +
-					"    jump-statement" + Environment.NewLine +
-					"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
-					"    statement" + Environment.NewLine +
-					"    jump-statement]" + Environment.NewLine +
-					"}");
+				result.AddCategory (GettextCatalog.GetString ("Form"),
+						            GettextCatalog.GetString ("{0} (Type)\n\nor\n\n{1} (expression) { \n  {2} constant-expression:\n    statement\n    jump-statement\n  [{3}:\n    statement\n    jump-statement]\n}", 
+						                                      Highlight ("default", colorStyle.KeywordSelection), Highlight ("switch", colorStyle.KeywordSelection), Highlight ("case", colorStyle.KeywordSelection), Highlight ("default", colorStyle.KeywordSelection))
+						           );
 				break;
 			case SyntaxKind.DelegateKeyword:
 				result.SignatureMarkup = Highlight ("delegate", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " result-type identifier ([formal-parameters]);");
-				result.SummaryMarkup = "A " + Highlight ("delegate", colorStyle.KeywordDeclaration) + " declaration defines a reference type that can be used to encapsulate a method with a specific signature.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} result-type identifier ([formal-parameters]);", Highlight ("delegate", colorStyle.KeywordDeclaration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("A {0} declaration defines a reference type that can be used to encapsulate a method with a specific signature.", Highlight ("delegate", colorStyle.KeywordDeclaration));
 				break;
 			case SyntaxKind.IdentifierToken:
 				if (node.ToFullString () == "nameof" && node.Parent?.Parent?.Kind () == SyntaxKind.InvocationExpression)
@@ -1093,380 +1072,351 @@ namespace MonoDevelop.CSharp
 
 				if (node.ToFullString () == "dynamic") {
 					result.SignatureMarkup = Highlight ("dynamic", colorStyle.KeywordContext) + keywordSign;
-					result.SummaryMarkup = "The " + Highlight ("dynamic", colorStyle.KeywordContext) + " type allows for an object to bypass compile-time type checking and resolve type checking during run-time.";
+					result.SummaryMarkup = GettextCatalog.GetString ("The {0} type allows for an object to bypass compile-time type checking and resolve type checking during run-time.", Highlight ("dynamic", colorStyle.KeywordContext));
 				} else {
 					return null;
 				}
 				break;
 			case SyntaxKind.DescendingKeyword:
 				result.SignatureMarkup = Highlight ("descending", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " ordering-statement " + Highlight ("descending", colorStyle.KeywordContext));
-				result.SummaryMarkup = "The " + Highlight ("descending", colorStyle.KeywordContext) + " keyword is used to set the sorting order from largest to smallest in a query expression.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), GettextCatalog.GetString ("{0} ordering-statement {1}", Highlight ("orderby", colorStyle.KeywordContext), Highlight ("descending", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to set the sorting order from largest to smallest in a query expression.", Highlight ("descending", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.DoKeyword:
 				result.SignatureMarkup = Highlight ("do", colorStyle.KeywordIteration) + keywordSign;
-				result.AddCategory ("Form", Highlight ("do", colorStyle.KeywordIteration) + " statement " + Highlight ("while", colorStyle.KeywordIteration) + " (expression);");
-				result.SummaryMarkup = "The " + Highlight ("do", colorStyle.KeywordIteration) + " statement executes a statement or a block of statements repeatedly until a specified expression evaluates to false.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} statement {1} (expression);", Highlight ("do", colorStyle.KeywordIteration), Highlight ("while", colorStyle.KeywordIteration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement executes a statement or a block of statements repeatedly until a specified expression evaluates to false.", Highlight ("do", colorStyle.KeywordIteration));
 				break;
 			case SyntaxKind.ElseKeyword:
 				result.SignatureMarkup = Highlight ("else", colorStyle.KeywordSelection) + keywordSign;
-				result.AddCategory ("Form", Highlight ("if", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
-					"  statement1" + Environment.NewLine +
-					"  [" + Highlight ("else", colorStyle.KeywordSelection) + Environment.NewLine +
-					"  statement2]");
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (expression)\n  statement1\n  [{1}\n  statement2]", Highlight ("if", colorStyle.KeywordSelection), Highlight ("else", colorStyle.KeywordSelection)));
 				result.SummaryMarkup = "";
 				break;
 			case SyntaxKind.EnumKeyword:
 				result.SignatureMarkup = Highlight ("enum", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("enum", colorStyle.KeywordDeclaration) + " identifier [:base-type] {enumerator-list} [;]");
-				result.SummaryMarkup = "The " + Highlight ("enum", colorStyle.KeywordDeclaration) + " keyword is used to declare an enumeration, a distinct type consisting of a set of named constants called the enumerator list.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-type] {{ enumerator-list }} [;]", Highlight ("enum", colorStyle.KeywordDeclaration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to declare an enumeration, a distinct type consisting of a set of named constants called the enumerator list.", Highlight ("enum", colorStyle.KeywordDeclaration));
 				break;
 			case SyntaxKind.EventKeyword:
 				result.SignatureMarkup = Highlight ("event", colorStyle.KeywordModifiers) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("event", colorStyle.KeywordModifiers) + " type declarator;" + Environment.NewLine +
-					"[attributes] [modifiers] " + Highlight ("event", colorStyle.KeywordModifiers) + " type member-name {accessor-declarations};");
-				result.SummaryMarkup = "Specifies an event.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} type declarator;\n[attributes] [modifiers] {0} type member-name {{ accessor-declarations }};", Highlight ("event", colorStyle.KeywordModifiers)));
+				result.SummaryMarkup = GettextCatalog.GetString ("Specifies an event.");
 				break;
 			case SyntaxKind.ExplicitKeyword:
 				result.SignatureMarkup = Highlight ("explicit", colorStyle.KeywordOperatorDeclaration) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("explicit", colorStyle.KeywordOperatorDeclaration) + " keyword is used to declare an explicit user-defined type conversion operator.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to declare an explicit user-defined type conversion operator.", Highlight ("explicit", colorStyle.KeywordOperatorDeclaration));
 				break;
 			case SyntaxKind.ExternKeyword:
 				result.SignatureMarkup = Highlight ("extern", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "Use the " + Highlight ("extern", colorStyle.KeywordModifiers) + " modifier in a method declaration to indicate that the method is implemented externally. A common use of the extern modifier is with the DllImport attribute.";
+				result.SummaryMarkup = GettextCatalog.GetString ("Use the {0} modifier in a method declaration to indicate that the method is implemented externally. A common use of the extern modifier is with the DllImport attribute.", Highlight ("extern", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.FinallyKeyword:
 				result.SignatureMarkup = Highlight ("finally", colorStyle.KeywordException) + keywordSign;
-				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("finally", colorStyle.KeywordException) + " finally-block");
-				result.SummaryMarkup = "The " + Highlight ("finally", colorStyle.KeywordException) + " block is useful for cleaning up any resources allocated in the try block. Control is always passed to the finally block regardless of how the try block exits.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} try-block {1} finally-block",Highlight ("try", colorStyle.KeywordException), Highlight ("finally", colorStyle.KeywordException)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} block is useful for cleaning up any resources allocated in the try block. Control is always passed to the finally block regardless of how the try block exits.", Highlight ("finally", colorStyle.KeywordException));
 				break;
 			case SyntaxKind.FixedKeyword:
 				result.SignatureMarkup = Highlight ("fixed", colorStyle.KeywordOther) + keywordSign;
-				result.AddCategory ("Form", Highlight ("fixed", colorStyle.KeywordOther) + " ( type* ptr = expr ) statement");
-				result.SummaryMarkup = "Prevents relocation of a variable by the garbage collector.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} ( type* ptr = expr ) statement", Highlight ("fixed", colorStyle.KeywordOther)));
+				result.SummaryMarkup = GettextCatalog.GetString ("Prevents relocation of a variable by the garbage collector.");
 				break;
 			case SyntaxKind.ForKeyword:
 				result.SignatureMarkup = Highlight ("for", colorStyle.KeywordIteration) + keywordSign;
-				result.AddCategory ("Form", Highlight ("for", colorStyle.KeywordIteration) + " ([initializers]; [expression]; [iterators]) statement");
-				result.SummaryMarkup = "The " + Highlight ("for", colorStyle.KeywordIteration) + " loop executes a statement or a block of statements repeatedly until a specified expression evaluates to false.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} ([initializers]; [expression]; [iterators]) statement", Highlight ("for", colorStyle.KeywordIteration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} loop executes a statement or a block of statements repeatedly until a specified expression evaluates to false.", Highlight ("for", colorStyle.KeywordIteration));
 				break;
 			case SyntaxKind.ForEachKeyword:
 				result.SignatureMarkup = Highlight ("foreach", colorStyle.KeywordIteration) + keywordSign;
-				result.AddCategory ("Form", Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement");
-				result.SummaryMarkup = "The " + Highlight ("foreach", colorStyle.KeywordIteration) + " statement repeats a group of embedded statements for each element in an array or an object collection. ";
+				result.AddCategory (GettextCatalog.GetString ("Form"), 
+				                    GettextCatalog.GetString ("{0} (type identifier {1} expression) statement", Highlight ("foreach", colorStyle.KeywordIteration), Highlight ("in", colorStyle.KeywordIteration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement repeats a group of embedded statements for each element in an array or an object collection.", Highlight ("foreach", colorStyle.KeywordIteration));
 				break;
 			case SyntaxKind.FromKeyword:
 				result.SignatureMarkup = Highlight ("from", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Form", Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration)
-				+ " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression");
-				result.SummaryMarkup = "The " + Highlight ("from", colorStyle.KeywordContext) + " keyword marks the beginning of a query expression and defines the data source and local variable to represent the elements in the sequence.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} range-variable {1} data-source [query clauses] {2} product-expression", Highlight ("from", colorStyle.KeywordContext), Highlight ("in", colorStyle.KeywordIteration), Highlight ("select", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword marks the beginning of a query expression and defines the data source and local variable to represent the elements in the sequence.", Highlight ("from", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.GetKeyword:
 				result.SignatureMarkup = Highlight ("get", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Form", "[modifiers] " + Highlight ("get", colorStyle.KeywordContext) + " [ { accessor-body } ]");
-				result.SummaryMarkup = "The " + Highlight ("get", colorStyle.KeywordContext) + " keyword is used to define an accessor method to retrieve the value of the property or indexer element.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} [ {{ accessor-body }} ]", Highlight ("get", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define an accessor method to retrieve the value of the property or indexer element.", Highlight ("get", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.GlobalKeyword:
 				result.SignatureMarkup = Highlight ("global", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Form", Highlight ("global", colorStyle.KeywordContext) + " :: type");
-				result.SummaryMarkup = "The " + Highlight ("global", colorStyle.KeywordContext) + " keyword is used to specify a type is within the global namespace.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} :: type", Highlight ("global", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to specify a type is within the global namespace.", Highlight ("global", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.GotoKeyword:
 				result.SignatureMarkup = Highlight ("goto", colorStyle.KeywordJump) + keywordSign;
-				result.AddCategory ("Form", Highlight ("goto", colorStyle.KeywordJump) + " identifier;" + Environment.NewLine +
-				Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression;" + Environment.NewLine +
-				Highlight ("goto", colorStyle.KeywordJump) + " " + Highlight ("default", colorStyle.KeywordSelection) + ";");
-				result.SummaryMarkup = "The " + Highlight ("goto", colorStyle.KeywordJump) + " statement transfers the program control directly to a labeled statement. ";
+				result.AddCategory (
+					GettextCatalog.GetString ("Form"), 
+					GettextCatalog.GetString ("{0} identifier;\n{0} {1} constant-expression;\n {0} {2};", Highlight ("goto", colorStyle.KeywordJump), Highlight ("case", colorStyle.KeywordSelection), Highlight ("default", colorStyle.KeywordSelection)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement transfers the program control directly to a labeled statement. ", Highlight ("goto", colorStyle.KeywordJump));
 				break;
 			case SyntaxKind.GroupKeyword:
 				result.SignatureMarkup = Highlight ("group", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + "key-value"
-					+ Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
-				Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + " key-value " + Highlight ("into", colorStyle.KeywordContext) + " group-name ");
-				result.SummaryMarkup = "The " + Highlight ("group", colorStyle.KeywordContext) + " keyword groups elements together from a query which match the key value and stores the result in an "
-					+ Highlight ("IGrouping&lt;TKey, TElement&gt;", colorStyle.KeywordTypes) + ". It can also be stored in a group for further use in the query with 'into'.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), 
+				                    GettextCatalog.GetString ("{0} range-variable {1} key-value\n\nor\n\n{2} range-variable {1} key-value {3} group-name ", Highlight ("group", colorStyle.KeywordContext), Highlight ("by", colorStyle.KeywordContext), Highlight ("group", colorStyle.KeywordContext), Highlight ("into", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword groups elements together from a query which match the key value and stores the result in an {1}. It can also be stored in a group for further use in the query with 'into'.", Highlight ("group", colorStyle.KeywordContext), Highlight ("IGrouping&lt;TKey, TElement&gt;", colorStyle.KeywordTypes));
 				break;
 			case SyntaxKind.IfKeyword:
 				result.SignatureMarkup = Highlight ("if", colorStyle.KeywordSelection) + keywordSign;
-				result.AddCategory ("Form", Highlight ("if", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
-					"  statement1" + Environment.NewLine +
-					"  [" + Highlight ("else", colorStyle.KeywordSelection) + Environment.NewLine +
-					"  statement2]");
-				result.SummaryMarkup = "The " + Highlight ("if", colorStyle.KeywordSelection) + " statement selects a statement for execution based on the value of a Boolean expression. ";
+				result.AddCategory (GettextCatalog.GetString ("Form"), 
+				                    GettextCatalog.GetString ("{0} (expression)\n  statement1\n  [{1}\n  statement2]", Highlight ("if", colorStyle.KeywordSelection), Highlight ("else", colorStyle.KeywordSelection)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement selects a statement for execution based on the value of a Boolean expression.", Highlight ("if", colorStyle.KeywordSelection));
 				break;
 			case SyntaxKind.IntoKeyword:
 				result.SignatureMarkup = Highlight ("into", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("group", colorStyle.KeywordContext) + " range-variable " + Highlight ("by", colorStyle.KeywordContext) + " key-value " + Highlight ("into", colorStyle.KeywordContext) + " group-name ");
-				result.SummaryMarkup = "The " + Highlight ("into", colorStyle.KeywordContext) + " keyword stores the result of a group statement for further use in the query.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), GettextCatalog.GetString ("{0} range-variable {1} key-value {2} group-name ", Highlight ("group", colorStyle.KeywordContext), Highlight ("by", colorStyle.KeywordContext), Highlight ("into", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword stores the result of a group statement for further use in the query.", Highlight ("into", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.ImplicitKeyword:
 				result.SignatureMarkup = Highlight ("implicit", colorStyle.KeywordOperatorDeclaration) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("implicit", colorStyle.KeywordOperatorDeclaration) + " keyword is used to declare an implicit user-defined type conversion operator.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to declare an implicit user-defined type conversion operator.", Highlight ("implicit", colorStyle.KeywordOperatorDeclaration));
 				break;
 			case SyntaxKind.InKeyword:
 				result.SignatureMarkup = Highlight ("in", colorStyle.KeywordIteration) + keywordSign;
 				if (node.Parent != null) {
 					if (node.Parent is ForEachStatementSyntax) {
-						result.AddCategory ("Form",
-							Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement");
+						result.AddCategory (GettextCatalog.GetString ("Form"),
+						                    GettextCatalog.GetString ("{0} (type identifier {1} expression) statement", Highlight ("foreach", colorStyle.KeywordIteration), Highlight ("in", colorStyle.KeywordIteration)));
 						break;
 					}
 					if (node.Parent is FromClauseSyntax) {
-						result.AddCategory ("Form",
-							Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration) + " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression");
+						result.AddCategory (GettextCatalog.GetString ("Form"),
+						                    GettextCatalog.GetString ("{0} range-variable {1} data-source [query clauses] {2} product-expression", Highlight ("from", colorStyle.KeywordContext), Highlight ("in", colorStyle.KeywordIteration), Highlight ("select", colorStyle.KeywordContext)));
 						break;
 					}
 					if (node.Parent is TypeParameterConstraintClauseSyntax) {
-						result.AddCategory ("Form",
-							Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}");
+						result.AddCategory (GettextCatalog.GetString ("Form"),
+						                    GettextCatalog.GetString ("{0} IMyInterface&lt; {1} T&gt; {}", Highlight ("interface", colorStyle.KeywordDeclaration), Highlight ("in", colorStyle.KeywordIteration)));
 						break;
 					}
 				}
-				result.AddCategory ("Form", Highlight ("foreach", colorStyle.KeywordIteration) + " (type identifier " + Highlight ("in", colorStyle.KeywordIteration) + " expression) statement" + Environment.NewLine + Environment.NewLine +
-					"or" + Environment.NewLine + Environment.NewLine +
-				Highlight ("from", colorStyle.KeywordContext) + " range-variable " + Highlight ("in", colorStyle.KeywordIteration) + " data-source [query clauses] " + Highlight ("select", colorStyle.KeywordContext) + " product-expression" + Environment.NewLine + Environment.NewLine +
-					"or" + Environment.NewLine + Environment.NewLine +
-				Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("in", colorStyle.KeywordIteration) + " T&gt; {}"
+				result.AddCategory (GettextCatalog.GetString ("Form"),
+				                    GettextCatalog.GetString ("{0} (type identifier {1} expression) statement\n\nor\n\n{0} range-variable {1} data-source [query clauses] {2} product-expression\n\nor\n\n{3} IMyInterface&lt;{1} T&gt; {{}}",
+															 Highlight ("foreach", colorStyle.KeywordIteration), Highlight ("in", colorStyle.KeywordIteration), Highlight ("select", colorStyle.KeywordContext), Highlight ("interface", colorStyle.KeywordDeclaration))
 				);
 				break;
 			case SyntaxKind.InterfaceKeyword:
 				result.SignatureMarkup = Highlight ("interface", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("interface", colorStyle.KeywordDeclaration) + " identifier [:base-list] {interface-body}[;]");
-				result.SummaryMarkup = "An interface defines a contract. A class or struct that implements an interface must adhere to its contract.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:base-list] {{interface-body}}[;]", Highlight ("interface", colorStyle.KeywordDeclaration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("An interface defines a contract. A class or struct that implements an interface must adhere to its contract.");
 				break;
 			case SyntaxKind.InternalKeyword:
 				result.SignatureMarkup = Highlight ("internal", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("internal", colorStyle.KeywordModifiers) + " keyword is an access modifier for types and type members. Internal members are accessible only within files in the same assembly.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is an access modifier for types and type members. Internal members are accessible only within files in the same assembly.", Highlight ("internal", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.IsKeyword:
 				result.SignatureMarkup = Highlight ("is", colorStyle.KeywordOperators) + keywordSign;
-				result.AddCategory ("Form", "expression " + Highlight ("is", colorStyle.KeywordOperators) + " type");
-				result.SummaryMarkup = "The " + Highlight ("is", colorStyle.KeywordOperators) + " operator is used to check whether the run-time type of an object is compatible with a given type.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("expression {0} type", Highlight ("is", colorStyle.KeywordOperators)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} operator is used to check whether the run-time type of an object is compatible with a given type.", Highlight ("is", colorStyle.KeywordOperators));
 				break;
 			case SyntaxKind.JoinKeyword:
 				result.SignatureMarkup = Highlight ("join", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("join", colorStyle.KeywordContext) + " range-variable2 " + Highlight ("in", colorStyle.KeywordContext) + " range2 " + Highlight ("on", colorStyle.KeywordContext)
-					+ " statement1 " + Highlight ("equals", colorStyle.KeywordContext) + " statement2 [ " + Highlight ("into", colorStyle.KeywordContext) + " group-name ]");
-				result.SummaryMarkup = "The " + Highlight ("join", colorStyle.KeywordContext) + " clause produces a new sequence of elements from two source sequences on a given equality condition.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), GettextCatalog.GetString ("{0} range-variable2 {1} range2 {2} statement1 {3} statement2 [ {4} group-name ]", 
+				                                                                                       Highlight ("join", colorStyle.KeywordContext), Highlight ("in", colorStyle.KeywordContext), Highlight ("on", colorStyle.KeywordContext), Highlight ("equals", colorStyle.KeywordContext), Highlight ("into", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} clause produces a new sequence of elements from two source sequences on a given equality condition.", Highlight ("join", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.LetKeyword:
 				result.SignatureMarkup = Highlight ("let", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("let", colorStyle.KeywordContext) + " range-variable = expression");
-				result.SummaryMarkup = "The " + Highlight ("let", colorStyle.KeywordContext) + " clause allows for a sub-expression to have its value stored in a new range variable for use later in the query.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), GettextCatalog.GetString ("{0} range-variable = expression", Highlight ("let", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} clause allows for a sub-expression to have its value stored in a new range variable for use later in the query.", Highlight ("let", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.LockKeyword:
 				result.SignatureMarkup = Highlight ("lock", colorStyle.KeywordOther) + keywordSign;
-				result.AddCategory ("Form", Highlight ("lock", colorStyle.KeywordOther) + " (expression) statement_block");
-				result.SummaryMarkup = "The " + Highlight ("lock", colorStyle.KeywordOther) + " keyword marks a statement block as a critical section by obtaining the mutual-exclusion lock for a given object, executing a statement, and then releasing the lock. ";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (expression) statement_block", Highlight ("lock", colorStyle.KeywordOther)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword marks a statement block as a critical section by obtaining the mutual-exclusion lock for a given object, executing a statement, and then releasing the lock.", Highlight ("lock", colorStyle.KeywordOther));
 				break;
 			case SyntaxKind.NamespaceKeyword:
 				result.SignatureMarkup = Highlight ("namespace", colorStyle.KeywordNamespace) + keywordSign;
-				result.AddCategory ("Form", Highlight ("namespace", colorStyle.KeywordNamespace) + " name[.name1] ...] {" + Environment.NewLine +
-					"type-declarations" + Environment.NewLine +
-					" }");
-				result.SummaryMarkup = "The " + Highlight ("namespace", colorStyle.KeywordNamespace) + " keyword is used to declare a scope. ";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} name[.name1] ...] {{\ntype-declarations\n }}", Highlight ("namespace", colorStyle.KeywordNamespace)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to declare a scope.", Highlight ("namespace", colorStyle.KeywordNamespace));
 				break;
 			case SyntaxKind.NewKeyword:
 				result.SignatureMarkup = Highlight ("new", colorStyle.KeywordOperators) + keywordSign;
 				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
-					result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " constraint specifies that any type argument in a generic class declaration must have a public parameterless constructor. To use the new constraint, the type cannot be abstract.";
+					result.SummaryMarkup = GettextCatalog.GetString ("The {0} constraint specifies that any type argument in a generic class declaration must have a public parameterless constructor. To use the new constraint, the type cannot be abstract.", Highlight ("new", colorStyle.KeywordOperators));
 				} else {
-					result.SummaryMarkup = "The " + Highlight ("new", colorStyle.KeywordOperators) + " keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.";
+					result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword can be used as an operator or as a modifier. The operator is used to create objects on the heap and invoke constructors. The modifier is used to hide an inherited member from a base class member.", Highlight ("new", colorStyle.KeywordOperators));
 				}
 				break;
 			case SyntaxKind.NullKeyword:
 				result.SignatureMarkup = Highlight ("null", colorStyle.KeywordConstants) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("null", colorStyle.KeywordConstants) + " keyword is a literal that represents a null reference, one that does not refer to any object. " + Highlight ("null", colorStyle.KeywordConstants) + " is the default value of reference-type variables.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is a literal that represents a null reference, one that does not refer to any object. {0} is the default value of reference-type variables.", Highlight ("null", colorStyle.KeywordConstants));
 				break;
 			case SyntaxKind.OperatorKeyword:
 				result.SignatureMarkup = Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + keywordSign;
-				result.AddCategory ("Form", Highlight ("public static ", colorStyle.KeywordModifiers) + "result-type " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " unary-operator ( op-type operand )" + Environment.NewLine +
-				Highlight ("public static ", colorStyle.KeywordModifiers) + "result-type " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " binary-operator (" + Environment.NewLine +
-					"op-type operand," + Environment.NewLine +
-					"op-type2 operand2" + Environment.NewLine +
-					" )" + Environment.NewLine +
-					Highlight ("public static ", colorStyle.KeywordModifiers) + Highlight ("implicit operator", colorStyle.KeywordOperatorDeclaration) + " conv-type-out ( conv-type-in operand )" + Environment.NewLine +
-					Highlight ("public static ", colorStyle.KeywordModifiers) + Highlight ("explicit operator", colorStyle.KeywordOperatorDeclaration) + " conv-type-out ( conv-type-in operand )"
-				);
-				result.SummaryMarkup = "The " + Highlight ("operator", colorStyle.KeywordOperatorDeclaration) + " keyword is used to declare an operator in a class or struct declaration.";
+				result.AddCategory (GettextCatalog.GetString ("Form"),
+									GettextCatalog.GetString ("{0} result-type {1} unary-operator ( op-type operand )\n{0} result-type {1} binary-operator (\nop-type operand,\nop-type2 operand2\n )\n{0} {2} {1} conv-type-out ( conv-type-in operand )\n{0} {3} {1} conv-type-out ( conv-type-in operand )",
+															  Highlight ("public static", colorStyle.KeywordModifiers), Highlight ("operator", colorStyle.KeywordOperatorDeclaration), Highlight ("implicit", colorStyle.KeywordOperatorDeclaration), Highlight ("explicit", colorStyle.KeywordOperatorDeclaration))
+				                   );
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to declare an operator in a class or struct declaration.", Highlight ("operator", colorStyle.KeywordOperatorDeclaration));
 				break;
 			case SyntaxKind.OrderByKeyword:
 				result.SignatureMarkup = Highlight ("orderby", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("orderby", colorStyle.KeywordContext) + " order-key1 [ " + Highlight ("ascending", colorStyle.KeywordContext) + "|" + Highlight ("descending", colorStyle.KeywordContext) + " , [order-key2, ...]");
-				result.SummaryMarkup = "The " + Highlight ("orderby", colorStyle.KeywordContext) + " clause specifies for the returned sequence to be sorted on a given element in either ascending or descending order.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), 
+				                    GettextCatalog.GetString ("{0} order-key1 [ {1}|{2}, [order-key2, ...]", Highlight ("orderby", colorStyle.KeywordContext), Highlight ("ascending", colorStyle.KeywordContext), Highlight ("descending", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} clause specifies for the returned sequence to be sorted on a given element in either ascending or descending order.", Highlight ("orderby", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.OutKeyword:
 				result.SignatureMarkup = Highlight ("out", colorStyle.KeywordParameter) + keywordSign;
 				if (node.Parent != null) {
 					if (node.Parent is TypeParameterSyntax) {
-						result.AddCategory ("Form",
-							Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}");
+						result.AddCategory (GettextCatalog.GetString ("Form"),
+						                    GettextCatalog.GetString ("{0} IMyInterface&lt;{1} T&gt; {}", Highlight ("interface", colorStyle.KeywordDeclaration), Highlight ("out", colorStyle.KeywordParameter)));
 						break;
 					}
 					if (node.Parent is ParameterSyntax) {
-						result.AddCategory ("Form",
-							Highlight ("out", colorStyle.KeywordParameter) + " parameter-name");
-						result.SummaryMarkup = "The " + Highlight ("out", colorStyle.KeywordParameter) + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
+						result.AddCategory (GettextCatalog.GetString ("Form"),
+						                    GettextCatalog.GetString ("{0} parameter-name", Highlight ("out", colorStyle.KeywordParameter)));
+						result.SummaryMarkup = GettextCatalog.GetString ("The {0} method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.", Highlight ("out", colorStyle.KeywordParameter));
 						break;
 					}
 				}
 
-				result.AddCategory ("Form",
-					Highlight ("out", colorStyle.KeywordParameter) + " parameter-name" + Environment.NewLine + Environment.NewLine +
-					"or" + Environment.NewLine + Environment.NewLine +
-					Highlight ("interface", colorStyle.KeywordDeclaration) + " IMyInterface&lt;" + Highlight ("out", colorStyle.KeywordParameter) + " T&gt; {}"
-				);
+				result.AddCategory (GettextCatalog.GetString ("Form"),
+				                    GettextCatalog.GetString ("{0} parameter-name\n\nor\n\n{1} IMyInterface&lt;{0} T&gt; {{}}",
+				                                              Highlight ("out", colorStyle.KeywordParameter), Highlight ("interface", colorStyle.KeywordDeclaration)));
 				break;
 			case SyntaxKind.OverrideKeyword:
 				result.SignatureMarkup = Highlight ("override", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("override", colorStyle.KeywordModifiers) + " modifier is used to override a method, a property, an indexer, or an event.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} modifier is used to override a method, a property, an indexer, or an event.", Highlight ("override", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.ParamKeyword:
 				result.SignatureMarkup = Highlight ("params", colorStyle.KeywordParameter) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("params", colorStyle.KeywordParameter) + " keyword lets you specify a method parameter that takes an argument where the number of arguments is variable.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword lets you specify a method parameter that takes an argument where the number of arguments is variable.", Highlight ("params", colorStyle.KeywordParameter));
 				break;
 			case SyntaxKind.PartialKeyword:
 				result.SignatureMarkup = Highlight ("partial", colorStyle.KeywordContext) + keywordSign;
 				if (node.Parent != null) {
 					if (node.Parent is TypeDeclarationSyntax) {
-						result.AddCategory ("Form", "[modifiers] " + Highlight ("partial", colorStyle.KeywordContext) + " type-declaration");
-						result.SummaryMarkup = "The " + Highlight ("partial", colorStyle.KeywordContext) + " keyword on a type declaration allows for the definition to be split into multiple files.";
+						result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} type-declaration", Highlight ("partial", colorStyle.KeywordContext)));
+						result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword on a type declaration allows for the definition to be split into multiple files.", Highlight ("partial", colorStyle.KeywordContext));
 						break;
 					} else if (node.Parent is MethodDeclarationSyntax) {
-						result.AddCategory ("Form", Highlight ("partial", colorStyle.KeywordContext) + " method-declaration");
-						result.SummaryMarkup = "The " + Highlight ("partial", colorStyle.KeywordContext) + " keyword on a method declaration allows for the implementation of a method to be defined in another part of the partial class.";
+						result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} method-declaration", Highlight ("partial", colorStyle.KeywordContext)));
+						result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword on a method declaration allows for the implementation of a method to be defined in another part of the partial class.", Highlight ("partial", colorStyle.KeywordContext));
 					}
 				} else
-					result.AddCategory ("Form", "[modifiers] " + Highlight ("partial", colorStyle.KeywordContext) + " type-declaration" + Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine +
-					Highlight ("partial", colorStyle.KeywordContext) + " method-declaration");
+					result.AddCategory (GettextCatalog.GetString ("Form"), 
+					                    GettextCatalog.GetString ("[modifiers] {0} type-declaration\n\nor\n\n{0} method-declaration", Highlight ("partial", colorStyle.KeywordContext)));
 				break;
 			case SyntaxKind.PrivateKeyword:
 				result.SignatureMarkup = Highlight ("private", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("private", colorStyle.KeywordModifiers) + " keyword is a member access modifier. Private access is the least permissive access level. Private members are accessible only within the body of the class or the struct in which they are declared.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is a member access modifier. Private access is the least permissive access level. Private members are accessible only within the body of the class or the struct in which they are declared.", Highlight ("private", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.ProtectedKeyword:
 				result.SignatureMarkup = Highlight ("protected", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("protected", colorStyle.KeywordModifiers) + " keyword is a member access modifier. A protected member is accessible from within the class in which it is declared, and from within any class derived from the class that declared this member.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is a member access modifier. A protected member is accessible from within the class in which it is declared, and from within any class derived from the class that declared this member.", Highlight ("protected", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.PublicKeyword:
 				result.SignatureMarkup = Highlight ("public", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("public", colorStyle.KeywordModifiers) + " keyword is an access modifier for types and type members. Public access is the most permissive access level. There are no restrictions on accessing public members.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is an access modifier for types and type members. Public access is the most permissive access level. There are no restrictions on accessing public members.", Highlight ("public", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.ReadOnlyKeyword:
 				result.SignatureMarkup = Highlight ("readonly", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("readonly", colorStyle.KeywordModifiers) + " keyword is a modifier that you can use on fields. When a field declaration includes a " + Highlight ("readonly", colorStyle.KeywordModifiers) + " modifier, assignments to the fields introduced by the declaration can only occur as part of the declaration or in a constructor in the same class.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is a modifier that you can use on fields. When a field declaration includes a {0} modifier, assignments to the fields introduced by the declaration can only occur as part of the declaration or in a constructor in the same class.", Highlight ("readonly", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.RefKeyword:
 				result.SignatureMarkup = Highlight ("ref", colorStyle.KeywordParameter) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("ref", colorStyle.KeywordParameter) + " method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} method parameter keyword on a method parameter causes a method to refer to the same variable that was passed into the method.", Highlight ("ref ", colorStyle.KeywordParameter));
 				break;
 			case SyntaxKind.RemoveKeyword:
 				result.SignatureMarkup = Highlight ("remove", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Form", "[modifiers] " + Highlight ("remove", colorStyle.KeywordContext) + " { accessor-body }");
-				result.SummaryMarkup = "The " + Highlight ("remove", colorStyle.KeywordContext) + " keyword is used to define a custom accessor for when an event is unsubscribed from. If supplied, an add accessor must also be supplied.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} {{ accessor-body }}", Highlight ("remove", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define a custom accessor for when an event is unsubscribed from. If supplied, an add accessor must also be supplied.", Highlight ("remove", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.ReturnKeyword:
 				result.SignatureMarkup = Highlight ("return", colorStyle.KeywordJump) + keywordSign;
-				result.AddCategory ("Form", Highlight ("return", colorStyle.KeywordJump) + " [expression];");
-				result.SummaryMarkup = "The " + Highlight ("return", colorStyle.KeywordJump) + " statement terminates execution of the method in which it appears and returns control to the calling method.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} [expression];", Highlight ("return", colorStyle.KeywordJump)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement terminates execution of the method in which it appears and returns control to the calling method.", Highlight ("return ", colorStyle.KeywordJump));
 				break;
 			case SyntaxKind.SelectKeyword:
 				result.SignatureMarkup = Highlight ("select", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Query Form", Highlight ("select", colorStyle.KeywordContext) + " return-type");
-				result.SummaryMarkup = "The " + Highlight ("select", colorStyle.KeywordContext) + " clause specifies the type of value to return from the query.";
+				result.AddCategory (GettextCatalog.GetString ("Query Form"), GettextCatalog.GetString ("{0} return-type", Highlight ("select", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} clause specifies the type of value to return from the query.", Highlight ("select", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.SealedKeyword:
 				result.SignatureMarkup = Highlight ("sealed", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "A sealed class cannot be inherited.";
+				result.SummaryMarkup = GettextCatalog.GetString ("A sealed class cannot be inherited.");
 				break;
 			case SyntaxKind.SetKeyword:
 				result.SignatureMarkup = Highlight ("set", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Form", "[modifiers] " + Highlight ("set", colorStyle.KeywordContext) + " [ { accessor-body } ]");
-				result.SummaryMarkup = "The " + Highlight ("set", colorStyle.KeywordContext) + " keyword is used to define an accessor method to assign to the value of the property or indexer element.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[modifiers] {0} [ {{ accessor-body }} ]", Highlight ("set", colorStyle.KeywordContext)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to define an accessor method to assign to the value of the property or indexer element.", Highlight ("set", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.SizeOfKeyword:
 				result.SignatureMarkup = Highlight ("sizeof", colorStyle.KeywordOperators) + keywordSign;
-				result.AddCategory ("Form", Highlight ("sizeof", colorStyle.KeywordOperators) + " (type)");
-				result.SummaryMarkup = "The " + Highlight ("sizeof", colorStyle.KeywordOperators) + " operator is used to obtain the size in bytes for a value type.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (type)", Highlight ("sizeof", colorStyle.KeywordOperators)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} operator is used to obtain the size in bytes for a value type.", Highlight ("sizeof", colorStyle.KeywordOperators));
 				break;
 			case SyntaxKind.StackAllocKeyword:
 				result.SignatureMarkup = Highlight ("stackalloc", colorStyle.KeywordOperators) + keywordSign;
-				result.AddCategory ("Form", "type * ptr = " + Highlight ("stackalloc", colorStyle.KeywordOperators) + " type [ expr ];");
-				result.SummaryMarkup = "Allocates a block of memory on the stack.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("type * ptr = {0} type [ expr ];", Highlight ("stackalloc", colorStyle.KeywordOperators)));
+				result.SummaryMarkup = GettextCatalog.GetString ("Allocates a block of memory on the stack.");
 				break;
 			case SyntaxKind.StaticKeyword:
 				result.SignatureMarkup = Highlight ("static", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "Use the " + Highlight ("static", colorStyle.KeywordModifiers) + " modifier to declare a static member, which belongs to the type itself rather than to a specific object.";
+				result.SummaryMarkup = GettextCatalog.GetString ("Use the {0} modifier to declare a static member, which belongs to the type itself rather than to a specific object.", Highlight ("static", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.StructKeyword:
 				result.SignatureMarkup = Highlight ("struct", colorStyle.KeywordDeclaration) + keywordSign;
 				if (node.Parent != null && node.Parent.IsKind (SyntaxKind.ConstructorConstraint)) {
-					result.SummaryMarkup = "The " + Highlight ("struct", colorStyle.KeywordDeclaration) + " constraint specifies that the type argument must be a value type. Any value type except Nullable can be specified.";
+					result.SummaryMarkup = GettextCatalog.GetString ("The {0} constraint specifies that the type argument must be a value type. Any value type except Nullable can be specified.", Highlight ("struct", colorStyle.KeywordDeclaration));
 				} else {
-					result.AddCategory ("Form", "[attributes] [modifiers] " + Highlight ("struct", colorStyle.KeywordDeclaration) + " identifier [:interfaces] body [;]");
-					result.SummaryMarkup = "A " + Highlight ("struct", colorStyle.KeywordDeclaration) + " type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types. ";
+					result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("[attributes] [modifiers] {0} identifier [:interfaces] body [;]", Highlight ("struct", colorStyle.KeywordDeclaration)));
+					result.SummaryMarkup = GettextCatalog.GetString ("A {0} type is a value type that can contain constructors, constants, fields, methods, properties, indexers, operators, events, and nested types.", Highlight ("struct", colorStyle.KeywordDeclaration));
 				}
 				break;
 			case SyntaxKind.SwitchKeyword:
 				result.SignatureMarkup = Highlight ("switch", colorStyle.KeywordSelection) + keywordSign;
-				result.AddCategory ("Form", Highlight ("switch", colorStyle.KeywordSelection) + " (expression)" + Environment.NewLine +
-					" {" + Environment.NewLine +
-					"  " + Highlight ("case", colorStyle.KeywordSelection) + " constant-expression:" + Environment.NewLine +
-					"  statement" + Environment.NewLine +
-					"  jump-statement" + Environment.NewLine +
-					"  [" + Highlight ("default", colorStyle.KeywordSelection) + ":" + Environment.NewLine +
-					"  statement" + Environment.NewLine +
-					"  jump-statement]" + Environment.NewLine +
-					" }");
-				result.SummaryMarkup = "The " + Highlight ("switch", colorStyle.KeywordSelection) + " statement is a control statement that handles multiple selections by passing control to one of the " + Highlight ("case", colorStyle.KeywordSelection) + " statements within its body.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (expression)\n {{\n  {1} constant-expression:\n  statement\n  jump-statement\n  [{2}:\n  statement\n  jump-statement]\n }}", Highlight ("switch", colorStyle.KeywordSelection), Highlight ("case ", colorStyle.KeywordSelection), Highlight ("default", colorStyle.KeywordSelection)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement is a control statement that handles multiple selections by passing control to one of the {1} statements within its body.", Highlight ("switch", colorStyle.KeywordSelection), Highlight ("case", colorStyle.KeywordSelection));
 				break;
 			case SyntaxKind.ThisKeyword:
 				result.SignatureMarkup = Highlight ("this", colorStyle.KeywordAccessors) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("this", colorStyle.KeywordAccessors) + " keyword refers to the current instance of the class.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword refers to the current instance of the class.", Highlight ("this", colorStyle.KeywordAccessors));
 				break;
 			case SyntaxKind.ThrowKeyword:
 				result.SignatureMarkup = Highlight ("throw", colorStyle.KeywordException) + keywordSign;
-				result.AddCategory ("Form", Highlight ("throw", colorStyle.KeywordException) + " [expression];");
-				result.SummaryMarkup = "The " + Highlight ("throw", colorStyle.KeywordException) + " statement is used to signal the occurrence of an anomalous situation (exception) during the program execution.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} [expression];", Highlight ("throw", colorStyle.KeywordException)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement is used to signal the occurrence of an anomalous situation (exception) during the program execution.", Highlight ("throw ", colorStyle.KeywordException));
 				break;
 			case SyntaxKind.TryKeyword:
 				result.SignatureMarkup = Highlight ("try", colorStyle.KeywordException) + keywordSign;
-				result.AddCategory ("Form", Highlight ("try", colorStyle.KeywordException) + " try-block" + Environment.NewLine +
-					"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-1) catch-block-1 " + Environment.NewLine +
-					"  " + Highlight ("catch", colorStyle.KeywordException) + " (exception-declaration-2) catch-block-2 " + Environment.NewLine +
-					"..." + Environment.NewLine +
-					Highlight ("try", colorStyle.KeywordException) + " try-block " + Highlight ("catch", colorStyle.KeywordException) + " catch-block");
-				result.SummaryMarkup = "The try-catch statement consists of a " + Highlight ("try", colorStyle.KeywordException) + " block followed by one or more " + Highlight ("catch", colorStyle.KeywordException) + " clauses, which specify handlers for different exceptions.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), 
+				                    GettextCatalog.GetString ("{0} try-block\n  {1} (exception-declaration-1) catch-block-1 \n  {1} (exception-declaration-2) catch-block-2 \n...\n{0} try-block {1} catch-block",
+				                                              Highlight ("try", colorStyle.KeywordException), Highlight ("catch", colorStyle.KeywordException)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The try-catch statement consists of a {0} block followed by one or more {1} clauses, which specify handlers for different exceptions.", Highlight ("try", colorStyle.KeywordException), Highlight ("catch", colorStyle.KeywordException));
 				break;
 			case SyntaxKind.TypeOfKeyword:
 				result.SignatureMarkup = Highlight ("typeof", colorStyle.KeywordOperators) + keywordSign;
-				result.AddCategory ("Form", Highlight ("typeof", colorStyle.KeywordOperators) + "(type)");
-				result.SummaryMarkup = "The " + Highlight ("typeof", colorStyle.KeywordOperators) + " operator is used to obtain the System.Type object for a type.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (type)", Highlight ("typeof", colorStyle.KeywordOperators)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} operator is used to obtain the System.Type object for a type.", Highlight ("typeof", colorStyle.KeywordOperators));
 				break;
 			case SyntaxKind.UncheckedKeyword:
 				result.SignatureMarkup = Highlight ("unchecked", colorStyle.KeywordOther) + keywordSign;
-				result.AddCategory ("Form", Highlight ("unchecked", colorStyle.KeywordOther) + " block" + Environment.NewLine +
-				Highlight ("unchecked", colorStyle.KeywordOther) + " (expression)");
-				result.SummaryMarkup = "The " + Highlight ("unchecked", colorStyle.KeywordOther) + " keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} block\n{0} (expression)", Highlight ("unchecked", colorStyle.KeywordOther)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to control the overflow-checking context for integral-type arithmetic operations and conversions.", Highlight ("unchecked", colorStyle.KeywordOther));
 				break;
 			case SyntaxKind.UnsafeKeyword:
 				result.SignatureMarkup = Highlight ("unsafe", colorStyle.KeywordOther) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("unsafe", colorStyle.KeywordOther) + " keyword denotes an unsafe context, which is required for any operation involving pointers.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword denotes an unsafe context, which is required for any operation involving pointers.", Highlight ("unsafe", colorStyle.KeywordOther));
 				break;
 			case SyntaxKind.UsingKeyword:
 				result.SignatureMarkup = Highlight ("using", colorStyle.KeywordNamespace) + keywordSign;
-				result.AddCategory ("Form", Highlight ("using", colorStyle.KeywordNamespace) + " (expression | type identifier = initializer) statement" + Environment.NewLine +
-				Highlight ("using", colorStyle.KeywordNamespace) + " [alias = ]class_or_namespace;");
-				result.SummaryMarkup = "The " + Highlight ("using", colorStyle.KeywordNamespace) + " directive creates an alias for a namespace or imports types defined in other namespaces. The " + Highlight ("using", colorStyle.KeywordNamespace) + " statement defines a scope at the end of which an object will be disposed.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (expression | type identifier = initializer) statement\n{0} [alias = ]class_or_namespace;", Highlight ("using", colorStyle.KeywordNamespace)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} directive creates an alias for a namespace or imports types defined in other namespaces. The {0} statement defines a scope at the end of which an object will be disposed.", Highlight ("using", colorStyle.KeywordNamespace));
 				break;
 			case SyntaxKind.VirtualKeyword:
 				result.SignatureMarkup = Highlight ("virtual", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("virtual", colorStyle.KeywordModifiers) + " keyword is used to modify a method, property, indexer, or event declaration and allow for it to be overridden in a derived class.";
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to modify a method, property, indexer, or event declaration and allow for it to be overridden in a derived class.", Highlight ("virtual", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.VolatileKeyword:
 				result.SignatureMarkup = Highlight ("volatile", colorStyle.KeywordModifiers) + keywordSign;
-				result.AddCategory ("Form", Highlight ("volatile", colorStyle.KeywordModifiers) + " declaration");
-				result.SummaryMarkup = "The " + Highlight ("volatile", colorStyle.KeywordModifiers) + " keyword indicates that a field can be modified in the program by something such as the operating system, the hardware, or a concurrently executing thread.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} declaration", Highlight ("volatile", colorStyle.KeywordModifiers)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword indicates that a field can be modified in the program by something such as the operating system, the hardware, or a concurrently executing thread.", Highlight ("volatile", colorStyle.KeywordModifiers));
 				break;
 			case SyntaxKind.VoidKeyword:
 				result.SignatureMarkup = Highlight ("void", colorStyle.KeywordTypes) + keywordSign;
@@ -1475,37 +1425,33 @@ namespace MonoDevelop.CSharp
 				result.SignatureMarkup = Highlight ("where", colorStyle.KeywordContext) + keywordSign;
 				if (node.Parent != null) {
 					if (node.Parent is WhereClauseSyntax) {
-						result.AddCategory ("Query Form", Highlight ("where", colorStyle.KeywordContext) + " condition");
-						result.SummaryMarkup = "The " + Highlight ("where", colorStyle.KeywordContext) + " clause specifies which elements from the data source to be returned according to a given condition.";
+						result.AddCategory (GettextCatalog.GetString ("Query Form"), GettextCatalog.GetString ("{0} condition", Highlight ("where", colorStyle.KeywordContext)));
+						result.SummaryMarkup = GettextCatalog.GetString ("The {0} clause specifies which elements from the data source to be returned according to a given condition.", Highlight ("where", colorStyle.KeywordContext));
 						break;
 					}
 					if (node.Parent is TypeConstraintSyntax) {
-						result.AddCategory ("Form", "generic-class-declaration " + Highlight ("where", colorStyle.KeywordContext) + " type-parameter : type-constraint");
-						result.SummaryMarkup = "The " + Highlight ("where", colorStyle.KeywordContext) + " clause constrains which types can be used as the type parameter in a generic declaration.";
+						result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("generic-class-declaration {0} type-parameter : type-constraint", Highlight ("where", colorStyle.KeywordContext)));
+						result.SummaryMarkup = GettextCatalog.GetString ("The {0} clause constrains which types can be used as the type parameter in a generic declaration.", Highlight ("where", colorStyle.KeywordContext));
 						break;
 					}
 				} else {
-					result.AddCategory ("Form", "generic-class-declaration " + Highlight ("where", colorStyle.KeywordContext) + " type-parameter : type-constraint"
-					+ Environment.NewLine + Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine + "query-clauses " + Highlight ("where", colorStyle.KeywordContext) +
-					" condition" + " [query-clauses]");
+					result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("generic-class-declaration {0} type-parameter : type-constraint\n\nor\n\nquery-clauses {0} condition [query-clauses]", Highlight ("where", colorStyle.KeywordContext)));
 				}
 				break;
 			case SyntaxKind.YieldKeyword:
 				result.SignatureMarkup = Highlight ("yield", colorStyle.KeywordContext) + keywordSign;
-				result.AddCategory ("Form", Highlight ("yield", colorStyle.KeywordContext) + Highlight ("break", colorStyle.KeywordJump) + Environment.NewLine
-				+ Environment.NewLine + "or" + Environment.NewLine + Environment.NewLine
-				+ Highlight ("yield", colorStyle.KeywordContext) + Highlight ("return", colorStyle.KeywordJump) + " expression");
-				result.SummaryMarkup = "The " + Highlight ("yield", colorStyle.KeywordContext) + " keyword is used to indicate that a method, get accessor, or operator is an iterator.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} {1}\n\nor\n\n{0} {2} expression", Highlight ("yield", colorStyle.KeywordContext), Highlight ("break", colorStyle.KeywordJump), Highlight ("return", colorStyle.KeywordJump)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} keyword is used to indicate that a method, get accessor, or operator is an iterator.", Highlight ("yield", colorStyle.KeywordContext));
 				break;
 			case SyntaxKind.WhileKeyword:
 				result.SignatureMarkup = Highlight ("while", colorStyle.KeywordIteration) + keywordSign;
-				result.AddCategory ("Form", Highlight ("while", colorStyle.KeywordIteration) + " (expression) statement");
-				result.SummaryMarkup = "The " + Highlight ("while", colorStyle.KeywordIteration) + " statement executes a statement or a block of statements until a specified expression evaluates to false. ";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0} (expression) statement", Highlight ("while", colorStyle.KeywordIteration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("The {0} statement executes a statement or a block of statements until a specified expression evaluates to false.", Highlight ("while", colorStyle.KeywordIteration));
 				break;
 				case SyntaxKind.NameOfKeyword:
 				result.SignatureMarkup = Highlight ("nameof", colorStyle.KeywordDeclaration) + keywordSign;
-				result.AddCategory ("Form", Highlight ("nameof", colorStyle.KeywordDeclaration) + "(identifier)");
-				result.SummaryMarkup = "Used to obtain the simple (unqualified) string name of a variable, type, or member.";
+				result.AddCategory (GettextCatalog.GetString ("Form"), GettextCatalog.GetString ("{0}(identifier)", Highlight ("nameof", colorStyle.KeywordDeclaration)));
+				result.SummaryMarkup = GettextCatalog.GetString ("Used to obtain the simple (unqualified) string name of a variable, type, or member.");
 				break;
 			default:
 				return null;
@@ -1520,19 +1466,19 @@ namespace MonoDevelop.CSharp
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 
-			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
+			var keywordSign = "<span foreground=\"" + colorString + "\"> " + GettextCatalog.GetString ("(keyword)") + "</span>";
 
 			result.SignatureMarkup = Highlight (keyword.ToFullString (), colorStyle.KeywordTypes) + keywordSign;
 
 			switch (keyword.Parent.Kind ()) {
 			case SyntaxKind.ClassConstraint:
-				result.AddCategory ("Constraint", "The type argument must be a reference type; this applies also to any class, interface, delegate, or array type.");
+				result.AddCategory (GettextCatalog.GetString ("Constraint"), GettextCatalog.GetString ("The type argument must be a reference type; this applies also to any class, interface, delegate, or array type."));
 				break;
 			case SyntaxKind.ConstructorConstraint:
-				result.AddCategory ("Constraint", "The type argument must have a public parameterless constructor. When used together with other constraints, the new() constraint must be specified last.");
+				result.AddCategory (GettextCatalog.GetString ("Constraint"), GettextCatalog.GetString ("The type argument must have a public parameterless constructor. When used together with other constraints, the new() constraint must be specified last."));
 				break;
 			case SyntaxKind.StructConstraint:
-				result.AddCategory ("Constraint", "The type argument must be a value type. Any value type except Nullable can be specified. See Using Nullable Types (C# Programming Guide) for more information.");
+				result.AddCategory (GettextCatalog.GetString ("Constraint"), GettextCatalog.GetString ("The type argument must be a value type. Any value type except Nullable can be specified. See Using Nullable Types (C# Programming Guide) for more information."));
 				break;
 			}
 

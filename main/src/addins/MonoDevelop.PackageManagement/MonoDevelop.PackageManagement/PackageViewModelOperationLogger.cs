@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.Core;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -46,9 +47,9 @@ namespace MonoDevelop.PackageManagement
 
 		void GetMessageFormats()
 		{
-			AddingPackageMessageFormat = "Installing...{0}";
-			RemovingPackageMessageFormat = "Uninstalling...{0}";
-			ManagingPackageMessageFormat = "Managing...{0}";
+			AddingPackageMessageFormat = GettextCatalog.GetString ("Installing...{0}");
+			RemovingPackageMessageFormat = GettextCatalog.GetString ("Uninstalling...{0}");
+			ManagingPackageMessageFormat = GettextCatalog.GetString ("Managing...{0}");
 		}
 		
 		public string AddingPackageMessageFormat { get; set; }

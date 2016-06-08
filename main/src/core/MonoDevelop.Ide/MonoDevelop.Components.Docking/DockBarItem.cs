@@ -362,7 +362,7 @@ namespace MonoDevelop.Components.Docking
 			if (autoHideTimeout == uint.MaxValue) {
 				autoHideTimeout = GLib.Timeout.Add (force ? 0 : bar.Frame.AutoHideDelay, delegate {
 					// Don't hide if the context menu for the item is being shown.
-					if (it.ShowingContextMemu)
+					if (it.ShowingContextMenu)
 						return true;
 					// Don't hide the item if it has the focus. Try again later.
 					if (it.Widget.FocusChild != null && !force && autoShowFrame != null && ((Gtk.Window)autoShowFrame.Toplevel).HasToplevelFocus)
@@ -437,7 +437,7 @@ namespace MonoDevelop.Components.Docking
 			if (bar.Frame.OverlayWidgetVisible)
 				return false;
 			if (evnt.TriggersContextMenu ()) {
-				it.ShowDockPopupMenu (evnt.Time);
+				it.ShowDockPopupMenu (this, evnt);
 			} else if (evnt.Button == 1) {
 				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
 					// Instead of changing the state of the pad here, do it when the button is released.

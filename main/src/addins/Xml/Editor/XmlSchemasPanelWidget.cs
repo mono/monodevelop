@@ -59,7 +59,8 @@ namespace MonoDevelop.Xml.Editor
 			var textRenderer = new CellRendererText ();
 			registeredSchemasStore = new ListStore (typeof (XmlSchemaCompletionData));
 			registeredSchemasView.Model = registeredSchemasStore;
-			
+			registeredSchemasView.SearchColumn = -1; // disable the interactive search
+
 			registeredSchemasView.AppendColumn (GettextCatalog.GetString ("Namespace"), textRenderer,
 				(TreeViewColumn col, CellRenderer cell, TreeModel model, TreeIter iter) => {
 					((CellRendererText)cell).Text = GetSchema (iter).NamespaceUri;
@@ -113,6 +114,7 @@ namespace MonoDevelop.Xml.Editor
 			//set up tree view for associations
 			defaultAssociationsStore = new ListStore (typeof (string), typeof (string), typeof (string), typeof (bool));
 			defaultAssociationsView.Model = defaultAssociationsStore;
+			defaultAssociationsView.SearchColumn = -1; // disable the interactive search
 			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("File Extension"), extensionTextRenderer, "text", COL_EXT);
 			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Namespace"), comboEditor, "text", COL_NS);
 			defaultAssociationsView.AppendColumn (GettextCatalog.GetString ("Prefix"), prefixTextRenderer, "text", COL_PREFIX);

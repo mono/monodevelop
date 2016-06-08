@@ -34,6 +34,10 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
+using Gtk;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -73,22 +77,89 @@ namespace MonoDevelop.CSharp.Completion
 
 			SyntaxKind kind;
 
-			public KeywordCompletionData (ICompletionDataKeyHandler keyHandler, SyntaxKind kind) : base (keyHandler)
+			protected readonly RoslynCodeCompletionFactory factory;
+
+			protected CSharpCompletionTextEditorExtension ext { get { return factory?.Ext; } }
+
+
+			public KeywordCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, SyntaxKind kind) : base (keyHandler)
 			{
 				this.kind = kind;
+				this.factory = factory;
 			}
 
-			public override Task<TooltipInformation> CreateTooltipInformation (bool smartWrap, System.Threading.CancellationToken cancelToken)
+			static bool IsBracketAlreadyInserted (CSharpCompletionTextEditorExtension ext)
 			{
-				if (kind == SyntaxKind.IdentifierToken)
-					return Task.FromResult (creator.GetKeywordTooltip (SyntaxFactory.Identifier (this.DisplayText)));
-				return Task.FromResult (creator.GetKeywordTooltip (SyntaxFactory.Token (kind)));
+				var Editor = ext.Editor;
+				int offset = Editor.CaretOffset;
+				while (offset < Editor.Length) {
+					char ch = Editor.GetCharAt (offset);
+					if (!char.IsLetterOrDigit (ch))
+						break;
+					offset++;
+				}
+				while (offset < Editor.Length) {
+					char ch = Editor.GetCharAt (offset);
+					if (!char.IsWhiteSpace (ch))
+						return ch == '(';
+					offset++;
+				}
+				return false;
+			}
+
+			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
+			{
+				if (kind == SyntaxKind.SizeOfKeyword || kind == SyntaxKind.NameOfKeyword || kind == SyntaxKind.TypeOfKeyword) {
+					string partialWord = GetCurrentWord (window, descriptor);
+					int skipChars = 0;
+					bool runCompletionCompletionCommand = false;
+					var method = Symbol as IMethodSymbol;
+
+					bool addParens = IdeApp.Preferences.AddParenthesesAfterCompletion;
+					bool addOpeningOnly = IdeApp.Preferences.AddOpeningOnly;
+					var Editor = ext.Editor;
+					var Policy = ext.FormattingPolicy;
+					string insertionText = this.CompletionText;
+
+					if (addParens && !IsBracketAlreadyInserted (ext)) {
+						var line = Editor.GetLine (Editor.CaretLine);
+						//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
+						//var end = line.Offset + line.Length;
+						//string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
+						bool addSpace = Policy.SpaceAfterMethodCallName && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
+
+						var keys = new [] { SpecialKey.Return, SpecialKey.Tab, SpecialKey.Space };
+						if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == ' ') {
+							if (addOpeningOnly) {
+								insertionText += addSpace ? " (|" : "(|";
+							} else {
+								insertionText += addSpace ? " (|)" : "(|)";
+							}
+						}
+						ka |= KeyActions.Ignore;
+					}
+
+					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, insertionText);
+					int offset = Editor.CaretOffset;
+					for (int i = skipChars - 1; i-- > 0;) {
+						Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset)));
+						offset++;
+					}
+
+					if (runCompletionCompletionCommand && IdeApp.Workbench != null) {
+						Application.Invoke (delegate {
+							ext.RunCompletionCommand ();
+						});
+					}
+				} else {
+					base.InsertCompletionText (window, ref ka, descriptor);
+				}
 			}
 		}
 
 		CompletionData ICompletionDataFactory.CreateKeywordCompletion (ICompletionDataKeyHandler keyHandler, string data, SyntaxKind syntaxKind)
 		{
-			return new KeywordCompletionData (keyHandler, syntaxKind) {
+			return new KeywordCompletionData (keyHandler, this, syntaxKind) {
 				CompletionText = data,
 				DisplayText = data,
 				Icon = "md-keyword"
@@ -138,7 +209,7 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				if (rightSideDescription == null) {
 					try {
-						rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
+						rightSideDescription = "<span size='small'>" + string.Format ("{0:" + format + "}", example) + "</span>";
 					} catch (Exception e) {
 						rightSideDescription = "";
 						LoggingService.LogError ("Format error.", e);

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<Template originator   = "Dave Thomas"
+          created      = "30/04/2015"
+          lastModified = "30/04/2015">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Portable Library</_Name>
+		<Category>crossplat/library/general</Category>
+		<Icon>md-crossplatform-pcl-project</Icon>
+		<Image id="md-crossplatform-pcl-project" />
+		<LanguageName>F#</LanguageName>
+		<_Description>Creates a F# PCL library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
+		<DefaultFilename>PortableLibrary</DefaultFilename>
+		<GroupId>md-project-portable-library</GroupId>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Component1.fs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." >
+			<Options Target = "Library"
+					 TargetFrameworkVersion = ".NETFramework,Version=v4.5,Profile=Profile78"
+					 FSharpPortable = "true"
+					 TargetFSharpCoreVersion = "3.78.3.1"
+					 TargetProfile = "netcore" />
+			<References>
+				<Reference type="Package" refto="FSharp.Core" HintPath = "$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll" />
+			</References>
+			<Files>
+				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
+		        <UnformattedFile name = "Component1.fs" AddStandardHeader="True">
+        <![CDATA[namespace ${Namespace}
+
+type Class1() = 
+    member this.X = "F#"
+]]></UnformattedFile>
+				<UnformattedFile name = "Script.fsx" AddStandardHeader="True">
+				<![CDATA[// Learn more about F# at http://fsharp.net. See the 'F# Tutorial' project
+// for more guidance on F# programming.
+
+#load "Component1.fs"
+open ${Namespace}
+]]></UnformattedFile>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

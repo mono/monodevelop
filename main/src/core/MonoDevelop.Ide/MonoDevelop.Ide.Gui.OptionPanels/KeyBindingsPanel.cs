@@ -87,12 +87,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			bindingTVCol.Title = GettextCatalog.GetString ("Key Binding");
 			CellRendererText bindingRenderer = new CellRendererText ();
 			bindingTVCol.PackStart (bindingRenderer, false);
-			bindingTVCol.SetCellDataFunc (bindingRenderer, delegate (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter) {
-				string binding = (model.GetValue (iter, bindingCol) as string) ?? "";
-				((CellRendererText)cell).Text = binding.Length > 0
-					? KeyBindingManager.BindingToDisplayLabel (binding, false)
-					: binding;
-			});
+			bindingTVCol.SetCellDataFunc (bindingRenderer, BindingTVDataFunc);
 			keyTreeView.AppendColumn (bindingTVCol);
 			
 			keyTreeView.AppendColumn (GettextCatalog.GetString ("Description"), new CellRendererText (), "text", descCol);
@@ -137,10 +132,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 					});
 				};
 			};
-			
+
+			keyTreeView.SearchColumn = -1; // disable the interactive search
+
 			//HACK: workaround for MD Bug 608021: Stetic loses values assigned to "new" properties of custom widget
 			conflicButton.Label = GettextCatalog.GetString ("_View Conflicts");
 			conflicButton.UseUnderline = true;
+		}
+
+		static void BindingTVDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			string binding = (model.GetValue (iter, bindingCol) as string) ?? "";
+			((CellRendererText)cell).Text = binding.Length > 0
+				? KeyBindingManager.BindingToDisplayLabel (binding, false)
+				: binding;
 		}
 
 		void Refilter ()
@@ -151,6 +156,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			if (keyStore.GetIterFirst (out iter))
 				Refilter (iter, allVisible);
 			keyTreeView.Model = filterModel;
+			keyTreeView.SearchColumn = -1; // disable the interactive search
 			keyTreeView.ExpandAll ();
 			keyTreeView.ColumnsAutosize ();
 		}

@@ -55,21 +55,16 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			var ct1 = new CellRendererText ();
 			var col1 = treeviewConventions.AppendColumn (GettextCatalog.GetString ("Rule"), ct1);
 			col1.Expand = true;
-			col1.SetCellDataFunc (ct1, delegate (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var rule = (NameConventionRule)model.GetValue (iter, 0);
-				ct1.Text = rule.Name;
-			});
+			col1.SetCellDataFunc (ct1, NameConventionRuleNameDataFunc);
 			
 			
 			var ct2 = new CellRendererText ();
 			var col2 = treeviewConventions.AppendColumn (GettextCatalog.GetString ("Example"), ct2);
 			col2.Expand = true;
-			col2.SetCellDataFunc (ct2, delegate (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var rule = (NameConventionRule)model.GetValue (iter, 0);
-				ct2.Text = rule.GetPreview ();
-			});
+			col2.SetCellDataFunc (ct2, NameConventionRulePreviewDataFunc);
 			
 			treeviewConventions.Model = treeStore;
+			treeviewConventions.SearchColumn = -1; // disable the interactive search
 			treeviewConventions.Selection.Changed += HandleSelectionChanged;
 			treeviewConventions.RowActivated += (o, args) => EditSelectedEntry ();
 			buttonEdit.Clicked += (o, s) => EditSelectedEntry ();
@@ -77,6 +72,18 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			buttonAdd.Clicked += (o, s) => AddEntry ();
 
 			HandleSelectionChanged (null, null);
+		}
+
+		static void NameConventionRuleNameDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var rule = (NameConventionRule)model.GetValue (iter, 0);
+			((CellRendererText)cell).Text = rule.Name;
+		}
+
+		static void NameConventionRulePreviewDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var rule = (NameConventionRule)model.GetValue (iter, 0);
+			((CellRendererText)cell).Text = rule.GetPreview ();
 		}
 
 		void HandleSelectionChanged (object sender, EventArgs e)

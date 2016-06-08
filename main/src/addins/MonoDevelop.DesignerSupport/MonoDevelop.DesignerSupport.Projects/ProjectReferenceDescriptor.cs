@@ -41,7 +41,19 @@ namespace MonoDevelop.DesignerSupport.Projects
 		{
 			this.pref = pref;
 		}
-		
+
+		[LocalizedCategory ("Reference")]
+		[LocalizedDisplayName ("Aliases")]
+		[LocalizedDescription ("A comma delimited list of aliases applied to this reference.")]
+		public string Aliases {
+			get {
+				return pref.Aliases;
+			}
+			set {
+				pref.Aliases = value;
+			}
+		}
+
 		[LocalizedCategory ("Reference")]
 		[LocalizedDisplayName ("Type")]
 		[LocalizedDescription ("Type of the reference.")]

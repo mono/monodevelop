@@ -81,7 +81,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			return
 				buildAction == MonoDevelop.Projects.BuildAction.Compile ||
-				buildAction == ApiDefinitionBuildAction || 
+				buildAction == ApiDefinitionBuildAction ||
+				buildAction == "BundleResource" ||
 				buildAction == "BMacInputs";
 		}
 	}

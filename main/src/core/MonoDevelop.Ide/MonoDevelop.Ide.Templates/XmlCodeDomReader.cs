@@ -32,6 +32,7 @@ using System.Reflection;
 using System.CodeDom;
 using System.Collections;
 using System.CodeDom.Compiler;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -57,7 +58,7 @@ namespace MonoDevelop.Ide.Templates
 				if (prop == null) {
 					if (att.Name.EndsWith ("Type") && type.GetProperty (att.Name.Substring (0, att.Name.Length - 4)) != null)
 						continue;
-					throw new InvalidOperationException ("Property '" + att.Name + "' not found in type '" + type + "'.");
+					throw new InvalidOperationException (GettextCatalog.GetString ("Property '{0}' not found in type '{1}'.", att.Name, type));
 				}
 				
 				Type ptype = null;
@@ -78,7 +79,7 @@ namespace MonoDevelop.Ide.Templates
 				
 				PropertyInfo prop = type.GetProperty (celem.Name);
 				if (prop == null)
-					throw new InvalidOperationException ("Property '" + celem.Name + "' not found in type '" + type + "'.");
+					throw new InvalidOperationException (GettextCatalog.GetString ("Property '{0}' not found in type '{1}'.", celem.Name, type));
 
 				if (typeof(IEnumerable).IsAssignableFrom (prop.PropertyType)) {
 					object col = prop.GetValue (ob, null);
@@ -117,7 +118,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 			
 			if (methods.Count == 0)
-				throw new InvalidOperationException ("Add method not found in " + type);
+				throw new InvalidOperationException (GettextCatalog.GetString ("Add method not found in {0}", type));
 			
 			foreach (XmlNode node in elem.ChildNodes) {
 				XmlElement celem = node as XmlElement;
@@ -150,7 +151,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			Type type = typeof(CodeObject).Assembly.GetType ("System.CodeDom.Code" + elemName);
 			if (type == null)
-				throw new InvalidOperationException ("Type not found for element: " + elemName);
+				throw new InvalidOperationException (GettextCatalog.GetString ("Type not found for element: {0}", elemName));
 			return type;
 		}
 	}

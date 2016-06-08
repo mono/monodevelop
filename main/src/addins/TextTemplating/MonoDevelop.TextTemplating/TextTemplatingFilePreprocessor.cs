@@ -65,7 +65,7 @@ namespace MonoDevelop.TextTemplating
 			}
 			catch (IOException ex) {
 				host.Errors.Add (new CompilerError {
-					ErrorText = "Could not read input file '" + file.FilePath + "':\n" + ex
+					ErrorText = GettextCatalog.GetString ("Could not read input file '{0}':\n{1}", file.FilePath, ex)
 				});
 				return;
 			}
@@ -101,7 +101,7 @@ namespace MonoDevelop.TextTemplating
 			}
 			catch (IOException ex) {
 				host.Errors.Add (new CompilerError {
-					ErrorText = "Could not write output file '" + outputFile + "':\n" + ex
+					ErrorText = GettextCatalog.GetString ("Could not write output file '{0}':\n{1}", outputFile, ex)
 				});
 			}
 		}

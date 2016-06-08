@@ -509,7 +509,7 @@ namespace Mono.TextEditor
 			if (link.GetStringFunc != null) {
 				link.Values = link.GetStringFunc (GetStringCallback);
 			}
-			if (!link.IsEditable && link.Values.Count > 0) {
+			if (!link.IsEditable && link.Values != null && link.Values.Count > 0) {
 				link.CurrentText = (string)link.Values [link.Values.Count - 1];
 			} else {
 				if (!link.PrimaryLink.IsInvalid) {
