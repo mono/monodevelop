@@ -1,8 +1,8 @@
 ﻿//
-// AssemblyReference.cs
+// CSharpProjectPropertiesTests.cs
 //
 // Author:
-//       Lluis Sanchez Gual <lluis@xamarin.com>
+//       David Karlaš <david.karlas@xamarin.com>
 //
 // Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
 //
@@ -24,42 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using System.Linq;
+using NUnit.Framework;
 
-namespace MonoDevelop.Projects
+namespace MonoDevelop.CSharpBinding
 {
-	public sealed class AssemblyReference
+	[TestFixture]
+	public class CSharpProjectPropertiesTests
 	{
-		public AssemblyReference (FilePath path, string aliases = null)
+		[Test]
+		public void TestRemovalOfDefineSymbolsDuplications()
 		{
-			FilePath = path;
-			Aliases = aliases ?? "";
+			Test ("  asd  ");
+			Test ("  asd  ;asd", "asd");
+			Test ("  asd  ;asd  ", "asd  ");
+			Test ("  asd");
+			Test (" asd ");
+			Test (" asd");
+			Test ("asd");
+			Test ("asd  ");
+			Test (" asd; asdR");
+			Test (" asd; asdR");
+			Test (" asd; asdR");
+			Test ("asd; asd ", "asd ");
+			Test ("asd; asd  ", "asd  ");
+			Test ("asd; asd  ;AA ", "asd  ;AA ");
+			Test ("asd; asd  ;AA", "asd  ;AA");
+			Test ("asd; TT\t\tasd", "TT\t\tasd");
+			Test ("asd; asd TT\t\t", "asd TT\t\t");
+			Test ("asd\t\t\t\tasd ", "asd ");
 		}
 
-		public FilePath FilePath { get; private set; }
-		public string Aliases { get; private set; }
-
-		public override bool Equals (object obj)
+		static void Test (string str, string expected = null)
 		{
-			var ar = obj as AssemblyReference;
-			return ar != null && ar.FilePath == FilePath && ar.Aliases == Aliases;
-		}
-
-		public override int GetHashCode ()
-		{
-			unchecked {
-				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
-			}
-		}
-
-		/// <summary>
-		/// Returns an enumerable collection of aliases. 
-		/// </summary>
-		public IEnumerable<string> EnumerateAliases ()
-		{
-			return Aliases.Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+			if (expected == null)
+				expected = str;
+			Assert.AreEqual (expected, MonoDevelop.CSharp.Project.CodeGenerationPanelWidget.RemoveDuplicateDefinedSymbols (str));
 		}
 	}
 }
+
