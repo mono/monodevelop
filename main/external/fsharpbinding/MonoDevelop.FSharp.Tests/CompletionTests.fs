@@ -63,6 +63,7 @@ type ``Completion Tests``() =
     [<TestCase("0uy|")>]
     [<TestCase("let x = [1..|")>]
     [<TestCase("[ for i in 0 .|. 99")>]
+    [<TestCase("for s|")>]
     member x.``Empty completions``(input: string) =
         let results = getCompletions input
         results |> should be Empty
