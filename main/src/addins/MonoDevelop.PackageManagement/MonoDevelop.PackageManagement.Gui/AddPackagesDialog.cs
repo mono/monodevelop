@@ -516,10 +516,10 @@ namespace MonoDevelop.PackageManagement
 		void InstallPackages (List<IPackageAction> packageActions)
 		{
 			if (packageActions.Count > 0) {
-				viewModel.OnInstallingSelectedPackages ();
-
 				ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (packageActions);
 				backgroundActionRunner.Run (progressMessage, packageActions);
+
+				viewModel.OnInstallingSelectedPackages ();
 				Close ();
 			}
 		}
