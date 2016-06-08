@@ -606,17 +606,18 @@ namespace MonoDevelop.VersionControl
 		public static ProgressMonitor GetProgressMonitor (string operation, VersionControlOperationType op)
 		{
 			IconId icon;
+			bool cancellable;
 			switch (op) {
-			case VersionControlOperationType.Pull: icon = Stock.PadDownload; break;
-			case VersionControlOperationType.Push: icon = Stock.PadUpload; break;
-			default: icon = "md-version-control"; break;
+			case VersionControlOperationType.Pull: icon = Stock.PadDownload; cancellable = true; break;
+			case VersionControlOperationType.Push: icon = Stock.PadUpload; cancellable = true; break;
+			default: icon = "md-version-control"; cancellable = false; break;
 			}
 
 			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", GettextCatalog.GetString ("Version Control"), "md-version-control", false, true);
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad));
+			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad, cancellable));
 			return mon;
 		}
 		

@@ -220,6 +220,30 @@
     <EmbeddedResource Include="maintoolbarbg~dark%402x.png">
       <LogicalName>maintoolbarbg~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16.png">
+      <LogicalName>status-stop-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16%402x.png">
+      <LogicalName>status-stop-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16~dark.png">
+      <LogicalName>status-stop-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16~dark%402x.png">
+      <LogicalName>status-stop-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16~dark~hover.png">
+      <LogicalName>status-stop-16~dark~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16~dark~hover%402x.png">
+      <LogicalName>status-stop-16~dark~hover@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16~hover.png">
+      <LogicalName>status-stop-16~hover.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\status-stop-16~hover%402x.png">
+      <LogicalName>status-stop-16~hover@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\" />
