@@ -116,7 +116,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.labelAuthor = new global::Gtk.Label ();
 			this.labelAuthor.Name = "labelAuthor";
 			this.labelAuthor.Xalign = 0F;
-			this.labelAuthor.LabelProp = "Author";
+			this.labelAuthor.LabelProp = global::Mono.Unix.Catalog.GetString ("Author");
 			this.labelAuthor.Selectable = true;
 			this.hbox2.Add (this.labelAuthor);
 			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.labelAuthor]));
@@ -127,7 +127,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.labelRevision = new global::Gtk.Label ();
 			this.labelRevision.Name = "labelRevision";
 			this.labelRevision.Xalign = 1F;
-			this.labelRevision.LabelProp = "Revision";
+			this.labelRevision.LabelProp = global::Mono.Unix.Catalog.GetString ("Revision");
 			this.labelRevision.Selectable = true;
 			this.hbox2.Add (this.labelRevision);
 			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.labelRevision]));
@@ -141,7 +141,7 @@ namespace MonoDevelop.VersionControl.Views
 			this.labelDate = new global::Gtk.Label ();
 			this.labelDate.Name = "labelDate";
 			this.labelDate.Xalign = 0F;
-			this.labelDate.LabelProp = "Date";
+			this.labelDate.LabelProp = global::Mono.Unix.Catalog.GetString ("Date");
 			this.labelDate.Selectable = true;
 			this.vbox5.Add (this.labelDate);
 			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.labelDate]));

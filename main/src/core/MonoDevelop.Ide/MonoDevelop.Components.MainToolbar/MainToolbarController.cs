@@ -594,7 +594,7 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.Workbench.Present ();
 			var text = lastSearchText;
 			var actDoc = IdeApp.Workbench.ActiveDocument;
-			if (actDoc != null && actDoc.Editor.IsSomethingSelected) {
+			if (actDoc != null && actDoc.Editor != null && actDoc.Editor.IsSomethingSelected) {
 				string selected = actDoc.Editor.SelectedText;
 				int whitespaceIndex = selected.TakeWhile (c => !char.IsWhiteSpace (c)).Count ();
 				text = selected.Substring (0, whitespaceIndex);

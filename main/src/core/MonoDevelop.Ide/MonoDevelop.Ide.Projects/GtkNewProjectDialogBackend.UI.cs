@@ -169,6 +169,7 @@ namespace MonoDevelop.Ide.Projects
 			templateCategoriesTreeView.BorderWidth = 0;
 			templateCategoriesTreeView.HeadersVisible = false;
 			templateCategoriesTreeView.Model = templateCategoriesListStore;
+			templateCategoriesTreeView.SearchColumn = -1; // disable the interactive search
 			templateCategoriesTreeView.AppendColumn (CreateTemplateCategoriesTreeViewColumn ());
 			templateCategoriesScrolledWindow.Add (templateCategoriesTreeView);
 			templateCategoriesBgBox.Add (templateCategoriesScrolledWindow);
@@ -189,6 +190,7 @@ namespace MonoDevelop.Ide.Projects
 			templatesTreeView.Name = "templatesTreeView";
 			templatesTreeView.HeadersVisible = false;
 			templatesTreeView.Model = templatesListStore;
+			templatesTreeView.SearchColumn = -1; // disable the interactive search
 			templatesTreeView.AppendColumn (CreateTemplateListTreeViewColumn ());
 			templatesScrolledWindow.Add (templatesTreeView);
 			templatesBgBox.Add (templatesScrolledWindow);

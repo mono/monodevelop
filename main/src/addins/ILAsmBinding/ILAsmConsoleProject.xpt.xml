@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
 		<Category>other/net/general</Category>
-		<Icon>md-project-console</Icon>
+		<Icon>md-console-project</Icon>
 		<Image id="md-console-project" />
 		<LanguageName>IL</LanguageName>
 		<_Description>IL Console Project</_Description>

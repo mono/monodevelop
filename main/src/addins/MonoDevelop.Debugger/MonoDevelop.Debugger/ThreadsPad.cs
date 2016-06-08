@@ -37,7 +37,8 @@ using MonoDevelop.Components;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
-
+using MonoDevelop.Components.AutoTest;
+using System.ComponentModel;
 
 namespace MonoDevelop.Debugger
 {
@@ -81,6 +82,9 @@ namespace MonoDevelop.Debugger
 			this.ShadowType = ShadowType.None;
 
 			store = new TreeStore (typeof(string), typeof (string), typeof(string), typeof(object), typeof(int), typeof(string));
+			SemanticModelAttribute modelAttr = new SemanticModelAttribute ("store__Icon", "store__Id","store_Name",
+				"store_Object", "store_Weight", "store_Location");
+			TypeDescriptor.AddAttributes (store, modelAttr);
 
 			tree = new PadTreeView (store);
 			tree.RulesHint = true;
@@ -203,7 +207,7 @@ namespace MonoDevelop.Debugger
 
 			foreach (var thread in threads) {
 				ThreadInfo activeThread = DebuggingService.DebuggerSession.ActiveThread;
-				var name = thread.Name == null && thread.Id == 1 ? "Main Thread" : thread.Name;
+				var name = thread.Name == null && thread.Id == 1 ? GettextCatalog.GetString("Main Thread") : thread.Name;
 				var weight = thread == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
 				var icon = thread == activeThread ? Gtk.Stock.GoForward : null;
 

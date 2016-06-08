@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 
 				if (result.Count == 0) {
 					foreach (var handler in nonExclusiveHandlers) {
-						var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
+						var handlerResult = await handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken);
 						//if (handlerResult != null) {
 						//	Console.WriteLine ("-----" + handler);
 						//	foreach (var item in handlerResult) {
@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					if (result.Count > 0) {
 						info = info.WithCompletionTriggerReason (CompletionTriggerReason.RetriggerCommand);
 						foreach (var handler in toRetriggerHandlers) {
-							var handlerResult = handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken).Result;
+							var handlerResult = await handler.GetCompletionDataAsync (result, this, completionContext, info, ctx, cancellationToken);
 							if (handlerResult != null)
 								result.AddRange (handlerResult);
 						}

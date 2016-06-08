@@ -258,6 +258,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 
 			inspectEditor = TextEditorFactory.CreateNewEditor ();
+			inspectEditor.ContextMenuPath = "/MonoDevelop/AssemblyBrowser/EditorContextMenu";
 			inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 
 			//inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
@@ -465,9 +466,7 @@ namespace MonoDevelop.AssemblyBrowser
 					if (p == null)
 						continue;
 					AppendTypeReference (result, p.Type);
-					if (p.IsOut)
-						result.Append ("&");
-					if (p.IsRef) {
+					if (p.IsRef || p.IsOut) {
 						result.Append ("@");
 					}
 				}

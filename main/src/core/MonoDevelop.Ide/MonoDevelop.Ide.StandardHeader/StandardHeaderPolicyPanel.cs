@@ -97,6 +97,7 @@ namespace MonoDevelop.Ide.StandardHeader
 				store.AppendValues ("${"+template+"}"); 
 			}
 			this.treeviewTemplates.Model = store;
+			this.treeviewTemplates.SearchColumn = -1; // disable the interactive search
 			treeviewTemplates.RowActivated += TreeviewTemplates_RowActivated;
 			var w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.GtkScrolledWindow1]));
 			w4.Expand = false;

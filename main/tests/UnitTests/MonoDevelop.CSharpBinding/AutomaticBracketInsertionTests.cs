@@ -464,6 +464,25 @@ class MyClass
 			Assert.AreEqual ("FooBar", completion); 
 		}
 
+		[Test]
+		public async Task TestBug41308 ()
+		{
+			string completion = await Test (@"
+class MyClass
+{
+	void Test<T> (T t)
+	{
+	}
+
+	void FooBar ()
+	{
+		$
+	}
+}", "MyClass", "Test");
+			Assert.AreEqual ("Test(|);", completion);
+		}
+
+
 	}
 }
 

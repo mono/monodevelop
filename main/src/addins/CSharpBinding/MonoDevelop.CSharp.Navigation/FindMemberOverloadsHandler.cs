@@ -58,14 +58,22 @@ namespace MonoDevelop.CSharp.Navigation
 				switch (symbol.Kind) {
 				case SymbolKind.Method:
 					foreach (var method in symbol.ContainingType.GetMembers (symbol.Name).OfType<IMethodSymbol> ()) {
-						foreach (var loc in method.Locations)
+						foreach (var loc in method.Locations) {
+							if (monitor.CancellationToken.IsCancellationRequested)
+								return;
+							
 							monitor.ReportResult (new MemberReference (method, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+						}
 					}
 					break;
 				case SymbolKind.Property:
 					foreach (var property in symbol.ContainingType.GetMembers ().OfType<IPropertySymbol> () .Where (p => p.IsIndexer)) {
-						foreach (var loc in property.Locations)
+						foreach (var loc in property.Locations) {
+							if (monitor.CancellationToken.IsCancellationRequested)
+								return;
+							
 							monitor.ReportResult (new MemberReference (property, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+						}
 					}
 					break;
 

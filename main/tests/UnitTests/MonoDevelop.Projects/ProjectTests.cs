@@ -523,7 +523,7 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var p = (DotNetProject) sol.FindProjectByName ("PortableLibrary");
-			var refs = (await p.GetReferencedAssemblies (p.Configurations [0].Selector)).Select (r => Path.GetFileName (r)).ToArray ();
+			var refs = (await p.GetReferencedAssemblies (p.Configurations [0].Selector)).Select (r => r.FilePath.FileName).ToArray ();
 		}
 
 		[Test]
@@ -586,7 +586,7 @@ namespace MonoDevelop.Projects
 
 			var refs = (await p.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
 
-			Assert.IsTrue (refs.Any (r => r.Contains ("System.Xml.Linq.dll")));
+			Assert.IsTrue (refs.Any (r => r.FilePath.FileName == "System.Xml.Linq.dll"));
 		}
 
 		[Test]
@@ -607,7 +607,7 @@ namespace MonoDevelop.Projects
 			var refs = (await p.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
 
 			// Check that the in-memory project data is used when the builder is loaded for the first time.
-			Assert.IsTrue (refs.Any (r => r.Contains ("System.Xml.Linq.dll")));
+			Assert.IsTrue (refs.Any (r => r.FilePath.FileName == "System.Xml.Linq.dll"));
 		}
 
 		[Test]
@@ -713,24 +713,6 @@ namespace MonoDevelop.Projects
 			var savedXml = File.ReadAllText (p.FileName);
 
 			Assert.AreEqual (refXml, savedXml);
-		}
-
-		[Test]
-		public async Task ReferenceWithVersion ()
-		{
-			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
-			var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
-
-			var p = (DotNetProject)sol.Items [0];
-			var reference = ProjectReference.CreateAssemblyReference ("System.Core, Version=4.0.0.0");
-			p.References.Add (reference);
-			Assert.AreEqual (string.Empty, reference.ValidationErrorMessage);
-			p.References.Remove (reference);
-
-
-			reference = ProjectReference.CreateAssemblyReference ("System.Core, Version=55.44.22.11");//non-existing version
-			p.References.Add (reference);
-			Assert.AreNotEqual (string.Empty, reference.ValidationErrorMessage);//Not equal...
 		}
 
 		[Test]

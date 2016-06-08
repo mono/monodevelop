@@ -219,6 +219,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public void BeginProgress ()
 		{
 			oldFraction = 0.0;
+			progressLayer.RemoveAllAnimations ();
+
 			progressLayer.Hidden = false;
 			progressLayer.Opacity = 1;
 			progressLayer.Frame = new CGRect (0, 0, 0, barHeight);
@@ -226,6 +228,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public void SetProgressFraction (double work)
 		{
+			if (oldFraction == work)
+				return;
+
 			progressMarks.Push (work);
 			if (!inProgress) {
 				inProgress = true;
@@ -245,18 +250,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		CAAnimation CreateMoveAndGrowAnimation (CALayer progress, double growToFraction)
 		{
-			CAAnimationGroup grp = CAAnimationGroup.CreateAnimation ();
-			grp.Duration = 0.2;
-			grp.FillMode = CAFillMode.Forwards;
-			grp.RemovedOnCompletion = false;
-
 			CABasicAnimation grow = CABasicAnimation.FromKeyPath ("bounds");
+			grow.Duration = 0.2;
+			grow.FillMode = CAFillMode.Forwards;
+			grow.RemovedOnCompletion = false;
 			grow.From = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)oldFraction, barHeight));
 			grow.To = NSValue.FromCGRect (new CGRect (0, 0, Frame.Width * (nfloat)growToFraction, barHeight));
-			grp.Animations = new [] {
-				grow,
-			};
-			return grp;
+			return grow;
 		}
 
 		CAAnimation CreateAutoPulseAnimation ()
@@ -273,8 +273,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		void AttachFadeoutAnimation (CALayer progress, CAAnimation animation, Func<bool> fadeoutVerifier)
 		{
 			animation.AnimationStopped += (sender, e) => {
-				if (!fadeoutVerifier ())
+				if (!fadeoutVerifier ()) {
 					return;
+				}
+
+				if (!e.Finished) {
+					return;
+				}
 
 				CABasicAnimation fadeout = CABasicAnimation.FromKeyPath ("opacity");
 				fadeout.From = NSNumber.FromDouble (1);
@@ -286,9 +291,17 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					if (!e2.Finished)
 						return;
 
+					// Reset all the properties.
 					inProgress = false;
-					progress.Opacity = 0;
+
+					progress.Hidden = true;
+
+					progress.Opacity = 1;
+					progress.Frame = new CGRect (0, 0, 0, barHeight);
 					progress.RemoveAllAnimations ();
+					oldFraction = 0.0;
+
+					progress.Hidden = false;
 				};
 				progress.Name = ProgressLayerFadingId;
 				progress.AddAnimation (fadeout, "opacity");

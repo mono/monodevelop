@@ -72,7 +72,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			listStore = new ListStore (typeof(SolutionFolderItem), typeof(bool), typeof(string));
 			treeItems.Model = listStore;
-			
+			treeItems.SearchColumn = -1; // disable the interactive search
+
 			CellRendererToggle crt = new CellRendererToggle ();
 			treeItems.AppendColumn ("", crt, "active", 1);
 			treeItems.AppendColumn (GettextCatalog.GetString ("Project"), new CellRendererText (), "text", 2);

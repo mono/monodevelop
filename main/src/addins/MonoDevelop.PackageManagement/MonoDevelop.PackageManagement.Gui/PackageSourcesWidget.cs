@@ -50,6 +50,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			packageSourcesStore = new ListStore (typeof (object), typeof (bool), typeof (IconId), typeof (PackageSourceViewModel));
 			packageSourcesTreeView.Model = packageSourcesStore;
+			packageSourcesTreeView.SearchColumn = -1; // disable the interactive search
 			packageSourcesTreeView.AppendColumn (CreateTreeViewColumn ());
 			packageSourcesTreeView.Selection.Changed += PackageSourcesTreeViewSelectionChanged;
 			packageSourcesTreeView.RowActivated += PackageSourcesTreeViewRowActivated;

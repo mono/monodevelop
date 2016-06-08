@@ -208,30 +208,6 @@
     <EmbeddedResource Include="icons\project-locale-16~dark~sel%402x.png">
       <LogicalName>project-locale-16~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32.png">
-      <LogicalName>project-locale-overlay-32.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32%402x.png">
-      <LogicalName>project-locale-overlay-32@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32~dark.png">
-      <LogicalName>project-locale-overlay-32~dark.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32~dark%402x.png">
-      <LogicalName>project-locale-overlay-32~dark@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32~sel.png">
-      <LogicalName>project-locale-overlay-32~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32~sel%402x.png">
-      <LogicalName>project-locale-overlay-32~sel@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32~dark~sel.png">
-      <LogicalName>project-locale-overlay-32~dark~sel.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\project-locale-overlay-32~dark~sel%402x.png">
-      <LogicalName>project-locale-overlay-32~dark~sel@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\file-locale-16.png">
       <LogicalName>file-locale-16.png</LogicalName>
     </EmbeddedResource>
@@ -313,17 +289,42 @@
     <EmbeddedResource Include="icons\prefs-language-16~sel%402x.png">
       <LogicalName>prefs-language-16~sel@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale-project.png">
-      <LogicalName>locale-project.png</LogicalName>
+	
+    <EmbeddedResource Include="templates\images\project-locale-template.png">
+      <LogicalName>project-locale-template.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale-project%402x.png">
-      <LogicalName>locale-project@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-locale-template%402x.png">
+      <LogicalName>project-locale-template@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale-project~dark.png">
-      <LogicalName>locale-project~dark.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-locale-template~dark.png">
+      <LogicalName>project-locale-template~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale-project~dark%402x.png">
-      <LogicalName>locale-project~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-locale-template~dark%402x.png">
+      <LogicalName>project-locale-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32.png">
+      <LogicalName>project-locale-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32%402x.png">
+      <LogicalName>project-locale-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32~dark.png">
+      <LogicalName>project-locale-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32~dark%402x.png">
+      <LogicalName>project-locale-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32~sel.png">
+      <LogicalName>project-locale-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32~sel%402x.png">
+      <LogicalName>project-locale-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32~dark~sel.png">
+      <LogicalName>project-locale-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-locale-32~dark~sel%402x.png">
+      <LogicalName>project-locale-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

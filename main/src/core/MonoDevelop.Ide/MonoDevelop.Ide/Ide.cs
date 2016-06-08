@@ -198,10 +198,15 @@ namespace MonoDevelop.Ide
 			
 			FileService.ErrorHandler = FileServiceErrorHandler;
 		
-			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 5);
+			monitor.BeginTask (GettextCatalog.GetString("Loading Workbench"), 6);
 			Counters.Initialization.Trace ("Loading Commands");
 			
 			commandService.LoadCommands ("/MonoDevelop/Ide/Commands");
+			monitor.Step (1);
+
+			// Before startup commands.
+			Counters.Initialization.Trace ("Running Pre-Startup Commands");
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/PreStartupHandlers", OnExtensionChanged);
 			monitor.Step (1);
 
 			Counters.Initialization.Trace ("Initializing Workbench");
@@ -388,6 +393,30 @@ namespace MonoDevelop.Ide
 		{
 			if (workbench.Close ()) {
 				Gtk.Application.Quit ();
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Restarts MonoDevelop
+		/// </summary>
+		/// <returns> false if the user cancels exiting. </returns>
+		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
+		/// <remarks>
+		/// Starts a new MonoDevelop instance in a new process and 
+		/// stops the current MonoDevelop instance.
+		/// </remarks>
+		public static bool Restart (bool reopenWorkspace = false)
+		{
+			if (Exit ()) {
+				try {
+					DesktopService.RestartIde (reopenWorkspace);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Restarting IDE failed", ex);
+				}
+				// return true here even if DesktopService.RestartIde has failed,
+				// because the Ide has already been closed.
 				return true;
 			}
 			return false;

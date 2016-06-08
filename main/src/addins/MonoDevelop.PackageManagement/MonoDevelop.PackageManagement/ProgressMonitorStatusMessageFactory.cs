@@ -24,9 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -36,40 +34,40 @@ namespace MonoDevelop.PackageManagement
 		public static ProgressMonitorStatusMessage CreateInstallingSinglePackageMessage (string packageId)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Adding {0}...", packageId),
-				GetString ("{0} successfully added.", packageId),
-				GetString ("Could not add {0}.", packageId),
-				GetString ("{0} added with warnings.", packageId)
+				GettextCatalog.GetString ("Adding {0}...", packageId),
+				GettextCatalog.GetString ("{0} successfully added.", packageId),
+				GettextCatalog.GetString ("Could not add {0}.", packageId),
+				GettextCatalog.GetString ("{0} added with warnings.", packageId)
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateInstallingProjectTemplatePackagesMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Adding packages..."),
-				GetString ("Packages successfully added."),
-				GetString ("Could not add packages."),
-				GetString ("Packages added with warnings.")
+				GettextCatalog.GetString ("Adding packages..."),
+				GettextCatalog.GetString ("Packages successfully added."),
+				GettextCatalog.GetString ("Could not add packages."),
+				GettextCatalog.GetString ("Packages added with warnings.")
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateInstallingMultiplePackagesMessage (int count)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Adding {0} packages...", count),
-				GetString ("{0} packages successfully added.", count),
-				GetString ("Could not add packages."),
-				GetString ("{0} packages added with warnings.", count)
+				GettextCatalog.GetString ("Adding {0} packages...", count),
+				GettextCatalog.GetString ("{0} packages successfully added.", count),
+				GettextCatalog.GetString ("Could not add packages."),
+				GettextCatalog.GetString ("{0} packages added with warnings.", count)
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInSolutionMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Updating packages in solution..."),
-				GetString ("Packages successfully updated."),
-				GetString ("Could not update packages."),
-				GetString ("Packages updated with warnings.")
+				GettextCatalog.GetString ("Updating packages in solution..."),
+				GettextCatalog.GetString ("Packages successfully updated."),
+				GettextCatalog.GetString ("Could not update packages."),
+				GettextCatalog.GetString ("Packages updated with warnings.")
 			);
 		}
 
@@ -78,18 +76,18 @@ namespace MonoDevelop.PackageManagement
 			ProgressMonitorStatusMessage message = CreateUpdatingPackagesInSolutionMessage ();
 			return new UpdatePackagesProgressMonitorStatusMessage (
 				projects,
-				GetString ("Packages are up to date."),
-				GetString ("No updates found but warnings were reported."),
+				GettextCatalog.GetString ("Packages are up to date."),
+				GettextCatalog.GetString ("No updates found but warnings were reported."),
 				message);
 		}
 
 		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage (int count)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Updating {0} packages in project...", count),
-				GetString ("{0} packages successfully updated.", count),
-				GetString ("Could not update packages."),
-				GetString ("{0} packages updated with warnings.", count)
+				GettextCatalog.GetString ("Updating {0} packages in project...", count),
+				GettextCatalog.GetString ("{0} packages successfully updated.", count),
+				GettextCatalog.GetString ("Could not update packages."),
+				GettextCatalog.GetString ("{0} packages updated with warnings.", count)
 			);
 		}
 
@@ -98,28 +96,28 @@ namespace MonoDevelop.PackageManagement
 			ProgressMonitorStatusMessage message = CreateUpdatingPackagesInProjectMessage (count);
 			return new UpdatePackagesProgressMonitorStatusMessage (
 				project,
-				GetString ("Packages are up to date."),
-				GetString ("No updates found but warnings were reported."),
+				GettextCatalog.GetString ("Packages are up to date."),
+				GettextCatalog.GetString ("No updates found but warnings were reported."),
 				message);
 		}
 
 		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Updating packages in project..."),
-				GetString ("Packages successfully updated."),
-				GetString ("Could not update packages."),
-				GetString ("Packages updated with warnings.")
+				GettextCatalog.GetString ("Updating packages in project..."),
+				GettextCatalog.GetString ("Packages successfully updated."),
+				GettextCatalog.GetString ("Could not update packages."),
+				GettextCatalog.GetString ("Packages updated with warnings.")
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateUpdatingSinglePackageMessage (string packageId)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Updating {0}...", packageId),
-				GetString ("{0} successfully updated.", packageId),
-				GetString ("Could not update {0}.", packageId),
-				GetString ("{0} updated with warnings.", packageId)
+				GettextCatalog.GetString ("Updating {0}...", packageId),
+				GettextCatalog.GetString ("{0} successfully updated.", packageId),
+				GettextCatalog.GetString ("Could not update {0}.", packageId),
+				GettextCatalog.GetString ("{0} updated with warnings.", packageId)
 			);
 		}
 
@@ -128,99 +126,89 @@ namespace MonoDevelop.PackageManagement
 			ProgressMonitorStatusMessage message = CreateUpdatingSinglePackageMessage (packageId);
 			return new UpdatePackagesProgressMonitorStatusMessage (
 				project,
-				GetString ("{0} is up to date.", packageId),
-				GetString ("No update found but warnings were reported."),
+				GettextCatalog.GetString ("{0} is up to date.", packageId),
+				GettextCatalog.GetString ("No update found but warnings were reported."),
 				message);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRemoveSinglePackageMessage (string packageId)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Removing {0}...", packageId),
-				GetString ("{0} successfully removed.", packageId),
-				GetString ("Could not remove {0}.", packageId),
-				GetString ("{0} removed with warnings.", packageId)
+				GettextCatalog.GetString ("Removing {0}...", packageId),
+				GettextCatalog.GetString ("{0} successfully removed.", packageId),
+				GettextCatalog.GetString ("Could not remove {0}.", packageId),
+				GettextCatalog.GetString ("{0} removed with warnings.", packageId)
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRestoringPackagesInSolutionMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Restoring packages for solution..."),
-				GetString ("Packages successfully restored."),
-				GetString ("Could not restore packages."),
-				GetString ("Packages restored with warnings.")
+				GettextCatalog.GetString ("Restoring packages for solution..."),
+				GettextCatalog.GetString ("Packages successfully restored."),
+				GettextCatalog.GetString ("Could not restore packages."),
+				GettextCatalog.GetString ("Packages restored with warnings.")
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRestoringPackagesBeforeUpdateMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Restoring packages before update..."),
-				GetString ("Packages successfully restored."),
-				GetString ("Could not restore packages."),
-				GetString ("Packages restored with warnings.")
+				GettextCatalog.GetString ("Restoring packages before update..."),
+				GettextCatalog.GetString ("Packages successfully restored."),
+				GettextCatalog.GetString ("Could not restore packages."),
+				GettextCatalog.GetString ("Packages restored with warnings.")
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRestoringPackagesInProjectMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Restoring packages for project..."),
-				GetString ("Packages successfully restored."),
-				GetString ("Could not restore packages."),
-				GetString ("Packages restored with warnings.")
+				GettextCatalog.GetString ("Restoring packages for project..."),
+				GettextCatalog.GetString ("Packages successfully restored."),
+				GettextCatalog.GetString ("Could not restore packages."),
+				GettextCatalog.GetString ("Packages restored with warnings.")
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateCheckingPackageCompatibilityMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Checking package compatibility with new target framework..."),
-				GetString ("Packages are compatible."),
-				GetString ("Could not check package compatibility."),
-				GetString ("Package retargeting required.")
+				GettextCatalog.GetString ("Checking package compatibility with new target framework..."),
+				GettextCatalog.GetString ("Packages are compatible."),
+				GettextCatalog.GetString ("Could not check package compatibility."),
+				GettextCatalog.GetString ("Package retargeting required.")
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRetargetingSinglePackageMessage (string packageId)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Retargeting {0}...", packageId),
-				GetString ("{0} successfully retargeted.", packageId),
-				GetString ("Could not retarget {0}.", packageId),
-				GetString ("{0} retargeted with warnings.", packageId)
+				GettextCatalog.GetString ("Retargeting {0}...", packageId),
+				GettextCatalog.GetString ("{0} successfully retargeted.", packageId),
+				GettextCatalog.GetString ("Could not retarget {0}.", packageId),
+				GettextCatalog.GetString ("{0} retargeted with warnings.", packageId)
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRetargetingPackagesInProjectMessage (int count)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Retargeting {0} packages...", count),
-				GetString ("{0} packages successfully retargeted.", count),
-				GetString ("Could not retarget packages."),
-				GetString ("{0} packages retargeted with warnings.", count)
+				GettextCatalog.GetString ("Retargeting {0} packages...", count),
+				GettextCatalog.GetString ("{0} packages successfully retargeted.", count),
+				GettextCatalog.GetString ("Could not retarget packages."),
+				GettextCatalog.GetString ("{0} packages retargeted with warnings.", count)
 			);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRetargetingPackagesInProjectMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Retargeting packages..."),
-				GetString ("Packages successfully retargeted."),
-				GetString ("Could not retarget packages."),
-				GetString ("Packages retarget with warnings.")
+				GettextCatalog.GetString ("Retargeting packages..."),
+				GettextCatalog.GetString ("Packages successfully retargeted."),
+				GettextCatalog.GetString ("Could not retarget packages."),
+				GettextCatalog.GetString ("Packages retarget with warnings.")
 			);
-		}
-
-		static string GetString (string phrase)
-		{
-			return GettextCatalog.GetString (phrase);
-		}
-
-		static string GetString (string phrase, object arg0)
-		{
-			return GettextCatalog.GetString (phrase, arg0);
 		}
 	}
 }

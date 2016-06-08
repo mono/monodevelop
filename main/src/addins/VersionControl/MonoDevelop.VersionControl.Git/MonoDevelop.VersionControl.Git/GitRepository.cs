@@ -658,14 +658,14 @@ namespace MonoDevelop.VersionControl.Git
 						// TODO: Remove me once https://github.com/libgit2/libgit2/pull/3137 goes in.
 						if (string.Equals (e.Message, "early EOF", StringComparison.OrdinalIgnoreCase))
 							message = GettextCatalog.GetString ("Unable to authorize credentials for the repository.");
+						else if (e.Message.StartsWith ("Invalid Content-Type", StringComparison.OrdinalIgnoreCase))
+							message = GettextCatalog.GetString ("Not a valid git repository.");
 						else if (string.Equals (e.Message, "Received unexpected content-type", StringComparison.OrdinalIgnoreCase))
 							message = GettextCatalog.GetString ("Not a valid git repository.");
 						else
 							message = e.Message;
 
-						if (monitor != null)
-							monitor.ReportError (message, null);
-						retry = false;
+						throw new VersionControlException (message);
 					}
 				} while (retry);
 			}

@@ -19,6 +19,7 @@
     <FFF>unknown</FFF>
     <FFF Condition=" '$(FOO)' == 'yes' ">yes_value</FFF>
     <GGG>yes</GGG>
+    <Imported>no</Imported>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(CCC)' == 'yes' ">
   	<DDD>yes_value</DDD>
@@ -68,4 +69,5 @@
     <Compile Include="Program11_$(HHH).cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="imported.targets" />
 </Project>

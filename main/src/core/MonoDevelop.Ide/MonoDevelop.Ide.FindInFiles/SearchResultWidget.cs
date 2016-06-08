@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -395,8 +396,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNamePixbufRenderer.Image = DesktopService.GetIconForFile (searchResult.FileName, IconSize.Menu);
 		}
 
-
-
 		static string MarkupText (string text, bool didRead)
 		{
 			return string.Format ("<span weight=\"{1}\">{0}</span>", GLib.Markup.EscapeText (text), didRead ? "normal" : "bold");
@@ -543,14 +542,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			}
 			string textMarkup = markupCache.FirstOrDefault (t =>t.Item1 == searchResult)?.Item2;
-
+			bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
+			if (isSelected)
+				textMarkup = null;
 			if (textMarkup == null) {
 				var doc = GetDocument (searchResult);
 				if (doc == null) {
 					textMarkup = "Can't create document for:" + searchResult.FileName;
 					goto end;
 				}
-				bool isSelected = treeviewSearchResults.Selection.IterIsSelected (iter);
 				int lineNumber, startIndex = 0, endIndex = 0;
 				try {
 					lineNumber = doc.OffsetToLineNumber (searchResult.Offset); 
@@ -572,8 +572,13 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (col + searchResult.Length < lineText.Length)
 					lineText = doc.GetTextAt (line.Offset, line.Length);
 
-				var markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent);
-				markup = AdjustColors(markup);
+				string markup;
+				if (isSelected) {
+					markup = Ambience.EscapeText (doc.GetTextAt (line.Offset + indent, line.Length - indent));
+				} else {
+					markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent);
+					markup = AdjustColors (markup);
+				}
 
 				if (col >= 0) {
 					uint start;
@@ -609,15 +614,19 @@ namespace MonoDevelop.Ide.FindInFiles
 						if (startIndex != endIndex) {
 							textMarkup = PangoHelper.ColorMarkupBackground (textMarkup, (int)startIndex, (int)endIndex, searchColor);
 						}
+					} else {
+						textMarkup = PangoHelper.AddBold (textMarkup, (int)startIndex, (int)endIndex);
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error whil setting the text renderer markup to: " + markup, e);
 				}
 			end:
 				textMarkup = textMarkup.Replace ("\t", new string (' ', doc.Options.TabSize));
-				markupCache.Add (Tuple.Create(searchResult, textMarkup));
-				if (markupCache.Count > 100)
-					markupCache.RemoveAt (0);
+				if (!isSelected) {
+					markupCache.Add (Tuple.Create (searchResult, textMarkup));
+					if (markupCache.Count > 100)
+						markupCache.RemoveAt (0);
+				}
 			}
 			textRenderer.Markup = textMarkup;
 		}
@@ -677,7 +686,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (content == null)
 					return null;
 
-				doc = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (content), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
+				doc = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (content.ReadToEnd ()), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
 
 				documents [result.FileName] = doc;	
 			}
@@ -926,8 +935,72 @@ namespace MonoDevelop.Ide.FindInFiles
 				markupBuilder.Append (ch);
 				i++;
 			}
-			if (!closed && !opened)
+			if (!closed && opened)
 				markupBuilder.Append ("</span>");
+			return markupBuilder.ToString ();
+		}
+
+		public static string AddBold (string textMarkup, int startIndex, int endIndex)
+		{
+			var markupBuilder = new StringBuilder ();
+			bool inMarkup = false, inEntity = false, closed = false, opened = false;
+			int i = 0;
+			for (int j = 0; j < textMarkup.Length; j++) {
+				var ch = textMarkup [j];
+				if (inEntity) {
+					if (ch == ';') {
+						inEntity = false;
+						i++;
+					}
+					markupBuilder.Append (ch);
+					continue;
+				}
+				if (inMarkup) {
+					if (ch == '>') {
+						inMarkup = false;
+						markupBuilder.Append (ch);
+						if (i > startIndex && markupBuilder.ToString ().EndsWith ("</span>", StringComparison.Ordinal)) {
+							if (opened && !closed) {
+								markupBuilder.Append ("</span>");
+								opened = false;
+							}
+							markupBuilder.Append (textMarkup.Substring (j + 1));
+							return AddBold (markupBuilder.ToString (), i, endIndex);
+						}
+						continue;
+					}
+					markupBuilder.Append (ch);
+					continue;
+				}
+				if (i == endIndex) {
+					if (opened) {
+						markupBuilder.Append ("</b>");
+						opened = false;
+					}
+					markupBuilder.Append (textMarkup.Substring (j));
+					closed = true;
+					break;
+				}
+
+				if (ch == '<') {
+					inMarkup = true;
+					markupBuilder.Append (ch);
+					continue;
+				}
+				if (i == startIndex) {
+					opened = true;
+					markupBuilder.Append ("<b>");
+				}
+				if (ch == '&') {
+					inEntity = true;
+					markupBuilder.Append (ch);
+					continue;
+				}
+				markupBuilder.Append (ch);
+				i++;
+			}
+			if (!closed && opened)
+				markupBuilder.Append ("</b>");
 			return markupBuilder.ToString ();
 		}
 	}

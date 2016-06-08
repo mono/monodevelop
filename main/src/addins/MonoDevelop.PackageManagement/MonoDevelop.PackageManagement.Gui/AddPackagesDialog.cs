@@ -660,14 +660,9 @@ namespace MonoDevelop.PackageManagement
 
 		void UpdateAddPackagesButton ()
 		{
-			if (PackagesCheckedCount > 1) {
-				addPackagesButton.Label = Catalog.GetString ("Add Packages");
-			} else {
-				if (OlderPackageInstalledThanPackageSelected ()) {
-					addPackagesButton.Label = Catalog.GetString ("Update Package");
-				} else {
-					addPackagesButton.Label = Catalog.GetString ("Add Package");
-				}
+			string label = Catalog.GetPluralString ("Add Package", "Add Packages", PackagesCheckedCount);
+			if (PackagesCheckedCount <= 1 && OlderPackageInstalledThanPackageSelected ()) {
+				label = Catalog.GetString ("Update Package");
 			}
 			addPackagesButton.Sensitive = IsAddPackagesButtonEnabled ();
 		}

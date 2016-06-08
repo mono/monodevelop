@@ -93,6 +93,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var list = new List<CompletionData> ();
 
 			var newExpression = GetObjectCreationNewExpression (ctx.SyntaxTree, completionContext.Position, cancellationToken);
+
 			if (newExpression == null) {
 				if (ctx.SyntaxTree.IsInNonUserCode(completionContext.Position, cancellationToken) ||
 					ctx.SyntaxTree.IsPreProcessorDirectiveContext(completionContext.Position, cancellationToken))
@@ -116,16 +117,29 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 				return list;
 			}
 
-			var type = SyntaxContext.InferenceService.InferType (ctx.CSharpSyntaxContext.SemanticModel, newExpression, objectAsDefault: false, cancellationToken: cancellationToken);
 
-			foreach (var symbol in await GetPreselectedSymbolsWorker(ctx.CSharpSyntaxContext, type, completionContext.Position, cancellationToken)) {
-				var symbolCompletionData = engine.Factory.CreateObjectCreation (this, type, symbol, newExpression.SpanStart, true);
-				list.Add (symbolCompletionData);
-				if (string.IsNullOrEmpty (result.DefaultCompletionString)) {
-					result.DefaultCompletionString = symbolCompletionData.DisplayText;
-					result.AutoCompleteEmptyMatch = true;
+			var expr = newExpression;
+			var assignmentParent = expr.Parent as AssignmentExpressionSyntax;
+
+			// HACK: Work around for a little bug in InferTypes see #41388 - may be obsolete in future roslyn versions. (after 1.2)
+			bool skipInference = false;
+			if (assignmentParent?.Left == expr) {
+				skipInference = true;
+			}
+
+			if (!skipInference) {
+				var type = SyntaxContext.InferenceService.InferType (ctx.CSharpSyntaxContext.SemanticModel, expr, objectAsDefault: false, cancellationToken: cancellationToken);
+
+				foreach (var symbol in await GetPreselectedSymbolsWorker (ctx.CSharpSyntaxContext, type, completionContext.Position, cancellationToken)) {
+					var symbolCompletionData = engine.Factory.CreateObjectCreation (this, type, symbol, newExpression.SpanStart, true);
+					list.Add (symbolCompletionData);
+					if (string.IsNullOrEmpty (result.DefaultCompletionString)) {
+						result.DefaultCompletionString = symbolCompletionData.DisplayText;
+						result.AutoCompleteEmptyMatch = true;
+					}
 				}
 			}
+
 			for (int i = 0; i < primitiveTypesKeywords.Length; i++) {
 				var keyword = primitiveTypesKeywords [i];
 				list.Add (engine.Factory.CreateKeywordCompletion (this, keyword, primitiveTypesKeywordKinds[i]));

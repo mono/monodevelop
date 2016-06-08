@@ -607,8 +607,8 @@ namespace MonoDevelop.VersionControl
 		{
 			IconId icon;
 			switch (op) {
-			case VersionControlOperationType.Pull: icon = Stock.StatusDownload; break;
-			case VersionControlOperationType.Push: icon = Stock.StatusUpload; break;
+			case VersionControlOperationType.Pull: icon = Stock.PadDownload; break;
+			case VersionControlOperationType.Push: icon = Stock.PadUpload; break;
 			default: icon = "md-version-control"; break;
 			}
 
