@@ -127,6 +127,32 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				}
 			}
 		}
+		
+		NSObject superviewFrameChangeObserver;
+		public override void ViewWillMoveToSuperview (NSView newSuperview)
+		{
+			if (Superview != null && superviewFrameChangeObserver != null) {
+				NSNotificationCenter.DefaultCenter.RemoveObserver (superviewFrameChangeObserver);
+				superviewFrameChangeObserver = null;
+
+				Superview.PostsFrameChangedNotifications = false;
+			}
+
+			base.ViewWillMoveToSuperview (newSuperview);
+		}
+
+		public override void ViewDidMoveToSuperview ()
+		{
+			base.ViewDidMoveToSuperview ();
+
+			if (Superview != null) {
+				Superview.PostsFrameChangedNotifications = true;
+				superviewFrameChangeObserver = NSNotificationCenter.DefaultCenter.AddObserver (NSView.FrameChangedNotification, (note) => {
+					// Centre vertically in superview frame
+					Frame = new CGRect (0, Superview.Frame.Y + (Superview.Frame.Height - ToolbarWidgetHeight) / 2, Superview.Frame.Width, ToolbarWidgetHeight);
+				}, Superview);
+			}
+		}
 
 		void UpdateLayout ()
 		{
@@ -144,7 +170,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			StatusBar.Frame = new CGRect (Math.Round((Frame.Width - statusbarWidth) / 2), 0, statusbarWidth - 2, ToolbarWidgetHeight);
 
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Dark) {
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0, searchbarWidth, ToolbarWidgetHeight);
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth, 0, searchbarWidth, ToolbarWidgetHeight);
 			} else {
 				nfloat elcapYOffset = 0;
 				nfloat elcapHOffset = 0;
@@ -158,7 +184,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					elcapYOffset = scaleFactor == 2 ? -0.5f : -1;
 					elcapHOffset = 1.0f;
 				}
-				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth - 10, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);
+				SearchBar.Frame = new CGRect (Frame.Width - searchbarWidth, 0 + elcapYOffset, searchbarWidth, ToolbarWidgetHeight + elcapHOffset);
 			}
 
 			var selectorSize = SelectorView.SizeThatFits (new CGSize (spaceLeft, ToolbarWidgetHeight));
