@@ -110,10 +110,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.SelectedPackageSource = secondPackageSource;
 		}
 
-		void AddRecentPackage (string packageId, string packageVersion, string packageSource)
+		PackageSearchResultViewModel AddRecentPackage (string packageId, string packageVersion, string packageSource)
 		{
 			var searchResultViewModel = CreateRecentPackage (packageId, packageVersion, packageSource);
 			viewModel.RecentPackagesRepository.AddPackage (searchResultViewModel, packageSource);
+			return searchResultViewModel;
 		}
 
 		PackageSearchResultViewModel CreateRecentPackage (string packageId, string packageVersion, string packageSource)
@@ -934,6 +935,85 @@ namespace MonoDevelop.PackageManagement.Tests
 			var package = viewModel.RecentPackagesRepository.GetPackages (source.Name).Single ();
 			Assert.AreEqual ("A", package.Id);
 			Assert.IsNull (package.Parent);
+		}
+
+		[Test]
+		public async Task ReadPackages_RecentPackageWasPrereleaseAndNowSearchingForNonPrerelease_RecentPackageIsNotDisplayed ()
+		{
+			CreateProject ();
+			var packageSource = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			var recentPackage = AddRecentPackage ("Recent1", "2.1", packageSource.Name);
+			recentPackage.SelectedVersion = new NuGetVersion ("2.1-beta1");
+			AddRecentPackage ("Recent2", "1.2", packageSource.Name);
+			viewModel.IncludePrerelease = false;
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			Assert.AreEqual (1, viewModel.PackageViewModels.Count);
+			Assert.AreEqual ("Recent2", viewModel.PackageViewModels[0].Id);
+		}
+
+		[Test]
+		public async Task ReadPackages_RecentPackageWasPrereleaseAndNowSearchingForPrerelease_RecentPackageIsDisplayed ()
+		{
+			CreateProject ();
+			var packageSource = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			var recentPackage = AddRecentPackage ("Recent1", "2.1", packageSource.Name);
+			recentPackage.SelectedVersion = new NuGetVersion ("2.1-beta1");
+			AddRecentPackage ("Recent2", "1.2", packageSource.Name);
+			viewModel.IncludePrerelease = true;
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			Assert.AreEqual (2, viewModel.PackageViewModels.Count);
+			Assert.AreEqual ("Recent2", viewModel.PackageViewModels[0].Id);
+			Assert.AreEqual ("Recent1", viewModel.PackageViewModels[1].Id);
+		}
+
+		[Test]
+		public async Task ReadPackages_NonPrereleaseRecentPackageWasInstalledWhenSearchingForPrereleaseAndNowSearchingForNonPrerelease_RecentPackageIsDisplayedWithoutCachedPrereleaseVersionsDisplayed ()
+		{
+			CreateProject ();
+			var packageSource = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			var recentPackage = AddRecentPackage ("Recent1", "2.1", packageSource.Name);
+			recentPackage.SelectedVersion = new NuGetVersion ("2.1");
+			recentPackage.Versions.Add (new NuGetVersion ("2.1"));
+			recentPackage.Versions.Add (new NuGetVersion ("2.0"));
+			recentPackage.Versions.Add (new NuGetVersion ("2.0-beta1"));
+			recentPackage.Versions.Add (new NuGetVersion ("2.0-beta2"));
+			viewModel.IncludePrerelease = false;
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			Assert.AreEqual (1, viewModel.PackageViewModels.Count);
+			Assert.AreEqual ("Recent1", viewModel.PackageViewModels[0].Id);
+			Assert.AreEqual (2, recentPackage.Versions.Count);
+			Assert.AreEqual ("2.1", recentPackage.Versions[0].ToString ());
+			Assert.AreEqual ("2.0", recentPackage.Versions[1].ToString ());
+		}
+
+		[Test]
+		public async Task ReadPackages_NonPrereleaseRecentPackageWasInstalledWhenSearchingForPrereleaseAndSearchingForPrerelease_RecentPackageIsDisplayedWithCachedPrereleaseVersionsDisplayed ()
+		{
+			CreateProject ();
+			var packageSource = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			var recentPackage = AddRecentPackage ("Recent1", "2.1", packageSource.Name);
+			recentPackage.SelectedVersion = new NuGetVersion ("2.1");
+			recentPackage.Versions.Add (new NuGetVersion ("2.1"));
+			recentPackage.Versions.Add (new NuGetVersion ("2.0"));
+			recentPackage.Versions.Add (new NuGetVersion ("2.0-beta1"));
+			recentPackage.Versions.Add (new NuGetVersion ("2.0-beta2"));
+			viewModel.IncludePrerelease = true;
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			Assert.AreEqual (1, viewModel.PackageViewModels.Count);
+			Assert.AreEqual ("Recent1", viewModel.PackageViewModels[0].Id);
+			Assert.AreEqual (4, recentPackage.Versions.Count);
 		}
 	}
 }

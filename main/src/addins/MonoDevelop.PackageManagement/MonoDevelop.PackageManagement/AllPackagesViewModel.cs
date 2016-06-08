@@ -557,9 +557,8 @@ namespace MonoDevelop.PackageManagement
 			var recentPackages = GetRecentPackages ().ToList ();
 
 			foreach (PackageSearchResultViewModel package in recentPackages) {
-				package.ResetDetailedPackageMetadata ();
 				package.Parent = this;
-				package.IsChecked = false;
+				package.ResetForRedisplay (IncludePrerelease);
 				yield return package;
 			}
 
@@ -575,10 +574,20 @@ namespace MonoDevelop.PackageManagement
 			if (PackageViewModels.Count == 0 &&
 				String.IsNullOrEmpty (SearchTerms) &&
 				selectedPackageSource != null) {
-				return recentPackagesRepository.GetPackages (SelectedPackageSource.Name);
+				return recentPackagesRepository.GetPackages (SelectedPackageSource.Name)
+					.Where (recentPackage => SelectedVersionMatchesIncludePreleaseFilter (recentPackage));
 			}
 
 			return Enumerable.Empty<PackageSearchResultViewModel> ();
+		}
+
+		bool SelectedVersionMatchesIncludePreleaseFilter (PackageSearchResultViewModel package)
+		{
+			if (package.SelectedVersion.IsPrerelease) {
+				return IncludePrerelease;
+			}
+
+			return true;
 		}
 	}
 }

@@ -243,7 +243,7 @@ namespace MonoDevelop.PackageManagement
 			var identity = new PackageIdentity (viewModel.Id, viewModel.Version);
 			foreach (var sourceRepository in parent.SelectedPackageSource.GetSourceRepositories ()) {
 				try {
-					var metadata = await sourceRepository.GetPackageMetadataAsync (identity, viewModel.Version.IsPrerelease, cancellationToken);
+					var metadata = await sourceRepository.GetPackageMetadataAsync (identity, parent.IncludePrerelease, cancellationToken);
 					if (metadata != null) {
 						var packageViewModel = CreatePackageItemListViewModel (metadata);
 						await packageDetailModel.SetCurrentPackage (packageViewModel);
@@ -424,6 +424,24 @@ namespace MonoDevelop.PackageManagement
 		public void ResetDetailedPackageMetadata ()
 		{
 			packageDetailModel = null;
+		}
+
+		public void ResetForRedisplay (bool includePrereleaseVersions)
+		{
+			ResetDetailedPackageMetadata ();
+			IsChecked = false;
+			if (!includePrereleaseVersions) {
+				RemovePrereleaseVersions ();
+			}
+		}
+
+		void RemovePrereleaseVersions ()
+		{
+			var prereleaseVersions = Versions.Where (version => version.IsPrerelease).ToArray ();
+
+			foreach (NuGetVersion prereleaseVersion in prereleaseVersions) {
+				Versions.Remove (prereleaseVersion);
+			}
 		}
 	}
 }

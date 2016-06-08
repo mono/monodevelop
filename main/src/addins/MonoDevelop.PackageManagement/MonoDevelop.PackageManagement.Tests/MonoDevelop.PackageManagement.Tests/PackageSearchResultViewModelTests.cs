@@ -592,5 +592,43 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.That (result, Contains.Substring ("jQuery"));
 		}
+
+		[Test]
+		public async Task ReadVersions_RecentPackageAndParentIsNotSearchingForPrereleases_NonPrereleaseVersionInfoRequestedAgainFromSourceRepository ()
+		{
+			CreateViewModel ();
+			packageItemListViewModel.Id = "Test";
+			packageItemListViewModel.Version = new NuGetVersion ("1.2-beta1");
+			viewModel.IsRecentPackage = true;
+			parent.IncludePrerelease = false;
+			SelectPackageSourceInParentViewModel ();
+			packageMetadataResource.AddPackageMetadata ("Test", "1.1");
+			packageMetadataResource.AddPackageMetadata ("Test", "1.0-beta2");
+			packageMetadataResource.AddPackageMetadata ("Test", "1.2-beta1");
+
+			await ReadVersions ();
+
+			Assert.AreEqual (1, viewModel.Versions.Count);
+			Assert.AreEqual ("1.1", viewModel.Versions[0].ToString ());
+		}
+
+		[Test]
+		public async Task ReadVersions_RecentPackageAndParentIsSearchingForPrereleases_PrereleaseVersionInfoRequestedAgainFromSourceRepository ()
+		{
+			CreateViewModel ();
+			packageItemListViewModel.Id = "Test";
+			packageItemListViewModel.Version = new NuGetVersion ("1.2");
+			viewModel.IsRecentPackage = true;
+			parent.IncludePrerelease = true;
+			SelectPackageSourceInParentViewModel ();
+			packageMetadataResource.AddPackageMetadata ("Test", "1.0-beta2");
+			packageMetadataResource.AddPackageMetadata ("Test", "1.2-beta1");
+
+			await ReadVersions ();
+
+			Assert.AreEqual (2, viewModel.Versions.Count);
+			Assert.AreEqual ("1.2-beta1", viewModel.Versions[0].ToString ());
+			Assert.AreEqual ("1.0-beta2", viewModel.Versions[1].ToString ());
+		}
 	}
 }
