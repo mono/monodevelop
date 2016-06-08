@@ -558,8 +558,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
 					if (metadataReference == null)
 						continue;
-					if (file.Aliases != null)
-						metadataReference = metadataReference.WithAliases (file.EnumerateAliases ());
+					metadataReference = metadataReference.WithAliases (file.EnumerateAliases ());
 					result.Add (metadataReference);
 				}
 			} catch (Exception e) {
