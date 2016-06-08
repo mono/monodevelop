@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		public override void Load (Project project, SolutionItemRunConfiguration config)
 		{
-			widget.Load ((AssemblyRunConfiguration)config);
+			widget.Load (project, (AssemblyRunConfiguration)config);
 		}
 
 		public override void Save ()
@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 		}
 
-		public void Load (AssemblyRunConfiguration config)
+		public void Load (Project project, AssemblyRunConfiguration config)
 		{
 			this.config = config;
 			if (config.StartAction == AssemblyRunConfiguration.StartActions.Project)
@@ -175,8 +175,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				radioStartApp.Active = true;
 			
 			appEntry.FileName = config.StartProgram.ToString ();
+			appEntry.CurrentFolder = project.BaseDirectory;
 			argumentsEntry.Text = config.StartArguments;
 			workingDir.Folder = config.StartWorkingDirectory;
+			workingDir.CurrentFolder = project.BaseDirectory;
 			envVars.LoadValues (config.EnvironmentVariables);
 			externalConsole.Active = config.ExternalConsole;
 			pauseConsole.Active = config.PauseConsoleOutput;

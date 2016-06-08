@@ -234,8 +234,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnAddConfiguration (object sender, EventArgs e)
 		{
 			using (var dlg = new RunConfigurationNameDialog (ParentWindow, "", new Command (GettextCatalog.GetString ("Create")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+				var okCommand = new Command (GettextCatalog.GetString ("Create"));
 				dlg.Title = GettextCatalog.GetString ("New Configuration");
-				if (dlg.Run () != Command.Cancel) {
+				if (dlg.Run () == okCommand) {
 					var config = panel.Project.CreateRunConfiguration (dlg.NewName);
 					panel.AddConfiguration (config);
 					Fill ();
@@ -246,9 +247,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnCopyConfiguration (object sender, EventArgs e)
 		{
 			var config = (ProjectRunConfiguration)list.SelectedConfiguration;
-			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Create")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+			var okCommand = new Command (GettextCatalog.GetString ("Create"));
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, okCommand, panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("Duplicate Configuration");
-				if (dlg.Run () != Command.Cancel) {
+				if (dlg.Run () == okCommand) {
 					var copy = panel.Project.CloneRunConfiguration (config, dlg.NewName);
 					panel.AddConfiguration (copy);
 					Fill ();
@@ -259,7 +261,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnRenameConfiguration (object sender, EventArgs e)
 		{
 			var config = (ProjectRunConfiguration)list.SelectedConfiguration;
-			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, new Command (GettextCatalog.GetString ("Rename")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
+			var okCommand = new Command (GettextCatalog.GetString ("Rename"));
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, config.Name, okCommand, panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("Rename Configuration");
 				if (dlg.Run () != Command.Cancel) {
 					var copy = panel.Project.CloneRunConfiguration (config, dlg.NewName);
@@ -272,7 +275,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		void OnRemoveConfiguration (object sender, EventArgs e)
 		{
 			var config = (ProjectRunConfiguration)list.SelectedConfiguration;
-			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the configuration '{0}'?", config.Name), AlertButton.Delete)) {
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to remove the configuration '{0}'?", config.Name), AlertButton.Remove)) {
 				panel.RemoveConfiguration (config);
 				Fill ();
 			}
