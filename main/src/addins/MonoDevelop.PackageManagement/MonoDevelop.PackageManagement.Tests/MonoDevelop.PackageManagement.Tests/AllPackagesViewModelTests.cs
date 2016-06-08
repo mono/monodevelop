@@ -110,14 +110,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.SelectedPackageSource = secondPackageSource;
 		}
 
-		void AddRecentPackage (string packageId, string packageVersion, string packageSource)
+		PackageSearchResultViewModel AddRecentPackage (string packageId, string packageVersion, string packageSource)
 		{
+			var allPackagesViewModelForRecentPackages = new TestableAllPackagesViewModel (
+				new FakeSolutionManager (),
+				new FakeDotNetProject ());
 			var recentPackage = new PackageItemListViewModel {
 				Id = packageId,
 				Version = new NuGetVersion (packageVersion)
 			};
-			var searchResultViewModel = new PackageSearchResultViewModel (null, recentPackage);
+			var searchResultViewModel = new PackageSearchResultViewModel (allPackagesViewModelForRecentPackages, recentPackage);
 			viewModel.RecentPackagesRepository.AddPackage (searchResultViewModel, packageSource);
+			return searchResultViewModel;
 		}
 
 		FakeNuGetProject CreateNuGetProjectForProject ()
@@ -856,6 +860,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			bool result = viewModel.IsOlderPackageInstalled ("Test", new NuGetVersion ("1.1"));
 
 			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public async Task ReadPackages_RecentPackageWasCheckedWhenInstalled_RecentPackageIsNotCheckedWhenOpeningAddPackagesDialogAgain ()
+		{
+			CreateProject ();
+			var packageSource = AddOnePackageSourceToRegisteredSources ();
+			CreateViewModel ();
+			var recentPackage = AddRecentPackage ("Recent", "2.1", packageSource.Name);
+			recentPackage.IsChecked = true;
+			viewModel.ReadPackages ();
+			await viewModel.ReadPackagesTask;
+
+			Assert.AreEqual (1, viewModel.PackageViewModels.Count);
+			Assert.AreEqual ("Recent", viewModel.PackageViewModels[0].Id);
+			Assert.IsFalse (recentPackage.IsChecked);
 		}
 	}
 }
