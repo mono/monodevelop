@@ -60,6 +60,16 @@ module Consumer =
         output |> should equal "User Types"
 
     [<Test>]
+    member x.Some_is_highlighted() =
+        let content = 
+            """
+            module MyModule =
+            let x = §Some§ 1
+            """
+        let output = getStyle content
+        output |> should equal "User Types(Enums)"
+
+    [<Test>]
     member x.Type_is_highlighted() =
         let content = """
 open System
