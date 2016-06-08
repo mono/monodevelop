@@ -7602,6 +7602,18 @@
     <EmbeddedResource Include="templates\AppManifest.xft.xml">
       <LogicalName>AppManifest.xft.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="options\KeyBindingSchemeVisualStudio-mac.xml">
+      <LogicalName>KeyBindingSchemeVisualStudio-mac.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="options\KeyBindingSchemeXcode.xml">
+      <LogicalName>KeyBindingSchemeXcode.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="options\KeyBindingSchemeVSCode-mac.xml">
+      <LogicalName>KeyBindingSchemeVSCode-mac.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="options\KeyBindingSchemeRider-mac.xml">
+      <LogicalName>KeyBindingSchemeRider-mac.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
