@@ -2,14 +2,14 @@
 
 	<!-- Extensions -->
 	
-	<Extension path = "/MonoDevelop/Ide/Commands">
+	<Extension path = "/MonoDevelop/Ide/Commands/Tools">
 		<Command id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit"
 		         defaultHandler = "MonoDevelop.RegexToolkit.ShowRegexToolkitHandler"
-		         _label = "_Regex Toolkit..." />
+		         _label = "_Regular Expressions Toolkit" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
-		<CommandItem id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit" insertbefore="OptionsSection" />
+		<CommandItem id = "MonoDevelop.RegexToolkit.Commands.ShowRegexToolkit" insertafter= "ToolsSection" />
 	</Extension>
 
 </ExtensionModel>

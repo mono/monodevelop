@@ -122,6 +122,7 @@
     <Compile Include="MacInterop\AppleEvents\Native.cs" />
     <Compile Include="MacMenu\MDLinkMenuItem.cs" />
     <Compile Include="MacMenu\MDMenu.cs" />
+    <Compile Include="MacMenu\MDMenuHeaderItem.cs" />
     <Compile Include="MacMenu\MDMenuItem.cs" />
     <Compile Include="MacMenu\MDServicesMenuItem.cs" />
     <Compile Include="MacMenu\MDSubMenuItem.cs" />

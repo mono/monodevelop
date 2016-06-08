@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		public CombineOptionsDialog (Window parentWindow, Solution solution) : base (parentWindow, solution)
 		{
-			this.Title = GettextCatalog.GetString ("Solution Options") + " - " + solution.Name;
+			this.Title = GettextCatalog.GetString ("Solution Options") + " – " + solution.Name;
 		}
 	}
 }

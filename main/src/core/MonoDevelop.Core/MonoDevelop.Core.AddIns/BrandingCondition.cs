@@ -1,10 +1,10 @@
-//
-// MDMenuItem.cs
+﻿//
+// BrandingCondition.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Vsevolod Kukol <sevoku@xamarin.com>
 //
-// Copyright (c) 2013 Xamarin Inc.
+// Copyright (c) 2016 Xamarin Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using Mono.Addins;
 
-using AppKit;
-using MonoDevelop.Components.Commands;
-using System.Linq;
-
-namespace MonoDevelop.MacIntegration.MacMenu
+namespace MonoDevelop.Core.AddIns
 {
-	class MDSubMenuItem : NSMenuItem, IUpdatableMenuItem
+	public class BrandingCondition: ConditionType
 	{
-		CommandEntrySet ces;
-
-		public MDSubMenuItem (CommandManager manager, CommandEntrySet ces, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
+		public override bool Evaluate (NodeElement conditionNode)
 		{
-			this.ces = ces;
-
-			this.Submenu = new MDMenu (manager, ces, commandSource, initialCommandTarget);
-			this.Title = this.Submenu.Title;
-		}
-
-		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
-		{
-			((MDMenu)Submenu).UpdateCommands ();
-			if (ces.AutoHide)
-				Hidden = Submenu.ItemArray ().All (item => item.Hidden);
-			else
-				Enabled = Submenu.ItemArray ().Any (item => !item.Hidden);
-			if (!Hidden) {
-				MDMenu.ShowLastSeparator (ref lastSeparator);
+			string appName = conditionNode.GetAttribute ("value");
+			bool negate = false;
+			if (appName.StartsWith ("!", StringComparison.Ordinal)) {
+				appName = appName.Substring (1);
+				negate = true;
 			}
+
+			bool result = BrandingService.ApplicationName.StartsWith (appName, StringComparison.OrdinalIgnoreCase);
+
+			return negate ? !result : result;
 		}
 	}
 }
+
