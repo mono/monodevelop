@@ -91,7 +91,9 @@
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id = "MonoDevelop.CSharp.ConsoleProject" resource = "ConsoleProject.xpt.xml"/>
 		<ProjectTemplate id = "MonoDevelop.CSharp.EmptyProject" resource = "EmptyProject.xpt.xml"/>
-		<ProjectTemplate id = "MonoDevelop.CSharp.GtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
+		<Condition id="AddinEnabled" value="MonoDevelop.GtkCore">
+			<ProjectTemplate id = "MonoDevelop.CSharp.GtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
+		</Condition>
 		<ProjectTemplate id = "MonoDevelop.CSharp.Library" resource = "Library.xpt.xml"/>
 		<ProjectTemplate id = "MonoDevelop.CSharp.SharedProject" resource = "SharedAssetsProject.xpt.xml"/>
 		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Microsoft\Portable\v4.0\Microsoft.Portable.CSharp.targets">
