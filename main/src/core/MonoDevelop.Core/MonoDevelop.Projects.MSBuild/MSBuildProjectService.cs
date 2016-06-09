@@ -935,11 +935,6 @@ namespace MonoDevelop.Projects.MSBuild
 					};
 					runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
 
-					//HACK should instead pass binDir to the builder process and have it use a custom resolver
-					if (runtime is MonoTargetRuntime) {
-						pinfo.EnvironmentVariables ["MONO_PATH"] = binDir;
-					}
-
 					Process p = null;
 
 					try {
@@ -966,6 +961,7 @@ namespace MonoDevelop.Projects.MSBuild
 									Console.WriteLine (e.Data);
 							};
 							p.BeginErrorReadLine ();
+							p.StandardInput.WriteLine (binDir);
 							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
 							if (await Task.WhenAny (processStartedSignal.Task, Task.Delay (5000)) != processStartedSignal.Task)
 								throw new Exception ("MSBuild process could not be started");
