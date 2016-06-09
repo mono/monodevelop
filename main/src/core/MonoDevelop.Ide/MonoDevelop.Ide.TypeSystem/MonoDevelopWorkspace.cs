@@ -485,6 +485,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f);
 				} else {
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
+						if (!duplicates.Add (projectData.GetOrCreateDocumentId (projectedDocument.FilePath)))
+							continue;
 						yield return projectedDocument;
 					}
 				}
