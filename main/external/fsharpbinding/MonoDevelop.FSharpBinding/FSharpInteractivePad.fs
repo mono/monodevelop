@@ -72,8 +72,12 @@ type FsiDocumentContext() =
     override x.Name = name
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
-
-    member x.CompletionWidget with set (value) = completionWidget <- value
+    member x.CompletionWidget 
+        with set (value) = 
+            completionWidget <- value
+            completionWidget.CompletionContextChanged.Add
+                (fun _args -> let completion = editor.GetContent<CompletionTextEditorExtension>()
+                              ParameterInformationWindowManager.HideWindow(completion, value))
     member x.Editor with set (value) = editor <- value
     member x.WorkingFolder
         with get() = workingFolder
