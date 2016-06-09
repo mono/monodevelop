@@ -90,7 +90,10 @@
 		<ProjectTemplate id="MonoDevelop.FSharp.TutorialProject" file="Templates/FSharpTutorialProject.xpt.xml"/>
 	</ComplexCondition>
 
-    <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
+
+	<Condition id="AddinEnabled" value="MonoDevelop.GtkCore">
+		<ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
+	</Condition>
     <ProjectTemplate id="FSharpNUnitLibraryProject" file="Templates/FSharpNUnitLibraryProject.xpt.xml"/>
     
     <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets" >

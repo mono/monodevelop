@@ -5,7 +5,7 @@
 	<ConditionType id="Platform" type="MonoDevelop.Core.AddIns.PlatformCondition" />
 	<ConditionType id="AssemblyInstalled" type="MonoDevelop.Core.AddIns.AssemblyInstalledCondition" />
 	<ConditionType id="MSBuildTargetIsAvailable" type="MonoDevelop.Projects.MSBuild.TargetsAvailableCondition" />
-
+	<ConditionType id="AddinEnabled" type="MonoDevelop.Core.AddIns.AddinEnabledCondition" />
 	
 	<!-- Extension points -->
 	
