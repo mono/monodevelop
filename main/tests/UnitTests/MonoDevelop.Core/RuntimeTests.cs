@@ -42,14 +42,14 @@ namespace MonoDevelop.Core
 		public async Task RunInMainThreadWithFuncTask ()
 		{
 			await Task.Run (() => {
-				var expectedException = new Exception ("Error");
+				var expectedException = new ApplicationException ("Error");
 
 				Task task = Runtime.RunInMainThread (() => ThrowException (expectedException));
-				AggregateException ex = Assert.Throws<AggregateException> (() => task.Wait ());
+				ApplicationException ex = Assert.Throws<ApplicationException> (async () => await task);
 
 				Assert.IsTrue (task.IsFaulted);
 				Assert.AreEqual (expectedException, task.Exception.GetBaseException ());
-				Assert.AreEqual (expectedException, ex.GetBaseException ());
+				Assert.AreEqual (expectedException, ex);
 			});
 		}
 
@@ -71,14 +71,14 @@ namespace MonoDevelop.Core
 		public async Task RunInMainThreadWithAsyncFuncTask ()
 		{
 			await Task.Run (() => {
-				var expectedException = new Exception ("Error");
+				var expectedException = new ApplicationException ("Error");
 
 				Task task = Runtime.RunInMainThread (async () => await ThrowExceptionAsync (expectedException));
-				AggregateException ex = Assert.Throws<AggregateException> (() => task.Wait ());
+				ApplicationException ex = Assert.Throws<ApplicationException> (async () => await task);
 
 				Assert.IsTrue (task.IsFaulted);
 				Assert.AreEqual (expectedException, task.Exception.GetBaseException ());
-				Assert.AreEqual (expectedException, ex.GetBaseException ());
+				Assert.AreEqual (expectedException, ex);
 			});
 		}
 
@@ -96,14 +96,14 @@ namespace MonoDevelop.Core
 		public async Task RunInMainThreadWithFuncTaskWithAwaitInsideMethod ()
 		{
 			await Task.Run (() => {
-				var expectedException = new Exception ("Error");
+				var expectedException = new ApplicationException ("Error");
 
 				Task task = Runtime.RunInMainThread (() => ThrowExceptionWithAwait (expectedException));
-				AggregateException ex = Assert.Throws<AggregateException> (() => task.Wait ());
+				ApplicationException ex = Assert.Throws<ApplicationException> (async () => await task);
 
 				Assert.IsTrue (task.IsFaulted);
 				Assert.AreEqual (expectedException, task.Exception.GetBaseException ());
-				Assert.AreEqual (expectedException, ex.GetBaseException ());
+				Assert.AreEqual (expectedException, ex);
 			});
 		}
 
@@ -111,6 +111,67 @@ namespace MonoDevelop.Core
 		{
 			await Task.Delay (1);
 			throw ex;
+		}
+
+		/// <summary>
+		/// This test works with the existing Task RunInMainThread (Func<Task<T>> func).
+		/// The func throws the exception so it is properly handled.
+		/// </summary>
+		[Test]
+		public async Task RunInMainThreadWithFuncTaskOfT ()
+		{
+			await Task.Run (() => {
+				var expectedException = new ApplicationException ("Error");
+
+				Task<bool> task = Runtime.RunInMainThread (() => TaskOfT_ThrowExceptionAsync (expectedException));
+				ApplicationException ex = Assert.Throws<ApplicationException> (async () => await task);
+
+				Assert.IsTrue (task.IsFaulted);
+				Assert.AreEqual (expectedException, task.Exception.GetBaseException ());
+				Assert.AreEqual (expectedException, ex);
+			});
+		}
+
+		Task<bool> TaskOfT_ThrowExceptionAsync (Exception ex)
+		{
+			throw ex;
+		}
+
+		/// <summary>
+		/// This test was failing since using an await returns a faulted Task and the
+		/// func does not directly throw an exception. The Task<T> returned from the RunInMainThread
+		/// method would never be faulted.
+		/// </summary>
+		[Test]
+		public async Task RunInMainThreadWithFuncTaskOfTWithAwaitInsideMethod ()
+		{
+			await Task.Run (() => {
+				var expectedException = new ApplicationException ("Error");
+
+				Task<bool> task = Runtime.RunInMainThread (() => TaskOfT_ThrowExceptionWithAwait (expectedException));
+				ApplicationException ex = Assert.Throws<ApplicationException> (async () => await task);
+
+				Assert.IsTrue (task.IsFaulted);
+				Assert.AreEqual (expectedException, task.Exception.GetBaseException ());
+				Assert.AreEqual (expectedException, ex);
+			});
+		}
+
+		async Task<bool> TaskOfT_ThrowExceptionWithAwait (Exception ex)
+		{
+			await Task.Delay (1);
+			throw ex;
+		}
+
+		[Test]
+		public async Task RunInMainThreadWithFuncTaskOfTWhichDoesNotFail ()
+		{
+			await Task.Run (async () => {
+				Task<int> task = Runtime.RunInMainThread (() => Task.FromResult (10));
+				int result = await task;
+
+				Assert.AreEqual (10, result);
+			});
 		}
 	}
 }
