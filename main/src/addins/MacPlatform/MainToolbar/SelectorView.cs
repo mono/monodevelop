@@ -553,7 +553,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				set {
 					activeRuntime = value;
 					using (var mutableModel = value.GetMutableModel ()) {
-						state |= CellState.RuntimeShown;
 						if (RuntimeChanged != null)
 							RuntimeChanged (this, new HandledEventArgs ());
 						UpdatePathText (RuntimeIdx, mutableModel.FullDisplayString);
