@@ -28,8 +28,14 @@ using Mono.Addins;
 
 namespace MonoDevelop.Core.AddIns
 {
-	public class AddinEnabledCondition : ConditionType
+	class AddinEnabledCondition : ConditionType
 	{
+		public AddinEnabledCondition ()
+		{
+			AddinManager.AddinLoaded += (o, e) => NotifyChanged ();
+			AddinManager.AddinUnloaded += (o, e) => NotifyChanged ();
+		}
+
 		public override bool Evaluate (NodeElement conditionNode)
 		{
 			string addin = conditionNode.GetAttribute ("value");
