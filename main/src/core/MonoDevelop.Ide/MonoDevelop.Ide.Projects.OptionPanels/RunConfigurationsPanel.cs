@@ -246,8 +246,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void OnAddConfiguration (object sender, EventArgs e)
 		{
-			using (var dlg = new RunConfigurationNameDialog (ParentWindow, "", new Command (GettextCatalog.GetString ("Create")), panel.Configurations.Select (c => c.EditedConfig.Name))) {
-				var okCommand = new Command (GettextCatalog.GetString ("Create"));
+			var okCommand = new Command (GettextCatalog.GetString ("Create"));
+			using (var dlg = new RunConfigurationNameDialog (ParentWindow, "", okCommand, panel.Configurations.Select (c => c.EditedConfig.Name))) {
 				dlg.Title = GettextCatalog.GetString ("New Configuration");
 				if (dlg.Run () == okCommand) {
 					var config = panel.Project.CreateRunConfiguration (dlg.NewName);
