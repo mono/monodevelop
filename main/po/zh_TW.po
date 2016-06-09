@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-25 18:39:03+0300\n"
+"POT-Creation-Date: 2016-06-07 18:47:04+0300\n"
 "PO-Revision-Date: 2011-02-19 19:10+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese/Traditional <zh-l10n@linux.org.tw>\n"
@@ -82,7 +82,7 @@ msgstr "OptionName"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:11
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:13
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:59
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:66
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:41
 msgid "File not found: {0}"
 msgstr "找不到檔案：{0}"
@@ -693,6 +693,7 @@ msgstr "希伯來文"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:4
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:10
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:12
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:80
 msgid "Turkish"
 msgstr "土耳其文"
 
@@ -727,11 +728,13 @@ msgstr "西里爾文/俄羅斯"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:7
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:71
 msgid "Japanese"
 msgstr "日文"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:8
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:72
 msgid "Korean"
 msgstr "韓文"
 
@@ -1454,7 +1457,7 @@ msgid "_Quick Properties"
 msgstr "快速屬性(_Q)"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:13
 msgid "Hidden"
 msgstr "隱藏"
 
@@ -1693,7 +1696,7 @@ msgstr "格式文件(_F)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:6
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:23
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:4
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:2
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:3
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:5
 msgid "Project"
 msgstr "專案"
@@ -2449,7 +2452,7 @@ msgid "Welcome Page"
 msgstr "歡迎頁面"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:20
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:10
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:11
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:2
 msgid "Tools"
 msgstr "工具"
@@ -2754,7 +2757,7 @@ msgstr "使用目前的選取範圍作為取代字串"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:40
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:4
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Text Editor"
 msgstr "文字編輯器"
 
@@ -2942,6 +2945,11 @@ msgstr "擴展選擇區域到文件結尾"
 #, fuzzy
 msgid "Expand selection to line"
 msgstr "擴展選擇區域到列尾"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
+#, fuzzy
+msgid "_Expand selection"
+msgstr "擴展選擇區到上一頁"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
 msgid "Switch caret mode"
@@ -3166,7 +3174,7 @@ msgid "Code Templates"
 msgstr "代碼範本"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:7
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:13
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:6
 msgid "Other"
 msgstr "其他"
@@ -3189,7 +3197,7 @@ msgstr "專案檔的位置"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:1
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:4
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/ProjectSearchCategory.cs:2
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/ProjectSearchCategory.fs:25
 msgid "Solution"
@@ -3497,78 +3505,78 @@ msgstr "只顯示公用與保護成員"
 msgid "Other Pads"
 msgstr "其他窗格"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "GNU/Emacs"
 msgstr "GNU/Emacs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Visual Studio"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "MonoDevelop 1.0"
 msgstr "MonoDevelop 1.0"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop 2.0"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Comments"
 msgstr "註解"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "User Tasks"
 msgstr "使用者任務"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:25
 msgid "Assemblies"
 msgstr "組件"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 #, fuzzy
 msgid "XML Files"
 msgstr "XAML 檔案"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #, fuzzy
 msgid ".NET Resource Files"
 msgstr "資源檔案"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:20
 #, fuzzy
 msgid "Solution Files"
 msgstr "方案檔案"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:26
 #, fuzzy
 msgid "Project Files"
 msgstr "專案檔案(_F)"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #, fuzzy
 msgid "MD Workbench"
 msgstr "正在載入工作台"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:2
 msgid "Arguments"
 msgstr "引數"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Mono Options"
 msgstr "Mono 選項"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #, fuzzy
 msgid "General Pad Text"
 msgstr "一般"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #, fuzzy
 msgid "Output Pad Contents"
 msgstr "輸出路徑："
@@ -3807,7 +3815,7 @@ msgid "No more errors or warnings"
 msgstr "沒有更多的錯誤或警告"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:9
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:12
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:13
 msgid "New Tool"
 msgstr "新增工具"
 
@@ -4349,61 +4357,61 @@ msgstr "窗格"
 msgid "Initializing Main Window"
 msgstr "正在初始化主視窗"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:31
 #, fuzzy
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "在關閉前儲存變更到文件 '{0}'?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:47
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:52
 msgid "Opening {0}"
 msgstr "正在開啟{0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:60
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:16
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:35
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:2
 msgid "Options"
 msgstr "選項"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:60
 msgid "Preferences"
 msgstr "偏好設定"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:64
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "在關閉前儲存變更到文件 '{0}'?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:64
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "如果不儲存，所有變更將永遠消失。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:65
 msgid "Invalid file name"
 msgstr "無效的檔案名稱"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:59
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:66
 msgid "{0} is a directory"
 msgstr "{0} 是個目錄"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:59
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:66
 msgid "File '{0}' could not be opened"
 msgstr "無法開啟檔案 '{0}' 。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:71
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:78
 #, fuzzy
 msgid "Loading workspace documents"
 msgstr "正在載入工作區項目：{0} "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:117
 msgid "The file '{0}' could not be opened."
 msgstr "無法開啟此檔案 '{0}' 。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:117
 #, fuzzy
 msgid "The file '{0}' could not opened. {1}"
 msgstr "無法開啟此檔案 '{0}' 。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:117
 #, fuzzy
 msgid "The file '{0}' could not opened. File too large."
 msgstr "無法開啟此檔案 '{0}' 。"
@@ -4535,7 +4543,7 @@ msgstr "欄"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:88
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:5
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:55
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:30
 msgid "Type"
 msgstr "型別"
@@ -4716,12 +4724,12 @@ msgstr "按鍵綁定"
 msgid "Custom"
 msgstr "自訂"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:7
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:9
 #, fuzzy
 msgid "_View Conflicts"
 msgstr "衝突"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:23
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:25
 msgid "This key combination is already bound to command '{0}'"
 msgstr "這個按鍵組合已經繫結到指令 '{0}'"
 
@@ -4937,20 +4945,20 @@ msgstr "檢查更新(_C)"
 msgid "The following add-ins could not be started:"
 msgstr "下列增益集無法啟動："
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:12
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:13
 msgid "Control not found!"
 msgstr "找不到控制項！"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:14
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
 #, fuzzy
 msgid "The command of tool \"{0}\" is not set."
 msgstr "此工具 \"{0}\" 的命令無效。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:16
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "此工具 \"{0}\" 的命令無效。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:16
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "此工具 \"{0}\" 的工作目錄無效。"
 
@@ -4991,6 +4999,7 @@ msgid "OVR"
 msgstr "OVR"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:15
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:57
 #: ../src/addins/MacPlatform/Dialogs/MacAddFileDialogHandler.cs:3
 msgid "(Default)"
 msgstr "(預設)"
@@ -5035,7 +5044,7 @@ msgstr "真的要搬移項目 '{0}' 到這個工作區 '{1}' ?"
 msgid "Do you really want to remove the item '{0}' from workspace '{1}'?"
 msgstr "真的要從工作區 '{1}' 移除項目 '{0}'？"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:258
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:259
 msgid "Display Options"
 msgstr "顯示選項"
 
@@ -5252,36 +5261,25 @@ msgstr "﻿使用者可選擇的值清單。"
 msgid "{0} is currently running on <b>{1}</b>."
 msgstr "MonoDevelop 目前運行在 <b>{0}</b>。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:9
 msgid "Select the mono installation prefix"
 msgstr "選擇 mono 安裝的前置路徑"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:9
 msgid "Mono runtime not found"
 msgstr "找不到 Mono runtime"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:9
 msgid ""
 "Please provide a valid directory prefix where mono is installed (for "
 "example, /usr)"
 msgstr "請提供有效的 mono 安裝目錄前綴名稱 (例如，/usr)"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
-msgid ""
-"If you have a parallel installation of Mono you can register it here, so you "
-"can use it for building and running projects. The <b>default runtime</b> is "
-"the .NET runtime to be used for building and running applications when none "
-"is specifically selected."
-msgstr ""
-"如果您安裝了多個 Mono，您可以在這裡註冊，這樣您就可以使用它來建置和運行專案。"
-"當指定使用 none 的時候，<b>預設運行時期</b> 會被作為 .NET 運行時期來建置和運"
-"行應用程式。"
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:11
 msgid "Set as Default"
 msgstr "設為預設"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:11
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInfoView.cs:2
 msgid "label1"
 msgstr "label1"
@@ -5444,71 +5442,65 @@ msgstr "Regex 搜索(_X)"
 msgid "_Whole words only"
 msgstr "符合整個字(_W)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:10
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:29
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:37
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:36
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
 msgid "Looking in '{0}'"
 msgstr "正在查詢 '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:10
 msgid "Looking for '{0}' in current document"
 msgstr "在目前文件裡找尋 '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:10
 msgid "Replacing '{0}' in current document"
 msgstr "在目前文件裡進行取代 '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:16
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:15
 msgid "Looking for '{0}' in current selection"
 msgstr "在目前選擇區域裡找尋 '{0}' "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:16
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:15
 msgid "Replacing '{0}' in current selection"
 msgstr "在目前選擇區域裡進行取代 '{0}' "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:19
-#, fuzzy
-msgid "Looking in solution folder '{0}'"
-msgstr "載入方案：{0} "
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:19
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:25
-msgid "Looking in project '{0}'"
-msgstr "正在查詢專案 '{0}'"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:20
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:27
 msgid "Looking for '{0}' in all projects"
 msgstr "在所有專案中找尋 '{0}' "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:20
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:27
 msgid "Replacing '{0}' in all projects"
 msgstr "在所有專案裡進行取代 '{0}' "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:26
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:32
+msgid "Looking in project '{0}'"
+msgstr "正在查詢專案 '{0}'"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:33
 msgid "Looking for '{0}' in project '{1}'"
 msgstr "在專案 '{1}' 中找尋 '{0}' "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:26
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:33
 msgid "Replacing '{0}' in project '{1}'"
 msgstr "在專案 '{1}' 裡進行取代 '{0}' "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:30
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:37
 msgid "Looking for '{0}' in all open documents"
 msgstr "在所有開啟文件裡找尋 '{0}' "
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:30
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:37
 msgid "Replacing '{0}' in all open documents"
 msgstr "在所有開啟的文件裡進行取代 '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:51
 msgid "Looking for '{0}' in directory '{1}'"
 msgstr "在目錄 '{1}' 裡中找尋 '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:51
 msgid "Replacing '{0}' in directory '{1}'"
 msgstr "在目錄 '{1}' 裡進行取代 '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindReplace.cs:13
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindReplace.cs:15
 #, fuzzy
 msgid "File {0} not found."
 msgstr "找不到檔案 '{0}'。"
@@ -6080,7 +6072,7 @@ msgstr "自訂 MonoDevelop 搜索組件或套件的資料夾："
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:5
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:2
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.ErrorDialog.cs:2
 msgid "Error"
@@ -6337,7 +6329,7 @@ msgid "Minimize"
 msgstr "最小化(_M)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItem.cs:36
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:35
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:37
 msgid "Dock"
 msgstr "停駐"
 
@@ -7030,7 +7022,7 @@ msgid "Code completion database generation"
 msgstr "代碼完成資料庫生成"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeDialog.cs:3
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:6
 msgid "(Custom)"
 msgstr "(自訂)"
 
@@ -7323,19 +7315,19 @@ msgstr "單一啟動專案："
 msgid "Multiple startup projects:"
 msgstr "多重啟動專案："
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:4
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
 msgid "File Type"
 msgstr "檔案類型"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:4
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
 msgid "Policy"
 msgstr "方針"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:6
 msgid "(Inherited Policy)"
 msgstr "(繼承的方針)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:10
 msgid ""
 "Are you sure you want to remove the formatting policy for the type '{0}'?"
 msgstr "真的要為類型 '{0}' 移除格式方針？"
@@ -7390,7 +7382,7 @@ msgstr "目前檔案"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:3
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:56
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "Namespace"
 msgstr "命名空間"
 
@@ -7415,7 +7407,7 @@ msgstr "框架 '{0}' 未安裝。"
 msgid "There must be at least one configuration."
 msgstr "至少要有一個組態。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:2
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:3
 msgid "The solution does not contain any executable project"
 msgstr "方案未包含任何可執行的專案。"
 
@@ -7720,7 +7712,7 @@ msgid "Search…"
 msgstr "搜索"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:4
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:4
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:5
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:2
 msgid "All"
 msgstr "全部"
@@ -8414,7 +8406,7 @@ msgid "Next Tip"
 msgstr "下個秘訣(_N)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:28
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:35
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:37
 msgid "Auto Hide"
 msgstr "自動隱藏"
 
@@ -8701,6 +8693,92 @@ msgstr "在...內搜索(_S)"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeAnalysisPanel.cs:12
 msgid "Enable Code Analysis on Build"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:58
+msgid "Catalan"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:59
+#, fuzzy
+msgid "Chinese - China"
+msgstr "正體中文"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:60
+#, fuzzy
+msgid "Chinese - Taiwan"
+msgstr "正體中文"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:61
+msgid "Czech"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:62
+#, fuzzy
+msgid "Danish"
+msgstr "完成"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:63
+msgid "Dutch"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:64
+msgid "French"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:65
+msgid "Galician"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:66
+msgid "German"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:67
+msgid "English"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:68
+msgid "Hungarian"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:69
+msgid "Indonesian"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:70
+msgid "Italian"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:73
+#, fuzzy
+msgid "Polish"
+msgstr "發佈(_P)..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:74
+msgid "Portuguese"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:75
+msgid "Portuguese - Brazil"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:76
+#, fuzzy
+msgid "Russian"
+msgstr "西里爾文/俄羅斯"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:77
+msgid "Slovenian"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:78
+#, fuzzy
+msgid "Spanish"
+msgstr "完成"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:79
+msgid "Swedish"
 msgstr ""
 
 #: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:44
@@ -9640,7 +9718,7 @@ msgstr "修改"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:52
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:7
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:26
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:27
 msgid "Replace"
 msgstr "取代"
 
@@ -11740,7 +11818,7 @@ msgid "Web and Windows Forms Components"
 msgstr "Web 和 Windows Forms 元件"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ToolboxService.cs:12
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:33
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:34
 msgid "Looking for components..."
 msgstr "找尋元件中..."
 
@@ -11775,11 +11853,11 @@ msgstr "組件的位置。"
 msgid "Location"
 msgstr "位置"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:33
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:34
 msgid "Add items to toolbox"
 msgstr "添加項目到工具箱"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:33
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:34
 msgid "The file '{0}' does not contain any component."
 msgstr "檔案 '{0}' 未包含任何元件。"
 
@@ -13032,27 +13110,17 @@ msgstr "移動到上個用法(_M)"
 msgid "_Move to next usage"
 msgstr "移動到下個用法(_M)"
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:33
-#, fuzzy
-msgid "_Expand selection"
-msgstr "擴展選擇區到上一頁"
-
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:34
-#, fuzzy
-msgid "_Shrink selection"
-msgstr "選擇"
-
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:37
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:35
 #, fuzzy
 msgid "Name Conventions"
 msgstr "資料庫連接"
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:40
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:38
 #, fuzzy
 msgid "Navigate"
 msgstr "巡覽"
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:41
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:39
 #, fuzzy
 msgid "Organize Usings"
 msgstr "組織 Usings(_O)"
@@ -16657,33 +16725,33 @@ msgstr "<b>解析器錯誤：</b>： {0}"
 msgid "_Input Methods"
 msgstr "輸入法(_I)"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:113
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
 #, fuzzy
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
 "overwrite the file?"
 msgstr "此檔案 {0} 已被其他應用程式變更。您確定要覆寫他嗎？"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #, fuzzy
 msgid "Can't save file"
 msgstr "無法移除檔案 {0}"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid "The file was marked as read only. Should the file be overwritten?"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #, fuzzy
 msgid "Operation failed."
 msgstr "儲存動作失敗。"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #, fuzzy
 msgid "Can't save file with current codepage."
 msgstr "跳到目前工作區的檔案"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid ""
 "Some unicode characters in this file could not be saved with the current "
 "encoding.\n"
@@ -16691,12 +16759,12 @@ msgid ""
 "You can choose another encoding in the 'save as' dialog."
 msgstr ""
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #, fuzzy
 msgid "Save as Unicode"
 msgstr "統一碼"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #, fuzzy
 msgid "Can't save file - access denied"
 msgstr "跳到目前工作區的檔案"
@@ -17478,7 +17546,7 @@ msgstr "基礎型別"
 msgid "Can't load:"
 msgstr "無法載入："
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.addin.xml:2
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.addin.xml:3
 #, fuzzy
 msgid "_Assembly Browser"
 msgstr "組件瀏覽器"
@@ -18883,41 +18951,41 @@ msgstr "顯示架構的批註"
 msgid "Schema changes could not be saved"
 msgstr "無法儲存此文件"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "Built in"
 msgstr "內建"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "User schema"
 msgstr "使用架構"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "File Extension"
 msgstr "副檔名"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "Prefix"
 msgstr "前置"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:9
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:10
 #, fuzzy
 msgid "<b>Registered Schema</b>"
 msgstr "<b>已註冊的架構</b>"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:11
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:12
 msgid "<b>Default File Associations</b>"
 msgstr "<b>預設的檔案關聯</b>"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:21
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:22
 #, fuzzy
 msgid "Schema '{0}' could not be loaded."
 msgstr "無法載入此檔案 '{0}' 。"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:23
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:24
 msgid "Schema '{0}' has no target namespace."
 msgstr "架構 '{0}' 沒有目標命名空間。"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:26
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:27
 msgid ""
 "A schema is already registered with the namespace '{0}'. Would you like to "
 "replace it?"
@@ -21223,7 +21291,7 @@ msgstr ""
 msgid "ASP.NET MVC Project"
 msgstr "ASP.NET MVC 專案"
 
-#: ../src/addins/AspNet/Templates/Projects/MvcProject.xpt.xml:9
+#: ../src/addins/AspNet/Templates/Projects/MvcProject.xpt.xml:8
 #, fuzzy
 msgid "Creates an ASP.NET MVC Web Project with Razor Views."
 msgstr "建立 ASP.NET MVC Web 專案。"
@@ -22359,21 +22427,21 @@ msgstr "正在搜索型別..."
 msgid "All Sources"
 msgstr "{0} 個來源"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:663
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:66
-#, fuzzy
-msgid "Add Packages"
-msgstr "添加套件..."
-
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:666
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:664
 #, fuzzy
 msgid "Update Package"
 msgstr "建立套件"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:668
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:662
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:337
 #, fuzzy
 msgid "Add Package"
+msgid_plural "Add Packages"
+msgstr[0] "添加套件..."
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:66
+#, fuzzy
+msgid "Add Packages"
 msgstr "添加套件..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:153
@@ -22451,27 +22519,27 @@ msgstr "更新"
 msgid "update"
 msgstr "更新"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:114
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:119
 #, fuzzy
 msgid "available"
 msgstr "沒有可用的更新"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:119
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:124
 #, fuzzy
 msgid "installing"
 msgstr "反安裝...(_U)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:129
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:134
 #, fuzzy
 msgid "Version {0}"
 msgstr "版本"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:148
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:153
 #, fuzzy
 msgid "Package is not restored"
 msgstr "未提供套件名稱"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:150
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:155
 #, fuzzy
 msgid "Package needs retargeting"
 msgstr "套件設定值"
@@ -29515,6 +29583,24 @@ msgstr "時間檢視"
 msgid "List View"
 msgstr "清單檢視"
 
+#~ msgid ""
+#~ "If you have a parallel installation of Mono you can register it here, so "
+#~ "you can use it for building and running projects. The <b>default runtime</"
+#~ "b> is the .NET runtime to be used for building and running applications "
+#~ "when none is specifically selected."
+#~ msgstr ""
+#~ "如果您安裝了多個 Mono，您可以在這裡註冊，這樣您就可以使用它來建置和運行專"
+#~ "案。當指定使用 none 的時候，<b>預設運行時期</b> 會被作為 .NET 運行時期來建"
+#~ "置和運行應用程式。"
+
+#, fuzzy
+#~ msgid "Looking in solution folder '{0}'"
+#~ msgstr "載入方案：{0} "
+
+#, fuzzy
+#~ msgid "_Shrink selection"
+#~ msgstr "選擇"
+
 #~ msgid "errorCode"
 #~ msgstr "errorCode"
 
@@ -33109,9 +33195,6 @@ msgstr "清單檢視"
 
 #~ msgid "Steps"
 #~ msgstr "追蹤"
-
-#~ msgid "Finish"
-#~ msgstr "完成"
 
 #~ msgid "N_ew Project..."
 #~ msgstr "開新專案...(_e)"

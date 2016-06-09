@@ -42,6 +42,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
 	[TestFixture()]
+	[Ignore]
 	public class GenerateNewMemberTests : UnitTests.TestBase
 	{
 		static async Task TestInsertionPoints (string text)

@@ -489,6 +489,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f);
 				} else {
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
+						if (!duplicates.Add (projectData.GetOrCreateDocumentId (projectedDocument.FilePath)))
+							continue;
 						yield return projectedDocument;
 					}
 				}
@@ -556,8 +558,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
 					if (metadataReference == null)
 						continue;
-					if (file.Aliases != null)
-						metadataReference = metadataReference.WithAliases (file.EnumerateAliases ());
+					metadataReference = metadataReference.WithAliases (file.EnumerateAliases ());
 					result.Add (metadataReference);
 				}
 			} catch (Exception e) {

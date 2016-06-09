@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-25 18:39:03+0300\n"
+"POT-Creation-Date: 2016-06-07 18:47:04+0300\n"
 "PO-Revision-Date: 2016-04-17 10:43+0300\n"
 "Last-Translator: Olexandr Pylypchuk <pilipchukap@rambler.ru>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
@@ -88,7 +88,7 @@ msgstr "НазваПараметру"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:11
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/ProjectService.cs:13
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:59
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:66
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/RootWorkspace.cs:41
 msgid "File not found: {0}"
 msgstr "Файл не знайдено: {0}"
@@ -698,6 +698,7 @@ msgstr "Іврит"
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:4
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:10
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:12
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:80
 msgid "Turkish"
 msgstr "Турецьке"
 
@@ -732,11 +733,13 @@ msgstr "Кирилиця/Росія"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:7
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:71
 msgid "Japanese"
 msgstr "Японське"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:8
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.Text/TextEncoding.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:72
 msgid "Korean"
 msgstr "Корейське"
 
@@ -1453,7 +1456,7 @@ msgid "_Quick Properties"
 msgstr "_Швидкі властивості"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:5
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:13
 msgid "Hidden"
 msgstr "Прихований"
 
@@ -1679,7 +1682,7 @@ msgstr "_Форматування документа"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:6
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:23
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:4
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:2
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:3
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:5
 msgid "Project"
 msgstr "Проект"
@@ -2419,7 +2422,7 @@ msgid "Welcome Page"
 msgstr "Стартова сторінка"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:20
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:10
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:11
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:2
 msgid "Tools"
 msgstr "Засоби"
@@ -2716,7 +2719,7 @@ msgstr "Використати вибране як зразок для замі�
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:40
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:4
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Text Editor"
 msgstr "Текстовий редактор"
 
@@ -2902,6 +2905,10 @@ msgstr "Розширити вибір до кінця документа"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
 msgid "Expand selection to line"
 msgstr "Розширити вибір до рядка"
+
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
+msgid "_Expand selection"
+msgstr "_Розширити вибір"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
 msgid "Switch caret mode"
@@ -3122,7 +3129,7 @@ msgid "Code Templates"
 msgstr "Шаблони коду"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:7
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:13
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:6
 msgid "Other"
 msgstr "Інші"
@@ -3145,7 +3152,7 @@ msgstr "Розташування файлів проекту"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/ItemOptionPanels.addin.xml:1
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Pads.addin.xml:4
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/ProjectSearchCategory.cs:2
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/ProjectSearchCategory.fs:25
 msgid "Solution"
@@ -3442,72 +3449,72 @@ msgstr "Показати лише загальнодоступні і захищ
 msgid "Other Pads"
 msgstr "Інші панелі"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "GNU/Emacs"
 msgstr "GNU/Emacs"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Visual Studio"
 msgstr "Visual Studio"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "MonoDevelop 1.0"
 msgstr "MonoDevelop 1.0"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "MonoDevelop 2.0"
 msgstr "MonoDevelop 2.0"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Comments"
 msgstr "Комментарі"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "User Tasks"
 msgstr "Завдання користувача"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:25
 msgid "Assemblies"
 msgstr "Збірки"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/addins/Xml/Editor/XmlEditorService.cs:8
 msgid "XML Files"
 msgstr "Файли XML"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid ".NET Resource Files"
 msgstr "Файли ресурсів .NET"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:20
 msgid "Solution Files"
 msgstr "Файли рішення"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:26
 msgid "Project Files"
 msgstr "Файли проекту"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "MD Workbench"
 msgstr "MD Workbench"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 #: ../src/addins/MonoDevelop.Debugger/gtk-gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:2
 msgid "Arguments"
 msgstr "Аргументи"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Mono Options"
 msgstr "Параметри Mono"
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "General Pad Text"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:15
+#: ../src/core/MonoDevelop.Ide/ExtensionModel/MonoDevelop.Ide.addin.xml:16
 msgid "Output Pad Contents"
 msgstr ""
 
@@ -3740,7 +3747,7 @@ msgid "No more errors or warnings"
 msgstr "Помилок або попереджень більше немає"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalTool.cs:9
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:12
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:13
 msgid "New Tool"
 msgstr "Додати засіб"
 
@@ -4258,58 +4265,58 @@ msgstr "Панелі"
 msgid "Initializing Main Window"
 msgstr "Ініціалізація головного вікна"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:26
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:31
 msgid "Save the changes to document '{0}' before creating a new solution?"
 msgstr "Зберегти зміни у документі '{0}' перед створенням нового рішення?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:47
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:52
 msgid "Opening {0}"
 msgstr "Відкривання {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:60
 #: ../src/addins/MonoDevelop.Autotools/MakefileGeneratorTool.cs:16
 #: ../src/addins/AspNet/Commands/AddViewDialog.cs:35
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/gtk-gui/MonoDevelop.FSharp.Gui.FSharpSettingsWidget.cs:2
 msgid "Options"
 msgstr "Параметри"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:55
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:60
 msgid "Preferences"
 msgstr "Уподобання"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:64
 msgid "Save the changes to document '{0}' before closing?"
 msgstr "Зберегти зміни у документі '{0}' перед закриванням?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:64
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "Якщо не зберегти, всі зміни будуть повністю втрачені."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:58
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:65
 msgid "Invalid file name"
 msgstr "Неправильна назва файлу"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:59
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:66
 msgid "{0} is a directory"
 msgstr "{0} є текою"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:59
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:66
 msgid "File '{0}' could not be opened"
 msgstr "Не вдалось відкрити файл '{0}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:71
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:78
 msgid "Loading workspace documents"
 msgstr "Завантаження документів робочого простору"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:117
 msgid "The file '{0}' could not be opened."
 msgstr "Не вдалось відкрити файл {0}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:117
 msgid "The file '{0}' could not opened. {1}"
 msgstr "Не вдалось відкрити файл '{0}'. {1}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:110
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Workbench.cs:117
 msgid "The file '{0}' could not opened. File too large."
 msgstr "Не вдалось відкрити файл '{0}'. Він занадто великий."
 
@@ -4437,7 +4444,7 @@ msgstr "Колонки"
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:88
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:5
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:55
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValueTreeView.cs:30
 msgid "Type"
 msgstr "Тип"
@@ -4621,11 +4628,11 @@ msgstr "Сполучення клавіш"
 msgid "Custom"
 msgstr "Власна"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:7
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:9
 msgid "_View Conflicts"
 msgstr "Пока_зати конфлікти"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:23
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:25
 msgid "This key combination is already bound to command '{0}'"
 msgstr "Це сполучення клавіш вже пов'язане з командою '{0}'"
 
@@ -4832,19 +4839,19 @@ msgstr "Перевірити наявність оновлень"
 msgid "The following add-ins could not be started:"
 msgstr "Не вдалось запустити такий додаток:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:12
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:13
 msgid "Control not found!"
 msgstr "Компонент не знайдено!"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:14
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
 msgid "The command of tool \"{0}\" is not set."
 msgstr "Команда запуску засобу \"{0}\" не задана."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:16
 msgid "The command of tool \"{0}\" is invalid."
 msgstr "Команда запуску засобу \"{0}\" некоректна."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:16
 msgid "The working directory of tool \"{0}\" is invalid."
 msgstr "Робоча тека засобу \"{0}\" некоректна."
 
@@ -4885,6 +4892,7 @@ msgid "OVR"
 msgstr "ЗАМ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/IDEStyleOptionsPanel.cs:15
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:57
 #: ../src/addins/MacPlatform/Dialogs/MacAddFileDialogHandler.cs:3
 msgid "(Default)"
 msgstr "(Стандарт)"
@@ -4928,7 +4936,7 @@ msgstr "Справді перемістити елемент '{0}' у робоч
 msgid "Do you really want to remove the item '{0}' from workspace '{1}'?"
 msgstr "Справді вилучити елемент '{0}' з робочого простору '{1}'?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:258
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/ExtensibleTreeView.cs:259
 msgid "Display Options"
 msgstr "Параметри відображення"
 
@@ -5142,37 +5150,25 @@ msgstr "Список значень для вибору користувачем
 msgid "{0} is currently running on <b>{1}</b>."
 msgstr "{0} зараз виконується в <b>{1}</b>."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:9
 msgid "Select the mono installation prefix"
 msgstr "Виберіть префікс встановлення mono"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:9
 msgid "Mono runtime not found"
 msgstr "Середовище виконання Mono не знайдено"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:8
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/MonoRuntimePanel.cs:9
 msgid ""
 "Please provide a valid directory prefix where mono is installed (for "
 "example, /usr)"
 msgstr "Надайте правильний префікс теки, де встановлено mono (наприклад, /usr)"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
-msgid ""
-"If you have a parallel installation of Mono you can register it here, so you "
-"can use it for building and running projects. The <b>default runtime</b> is "
-"the .NET runtime to be used for building and running applications when none "
-"is specifically selected."
-msgstr ""
-"Якщо ви маєте паралельно встановлену Mono, можна зареєструвати її тут, після "
-"чого її можна буде використовувати для побудови і запуску проектів. "
-"<b>Типовим середовищем</b> є .NET, яке використовується для побудови і "
-"запуску проектів, якщо не вказано інше."
-
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:11
 msgid "Set as Default"
 msgstr "Зробити стандартним"
 
-#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:2
+#: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:11
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.AddinInfoView.cs:2
 msgid "label1"
 msgstr "label1"
@@ -5339,70 +5335,65 @@ msgstr "Регулярні вирази"
 msgid "_Whole words only"
 msgstr "Лише _цілі слова"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:10
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:29
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:37
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:36
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
 msgid "Looking in '{0}'"
 msgstr "Пошук у {0}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:10
 msgid "Looking for '{0}' in current document"
 msgstr "Пошук '{0}' у поточному документі"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:11
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:10
 msgid "Replacing '{0}' in current document"
 msgstr "Заміна '{0}' у поточному документі"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:16
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:15
 msgid "Looking for '{0}' in current selection"
 msgstr "Пошук '{0}' у вибраному"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:16
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:15
 msgid "Replacing '{0}' in current selection"
 msgstr "Заміна '{0}' у вибраному"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:19
-msgid "Looking in solution folder '{0}'"
-msgstr "Пошук у теці рішення {0}"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:19
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:25
-msgid "Looking in project '{0}'"
-msgstr "Пошук у проекті '{0}'"
-
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:20
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:27
 msgid "Looking for '{0}' in all projects"
 msgstr "Пошук '{0}' у всіх проектах"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:20
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:27
 msgid "Replacing '{0}' in all projects"
 msgstr "Заміна '{0}' у всіх проектах"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:26
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:32
+msgid "Looking in project '{0}'"
+msgstr "Пошук у проекті '{0}'"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:33
 msgid "Looking for '{0}' in project '{1}'"
 msgstr "Пошук '{0}' у проекті '{1}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:26
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:33
 msgid "Replacing '{0}' in project '{1}'"
 msgstr "Заміна '{0}' у проекті '{1}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:30
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:37
 msgid "Looking for '{0}' in all open documents"
 msgstr "Пошук '{0}' у всіх відкритих документах"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:30
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:37
 msgid "Replacing '{0}' in all open documents"
 msgstr "Заміна '{0}' у всіх відкритих документах"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:51
 msgid "Looking for '{0}' in directory '{1}'"
 msgstr "Пошук '{0}' у теці '{1}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:44
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/Scope.cs:51
 msgid "Replacing '{0}' in directory '{1}'"
 msgstr "Заміна '{0}' у теці '{1}'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindReplace.cs:13
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/FindReplace.cs:15
 msgid "File {0} not found."
 msgstr "Файл {0} не знайдено."
 
@@ -5939,7 +5930,7 @@ msgstr "Власні теки, де MonoDevelop має шукати збірки
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/BuildMessagePanel.cs:5
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:2
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeIssues/CodeIssuePanelWidget.cs:8
 #: ../external/mono-addins/Mono.Addins.Gui/gtk-gui/Mono.Addins.Gui.ErrorDialog.cs:2
 msgid "Error"
@@ -6181,7 +6172,7 @@ msgid "Minimize"
 msgstr "Мінімізувати"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItem.cs:36
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:35
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:37
 msgid "Dock"
 msgstr "Прикріпити"
 
@@ -6852,7 +6843,7 @@ msgid "Code completion database generation"
 msgstr "Створення бази автодоповнення коду"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/CustomExecutionModeDialog.cs:3
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:6
 msgid "(Custom)"
 msgstr "(Власний)"
 
@@ -7141,19 +7132,19 @@ msgstr "Окремий початковий проект:"
 msgid "Multiple startup projects:"
 msgstr "Декілька початкових проектів:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:4
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
 msgid "File Type"
 msgstr "Тип файлу"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:4
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
 msgid "Policy"
 msgstr "Політика"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:5
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:6
 msgid "(Inherited Policy)"
 msgstr "(Успадкована політика)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:9
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeFormattingPanel.cs:10
 msgid ""
 "Are you sure you want to remove the formatting policy for the type '{0}'?"
 msgstr "Ви справді бажаєте вилучити політику форматування для типу '{0}'?"
@@ -7204,7 +7195,7 @@ msgstr "Поточний документ"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:3
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:56
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "Namespace"
 msgstr "Простір назв"
 
@@ -7228,7 +7219,7 @@ msgstr "{0} (Не встановлено)"
 msgid "There must be at least one configuration."
 msgstr "Слід вказати принаймні одну конфігурацію."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:2
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/StartupOptionsPanel.cs:3
 msgid "The solution does not contain any executable project"
 msgstr "Рішення не містить жодного виконуваного проекту"
 
@@ -7521,7 +7512,7 @@ msgid "Search…"
 msgstr "Пошук"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/TemplatePickerWidget.cs:4
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:4
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:5
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs:2
 msgid "All"
 msgstr "Всі"
@@ -8166,7 +8157,7 @@ msgid "Next Tip"
 msgstr "Наступна порада"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:28
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:35
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:37
 msgid "Auto Hide"
 msgstr "Автоприховування"
 
@@ -8431,6 +8422,91 @@ msgstr "Шукати рішення"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CodeAnalysisPanel.cs:12
 msgid "Enable Code Analysis on Build"
 msgstr "Увімкнути аналіз коду при побудові"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:58
+msgid "Catalan"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:59
+#, fuzzy
+msgid "Chinese - China"
+msgstr "Традиційне китайське"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:60
+#, fuzzy
+msgid "Chinese - Taiwan"
+msgstr "Традиційне китайське"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:61
+msgid "Czech"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:62
+msgid "Danish"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:63
+msgid "Dutch"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:64
+msgid "French"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:65
+msgid "Galician"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:66
+msgid "German"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:67
+msgid "English"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:68
+msgid "Hungarian"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:69
+msgid "Indonesian"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:70
+#, fuzzy
+msgid "Italian"
+msgstr "Курсив"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:73
+#, fuzzy
+msgid "Polish"
+msgstr "Опу_блікувати..."
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:74
+msgid "Portuguese"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:75
+msgid "Portuguese - Brazil"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:76
+#, fuzzy
+msgid "Russian"
+msgstr "Кирилиця/Росія"
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:77
+msgid "Slovenian"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:78
+msgid "Spanish"
+msgstr ""
+
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LocalizationService.cs:79
+msgid "Swedish"
+msgstr ""
 
 #: ../src/core/Mono.Texteditor/Mono.TextEditor.PopupWindow/ModeHelpWindow.cs:44
 msgid "Use [%UP%] [%DOWN%] to move to another location."
@@ -9338,7 +9414,7 @@ msgstr "Змінити"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:52
 #: ../src/addins/MonoDevelop.RegexToolkit/gtk-gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:2
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SearchAndReplaceWidget.cs:7
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:26
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:27
 msgid "Replace"
 msgstr "Замінити"
 
@@ -11389,7 +11465,7 @@ msgid "Web and Windows Forms Components"
 msgstr "Компоненти Web та Windows Forms"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport/ToolboxService.cs:12
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:33
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:34
 msgid "Looking for components..."
 msgstr "Пошук компонентів..."
 
@@ -11424,11 +11500,11 @@ msgstr "Розташування збірки."
 msgid "Location"
 msgstr "Розташування"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:33
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:34
 msgid "Add items to toolbox"
 msgstr "Додати компоненти на палітру елементів керування"
 
-#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:33
+#: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:34
 msgid "The file '{0}' does not contain any component."
 msgstr "Файл '{0}' не містить компонентів."
 
@@ -12684,24 +12760,16 @@ msgstr "_Перейти до попереднього використання"
 msgid "_Move to next usage"
 msgstr "_Перейти до наступного використання"
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:33
-msgid "_Expand selection"
-msgstr "_Розширити вибір"
-
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:34
-msgid "_Shrink selection"
-msgstr "_Звузити вибір"
-
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:37
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:35
 msgid "Name Conventions"
 msgstr "Домовленості про позначання"
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:40
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:38
 #, fuzzy
 msgid "Navigate"
 msgstr "Назад"
 
-#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:41
+#: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:39
 msgid "Organize Usings"
 msgstr ""
 
@@ -16153,29 +16221,29 @@ msgstr "<b>Помилка</b>: {0}"
 msgid "_Input Methods"
 msgstr "_Методи введення"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:113
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
 msgid ""
 "This file {0} has been changed outside of {1}. Are you sure you want to "
 "overwrite the file?"
 msgstr "Цей файл {0} змінено за межами {1}. Справді перезаписати файл?"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid "Can't save file"
 msgstr "Не вдалось зберегти файл"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid "The file was marked as read only. Should the file be overwritten?"
 msgstr "Файл позначений, як доступний лише для читання. Перезаписати його?"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid "Operation failed."
 msgstr "Операція завершилась невдало."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid "Can't save file with current codepage."
 msgstr "Неможливо зберегти файл з поточною кодовою сторінкою"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid ""
 "Some unicode characters in this file could not be saved with the current "
 "encoding.\n"
@@ -16187,11 +16255,11 @@ msgstr ""
 "Бажаєте зберегти цей файл в Юнікоді?\n"
 "У діалозі \"Зберегти як\" ви можете вибрати й інше кодування."
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid "Save as Unicode"
 msgstr "Зберегти в Unicode"
 
-#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:114
+#: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 msgid "Can't save file - access denied"
 msgstr "Не вдалось зберегти файл - немає доступу"
 
@@ -16918,7 +16986,7 @@ msgstr "Базові типи"
 msgid "Can't load:"
 msgstr "Не вдалось завантажити:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.addin.xml:2
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser.addin.xml:3
 #, fuzzy
 msgid "_Assembly Browser"
 msgstr "Оглядач збірок"
@@ -18319,39 +18387,39 @@ msgstr "Показати анотацію схеми"
 msgid "Schema changes could not be saved"
 msgstr "Не вдалось зберегти зміни схеми."
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "Built in"
 msgstr "Вбудована"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "User schema"
 msgstr "Користувацька"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "File Extension"
 msgstr "Розширення файлу"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:4
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:5
 msgid "Prefix"
 msgstr "Префікс"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:9
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:10
 msgid "<b>Registered Schema</b>"
 msgstr "<b>Зареєстрована схема</b>"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:11
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:12
 msgid "<b>Default File Associations</b>"
 msgstr "<b>Стандартні відповідності файлів</b>"
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:21
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:22
 msgid "Schema '{0}' could not be loaded."
 msgstr "Не вдалось завантажити схему {0}."
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:23
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:24
 msgid "Schema '{0}' has no target namespace."
 msgstr "Схема '{0}' не має цільового простору назв."
 
-#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:26
+#: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:27
 msgid ""
 "A schema is already registered with the namespace '{0}'. Would you like to "
 "replace it?"
@@ -20568,7 +20636,7 @@ msgstr "Шаблон Razor, що буде перетворений препро�
 msgid "ASP.NET MVC Project"
 msgstr "Проект ASP.NET MVC"
 
-#: ../src/addins/AspNet/Templates/Projects/MvcProject.xpt.xml:9
+#: ../src/addins/AspNet/Templates/Projects/MvcProject.xpt.xml:8
 msgid "Creates an ASP.NET MVC Web Project with Razor Views."
 msgstr "Створити веб-проект ASP.NET MVC з представленнями Razor."
 
@@ -21613,19 +21681,22 @@ msgstr "Пошук пакунків..."
 msgid "All Sources"
 msgstr "Всі джерела"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:663
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:66
-msgid "Add Packages"
-msgstr "Додати пакунки"
-
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:666
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:664
 msgid "Update Package"
 msgstr "Оновити пакунок"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:668
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.cs:662
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:337
+#, fuzzy
 msgid "Add Package"
-msgstr "Додати пакунок"
+msgid_plural "Add Packages"
+msgstr[0] "Додати пакунок"
+msgstr[1] "Додати пакунок"
+msgstr[2] "Додати пакунок"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:66
+msgid "Add Packages"
+msgstr "Додати пакунки"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackagesDialog.UI.cs:153
 msgid "No matching packages found."
@@ -21693,23 +21764,23 @@ msgstr "оновлення"
 msgid "update"
 msgstr "оновити"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:114
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:119
 msgid "available"
 msgstr "доступно"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:119
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:124
 msgid "installing"
 msgstr "встановлення"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:129
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:134
 msgid "Version {0}"
 msgstr "Версія {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:148
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:153
 msgid "Package is not restored"
 msgstr "Пакунок не відновлено"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:150
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:155
 msgid "Package needs retargeting"
 msgstr "Пакунок потрібно перенацілити"
 
@@ -28175,6 +28246,23 @@ msgstr ""
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationChartView.cs:2
 msgid "List View"
 msgstr ""
+
+#~ msgid ""
+#~ "If you have a parallel installation of Mono you can register it here, so "
+#~ "you can use it for building and running projects. The <b>default runtime</"
+#~ "b> is the .NET runtime to be used for building and running applications "
+#~ "when none is specifically selected."
+#~ msgstr ""
+#~ "Якщо ви маєте паралельно встановлену Mono, можна зареєструвати її тут, "
+#~ "після чого її можна буде використовувати для побудови і запуску проектів. "
+#~ "<b>Типовим середовищем</b> є .NET, яке використовується для побудови і "
+#~ "запуску проектів, якщо не вказано інше."
+
+#~ msgid "Looking in solution folder '{0}'"
+#~ msgstr "Пошук у теці рішення {0}"
+
+#~ msgid "_Shrink selection"
+#~ msgstr "_Звузити вибір"
 
 #~ msgid "errorCode"
 #~ msgstr "errorCode"

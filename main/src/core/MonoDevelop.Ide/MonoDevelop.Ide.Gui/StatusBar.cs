@@ -37,6 +37,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
+using System.Threading;
 
 namespace MonoDevelop.Ide
 {
@@ -68,6 +69,12 @@ namespace MonoDevelop.Ide
 		/// status bar, this pad will be activated. This source pad is reset at every ShowMessage call.
 		/// </summary>
 		void SetMessageSourcePad (Pad pad);
+
+		/// <summary>
+		/// When set, the status bar can be cancelled via this cancellation source.
+		/// </summary>
+		/// <value>The cancellation token.</value>
+		void SetCancellationTokenSource (CancellationTokenSource source);
 	}
 	
 }

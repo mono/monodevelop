@@ -46,6 +46,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			base.Initialize (builders, options, contextMenuPath);
 			foreach (WorkspaceItem it in IdeApp.Workspace.Items)
 				treeView.AddChild (it);
+			base.TreeView.Tree.Name = "solutionBrowserTree";
 		}
 		
 		protected virtual void OnOpenWorkspace (object sender, WorkspaceItemEventArgs e)

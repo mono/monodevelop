@@ -157,6 +157,7 @@
   <ItemGroup>
     <Compile Include="ParameterHinting.fs" />
     <Compile Include="HighlightUsagesTests.fs" />
+    <Compile Include="SelectionTests.fs" />
     <None Include="paket.references" />
     <None Include="Samples\Xamarin.iOS.fsproj" />
   </ItemGroup>
@@ -316,4 +317,18 @@
       </ItemGroup>
     </When>
   </Choose>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-fsharp" />
+          <FSharpFormattingPolicy scope="text/x-fsharp">
+            <DefaultFormat IndentOnTryWith="False" ReorderOpenDeclaration="False" SpaceAfterComma="True" SpaceAfterSemicolon="True" SpaceAroundDelimiter="True" SpaceBeforeArgument="True" SpaceBeforeColon="True" />
+          </FSharpFormattingPolicy>
+          <TextStylePolicy inheritsSet="null" scope="application/fsproject+xml" />
+          <XmlFormattingPolicy inheritsSet="null" scope="application/fsproject+xml" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

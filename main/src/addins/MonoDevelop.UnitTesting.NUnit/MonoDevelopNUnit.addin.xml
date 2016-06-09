@@ -16,7 +16,11 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
-		<Image id="md-nunit-library-project" resource="nunit-library-project.png" />
+		<Image id="md-test-project" resource="project-test-template.png" />
+	</Extension>
+	
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-test-project" resource="project-test-32.png" size="Dnd" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/UnitTesting/UnitTestMarkers">

@@ -264,5 +264,41 @@ namespace cp654fz7
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.IsNull (provider.Find ("MainClass"));
 		}
+
+
+		/// <summary>
+		/// Bug 41388 - Code completion is incorrect for array types
+		/// </summary>
+		[Test]
+		public void TestBug41388 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+
+class Test
+{
+	public event EventHandler FooBar;
+
+	public Test[] test { get; private set; }
+
+
+	public Test()
+	{
+		test = new $$
+		FooBar += Test_FooBar;
+	}
+
+	void Test_FooBar(object sender, EventArgs e)
+	{
+
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+
+			Assert.IsNull (provider.Find ("System.Action<object, System.EventArgs>"));
+		}
 	}
 }

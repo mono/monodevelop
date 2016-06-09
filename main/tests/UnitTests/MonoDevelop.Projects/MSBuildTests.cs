@@ -484,6 +484,17 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
+		[Test]
+		public async Task EvaluateImportedProperty ()
+		{
+			// Even when a property is defined in an imported targets file, the project properties should include the value
+			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
+			Solution sol = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			var p = (DotNetProject)sol.GetAllProjects ().First ();
+
+			Assert.AreEqual ("yes", p.ProjectProperties.GetValue ("Imported"));
+		}
+
 		//[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
 		[Test]
 		public async Task EvaluatePropertiesWithConditionalGroup ()

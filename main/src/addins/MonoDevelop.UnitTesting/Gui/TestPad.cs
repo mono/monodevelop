@@ -348,6 +348,8 @@ namespace MonoDevelop.UnitTesting
 			
 			foreach (UnitTest t in UnitTestService.RootTests)
 				TreeView.AddChild (t);
+			
+			base.TreeView.Tree.Name = "unitTestBrowserTree";
 		}
 		
 		void OnTestSuiteChanged (object sender, EventArgs e)

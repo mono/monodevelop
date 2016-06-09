@@ -813,6 +813,11 @@ namespace MonoDevelop.Components.Docking
 					if (dh > height)
 						height = dh;
 				}
+				if (boundTabStrip != null) {
+					var tr = boundTabStrip.SizeRequest ();
+					if (width < tr.Width)
+						width = tr.Width;
+				}
 			}
 			else if (type == DockGroupType.Vertical) {
 				height = VisibleObjects.Count > 1 ? (VisibleObjects.Count - 1) * Frame.TotalHandleSize : 0;

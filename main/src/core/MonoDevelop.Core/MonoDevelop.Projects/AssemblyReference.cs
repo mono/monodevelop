@@ -59,7 +59,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		public IEnumerable<string> EnumerateAliases ()
 		{
-			return Aliases.Split (',', ';').Where (a => !string.IsNullOrEmpty (a));
+			return Aliases.Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
 		}
 	}
 }

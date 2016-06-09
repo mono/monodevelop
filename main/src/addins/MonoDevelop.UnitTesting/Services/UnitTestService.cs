@@ -402,7 +402,8 @@ namespace MonoDevelop.UnitTesting
 		public TestSession (UnitTest test, MonoDevelop.Projects.ExecutionContext context, TestResultsPad resultsPad, CancellationTokenSource cs)
 		{
 			this.test = test;
-			this.context = new Projects.ExecutionContext (context.ExecutionHandler, new CustomConsoleFactory (context.ConsoleFactory, cs), context.ExecutionTarget);
+			if (context != null)
+				this.context = new Projects.ExecutionContext (context.ExecutionHandler, new CustomConsoleFactory (context.ConsoleFactory, cs), context.ExecutionTarget);
 			CancellationTokenSource = cs;
 			this.monitor = new TestMonitor (resultsPad, CancellationTokenSource);
 			this.resultsPad = resultsPad;
