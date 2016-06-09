@@ -73,25 +73,24 @@ namespace MonoDevelop.Core
 			// Set the user defined language
 			string lang = Runtime.Preferences.UserInterfaceLanguage;
 			if (!string.IsNullOrEmpty (lang)) {
-				if (Platform.IsWindows) {
-					string cultureLang;
-					if (!localeToCulture.TryGetValue (lang, out cultureLang))
-						cultureLang = lang.Replace("_", "-");
-					CultureInfo ci = CultureInfo.GetCultureInfo(cultureLang);
-					if (ci.IsNeutralCulture) {
-						// We need a non-neutral culture
-						foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
-							if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
-								ci = c;
-								break;
-							}
-					}
-					if (!ci.IsNeutralCulture) {
-						SetThreadUILanguage (ci.LCID);
-						mainThread.CurrentUICulture = ci;
-					}
+				string cultureLang;
+				if (!localeToCulture.TryGetValue (lang, out cultureLang))
+					cultureLang = lang.Replace ("_", "-");
+				CultureInfo ci = CultureInfo.GetCultureInfo (cultureLang);
+				if (ci.IsNeutralCulture) {
+					// We need a non-neutral culture
+					foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
+						if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
+							ci = c;
+							break;
+						}
 				}
-				else
+				if (!ci.IsNeutralCulture) {
+					if (Platform.IsWindows)
+						SetThreadUILanguage (ci.LCID);
+					mainThread.CurrentUICulture = ci;
+				}
+				if (!Platform.IsWindows)
 					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
 			}
 			
