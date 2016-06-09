@@ -64,7 +64,7 @@ namespace MonoDevelop.AspNet.Commands
 				}
 			}
 
-			MessageService.ShowError ("Matching view cannot be found.");
+			MessageService.ShowError (GettextCatalog.GetString ("Matching view cannot be found."));
 		}
 	}
 }

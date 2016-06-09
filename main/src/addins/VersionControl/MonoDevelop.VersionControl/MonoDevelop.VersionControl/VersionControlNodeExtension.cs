@@ -95,7 +95,9 @@ namespace MonoDevelop.VersionControl
 			
 			VersionInfo vi = repo.GetVersionInfo (file);
 
-			nodeInfo.OverlayBottomRight = VersionControlService.LoadOverlayIconForStatus (vi.Status);
+			var overlay = VersionControlService.LoadOverlayIconForStatus (vi.Status);
+			if (overlay != null)
+				nodeInfo.OverlayBottomRight = overlay;
 		}
 
 /*		public override void PrepareChildNodes (object dataObject)
@@ -128,7 +130,8 @@ namespace MonoDevelop.VersionControl
 			} else {
 				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
 			}
-			nodeInfo.OverlayBottomRight = overlay;
+			if (overlay != null)
+				nodeInfo.OverlayBottomRight = overlay;
 		}
 		
 		void Monitor (object sender, FileUpdateEventArgs args)

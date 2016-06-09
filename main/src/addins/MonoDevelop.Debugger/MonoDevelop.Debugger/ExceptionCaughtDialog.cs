@@ -155,6 +155,7 @@ namespace MonoDevelop.Debugger
 		{
 			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
 			StackTraceTreeView = new TreeView (store);
+			StackTraceTreeView.SearchColumn = -1; // disable the interactive search
 			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;
@@ -329,7 +330,7 @@ namespace MonoDevelop.Debugger
 
 				if (OnlyShowMyCodeCheckbox.Active && !isUserCode) {
 					if (!external) {
-						var str = GettextCatalog.GetString ("<b>[External Code]</b>");
+						var str = "<b>" + GettextCatalog.GetString ("[External Code]") + "</b>";
 						model.AppendValues (null, str, false);
 						external = true;
 					}

@@ -253,15 +253,7 @@ namespace MonoDevelop.CodeIssues
 			treeviewInspections.AppendColumn (titleCol);
 			titleCol.PackStart (toggleRenderer, false);
 			titleCol.Sizing = TreeViewColumnSizing.Autosize;
-			titleCol.SetCellDataFunc (toggleRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
-				if (provider == null) {
-					toggleRenderer.Visible = false;
-					return;
-				}
-				toggleRenderer.Visible = true;
-				toggleRenderer.Active = enableState[provider];
-			});
+			titleCol.SetCellDataFunc (toggleRenderer, TitleColDataFunc);
 
 
 			var cellRendererText = new CellRendererText {
@@ -317,25 +309,44 @@ namespace MonoDevelop.CodeIssues
 				} while (comboBoxStore.IterNext (ref storeIter));
 			};
 			
-			col.SetCellDataFunc (comboRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
-				if (provider == null) {
-					comboRenderer.Visible = false;
-					return;
-				}
-				var severity = severities[provider];
-				if (!severity.HasValue) {
-					comboRenderer.Visible = false;
-					return;
-				}
-				comboRenderer.Visible = true;
-				comboRenderer.Text = GetDescription (severity.Value);
-				comboRenderer.Icon = GetIcon (severity.Value);
-			});
+			col.SetCellDataFunc (comboRenderer, ComboDataFunc);
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
+			treeviewInspections.SearchColumn = -1; // disable the interactive search
 			GetAllSeverities ();
 			FillInspectors (null);
+		}
+
+		// TODO: Make static.
+		void TitleColDataFunc (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)model.GetValue (iter, 1);
+			if (provider == null) {
+				cell.Visible = false;
+				return;
+			}
+			cell.Visible = true;
+			((CellRendererToggle)cell).Active = enableState [provider];
+		}
+
+		// TODO: Make static.
+		void ComboDataFunc (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+			if (provider == null) {
+				cell.Visible = false;
+				return;
+			}
+			var severity = severities [provider];
+			if (!severity.HasValue) {
+				cell.Visible = false;
+				return;
+			}
+			cell.Visible = true;
+
+			var combo = (CustomCellRenderer)cell;
+			combo.Text = GetDescription (severity.Value);
+			combo.Icon = GetIcon (severity.Value);
 		}
 
 		void ApplyFilter (object sender, EventArgs e)

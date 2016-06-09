@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -92,7 +93,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		protected override string StartingMessageFormat {
-			get { return "Adding {0}..."; }
+			get { return GettextCatalog.GetString ("Adding {0}..."); }
 		}
 
 		protected override IOpenPackageReadMeMonitor CreateOpenPackageReadMeMonitor (string packageId)

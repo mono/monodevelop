@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory6.CSharp.ExtractMethod;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.CSharp.Completion;
+using MonoDevelop.Core;
 
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
@@ -156,6 +157,22 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return result.ToString ();
 		}
 
+		public static CompletionCategory category = new DelegateCreationCategory ();
+
+		public class DelegateCreationCategory : CompletionCategory
+		{
+			public DelegateCreationCategory ()
+			{
+				this.DisplayText = GettextCatalog.GetString ("Delegate Handlers");
+			}
+
+			public override int CompareTo (CompletionCategory other)
+			{
+				return -1;
+			}
+		}
+
+
 		void AddDelegateHandlers (List<CompletionData> completionList, SyntaxNode parent, SemanticModel semanticModel, CompletionEngine engine, CompletionResult result, ITypeSymbol delegateType, int position, string optDelegateName, CancellationToken cancellationToken)
 		{
 			var delegateMethod = delegateType.GetDelegateInvokeMethod ();
@@ -177,6 +194,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					"delegate {" + EolMarker + thisLineIndent,
 					delegateEndString
 				);
+				item.CompletionCategory = category;
 				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
 					completionList.Add (item);
 
@@ -189,6 +207,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					"async delegate {" + EolMarker + thisLineIndent,
 					delegateEndString
 				);
+				item.CompletionCategory = category;
 				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
 					completionList.Add (item);
 			}
@@ -218,6 +237,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					signature + " => ",
 					(addSemicolon ? ";" : "")
 				);
+				item.CompletionCategory = category;
 				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
 					completionList.Add (item);
 
@@ -230,6 +250,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					"async " + signature + " => ",
 					(addSemicolon ? ";" : "")
 				);
+				item.CompletionCategory = category;
 				if (!completionList.Any (i => i.DisplayText == item.DisplayText))
 					completionList.Add (item);
 
@@ -242,9 +263,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						signatureWithoutTypes + " => ",
 						(addSemicolon ? ";" : "")
 					);
-					if (!completionList.Any (i => i.DisplayText == item.DisplayText))
+					item.CompletionCategory = category;
+					if (!completionList.Any (i => i.DisplayText == item.DisplayText)) {
 						completionList.Add (item);
-
+						result.DefaultCompletionString = item.DisplayText;
+					}
+					
 					//if (LanguageVersion.Major >= 5) {
 					item = engine.Factory.CreateAnonymousMethod (
 						this,
@@ -253,6 +277,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 						"async " + signatureWithoutTypes + " => ",
 						(addSemicolon ? ";" : "")
 					);
+					item.CompletionCategory = category;
 					if (!completionList.Any (i => i.DisplayText == item.DisplayText))
 						completionList.Add (item);
 
@@ -265,8 +290,12 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			var curType = semanticModel.GetEnclosingSymbol<INamedTypeSymbol> (position, cancellationToken);
 			var uniqueName = new UniqueNameGenerator (semanticModel).CreateUniqueMethodName (parent, varName);
 			item = engine.Factory.CreateNewMethodDelegate (this, delegateType, uniqueName, curType);
-			if (!completionList.Any (i => i.DisplayText == item.DisplayText))
+			item.CompletionCategory = category;
+			if (!completionList.Any (i => i.DisplayText == item.DisplayText)) {
 				completionList.Add (item);
+				if (string.IsNullOrEmpty (result.DefaultCompletionString))
+					result.DefaultCompletionString = item.DisplayText;
+			}
 		}
 	}
 }

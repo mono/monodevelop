@@ -223,11 +223,7 @@ namespace MonoDevelop.PackageManagement
 
 		void LogPackagesFound (int count)
 		{
-			if (count == 1) {
-				Log (GettextCatalog.GetString ("{0} update found.", count));
-			} else {
-				Log (GettextCatalog.GetString ("{0} updates found.", count));
-			}
+			Log (GettextCatalog.GetPluralString ("{0} update found.", "{0} updates found.", count, count));
 		}
 
 		void Log (string message)

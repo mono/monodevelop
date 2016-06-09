@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<_Name>Library</_Name>
 		<Category>other/net/general</Category>
-		<Icon>md-project-library</Icon>
+		<Icon>md-library-project</Icon>
 		<Image id="md-library-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# class library</_Description>

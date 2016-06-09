@@ -31,7 +31,7 @@ namespace MonoDevelop.VersionControl.Git
 			this.labelTop = new global::Gtk.Label ();
 			this.labelTop.Name = "labelTop";
 			this.labelTop.Xalign = 0F;
-			this.labelTop.LabelProp = "A merge conflict has been detected in file <b>SomeFile.txt</b>";
+			this.labelTop.LabelProp = global::Mono.Unix.Catalog.GetString ("A merge conflict has been detected in file <b>SomeFile.txt</b>");
 			this.labelTop.UseMarkup = true;
 			this.vbox2.Add (this.labelTop);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelTop]));

@@ -506,6 +506,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			} else {
 				outlineTreeView.Model = outlineTreeStore;
 			}
+			outlineTreeView.SearchColumn = -1; // disable the interactive search
 
 			// Because sorting the tree by setting the sort function also collapses the tree view we expand
 			// the whole tree.

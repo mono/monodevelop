@@ -278,17 +278,42 @@
     <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml">
       <LogicalName>MonoDevelop.Deployment.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\packaging-project.png">
-      <LogicalName>packaging-project.png</LogicalName>
+	
+    <EmbeddedResource Include="templates\images\project-package-template.png">
+      <LogicalName>project-package-template.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\packaging-project%402x.png">
-      <LogicalName>packaging-project@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-package-template%402x.png">
+      <LogicalName>project-package-template@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\packaging-project~dark.png">
-      <LogicalName>packaging-project~dark.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-package-template~dark.png">
+      <LogicalName>project-package-template~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="templates\images\packaging-project~dark%402x.png">
-      <LogicalName>packaging-project~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="templates\images\project-package-template~dark%402x.png">
+      <LogicalName>project-package-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32.png">
+      <LogicalName>project-package-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32%402x.png">
+      <LogicalName>project-package-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32~dark.png">
+      <LogicalName>project-package-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32~dark%402x.png">
+      <LogicalName>project-package-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32~sel.png">
+      <LogicalName>project-package-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32~sel%402x.png">
+      <LogicalName>project-package-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32~dark~sel.png">
+      <LogicalName>project-package-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\project-package-32~dark~sel%402x.png">
+      <LogicalName>project-package-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -113,7 +113,7 @@ namespace MonoDevelop.VersionControl.Subversion.Gui
 			this.labelReason = new global::Gtk.Label ();
 			this.labelReason.Name = "labelReason";
 			this.labelReason.Xalign = 0F;
-			this.labelReason.LabelProp = "<b>Reason</b>";
+			this.labelReason.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Reason</b>");
 			this.labelReason.UseMarkup = true;
 			this.vbox3.Add (this.labelReason);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.labelReason]));

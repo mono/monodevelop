@@ -71,17 +71,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetLabel ()
 		{
-			return GettextCatalog.GetString ("Packages") + GetUpdatedPackagesCountLabel ();
+			return GettextCatalog.GetString ("Packages");
 		}
 
-		string GetUpdatedPackagesCountLabel ()
+		public string GetSecondaryLabel ()
 		{
 			int count = GetUpdatedPackagesCount ();
 			if (count == 0) {
 				return String.Empty;
 			}
 
-			return " <span color='grey'>" + GetUpdatedPackagesCountLabel (count) + "</span>";
+			return GetUpdatedPackagesCountLabel (count);
 		}
 
 		string GetUpdatedPackagesCountLabel (int count)

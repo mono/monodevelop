@@ -227,14 +227,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		string FormatTargetFramework (TargetFramework fx)
 		{
-			string description;
 			if (fx == missingFramework)
-				description = " - not installed";
+				return GettextCatalog.GetString ("PCL {0} - {1} - not installed", fx.Id.Version, fx.Id.Profile);
 			else
-				description = string.Empty;
-
-			return string.Format (
-				"PCL {0} - {1}{2}", fx.Id.Version, fx.Id.Profile, description);
+				return GettextCatalog.GetString ("PCL {0} - {1}", fx.Id.Version, fx.Id.Profile);
 		}
 
 		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
@@ -249,11 +245,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		void CreateUI ()
 		{
-			AddLabel ("Current Profile:", 0);
+			AddLabel (GettextCatalog.GetString ("Current Profile:"), 0);
 
 			AddTopSelectorCombo ();
 
-			AddLabel ("Target Frameworks:", 18);
+			AddLabel (GettextCatalog.GetString ("Target Frameworks:"), 18);
 
 			// Add multi-option combo boxes first
 			foreach (var opt in options) {
@@ -410,7 +406,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				TopPadding = 8, LeftPadding = 18, RightPadding = 18
 			};
 
-			warning = new Label ("Test Error");
+			warning = new Label (GettextCatalog.GetString ("Test Error"));
 			warning.SetAlignment (0.0f, 0.5f);
 			warning.Show ();
 
@@ -504,7 +500,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var selectedOptions = options.Where (o => o.Check.Active).ToList ();
 
 			if (selectedOptions.Count < 2) {
-				SetWarning ("Need to select at least two frameworks.");
+				SetWarning (GettextCatalog.GetString ("Need to select at least two frameworks."));
 				return;
 			}
 
@@ -520,7 +516,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				f => IsApplicable (f, true, selectedFrameworks)).ToList ();
 
 			if (applicable.Count == 0) {
-				AddWarning ("No applicable frameworks for this selection!");
+				AddWarning (GettextCatalog.GetString ("No applicable frameworks for this selection!"));
 				return;
 			}
 
@@ -540,9 +536,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				return;
 			} else if (exactMatches.Count > 1) {
 				// This should never happen.
-				AddWarning ("Multiple frameworks match the current selection:");
+				AddWarning (GettextCatalog.GetString ("Multiple frameworks match the current selection:"));
 				exactMatches.ForEach (e => AddWarning ("     " + e.Id));
-				AddWarning ("You must manually pick a profile in the drop-down selector.");
+				AddWarning (GettextCatalog.GetString ("You must manually pick a profile in the drop-down selector."));
 				// This is very bad UX, we should really disable "Ok" / add an "Apply"
 				// button, but it's better than nothing.
 				target = exactMatches [0];
@@ -563,14 +559,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			if (common.Count == 0) {
 				// Ok, the user must pick something.
-				AddWarning ("Found multiple applicable frameworks, you need to " +
-					"select additional check boxes.");
+				AddWarning (GettextCatalog.GetString ("Found multiple applicable frameworks, you need to select additional check boxes."));
 				// Same here: randomly pick a profile to make "Ok" happy.
 				target = applicable [0];
 				return;
 			}
 
-			AddInfo ("The following frameworks have been implicitly selected:");
+			AddInfo (GettextCatalog.GetString ("The following frameworks have been implicitly selected:"));
 			AddInfo ("   " + string.Join (", ", common.Select (c => GetDisplayName (c))));
 
 			// Implicitly select them.

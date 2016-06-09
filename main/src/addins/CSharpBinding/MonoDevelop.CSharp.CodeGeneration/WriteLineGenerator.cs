@@ -126,17 +126,18 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var format = new StringBuilder ();
 				int i = 0;
+				format.Append ("$\"");
 				foreach (var member in includedMembers) {
 					if (i > 0)
 						format.Append (", ");
 					format.Append (GetName (member));
 					format.Append ("={");
-					format.Append (i++);
+					format.Append (member.ToString ());
 					format.Append ("}");
 				}
-
+				format.Append ("\"");
 				var arguments = new List<ArgumentSyntax> ();
-				arguments.Add (SyntaxFactory.Argument (SyntaxFactory.LiteralExpression (SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal (format.ToString ()))));
+				arguments.Add (SyntaxFactory.Argument (SyntaxFactory.ParseExpression (format.ToString ())));
 				var node = 
 					SyntaxFactory.ExpressionStatement (
 						SyntaxFactory.InvocationExpression (

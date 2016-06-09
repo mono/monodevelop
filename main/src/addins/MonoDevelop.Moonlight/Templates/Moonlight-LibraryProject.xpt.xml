@@ -7,7 +7,6 @@
 	<TemplateConfiguration>
 		<_Name>Moonlight Library Project</_Name>
 		<_Category>C#/Moonlight</_Category>
-		<Icon>md-project-web</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Moonlight class library project.</_Description>
 	</TemplateConfiguration>

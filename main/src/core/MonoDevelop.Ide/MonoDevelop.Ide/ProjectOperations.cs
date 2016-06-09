@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
 			var doc = TextEditorFactory.CreateNewDocument ();
-			doc.Text = provider.ReadString ();
+			doc.Text = provider.ReadString ().ReadToEnd ();
 			int position = location.SourceSpan.Start;
 			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
@@ -269,8 +269,8 @@ namespace MonoDevelop.Ide
 				if (metadataDllName == "CommonLanguageRuntimeLibrary")
 					metadataDllName = "corlib.dll";
 				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
-					if (assembly.IndexOf (metadataDllName) > 0) {
-						fileName = dn.GetAbsoluteChildPath (assembly);
+					if (assembly.FilePath.ToString ().IndexOf (metadataDllName, StringComparison.Ordinal) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
 					}
 				}
@@ -311,8 +311,11 @@ namespace MonoDevelop.Ide
 			
 			if (askIfMultipleLocations && locations.Length > 1) {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					foreach (var part in locations)
+					foreach (var part in locations) {
+						if (monitor.CancellationToken.IsCancellationRequested)
+							return;
 						monitor.ReportResult (GetJumpTypePartSearchResult (symbol, part));
+					}
 				}
 				return;
 			}
@@ -331,8 +334,8 @@ namespace MonoDevelop.Ide
 			var dn = project as DotNetProject;
 			if (dn != null) {
 				foreach (var assembly in await dn.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration)) {
-					if (assembly.IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
-						fileName = dn.GetAbsoluteChildPath (assembly);
+					if (assembly.FilePath.ToString ().IndexOf(metadataDllName, StringComparison.Ordinal) > 0) {
+						fileName = dn.GetAbsoluteChildPath (assembly.FilePath);
 						break;
 					}
 				}
@@ -1177,7 +1180,11 @@ namespace MonoDevelop.Ide
 			try {
 				OnStartClean (monitor, tt);
 
+				monitor.BeginTask (GettextCatalog.GetString ("Rebuilding..."), 2);
+				monitor.BeginStep (GettextCatalog.GetString ("Rebuilding... (Clean)"));
+
 				var res = await CleanAsync (entry, monitor, tt, true, operationContext);
+				monitor.EndStep ();
 				if (res.HasErrors) {
 					tt.End ();
 					monitor.Dispose ();
@@ -1186,6 +1193,7 @@ namespace MonoDevelop.Ide
 				if (StartBuild != null) {
 					BeginBuild (monitor, tt, true);
 				}
+				monitor.BeginStep (GettextCatalog.GetString ("Rebuilding... (Build)"));
 				return await BuildSolutionItemAsync (entry, monitor, tt, operationContext:operationContext);
 			} finally {
 				tt.End ();

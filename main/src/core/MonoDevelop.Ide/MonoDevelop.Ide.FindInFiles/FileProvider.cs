@@ -76,22 +76,15 @@ namespace MonoDevelop.Ide.FindInFiles
 			SelectionEndPosition = selectionEndPosition;
 		}
 		
-		public string ReadString ()
+		public TextReader ReadString ()
 		{
 			return ReadString (false);
 		}
 
-		WeakReference cachedText;
-
-		public string ReadString (bool readBinaryFiles)
+		public TextReader ReadString (bool readBinaryFiles)
 		{
-			string result = cachedText != null ? cachedText.Target as string : null;
-			if (result != null) {
-				return result;
-			}
-
 			if (buffer != null) {
-				result = buffer.ToString ();
+				return new StringReader (buffer.ToString ());
 			} else {
 				Document doc = null;
 
@@ -100,27 +93,27 @@ namespace MonoDevelop.Ide.FindInFiles
 					doc = task.Result;
 
 				if (doc != null && doc.Editor != null) {
-					result = doc.Editor.Text;
-					encoding = doc.Editor.Encoding;
-					hadBom = doc.Editor.UseBOM;
+					return doc.Editor.CreateReader ();
 				} else {
-					try {
-						if (!File.Exists (FileName))
-							return null;
-						var content = File.ReadAllBytes (FileName);
-						if (!readBinaryFiles && TextFileUtility.IsBinary (content))
-							return null;
-						result = TextFileUtility.GetText (content, out encoding, out hadBom);
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while opening " + FileName, e);
-						return null;
-					}
+					return GetReaderForFileName (readBinaryFiles);
 				}
 			}
-			cachedText = new WeakReference (result);
-			return result;
 		}
-		
+
+		internal TextReader GetReaderForFileName (bool readBinaryFiles = false)
+		{
+			try {
+				if (!File.Exists (FileName))
+					return null;
+				if (!readBinaryFiles && TextFileUtility.IsBinary (FileName))
+					return null;
+				return TextFileUtility.OpenStream (FileName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while opening " + FileName, e);
+				return null;
+			}
+		}
+
 		async Task<Document> SearchDocument ()
 		{
 			string fullPath = Path.GetFullPath (FileName);

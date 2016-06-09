@@ -69,24 +69,29 @@ namespace MonoDevelop.CSharp.Refactoring
 			Task.Run (async delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
 					IEnumerable<ISymbol> result;
-					if (symbol.ContainingType != null && symbol.ContainingType.TypeKind == TypeKind.Interface) {
-						result = await SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false); 
-					} else if (symbol.Kind == SymbolKind.NamedType) {
-						var type = (INamedTypeSymbol)symbol;
-						if (type.TypeKind == TypeKind.Interface) {
-							
-							result = (await SymbolFinder.FindImplementationsAsync (type, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ().Concat (
-								await FindInterfaceImplementaitonsAsync (type, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false) 
-							);
+					try {
+						if (symbol.ContainingType != null && symbol.ContainingType.TypeKind == TypeKind.Interface) {
+							result = await SymbolFinder.FindImplementationsAsync (symbol, TypeSystemService.Workspace.CurrentSolution, cancellationToken: monitor.CancellationToken).ConfigureAwait (false);
+						} else if (symbol.Kind == SymbolKind.NamedType) {
+							var type = (INamedTypeSymbol)symbol;
+							if (type.TypeKind == TypeKind.Interface) {
+
+								result = (await SymbolFinder.FindImplementationsAsync (type, TypeSystemService.Workspace.CurrentSolution, cancellationToken: monitor.CancellationToken).ConfigureAwait (false)).Cast<ISymbol> ().Concat (
+									await FindInterfaceImplementaitonsAsync (type, TypeSystemService.Workspace.CurrentSolution, monitor.CancellationToken).ConfigureAwait (false)
+								);
+							} else {
+								result = (await SymbolFinder.FindDerivedClassesAsync (type, TypeSystemService.Workspace.CurrentSolution, cancellationToken: monitor.CancellationToken).ConfigureAwait (false)).Cast<ISymbol> ();
+							}
 						} else {
-							result = (await SymbolFinder.FindDerivedClassesAsync (type, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false)).Cast<ISymbol> ();
+							result = await SymbolFinder.FindOverridesAsync (symbol, TypeSystemService.Workspace.CurrentSolution, cancellationToken: monitor.CancellationToken).ConfigureAwait (false);
 						}
-					} else {
-						result = await SymbolFinder.FindOverridesAsync (symbol, TypeSystemService.Workspace.CurrentSolution).ConfigureAwait (false);
-					}
-					foreach (var foundSymbol in result) {
-						foreach (var loc in foundSymbol.Locations)
-							monitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+						foreach (var foundSymbol in result) {
+							foreach (var loc in foundSymbol.Locations) {
+								monitor.CancellationToken.ThrowIfCancellationRequested ();
+								monitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							}
+						}
+					} catch (OperationCanceledException) {
 					}
 				}
 			});

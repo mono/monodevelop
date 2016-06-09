@@ -65,6 +65,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			this.Build();
 			
+			textview1.SetMarkup (textview1.Buffer.Text);
+			
 			labelRunning.Markup = GettextCatalog.GetString (
 				"{0} is currently running on <b>{1}</b>.",
 				BrandingService.ApplicationName,
@@ -72,7 +74,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			);
 			store = new ListStore (typeof(string), typeof(object));
 			tree.Model = store;
-			
+			tree.SearchColumn = -1; // disable the interactive search
+
 			CellRendererText crt = new CellRendererText ();
 			tree.AppendColumn ("Runtime", crt, "markup", 0);
 			TargetRuntime defRuntime = IdeApp.Preferences.DefaultTargetRuntime;

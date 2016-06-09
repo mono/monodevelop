@@ -81,6 +81,6 @@
 		<StockIcon stockid = "device" resource = "device.png" size="Menu" />
 		<StockIcon stockid = "pause" resource = "pause.png" size="Menu" />
 		<StockIcon stockid = "project" resource = "project.png" size="Menu" />
-		<StockIcon stockid = "stop" resource = "stop.png" size="Menu" />
+		<StockIcon stockid = "status-stop" resource = "status-stop-16.png" size="Menu" />
 	</Extension>
 </ExtensionModel>

@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			list = new TreeView ();
 			store = new ListStore (typeof(string), typeof(string), typeof(bool), typeof(string));
 			list.Model = store;
+			list.SearchColumn = -1; // disable the interactive search
 			Add (list);
 			
 			CellRendererText crt = new CellRendererText ();

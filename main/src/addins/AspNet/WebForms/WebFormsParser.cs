@@ -58,7 +58,7 @@ namespace MonoDevelop.AspNet.WebForms
 				parser.Parse (parseOptions.Content.CreateReader ());
 			} catch (Exception ex) {
 				LoggingService.LogError ("Unhandled error parsing ASP.NET document '" + (parseOptions.FileName ?? "") + "'", ex);
-				errors.Add (new Error (ErrorType.Error, "Unhandled error parsing ASP.NET document: " + ex.Message));
+				errors.Add (new Error (ErrorType.Error, GettextCatalog.GetString ("Unhandled error parsing ASP.NET document: {0}", ex.Message)));
 			}
 
 			// get the errors from the StateEngine parser
@@ -71,10 +71,10 @@ namespace MonoDevelop.AspNet.WebForms
 			var type = AspNetAppProjectFlavor.DetermineWebSubtype (parseOptions.FileName);
 			if (type != info.Subtype) {
 				if (info.Subtype == WebSubtype.None) {
-					errors.Add (new Error (ErrorType.Error, "File directive is missing", new DocumentLocation (1, 1)));
+					errors.Add (new Error (ErrorType.Error, GettextCatalog.GetString ("File directive is missing"), new DocumentLocation (1, 1)));
 				} else {
 					type = info.Subtype;
-					errors.Add (new Error (ErrorType.Warning, "File directive does not match page extension", new DocumentLocation (1, 1)));
+					errors.Add (new Error (ErrorType.Warning, GettextCatalog.GetString ("File directive does not match page extension"), new DocumentLocation (1, 1)));
 				}
 			}
 			

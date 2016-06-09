@@ -59,6 +59,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 			store = new ListStore(typeof (Xwt.Drawing.Image), typeof (string), typeof (string), typeof(bool), typeof(object));
 			fileList.Model = store;
+			fileList.SearchColumn = -1; // disable the interactive search
 			this.changeSet = changeSet;
 			oldMessage = changeSet.GlobalComment;
 

@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		internal SearchProgressMonitor (Pad pad, CancellationTokenSource cancellationTokenSource = null): base (Runtime.MainSynchronizationContext, cancellationTokenSource)
 		{
-			AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad));
+			AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Searching..."), Stock.StatusSearch, false, true, false, pad, true));
 
 			outputPad = (SearchResultPad) pad.Content;
 			outputPad.CancellationTokenSource = CancellationTokenSource;
@@ -99,14 +99,18 @@ namespace MonoDevelop.Ide.FindInFiles
 		protected override void OnCompleted ()
 		{
 			if (outputPad == null) throw GetDisposedException ();
+
 			outputPad.WriteText ("\n");
 			
 			foreach (string msg in SuccessMessages)
 				outputPad.WriteText (msg + "\n");
 			
+			if (CancellationToken.IsCancellationRequested)
+				ReportWarning (GettextCatalog.GetString ("Search operation canceled"));
+
 			foreach (string msg in Warnings)
 				outputPad.WriteText (msg + "\n");
-			
+
 			foreach (var msg in Errors)
 				outputPad.WriteText (msg.Message + "\n");
 			

@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Templates
 {
 	public class SolutionTemplate
 	{
-		public static readonly string DefaultImageId = "md-generic-project";
+		public static readonly string DefaultImageId = "md-project";
 
 		string imageId;
 		string language;
