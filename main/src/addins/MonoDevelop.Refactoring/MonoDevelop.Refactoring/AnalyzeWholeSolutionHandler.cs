@@ -119,7 +119,7 @@ namespace MonoDevelop.Refactoring
 		{
 			var workspace = TypeSystemService.Workspace;
 			try {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false)) {
+				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Analyzing solution"), null, false, true, false, null, true)) {
 					CancellationToken token = monitor.CancellationToken;
 					var allDiagnostics = await Task.Run (async delegate {
 						var diagnosticList = new List<Diagnostic> ();
