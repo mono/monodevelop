@@ -37,8 +37,6 @@ namespace MonoDevelop.PackageManagement
 		
 		void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions);
 
-		void RunPackageOperations(IEnumerable<PackageOperation> operations);
-
 		void InstallPackageIntoSolutionRepository (IPackage package);
 	}
 }

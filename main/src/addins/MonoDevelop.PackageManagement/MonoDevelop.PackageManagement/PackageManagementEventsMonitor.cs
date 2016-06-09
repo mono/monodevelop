@@ -43,7 +43,6 @@ namespace MonoDevelop.PackageManagement
 		IFileConflictResolver fileConflictResolver = new FileConflictResolver ();
 		string currentProgressOperation;
 		List<FileEventArgs> fileChangedEvents = new List<FileEventArgs> ();
-		List<IPackageManagementProject> projectsRequiringTypeSystemRefresh = new List<IPackageManagementProject> ();
 		ISolution solutionContainingProjectBuildersToDispose;
 		TaskCompletionSource<bool> taskCompletionSource;
 
@@ -68,9 +67,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
-			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			packageManagementEvents.FileChanged += FileChanged;
-			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
 			packageManagementEvents.ImportRemoved += ImportRemoved;
 			progressProvider.ProgressAvailable += ProgressAvailable;
 		}
@@ -79,15 +76,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			progressProvider.ProgressAvailable -= ProgressAvailable;
 			packageManagementEvents.ImportRemoved -= ImportRemoved;
-			packageManagementEvents.ParentPackageInstalled -= PackageInstalled;
 			packageManagementEvents.FileChanged -= FileChanged;
-			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 
 			NotifyFilesChanged ();
 			UnloadMSBuildHost ();
-			RefreshTypeSystem ();
 		}
 
 		void ResolveFileConflict(object sender, ResolveFileConflictEventArgs e)
@@ -151,28 +145,6 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void AcceptLicenses (object sender, AcceptLicensesEventArgs e)
-		{
-			foreach (IPackage package in e.Packages) {
-				ReportLicenseAgreementWarning (package);
-			}
-			e.IsAccepted = true;
-		}
-
-		void ReportLicenseAgreementWarning (IPackage package)
-		{
-			string message = GettextCatalog.GetString (
-				"The {0} package has a license agreement which is available at {1}{2}" +
-				"Please review this license agreement and remove the package if you do not accept the agreement.{2}" +
-				"Check the package for additional dependencies which may also have license agreements.{2}" +
-				"Using this package and any dependencies constitutes your acceptance of these license agreements.",
-				package.Id,
-				package.LicenseUrl,
-				Environment.NewLine);
-
-			ReportWarning (message);
-		}
-
 		void ProgressAvailable (object sender, ProgressEventArgs e)
 		{
 			if (currentProgressOperation == e.Operation)
@@ -230,40 +202,6 @@ namespace MonoDevelop.PackageManagement
 		protected virtual void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			progressMonitor.ShowPackageConsole ();
-		}
-
-		void RefreshTypeSystem ()
-		{
-			foreach (IPackageManagementProject project in projectsRequiringTypeSystemRefresh) {
-				ReconnectAssemblyReferences (project);
-			}
-		}
-
-		protected virtual void ReconnectAssemblyReferences (IPackageManagementProject project)
-		{
-			// TODO : Roslyn port ? 
-//			var projectWrapper = TypeSystemService.GetProjectContentWrapper (project.DotNetProject);
-//			if (projectWrapper != null) {
-//				projectWrapper.ReconnectAssemblyReferences ();
-//			}
-		}
-
-		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
-		{
-			if (ShouldRefreshTypeSystemForProject (e)) {
-				projectsRequiringTypeSystemRefresh.Add (e.Project);
-			}
-		}
-
-		bool ShouldRefreshTypeSystemForProject (ParentPackageOperationEventArgs e)
-		{
-			return e.Operations.Any (operation => IsInstallingMSBuildFiles (operation));
-		}
-
-		bool IsInstallingMSBuildFiles (PackageOperation operation)
-		{
-			return (operation.Action == PackageAction.Install) &&
-				operation.Package.GetBuildFiles ().Any ();
 		}
 
 		void ImportRemoved (object sender, DotNetProjectImportEventArgs e)

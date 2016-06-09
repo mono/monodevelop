@@ -26,34 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Collections.Generic;
-using System.Linq;
-
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal interface IPackageManagementSolution
 	{
-		IPackageManagementProject GetActiveProject();
-		IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository);
-		IPackageManagementProject GetProject(PackageSource source, string projectName);
-		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
-		IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project);
 		IPackageManagementProject GetProject (IDotNetProject project);
-		IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository);
-		
-		IDotNetProject GetActiveDotNetProject ();
-		IEnumerable<IDotNetProject> GetDotNetProjects ();
-		bool HasMultipleProjects();
-		
-		bool IsPackageInstalled(IPackage package);
-		IQueryable<IPackage> GetPackages();
-		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
-		string GetInstallPath(IPackage package);
-		ISolutionPackageRepository GetRepository ();
-		
-		bool IsOpen { get; }
-		string FileName { get; }
 	}
 }

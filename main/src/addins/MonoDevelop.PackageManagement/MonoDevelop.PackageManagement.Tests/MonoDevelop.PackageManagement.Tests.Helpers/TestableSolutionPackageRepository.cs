@@ -41,11 +41,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public TestableLocalPackageRepository LocalPackageRepository = new TestableLocalPackageRepository ();
-
-		protected override LocalPackageRepository CreateLocalPackageRepository ()
-		{
-			return LocalPackageRepository;
-		}
 	}
 }
 

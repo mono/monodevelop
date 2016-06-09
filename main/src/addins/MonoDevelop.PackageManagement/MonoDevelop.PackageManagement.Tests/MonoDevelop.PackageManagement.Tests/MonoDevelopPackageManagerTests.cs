@@ -297,14 +297,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void ProjectManager_InstanceCreated_PathResolverIsPackageManagerPathResolver ()
-		{
-			CreatePackageManager ();
-
-			Assert.AreEqual (packageManager.PathResolver, packageManager.ProjectManager.PathResolver);
-		}
-
-		[Test]
 		public void InstallPackage_PackageInstancePassed_AddsReferenceToProject ()
 		{
 			CreatePackageManager ();
@@ -493,24 +485,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (containsPackage);
 			Assert.AreEqual ("MyPackageId", fakeSolutionSharedRepository.PackageIdPassedToIsReferenced);
 			Assert.AreEqual (package.Version, fakeSolutionSharedRepository.VersionPassedToIsReferenced);
-		}
-
-		[Test]
-		public void RunPackageOperations_TwoPackageOperations_BothPackagesInOperationsAddedToSharedRepository ()
-		{
-			CreatePackageManager ();
-			CreateTestableProjectManager ();
-			PackageOperation operation1 = CreateOneInstallPackageOperation ("First", "1.0");
-			PackageOperation operation2 = CreateOneInstallPackageOperation ("Second", "1.0");
-			var operations = new PackageOperation[] { operation1, operation2 };
-			var expectedPackages = new FakePackage[] {
-				operation1.Package as FakePackage,
-				operation2.Package as FakePackage
-			};
-
-			packageManager.RunPackageOperations (operations);
-
-			PackageCollectionAssert.AreEqual (expectedPackages, fakeSolutionSharedRepository.PackagesAdded);
 		}
 	}
 }

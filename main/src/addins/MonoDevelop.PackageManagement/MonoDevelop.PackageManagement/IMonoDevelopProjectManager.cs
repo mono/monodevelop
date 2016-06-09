@@ -34,9 +34,5 @@ namespace MonoDevelop.PackageManagement
 {
 	internal interface IMonoDevelopProjectManager : IProjectManager
 	{
-		IPackagePathResolver PathResolver { get; }
-		bool IsInstalled(string packageId);
-		bool HasOlderPackageInstalled(IPackage package);
-		IEnumerable<PackageReference> GetPackageReferences ();
 	}
 }

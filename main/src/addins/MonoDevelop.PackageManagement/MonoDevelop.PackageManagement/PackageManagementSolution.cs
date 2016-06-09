@@ -26,8 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Collections.Generic;
-using System.Linq;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -35,83 +33,30 @@ namespace MonoDevelop.PackageManagement
 	internal class PackageManagementSolution : IPackageManagementSolution
 	{
 		IRegisteredPackageRepositories registeredPackageRepositories;
-		IPackageManagementProjectService projectService;
 		IPackageManagementProjectFactory projectFactory;
-		ISolutionPackageRepositoryFactory solutionPackageRepositoryFactory;
 
-		internal PackageManagementSolution (
-			IPackageManagementProjectService projectService)
+		internal PackageManagementSolution ()
 			: this (
 				PackageManagementServices.RegisteredPackageRepositories,
-				projectService,
 				PackageManagementServices.PackageManagementEvents)
 		{
 		}
 
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementProjectService projectService,
 			IPackageManagementEvents packageManagementEvents)
 			: this(
 				registeredPackageRepositories,
-				projectService,
-				new PackageManagementProjectFactory(packageManagementEvents),
-				new SolutionPackageRepositoryFactory())
+				new PackageManagementProjectFactory(packageManagementEvents))
 		{
 		}
 		
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageManagementProjectService projectService,
-			IPackageManagementProjectFactory projectFactory,
-			ISolutionPackageRepositoryFactory solutionPackageRepositoryFactory)
+			IPackageManagementProjectFactory projectFactory)
 		{
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.projectFactory = projectFactory;
-			this.projectService = projectService;
-			this.solutionPackageRepositoryFactory = solutionPackageRepositoryFactory;
-		}
-		
-		public string FileName {
-			get { return OpenSolution.FileName; }
-		}
-		
-		ISolution OpenSolution {
-			get { return projectService.OpenSolution; }
-		}
-
-		public IPackageManagementProject GetActiveProject()
-		{
-			if (HasActiveProject()) {
-				return GetActiveProject(registeredPackageRepositories.CreateAggregateRepository());
-			}
-			return null;
-		}
-		
-		bool HasActiveProject()
-		{
-			return GetActiveDotNetProject() != null;
-		}
-		
-		public IDotNetProject GetActiveDotNetProject ()
-		{
-			if (projectService.CurrentProject != null) {
-				return projectService.CurrentProject as IDotNetProject;
-			}
-			return null;
-		}
-		
-		IPackageRepository ActivePackageRepository {
-			get { return registeredPackageRepositories.ActiveRepository; }
-		}
-		
-		public IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
-		{
-			IDotNetProject activeProject = GetActiveDotNetProject ();
-			if (activeProject != null) {
-				return CreateProject (sourceRepository, activeProject);
-			}
-			return null;
 		}
 
 		IPackageManagementProject CreateProject (IPackageRepository sourceRepository, IDotNetProject project)
@@ -127,109 +72,9 @@ namespace MonoDevelop.PackageManagement
 			return new FallbackRepository (repository, registeredPackageRepositories.CreateAggregateRepository ());
 		}
 
-		IPackageRepository CreatePackageRepository(PackageSource source)
-		{
-			return registeredPackageRepositories.CreateRepository(source);
-		}
-		
-		public IPackageManagementProject GetProject(PackageSource source, string projectName)
-		{
-			IDotNetProject project = GetDotNetProject (projectName);
-			return CreateProject(source, project);
-		}
-		
-		IDotNetProject GetDotNetProject (string name)
-		{
-			var openProjects = new OpenDotNetProjects(projectService);
-			return openProjects.FindProject(name);
-		}
-		
-		IPackageManagementProject CreateProject (PackageSource source, IDotNetProject project)
-		{
-			IPackageRepository sourceRepository = CreatePackageRepository(source);
-			return CreateProject(sourceRepository, project);
-		}
-		
-		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
-		{
-			IDotNetProject project = GetDotNetProject (projectName);
-			return CreateProject(sourceRepository, project);
-		}
-		
-		public IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project)
-		{
-			return CreateProject (sourceRepository, project);
-		}
-
 		public IPackageManagementProject GetProject (IDotNetProject project)
 		{
 			return CreateProject (registeredPackageRepositories.CreateAggregateRepository(), project);
-		}
-		
-		public IEnumerable<IDotNetProject> GetDotNetProjects ()
-		{
-			return projectService.GetOpenProjects ();
-		}
-		
-		public bool IsOpen {
-			get { return OpenSolution != null; }
-		}
-		
-		public bool HasMultipleProjects()
-		{
-			return projectService.GetOpenProjects().Count() > 1;
-		}
-		
-		public bool IsPackageInstalled(IPackage package)
-		{
-			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
-			return repository.IsInstalled(package);
-		}
-		
-		ISolutionPackageRepository CreateSolutionPackageRepository()
-		{
-			return solutionPackageRepositoryFactory.CreateSolutionPackageRepository (OpenSolution);
-		}
-		
-		public IQueryable<IPackage> GetPackages()
-		{
-			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
-			List<IPackageManagementProject> projects = GetProjects(ActivePackageRepository).ToList();
-			return repository
-				.GetPackages()
-				.Where(package => IsPackageInstalledInSolutionOrAnyProject(projects, package));
-		}
-		
-		bool IsPackageInstalledInSolutionOrAnyProject(IList<IPackageManagementProject> projects, IPackage package)
-		{
-			if (projects.Any(project => project.IsPackageInstalled(package))) {
-				return true;
-			}
-			return false;
-		}
-		
-		public string GetInstallPath(IPackage package)
-		{
-			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
-			return repository.GetInstallPath(package);
-		}
-		
-		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
-		{
-			ISolutionPackageRepository repository = CreateSolutionPackageRepository();
-			return repository.GetPackagesByReverseDependencyOrder();
-		}
-		
-		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)
-		{
-			foreach (IDotNetProject dotNetProject in GetDotNetProjects ()) {
-				yield return CreateProject (sourceRepository, dotNetProject);
-			}
-		}
-
-		public ISolutionPackageRepository GetRepository ()
-		{
-			return CreateSolutionPackageRepository ();
 		}
 	}
 }

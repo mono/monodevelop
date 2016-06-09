@@ -102,23 +102,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetInstallPath_GetInstallPathForPackage_ReturnsPackagePathInsideSolutionPackagesRepository ()
-		{
-			CreateOptions ();
-			CreateSolution (@"d:\projects\Test\MySolution\MyProject.sln");
-			CreateSolutionPackageRepositoryPath (solution);
-
-			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.2.1.40");
-
-			string installPath = repositoryPath.GetInstallPath (package);
-
-			string expectedInstallPath = 
-				@"d:\projects\Test\MySolution\packages\MyPackage.1.2.1.40".ToNativePath ();
-
-			Assert.AreEqual (expectedInstallPath, installPath);
-		}
-
-		[Test]
 		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPath_OverriddenPathReturned ()
 		{
 			CreateOptions ();

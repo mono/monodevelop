@@ -142,15 +142,6 @@ namespace MonoDevelop.PackageManagement.Commands
 			}
 			return IdeApp.ProjectOperations.CurrentSelectedSolution;
 		}
-
-		IPackageManagementSolution GetPackageManagementSolution ()
-		{
-			Solution solution = GetSelectedSolution ();
-			if (solution != null) {
-				return new PackageManagementSolution (new PackageManagementSolutionProjectService (solution));
-			}
-			return null;
-		}
 	}
 }
 

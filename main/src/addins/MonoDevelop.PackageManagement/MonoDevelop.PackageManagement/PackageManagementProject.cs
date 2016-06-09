@@ -26,13 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using System.Runtime.Versioning;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -41,7 +35,6 @@ namespace MonoDevelop.PackageManagement
 	{
 		IMonoDevelopPackageManager packageManager;
 		IMonoDevelopProjectManager projectManager;
-		IPackageManagementEvents packageManagementEvents;
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
 
@@ -51,24 +44,10 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagementEvents packageManagementEvents,
 			IPackageManagerFactory packageManagerFactory)
 		{
-			SourceRepository = sourceRepository;
 			this.project = project;
-			this.packageManagementEvents = packageManagementEvents;
 			
 			packageManager = packageManagerFactory.CreatePackageManager (sourceRepository, project);
 			projectManager = packageManager.ProjectManager;
-		}
-		
-		public string Name {
-			get { return project.Name; }
-		}
-
-		public DotNetProject DotNetProject {
-			get { return project.DotNetProject; }
-		}
-
-		public IDotNetProject Project {
-			get { return project; }
 		}
 
 		public FrameworkName TargetFramework {
@@ -83,118 +62,9 @@ namespace MonoDevelop.PackageManagement
 			return targetFramework.TargetFrameworkName;
 		}
 
-		public IPackageRepository SourceRepository { get; private set; }
-		
-		public ILogger Logger {
-			get { return packageManager.Logger; }
-			set {
-				packageManager.Logger = value;
-				packageManager.FileSystem.Logger = value;
-			
-				projectManager.Logger = value;
-				projectManager.Project.Logger = value;
-
-				ConfigureLoggerForSourceRepository ();
-			}
-		}
-
-		void ConfigureLoggerForSourceRepository ()
-		{
-			var aggregateRepository = SourceRepository as AggregateRepository;
-			if (aggregateRepository != null) {
-				aggregateRepository.Logger = Logger;
-			}
-		}
-		
-		public event EventHandler<PackageOperationEventArgs> PackageInstalled {
-			add { packageManager.PackageInstalled += value; }
-			remove { packageManager.PackageInstalled -= value; }
-		}
-		
-		public event EventHandler<PackageOperationEventArgs> PackageUninstalled {
-			add { packageManager.PackageUninstalled += value; }
-			remove { packageManager.PackageUninstalled -= value; }
-		}
-		
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdded {
-			add { projectManager.PackageReferenceAdded += value; }
-			remove { projectManager.PackageReferenceAdded -= value; }
-		}
-		
-		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved {
-			add { projectManager.PackageReferenceRemoved += value; }
-			remove { projectManager.PackageReferenceRemoved -= value; }
-		}
-		
-		public bool IsPackageInstalled(IPackage package)
-		{
-			return projectManager.IsInstalled(package);
-		}
-		
-		public bool IsPackageInstalled(string packageId)
-		{
-			return projectManager.IsInstalled(packageId);
-		}
-		
-		public IQueryable<IPackage> GetPackages()
-		{
-			return projectManager.LocalRepository.GetPackages();
-		}
-
-		public IEnumerable<IPackage> GetPackagesInReverseDependencyOrder()
-		{
-			var packageSorter = new PackageSorter(null);
-			return packageSorter
-				.GetPackagesByDependencyOrder(projectManager.LocalRepository)
-				.Reverse();
-		}
-
-		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
-		{
-			packageManager.RunPackageOperations(operations);
-		}
-		
-		public bool HasOlderPackageInstalled(IPackage package)
-		{
-			return projectManager.HasOlderPackageInstalled(package);
-		}
-
-		public void AddPackageReference (IPackage package)
-		{
-			bool allowPrerelease = !package.IsReleaseVersion ();
-			bool ignoreDependencies = true;
-			packageManager.AddPackageReference (package, ignoreDependencies, allowPrerelease);
-		}
-
 		public IPackage FindPackage(string packageId)
 		{
 			return projectManager.LocalRepository.FindPackage (packageId);
-		}
-
-		public IEnumerable<PackageReference> GetPackageReferences ()
-		{
-			return projectManager.GetPackageReferences ();
-		}
-
-		public bool AnyUnrestoredPackages ()
-		{
-			return GetPackageReferences ()
-				.Any (packageReference => !IsPackageInstalled (packageReference));
-		}
-
-		bool IsPackageInstalled (PackageReference packageReference)
-		{
-			return projectManager.LocalRepository.Exists (packageReference.Id, packageReference.Version);
-		}
-
-		public IPackageConstraintProvider ConstraintProvider {
-			get {
-				var constraintProvider = projectManager.LocalRepository as IPackageConstraintProvider;
-				if (constraintProvider != null) {
-					return constraintProvider;
-				}
-				return NullConstraintProvider.Instance;
-			}
 		}
 	}
 }

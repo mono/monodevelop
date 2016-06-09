@@ -168,12 +168,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FileNameAndProjectName.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ReferenceAndProjectName.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectHelper.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\OpenDotNetProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopPackageManagerFactoryTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopProjectManagerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementSolutionTests.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\WindowsPath.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\XmlDocumentTransformTests.cs" />
@@ -200,7 +197,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableSolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeFileRemover.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithConstraintProvider.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildTargetsRestoredMonitorTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\EnsureNuGetPackageBuildImportsTargetUpdaterTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingSolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\FilePathExtensionsTests.cs" />

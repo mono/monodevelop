@@ -89,56 +89,5 @@ namespace MonoDevelop.PackageManagement
 		public IPackagePathResolver PackagePathResolver {
 			get { return packagePathResolver; }
 		}
-		
-		public string GetInstallPath(IPackage package)
-		{
-			return repositoryPath.GetInstallPath(package);
-		}
-		
-		public IEnumerable<IPackage> GetPackagesByDependencyOrder()
-		{
-			var packageSorter = new PackageSorter(null);
-			return packageSorter.GetPackagesByDependencyOrder(repository);
-		}
-		
-		public IEnumerable<IPackage> GetPackagesByReverseDependencyOrder()
-		{
-			return GetPackagesByDependencyOrder().Reverse();
-		}
-		
-		public bool IsInstalled(IPackage package)
-		{
-			return repository.Exists(package);
-		}
-		
-		public IQueryable<IPackage> GetPackages()
-		{
-			return repository.GetPackages();
-		}
-
-		public bool IsRestored (PackageReference packageReference)
-		{
-			if (packageReference.Version == null) {
-				return false;
-			}
-
-			return CreateLocalPackageRepository ()
-				.GetPackageLookupPaths (packageReference.Id, packageReference.Version)
-				.Any ();
-		}
-
-		protected virtual LocalPackageRepository CreateLocalPackageRepository ()
-		{
-			return new LocalPackageRepository (packagePathResolver, fileSystem);
-		}
-
-		public IEnumerable<PackageReference> GetPackageReferences ()
-		{
-			var sharedRepository = Repository as SharedPackageRepository;
-			if (sharedRepository != null) {
-				return sharedRepository.PackageReferenceFile.GetPackageReferences ();
-			}
-			return Enumerable.Empty <PackageReference> ();
-		}
 	}
 }

@@ -27,10 +27,8 @@
 //
 
 using System;
-using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using NuGet;
 using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
@@ -64,43 +62,6 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 		
-		public event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
-		
-		public bool OnAcceptLicenses(IEnumerable<IPackage> packages)
-		{
-			if (AcceptLicenses != null) {
-				var eventArgs = new AcceptLicensesEventArgs(packages);
-				AcceptLicenses(this, eventArgs);
-				return eventArgs.IsAccepted;
-			}
-			return true;
-		}
-		
-		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
-		
-		public void OnParentPackageInstalled(IPackage package, IPackageManagementProject project)
-		{
-			if (ParentPackageInstalled != null) {
-				ParentPackageInstalled(this, new ParentPackageOperationEventArgs(package, project));
-			}
-		}
-
-		public void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations)
-		{
-			if (ParentPackageInstalled != null) {
-				ParentPackageInstalled (this, new ParentPackageOperationEventArgs(package, project, operations));
-			}
-		}
-
-		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
-		
-		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
-		{
-			if (ParentPackageUninstalled != null) {
-				ParentPackageUninstalled(this, new ParentPackageOperationEventArgs(package, project));
-			}
-		}
-		
 		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		
 		public void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args)
@@ -121,15 +82,6 @@ namespace MonoDevelop.PackageManagement
 				return eventArgs.Resolution;
 			}
 			return FileConflictAction.IgnoreAll;
-		}
-		
-		public event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
-		
-		public void OnParentPackagesUpdated(IEnumerable<IPackage> packages)
-		{
-			if (ParentPackagesUpdated != null) {
-				ParentPackagesUpdated(this, new ParentPackagesOperationEventArgs(packages));
-			}
 		}
 
 		public event EventHandler PackagesRestored;
@@ -169,15 +121,6 @@ namespace MonoDevelop.PackageManagement
 				return !eventArgs.IsCancelled;
 			}
 			return true;
-		}
-
-		public event EventHandler<PackageRestoredEventArgs> PackageRestored;
-
-		public void OnPackageRestored (IPackage package)
-		{
-			if (PackageRestored != null) {
-				PackageRestored (this, new PackageRestoredEventArgs (package));
-			}
 		}
 
 		public event EventHandler<DotNetProjectReferenceEventArgs> ReferenceRemoving;

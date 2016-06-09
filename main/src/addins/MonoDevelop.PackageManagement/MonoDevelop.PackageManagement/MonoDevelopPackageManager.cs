@@ -142,12 +142,5 @@ namespace MonoDevelop.PackageManagement
 			var sharedRepository = LocalRepository as ISharedPackageRepository;
 			return sharedRepository.IsReferenced(package.Id, package.Version);
 		}
-
-		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
-		{
-			foreach (PackageOperation operation in operations) {
-				Execute(operation);
-			}
-		}
 	}
 }

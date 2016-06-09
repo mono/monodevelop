@@ -26,8 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -41,24 +39,6 @@ namespace MonoDevelop.PackageManagement
 			IPackageRepository localRepository)
 			: base(sourceRepository, pathResolver, project, localRepository)
 		{
-		}
-		
-		public bool IsInstalled(string packageId)
-		{
-			return LocalRepository.Exists(packageId);
-		}
-		
-		public bool HasOlderPackageInstalled(IPackage package)
-		{
-			IPackage installedPackage = LocalRepository.FindPackage(package.Id);
-			return (installedPackage != null) &&
-				(installedPackage.Version < package.Version);
-		}
-
-		public IEnumerable<PackageReference> GetPackageReferences ()
-		{
-			var repository = LocalRepository as PackageReferenceRepository;
-			return repository.ReferenceFile.GetPackageReferences ();
 		}
 	}
 }

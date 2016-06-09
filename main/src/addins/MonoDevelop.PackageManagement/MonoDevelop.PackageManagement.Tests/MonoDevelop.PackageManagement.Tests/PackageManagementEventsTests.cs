@@ -25,9 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.PackageManagement.Tests.Helpers;
-using NuGet;
 using NuGet.ProjectManagement;
 using NUnit.Framework;
 
@@ -37,11 +34,9 @@ namespace MonoDevelop.PackageManagement.Tests
 	public class PackageManagementEventsTests
 	{
 		PackageManagementEvents events;
-		List<FakePackage> packages;
 
 		void CreateEvents ()
 		{
-			packages = new List<FakePackage> ();
 			events = new PackageManagementEvents ();
 		}
 
@@ -107,149 +102,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			Exception expectedException = new Exception ("Test");
 
 			Assert.DoesNotThrow (() => events.OnPackageOperationError (expectedException));
-		}
-
-		[Test]
-		public void OnAcceptLicenses_OneEventSubscriber_EventArgsHasPackages ()
-		{
-			CreateEvents ();
-			IEnumerable<IPackage> packages = null;
-			events.AcceptLicenses += (sender, e) => packages = e.Packages;
-
-			var expectedPackages = new FakePackage[] {
-				new FakePackage ("A"),
-				new FakePackage ("B")
-			};
-			events.OnAcceptLicenses (expectedPackages);
-
-			Assert.AreEqual (expectedPackages, packages);
-		}
-
-		[Test]
-		public void OnAcceptLicenses_OneEventSubscriber_SenderIsPackageEvents ()
-		{
-			CreateEvents ();
-			object eventSender = null;
-			events.AcceptLicenses += (sender, e) => eventSender = sender;
-			events.OnAcceptLicenses (packages);
-
-			Assert.AreEqual (events, eventSender);
-		}
-
-		[Test]
-		public void OnAcceptLicenses_NoEventSubscribers_NullReferenceExceptionIsNotThrown ()
-		{
-			CreateEvents ();
-			Assert.DoesNotThrow (() => events.OnAcceptLicenses (packages));
-		}
-
-		[Test]
-		public void OnAcceptLicenses_NoEventSubscribers_ReturnsTrue ()
-		{
-			CreateEvents ();
-			bool result = events.OnAcceptLicenses (packages);
-
-			Assert.IsTrue (result);
-		}
-
-		[Test]
-		public void OnAcceptLicenses_EventArgIsAcceptedIsSetToFalse_ReturnsFalse ()
-		{
-			CreateEvents ();
-			events.AcceptLicenses += (sender, e) => e.IsAccepted = false;
-			bool result = events.OnAcceptLicenses (packages);
-
-			Assert.IsFalse (result);
-		}
-
-		[Test]
-		public void OnAcceptLicenses_EventArgIsAcceptedIsSetToTrue_ReturnsTrue ()
-		{
-			CreateEvents ();
-			events.AcceptLicenses += (sender, e) => e.IsAccepted = true;
-			bool result = events.OnAcceptLicenses (packages);
-
-			Assert.IsTrue (result);
-		}
-
-		[Test]
-		public void OnParentPackageInstalled_OneEventSubscriber_EventArgsHasPackage ()
-		{
-			CreateEvents ();
-			IPackage package = null;
-			IPackageManagementProject project = null;
-			events.ParentPackageInstalled += (sender, e) => {
-				package = e.Package;
-				project = e.Project;
-			};
-
-			var expectedPackage = new FakePackage ("Test");
-			var expectedProject = new FakePackageManagementProject ();
-			events.OnParentPackageInstalled (expectedPackage, expectedProject);
-
-			Assert.AreEqual (expectedPackage, package);
-			Assert.AreEqual (expectedProject, project);
-		}
-
-		[Test]
-		public void OnParentPackageInstalled_OneEventSubscriber_SenderIsPackageManagementEvents ()
-		{
-			CreateEvents ();
-			object eventSender = null;
-			events.ParentPackageInstalled += (sender, e) => eventSender = sender;
-
-			var package = new FakePackage ("Test");
-			events.OnParentPackageInstalled (package, null);
-
-			Assert.AreEqual (events, eventSender);
-		}
-
-		[Test]
-		public void  OnParentPackageInstalled_NoEventSubscribers_NullReferenceExceptionIsNotThrown ()
-		{
-			CreateEvents ();
-			var package = new FakePackage ("Test");
-			Assert.DoesNotThrow (() => events.OnParentPackageInstalled (package, null));
-		}
-
-		[Test]
-		public void OnParentPackageUninstalled_OneEventSubscriber_EventArgsHasPackage ()
-		{
-			CreateEvents ();
-			IPackage package = null;
-			IPackageManagementProject project = null;
-			events.ParentPackageUninstalled += (sender, e) => {
-				package = e.Package;
-				project = e.Project;
-			};
-
-			var expectedPackage = new FakePackage ("Test");
-			var expectedProject = new FakePackageManagementProject ();
-			events.OnParentPackageUninstalled (expectedPackage, expectedProject);
-
-			Assert.AreEqual (expectedPackage, package);
-			Assert.AreEqual (expectedProject, project);
-		}
-
-		[Test]
-		public void OnParentPackageUninstalled_OneEventSubscriber_SenderIsPackageManagementEvents ()
-		{
-			CreateEvents ();
-			object eventSender = null;
-			events.ParentPackageUninstalled += (sender, e) => eventSender = sender;
-
-			var package = new FakePackage ("Test");
-			events.OnParentPackageUninstalled (package, null);
-
-			Assert.AreEqual (events, eventSender);
-		}
-
-		[Test]
-		public void  OnParentPackageUninstalled_NoEventSubscribers_NullReferenceExceptionIsNotThrown ()
-		{
-			CreateEvents ();
-			var package = new FakePackage ("Test");
-			Assert.DoesNotThrow (() => events.OnParentPackageUninstalled (package, null));
 		}
 
 		[Test]
@@ -349,41 +201,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			FileConflictAction resolution = events.OnResolveFileConflict ("message");
 
 			Assert.AreEqual (FileConflictAction.IgnoreAll, resolution);
-		}
-
-		[Test]
-		public void OnParentPackagesUpdated_OneEventSubscriber_PackagesUpdatedEventFired ()
-		{
-			CreateEvents ();
-			ParentPackagesOperationEventArgs eventArgs = null;
-			events.ParentPackagesUpdated += (sender, e) => eventArgs = e;
-			var packages = new FakePackage[] { new FakePackage ("Test") };
-
-			events.OnParentPackagesUpdated (packages);
-
-			Assert.AreEqual (packages, eventArgs.Packages);
-		}
-
-		[Test]
-		public void OnParentPackagesUpdated_OneEventSubscriber_SenderIsPackageManagementEvents ()
-		{
-			CreateEvents ();
-			object eventSender = null;
-			events.ParentPackagesUpdated += (sender, e) => eventSender = sender;
-			var packages = new FakePackage[] { new FakePackage ("Test") };
-
-			events.OnParentPackagesUpdated (packages);
-
-			Assert.AreEqual (events, eventSender);
-		}
-
-		[Test]
-		public void OnParentPackagesUpdated_NoEventSubscribers_NullReferenceExceptionNotThrown ()
-		{
-			CreateEvents ();
-			var packages = new FakePackage[] { new FakePackage ("Test") };
-
-			Assert.DoesNotThrow (() => events.OnParentPackagesUpdated (packages));
 		}
 	}
 }

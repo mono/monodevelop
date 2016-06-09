@@ -37,7 +37,6 @@ namespace MonoDevelop.PackageManagement
 	internal class SolutionPackageRepositoryPath
 	{
 		ISolution solution;
-		DefaultPackagePathResolver pathResolver;
 
 		public SolutionPackageRepositoryPath(Project project)
 			: this (new ProjectProxy (project), PackageManagementServices.Options)
@@ -70,11 +69,5 @@ namespace MonoDevelop.PackageManagement
 		}
 		
 		public string PackageRepositoryPath { get; private set; }
-		
-		public string GetInstallPath(IPackage package)
-		{
-			pathResolver = new DefaultPackagePathResolver(PackageRepositoryPath);
-			return pathResolver.GetInstallPath(package);
-		}
 	}
 }

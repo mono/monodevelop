@@ -61,7 +61,7 @@ namespace MonoDevelop.PackageManagement
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
 
-			solution = new PackageManagementSolution (registeredPackageRepositories, projectService, packageManagementEvents);
+			solution = new PackageManagementSolution (registeredPackageRepositories, packageManagementEvents);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
 			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);

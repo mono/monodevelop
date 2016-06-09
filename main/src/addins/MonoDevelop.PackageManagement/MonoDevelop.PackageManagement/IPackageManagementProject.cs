@@ -26,45 +26,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.Versioning;
-using System.Linq;
-
 using NuGet;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal interface IPackageManagementProject
 	{
-		event EventHandler<PackageOperationEventArgs> PackageInstalled;
-		event EventHandler<PackageOperationEventArgs> PackageUninstalled;
-		event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;
-		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
-		
-		string Name { get; }
-		ILogger Logger { get; set; }
-		IPackageRepository SourceRepository { get; }
 		FrameworkName TargetFramework { get; }
 
-		DotNetProject DotNetProject { get; }
-		IDotNetProject Project { get; }
-
-		IPackageConstraintProvider ConstraintProvider { get; }
-
-		bool IsPackageInstalled(IPackage package);
-		bool IsPackageInstalled(string packageId);
-		bool HasOlderPackageInstalled(IPackage package);
-		
-		IQueryable<IPackage> GetPackages();
-		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		IPackage FindPackage(string packageId);
-		bool AnyUnrestoredPackages ();
-
-		void AddPackageReference (IPackage package);
-		IEnumerable<PackageReference> GetPackageReferences ();
-
-		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
 	}
 }

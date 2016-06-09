@@ -39,18 +39,13 @@ namespace MonoDevelop.PackageManagement
 	{
 		event EventHandler PackageOperationsStarting;
 		event EventHandler PackageOperationsFinished;
-		event EventHandler<AcceptLicensesEventArgs> AcceptLicenses;
 		event EventHandler<ResolveFileConflictEventArgs> ResolveFileConflict;
 		event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
-		event EventHandler<ParentPackageOperationEventArgs> ParentPackageInstalled;
-		event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
-		event EventHandler<ParentPackagesOperationEventArgs> ParentPackagesUpdated;
 		event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		event EventHandler PackagesRestored;
 		event EventHandler<FileEventArgs> FileChanged;
 		event EventHandler<FileRemovingEventArgs> FileRemoving;
 		event EventHandler UpdatedPackagesAvailable;
-		event EventHandler<PackageRestoredEventArgs> PackageRestored;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceAdding;
 		event EventHandler<DotNetProjectReferenceEventArgs> ReferenceRemoving;
 		event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
@@ -62,23 +57,15 @@ namespace MonoDevelop.PackageManagement
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
 		void OnPackageOperationError(Exception ex);
-		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
-		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations);
-		void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project);
-		void OnParentPackagesUpdated(IEnumerable<IPackage> packages);
 		void OnPackageOperationMessageLogged(NuGet.MessageLevel level, string message, params object[] args);
 		FileConflictAction OnResolveFileConflict(string message);
 		void OnPackagesRestored();
 		void OnFileChanged(string path);
 		void OnUpdatedPackagesAvailable ();
 		bool OnFileRemoving (string path);
-		void OnPackageRestored (IPackage package);
 		void OnReferenceAdding (ProjectReference reference);
 		void OnReferenceRemoving (ProjectReference reference);
 		void OnImportRemoved (IDotNetProject project, string import);
 		void OnNoUpdateFound (IDotNetProject project);
-
-		[Obsolete]
-		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);
 	}
 }
