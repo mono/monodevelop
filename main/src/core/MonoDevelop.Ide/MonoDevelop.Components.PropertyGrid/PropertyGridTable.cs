@@ -237,9 +237,15 @@ namespace MonoDevelop.Components.PropertyGrid
 			QueueResize ();
 		}
 
+		internal bool IsEditing {
+			get {
+				return editSession != null;
+			}
+		}
+
 		internal void SaveEditSession ()
 		{
-			if (editSession == null)
+			if (!IsEditing)
 				return;
 
 			lastEditedProperty = editSession.Property;
@@ -837,6 +843,7 @@ namespace MonoDevelop.Components.PropertyGrid
 				editSession.Dispose ();
 				editSession = null;
 				currentEditorRow = null;
+				parentGrid.Populate (saveEditSession: false);
 				QueueDraw ();
 			}
 		}
