@@ -35,8 +35,6 @@ namespace MonoDevelop.PackageManagement
 	public static class PackageManagementServices
 	{
 		static readonly PackageManagementOptions options;
-		static readonly PackageManagementSolution solution;
-		static readonly RegisteredPackageRepositories registeredPackageRepositories;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
 		static readonly PackageRepositoryCache packageRepositoryCache;
@@ -59,9 +57,6 @@ namespace MonoDevelop.PackageManagement
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();
 			userAgentGenerator.Register (packageRepositoryCache);
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
-			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
-
-			solution = new PackageManagementSolution (registeredPackageRepositories, packageManagementEvents);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
 			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
@@ -91,14 +86,6 @@ namespace MonoDevelop.PackageManagement
 
 		internal static PackageManagementOptions Options {
 			get { return options; }
-		}
-		
-		internal static IPackageManagementSolution Solution {
-			get { return solution; }
-		}
-		
-		internal static IRegisteredPackageRepositories RegisteredPackageRepositories {
-			get { return registeredPackageRepositories; }
 		}
 		
 		internal static IPackageRepositoryCache PackageRepositoryCache {

@@ -73,11 +73,6 @@ namespace MonoDevelop.PackageManagement
 		public RegisteredPackageSources PackageSources {
 			get { return registeredPackageSourceSettings.PackageSources; }
 		}
-		
-		public PackageSource ActivePackageSource {
-			get { return registeredPackageSourceSettings.ActivePackageSource; }
-			set { registeredPackageSourceSettings.ActivePackageSource = value; }
-		}
 
 		public string GetCustomPackagesDirectory ()
 		{

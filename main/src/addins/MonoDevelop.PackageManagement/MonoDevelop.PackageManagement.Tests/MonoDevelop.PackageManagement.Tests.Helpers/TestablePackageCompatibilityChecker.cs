@@ -37,8 +37,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
-		public FakeSolutionPackageRepository PackageRepository;
-
 		public PackageReferenceFile PackageReferenceFile;
 
 		protected override PackageReferenceFile CreatePackageReferenceFile (string fileName)
