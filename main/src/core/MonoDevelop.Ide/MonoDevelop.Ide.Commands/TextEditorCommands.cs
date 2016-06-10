@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		ShowCompletionWindow,
 		ShowCodeTemplateWindow,
+		ShowCodeSurroundingsWindow,
 		LineEnd,
 		LineStart,
 		DeleteLeftChar,
@@ -50,6 +51,8 @@ namespace MonoDevelop.Ide.Commands
 		ScrollLineDown,
 		ScrollPageUp,
 		ScrollPageDown,
+		ScrollTop,
+		ScrollBottom,
 		DeleteLine,
 		DeleteToLineStart,
 		DeleteToLineEnd,

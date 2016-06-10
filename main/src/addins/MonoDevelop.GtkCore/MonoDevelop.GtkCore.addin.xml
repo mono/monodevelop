@@ -57,7 +57,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "Gtk# Designer" id = "GtkCore">
+		<Category _name = "Designer (Gtk#)" id = "GtkCore">
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.AddNewDialog"
 				icon = "md-gtkcore-dialog"
 				_label = "New Dialog..." />
@@ -75,7 +75,7 @@
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.EditIcons"
 				_label = "Edit Project Icons..." />
 		<Command id = "MonoDevelop.GtkCore.GtkCommands.GtkSettings"
-				_label = "GTK# support settings..." />
+				_label = "GTK# Support Settings..." />
 		</Category>
 	</Extension>
 	

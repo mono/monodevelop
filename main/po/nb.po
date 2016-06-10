@@ -1608,7 +1608,7 @@ msgid "Show MonoDevelop preferences window"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -6458,7 +6458,7 @@ msgid ""
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
-msgid "Custom Policies"
+msgid "Policies"
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
@@ -18657,7 +18657,7 @@ msgid "Preferences..."
 msgstr ""
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr ""
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42

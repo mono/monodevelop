@@ -1,10 +1,10 @@
-//
-// MDMenuItem.cs
+﻿//
+// MDMenuHeaderItem.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Vsevolod Kukol <sevoku@xamarin.com>
 //
-// Copyright (c) 2013 Xamarin Inc.
+// Copyright (c) 2016 Xamarin Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using AppKit;
-using MonoDevelop.Components.Commands;
-using System.Linq;
 
 namespace MonoDevelop.MacIntegration.MacMenu
 {
-	class MDSubMenuItem : NSMenuItem, IUpdatableMenuItem
+	class MDMenuHeaderItem : NSMenuItem, IUpdatableMenuItem
 	{
-		CommandEntrySet ces;
-
-		public MDSubMenuItem (CommandManager manager, CommandEntrySet ces, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
+		public MDMenuHeaderItem (string text)
 		{
-			this.ces = ces;
-
-			this.Submenu = new MDMenu (manager, ces, commandSource, initialCommandTarget);
-			this.Title = this.Submenu.Title;
+			Title = text;
+			Enabled = false;
+			Hidden = false;
 		}
 
 		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
 		{
-			((MDMenu)Submenu).UpdateCommands ();
-			if (ces.AutoHide)
-				Hidden = Submenu.ItemArray ().All (item => item.Hidden);
-			else
-				Enabled = Submenu.ItemArray ().Any (item => !item.Hidden);
-			if (!Hidden) {
-				MDMenu.ShowLastSeparator (ref lastSeparator);
-			}
+			MDMenu.ShowLastSeparator (ref lastSeparator);
 		}
 	}
 }
+

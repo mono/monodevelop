@@ -24,6 +24,7 @@
 	<Pad id = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
 		_label = "Errors"
 		icon="md-errors-list"
+		group="Logs"
 		class = "MonoDevelop.Ide.Gui.Pads.ErrorListPad"
 		defaultPlacement = "Bottom"
 		defaultStatus="AutoHide"
@@ -32,6 +33,7 @@
 	<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
 		_label = "Tasks"
 		icon="md-task-list"
+		group="Logs"
 		class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
 		defaultPlacement = "Bottom"
 		defaultStatus="AutoHide"
@@ -41,9 +43,10 @@
 		defaultPlacement = "Left"
 		_label = "Help"
 		icon="md-help-pad"
+		group="ZHelp"
 		class = "MonoDevelop.Ide.Gui.Pads.HelpTree"/>
 
-	<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution-pad" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left">
+	<SolutionPad id = "ProjectPad" _label = "Solution" icon = "md-solution-pad" class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ProjectSolutionPad" defaultLayout="*" defaultPlacement = "Left" group="1Solution">
 		<ContextMenu path="/MonoDevelop/Ide/ContextMenu/ProjectPad" />
 		<PadOption id = "ShowAllFiles" _label = "Show All Files" defaultValue = "False" />
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.WorkspaceNodeBuilder"/>
@@ -63,7 +66,7 @@
 		<NodeBuilder class = "MonoDevelop.Ide.Gui.Pads.ProjectPad.ImplicitFrameworkAssemblyReferenceNodeBuilder"/>
 	</SolutionPad>
 	
-	<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-classes-pad" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultPlacement = "Left" defaultStatus="AutoHide">
+	<SolutionPad id = "ClassPad" _label = "Classes" icon = "md-classes-pad" class = "MonoDevelop.Ide.Gui.Pads.ClassBrowser.ClassBrowserPad" defaultPlacement = "Left" defaultStatus="AutoHide" group="1Solution">
 		<PadOption id = "NestedNamespaces" _label = "Nested namespaces" defaultValue = "True" />
 		<PadOption id = "ShowProjects" _label = "Show project structure" defaultValue = "True" />
 		<PadOption id = "GroupByAccess" _label = "Group members by access" defaultValue = "False" />

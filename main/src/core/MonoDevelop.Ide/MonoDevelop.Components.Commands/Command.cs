@@ -39,6 +39,7 @@ namespace MonoDevelop.Components.Commands
 		
 		object id;
 		string text;
+		string displayName;
 		string description;
 		IconId icon;
 		string accelKey;
@@ -132,6 +133,11 @@ namespace MonoDevelop.Components.Commands
 		public bool DisabledVisible {
 			get { return disabledVisible; }
 			set { disabledVisible = value; }
+		}
+
+		public string DisplayName {
+			get { return String.IsNullOrWhiteSpace (displayName) ? text.Replace ("_", String.Empty) : displayName; }
+			set { displayName = value; }
 		}
 		
 		public string Description {
