@@ -40,7 +40,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public AssemblyRunConfigurationEditor ()
 		{
 			widget = new DotNetRunConfigurationEditorWidget ();
-			widget.Changed += (sender, e) => NotifyChanged ();
 		}
 
 		public override Control CreateControl ()
@@ -51,6 +50,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public override void Load (Project project, SolutionItemRunConfiguration config)
 		{
 			widget.Load (project, (AssemblyRunConfiguration)config);
+			widget.Changed += (sender, e) => NotifyChanged ();
 		}
 
 		public override void Save ()
