@@ -341,6 +341,8 @@ namespace MonoDevelop.Core.Assemblies
 		//FIXME: the fallback is broken since multiple frameworks can have the same corlib
 		public TargetFrameworkMoniker GetTargetFrameworkForAssembly (TargetRuntime tr, string file)
 		{
+			if (!File.Exists (file))
+				return TargetFrameworkMoniker.UNKNOWN;
 			var universe = CreateClosedUniverse ();
 			try {
 				IKVM.Reflection.Assembly assembly = universe.LoadFile (file);
