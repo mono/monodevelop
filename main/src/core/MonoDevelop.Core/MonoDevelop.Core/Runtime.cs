@@ -373,16 +373,9 @@ namespace MonoDevelop.Core
 				return func ();
 			} else {
 				var ts = new TaskCompletionSource<T> ();
-				MainSynchronizationContext.Post (delegate {
+				MainSynchronizationContext.Post (async state => {
 					try {
-						var t = func ();
-						t.ContinueWith (ta => {
-							try {
-								ts.SetResult (ta.Result);
-							} catch (Exception ex) {
-								ts.SetException (ex);
-							}
-						});
+						ts.SetResult (await func ());
 					} catch (Exception ex) {
 						ts.SetException (ex);
 					}
@@ -402,16 +395,10 @@ namespace MonoDevelop.Core
 				return func ();
 			} else {
 				var ts = new TaskCompletionSource<int> ();
-				MainSynchronizationContext.Post (delegate {
+				MainSynchronizationContext.Post (async state => {
 					try {
-						var t = func ();
-						t.ContinueWith (ta => {
-							try {
-								ts.SetResult (0);
-							} catch (Exception ex) {
-								ts.SetException (ex);
-							}
-						});
+						await func ();
+						ts.SetResult (0);
 					} catch (Exception ex) {
 						ts.SetException (ex);
 					}
