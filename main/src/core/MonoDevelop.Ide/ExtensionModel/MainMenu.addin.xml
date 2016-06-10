@@ -19,7 +19,6 @@
 	<ItemSet id = "File" _label = "_File">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" />
 		<SeparatorItem id = "NewSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 		<SeparatorItem id = "OpenSep" />
