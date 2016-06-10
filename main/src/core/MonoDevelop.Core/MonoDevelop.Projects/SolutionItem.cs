@@ -395,6 +395,8 @@ namespace MonoDevelop.Projects
 
 		protected virtual void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
 		{
+			if (projectCreateInfo.TemplateInitializationCallback != null)
+				projectCreateInfo.TemplateInitializationCallback (this);
 		}
 
 		protected sealed override FilePath GetDefaultBaseDirectory ( )
