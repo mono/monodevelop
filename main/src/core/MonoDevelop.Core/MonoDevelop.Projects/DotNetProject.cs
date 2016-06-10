@@ -142,14 +142,12 @@ namespace MonoDevelop.Projects
 				DotNetProjectConfiguration configDebug = CreateConfiguration ("Debug" + platformSuffix, ConfigurationKind.Debug) as DotNetProjectConfiguration;
 				DefineSymbols (configDebug.CompilationParameters, projectOptions, "DefineConstantsDebug");
 				configDebug.ExternalConsole = externalConsole;
-				configDebug.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configDebug);
 
 				DotNetProjectConfiguration configRelease = CreateConfiguration ("Release" + platformSuffix, ConfigurationKind.Release) as DotNetProjectConfiguration;
 				DefineSymbols (configRelease.CompilationParameters, projectOptions, "DefineConstantsRelease");
 				configRelease.CompilationParameters.RemoveDefineSymbol ("DEBUG");
 				configRelease.ExternalConsole = externalConsole;
-				configRelease.PauseConsoleOutput = externalConsole;
 				Configurations.Add (configRelease);
 			}
 
