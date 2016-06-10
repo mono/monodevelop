@@ -25,19 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using NuGet;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
 	class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
 	{
 		public TestablePackageCompatibilityChecker (
-			IPackageManagementSolution solution)
-			: base (solution)
+			FakeSolutionPackageRepository packageRepository)
+			: base (packageRepository)
 		{
 		}
+
+		public FakeSolutionPackageRepository PackageRepository;
 
 		public PackageReferenceFile PackageReferenceFile;
 

@@ -36,13 +36,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public TestablePackageCompatibilityRunner (
 			IDotNetProject project,
-			IPackageManagementSolution solution,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 			: base (
 				project,
-				solution,
 				progressMonitorFactory,
 				packageManagementEvents,
 				progressProvider)
@@ -80,13 +78,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ProgressMonitorStatusMessage ProgressStatusMessage;
 
 		protected override PackageCompatibilityChecker CreatePackageCompatibilityChecker (
-			IPackageManagementSolution solution)
+			ISolution solution)
 		{
-			return new TestablePackageCompatibilityChecker (solution) {
+			return new TestablePackageCompatibilityChecker (PackageRepository) {
 				PackageReferenceFile = PackageReferenceFile
 			};
 		}
 
+		public FakeSolutionPackageRepository PackageRepository = new FakeSolutionPackageRepository ();
 		public PackageReferenceFile PackageReferenceFile;
 		public FakeFileSystem FileSystem = new FakeFileSystem ();
 

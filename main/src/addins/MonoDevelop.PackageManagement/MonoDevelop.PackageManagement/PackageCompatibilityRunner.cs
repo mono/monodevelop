@@ -33,7 +33,6 @@ namespace MonoDevelop.PackageManagement
 	internal class PackageCompatibilityRunner
 	{
 		IDotNetProject project;
-		IPackageManagementSolution solution;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		ProgressMonitorStatusMessage progressMessage;
 		ProgressMonitor progressMonitor;
@@ -42,13 +41,11 @@ namespace MonoDevelop.PackageManagement
 
 		public PackageCompatibilityRunner (
 			IDotNetProject project,
-			IPackageManagementSolution solution,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
 			this.project = project;
-			this.solution = solution;
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
@@ -57,7 +54,6 @@ namespace MonoDevelop.PackageManagement
 		public PackageCompatibilityRunner (IDotNetProject project)
 			: this (
 				project,
-				PackageManagementServices.Solution,
 				PackageManagementServices.ProgressMonitorFactory,
 				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.ProgressProvider)
@@ -114,7 +110,7 @@ namespace MonoDevelop.PackageManagement
 
 		void CheckCompatibility ()
 		{
-			PackageCompatibilityChecker checker = CreatePackageCompatibilityChecker (solution);
+			PackageCompatibilityChecker checker = CreatePackageCompatibilityChecker (project.ParentSolution);
 			checker.CheckProjectPackages (project);
 
 			if (checker.AnyPackagesRequireReinstallation ()) {
@@ -128,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker (IPackageManagementSolution solution)
+		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker (ISolution solution)
 		{
 			return new PackageCompatibilityChecker (solution);
 		}
