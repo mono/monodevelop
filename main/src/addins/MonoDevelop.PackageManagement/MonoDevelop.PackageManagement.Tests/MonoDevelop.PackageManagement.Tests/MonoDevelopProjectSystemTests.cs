@@ -1250,7 +1250,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			await projectSystem.ExecuteScriptAsync (package, null, scriptPath, null, false);
 
-			Assert.AreEqual (MessageLevel.Warning, projectSystem.FakeNuGetProjectContext.LastLogLevel);
+			Assert.AreEqual (MessageLevel.Info, projectSystem.FakeNuGetProjectContext.LastLogLevel);
 			Assert.AreEqual (expectedLogMessage, projectSystem.FakeNuGetProjectContext.LastMessageLogged);
 		}
 

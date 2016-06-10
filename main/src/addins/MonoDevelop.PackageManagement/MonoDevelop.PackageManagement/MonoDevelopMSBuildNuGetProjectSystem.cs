@@ -295,7 +295,7 @@ namespace MonoDevelop.PackageManagement
 				identity.Id,
 				scriptRelativePath);
 
-			NuGetProjectContext.Log (MessageLevel.Warning, message);
+			NuGetProjectContext.Log (MessageLevel.Info, message);
 
 			return Task.FromResult (0);
 		}
