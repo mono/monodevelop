@@ -81,6 +81,7 @@ namespace MonoDevelop.PackageManagement
 			topHBox.Margin = new WidgetSpacing (8, 5, 6, 5);
 
 			packageSourceComboBox = new ComboBox ();
+			packageSourceComboBox.Name = "packageSourceComboBox";
 			packageSourceComboBox.MinWidth = 200;
 			topHBox.PackStart (packageSourceComboBox);
 
@@ -328,6 +329,7 @@ namespace MonoDevelop.PackageManagement
 			packageVersionsHBox.PackStart (packageVersionsLabel);
 
 			packageVersionComboBox = new ComboBox ();
+			packageVersionComboBox.Name = "packageVersionComboBox";
 			packageVersionsHBox.Spacing = 15;
 			packageVersionsHBox.PackStart (packageVersionComboBox, true, true);
 
