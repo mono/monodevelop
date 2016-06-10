@@ -758,7 +758,6 @@ module SymbolTooltips =
     let returnType (symbol:FSharpSymbolUse) =
         match symbol with
         | MemberFunctionOrValue m ->
-            LoggingService.logDebug "%s" m.DisplayName
             Some m.ReturnParameter.Type
         //| Entity c ->
         | _ -> None
