@@ -321,7 +321,6 @@ namespace MonoDevelop.PackageManagement
 		void ShowPackageInformation (PackageSearchResultViewModel packageViewModel)
 		{
 			this.packageNameLabel.Markup = packageViewModel.GetNameMarkup ();
-			this.packageVersionLabel.Text = packageViewModel.Version.ToString ();
 			this.packageAuthor.Text = packageViewModel.Author;
 			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
 			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();

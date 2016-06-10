@@ -41,7 +41,6 @@ namespace MonoDevelop.PackageManagement
 		ListView packagesListView;
 		VBox packageInfoVBox;
 		Label packageNameLabel;
-		Label packageVersionLabel;
 		LinkLabel packageIdLink;
 		Label packageDescription;
 		Label packageAuthor;
@@ -195,11 +194,6 @@ namespace MonoDevelop.PackageManagement
 			Font packageInfoSmallFont = packageNameLabel.Font.WithSize (packageInfoFontSize);
 			packageNameLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackStart (packageNameLabel, true);
-
-			packageVersionLabel = new Label ();
-			packageVersionLabel.TextAlignment = Alignment.End;
-			packageVersionLabel.Font = packageInfoSmallFont;
-			packageNameHBox.PackEnd (packageVersionLabel);
 
 			// Package description.
 			packageDescription = new Label ();
