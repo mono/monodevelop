@@ -402,7 +402,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					if (f.ProjectFile.Subtype != Subtype.Directory && p.Files.GetFile (f.ProjectFile.FilePath) == null) {
 						var pf = (ProjectFile)f.ProjectFile.Clone ();
 						pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
-						p.Files.Add (pf);
+						p.Files.Insert (0, pf);
 					}
 				}
 			}
@@ -429,7 +429,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 					var pf = (ProjectFile) f.ProjectFile.Clone ();
 					p.Files.Remove (f.OldName);
 					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
-					p.Files.Add (pf);
+					p.Files.Insert (0, pf);
 				}
 			}
 		}
