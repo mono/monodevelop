@@ -1135,15 +1135,24 @@ namespace MonoDevelop.Projects
 
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
+			ExecutionCommand rcmd;
+			var rc = runConfiguration as AssemblyRunConfiguration;
+			if (rc != null && rc.StartAction == AssemblyRunConfiguration.StartActions.Program) {
+				var pcmd = Runtime.ProcessService.CreateCommand (rc.StartProgram);
+				pcmd.Arguments = rc.StartArguments;
+				pcmd.WorkingDirectory = rc.StartWorkingDirectory;
+				pcmd.EnvironmentVariables = rc.EnvironmentVariables;
+				rcmd = pcmd;
+			} else {
 #pragma warning disable 618 // Type or member is obsolete
-			var rcmd = ProjectExtension.OnCreateExecutionCommand (configSel, configuration);
+				rcmd = ProjectExtension.OnCreateExecutionCommand (configSel, configuration);
 #pragma warning restore 618 // Type or member is obsolete
+			}
 
 			var cmd = rcmd as DotNetExecutionCommand;
 			if (cmd == null)
 				return rcmd;
 
-			var rc = runConfiguration as AssemblyRunConfiguration;
 			if (rc != null) {
 				// Don't directly overwrite the settings, since those may have been set by the OnCreateExecutionCommand
 				// overload that doesn't take a runConfiguration.
@@ -1601,16 +1610,6 @@ namespace MonoDevelop.Projects
 			}
 
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", dotNetProjectConfig.CompiledOutputName));
-
-			var rc = runConfiguration as AssemblyRunConfiguration;
-			if (rc != null && rc.StartAction == AssemblyRunConfiguration.StartActions.Program) {
-				// Start an external program
-				var cons = rc.ExternalConsole ? 
-				                                  context.ExternalConsoleFactory.CreateConsole (!rc.PauseConsoleOutput, monitor.CancellationToken) : 
-				                                  context.ConsoleFactory.CreateConsole (monitor.CancellationToken);
-				await Runtime.ProcessService.StartConsoleProcess (rc.StartProgram, rc.StartArguments, rc.StartWorkingDirectory, cons, rc.EnvironmentVariables).Task;
-				return;
-			}
 
 			ExecutionCommand executionCommand = CreateExecutionCommand (configuration, dotNetProjectConfig, runConfiguration as ProjectRunConfiguration);
 			if (context.ExecutionTarget != null)
