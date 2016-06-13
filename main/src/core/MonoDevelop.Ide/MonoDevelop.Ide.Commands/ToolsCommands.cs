@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Commands
 		InstrumentationViewer,
 		ToggleSessionRecorder,
 		ReplaySession,
+		EditCustomTools,
 	}
 
 	internal class AddinManagerHandler : CommandHandler
@@ -67,6 +68,8 @@ namespace MonoDevelop.Ide.Commands
 				info.Add (commandInfo, externalTool);
 
 			}
+			if (info.Count > 0)
+				info.AddSeparator ();
 		}
 
 		protected override void Run (object dataItem)
@@ -126,6 +129,19 @@ namespace MonoDevelop.Ide.Commands
 				progressMonitor.Dispose ();
 			}
 
+		}
+	}
+
+	internal class EditCustomToolsHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Text = ExternalTools.ExternalToolService.Tools.Count > 0 ? GettextCatalog.GetString ("Edit Custom Tools...") : GettextCatalog.GetString ("Add Custom Tool...");
+		}
+		
+		protected override void Run ()
+		{
+			IdeApp.Workbench.ShowGlobalPreferencesDialog (IdeApp.Workbench.RootWindow, "ExternalTools");
 		}
 	}
 

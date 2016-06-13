@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Animation;
 using MonoDevelop.Ide.Gui.Components;
+using System.Threading;
 
 namespace WindowsPlatform.MainToolbar
 {
@@ -305,6 +306,10 @@ namespace WindowsPlatform.MainToolbar
 		{
             get { return buildResultPanelVisibility; }
 			set { buildResultPanelVisibility = value; RaisePropertyChanged (); }
+		}
+
+		public void SetCancellationTokenSource (CancellationTokenSource source)
+		{
 		}
 
 		void RaisePropertyChanged ([CallerMemberName] string propName = null)

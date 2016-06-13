@@ -68,6 +68,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			
 			store = new TreeStore (typeof(object), typeof(string));
 			configsList.Model = store;
+			configsList.SearchColumn = -1; // disable the interactive search
 			configsList.HeadersVisible = true;
 			store.SetSortColumnId (1, SortType.Ascending);
 			

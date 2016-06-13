@@ -42,7 +42,7 @@ namespace MonoDevelop.Ide.Editor
 		protected override void Update (CommandInfo info)
 		{
 			base.Update (info);
-			info.Text = IdeApp.Preferences.DefaultHideMessageBubbles ? GettextCatalog.GetString ("_Show Message Bubbles") : GettextCatalog.GetString ("_Hide Message Bubbles"); 
+			info.Checked = IdeApp.Preferences.DefaultHideMessageBubbles;
 		}
 		
 		protected override void Run (object data)
@@ -62,15 +62,17 @@ namespace MonoDevelop.Ide.Editor
 		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
-			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("_Errors & Warnings"), new Action (delegate {
-				MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles.Value = MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings;
+			CommandInfo info = ainfo.Add (GettextCatalog.GetString ("E_rrors"), new Action (delegate {
+				IdeApp.Preferences.ShowMessageBubbles.Value = ShowMessageBubbles.ForErrors;
+				IdeApp.Preferences.DefaultHideMessageBubbles.Value = false;
 			}));
-			info.Checked = MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles == MonoDevelop.Ide.ShowMessageBubbles.ForErrorsAndWarnings;
-			
-			info = ainfo.Add (GettextCatalog.GetString ("E_rrors only"), new Action (delegate {
-				MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles.Value = MonoDevelop.Ide.ShowMessageBubbles.ForErrors;
+			info.Checked = !IdeApp.Preferences.DefaultHideMessageBubbles && IdeApp.Preferences.ShowMessageBubbles.Value == ShowMessageBubbles.ForErrors;
+
+			info = ainfo.Add (GettextCatalog.GetString ("_Errors and Warnings"), new Action (delegate {
+				IdeApp.Preferences.ShowMessageBubbles.Value = ShowMessageBubbles.ForErrorsAndWarnings;
+				IdeApp.Preferences.DefaultHideMessageBubbles.Value = false;
 			}));
-			info.Checked = MonoDevelop.Ide.IdeApp.Preferences.ShowMessageBubbles.Value == MonoDevelop.Ide.ShowMessageBubbles.ForErrors;
+			info.Checked = !IdeApp.Preferences.DefaultHideMessageBubbles && IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrorsAndWarnings;
 		}
 	}
 }

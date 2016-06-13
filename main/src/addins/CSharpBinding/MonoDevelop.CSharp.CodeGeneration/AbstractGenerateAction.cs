@@ -95,6 +95,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 			
 			treeView.Model = store;
+			treeView.SearchColumn = -1; // disable the interactive search
 		}
 		
 		void ToggleRendererToggled (object o, ToggledArgs args)

@@ -72,8 +72,12 @@ type FsiDocumentContext() =
     override x.Name = name
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
-
-    member x.CompletionWidget with set (value) = completionWidget <- value
+    member x.CompletionWidget 
+        with set (value) = 
+            completionWidget <- value
+            completionWidget.CompletionContextChanged.Add
+                (fun _args -> let completion = editor.GetContent<CompletionTextEditorExtension>()
+                              ParameterInformationWindowManager.HideWindow(completion, value))
     member x.Editor with set (value) = editor <- value
     member x.WorkingFolder
         with get() = workingFolder
@@ -482,17 +486,21 @@ type FSharpFsiEditorCompletion() =
             result
         | _ -> base.KeyPress (descriptor)
 
+  
   type InteractiveCommand(command) =
     inherit CommandHandler()
-
-    override x.Update(info:CommandInfo) =
-        info.Enabled <- true
-        info.Visible <- FileService.isInsideFSharpFile()
 
     override x.Run() =
         FSharpInteractivePad.Fsi
         |> Option.iter (fun fsi -> command fsi
                                    FSharpInteractivePad.BringToFront(false))
+
+  type FSharpFileInteractiveCommand(command) =
+    inherit InteractiveCommand(command)
+
+    override x.Update(info:CommandInfo) =
+        info.Enabled <- true
+        info.Visible <- FileService.isInsideFSharpFile()
 
   type ShowFSharpInteractive() =
       inherit InteractiveCommand(ignore)
@@ -510,16 +518,16 @@ type FSharpFsiEditorCompletion() =
       inherit InteractiveCommand(fun fsi -> fsi.Paste())
 
   type SendSelection() =
-      inherit InteractiveCommand(fun fsi -> fsi.SendSelection())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendSelection())
 
   type SendLine() =
-      inherit InteractiveCommand(fun fsi -> fsi.SendLine())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendLine())
 
   type SendFile() =
-      inherit InteractiveCommand(fun fsi -> fsi.SendFile())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendFile())
 
   type SendReferences() =
-      inherit InteractiveCommand(fun fsi -> fsi.LoadReferences())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.LoadReferences())
 
   type RestartFsi() =
       inherit InteractiveCommand(fun fsi -> fsi.RestartFsi())

@@ -40,9 +40,12 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	[ExtensionNode (Description="A separator menu or toolbar item")]
 	internal class SeparatorItemCodon : InstanceExtensionNode
 	{
+		[NodeAttribute ("_label", "Label of the item.", Localizable = true)]
+		string label;
+
 		public override object CreateInstance ()
 		{
-			return new CommandEntry (Command.Separator);
+			return new CommandEntry (Command.Separator, label);
 		}
 	}
 }

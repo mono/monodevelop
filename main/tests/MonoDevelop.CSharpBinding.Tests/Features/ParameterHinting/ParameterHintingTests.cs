@@ -1415,5 +1415,31 @@ namespace cp654fz7
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (2, provider.Count);
 		}
+
+
+		/// <summary>
+		/// Bug 41351 - No arguments code completion for methods called via ?. operator
+		/// </summary>
+		[Test]
+		public void TestBug41351 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+
+class test
+{
+	public event EventHandler Handler;
+
+	public test()
+	{
+		Handler?.Invoke($$);
+	}
+}
+
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.Count);
+		}
 	}
 }

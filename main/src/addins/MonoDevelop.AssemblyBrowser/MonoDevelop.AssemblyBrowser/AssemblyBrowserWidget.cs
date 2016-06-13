@@ -258,6 +258,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 
 			inspectEditor = TextEditorFactory.CreateNewEditor ();
+			inspectEditor.ContextMenuPath = "/MonoDevelop/AssemblyBrowser/EditorContextMenu";
 			inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 
 			//inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;

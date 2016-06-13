@@ -112,6 +112,7 @@ namespace MonoDevelop.CodeActions
 			treeviewContextActions.AppendColumn (col);
 			treeviewContextActions.HeadersVisible = false;
 			treeviewContextActions.Model = treeStore;
+			treeviewContextActions.SearchColumn = -1; // disable the interactive search
 			GetAllProviderStates ();
 			FillTreeStore (null);
 			treeviewContextActions.TooltipColumn = 3;

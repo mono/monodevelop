@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
 using System.Security.Permissions;
 using System.Security;
-
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -125,34 +125,67 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public override IEnumerable<FileProvider> GetFiles (ProgressMonitor monitor, FilterOptions filterOptions)
 		{
-			if (IdeApp.Workspace.IsOpen) {
-				var alreadyVisited = new HashSet<string> ();
-				foreach (var solutionFolder in IdeApp.Workspace.GetAllSolutionItems().OfType<SolutionFolder>()) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in solution folder '{0}'", solutionFolder.Name));
-					foreach (var file in solutionFolder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
-						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FullPath))
-							continue;
-						if (alreadyVisited.Contains (file.FullPath))
-							continue;
-						alreadyVisited.Add (file.FullPath);
-						yield return new FileProvider (file.FullPath);
-					}
-				}
-				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
-					var conf = project.DefaultConfiguration?.Selector;
-					foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
-						if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
-							continue;
-						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
-							continue;
-						if (alreadyVisited.Contains (file.FilePath.FullPath))
-							continue;
-						alreadyVisited.Add (file.FilePath.FullPath);
-						yield return new FileProvider (file.Name, project);
-					}
-				}
+			if (!IdeApp.Workspace.IsOpen) {
+				return null;
 			}
+
+			var alreadyVisited = new HashSet<string> ();
+			var results = new List<FileProvider> ();
+
+			var options = new ParallelOptions ();
+			options.MaxDegreeOfParallelism = 4;
+
+			Parallel.ForEach (IdeApp.Workspace.GetAllSolutionItems ().OfType<SolutionFolder> (),
+							  options,
+							  () => new List<FileProvider> (),
+							  (folder, loop, providers) => {
+								  foreach (var file in folder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
+									  if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FullPath))
+										  continue;
+									  lock (alreadyVisited) {
+										  if (alreadyVisited.Contains (file.FullPath))
+											  continue;
+										  alreadyVisited.Add (file.FullPath);
+									  }
+									  providers.Add (new FileProvider (file.FullPath));
+								  }
+								  return providers;
+							  },
+							  (providers) => {
+								  lock (results) {
+									  results.AddRange (providers);
+								  }
+							  });
+
+			Parallel.ForEach (IdeApp.Workspace.GetAllProjects (),
+							  options,
+							  () => new List<FileProvider> (),
+							  (project, loop, providers) => {
+								  var conf = project.DefaultConfiguration?.Selector;
+
+								  foreach (ProjectFile file in project.GetSourceFilesAsync (conf).Result.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+									  if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+										  continue;
+									  if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
+										  continue;
+
+									  lock (alreadyVisited) {
+										  if (alreadyVisited.Contains (file.FilePath.FullPath))
+											  continue;
+										  alreadyVisited.Add (file.FilePath.FullPath);
+									  }
+
+									  providers.Add (new FileProvider (file.Name, project));
+								  }
+								  return providers;
+							  },
+							  (providers) => {
+								  lock (results) {
+									  results.AddRange (providers);
+								  }
+							  });
+
+			return results;
 		}
 
 		public override string GetDescription (FilterOptions filterOptions, string pattern, string replacePattern)

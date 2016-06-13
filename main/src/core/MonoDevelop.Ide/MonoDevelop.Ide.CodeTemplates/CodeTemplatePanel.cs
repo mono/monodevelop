@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			treeviewCodeTemplates.AppendColumn (column);
 			
 			treeviewCodeTemplates.Model = templateStore;
+			treeviewCodeTemplates.SearchColumn = -1; // disable the interactive search
 			templates = new List<CodeTemplate> (CodeTemplateService.Templates);
 			templates.ForEach (t => InsertTemplate (t));
 			

@@ -233,6 +233,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		{
 			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
 			StackTraceTreeView = new TreeView (store);
+			StackTraceTreeView.SearchColumn = -1; // disable the interactive search
 			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
 			StackTraceTreeView.ShowExpanders = false;

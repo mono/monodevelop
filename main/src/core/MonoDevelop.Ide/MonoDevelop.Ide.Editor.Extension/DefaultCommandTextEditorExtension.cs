@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.TypeSystem;
@@ -258,6 +259,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			var marker = (IMessageBubbleLineMarker)Editor.GetLineMarkers (line).FirstOrDefault (m => m is IMessageBubbleLineMarker);
 			info.Visible = marker != null;
+
+			if (info.Visible)
+				info.Text = marker.IsVisible ? GettextCatalog.GetString ("_Hide Current Message") : GettextCatalog.GetString ("_Show Hidden Message");
 		}
 
 		[CommandHandler (MessageBubbleCommands.Toggle)]

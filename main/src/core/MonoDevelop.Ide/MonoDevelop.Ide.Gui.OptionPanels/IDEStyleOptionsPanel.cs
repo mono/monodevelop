@@ -92,12 +92,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 			currentTheme = IdeApp.Preferences.UserInterfaceThemeName;
 
-			for (int n = 1; n < isoCodes.Length; n += 2)
-				comboLanguage.AppendText (GettextCatalog.GetString (isoCodes [n]));
+			foreach (var localeSet in LocalizationService.CurrentLocaleSet)
+				comboLanguage.AppendText (localeSet.DisplayName);
 
-			int i = Array.IndexOf (isoCodes, IdeApp.Preferences.UserInterfaceLanguage);
+			int i = LocalizationService.CurrentLocaleSet.FindIndex (ls => ls.Culture == IdeApp.Preferences.UserInterfaceLanguage);
 			if (i == -1) i = 0;
-			comboLanguage.Active = i / 2;
+			comboLanguage.Active = i;
 
 			if (Platform.IsLinux)
 				comboTheme.AppendText (GettextCatalog.GetString ("(Default)"));
@@ -113,6 +113,27 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			comboTheme.Active = sel;
 			comboTheme.Changed += ComboThemeChanged;
+			tableRestart.Visible = separatorRestart.Visible = false;
+			labelRestart.LabelProp = GettextCatalog.GetString ("These preferences will take effect next time you start {0}", BrandingService.ApplicationName);
+			btnRestart.Label = GettextCatalog.GetString ("Restart {0}", BrandingService.ApplicationName);
+
+			comboLanguage.Changed += UpdateRestartMessage;
+			comboTheme.Changed += UpdateRestartMessage;
+		}
+
+		void RestartClicked (object sender, System.EventArgs e)
+		{
+			Store ();
+			IdeApp.Restart (true);
+		}
+
+		void UpdateRestartMessage (object sender, EventArgs e)
+		{
+			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value ||
+			    LocalizationService.CurrentLocaleSet [comboLanguage.Active].Culture != IdeApp.Preferences.UserInterfaceLanguage) {
+				tableRestart.Visible = separatorRestart.Visible = true;
+			} else
+				tableRestart.Visible = separatorRestart.Visible = false;
 		}
 
 		void ComboThemeChanged (object sender, EventArgs e)
@@ -174,54 +195,12 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		
 		public void Store()
 		{
-			string lc = isoCodes [comboLanguage.Active * 2];
-			if (lc != IdeApp.Preferences.UserInterfaceLanguage) {
+			string lc = LocalizationService.CurrentLocaleSet [comboLanguage.Active].Culture;
+			if (lc != IdeApp.Preferences.UserInterfaceLanguage)
 				IdeApp.Preferences.UserInterfaceLanguage.Value = lc;
-				MessageService.ShowMessage (
-					GettextCatalog.GetString (
-						"The user interface language change will take effect the next time you start {0}",
-						BrandingService.ApplicationName
-					)
-				);
-			}
 
-			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value) {
+			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value)
 				IdeApp.Preferences.UserInterfaceThemeName.Value = currentTheme;
-				MessageService.ShowMessage (
-					GettextCatalog.GetString (
-						"The user interface theme change will take effect the next time you start {0}",
-						BrandingService.ApplicationName
-					)
-				);
-			}
 		}
-
-		static string[] isoCodes = new string[] {
-			"", "(Default)",
-			"ca", "Catalan",
-			"zh_CN", "Chinese - China",
-			"zh_TW", "Chinese - Taiwan",
-			"cs", "Czech",
-			"da", "Danish",
-			"nl", "Dutch",
-			"fr", "French",
-			"gl", "Galician",
-			"de", "German",
-			"en", "English",
-			"hu", "Hungarian",
-			"id", "Indonesian",
-			"it", "Italian",
-			"ja", "Japanese",
-			"ko", "Korean",
-			"pl", "Polish",
-			"pt", "Portuguese",
-			"pt_BR", "Portuguese - Brazil",
-			"ru", "Russian",
-			"sl", "Slovenian",
-			"es", "Spanish",
-			"sv", "Swedish",
-			"tr", "Turkish"
-		};
-		
 	}
 }

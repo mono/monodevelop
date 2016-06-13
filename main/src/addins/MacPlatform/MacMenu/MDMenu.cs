@@ -52,6 +52,8 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			foreach (CommandEntry ce in ces) {
 				if (ce.CommandId == Command.Separator) {
 					AddItem (NSMenuItem.SeparatorItem);
+					if (!string.IsNullOrEmpty (ce.OverrideLabel))
+						AddItem (new MDMenuHeaderItem (ce.OverrideLabel));
 					continue;
 				}
 

@@ -82,6 +82,7 @@ namespace MonoDevelop.Components.Docking
 			if (ParentGroup.Type != DockGroupType.Tabbed || ParentGroup.VisibleObjects.Count == 1) {
 				var tr = item.TitleTab.SizeRequest ();
 				req.Height += tr.Height;
+				req.Width = Math.Max (req.Width, tr.Width);
 				return req;
 			} else
 				return req;

@@ -152,6 +152,7 @@ namespace MonoDevelop.CSharp.Formatting
 			column.SetAttributes (cellRendererText, "text", 1);
 			 
 			treeviewIndentOptions.Model = indentationOptions;
+			treeviewIndentOptions.SearchColumn = -1; // disable the interactive search
 			treeviewIndentOptions.HeadersVisible = false;
 			treeviewIndentOptions.Selection.Changed += TreeSelectionChanged;
 			treeviewIndentOptions.AppendColumn (column);
@@ -204,6 +205,7 @@ namespace MonoDevelop.CSharp.Formatting
 			column.SetAttributes (cellRendererText, "text", 1);
 			
 			treeviewNewLines.Model = newLineOptions;
+			treeviewNewLines.SearchColumn = -1; // disable the interactive search
 			treeviewNewLines.HeadersVisible = false;
 			treeviewNewLines.Selection.Changed += TreeSelectionChanged;
 			treeviewNewLines.AppendColumn (column);
@@ -357,6 +359,7 @@ namespace MonoDevelop.CSharp.Formatting
 			column.SetAttributes (cellRendererText, "text", 1);
 
 			treeviewSpacing.Model = spacingOptions;
+			treeviewSpacing.SearchColumn = -1; // disable the interactive search
 			treeviewSpacing.HeadersVisible = false;
 			treeviewSpacing.Selection.Changed += TreeSelectionChanged;
 			treeviewSpacing.AppendColumn (column);
@@ -522,6 +525,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 			treeviewStyle.Model = styleOptions;
+			treeviewStyle.SearchColumn = -1; // disable the interactive search
 			treeviewStyle.HeadersVisible = false;
 			treeviewStyle.Selection.Changed += TreeSelectionChanged;
 			treeviewStyle.AppendColumn (column);
@@ -572,6 +576,7 @@ namespace MonoDevelop.CSharp.Formatting
 			column.SetAttributes (cellRendererText, "text", 1);
 
 			treeviewWrapping.Model = wrappingOptions;
+			treeviewWrapping.SearchColumn = -1; // disable the interactive search
 			treeviewWrapping.HeadersVisible = false;
 			treeviewWrapping.Selection.Changed += TreeSelectionChanged;
 			treeviewWrapping.AppendColumn (column);

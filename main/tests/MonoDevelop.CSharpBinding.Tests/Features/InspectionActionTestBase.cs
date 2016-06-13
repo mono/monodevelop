@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory6
         {
 			try {
 				mscorlib = MetadataReference.CreateFromFile (typeof(Console).Assembly.Location);
-				systemAssembly = MetadataReference.CreateFromFile (typeof(System.Text.RegularExpressions.Regex).Assembly.Location);
+				systemAssembly = MetadataReference.CreateFromFile (typeof (System.Text.RegularExpressions.Regex).Assembly.Location);
 				//systemXmlLinq = MetadataReference.CreateFromFile (typeof(System.Xml.Linq.XElement).Assembly.Location);
 				systemCore = MetadataReference.CreateFromFile (typeof(Enumerable).Assembly.Location);
 				DefaultMetadataReferences = new [] {

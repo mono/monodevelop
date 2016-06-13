@@ -43,12 +43,12 @@ using MonoDevelop.CSharp.Completion;
 namespace ICSharpCode.NRefactory6.CSharp.Completion
 {
 
-//	class CompletionEngineCache
-//	{
-//		public List<INamespace>  namespaces;
-//		public ICompletionData[] importCompletion;
-//	}
-	
+	//	class CompletionEngineCache
+	//	{
+	//		public List<INamespace>  namespaces;
+	//		public ICompletionData[] importCompletion;
+	//	}
+
 	class EnumMemberContextHandler : CompletionContextHandler
 	{
 		public override bool IsCommitCharacter (CompletionData completionItem, char ch, string textTypedSoFar)
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			return ch == '.';
 		}
 
-		public override bool IsTriggerCharacter(SourceText text, int position)
+		public override bool IsTriggerCharacter (SourceText text, int position)
 		{
 			// Bring up on space or at the start of a word, or after a ( or [.
 			//
@@ -65,23 +65,23 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			// That's because we don't like the experience where the enum appears directly after the
 			// operator.  Instead, the user normally types <space> and we will bring up the list
 			// then.
-			var ch = text[position];
+			var ch = text [position];
 			return
 				ch == ' ' ||
 				ch == '[' ||
 				ch == '(' ||
-				(/*options.GetOption(CompletionOptions.TriggerOnTypingLetters, LanguageNames.CSharp) && CompletionUtilities.*/IsStartingNewWord(text, position));
+				(/*options.GetOption(CompletionOptions.TriggerOnTypingLetters, LanguageNames.CSharp) && CompletionUtilities.*/IsStartingNewWord (text, position));
 		}
 
 		protected async override Task<IEnumerable<CompletionData>> GetItemsWorkerAsync (CompletionResult completionResult, CompletionEngine engine, CompletionContext completionContext, CompletionTriggerInfo info, SyntaxContext ctx, CancellationToken cancellationToken)
 		{
 			var model = ctx.SemanticModel;
 			var tree = ctx.SyntaxTree;
-			if (tree.IsInNonUserCode(completionContext.Position, cancellationToken))
+			if (tree.IsInNonUserCode (completionContext.Position, cancellationToken))
 				return Enumerable.Empty<CompletionData> ();
 
-			var token = tree.FindTokenOnLeftOfPosition(completionContext.Position, cancellationToken);
-			if (token.IsMandatoryNamedParameterPosition())
+			var token = tree.FindTokenOnLeftOfPosition (completionContext.Position, cancellationToken);
+			if (token.IsMandatoryNamedParameterPosition ())
 				return Enumerable.Empty<CompletionData> ();
 			var result = new List<CompletionData> ();
 
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 			foreach (var _type in ctx.InferredTypes) {
 				var type = _type;
 				if (type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T) {
-					type = type.GetTypeArguments().FirstOrDefault();
+					type = type.GetTypeArguments ().FirstOrDefault ();
 					if (type == null)
 						continue;
 				}
@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					continue;
 
 				// Does type have any aliases?
-				ISymbol alias = await type.FindApplicableAlias(completionContext.Position, model, cancellationToken).ConfigureAwait(false);
+				ISymbol alias = await type.FindApplicableAlias (completionContext.Position, model, cancellationToken).ConfigureAwait (false);
 
 				var displayString = RoslynCompletionData.SafeMinimalDisplayString (type, model, completionContext.Position, SymbolDisplayFormat.CSharpErrorMessageFormat);
 				if (string.IsNullOrEmpty (completionResult.DefaultCompletionString)) {
@@ -123,14 +123,27 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 					completionResult.AutoCompleteEmptyMatch = true;
 
 				}
-				result.Add (engine.Factory.CreateSymbolCompletionData(this, type, displayString));
-				foreach (IFieldSymbol field in type.GetMembers().OfType<IFieldSymbol>()) {
+				if (!IsReachable (model,  type, token.Parent))
+					result.Add (engine.Factory.CreateSymbolCompletionData (this, type, displayString));
+				foreach (IFieldSymbol field in type.GetMembers ().OfType<IFieldSymbol> ()) {
 					if (field.DeclaredAccessibility == Accessibility.Public && (field.IsConst || field.IsStatic)) {
-						result.Add (engine.Factory.CreateEnumMemberCompletionData(this, alias, field));
+						result.Add (engine.Factory.CreateEnumMemberCompletionData (this, alias, field));
 					}
 				}
 			}
 			return result;
+		}
+
+		bool IsReachable (SemanticModel model, ITypeSymbol type, SyntaxNode node)
+		{
+			if (type.ContainingNamespace.IsGlobalNamespace)
+				return true;
+			var ds = type.ContainingNamespace.ToDisplayString ();
+			foreach (var ns in model.GetUsingNamespacesInScope (node)) {
+				if (ns.ToDisplayString  () == ds)
+					return true;
+			}
+			return false;
 		}
 	}
 

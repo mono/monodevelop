@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		public ProjectOptionsDialog (Window parentWindow, SolutionItem project) : base (parentWindow, project)
 		{
-			this.Title = GettextCatalog.GetString ("Project Options") + " - " + project.Name;
+			this.Title = GettextCatalog.GetString ("Project Options") + " – " + project.Name;
 			this.DefaultWidth = 960;
 			this.DefaultHeight = 680;
 		}
