@@ -370,11 +370,11 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		{
 			pref.Flags = ProjectItemFlags.DontPersist;
 			pref.SetItemsProjectPath (ProjItemsPath);
-			foreach (var f in Files) {
+			foreach (var f in Files.Reverse()) {
 				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null && f.Subtype != Subtype.Directory) {
 					var cf = (ProjectFile)f.Clone ();
 					cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
-					pref.OwnerProject.Files.Add (cf);
+					pref.OwnerProject.Files.Insert (0, cf);
 				}
 			}
 		}
