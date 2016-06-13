@@ -485,8 +485,14 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 		void UpdateConflictsWarning ()
 		{
-			duplicates = currentBindings.CheckKeyBindingConflicts (IdeApp.CommandService.GetCommands ())
-			                            .ToDictionary (dup => dup.Key, dup => new HashSet<Command> (dup.Commands));
+			duplicates = new Dictionary<string, HashSet<Command>> ();
+			foreach (var conflict in currentBindings.CheckKeyBindingConflicts (IdeApp.CommandService.GetCommands ())) {
+				HashSet<Command> cmds = null;
+				if (!duplicates.TryGetValue (conflict.Key, out cmds))
+					duplicates [conflict.Key] = cmds = new HashSet<Command> ();
+				foreach (var cmd in conflict.Commands)
+					cmds.Add (cmd);
+			}
 			conflicts = new Dictionary<string, HashSet<Command>> ();
 
 			foreach (var dup in duplicates) {
