@@ -3497,5 +3497,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			FocusLost?.Invoke (this, EventArgs.Empty);
 		}
+
+		void ITextEditorImpl.GrabFocus ()
+		{
+			this.TextEditor.GrabFocus ();
+		}
+
 	}
 } 

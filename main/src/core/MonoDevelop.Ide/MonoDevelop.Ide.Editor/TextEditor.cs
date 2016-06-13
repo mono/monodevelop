@@ -1416,5 +1416,10 @@ namespace MonoDevelop.Ide.Editor
 		internal ITextEditorImpl Implementation { get { return this.textEditorImpl; } }
 
 		public event EventHandler FocusLost { add { textEditorImpl.FocusLost += value; } remove { textEditorImpl.FocusLost -= value; } }
+
+		public new void GrabFocus ()
+		{
+			this.textEditorImpl.GrabFocus ();
+		}
 	}
 }
