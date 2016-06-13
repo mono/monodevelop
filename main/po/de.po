@@ -1643,7 +1643,7 @@ msgid "Show MonoDevelop preferences window"
 msgstr "MonoDevelop-Einstellungsfenster anzeigen"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "_Benutzerrichtlinien..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -6701,7 +6701,7 @@ msgstr ""
 "Projektes oder einer Projektmappe enthält."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "Benutzerdefinierte Richtlinie"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
@@ -19440,7 +19440,7 @@ msgid "Preferences..."
 msgstr "Einstellungen..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Benutzerrichtlinien..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42

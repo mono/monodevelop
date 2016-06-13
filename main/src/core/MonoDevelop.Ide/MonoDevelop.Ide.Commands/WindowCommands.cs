@@ -134,12 +134,15 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
+			var windows = IdeApp.CommandService.TopLevelWindowStack.ToArray (); // enumerate only once
+			if (windows.Length <= 1)
+				return;
 			int i = 0;
-			foreach (Gtk.Window window in IdeApp.CommandService.TopLevelWindowStack) {
+			foreach (Gtk.Window window in windows) {
 
 				//Create CommandInfo object
 				CommandInfo commandInfo = new CommandInfo ();
-				commandInfo.Text = window.Title.Replace ("_", "__");
+				commandInfo.Text = window.Title.Replace ("_", "__").Replace("-","\u2013").Replace(" \u2013 " + BrandingService.ApplicationName, "");
 				if (window.HasToplevelFocus)
 					commandInfo.Checked = true;
 				commandInfo.Description = GettextCatalog.GetString ("Activate window '{0}'", commandInfo.Text);

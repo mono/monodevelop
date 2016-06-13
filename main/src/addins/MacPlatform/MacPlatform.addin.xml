@@ -17,8 +17,12 @@
 			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
 					defaultHandler = "MonoDevelop.MacIntegration.MacMinimizeWindowHandler"
 					_label = "_Minimize"
-					_description = "Minimize the window"
+					_description = "Minimize the Window"
 					macShortcut = "Meta|M" />
+			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.ZoomWindow"
+					defaultHandler = "MonoDevelop.MacIntegration.MacZoomWindowHandler"
+					_label = "_Zoom"
+					_description = "Zoom the Window"/>
 			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow"
 					defaultHandler = "MonoDevelop.MacIntegration.MacHideWindowHandler"
 					_label = "_Hide Application"
@@ -43,7 +47,9 @@
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Window">
 		<Condition id = "Platform" value = "mac">
 			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.MinimizeWindow"
-			             insertbefore = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow" />
+			             insertafter = "NxtPrvSeparator" />
+			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.ZoomWindow" />
+			<SeparatorItem id = "winMinimizeSep" />
 		</Condition>
 	</Extension>
 	
@@ -81,6 +87,6 @@
 		<StockIcon stockid = "device" resource = "device.png" size="Menu" />
 		<StockIcon stockid = "pause" resource = "pause.png" size="Menu" />
 		<StockIcon stockid = "project" resource = "project.png" size="Menu" />
-		<StockIcon stockid = "stop" resource = "stop.png" size="Menu" />
+		<StockIcon stockid = "status-stop" resource = "status-stop-16.png" size="Menu" />
 	</Extension>
 </ExtensionModel>

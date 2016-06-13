@@ -615,7 +615,9 @@ namespace MonoDevelop.Ide.FindInFiles
 							textMarkup = PangoHelper.ColorMarkupBackground (textMarkup, (int)startIndex, (int)endIndex, searchColor);
 						}
 					} else {
-						textMarkup = PangoHelper.AddBold (textMarkup, (int)startIndex, (int)endIndex);
+						var searchColor = this.treeviewSearchResults.Style.Base (StateType.Selected);
+						searchColor = searchColor.AddLight (-0.2);
+						textMarkup = PangoHelper.ColorMarkupBackground (textMarkup, (int)startIndex, (int)endIndex, searchColor);
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error whil setting the text renderer markup to: " + markup, e);
@@ -937,70 +939,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			if (!closed && opened)
 				markupBuilder.Append ("</span>");
-			return markupBuilder.ToString ();
-		}
-
-		public static string AddBold (string textMarkup, int startIndex, int endIndex)
-		{
-			var markupBuilder = new StringBuilder ();
-			bool inMarkup = false, inEntity = false, closed = false, opened = false;
-			int i = 0;
-			for (int j = 0; j < textMarkup.Length; j++) {
-				var ch = textMarkup [j];
-				if (inEntity) {
-					if (ch == ';') {
-						inEntity = false;
-						i++;
-					}
-					markupBuilder.Append (ch);
-					continue;
-				}
-				if (inMarkup) {
-					if (ch == '>') {
-						inMarkup = false;
-						markupBuilder.Append (ch);
-						if (i > startIndex && markupBuilder.ToString ().EndsWith ("</span>", StringComparison.Ordinal)) {
-							if (opened && !closed) {
-								markupBuilder.Append ("</span>");
-								opened = false;
-							}
-							markupBuilder.Append (textMarkup.Substring (j + 1));
-							return AddBold (markupBuilder.ToString (), i, endIndex);
-						}
-						continue;
-					}
-					markupBuilder.Append (ch);
-					continue;
-				}
-				if (i == endIndex) {
-					if (opened) {
-						markupBuilder.Append ("</b>");
-						opened = false;
-					}
-					markupBuilder.Append (textMarkup.Substring (j));
-					closed = true;
-					break;
-				}
-
-				if (ch == '<') {
-					inMarkup = true;
-					markupBuilder.Append (ch);
-					continue;
-				}
-				if (i == startIndex) {
-					opened = true;
-					markupBuilder.Append ("<b>");
-				}
-				if (ch == '&') {
-					inEntity = true;
-					markupBuilder.Append (ch);
-					continue;
-				}
-				markupBuilder.Append (ch);
-				i++;
-			}
-			if (!closed && opened)
-				markupBuilder.Append ("</b>");
 			return markupBuilder.ToString ();
 		}
 	}

@@ -228,8 +228,12 @@ namespace MonoDevelop.CSharp.ClassOutline
 				Editor.CaretOffset = ((SyntaxTrivia)o).SpanStart;
 			}
 
-			if (focusEditor)
-				Editor.GrabFocus ();
+			if (focusEditor) {
+				GLib.Timeout.Add (10, delegate {
+					Editor.GrabFocus ();
+					return false;
+				});
+			}
 		}
 
 		static void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)

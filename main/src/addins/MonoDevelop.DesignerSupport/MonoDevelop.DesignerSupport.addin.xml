@@ -41,6 +41,7 @@
 			class = "MonoDevelop.DesignerSupport.ToolboxPad"
 			_label="Toolbox"
 			icon = "md-toolbox-pad"
+			group = "Designer"
 			defaultLayout="*"
 			defaultPlacement="Right"
 			defaultStatus="AutoHide"
@@ -49,6 +50,7 @@
 			class = "MonoDevelop.DesignerSupport.PropertyPad"
 			_label="Properties"
 			icon = "md-properties-pad"
+			group = "Designer"
 			defaultLayout="*"
 			defaultPlacement="MonoDevelop.DesignerSupport.ToolboxPad/bottom; right"
 			defaultStatus="AutoHide"
@@ -57,6 +59,7 @@
 			class = "MonoDevelop.DesignerSupport.DocumentOutlinePad"
 			_label="Document Outline"
 			icon="md-pad-document-outline"
+			group = "Designer"
 			defaultLayout="*"
 			defaultPlacement="MonoDevelop.DesignerSupport.PropertyPad/center; bottom"
 			defaultStatus="AutoHide"
@@ -93,15 +96,18 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "Designer" id = "Designer">
 		<Command id = "MonoDevelop.DesignerSupport.Commands.SelectItems"
 				defaultHandler = "MonoDevelop.DesignerSupport.SelectItemsCommandHandler"
-				_label = "Add Items..." />
+				_label = "Add Items..."
+				_displayName = "Add Toolbox Items..." />
 		<Command id = "MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles"
 		         _label = "Switch between related files "
 		         _description = "Switch between related files, such as CodeBehind, headers, etc."
 		         defaultHandler="MonoDevelop.DesignerSupport.SwitchBetweenRelatedFilesCommand"
 		         shortcut="Control|Alt|Up"
 		         macShortcut="Control|Meta|Up" />
+		</Category>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ContextMenu/DocumentTab">

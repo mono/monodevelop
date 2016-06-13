@@ -92,7 +92,7 @@ namespace MonoDevelop.Components.Mac
 			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
 
 			if (!isArrayItem) {
-				SetItemValues (this, info, ce.DisabledVisible);
+				SetItemValues (this, info, ce.DisabledVisible, ce.OverrideLabel);
 				if (!Hidden)
 					MDMenu.ShowLastSeparator (ref lastSeparator);
 				return;
@@ -129,6 +129,7 @@ namespace MonoDevelop.Components.Mac
 						parent.InsertItem (n, index);
 					else
 						parent.AddItem (n);
+					index++;
 					continue;
 				}
 
@@ -162,9 +163,9 @@ namespace MonoDevelop.Components.Mac
 			public CommandInfo Info;
 		}
 
-		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible)
+		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible, string overrideLabel = null)
 		{
-			item.SetTitleWithMnemonic (GetCleanCommandText (info));
+			item.SetTitleWithMnemonic (GetCleanCommandText (info, overrideLabel));
 			if (!string.IsNullOrEmpty (info.Description) && item.ToolTip != info.Description)
 				item.ToolTip = info.Description;
 
@@ -249,9 +250,9 @@ namespace MonoDevelop.Components.Mac
 			return "";
 		}
 
-		static string GetCleanCommandText (CommandInfo ci)
+		static string GetCleanCommandText (CommandInfo ci, string overrideLabel = null)
 		{
-			string txt = ci.Text;
+			string txt = overrideLabel ?? ci.Text;
 			if (txt == null)
 				return "";
 

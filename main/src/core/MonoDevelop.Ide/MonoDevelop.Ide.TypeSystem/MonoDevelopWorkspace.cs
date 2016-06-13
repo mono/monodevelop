@@ -182,15 +182,15 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			return Task.Run (async delegate {
 				var projects = new ConcurrentBag<ProjectInfo> ();
-				var mdProjects = solution.GetAllProjects ().OfType<MonoDevelop.Projects.DotNetProject> ();
+				var mdProjects = solution.GetAllProjects ();
 				projectionList.Clear ();
 				solutionData = new SolutionData ();
-
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {
 					if (token.IsCancellationRequested)
 						return null;
-					if (!proj.SupportsRoslyn)
+					var netProj = proj as MonoDevelop.Projects.DotNetProject;
+					if (netProj != null && !netProj.SupportsRoslyn)
 						continue;
 					var tp = LoadProject (proj, token).ContinueWith (t => {
 						if (!t.IsCanceled)
@@ -380,7 +380,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			project.Modified -= OnProjectModified;
 		}
 
-		async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.DotNetProject p, CancellationToken token)
+		async Task<ProjectInfo> LoadProject (MonoDevelop.Projects.Project p, CancellationToken token)
 		{
 			if (!projectIdMap.ContainsKey (p)) {
 				p.FileAddedToProject += OnFileAdded;
@@ -531,10 +531,28 @@ namespace MonoDevelop.Ide.TypeSystem
 			projectionList.Add (entry);
 		}
 
-		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.DotNetProject netProject, ProjectId projectId, CancellationToken token)
+		static async Task<List<MetadataReference>> CreateMetadataReferences (MonoDevelop.Projects.Project proj, ProjectId projectId, CancellationToken token)
 		{
 			List<MetadataReference> result = new List<MetadataReference> ();
-			
+
+			var netProject = proj as MonoDevelop.Projects.DotNetProject;
+			if (netProject == null) {
+				// create some default references for unsupported project types.
+				string [] assemblies = {
+					typeof(string).Assembly.Location,                                // mscorlib
+					typeof(System.Text.RegularExpressions.Regex).Assembly.Location,  // System
+					typeof(System.Linq.Enumerable).Assembly.Location,                // System.Core
+					typeof(System.Data.VersionNotFoundException).Assembly.Location,  // System.Data
+					typeof(System.Xml.XmlDocument).Assembly.Location,                // System.Xml
+				};
+
+				foreach (var asm in assemblies) {
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, typeof (string).Assembly.Location);
+					result.Add (metadataReference);
+				}
+
+				return result;
+			}
 			var configurationSelector = IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default;
 			var hashSet = new HashSet<string> (FilePath.PathComparer);
 
@@ -585,9 +603,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.DotNetProject p, CancellationToken token)
+		IEnumerable<ProjectReference> CreateProjectReferences (MonoDevelop.Projects.Project p, CancellationToken token)
 		{
-			foreach (var referencedProject in p.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default)) {
+			var netProj = p as MonoDevelop.Projects.DotNetProject;
+			if (netProj == null)
+				yield break;
+
+			foreach (var referencedProject in netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default)) {
 				if (token.IsCancellationRequested)
 					yield break;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))

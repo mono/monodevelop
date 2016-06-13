@@ -515,6 +515,19 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		[CommandHandler (EditCommands.EnableDisableFolding)]
+		protected void EnableDisableFolding ()
+		{
+			DefaultSourceEditorOptions.Instance.ShowFoldMargin = !DefaultSourceEditorOptions.Instance.ShowFoldMargin;
+		}
+
+		[CommandUpdateHandler (EditCommands.EnableDisableFolding)]
+		protected void UpdateEnableDisableFolding (CommandInfo info)
+		{
+			info.Text = IsFoldMarkerMarginEnabled ? GettextCatalog.GetString ("Disable _Folding") : GettextCatalog.GetString ("Enable _Folding");
+			info.Enabled = GetContent<IFoldable> () != null;
+		}
+
 		[CommandUpdateHandler (EditCommands.ToggleAllFoldings)]
 		[CommandUpdateHandler (EditCommands.FoldDefinitions)]
 		[CommandUpdateHandler (EditCommands.ToggleFolding)]

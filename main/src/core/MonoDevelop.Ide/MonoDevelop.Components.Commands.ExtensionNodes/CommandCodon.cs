@@ -44,6 +44,9 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	{
 		[NodeAttribute ("_label", true, "Label", Localizable=true)]
 		string label;
+
+		[NodeAttribute ("_displayName", "Display Name of the command, visible in search results or key bindings option panel.", Localizable = true)]
+		string _displayName;
 		
 		[NodeAttribute ("_description", "Description of the command", Localizable=true)]
 		string _description;
@@ -148,6 +151,8 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			
 			cmd.Id = ParseCommandId (this);
 			cmd.Text = StringParserService.Parse (BrandingService.BrandApplicationName (label));
+			if (!String.IsNullOrWhiteSpace(_displayName))
+				cmd.DisplayName = StringParserService.Parse (BrandingService.BrandApplicationName (_displayName));
 			if ((_description != null) && (_description.Length > 0)){
 				cmd.Description = BrandingService.BrandApplicationName (_description);				
 			}

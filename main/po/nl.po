@@ -1754,7 +1754,7 @@ msgstr "MonoDevelop voorkeuren"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Standaard C-compiler:"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -7151,7 +7151,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
 #, fuzzy
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "Ander beleid"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
@@ -20484,7 +20484,7 @@ msgstr "Voorkeuren"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Standaard C-compiler:"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42
