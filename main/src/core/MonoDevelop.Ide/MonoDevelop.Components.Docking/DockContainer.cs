@@ -84,8 +84,11 @@ namespace MonoDevelop.Components.Docking
 			layout = null;
 		}
 
+		internal bool IsSwitchingLayout { get; set; }
+
 		public void LoadLayout (DockLayout dl)
 		{
+			IsSwitchingLayout = true;
 			HidePlaceholder ();
 
 			// Sticky items currently selected in notebooks will remain
@@ -97,8 +100,8 @@ namespace MonoDevelop.Components.Docking
 					if (gitem != null && gitem.ParentGroup.IsSelectedPage (it))
 						sickyOnTop.Add (it);
 				}
-			}			
-			
+			}
+
 			if (layout != null)
 				layout.StoreAllocation ();
 			layout = dl;
@@ -116,6 +119,8 @@ namespace MonoDevelop.Components.Docking
 
 			foreach (DockItem it in sickyOnTop)
 				it.Present (false);
+
+			IsSwitchingLayout = false;
 		}
 		
 		public void StoreAllocation ()
