@@ -30,7 +30,7 @@ type FSharpFormattingPolicyPanelWidget() =
             GettextCatalog.GetString ("Default")
         else
             let i = policy.Formats.IndexOf (format) + 1
-            String.Format(GettextCatalog.GetString ("Format #{0}"), i)
+            GettextCatalog.GetString ("Format #{0}", i)
 
     let updateCurrentName() =
         let it : TreeIter ref = ref Unchecked.defaultof<_>
