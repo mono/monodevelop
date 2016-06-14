@@ -412,7 +412,12 @@ type FSharpInteractivePad() =
     member x.Save() =
         let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as script"), MonoDevelop.Components.FileChooserAction.Save)
         if dlg.Run () then
-            let file = dlg.SelectedFile
+            let file = 
+                if dlg.SelectedFile.Extension = ".fsx" then
+                    dlg.SelectedFile
+                else
+                    dlg.SelectedFile.ChangeExtension(".fsx")
+
             let lines = input |> Seq.map (fun line -> line.TrimEnd(';'))
             let fileContent = String.concat "\n" lines
             File.WriteAllText(file.FullPath.ToString(), fileContent)
