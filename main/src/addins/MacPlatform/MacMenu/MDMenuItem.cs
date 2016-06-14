@@ -278,6 +278,10 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 		static string GetKeyEquivalent (Gdk.Key key)
 		{
+			// Gdk.Keyval.ToUnicode returns NULL for TAB, fix it
+			if (key == Gdk.Key.Tab)
+				return "\t";
+			
 			char c = (char) Gdk.Keyval.ToUnicode ((uint) key);
 			if (c != 0)
 				return c.ToString ();
@@ -286,7 +290,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			if (fk != 0)
 				return ((char) fk).ToString ();
 
-			LoggingService.LogError ("Mac menu cannot display key '{0}", key);
+			LoggingService.LogError ("Mac menu cannot display key '{0}'", key);
 			return "";
 		}
 
