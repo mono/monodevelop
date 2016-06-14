@@ -185,7 +185,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				var mdProjects = solution.GetAllProjects ();
 				projectionList.Clear ();
 				solutionData = new SolutionData ();
-				Console.WriteLine ("load solution ! ");
 				List<Task> allTasks = new List<Task> ();
 				foreach (var proj in mdProjects) {
 					if (token.IsCancellationRequested)
