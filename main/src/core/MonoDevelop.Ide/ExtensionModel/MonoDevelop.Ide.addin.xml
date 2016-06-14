@@ -200,6 +200,11 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/ErrorDocumentationProvider" name = "Link to documentation">
+		<Description>Send users to the appropriate documentation for errors in the error pad.</Description>
+		<ExtensionNode name = "ErrorDocumentationProvider" type = "MonoDevelop.Ide.Extensions.ErrorDocumentationProvider" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -345,5 +350,9 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-	
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/LocaleSet" name = "Localization set definition">
+		<Description>Setting what languages are supported for user selection.</Description>
+		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
+	</ExtensionPoint>
 </ExtensionModel>

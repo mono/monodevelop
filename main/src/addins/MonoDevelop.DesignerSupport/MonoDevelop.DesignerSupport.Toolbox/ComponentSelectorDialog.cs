@@ -100,7 +100,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			store.SetSortColumnId (ColName, SortType.Ascending);
 			listView.SearchColumn = ColName;
 			listView.Model = store;
-			
+			listView.SearchColumn = -1; // disable the interactive search
+
 			foreach (ItemToolboxNode it in DesignerSupport.Service.ToolboxService.UserItems)
 				currentItems [it] = it;
 

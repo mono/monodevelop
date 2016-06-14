@@ -232,11 +232,30 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubbles.Changed += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
+			widget.TextEditor.Document.MimeTypeChanged += Document_MimeTypeChanged;
 			if (document != null) {
 				Document.MimeType = document.MimeType;
 				Document.FileName = document.FileName;
 			}
 			FileRegistry.Add (this);
+		}
+
+		void Document_MimeTypeChanged (object sender, EventArgs e)
+		{
+			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
+			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
+			if (sm != null && sm.MimeType == null) {
+				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
+					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
+					if (syntaxMode != null) {
+						Document.SyntaxMode = syntaxMode;
+						break;
+					}
+				}
+			}
+			if (Document.MimeType != null) {
+				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
+			}
 		}
 
 		void HandleDocumentTextSet (object sender, EventArgs e)
@@ -934,21 +953,6 @@ namespace MonoDevelop.SourceEditor
 		void UpdateMimeType (string fileName)
 		{
 			Document.MimeType = DesktopService.GetMimeTypeForUri (fileName);
-
-			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
-			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
-			if (sm != null && sm.MimeType == null) {
-				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
-					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
-					if (syntaxMode != null) {
-						Document.SyntaxMode = syntaxMode;
-						break;
-					}
-				}
-			}
-			if (Document.MimeType != null) {
-				widget.TextEditor.TextEditorResolverProvider = TextEditorResolverService.GetProvider (Document.MimeType);
-			}
 		}
 		
 		public Encoding SourceEncoding {
@@ -993,6 +997,7 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.TextViewMargin.LineShown -= TextViewMargin_LineShown;
 			widget.TextEditor.TextArea.FocusOutEvent -= TextArea_FocusOutEvent;
 			widget.TextEditor.Document.TextSet -= HandleDocumentTextSet;
+			widget.TextEditor.Document.MimeTypeChanged -= Document_MimeTypeChanged;
 
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
@@ -3063,13 +3068,13 @@ namespace MonoDevelop.SourceEditor
 				int end = this.EndOffset;
 
 				uint curIndex = 0, byteIndex = 0;
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(start - startOffset), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (start - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
 
 				int x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
 
 				fromX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 
-				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)(end - startOffset), ref curIndex, ref byteIndex);
+				TextViewMargin.TranslateToUTF8Index (metrics.Layout.LineChars, (uint)Math.Min (end - startOffset, metrics.Layout.LineChars.Length), ref curIndex, ref byteIndex);
 				x_pos = metrics.Layout.Layout.IndexToPos ((int)byteIndex).X;
 
 				toX = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
@@ -3504,5 +3509,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			FocusLost?.Invoke (this, EventArgs.Empty);
 		}
+
+		void ITextEditorImpl.GrabFocus ()
+		{
+			this.TextEditor.GrabFocus ();
+		}
+
 	}
 } 

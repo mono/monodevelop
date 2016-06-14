@@ -107,7 +107,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
 		<CommandItem id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
-		             insertafter="CodeCompletion" />
+		             insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 	</Extension>
 	
 	<!-- Quick fix commands -->

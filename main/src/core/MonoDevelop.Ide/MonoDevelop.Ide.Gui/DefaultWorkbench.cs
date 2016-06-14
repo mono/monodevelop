@@ -1410,15 +1410,17 @@ namespace MonoDevelop.Ide.Gui
 			PadCodon codon = padCodons [window];
 			DockItem item = GetDockItem (codon);
 			if (item != null) {
-				string windowTitle = GettextCatalog.GetString (window.Title); 
+				string windowTitle = GettextCatalog.GetString (window.Title);
+				var windowIcon = ImageService.GetIcon (window.Icon).WithSize (IconSize.Menu);
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
-				if (window.HasErrors && !window.ContentVisible)
+				if (window.HasErrors && !window.ContentVisible) {
 					windowTitle = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + windowTitle + "</span>";
-				else if (window.HasNewData && !window.ContentVisible)
+					windowIcon = windowIcon.WithStyles ("error");
+				} else if (window.HasNewData && !window.ContentVisible)
 					windowTitle = "<b>" + windowTitle + "</b>";
 				item.Label = windowTitle;
-				item.Icon  = ImageService.GetIcon (window.Icon).WithSize (IconSize.Menu);
+				item.Icon = windowIcon;
 			}
 		}
 		

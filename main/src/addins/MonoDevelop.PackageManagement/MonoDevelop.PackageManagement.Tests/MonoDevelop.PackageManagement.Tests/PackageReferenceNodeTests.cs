@@ -81,8 +81,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode ();
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual (String.Empty, secondaryLabel);
 		}
 
 		[Test]
@@ -92,8 +94,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode (installed: false);
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual (String.Empty, secondaryLabel);
 		}
 
 		[Test]
@@ -103,8 +107,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode (installed: true);
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual (String.Empty, secondaryLabel);
 		}
 
 		[Test]
@@ -114,8 +120,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode (installed: false, installPending: true);
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
-			Assert.AreEqual ("MyPackage (installing)", label);
+			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual ("(installing)", secondaryLabel);
 		}
 
 		[Test]
@@ -162,8 +170,10 @@ namespace MonoDevelop.PackageManagement.Tests
 				updatedPackage: new PackageName ("MyPackage", new SemanticVersion ("1.2.3.4")));
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
-			Assert.AreEqual ("MyPackage <span color='grey'>(1.2.3.4 available)</span>", label);
+			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual ("(1.2.3.4 available)", secondaryLabel);
 		}
 
 		[Test]

@@ -5,6 +5,11 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/AssemblyBrowser/EditorContextMenu" name = "Assembly browser context menu">
+		<Description>Context menu for the assembly browser editor.</Description>;
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Commands/Tools">
@@ -25,5 +30,8 @@
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
 		<CommandItem id = "MonoDevelop.AssemblyBrowser.ShowAssemblyBrowser" insertafter="ToolsSection" />
 	</Extension>
-
+	
+	<Extension path = "/MonoDevelop/AssemblyBrowser/EditorContextMenu">
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
+	</Extension>
 </ExtensionModel>

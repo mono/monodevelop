@@ -95,20 +95,25 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (doc != null && doc.Editor != null) {
 					return doc.Editor.CreateReader ();
 				} else {
-					try {
-						if (!File.Exists (FileName))
-							return null;
-						if (!readBinaryFiles && TextFileUtility.IsBinary (FileName))
-							return null;
-						return TextFileUtility.OpenStream (FileName);
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while opening " + FileName, e);
-						return null;
-					}
+					return GetReaderForFileName (readBinaryFiles);
 				}
 			}
 		}
-		
+
+		internal TextReader GetReaderForFileName (bool readBinaryFiles = false)
+		{
+			try {
+				if (!File.Exists (FileName))
+					return null;
+				if (!readBinaryFiles && TextFileUtility.IsBinary (FileName))
+					return null;
+				return TextFileUtility.OpenStream (FileName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while opening " + FileName, e);
+				return null;
+			}
+		}
+
 		async Task<Document> SearchDocument ()
 		{
 			string fullPath = Path.GetFullPath (FileName);

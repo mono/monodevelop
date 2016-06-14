@@ -49,6 +49,7 @@ using Microsoft.CodeAnalysis;
 using System.Reflection;
 using MonoDevelop.Ide.Gui;
 using Microsoft.CodeAnalysis.Diagnostics;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CodeActions
 {
@@ -709,8 +710,24 @@ namespace MonoDevelop.CodeActions
 									return;
 								var info = latestModel.GetSymbolInfo (node);
 								var sym = info.Symbol ?? latestModel.GetDeclaredSymbol (node);
-								if (sym != null)
+								if (sym != null) {
 									await new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (sym);
+								} else {
+									var links = new List<TextLink> ();
+									var link = new TextLink ("name");
+									link.AddLink (new TextSegment (node.Span.Start, node.Span.Length));
+									links.Add (link);
+									var oldVersion = editor.Version;
+									editor.StartTextLinkMode (new TextLinkModeOptions (links, (arg) => {
+										//If user cancel renaming revert changes
+										if (!arg.Success) {
+											var textChanges = editor.Version.GetChangesTo (oldVersion).ToList ();
+											foreach (var v in textChanges) {
+												editor.ReplaceText (v.Offset, v.RemovalLength, v.InsertedText);
+											}
+										}
+									}));
+								}
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while renaming " + renameTokenOpt.Value.Parent, ex);
 							}

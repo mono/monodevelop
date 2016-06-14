@@ -96,7 +96,8 @@ namespace MonoDevelop.Ide.ExternalTools
 			toolListBox.HeadersVisible = true;
 			toolListBox.Selection.Mode = SelectionMode.Multiple;
 			toolListBox.Model = toolListBoxStore;
-				 
+			toolListBox.SearchColumn = -1; // disable the interactive search
+
 			toolListBox.AppendColumn (GettextCatalog.GetString ("Tools"), new CellRendererText (), "text", 0);
 
 			tagSelectorArgs.TagModel = IdeApp.Workbench.GetStringTagModelDescription ();

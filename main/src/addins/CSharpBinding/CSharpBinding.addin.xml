@@ -11,7 +11,7 @@
 		<Category _name = "Edit" id="Edit">
 			
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
-				_label = "_Generate Code..."
+				_label = "Show Code _Generation"
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
 		</Category>
@@ -267,18 +267,6 @@
 		         shortcut = "Ctrl|Shift|Down"
 		         macShortcut = "Control+Alt+Meta+Down"
 		         _label = "_Move to next usage"/>
-
-		<Command id = "MonoDevelop.CSharp.ExpandCommands.ExpandSelection"
-		         defaultHandler = "MonoDevelop.CSharp.ExpandSelectionHandler"
-		         shortcut = "Alt|Shift|Up"
-		         macShortcut = "Alt|Shift|Up"
-		         _label = "_Expand selection"/>
-
-		<Command id = "MonoDevelop.CSharp.ExpandCommands.ShrinkSelection"
-		         defaultHandler = "MonoDevelop.CSharp.ShrinkSelectionHandler"
-		         shortcut = "Alt|Shift|Down"
-		         macShortcut = "Alt|Shift|Down"
-		         _label = "_Shrink selection"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
@@ -331,12 +319,12 @@
 				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"/>
 			</ItemSet>
 
-				
+				<!--
 			<ItemSet id = "Organize Imports" _label = "Organize Usings" insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow">
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
-			</ItemSet>
+			</ItemSet> -->
 		</Condition>
 	</Extension>
 

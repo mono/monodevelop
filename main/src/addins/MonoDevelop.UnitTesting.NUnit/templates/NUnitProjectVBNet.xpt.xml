@@ -5,8 +5,8 @@
 	<TemplateConfiguration>
 		<_Name>NUnit Library Project</_Name>
 		<Category>other/net/general</Category>
-		<Icon>md-project|res:project-nunit-overlay-32.png</Icon>
-		<Image id="md-nunit-library-project" />
+		<Icon>md-test-project</Icon>
+		<Image id="md-test-project" />
 		<_Description>Creates an NUnit library</_Description>
 		<LanguageName>VBNet</LanguageName>
 		<DefaultFilename>NUnitProject</DefaultFilename>

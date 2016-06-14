@@ -227,6 +227,7 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Flushed GUI events");
 			
 			MessageService.RootWindow = workbench.RootWindow;
+			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (workbench.RootWindow);
 		
 			commandService.EnableIdleUpdate = true;
 
@@ -393,6 +394,30 @@ namespace MonoDevelop.Ide
 		{
 			if (workbench.Close ()) {
 				Gtk.Application.Quit ();
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Restarts MonoDevelop
+		/// </summary>
+		/// <returns> false if the user cancels exiting. </returns>
+		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
+		/// <remarks>
+		/// Starts a new MonoDevelop instance in a new process and 
+		/// stops the current MonoDevelop instance.
+		/// </remarks>
+		public static bool Restart (bool reopenWorkspace = false)
+		{
+			if (Exit ()) {
+				try {
+					DesktopService.RestartIde (reopenWorkspace);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Restarting IDE failed", ex);
+				}
+				// return true here even if DesktopService.RestartIde has failed,
+				// because the Ide has already been closed.
 				return true;
 			}
 			return false;

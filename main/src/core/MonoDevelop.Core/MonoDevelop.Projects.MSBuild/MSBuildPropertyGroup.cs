@@ -378,14 +378,6 @@ namespace MonoDevelop.Projects.MSBuild
 			NotifyChanged ();
 		}
 
-		internal void SetLoadedValues (IMSBuildPropertyGroupEvaluated loadedProps)
-		{
-			foreach (var p in GetProperties ()) {
-				var ep = loadedProps.GetProperty (p.Name);
-				p.InitEvaluatedValue (ep.Value);
-			}
-		}
-
 		internal void ResetIsNewFlags ()
 		{
 			foreach (MSBuildProperty prop in GetProperties ()) {

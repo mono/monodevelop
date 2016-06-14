@@ -19,7 +19,6 @@
 	<ItemSet id = "File" _label = "_File">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" />
 		<SeparatorItem id = "NewSep" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile" />
 		<SeparatorItem id = "OpenSep" />
@@ -66,9 +65,6 @@
 
 		<SeparatorItem id = "Separator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" />
-		<ItemSet id = "SelectionMode" _label = "Selection _Mode" >
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.SwitchSelectionMode" />
-		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" />
 		
 		<SeparatorItem id = "Separator4" />
@@ -97,13 +93,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid" />
 		</ItemSet>
 		<SeparatorItem id = "Separator5" />
-		
-		<ItemSet id = "CodeCompletion" _label = "Code Completion">
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode" />
-			<SeparatorItem id = "Separator1" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
-			<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
-		</ItemSet>
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" />
 		<SeparatorItem id = "optionssep5" />
 		<Condition id="Platform" value="linux">
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" />
@@ -131,6 +122,8 @@
 			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
 		</ItemSet>
 		<ItemSet id = "Folding" _label = "F_olding">
+			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.EnableDisableFolding" />
+			<SeparatorItem id = "FoldingSeparator" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" />
 			<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" />
 			<SeparatorItem id = "FoldDefinitionsSeparator" />

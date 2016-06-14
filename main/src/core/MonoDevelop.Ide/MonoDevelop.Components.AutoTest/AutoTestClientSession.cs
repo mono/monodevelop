@@ -60,7 +60,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 		}
 				
-		public void StartApplication (string file = null, string args = null, IDictionary<string, string> environment = null)
+		public int StartApplication (string file = null, string args = null, IDictionary<string, string> environment = null)
 		{
 			if (file == null) {
 				var binDir = Path.GetDirectoryName (typeof(AutoTestClientSession).Assembly.Location);
@@ -98,6 +98,8 @@ namespace MonoDevelop.Components.AutoTest
 				} catch { }
 				throw new Exception ("Could not connect to application");
 			}
+
+			return process.Id;
 		}
 
 		public void AttachApplication ()

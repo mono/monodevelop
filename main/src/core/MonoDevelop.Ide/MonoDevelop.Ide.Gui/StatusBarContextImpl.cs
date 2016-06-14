@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
+using System.Threading;
 
 namespace MonoDevelop.Ide
 {
@@ -148,6 +149,7 @@ namespace MonoDevelop.Ide
 				return;
 			if (statusHandler.IsCurrentContext (this)) {
 				OnMessageChanged ();
+				statusBar.SetCancellationTokenSource (CancellationTokenSource);
 				statusBar.BeginProgress (name);
 				statusBar.SetMessageSourcePad (sourcePad);
 				lastMessageIsTransient = true;
@@ -166,6 +168,7 @@ namespace MonoDevelop.Ide
 				return;
 			if (statusHandler.IsCurrentContext (this)) {
 				OnMessageChanged ();
+				statusBar.SetCancellationTokenSource (CancellationTokenSource);
 				statusBar.BeginProgress (name);
 				statusBar.SetMessageSourcePad (sourcePad);
 				lastMessageIsTransient = true;
@@ -219,12 +222,14 @@ namespace MonoDevelop.Ide
 		internal void Update ()
 		{
 			if (showProgress) {
+				statusBar.AutoPulse = autoPulse;
+				statusBar.SetCancellationTokenSource (CancellationTokenSource);
 				statusBar.BeginProgress (image, message);
 				statusBar.SetProgressFraction (progressFraction);
-				statusBar.AutoPulse = autoPulse;
 				statusBar.SetMessageSourcePad (sourcePad);
 				lastMessageIsTransient = true;
 			} else {
+				statusBar.SetCancellationTokenSource (null);
 				statusBar.EndProgress ();
 				if (globalLastChangeTime < lastChangeTime && messageShownAfterProgress) {
 					globalLastChangeTime = lastChangeTime;
@@ -251,7 +256,12 @@ namespace MonoDevelop.Ide
 				sourcePad = value;
 			}
 		}
-		
+
+		public CancellationTokenSource CancellationTokenSource {
+			get;
+			set;
+		}
+
 		protected virtual void OnMessageChanged ()
 		{
 		}
