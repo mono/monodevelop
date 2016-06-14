@@ -189,9 +189,10 @@ type FSharpInteractivePad() =
     let setupSession() =
         try
             let ses = InteractiveSession()
-
+            promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
+
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
@@ -201,8 +202,8 @@ type FSharpInteractivePad() =
                         fsiOutput "\nSession termination detected. Press Enter to restart.") |> ignore
                 elif killIntent = Restart then
                     Runtime.RunInMainThread (fun () -> editor.Text <- "") |> ignore
-                killIntent <- NoIntent
-                promptReceived <- false)
+                killIntent <- NoIntent)
+
             ses.StartReceiving()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
             getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
@@ -225,9 +226,10 @@ type FSharpInteractivePad() =
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
     
     let resetFsi intent =
-        killIntent <- intent
-        session |> Option.iter (fun ses -> ses.Kill())
-        if intent = Restart then session <- setupSession()
+        if promptReceived then
+            killIntent <- intent
+            session |> Option.iter (fun ses -> ses.Kill())
+            if intent = Restart then session <- setupSession()
 
     let input = new ResizeArray<_>()
     member x.Text =
@@ -395,7 +397,6 @@ type FSharpInteractivePad() =
         addButton ("gtk-open", (fun _ -> x.OpenScript()), GettextCatalog.GetString ("Open"))
         addButton ("gtk-clear", (fun _ -> editor.Text <- ""), GettextCatalog.GetString ("Clear"))
         addButton ("gtk-refresh", (fun _ -> x.RestartFsi()), GettextCatalog.GetString ("Reset"))
-
         toolbar.ShowAll()
 
     member x.RestartFsi() = resetFsi Restart
