@@ -841,6 +841,8 @@ namespace MonoDevelop.Projects
 				var tasks = new List<Task> ();
 				var monitors = new List<AggregatedProgressMonitor> ();
 				monitor.BeginTask ("Executing projects", 1);
+
+				var secondaryContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionMode, context.ConsoleFactory, null);
 				
 				foreach (SolutionItem it in msc.Items) {
 					if (!it.CanExecute (context, configuration))
@@ -849,6 +851,7 @@ namespace MonoDevelop.Projects
 					mon.AddFollowerMonitor (monitor, MonitorAction.ReportError | MonitorAction.ReportWarning | MonitorAction.FollowerCancel);
 					monitors.Add (mon);
 					tasks.Add (it.Execute (mon, context, configuration));
+					context = secondaryContext;
 				}
 				try {
 					await Task.WhenAll (tasks);
