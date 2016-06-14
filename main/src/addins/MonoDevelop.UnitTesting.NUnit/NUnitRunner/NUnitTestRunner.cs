@@ -96,6 +96,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 				tr = new RemoteTestRunner ();
 
 			TestPackage package = new TestPackage (path);
+			package.Settings ["ShadowCopyFiles"] = false;
 			if (!string.IsNullOrEmpty (suiteName))
 				package.TestName = suiteName;
 			tr.Load (package);
