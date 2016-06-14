@@ -16,6 +16,7 @@
     <binding command="MonoDevelop.Debugger.DebugCommands.RunToCursor" shortcut="Control+F10" />
     <binding command="MonoDevelop.Debugger.DebugCommands.SetNextStatement" shortcut="Control+Shift+F10" />
     <binding command="MonoDevelop.Debugger.DebugCommands.ShowBreakpoints" shortcut="Control+Alt+B Control+D|B Control+D|Control+B" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine" shortcut="" />
     <binding command="MonoDevelop.Debugger.DebugCommands.ShowDisassembly" shortcut="Control+Alt+D" />
     <binding command="MonoDevelop.Debugger.DebugCommands.ShowNextStatement" shortcut="Alt+*" />
     <binding command="MonoDevelop.Debugger.DebugCommands.StepInto" shortcut="F11 Control+F11" />
@@ -32,7 +33,6 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" shortcut="Control+E|C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Control+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Control+X" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Delete" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="Control+M|Control+O" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Tab" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Control+U" />
@@ -91,6 +91,7 @@
     <binding command="MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark" shortcut="Control+B|T Control+K|K Control+K|Control+K" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CompleteStatement" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLine" shortcut="Control+L Control+Shift+L" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextSubword" shortcut="" />
@@ -153,6 +154,7 @@
     <binding command="MonoDevelop.VersionControl.Commands.Log" shortcut="Control+0|O Control+0|Control+O" />
     <binding command="MonoDevelop.VersionControl.Commands.SolutionStatus" shortcut="Control+0|G Control+0|Control+G" />
     <binding command="MonoDevelop.VersionControl.Git.Commands.ManageBranches" shortcut="Control+0|N Control+0|Control+N" />
+    <binding command="MonoDevelop.Xml.Editor.XmlCommands.RunXslTransform" shortcut="" />
     <binding command="Pad|ClassPad" shortcut="Control+Shift+C Control+W|C" />
     <binding command="Pad|MonoDevelop.Debugger.ImmediatePad" shortcut="Control+Alt+I Control+D|I" />
     <binding command="Pad|MonoDevelop.Debugger.LocalsPad" shortcut="Control+Alt+V|L Control+D|L" />
