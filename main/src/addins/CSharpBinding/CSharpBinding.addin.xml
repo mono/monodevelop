@@ -318,12 +318,12 @@
 				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"/>
 			</ItemSet>
 
-				
+				<!--
 			<ItemSet id = "Organize Imports" _label = "Organize Usings" insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow">
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
-			</ItemSet>
+			</ItemSet> -->
 		</Condition>
 	</Extension>
 
