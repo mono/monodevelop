@@ -424,7 +424,7 @@ type FSharpInteractivePad() =
 
     member x.OpenScript() =
         let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open)
-
+        dlg.AddFilter (GettextCatalog.GetString ("F# script files"), [|".fs"; "*.fsi"; "*.fsx"; "*.fsscript"; "*.ml"; "*.mli" |]) |> ignore
         if dlg.Run () then
             let file = dlg.SelectedFile
             x.SendCommand ("#load \"" + file.FullPath.ToString() + "\"")
