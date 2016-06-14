@@ -802,29 +802,29 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
-					using (var undo = editor.OpenUndoGroup ()) {
-						var oldVersion = editor.Version;
-						delta = ApplyChanges (projection, data, changes);
-						var versionBeforeFormat = editor.Version;
-							
-						if (formatter.SupportsOnTheFlyFormatting) {
-							foreach (var change in changes) {
-								delta -= change.Span.Length - change.NewText.Length;
-								var startOffset = change.Span.Start - delta;
-								if (projection != null) {
-									int originalOffset;
-									if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
-										startOffset = originalOffset;
-								}
-								if (change.NewText.Length == 0) {
-									formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-								} else {
-									formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
+					await Runtime.RunInMainThread (async () => {
+						using (var undo = editor.OpenUndoGroup ()) {
+							var oldVersion = editor.Version;
+							delta = ApplyChanges (projection, data, changes);
+							var versionBeforeFormat = editor.Version;
+
+							if (formatter.SupportsOnTheFlyFormatting) {
+								foreach (var change in changes) {
+									delta -= change.Span.Length - change.NewText.Length;
+									var startOffset = change.Span.Start - delta;
+									if (projection != null) {
+										int originalOffset;
+										if (projection.TryConvertFromProjectionToOriginal (startOffset, out originalOffset))
+											startOffset = originalOffset;
+									}
+									if (change.NewText.Length == 0) {
+										formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
+									} else {
+										formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
+									}
 								}
 							}
-						}
-						if (annotatedNode != null && GetInsertionPoints != null) {
-							await Runtime.RunInMainThread (async () => {
+							if (annotatedNode != null && GetInsertionPoints != null) {
 								IdeApp.Workbench.Documents.First (d => d.FileName == editor.FileName).Select ();
 								var formattedVersion = editor.Version;
 
@@ -912,9 +912,9 @@ namespace MonoDevelop.Ide.TypeSystem
 										StartRenameSession (editor, documentContext, versionBeforeFormat, renameTokenOpt.Value);
 								};
 								editor.StartInsertionMode (options);
-							});
+							}
 						}
-					}
+					});
 				}
 
 				if (projection != null) {

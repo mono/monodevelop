@@ -157,7 +157,10 @@ namespace MonoDevelop.Components.Docking
 				labelWidget.ModifyText (StateType.Normal, (active ? visualStyle.PadTitleLabelColor.Value : visualStyle.InactivePadTitleLabelColor.Value).ToGdkColor ());
 			}
 
+			var r = WidthRequest;
+			WidthRequest = -1;
 			labelWidth = SizeRequest ().Width + 1;
+			WidthRequest = r;
 
 			if (visualStyle != null)
 				HeightRequest = visualStyle.PadTitleHeight != null ? (int)(visualStyle.PadTitleHeight.Value) : -1;
