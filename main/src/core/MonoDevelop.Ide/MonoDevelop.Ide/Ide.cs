@@ -227,6 +227,7 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Flushed GUI events");
 			
 			MessageService.RootWindow = workbench.RootWindow;
+			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (workbench.RootWindow);
 		
 			commandService.EnableIdleUpdate = true;
 
