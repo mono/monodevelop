@@ -42,10 +42,5 @@ namespace MonoDevelop.PackageManagement
 		{
 			return new SharedPackageRepository(pathResolver, fileSystem, configSettingsFileSystem);
 		}
-		
-		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
-		{
-			return new MonoDevelopAggregateRepository (repositories);
-		}
 	}
 }

@@ -35,7 +35,7 @@ namespace MonoDevelop.PackageManagement.Tests
 	public class SolutionPackageRepositoryTests
 	{
 		TestableSolutionPackageRepository repository;
-		TestablePackageManagementOptions options;
+		FakeSettingsProvider settingsProvider;
 		FakeSolution solution;
 		FakePackageRepositoryFactory fakeRepositoryFactory;
 
@@ -49,21 +49,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			fakeRepositoryFactory = new FakePackageRepositoryFactory ();
 		}
 
-		void CreateOptions ()
+		void CreateSettings ()
 		{
-			options = new TestablePackageManagementOptions ();
+			settingsProvider = new FakeSettingsProvider ();
 		}
 
-		void CreateRepository (ISolution solution, TestablePackageManagementOptions options)
+		void CreateRepository (ISolution solution, FakeSettingsProvider settings)
 		{
 			CreateFakeRepositoryFactory ();
-			repository = new TestableSolutionPackageRepository (solution, fakeRepositoryFactory, options);
+			repository = new TestableSolutionPackageRepository (solution, fakeRepositoryFactory, settings);
 		}
 
 		void CreateRepository (ISolution solution)
 		{
-			CreateOptions ();
-			CreateRepository (solution, options);
+			CreateSettings ();
+			CreateRepository (solution, settingsProvider);
 		}
 
 		void CreateRepository ()

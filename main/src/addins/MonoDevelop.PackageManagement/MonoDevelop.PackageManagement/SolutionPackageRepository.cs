@@ -47,17 +47,17 @@ namespace MonoDevelop.PackageManagement
 			: this (
 				solution,
 				new MonoDevelopPackageRepositoryFactory(),
-				PackageManagementServices.Options)
+				new SettingsProvider (solution))
 		{
 		}
 		
 		public SolutionPackageRepository (
 			ISolution solution,
 			IMonoDevelopPackageRepositoryFactory repositoryFactory,
-			PackageManagementOptions options)
+			ISettingsProvider settingsProvider)
 		{
 			this.repositoryFactory = repositoryFactory;
-			repositoryPath = new SolutionPackageRepositoryPath(solution, options);
+			repositoryPath = new SolutionPackageRepositoryPath(solution, settingsProvider);
 			CreatePackagePathResolver();
 			CreateFileSystem();
 			CreateRepository(ConfigSettingsFileSystem.CreateConfigSettingsFileSystem(solution));

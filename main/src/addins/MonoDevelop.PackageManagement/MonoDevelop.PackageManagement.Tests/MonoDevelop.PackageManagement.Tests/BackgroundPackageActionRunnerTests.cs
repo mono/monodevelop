@@ -41,11 +41,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		TestableBackgroundPackageActionRunner runner;
 		FakeProgressMonitorFactory progressMonitorFactory;
 		PackageManagementEvents packageManagementEvents;
-		PackageManagementProgressProvider progressProvider;
 		List<IPackageAction> actions;
 		ProgressMonitorStatusMessage progressMessage;
 		FakeProgressMonitor progressMonitor;
-		FakePackageRepositoryFactoryEvents repositoryFactoryEvents;
 		TestableInstrumentationService instrumentationService;
 
 		void CreateRunner ()
@@ -55,16 +53,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManagementEvents = new PackageManagementEvents ();
 			progressMonitorFactory = new FakeProgressMonitorFactory ();
 			progressMonitor = progressMonitorFactory.ProgressMonitor;
-			repositoryFactoryEvents = new FakePackageRepositoryFactoryEvents ();
-			progressProvider = new PackageManagementProgressProvider (repositoryFactoryEvents, handler => {
-				handler.Invoke ();
-			});
 			instrumentationService = new TestableInstrumentationService ();
 
 			runner = new TestableBackgroundPackageActionRunner (
 				progressMonitorFactory,
 				packageManagementEvents,
-				progressProvider,
 				instrumentationService);
 		}
 
@@ -408,31 +401,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Run_ActionDownloadsTwoPackages_DownloadingMessageLoggedOnceForEachDownloadOperationByProgressMonitor ()
-		{
-			CreateRunner ();
-			AddInstallActionWithCustomExecuteAction (() => {
-				var repository = new FakePackageRepository ();
-				repositoryFactoryEvents.RaiseRepositoryCreatedEvent (new PackageRepositoryFactoryEventArgs (repository));
-
-				var progress = new ProgressEventArgs ("Download1", 100);
-				repository.RaiseProgressAvailableEvent (progress);
-
-				progress = new ProgressEventArgs ("Download2", 50);
-				repository.RaiseProgressAvailableEvent (progress);
-
-				progress = new ProgressEventArgs ("Download2", 100);
-				repository.RaiseProgressAvailableEvent (progress);
-			});
-
-			Run ();
-
-			progressMonitor.AssertMessageIsLogged ("Download1");
-			progressMonitor.AssertMessageIsLogged ("Download2");
-			progressMonitor.AssertMessageIsNotLogged ("Download2" + Environment.NewLine + "Download2");
-		}
-
-		[Test]
 		public void IsRunning_NothingRunning_IsRunningIsFalse ()
 		{
 			CreateRunner ();
@@ -498,7 +466,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			AddUninstallAction ();
-			runner.CreateEventMonitorAction = (monitor, packageManagementEvents, progressProvider) => {
+			runner.CreateEventMonitorAction = (monitor, packageManagementEvents) => {
 				throw new ApplicationException ("Error");
 			};
 

@@ -39,28 +39,33 @@ namespace MonoDevelop.PackageManagement
 		ISolution solution;
 
 		public SolutionPackageRepositoryPath(Project project)
-			: this (new ProjectProxy (project), PackageManagementServices.Options)
+			: this (new ProjectProxy (project))
+		{
+		}
+
+		public SolutionPackageRepositoryPath (IProject project)
+			: this (project, new SettingsProvider (project.ParentSolution))
 		{
 		}
 
 		public SolutionPackageRepositoryPath (
 			IProject project,
-			PackageManagementOptions options)
-			: this (project.ParentSolution, options)
+			ISettingsProvider settingsProvider)
+			: this (project.ParentSolution, settingsProvider)
 		{
 		}
 
 		public SolutionPackageRepositoryPath (
 			ISolution solution,
-			PackageManagementOptions options)
+			ISettingsProvider settingsProvider)
 		{
 			this.solution = solution;
-			PackageRepositoryPath = GetSolutionPackageRepositoryPath (options);
+			PackageRepositoryPath = GetSolutionPackageRepositoryPath (settingsProvider);
 		}
 
-		string GetSolutionPackageRepositoryPath (PackageManagementOptions options)
+		string GetSolutionPackageRepositoryPath (ISettingsProvider settingsProvider)
 		{
-			string customPath = options.GetCustomPackagesDirectory ();
+			string customPath = settingsProvider.LoadSettings ().GetRepositoryPath ();
 			if (!String.IsNullOrEmpty (customPath)) {
 				return Path.GetFullPath (customPath);
 			}

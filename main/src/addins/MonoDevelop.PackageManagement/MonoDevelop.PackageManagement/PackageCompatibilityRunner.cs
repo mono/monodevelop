@@ -26,7 +26,6 @@
 
 using System;
 using MonoDevelop.Core;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -37,26 +36,22 @@ namespace MonoDevelop.PackageManagement
 		ProgressMonitorStatusMessage progressMessage;
 		ProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
-		IProgressProvider progressProvider;
 
 		public PackageCompatibilityRunner (
 			IDotNetProject project,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.project = project;
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
-			this.progressProvider = progressProvider;
 		}
 
 		public PackageCompatibilityRunner (IDotNetProject project)
 			: this (
 				project,
 				PackageManagementServices.ProgressMonitorFactory,
-				PackageManagementServices.PackageManagementEvents,
-				PackageManagementServices.ProgressProvider)
+				PackageManagementServices.PackageManagementEvents)
 		{
 		}
 
@@ -97,15 +92,14 @@ namespace MonoDevelop.PackageManagement
 
 		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor)
 		{
-			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider);
+			return CreateEventMonitor (monitor, packageManagementEvents);
 		}
 
 		protected virtual PackageManagementEventsMonitor CreateEventMonitor (
 			ProgressMonitor monitor,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IPackageManagementEvents packageManagementEvents)
 		{
-			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+			return new PackageManagementEventsMonitor (monitor, packageManagementEvents);
 		}
 
 		void CheckCompatibility ()

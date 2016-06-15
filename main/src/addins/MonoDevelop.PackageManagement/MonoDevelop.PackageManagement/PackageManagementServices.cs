@@ -26,10 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using NuGet;
-using MonoDevelop.Core;
-
 namespace MonoDevelop.PackageManagement
 {
 	public static class PackageManagementServices
@@ -37,11 +33,8 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementOptions options;
 		static readonly PackageManagementEvents packageManagementEvents = new PackageManagementEvents();
 		static readonly PackageManagementProjectService projectService = new PackageManagementProjectService();
-		static readonly PackageRepositoryCache packageRepositoryCache;
-		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
 		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
 		static readonly IPackageManagementProgressMonitorFactory progressMonitorFactory;
-		static readonly PackageManagementProgressProvider progressProvider;
 		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
 		static readonly PackageCompatibilityHandler packageCompatibilityHandler;
 		static readonly UpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace;
@@ -49,17 +42,14 @@ namespace MonoDevelop.PackageManagement
 		static readonly PackageManagementWorkspace workspace;
 		static readonly PackageManagementCredentialService credentialService;
 		static readonly AnalyzerPackageMonitor analyzerPackageMonitor;
+		static readonly MonoDevelopHttpUserAgent userAgent = new MonoDevelopHttpUserAgent ();
 
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
-			packageRepositoryCache = new PackageRepositoryCache (options);
-			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();
-			userAgentGenerator.Register (packageRepositoryCache);
-			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
-			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
+			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents);
 
 			projectTargetFrameworkMonitor = new ProjectTargetFrameworkMonitor (projectService);
 			packageCompatibilityHandler = new PackageCompatibilityHandler ();
@@ -88,10 +78,6 @@ namespace MonoDevelop.PackageManagement
 			get { return options; }
 		}
 		
-		internal static IPackageRepositoryCache PackageRepositoryCache {
-			get { return packageRepositoryCache; }
-		}
-		
 		internal static IPackageManagementEvents PackageManagementEvents {
 			get { return packageManagementEvents; }
 		}
@@ -106,10 +92,6 @@ namespace MonoDevelop.PackageManagement
 
 		internal static IPackageManagementProgressMonitorFactory ProgressMonitorFactory {
 			get { return progressMonitorFactory; }
-		}
-
-		internal static IProgressProvider ProgressProvider {
-			get { return progressProvider; }
 		}
 
 		internal static IUpdatedNuGetPackagesInWorkspace UpdatedPackagesInWorkspace {

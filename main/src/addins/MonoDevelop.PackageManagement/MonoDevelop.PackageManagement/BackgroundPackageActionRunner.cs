@@ -38,19 +38,16 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
-		IProgressProvider progressProvider;
 		PackageManagementInstrumentationService instrumentationService;
 		List<IInstallNuGetPackageAction> pendingInstallActions = new List<IInstallNuGetPackageAction> ();
 		int runCount;
 
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IPackageManagementEvents packageManagementEvents)
 			: this (
 				progressMonitorFactory,
 				packageManagementEvents,
-				progressProvider,
 				new PackageManagementInstrumentationService ())
 		{
 		}
@@ -58,12 +55,10 @@ namespace MonoDevelop.PackageManagement
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider,
 			PackageManagementInstrumentationService instrumentationService)
 		{
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
-			this.progressProvider = progressProvider;
 			this.instrumentationService = instrumentationService;
 		}
 
@@ -162,16 +157,15 @@ namespace MonoDevelop.PackageManagement
 
 		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor, TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider, taskCompletionSource);
+			return CreateEventMonitor (monitor, packageManagementEvents, taskCompletionSource);
 		}
 
 		protected virtual PackageManagementEventsMonitor CreateEventMonitor (
 			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider,
 			TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider, taskCompletionSource);
+			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, taskCompletionSource);
 		}
 
 		void RunActionsWithProgressMonitor (ProgressMonitor monitor, IList<IPackageAction> packageActions)

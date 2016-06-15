@@ -37,18 +37,18 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		SolutionPackageRepositoryPath repositoryPath;
 		FakeProject project;
-		TestablePackageManagementOptions options;
 		FakeSolution solution;
+		FakeSettingsProvider settingsProvider;
 		FakeSettings settings;
 
 		void CreateSolutionPackageRepositoryPath ()
 		{
-			repositoryPath = new SolutionPackageRepositoryPath (project, options);
+			repositoryPath = new SolutionPackageRepositoryPath (project, settingsProvider);
 		}
 
 		void CreateSolutionPackageRepositoryPath (ISolution solution)
 		{
-			repositoryPath = new SolutionPackageRepositoryPath (solution, options);
+			repositoryPath = new SolutionPackageRepositoryPath (solution, settingsProvider);
 		}
 
 		void CreateTestProject ()
@@ -61,10 +61,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			solution = new FakeSolution (fileName);
 		}
 
-		void CreateOptions ()
+		void CreateSettings ()
 		{
-			options = new TestablePackageManagementOptions ();
-			settings = options.FakeSettings;
+			settingsProvider = new FakeSettingsProvider ();
+			settings = settingsProvider.FakeSettings;
 		}
 
 		void SolutionNuGetConfigFileHasCustomPackagesPath (string fullPath)
@@ -75,7 +75,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void PackageRepositoryPath_ProjectAndSolutionHaveDifferentFolders_IsConfiguredPackagesFolderInsideSolutionFolder ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateTestProject ();
 			CreateSolution (@"d:\projects\MyProject\MySolution.sln");
 			solution.BaseDirectory = @"d:\projects\MyProject\".ToNativePath ();
@@ -91,7 +91,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void PackageRepositoryPath_PassSolutionToConstructor_IsConfiguredPackagesFolderInsideSolutionFolder ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
 			CreateSolutionPackageRepositoryPath (solution);
 
@@ -104,7 +104,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPath_OverriddenPathReturned ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
 			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\Team\MyPackages");
 			CreateSolutionPackageRepositoryPath (solution);
@@ -118,7 +118,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPathAndPathContainsDotDots_OverriddenPathReturnedWithoutDotDots ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
 			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\projects\MySolution\..\..\Team\MyPackages");
 			CreateSolutionPackageRepositoryPath (solution);

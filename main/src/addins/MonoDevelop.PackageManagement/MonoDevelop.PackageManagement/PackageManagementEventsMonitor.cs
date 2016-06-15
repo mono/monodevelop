@@ -38,43 +38,36 @@ namespace MonoDevelop.PackageManagement
 	{
 		ProgressMonitor progressMonitor;
 		IPackageManagementEvents packageManagementEvents;
-		IProgressProvider progressProvider;
 		FileConflictAction lastFileConflictResolution;
 		IFileConflictResolver fileConflictResolver = new FileConflictResolver ();
-		string currentProgressOperation;
 		List<FileEventArgs> fileChangedEvents = new List<FileEventArgs> ();
 		ISolution solutionContainingProjectBuildersToDispose;
 		TaskCompletionSource<bool> taskCompletionSource;
 
 		public PackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
-			: this (progressMonitor, packageManagementEvents, progressProvider, null)
+			IPackageManagementEvents packageManagementEvents)
+			: this (progressMonitor, packageManagementEvents, null)
 		{
 		}
 
 		public PackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider,
 			TaskCompletionSource<bool> taskCompletionSource)
 		{
 			this.progressMonitor = progressMonitor;
 			this.packageManagementEvents = packageManagementEvents;
-			this.progressProvider = progressProvider;
 			this.taskCompletionSource = taskCompletionSource;
 
 			packageManagementEvents.PackageOperationMessageLogged += PackageOperationMessageLogged;
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
 			packageManagementEvents.FileChanged += FileChanged;
 			packageManagementEvents.ImportRemoved += ImportRemoved;
-			progressProvider.ProgressAvailable += ProgressAvailable;
 		}
 
 		public void Dispose ()
 		{
-			progressProvider.ProgressAvailable -= ProgressAvailable;
 			packageManagementEvents.ImportRemoved -= ImportRemoved;
 			packageManagementEvents.FileChanged -= FileChanged;
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
@@ -143,15 +136,6 @@ namespace MonoDevelop.PackageManagement
 			if (taskCompletionSource != null) {
 				taskCompletionSource.TrySetResult (true);
 			}
-		}
-
-		void ProgressAvailable (object sender, ProgressEventArgs e)
-		{
-			if (currentProgressOperation == e.Operation)
-				return;
-
-			currentProgressOperation = e.Operation;
-			progressMonitor.Log.WriteLine (e.Operation);
 		}
 
 		void FileChanged (object sender, FileEventArgs e)

@@ -26,33 +26,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Collections.Generic;
 using MonoDevelop.Core;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class PackageManagementOptions
 	{
-		const string PackageDirectoryPropertyName = "PackagesDirectory";
-		const string RecentPackagesPropertyName = "RecentPackages";
 		const string AutomaticPackageRestoreOnOpeningSolutionPropertyName = "AutomaticPackageRestoreOnOpeningSolution";
 		const string CheckUpdatedPackagesOnOpeningSolutionPropertyName = "CheckUpdatedPackagesOnOpeningSolution";
 
-		RegisteredPackageSourceSettings registeredPackageSourceSettings;
 		Properties properties;
 
-		public PackageManagementOptions (
-			Properties properties,
-			ISettingsProvider settingsProvider)
+		public PackageManagementOptions (Properties properties)
 		{
 			this.properties = properties;
-			registeredPackageSourceSettings = new RegisteredPackageSourceSettings (settingsProvider);
-		}
-
-		public PackageManagementOptions (Properties properties)
-			: this (properties, new SettingsProvider ())
-		{
 		}
 
 		public PackageManagementOptions()
@@ -68,15 +55,6 @@ namespace MonoDevelop.PackageManagement
 		public bool IsCheckForPackageUpdatesOnOpeningSolutionEnabled {
 			get { return properties.Get(CheckUpdatedPackagesOnOpeningSolutionPropertyName, true); }
 			set { properties.Set(CheckUpdatedPackagesOnOpeningSolutionPropertyName, value); }
-		}
-		
-		public RegisteredPackageSources PackageSources {
-			get { return registeredPackageSourceSettings.PackageSources; }
-		}
-
-		public string GetCustomPackagesDirectory ()
-		{
-			return registeredPackageSourceSettings.Settings.GetRepositoryPath ();
 		}
 	}
 }

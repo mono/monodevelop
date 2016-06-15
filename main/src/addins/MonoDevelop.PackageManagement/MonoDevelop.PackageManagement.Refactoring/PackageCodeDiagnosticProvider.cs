@@ -86,7 +86,7 @@ namespace MonoDevelop.PackageManagement.Refactoring
 			if (dotNetProject != null) {
 				var proxy = new DotNetProjectProxy (dotNetProject);
 				if (proxy.HasPackages ()) {
-					var packagesPath = new SolutionPackageRepositoryPath (proxy, PackageManagementServices.Options);
+					var packagesPath = new SolutionPackageRepositoryPath (proxy);
 					foreach (var file in Directory.EnumerateFiles (packagesPath.PackageRepositoryPath, "*.dll", SearchOption.AllDirectories)) {
 						cancellationToken.ThrowIfCancellationRequested ();
 						try {

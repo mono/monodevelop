@@ -39,12 +39,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableBackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider,
 			PackageManagementInstrumentationService instrumentationService)
 			: base (
 				progressMonitorFactory,
 				packageManagementEvents,
-				progressProvider,
 				instrumentationService)
 		{
 			Init ();
@@ -52,8 +50,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		void Init ()
 		{
-			CreateEventMonitorAction = (monitor, packageManagementEvents, progressProvider) => {
-				EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+			CreateEventMonitorAction = (monitor, packageManagementEvents) => {
+				EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents);
 				return EventsMonitor;
 			};
 		}
@@ -84,16 +82,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public Func<ProgressMonitor,
 			IPackageManagementEvents,
-			IProgressProvider,
 			PackageManagementEventsMonitor> CreateEventMonitorAction;
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
 			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider,
 			TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return CreateEventMonitorAction (monitor, packageManagementEvents, progressProvider);
+			return CreateEventMonitorAction (monitor, packageManagementEvents);
 		}
 
 		public TestablePackageManagementEventsMonitor EventsMonitor;

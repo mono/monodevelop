@@ -37,9 +37,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestablePackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
-			: base (progressMonitor, packageManagementEvents, progressProvider)
+			IPackageManagementEvents packageManagementEvents)
+			: base (progressMonitor, packageManagementEvents)
 		{
 		}
 

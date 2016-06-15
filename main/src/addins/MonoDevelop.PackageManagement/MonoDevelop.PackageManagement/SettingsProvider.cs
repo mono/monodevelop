@@ -26,7 +26,6 @@
 
 using System;
 using System.IO;
-using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Core;
 
@@ -38,17 +37,18 @@ namespace MonoDevelop.PackageManagement
 			= Settings.LoadDefaultSettings;
 
 		IPackageManagementProjectService projectService;
-
-		public SettingsProvider ()
-			: this (PackageManagementServices.ProjectService)
-		{
-		}
+		ISolution solution;
 
 		public SettingsProvider (IPackageManagementProjectService projectService)
 		{
 			this.projectService = projectService;
 			projectService.SolutionLoaded += OnSettingsChanged;
 			projectService.SolutionUnloaded += OnSettingsChanged;
+		}
+
+		public SettingsProvider (ISolution solution)
+		{
+			this.solution = solution;
 		}
 
 		public event EventHandler SettingsChanged;
@@ -73,11 +73,19 @@ namespace MonoDevelop.PackageManagement
 
 		string GetSolutionDirectory ()
 		{
-			ISolution solution = projectService.OpenSolution;
+			ISolution solution = GetSolution ();
 			if (solution != null) {
 				return Path.Combine (solution.BaseDirectory, ".nuget");
 			}
 			return null;
+		}
+
+		ISolution GetSolution ()
+		{
+			if (solution != null)
+				return solution;
+
+			return  projectService.OpenSolution;
 		}
 
 		ISettings LoadSettings (string directory)

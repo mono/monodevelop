@@ -37,13 +37,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestablePackageCompatibilityRunner (
 			IDotNetProject project,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IPackageManagementEvents packageManagementEvents)
 			: base (
 				project,
 				progressMonitorFactory,
-				packageManagementEvents,
-				progressProvider)
+				packageManagementEvents)
 		{
 			PackageReferenceFile = new PackageReferenceFile (FileSystem, "packages.config");
 		}
@@ -60,10 +58,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
 			ProgressMonitor monitor,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IPackageManagementEvents packageManagementEvents)
 		{
-			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents);
 			return EventsMonitor;
 		}
 
