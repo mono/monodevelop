@@ -158,7 +158,6 @@ style "button" = "default" {
         contrast = 1.0
         focus_color = shade(1.4, @bg_color)
         focusstyle = 3
-        border_colors = { @bg_color, @bg_color }
         textstyle = 0
         highlight_shade = 1.0
         lightborder_shade = 1.0
@@ -325,7 +324,6 @@ style "quartz-radio-or-check-box" = "button"
     engine "xamarin" {
         focusstyle = 0
         border_shades = { 1.0, 1.0 }
-        border_colors = { @fg_color, @fg_color }
     }
 }
 

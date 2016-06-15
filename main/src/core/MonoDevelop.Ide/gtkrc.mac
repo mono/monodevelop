@@ -348,7 +348,6 @@ style "radio-or-check-box" = "button"
     engine "xamarin" {
         focusstyle = 0
         border_shades = { 1.0, 1.0 }
-        border_colors = { @fg_color, @fg_color }
     }
 }
 
