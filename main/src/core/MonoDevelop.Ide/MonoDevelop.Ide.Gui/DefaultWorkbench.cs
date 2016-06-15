@@ -474,7 +474,7 @@ namespace MonoDevelop.Ide.Gui
 				string lab = content.Label.Length > 0 ? GettextCatalog.GetString (content.Label) : "";
 				ActionCommand cmd = new ActionCommand ("Pad|" + content.PadId, lab, null);
 				cmd.DefaultHandler = new PadActivationHandler (this, content);
-				cmd.Category = GettextCatalog.GetString ("View");
+				cmd.Category = GettextCatalog.GetString ("View (Pads)");
 				cmd.Description = GettextCatalog.GetString ("Show {0}", cmd.Text);
 				IdeApp.CommandService.RegisterCommand (cmd);
 			}

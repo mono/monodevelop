@@ -309,7 +309,7 @@ namespace MonoDevelop.Ide
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
 		{
-			Ide.IdeApp.Workbench.StatusBar.ShowMessage (e.Message);
+			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell
