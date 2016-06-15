@@ -65,6 +65,8 @@ namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 				var typeArgumentList = (TypeArgumentListSyntax)expression.Parent;
 				var symbolInfo = semanticModel.GetSymbolInfo(typeArgumentList.Parent, cancellationToken);
 				var symbol = symbolInfo.GetAnySymbol();
+				if (symbol == null)
+					return false;
 				if (symbol.IsConstructor())
 				{
 					symbol = symbol.ContainingType;

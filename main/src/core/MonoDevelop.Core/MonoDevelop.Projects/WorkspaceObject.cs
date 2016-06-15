@@ -380,8 +380,6 @@ namespace MonoDevelop.Projects
 					var ext = node.CreateExtension ();
 					if (ext.SupportsObject (this))
 						extensions.Add (ext);
-					else
-						ext.Dispose ();
 				}
 			}
 

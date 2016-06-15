@@ -20,7 +20,8 @@
 			
 		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsagesHandler"
-			_label = "_Find Reference Usages"/>
+			_label = "_Find Reference Usages"
+			macShortcut = "Meta+F12" />
 		<Command id = "MonoDevelop.CSharp.Navigation.FindExtensionMethods"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindExtensionMethodsHandler"
 			_label = "Extension Methods"
@@ -77,7 +78,7 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
 						_label = "_Go to Declaration" 
 						shortcut = "F12"
-						macShortcut = "Meta|D"/>
+						macShortcut = "Meta|D F12"/>
 	</Extension>
 		
 	
@@ -259,12 +260,12 @@
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToPrevUsageHandler"
 		         shortcut = "Ctrl|Shift|Up"
-		         macShortcut = "Meta|Shift|Up"
+		         macShortcut = "Control+Alt+Meta+Up"
 		         _label = "_Move to prev usage"/>
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToNextUsageHandler"
 		         shortcut = "Ctrl|Shift|Down"
-		         macShortcut = "Meta|Shift|Down"
+		         macShortcut = "Control+Alt+Meta+Down"
 		         _label = "_Move to next usage"/>
 	</Extension>
 
@@ -318,12 +319,12 @@
 				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"/>
 			</ItemSet>
 
-				
+				<!--
 			<ItemSet id = "Organize Imports" _label = "Organize Usings" insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow">
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
-			</ItemSet>
+			</ItemSet> -->
 		</Condition>
 	</Extension>
 

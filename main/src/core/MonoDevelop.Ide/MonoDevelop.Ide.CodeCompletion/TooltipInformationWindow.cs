@@ -308,13 +308,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			IdeApp.Preferences.ColorScheme.Changed += HandleThemeChanged;
 		}
 
-		public override void RepositionWindow(Gdk.Rectangle? newCaret = null)
+		public override void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
 			// Setting the opicity delayed to 1 is a hack to ensure smooth animation popup see "Bug 32046 - Janky animations on tooltips"
 			Opacity = 0;
 			base.RepositionWindow(newCaret);
 			GLib.Timeout.Add (50, delegate {
-				Opacity = 1;
+				if (Visible)
+					Opacity = 1;
 				return false;
 			});
 		}

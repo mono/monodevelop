@@ -28,11 +28,14 @@
 
 
 using System;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Xml;
 
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.Addins;
@@ -78,6 +81,15 @@ namespace MonoDevelop.Components.Commands
 		
 		internal bool handlerFoundInMulticast;
 		Gtk.Widget lastActiveWidget;
+
+		Dictionary<Command, HashSet<Command>> conflicts;
+		internal Dictionary<Command, HashSet<Command>> Conflicts {
+			get {
+				if (conflicts == null)
+					LoadConflicts ();
+				return conflicts;
+			}
+		}
 
 		public CommandManager (): this (null)
 		{
@@ -391,7 +403,12 @@ namespace MonoDevelop.Components.Commands
 			}
 
 			var toplevelFocus = IdeApp.Workbench.HasToplevelFocus;
+
+			var conflict = new List<Command> ();
+
 			bool bypass = false;
+			var dispatched = false;
+
 			for (int i = 0; i < commands.Count; i++) {
 				CommandInfo cinfo = GetCommandInfo (commands[i].Id, new CommandTargetRoute ());
 				if (cinfo.Bypass) {
@@ -399,9 +416,33 @@ namespace MonoDevelop.Components.Commands
 					continue;
 				}
 
-				if (cinfo.Enabled && cinfo.Visible && DispatchCommand (commands[i].Id, CommandSource.Keybinding))
-					return result;
+				if (cinfo.Enabled && cinfo.Visible) {
+					if (!dispatched)
+						dispatched = DispatchCommand (commands [i].Id, CommandSource.Keybinding);
+					conflict.Add (commands [i]);
+				}
 			}
+
+			if (conflict.Count > 1) {
+				bool newConflict = false;
+				foreach (var item in conflict) {
+					HashSet<Command> itemConflicts;
+					if (!Conflicts.TryGetValue (item, out itemConflicts))
+						Conflicts [item] = itemConflicts = new HashSet<Command> ();
+					var tmp = conflict.Where (c => c != item);
+					if (!itemConflicts.IsSupersetOf (tmp)) {
+						itemConflicts.UnionWith (tmp);
+						newConflict = true;
+					}
+				}
+				if (newConflict)
+					SaveConflicts ();
+				if (KeyBindingFailed != null)
+					KeyBindingFailed (this, new KeyBindingFailedEventArgs (GettextCatalog.GetString ("The key combination ({0}) has conflicts.", KeyBindingManager.BindingToDisplayLabel (binding.ToString (), false))));
+			}
+
+			if (dispatched)
+				return result;
 
 			// The command has not been handled.
 			// If there is at least a handler that sets the bypass flag, allow gtk to execute the default action
@@ -415,6 +456,95 @@ namespace MonoDevelop.Components.Commands
 			
 			chords = null;
 			return result;
+		}
+
+		void LoadConflicts ()
+		{
+			if (conflicts == null)
+				conflicts = new Dictionary<Command, HashSet<Command>> ();
+
+			var file = UserProfile.Current.CacheDir.Combine ("CommandConflicts.xml");
+
+			if (!File.Exists (file))
+				return;
+
+			try {
+				using (var reader = new XmlTextReader (file)) {
+					bool foundConflicts = false;
+					conflicts.Clear ();
+
+					while (reader.Read ()) {
+						if (reader.IsStartElement ("conflicts")) {
+							foundConflicts = true;
+							break;
+						}
+					}
+
+					if (!foundConflicts || reader.GetAttribute ("version") != "1.0")
+						return;
+
+					while (reader.Read ()) {
+						if (reader.IsStartElement ("conflict")) {
+							var conflictId = reader.GetAttribute ("id");
+							var command = GetCommand (conflictId);
+							if (command == null)
+								continue;
+
+							var conflict = new HashSet<Command> ();
+							conflicts.Add (command, conflict);
+							while (reader.Read ()) {
+								if (reader.IsStartElement ("command")) {
+									var cmdId = reader.ReadElementContentAsString ();
+									var cmd = GetCommand (cmdId);
+									if (cmd == null)
+										continue;
+									conflict.Add (cmd);
+								} else
+									break;
+							}
+						}
+					}
+				}
+			} catch (Exception e) {
+				conflicts.Clear ();
+				LoggingService.LogError ("Loading command conflicts from " + file + " failed.", e);
+			}
+		}
+
+		void SaveConflicts ()
+		{
+			if (!Directory.Exists (UserProfile.Current.CacheDir))
+				Directory.CreateDirectory (UserProfile.Current.CacheDir);
+
+			string file = UserProfile.Current.CacheDir.Combine ("CommandConflicts.xml");
+
+			try {
+				using (var stream = new FileStream (file + '~', FileMode.Create))
+				using (var writer = new XmlTextWriter (stream, Encoding.UTF8)) {
+					writer.Formatting = Formatting.Indented;
+					writer.IndentChar = ' ';
+					writer.Indentation = 2;
+
+					writer.WriteStartElement ("conflicts");
+					writer.WriteAttributeString ("version", "1.0");
+
+					foreach (var conflict in conflicts) {
+						writer.WriteStartElement ("conflict");
+						writer.WriteAttributeString ("id", conflict.Key.Id.ToString ());
+						foreach (var cmd in conflict.Value) {
+							writer.WriteStartElement ("command");
+							writer.WriteString (cmd.Id.ToString ());
+							writer.WriteEndElement ();
+						}
+						writer.WriteEndElement ();
+					}
+
+					writer.WriteEndElement ();
+				}
+				FileService.SystemRename (file + '~', file);
+			} catch (Exception e) {
+				LoggingService.LogError ("Saving command conflicts to " + file + " failed.", e);
+			}
 		}
 		
 		void NotifyKeyPressed (Gdk.EventKey ev)

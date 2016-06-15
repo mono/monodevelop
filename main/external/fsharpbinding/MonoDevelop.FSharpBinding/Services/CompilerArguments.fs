@@ -287,14 +287,25 @@ module CompilerArguments =
           | _ -> "--debug+"
       | false, _ -> "--debug-"
 
+  let getCompiledFiles (project:DotNetProject) =
+      let sharedAssetFiles = 
+          project.References
+          |> Seq.filter (fun r -> r.ExtendedProperties.Contains("MSBuild.SharedAssetsProject"))
+          |> Seq.collect (fun r -> (r.ResolveProject project.ParentSolution).Files)
+          |> Seq.map (fun f -> f.FilePath)
+          |> Set.ofSeq
+
+      project.Files
+      // Shared Asset files need to be referenced first
+      |> Seq.sortByDescending (fun f -> sharedAssetFiles.Contains f.FilePath)
+      |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
+      |> Seq.map(fun f -> f.Name)
+
   /// Generates command line options for the compiler specified by the
   /// F# compiler options (debugging, tail-calls etc.), custom command line
   /// parameters and assemblies referenced by the project ("-r" options)
   let generateCompilerOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let dashr = generateReferences (project, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq
-    let files = project.Files
-                |> Seq.filter(fun f -> f.FilePath.Extension = ".fs")
-                |> Seq.map(fun f -> f.Name)
 
     let defines = fsconfig.GetDefineSymbols()
     [
@@ -318,7 +329,7 @@ module CompilerArguments =
        for arg in fsconfig.OtherFlags.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries) do
          yield arg
        yield! dashr
-       yield! files]
+       yield! (getCompiledFiles project)]
 
   let generateProjectOptions (project:DotNetProject, fsconfig:FSharpCompilerParameters, reqLangVersion, targetFramework, configSelector, shouldWrap) =
     let compilerOptions = generateCompilerOptions (project, fsconfig, reqLangVersion, targetFramework, configSelector, shouldWrap) |> Array.ofSeq

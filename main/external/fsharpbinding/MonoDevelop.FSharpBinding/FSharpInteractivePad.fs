@@ -15,6 +15,7 @@ open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
+open MonoDevelop.Ide.Commands
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui.Content
@@ -148,7 +149,6 @@ type FSharpInteractivePad() =
         ctx.CompletionWidget <- editor.GetContent<ICompletionWidget>()
         ctx.Editor <- editor
 
-    let clipboardHandler = editor.GetContent<IClipboardHandler>()
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
     let mutable activeDoc : IDisposable option = None
@@ -189,9 +189,10 @@ type FSharpInteractivePad() =
     let setupSession() =
         try
             let ses = InteractiveSession()
-
+            promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
+
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
@@ -201,8 +202,8 @@ type FSharpInteractivePad() =
                         fsiOutput "\nSession termination detected. Press Enter to restart.") |> ignore
                 elif killIntent = Restart then
                     Runtime.RunInMainThread (fun () -> editor.Text <- "") |> ignore
-                killIntent <- NoIntent
-                promptReceived <- false)
+                killIntent <- NoIntent)
+
             ses.StartReceiving()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
             getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
@@ -225,9 +226,10 @@ type FSharpInteractivePad() =
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
     
     let resetFsi intent =
-        killIntent <- intent
-        session |> Option.iter (fun ses -> ses.Kill())
-        if intent = Restart then session <- setupSession()
+        if promptReceived then
+            killIntent <- intent
+            session |> Option.iter (fun ses -> ses.Kill())
+            if intent = Restart then session <- setupSession()
 
     let input = new ResizeArray<_>()
     member x.Text =
@@ -395,30 +397,28 @@ type FSharpInteractivePad() =
         addButton ("gtk-open", (fun _ -> x.OpenScript()), GettextCatalog.GetString ("Open"))
         addButton ("gtk-clear", (fun _ -> editor.Text <- ""), GettextCatalog.GetString ("Clear"))
         addButton ("gtk-refresh", (fun _ -> x.RestartFsi()), GettextCatalog.GetString ("Reset"))
-
         toolbar.ShowAll()
 
     member x.RestartFsi() = resetFsi Restart
 
     member x.ClearFsi() = editor.Text <- ""
 
-    member x.Cut() = clipboardHandler.Cut()
-
-    member x.Copy() = clipboardHandler.Copy()
-
-    member x.Paste() = clipboardHandler.Paste()
-
     member x.Save() =
         let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as script"), MonoDevelop.Components.FileChooserAction.Save)
         if dlg.Run () then
-            let file = dlg.SelectedFile
+            let file = 
+                if dlg.SelectedFile.Extension = ".fsx" then
+                    dlg.SelectedFile
+                else
+                    dlg.SelectedFile.ChangeExtension(".fsx")
+
             let lines = input |> Seq.map (fun line -> line.TrimEnd(';'))
             let fileContent = String.concat "\n" lines
             File.WriteAllText(file.FullPath.ToString(), fileContent)
 
     member x.OpenScript() =
         let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open)
-
+        dlg.AddFilter (GettextCatalog.GetString ("F# script files"), [|".fs"; "*.fsi"; "*.fsx"; "*.fsscript"; "*.ml"; "*.mli" |]) |> ignore
         if dlg.Run () then
             let file = dlg.SelectedFile
             x.SendCommand ("#load \"" + file.FullPath.ToString() + "\"")
@@ -486,7 +486,29 @@ type FSharpFsiEditorCompletion() =
             result
         | _ -> base.KeyPress (descriptor)
 
-  
+    member x.clipboardHandler = x.Editor.GetContent<IClipboardHandler>()
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Cut")>]
+    member x.Cut() = x.clipboardHandler.Cut()
+
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Cut")>]
+    member x.CanCut(ci:CommandInfo) =
+        ci.Enabled <- x.clipboardHandler.EnableCut
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Copy")>]
+    member x.Copy() = x.clipboardHandler.Copy()
+
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Copy")>]
+    member x.CanCopy(ci:CommandInfo) =
+        ci.Enabled <- x.clipboardHandler.EnableCopy
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Paste")>]
+    member x.Paste() = x.clipboardHandler.Paste()
+
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Paste")>]
+    member x.CanPaste(ci:CommandInfo) =
+        ci.Enabled <- x.clipboardHandler.EnablePaste
+
   type InteractiveCommand(command) =
     inherit CommandHandler()
 
@@ -507,15 +529,6 @@ type FSharpFsiEditorCompletion() =
       override x.Update(info:CommandInfo) =
           info.Enabled <- true
           info.Visible <- true
-
-  type InteractiveCut() =
-      inherit InteractiveCommand(fun fsi -> fsi.Cut())
-
-  type InteractiveCopy() =
-      inherit InteractiveCommand(fun fsi -> fsi.Copy())
-
-  type InteractivePaste() =
-      inherit InteractiveCommand(fun fsi -> fsi.Paste())
 
   type SendSelection() =
       inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendSelection())

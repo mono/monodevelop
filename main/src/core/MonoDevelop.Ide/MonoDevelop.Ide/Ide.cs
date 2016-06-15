@@ -227,6 +227,7 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Flushed GUI events");
 			
 			MessageService.RootWindow = workbench.RootWindow;
+			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (workbench.RootWindow);
 		
 			commandService.EnableIdleUpdate = true;
 
@@ -308,7 +309,7 @@ namespace MonoDevelop.Ide
 
 		static void KeyBindingFailed (object sender, KeyBindingFailedEventArgs e)
 		{
-			Ide.IdeApp.Workbench.StatusBar.ShowMessage (e.Message);
+			Ide.IdeApp.Workbench.StatusBar.ShowWarning (e.Message);
 		}
 		
 		//this method is MIT/X11, 2009, Michael Hutchinson / (c) Novell

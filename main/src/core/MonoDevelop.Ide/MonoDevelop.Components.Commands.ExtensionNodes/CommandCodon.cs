@@ -166,9 +166,9 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 				keyBinding = winShortcut;
 			string[] splittedKeys = (keyBinding ?? "").Split (' ');
 
-			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (splittedKeys[0]);
+			cmd.AccelKey = KeyBindingManager.FixChordSeparators (KeyBindingManager.CanonicalizeBinding (splittedKeys[0]));
 			if (splittedKeys.Length > 1) {
-				cmd.AlternateAccelKeys = splittedKeys.Skip (1).ToArray ();
+				cmd.AlternateAccelKeys = splittedKeys.Skip (1).Select (key => KeyBindingManager.FixChordSeparators (key)).ToArray ();
 			}
 			
 			cmd.DisabledVisible = disabledVisible;

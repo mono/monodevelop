@@ -226,6 +226,8 @@ namespace Mono.TextEditor
 				return completeText;
 			}
 			set {
+				if (value == null)
+					value = "";
 				var args = new DocumentChangeEventArgs (0, Text, value);
 				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
