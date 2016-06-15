@@ -1731,7 +1731,7 @@ msgstr "Настройки MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Правила по умолчанию..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -6939,7 +6939,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
 #, fuzzy
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "Пользовательский список команд"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
@@ -20085,7 +20085,7 @@ msgstr "Параметры..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Правила по умолчанию..."
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42

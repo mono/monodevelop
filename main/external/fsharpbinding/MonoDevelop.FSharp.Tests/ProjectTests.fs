@@ -6,6 +6,7 @@ open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Components
 open MonoDevelop.Projects
+open MonoDevelop.Projects.SharedAssetsProjects
 open System
 open System.IO
 
@@ -61,3 +62,22 @@ type ProjectTests() =
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
 </Project>"""
+
+    [<Test>]
+    member this.``Adds shared project files first``() =
+        let sol = new Solution ()
+        let shared = new SharedAssetsProject ("F#")
+        shared.AddFile ("Shared1.fs") |> ignore
+        shared.AddFile ("Shared2.fs") |> ignore
+        sol.RootFolder.AddItem (shared)
+
+        // Reference to shared is added before adding project to solution
+        let main = Services.ProjectService.CreateDotNetProject ("F#")
+        main.AddFile ("File1.fs") |> ignore
+        main.References.Add (ProjectReference.CreateProjectReference (shared))
+        sol.RootFolder.AddItem (main)
+
+        let files = CompilerArguments.getCompiledFiles main
+                    |> Seq.map(fun f -> FilePath(f).FileName)
+
+        Assert.AreEqual (seq ["Shared1.fs"; "Shared2.fs"; "File1.fs"], files)

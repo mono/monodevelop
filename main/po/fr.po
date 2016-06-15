@@ -1690,7 +1690,7 @@ msgstr "Afficher la fenêtre de préférences MonoDevelop"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
 #, fuzzy
-msgid "Custom Po_licies..."
+msgid "Po_licies..."
 msgstr "Stratégies par défaut"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:7
@@ -6912,7 +6912,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
 #, fuzzy
-msgid "Custom Policies"
+msgid "Policies"
 msgstr "Stratégie personnalisée"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/DefaultPolicyOptionsDialog.cs:2
@@ -20070,7 +20070,7 @@ msgstr "Préférences"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42
 #, fuzzy
-msgid "Custom Policies..."
+msgid "Policies..."
 msgstr "Stratégies par défaut"
 
 #: ../src/addins/MacPlatform/MacPlatform.cs:42

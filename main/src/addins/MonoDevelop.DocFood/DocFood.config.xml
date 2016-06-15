@@ -321,16 +321,16 @@
 						<Section name="remarks" override="true">Call ${Member} when you are finished using the ${DeclaringType}. The ${Member} method leaves the ${DeclaringType} in an unusable state. After calling ${Member}, you must release all references to the ${DeclaringType} so the garbage collector can reclaim the memory that the ${DeclaringType} was occupying.</Section>
 					</Case>
 					
-					<Case name = "Equals" paramCount="1" returns="System.Boolean">
+					<Case name = "Equals" paramCount="1" returns="bool">
 						<Section name="summary" override="true">Determines whether the specified ${Parameter0.Type} is equal to the current ${DeclaringType}.</Section>
 						<Section name="param0" override="true">The ${Parameter0.Type} to compare with the current ${DeclaringType}.</Section>
 						<Section name="returns" override="true">${True} if the specified ${Parameter0.Type} is equal to the current ${DeclaringType}; otherwise, ${False}.</Section>
 					</Case>
-					<Case name = "GetHashCode" paramCount="0" returns="System.Int32">
+					<Case name = "GetHashCode" paramCount="0" returns="int">
 						<Section name="summary" override="true">Serves as a hash function for a ${DeclaringType} object.</Section>
 						<Section name="returns" override="true">A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</Section>
 					</Case>
-					<Case name = "ToString" paramCount="0" returns="System.String">
+					<Case name = "ToString" paramCount="0" returns="string">
 						<Section name="summary" override="true">Returns a ${ReturnType} that represents the current ${DeclaringType}.</Section>
 						<Section name="returns" override="true">A ${ReturnType} that represents the current ${DeclaringType}.</Section>
 					</Case>
@@ -340,7 +340,7 @@
 						<If paramCount="1">
 							<Section name="param0">The command-line arguments.</Section>
 						</If>
-						<If returns="System.Int32">
+						<If returns="int">
 							<Section name="returns">The exit code that is given to the operating system after the program ends.</Section>
 						</If>
 					</Case>
@@ -354,7 +354,7 @@
 					</Case>
 					<Case endsWith="At,Between">
 						<Section name="summary">${Sentence} ${ParameterList}.</Section>
-						<IfNot returns="System.Void">
+						<IfNot returns="void">
 							<Section name="returns">The ${ReturnType}.</Section>
 						</IfNot>
 					</Case>
@@ -366,11 +366,11 @@
 							<Section name="summary">${Sentence}.</Section>
 						</IfNot>
 						<Switch>
-							<Case returns="System.Boolean">
+							<Case returns="bool">
 								<Section name="returns">${True}, if ${AllWordsExceptFirst} was ${FirstAsVerbPastParticiple}, ${False} otherwise.</Section>
 							</Case>
 							<Default>
-								<IfNot returns="System.Void">
+								<IfNot returns="void">
 									<Section name="returns">The ${AllWordsExceptFirst}.</Section>
 								</IfNot>
 							</Default>				
@@ -459,7 +459,7 @@
 							</Default>
 						</Switch>
 					</Case>
-					<Case returns="System.Boolean">
+					<Case returns="bool">
 						<If wordCount="1">
 							<Section name="summary">${AccessText} a value indicating whether this ${DeclaringType} is ${AllWords}.</Section>
 							<Section name="value">${True} if ${AllWords}; otherwise, ${False}.</Section>
@@ -478,7 +478,7 @@
 			
 			<Case type="parameter">
 				<Switch>
-					<Case returns="System.Boolean">
+					<Case returns="bool">
 						<Section name="param">If set to ${True} ${AllWords}.</Section>
 					</Case>
 					<Case endsWith="EventArgs">

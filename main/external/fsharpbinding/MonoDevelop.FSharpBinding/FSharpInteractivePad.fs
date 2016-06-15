@@ -72,8 +72,12 @@ type FsiDocumentContext() =
     override x.Name = name
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
-
-    member x.CompletionWidget with set (value) = completionWidget <- value
+    member x.CompletionWidget 
+        with set (value) = 
+            completionWidget <- value
+            completionWidget.CompletionContextChanged.Add
+                (fun _args -> let completion = editor.GetContent<CompletionTextEditorExtension>()
+                              ParameterInformationWindowManager.HideWindow(completion, value))
     member x.Editor with set (value) = editor <- value
     member x.WorkingFolder
         with get() = workingFolder
@@ -185,9 +189,10 @@ type FSharpInteractivePad() =
     let setupSession() =
         try
             let ses = InteractiveSession()
-
+            promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
+
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
@@ -197,8 +202,8 @@ type FSharpInteractivePad() =
                         fsiOutput "\nSession termination detected. Press Enter to restart.") |> ignore
                 elif killIntent = Restart then
                     Runtime.RunInMainThread (fun () -> editor.Text <- "") |> ignore
-                killIntent <- NoIntent
-                promptReceived <- false)
+                killIntent <- NoIntent)
+
             ses.StartReceiving()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
             getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
@@ -221,9 +226,10 @@ type FSharpInteractivePad() =
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
     
     let resetFsi intent =
-        killIntent <- intent
-        session |> Option.iter (fun ses -> ses.Kill())
-        if intent = Restart then session <- setupSession()
+        if promptReceived then
+            killIntent <- intent
+            session |> Option.iter (fun ses -> ses.Kill())
+            if intent = Restart then session <- setupSession()
 
     let input = new ResizeArray<_>()
     member x.Text =
@@ -391,7 +397,6 @@ type FSharpInteractivePad() =
         addButton ("gtk-open", (fun _ -> x.OpenScript()), GettextCatalog.GetString ("Open"))
         addButton ("gtk-clear", (fun _ -> editor.Text <- ""), GettextCatalog.GetString ("Clear"))
         addButton ("gtk-refresh", (fun _ -> x.RestartFsi()), GettextCatalog.GetString ("Reset"))
-
         toolbar.ShowAll()
 
     member x.RestartFsi() = resetFsi Restart
@@ -407,14 +412,19 @@ type FSharpInteractivePad() =
     member x.Save() =
         let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as script"), MonoDevelop.Components.FileChooserAction.Save)
         if dlg.Run () then
-            let file = dlg.SelectedFile
+            let file = 
+                if dlg.SelectedFile.Extension = ".fsx" then
+                    dlg.SelectedFile
+                else
+                    dlg.SelectedFile.ChangeExtension(".fsx")
+
             let lines = input |> Seq.map (fun line -> line.TrimEnd(';'))
             let fileContent = String.concat "\n" lines
             File.WriteAllText(file.FullPath.ToString(), fileContent)
 
     member x.OpenScript() =
         let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open)
-
+        dlg.AddFilter (GettextCatalog.GetString ("F# script files"), [|".fs"; "*.fsi"; "*.fsx"; "*.fsscript"; "*.ml"; "*.mli" |]) |> ignore
         if dlg.Run () then
             let file = dlg.SelectedFile
             x.SendCommand ("#load \"" + file.FullPath.ToString() + "\"")

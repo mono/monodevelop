@@ -96,6 +96,12 @@ namespace MonoDevelop.Ide.Gui
 				return categories;
 			}
 		}
+
+		public string Group {
+			get {
+				return content.Group;
+			}
+		}
 		
 		public void BringToFront ()
 		{

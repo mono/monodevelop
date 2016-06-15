@@ -94,7 +94,7 @@ type FSharpFormatter()  =
                     StringTextSource (result)
                 with exn ->
                     LoggingService.LogError("Error occured: {0}", exn.Message)
-                    StringTextSource.Empty
+                    StringTextSource input
             output :> ITextSource
 
         | Selection(fromOffset, toOffset) ->

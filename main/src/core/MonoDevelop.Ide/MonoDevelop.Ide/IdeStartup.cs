@@ -273,6 +273,7 @@ namespace MonoDevelop.Ide
 			
 			initialized = true;
 			MessageService.RootWindow = IdeApp.Workbench.RootWindow;
+			Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (IdeApp.Workbench.RootWindow);
 			Thread.CurrentThread.Name = "GUI Thread";
 			Counters.Initialization.Trace ("Running IdeApp");
 			Counters.Initialization.EndTiming ();
