@@ -34,7 +34,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Control+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Control+X" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="Control+M|Control+O" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Tab" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Control+U" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Paste" shortcut="Control+V" />
@@ -47,7 +47,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment" shortcut="Control+K|U Control+K|Control+U" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleFolding" shortcut="Control+M|M Control+M|Control+M" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Undo" shortcut="Control+Z" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="Shift+Tab" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection" shortcut="Control+Shift+U" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Control+F4" />
@@ -112,7 +112,7 @@
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineUp" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord" shortcut="Control+Right" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevWord" shortcut="Control+Left" />
-    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret" shortcut="Escape" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineDown" shortcut="Control+Down" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollLineUp" shortcut="Control+Up" />
     <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ScrollPageDown" shortcut="Page_Down Control+Page_Down" />

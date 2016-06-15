@@ -107,12 +107,12 @@
 			_description = "Indent selected lines of code"
 			_label = "_Indent"
 			_displayName = "Indent Selection"
-			macShortcut = "Meta|] Tab"
+			macShortcut = "Meta|]"
 			icon = "gtk-indent" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection"
 			shortcut = "Control|Alt|Home"
 			_description = "Unindent selected lines of code"
-			macShortcut = "Meta|[ Shift+Tab"
+			macShortcut = "Meta|["
 			_label = "_Unindent"
 			_displayName = "Unindent Selection"
 			icon = "gtk-unindent" />
