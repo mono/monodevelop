@@ -342,15 +342,22 @@ style "radio-or-check-box" = "default"
     }
 }
 
-style "propertygrid-radio-or-check-box" = "radio-or-check-box"
+style "propertygrid-radio-or-check-box" = "button"
 {
-    base[ACTIVE] = @base_color
-    base[SELECTED] = @base_color
-    base[PRELIGHT] = @base_color
-    text[SELECTED] = @fg_color
+    base[ACTIVE] = "#419bf9"
+    base[SELECTED] = "#419bf9"
+    base[PRELIGHT] = "#419bf9"
+    text[ACTIVE] = @base_color
+    text[SELECTED] = @base_color
+    text[PRELIGHT] = @base_color
+    text[NORMAL] = @base_color
     GtkCheckButton::indicator-spacing = 0
+    GtkCheckButton::indicator-size = 15
 
     engine "xamarin" {
+        focusstyle = 0
+        border_shades = { 1.0, 1.0 }
+        border_colors = { @fg_color, @fg_color }
     }
 }
 
