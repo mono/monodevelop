@@ -311,27 +311,28 @@ style "notebook" = "default"
     }
 }
 
-style "quartz-radio-or-check-box" = "default"
+style "quartz-radio-or-check-box" = "button"
 {
-    ythickness = 6
+    GtkCheckButton::indicator-size = 17
+    base[ACTIVE] = "#99999e"
+    base[SELECTED] = "#fff"
+    base[PRELIGHT] = @base_color
+    text[ACTIVE] = @selected_fg_color
+    text[SELECTED] = @selected_fg_color
+    text[PRELIGHT] = @selected_fg_color
+    text[NORMAL] = @selected_fg_color
 
-    engine "quartz" {
+    engine "xamarin" {
+        focusstyle = 0
+        border_shades = { 1.0, 1.0 }
+        border_colors = { @fg_color, @fg_color }
     }
 }
 
-style "propertygrid-radio-or-check-box" = "default"
+style "propertygrid-radio-or-check-box" = "quartz-radio-or-check-box"
 {
     GtkCheckButton::indicator-spacing = 0
-
-    base[NORMAL] = "#fff"
-    base[ACTIVE] = "#fff"
-    base[SELECTED] = "#fff"
-    base[PRELIGHT] = "#fff"
-    text[SELECTED] = @base_color
-
-    engine "xamarin" {
-        border_shades = { 1.33, 1.33 }
-    }
+    GtkCheckButton::indicator-size = 15
 }
 
 style "entry" = "default"
