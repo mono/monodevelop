@@ -131,20 +131,17 @@ type FsiPrompt(icon: Xwt.Drawing.Image) =
 type FSharpInteractivePad() =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
-    let options = DefaultSourceEditorOptions.Instance
     let ctx = FsiDocumentContext()
     let doc = TextEditorFactory.CreateNewDocument()
-
+    let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
     do
+        let options = new CustomEditorOptions (editor.Options)
+        editor.MimeType <- "text/x-fsharp"
+        editor.ContextMenuPath <- "/MonoDevelop/SourceEditor2/ContextMenu/Fsi"
         options.ShowLineNumberMargin <- false
         options.TabsToSpaces <- true
         options.ShowWhitespaces <- ShowWhitespaces.Never
-        doc.FileName <- FilePath ctx.Name
-
-    let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
-    do
-        editor.MimeType <- "text/x-fsharp"
-        editor.ContextMenuPath <- "/MonoDevelop/SourceEditor2/ContextMenu/Fsi"
+        editor.Options <- options
 
         ctx.CompletionWidget <- editor.GetContent<ICompletionWidget>()
         ctx.Editor <- editor
