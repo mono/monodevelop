@@ -625,7 +625,7 @@ namespace MonoDevelop.VersionControl
 				break;
 			}
 
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", GettextCatalog.GetString ("Version Control"), "md-version-control", false, true);
+			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", GettextCatalog.GetString ("Version Control"), padIcon, false, true);
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
