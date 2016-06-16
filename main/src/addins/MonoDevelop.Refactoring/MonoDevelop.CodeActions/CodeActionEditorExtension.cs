@@ -941,7 +941,8 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 
-			CurrentSmartTagPopup ();
+			CancelSmartTagPopupTimeout ();
+			PopupQuickFixMenu (null, menu => { });
 		}
 
 		internal bool HasCurrentFixes {
