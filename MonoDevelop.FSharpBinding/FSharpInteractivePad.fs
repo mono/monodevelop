@@ -516,6 +516,9 @@ type FSharpFsiEditorCompletion() =
     [<CommandHandler ("MonoDevelop.Ide.Commands.ViewCommands.ZoomOut")>]
     member x.ZoomOut() = x.Editor.GetContent<IZoomable>().ZoomOut()
 
+    [<CommandHandler ("MonoDevelop.Ide.Commands.ViewCommands.ZoomReset")>]
+    member x.ZoomReset() = x.Editor.GetContent<IZoomable>().ZoomReset()
+
   type InteractiveCommand(command) =
     inherit CommandHandler()
 
