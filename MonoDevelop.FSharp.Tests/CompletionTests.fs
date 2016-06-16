@@ -55,6 +55,7 @@ type ``Completion Tests``() =
     [<TestCase("let x =|")>]
     [<TestCase("let x, y|")>]
     [<TestCase("let x = \"System.|")>]
+    [<TestCase("#r \"/Users/user/some/dll\"|")>]
     //[<TestCase("let x = ``System.|");Ignore("Not implemented yet")>]
     [<TestCase("member x|")>]
     [<TestCase("override x|")>]

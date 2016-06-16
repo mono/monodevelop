@@ -167,7 +167,7 @@ module Completion =
             None
 
     let (|FilePath|_|) context =
-        let matches = Regex.Matches(context.lineToCaret, "^\s*#(load|r)\s+\"([^\"]*)", RegexOptions.Compiled)
+        let matches = Regex.Matches(context.lineToCaret, "^\s*#(load|r)\s+\"([^\"]*)$", RegexOptions.Compiled)
         if matches.Count > 0 then
             Some (matches.[0].Groups.[1].Value, matches.[0].Groups.[2].Value)
         else
