@@ -1,0 +1,22 @@
+﻿<?xml version="1.0"?>
+<Template Originator="Dave Thomas" Language="F#" Created="20/02/2014" LastModified="20/02/2014">
+  <TemplateConfiguration>
+    <_Name>F# Signature File</_Name>
+    <Icon>md-text-file-icon</Icon>
+    <_Description>Creates an empty F# signature file.  
+    
+    A signature file contains information about the public signatures of a set of F# program elements, such as types, namespaces, and modules. 
+    
+    It can be used to specify the accessibility of these program elements.</_Description>
+    <_Category>General</_Category>
+    <LanguageName>F#</LanguageName>
+    <DefaultFilename>Class.fsi</DefaultFilename>
+  </TemplateConfiguration>
+
+  <TemplateFiles>
+    <UnformattedFile DefaultExtension=".fsi" DefaultName="source" AddStandardHeader="True">
+    </UnformattedFile>
+  </TemplateFiles>
+
+  <FileOptions/>
+</Template>

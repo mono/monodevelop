@@ -44,10 +44,11 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
 		{
-			if (ces.AutoHide) {
-				((MDMenu)Submenu).UpdateCommands ();
+			((MDMenu)Submenu).UpdateCommands ();
+			if (ces.AutoHide)
 				Hidden = Submenu.ItemArray ().All (item => item.Hidden);
-			}
+			else
+				Enabled = Submenu.ItemArray ().Any (item => !item.Hidden);
 			if (!Hidden) {
 				MDMenu.ShowLastSeparator (ref lastSeparator);
 			}

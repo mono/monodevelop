@@ -52,6 +52,8 @@ using MonoDevelop.MacIntegration.MacMenu;
 using MonoDevelop.Components.Extensions;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
+using System.Diagnostics;
+using Xwt.Mac;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -140,6 +142,11 @@ namespace MonoDevelop.MacIntegration
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
 			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
 			var loaded = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
+
+			loaded.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedMacDialogBackend> ();
+			loaded.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedMacWindowBackend> ();
+			loaded.RegisterBackend<Xwt.Backends.IAlertDialogBackend, ThemedMacAlertDialogBackend> ();
+
 
 			// We require Xwt.Mac to initialize MonoMac before we can execute any code using MonoMac
 			timer.Trace ("Installing App Event Handlers");
@@ -268,7 +275,7 @@ namespace MonoDevelop.MacIntegration
 
 			//mac-ify these command names
 			commandManager.GetCommand (EditCommands.MonodevelopPreferences).Text = GettextCatalog.GetString ("Preferences...");
-			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Custom Policies...");
+			commandManager.GetCommand (EditCommands.DefaultPolicies).Text = GettextCatalog.GetString ("Policies...");
 			commandManager.GetCommand (HelpCommands.About).Text = GetAboutCommandText ();
 			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GetHideWindowCommandText ();
 			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-ins...");
@@ -290,9 +297,28 @@ namespace MonoDevelop.MacIntegration
 					Styles.LoadStyle();
 					PatchGtkTheme();
 				}));
+
+
+			Styles.Changed += (s, a) => {
+				var colorPanel = NSColorPanel.SharedColorPanel;
+				IdeTheme.ApplyTheme (colorPanel.ContentView.Superview.Window);
+				// The subviews of the shared NSColorPanel do not inherit the appearance of the main panel window
+				// and need to be updated recursively.
+				UpdateColorPanelSubviewsAppearance (colorPanel.ContentView.Superview, colorPanel.ContentView.Superview.Window.Appearance);
+			};
 			
 			// FIXME: Immediate theme switching disabled, until NSAppearance issues are fixed 
 			//IdeApp.Preferences.UserInterfaceTheme.Changed += (s,a) => PatchGtkTheme ();
+		}
+
+		static void UpdateColorPanelSubviewsAppearance (NSView view, NSAppearance appearance)
+		{
+			if (view.Class.Name == "NSPageableTableView")
+					((NSTableView)view).BackgroundColor = Styles.BackgroundColor.ToNSColor ();
+			view.Appearance = appearance;
+
+			foreach (var subview in view.Subviews)
+				UpdateColorPanelSubviewsAppearance (subview, appearance);
 		}
 
 		static string GetAboutCommandText ()
@@ -892,6 +918,62 @@ namespace MonoDevelop.MacIntegration
 			} else {
 				NSWorkspace.SharedWorkspace.ActivateFileViewer (selectFiles.Select ((f) => NSUrl.FromFilename (f)).ToArray ());
 			}
+		}
+
+		internal override void RestartIde (bool reopenWorkspace)
+		{
+			FilePath bundlePath = NSBundle.MainBundle.BundlePath;
+
+			if (bundlePath.Extension != ".app") {
+				base.RestartIde (reopenWorkspace);
+				return;
+			}
+
+			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
+
+			var proc = new Process ();
+
+			var path = bundlePath.Combine ("Contents", "MacOS");
+			var psi = new ProcessStartInfo (path.Combine ("mdtool")) {
+				CreateNoWindow = true,
+				UseShellExecute = false,
+				WorkingDirectory = path,
+				Arguments = "--start-app-bundle",
+			};
+
+			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			if (!string.IsNullOrEmpty (recentWorkspace))
+				psi.Arguments += " " + recentWorkspace;
+
+			proc.StartInfo = psi;
+			proc.Start ();
+		}
+	}
+
+	public class ThemedMacWindowBackend : Xwt.Mac.WindowBackend
+	{
+		public override void InitializeBackend (object frontend, Xwt.Backends.ApplicationContext context)
+		{
+			base.InitializeBackend (frontend, context);
+			IdeTheme.ApplyTheme (this);
+		}
+	}
+
+	public class ThemedMacDialogBackend : Xwt.Mac.DialogBackend
+	{
+		public override void InitializeBackend (object frontend, Xwt.Backends.ApplicationContext context)
+		{
+			base.InitializeBackend (frontend, context);
+			IdeTheme.ApplyTheme (this);
+		}
+	}
+
+	public class ThemedMacAlertDialogBackend : Xwt.Mac.AlertDialogBackend
+	{
+		public override void Initialize (Xwt.Backends.ApplicationContext actx)
+		{
+			base.Initialize (actx);
+			IdeTheme.ApplyTheme (this.Window);
 		}
 	}
 }

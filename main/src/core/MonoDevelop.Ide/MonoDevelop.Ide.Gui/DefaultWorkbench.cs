@@ -474,7 +474,7 @@ namespace MonoDevelop.Ide.Gui
 				string lab = content.Label.Length > 0 ? GettextCatalog.GetString (content.Label) : "";
 				ActionCommand cmd = new ActionCommand ("Pad|" + content.PadId, lab, null);
 				cmd.DefaultHandler = new PadActivationHandler (this, content);
-				cmd.Category = GettextCatalog.GetString ("View");
+				cmd.Category = GettextCatalog.GetString ("View (Pads)");
 				cmd.Description = GettextCatalog.GetString ("Show {0}", cmd.Text);
 				IdeApp.CommandService.RegisterCommand (cmd);
 			}
@@ -540,9 +540,9 @@ namespace MonoDevelop.Ide.Gui
 				post = "*";
 			}
 			if (window.ViewContent.Project != null) {
-				return window.ViewContent.Project.Name + " - " + window.ViewContent.PathRelativeToProject + post + " - " + BrandingService.ApplicationLongName;
+				return window.ViewContent.Project.Name + " – " + window.ViewContent.PathRelativeToProject + post + " – " + BrandingService.ApplicationLongName;
 			}
-			return window.ViewContent.ContentName + post + " - " + BrandingService.ApplicationLongName;
+			return window.ViewContent.ContentName + post + " – " + BrandingService.ApplicationLongName;
 		}
 		
 		void SetWorkbenchTitle ()
@@ -565,7 +565,7 @@ namespace MonoDevelop.Ide.Gui
 		static string GetDefaultTitle ()
 		{
 			if (IdeApp.ProjectOperations.CurrentSelectedProject != null)
-				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " - " + BrandingService.ApplicationLongName;
+				return IdeApp.ProjectOperations.CurrentSelectedProject.Name + " – " + BrandingService.ApplicationLongName;
 			return BrandingService.ApplicationLongName;
 		}
 
@@ -1410,15 +1410,17 @@ namespace MonoDevelop.Ide.Gui
 			PadCodon codon = padCodons [window];
 			DockItem item = GetDockItem (codon);
 			if (item != null) {
-				string windowTitle = GettextCatalog.GetString (window.Title); 
+				string windowTitle = GettextCatalog.GetString (window.Title);
+				var windowIcon = ImageService.GetIcon (window.Icon).WithSize (IconSize.Menu);
 				if (String.IsNullOrEmpty (windowTitle)) 
 					windowTitle = GettextCatalog.GetString (codon.Label);
-				if (window.HasErrors && !window.ContentVisible)
+				if (window.HasErrors && !window.ContentVisible) {
 					windowTitle = "<span foreground='" + Styles.ErrorForegroundColor.ToHexString (false) + "'>" + windowTitle + "</span>";
-				else if (window.HasNewData && !window.ContentVisible)
+					windowIcon = windowIcon.WithStyles ("error");
+				} else if (window.HasNewData && !window.ContentVisible)
 					windowTitle = "<b>" + windowTitle + "</b>";
 				item.Label = windowTitle;
-				item.Icon  = ImageService.GetIcon (window.Icon).WithSize (IconSize.Menu);
+				item.Icon = windowIcon;
 			}
 		}
 		

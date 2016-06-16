@@ -80,9 +80,8 @@ namespace MonoDevelop.Components.Docking
 			if (tab.Parent != null)
 				((Gtk.Container)tab.Parent).Remove (tab);
 
-			//box.PackStart (tab, true, true, 0);
 			box.PackStart (tab, false, false, 0);
-			tab.WidthRequest = tab.LabelWidth;
+
 			if (currentTab == -1)
 				CurrentTab = box.Children.Length - 1;
 			else {
@@ -191,6 +190,17 @@ namespace MonoDevelop.Components.Docking
 		{
 			UpdateEllipsize (allocation);
 			base.OnSizeAllocated (allocation);
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			int minWidth = 0;
+			foreach (var tab in box.Children.Cast<DockItemTitleTab> ())
+					 minWidth += tab.MinWidth;
+
+			requisition.Width = minWidth;
 		}
 		
 		void UpdateEllipsize (Gdk.Rectangle allocation)

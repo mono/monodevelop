@@ -407,6 +407,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetPackageManager.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IBuildIntegratedNuGetProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRestoreManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\BackgroundDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

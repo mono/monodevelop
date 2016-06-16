@@ -35,6 +35,28 @@ namespace System
 		{
 			return e.Concat (Enumerable.Repeat (item, 1));
 		}
+
+		public static int FindIndex<T> (this IEnumerable<T> e, Func<T, bool> predicate)
+		{
+			bool found = false;
+			int index = e.TakeWhile (i => {
+				found = predicate(i);
+				return !found;
+			}).Count ();
+
+			return found ? index : -1;
+		}
+
+		public static int IndexOf<T> (this IEnumerable<T> e, T item)
+		{
+			bool found = false;
+			int index = e.TakeWhile (i => {
+				found = EqualityComparer<T>.Default.Equals (i, item);
+				return !found;
+			}).Count ();
+
+			return found ? index : -1;
+		}
 	}
 }
 

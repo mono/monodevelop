@@ -47,7 +47,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		private global::Gtk.Entry accelEntry;
 		
 		private global::Gtk.Button updateButton;
-
+		
+		private global::Gtk.Button addButton;
+		
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
@@ -199,6 +201,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			this.labelMessage.Name = "labelMessage";
 			this.labelMessage.Xalign = 0F;
 			this.labelMessage.UseMarkup = true;
+			this.labelMessage.Ellipsize = Pango.EllipsizeMode.End;
 			this.vbox.Add (this.labelMessage);
 			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox [this.labelMessage]));
 			w17.Position = 5;
@@ -237,11 +240,22 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			w20.Position = 2;
 			w20.Expand = false;
 			w20.Fill = false;
-			this.vbox.Add (this.hbox);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox [this.hbox]));
-			w21.Position = 6;
+			// Container child hbox.Gtk.Box+BoxChild
+			this.addButton = new global::Gtk.Button ();
+			this.addButton.CanFocus = true;
+			this.addButton.Name = "addButton";
+			this.addButton.UseUnderline = true;
+			this.addButton.Label = global::Mono.Unix.Catalog.GetString ("Add");
+			this.hbox.Add (this.addButton);
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.hbox [this.addButton]));
+			w21.Position = 3;
 			w21.Expand = false;
 			w21.Fill = false;
+			this.vbox.Add (this.hbox);
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox [this.hbox]));
+			w22.Position = 6;
+			w22.Expand = false;
+			w22.Fill = false;
 			this.Add (this.vbox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

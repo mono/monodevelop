@@ -101,7 +101,8 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			treeviewEntities.AppendColumn ("IsChecked", ct1, "active", 2);
 			treeviewEntities.AppendColumn ("Entity", new CellRendererText (), "text", 0);
 			treeviewEntities.Model = entityStore;
-			
+			treeviewEntities.SearchColumn = -1; // disable the interactive search
+
 			var ct2 = new CellRendererToggle ();
 			ct2.Toggled += delegate(object o, Gtk.ToggledArgs args) {
 				TreeIter iter;
@@ -112,6 +113,7 @@ namespace MonoDevelop.CSharp.Diagnostics.InconsistentNaming
 			treeviewAccessibility.AppendColumn ("IsChecked", ct2, "active", 2);
 			treeviewAccessibility.AppendColumn ("Entity", new CellRendererText (), "text", 0);
 			treeviewAccessibility.Model = accessibiltyStore;
+			treeviewAccessibility.SearchColumn = -1; // disable the interactive search
 			buttonOk.Clicked += (sender, e) => Apply ();
 
 			FillDialog ();

@@ -26,6 +26,7 @@
 
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.MacInterop;
 using AppKit;
 using System.Linq;
 
@@ -92,6 +93,15 @@ namespace MonoDevelop.MacIntegration
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = NSWorkspace.SharedWorkspace.RunningApplications.Any (a => a.Hidden);
+		}
+	}
+
+	class MacZoomWindowHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			NSWindow w = GtkQuartz.GetWindow (IdeApp.Workbench.RootWindow);
+			w.PerformZoom (w);
 		}
 	}
 }

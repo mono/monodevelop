@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Template originator="Ihor Sihuta" created="2012/08/05">
+
+	<TemplateConfiguration>
+		<_Name>Gtk# 2.0 Project</_Name>
+		<_Description>Create an F# desktop application (using Gtk# 2.0 and .NET 4.0)</_Description>
+		<Category>other/net/general</Category>
+		<Icon>md-gui-project</Icon>
+		<Image id="md-gui-project" />
+		<LanguageName>F#</LanguageName>
+		<GroupId>md-gtk-project</GroupId>
+	</TemplateConfiguration>
+	
+	<Actions>
+		<Open filename="Main.fs" />
+	</Actions>
+	
+	<Combine name="${ProjectName}" directory=".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+
+		<Project name = "${ProjectName}" directory = ".">
+			<Options Target = "WinExe" TargetFrameworkVersion="4.5.1" />
+
+			<References>
+        <Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <Reference type="Gac" refto="FSharp.Core" />
+				<Reference type="Package" refto="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+        <Reference type="Package" refto="System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				<Reference type="Package" SpecificVersion="false" refto="gtk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="gdk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="glib-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="glade-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="pango-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference type="Package" SpecificVersion="false" refto="atk-sharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+			</References>
+
+			<Files>
+
+			<!-- A window template -->
+
+				<FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />
+                <UnformattedFile name="MainWindow.fs">
+<![CDATA[namespace ${Namespace}
+
+    module MainWindow =
+    
+        open System
+        open Gtk;
+
+        type MyWindow() as this =
+            inherit Window("MainWindow")
+            
+            do this.SetDefaultSize(400,300)
+            do this.DeleteEvent.AddHandler(fun o e -> this.OnDeleteEvent(o,e))
+            do this.ShowAll()
+            
+            member this.OnDeleteEvent(o,e:DeleteEventArgs) = 
+                Application.Quit ()
+                e.RetVal <- true]]>
+				</UnformattedFile>
+             
+             <UnformattedFile name="Main.fs">
+                <![CDATA[namespace ${ProjectName}
+    module Main =
+        
+        open System
+        open Gtk
+    
+        [<EntryPoint>]
+        let Main(args) = 
+            Application.Init()
+            let win = new MainWindow.MyWindow()
+            win.Show()
+            Application.Run()
+            0
+]]>
+             </UnformattedFile>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
+

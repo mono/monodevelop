@@ -200,6 +200,11 @@
 		<ExtensionNode name="Class"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/Ide/ErrorDocumentationProvider" name = "Link to documentation">
+		<Description>Send users to the appropriate documentation for errors in the error pad.</Description>
+		<ExtensionNode name = "ErrorDocumentationProvider" type = "MonoDevelop.Ide.Extensions.ErrorDocumentationProvider" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -228,8 +233,13 @@
 	<Extension path = "/MonoDevelop/Ide/KeyBindingSchemes">
 		<Scheme id="Emacs" _name = "GNU/Emacs" resource="KeyBindingSchemeEmacs.xml"/>
 		<Scheme id="VS05" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio.xml"/>
+		<Scheme id="VS14MAC" _name = "Visual Studio" resource="KeyBindingSchemeVisualStudio-mac.xml" forMac="true"/>
+		<Scheme id="VS14MAC2" _name = "Visual Studio (Windows)" resource="KeyBindingSchemeVisualStudio.xml" forMac="true"/>
 		<Scheme id="MD1" _name = "MonoDevelop 1.0" resource="KeyBindingSchemeMonoDevelop1.xml"/>
 		<Scheme id="MD2" _name = "MonoDevelop 2.0" resource="KeyBindingSchemeMonoDevelop2.xml"/>
+		<Scheme id="Xcode" _name = "Xcode" resource="KeyBindingSchemeXcode.xml" forMac="true"/>
+		<Scheme id="VSCodeMAC" _name = "Visual Studio Code" resource="KeyBindingSchemeVSCode-mac.xml" forMac="true"/>
+		<Scheme id="RiderMAC" _name = "ReSharper / Rider" resource="KeyBindingSchemeRider-mac.xml" forMac="true"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TaskList/View">
@@ -340,5 +350,9 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-	
+
+	<ExtensionPoint path = "/MonoDevelop/Ide/LocaleSet" name = "Localization set definition">
+		<Description>Setting what languages are supported for user selection.</Description>
+		<ExtensionNode name = "Class" objectType = "MonoDevelop.Ide.LocaleSetProvider" />
+	</ExtensionPoint>
 </ExtensionModel>

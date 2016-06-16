@@ -1148,6 +1148,53 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("a as C");
 			Assert.AreEqual ("null", val.Value);
 			Assert.AreEqual ("C", val.TypeName);
+
+			val = Eval ("a as string");
+			Assert.AreEqual ("null", val.Value);
+			Assert.AreEqual ("System.String", val.TypeName);
+
+
+			// Is operator
+
+			val = Eval ("c is A");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("c is B");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("c is C");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("b is A");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("b is B");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("b is C");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is A");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is B");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is C");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("a is string");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
 			
 			// Enum cast
 			
@@ -2330,7 +2377,7 @@ namespace MonoDevelop.Debugger.Tests
 				val.Refresh (options);
 				val = val.Sync ();
 			}
-			Assert.AreEqual ("System.MonoType", val.TypeName);//Should this be System.Type?
+			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			Assert.AreEqual ("{A}", val.Value);
 		
 			val = Eval ("this.GetType()");
@@ -2342,7 +2389,7 @@ namespace MonoDevelop.Debugger.Tests
 				val.Refresh (options);
 				val = val.Sync ();
 			}
-			Assert.AreEqual ("System.MonoType", val.TypeName);//Should this be System.Type?
+			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluationChild}", val.Value);
 		}
 

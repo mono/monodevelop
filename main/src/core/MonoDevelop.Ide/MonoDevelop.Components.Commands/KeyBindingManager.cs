@@ -559,6 +559,36 @@ namespace MonoDevelop.Components.Commands
 			
 			return Binding (chord, accel);
 		}
+
+		internal static string FixChordSeparators (string binding)
+		{
+			// converts old style '|' separators to new scheme with chord detection.
+			// Examples:
+			//    Control|X -> Control+X
+			//    Alt|| -> Alt+|
+			//    Alt|+ -> Alt++
+			// this conversion is required for proper key detection, otherwise
+			// keys bindings like Control|X and Control+X will not be detected as
+			// eqal / duplicate bindings.
+			if (string.IsNullOrEmpty (binding))
+				return binding;
+			var chars = binding.ToCharArray ();
+			bool foundChordSep = false;
+			// first and last characters are never separators, skip them
+			for (int i = 1; i < binding.Length - 1; i++) {
+				// chords can not start with a '+', therefore all bindings
+				// whre a '+' occurs before a '|' have already the right style
+				if (chars [i] == '+' && !foundChordSep)
+					return binding;
+				// make sure we don't convert the real '|' key
+				if (chars [i] == '|' && chars [i - 1] != '|') {
+					foundChordSep = true;
+					chars [i] = '+';
+				}
+			}
+			var result = new string (chars);
+			return result;
+		}
 		
 		#endregion
 		
@@ -776,9 +806,13 @@ namespace MonoDevelop.Components.Commands
 			case Gdk.Key.Delete:
 				return '⌦';
 			case Gdk.Key.Home:
-				return '⇱';
+				return '\u2196';    // ↖
+				//return '\u21F1';  // ⇱
+				//return '⇱';
 			case Gdk.Key.End:
-				return '⇲';
+				return '\u2198';    // ↘
+				//return '\u21F2';  // ⇲
+				//return '⇲';
 			case Gdk.Key.Page_Up:
 				return '⇞';
 			case Gdk.Key.Page_Down:

@@ -1,0 +1,11 @@
+﻿<FSharpFormattingPolicy scope="text/x-fsharp" allowDiffSerialize="False">
+    <DefaultFormat
+        SemicolonAtEndOfLine="False"
+        SpaceBeforeArgument="True"
+        SpaceBeforeColon="True"
+        SpaceAfterComma="True"
+        SpaceAfterSemicolon="True"
+        IndentOnTryWith="False"
+        ReorderOpenDeclaration="False"
+        SpaceAroundDelimiter="True" />
+</FSharpFormattingPolicy>

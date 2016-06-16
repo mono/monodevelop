@@ -47,6 +47,7 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Widget page;
 		ExtendedLabel labelWidget;
 		int labelWidth;
+		int minWidth;
 		DockVisualStyle visualStyle;
 		ImageView tabIcon;
 		DockFrame frame;
@@ -188,6 +189,7 @@ namespace MonoDevelop.Components.Docking
 			if (!string.IsNullOrEmpty (label)) {
 				labelWidget = new ExtendedLabel (label);
 				labelWidget.UseMarkup = true;
+				labelWidget.Name = label;
 				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
@@ -205,6 +207,7 @@ namespace MonoDevelop.Components.Docking
 			btnDock.Clicked += OnClickDock;
 			btnDock.ButtonPressEvent += (o, args) => args.RetVal = true;
 			btnDock.WidthRequest = btnDock.SizeRequest ().Width;
+			btnDock.Name = string.Format("btnDock_{0}", label ?? string.Empty);
 
 			btnClose = new ImageButton ();
 			btnClose.Image = pixClose;
@@ -216,6 +219,7 @@ namespace MonoDevelop.Components.Docking
 				item.Visible = false;
 			};
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
+			btnClose.Name = string.Format ("btnClose_{0}", label ?? string.Empty);
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
 			HBox btnBox = new HBox (false, 0);
@@ -231,6 +235,8 @@ namespace MonoDevelop.Components.Docking
 			box.ShowAll ();
 			Show ();
 
+			minWidth = tabIcon.SizeRequest ().Width + al.SizeRequest ().Width + 10;
+
 			UpdateBehavior ();
 			UpdateVisualStyle ();
 		}
@@ -245,6 +251,10 @@ namespace MonoDevelop.Components.Docking
 
 		public int LabelWidth {
 			get { return labelWidth; }
+		}
+
+		public int MinWidth {
+			get { return minWidth; }
 		}
 		
 		public bool Active {
@@ -410,13 +420,6 @@ namespace MonoDevelop.Components.Docking
 
 			int leftPadding = (int)TabPadding.Left;
 			int rightPadding = (int)TabPadding.Right;
-			if (rect.Width < labelWidth) {
-				int red = (labelWidth - rect.Width) / 2;
-				leftPadding -= red;
-				rightPadding -= red;
-				if (leftPadding < 2) leftPadding = 2;
-				if (rightPadding < 2) rightPadding = 2;
-			}
 			
 			rect.X += leftPadding;
 			rect.Width -= leftPadding + rightPadding;

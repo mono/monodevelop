@@ -29,6 +29,7 @@ using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
 using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -48,6 +49,8 @@ namespace MonoDevelop.CSharp.Completion
 			if (other == null)
 				return 1;
 			var t1 = symbol as INamedTypeSymbol;
+			if (other is DelegateCreationContextHandler.DelegateCreationCategory)
+				return 1;
 			var t2 = ((RoslynCompletionCategory)other).symbol as INamedTypeSymbol;
 			if (t1 != null && t2 != null) {
 				if (t1.AllInterfaces.Contains (t2) || t1.GetBaseTypes().Contains (t2))

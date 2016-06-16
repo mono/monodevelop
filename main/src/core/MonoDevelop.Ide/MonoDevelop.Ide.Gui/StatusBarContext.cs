@@ -36,6 +36,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
 
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
+using System.Threading;
 
 namespace MonoDevelop.Ide
 {
@@ -47,6 +48,12 @@ namespace MonoDevelop.Ide
 	public interface StatusBarContext: StatusBarContextBase
 	{
 		Pad StatusSourcePad { get; set; }
+
+		/// <summary>
+		/// When set, the status bar can be cancelled via this cancellation source.
+		/// </summary>
+		/// <value>The cancellation token.</value>
+		CancellationTokenSource CancellationTokenSource { get; set; }
 	}
 	
 }

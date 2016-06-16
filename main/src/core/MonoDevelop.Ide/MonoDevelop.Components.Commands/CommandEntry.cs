@@ -76,6 +76,11 @@ namespace MonoDevelop.Components.Commands
 			set { disabledVisible = value; }
 		}
 
+		public string OverrideLabel {
+			get { return overrideLabel; }
+			set { overrideLabel = value; }
+		}
+
 		public CommandEntryDisplayType DisplayType {
 			get;
 			set;

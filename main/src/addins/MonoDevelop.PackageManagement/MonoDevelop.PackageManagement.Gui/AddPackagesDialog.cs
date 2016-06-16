@@ -453,18 +453,8 @@ namespace MonoDevelop.PackageManagement
 		void LoadPackageImage (int row, PackageSearchResultViewModel packageViewModel)
 		{
 			if (packageViewModel.HasIconUrl) {
-				// Workaround: Image loading is incorrectly being done on GUI thread
-				// since the wrong synchronization context seems to be used. So
-				// here we switch to a background thread and then back to the GUI thread.
-				Task.Run (() => LoadImage (packageViewModel.IconUrl, row));
+				imageLoader.LoadFrom (packageViewModel.IconUrl, row);
 			}
-		}
-
-		void LoadImage (Uri iconUrl, int row)
-		{
-			// Put it back on the GUI thread so the correct synchronization context
-			// is used. The image loading will be done on a background thread.
-			Runtime.RunInMainThread (() => imageLoader.LoadFrom (iconUrl, row));
 		}
 
 		bool IsOddRow (int row)
@@ -660,14 +650,9 @@ namespace MonoDevelop.PackageManagement
 
 		void UpdateAddPackagesButton ()
 		{
-			if (PackagesCheckedCount > 1) {
-				addPackagesButton.Label = Catalog.GetString ("Add Packages");
-			} else {
-				if (OlderPackageInstalledThanPackageSelected ()) {
-					addPackagesButton.Label = Catalog.GetString ("Update Package");
-				} else {
-					addPackagesButton.Label = Catalog.GetString ("Add Package");
-				}
+			string label = Catalog.GetPluralString ("Add Package", "Add Packages", PackagesCheckedCount);
+			if (PackagesCheckedCount <= 1 && OlderPackageInstalledThanPackageSelected ()) {
+				label = Catalog.GetString ("Update Package");
 			}
 			addPackagesButton.Sensitive = IsAddPackagesButtonEnabled ();
 		}

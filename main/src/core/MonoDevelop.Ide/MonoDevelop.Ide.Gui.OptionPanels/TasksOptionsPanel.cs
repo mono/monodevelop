@@ -59,7 +59,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			tokensTreeView.AppendColumn (String.Empty, new CellRendererText (), "text", 0);
 			tokensTreeView.Selection.Changed += new EventHandler (OnTokenSelectionChanged);
 			tokensTreeView.Model = tokensStore;
-			
+			tokensTreeView.SearchColumn = -1; // disable the interactive search
+
 			OnTokenSelectionChanged (null, null);
 			
 			buttonAdd.Clicked += new EventHandler (AddToken);

@@ -60,6 +60,11 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int PriorityGroup { get { return 2; } }
 
+		public override string GetRightSideDescription (bool isSelected)
+		{
+			return "<span size='small'>" + GettextCatalog.GetString ("Creates new method") + "</span>";
+		}
+
 		public EventCreationCompletionData (ICompletionDataKeyHandler keyHandler, RoslynCodeCompletionFactory factory, ITypeSymbol delegateType, string varName, INamedTypeSymbol curType) : base (factory, keyHandler)
 		{
 			this.DisplayText = varName;

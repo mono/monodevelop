@@ -506,7 +506,10 @@ namespace Mono.TextEditor
 			
 			if (Caret.AutoScrollToCaret && HasFocus)
 				ScrollToCaret ();
-			
+
+			if (textViewMargin.HighlightCaretLine == true)
+				textViewMargin.HighlightCaretLine = false;
+
 //			Rectangle rectangle = textViewMargin.GetCaretRectangle (Caret.Mode);
 			RequestResetCaretBlink ();
 			
@@ -2526,6 +2529,7 @@ namespace Mono.TextEditor
 		public void StartCaretPulseAnimation ()
 		{
 			StartAnimation (new CaretPulseAnimation (editor));
+			textViewMargin.HighlightCaretLine = true;
 		}
 
 		SearchHighlightPopupWindow popupWindow = null;

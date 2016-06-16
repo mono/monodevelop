@@ -507,5 +507,36 @@ namespace MonoDevelop.Ide.Desktop
 			window.Move (x, y);
 			window.Resize (width, height);
 		}
+
+		/// <summary>
+		/// Restarts MonoDevelop
+		/// </summary>
+		/// <param name="reopenWorkspace"> true to reopen current workspace. </param>
+		internal virtual void RestartIde (bool reopenWorkspace)
+		{
+			var reopen = reopenWorkspace && IdeApp.Workspace != null && IdeApp.Workspace.Items.Count > 0;
+
+			FilePath path = Environment.GetCommandLineArgs ()[0];
+			if (Platform.IsMac && path.Extension == ".exe")
+				path = path.ChangeExtension (null);
+
+			if (!File.Exists (path))
+				throw new Exception (path + " not found");
+
+			var proc = new Process ();
+				
+			var psi = new ProcessStartInfo (path) {
+				CreateNoWindow = true,
+				UseShellExecute = false,
+				WorkingDirectory = Environment.CurrentDirectory,
+			};
+
+			var recentWorkspace = reopen ? DesktopService.RecentFiles.GetProjects ().FirstOrDefault ()?.FileName : string.Empty;
+			if (!string.IsNullOrEmpty (recentWorkspace))
+				psi.Arguments = recentWorkspace;
+			
+			proc.StartInfo = psi;
+			proc.Start ();
+		}
 	}
 }

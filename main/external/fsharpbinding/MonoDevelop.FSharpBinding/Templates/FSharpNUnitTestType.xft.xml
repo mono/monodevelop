@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Template Originator="Dave Thomas" Created="14/3/2014" LastModified="14/3/2014">
+	
+	<TemplateConfiguration>
+		<_Name>F# Test Fixture</_Name>
+		<Icon>md-file-unit-test</Icon>
+		<_Category>NUnit</_Category>
+		<LanguageName>F#</LanguageName>
+		<_Description>Creates a Test Fixture.</_Description>
+		<DefaultFilename>NUnitTest</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<TemplateFiles>
+		<UnformattedFile AddStandardHeader="True">
+<![CDATA[namespace ${Namespace}
+open System
+open NUnit.Framework
+
+[<TestFixture>]
+type Test() = 
+
+    [<Test>]
+    member x.TestCase() =
+        Assert.IsTrue(true)
+]]>
+             	</UnformattedFile>
+	</TemplateFiles>
+	
+	<FileOptions/>
+	
+</Template>

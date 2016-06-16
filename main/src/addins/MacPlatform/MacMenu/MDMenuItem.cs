@@ -32,6 +32,8 @@ using System.Text;
 using Foundation;
 using ObjCRuntime;
 using System.Collections.Generic;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Navigation;
 
 namespace MonoDevelop.MacIntegration.MacMenu
 {
@@ -91,7 +93,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
 
 			if (!isArrayItem) {
-				SetItemValues (this, info, ce.DisabledVisible);
+				SetItemValues (this, info, ce.DisabledVisible, ce.OverrideLabel);
 				if (!Hidden)
 					MDMenu.ShowLastSeparator (ref lastSeparator);
 				return;
@@ -128,6 +130,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 						parent.InsertItem (n, index);
 					else
 						parent.AddItem (n);
+					index++;
 					continue;
 				}
 
@@ -161,17 +164,56 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			public CommandInfo Info;
 		}
 
-		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible)
+		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible, string overrideLabel = null)
 		{
-			item.SetTitleWithMnemonic (GetCleanCommandText (info));
-			if (!string.IsNullOrEmpty (info.Description) && item.ToolTip != info.Description)
-				item.ToolTip = info.Description;
+			item.SetTitleWithMnemonic (GetCleanCommandText (info, overrideLabel));
 
 			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
 			bool visible = info.Visible && (disabledVisible || info.Enabled);
 
 			item.Enabled = enabled;
 			item.Hidden = !visible;
+
+			string fileName = null;
+			var doc = info.DataItem as Ide.Gui.Document;
+			if (doc != null) {
+				if (doc.IsFile)
+					fileName = doc.FileName;
+				else {
+					// Designer documents have no file bound to them, but the document name
+					// could be a valid path
+					var docName = doc.Name;
+					if (!string.IsNullOrEmpty (docName) && System.IO.Path.IsPathRooted (docName) && System.IO.File.Exists (docName))
+						fileName = docName;
+				}
+			} else if (info.DataItem is NavigationHistoryItem) {
+					var navDoc = ((NavigationHistoryItem)info.DataItem).NavigationPoint as DocumentNavigationPoint;
+					if (navDoc != null)
+						fileName = navDoc.FileName;
+			} else {
+				var str = info.DataItem as string;
+				if (str != null && System.IO.Path.IsPathRooted (str) && System.IO.File.Exists (str))
+					fileName = str;
+			}
+
+			if (!String.IsNullOrWhiteSpace (fileName)) {
+				item.ToolTip = fileName;
+				Xwt.Drawing.Image icon = null;
+				if (!info.Icon.IsNull)
+					icon = Ide.ImageService.GetIcon (info.Icon, Gtk.IconSize.Menu);
+				if (icon == null)
+					icon = Ide.DesktopService.GetIconForFile (fileName, Gtk.IconSize.Menu);
+				if (icon != null) {
+					var scale = GtkWorkarounds.GetScaleFactor (Ide.IdeApp.Workbench.RootWindow);
+
+					if (NSUserDefaults.StandardUserDefaults.StringForKey ("AppleInterfaceStyle") == "Dark")
+						icon = icon.WithStyles ("dark");
+					else
+						icon = icon.WithStyles ("-dark");
+					item.Image = icon.ToBitmap (scale).ToNSImage ();
+					item.Image.Template = true;
+				}
+			}
 
 			SetAccel (item, info.AccelKey);
 
@@ -236,6 +278,10 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 		static string GetKeyEquivalent (Gdk.Key key)
 		{
+			// Gdk.Keyval.ToUnicode returns NULL for TAB, fix it
+			if (key == Gdk.Key.Tab)
+				return "\t";
+			
 			char c = (char) Gdk.Keyval.ToUnicode ((uint) key);
 			if (c != 0)
 				return c.ToString ();
@@ -244,13 +290,13 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			if (fk != 0)
 				return ((char) fk).ToString ();
 
-			LoggingService.LogError ("Mac menu cannot display key '{0}", key);
+			LoggingService.LogError ("Mac menu cannot display key '{0}'", key);
 			return "";
 		}
 
-		static string GetCleanCommandText (CommandInfo ci)
+		static string GetCleanCommandText (CommandInfo ci, string overrideLabel = null)
 		{
-			string txt = ci.Text;
+			string txt = overrideLabel ?? ci.Text;
 			if (txt == null)
 				return "";
 

@@ -124,14 +124,18 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/TemplateImages">
-	<Image id="md-generic-project" resource="project.png" />
-	<Image id="md-blank-solution" resource="solution.png" />
-	<Image id="md-console-project" resource="console-project.png" />
-	<Image id="md-library-project" resource="library-project.png" />
-	<Image id="md-pcl-project" resource="pcl-project.png" />
-	<Image id="md-shared-project" resource="shared-project.png" />
-	<Image id="md-workspace" resource="workspace.png" />
-	<Image id="md-gtk2-project" resource="gtk2-project.png" />
+	<Image id="md-workspace" resource="workspace-template.png" />
+	<Image id="md-solution" resource="solution-template.png" />
+	<Image id="md-project" resource="project-template.png" />
+	
+	<Image id="md-library-project" resource="project-library-template.png" />
+	<Image id="md-gui-project" resource="project-gui-template.png" />
+	<Image id="md-console-project" resource="project-console-template.png" />
+	<Image id="md-test-project" resource="project-test-template.png" />
+	<Image id="md-package-project" resource="project-package-template.png" />
+	
+	<Image id="md-crossplatform-pcl-project" resource="project-crossplatform-pcl-template.png" />
+	<Image id="md-crossplatform-shared-project" resource="project-crossplatform-shared-template.png" />
 </Extension>
 
 </ExtensionModel>

@@ -27,6 +27,7 @@
 
 
 using System;
+using System.Linq;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -66,8 +67,10 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			for (int i = 0; i < IdeApp.Workbench.Pads.Count; i++) {
-				Pad pad = IdeApp.Workbench.Pads[i];
+			string group;
+			var lastListGroup = new Dictionary <CommandArrayInfo, string>();
+
+			foreach (Pad pad in IdeApp.Workbench.Pads.OrderBy (p => p.Group, StringComparer.InvariantCultureIgnoreCase)) {
 
 				CommandInfo ci = new CommandInfo(pad.Title);
 				ci.Icon = pad.Icon;
@@ -97,14 +100,25 @@ namespace MonoDevelop.Ide.Commands
 						}
 					}
 				}
+
+				int atIndex = 0;
 				for (int j = list.Count - 1; j >= 0; j--) {
-					if (!(list[j] is CommandInfoSet)) {
-						list.Insert (j + 1, ci, pad);
-						pad = null;
+					if (!(list [j] is CommandInfoSet)) {
+						atIndex = j + 1;
 						break;
 					}
 				}
-				if (pad != null) list.Insert (0, ci, pad); 
+
+				list.Insert (atIndex, ci, pad);
+				lastListGroup.TryGetValue (list, out group);
+				if (group != pad.Group) {
+					lastListGroup [list] = pad.Group;
+					if (atIndex > 0) {
+						CommandInfo sep = new CommandInfo ("-");
+						sep.IsArraySeparator = true;
+						list.Insert (atIndex, sep, null);
+					}
+				}
 			}
 		}
 
@@ -122,10 +136,24 @@ namespace MonoDevelop.Ide.Commands
 	// MonoDevelop.Ide.Commands.ViewCommands.LayoutList
 	public class LayoutListHandler : CommandHandler
 	{
+		static internal readonly Dictionary<string, string> NameMapping;
+
+		static LayoutListHandler ()
+		{
+			NameMapping = new Dictionary<string, string> ();
+			NameMapping ["Solution"] = "Code";
+			NameMapping ["Visual Design"] = "Design";
+			NameMapping ["Debug"] = "Debug";
+			NameMapping ["Unit Testing"] = "Test";
+		}
+
 		protected override void Update (CommandArrayInfo info)
 		{
+			string text;
 			foreach (var name in IdeApp.Workbench.Layouts) {
-				CommandInfo item = new CommandInfo(GettextCatalog.GetString (name));
+				if (!NameMapping.TryGetValue (name, out text))
+					text = name;
+				CommandInfo item = new CommandInfo(GettextCatalog.GetString (text));
 				item.Checked = IdeApp.Workbench.CurrentLayout == name;
 				item.Description = GettextCatalog.GetString ("Switch to layout '{0}'", name);
 				info.Add (item, name);
@@ -163,10 +191,20 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = !String.Equals ("Solution", IdeApp.Workbench.CurrentLayout, StringComparison.OrdinalIgnoreCase);
+			string itemName;
+			if (!LayoutListHandler.NameMapping.TryGetValue (IdeApp.Workbench.CurrentLayout, out itemName))
+				itemName = IdeApp.Workbench.CurrentLayout;
+			if (info.Enabled)
+				info.Text = GettextCatalog.GetString ("_Delete \u201C{0}\u201D Layout", itemName);
+			else
+				info.Text = GettextCatalog.GetString ("_Delete Current Layout");
 		}
 		protected override void Run ()
 		{
-			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the active layout?"), AlertButton.Delete)) {
+			string itemName;
+			if (!LayoutListHandler.NameMapping.TryGetValue (IdeApp.Workbench.CurrentLayout, out itemName))
+				itemName = IdeApp.Workbench.CurrentLayout;
+			if (MessageService.Confirm (GettextCatalog.GetString ("Are you sure you want to delete the \u201C{0}\u201D layout?", itemName), AlertButton.Delete)) {
 				string clayout = IdeApp.Workbench.CurrentLayout;
 				IdeApp.Workbench.CurrentLayout = "Solution";
 				IdeApp.Workbench.DeleteLayout (clayout);
@@ -291,7 +329,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.TabCount > 1 && DockNotebook.ActiveNotebook.Container.AllowRightInsert;
+			info.Checked = DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
+			info.Enabled = (DockNotebook.ActiveNotebook?.TabCount > 1 &&
+			                DockNotebook.ActiveNotebook?.Container?.AllowRightInsert == true) || DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
 		}
 
 		protected override void Run ()
@@ -311,7 +351,9 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.Container.SplitCount > 0;
+			info.Checked = DockNotebook.ActiveNotebook?.Container?.SplitCount < 1;
+			info.Enabled = (DockNotebook.ActiveNotebook?.TabCount > 1 &&
+			                DockNotebook.ActiveNotebook?.Container?.AllowRightInsert == true) || DockNotebook.ActiveNotebook?.Container?.SplitCount > 0;
 		}
 
 		protected override void Run ()
