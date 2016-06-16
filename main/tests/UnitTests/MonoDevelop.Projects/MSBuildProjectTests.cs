@@ -276,6 +276,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("abcdefgh", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault1"));
 			Assert.AreEqual ("empty", p.EvaluatedProperties.GetValue ("MSBuildValueOrDefault2"));
 			Assert.AreEqual ("a", p.EvaluatedProperties.GetValue ("CharTrim"));
+			Assert.AreEqual ("2", p.EvaluatedProperties.GetValue ("SplitLength"));
 
 			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (projectFile), "foo"));
 			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
