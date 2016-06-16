@@ -389,7 +389,7 @@ module Completion =
                         |> Seq.cast<CompletionData>
 
                     result.AddRange completions
-                    let residue = Parsing.findResidue(column, lineToCaret)
+                    let _longName,residue = Parsing.findLongIdentsAndResidue(column, lineToCaret)
                     if completionChar <> '.' && result.Count > 0 then
 
                         LoggingService.logDebug "Completion: residue %s" residue

@@ -21,13 +21,6 @@ type PathCompletion = {
 }
 
 module Completion =
-    let (|FilePath|_|) line =
-        let matches = Regex.Matches(line, "^\s*#(load|r)\s+\"([^\"]*)", RegexOptions.Compiled)
-        if matches.Count > 0 then
-            Some (matches.[0].Groups.[1].Value, matches.[0].Groups.[2].Value)
-        else
-            None
-
     let rec allBaseTypes (entity:FSharpEntity) =
         seq {
             match entity.TryFullName with
@@ -161,6 +154,7 @@ module Completion =
         async {
             let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction(input)
             let longName,residue = Parsing.findLongIdentsAndResidue(column, input)
+
             let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
             let results = symbols
                           |> List.choose symbolToCompletionData
