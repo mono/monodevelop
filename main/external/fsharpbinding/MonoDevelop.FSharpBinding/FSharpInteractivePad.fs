@@ -133,6 +133,9 @@ type FSharpInteractivePad() =
    
     let ctx = FsiDocumentContext()
     let doc = TextEditorFactory.CreateNewDocument()
+    do
+        doc.FileName <- FilePath ctx.Name
+
     let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
     do
         let options = new CustomEditorOptions (editor.Options)
@@ -141,10 +144,9 @@ type FSharpInteractivePad() =
         options.ShowLineNumberMargin <- false
         options.TabsToSpaces <- true
         options.ShowWhitespaces <- ShowWhitespaces.Never
-        editor.Options <- options
-
         ctx.CompletionWidget <- editor.GetContent<ICompletionWidget>()
         ctx.Editor <- editor
+        editor.Options <- options
 
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
