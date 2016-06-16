@@ -276,7 +276,7 @@ namespace MonoDevelop.Projects
 					oper = context.ExecutionHandler.Execute (cmd, console);
 				} else {
 					if (externalConsole) {
-						console = context.ExternalConsoleFactory.CreateConsole (!pauseExternalConsole, monitor.CancellationToken);
+						console = ExternalConsoleFactory.Instance.CreateConsole (!pauseExternalConsole, monitor.CancellationToken);
 						oper = Runtime.ProcessService.StartConsoleProcess (cmd.Command, cmd.Arguments,
 							cmd.WorkingDirectory, console, null);
 					} else {
