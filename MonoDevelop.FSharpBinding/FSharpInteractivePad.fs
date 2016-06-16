@@ -403,7 +403,9 @@ type FSharpInteractivePad() =
     member x.ClearFsi() = editor.Text <- ""
 
     member x.Save() =
-        let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as script"), MonoDevelop.Components.FileChooserAction.Save)
+        let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as .fsx"), MonoDevelop.Components.FileChooserAction.Save)
+
+        dlg.DefaultFilter <- dlg.AddFilter (GettextCatalog.GetString ("F# script files"), "*.fsx")
         if dlg.Run () then
             let file = 
                 if dlg.SelectedFile.Extension = ".fsx" then
@@ -416,7 +418,7 @@ type FSharpInteractivePad() =
             File.WriteAllText(file.FullPath.ToString(), fileContent)
 
     member x.OpenScript() =
-        let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open)
+        let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Open script"), MonoDevelop.Components.FileChooserAction.Open)
         dlg.AddFilter (GettextCatalog.GetString ("F# script files"), [|".fs"; "*.fsi"; "*.fsx"; "*.fsscript"; "*.ml"; "*.mli" |]) |> ignore
         if dlg.Run () then
             let file = dlg.SelectedFile
