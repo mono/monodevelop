@@ -62,7 +62,7 @@ namespace Mono.TextTemplating
 		public TemplateGenerator ()
 		{
 			Refs.Add (typeof (TextTransformation).Assembly.Location);
-			Refs.Add (typeof(Uri).Assembly.Location);
+			Refs.Add (typeof(Uri).Assembly.FullName);
 			Imports.Add ("System");
 		}
 		
