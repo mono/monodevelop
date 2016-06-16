@@ -29,7 +29,7 @@
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage"
 			_description="Retarget selected package"
 			_label="Re_target"
-			_displayName="Retartget Package" />
+			_displayName="Retarget Package" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage"
 			_description="Update selected package"
@@ -51,7 +51,7 @@
 			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
 			_description="Retargets all packages"
 			_label="Re_target"
-			_displayName="Retartget All Packages"
+			_displayName="Retarget All Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
 		</Category>
 		<Category id="Hidden" _name="Hidden">
