@@ -508,6 +508,12 @@ type FSharpFsiEditorCompletion() =
     member x.CanPaste(ci:CommandInfo) =
         ci.Enabled <- x.clipboardHandler.EnablePaste
 
+    [<CommandHandler ("MonoDevelop.Ide.Commands.ViewCommands.ZoomIn")>]
+    member x.ZoomIn() = x.Editor.GetContent<IZoomable>().ZoomIn()
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.ViewCommands.ZoomOut")>]
+    member x.ZoomOut() = x.Editor.GetContent<IZoomable>().ZoomOut()
+
   type InteractiveCommand(command) =
     inherit CommandHandler()
 
