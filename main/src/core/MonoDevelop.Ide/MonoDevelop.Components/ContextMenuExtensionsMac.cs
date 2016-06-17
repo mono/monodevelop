@@ -159,6 +159,8 @@ namespace MonoDevelop.Components
 			[Export ("menuDidClose:")]
 			void MenuDidClose (NSMenu menu)
 			{
+				if (menu.Supermenu != null)
+					return;
 				if (CloseHandler != null) {
 					CloseHandler ();
 				}

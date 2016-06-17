@@ -74,23 +74,25 @@ namespace MonoDevelop.Refactoring
 			var token = popupSrc.Token;
 
 			diff = await Task.Run (async delegate {
-				foreach (var op in await codeAction.GetPreviewOperationsAsync (token)) {
-					var ac = op as ApplyChangesOperation;
-					if (ac == null) {
-						continue;
-					}
-					var changedDocument = ac.ChangedSolution.GetDocument (documentContext.AnalysisDocument.Id);
+				try {
+					foreach (var op in await codeAction.GetPreviewOperationsAsync (token)) {
+						var ac = op as ApplyChangesOperation;
+						if (ac == null) {
+							continue;
+						}
+						var changedDocument = ac.ChangedSolution.GetDocument (documentContext.AnalysisDocument.Id);
 
-					changedTextDocument = TextEditorFactory.CreateNewDocument (new StringTextSource ((await changedDocument.GetTextAsync (token)).ToString ()), editor.FileName);
-					try {
-						var list = new List<DiffHunk> (editor.GetDiff (changedTextDocument, new DiffOptions(false, true)));
-						if (list.Count > 0)
-							return list;
-					} catch (Exception e) {
-						LoggingService.LogError ("Error while getting preview list diff.", e);
-					}
+						changedTextDocument = TextEditorFactory.CreateNewDocument (new StringTextSource ((await changedDocument.GetTextAsync (token)).ToString ()), editor.FileName);
+						try {
+							var list = new List<DiffHunk> (editor.GetDiff (changedTextDocument, new DiffOptions (false, true)));
+							if (list.Count > 0)
+								return list;
+						} catch (Exception e) {
+							LoggingService.LogError ("Error while getting preview list diff.", e);
+						}
 
-				}
+					}
+				} catch (OperationCanceledException) {}
 				return new List<DiffHunk> ();
 			});
 			if (diff.Count > 0 && !token.IsCancellationRequested)
