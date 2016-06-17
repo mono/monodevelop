@@ -185,7 +185,6 @@
     <Compile Include="MonoDevelop.Debugger\DebuggerConsoleView.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\CStringVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Visualizer\ValueVisualizer.cs" />
-    <Compile Include="MonoDevelop.Debugger\InfoFrame.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
@@ -401,12 +400,6 @@
     <EmbeddedResource Include="icons\lightning-16~dark~disabled%402x.png">
       <LogicalName>lightning-16~dark~disabled@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-48.png">
-      <LogicalName>exception-48.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\exception-48%402x.png">
-      <LogicalName>exception-48@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\exception-48~dark.png">
       <LogicalName>exception-48~dark.png</LogicalName>
     </EmbeddedResource>
@@ -514,6 +507,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stack-pointer-16%402x.png">
       <LogicalName>stack-pointer-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-icon.png">
+      <LogicalName>toolbar-icon.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\toolbar-icon%402x.png">
+      <LogicalName>toolbar-icon@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-outline-16.png">
+      <LogicalName>exception-outline-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-outline-16%402x.png">
+      <LogicalName>exception-outline-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-outline-16~dark.png">
+      <LogicalName>exception-outline-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\exception-outline-16~dark%402x.png">
+      <LogicalName>exception-outline-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\stack-pointer-16~dark.png">
       <LogicalName>stack-pointer-16~dark.png</LogicalName>
