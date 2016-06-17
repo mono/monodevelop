@@ -92,13 +92,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-    <PropertyGroup>
-      <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
-      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
-    </PropertyGroup>
-    <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
-  </Target>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
