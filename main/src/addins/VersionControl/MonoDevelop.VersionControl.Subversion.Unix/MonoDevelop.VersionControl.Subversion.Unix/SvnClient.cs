@@ -13,6 +13,8 @@ using off_t = System.Int64;
 using MonoDevelop.Projects.Text;
 using System.Threading;
 using System.Linq;
+using MonoDevelop.Ide;
+using System.Diagnostics;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
@@ -114,6 +116,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		internal static bool CheckInstalled ()
 		{
+			if (IsDependentOnXcodeCLITools.Value)
+				return true;
+
 			// libsvn_client may be linked to libapr-0 or libapr-1, and we need to bind the LibApr class
 			// to the same library. The following code detects the required libapr version and loads it. 
 			int aprver = GetLoadAprLib (-1);
@@ -198,11 +203,49 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return new UnixSvnBackend ();
 		}
 
+		static bool FallbackProbeDirectoryDotSvn (FilePath path)
+		{
+			while (!path.IsNullOrEmpty) {
+				if (Directory.Exists (path.Combine (".svn")))
+					return true;
+				path = path.ParentDirectory;
+			}
+			return false;
+		}
+
+		const string commandLineToolsSvn = "/Library/Developer/CommandLineTools/usr/lib/libsvn_client-1.0.dylib";
+		static Lazy<bool> IsDependentOnXcodeCLITools = new Lazy<bool> (
+			() => Platform.IsMac && Environment.Is64BitOperatingSystem && !File.Exists (commandLineToolsSvn)
+		);
+
+		bool macDisabled;
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
+			if (macDisabled)
+				return string.Empty;
+			
 			if (path.IsNullOrEmpty)
 				return string.Empty;
 
+			// For Mac 64bits, we need to have Xcode Command Line Tools installed.
+			if (IsDependentOnXcodeCLITools.Value) {
+				if (!FallbackProbeDirectoryDotSvn (path))
+					return string.Empty;
+
+				var button = new AlertButton (GettextCatalog.GetString ("Install"));
+				if (MessageService.AskQuestion (
+					GettextCatalog.GetString ("This solution may be using Subversion. Do you want to install Xcode Command Line Tools now?"),
+					BrandingService.BrandApplicationName (
+						GettextCatalog.GetString ("Xcode Command Line Tools are not currently installed, and are required to use Subversion.\nPlease restart MonoDevelop after the installation to enable Subversion support.")),
+					AlertButton.Cancel,
+					button) == button) {
+					var p = Process.Start ("xcode-select", "--install");
+					p.WaitForExit ();
+				}
+				macDisabled = true;
+				return string.Empty;
+			}
+			
 			if (Pre_1_7)
 				return base.GetDirectoryDotSvn (path);
 
