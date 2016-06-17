@@ -47,7 +47,8 @@ namespace MonoDevelop.PackageManagement
 				false,
 				false,
 				false,
-				pad);
+				pad,
+				true);
 
 			return new PackageManagementProgressMonitor (consoleMonitor, statusMonitor);
 		}
