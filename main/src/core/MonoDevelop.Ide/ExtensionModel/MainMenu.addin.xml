@@ -140,7 +140,7 @@
 	</ItemSet>
 	
 	<ItemSet id = "Search" _label = "_Search">
-	
+
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Find" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.Replace" />
 		<SeparatorItem id = "SearchSeparator1" />

@@ -784,6 +784,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			filter.Refilter ();
 		}
 
+		internal void SetFilter (bool showErrors, bool showWarnings, bool showMessages)
+		{
+			errorBtn.Active = showErrors;
+			warnBtn.Active = showWarnings;
+			msgBtn.Active = showMessages;
+		}
+
+
 		bool FilterTasks (TreeModel model, TreeIter iter)
 		{
 			bool canShow = false;

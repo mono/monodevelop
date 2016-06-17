@@ -93,6 +93,18 @@
 					_label = "Export C# Code Rules to a File" 
 					_description = "Generates an HTML file that contains a list of all code rules"
 					/>
+		<Command id = "MonoDevelop.Refactoring.AnalyzeWholeSolution"
+					defaultHandler = "MonoDevelop.Refactoring.AnalyzeWholeSolutionHandler"
+					_label = "_Whole Solution" 
+					/>
+		<Command id = "MonoDevelop.Refactoring.AnalyzeCurrentProject"
+					defaultHandler = "MonoDevelop.Refactoring.AnalyzeCurrentProjectHandler"
+					_label = "_Current Project" 
+					/>
+		<Command id = "MonoDevelop.Refactoring.AnalyzeSource"
+					defaultHandler = "MonoDevelop.Refactoring.AnalyzeSourceHandler"
+					_label = "_Analyze Source" 
+					/>
 		</Category>
 
 		<Category id="Hidden" _name="Hidden">
@@ -162,4 +174,19 @@
 	<Extension path = "/MonoDevelop/Refactoring/JumpToDeclarationHandler">
 		<Class id="MidStep" class="MonoDevelop.Refactoring.DummyJumpToDeclarationHandler" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<ItemSet 
+			id = "Analyze"
+			_label = "_Analyze">
+			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeWholeSolution" />
+			<CommandItem id = "MonoDevelop.Refactoring.AnalyzeCurrentProject" />
+		</ItemSet>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<CommandItem id = "MonoDevelop.Refactoring.AnalyzeSource" insertbefore="MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
+	</Extension>
+
+
 </ExtensionModel>
