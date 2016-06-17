@@ -482,7 +482,7 @@ namespace MonoDevelop.Projects
 					return evaluatedCompileItemsTask.Task.Result;
 				}
 
-				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0);
 				foreach (var dependTarget in dependsList) {
 					try {
 						// evaluate the Compile targets
