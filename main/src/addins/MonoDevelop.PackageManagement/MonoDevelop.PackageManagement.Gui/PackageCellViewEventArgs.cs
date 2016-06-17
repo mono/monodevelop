@@ -25,18 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class PackageCellViewEventArgs : EventArgs
 	{
-		public PackageCellViewEventArgs (PackageViewModel packageViewModel)
+		public PackageCellViewEventArgs (PackageSearchResultViewModel packageViewModel)
 		{
 			PackageViewModel = packageViewModel;
 		}
 
-		public PackageViewModel PackageViewModel { get; private set; }
+		public PackageSearchResultViewModel PackageViewModel { get; private set; }
 	}
 }
 

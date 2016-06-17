@@ -35,6 +35,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public static EnsureNuGetPackageBuildImportsTargetUpdater Updater;
 		public static NuGetPackageNewImportsHandler NewImportsHandler;
+		public static NuGetPackageForcedImportsRemover ForcedImportsRemover;
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
@@ -44,6 +45,11 @@ namespace MonoDevelop.PackageManagement
 
 		public void UpdateProject (MSBuildProject msproject)
 		{
+			NuGetPackageForcedImportsRemover importsRemover = ForcedImportsRemover;
+			if (importsRemover != null) {
+				importsRemover.UpdateProject (msproject);
+			}
+
 			EnsureNuGetPackageBuildImportsTargetUpdater currentUpdater = Updater;
 			if (currentUpdater != null) {
 				currentUpdater.UpdateProject (msproject);

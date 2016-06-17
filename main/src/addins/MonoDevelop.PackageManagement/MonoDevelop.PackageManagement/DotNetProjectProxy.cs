@@ -122,6 +122,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			DotNetProject.ReloadProjectBuilder ();
 		}
+
+		public void RefreshReferenceStatus ()
+		{
+			DotNetProject.RefreshReferenceStatus ();
+		}
 	}
 }
 

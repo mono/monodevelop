@@ -26,8 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -38,11 +36,5 @@ namespace MonoDevelop.PackageManagement
 			IPackagePathResolver pathResolver,
 			IFileSystem fileSystem,
 			IFileSystem configSettingsFileSystem);
-		
-		IRecentPackageRepository CreateRecentPackageRepository(
-			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository);
-		
-		IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories);
 	}
 }

@@ -48,7 +48,7 @@
 			_displayName="Update All Packages (Solution)"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
 		<Command
-			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
+			id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject"
 			_description="Retargets all packages"
 			_label="Re_target"
 			_displayName="Retarget All Packages"
@@ -85,7 +85,7 @@
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject" />
+				id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
@@ -159,4 +159,8 @@
 	<Extension path="/MonoDevelop/Refactoring/CodeDiagnosticProvider">
 		<Class class="MonoDevelop.PackageManagement.Refactoring.PackageCodeDiagnosticProvider" />
 	</Extension>-->
+
+	<Extension path="/MonoDevelop/Core/SystemInformation"> 
+		<Class class="MonoDevelop.PackageManagement.NuGetSystemInformation" /> 
+	</Extension>
 </ExtensionModel>

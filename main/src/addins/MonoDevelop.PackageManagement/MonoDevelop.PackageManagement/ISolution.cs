@@ -39,6 +39,7 @@ namespace MonoDevelop.PackageManagement
 		FilePath FileName { get; }
 
 		IEnumerable<IDotNetProject> GetAllProjects ();
+		bool Equals (ISolution solution);
 
 		event EventHandler<DotNetProjectEventArgs> ProjectAdded;
 		event EventHandler<DotNetProjectEventArgs> ProjectRemoved;

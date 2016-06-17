@@ -24,9 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -37,12 +35,12 @@ namespace MonoDevelop.PackageManagement
 		string packagesUpToDateWarningMessage;
 
 		public UpdatePackagesProgressMonitorStatusMessage (
-			IPackageManagementProject project,
+			IDotNetProject project,
 			string packagesUpToDateMessage,
 			string packagesUpToDateWarningMessage,
 			ProgressMonitorStatusMessage message)
 			: this (
-				new IPackageManagementProject [] { project },
+				new IDotNetProject [] { project },
 				packagesUpToDateMessage,
 				packagesUpToDateWarningMessage,
 				message)
@@ -50,7 +48,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public UpdatePackagesProgressMonitorStatusMessage (
-			IEnumerable<IPackageManagementProject> projects,
+			IEnumerable<IDotNetProject> projects,
 			string packagesUpToDateMessage,
 			string packagesUpToDateWarningMessage,
 			ProgressMonitorStatusMessage message)

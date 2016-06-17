@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Projects;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -38,7 +39,42 @@ namespace MonoDevelop.PackageManagement
 	/// </summary>
 	public interface IPackageManagementProjectOperations
 	{
+		/// <summary>
+		/// Installs NuGet packages into the selected project. If a NuGet package requires a license to be
+		/// accepted then a dialog will be displayed.
+		/// </summary>
+		/// <param name="packageSourceUrl">Package source URL.</param>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
 		void InstallPackages (string packageSourceUrl, Project project, IEnumerable<PackageManagementPackageReference> packages);
+
+		/// <summary>
+		/// Installs NuGet packages into the selected project.
+		/// </summary>
+		/// <param name="packageSourceUrl">Package source URL.</param>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		/// <param name="licensesAccepted">True if NuGet package licenses have already been accepted. If false then the 
+		/// license acceptance dialog will be displayed for any licences that require a license to be accepted.</param>
+		void InstallPackages (string packageSourceUrl, Project project, IEnumerable<PackageManagementPackageReference> packages, bool licensesAccepted);
+
+		/// <summary>
+		/// Installs NuGet packages into the selected project using the enabled package sources.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		void InstallPackages (Project project, IEnumerable<PackageManagementPackageReference> packages);
+
+		/// <summary>
+		/// Installs NuGet packages into the selected project. If a NuGet package requires a license to be
+		/// accepted then a dialog will be displayed.
+		/// </summary>
+		/// <returns>A task that can be used to determine when all the packages have been installed.</returns>
+		/// <param name="packageSourceUrl">Package source URL.</param>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		Task InstallPackagesAsync (string packageSourceUrl, Project project, IEnumerable<PackageManagementPackageReference> packages);
+
 		IEnumerable<PackageManagementPackageReference> GetInstalledPackages (Project project);
 
 		event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;

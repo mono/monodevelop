@@ -27,9 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -37,36 +36,43 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class BackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
-		static MonoDevelop.Core.Instrumentation.Counter InstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Installed", "Package Management", id:"PackageManagement.Package.Installed");
-		static MonoDevelop.Core.Instrumentation.Counter UninstallPackageCounter = MonoDevelop.Core.Instrumentation.InstrumentationService.CreateCounter ("Package Uninstalled", "Package Management", id:"PackageManagement.Package.Uninstalled");
-
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
-		IProgressProvider progressProvider;
-		List<InstallPackageAction> pendingInstallActions = new List<InstallPackageAction> ();
+		PackageManagementInstrumentationService instrumentationService;
+		List<IInstallNuGetPackageAction> pendingInstallActions = new List<IInstallNuGetPackageAction> ();
 		int runCount;
 
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents)
+			: this (
+				progressMonitorFactory,
+				packageManagementEvents,
+				new PackageManagementInstrumentationService ())
+		{
+		}
+
+		public BackgroundPackageActionRunner (
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			PackageManagementInstrumentationService instrumentationService)
 		{
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
-			this.progressProvider = progressProvider;
+			this.instrumentationService = instrumentationService;
 		}
 
 		public bool IsRunning {
 			get { return runCount > 0; }
 		}
 
-		public IEnumerable<InstallPackageAction> PendingInstallActions {
+		public IEnumerable<IInstallNuGetPackageAction> PendingInstallActions {
 			get { return pendingInstallActions; }
 		}
 
-		public IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project)
+		public IEnumerable<IInstallNuGetPackageAction> PendingInstallActionsForProject (DotNetProject project)
 		{
-			return pendingInstallActions.Where (action => action.Project.DotNetProject == project);
+			return pendingInstallActions.Where (action => action.IsForProject (project));
 		}
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
@@ -76,29 +82,47 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
+			Run (progressMessage, actions, null);
+		}
+
+		void Run (
+			ProgressMonitorStatusMessage progressMessage,
+			IEnumerable<IPackageAction> actions,
+			TaskCompletionSource<bool> taskCompletionSource)
+		{
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
 			runCount++;
 
 			List<IPackageAction> actionsList = actions.ToList ();
 			BackgroundDispatch (() => {
-				TryRunActionsWithProgressMonitor (progressMessage, actionsList);
+				TryRunActionsWithProgressMonitor (progressMessage, actionsList, taskCompletionSource);
 				actionsList = null;
 				progressMessage = null;
 			});
 		}
 
+		public Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
+		{
+			var taskCompletionSource = new TaskCompletionSource<bool> ();
+			Run (progressMessage, actions, taskCompletionSource);
+			return taskCompletionSource.Task;
+		}
+
 		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
 		{
-			foreach (InstallPackageAction action in actions.OfType<InstallPackageAction> ()) {
+			foreach (IInstallNuGetPackageAction action in actions.OfType<IInstallNuGetPackageAction> ()) {
 				pendingInstallActions.Add (action);
 			}
 		}
 
-		void TryRunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> actions)
+		void TryRunActionsWithProgressMonitor (
+			ProgressMonitorStatusMessage progressMessage,
+			IList<IPackageAction> actions,
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
 			try {
-				RunActionsWithProgressMonitor (progressMessage, actions);
+				RunActionsWithProgressMonitor (progressMessage, actions, taskCompletionSource);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
 			} finally {
@@ -106,10 +130,13 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
+		void RunActionsWithProgressMonitor (
+			ProgressMonitorStatusMessage progressMessage,
+			IList<IPackageAction> installPackageActions,
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
 			using (ProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
-				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (monitor)) {
+				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (monitor, taskCompletionSource)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
@@ -128,80 +155,31 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor)
+		PackageManagementEventsMonitor CreateEventMonitor (ProgressMonitor monitor, TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider);
+			return CreateEventMonitor (monitor, packageManagementEvents, taskCompletionSource);
 		}
 
 		protected virtual PackageManagementEventsMonitor CreateEventMonitor (
 			ProgressMonitor monitor,
 			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			TaskCompletionSource<bool> taskCompletionSource)
 		{
-			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, taskCompletionSource);
 		}
 
 		void RunActionsWithProgressMonitor (ProgressMonitor monitor, IList<IPackageAction> packageActions)
 		{
 			foreach (IPackageAction action in packageActions) {
-				action.Execute ();
-				InstrumentPackageAction (action);
+				action.Execute (monitor.CancellationToken);
+				instrumentationService.InstrumentPackageAction (action);
 				monitor.Step (1);
-			}
-		}
-
-		protected virtual void InstrumentPackageAction (IPackageAction action) 
-		{
-			try {
-				var addAction = action as InstallPackageAction;
-				if (addAction != null) {
-					InstrumentPackageOperations (addAction.Operations);
-					return;
-				}
-
-				var updateAction = action as UpdatePackageAction;
-				if (updateAction != null) {
-					InstrumentPackageOperations (updateAction.Operations);
-					return;
-				}
-
-				var removeAction = action as UninstallPackageAction;
-				if (removeAction != null) {
-					var metadata = new Dictionary<string, string> ();
-
-					metadata ["PackageId"] = removeAction.GetPackageId ();
-					var version = removeAction.GetPackageVersion ();
-					if (version != null)
-						metadata ["PackageVersion"] = version.ToString ();
-
-					UninstallPackageCounter.Inc (1, null, metadata);
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Instrumentation Failure in PackageManagement", ex);
-			}
-		}
-
-		static void InstrumentPackageOperations (IEnumerable<PackageOperation> operations)
-		{
-			foreach (var op in operations) {
-				var metadata = new Dictionary<string, string> ();
-				metadata ["PackageId"] = op.Package.Id;
-				metadata ["Package"] = op.Package.Id + " v" + op.Package.Version.ToString ();
-
-				switch (op.Action) {
-				case PackageAction.Install: 
-					InstallPackageCounter.Inc (1, null, metadata);
-					break;
-				case PackageAction.Uninstall:
-					UninstallPackageCounter.Inc (1, null, metadata);
-					break;
-				}
 			}
 		}
 
 		void RemoveInstallActions (IList<IPackageAction> installPackageActions)
 		{
-			foreach (InstallPackageAction action in installPackageActions.OfType <InstallPackageAction> ()) {
+			foreach (IInstallNuGetPackageAction action in installPackageActions.OfType<IInstallNuGetPackageAction> ()) {
 				pendingInstallActions.Remove (action);
 			}
 		}

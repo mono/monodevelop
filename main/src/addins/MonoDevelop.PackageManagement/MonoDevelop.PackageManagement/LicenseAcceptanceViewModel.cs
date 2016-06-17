@@ -26,22 +26,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class LicenseAcceptanceViewModel : ViewModelBase<LicenseAcceptanceViewModel>
 	{
 		IList<PackageLicenseViewModel> packages;
-		
-		public LicenseAcceptanceViewModel(IEnumerable<IPackage> packages)
+
+		public LicenseAcceptanceViewModel (IEnumerable<NuGetPackageLicense> packageLicenses)
 		{
-			this.packages = packages
-				.Select(p => new PackageLicenseViewModel(p))
-				.ToList();
+			packages = packageLicenses
+				.Select (p => new PackageLicenseViewModel (p))
+				.ToList ();
 		}
 		
 		public IEnumerable<PackageLicenseViewModel> Packages {

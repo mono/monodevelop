@@ -37,18 +37,18 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		SolutionPackageRepositoryPath repositoryPath;
 		FakeProject project;
-		TestablePackageManagementOptions options;
 		FakeSolution solution;
+		FakeSettingsProvider settingsProvider;
 		FakeSettings settings;
 
 		void CreateSolutionPackageRepositoryPath ()
 		{
-			repositoryPath = new SolutionPackageRepositoryPath (project, options);
+			repositoryPath = new SolutionPackageRepositoryPath (project, settingsProvider);
 		}
 
 		void CreateSolutionPackageRepositoryPath (ISolution solution)
 		{
-			repositoryPath = new SolutionPackageRepositoryPath (solution, options);
+			repositoryPath = new SolutionPackageRepositoryPath (solution, settingsProvider);
 		}
 
 		void CreateTestProject ()
@@ -61,10 +61,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			solution = new FakeSolution (fileName);
 		}
 
-		void CreateOptions ()
+		void CreateSettings ()
 		{
-			options = new TestablePackageManagementOptions ();
-			settings = options.FakeSettings;
+			settingsProvider = new FakeSettingsProvider ();
+			settings = settingsProvider.FakeSettings;
 		}
 
 		void SolutionNuGetConfigFileHasCustomPackagesPath (string fullPath)
@@ -75,16 +75,15 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void PackageRepositoryPath_ProjectAndSolutionHaveDifferentFolders_IsConfiguredPackagesFolderInsideSolutionFolder ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateTestProject ();
 			CreateSolution (@"d:\projects\MyProject\MySolution.sln");
 			solution.BaseDirectory = @"d:\projects\MyProject\".ToNativePath ();
 			project.ParentSolution = solution;
-			options.PackagesDirectory = "MyPackages";
 			CreateSolutionPackageRepositoryPath ();
 
 			string path = repositoryPath.PackageRepositoryPath;
-			string expectedPath = @"d:\projects\MyProject\MyPackages".ToNativePath ();
+			string expectedPath = @"d:\projects\MyProject\packages".ToNativePath ();
 
 			Assert.AreEqual (expectedPath, path);
 		}
@@ -92,41 +91,21 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void PackageRepositoryPath_PassSolutionToConstructor_IsConfiguredPackagesFolderInsideSolutionFolder ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
-			options.PackagesDirectory = "Packages";
 			CreateSolutionPackageRepositoryPath (solution);
 
 			string path = repositoryPath.PackageRepositoryPath;
-			string expectedPath = @"d:\projects\MySolution\Packages".ToNativePath ();
+			string expectedPath = @"d:\projects\MySolution\packages".ToNativePath ();
 
 			Assert.AreEqual (expectedPath, path);
 		}
 
 		[Test]
-		public void GetInstallPath_GetInstallPathForPackage_ReturnsPackagePathInsideSolutionPackagesRepository ()
-		{
-			CreateOptions ();
-			CreateSolution (@"d:\projects\Test\MySolution\MyProject.sln");
-			options.PackagesDirectory = "MyPackages";
-			CreateSolutionPackageRepositoryPath (solution);
-
-			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.2.1.40");
-
-			string installPath = repositoryPath.GetInstallPath (package);
-
-			string expectedInstallPath = 
-				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.2.1.40".ToNativePath ();
-
-			Assert.AreEqual (expectedInstallPath, installPath);
-		}
-
-		[Test]
 		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPath_OverriddenPathReturned ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
-			options.PackagesDirectory = "Packages";
 			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\Team\MyPackages");
 			CreateSolutionPackageRepositoryPath (solution);
 			string expectedPath = @"d:\Team\MyPackages".ToNativePath ();
@@ -139,9 +118,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPathAndPathContainsDotDots_OverriddenPathReturnedWithoutDotDots ()
 		{
-			CreateOptions ();
+			CreateSettings ();
 			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
-			options.PackagesDirectory = "Packages";
 			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\projects\MySolution\..\..\Team\MyPackages");
 			CreateSolutionPackageRepositoryPath (solution);
 			string expectedPath = @"d:\Team\MyPackages".ToNativePath ();

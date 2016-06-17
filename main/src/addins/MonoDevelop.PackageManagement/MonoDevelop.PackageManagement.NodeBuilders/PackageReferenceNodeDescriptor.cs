@@ -24,11 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
-using NuGet;
-using System.Runtime.Versioning;
+using NuGet.Frameworks;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -51,8 +50,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		[LocalizedCategory ("Package")]
 		[LocalizedDisplayName ("Version")]
 		[LocalizedDescription ("Package version.")]
-		public SemanticVersion Version {
-			get { return packageReferenceNode.Version; }
+		public string Version {
+			get { return packageReferenceNode.GetPackageDisplayVersion (); }
 		}
 
 		[LocalizedCategory ("Package")]
@@ -65,14 +64,14 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		[LocalizedCategory ("Package")]
 		[LocalizedDisplayName ("Target Framework")]
 		[LocalizedDescription ("Target framework for the Package.")]
-		public FrameworkName TargetFramework {
+		public NuGetFramework TargetFramework {
 			get { return packageReferenceNode.TargetFramework; }
 		}
 
 		[LocalizedCategory ("Package")]
 		[LocalizedDisplayName ("Version Constraint")]
 		[LocalizedDescription ("Version constraint for the Package.")]
-		public IVersionSpec VersionConstraint {
+		public VersionRange VersionConstraint {
 			get { return packageReferenceNode.VersionConstraint; }
 		}
 

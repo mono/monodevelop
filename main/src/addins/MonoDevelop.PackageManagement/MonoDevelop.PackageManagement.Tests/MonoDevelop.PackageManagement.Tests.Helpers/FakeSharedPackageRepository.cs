@@ -65,6 +65,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public Action BeforeGetPackagesAction = () => { };
+
+		public override IQueryable<IPackage> GetPackages ()
+		{
+			BeforeGetPackagesAction ();
+			return base.GetPackages ();
+	 	}
 	}
 }
 

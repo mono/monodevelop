@@ -35,17 +35,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableSolutionPackageRepository (
 			ISolution solution,
 			IMonoDevelopPackageRepositoryFactory repositoryFactory,
-			PackageManagementOptions options)
-			: base (solution, repositoryFactory, options)
+			ISettingsProvider settingsProvider)
+			: base (solution, repositoryFactory, settingsProvider)
 		{
 		}
 
 		public TestableLocalPackageRepository LocalPackageRepository = new TestableLocalPackageRepository ();
-
-		protected override LocalPackageRepository CreateLocalPackageRepository ()
-		{
-			return LocalPackageRepository;
-		}
 	}
 }
 

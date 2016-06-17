@@ -24,9 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.PackageManagement;
-using NuGet;
+using NuGet.Configuration;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -99,7 +98,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageSourceWithSourceUrl ("Test-url");
 			CreateViewModel (packageSource);
 
-			Assert.AreEqual ("Test-url", viewModel.SourceUrl);
+			Assert.AreEqual ("Test-url", viewModel.Source);
 		}
 
 		[Test]
@@ -107,9 +106,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreatePackageSourceWithSourceUrl ("source-url");
 			CreateViewModel (packageSource);
-			viewModel.SourceUrl = "changed";
+			viewModel.Source  = "changed";
 
-			Assert.AreEqual ("changed", viewModel.SourceUrl);
+			Assert.AreEqual ("changed", viewModel.Source);
 		}
 
 		[Test]

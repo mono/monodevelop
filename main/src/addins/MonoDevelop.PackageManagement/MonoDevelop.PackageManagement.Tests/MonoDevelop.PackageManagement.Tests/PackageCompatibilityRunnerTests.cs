@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.PackageManagement.Tests.Helpers;
@@ -42,12 +41,8 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		TestablePackageCompatibilityRunner runner;
 		FakeDotNetProject project;
-		FakePackageManagementSolution solution;
-		FakeRegisteredPackageRepositories registeredRepositories;
 		FakeProgressMonitorFactory progressMonitorFactory;
 		PackageManagementEvents packageManagementEvents;
-		PackageManagementProgressProvider progressProvider;
-		FakePackageRepositoryFactoryEvents repositoryFactoryEvents;
 		FakeProgressMonitor progressMonitor;
 
 		void CreateRunner ()
@@ -55,24 +50,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			project = new FakeDotNetProject (@"d:\projects\MyProject\MyProject.csproj");
 			project.Name = "MyProject";
 			project.TargetFrameworkMoniker = new TargetFrameworkMoniker ("4.5");
-			solution = new FakePackageManagementSolution ();
-			registeredRepositories = new FakeRegisteredPackageRepositories ();
 			progressMonitorFactory = new FakeProgressMonitorFactory ();
 			progressMonitor = progressMonitorFactory.ProgressMonitor;
 			packageManagementEvents = new PackageManagementEvents ();
 
-			repositoryFactoryEvents = new FakePackageRepositoryFactoryEvents ();
-			progressProvider = new PackageManagementProgressProvider (repositoryFactoryEvents, handler => {
-				handler.Invoke ();
-			});
-
 			runner = new TestablePackageCompatibilityRunner (
 				project,
-				solution,
-				registeredRepositories,
 				progressMonitorFactory,
-				packageManagementEvents,
-				progressProvider);
+				packageManagementEvents);
 		}
 
 		void Run ()
@@ -98,9 +83,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			package.AddFile (@"lib\net45\MyPackage.dll");
 			package.AddFile (@"lib\net40\MyPackage.dll");
 
-			FakePackageManagementProject packageManagementProject =
-				solution.AddFakeProjectToReturnFromGetProject (project.Name);
-			packageManagementProject.FakePackages.Add (package);
+			runner.PackageRepository.FakeSharedRepository.FakePackages.Add (package);
 
 			string xml = String.Format (
 				@"<packages>
@@ -119,29 +102,28 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void ProjectPackagesAreNotRestored ()
 		{
-			solution.FakeProjectsToReturnFromGetProject ["MyProject"].FakePackages.Clear ();
+			runner.PackageRepository.FakeSharedRepository.FakePackages.Clear ();
 		}
 
 		void ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework (string packageId)
 		{
 			ProjectHasOnePackageReferenceNeedingReinstall (packageId);
 
-			solution.FakeProjectsToReturnFromGetProject ["MyProject"].FakePackages [0].FilesList.Clear ();
+			runner.PackageRepository.FakeSharedRepository.FakePackages [0].FilesList.Clear ();
 		}
 
 		void ProjectHasOnePackageReferenceIncompatibleWithCurrentProjectTargetFramework (string packageId)
 		{
 			ProjectHasOnePackageReferenceNeedingReinstall (packageId);
 
-			FakePackage package = solution.FakeProjectsToReturnFromGetProject ["MyProject"].FakePackages [0];
+			FakePackage package = runner.PackageRepository.FakeSharedRepository.FakePackages [0];
 			package.FilesList.Clear ();
 			package.AddFile (@"lib\wp8\MyPackage.dll");
 		}
 
 		void FindPackageInProjectThrowsException (string errorMessage)
 		{
-			FakePackageManagementProject project = solution.FakeProjectsToReturnFromGetProject ["MyProject"];
-			project.FindPackageAction = packageId => {
+			runner.PackageRepository.FakeSharedRepository.BeforeGetPackagesAction = () => {
 				throw new Exception (errorMessage);
 			};
 		}

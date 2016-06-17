@@ -25,22 +25,19 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	class TestableMonoDevelopProjectSystem : MonoDevelopProjectSystem
+	class TestableMonoDevelopProjectSystem : MonoDevelopMSBuildNuGetProjectSystem
 	{
 		public string PathPassedToPhysicalFileSystemAddFile;
 		public Stream StreamPassedToPhysicalFileSystemAddFile;
-		public Action<Stream> ActionPassedToPhysicalFileSystemAddFile;
 		public FakeFileService FakeFileService;
 		public FakePackageManagementProjectService FakeProjectService;
 		public PackageManagementEvents PackageManagementEvents;
-		public FakeLogger FakeLogger;
 		public string FileNamePassedToLogDeletedFile;
 		public FileNameAndDirectory FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
 		public string DirectoryPassedToLogDeletedDirectory;
@@ -48,6 +45,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ReferenceAndProjectName ReferenceAndProjectNamePassedToLogRemovedReferenceFromProject;
 		public FileNameAndProjectName FileNameAndProjectNamePassedToLogAddedFileToProject;
 		public FakeNuGetPackageNewImportsHandler NewImportsHandler;
+		public FakeNuGetProjectContext FakeNuGetProjectContext;
 
 		public static Action<Action> GuiSyncDispatcher = handler => handler.Invoke ();
 		public static Func<Func<Task>,Task> GuiSyncDispatcherFunc = handler => handler.Invoke();
@@ -55,37 +53,28 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public TestableMonoDevelopProjectSystem (IDotNetProject project)
 			: this (
 				project,
+				new FakeNuGetProjectContext (),
 				new FakeFileService (project),
-				new FakePackageManagementProjectService (),
-				new PackageManagementEvents (),
-				new FakeLogger ())
+				new PackageManagementEvents ())
 		{
 		}
 
 		TestableMonoDevelopProjectSystem (
 			IDotNetProject project,
+			FakeNuGetProjectContext context,
 			IPackageManagementFileService fileService,
-			IPackageManagementProjectService projectService,
-			PackageManagementEvents packageManagementEvents,
-			FakeLogger logger)
-			: base (project, fileService, projectService, packageManagementEvents, GuiSyncDispatcher, GuiSyncDispatcherFunc)
+			PackageManagementEvents packageManagementEvents)
+			: base (project, context, fileService, packageManagementEvents, GuiSyncDispatcher, GuiSyncDispatcherFunc)
 		{
+			FakeNuGetProjectContext = context;
 			FakeFileService = (FakeFileService)fileService;
-			FakeProjectService = (FakePackageManagementProjectService)projectService;
 			PackageManagementEvents = packageManagementEvents;
-			Logger = logger;
 		}
 
 		protected override void PhysicalFileSystemAddFile (string path, Stream stream)
 		{
 			PathPassedToPhysicalFileSystemAddFile = path;
 			StreamPassedToPhysicalFileSystemAddFile = stream;
-		}
-
-		protected override void PhysicalFileSystemAddFile (string path, Action<Stream> writeToStream)
-		{
-			PathPassedToPhysicalFileSystemAddFile = path;
-			ActionPassedToPhysicalFileSystemAddFile = writeToStream;
 		}
 
 		protected override void LogDeletedFile (string fileName)
@@ -98,9 +87,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FileNameAndDirectoryPassedToLogDeletedFileFromDirectory = new FileNameAndDirectory (fileName, directory);
 		}
 
-		protected override void LogDeletedDirectory (string directory)
+		protected override void LogDeletedDirectory (string folder)
 		{
-			DirectoryPassedToLogDeletedDirectory = directory;
+			DirectoryPassedToLogDeletedDirectory = folder;
 		}
 
 		protected override void LogAddedReferenceToProject (string referenceName, string projectName)
@@ -125,6 +114,40 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			NewImportsHandler = new FakeNuGetPackageNewImportsHandler ();
 			return NewImportsHandler;
+		}
+
+		Dictionary<string, IEnumerable<string>> enumeratedDirectories = new Dictionary<string, IEnumerable<string>> ();
+
+		public void AddDirectoriesForPath (string path, params string[] directories)
+		{
+			enumeratedDirectories[path] = directories;
+		}
+
+		protected override IEnumerable<string> EnumerateDirectories (string path)
+		{
+			IEnumerable<string> directories;
+			if (enumeratedDirectories.TryGetValue (path, out directories)) {
+				return directories;
+			}
+			return new string[0];
+		}
+
+		Dictionary<string, IEnumerable<string>> enumeratedFiles = new Dictionary<string, IEnumerable<string>> ();
+
+		public void AddFilesForPath (string path, string searchPattern, SearchOption searchOption, params string[] files)
+		{
+			string key = path + searchPattern + searchOption.ToString ();
+			enumeratedFiles[key] = files;
+		}
+
+		protected override IEnumerable<string> EnumerateFiles (string path, string searchPattern, SearchOption searchOption)
+		{
+			IEnumerable<string> files;
+			string key = path + searchPattern + searchOption.ToString ();
+			if (enumeratedFiles.TryGetValue (key, out files)) {
+				return files;
+			}
+			return new string[0];
 		}
 	}
 }

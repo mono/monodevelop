@@ -24,12 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
-using NuGet;
+using NuGet.Configuration;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -39,35 +36,30 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		RegisteredPackageSourcesViewModel viewModel;
 		List<string> propertiesChanged;
-		RegisteredPackageSources packageSources;
-		RegisteredPackageRepositories registeredRepositories;
+		FakePackageSourceProvider packageSourceProvider;
+		List<PackageSource> packageSources;
 
 		void CreateViewModel ()
 		{
-			var options = new TestablePackageManagementOptions ();
-			packageSources = options.PackageSources;
-			packageSources.Clear ();
-
-			var cache = new PackageRepositoryCache (packageSources, new RecentPackageInfo [0]);
-			registeredRepositories = new RegisteredPackageRepositories (cache, options);
-
-			viewModel = new RegisteredPackageSourcesViewModel (registeredRepositories);
+			packageSourceProvider = new FakePackageSourceProvider ();
+			packageSources = packageSourceProvider.PackageSources;
+			viewModel = new RegisteredPackageSourcesViewModel (packageSourceProvider, new FolderBrowser ());
 		}
 
 		void CreateViewModelWithOnePackageSource ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Source 1", "http://url1");
+			AddPackageSourceToProvider ("Source 1", "http://url1");
 		}
 
 		void CreateViewModelWithTwoPackageSources ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Source 1", "http://url1");
-			AddPackageSourceToOptions ("Source 2", "http://url2");
+			AddPackageSourceToProvider ("Source 1", "http://url1");
+			AddPackageSourceToProvider ("Source 2", "http://url2");
 		}
 
-		void AddPackageSourceToOptions (string name, string url)
+		void AddPackageSourceToProvider (string name, string url)
 		{
 			var source = new PackageSource (url, name);
 			packageSources.Add (source);
@@ -127,12 +119,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Load_PackageSourceModifiedAfterLoadAndSaveNotCalled_RegisteredPackageSourcesInOptionsUnchanged ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Test", "http://monodevelop.com");
+			AddPackageSourceToProvider ("Test", "http://monodevelop.com");
 			viewModel.Load ();
 
 			PackageSourceViewModel packageSourceViewModel = viewModel.PackageSourceViewModels [0];
 			packageSourceViewModel.Name = "Changed-Name";
-			packageSourceViewModel.SourceUrl = "changed-url";
+			packageSourceViewModel.Source  = "changed-url";
 
 			var expectedSources = new PackageSource[] {
 				new PackageSource ("http://monodevelop.com", "Test")
@@ -145,12 +137,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Save_PackageSourceModifiedAfterLoad_RegisteredPackageSourcesInOptionsUpdated ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Test", "http://monodevelop.com");
+			AddPackageSourceToProvider ("Test", "http://monodevelop.com");
 			viewModel.Load ();
 
 			PackageSourceViewModel packageSourceViewModel = viewModel.PackageSourceViewModels [0];
 			packageSourceViewModel.Name = "Test-updated";
-			packageSourceViewModel.SourceUrl = "url-updated";
+			packageSourceViewModel.Source  = "url-updated";
 
 			viewModel.Save ();
 
@@ -165,7 +157,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Save_OnePackageSourceAddedAfterLoadAndBeforeSave_TwoRegisteredPackageSourcesInOptions ()
 		{
 			CreateViewModel ();
-			AddPackageSourceToOptions ("Test", "http://monodevelop.com/1");
+			AddPackageSourceToProvider ("Test", "http://monodevelop.com/1");
 			viewModel.Load ();
 
 			var newSource = new PackageSource ("http://monodevelop.com/2", "Test");
@@ -191,7 +183,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateViewModel ();
 			viewModel.Load ();
 			viewModel.NewPackageSourceName = "Test";
-			viewModel.NewPackageSourceUrl = "http://monodevelop.com";
+			viewModel.NewPackageSourceUrl  = "http://monodevelop.com";
 
 			viewModel.AddPackageSourceCommand.Execute (null);
 
@@ -208,7 +200,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateViewModel ();
 			viewModel.Load ();
 			viewModel.NewPackageSourceName = "Test";
-			viewModel.NewPackageSourceUrl = null;
+			viewModel.NewPackageSourceUrl  = null;
 
 			bool result = viewModel.AddPackageSourceCommand.CanExecute (null);
 
@@ -221,7 +213,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateViewModel ();
 			viewModel.Load ();
 			viewModel.NewPackageSourceName = "Test";
-			viewModel.NewPackageSourceUrl = "http://codeplex.com";
+			viewModel.NewPackageSourceUrl  = "http://codeplex.com";
 
 			bool result = viewModel.AddPackageSourceCommand.CanExecute (null);
 
@@ -234,7 +226,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateViewModel ();
 			viewModel.Load ();
 			viewModel.NewPackageSourceName = null;
-			viewModel.NewPackageSourceUrl = "http://codeplex.com";
+			viewModel.NewPackageSourceUrl  = "http://codeplex.com";
 
 			bool result = viewModel.AddPackageSourceCommand.CanExecute (null);
 
@@ -246,7 +238,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateViewModel ();
 			viewModel.Load ();
-			viewModel.NewPackageSourceUrl = "http://url";
+			viewModel.NewPackageSourceUrl  = "http://url";
 			viewModel.NewPackageSourceName = "abc";
 
 			viewModel.AddPackageSource ();
@@ -271,7 +263,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateViewModel ();
 			viewModel.Load ();
-			viewModel.NewPackageSourceUrl = "Test";
+			viewModel.NewPackageSourceUrl  = "Test";
 
 			Assert.AreEqual ("Test", viewModel.NewPackageSourceUrl);
 		}
@@ -523,6 +515,42 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.AddPackageSource ();
 
 			Assert.IsTrue (propertyNames.Contains ("SelectedPackageSourceViewModel"));
+		}
+
+		[Test]
+		public void AddPackageSource_NewPackageSourceHasEmptyStringPassword_DoesNotThrowCryptographicExceptionAndNewPackageSourceAddedWithNullPassword ()
+		{
+			CreateViewModel ();
+			viewModel.Load ();
+			viewModel.NewPackageSourceUrl  = "http://url";
+			viewModel.NewPackageSourceName = "abc";
+			viewModel.NewPackageSourcePassword = "";
+
+			Assert.DoesNotThrow (() => viewModel.AddPackageSource ());
+
+			PackageSourceViewModel expectedViewModel = viewModel.PackageSourceViewModels [0];
+
+			Assert.IsNull (expectedViewModel.Password);
+			Assert.AreEqual ("abc", expectedViewModel.Name);
+			Assert.AreEqual ("http://url", expectedViewModel.Source);
+		}
+
+		[Test]
+		public void AddPackageSource_NewPackageSourceHasPassword_DoesNotThrowCryptographicExceptionAndNewPackageSourceAddedWithPassword ()
+		{
+			CreateViewModel ();
+			viewModel.Load ();
+			viewModel.NewPackageSourceUrl  = "http://url";
+			viewModel.NewPackageSourceName = "abc";
+			viewModel.NewPackageSourcePassword = "test";
+
+			Assert.DoesNotThrow (() => viewModel.AddPackageSource ());
+
+			PackageSourceViewModel expectedViewModel = viewModel.PackageSourceViewModels [0];
+
+			Assert.AreEqual ("test", expectedViewModel.Password);
+			Assert.AreEqual ("abc", expectedViewModel.Name);
+			Assert.AreEqual ("http://url", expectedViewModel.Source);
 		}
 	}
 }

@@ -54,12 +54,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public const string PackageSourcesSectionName = "packageSources";
 		public const string DisabledPackageSourcesSectionName = "disabledPackageSources";
+		public const string ActivePackageSourceSectionName = "activePackageSource";
 		public const string ConfigSectionName = "config";
 
 		public FakeSettings ()
 		{
 			Sections.Add (PackageSourcesSectionName, PackageSources);
-			Sections.Add (RegisteredPackageSourceSettings.ActivePackageSourceSectionName, ActivePackageSourceSettings);
+			Sections.Add (ActivePackageSourceSectionName, ActivePackageSourceSettings);
 			Sections.Add (DisabledPackageSourcesSectionName, DisabledPackageSources);
 		}
 
@@ -94,7 +95,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public SettingValue GetValuePassedToSetValueForActivePackageSourceSection ()
 		{
-			return SavedSectionValues [RegisteredPackageSourceSettings.ActivePackageSourceSectionName];
+			return SavedSectionValues [ActivePackageSourceSectionName];
 		}
 
 		public void SetValues (string section, IList<SettingValue> values)
@@ -138,7 +139,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool IsActivePackageSourceSectionDeleted {
 			get {
-				return SectionsDeleted.Contains (RegisteredPackageSourceSettings.ActivePackageSourceSectionName);
+				return SectionsDeleted.Contains (ActivePackageSourceSectionName);
 			}
 		}
 
@@ -151,8 +152,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void MakeActivePackageSourceSectionNull ()
 		{
-			Sections.Remove (RegisteredPackageSourceSettings.ActivePackageSourceSectionName);
-			Sections.Add (RegisteredPackageSourceSettings.ActivePackageSourceSectionName, null);
+			Sections.Remove (ActivePackageSourceSectionName);
+			Sections.Add (ActivePackageSourceSectionName, null);
 		}
 
 		public void MakePackageSourceSectionsNull ()

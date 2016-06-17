@@ -25,7 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement.NodeBuilders;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -35,6 +40,62 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			var runner = new AddPackagesDialogRunner ();
 			runner.Run ();
+		}
+
+		[CommandUpdateHandler (PackagesFolderNodeCommands.ReinstallAllPackagesInProject)]
+		void UpdateReinstallPackages (CommandInfo info)
+		{
+			var packagesFolderNode = (ProjectPackagesFolderNode)CurrentNode.DataItem;
+			info.Visible = packagesFolderNode.AnyPackageReferencesRequiringReinstallation ();
+		}
+
+		[CommandHandler (PackagesFolderNodeCommands.ReinstallAllPackagesInProject)]
+		public void ReinstallPackages ()
+		{
+			try {
+				var packagesFolderNode = (ProjectPackagesFolderNode)CurrentNode.DataItem;
+				List<ReinstallNuGetPackageAction> reinstallActions = CreateReinstallActions (packagesFolderNode).ToList ();
+				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (reinstallActions);
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, reinstallActions);
+			} catch (Exception ex) {
+				ShowStatusBarError (ex);
+			}
+		}
+
+		IEnumerable<ReinstallNuGetPackageAction> CreateReinstallActions (ProjectPackagesFolderNode packagesFolderNode)
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packagesFolderNode.Project.ParentSolution);
+
+			return packagesFolderNode.GetPackageReferencesNodes ()
+				.Select (packageReferenceNode => CreateReinstallPackageAction (packageReferenceNode, solutionManager));
+		}
+
+		ReinstallNuGetPackageAction CreateReinstallPackageAction (
+			PackageReferenceNode packageReference,
+			IMonoDevelopSolutionManager solutionManager)
+		{
+			var action = new ReinstallNuGetPackageAction (
+				packageReference.Project,
+				solutionManager);
+
+			action.PackageId = packageReference.Id;
+			action.Version = packageReference.Version;
+
+			return action;
+		}
+
+		ProgressMonitorStatusMessage CreateProgressMessage (IEnumerable<ReinstallNuGetPackageAction> actions)
+		{
+			if (actions.Count () == 1) {
+				return ProgressMonitorStatusMessageFactory.CreateRetargetingSinglePackageMessage (actions.First ().PackageId);
+			}
+			return ProgressMonitorStatusMessageFactory.CreateRetargetingPackagesInProjectMessage (actions.Count ());
+		}
+
+		void ShowStatusBarError (Exception ex)
+		{
+			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRetargetingPackagesInProjectMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.ShowError (message, ex);
 		}
 	}
 }

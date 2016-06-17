@@ -24,10 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using MonoDevelop.PackageManagement.NodeBuilders;
-using NuGet;
+using NuGet.Packaging;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -35,8 +37,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestableProjectPackagesFolderNode (
 			IDotNetProject project,
-			IUpdatedPackagesInSolution updatedPackagesInSolution)
-			: base (project, updatedPackagesInSolution)
+			IUpdatedNuGetPackagesInWorkspace updatedPackagesInWorkspace)
+			: base (project, updatedPackagesInWorkspace, false)
 		{
 		}
 
@@ -49,9 +51,23 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public List<PackageReference> PackageReferencesWithPackageInstalled = new List<PackageReference> ();
 
-		protected override bool IsPackageInstalled (PackageReference reference)
+		public override bool IsPackageInstalled (PackageReference reference)
 		{
 			return PackageReferencesWithPackageInstalled.Contains (reference);
+		}
+
+		public TaskCompletionSource<bool> RefreshTaskCompletionSource;
+
+		protected override Task<IEnumerable<PackageReference>> GetInstalledPackagesAsync (CancellationTokenSource tokenSource)
+		{
+			RefreshTaskCompletionSource = new TaskCompletionSource<bool> ();
+			return Task.FromResult (PackageReferences.AsEnumerable ());
+		}
+
+		protected override void OnInstalledPackagesRead (Task<IEnumerable<PackageReference>> task, CancellationTokenSource tokenSource)
+		{
+			base.OnInstalledPackagesRead (task, tokenSource);
+			RefreshTaskCompletionSource.SetResult (true);
 		}
 	}
 }
