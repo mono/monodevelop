@@ -272,10 +272,10 @@ namespace MonoDevelop.Debugger
 						int YOffset = (cell_area.Height - h) / 2;
 						if (((ObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
 							YOffset += 1;
-						window.DrawLayoutWithColors (widget.Style.TextGC (StateType.Normal),
-							cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
-							cell_area.Y + YOffset,
-							layout, Styles.ObjectValueTreeValuesButtonText.ToGdkColor(), Styles.ObjectValueTreeValuesButtonBackground.ToGdkColor());
+						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
+						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
+								   cell_area.Y + YOffset);
+						cr.ShowLayout (layout);
 					}
 				}
 			}
