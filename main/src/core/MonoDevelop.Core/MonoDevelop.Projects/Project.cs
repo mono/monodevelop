@@ -482,25 +482,23 @@ namespace MonoDevelop.Projects
 					return evaluatedCompileItemsTask.Task.Result;
 				}
 
-				var dependsList = coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0);
-				foreach (var dependTarget in dependsList) {
-					try {
-						// evaluate the Compile targets
-						var ctx = new TargetEvaluationContext ();
-						ctx.ItemsToEvaluate.Add ("Compile");
+				var dependsList = string.Join (";", coreCompileDependsOn.Split (new [] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()).Where (s => s.Length > 0));
+				try {
+					// evaluate the Compile targets
+					var ctx = new TargetEvaluationContext ();
+					ctx.ItemsToEvaluate.Add ("Compile");
 
-						var evalResult = await this.RunTarget (monitor, dependTarget, configuration, ctx);
-						if (evalResult != null && !evalResult.BuildResult.HasErrors) {
-							var evalItems = evalResult
-								.Items
-								.Select (i => CreateProjectFile (i))
-								.ToList ();
+					var evalResult = await this.RunTarget (monitor, dependsList, configuration, ctx);
+					if (evalResult != null && !evalResult.BuildResult.HasErrors) {
+						var evalItems = evalResult
+							.Items
+							.Select (i => CreateProjectFile (i))
+							.ToList ();
 
-							result.AddRange (evalItems);
-						}
-					} catch (Exception ex) {
-						LoggingService.LogInternalError (string.Format ("Error running target {0}", dependTarget), ex);
+						result.AddRange (evalItems);
 					}
+				} catch (Exception ex) {
+					LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
 				}
 				evaluatedCompileItemsTask.SetResult (result.ToArray ());
 			}
@@ -1041,8 +1039,14 @@ namespace MonoDevelop.Projects
 					else
 						builder.Lock ();
 
+					string [] targets;
+					if (target.IndexOf (';') != -1)
+						targets = target.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+					else
+						targets = new string [] { target };
+					
 					try {
-						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new [] { target }, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
+						result = await builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken);
 					} finally {
 						builder.Unlock ();
 						builder.ReleaseReference ();
