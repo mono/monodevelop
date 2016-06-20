@@ -3,6 +3,7 @@
 open System
 open NUnit.Framework
 open MonoDevelop.FSharp
+open MonoDevelop.FSharp.Completion
 open Mono.TextEditor
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.CodeCompletion
@@ -143,3 +144,23 @@ type ``Completion Tests``() =
         results |> should contain "Test"
         results |> should contain "TestCase"
         results |> shouldnot contain "Array"
+
+    [<TestCase("#r @\"c:\some\path", @"c:\some\path")>]
+    [<TestCase("#r \"some/path", "some/path")>]
+    [<TestCase(@"#r ""c:\\some\\path", @"c:\some\path")>]
+    member x.``Accepts path completions``(input, expected) =
+        let doc = TestHelpers.createDoc input "defined"
+       
+        let completionContext =  {
+            completionChar = 'x'
+            lineToCaret = input
+            line = 0
+            column = 0
+            editor = doc.Editor
+            triggerOffset = 0
+            ctrlSpace = true
+            documentContext = doc
+        }
+        match completionContext with
+        | FilePath(_,path) -> path |> should equal expected
+        | _ -> Assert.Fail "Did not match path"
