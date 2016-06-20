@@ -205,6 +205,8 @@ module Lexer =
                         Some t1.LeftColumn
                | {Kind = Ident; Token = t} :: _ ->
                    Some t.LeftColumn
+               | {Kind = SymbolKind.Other; Token = t} :: _ when t.TokenName = "HASH" ->
+                   Some t.LeftColumn
                | _ :: _ | [] ->
                    None
             let decreasingTokens =
@@ -216,6 +218,13 @@ module Lexer =
 
             match decreasingTokens with
             | [] -> None
+            | [only] when only.Token.TokenName = "HASH" ->
+                Some 
+                 { Kind = SymbolKind.Other
+                   Line = line
+                   LeftColumn = only.Token.LeftColumn
+                   RightColumn = only.Token.RightColumn
+                   Text = lineStr }
             | first :: _ ->
                 tryFindStartColumn decreasingTokens
                 |> Option.map (fun leftCol ->
