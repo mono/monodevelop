@@ -729,7 +729,7 @@ namespace MonoDevelop.CSharp.Completion
 		public async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, bool force, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
-			if (!force && completionChar != '(' && completionChar != ',')
+			if (!force && completionChar != '(' && completionChar != '<' && completionChar != '[' && completionChar != ',')
 				return null;
 			if (Editor.EditMode != EditMode.Edit)
 				return null;
