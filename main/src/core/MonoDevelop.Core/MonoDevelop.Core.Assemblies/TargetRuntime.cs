@@ -230,22 +230,6 @@ namespace MonoDevelop.Core.Assemblies
 		/// </returns>
 		public virtual Process ExecuteAssembly (ProcessStartInfo pinfo, TargetFramework fx)
 		{
-			if (fx == null) {
-				TargetFrameworkMoniker fxId = Runtime.SystemAssemblyService.GetTargetFrameworkForAssembly (this, pinfo.FileName);
-				fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);
-				if (!IsInstalled (fx)) {
-					// Look for a compatible framework which is installed
-					foreach (TargetFramework f in Runtime.SystemAssemblyService.GetTargetFrameworks ()) {
-						if (IsInstalled (f) && f.CanReferenceAssembliesTargetingFramework (fx)) {
-							fx = f;
-							break;
-						}
-					}
-				}
-				if (!IsInstalled (fx))
-					throw new InvalidOperationException (string.Format ("No compatible framework found for assembly '{0}' (required framework: {1})", pinfo.FileName, fxId));
-			}
-			
 			ConvertAssemblyProcessStartInfo (pinfo);
 			return Process.Start (pinfo);
 		}
