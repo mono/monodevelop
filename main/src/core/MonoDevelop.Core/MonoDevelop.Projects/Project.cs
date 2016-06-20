@@ -489,7 +489,7 @@ namespace MonoDevelop.Projects
 					ctx.ItemsToEvaluate.Add ("Compile");
 
 					var evalResult = await this.RunTarget (monitor, dependsList, configuration, ctx);
-					if (evalResult != null && !evalResult.BuildResult.HasErrors) {
+					if (evalResult != null && !evalResult.BuildResult.HasErrors && evalResult.Items != null) {
 						var evalItems = evalResult
 							.Items
 							.Select (i => CreateProjectFile (i))
