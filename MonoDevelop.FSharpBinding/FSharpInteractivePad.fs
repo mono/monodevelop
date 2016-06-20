@@ -185,9 +185,12 @@ type FSharpInteractivePad() =
         editor.InsertAtCaret (nonBreakingSpace + t)
         editor.ScrollTo editor.CaretLocation
 
+    let input = new ResizeArray<_>()
+
     let setupSession() =
         try
             let ses = InteractiveSession()
+            input.Clear()
             promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
@@ -223,6 +226,8 @@ type FSharpInteractivePad() =
     let setCaretLine (s: string) =
         let line = editor.GetLineByOffset editor.CaretOffset
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
+
+    
     
     let resetFsi intent =
         if promptReceived then
@@ -230,7 +235,6 @@ type FSharpInteractivePad() =
             session |> Option.iter (fun ses -> ses.Kill())
             if intent = Restart then session <- setupSession()
 
-    let input = new ResizeArray<_>()
     member x.Text =
         editor.Text
 
