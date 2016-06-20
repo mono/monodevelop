@@ -795,6 +795,32 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task FlavorLoadExtendedProperties_InitialEmptyGroup ()
+		{
+			// Check that data load works when it is not defined in the main group
+			// Test for BXC 41774.
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-data-empty-group.myproj");
+
+			var tn = new MyEmptyProjectTypeNode ();
+			var fn = new CustomItemNode<FlavorWithData> ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			WorkspaceObject.RegisterCustomExtension (fn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyEmptyProject> (p);
+				var mp = (MyEmptyProject)p;
+
+				var f = mp.GetFlavor<FlavorWithData> ();
+				Assert.NotNull (f.Data);
+				Assert.AreEqual (f.Data.Foo, "bar");
+				Assert.AreEqual (f.SimpleData, "Test");
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
 		public async Task FlavorLoadSaveExtendedPropertiesWithUnknownProperty ()
 		{
 			// Unknown data should be kept in the file

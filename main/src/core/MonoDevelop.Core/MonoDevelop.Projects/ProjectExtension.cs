@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects
 		internal protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			next.OnReadProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, GetType (), true);
+			msproject.EvaluatedProperties.ReadObjectProperties (this, GetType (), true);
 			msproject.ReadExternalProjectProperties (this, GetType (), true);
 		}
 
