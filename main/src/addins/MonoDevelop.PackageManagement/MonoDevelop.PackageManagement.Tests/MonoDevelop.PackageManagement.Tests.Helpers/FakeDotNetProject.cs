@@ -127,6 +127,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 		}
 
+		public event EventHandler Saved;
+
+		public void RaiseSavedEvent ()
+		{
+			if (Saved != null) {
+				Saved (this, new EventArgs ());
+			}
+		}
+
 		public Func<IDotNetProject, bool> EqualsAction;
 
 		void CreateEqualsAction ()
