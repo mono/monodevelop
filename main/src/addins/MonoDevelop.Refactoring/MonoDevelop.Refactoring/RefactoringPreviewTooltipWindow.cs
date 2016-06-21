@@ -148,10 +148,11 @@ namespace MonoDevelop.Refactoring
 			DiffHunk item;
 			int remStart;
 			int insStart;
+			int distance = 0;
 			do {
 				item = qh.Dequeue ();
-				remStart = System.Math.Max (1, item.RemoveStart - item.Context);
-				insStart = System.Math.Max (1, item.InsertStart - item.Context);
+				remStart = System.Math.Max (1, item.RemoveStart - (distance != 0 ? distance : item.Context));
+				insStart = System.Math.Max (1, item.InsertStart - (distance != 0 ? distance : item.Context));
 
 				for (int i = System.Math.Min (remStart, insStart); i < item.RemoveStart; i++) {
 					MeasureLine (editor, i, ref x, ref y);
@@ -164,6 +165,9 @@ namespace MonoDevelop.Refactoring
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
 					MeasureLine ( changedDocument, i, ref x, ref y);
 				}
+
+				if (qh.Count != 0)
+					distance = item.DistanceTo (qh.Peek ());
 			} while (qh.Count != 0);
 
 			int remEnd = System.Math.Min (baseDocument.LineCount, item.RemoveStart + item.Removed + item.Context);
@@ -243,11 +247,12 @@ namespace MonoDevelop.Refactoring
 			DiffHunk item;
 			int remStart;
 			int insStart;
+			int distance = 0;
 
 			do {
 				item = qh.Dequeue ();
-				remStart = System.Math.Max (1, item.RemoveStart - item.Context);
-				insStart = System.Math.Max (1, item.InsertStart - item.Context);
+				remStart = System.Math.Max (1, item.RemoveStart - (distance != 0 ? distance : item.Context));
+				insStart = System.Math.Max (1, item.InsertStart - (distance != 0 ? distance : item.Context));
 
 				for (int i = System.Math.Min (remStart, insStart); i < item.RemoveStart; i++) {
 					DrawLine (g, editor, i, ref y);
@@ -268,6 +273,9 @@ namespace MonoDevelop.Refactoring
 					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffAddedd.Foreground);
 					DrawTextLine (g, changedDocument, i, ref y);
 				}
+
+				if (qh.Count != 0)
+					distance = item.DistanceTo (qh.Peek ());
 			} while (qh.Count != 0);
 
 			int remEnd = System.Math.Min (baseDocument.LineCount, item.RemoveStart + item.Removed + item.Context);
