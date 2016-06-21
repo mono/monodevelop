@@ -126,11 +126,6 @@ namespace MonoDevelop.CSharp
 				foreach (var arg in attr.ConstructorArguments) {
 					if (sb.Length > 0)
 						sb.Append (", ");
-//					var cr = arg as ConversionResolveResult;
-//					if (cr != arg.Value) {
-//						AppendConstant (sb, cr.Input.ConstantValue);
-//						continue;
-//					}
 					AppendConstant (sb, arg.Value);
 				}
 				return sb.ToString ();
