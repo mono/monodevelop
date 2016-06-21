@@ -74,6 +74,9 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			RealSelectorView = new PathSelectorView (new CGRect (6, 0, 1, 1));
 			RealSelectorView.UnregisterDraggedTypes ();
 			AddSubview (RealSelectorView);
+
+			// Disguise this NSButton as a group
+			AccessibilityRole = NSAccessibilityRoles.GroupRole;
 		}
 
 		public override CGSize SizeThatFits (CGSize size)
