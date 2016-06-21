@@ -39,6 +39,7 @@ using ICSharpCode.NRefactory6.CSharp;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp
 {
@@ -123,12 +124,36 @@ namespace MonoDevelop.CSharp
 			static string BuildArguments (AttributeData attr)
 			{
 				var sb = new StringBuilder ();
-				foreach (var arg in attr.ConstructorArguments) {
-					if (sb.Length > 0)
+				ImmutableArray<TypedConstant> args;
+				if (attr.ConstructorArguments.Length == 1 && attr.ConstructorArguments [0].Kind == TypedConstantKind.Array)
+					args = attr.ConstructorArguments [0].Values;
+				else
+					args = attr.ConstructorArguments;
+
+				for (int i = 0; i < args.Length; i++)
+				{
+					if (i > 0)
 						sb.Append (", ");
-					AppendConstant (sb, arg.Value);
+
+					AddArgument (args [i], sb);
 				}
 				return sb.ToString ();
+			}
+
+			static void AddArgument(TypedConstant arg, StringBuilder sb)
+			{
+				if (arg.Kind == TypedConstantKind.Array) {
+					sb.Append ("[");
+					for (int i = 0; i < arg.Values.Length; i++)
+					{
+						if (i > 0)
+							sb.Append (", ");
+						
+						AddArgument (arg.Values [i], sb);
+					}
+					sb.Append ("]");
+				} else
+					AppendConstant (sb, arg.Value);
 			}
 
 			public override void VisitMethodDeclaration (MethodDeclarationSyntax node)
