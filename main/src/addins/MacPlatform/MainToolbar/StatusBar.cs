@@ -992,6 +992,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			cts = source;
 
 			bool willHide = cts == null;
+			cancelButton.ToolTip = willHide ? string.Empty : GettextCatalog.GetString ("Cancel operation");
 			if (cancelButton.Hidden != willHide) {
 				cancelButton.Hidden = willHide;
 				RepositionStatusIcons ();
