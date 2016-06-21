@@ -26,20 +26,16 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
 using System.Linq;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class ProjectTargetFrameworkMonitor
 	{
-		IPackageManagementProjectService projectService;
 		List<MonitoredSolution> monitoredSolutions = new List<MonitoredSolution> ();
 
 		public ProjectTargetFrameworkMonitor (IPackageManagementProjectService projectService)
 		{
-			this.projectService = projectService;
-
 			projectService.SolutionLoaded += SolutionLoaded;
 			projectService.SolutionUnloaded += SolutionUnloaded;
 			projectService.ProjectReloaded += ProjectReloaded;
@@ -63,6 +59,7 @@ namespace MonoDevelop.PackageManagement
 
 			foreach (IDotNetProject project in monitoredSolution.Projects) {
 				project.Modified -= ProjectModified;
+				project.Saved -= ProjectSaved;
 			}
 			monitoredSolution.Projects.Clear ();
 
@@ -112,8 +109,16 @@ namespace MonoDevelop.PackageManagement
 		void ProjectModified (object sender, ProjectModifiedEventArgs e)
 		{
 			if (e.IsTargetFramework ()) {
-				OnProjectTargetFrameworkChanged (e.Project);
+				e.Project.Saved += ProjectSaved;
 			}
+		}
+
+		void ProjectSaved (object sender, EventArgs e)
+		{
+			var project = (IDotNetProject)sender;
+			project.Saved -= ProjectSaved;
+
+			OnProjectTargetFrameworkChanged (project);
 		}
 
 		void ProjectReloaded (object sender, ProjectReloadedEventArgs e)
