@@ -79,6 +79,8 @@ namespace MonoDevelop.SourceEditor
 		DebugMarkerPair currentDebugLineMarker;
 		DebugMarkerPair debugStackLineMarker;
 		BreakpointStore breakpoints;
+		DebugIconMarker hoverDebugLineMarker;
+		static readonly Xwt.Drawing.Image hoverBreakpointIcon = Xwt.Drawing.Image.FromResource (typeof (BreakpointPad), "gutter-breakpoint-disabled-15.png");
 		List<DebugMarkerPair> breakpointSegments = new List<DebugMarkerPair> ();
 		List<PinnedWatchInfo> pinnedWatches = new List<PinnedWatchInfo> ();
 		bool writeAllowed;
@@ -203,6 +205,8 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Caret.PositionChanged += HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
+			widget.TextEditor.IconMargin.MouseMoved += OnIconMarginMouseMoved;
+			widget.TextEditor.IconMargin.MouseLeave += OnIconMarginMouseLeave;
 			widget.TextEditor.TextArea.FocusOutEvent += TextArea_FocusOutEvent;
 			ClipbardRingUpdated += UpdateClipboardRing;
 			
@@ -990,6 +994,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.EndUndo -= HandleEndUndo;
 			widget.TextEditor.Caret.PositionChanged -= HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed -= OnIconButtonPress;
+			widget.TextEditor.IconMargin.MouseMoved -= OnIconMarginMouseMoved;
+			widget.TextEditor.IconMargin.MouseLeave -= OnIconMarginMouseLeave;
 			widget.TextEditor.Document.TextReplacing -= OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
 			widget.TextEditor.Document.ReadOnlyCheckDelegate = null;
@@ -1426,6 +1432,31 @@ namespace MonoDevelop.SourceEditor
 							breakpoints.Toggle (Document.FileName, args.LineNumber, column);
 					}
 				}
+			}
+		}
+
+		void OnIconMarginMouseMoved (object sender, MarginMouseEventArgs e)
+		{
+			if (hoverDebugLineMarker != null) {
+				if (hoverDebugLineMarker.LineSegment.LineNumber != e.LineSegment.LineNumber) {
+					e.Editor.Document.RemoveMarker (hoverDebugLineMarker);
+					hoverDebugLineMarker = null;
+				}
+			}
+
+			if (hoverDebugLineMarker == null && e.LineSegment.Markers.FirstOrDefault (m => m is DebugIconMarker) == null) {
+				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon) {
+					Tooltip = GettextCatalog.GetString ("Insert Breakpoint")
+				};
+				e.Editor.Document.AddMarker (e.LineSegment.LineNumber, hoverDebugLineMarker);
+			}
+		}
+
+		void OnIconMarginMouseLeave (object sender, EventArgs e)
+		{
+			if (hoverDebugLineMarker != null) {
+				Document.RemoveMarker (hoverDebugLineMarker);
+				hoverDebugLineMarker = null;
 			}
 		}
 
