@@ -941,7 +941,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.ToggleCompletionSuggestionModeHandler"
 			_label = "Toggle Completion Suggestion Mode" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow"
-			_description="Inserts a template or when something is selected surrounds selection with a template"
+			_description="Inserts a template"
 			_label = "_Template..."
 			_displayName = "Insert Template..."/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow"

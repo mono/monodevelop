@@ -109,7 +109,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection" />
 		<SeparatorItem id = "Separator4" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" _label = "Insert Template..." />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeSurroundingsWindow" _label = "Surround With..." />
+		<CommandItem id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow" _label = "Insert Template..."  />
+		<SeparatorItem id = "Separator5" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Scrollbar">
