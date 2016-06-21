@@ -154,7 +154,7 @@ module Completion =
         async {
             let parseResults, checkResults, _checkProjectResults = fsiSession.ParseAndCheckInteraction(input)
             let longName,residue = Parsing.findLongIdentsAndResidue(column, input)
-            if residue.[0] = '#' then
+            if residue.Length > 0 && residue.[0] = '#' then
                 return hashDirectives
             else
                 let! symbols = checkResults.GetDeclarationListSymbols(Some parseResults, 1, column, input, longName, residue, fun (_,_) -> false)
