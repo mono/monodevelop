@@ -426,7 +426,7 @@ type FSharpInteractivePad() =
         dlg.AddFilter (GettextCatalog.GetString ("F# script files"), [|".fs"; "*.fsi"; "*.fsx"; "*.fsscript"; "*.ml"; "*.mli" |]) |> ignore
         if dlg.Run () then
             let file = dlg.SelectedFile
-            x.SendCommand ("#load \"" + file.FullPath.ToString() + "\"")
+            x.SendCommand ("#load @\"" + file.FullPath.ToString() + "\"")
 
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
