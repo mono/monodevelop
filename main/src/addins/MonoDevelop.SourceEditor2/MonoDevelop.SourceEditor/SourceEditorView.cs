@@ -1444,7 +1444,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			if (hoverDebugLineMarker == null && e.LineSegment.Markers.FirstOrDefault (m => m is DebugIconMarker) == null) {
+			if (hoverDebugLineMarker == null && e.LineSegment?.Markers.FirstOrDefault (m => m is DebugIconMarker) == null) {
 				hoverDebugLineMarker = new DebugIconMarker (hoverBreakpointIcon) {
 					Tooltip = GettextCatalog.GetString ("Insert Breakpoint")
 				};
