@@ -314,9 +314,11 @@ namespace MonoDevelop.Ide.Templates
 				var lineText = doc.GetTextAt (line.Offset, line.Length);
 				if (tabToSpaces != null)
 					lineText = lineText.Replace ("\t", tabToSpaces);
-				data = System.Text.Encoding.UTF8.GetBytes (lineText);
-				ms.Write (data, 0, data.Length);
-				ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
+				if (line.LengthIncludingDelimiter > 0) {
+					data = System.Text.Encoding.UTF8.GetBytes (lineText);
+					ms.Write (data, 0, data.Length);
+					ms.Write (eolMarkerBytes, 0, eolMarkerBytes.Length);
+				}
 			}
 			
 			ms.Position = 0;
