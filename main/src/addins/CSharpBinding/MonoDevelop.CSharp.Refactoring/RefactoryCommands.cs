@@ -206,13 +206,13 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var ext = doc.GetContent<CodeActionEditorExtension> ();
 
-			if (ext != null) {
-				var fixMenu = CreateFixMenu (doc.Editor, doc, semanticModel, ext.GetCurrentFixes ());
-				if (fixMenu.CommandInfos.Count > 0) {
-					ainfo.Add (fixMenu, null);
-					added = true;
-				}
-			}
+			//if (ext != null) {
+			//	var fixMenu = CreateFixMenu (doc.Editor, doc, semanticModel, ext.GetCurrentFixes ());
+			//	if (fixMenu.CommandInfos.Count > 0) {
+			//		ainfo.Add (fixMenu, null);
+			//		added = true;
+			//	}
+			//}
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
@@ -224,16 +224,16 @@ namespace MonoDevelop.CSharp.Refactoring
 				added = true;
 			}
 			bool first = true;
-			if (ext != null) {
-				foreach (var fix in ext.GetCurrentFixes ().CodeRefactoringActions) {
-					if (added & first && ciset.CommandInfos.Count > 0)
-						ciset.CommandInfos.AddSeparator ();
-					var info2 = new CommandInfo (fix.CodeAction.Title);
-					ciset.CommandInfos.Add (info2, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run ()));
-					added = true;
-					first = false;
-				}
-			}
+			//if (ext != null) {
+			//	foreach (var fix in ext.GetCurrentFixes ().CodeRefactoringActions) {
+			//		if (added & first && ciset.CommandInfos.Count > 0)
+			//			ciset.CommandInfos.AddSeparator ();
+			//		var info2 = new CommandInfo (fix.CodeAction.Title);
+			//		ciset.CommandInfos.Add (info2, new Action (async () => await new CodeActionEditorExtension.ContextActionRunner (fix.CodeAction, doc.Editor, doc).Run ()));
+			//		added = true;
+			//		first = false;
+			//	}
+			//}
 
 			if (ciset.CommandInfos.Count > 0) {
 				ainfo.Add (ciset, null);

@@ -170,6 +170,7 @@
     <Compile Include="MonoDevelop.Refactoring\InsertionPointService.cs" />
     <Compile Include="MonoDevelop.Refactoring\AnalyzeWholeSolutionHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\AnalyzeCurrentProjectHandler.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewTooltipWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
