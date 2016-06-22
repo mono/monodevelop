@@ -160,7 +160,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!Visible)
 				info.Bypass = true;
 			else {
-				info.Text = GettextCatalog.GetString ("Show Next ({0})", GettextCatalog.GetString ("Difference"));
+				info.Text = GettextCatalog.GetString ("Show Next (Difference)");
 			}
 		}
 
@@ -176,7 +176,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (!Visible)
 				info.Bypass = true;
 			else {
-				info.Text = GettextCatalog.GetString ("Show Previous ({0})", GettextCatalog.GetString ("Difference"));
+				info.Text = GettextCatalog.GetString ("Show Previous (Difference)");
 			}
 		}
 
