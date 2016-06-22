@@ -117,8 +117,9 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			labelRestart.LabelProp = GettextCatalog.GetString ("These preferences will take effect next time you start {0}", BrandingService.ApplicationName);
 			btnRestart.Label = GettextCatalog.GetString ("Restart {0}", BrandingService.ApplicationName);
 
-			comboLanguage.Changed += UpdateRestartMessage;
-			comboTheme.Changed += UpdateRestartMessage;
+			comboLanguage.Changed += (sender, e) => UpdateRestartMessage();
+			comboTheme.Changed += (sender, e) => UpdateRestartMessage ();
+			UpdateRestartMessage ();
 		}
 
 		void RestartClicked (object sender, System.EventArgs e)
@@ -127,10 +128,20 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			IdeApp.Restart (true);
 		}
 
-		void UpdateRestartMessage (object sender, EventArgs e)
+		void UpdateRestartMessage ()
 		{
+			bool restartRequired = false;
+
 			if (currentTheme != IdeApp.Preferences.UserInterfaceThemeName.Value ||
-			    LocalizationService.CurrentLocaleSet [comboLanguage.Active].Culture != IdeApp.Preferences.UserInterfaceLanguage) {
+			    ((Platform.IsLinux && Gtk.Settings.Default.ThemeName != IdeApp.Preferences.UserInterfaceThemeName.Value) ||
+			     IdeTheme.UserInterfaceTheme != (IdeApp.Preferences.UserInterfaceThemeName == "Dark" ? Theme.Dark : Theme.Light)))
+				restartRequired = true;
+			
+			if (GettextCatalog.UILocale != IdeApp.Preferences.UserInterfaceLanguage ||
+				LocalizationService.CurrentLocaleSet [comboLanguage.Active].Culture != IdeApp.Preferences.UserInterfaceLanguage)
+				restartRequired = true;
+			
+			if (restartRequired) {
 				tableRestart.Visible = separatorRestart.Visible = true;
 			} else
 				tableRestart.Visible = separatorRestart.Visible = false;

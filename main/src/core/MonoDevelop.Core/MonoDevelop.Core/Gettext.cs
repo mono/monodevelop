@@ -71,11 +71,11 @@ namespace MonoDevelop.Core
 			string catalog = Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
 
 			// Set the user defined language
-			string lang = Runtime.Preferences.UserInterfaceLanguage;
-			if (!string.IsNullOrEmpty (lang)) {
+			UILocale = Runtime.Preferences.UserInterfaceLanguage;
+			if (!string.IsNullOrEmpty (UILocale)) {
 				string cultureLang;
-				if (!localeToCulture.TryGetValue (lang, out cultureLang))
-					cultureLang = lang.Replace ("_", "-");
+				if (!localeToCulture.TryGetValue (UILocale, out cultureLang))
+					cultureLang = UILocale.Replace ("_", "-");
 				CultureInfo ci = CultureInfo.GetCultureInfo (cultureLang);
 				if (ci.IsNeutralCulture) {
 					// We need a non-neutral culture
@@ -91,7 +91,7 @@ namespace MonoDevelop.Core
 					mainThread.CurrentUICulture = ci;
 				}
 				if (!Platform.IsWindows)
-					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
+					Environment.SetEnvironmentVariable ("LANGUAGE", UILocale);
 			}
 			
 			if (string.IsNullOrEmpty (catalog) || !Directory.Exists (catalog)) {
@@ -120,6 +120,8 @@ namespace MonoDevelop.Core
 				Console.WriteLine (ex);
 			}
 		}
+
+		public static string UILocale { get; private set; }
 
 		public static CultureInfo UICulture {
 			get { return mainThread.CurrentUICulture; }
