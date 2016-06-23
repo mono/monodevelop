@@ -56,9 +56,9 @@ namespace MonoDevelop.UnitTesting
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
-			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;;
+			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnItemsChangedInSolution;
-			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;;
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
