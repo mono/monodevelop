@@ -36,7 +36,7 @@ using System.Threading;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class UnitTestGroup: UnitTest
+	public abstract class UnitTestGroup: UnitTest
 	{
 		UnitTestCollection tests;
 		
@@ -117,10 +117,8 @@ namespace MonoDevelop.UnitTesting
 				total += t.CountTestCases ();
 			return total;
 		}
-		
-		protected virtual void OnCreateTests ()
-		{
-		}
+
+		protected abstract void OnCreateTests ();
 		
 		public async override Task Refresh (CancellationToken ct)
 		{
@@ -161,18 +159,14 @@ namespace MonoDevelop.UnitTesting
 			return true;
 		}
 
-		protected virtual void OnBeginTest (TestContext testContext)
-		{
-		}
+		protected abstract void OnBeginTest (TestContext testContext);
 		
 		protected virtual UnitTestResult OnRunChildTest (UnitTest test, TestContext testContext)
 		{
 			return test.Run (testContext);
 		}
-		
-		protected virtual void OnEndTest (TestContext testContext)
-		{
-		}
+
+		protected abstract void OnEndTest (TestContext testContext);
 		
 		internal override void FindRegressions (UnitTestCollection list, DateTime fromDate, DateTime toDate)
 		{
