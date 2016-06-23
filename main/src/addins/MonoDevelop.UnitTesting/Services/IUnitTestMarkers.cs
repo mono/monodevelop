@@ -40,7 +40,6 @@ using Mono.Addins;
 
 namespace MonoDevelop.UnitTesting
 {
-
 	/// <summary>
 	/// Markers that can be used to identify a method as a unit test
 	/// </summary>

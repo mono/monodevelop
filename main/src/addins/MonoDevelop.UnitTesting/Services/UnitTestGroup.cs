@@ -109,8 +109,7 @@ namespace MonoDevelop.UnitTesting
 					t.SaveResults ();
 			}
 		}
-		
-		
+
 		public override int CountTestCases ()
 		{
 			int total = 0;
@@ -162,7 +161,6 @@ namespace MonoDevelop.UnitTesting
 			return true;
 		}
 
-		
 		protected virtual void OnBeginTest (TestContext testContext)
 		{
 		}
@@ -191,7 +189,6 @@ namespace MonoDevelop.UnitTesting
 					t.Dispose ();
 			}
 		}
-		
 	}
 }
 

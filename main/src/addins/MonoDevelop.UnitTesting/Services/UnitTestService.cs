@@ -200,7 +200,6 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
-		
 		static UnitTest SearchTest (UnitTest test, string fullName)
 		{
 			if (test == null)
@@ -341,7 +340,6 @@ namespace MonoDevelop.UnitTesting
 
 			return Path.Combine (newCache, "test-results");
 		}
-
 
 		public static UnitTest[] RootTests {
 			get { return rootTests; }

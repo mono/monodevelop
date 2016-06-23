@@ -31,7 +31,6 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace MonoDevelop.UnitTesting
 {
-
 	/// <summary>
 	/// Serializer implementation that uses ICSharpCode.NRefactory.Utils.FastSerializer
 	/// as it's main method to serialize test records. The serializer is backward compatible

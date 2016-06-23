@@ -36,7 +36,6 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting
 {
-	
 	/// <summary>
 	/// Encapsulates serialization/deserialization logic
 	/// </summary>

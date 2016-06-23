@@ -28,7 +28,6 @@
 
 using MonoDevelop.Projects;
 
-
 namespace MonoDevelop.UnitTesting
 {
 	public class WorkspaceTestGroup: UnitTestGroup

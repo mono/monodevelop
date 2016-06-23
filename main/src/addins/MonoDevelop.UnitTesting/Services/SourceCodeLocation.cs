@@ -39,7 +39,6 @@ using System.Threading;
 
 namespace MonoDevelop.UnitTesting
 {
-	
 	public class SourceCodeLocation
 	{
 		string fileName;

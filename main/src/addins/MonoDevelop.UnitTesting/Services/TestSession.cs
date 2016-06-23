@@ -45,7 +45,6 @@ using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.UnitTesting
 {
-
 	class TestSession: AsyncOperation
 	{
 		UnitTest test;
@@ -87,5 +86,4 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 	}
-	
 }
