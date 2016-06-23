@@ -61,7 +61,7 @@ namespace MonoDevelop.UnitTesting
 			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
 
-			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
 
 			RebuildTests ();
 		}
@@ -69,7 +69,7 @@ namespace MonoDevelop.UnitTesting
 		static void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+				ProjectService ps = Projects.Services.ProjectService;
 				ITestProvider provider = args.ExtensionObject as ITestProvider;
 				providers.Add (provider);
 			}
@@ -98,20 +98,20 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 
-		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context)
+		public static AsyncOperation RunTest (UnitTest test, Projects.ExecutionContext context)
 		{
 			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
 			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return result;
 		}
 		
-		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject)
+		public static AsyncOperation RunTest (UnitTest test, Projects.ExecutionContext context, bool buildOwnerObject)
 		{
 			var cs = new CancellationTokenSource ();
 			return new AsyncOperation (RunTest (test, context, buildOwnerObject, true, cs), cs);
 		}
 
-		internal static async Task RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
+		internal static async Task RunTest (UnitTest test, Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
 		{
 			string testName = test.FullName;
 			
@@ -119,7 +119,7 @@ namespace MonoDevelop.UnitTesting
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
 				if (bt != null) {
 					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-						MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
+						Ide.Commands.StopHandler.StopBuildOperations ();
 						await IdeApp.ProjectOperations.CurrentRunOperation.Task;
 					}
 	
