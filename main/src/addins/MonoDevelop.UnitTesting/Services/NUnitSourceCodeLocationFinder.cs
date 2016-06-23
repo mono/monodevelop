@@ -38,7 +38,8 @@ namespace MonoDevelop.UnitTesting
 
 		static NUnitSourceCodeLocationFinder ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/NUnitSourceCodeLocationFinder", delegate(object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/NUnitSourceCodeLocationFinder",
+			                                      delegate(object sender, ExtensionNodeEventArgs args) {
 				var provider  = (NUnitSourceCodeLocationFinder) args.ExtensionObject;
 				switch (args.Change) {
 				case ExtensionChange.Add:
@@ -51,17 +52,22 @@ namespace MonoDevelop.UnitTesting
 			});
 		}
 
-		public static async Task<SourceCodeLocation> TryGetSourceCodeLocationAsync (Project project, string fixtureTypeNamespace, string fixtureTypeName, string testName, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<SourceCodeLocation> TryGetSourceCodeLocationAsync
+				(Project project, string fixtureTypeNamespace, string fixtureTypeName, string testName,
+				 CancellationToken cancellationToken = default(CancellationToken))
 		{
 			foreach (var finder in locationFinder) {
-				var result = await finder.GetSourceCodeLocationAsync (project, fixtureTypeNamespace, fixtureTypeName, testName, cancellationToken).ConfigureAwait (false);
+				var result = await finder.GetSourceCodeLocationAsync (project, fixtureTypeNamespace, fixtureTypeName,
+				                                                      testName, cancellationToken).ConfigureAwait (false);
 				if (result != null)
 					return result;
 			}
 			return null;
 		}
 
-		public abstract Task<SourceCodeLocation> GetSourceCodeLocationAsync (Project project, string fixtureTypeNamespace, string fixtureTypeName, string testName, CancellationToken cancellationToken = default(CancellationToken));
+		public abstract Task<SourceCodeLocation> GetSourceCodeLocationAsync (Project project, string fixtureTypeNamespace,
+		                                         	string fixtureTypeName, string testName,
+		                                            CancellationToken cancellationToken = default(CancellationToken));
 	}
 }
 
