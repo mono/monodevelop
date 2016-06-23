@@ -32,7 +32,7 @@
     <binding command="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" shortcut="Alt+F8" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Meta+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Meta+X" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Meta+BackSpace Delete" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Meta+BackSpace" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine" shortcut="Control+Shift+J" />

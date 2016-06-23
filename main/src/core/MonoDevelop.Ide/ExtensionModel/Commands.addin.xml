@@ -62,7 +62,7 @@
 			_description = "Delete the selection"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultDeleteHandler"
 			icon  = "gtk-delete"
-			macShortcut = "Meta+BackSpace Delete" />
+			macShortcut = "Meta+BackSpace" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Rename"
 			_label = "Re_name..."
 			_description = "Rename the selection"
