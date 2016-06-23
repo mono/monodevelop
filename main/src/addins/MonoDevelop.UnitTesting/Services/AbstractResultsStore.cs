@@ -48,7 +48,7 @@ namespace MonoDevelop.UnitTesting
 		public AbstractResultsStore (IResultsStoreSerializer serializer, string directory, string storeId)
 		{
 			this.serializer = serializer;
-			this.basePath = directory;
+			basePath = directory;
 			this.storeId = storeId;
 		}
 		
