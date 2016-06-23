@@ -49,10 +49,10 @@ namespace MonoDevelop.UnitTesting
 	{
 		UnitTest test;
 		TestMonitor monitor;
-		MonoDevelop.Projects.ExecutionContext context;
+		Projects.ExecutionContext context;
 		TestResultsPad resultsPad;
 
-		public TestSession (UnitTest test, MonoDevelop.Projects.ExecutionContext context, TestResultsPad resultsPad, CancellationTokenSource cs)
+		public TestSession (UnitTest test, Projects.ExecutionContext context, TestResultsPad resultsPad, CancellationTokenSource cs)
 		{
 			this.test = test;
 			if (context != null)
