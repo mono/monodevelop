@@ -257,9 +257,23 @@
     <Compile Include="Services\RemoteUnhandledException.cs" />
     <Compile Include="Services\AbstractUnitTestEditorExtension.cs" />
     <Compile Include="Services\UnitTestMarkersExtension.cs" />
+    <Compile Include="SerializableTypes\TestRecord.cs" />
+    <Compile Include="SerializableTypes\TestRecordCollection.cs" />
+    <Compile Include="SerializableTypes\UnitTestResultCollection.cs" />
+    <Compile Include="Services\IResultsStoreSerializer.cs" />
+    <Compile Include="Services\IUnitTestMarkers.cs" />
+    <Compile Include="Services\BinaryResultsStoreSerializer.cs" />
+    <Compile Include="Services\SourceCodeLocation.cs" />
+    <Compile Include="Services\TestSession.cs" />
+    <Compile Include="EventArgs\TestSessionEventArgs.cs" />
+    <Compile Include="Services\CustomConsoleFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SerializableTypes\" />
+    <Folder Include="EventArgs\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

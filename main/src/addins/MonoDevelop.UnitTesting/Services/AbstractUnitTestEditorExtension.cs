@@ -339,35 +339,5 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 	}
-
-	/// <summary>
-	/// Markers that can be used to identify a method as a unit test
-	/// </summary>
-	public interface IUnitTestMarkers
-	{
-		/// <summary>
-		/// Type of attribute that a method needs to have to be considered to be a test method
-		/// </summary>
-		/// <value>The test method attribute marker.</value>
-		string TestMethodAttributeMarker { get; }
-
-		/// <summary>
-		/// Type of attribute that describes a test case for a test method. It has to be applied to a test method.
-		/// </summary>
-		/// <value>The test method attribute marker.</value>
-		string TestCaseMethodAttributeMarker { get; }
-
-		/// <summary>
-		/// Type of attribute used to mark a test method to be ignored
-		/// </summary>
-		/// <value>The ignore test method attribute marker.</value>
-		string IgnoreTestMethodAttributeMarker { get; }
-
-		/// <summary>
-		/// Type of attribute used to mark a test class to be ignored
-		/// </summary>
-		/// <value>The ignore test method attribute marker.</value>
-		string IgnoreTestClassAttributeMarker { get; }
-	}
 }
 

@@ -2,9 +2,9 @@
 // BinaryResultsStoreSerializer.cs
 //
 // Author:
-//       Anthony Stivers <tony.stivers@gmail.com>
+//       Sergey Khabibullin <sergey@khabibullin.com>
 //
-// Copyright (c) 2016 Anthony Stivers
+// Copyright (c) 2014 Sergey Khabibullin
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal

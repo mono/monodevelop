@@ -42,57 +42,5 @@ namespace MonoDevelop.UnitTesting
 		{
 		}
 	}
-
-	/// <summary>
-	/// Serializer implementation that uses ICSharpCode.NRefactory.Utils.FastSerializer
-	/// as it's main method to serialize test records. The serializer is backward compatible
-	/// with the old xml-based serialization and will deserialize test record from xml
-	/// if the binary form is not yet present.
-	/// </summary>
-	public class BinaryResultsStoreSerializer : IResultsStoreSerializer
-	{
-		const string binaryExtension = ".test-result";
-		const string xmlExtension = ".xml";
-
-		FastSerializer fastSerializer = new FastSerializer();
-		XmlSerializer xmlSerializer = new XmlSerializer(typeof(TestRecord));
-
-		public void Serialize (string xmlFilePath, TestRecord testRecord)
-		{
-			// no need for xml serialization because next time it will be
-			// deserialized from the binary format
-			string binaryFilePath = GetBinaryFilePath (xmlFilePath);
-			using (var stream = File.OpenWrite(binaryFilePath)) {
-				fastSerializer.Serialize (stream, testRecord);
-			}
-		}
-
-		public TestRecord Deserialize (string xmlFilePath)
-		{
-			string binaryFilePath = GetBinaryFilePath (xmlFilePath);
-
-			// deserialize from the binary format if the file exists
-			if (File.Exists(binaryFilePath)) {
-				using (var stream = File.OpenRead (binaryFilePath)) {
-					return (TestRecord) fastSerializer.Deserialize (stream);
-				}
-			}
-
-			// deserialize from xml if the file exists
-			if (File.Exists(xmlFilePath)) {
-				using (var reader = new StreamReader (xmlFilePath)) {
-					return (TestRecord) xmlSerializer.Deserialize (reader);
-				}
-			}
-
-			return null;
-		}
-
-		string GetBinaryFilePath(string xmlFilePath)
-		{
-			// filename with the binary extension
-			return xmlFilePath.Substring (0, xmlFilePath.Length - xmlExtension.Length) + binaryExtension;
-		}
-	}
 }
 

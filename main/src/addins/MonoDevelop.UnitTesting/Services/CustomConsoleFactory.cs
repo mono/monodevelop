@@ -1,5 +1,5 @@
 //
-// IResultsStoreSerializer.cs
+// CustomConsoleFactory.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -29,28 +29,36 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Xml.Serialization;
+using System.Threading;
+
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using Mono.Addins;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Linq;
+using MonoDevelop.Ide.TypeSystem;
+using System.IO;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.UnitTesting
 {
-	
-	/// <summary>
-	/// Encapsulates serialization/deserialization logic
-	/// </summary>
-	public interface IResultsStoreSerializer
+	class CustomConsoleFactory : OperationConsoleFactory
 	{
-		/// <summary>
-		/// Serialize the record into the specified path.
-		/// </summary>
-		void Serialize(string filePath, TestRecord testRecord);
-		
-		/// <summary>
-		/// Deserialize the TestRecord from the sepcified path if possible.
-		/// Return null if deserialization is impossible.
-		/// </summary>
-		TestRecord Deserialize(string filePath);
+		OperationConsoleFactory factory;
+		CancellationTokenSource cancelSource;
+
+		public CustomConsoleFactory (OperationConsoleFactory factory, CancellationTokenSource cs)
+		{
+			this.factory = factory;
+			cancelSource = cs;
+		}
+
+		protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
+		{
+			return factory.CreateConsole (options.WithBringToFront (false)).WithCancelCallback (cancelSource.Cancel);
+		}
 	}
 }

@@ -1,5 +1,5 @@
 //
-// IResultsStoreSerializer.cs
+// SourceCodeLocation.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -28,29 +28,41 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Xml.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Projects;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.UnitTesting
 {
 	
-	/// <summary>
-	/// Encapsulates serialization/deserialization logic
-	/// </summary>
-	public interface IResultsStoreSerializer
+	public class SourceCodeLocation
 	{
-		/// <summary>
-		/// Serialize the record into the specified path.
-		/// </summary>
-		void Serialize(string filePath, TestRecord testRecord);
+		string fileName;
+		int line;
+		int column;
 		
-		/// <summary>
-		/// Deserialize the TestRecord from the sepcified path if possible.
-		/// Return null if deserialization is impossible.
-		/// </summary>
-		TestRecord Deserialize(string filePath);
+		public SourceCodeLocation (string fileName, int line, int column)
+		{
+			this.fileName = fileName;
+			this.line = line;
+			this.column = column;
+		}
+		
+		public string FileName {
+			get { return fileName; }
+		}
+		
+		public int Line {
+			get { return line; }
+		}
+		
+		public int Column {
+			get { return column; }
+		}
 	}
 }

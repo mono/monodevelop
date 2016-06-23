@@ -423,31 +423,5 @@ namespace MonoDevelop.UnitTesting
 		public event EventHandler TestChanged;
 		public event EventHandler TestStatusChanged;
 	}
-	
-	public class SourceCodeLocation
-	{
-		string fileName;
-		int line;
-		int column;
-		
-		public SourceCodeLocation (string fileName, int line, int column)
-		{
-			this.fileName = fileName;
-			this.line = line;
-			this.column = column;
-		}
-		
-		public string FileName {
-			get { return fileName; }
-		}
-		
-		public int Line {
-			get { return line; }
-		}
-		
-		public int Column {
-			get { return column; }
-		}
-	}
 }
 
