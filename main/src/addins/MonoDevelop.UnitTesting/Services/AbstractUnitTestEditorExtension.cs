@@ -254,8 +254,6 @@ namespace MonoDevelop.UnitTesting
 							submenu.Add (menuItem);
 
 							var subMenuItem = new ContextMenuItem (label);
-							// if (!string.IsNullOrEmpty (tooltip))
-							//	subMenuItem.TooltipText = tooltip;
 							subMenuItem.SubMenu  = submenu;
 							menu.Add (subMenuItem);
 						}
@@ -331,7 +329,6 @@ namespace MonoDevelop.UnitTesting
 							}
 						}
 					}
-					// NUnitService.Instance.RunTest (test, ctx);
 					var pad = IdeApp.Workbench.GetPad<TestPad> ();
 					var content = (TestPad)pad.Content;
 					content.RunTest (test, ctx);
