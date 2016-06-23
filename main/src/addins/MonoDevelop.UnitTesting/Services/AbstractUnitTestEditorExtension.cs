@@ -107,7 +107,9 @@ namespace MonoDevelop.UnitTesting
 							foreach (var foundTest in foundTests) {
 								if (foundTest == null)
 									continue;
-								var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor, new UnitTestMarkerHostImpl (this), foundTest);
+								var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor,
+								                                                             new UnitTestMarkerHostImpl (this),
+								                                                             foundTest);
 								newMarkers.Add (unitTestMarker);
 								var line = Editor.GetLineByOffset (foundTest.Offset);
 								if (line != null) {
