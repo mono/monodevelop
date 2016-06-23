@@ -129,25 +129,21 @@ namespace MonoDevelop.UnitTesting
 		protected override UnitTestResult OnRun (TestContext testContext)
 		{
 			UnitTestResult tres = new UnitTestResult ();
-			OnBeginTest (testContext);
-			
-			try {
-				foreach (UnitTest t in Tests) {
-					if (t.IsExplicit)
-						continue;
-					UnitTestResult res;
-					try {
-						res = OnRunChildTest (t, testContext);
-						if (testContext.Monitor.CancellationToken.IsCancellationRequested)
-							break;
-					} catch (Exception ex) {
-						res = UnitTestResult.CreateFailure (ex);
-					}
-					tres.Add (res);
+
+			foreach (UnitTest t in Tests) {
+				if (t.IsExplicit)
+					continue;
+				UnitTestResult res;
+				try {
+					res = OnRunChildTest (t, testContext);
+					if (testContext.Monitor.CancellationToken.IsCancellationRequested)
+						break;
+				} catch (Exception ex) {
+					res = UnitTestResult.CreateFailure (ex);
 				}
-			} finally {
-				OnEndTest (testContext);
+				tres.Add (res);
 			}
+
 			return tres;
 		}
 		
@@ -158,15 +154,11 @@ namespace MonoDevelop.UnitTesting
 					return false;
 			return true;
 		}
-
-		protected abstract void OnBeginTest (TestContext testContext);
 		
 		protected virtual UnitTestResult OnRunChildTest (UnitTest test, TestContext testContext)
 		{
 			return test.Run (testContext);
 		}
-
-		protected abstract void OnEndTest (TestContext testContext);
 		
 		internal override void FindRegressions (UnitTestCollection list, DateTime fromDate, DateTime toDate)
 		{
