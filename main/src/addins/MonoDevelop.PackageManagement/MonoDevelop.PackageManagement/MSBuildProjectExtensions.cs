@@ -64,8 +64,19 @@ namespace MonoDevelop.PackageManagement
 			ImportLocation importLocation,
 			string condition)
 		{
-			var before = importLocation == ImportLocation.Top ? project.GetAllObjects ().FirstOrDefault () : null;
+			MSBuildObject before = GetInsertBeforeObject (project, importLocation);
 			project.AddNewImport (importedProjectFile, condition, before);
+		}
+
+		static MSBuildObject GetInsertBeforeObject (MSBuildProject project, ImportLocation importLocation)
+		{
+			if (importLocation == ImportLocation.Top) {
+				return project.GetAllObjects ().FirstOrDefault ();
+			}
+
+			// Return an unknown MSBuildItem instead of null so the MSBuildProject adds the import as the last
+			// child in the project.
+			return new MSBuildItem ();
 		}
 		
 		public static void RemoveImportIfExists (this MSBuildProject project, string importedProjectFile)
