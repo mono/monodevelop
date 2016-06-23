@@ -76,7 +76,8 @@ namespace MonoDevelop.UnitTesting
 			return unitTestFound;
 		}
 
-		protected override async Task OnExecute (ProgressMonitor monitor, Projects.ExecutionContext context, ConfigurationSelector configuration)
+		protected override async Task OnExecute (ProgressMonitor monitor, Projects.ExecutionContext context,
+		                                         ConfigurationSelector configuration)
 		{
 			bool defaultCanExecute;
 
