@@ -613,8 +613,7 @@ namespace MonoDevelop.Ide.Gui
 					WorkbenchMemento memento = new WorkbenchMemento ((Properties)value);
 					
 					normalBounds = memento.Bounds;
-					Move (normalBounds.X, normalBounds.Y);
-					Resize (normalBounds.Width, normalBounds.Height);
+					DesktopService.PlaceWindow (this, normalBounds.X, normalBounds.Y, normalBounds.Width, normalBounds.Height);
 					
 					// HACK: don't restore Gdk.WindowState.Maximized on OS X, because there's a bug in 
 					// GdkWindow.State that means it doesn't reflect the real state, it only reflects values set
