@@ -241,7 +241,6 @@
     <Compile Include="Services\UnitTestCollection.cs" />
     <Compile Include="Services\UnitTest.cs" />
     <Compile Include="Services\UnitTestGroup.cs" />
-    <Compile Include="Services\GeneralTestOptions.cs" />
     <Compile Include="Services\IResultsStore.cs" />
     <Compile Include="Services\UnitTestResultsStore.cs" />
     <Compile Include="Services\WorkspaceTestGroup.cs" />
