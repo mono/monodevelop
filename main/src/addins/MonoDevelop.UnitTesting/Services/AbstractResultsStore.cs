@@ -115,7 +115,7 @@ namespace MonoDevelop.UnitTesting
 				TestRecord tr = FindRecord (root, test.StoreRelativeName);
 				if (tr != null && tr.Results != null) {
 					for (int n = tr.Results.Count - 1; n >= 0; n--) {
-						UnitTestResult res = (UnitTestResult) tr.Results [n];
+						UnitTestResult res = tr.Results [n];
 						if (res.TestDate < date)
 							return res;
 					}
@@ -173,7 +173,7 @@ namespace MonoDevelop.UnitTesting
 				TestRecord tr = FindRecord (root, test.StoreRelativeName);
 				if (tr != null && tr.Results != null) {
 					for (int m = tr.Results.Count - 1; m >= 0 && list.Count < count; m--) {
-						UnitTestResult res = (UnitTestResult) tr.Results [m];
+						UnitTestResult res = tr.Results [m];
 						if (res.TestDate <= endDate)
 							list.Add (res);
 					}
@@ -238,7 +238,7 @@ namespace MonoDevelop.UnitTesting
 			}
 			
 			try {
-				res = (TestRecord) serializer.Deserialize (filePath);
+				res = serializer.Deserialize (filePath);
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				return null;
