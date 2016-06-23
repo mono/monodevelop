@@ -12,6 +12,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.CheckButton autoCodeCompletionCheckbutton;
 
+		private global::Gtk.HBox hbox6;
+
+		private global::Gtk.Fixed fixed5;
+
+		private global::Gtk.CheckButton automaticCompletionModeCheckbutton;
+
 		private global::Gtk.HBox hbox4;
 
 		private global::Gtk.Fixed fixed3;
@@ -23,12 +29,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.Fixed fixed4;
 
 		private global::Gtk.CheckButton includeCodeSnippetsCheckbutton;
-
-		private global::Gtk.HBox hbox6;
-
-		private global::Gtk.Fixed fixed5;
-
-		private global::Gtk.CheckButton suggestionOnlyModeCheckbutton;
 
 		private global::Gtk.CheckButton showImportsCheckbutton;
 
@@ -66,6 +66,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.vbox5.Spacing = 6;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.autoCodeCompletionCheckbutton = new global::Gtk.CheckButton ();
+			this.autoCodeCompletionCheckbutton.TooltipMarkup = "Automatic Completion with Enter or Tab keys";
 			this.autoCodeCompletionCheckbutton.CanFocus = true;
 			this.autoCodeCompletionCheckbutton.Name = "autoCodeCompletionCheckbutton";
 			this.autoCodeCompletionCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("_Show completion list after a character is typed");
@@ -77,6 +78,35 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
+			this.hbox6 = new global::Gtk.HBox ();
+			this.hbox6.Name = "hbox6";
+			this.hbox6.Spacing = 6;
+			// Container child hbox6.Gtk.Box+BoxChild
+			this.fixed5 = new global::Gtk.Fixed ();
+			this.fixed5.Name = "fixed5";
+			this.fixed5.HasWindow = false;
+			this.hbox6.Add (this.fixed5);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.fixed5]));
+			w2.Position = 0;
+			w2.Expand = false;
+			w2.Padding = ((uint)(6));
+			// Container child hbox6.Gtk.Box+BoxChild
+			this.automaticCompletionModeCheckbutton = new global::Gtk.CheckButton ();
+			this.automaticCompletionModeCheckbutton.TooltipMarkup = "Enables automatic completion with the Space key or Punctation";
+			this.automaticCompletionModeCheckbutton.CanFocus = true;
+			this.automaticCompletionModeCheckbutton.Name = "automaticCompletionModeCheckbutton";
+			this.automaticCompletionModeCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Complete with Space or Punctation");
+			this.automaticCompletionModeCheckbutton.DrawIndicator = true;
+			this.automaticCompletionModeCheckbutton.UseUnderline = true;
+			this.hbox6.Add (this.automaticCompletionModeCheckbutton);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.automaticCompletionModeCheckbutton]));
+			w3.Position = 1;
+			this.vbox5.Add (this.hbox6);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox6]));
+			w4.Position = 1;
+			w4.Expand = false;
+			w4.Fill = false;
+			// Container child vbox5.Gtk.Box+BoxChild
 			this.hbox4 = new global::Gtk.HBox ();
 			this.hbox4.Name = "hbox4";
 			this.hbox4.Spacing = 6;
@@ -85,10 +115,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.fixed3.Name = "fixed3";
 			this.fixed3.HasWindow = false;
 			this.hbox4.Add (this.fixed3);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.fixed3]));
-			w2.Position = 0;
-			w2.Expand = false;
-			w2.Padding = ((uint)(6));
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.fixed3]));
+			w5.Position = 0;
+			w5.Expand = false;
+			w5.Padding = ((uint)(6));
 			// Container child hbox4.Gtk.Box+BoxChild
 			this.includeKeywordsCheckbutton = new global::Gtk.CheckButton ();
 			this.includeKeywordsCheckbutton.CanFocus = true;
@@ -97,13 +127,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.includeKeywordsCheckbutton.DrawIndicator = true;
 			this.includeKeywordsCheckbutton.UseUnderline = true;
 			this.hbox4.Add (this.includeKeywordsCheckbutton);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.includeKeywordsCheckbutton]));
-			w3.Position = 1;
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.includeKeywordsCheckbutton]));
+			w6.Position = 1;
 			this.vbox5.Add (this.hbox4);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox4]));
-			w4.Position = 1;
-			w4.Expand = false;
-			w4.Fill = false;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox4]));
+			w7.Position = 2;
+			w7.Expand = false;
+			w7.Fill = false;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.hbox5 = new global::Gtk.HBox ();
 			this.hbox5.Name = "hbox5";
@@ -113,10 +143,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.fixed4.Name = "fixed4";
 			this.fixed4.HasWindow = false;
 			this.hbox5.Add (this.fixed4);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.fixed4]));
-			w5.Position = 0;
-			w5.Expand = false;
-			w5.Padding = ((uint)(6));
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.fixed4]));
+			w8.Position = 0;
+			w8.Expand = false;
+			w8.Padding = ((uint)(6));
 			// Container child hbox5.Gtk.Box+BoxChild
 			this.includeCodeSnippetsCheckbutton = new global::Gtk.CheckButton ();
 			this.includeCodeSnippetsCheckbutton.CanFocus = true;
@@ -125,38 +155,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.includeCodeSnippetsCheckbutton.DrawIndicator = true;
 			this.includeCodeSnippetsCheckbutton.UseUnderline = true;
 			this.hbox5.Add (this.includeCodeSnippetsCheckbutton);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.includeCodeSnippetsCheckbutton]));
-			w6.Position = 1;
-			this.vbox5.Add (this.hbox5);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox5]));
-			w7.Position = 2;
-			w7.Expand = false;
-			w7.Fill = false;
-			// Container child vbox5.Gtk.Box+BoxChild
-			this.hbox6 = new global::Gtk.HBox ();
-			this.hbox6.Name = "hbox6";
-			this.hbox6.Spacing = 6;
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.fixed5 = new global::Gtk.Fixed ();
-			this.fixed5.Name = "fixed5";
-			this.fixed5.HasWindow = false;
-			this.hbox6.Add (this.fixed5);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.fixed5]));
-			w8.Position = 0;
-			w8.Expand = false;
-			w8.Padding = ((uint)(6));
-			// Container child hbox6.Gtk.Box+BoxChild
-			this.suggestionOnlyModeCheckbutton = new global::Gtk.CheckButton ();
-			this.suggestionOnlyModeCheckbutton.CanFocus = true;
-			this.suggestionOnlyModeCheckbutton.Name = "suggestionOnlyModeCheckbutton";
-			this.suggestionOnlyModeCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Disable automatic completion (Suggest only mode)");
-			this.suggestionOnlyModeCheckbutton.DrawIndicator = true;
-			this.suggestionOnlyModeCheckbutton.UseUnderline = true;
-			this.hbox6.Add (this.suggestionOnlyModeCheckbutton);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox6 [this.suggestionOnlyModeCheckbutton]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox5 [this.includeCodeSnippetsCheckbutton]));
 			w9.Position = 1;
-			this.vbox5.Add (this.hbox6);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox6]));
+			this.vbox5.Add (this.hbox5);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox5 [this.hbox5]));
 			w10.Position = 3;
 			w10.Expand = false;
 			w10.Fill = false;
