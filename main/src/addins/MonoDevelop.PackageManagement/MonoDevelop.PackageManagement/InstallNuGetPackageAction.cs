@@ -144,7 +144,7 @@ namespace MonoDevelop.PackageManagement
 				await CheckLicenses (cancellationToken);
 			}
 
-			if (OpenReadmeFile) {
+			if (ShouldOpenReadmeFile (identity)) {
 				packageManager.SetDirectInstall (identity, context);
 			}
 
@@ -223,6 +223,11 @@ namespace MonoDevelop.PackageManagement
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
 		{
 			return actions;
+		}
+
+		bool ShouldOpenReadmeFile (PackageIdentity identity)
+		{
+			return OpenReadmeFile && !packageManager.PackageExistsInPackagesFolder (identity);
 		}
 
 		IDisposable CreateFileMonitor ()
