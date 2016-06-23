@@ -46,7 +46,8 @@ namespace MonoDevelop.UnitTesting
 		{
 			this.monitor = monitor;
 			if (executionContext == null)
-				executionContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+				executionContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler,
+				                                         IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
 			this.executionContext = executionContext;
 			// Round to seconds
 			this.testDate = new DateTime ((testDate.Ticks / TimeSpan.TicksPerSecond) * TimeSpan.TicksPerSecond);
