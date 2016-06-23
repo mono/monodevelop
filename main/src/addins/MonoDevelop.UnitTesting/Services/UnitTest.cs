@@ -328,8 +328,6 @@ namespace MonoDevelop.UnitTesting
 				return;
 
 			result.TestDate = context.TestDate;
-//			if ((int)result.Status == 0)
-//				result.Status = ResultStatus.Ignored;
 
 			lastResult = result;
 			historicResult = false;
