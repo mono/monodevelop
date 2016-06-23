@@ -61,7 +61,7 @@ namespace MonoDevelop.UnitTesting
 			monitor = new TestMonitor (resultsPad, CancellationTokenSource);
 			this.resultsPad = resultsPad;
 			resultsPad.InitializeTestRun (test, cs);
-			Task = new Task ((Action)RunTests);
+			Task = new Task (RunTests);
 		}
 		
 		public Task Start ()
