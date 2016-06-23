@@ -75,7 +75,7 @@ namespace MonoDevelop.UnitTesting
 			try {
 				UnitTestService.ResetResult (test);
 
-				TestContext ctx = new TestContext (monitor, resultsPad, context, DateTime.Now);
+				TestContext ctx = new TestContext (monitor, context, DateTime.Now);
 				test.Run (ctx);
 				test.SaveResults ();
 			} catch (Exception ex) {
