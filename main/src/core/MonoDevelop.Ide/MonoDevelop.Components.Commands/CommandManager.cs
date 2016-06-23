@@ -420,7 +420,8 @@ namespace MonoDevelop.Components.Commands
 					if (!dispatched)
 						dispatched = DispatchCommand (commands [i].Id, CommandSource.Keybinding);
 					conflict.Add (commands [i]);
-				}
+				} else
+					bypass = true; // allow Gtk to handle the event if the command is disabled
 			}
 
 			if (conflict.Count > 1) {
