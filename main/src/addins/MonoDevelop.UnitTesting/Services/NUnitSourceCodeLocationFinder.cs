@@ -61,10 +61,7 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
-
 		public abstract Task<SourceCodeLocation> GetSourceCodeLocationAsync (Project project, string fixtureTypeNamespace, string fixtureTypeName, string testName, CancellationToken cancellationToken = default(CancellationToken));
-
-
 	}
 }
 
