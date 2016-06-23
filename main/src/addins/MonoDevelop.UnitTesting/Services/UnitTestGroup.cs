@@ -147,7 +147,7 @@ namespace MonoDevelop.UnitTesting
 			return tres;
 		}
 		
-		protected override bool OnCanRun (MonoDevelop.Core.Execution.IExecutionHandler executionContext)
+		protected override bool OnCanRun (Core.Execution.IExecutionHandler executionContext)
 		{
 			foreach (UnitTest t in Tests)
 				if (!t.CanRun (executionContext))
