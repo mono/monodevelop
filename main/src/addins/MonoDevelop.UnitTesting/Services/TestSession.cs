@@ -58,7 +58,7 @@ namespace MonoDevelop.UnitTesting
 			if (context != null)
 				this.context = new Projects.ExecutionContext (context.ExecutionHandler, new CustomConsoleFactory (context.ConsoleFactory, cs), context.ExecutionTarget);
 			CancellationTokenSource = cs;
-			this.monitor = new TestMonitor (resultsPad, CancellationTokenSource);
+			monitor = new TestMonitor (resultsPad, CancellationTokenSource);
 			this.resultsPad = resultsPad;
 			resultsPad.InitializeTestRun (test, cs);
 			Task = new Task ((Action)RunTests);
