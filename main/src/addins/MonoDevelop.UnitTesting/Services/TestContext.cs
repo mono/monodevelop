@@ -40,7 +40,7 @@ namespace MonoDevelop.UnitTesting
 		ITestProgressMonitor monitor;
 		DateTime testDate;
 		object contextData;
-		MonoDevelop.Projects.ExecutionContext executionContext;
+		ExecutionContext executionContext;
 
 		internal TestContext (ITestProgressMonitor monitor, TestResultsPad resultsPad, MonoDevelop.Projects.ExecutionContext executionContext, DateTime testDate)
 		{
