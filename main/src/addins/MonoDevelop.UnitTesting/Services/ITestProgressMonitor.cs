@@ -39,7 +39,5 @@ namespace MonoDevelop.UnitTesting
 		void WriteGlobalLog (string message);
 		CancellationToken CancellationToken { get; }
 	}
-	
-	public delegate void TestHandler ();
 }
 
