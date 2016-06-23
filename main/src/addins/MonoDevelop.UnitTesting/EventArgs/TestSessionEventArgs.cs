@@ -27,29 +27,13 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using Mono.Addins;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using System.Threading.Tasks;
-using System.Linq;
-using MonoDevelop.Ide.TypeSystem;
-using System.IO;
-using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.UnitTesting
 {
-
 	public class TestSessionEventArgs: EventArgs
 	{
 		public AsyncOperation Session { get; set; }
 		public UnitTest Test { get; set; }
 	}
-	
 }
