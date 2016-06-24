@@ -675,7 +675,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
 			_label = "_Focus Document"
 			shortcut = "Alt|C"
-			macShortcut = "F7 Escape"
+			macShortcut = "F7"
 			_description = "Focus current document" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.CenterAndFocusCurrentDocumentHandler"
