@@ -43,7 +43,16 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 	{
 		[NodeAttribute ("_label", "Label of the submenu", Localizable=true)]
 		string label;
-		
+		public string Label {
+			get {
+				return label ?? Id;
+			}
+
+			private set {
+				label = value;
+			}
+		}
+
 		[NodeAttribute("icon", "Icon of the submenu. The provided value must be a registered stock icon. A resource icon can also be specified using 'res:' as prefix for the name, for example: 'res:customIcon.png'")]
 		string icon;
 		

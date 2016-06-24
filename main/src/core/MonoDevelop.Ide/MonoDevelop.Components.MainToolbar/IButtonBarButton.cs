@@ -24,10 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	public class ButtonBarGroup
+	{
+		// The title of the button group. Used for accessibility
+		public string Title { get; private set; }
+
+		// The buttons in this group
+		public List<IButtonBarButton> Buttons { get; }
+
+		public ButtonBarGroup (string title)
+		{
+			Title = title;
+			Buttons = new List<IButtonBarButton> ();
+		}
+	}
+
 	public interface IButtonBarButton
 	{
 		/// <summary>

@@ -84,6 +84,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		readonly Dictionary<IButtonBarButton, int> indexMap = new Dictionary<IButtonBarButton, int> ();
 		readonly IReadOnlyList<IButtonBarButton> buttons;
 
+		public string Title { get; set; }
 		public ButtonBar (IEnumerable<IButtonBarButton> buttons)
 		{
 			Cell = new DarkThemeSegmentedCell ();
