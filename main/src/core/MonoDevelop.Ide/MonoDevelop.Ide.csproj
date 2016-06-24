@@ -160,6 +160,9 @@
     <Reference Include="System.Composition.Runtime">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\System.Composition.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>..\..\..\packages\YamlDotNet.3.9.0\lib\net35\YamlDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -8555,6 +8558,9 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AutoInsertBracketTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\ErrorDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide\LocalizationService.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Sublime3Format.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ISyntaxMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -8566,6 +8572,7 @@
     <None Include="MonoDevelop.Ide.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
