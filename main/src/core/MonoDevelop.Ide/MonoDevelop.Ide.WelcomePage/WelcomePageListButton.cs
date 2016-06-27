@@ -151,7 +151,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			get { return itemAccessible; }
 			set {
 				itemAccessible = value;
-				Sensitive = ItemAccessible;
 				QueueDraw ();
 			}
 		}
@@ -220,15 +219,8 @@ namespace MonoDevelop.Ide.WelcomePage
 				updated = true;
 			}
 
-			if (!ItemAccessible) {
+			if (!ItemAccessible)
 				GdkWindow.Cursor = mouseOverRemove || mouseOverStar ? hand_cursor : null;
-			}
-
-			so = removeRect.Contains (x, y);
-			if (so != mouseOverRemove) {
-				mouseOverRemove = so;
-				updated = true;
-			}
 
 			if (updated)
 				QueueDraw ();
