@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Editor.Projection;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Host.Mef;
 using System.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -608,13 +609,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			var netProj = p as MonoDevelop.Projects.DotNetProject;
 			if (netProj == null)
 				yield break;
-
-			foreach (var referencedProject in netProj.GetReferencedAssemblyProjects (IdeApp.Workspace?.ActiveConfiguration ?? MonoDevelop.Projects.ConfigurationSelector.Default)) {
-				if (token.IsCancellationRequested)
-					yield break;
+			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
+				var referencedProject = pr.ResolveProject (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
+				if (referencedProject == null)
+					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject))
 					continue;
-				yield return new ProjectReference (GetOrCreateProjectId (referencedProject));
+				var splittedAliases = (pr.Aliases ?? "").Split (new [] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+				yield return new ProjectReference (GetOrCreateProjectId (referencedProject), ImmutableArray<string>.Empty.AddRange (splittedAliases));
 			}
 		}
 
