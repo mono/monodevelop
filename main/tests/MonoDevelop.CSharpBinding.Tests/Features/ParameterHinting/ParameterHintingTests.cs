@@ -1364,28 +1364,56 @@ namespace Test40018
 		}
 
 		/// <summary>
-		/// Bug 41351 - No arguments code completion for methods called via ?. operator
+		/// Bug 41245 - Attribute code completion not showing all constructors and showing too many things
 		/// </summary>
 		[Test]
-		public void TestBug41351 ()
+		public void TestBug41245 ()
 		{
 			var provider = CreateProvider (
 				@"
 using System;
 
-class test
+namespace cp654fz7
 {
-	public event EventHandler Handler;
-
-	public test()
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false)]
+	public sealed class JsonPropertyAttribute : Attribute
 	{
-		Handler?.Invoke($$);
+		internal bool? _isReference;
+		internal int? _order;
+		public bool IsReference
+		{
+			get { return _isReference ?? default(bool); }
+			set { _isReference = value; }
+		}
+		public int Order
+		{
+			get { return _order ?? default(int); }
+			set { _order = value; }
+		}
+		public string PropertyName { get; set; }
+		public JsonPropertyAttribute()
+		{
+		}
+
+		public JsonPropertyAttribute(string propertyName)
+		{
+			PropertyName = propertyName;
+		}
+	}
+
+	class MainClass
+	{
+		[JsonProperty($$)]
+		public object MyProperty { get; set; }
+
+		public static void Main(string[] args)
+		{
+		}
 	}
 }
-
 ");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual (2, provider.Count);
 		}
 	}
 }
