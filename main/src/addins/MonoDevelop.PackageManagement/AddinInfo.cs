@@ -9,7 +9,7 @@ using Mono.Addins.Description;
 	Category = "IDE extensions")]
 
 [assembly:AddinName ("NuGet Package Management")]
-[assembly:AddinDescription ("Provides support for adding and maintaining NuGet packages in your project. Uses NuGet 2.8.7")]
+[assembly:AddinDescription ("Provides support for adding and maintaining NuGet packages in your project.")]
 
 [assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]

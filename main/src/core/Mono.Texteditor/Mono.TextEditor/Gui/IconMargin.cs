@@ -82,9 +82,12 @@ namespace Mono.TextEditor
 			}
 		}
 
+		Gdk.Cursor textLinkCursor = new Gdk.Cursor (Gdk.CursorType.Hand1);
+
 		internal protected override void MouseHover (MarginMouseEventArgs args)
 		{
 			base.MouseHover (args);
+			cursor = textLinkCursor;
 			args.Editor.TooltipText = null;
 			DocumentLine lineSegment = args.LineSegment;
 			if (lineSegment != null) {
@@ -94,6 +97,13 @@ namespace Mono.TextEditor
 						marginMarker.InformMouseHover (editor, this, args);
 				}
 			}
+		}
+
+		internal protected override void MouseLeft ()
+		{
+			if (!string.IsNullOrEmpty (editor.TooltipText))
+				editor.TooltipText = null;
+			base.MouseLeft ();
 		}
 
 		internal protected override void Draw (Cairo.Context ctx, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)

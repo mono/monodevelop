@@ -40,9 +40,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ISolution ParentSolution { get; set; }
 		public IDictionary ExtendedProperties { get; set; }
 
+		List<string> flavorGuids;
+
 		public FakeProject ()
 		{
 			ExtendedProperties = new Hashtable ();
+			flavorGuids = new List<string> ();
 		}
 
 		public FakeProject (string fileName)
@@ -66,7 +69,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public IEnumerable<string> FlavorGuids {
-			get { yield break; }
+			get { return flavorGuids; }
+		}
+
+		public void AddFlavorGuid (string guid)
+		{
+			flavorGuids.Add (guid);
 		}
 	}
 }

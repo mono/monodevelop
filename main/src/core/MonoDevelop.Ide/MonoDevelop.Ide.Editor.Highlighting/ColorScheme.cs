@@ -551,6 +551,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription(DiffLocationKey)] //not defined
 		public ChunkStyle DiffLocation { get; private set; }
 
+		public const string PreviewDiffRemovedKey = "Preview Diff Removed Line";
+		[ColorDescription (PreviewDiffRemovedKey)] //not defined
+		public ChunkStyle PreviewDiffRemoved { get; private set; }
+
+		public const string PreviewDiffAddeddKey = "Preview Diff Added Line";
+		[ColorDescription (PreviewDiffAddeddKey)] //not defined
+		public ChunkStyle PreviewDiffAddedd { get; private set; }
+
 		public const string HtmlAttributeNameKey = "Html Attribute Name";
 		[ColorDescription(HtmlAttributeNameKey, VSSetting="HTML Attribute")]
 		public ChunkStyle HtmlAttributeName { get; private set; }

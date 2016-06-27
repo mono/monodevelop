@@ -41,7 +41,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
-			return "From Packages";
+			return ProjectReferencesFromPackagesFolderNode.NodeName;
 		}
 
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)

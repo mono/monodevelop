@@ -295,9 +295,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, insertionText);
 			int offset = Editor.CaretOffset;
-			for (int i = skipChars - 1; i --> 0;) {
-				Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset)));
-				offset++;
+			for (int i = skipChars; i --> 0;) {
+				Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset + i)));
 			}
 
 			if (runParameterCompletionCommand && IdeApp.Workbench != null) {

@@ -428,7 +428,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return false;
 			
 			var member = ResolveMember (type, memberName, instance == null);
-			if (member.Length == 0)
+			if (member == null || member.Length == 0)
 				return false;
 
 			if (j < str.Length && str[j] == '(') {
@@ -439,7 +439,7 @@ namespace MonoDevelop.Projects.MSBuild
 					return false;
 
 				// Find a method with a matching number of parameters
-				var method = FindBestOverload (member.OfType<MethodInfo> (), parameterValues);
+				var method = FindBestOverload (member.OfType<MethodBase> (), parameterValues);
 				if (method == null)
 					return false;
 				
@@ -552,11 +552,11 @@ namespace MonoDevelop.Projects.MSBuild
 			return false;
 		}
 
-		MethodInfo FindBestOverload (IEnumerable<MethodInfo> methods, object [] args)
+		MethodBase FindBestOverload (IEnumerable<MethodBase> methods, object [] args)
 		{
-			MethodInfo methodWithParams = null;
+			MethodBase methodWithParams = null;
 
-			foreach (var m in methods.OfType<MethodInfo> ()) {
+			foreach (var m in methods) {
 				var argInfo = m.GetParameters ();
 
 				// Exclude methods which take a complex object as argument
@@ -580,7 +580,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return pi.ParameterType.IsArray && pi.IsDefined (typeof (ParamArrayAttribute));
 		}
 
-		object ConvertArg (MethodInfo method, int argNum, object value, Type parameterType)
+		object ConvertArg (MethodBase method, int argNum, object value, Type parameterType)
 		{
 			var sval = value as string;
 			if (sval == "null")
@@ -640,6 +640,10 @@ namespace MonoDevelop.Projects.MSBuild
 
 		MemberInfo[] ResolveMember (Type type, string memberName, bool isStatic)
 		{
+			if (type == typeof (string) && memberName == "new")
+				memberName = "Copy";
+			if (type.IsArray)
+				type = typeof (Array);
 			var flags = isStatic ? BindingFlags.Static : BindingFlags.Instance;
 			if (type != typeof (Microsoft.Build.Evaluation.IntrinsicFunctions)) {
 				var t = supportedTypeMembers.FirstOrDefault (st => st.Item1 == type);
@@ -654,6 +658,7 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		static Tuple<Type, string []> [] supportedTypeMembers = {
+			Tuple.Create (typeof(System.Array), (string[]) null),
 			Tuple.Create (typeof(System.Byte), (string[]) null),
 			Tuple.Create (typeof(System.Char), (string[]) null),
 			Tuple.Create (typeof(System.Convert), (string[]) null),

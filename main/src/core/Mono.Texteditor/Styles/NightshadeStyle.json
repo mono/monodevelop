@@ -240,6 +240,9 @@
 		{ "name": "Diff Header(New)", "fore": "chameleon1", "weight": "bold" },
 		{ "name": "Diff Location", "fore": "chameleon1", "weight": "bold" },
 
+		{ "name": "Preview Diff Removed Line", "fore": "#5c2c2c", "back": "#dcb4b4" },
+		{ "name": "Preview Diff Added Line", "fore": "#235423", "back": "#a4d9a4" },
+
 		{ "name": "Css Comment", "fore": "CommentVim", "weight": "bold" },
 		{ "name": "Css Property Name", "fore": "NormalVim", "weight": "bold" },
 		{ "name": "Css Property Value", "fore": "StringVim", "weight": "bold" },

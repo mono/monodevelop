@@ -1,0 +1,124 @@
+﻿<?xml version="1.0"?>
+<scheme version="1.0">
+    <binding command="MonoDevelop.AnalysisCore.AnalysisCommands.ShowFixes" shortcut="" />
+    <binding command="MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow" shortcut="" />
+    <binding command="MonoDevelop.Components.MainToolbar.Commands.NavigateTo" shortcut="" />
+    <binding command="MonoDevelop.CSharp.ExpandCommands.ExpandSelection" shortcut="" />
+    <binding command="MonoDevelop.CSharp.ExpandCommands.ShrinkSelection" shortcut="" />
+    <binding command="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage" shortcut="" />
+    <binding command="MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage" shortcut="" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.Continue" shortcut="Control+Meta+Y" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.Debug" shortcut="Meta+R" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" shortcut="" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.Pause" shortcut="Control+Meta+Y" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.ShowBreakpoints" shortcut="Meta+7" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.StepInto" shortcut="F7" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.StepOut" shortcut="F8" />
+    <binding command="MonoDevelop.Debugger.DebugCommands.StepOver" shortcut="F6" />
+    <binding command="MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles" shortcut="" />
+    <binding command="MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Meta+BackSpace" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="Control+Shift+Meta+Left" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Rename" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" shortcut="Meta+W" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.CloseFile" shortcut="Control+Meta+W Shift+Meta+W" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup" shortcut="Shift+Meta+P" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.ReloadFile" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.FileCommands.SaveAll" shortcut="Alt+Meta+S" />
+    <binding command="MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" shortcut="Control+Alt+Meta+W" />
+    <binding command="MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" shortcut="Meta+0" />
+    <binding command="MonoDevelop.Ide.Commands.HelpCommands.Help" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Build" shortcut="Meta+B" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.BuildSolution" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions" shortcut="Shift+Meta+," />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Rebuild" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RebuildSolution" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Run" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.RunCodeAnalysisProject" shortcut="Shift+Meta+B" />
+    <binding command="MonoDevelop.Ide.Commands.ProjectCommands.Stop" shortcut="Meta+." />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoFile" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharLeft" shortcut="Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.CharRight" shortcut="Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" shortcut="Control+H" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextSubword" shortcut="Control+Delete" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteNextWord" shortcut="Alt+Delete" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevSubword" shortcut="Control+BackSpace" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeletePrevWord" shortcut="Alt+BackSpace" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" shortcut="Control+D" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineEnd" shortcut="Control+K Meta+Delete" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteToLineStart" shortcut="Meta+BackSpace" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" shortcut="Meta+Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentStart" shortcut="Meta+Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.DynamicAbbrev" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace" shortcut="Shift+Meta+\" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineDown" shortcut="Control+N Alt+Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineEnd" shortcut="Control+E Meta+Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineStart" shortcut="Control+A Meta+Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.LineUp" shortcut="Control+P Alt+Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" shortcut="Alt+Meta+]" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" shortcut="Alt+Meta+[" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextSubword" shortcut="Control+Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MoveNextWord" shortcut="Alt+Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevSubword" shortcut="Control+Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.MovePrevWord" shortcut="Alt+Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PageDown" shortcut="Alt+Page_Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PageUp" shortcut="Alt+Page_Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveDown" shortcut="Shift+Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveEnd" shortcut="Control+Shift+E Shift+Meta+Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveHome" shortcut="Control+Shift+A Shift+Meta+Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft" shortcut="Shift+Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextSubword" shortcut="Control+Shift+Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveNextWord" shortcut="Alt+Shift+Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevSubword" shortcut="Control+Shift+Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMovePrevWord" shortcut="Alt+Shift+Left" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveRight" shortcut="Shift+Right" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentEnd" shortcut="Shift+Meta+Down Shift+End" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveToDocumentStart" shortcut="Shift+Meta+Up Shift+Home" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveUp" shortcut="Alt+Shift+Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageDownAction" shortcut="Shift+Page_Down" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.SelectionPageUpAction" shortcut="Shift+Page_Up" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" shortcut="Control+Space" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.CenterAndFocusCurrentDocument" shortcut="Control+L" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" shortcut="Meta+J" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.FullScreen" shortcut="Control+Meta+F" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.NextNotebook" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.PreviousNotebook" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" shortcut="Shift+Meta+1" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.SingleMode" shortcut="" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" shortcut="Meta++" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" shortcut="Meta+-" />
+    <binding command="MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" shortcut="Shift+Meta+=" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchNextDocument" shortcut="Control+3" />
+    <binding command="MonoDevelop.Ide.Commands.WindowCommands.SwitchPreviousDocument" shortcut="Control+2" />
+    <binding command="MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues" shortcut="Control+Meta+M" />
+    <binding command="MonoDevelop.IPhone.IPhoneCommands.Profile" shortcut="Meta+I" />
+    <binding command="MonoDevelop.MacIntegration.MacIntegrationCommands.ZoomWindow" shortcut="Alt+Meta+8" />
+    <binding command="MonoDevelop.Refactoring.RefactoryCommands.FindReferences" shortcut="Control+Shift+Meta+F" />
+    <binding command="MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" shortcut="Control+Meta+J" />
+    <binding command="MonoDevelop.Refactoring.RefactoryCommands.ImportSymbol" shortcut="" />
+    <binding command="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" shortcut="Meta+'" />
+    <binding command="MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" shortcut="" />
+    <binding command="MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError" shortcut="Meta+Shift+'" />
+    <binding command="MonoDevelop.UnitTesting.Commands.TestCommands.RunAllTests" shortcut="Meta+U" />
+    <binding command="MonoDevelop.VersionControl.Commands.SolutionStatus" shortcut="Alt+Meta+C" />
+    <binding command="MonoDevelop.VersionControl.Commands.UpdateSolution" shortcut="Alt+Meta+X" />
+    <binding command="Pad|ClassPad" shortcut="Meta+2" />
+    <binding command="Pad|MonoDevelop.Debugger.ImmediatePad" shortcut="Shift+Meta+C" />
+    <binding command="Pad|MonoDevelop.Debugger.LocalsPad" shortcut="Meta+6" />
+    <binding command="Pad|MonoDevelop.DesignerSupport.PropertyPad" shortcut="Alt+Meta+4" />
+    <binding command="Pad|MonoDevelop.Ide.Gui.Pads.ErrorListPad" shortcut="Meta+4" />
+    <binding command="Pad|MonoDevelop.Ide.Gui.Pads.HelpTree" shortcut="Shift+Meta+0" />
+    <binding command="Pad|MonoDevelop.UnitTesting.TestPad" shortcut="Meta+5" />
+    <binding command="Pad|ProjectPad" shortcut="Meta+1" />
+    <binding command="Pad|SearchPad - Search Results - 0" shortcut="Meta+3" />
+    <binding command="Xamarin.Inspector.XS.Commands.InspectorCommands.Inspect" shortcut="" />
+</scheme>

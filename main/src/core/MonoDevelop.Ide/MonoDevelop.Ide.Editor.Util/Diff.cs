@@ -249,11 +249,8 @@ namespace MonoDevelop.Ide.Editor.Util
 		{
 			int lineA = 0;
 			int lineB = 0;
-			while (lineA < baseData.Length || lineB < changedData
-		.Length) {
-				if (lineA < baseData.Length && !baseData.Modified[lineA] && lineB < changedData
-		.Length && !changedData
-		.Modified[lineB]) {
+			while (lineA < baseData.Length || lineB < changedData.Length) {
+				if (lineA < baseData.Length && !baseData.Modified[lineA] && lineB < changedData.Length && !changedData.Modified[lineB]) {
 					// equal lines
 					lineA++;
 					lineB++;
@@ -263,14 +260,11 @@ namespace MonoDevelop.Ide.Editor.Util
 					int startA = lineA;
 					int startB = lineB;
 
-					while (lineA < baseData.Length && (lineB >= changedData
-		.Length || baseData.Modified[lineA]))
+					while (lineA < baseData.Length && (lineB >= changedData.Length || baseData.Modified[lineA]))
 						// while (LineA < DataA.Length && DataA.Modified[LineA])
 						lineA++;
 
-					while (lineB < changedData
-		.Length && (lineA >= baseData.Length || changedData
-		.Modified[lineB]))
+					while (lineB < changedData.Length && (lineA >= baseData.Length || changedData.Modified[lineB]))
 						// while (LineB < DataB.Length && DataB.Modified[LineB])
 						lineB++;
 

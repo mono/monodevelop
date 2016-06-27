@@ -28,19 +28,36 @@
 
 using System;
 using System.Net;
-using NuGet;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Web;
+using NuGet.Credentials;
 
 namespace MonoDevelop.PackageManagement
 {
-	class MonoDevelopCredentialProvider : ICredentialProvider
+	class MonoDevelopCredentialProvider : NuGet.Credentials.ICredentialProvider
 	{
-		public ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
+		public string Id {
+			get { return "MonoDevelop.PackageManagement.CredentialProvider"; }
+		}
+
+		public Task<CredentialResponse> Get (Uri uri, IWebProxy proxy, bool isProxyRequest, bool isRetry, bool nonInteractive, CancellationToken cancellationToken)
 		{
-			var cp = MonoDevelop.Core.WebRequestHelper.CredentialProvider;
+			var cp = WebRequestHelper.CredentialProvider;
 			if (cp == null)
 				return null;
 
-			return cp.GetCredentials (uri, proxy, (MonoDevelop.Core.Web.CredentialType)credentialType, retrying);
+			var credentialType = isProxyRequest ? CredentialType.ProxyCredentials : CredentialType.RequestCredentials;
+
+			return Task.Run (() => {
+				ICredentials credentials = cp.GetCredentials (uri, proxy, credentialType, isRetry);
+				if (credentials != null) {
+					return new CredentialResponse (credentials, CredentialStatus.Success);
+				}
+				return new CredentialResponse (CredentialStatus.ProviderNotApplicable);
+			});
 		}
 	}
 }
+

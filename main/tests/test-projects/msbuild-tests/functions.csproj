@@ -26,6 +26,8 @@
 	<MSBuildAddDouble>$([MSBuild]::Add(2.5, 3))</MSBuildAddDouble>
 	<MSBuildValueOrDefault1>$([MSBuild]::ValueOrDefault($(Prop), "empty"))</MSBuildValueOrDefault1>
 	<MSBuildValueOrDefault2>$([MSBuild]::ValueOrDefault($(NoProp), "empty"))</MSBuildValueOrDefault2>
+	<SplitLength>$(Prop.Split('d').Length)</SplitLength>
+	<NewString>$([System.String]::new('$(Prop)').TrimEnd('h'))</NewString>
 	<Path>\a\b\</Path>
 	<CharTrim>$(Path.Trim (\b))</CharTrim>
 	<OutDir>foo</OutDir>

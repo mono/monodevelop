@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Ide;
 using NuGet;
 using MonoDevelop.Core;
 
@@ -38,19 +36,20 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class PackageCompatibilityChecker
 	{
-		IPackageManagementSolution solution;
-		IRegisteredPackageRepositories registeredRepositories;
+		ISolutionPackageRepository packageRepository;
 		List<IPackage> packagesRequiringReinstallation = new List<IPackage> ();
 		PackageReferenceFile packageReferenceFile;
 		List<PackageReference> packageReferences;
 		ProjectPackagesCompatibilityReport compatibilityReport;
 
-		public PackageCompatibilityChecker (
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories)
+		public PackageCompatibilityChecker (ISolution solution)
+			: this (new SolutionPackageRepository (solution))
 		{
-			this.solution = solution;
-			this.registeredRepositories = registeredRepositories;
+		}
+
+		public PackageCompatibilityChecker (ISolutionPackageRepository packageRepository)
+		{
+			this.packageRepository = packageRepository;
 		}
 
 		public string PackageReferenceFileName {
@@ -59,15 +58,14 @@ namespace MonoDevelop.PackageManagement
 
 		public void CheckProjectPackages (IDotNetProject project)
 		{
-			IPackageManagementProject packageManagementProject = solution.GetProject (registeredRepositories.ActiveRepository, project);
-
 			packageReferenceFile = CreatePackageReferenceFile (project.GetPackagesConfigFilePath ());
 			packageReferences = packageReferenceFile.GetPackageReferences ().ToList ();
 
-			compatibilityReport = new ProjectPackagesCompatibilityReport (packageManagementProject.TargetFramework);
+			var targetFramework = new ProjectTargetFramework (project);
+			compatibilityReport = new ProjectPackagesCompatibilityReport (targetFramework.TargetFrameworkName);
 
 			foreach (PackageReference packageReference in packageReferences) {
-				IPackage package = packageManagementProject.FindPackage (packageReference.Id);
+				IPackage package = packageRepository.Repository.FindPackage (packageReference.Id);
 				if (package != null) {
 					if (PackageNeedsReinstall (project, package, packageReference.TargetFramework)) {
 						packagesRequiringReinstallation.Add (package);

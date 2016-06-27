@@ -9,58 +9,62 @@
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Category _name = "NuGet" id = "NuGet">
 		<Command
-			id = "MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
+			id = "MonoDevelop.PackageManagement.Commands.AddPackages"
 			_description = "Add NuGet packages to the project"
 			_label = "Add NuGet _Packages..."
 			defaultHandler = "MonoDevelop.PackageManagement.Commands.AddPackagesHandler" />
 		<Command
-			id = "MonoDevelop.PackageManagement.Commands.AddPackages"
-			_description = "Add packages to the project"
-			_label = "Add _Packages..."
-			defaultHandler = "MonoDevelop.PackageManagement.Commands.AddPackagesHandler" />
-		<Command
 			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
-			_description = "Restore missing NuGet packages"
+			_description = "Restore all missing packages in the solution"
 			_label = "_Restore NuGet Packages"
+			_displayName = "Restore Packages (Solution)"
 			defaultHandler = "MonoDevelop.PackageManagement.Commands.RestorePackagesHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.Restore"
 			_description="Restore missing packages"
 			_label="_Restore"
+			_displayName = "Restore Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.RestorePackagesInProjectHandler" />
 		<Command
-			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion"
-			_description="Current package version"
-			_label="Version" />
-		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage"
-			_description="Retarget package"
-			_label="Re_target" />
+			_description="Retarget selected package"
+			_label="Re_target"
+			_displayName="Retarget Package" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage"
-			_description="Update package"
-			_label="_Update" />
+			_description="Update selected package"
+			_label="_Update"
+			_displayName="Update Package" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject"
 			_description="Update all packages"
 			_label="_Update"
+			_displayName="Update All Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProjectHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
-			_description="Update all NuGet packages in the solution"
+			_description="Update all packages in the solution"
 			_label="_Update NuGet Packages"
+			_displayName="Update All Packages (Solution)"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
 		<Command
-			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
+			id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject"
 			_description="Retargets all packages"
 			_label="Re_target"
+			_displayName="Retarget All Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
+		</Category>
+		<Category id="Hidden" _name="Hidden">
+			<Command
+				id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion"
+				_description="Current package version"
+				_label="Version" />
 		</Category>
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
 		<SeparatorItem insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
-		<CommandItem id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.AddPackages" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.RestorePackages" />
 		<SeparatorItem />
@@ -79,9 +83,9 @@
 		</Condition>
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages" />
+				id="MonoDevelop.PackageManagement.Commands.AddPackages" _label = "Add _Packages..." />
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject" />
+				id="MonoDevelop.PackageManagement.Commands.PackagesFolderNodeCommands.ReinstallAllPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
@@ -92,7 +96,7 @@
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="Project">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
+				id="MonoDevelop.PackageManagement.Commands.AddPackages"
 				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
 				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		</Condition>
@@ -155,4 +159,8 @@
 	<Extension path="/MonoDevelop/Refactoring/CodeDiagnosticProvider">
 		<Class class="MonoDevelop.PackageManagement.Refactoring.PackageCodeDiagnosticProvider" />
 	</Extension>-->
+
+	<Extension path="/MonoDevelop/Core/SystemInformation"> 
+		<Class class="MonoDevelop.PackageManagement.NuGetSystemInformation" /> 
+	</Extension>
 </ExtensionModel>

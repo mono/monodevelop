@@ -99,11 +99,16 @@ namespace MonoDevelop.Components
 			Show (parent, x, y, null);
 		}
 
-
-
 		public void Add (ContextMenuItem menuItem)
 		{
 			items.Add (menuItem);
+		}
+
+		public event EventHandler Closed;
+
+		internal void FireClosedEvent ()
+		{
+			Closed?.Invoke (this, EventArgs.Empty);
 		}
 	}
 }

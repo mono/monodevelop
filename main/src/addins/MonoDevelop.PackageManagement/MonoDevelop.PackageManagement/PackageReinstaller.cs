@@ -31,21 +31,17 @@ namespace MonoDevelop.PackageManagement
 {
 	internal class PackageReinstaller
 	{
-		IPackageManagementSolution solution;
 		IBackgroundPackageActionRunner runner;
 
 		public PackageReinstaller ()
 			: this (
-				PackageManagementServices.Solution,
 				PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
 		public PackageReinstaller (
-			IPackageManagementSolution solution,
 			IBackgroundPackageActionRunner runner)
 		{
-			this.solution = solution;
 			this.runner = runner;
 		}
 
@@ -58,10 +54,13 @@ namespace MonoDevelop.PackageManagement
 		public void Run (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
 			try {
-				IPackageManagementProject project = solution.GetProject (packageReferenceNode.Project);
-				ReinstallPackageAction action = project.CreateReinstallPackageAction ();
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+
+				var action = new ReinstallNuGetPackageAction (
+					packageReferenceNode.Project,
+					solutionManager);
 				action.PackageId = packageReferenceNode.Id;
-				action.PackageVersion = packageReferenceNode.Version;
+				action.Version = packageReferenceNode.Version;
 
 				runner.Run (progressMessage, action);
 			} catch (Exception ex) {

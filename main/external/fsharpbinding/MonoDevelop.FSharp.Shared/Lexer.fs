@@ -1,9 +1,6 @@
 ﻿namespace MonoDevelop.FSharp.Shared
 
-open System
 open System.Diagnostics
-open System.IO
-open System.Text
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open ExtCore.Control
 
@@ -40,20 +37,6 @@ type internal DraftToken =
 type TokenisedLine = TokenisedLine of tokens:FSharpTokenInfo list * stateAtEOL:int64
 
 module Lexer =
-    let inline isNotNull v = not (isNull v)
-
-    let getLines (str: string) =
-        use reader = new StringReader(str)
-        [|
-            let line = ref (reader.ReadLine())
-            while isNotNull (!line) do
-                yield !line
-                line := reader.ReadLine()
-            if str.EndsWith("\n") then
-                // last trailing space not returned
-                // http://stackoverflow.com/questions/19365404/stringreader-omits-trailing-linebreak
-                yield String.Empty
-        |]
     /// Get the array of all lex states in current source
     let internal getLexStates defines (source: string) =
         [|
@@ -65,7 +48,7 @@ module Lexer =
                     loop lineTokenizer newLexState
 
             let sourceTokenizer = SourceTokenizer(defines, "/tmp.fsx")
-            let lines = getLines source
+            let lines = String.getLines source
             let mutable lexState = 0L
             for line in lines do
                 yield lexState
@@ -87,7 +70,7 @@ module Lexer =
                 // OPTIMIZE: if the new document has the current document as a prefix,
                 // we can reuse lexing results and process only the added part.
                 | _ ->
-                    //LoggingService.LogDebug "queryLexState: lexing current document"
+                    printfn "queryLexState: lexing current document"
                     let lexStates = getLexStates defines source
                     currentDocumentState := Some (lexStates, source, defines)
                     lexStates
@@ -111,7 +94,6 @@ module Lexer =
             
     let inline isIdentifier t = t.CharClass = FSharpTokenCharKind.Identifier
     let inline isOperator t = t.ColorClass = FSharpTokenColorKind.Operator
-            
     let inline internal (|GenericTypeParameterPrefix|StaticallyResolvedTypeParameterPrefix|ActivePattern|Other|) ((token: FSharpTokenInfo), (lineStr:string)) =
         if token.Tag = FSharpTokenTag.QUOTE then GenericTypeParameterPrefix
         elif token.Tag = FSharpTokenTag.INFIX_AT_HAT_OP then
@@ -121,7 +103,9 @@ module Lexer =
                 StaticallyResolvedTypeParameterPrefix
              else Other
         elif token.Tag = FSharpTokenTag.LPAREN then
-            if token.FullMatchedLength = 1 && lineStr.[token.LeftColumn+1] = '|' then
+            if token.FullMatchedLength = 1 &&
+               lineStr.Length > token.LeftColumn+1 &&
+               lineStr.[token.LeftColumn+1] = '|' then
                ActivePattern
             else Other
         else Other
@@ -206,11 +190,6 @@ module Lexer =
             | SymbolLookupKind.ByLongIdent ->
                 tokens |> List.filter (fun x -> x.Token.LeftColumn <= col)
 
-        let inline orTry f =
-            function
-            | Some x -> Some x
-            | None -> f()
-
         //printfn "Filtered tokens: %+A" tokensUnderCursor
         match lookupKind with
         | SymbolLookupKind.ByLongIdent ->
@@ -225,6 +204,8 @@ module Lexer =
                         Some t1.LeftColumn
                | {Kind = Ident; Token = t} :: _ ->
                    Some t.LeftColumn
+               | {Kind = SymbolKind.Other; Token = t} :: _ when t.TokenName = "HASH" ->
+                   Some t.LeftColumn
                | _ :: _ | [] ->
                    None
             let decreasingTokens =
@@ -236,6 +217,13 @@ module Lexer =
 
             match decreasingTokens with
             | [] -> None
+            | [only] when only.Token.TokenName = "HASH" ->
+                Some 
+                 { Kind = SymbolKind.Other
+                   Line = line
+                   LeftColumn = only.Token.LeftColumn
+                   RightColumn = only.Token.RightColumn
+                   Text = lineStr }
             | first :: _ ->
                 tryFindStartColumn decreasingTokens
                 |> Option.map (fun leftCol ->
@@ -252,9 +240,7 @@ module Lexer =
                 match k with
                 | Ident | GenericTypeParameter | StaticallyResolvedTypeParameter -> true
                 | _ -> false)
-                /// Gets the option if Some x, otherwise try to get another value
-
-            |> orTry (fun _ -> tokensUnderCursor |> List.tryFind (fun { DraftToken.Kind = k } -> k = Operator))
+            |> Option.orTry (fun _ -> tokensUnderCursor |> List.tryFind (fun { DraftToken.Kind = k } -> k = Operator))
             |> Option.map (fun token ->
                 { Kind = token.Kind
                   Line = line
@@ -273,8 +259,4 @@ module Lexer =
 
     let getSymbol source line col lineStr lookupKind (args: string[]) queryLexState =
         let tokens = tokenizeLine source args line lineStr queryLexState
-        try
-            getSymbolFromTokens tokens line col lineStr lookupKind
-        with e ->
-            //LoggingService.LogInfo (sprintf "Getting lex symbols failed with %O" e)
-            None
+        getSymbolFromTokens tokens line col lineStr lookupKind

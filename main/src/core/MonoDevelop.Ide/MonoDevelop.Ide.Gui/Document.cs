@@ -890,9 +890,11 @@ namespace MonoDevelop.Ide.Gui
 			lock (adhocProjectLock) {
 				if (adhocProject == null)
 					return;
-				TypeSystemService.Unload (adhocSolution);
-				adhocSolution.Dispose ();
-				adhocSolution = null;
+				if (adhocSolution != null) {
+					TypeSystemService.Unload (adhocSolution);
+					adhocSolution.Dispose ();
+					adhocSolution = null;
+				}
 				adhocProject = null;
 			}
 		}

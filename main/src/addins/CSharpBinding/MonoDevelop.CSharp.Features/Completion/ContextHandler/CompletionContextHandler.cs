@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory6.CSharp.Completion
 		internal protected static bool IsTriggerAfterSpaceOrStartOfWordCharacter(SourceText text, int characterPosition)
 		{
 			var ch = text[characterPosition];
-			if (ch == ' ') {
+			if (ch == ' ' && characterPosition > 0) {
 				ch = text[characterPosition - 1];
 				return !char.IsWhiteSpace (ch);
 			}

@@ -424,6 +424,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			TreeIter cit;
 			if (removeEmptySections && page.Panels.Count == 0 && !store.IterChildren (out cit, it)) {
 				store.Remove (ref it);
+				pages.Remove (section);
 				return TreeIter.Zero;
 			}
 			return it;

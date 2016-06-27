@@ -42,8 +42,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			insertParenthesesCheckbutton.Toggled += InsertParensToggled;
 			autoCodeCompletionCheckbutton.Toggled += AutomaticCompletionToggled;
 			includeKeywordsCheckbutton.Visible = includeCodeSnippetsCheckbutton.Visible = false;
+			automaticCompletionModeCheckbutton.Sensitive = false;
 			hbox4.Visible = hbox5.Visible = false;
-
 		}
 
 		void InsertParensToggled (object sender, EventArgs e)
@@ -63,6 +63,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			showImportsCheckbutton.Active = IdeApp.Preferences.AddImportedItemsToCompletionList;
 			includeKeywordsCheckbutton.Active = IdeApp.Preferences.IncludeKeywordsInCompletionList;
 			includeCodeSnippetsCheckbutton.Active = IdeApp.Preferences.IncludeCodeSnippetsInCompletionList;
+			automaticCompletionModeCheckbutton.Active = !IdeApp.Preferences.ForceSuggestionMode;
 
 			insertParenthesesCheckbutton.Active = IdeApp.Preferences.AddParenthesesAfterCompletion;
 			openingRadiobutton.Active = IdeApp.Preferences.AddOpeningOnly;
@@ -76,6 +77,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void AutomaticCompletionToggled (object sender, EventArgs e)
 		{
 			includeKeywordsCheckbutton.Sensitive = includeCodeSnippetsCheckbutton.Sensitive = !autoCodeCompletionCheckbutton.Active;
+			automaticCompletionModeCheckbutton.Sensitive = autoCodeCompletionCheckbutton.Active;
 		}
 
 		bool IOptionsPanel.IsVisible ()
@@ -94,6 +96,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			IdeApp.Preferences.AddImportedItemsToCompletionList.Value = showImportsCheckbutton.Active;
 			IdeApp.Preferences.IncludeKeywordsInCompletionList.Value = includeKeywordsCheckbutton.Active;
 			IdeApp.Preferences.IncludeCodeSnippetsInCompletionList.Value = includeCodeSnippetsCheckbutton.Active;
+			IdeApp.Preferences.ForceSuggestionMode.Value = !automaticCompletionModeCheckbutton.Active;
 
 			IdeApp.Preferences.AddParenthesesAfterCompletion.Value = insertParenthesesCheckbutton.Active;
 			IdeApp.Preferences.AddOpeningOnly.Value = openingRadiobutton.Active;

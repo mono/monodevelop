@@ -15,6 +15,7 @@ open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Ide
 open MonoDevelop.Ide.CodeCompletion
+open MonoDevelop.Ide.Commands
 open MonoDevelop.Ide.Editor
 open MonoDevelop.Ide.Editor.Extension
 open MonoDevelop.Ide.Gui.Content
@@ -72,8 +73,12 @@ type FsiDocumentContext() =
     override x.Name = name
     override x.AnalysisDocument with get() = null
     override x.UpdateParseDocument() = Task.FromResult pd
-
-    member x.CompletionWidget with set (value) = completionWidget <- value
+    member x.CompletionWidget 
+        with set (value) = 
+            completionWidget <- value
+            completionWidget.CompletionContextChanged.Add
+                (fun _args -> let completion = editor.GetContent<CompletionTextEditorExtension>()
+                              ParameterInformationWindowManager.HideWindow(completion, value))
     member x.Editor with set (value) = editor <- value
     member x.WorkingFolder
         with get() = workingFolder
@@ -126,25 +131,23 @@ type FsiPrompt(icon: Xwt.Drawing.Image) =
 type FSharpInteractivePad() =
     inherit MonoDevelop.Ide.Gui.PadContent()
    
-    let options = DefaultSourceEditorOptions.Instance
     let ctx = FsiDocumentContext()
     let doc = TextEditorFactory.CreateNewDocument()
-
     do
-        options.ShowLineNumberMargin <- false
-        options.TabsToSpaces <- true
-        options.ShowWhitespaces <- ShowWhitespaces.Never
         doc.FileName <- FilePath ctx.Name
 
     let editor = TextEditorFactory.CreateNewEditor(ctx, doc, TextEditorType.Default)
     do
+        let options = new CustomEditorOptions (editor.Options)
         editor.MimeType <- "text/x-fsharp"
         editor.ContextMenuPath <- "/MonoDevelop/SourceEditor2/ContextMenu/Fsi"
-
+        options.ShowLineNumberMargin <- false
+        options.TabsToSpaces <- true
+        options.ShowWhitespaces <- ShowWhitespaces.Never
         ctx.CompletionWidget <- editor.GetContent<ICompletionWidget>()
         ctx.Editor <- editor
+        editor.Options <- options
 
-    let clipboardHandler = editor.GetContent<IClipboardHandler>()
     let mutable killIntent = NoIntent
     let mutable promptReceived = false
     let mutable activeDoc : IDisposable option = None
@@ -182,12 +185,16 @@ type FSharpInteractivePad() =
         editor.InsertAtCaret (nonBreakingSpace + t)
         editor.ScrollTo editor.CaretLocation
 
+    let input = new ResizeArray<_>()
+
     let setupSession() =
         try
             let ses = InteractiveSession()
-
+            input.Clear()
+            promptReceived <- false
             let textReceived = ses.TextReceived.Subscribe(fun t -> Runtime.RunInMainThread(fun () -> fsiOutput t) |> ignore)
             let promptReady = ses.PromptReady.Subscribe(fun () -> Runtime.RunInMainThread(fun () -> promptReceived <- true; setPrompt() ) |> ignore)
+
             ses.Exited.Add(fun _ ->
                 textReceived.Dispose()
                 promptReady.Dispose()
@@ -197,8 +204,8 @@ type FSharpInteractivePad() =
                         fsiOutput "\nSession termination detected. Press Enter to restart.") |> ignore
                 elif killIntent = Restart then
                     Runtime.RunInMainThread (fun () -> editor.Text <- "") |> ignore
-                killIntent <- NoIntent
-                promptReceived <- false)
+                killIntent <- NoIntent)
+
             ses.StartReceiving()
             // Make sure we're in the correct directory after a start/restart. No ActiveDocument event then.
             getCorrectDirectory() |> Option.iter (fun path -> ses.SendInput("#silentCd @\"" + path + "\";;"))
@@ -219,13 +226,15 @@ type FSharpInteractivePad() =
     let setCaretLine (s: string) =
         let line = editor.GetLineByOffset editor.CaretOffset
         editor.ReplaceText(line.Offset, line.EndOffset - line.Offset, s)
+
+    
     
     let resetFsi intent =
-        killIntent <- intent
-        session |> Option.iter (fun ses -> ses.Kill())
-        if intent = Restart then session <- setupSession()
+        if promptReceived then
+            killIntent <- intent
+            session |> Option.iter (fun ses -> ses.Kill())
+            if intent = Restart then session <- setupSession()
 
-    let input = new ResizeArray<_>()
     member x.Text =
         editor.Text
 
@@ -391,33 +400,33 @@ type FSharpInteractivePad() =
         addButton ("gtk-open", (fun _ -> x.OpenScript()), GettextCatalog.GetString ("Open"))
         addButton ("gtk-clear", (fun _ -> editor.Text <- ""), GettextCatalog.GetString ("Clear"))
         addButton ("gtk-refresh", (fun _ -> x.RestartFsi()), GettextCatalog.GetString ("Reset"))
-
         toolbar.ShowAll()
 
     member x.RestartFsi() = resetFsi Restart
 
     member x.ClearFsi() = editor.Text <- ""
 
-    member x.Cut() = clipboardHandler.Cut()
-
-    member x.Copy() = clipboardHandler.Copy()
-
-    member x.Paste() = clipboardHandler.Paste()
-
     member x.Save() =
-        let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as script"), MonoDevelop.Components.FileChooserAction.Save)
+        let dlg = new MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Save as .fsx"), MonoDevelop.Components.FileChooserAction.Save)
+
+        dlg.DefaultFilter <- dlg.AddFilter (GettextCatalog.GetString ("F# script files"), "*.fsx")
         if dlg.Run () then
-            let file = dlg.SelectedFile
+            let file = 
+                if dlg.SelectedFile.Extension = ".fsx" then
+                    dlg.SelectedFile
+                else
+                    dlg.SelectedFile.ChangeExtension(".fsx")
+
             let lines = input |> Seq.map (fun line -> line.TrimEnd(';'))
             let fileContent = String.concat "\n" lines
             File.WriteAllText(file.FullPath.ToString(), fileContent)
 
     member x.OpenScript() =
-        let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("File to Open"), MonoDevelop.Components.FileChooserAction.Open)
-
+        let dlg = MonoDevelop.Ide.Gui.Dialogs.OpenFileDialog(GettextCatalog.GetString ("Open script"), MonoDevelop.Components.FileChooserAction.Open)
+        dlg.AddFilter (GettextCatalog.GetString ("F# script files"), [|".fs"; "*.fsi"; "*.fsx"; "*.fsscript"; "*.ml"; "*.mli" |]) |> ignore
         if dlg.Run () then
             let file = dlg.SelectedFile
-            x.SendCommand ("#load \"" + file.FullPath.ToString() + "\"")
+            x.SendCommand ("#load @\"" + file.FullPath.ToString() + "\"")
 
 /// handles keypresses for F# Interactive
 type FSharpFsiEditorCompletion() =
@@ -482,17 +491,52 @@ type FSharpFsiEditorCompletion() =
             result
         | _ -> base.KeyPress (descriptor)
 
+    member x.clipboardHandler = x.Editor.GetContent<IClipboardHandler>()
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Cut")>]
+    member x.Cut() = x.clipboardHandler.Cut()
+
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Cut")>]
+    member x.CanCut(ci:CommandInfo) =
+        ci.Enabled <- x.clipboardHandler.EnableCut
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Copy")>]
+    member x.Copy() = x.clipboardHandler.Copy()
+
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Copy")>]
+    member x.CanCopy(ci:CommandInfo) =
+        ci.Enabled <- x.clipboardHandler.EnableCopy
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.EditCommands.Paste")>]
+    member x.Paste() = x.clipboardHandler.Paste()
+
+    [<CommandUpdateHandler ("MonoDevelop.Ide.Commands.EditCommands.Paste")>]
+    member x.CanPaste(ci:CommandInfo) =
+        ci.Enabled <- x.clipboardHandler.EnablePaste
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.ViewCommands.ZoomIn")>]
+    member x.ZoomIn() = x.Editor.GetContent<IZoomable>().ZoomIn()
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.ViewCommands.ZoomOut")>]
+    member x.ZoomOut() = x.Editor.GetContent<IZoomable>().ZoomOut()
+
+    [<CommandHandler ("MonoDevelop.Ide.Commands.ViewCommands.ZoomReset")>]
+    member x.ZoomReset() = x.Editor.GetContent<IZoomable>().ZoomReset()
+
   type InteractiveCommand(command) =
     inherit CommandHandler()
-
-    override x.Update(info:CommandInfo) =
-        info.Enabled <- true
-        info.Visible <- FileService.isInsideFSharpFile()
 
     override x.Run() =
         FSharpInteractivePad.Fsi
         |> Option.iter (fun fsi -> command fsi
                                    FSharpInteractivePad.BringToFront(false))
+
+  type FSharpFileInteractiveCommand(command) =
+    inherit InteractiveCommand(command)
+
+    override x.Update(info:CommandInfo) =
+        info.Enabled <- true
+        info.Visible <- FileService.isInsideFSharpFile()
 
   type ShowFSharpInteractive() =
       inherit InteractiveCommand(ignore)
@@ -500,26 +544,17 @@ type FSharpFsiEditorCompletion() =
           info.Enabled <- true
           info.Visible <- true
 
-  type InteractiveCut() =
-      inherit InteractiveCommand(fun fsi -> fsi.Cut())
-
-  type InteractiveCopy() =
-      inherit InteractiveCommand(fun fsi -> fsi.Copy())
-
-  type InteractivePaste() =
-      inherit InteractiveCommand(fun fsi -> fsi.Paste())
-
   type SendSelection() =
-      inherit InteractiveCommand(fun fsi -> fsi.SendSelection())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendSelection())
 
   type SendLine() =
-      inherit InteractiveCommand(fun fsi -> fsi.SendLine())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendLine())
 
   type SendFile() =
-      inherit InteractiveCommand(fun fsi -> fsi.SendFile())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.SendFile())
 
   type SendReferences() =
-      inherit InteractiveCommand(fun fsi -> fsi.LoadReferences())
+      inherit FSharpFileInteractiveCommand(fun fsi -> fsi.LoadReferences())
 
   type RestartFsi() =
       inherit InteractiveCommand(fun fsi -> fsi.RestartFsi())

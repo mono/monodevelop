@@ -28,12 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
-using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackage : IPackageFromRepository
+	public class FakePackage : IPackage
 	{
 		public Stream Stream = null;
 		public List<string> AuthorsList = new List<string> ();

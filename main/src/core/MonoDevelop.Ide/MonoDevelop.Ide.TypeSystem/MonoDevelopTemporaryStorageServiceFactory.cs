@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Core.Text;
 using System.Reflection;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -80,14 +81,34 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		class TemporaryStorageService : ITemporaryStorageService
 		{
+			List<IDisposable> serviceList = new List<IDisposable> ();
+
+			void DisposeServices ()
+			{
+				foreach (var service in serviceList)
+					service.Dispose ();
+				serviceList.Clear ();
+			}
+
+			public TemporaryStorageService ()
+			{
+				IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
+					DisposeServices ();
+				};
+			}
+
 			public ITemporaryStreamStorage CreateTemporaryStreamStorage (CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return new StreamStorage ();
+				var result = new StreamStorage ();
+				serviceList.Add (result);
+				return result;
 			}
 
 			public ITemporaryTextStorage CreateTemporaryTextStorage (CancellationToken cancellationToken = default(CancellationToken))
 			{
-				return new TemporaryTextStorage ();
+				var result = new TemporaryTextStorage ();
+				serviceList.Add (result);
+				return result;
 			}
 		}
 
@@ -183,6 +204,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				try {
 					File.Delete (fileName);
+					fileName = null;
 				} catch (Exception) {}
 			}
 
@@ -240,6 +262,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				try {
 					File.Delete (fileName);
+					fileName = null;
 				} catch (Exception) {}
 			}
 

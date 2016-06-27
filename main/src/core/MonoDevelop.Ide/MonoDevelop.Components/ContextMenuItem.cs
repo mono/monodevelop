@@ -93,6 +93,21 @@ namespace MonoDevelop.Components
 
 		public bool Visible { get; set; }
 
+		public event EventHandler<Xwt.Rectangle> Selected;
+
+		internal void FireSelectedEvent (Xwt.Rectangle menuArea)
+		{
+			Selected?.Invoke (this, menuArea);
+		}
+
+		public event EventHandler Deselected;
+
+		internal void FireDeselectedEvent ()
+		{
+			Deselected?.Invoke (this, EventArgs.Empty);
+		}
+
+
 		public Xwt.Drawing.Image Image {
 			get { return image; }
 			set {
@@ -142,5 +157,6 @@ namespace MonoDevelop.Components
 			if (Clicked != null)
 				Clicked (this, e);
 		}
-	}
+
+}
 }

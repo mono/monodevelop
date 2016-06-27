@@ -46,7 +46,7 @@ namespace MonoDevelop.Xml.Editor
 	static class XmlEditorService
 	{
 		#region Task management
-		public static void AddTask(string fileName, string message, int column, int line, TaskSeverity taskType)
+		public static void AddTask (string fileName, string message, int column, int line, TaskSeverity taskType, WorkspaceObject workspaceObject)
 		{
 			// HACK: Use a compiler error since we cannot add an error
 			// task otherwise (task type property is read-only and
@@ -60,6 +60,8 @@ namespace MonoDevelop.Xml.Editor
 			
 			//Task task = new Task(fileName, message, column, line);
 			TaskListEntry task = new TaskListEntry (error);
+			task.WorkspaceObject = workspaceObject;
+			task.Owner = ActiveEditor;
 			TaskService.Errors.Add(task);
 		}
 		#endregion
@@ -200,7 +202,7 @@ namespace MonoDevelop.Xml.Editor
 		/// <summary>
 		/// Checks that the xml in this view is well-formed.
 		/// </summary>
-		public static XmlDocument ValidateWellFormedness (ProgressMonitor monitor, string xml, string fileName)
+		public static XmlDocument ValidateWellFormedness (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
 			bool error = false;
@@ -211,7 +213,7 @@ namespace MonoDevelop.Xml.Editor
 				doc.LoadXml (xml);
 			} catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			
@@ -229,7 +231,7 @@ namespace MonoDevelop.Xml.Editor
 		/// <summary>
 		/// Validates the xml against known schemas.
 		/// </summary>		
-		public static XmlDocument ValidateXml (ProgressMonitor monitor, string xml, string fileName)
+		public static XmlDocument ValidateXml (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating XML..."), 1);
 			bool error = false;
@@ -247,9 +249,9 @@ namespace MonoDevelop.Xml.Editor
 			ValidationEventHandler validationHandler = delegate (object sender, System.Xml.Schema.ValidationEventArgs args) {
 				if (args.Severity == XmlSeverityType.Warning) {
 					monitor.Log.WriteLine (args.Message);
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskSeverity.Warning);
+					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Warning, workspaceObject);
 				} else {
-					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber,TaskSeverity.Error);
+					AddTask (fileName, args.Exception.Message, args.Exception.LinePosition, args.Exception.LineNumber, TaskSeverity.Error, workspaceObject);
 					monitor.Log.WriteLine (args.Message);
 					error = true;
 				}	
@@ -267,12 +269,12 @@ namespace MonoDevelop.Xml.Editor
 				
 			} catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			finally {
@@ -295,7 +297,7 @@ namespace MonoDevelop.Xml.Editor
 		/// <summary>
 		/// Validates the schema.
 		/// </summary>		
-		public static XmlSchema ValidateSchema (ProgressMonitor monitor, string xml, string fileName)
+		public static XmlSchema ValidateSchema (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating schema..."), 1);
 			bool error = false;
@@ -313,7 +315,7 @@ namespace MonoDevelop.Xml.Editor
 						error = true;
 					}
 					AddTask (fileName, args.Message, args.Exception.LinePosition, args.Exception.LineNumber,
-					    (args.Severity == XmlSeverityType.Warning)? TaskSeverity.Warning : TaskSeverity.Error);
+					    (args.Severity == XmlSeverityType.Warning)? TaskSeverity.Warning : TaskSeverity.Error, workspaceObject);
 				};
 				schema = XmlSchema.Read (xmlReader, callback);
 				XmlSchemaSet sset = new XmlSchemaSet ();
@@ -323,12 +325,12 @@ namespace MonoDevelop.Xml.Editor
 			} 
 			catch (XmlSchemaException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 				error = true;
 			}
 			
@@ -343,7 +345,7 @@ namespace MonoDevelop.Xml.Editor
 			return error? null: schema;
 		}
 		
-		public static XslCompiledTransform ValidateStylesheet (ProgressMonitor monitor, string xml, string fileName)
+		public static XslCompiledTransform ValidateStylesheet (ProgressMonitor monitor, string xml, string fileName, WorkspaceObject workspaceObject)
 		{
 			monitor.BeginTask (GettextCatalog.GetString ("Validating stylesheet..."), 1);
 			bool error = true;
@@ -357,15 +359,15 @@ namespace MonoDevelop.Xml.Editor
 				error = false;
 			} catch (XsltCompileException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 			}
 			catch (XsltException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 			}
 			catch (XmlException ex) {
 				monitor.ReportError (ex.Message, ex);
-				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber,TaskSeverity.Error);
+				AddTask (fileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskSeverity.Error, workspaceObject);
 			}
 			
 			if (error) {

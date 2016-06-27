@@ -25,19 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide;
-using Xwt;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class AddPackagesDialogRunner
 	{
+		static RecentNuGetPackagesRepository recentPackagesRepository = new RecentNuGetPackagesRepository ();
+
 		public void Run (string initialSearch = null)
 		{
 			try {
-
 				bool configurePackageSources = false;
 				do {
 					using (AddPackagesDialog dialog = CreateDialog (initialSearch)) {
@@ -57,9 +56,9 @@ namespace MonoDevelop.PackageManagement
 
 		AddPackagesDialog CreateDialog (string initialSearch)
 		{
-			var viewModels = new PackageManagementViewModels ();
+			var viewModel = AllPackagesViewModel.Create (recentPackagesRepository);
 			return new AddPackagesDialog (
-				viewModels.ManagePackagesViewModel,
+				viewModel,
 				initialSearch);
 		}
 

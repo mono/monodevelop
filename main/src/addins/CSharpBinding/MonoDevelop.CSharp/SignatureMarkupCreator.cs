@@ -77,9 +77,14 @@ namespace MonoDevelop.CSharp
 		public SignatureMarkupCreator (DocumentContext ctx, int offset)
 		{
 			this.offset = offset;
-			this.colorStyle = SyntaxModeService.GetColorStyle (Ide.IdeApp.Preferences.ColorScheme);
-			if (!this.colorStyle.FitsIdeTheme (Ide.IdeApp.Preferences.UserInterfaceTheme))
-				this.colorStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
+			try {
+				this.colorStyle = SyntaxModeService.GetColorStyle (Ide.IdeApp.Preferences.ColorScheme);
+				if (!this.colorStyle.FitsIdeTheme (Ide.IdeApp.Preferences.UserInterfaceTheme))
+					this.colorStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while getting the color style : " + Ide.IdeApp.Preferences.ColorScheme + " in ide theme : " + Ide.IdeApp.Preferences.UserInterfaceTheme, e);
+				this.colorStyle = SyntaxModeService.DefaultColorStyle;
+			}
 			this.ctx = ctx;
 			if (ctx != null) {
 				this.options = ctx.GetOptionSet ();

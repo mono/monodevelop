@@ -57,7 +57,7 @@ namespace MonoDevelop.Ide.Projects
 			: base (parentWindow, new PolicySet (),
 			        "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels")
 		{
-			this.Title = GettextCatalog.GetString ("Custom Policies");
+			this.Title = GettextCatalog.GetString ("Policies");
 			editingSet = (PolicySet) DataObject;
 			
 			HBox topBar = new HBox ();

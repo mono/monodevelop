@@ -55,6 +55,18 @@ namespace MonoDevelop.Ide.Editor
 		IDocumentLine GetLineByOffset (int offset);
 	}
 
+	public sealed class DiffOptions
+	{
+		public bool IncludeEol { get; private set; }
+		public bool TrimLines { get; private set; }
+
+		public DiffOptions (bool includeEol = true, bool trimLines = false)
+		{
+			IncludeEol = includeEol;
+			TrimLines = trimLines;
+		}
+	}
+
 	public static class ReadonlyTextDocumentExtensions
 	{
 		/// <summary>
@@ -156,17 +168,19 @@ namespace MonoDevelop.Ide.Editor
 			return document.GetTextAt (includeDelimiter ? line.SegmentIncludingDelimiter : line);
 		}
 
-		static int[] GetDiffCodes (IReadonlyTextDocument document, ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
+		static int [] GetDiffCodes (IReadonlyTextDocument document, ref int codeCounter, Dictionary<string, int> codeDictionary, DiffOptions options)
 		{
 			int i = 0;
-			var result = new int[document.LineCount];
+			var result = new int [document.LineCount];
 			foreach (var line in document.GetLinesStartingAt (1)) {
-				string lineText = document.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
+				string lineText = document.GetTextAt (line.Offset, options.IncludeEol ? line.LengthIncludingDelimiter : line.Length);
+				if (options.TrimLines)
+					lineText = lineText.Trim ();
 				int curCode;
 				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
-					codeDictionary[lineText] = curCode = ++codeCounter;
+					codeDictionary [lineText] = curCode = ++codeCounter;
 				}
-				result[i] = curCode;
+				result [i] = curCode;
 				i++;
 			}
 			return result;
@@ -180,8 +194,21 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException ("changedDocument");
 			var codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;
-			return Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, includeEol),
-				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, includeEol));
+			var options = new DiffOptions (includeEol);
+			return Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, options),
+				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, options));
+		}
+
+		public static IEnumerable<DiffHunk> GetDiff (this IReadonlyTextDocument document, IReadonlyTextDocument changedDocument, DiffOptions options)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (changedDocument == null)
+				throw new ArgumentNullException ("changedDocument");
+			var codeDictionary = new Dictionary<string, int> ();
+			int codeCounter = 0;
+			return Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, options),
+				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, options));
 		}
 
 		public static string GetDiffAsString (this IReadonlyTextDocument document, IReadonlyTextDocument changedDocument, bool includeEol = true)

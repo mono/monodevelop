@@ -39,7 +39,7 @@
 					<xs:element name="file" type="file" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:choice>
 			</xs:choice>
-			<xs:attribute name="manifestVersion" type="xs:string" default="1.0" use="required"/>
+			<xs:attribute name="manifestVersion" type="xs:string" default="1.0"/>
 		</xs:complexType>
 	</xs:element>
 
@@ -186,6 +186,13 @@
 	<xs:complexType name="probing">
 		<xs:attribute name="privatePath" type="xs:string" use="required"/>
 	</xs:complexType>
+
+	<xs:simpleType name="yesNoEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="yes"/>
+			<xs:enumeration value="no"/>
+		</xs:restriction>
+	</xs:simpleType>
 
 	<xs:complexType name="publisherPolicy">
 		<xs:attribute name="apply" type="yesNoEnum" use="required"/>

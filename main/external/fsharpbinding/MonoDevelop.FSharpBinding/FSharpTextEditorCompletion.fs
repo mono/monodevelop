@@ -167,14 +167,14 @@ module Completion =
             None
 
     let (|FilePath|_|) context =
-        let matches = Regex.Matches(context.lineToCaret, "^\s*#(load|r)\s+\"([^\"]*)", RegexOptions.Compiled)
+        let matches = Regex.Matches(context.lineToCaret, "^\s*#(load|r)\s+@*\"([^\"]*)$", RegexOptions.Compiled)
         if matches.Count > 0 then
-            Some (matches.[0].Groups.[1].Value, matches.[0].Groups.[2].Value)
+            Some (matches.[0].Groups.[1].Value, matches.[0].Groups.[2].Value.Replace(@"\\", @"\"))
         else
             None
 
     let (|LetIdentifier|_|) context =
-        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member)\s+[^=]+$", RegexOptions.Compiled) then
+        if Regex.IsMatch(context.lineToCaret, "\s?(let!?|override|member|for)\s+[^=]+$", RegexOptions.Compiled) then
              let document = new TextDocument(context.lineToCaret)
              let syntaxMode = SyntaxModeService.GetSyntaxMode (document, "text/x-fsharp")
 
@@ -389,7 +389,7 @@ module Completion =
                         |> Seq.cast<CompletionData>
 
                     result.AddRange completions
-                    let residue = Parsing.findResidue(column, lineToCaret)
+                    let _longName,residue = Parsing.findLongIdentsAndResidue(column, lineToCaret)
                     if completionChar <> '.' && result.Count > 0 then
 
                         LoggingService.logDebug "Completion: residue %s" residue

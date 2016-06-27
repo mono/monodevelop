@@ -666,8 +666,8 @@ namespace MonoDevelop.Components.MainToolbar
 				text = selected.Substring (0, whitespaceIndex);
 			}
 
-			ToolbarView.SearchText = text;
 			ToolbarView.FocusSearchBar ();
+			ToolbarView.SearchText = text;
 		}
 
 		public void SetSearchCategory (string category)

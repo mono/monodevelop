@@ -18,8 +18,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		public NewLayoutDialog ()
 		{
 			Build ();
-			
-			existingLayouts = IdeApp.Workbench.Layouts;
+
+			existingLayouts = IdeApp.Workbench.Layouts.ToList ();
+			foreach (var mapping in Commands.LayoutListHandler.NameMapping)
+				if (existingLayouts.Contains (mapping.Key))
+					existingLayouts.Add (mapping.Value);
 			
 			layoutName.Changed += OnNameChanged;
 			OnNameChanged (layoutName, EventArgs.Empty);

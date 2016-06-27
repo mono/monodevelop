@@ -242,6 +242,7 @@
     <Compile Include="MonoDevelop.Core.Logging\RemoteLogger.cs" />
     <Compile Include="MonoDevelop.Core.Instrumentation\TimeCounter.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\PlatformCondition.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\BrandingCondition.cs" />
     <Compile Include="MonoDevelop.Core.Serialization\BinaryDataSerializer.cs" />
     <Compile Include="MonoDevelop.Core.Execution\LocalConsole.cs" />
     <Compile Include="MonoDevelop.Core\IconId.cs" />

@@ -90,22 +90,13 @@ namespace MonoDevelop.PackageManagement.Commands
 			return false;
 		}
 
-		Solution GetSelectedSolution ()
+		protected Solution GetSelectedSolution ()
 		{
 			DotNetProject project = GetSelectedDotNetProject ();
 			if (project != null) {
 				return project.ParentSolution;
 			}
 			return IdeApp.ProjectOperations.CurrentSelectedSolution;
-		}
-
-		protected IPackageManagementSolution GetPackageManagementSolution ()
-		{
-			Solution solution = GetSelectedSolution ();
-			if (solution != null) {
-				return new PackageManagementSolution (new PackageManagementSolutionProjectService (solution));
-			}
-			return null;
 		}
 	}
 }

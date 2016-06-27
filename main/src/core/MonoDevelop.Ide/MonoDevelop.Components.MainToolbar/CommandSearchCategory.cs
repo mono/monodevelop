@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.MainToolbar
 		static CommandSearchCategory ()
 		{
 			allCommands = IdeApp.CommandService.GetCommands ().Select(cmd =>
-				Tuple.Create (cmd, cmd.Text.Replace ("_", ""))
+				Tuple.Create (cmd, cmd.DisplayName)
 			).ToList();
 		}
 

@@ -31,6 +31,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
+	[Obsolete]
 	public class RecentPackageInfo
 	{
 		SemanticVersion version;

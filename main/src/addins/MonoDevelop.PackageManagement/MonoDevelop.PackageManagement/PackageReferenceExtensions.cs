@@ -24,42 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
-using MonoDevelop.PackageManagement;
-using MonoDevelop.Projects;
-using NuGet;
+using NuGet.Packaging;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal static class PackageReferenceExtensions
 	{
-		public static bool IsPackageInstalled (this PackageReference packageReference, DotNetProject project)
+		public static bool IsFloating (this PackageReference packageReference)
 		{
-			var packagesPath = new SolutionPackageRepositoryPath (project);
-			var fileSystem = new PhysicalFileSystem (packagesPath.PackageRepositoryPath);
-			return packageReference.IsPackageInstalled (fileSystem);
-		}
-
-		public static bool IsPackageInstalled (this PackageReference packageReference, PhysicalFileSystem fileSystem)
-		{
-			if (packageReference.Version == null) {
-				return false;
-			}
-
-			var repository = new LocalPackageRepository (new DefaultPackagePathResolver (fileSystem), fileSystem);
-			return repository
-				.GetPackageLookupPaths (packageReference.Id, packageReference.Version)
-				.Any ();
-		}
-
-		public static bool IsReleaseVersion (this PackageReference packageReference)
-		{
-			if (packageReference.Version == null) {
-				return true;
-			}
-
-			return String.IsNullOrEmpty (packageReference.Version.SpecialVersion);
+			return packageReference.HasAllowedVersions && packageReference.AllowedVersions.IsFloating;
 		}
 	}
 }

@@ -28,6 +28,7 @@ using System;
 #if MAC
 using AppKit;
 using Foundation;
+using MonoDevelop.Ide;
 #endif
 
 namespace MonoDevelop.Components
@@ -62,6 +63,8 @@ namespace MonoDevelop.Components
 			ShowContextMenu (parent, x, y, menu, null);
 		}
 
+
+		static CoreGraphics.CGPoint lastOpenPositon;
 		public static void ShowContextMenu (Gtk.Widget parent, int x, int y, NSMenu menu, bool selectFirstItem = false)
 		{
 			if (parent == null)
@@ -91,10 +94,11 @@ namespace MonoDevelop.Components
 
 				if (selectFirstItem) {
 					var pt = new CoreGraphics.CGPoint (x, y);
+					lastOpenPositon = pt;
 					menu.PopUpMenu (menu.ItemAt (0), pt, nsview);
 				} else {
 					var pt = new CoreGraphics.CGPoint (x, nswindow.Frame.Height - y - titleBarOffset);
-
+					lastOpenPositon = pt;
 					var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
 					                                pt,
 					                                0, 0,
@@ -102,8 +106,6 @@ namespace MonoDevelop.Components
 					                                null, 0, 0, 0);
 					NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
 				}
-
-
 			});
 		}
 
@@ -145,21 +147,48 @@ namespace MonoDevelop.Components
 
 		class ContextMenuDelegate : NSObject
 		{
+			ContextMenu menu;
+			ContextMenuItem oldItem;
+			public ContextMenuDelegate (ContextMenu menu)
+			{
+				this.menu = menu;
+			}
+
 			public Action CloseHandler { get; set; }
 
 			[Export ("menuDidClose:")]
 			void MenuDidClose (NSMenu menu)
 			{
+				if (menu.Supermenu != null)
+					return;
 				if (CloseHandler != null) {
 					CloseHandler ();
 				}
+				this.menu.FireClosedEvent ();
+			}
+
+			[Export ("menu:willHighlightItem:")]
+			void MenuWillHighlightItem (NSMenu menu, NSMenuItem willHighlightItem)
+			{
+				if (oldItem != null) {
+					oldItem.FireDeselectedEvent ();
+					oldItem = null;
+				}
+				if (willHighlightItem == null)
+					return;
+				int index = (int)menu.IndexOf (willHighlightItem);
+				if (index < 0)
+					return;
+				oldItem = this.menu.Items [index];
+
+				oldItem.FireSelectedEvent (new Xwt.Rectangle (lastOpenPositon.X, lastOpenPositon.Y, menu.Size.Width, menu.Size.Height));
 			}
 		}
 
 		static NSMenu FromMenu (ContextMenu menu, Action closeHandler)
 		{
 			var result = new NSMenu () { AutoEnablesItems = false };
-			result.WeakDelegate = new ContextMenuDelegate { CloseHandler = closeHandler };
+			result.WeakDelegate = new ContextMenuDelegate (menu) { CloseHandler = closeHandler };
 
 			foreach (var menuItem in menu.Items) {
 				var item = CreateMenuItem (menuItem);

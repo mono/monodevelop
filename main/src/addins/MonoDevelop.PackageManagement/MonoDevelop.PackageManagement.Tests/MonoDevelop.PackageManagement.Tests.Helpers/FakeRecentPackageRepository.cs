@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeRecentPackageRepository : IRecentPackageRepository
+	public class FakeRecentPackageRepository : IPackageRepository
 	{
 		public string Source { get; set; }
 

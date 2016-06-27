@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -34,7 +34,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool IsDisposed;
 		public List<ImportAndCondition> ImportsAdded = new List<ImportAndCondition> ();
 
-		public void AddImportIfMissing (string name, string condition, ProjectImportLocation location)
+		public void AddImportIfMissing (string name, string condition, ImportLocation location)
 		{
 			ImportsAdded.Add (new ImportAndCondition (name, condition, location));
 		}

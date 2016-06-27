@@ -404,10 +404,10 @@ namespace MonoDevelop.Ide.Commands
 			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor ();
 			
 			Thread t = new Thread (
-				delegate () {
+				async delegate () {
 					using (monitor) {
 						try {
-							cmd.Execute (monitor, ce, IdeApp.Workspace.ActiveConfiguration);
+							await cmd.Execute (monitor, ce, IdeApp.Workspace.ActiveConfiguration);
 						} catch (Exception ex) {
 							monitor.ReportError (GettextCatalog.GetString ("Command execution failed"), ex);
 						}

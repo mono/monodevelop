@@ -51,21 +51,23 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RemovePackage (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
-			IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
-			UninstallPackageAction action = project.CreateUninstallPackageAction ();
-			action.Package = project.FindPackage (packageReferenceNode.Id);
-
-			if (action.Package != null) {
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-			} else {
-				ShowMissingPackageError (progressMessage, packageReferenceNode);
-			}
+			IPackageAction action = CreateUninstallPackageAction (packageReferenceNode);
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 		}
 
-		void ShowMissingPackageError (ProgressMonitorStatusMessage progressMessage, PackageReferenceNode packageReferenceNode)
+		IPackageAction CreateUninstallPackageAction (PackageReferenceNode packageReferenceNode)
 		{
-			string message = GettextCatalog.GetString ("Unable to find package {0} {1} to remove it from the project. Please restore the package first.", packageReferenceNode.Id, packageReferenceNode.Version);
-			PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, message);
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+			if (packageReferenceNode.NeedsRestoreBeforeUninstall ()) {
+				return new RestoreAndUninstallNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
+					PackageId = packageReferenceNode.Id,
+					Version = packageReferenceNode.Version
+				};
+			}
+
+			return new UninstallNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
+				PackageId = packageReferenceNode.Id
+			};
 		}
 
 		[CommandUpdateHandler (EditCommands.Delete)]
@@ -86,23 +88,21 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 
 			try {
-				IPackageManagementProject project = PackageManagementServices.Solution.GetProject (packageReferenceNode.Project);
-				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
-				UpdatePackageAction action = project.CreateUpdatePackageAction ();
-				action.PackageId = packageReferenceNode.Id;
-				action.AllowPrereleaseVersions = !packageReferenceNode.IsReleaseVersion ();
+				var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (packageReferenceNode.Project.ParentSolution);
+				var action = new UpdateNuGetPackageAction (solutionManager, packageReferenceNode.Project) {
+					PackageId = packageReferenceNode.Id,
+					IncludePrerelease = !packageReferenceNode.IsReleaseVersion ()
+				};
 
-				IPackageManagementSolution solution = GetPackageManagementSolution ();
-				RestoreBeforeUpdateAction.Restore (solution, project, () => {
-					UpdatePackage (progressMessage, action);
-				});
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, packageReferenceNode.Project);
+				UpdatePackage (progressMessage, action);
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
 		}
 
-		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, UpdatePackageAction action)
+		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
 		{
 			try {
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
@@ -141,15 +141,6 @@ namespace MonoDevelop.PackageManagement.Commands
 				return project.ParentSolution;
 			}
 			return IdeApp.ProjectOperations.CurrentSelectedSolution;
-		}
-
-		IPackageManagementSolution GetPackageManagementSolution ()
-		{
-			Solution solution = GetSelectedSolution ();
-			if (solution != null) {
-				return new PackageManagementSolution (new PackageManagementSolutionProjectService (solution));
-			}
-			return null;
 		}
 	}
 }
