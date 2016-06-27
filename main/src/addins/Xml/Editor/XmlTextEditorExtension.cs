@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -95,12 +96,24 @@ namespace MonoDevelop.Xml.Editor
 				XmlSchemaManager.UserSchemaAdded -= UserSchemaAdded;
 
 				XmlSchemaManager.UserSchemaRemoved -= UserSchemaRemoved;
+				ClearTasksForStandaloneXmlFile ();
 				base.Dispose ();
 			}
 		}
-		
+
+		void ClearTasksForStandaloneXmlFile ()
+		{
+			var tasks = TaskService.Errors
+				.GetOwnerTasks (this)
+				.Where (t => t.WorkspaceObject == null)
+				.ToList ();
+
+			if (tasks.Any ())
+				TaskService.Errors.RemoveRange (tasks);
+		}
+
 		#region Code completion
-		
+
 		XmlElementPath GetElementPath ()
 		{
 			return XmlElementPath.Resolve (
@@ -675,7 +688,7 @@ namespace MonoDevelop.Xml.Editor
 
 				string xml = Editor.Text;
 				using (ProgressMonitor monitor = XmlEditorService.GetMonitor ()) {
-					XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName);
+					XmlDocument doc = XmlEditorService.ValidateWellFormedness (monitor, xml, FileName, DocumentContext.Project);
 					if (doc == null)
 						return;
 					monitor.BeginTask (GettextCatalog.GetString ("Creating schema..."), 0);
@@ -757,10 +770,9 @@ namespace MonoDevelop.Xml.Editor
 			TaskService.Errors.Clear ();
 			using (ProgressMonitor monitor = XmlEditorService.GetMonitor()) {
 				if (IsSchema)
-					XmlEditorService.ValidateSchema (monitor, Editor.Text, FileName);
+					XmlEditorService.ValidateSchema (monitor, Editor.Text, FileName, DocumentContext.Project);
 				else
-
-					XmlEditorService.ValidateXml (monitor, Editor.Text, FileName);
+					XmlEditorService.ValidateXml (monitor, Editor.Text, FileName, DocumentContext.Project);
 			}
 		}
 		
@@ -798,11 +810,11 @@ namespace MonoDevelop.Xml.Editor
 						return;
 					}
 					System.Xml.Xsl.XslCompiledTransform xslt = 
-						XmlEditorService.ValidateStylesheet (monitor, xsltContent, stylesheetFileName);
+						XmlEditorService.ValidateStylesheet (monitor, xsltContent, stylesheetFileName, DocumentContext.Project);
 					if (xslt == null)
 						return;
 					
-					XmlDocument doc = XmlEditorService.ValidateXml (monitor, Editor.Text, FileName);
+					XmlDocument doc = XmlEditorService.ValidateXml (monitor, Editor.Text, FileName, DocumentContext.Project);
 					if (doc == null)
 						return;
 					
