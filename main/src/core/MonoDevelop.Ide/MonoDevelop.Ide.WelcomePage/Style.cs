@@ -132,6 +132,13 @@ namespace MonoDevelop.Ide.WelcomePage
 
 					Pad.BackgroundColor = padColor;
 					Pad.BorderColor = padColor;
+					Pad.TextColor = fgColor;
+					Pad.ShadowColor = "#000000";
+					Pad.LargeTitleFontColor = fgColor;
+					Pad.MediumTitleDisabledColor = fgDisabledColor;
+					Pad.MediumTitleColor = fgColor;
+					Pad.SmallTitleDisabledColor = dimDisabledColor;
+					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#3496d9";
 
@@ -147,6 +154,13 @@ namespace MonoDevelop.Ide.WelcomePage
 
 					Pad.BackgroundColor = "#222222"; // TODO: VV: We can't use the padColor here because of the BackgroundColor bug, so override
 					Pad.BorderColor = "#222222";
+					Pad.TextColor = fgColor;
+					Pad.ShadowColor = "#000000";
+					Pad.LargeTitleFontColor = fgColor;
+					Pad.MediumTitleDisabledColor = fgDisabledColor;
+					Pad.MediumTitleColor = fgColor;
+					Pad.SmallTitleDisabledColor = dimDisabledColor;
+					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#5babed";
 
