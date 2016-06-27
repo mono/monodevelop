@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
 		string title, subtitle, actionUrl, fileName;
 		protected Xwt.Drawing.Image icon;
+		protected Xwt.Drawing.Image disabledIcon;
 		protected bool mouseOver;
 		protected bool pinned;
 		protected readonly bool hasRemoveButton;
@@ -96,6 +97,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.title = title;
 			this.subtitle = subtitle;
 			this.icon = icon;
+			this.disabledIcon = icon.WithStyles ("hover");
 			this.actionUrl = actionUrl;
 			this.fileName = fileName;
 			hasRemoveButton = fileName != null;
@@ -266,7 +268,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			int x = Allocation.X + InternalPadding;
 			int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
-			ctx.DrawImage (this, icon, x, y);
+			ctx.DrawImage (this, itemAccessible ? icon : disabledIcon, x, y);
 			if (AllowPinning && (mouseOver || pinned)) {
 				Xwt.Drawing.Image star;
 				if (pinned) {
