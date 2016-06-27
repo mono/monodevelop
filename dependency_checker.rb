@@ -2,7 +2,7 @@ require 'pp'
 
 NOT_INSTALLED_VERSION="-1"
 
-XAMARIN_MAC_MIN_VERSION="2.3"
+XAMARIN_MAC_MIN_VERSION="2.9"
 XAMARIN_MAC_VERSION=lambda { product_version ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/bin/mmp") }
 XAMARIN_MAC_URL="http://www.xamarin.com"
 
