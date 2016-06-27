@@ -151,7 +151,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			get { return itemAccessible; }
 			set {
 				itemAccessible = value;
-				Sensitive = ItemAccessible;
 				QueueDraw ();
 			}
 		}
@@ -166,8 +165,10 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
-			GdkWindow.Cursor = hand_cursor;
-			mouseOver = true;
+			if (ItemAccessible) {
+				GdkWindow.Cursor = hand_cursor;
+				mouseOver = true;
+			}
 			QueueDraw ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
@@ -217,6 +218,9 @@ namespace MonoDevelop.Ide.WelcomePage
 				mouseOverRemove = so;
 				updated = true;
 			}
+
+			if (!ItemAccessible)
+				GdkWindow.Cursor = mouseOverRemove || mouseOverStar ? hand_cursor : null;
 
 			if (updated)
 				QueueDraw ();
