@@ -139,6 +139,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			static readonly string RunConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string ConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string RuntimePlaceholder = GettextCatalog.GetString ("Default");
+			static readonly string RunConfigurationIdentifier = "RunConfiguration";
+			static readonly string ConfigurationIdentifier = "Configuration";
+			static readonly string RuntimeIdentifier = "Runtime";
+			CellState state = CellState.AllShown;
 
 			static nfloat iconSize = 28;
 			nfloat AddCellSize (int cellId, nfloat totalWidth, nfloat layoutWidth, nfloat allIconsWidth)
@@ -321,16 +325,19 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						Image = projectImageDisabled,
 						Title = TextForActiveRunConfiguration,
 						Enabled = false,
+						Identifier = RunConfigurationIdentifier
 					},
 					new NSPathComponentCell {
 						Image = projectImageDisabled,
 						Title = TextForActiveConfiguration,
 						Enabled = false,
+						Identifier = ConfigurationIdentifier
 					},
 					new NSPathComponentCell {
 						Image = deviceImageDisabled,
 						Title = TextForRuntimeConfiguration,
 						Enabled = false,
+						Identifier = RuntimeIdentifier
 					}
 				};
 				SetVisibleCells (RunConfigurationIdx, ConfigurationIdx, RuntimeIdx);
@@ -369,11 +376,23 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				return -1;
 			}
 
+			public override bool AccessibilityPerformShowMenu ()
+			{
+				if (ClickedPathComponentCell == null) {
+					return false;
+				}
+
+				PopupMenuForCell (ClickedPathComponentCell);
+
+				return true;
+			}
+
 			public override void MouseDown (NSEvent theEvent)
 			{
 				if (!Enabled)
 					return;
 
+				// Can't use ClickedPathComponentCell here because it is only set on MouseUp
 				var locationInView = ConvertPointFromView (theEvent.LocationInWindow, null);
 
 				var cellIdx = IndexOfCellAtX (locationInView.X);
@@ -385,6 +404,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				if (item == null || !item.Enabled)
 					return;
 
+				PopupMenuForCell (item);
+			}
+
+			void PopupMenuForCell (NSPathComponentCell item)
+			{
 				var componentRect = ((NSPathCell)Cell).GetRect (item, Frame, this);
 				int i = 0;
 
@@ -394,7 +418,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					ShowsStateColumn = false,
 					Font = NSFont.MenuFontOfSize (12),
 				};
-				if (cellIdx == RunConfigurationIdx) {
+
+				if (item.Identifier == RunConfigurationIdentifier) {
 					if (ActiveRunConfiguration == null)
 						return;
 
@@ -413,7 +438,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (selectedItem == null && configuration.OriginalId == ActiveRunConfiguration.OriginalId)
 							selectedItem = menuitem;
 					}
-				} else if (cellIdx == ConfigurationIdx) {
+				} else if (item.Identifier == ConfigurationIdentifier) {
 					if (ActiveConfiguration == null)
 						return;
 
@@ -432,7 +457,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 						if (selectedItem == null && configuration.OriginalId == ActiveConfiguration.OriginalId)
 							selectedItem = menuitem;
 					}
-				} else if (cellIdx == RuntimeIdx) {
+				} else if (item.Identifier == RuntimeIdentifier) {
 					if (ActiveRuntime == null)
 						return;
 
