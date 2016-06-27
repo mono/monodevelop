@@ -45,10 +45,12 @@ namespace MonoDevelop.Ide.WelcomePage
 				public static string LargeTitleFontColor { get; internal set; }
 				public const int LargeTitleMarginBottom = 22;
 
+				public static string MediumTitleDisabledColor { get; internal set; }
 				public static string MediumTitleColor { get; internal set; }
 				public static int MediumTitleFontSize = Platform.IsLinux ? 13 : 12;
 				public const int MediumTitleMarginBottom = 7;
 
+				public static string SmallTitleDisabledColor { get; internal set; }
 				public static string SmallTitleColor { get; internal set; }
 				public static int SmallTitleFontSize = Platform.IsLinux ? 11 : 10;
 
@@ -115,7 +117,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			{
 				var bgColor = Gui.Styles.BaseBackgroundColor.ToHexString (false);
 				var fgColor = Gui.Styles.BaseForegroundColor.ToHexString (false);
+				var fgDisabledColor = Gui.Styles.BaseForegroundColor.WithAlpha (0.7).ToHexString (false);
 				var dimColor = Gui.Styles.DimTextColor.ToHexString (false);
+				var dimDisabledColor = Gui.Styles.DimTextColor.WithAlpha (0.7).ToHexString (false);
 				var padColor = Gui.Styles.PadBackground.ToHexString (false);
 				var hoverColor = Gui.Styles.DockBarPrelightColor.ToHexString (false);
 
@@ -131,7 +135,9 @@ namespace MonoDevelop.Ide.WelcomePage
 					Pad.TextColor = fgColor;
 					Pad.ShadowColor = "#000000";
 					Pad.LargeTitleFontColor = fgColor;
+					Pad.MediumTitleDisabledColor = fgDisabledColor;
 					Pad.MediumTitleColor = fgColor;
+					Pad.SmallTitleDisabledColor = dimDisabledColor;
 					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#3496d9";
@@ -151,7 +157,9 @@ namespace MonoDevelop.Ide.WelcomePage
 					Pad.TextColor = fgColor;
 					Pad.ShadowColor = "#000000";
 					Pad.LargeTitleFontColor = fgColor;
+					Pad.MediumTitleDisabledColor = fgDisabledColor;
 					Pad.MediumTitleColor = fgColor;
+					Pad.SmallTitleDisabledColor = dimDisabledColor;
 					Pad.SmallTitleColor = dimColor;
 
 					Pad.News.Item.TitleHoverColor = "#5babed";

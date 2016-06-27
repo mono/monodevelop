@@ -33,12 +33,16 @@ namespace MonoDevelop.Ide.WelcomePage
 	public class WelcomePageListButton: EventBox
 	{
 		static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
-		string title, subtitle, actionUrl;
+		string title, subtitle, actionUrl, fileName;
 		protected Xwt.Drawing.Image icon;
 		protected bool mouseOver;
 		protected bool pinned;
+		protected readonly bool hasRemoveButton;
+		protected bool itemAccessible;
 		protected Gdk.Rectangle starRect;
+		protected Gdk.Rectangle removeRect;
 		protected bool mouseOverStar;
+		protected bool mouseOverRemove;
 
 		protected Pango.Weight TitleFontWeight { get; set; }
 
@@ -46,6 +50,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		static protected readonly Xwt.Drawing.Image starNormalHover;
 		static protected readonly Xwt.Drawing.Image starPinned;
 		static protected readonly Xwt.Drawing.Image starPinnedHover;
+		static protected readonly Xwt.Drawing.Image removeImage;
 
 		public event EventHandler PinClicked;
 
@@ -59,6 +64,9 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public string SmallTitleColor { get; set; }
 		public string MediumTitleColor { get; set; }
+
+		public string SmallTitleDisabledColor { get; set; }
+		public string MediumTitleDisabledColor { get; set; }
 
 		public string TitleFontFace { get; set; }
 		public string SmallTitleFontFace { get; set; }
@@ -75,15 +83,22 @@ namespace MonoDevelop.Ide.WelcomePage
 			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-hover-16.png");
 			starPinned = Xwt.Drawing.Image.FromResource ("star-16.png");
 			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-hover-16.png");
+			removeImage = Xwt.Drawing.Image.FromResource ("remove-16.png");
 		}
 
-		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
+		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl) : this(title, subtitle, icon, actionUrl, null)
+		{
+		}
+
+		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl, string fileName)
 		{
 			VisibleWindow = false;
 			this.title = title;
 			this.subtitle = subtitle;
 			this.icon = icon;
 			this.actionUrl = actionUrl;
+			this.fileName = fileName;
+			hasRemoveButton = fileName != null;
 
 			WidthRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Width;
 			HeightRequest = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.Height + 2;
@@ -94,6 +109,14 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			Gui.Styles.Changed += UpdateStyle;
 			UpdateStyle ();
+
+			IdeApp.FocusIn += UpdateFileStatus;
+			UpdateFileStatus (this, EventArgs.Empty);
+		}
+
+		void UpdateFileStatus (object sender, EventArgs args)
+		{
+			ItemAccessible = fileName == null || System.IO.File.Exists (fileName);
 		}
 
 		void UpdateStyle (object sender = null, EventArgs e = null)
@@ -107,6 +130,9 @@ namespace MonoDevelop.Ide.WelcomePage
 			SmallTitleColor = Styles.WelcomeScreen.Pad.SmallTitleColor;
 			MediumTitleColor = Styles.WelcomeScreen.Pad.MediumTitleColor;
 
+			SmallTitleDisabledColor = Styles.WelcomeScreen.Pad.SmallTitleDisabledColor;
+			MediumTitleDisabledColor = Styles.WelcomeScreen.Pad.MediumTitleDisabledColor;
+
 			TitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 			SmallTitleFontFace = Platform.IsMac ? Styles.WelcomeScreen.Pad.TitleFontFamilyMac : Styles.WelcomeScreen.Pad.TitleFontFamilyWindows;
 
@@ -118,6 +144,15 @@ namespace MonoDevelop.Ide.WelcomePage
 		}
 
 		public bool AllowPinning { get; set; }
+
+		public bool ItemAccessible {
+			get { return itemAccessible; }
+			set {
+				itemAccessible = value;
+				Sensitive = ItemAccessible;
+				QueueDraw ();
+			}
+		}
 
 		public bool Pinned {
 			get { return pinned; }
@@ -152,6 +187,9 @@ namespace MonoDevelop.Ide.WelcomePage
 					if (PinClicked != null)
 						PinClicked (this, EventArgs.Empty);
 					return true;
+				} else if (mouseOverRemove) {
+					WelcomePageSection.RemoveItem (fileName, withDialog: false);
+					return true;
 				} else if (mouseOver) {
 					WelcomePageSection.DispatchLink (actionUrl);
 					return true;
@@ -162,11 +200,25 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
-			var so = starRect.Contains (Allocation.X + (int)evnt.X, Allocation.Y + (int)evnt.Y);
+			int x = Allocation.X + (int)evnt.X;
+			int y = Allocation.Y + (int)evnt.Y;
+			bool updated = false;
+
+			var so = starRect.Contains (x, y);
 			if (so != mouseOverStar) {
 				mouseOverStar = so;
-				QueueDraw ();
+				updated = true;
 			}
+
+			so = removeRect.Contains (x, y);
+			if (so != mouseOverRemove) {
+				mouseOverRemove = so;
+				updated = true;
+			}
+
+			if (updated)
+				QueueDraw ();
+
 			return base.OnMotionNotifyEvent (evnt);
 		}
 
@@ -234,6 +286,13 @@ namespace MonoDevelop.Ide.WelcomePage
 				ctx.DrawImage (this, star, x, y);
 				starRect = new Gdk.Rectangle (x, y, (int)star.Width, (int)star.Height);
 			}
+
+			if (hasRemoveButton && (mouseOver || !ItemAccessible)) {
+				x = Allocation.Right - InternalPadding;
+				y = Allocation.Y + Allocation.Height / 2 - (int)removeImage.Height;
+				ctx.DrawImage (this, removeImage, x, y);
+				removeRect = new Gdk.Rectangle (x, y, (int)removeImage.Width, (int)removeImage.Height);
+			}
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
@@ -253,7 +312,7 @@ namespace MonoDevelop.Ide.WelcomePage
 				{
 					titleLayout.Width = Pango.Units.FromPixels (textWidth);
 					titleLayout.Ellipsize = Pango.EllipsizeMode.End;
-					titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, title));
+					titleLayout.SetMarkup (WelcomePageSection.FormatText (TitleFontFace, TitleFontSize, Pango.Weight.Bold, ItemAccessible ? MediumTitleColor : MediumTitleDisabledColor, title));
 
 					Pango.Layout subtitleLayout = null;
 
@@ -262,7 +321,7 @@ namespace MonoDevelop.Ide.WelcomePage
 						subtitleLayout = new Pango.Layout (PangoContext);
 						subtitleLayout.Width = Pango.Units.FromPixels (textWidth);
 						subtitleLayout.Ellipsize = Pango.EllipsizeMode.Start;
-						subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, subtitle));
+						subtitleLayout.SetMarkup (WelcomePageSection.FormatText (SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, ItemAccessible ? SmallTitleColor : SmallTitleDisabledColor, subtitle));
 					}
 
 					int height = 0;
@@ -279,12 +338,12 @@ namespace MonoDevelop.Ide.WelcomePage
 
 					int tx = Allocation.X + InternalPadding + LeftTextPadding;
 					int ty = Allocation.Y + (Allocation.Height - height) / 2;
-					DrawLayout (ctx, titleLayout, TitleFontFace, TitleFontSize, Pango.Weight.Bold, MediumTitleColor, tx, ty);
+					DrawLayout (ctx, titleLayout, TitleFontFace, TitleFontSize, Pango.Weight.Bold, ItemAccessible ? MediumTitleColor : MediumTitleDisabledColor, tx, ty);
 
 					if (subtitleLayout != null)
 					{
 						ty += h1 + Styles.WelcomeScreen.Pad.Solutions.SolutionTile.TitleBottomMargin;
-						DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, SmallTitleColor, tx, ty);
+						DrawLayout (ctx, subtitleLayout, SmallTitleFontFace, SmallTitleFontSize, Pango.Weight.Normal, ItemAccessible ? SmallTitleColor : SmallTitleDisabledColor, tx, ty);
 						subtitleLayout.Dispose ();
 					}
 				}
@@ -295,6 +354,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		protected override void OnDestroyed ()
 		{
 			Gui.Styles.Changed -= UpdateStyle;
+			IdeApp.FocusIn -= UpdateFileStatus;
 			base.OnDestroyed ();
 		}
 	}
