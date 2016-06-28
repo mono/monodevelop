@@ -5,7 +5,6 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../external/xwt/Xwt.Gtk/bin/Debug/Xwt.Gtk.dll" />
     <widget-library name="../../../../external/mono-addins/bin/Mono.Addins.Gui.dll" />
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" internal="true" />
@@ -904,7 +903,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="471 274">
+  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Gui.OptionPanels.BuildPanelWidget" design-size="471 300">
     <property name="MemberName" />
     <property name="GeneratePublic">False</property>
     <child>
@@ -976,6 +975,22 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.CheckButton" id="buildWithMSBuildCheckBox">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Build with MSBuild instead of xbuild</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">4</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.Alignment" id="alignment1">
             <property name="MemberName" />
             <property name="LeftPadding">36</property>
@@ -1022,7 +1037,7 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">5</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1037,7 +1052,7 @@ Diagnostic</property>
             <property name="UseMarkup">True</property>
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">6</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -1124,7 +1139,7 @@ Diagnostic</property>
             </child>
           </widget>
           <packing>
-            <property name="Position">6</property>
+            <property name="Position">7</property>
             <property name="AutoSize">False</property>
           </packing>
         </child>
