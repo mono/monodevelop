@@ -487,28 +487,33 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			foreach (var file in repo.ToGitPath (localPaths)) {
 				var status = repo.RetrieveStatus (file);
-				VersionStatus fstatus = VersionStatus.Versioned;
-
-				if (status != FileStatus.Unaltered) {
-					if ((status & FileStatus.NewInIndex) != 0)
-						fstatus |= VersionStatus.ScheduledAdd;
-					else if ((status & (FileStatus.DeletedFromIndex | FileStatus.DeletedFromWorkdir)) != 0)
-						fstatus |= VersionStatus.ScheduledDelete;
-					else if ((status & (FileStatus.TypeChangeInWorkdir | FileStatus.ModifiedInWorkdir)) != 0)
-						fstatus |= VersionStatus.Modified;
-					else if ((status & (FileStatus.RenamedInIndex | FileStatus.RenamedInWorkdir)) != 0)
-						fstatus |= VersionStatus.ScheduledReplace;
-					else if ((status & (FileStatus.Nonexistent | FileStatus.NewInWorkdir)) != 0)
-						fstatus = VersionStatus.Unversioned;
-					else if ((status & FileStatus.Ignored) != 0)
-						fstatus = VersionStatus.Ignored;
-				}
-
-				if (repo.Index.Conflicts [file] != null)
-					fstatus = VersionStatus.Versioned | VersionStatus.Conflicted;
-
-				versions.Add (new VersionInfo (repo.FromGitPath (file), "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
+				AddStatus (repo, rev, file, versions, status);
 			}
+		}
+
+		static void AddStatus (LibGit2Sharp.Repository repo, GitRevision rev, string file, List<VersionInfo> versions, FileStatus status)
+		{
+			VersionStatus fstatus = VersionStatus.Versioned;
+
+			if (status != FileStatus.Unaltered) {
+				if ((status & FileStatus.NewInIndex) != 0)
+					fstatus |= VersionStatus.ScheduledAdd;
+				else if ((status & (FileStatus.DeletedFromIndex | FileStatus.DeletedFromWorkdir)) != 0)
+					fstatus |= VersionStatus.ScheduledDelete;
+				else if ((status & (FileStatus.TypeChangeInWorkdir | FileStatus.ModifiedInWorkdir)) != 0)
+					fstatus |= VersionStatus.Modified;
+				else if ((status & (FileStatus.RenamedInIndex | FileStatus.RenamedInWorkdir)) != 0)
+					fstatus |= VersionStatus.ScheduledReplace;
+				else if ((status & (FileStatus.Nonexistent | FileStatus.NewInWorkdir)) != 0)
+					fstatus = VersionStatus.Unversioned;
+				else if ((status & FileStatus.Ignored) != 0)
+					fstatus = VersionStatus.Ignored;
+			}
+
+			if (repo.Index.Conflicts [file] != null)
+				fstatus = VersionStatus.Versioned | VersionStatus.Conflicted;
+
+			versions.Add (new VersionInfo (repo.FromGitPath (file), "", false, fstatus, rev, fstatus == VersionStatus.Ignored ? VersionStatus.Unversioned : VersionStatus.Versioned, null));
 		}
 
 		static void GetDirectoryVersionInfoCore (LibGit2Sharp.Repository repo, GitRevision rev, FilePath directory, List<VersionInfo> versions, bool recursive)
@@ -519,30 +524,8 @@ namespace MonoDevelop.VersionControl.Git
 				IncludeUnaltered = true,
 			});
 
-			versions.AddRange (status.Added.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Versioned | VersionStatus.ScheduledAdd, rev, VersionStatus.Versioned, null)));
-			versions.AddRange (status.Ignored.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Ignored, rev, VersionStatus.Unversioned, null)));
-			versions.AddRange (status.Missing.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Versioned | VersionStatus.ScheduledDelete, rev, VersionStatus.Versioned, null)));
-			versions.AddRange (status.Modified.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Versioned | VersionStatus.Modified, rev, VersionStatus.Versioned, null)));
-			versions.AddRange (status.Removed.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Versioned | VersionStatus.ScheduledDelete, rev, VersionStatus.Versioned, null)));
-			versions.AddRange (status.RenamedInIndex.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Versioned | VersionStatus.ScheduledReplace, rev, VersionStatus.Versioned, null)));
-			versions.AddRange (status.RenamedInWorkDir.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Versioned | VersionStatus.ScheduledReplace, rev, VersionStatus.Versioned, null)));
-			versions.AddRange (status.Unaltered.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Versioned, rev, VersionStatus.Versioned, null)));
-			versions.AddRange (status.Untracked.Select (s => new VersionInfo (
-				repo.FromGitPath (s.FilePath), "", false, VersionStatus.Unversioned, rev, VersionStatus.Unversioned, null)));
-
-			foreach (var conflict in repo.Index.Conflicts) {
-				FilePath path = conflict.Ours.Path;
-				if (path.IsChildPathOf (directory))
-					versions.Add (new VersionInfo (
-						repo.FromGitPath (path), "", false, VersionStatus.Versioned | VersionStatus.Conflicted, rev, VersionStatus.Versioned, null));
+			foreach (var statusEntry in status) {
+				AddStatus (repo, rev, statusEntry.FilePath, versions, statusEntry.State);
 			}
 
 			if (!recursive)
