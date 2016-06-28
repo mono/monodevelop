@@ -74,33 +74,35 @@ namespace MonoDevelop.CSharp.Refactoring
 			bool searchType = documentationCommentId[0] == 'T';
 			int reminderIndex = 2;
 			var comp = await prj.GetCompilationAsync (token).ConfigureAwait (false);
-			var current = LookupNamespace (documentationCommentId, ref reminderIndex, comp.GlobalNamespace);
-			if (current == null)
-				return LookupResult.Failure;
-			if (searchNs) {
-				if (current.GetDocumentationCommentId () == documentationCommentId)
-					return new LookupResult (current, prj.Solution, comp);
-				return LookupResult.Failure;
-			}
-			
-			INamedTypeSymbol type = null;
-			foreach (var t in current.GetAllTypes ()) {
-				type = LookupType (documentationCommentId, reminderIndex, t);
-				if (type != null) {
-					if (searchType) {
-						return new LookupResult(type, prj.Solution, comp);
+			return await Task.Run (() => {
+				var current = LookupNamespace (documentationCommentId, ref reminderIndex, comp.GlobalNamespace);
+				if (current == null)
+					return LookupResult.Failure;
+				if (searchNs) {
+					if (current.GetDocumentationCommentId () == documentationCommentId)
+						return new LookupResult (current, prj.Solution, comp);
+					return LookupResult.Failure;
+				}
+
+				INamedTypeSymbol type = null;
+				foreach (var t in current.GetTypeMembers ()) {
+					type = LookupType (documentationCommentId, reminderIndex, t);
+					if (type != null) {
+						if (searchType) {
+							return new LookupResult (type, prj.Solution, comp);
+						}
+						break;
 					}
-					break;
 				}
-			}
-			if (type == null)
+				if (type == null)
+					return LookupResult.Failure;
+				foreach (var member in type.GetMembers ()) {
+					if (member.GetDocumentationCommentId () == documentationCommentId) {
+						return new LookupResult (member, prj.Solution, comp);
+					}
+				}
 				return LookupResult.Failure;
-			foreach (var member in type.GetMembers ()) {
-				if (member.GetDocumentationCommentId () == documentationCommentId) {
-					return new LookupResult(member, prj.Solution, comp);
-				}
-			}
-			return LookupResult.Failure;
+			});
 		}
 
 		internal static async Task<LookupResult> TryLookupSymbol (string documentationCommentId, MonoDevelop.Projects.Project hintProject, CancellationToken token)
