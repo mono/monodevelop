@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Editor
 
 			var diff = editor.GetDiffAsString (editor2);
 
-			Assert.AreEqual ("--- \n+++ \n@@ -1,5 +1,5 @@\n+4\n 1\n+5\n 2\n 3\n-4\n-5\n", diff.Replace ("\\r", ""));
+			Assert.AreEqual ("--- \n+++ \n@@ -1,5 +1,5 @@\n+4\n 1\n+5\n 2\n 3\n-4\n-5\n", diff.Replace ("\r", ""));
 
 		}
 
