@@ -86,6 +86,7 @@ namespace MonoDevelop.Ide.Desktop
 					cachedItemList = ReadStore (stream);
 					cachedItemList.Sort ();
 				}
+				OnRecentFilesChanged (cachedItemList);
 			});
 		}
 		
