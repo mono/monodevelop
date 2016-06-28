@@ -30,6 +30,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Dialogs;
 using System;
 using System.Linq;
 
@@ -74,11 +75,37 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override bool OnDeleteEvent (Event evnt)
 		{
 			var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
+
+			int howManyDirtyFiles = documents.Count (doc => doc.IsDirty);
+			if (howManyDirtyFiles > 1) {
+				using (var dlg = new DirtyFilesDialog (documents, closeWorkspace: false, groupByProject: false)) {
+					dlg.Modal = true;
+					if (MessageService.ShowCustomDialog (dlg) != (int)Gtk.ResponseType.Ok)
+						return true;
+				}
+			} else if (howManyDirtyFiles == 1) {
+				// Ensure dirty file is closed first. This prevents saved files being closed
+				// if the save is cancelled.
+				documents.Sort (DirtyFilesFirst);
+			}
+
 			foreach (var d in documents) {
-				if (!d.Close ())
+				if (howManyDirtyFiles > 1)
+					d.Window.CloseWindow (true);
+				else if (!d.Close ())
 					return true;
 			}
 			return base.OnDeleteEvent (evnt);
+		}
+
+		static int DirtyFilesFirst (Document x, Document y)
+		{
+			if (x.IsDirty == y.IsDirty)
+				return 0;
+			else if (x.IsDirty)
+				return -1;
+			else
+				return 1;
 		}
 
 		protected override bool OnConfigureEvent (EventConfigure evnt)
