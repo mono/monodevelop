@@ -36,9 +36,10 @@
   <PropertyGroup>
     <StartupObject>MonoDevelop.Projects.MSBuild.MainClass</StartupObject>
   </PropertyGroup>
-  <!-- TODO: Linux, Windows -->
-  <PropertyGroup Condition="'$(OS)'=='Unix'">
-    <MSBuild_14_1_BinDir>\Library\Frameworks\Mono.framework\Versions\4.4.0\lib\mono\msbuild\14.1\bin\</MSBuild_14_1_BinDir>
+  <!-- TODO: Linux -->
+  <PropertyGroup>
+    <MSBuild_14_1_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_14_1_BinDir>
+    <MSBuild_14_1_BinDir Condition="'$(OS)' == 'Unix'">\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\msbuild\14.1\bin\</MSBuild_14_1_BinDir>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
