@@ -961,7 +961,13 @@ namespace MonoDevelop.Projects.MSBuild
 									Console.WriteLine (e.Data);
 							};
 							p.BeginErrorReadLine ();
-							p.StandardInput.WriteLine (binDir);
+
+							// first line: path for locating the msbuild (oss) assemblies
+							if (Runtime.Preferences.BuildWithMSBuild)
+								p.StandardInput.WriteLine (binDir);
+							else
+								p.StandardInput.WriteLine ();
+
 							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
 							if (await Task.WhenAny (processStartedSignal.Task, Task.Delay (5000)) != processStartedSignal.Task)
 								throw new Exception ("MSBuild process could not be started");
@@ -1032,11 +1038,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 			var version = Version.Parse (toolsVersion);
 			bool useMicrosoftBuild =
-				(version >= new Version (14, 1)) ||
+				((version >= new Version (14, 1)) && Runtime.Preferences.BuildWithMSBuild) ||
 				(version >= new Version (4, 0) && runtime is MsNetTargetRuntime);
 
 			if (useMicrosoftBuild) {
 				toolsVersion = "dotnet." + toolsVersion;
+			} else if (version >= new Version (14, 1)) {
+				// ToolsVersion >= 14.1 is supported only by msbuild
+				// FIXME: should this fallback to 14.0 with xbuild?
+				toolsVersion = "4.0";
 			}
 
 			var exe = builderDir.Combine (toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
