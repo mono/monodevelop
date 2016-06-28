@@ -174,14 +174,18 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public override string GetMSBuildBinPath (string toolsVersion)
 		{
-			//TODO make this a PropertyService property and expose in prefs
-			const bool monoUseMSBuild = true;
+			bool monoUseMSBuild = Runtime.Preferences.BuildWithMSBuild
+						&& System.Version.Parse (toolsVersion) >= new System.Version(14, 1);
 
 			if (monoUseMSBuild) {
 				var path = Path.Combine (monoDir, "msbuild", toolsVersion, "bin");
 				if (File.Exists (Path.Combine (path, "MSBuild.exe"))) {
 					return path;
 				}
+
+				// ToolsVersion >= 14.1 is supported only by msbuild, so, just
+				// return null here
+				return null;
 			}
 
 			//fall back to xbuild. it only has one version, which lives in Mono's 4.5 directory.
