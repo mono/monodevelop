@@ -84,7 +84,8 @@ namespace MonoDevelop.Ide.ExternalTools
 				titleLabel, argumentLabel, commandLabel, 
 				workingDirLabel, browseButton, 
 				moveUpButton, moveDownButton,
-				saveCurrentFileCheckBox
+				saveCurrentFileCheckBox,
+				tagSelectorArgs, tagSelectorPath
 			};
 			 
 			foreach (ExternalTool tool in ExternalToolService.Tools) {
