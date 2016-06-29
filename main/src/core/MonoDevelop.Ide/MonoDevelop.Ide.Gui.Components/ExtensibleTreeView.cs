@@ -1352,7 +1352,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			string nodeName = node.NodeName;
 
-			GetNodeInfo (iter).Label = nodeName;
+			GetNodeInfo (iter).Label = GLib.Markup.EscapeText (nodeName);
 			store.EmitRowChanged (store.GetPath (iter), iter);
 
 			// Get and validate the initial text selection
