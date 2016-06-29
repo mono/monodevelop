@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	class Sublime3Format
+	static class Sublime3Format
 	{
 		public static SyntaxHighlighting ReadHighlighting (TextReader input)
 		{
@@ -68,6 +68,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					scope = ((YamlScalarNode)entry.Value).Value;
 					break;
 				case "captures":
+					foreach (var captureEntry in ((YamlMappingNode)entry.Value).Children) {
+						captures.Add (
+							Tuple.Create (
+								int.Parse (((YamlScalarNode)captureEntry.Key).Value),
+								((YamlScalarNode)captureEntry.Value).Value
+							)
+						);
+					}
 					break;
 				case "push":
 					push = ReadContextReference (entry.Value);

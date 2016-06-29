@@ -47,18 +47,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// <summary>
 		/// Gets colorized segments (aka chunks) from offset to offset + length.
 		/// </summary>
-		/// <param name='style'>
-		/// The color scheme used te generate the chunks.
-		/// </param>
 		/// <param name='line'>
 		/// The starting line at (offset). This is the same as Document.GetLineByOffset (offset).
 		/// </param>
-		/// <param name='offset'>
-		/// The starting offset.
-		/// </param>
-		/// <param name='length'>
-		/// The length of the text converted to chunks.
-		/// </param>
-		IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length);
+		IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line);
 	}
 }

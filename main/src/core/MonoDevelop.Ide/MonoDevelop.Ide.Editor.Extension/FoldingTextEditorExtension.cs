@@ -25,11 +25,13 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.Extension
@@ -42,6 +44,23 @@ namespace MonoDevelop.Ide.Editor.Extension
 		protected override void Initialize ()
 		{
 			DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
+
+			var input = new StreamReader ("/home/mkrueger/b/C#.sublime-syntax");
+			input.ReadLine ();
+			input.ReadLine ();
+
+			var highlighting = Sublime3Format.ReadHighlighting (input);
+			highlighting.Document = Editor;
+
+			var editorTheme = TextMateFormat.LoadEditorTheme ("/home/mkrueger/b/Monokai.tmTheme");
+
+			Editor.CaretPositionChanged += delegate {
+				var line = Editor.GetLine (Editor.CaretLine);
+				Console.WriteLine ("------------------");
+				foreach (var seg in highlighting.GetColoredSegments (line)) {
+					Console.WriteLine (seg);
+				}
+			};
 		}
 
 		public override void Dispose ()

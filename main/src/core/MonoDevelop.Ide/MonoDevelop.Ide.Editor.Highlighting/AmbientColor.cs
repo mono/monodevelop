@@ -33,6 +33,7 @@ using System.Xml.XPath;
 using System.Reflection;
 using MonoDevelop.Components;
 
+
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class AmbientColor
