@@ -60,6 +60,8 @@ namespace MonoDevelop.Ide.Editor
 
 		SemanticHighlighting SemanticHighlighting { get; set; }
 
+		ISyntaxHighlighting SyntaxHighlighting { get; set; }
+	
 		int CaretOffset { get; set; }
 
 		bool IsSomethingSelected { get; }

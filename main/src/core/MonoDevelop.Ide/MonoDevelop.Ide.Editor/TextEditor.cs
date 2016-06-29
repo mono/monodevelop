@@ -177,6 +177,15 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public ISyntaxHighlighting SyntaxHighlighting {
+			get {
+				return textEditorImpl.SyntaxHighlighting;
+			}
+			set {
+				textEditorImpl.SyntaxHighlighting = value;
+			}
+		}
+
 		public int CaretLine {
 			get {
 				return CaretLocation.Line;

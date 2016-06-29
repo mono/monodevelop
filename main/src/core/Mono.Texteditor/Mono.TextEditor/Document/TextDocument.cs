@@ -1982,6 +1982,8 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting SyntaxHighlighting { get; set; }
+
 		public class SnapshotDocument : TextDocument
 		{
 			readonly ITextSourceVersion version;

@@ -3040,6 +3040,16 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		ISyntaxHighlighting ITextEditorImpl.SyntaxHighlighting {
+			get {
+				return TextEditor.SyntaxHighlighting;
+			}
+			set {
+				TextEditor.SyntaxHighlighting = value;
+			}
+		}
+
+
 		string ITextEditorImpl.GetPangoMarkup (int offset, int length, bool fitIdeStyle)
 		{
 			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false, fitIdeStyle:fitIdeStyle);

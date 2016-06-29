@@ -8548,7 +8548,7 @@
     <Compile Include="MonoDevelop.Ide\LocalizationService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlighting.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Sublime3Format.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ISyntaxMode.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ISyntaxHighlighting.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RegexEngine\Regex.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RegexEngine\RegexBoyerMoore.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RegexEngine\RegexCapture.cs" />

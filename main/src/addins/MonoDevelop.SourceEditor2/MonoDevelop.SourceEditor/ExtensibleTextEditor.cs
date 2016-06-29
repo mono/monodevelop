@@ -83,6 +83,16 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public ISyntaxHighlighting SyntaxHighlighting {
+			get {
+				return Document.SyntaxHighlighting;
+			}
+			internal set {
+				Document.SyntaxHighlighting = value;
+			} 
+		}
+
+
 		void UpdateSemanticHighlighting ()
 		{
 			var oldSemanticHighighting = Document.SyntaxMode as SemanticHighlightingSyntaxMode;
@@ -509,7 +519,6 @@ namespace MonoDevelop.SourceEditor
 				menuPath = value;
 			}
 		}
-
 
 		void ShowPopup (Gdk.EventButton evt)
 		{

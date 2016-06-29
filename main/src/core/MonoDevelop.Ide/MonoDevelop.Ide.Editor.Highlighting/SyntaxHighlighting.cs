@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public class SyntaxHighlighting : ISyntaxMode
+	public class SyntaxHighlighting : ISyntaxHighlighting
 	{
 		public string Name { get; internal set; }
 

@@ -34,16 +34,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	/// <summary>
 	/// The basic interface for all syntax modes
 	/// </summary>
-	public interface ISyntaxMode
+	public interface ISyntaxHighlighting
 	{
-		/// <summary>
-		/// Gets or sets the document the syntax mode is attached to. To detach it's set to null.
-		/// </summary>
-		IReadonlyTextDocument Document {
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Gets colorized segments (aka chunks) from offset to offset + length.
 		/// </summary>
