@@ -149,9 +149,12 @@ namespace MonoDevelop.Components
 				targetWindow = evt.Window;
 			} else
 				targetWindow = parent.GdkWindow;
-			int x, y;
-			targetWindow.GetOrigin (out x, out y);
-			targetWindowOrigin = new Point (x, y);
+			
+			if (targetWindow != null) {
+				int x, y;
+				targetWindow.GetOrigin (out x, out y);
+				targetWindowOrigin = new Point (x, y);
+			}
 			RepositionWindow ();
 		}
 		

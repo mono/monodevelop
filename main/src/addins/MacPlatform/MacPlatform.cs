@@ -795,6 +795,18 @@ namespace MonoDevelop.MacIntegration
 			return (int)(frame.Height - rect.Height);
 		}
 
+		internal static int GetTitleBarHeight (NSWindow w)
+		{
+			int height = 0;
+			if (w.StyleMask.HasFlag (NSWindowStyle.Titled))
+				height += GetTitleBarHeight ();
+			if (w.Toolbar != null) {
+				var rect = NSWindow.ContentRectFor (w.Frame, w.StyleMask);
+				height += (int)(rect.Height - w.ContentView.Frame.Height);
+			}
+			return height;
+		}
+
 
 		internal static NSImage LoadImage (string resource)
 		{
@@ -886,6 +898,7 @@ namespace MonoDevelop.MacIntegration
 				return; // Not yet realized
 
 			NSWindow w = GtkQuartz.GetWindow (window);
+			y += GetTitleBarHeight (w);
 			var dr = FromDesktopRect (new Gdk.Rectangle (x, y, width, height));
 			var r = w.FrameRectFor (dr);
 			w.SetFrame (r, true);

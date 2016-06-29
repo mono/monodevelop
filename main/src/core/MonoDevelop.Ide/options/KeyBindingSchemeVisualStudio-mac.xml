@@ -33,7 +33,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" shortcut="Meta+E|C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Meta+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Meta+X" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Delete" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="Meta+M|Meta+O" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection" shortcut="Meta+U" />

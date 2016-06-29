@@ -73,6 +73,7 @@ namespace MonoDevelop.Ide.Editor
 			if (editor == null)
 				throw new InvalidOperationException ("Session not yet started.");
 			if (StartOffset  > editor.CaretOffset || EndOffset < editor.CaretOffset) {
+				Console.WriteLine ($"session ended !!!! {StartOffset}-{EndOffset}:{editor.CaretOffset}");
 				editor.EndSession ();
 				return false;
 			}
@@ -163,11 +164,12 @@ namespace MonoDevelop.Ide.Editor
 			endOffset = StartOffset + 1;
 		}
 
-		public override void AfterBackspace ()
+		public override void BeforeBackspace (out bool handledCommand)
 		{
-			if (Editor.CaretOffset == StartOffset) {
+			if (Editor.CaretOffset == StartOffset +  1) {
 				Editor.EndSession ();
 			}
+			base.BeforeBackspace (out handledCommand);
 		}
 
 		public override void AfterDelete ()

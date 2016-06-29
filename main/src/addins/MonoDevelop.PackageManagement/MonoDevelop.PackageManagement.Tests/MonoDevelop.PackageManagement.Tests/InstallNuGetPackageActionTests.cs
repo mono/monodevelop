@@ -395,6 +395,30 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (action.OpenReadmeFile);
 		}
+
+		[Test]
+		public void Execute_OpenReadmeFileIsTrueAndPackageIsAlreadyInstalledInSolution_DirectInstallIsNotSetWhichPreventsReadmeFileBeingOpened ()
+		{
+			CreateAction ("Test", "1.2");
+			packageManager.AddPackageToPackagesFolder ("Test", "1.2");
+			action.OpenReadmeFile = true;
+
+			action.Execute ();
+
+			Assert.IsNull (packageManager.SetDirectInstallPackageIdentity);
+		}
+
+		[Test]
+		public void Execute_OpenReadmeFileIsTrueAndPackageIsNotAlreadyInstalledInSolution_DirectInstallIsSetWhichAllowsReadmeFileToBeOpened ()
+		{
+			CreateAction ("Test", "1.2");
+			action.OpenReadmeFile = true;
+
+			action.Execute ();
+
+			Assert.AreEqual ("Test", packageManager.SetDirectInstallPackageIdentity.Id);
+			Assert.AreEqual ("1.2", packageManager.SetDirectInstallPackageIdentity.Version.ToString ());
+		}
 	}
 }
 

@@ -1015,6 +1015,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("Recent1", viewModel.PackageViewModels[0].Id);
 			Assert.AreEqual (4, recentPackage.Versions.Count);
 		}
+
+		[Test]
+		public void PackageSources_AggregateSourceSelectedThenDialogClosedAndReopened_ReturnsTwoPackageSourcesPlusAggregatePackageSource ()
+		{
+			CreateProject ();
+			AddTwoPackageSourcesToRegisteredSources ();
+			CreateViewModel ();
+			viewModel.SelectedPackageSource = viewModel.PackageSources.First ();
+			Assert.IsTrue (viewModel.SelectedPackageSource.IsAggregate);
+			CreateViewModel ();
+
+			var selectedPackageSource = viewModel.SelectedPackageSource;
+
+			Assert.AreEqual ("All Sources", selectedPackageSource.Name);
+			Assert.IsTrue (selectedPackageSource.IsAggregate);
+		}
 	}
 }
 

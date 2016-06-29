@@ -26,7 +26,7 @@
     <binding command="MonoDevelop.Ide.Commands.EditCommands.AddCodeComment" shortcut="Meta+K|Meta+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Copy" shortcut="Meta+C" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.Cut" shortcut="Meta+X" />
-    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="Delete" />
+    <binding command="MonoDevelop.Ide.Commands.EditCommands.Delete" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions" shortcut="" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.IndentSelection" shortcut="Meta+] Tab" />
     <binding command="MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences" shortcut="Meta+," />

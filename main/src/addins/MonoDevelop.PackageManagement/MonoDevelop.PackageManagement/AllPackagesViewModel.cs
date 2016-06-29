@@ -163,7 +163,7 @@ namespace MonoDevelop.PackageManagement
 
 			if (!String.IsNullOrEmpty (packageSourceProvider.ActivePackageSourceName)) {
 				SourceRepositoryViewModel packageSource = packageSources
-					.FirstOrDefault (viewModel => String.Equals (viewModel.Name, packageSourceProvider.ActivePackageSourceName, StringComparison.CurrentCultureIgnoreCase));
+					.FirstOrDefault (viewModel => String.Equals (viewModel.PackageSource.Name, packageSourceProvider.ActivePackageSourceName, StringComparison.CurrentCultureIgnoreCase));
 				if (packageSource != null) {
 					return packageSource;
 				}
