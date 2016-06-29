@@ -1195,7 +1195,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		void InterruptFoldWorker ()
+		internal void InterruptFoldWorker ()
 		{
 			if (foldSegmentSrc == null)
 				return;
