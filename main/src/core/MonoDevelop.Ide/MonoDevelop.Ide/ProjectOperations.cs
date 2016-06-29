@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (location.SourceTree.FilePath);
 			var doc = TextEditorFactory.CreateNewDocument ();
-			doc.Text = provider.ReadString ();
+			doc.Text = provider.ReadString ().ReadToEnd ();
 			int position = location.SourceSpan.Start;
 			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
@@ -1180,7 +1180,11 @@ namespace MonoDevelop.Ide
 			try {
 				OnStartClean (monitor, tt);
 
+				monitor.BeginTask (GettextCatalog.GetString ("Rebuilding..."), 2);
+				monitor.BeginStep (GettextCatalog.GetString ("Rebuilding... (Clean)"));
+
 				var res = await CleanAsync (entry, monitor, tt, true, operationContext);
+				monitor.EndStep ();
 				if (res.HasErrors) {
 					tt.End ();
 					monitor.Dispose ();
@@ -1189,6 +1193,7 @@ namespace MonoDevelop.Ide
 				if (StartBuild != null) {
 					BeginBuild (monitor, tt, true);
 				}
+				monitor.BeginStep (GettextCatalog.GetString ("Rebuilding... (Build)"));
 				return await BuildSolutionItemAsync (entry, monitor, tt, operationContext:operationContext);
 			} finally {
 				tt.End ();

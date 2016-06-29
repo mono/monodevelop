@@ -98,7 +98,6 @@ namespace MonoDevelop.CSharp.Formatting
 						var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
 						optionSet = policy.CreateOptions (textPolicy);
 					}
-
 					var doc = Formatter.FormatAsync (analysisDocument, span, optionSet).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					var caretOffset = editor.CaretOffset;
@@ -106,6 +105,8 @@ namespace MonoDevelop.CSharp.Formatting
 					int delta = 0;
 					foreach (var change in newTree.GetChanges (syntaxTree)) {
 						if (!exact && change.Span.Start + delta >= caretOffset)
+							continue;
+						if (exact && !span.Contains (change.Span.Start))
 							continue;
 						var newText = change.NewText;
 						editor.ReplaceText (delta + change.Span.Start, change.Span.Length, newText);

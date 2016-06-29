@@ -481,7 +481,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token, bool forceSymbolCompletion = false)
 		{
-			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
+			if (Editor.EditMode == MonoDevelop.Ide.Editor.EditMode.CursorInsertion)
 				return Task.FromResult ((ICompletionDataList)null);
 //			var data = Editor;
 //			if (data.CurrentMode is TextLinkEditMode) {
@@ -729,7 +729,7 @@ namespace MonoDevelop.CSharp.Completion
 		public async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, bool force, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
-			if (!force && completionChar != '(' && completionChar != ',')
+			if (!force && completionChar != '(' && completionChar != '<' && completionChar != '[' && completionChar != ',')
 				return null;
 			if (Editor.EditMode != EditMode.Edit)
 				return null;

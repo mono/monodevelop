@@ -42,6 +42,7 @@ namespace MonoDevelop.Components
 			
 			store = new ListStore (typeof(String));
 			dirList.Model = store;
+			dirList.SearchColumn = -1; // disable the interactive search
 			dirList.AppendColumn ("", new CellRendererText (), "text", 0);
 			dirList.Selection.Changed += delegate {
 				UpdateStatus ();

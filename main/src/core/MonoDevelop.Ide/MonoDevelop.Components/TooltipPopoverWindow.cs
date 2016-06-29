@@ -124,7 +124,14 @@ namespace MonoDevelop.Components
 
 		void UpdateLabel ()
 		{
+			if (label == null)
+				return;
+			
 			string msg = hasMarkup ? text : GLib.Markup.EscapeText (text);
+			if (string.IsNullOrEmpty (msg)) {
+				label.Markup = String.Empty;
+				return;
+			}
 
 			if (severity.HasValue) {
 				switch (severity.Value) {

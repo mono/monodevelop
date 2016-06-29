@@ -76,7 +76,7 @@ namespace MonoDevelop.Components
 
 		internal static void SetupXwtTheme ()
 		{
-			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled");
+			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled", "error");
 
 			if (Core.Platform.IsMac) {
 				Xwt.Drawing.Context.RegisterStyles ("mac", "sel");
@@ -227,10 +227,37 @@ namespace MonoDevelop.Components
 			else
 				Xwt.Drawing.Context.ClearGlobalStyle ("dark");
 
+			UpdateXwtDefaults ();
+
 			Styles.LoadStyle ();
 			#if MAC
 			UpdateMacWindows ();
 			#endif
+		}
+
+		static void UpdateXwtDefaults ()
+		{
+			// Xwt default dialog icons
+			Xwt.Toolkit.CurrentEngine.Defaults.MessageDialog.InformationIcon = ImageService.GetIcon ("gtk-dialog-info", Gtk.IconSize.Dialog);
+			Xwt.Toolkit.CurrentEngine.Defaults.MessageDialog.WarningIcon = ImageService.GetIcon ("gtk-dialog-warning", Gtk.IconSize.Dialog);
+			Xwt.Toolkit.CurrentEngine.Defaults.MessageDialog.ErrorIcon = ImageService.GetIcon ("gtk-dialog-error", Gtk.IconSize.Dialog);
+			Xwt.Toolkit.CurrentEngine.Defaults.MessageDialog.QuestionIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog);
+			Xwt.Toolkit.CurrentEngine.Defaults.MessageDialog.ConfirmationIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog);
+
+			if (Platform.IsMac && UserInterfaceTheme == Theme.Dark) {
+				// dark NSAppearance can not handle custom drawn images in dialogs
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.InformationIcon = ImageService.GetIcon ("gtk-dialog-info", Gtk.IconSize.Dialog).ToBitmap (GtkWorkarounds.GetScaleFactor ());
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.WarningIcon = ImageService.GetIcon ("gtk-dialog-warning", Gtk.IconSize.Dialog).ToBitmap (GtkWorkarounds.GetScaleFactor ());
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.ErrorIcon = ImageService.GetIcon ("gtk-dialog-error", Gtk.IconSize.Dialog).ToBitmap (GtkWorkarounds.GetScaleFactor ());
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.QuestionIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog).ToBitmap (GtkWorkarounds.GetScaleFactor ());
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.ConfirmationIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog).ToBitmap (GtkWorkarounds.GetScaleFactor ());
+			} else {
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.InformationIcon = ImageService.GetIcon ("gtk-dialog-info", Gtk.IconSize.Dialog);
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.WarningIcon = ImageService.GetIcon ("gtk-dialog-warning", Gtk.IconSize.Dialog);
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.ErrorIcon = ImageService.GetIcon ("gtk-dialog-error", Gtk.IconSize.Dialog);
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.QuestionIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog);
+				Xwt.Toolkit.NativeEngine.Defaults.MessageDialog.ConfirmationIcon = ImageService.GetIcon ("gtk-dialog-question", Gtk.IconSize.Dialog);
+			}
 		}
 
 		internal static string[] gtkThemeFallbacks = new string[] {

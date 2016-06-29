@@ -26,14 +26,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
+using System.Threading;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal interface IPackageAction
 	{
-		void Execute();
+		void Execute ();
+		void Execute (CancellationToken cancellationToken);
 		bool HasPackageScriptsToRun();
-		//IPackageScriptRunner PackageScriptRunner { get; set; }
 	}
 }

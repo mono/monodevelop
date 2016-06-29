@@ -33,6 +33,8 @@ using Mono.Unix;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Mono.Addins;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core
 {
@@ -45,6 +47,22 @@ namespace MonoDevelop.Core
 
 		const int LOCALE_CUSTOM_UNSPECIFIED = 4096;
 
+		static Dictionary<string, string> localeToCulture = new Dictionary<string, string> {
+			{ "cs", "cs-CZ" },
+			{ "de", "de-DE" },
+			{ "es", "es-ES" },
+			{ "fr", "fr-FR" },
+			{ "it", "it-IT" },
+			{ "ja", "ja-JP" },
+			{ "ko", "ko-KR" },
+			{ "pl", "pl-PL" },
+			{ "pt", "pt-BR" },
+			{ "ru", "ru-RU" },
+			{ "tr", "tr-TR" },
+			{ "zh_CN", "zh-CN" },
+			{ "zh_TW", "zh-TW" },
+		};
+
 		static GettextCatalog ()
 		{
 			mainThread = Thread.CurrentThread;
@@ -53,26 +71,27 @@ namespace MonoDevelop.Core
 			string catalog = Environment.GetEnvironmentVariable ("MONODEVELOP_LOCALE_PATH");
 
 			// Set the user defined language
-			string lang = Runtime.Preferences.UserInterfaceLanguage;
-			if (!string.IsNullOrEmpty (lang)) {
-				if (Platform.IsWindows) {
-					lang = lang.Replace("_", "-");
-					CultureInfo ci = CultureInfo.GetCultureInfo(lang);
-					if (ci.IsNeutralCulture) {
-						// We need a non-neutral culture
-						foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
-							if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
-								ci = c;
-								break;
-							}
-					}
-					if (!ci.IsNeutralCulture) {
-						SetThreadUILanguage (ci.LCID);
-						mainThread.CurrentUICulture = ci;
-					}
+			UILocale = Runtime.Preferences.UserInterfaceLanguage;
+			if (!string.IsNullOrEmpty (UILocale)) {
+				string cultureLang;
+				if (!localeToCulture.TryGetValue (UILocale, out cultureLang))
+					cultureLang = UILocale.Replace ("_", "-");
+				CultureInfo ci = CultureInfo.GetCultureInfo (cultureLang);
+				if (ci.IsNeutralCulture) {
+					// We need a non-neutral culture
+					foreach (CultureInfo c in CultureInfo.GetCultures (CultureTypes.AllCultures & ~CultureTypes.NeutralCultures))
+						if (c.Parent != null && c.Parent.Name == ci.Name && c.LCID != LOCALE_CUSTOM_UNSPECIFIED) {
+							ci = c;
+							break;
+						}
 				}
-				else
-					Environment.SetEnvironmentVariable ("LANGUAGE", lang);
+				if (!ci.IsNeutralCulture) {
+					if (Platform.IsWindows)
+						SetThreadUILanguage (ci.LCID);
+					mainThread.CurrentUICulture = ci;
+				}
+				if (!Platform.IsWindows)
+					Environment.SetEnvironmentVariable ("LANGUAGE", UILocale);
 			}
 			
 			if (string.IsNullOrEmpty (catalog) || !Directory.Exists (catalog)) {
@@ -101,6 +120,8 @@ namespace MonoDevelop.Core
 				Console.WriteLine (ex);
 			}
 		}
+
+		public static string UILocale { get; private set; }
 
 		public static CultureInfo UICulture {
 			get { return mainThread.CurrentUICulture; }

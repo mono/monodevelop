@@ -8,28 +8,41 @@
 	<!-- Extensions -->
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "Edit" id="Edit">
+			
 		<Command id = "MonoDevelop.CodeGeneration.CodeGenerationCommands.ShowCodeGenerationWindow"
-				_label = "S_how Code Generation Window"
+				_label = "Show Code _Generation"
 				shortcut = "Alt|Insert"
 				macShortcut = "Meta|I" />
+		</Category>
+
+		<Category _name = "Code Navigation" id = "CodeNavigation">
+			
 		<Command id = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsages"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindProjectReferenceUsagesHandler"
-			_label = "_Find reference usages"/>
+			_label = "_Find Reference Usages"
+			macShortcut = "Meta+F12" />
 		<Command id = "MonoDevelop.CSharp.Navigation.FindExtensionMethods"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindExtensionMethodsHandler"
-			_label = "Extension Methods"/>
+			_label = "Extension Methods"
+			_displayName = "Find Extension Methods"/>
 		<Command id = "MonoDevelop.Refactoring.Navigation.FindBaseSymbols"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindBaseSymbolsHandler"
-			_label = "Base Symbols"/>
+			_label = "Base Symbols"
+			_displayName = "Find Base Symbols"/>
 		<Command id = "MonoDevelop.Refactoring.Navigation.FindDerivedSymbols"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.FindDerivedSymbolsHandler"
-			_label = "Derived Symbols"/>
+			_label = "Derived Symbols"
+			_displayName = "Find Derived Symbols"/>
 		<Command id = "MonoDevelop.CSharp.Navigation.FindMemberOverloads"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindMemberOverloadsHandler"
-			_label = "Member Overloads"/>
+			_label = "Member Overloads"
+			_displayName = "Find Member Overloads"/>
 		<Command id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"
 			defaultHandler = "MonoDevelop.CSharp.Navigation.FindImplementingMembersHandler"
-			_label = "Implementing Members"/>
+			_label = "Implementing Members"
+			_displayName = "Find Implementing Members"/>
+		</Category>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands/Refactoring">
@@ -56,7 +69,8 @@
 		/>
 		<Command id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"
 			defaultHandler = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommandHandler"
-			_label = "R_emove and Sort" 
+			_label = "R_emove and Sort"
+			_displayName = "Remove Unused and Sort (Usings)"
 		/>
 	</Extension>
 
@@ -64,7 +78,7 @@
 		<Command id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration"
 						_label = "_Go to Declaration" 
 						shortcut = "F12"
-						macShortcut = "Meta|D"/>
+						macShortcut = "Meta|D F12"/>
 	</Extension>
 		
 	
@@ -246,25 +260,13 @@
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.PrevUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToPrevUsageHandler"
 		         shortcut = "Ctrl|Shift|Up"
-		         macShortcut = "Meta|Shift|Up"
+		         macShortcut = "Control+Alt+Meta+Up"
 		         _label = "_Move to prev usage"/>
 		<Command id = "MonoDevelop.CSharp.Highlighting.MoveToUsagesCommand.NextUsage"
 		         defaultHandler = "MonoDevelop.CSharp.Highlighting.MoveToNextUsageHandler"
 		         shortcut = "Ctrl|Shift|Down"
-		         macShortcut = "Meta|Shift|Down"
+		         macShortcut = "Control+Alt+Meta+Down"
 		         _label = "_Move to next usage"/>
-
-		<Command id = "MonoDevelop.CSharp.ExpandCommands.ExpandSelection"
-		         defaultHandler = "MonoDevelop.CSharp.ExpandSelectionHandler"
-		         shortcut = "Alt|Shift|Up"
-		         macShortcut = "Alt|Shift|Up"
-		         _label = "_Expand selection"/>
-
-		<Command id = "MonoDevelop.CSharp.ExpandCommands.ShrinkSelection"
-		         defaultHandler = "MonoDevelop.CSharp.ShrinkSelectionHandler"
-		         shortcut = "Alt|Shift|Down"
-		         macShortcut = "Alt|Shift|Down"
-		         _label = "_Shrink selection"/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Refactoring/CodeGenerators">
@@ -303,6 +305,7 @@
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
 		<Condition id="FileType" mimeTypes="text/x-csharp">
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.QuickFix"  insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.CurrentRefactoryOperations" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" insertbefore="MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator"/>
 
 			<ItemSet id = "Navigate" _label = "Navigate">
@@ -317,12 +320,12 @@
 				<CommandItem id = "MonoDevelop.CSharp.Navigation.FindImplementingMembers"/>
 			</ItemSet>
 
-				
+				<!--
 			<ItemSet id = "Organize Imports" _label = "Organize Usings" insertafter="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCodeTemplateWindow">
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.RemoveUnusedImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.OrganizeImportsCommand"/>
 				<CommandItem id = "MonoDevelop.CSharp.Refactoring.SortAndRemoveImportsCommand"/>
-			</ItemSet>
+			</ItemSet> -->
 		</Condition>
 	</Extension>
 

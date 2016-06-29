@@ -33,6 +33,7 @@ namespace MonoDevelop.PackageManagement
 	internal interface IDotNetProject : IProject
 	{
 		event EventHandler<ProjectModifiedEventArgs> Modified;
+		event EventHandler Saved;
 
 		DotNetProject DotNetProject { get; }
 		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
@@ -48,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 		bool Equals (IDotNetProject project);
 		void RefreshProjectBuilder ();
 		void DisposeProjectBuilder ();
+		void RefreshReferenceStatus ();
 	}
 }
 

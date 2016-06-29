@@ -295,9 +295,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, insertionText);
 			int offset = Editor.CaretOffset;
-			for (int i = skipChars - 1; i --> 0;) {
-				Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset)));
-				offset++;
+			for (int i = skipChars; i --> 0;) {
+				Editor.StartSession (new SkipCharSession (Editor.GetCharAt (offset + i)));
 			}
 
 			if (runParameterCompletionCommand && IdeApp.Workbench != null) {
@@ -415,19 +414,25 @@ namespace MonoDevelop.CSharp.Completion
 			
 			if (!typeArgs.Any (ta => ta.TypeKind == TypeKind.TypeParameter))
 				return false;
-			var testMethod = method.ReducedFrom ?? method;
-			return typeArgs.Any (t => !testMethod.Parameters.Any (p => ContainsType(p.Type, t)));
+
+			var parameterTypes = new List<ITypeSymbol> (method.Parameters.Select (p => p.Type));
+			if (method.IsExtensionMethod) {
+				parameterTypes.Add (method.ReducedFrom.Parameters [0].Type);
+			}
+
+			return typeArgs.Any (t => !parameterTypes.Any (pt => ContainsType (pt, t)));
 		}
 
 		static bool ContainsType (ITypeSymbol testType, ITypeSymbol searchType)
 		{
 			if (testType == null)
 				return false;
+			Console.WriteLine (testType +" == " + searchType + " ? " + (testType == searchType) + "/" + testType.Equals (searchType));
 			if (testType == searchType)
 				return true;
 			var namedTypeSymbol = testType as INamedTypeSymbol;
 			if (namedTypeSymbol != null) {
-				foreach (var arg in namedTypeSymbol.TypeParameters)
+				foreach (var arg in namedTypeSymbol.TypeArguments)
 					if (ContainsType (arg, searchType))
 						return true;
 			}

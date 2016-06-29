@@ -43,6 +43,7 @@ using MonoDevelop.Ide;
 using System.Collections.Generic;
 using MonoDevelop.Ide.StandardHeader;
 using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 {
@@ -85,6 +86,8 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 			readonly BaseTypeDeclarationSyntax type;
 			readonly SyntaxNode root;
 
+			bool generatePreview;
+
 			public MyCodeAction (Document document, string title, SyntaxNode root, BaseTypeDeclarationSyntax type)
 			{
 				this.root = root;
@@ -101,8 +104,30 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 				}
 			}
 
-			protected override Task<Document> GetChangedDocumentAsync (System.Threading.CancellationToken cancellationToken)
+			protected override Task<IEnumerable<CodeActionOperation>> ComputePreviewOperationsAsync (System.Threading.CancellationToken cancellationToken)
 			{
+				generatePreview = true;
+				var result = base.ComputePreviewOperationsAsync (cancellationToken);
+				generatePreview = false;
+				return result;
+			}
+
+			protected override async Task<Document> GetChangedDocumentAsync (System.Threading.CancellationToken cancellationToken)
+			{
+				if (generatePreview) {
+					var removeType =
+						root.DescendantNodesAndSelf (n => !(n is BaseTypeDeclarationSyntax))
+						    .OfType<BaseTypeDeclarationSyntax> ()
+							.FirstOrDefault (t => t.SpanStart == type.SpanStart);
+					if (removeType == null)
+						return document;
+
+					var st = await document.GetTextAsync ().ConfigureAwait (false);
+					var bounds = CalcTypeBounds (removeType);
+
+					return document.WithText (st.WithChanges (new TextChange (new TextSpan (bounds.Offset, bounds.Length), "")));
+				}
+
 				var correctFileName = GetCorrectFileName (document, type);
 				if (IsSingleType (root)) {
 					FileService.RenameFile (document.FilePath, correctFileName);
@@ -110,9 +135,9 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 					if (doc.HasProject) {
 						IdeApp.ProjectOperations.SaveAsync (doc.Project);
 					}
-					return Task.FromResult (document);
+					return document;
 				} 
-				return Task.FromResult (CreateNewFile (type, correctFileName));
+				return CreateNewFile (type, correctFileName);
 			}
 
 			Document CreateNewFile (BaseTypeDeclarationSyntax type, string correctFileName)

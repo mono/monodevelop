@@ -484,6 +484,17 @@ namespace MonoDevelop.Projects
 			Assert.IsTrue (asms.Contains (testRef));
 		}
 
+		[Test]
+		public async Task EvaluateImportedProperty ()
+		{
+			// Even when a property is defined in an imported targets file, the project properties should include the value
+			string solFile = Util.GetSampleProject ("property-evaluation-test", "property-evaluation-test.sln");
+			Solution sol = await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			var p = (DotNetProject)sol.GetAllProjects ().First ();
+
+			Assert.AreEqual ("yes", p.ProjectProperties.GetValue ("Imported"));
+		}
+
 		//[Ignore ("xbuild bug. It is not returning correct values for evaluated-items-without-condition list")]
 		[Test]
 		public async Task EvaluatePropertiesWithConditionalGroup ()
@@ -763,6 +774,32 @@ namespace MonoDevelop.Projects
 		public async Task FlavorLoadExtendedProperties ()
 		{
 			string projFile = Util.GetSampleProject ("extended-project-properties", "test-data.myproj");
+
+			var tn = new MyEmptyProjectTypeNode ();
+			var fn = new CustomItemNode<FlavorWithData> ();
+			MSBuildProjectService.RegisterCustomItemType (tn);
+			WorkspaceObject.RegisterCustomExtension (fn);
+			try {
+				var p = await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projFile);
+				Assert.IsInstanceOf<MyEmptyProject> (p);
+				var mp = (MyEmptyProject)p;
+
+				var f = mp.GetFlavor<FlavorWithData> ();
+				Assert.NotNull (f.Data);
+				Assert.AreEqual (f.Data.Foo, "bar");
+				Assert.AreEqual (f.SimpleData, "Test");
+			} finally {
+				MSBuildProjectService.UnregisterCustomItemType (tn);
+				WorkspaceObject.UnregisterCustomExtension (fn);
+			}
+		}
+
+		[Test]
+		public async Task FlavorLoadExtendedProperties_InitialEmptyGroup ()
+		{
+			// Check that data load works when it is not defined in the main group
+			// Test for BXC 41774.
+			string projFile = Util.GetSampleProject ("extended-project-properties", "test-data-empty-group.myproj");
 
 			var tn = new MyEmptyProjectTypeNode ();
 			var fn = new CustomItemNode<FlavorWithData> ();

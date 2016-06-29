@@ -539,21 +539,24 @@ namespace MonoDevelop.Ide.Gui.Pads
 		void OnShowReference (object o, EventArgs args)
 		{
 			string reference = null;
-			if (GetSelectedErrorReference (out reference)) {
-				Process.Start ("http://google.com/search?q=" + System.Web.HttpUtility.UrlEncode (reference));
-				return;
-			}
+			if (GetSelectedErrorReference (out reference) && reference != null)
+				DesktopService.ShowUrl (reference);
 		}
 
 		bool GetSelectedErrorReference (out string reference)
 		{
+			string webRequest = "http://google.com/search?q=";
 			TaskListEntry task = SelectedTask;
-			if (task != null && !String.IsNullOrEmpty (task.HelpKeyword)) {
-				reference = task.HelpKeyword;
+			if (task != null && task.HasDocumentationLink ()) {
+				reference = task.DocumentationLink;
 				return true;
 			}
-			if (task != null && !String.IsNullOrEmpty (task.Code)) {
-				reference = task.Code;
+			if (task != null && !string.IsNullOrEmpty (task.HelpKeyword)) {
+				reference = webRequest + System.Web.HttpUtility.UrlEncode (task.HelpKeyword);
+				return true;
+			}
+			if (task != null && !string.IsNullOrEmpty (task.Code)) {
+				reference = webRequest + System.Web.HttpUtility.UrlEncode (task.Code);
 				return true;
 			}
 			reference = null;
@@ -780,6 +783,14 @@ namespace MonoDevelop.Ide.Gui.Pads
 			
 			filter.Refilter ();
 		}
+
+		internal void SetFilter (bool showErrors, bool showWarnings, bool showMessages)
+		{
+			errorBtn.Active = showErrors;
+			warnBtn.Active = showWarnings;
+			msgBtn.Active = showMessages;
+		}
+
 
 		bool FilterTasks (TreeModel model, TreeIter iter)
 		{

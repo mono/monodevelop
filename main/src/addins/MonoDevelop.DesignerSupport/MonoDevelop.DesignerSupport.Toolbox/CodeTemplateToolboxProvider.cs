@@ -31,6 +31,7 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
@@ -42,18 +43,20 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			var editor = consumer as IReadonlyTextDocument;
-			if (editor != null) {
-				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (editor.FileName)) {
-					if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
-						continue;
-					yield return new TemplateToolboxNode (ct) {
-						Category = category,
-						Icon = ImageService.GetIcon ("md-template", Gtk.IconSize.Menu)
-					};
-				}
+			var content = consumer as ViewContent;
+			if (content == null || !content.IsFile)
+				yield break;
+			// Hack: Ensure that this category is only filled if the current page is a text editor.
+			if (!(content is ITextEditorResolver))
+				yield break;
+			foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (content.ContentName)) {
+				if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
+					continue;
+				yield return new TemplateToolboxNode (ct) {
+					Category = category,
+					Icon = ImageService.GetIcon ("md-template", Gtk.IconSize.Menu)
+				};
 			}
-			yield break;
 		}
 		
 		public event EventHandler ItemsChanged {

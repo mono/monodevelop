@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger
 		double typeColWidth;
 
 		readonly CellRendererTextWithIcon crtExp;
-		readonly CellRendererText crtValue;
+		readonly ValueCellRenderer crtValue;
 		readonly CellRendererText crtType;
 		readonly CellRendererRoundedButton crpButton;
 		readonly CellRendererImage crpPin;
@@ -178,7 +178,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		class CellRendererTextUrl : CellRendererText{
+		class ValueCellRenderer : CellRendererText
+		{
+			public bool Compact;
+
 			[GLib.Property ("texturl")]
 			public string TextUrl {
 				get {
@@ -194,6 +197,15 @@ namespace MonoDevelop.Debugger
 					}
 					Text = value;
 				}
+			}
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				if (Compact)
+					this.Ellipsize = Pango.EllipsizeMode.None;
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				if (Compact)
+					this.Ellipsize = Pango.EllipsizeMode.End;
 			}
 		}
 
@@ -260,10 +272,10 @@ namespace MonoDevelop.Debugger
 						int YOffset = (cell_area.Height - h) / 2;
 						if (((ObjectValueTreeView)widget).CompactView && !Platform.IsWindows)
 							YOffset += 1;
-						window.DrawLayoutWithColors (widget.Style.TextGC (StateType.Normal),
-							cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
-							cell_area.Y + YOffset,
-							layout, Styles.ObjectValueTreeValuesButtonText.ToGdkColor(), Styles.ObjectValueTreeValuesButtonBackground.ToGdkColor());
+						cr.SetSourceColor (Styles.ObjectValueTreeValuesButtonText.ToCairoColor ());
+						cr.MoveTo (cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
+								   cell_area.Y + YOffset);
+						cr.ShowLayout (layout);
 					}
 				}
 			}
@@ -292,6 +304,7 @@ namespace MonoDevelop.Debugger
 		{
 			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string));
 			Model = store;
+			SearchColumn = -1; // disable the interactive search
 			RulesHint = true;
 			EnableSearch = false;
 			AllowPopupMenu = true;
@@ -338,7 +351,8 @@ namespace MonoDevelop.Debugger
 			crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
-			crtValue = new CellRendererTextUrl ();
+			crtValue = new ValueCellRenderer ();
+			crtValue.Ellipsize = Pango.EllipsizeMode.End;
 			valueCol.PackStart (crtValue, true);
 			valueCol.AddAttribute (crtValue, "texturl", ValueColumn);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableColumn);
@@ -384,9 +398,7 @@ namespace MonoDevelop.Debugger
 			crtValue.EditingStarted += OnValueEditing;
 			crtValue.Edited += OnValueEdited;
 			crtValue.EditingCanceled += OnEditingCancelled;
-			
-			this.EnableAutoTooltips ();
-			
+
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
@@ -751,6 +763,7 @@ namespace MonoDevelop.Debugger
 					newFont = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale12);
 					valueCol.MaxWidth = int.MaxValue;
 				}
+				crtValue.Compact = compact;
 				typeCol.Visible = !compact;
 				crtExp.FontDesc = newFont;
 				crtValue.FontDesc = newFont;
@@ -1594,13 +1607,8 @@ namespace MonoDevelop.Debugger
 				if (obj.IsNull)
 					return false;
 				if (obj.IsPrimitive) {
-					if (obj.TypeName != "string") {
-						return false;
-					} else {
-						if (obj.Value.Length < DebuggingService.DebuggerSession.EvaluationOptions.EllipsizedLength + 3) {//3=2x"(qoute) and 1x "…"
-							return false;
-						}
-					}
+					//obj.DisplayValue.Contains ("|") is special case to detect enum with [Flags]
+					return obj.TypeName == "string" || obj.DisplayValue.Contains ("|");
 				}
 				if (string.IsNullOrEmpty (obj.TypeName))
 					return false;

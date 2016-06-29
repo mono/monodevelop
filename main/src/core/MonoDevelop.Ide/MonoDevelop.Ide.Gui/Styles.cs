@@ -45,6 +45,8 @@ namespace MonoDevelop.Ide.Gui
 		public static Color BaseSelectionTextColor { get; internal set; }
 		public static Color BaseIconColor { get; internal set; }
 		public static Color LinkForegroundColor { get; internal set; }
+		public static Color SecondaryTextColor { get; internal set; }
+		public static Color SecondarySelectionTextColor { get; internal set; }
 
 		public static Color ErrorForegroundColor { get; internal set; }
 		public static Color WarningForegroundColor { get; internal set; }
@@ -241,6 +243,16 @@ namespace MonoDevelop.Ide.Gui
 			public static Color SearchErrorForegroundColor { get; internal set; }
 		}
 
+		public static class KeyBindingsPanel
+		{
+			public static Color KeyBackgroundColor { get; internal set; }
+			public static Color KeyForegroundColor { get; internal set; }
+			public static Color KeyDuplicateBackgroundColor { get; internal set; }
+			public static Color KeyDuplicateForegroundColor { get; internal set; }
+			public static Color KeyConflictBackgroundColor { get; internal set; }
+			public static Color KeyConflictForegroundColor { get; internal set; }
+		}
+
 		// Helper methods
 
 		internal static Color Shift (Color color, double factor)
@@ -328,6 +340,8 @@ namespace MonoDevelop.Ide.Gui
 			SubTabBarActiveTextColor = BaseSelectionTextColor;
 			SubTabBarSeparatorColor = SubTabBarTextColor;
 			InactiveBrowserPadBackground = InactivePadBackground;
+			SecondaryTextColor = Color.FromName ("#808080");
+			SecondarySelectionTextColor = Color.FromName ("#93cbff");
 
 			// Tabs
 
@@ -384,6 +398,15 @@ namespace MonoDevelop.Ide.Gui
 			Editor.SmartTagMarkerColorLight = Color.FromName ("#ff70fe").WithAlpha (.5);
 			Editor.SmartTagMarkerColorDark = Color.FromName ("#ffffff").WithAlpha (.5);
 			Editor.SearchErrorForegroundColor = ErrorForegroundColor;
+
+			// Key Bindings Preferences
+
+			KeyBindingsPanel.KeyBackgroundColor = BackgroundColor;
+			KeyBindingsPanel.KeyForegroundColor = BaseForegroundColor;
+			KeyBindingsPanel.KeyDuplicateBackgroundColor = StatusWarningBackgroundColor;
+			KeyBindingsPanel.KeyDuplicateForegroundColor = StatusWarningTextColor;
+			KeyBindingsPanel.KeyConflictBackgroundColor = StatusErrorBackgroundColor;
+			KeyBindingsPanel.KeyConflictForegroundColor = StatusErrorTextColor;
 
 			if (Changed != null)
 				Changed (null, EventArgs.Empty);

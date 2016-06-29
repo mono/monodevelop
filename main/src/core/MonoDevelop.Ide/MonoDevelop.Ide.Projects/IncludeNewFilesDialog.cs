@@ -56,7 +56,8 @@ namespace MonoDevelop.Ide.Projects
 			this.baseDirectory = baseDirectory;
 			
 			treeviewFiles.Model = store;
-			
+			treeviewFiles.SearchColumn = -1; // disable the interactive search
+
 			treeviewFiles.HeadersVisible = false; // Headers are untranslated because they're hidden as default
 			
 			TreeViewColumn textColumn = new TreeViewColumn ();

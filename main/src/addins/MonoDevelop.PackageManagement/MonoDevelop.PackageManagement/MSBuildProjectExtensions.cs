@@ -32,7 +32,7 @@ using System.Linq;
 using System.Xml;
 
 using MonoDevelop.Projects.MSBuild;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -49,7 +49,7 @@ namespace MonoDevelop.PackageManagement
 		public static void AddImportIfMissing (
 			this MSBuildProject project,
 			string importedProjectFile,
-			ProjectImportLocation importLocation,
+			ImportLocation importLocation,
 			string condition)
 		{
 			if (project.ImportExists (importedProjectFile))
@@ -61,11 +61,22 @@ namespace MonoDevelop.PackageManagement
 		public static void AddImport (
 			this MSBuildProject project,
 			string importedProjectFile,
-			ProjectImportLocation importLocation,
+			ImportLocation importLocation,
 			string condition)
 		{
-			var before = importLocation == ProjectImportLocation.Top ? project.GetAllObjects ().FirstOrDefault () : null;
+			MSBuildObject before = GetInsertBeforeObject (project, importLocation);
 			project.AddNewImport (importedProjectFile, condition, before);
+		}
+
+		static MSBuildObject GetInsertBeforeObject (MSBuildProject project, ImportLocation importLocation)
+		{
+			if (importLocation == ImportLocation.Top) {
+				return project.GetAllObjects ().FirstOrDefault ();
+			}
+
+			// Return an unknown MSBuildItem instead of null so the MSBuildProject adds the import as the last
+			// child in the project.
+			return new MSBuildItem ();
 		}
 		
 		public static void RemoveImportIfExists (this MSBuildProject project, string importedProjectFile)

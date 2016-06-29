@@ -34,6 +34,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		DotNetProject project;
 		EventHandler<ProjectModifiedEventArgs> projectModifiedHandler;
+		EventHandler projectSavedHandler;
 
 		public DotNetProjectProxy (DotNetProject project)
 			: base (project)
@@ -108,6 +109,26 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		public event EventHandler Saved {
+			add {
+				if (projectSavedHandler == null) {
+					project.Saved += ProjectSaved;
+				}
+				projectSavedHandler += value;
+			}
+			remove {
+				projectSavedHandler -= value;
+				if (projectSavedHandler == null) {
+					project.Saved -= ProjectSaved;
+				}
+			}
+		}
+
+		void ProjectSaved (object sender, SolutionItemEventArgs e)
+		{
+			projectSavedHandler (this, new EventArgs ());
+		}
+
 		public bool Equals (IDotNetProject project)
 		{
 			return DotNetProject == project.DotNetProject;
@@ -121,6 +142,11 @@ namespace MonoDevelop.PackageManagement
 		public void DisposeProjectBuilder ()
 		{
 			DotNetProject.ReloadProjectBuilder ();
+		}
+
+		public void RefreshReferenceStatus ()
+		{
+			DotNetProject.RefreshReferenceStatus ();
 		}
 	}
 }

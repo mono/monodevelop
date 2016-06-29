@@ -174,6 +174,42 @@ get_mono_env_options (int *count)
 	return argv;
 }
 
+
+static void
+run_md_bundle (NSString *appDir, NSArray *arguments)
+{
+	NSURL *bundleURL = [NSURL fileURLWithPath: appDir];
+	pid_t myPID = getpid ();
+	NSRunningApplication *mdApp = nil;
+
+	NSArray *runningApplications = [[NSWorkspace sharedWorkspace] runningApplications];
+	for (NSRunningApplication *app in runningApplications) {
+		if ([[[app bundleURL] path] isEqual:[bundleURL path]] && myPID != [app processIdentifier])
+		{
+			mdApp = app;
+			break;
+		}
+	}
+
+	if (mdApp != nil) {
+		for (int i = 0; i < 10; i++) {
+			if ([mdApp isTerminated])
+				break;
+			[NSThread sleepForTimeInterval:0.5f];
+		}
+	}
+
+	NSError *error = nil;
+	mdApp = [[NSWorkspace sharedWorkspace] launchApplicationAtURL:bundleURL options:NSWorkspaceLaunchAsync configuration:[NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments] error:&error];
+
+	if (mdApp == nil)
+	{
+		NSLog(@"Failed to start bundle %@: %@", appDir, error);
+		exit (1);
+	}
+	exit (0);
+}
+
 int main (int argc, char **argv)
 {
 	//clock_t start = clock();
@@ -190,6 +226,19 @@ int main (int argc, char **argv)
 		binDir = [[NSString alloc] initWithUTF8String: "."];
 
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
+
+	// if we are running inside an app bundle and --start-app-bundle has been passed
+	// run the actual bundle and exit.
+	if (![appDir isEqualToString:@"."] && argc > 1 && !strcmp(argv[1],"--start-app-bundle")) {
+		NSArray *arguments = [NSArray array];
+		if (argc > 2) {
+			NSString *strings[argc-2];
+		for (int i = 0; i < argc-2; i++)
+			strings [i] = [[NSString alloc] initWithUTF8String:argv[i+2]];
+			arguments = [NSArray arrayWithObjects:strings count:argc-2];
+		}
+		run_md_bundle (appDir, arguments);
+	}
 
 	// can be overridden with plist string MonoMinVersion
 	NSString *req_mono_version = @"4.3";

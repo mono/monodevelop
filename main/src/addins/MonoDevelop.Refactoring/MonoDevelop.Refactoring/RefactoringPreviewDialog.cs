@@ -55,6 +55,7 @@ namespace MonoDevelop.Refactoring
 			this.Build ();
 			this.changes = changes;
 			treeviewPreview.Model = store;
+			treeviewPreview.SearchColumn = -1; // disable the interactive search
 
 			TreeViewColumn column = new TreeViewColumn ();
 

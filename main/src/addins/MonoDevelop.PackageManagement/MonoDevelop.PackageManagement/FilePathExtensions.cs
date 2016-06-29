@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using NuGet;
+using NuGet.Common;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -38,14 +39,25 @@ namespace MonoDevelop.PackageManagement
 				return false;
 			}
 
-			return Constants.PackageReferenceFile.Equals (filePath.FileName, StringComparison.OrdinalIgnoreCase) ||
-				IsProjectSpecificPackagesConfigFile (filePath.FileName);
+			return PackageReferenceFile.IsValidConfigFileName (filePath.FileName);
 		}
 
-		static bool IsProjectSpecificPackagesConfigFile (FilePath filePath)
+		public static bool IsProjectJsonFileName (this FilePath filePath)
 		{
-			return filePath.Extension.Equals (".config", StringComparison.OrdinalIgnoreCase) &&
-				filePath.FileNameWithoutExtension.StartsWith ("packages.", StringComparison.OrdinalIgnoreCase);
+			if (filePath == null) {
+				return false;
+			}
+
+			return ProjectJsonPathUtilities.IsProjectConfig (filePath);
+		}
+
+		public static bool IsPackagesConfigOrProjectJsonFileName (this FilePath filePath)
+		{
+			if (filePath == null) {
+				return false;
+			}
+
+			return IsPackagesConfigFileName (filePath) || IsProjectJsonFileName (filePath);
 		}
 	}
 }

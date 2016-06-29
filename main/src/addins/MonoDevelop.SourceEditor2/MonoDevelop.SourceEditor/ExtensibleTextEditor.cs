@@ -82,6 +82,16 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public ISyntaxHighlighting SyntaxHighlighting {
+			get {
+				return Document.SyntaxHighlighting;
+			}
+			internal set {
+				Document.SyntaxHighlighting = value;
+			} 
+		}
+
+
 		void UpdateSemanticHighlighting ()
 		{
 			var oldSemanticHighighting = Document.SyntaxMode as SemanticHighlightingSyntaxMode;
@@ -509,7 +519,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-
 		void ShowPopup (Gdk.EventButton evt)
 		{
 			view.FireCompletionContextChanged ();
@@ -756,6 +765,24 @@ namespace MonoDevelop.SourceEditor
 		internal void OnScrollPageDown ()
 		{
 			RunAction (ScrollActions.PageDown);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollTop)]
+		internal void OnScrollTop ()
+		{
+			RunAction (ScrollActions.Top);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.ScrollBottom)]
+		internal void OnScrollBottom ()
+		{
+			RunAction (ScrollActions.Bottom);
+		}
+
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
+		internal void OnGotoMatchingBrace ()
+		{
+			RunAction (MiscActions.GotoMatchingBracket);
 		}
 
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]

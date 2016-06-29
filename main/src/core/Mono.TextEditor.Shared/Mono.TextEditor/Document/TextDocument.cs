@@ -237,6 +237,8 @@ namespace Mono.TextEditor
 				return completeText;
 			}
 			set {
+				if (value == null)
+					value = "";
 				var args = new TextChangeEventArgs (0, Text, value);
 				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
@@ -1822,6 +1824,8 @@ namespace Mono.TextEditor
 				ReplaceText (offset, 1, value.ToString ());
 			}
 		}
+
+		public MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting SyntaxHighlighting { get; set; }
 
 		public class SnapshotDocument : TextDocument
 		{

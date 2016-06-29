@@ -1241,7 +1241,7 @@ namespace MonoDevelop.Projects.Policies
 							defaultPolicies = pset;
 						} else {
 							// if the policy file does not have a name, use the file name as one
-							if (!string.IsNullOrEmpty (pset.Name)) {
+							if (string.IsNullOrEmpty (pset.Name)) {
 								pset.Name = file.FileNameWithoutExtension;
 							}
 

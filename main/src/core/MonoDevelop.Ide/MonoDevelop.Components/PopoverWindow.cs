@@ -40,7 +40,7 @@ namespace MonoDevelop.Components
 		Gtk.Alignment alignment;
 
 		Gdk.Rectangle currentCaret;
-		Gdk.Window targetWindow;
+		Gdk.Point targetWindowOrigin = new Point (-1, -1);
 		Gtk.Widget parent;
 		bool eventProvided;
 
@@ -129,18 +129,32 @@ namespace MonoDevelop.Components
 			ShowPopup (widget, null, caret, position);
 		}
 
+		public void ShowPopup (Xwt.Rectangle onScreenArea, PopupPosition position)
+		{
+			this.parent = IdeApp.Workbench.RootWindow;
+			this.currentCaret = new Rectangle ((int)onScreenArea.X, (int)onScreenArea.Y, (int)onScreenArea.Width, (int)onScreenArea.Height);
+			Theme.TargetPosition = position;
+			targetWindowOrigin = new Point ((int)onScreenArea.X, (int)onScreenArea.Y);
+			RepositionWindow ();
+		}
+
 		void ShowPopup (Gtk.Widget parent, Gdk.EventButton evt, Gdk.Rectangle caret, PopupPosition position)
 		{
 			this.parent = parent;
 			this.currentCaret = caret;
 			Theme.TargetPosition = position;
-
+			Gdk.Window targetWindow;
 			if (evt != null) {
 				eventProvided = true;
 				targetWindow = evt.Window;
 			} else
 				targetWindow = parent.GdkWindow;
-
+			
+			if (targetWindow != null) {
+				int x, y;
+				targetWindow.GetOrigin (out x, out y);
+				targetWindowOrigin = new Point (x, y);
+			}
 			RepositionWindow ();
 		}
 		
@@ -208,19 +222,18 @@ namespace MonoDevelop.Components
 			if (parent == null)
 				return;
 
-			int x, y;
 			if (newCaret.HasValue) {//Update caret if parameter is given
 				currentCaret = newCaret.Value;
 			}
 			Gdk.Rectangle caret = currentCaret;
-			Gdk.Window window = targetWindow;
-			if (targetWindow == null)
+			if (targetWindowOrigin.X < 0)
 				return;
+			int x = targetWindowOrigin.X;
+			int y = targetWindowOrigin.Y;
 			PopupPosition position = Theme.TargetPosition;
 			this.position = Theme.TargetPosition;
 			UpdatePadding ();
 
-			window.GetOrigin (out x, out y);
 			var alloc = parent.Allocation;
 
 			if (eventProvided) {

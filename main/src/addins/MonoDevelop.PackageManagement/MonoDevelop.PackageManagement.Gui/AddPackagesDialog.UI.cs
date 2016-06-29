@@ -41,7 +41,6 @@ namespace MonoDevelop.PackageManagement
 		ListView packagesListView;
 		VBox packageInfoVBox;
 		Label packageNameLabel;
-		Label packageVersionLabel;
 		LinkLabel packageIdLink;
 		Label packageDescription;
 		Label packageAuthor;
@@ -50,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 		LinkLabel packageLicenseLink;
 		LinkLabel packageProjectPageLink;
 		Label packageDependenciesList;
+		HBox packageDependenciesHBox;
 		HBox packageDependenciesListHBox;
 		Label packageDependenciesNoneLabel;
 		CheckBox showPrereleaseCheckBox;
@@ -60,6 +60,8 @@ namespace MonoDevelop.PackageManagement
 		Label errorMessageLabel;
 		Label loadingSpinnerLabel;
 		FrameBox noPackagesFoundFrame;
+		ComboBox packageVersionComboBox;
+		HBox packageVersionsHBox;
 		int packageInfoFontSize = 11;
 
 		void Build ()
@@ -79,6 +81,7 @@ namespace MonoDevelop.PackageManagement
 			topHBox.Margin = new WidgetSpacing (8, 5, 6, 5);
 
 			packageSourceComboBox = new ComboBox ();
+			packageSourceComboBox.Name = "packageSourceComboBox";
 			packageSourceComboBox.MinWidth = 200;
 			topHBox.PackStart (packageSourceComboBox);
 
@@ -182,7 +185,6 @@ namespace MonoDevelop.PackageManagement
 			packageInfoScrollViewFrame.BorderWidth = new WidgetSpacing (1, 0, 0, 0);
 			packageInfoScrollViewFrame.BorderColor = Styles.LineBorderColor;
 			packageInfoScrollViewFrame.Content = packageInfoScrollView;
-			middleHBox.PackEnd (packageInfoScrollViewFrame);
 
 			// Package name and version.
 			var packageNameHBox = new HBox ();
@@ -193,11 +195,6 @@ namespace MonoDevelop.PackageManagement
 			Font packageInfoSmallFont = packageNameLabel.Font.WithSize (packageInfoFontSize);
 			packageNameLabel.Font = packageInfoSmallFont;
 			packageNameHBox.PackStart (packageNameLabel, true);
-
-			packageVersionLabel = new Label ();
-			packageVersionLabel.TextAlignment = Alignment.End;
-			packageVersionLabel.Font = packageInfoSmallFont;
-			packageNameHBox.PackEnd (packageVersionLabel);
 
 			// Package description.
 			packageDescription = new Label ();
@@ -297,7 +294,7 @@ namespace MonoDevelop.PackageManagement
 			packageProjectPageHBox.PackEnd (packageProjectPageLink);
 
 			// Package dependencies
-			var packageDependenciesHBox = new HBox ();
+			packageDependenciesHBox = new HBox ();
 			packageInfoVBox.PackStart (packageDependenciesHBox);
 
 			var packageDependenciesLabel = new Label ();
@@ -320,6 +317,28 @@ namespace MonoDevelop.PackageManagement
 			packageDependenciesList.Margin = new WidgetSpacing (5);
 			packageDependenciesList.Font = packageInfoSmallFont;
 			packageDependenciesListHBox.PackStart (packageDependenciesList, true);
+
+			// Package versions.
+			packageVersionsHBox = new HBox ();
+			packageVersionsHBox.Visible = false;
+			packageVersionsHBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
+			packageVersionsHBox.Margin = new WidgetSpacing (15, 0, 15, 12);
+			var packageVersionsLabel = new Label ();
+			packageVersionsLabel.Font = packageInfoSmallFont;
+			packageVersionsLabel.Markup = Catalog.GetString ("<b>Version</b>");
+			packageVersionsHBox.PackStart (packageVersionsLabel);
+
+			packageVersionComboBox = new ComboBox ();
+			packageVersionComboBox.Name = "packageVersionComboBox";
+			packageVersionsHBox.Spacing = 15;
+			packageVersionsHBox.PackStart (packageVersionComboBox, true, true);
+
+			var packageInfoAndVersionsVBox = new VBox ();
+			packageInfoAndVersionsVBox.Margin = new WidgetSpacing ();
+			packageInfoAndVersionsVBox.BackgroundColor = Styles.PackageInfoBackgroundColor;
+			packageInfoAndVersionsVBox.PackStart (packageInfoScrollViewFrame, true, true);
+			packageInfoAndVersionsVBox.PackStart (packageVersionsHBox, false, false);
+			middleHBox.PackEnd (packageInfoAndVersionsVBox);
 
 			// Bottom part of dialog:
 			// Show pre-release packages and Close/Add to Project buttons.

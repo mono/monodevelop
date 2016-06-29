@@ -27,7 +27,7 @@
 //
 
 using System;
-using NuGet;
+using NuGet.ProjectManagement;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -36,10 +36,10 @@ namespace MonoDevelop.PackageManagement
 		public ResolveFileConflictEventArgs(string message)
 		{
 			this.Message = message;
-			this.Resolution = FileConflictResolution.Ignore;
+			this.Resolution = FileConflictAction.Ignore;
 		}
 		
 		public string Message { get; private set; }
-		public FileConflictResolution Resolution { get; set; }
+		public FileConflictAction Resolution { get; set; }
 	}
 }

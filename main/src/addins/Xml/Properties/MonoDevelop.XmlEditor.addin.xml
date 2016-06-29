@@ -70,11 +70,13 @@
 	</Extension>
 
 	<!-- XML menu -->
-	<Extension path = "/MonoDevelop/Ide/MainMenu/Tools">
-		<ItemSet id = "XmlMenu" insertafter = "AddinManagerSeparator" _label = "_XML" >
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
+		<ItemSet id = "XmlMenu" insertafter = "Insert" _label = "_XML" >
+			<CommandItem id = "MonoDevelop.Xml.Editor.XmlCommands.Validate" />
+			<SeparatorItem id = "Separator1" />
 			<CommandItem id = "MonoDevelop.Xml.Editor.XmlCommands.CreateSchema" />
 			<CommandItem id = "MonoDevelop.Xml.Editor.XmlCommands.GoToSchemaDefinition" />
-			<CommandItem id = "MonoDevelop.Xml.Editor.XmlCommands.Validate" />
+			<SeparatorItem id = "Separator2" />
 			<CommandItem id = "MonoDevelop.Xml.Editor.XmlCommands.AssignStylesheet"/>
 			<CommandItem id = "MonoDevelop.Xml.Editor.XmlCommands.OpenStylesheet"/>
 			<CommandItem id = "MonoDevelop.Xml.Editor.XmlCommands.RunXslTransform"/>

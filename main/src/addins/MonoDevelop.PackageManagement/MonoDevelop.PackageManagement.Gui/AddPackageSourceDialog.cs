@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -33,6 +32,7 @@ namespace MonoDevelop.PackageManagement
 	internal partial class AddPackageSourceDialog
 	{
 		RegisteredPackageSourcesViewModel viewModel;
+		bool ignoreChanges;
 
 		public AddPackageSourceDialog (RegisteredPackageSourcesViewModel viewModel)
 		{
@@ -42,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 
 			addPackageSourceButton.Clicked += AddPackageSourceButtonClicked;
 			savePackageSourceButton.Clicked += SavePackageSourceButtonClicked;
+			browseButton.Clicked += BrowseButtonClicked;
 
 			packageSourceNameTextEntry.Changed += PackageSourceNameTextBoxChanged;
 			packageSourceNameTextEntry.Activated += TextEntryActivated;
@@ -85,12 +86,18 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageSourceNameTextBoxChanged (object sender, EventArgs e)
 		{
+			if (ignoreChanges)
+				return;
+
 			viewModel.NewPackageSourceName = packageSourceNameTextEntry.Text;
 			UpdateAddPackageSourceButton ();
 		}
 
 		void PackageSourceUrlTextBoxChanged (object sender, EventArgs e)
 		{
+			if (ignoreChanges)
+				return;
+
 			viewModel.NewPackageSourceUrl = packageSourceUrlTextEntry.Text;
 			UpdateAddPackageSourceButton ();
 		}
@@ -132,6 +139,24 @@ namespace MonoDevelop.PackageManagement
 				viewModel.UpdatePackageSource ();
 				Close ();
 			}
+		}
+
+		void BrowseButtonClicked (object sender, EventArgs e)
+		{
+			if (viewModel.BrowsePackageFolder ()) {
+				UpdateAfterFolderSelected ();
+			}
+		}
+
+		void UpdateAfterFolderSelected ()
+		{
+			ignoreChanges = true;
+
+			packageSourceNameTextEntry.Text = viewModel.NewPackageSourceName;
+			packageSourceUrlTextEntry.Text = viewModel.NewPackageSourceUrl;
+			UpdateAddPackageSourceButton ();
+
+			ignoreChanges = false;
 		}
 	}
 }

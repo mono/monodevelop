@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
 
@@ -40,33 +39,41 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
-			return ProjectHasPackages (builder);
-		}
-
-		bool ProjectHasPackages (ITreeBuilder builder)
-		{
-			DotNetProject project = GetProject (builder);
-			if (project != null) {
-				return project.HasPackages ();
+			ProjectPackagesFolderNode packagesFolder = GetPackagesFolderNode (builder);
+			if (packagesFolder != null) {
+				return packagesFolder.AnyPackageReferences ();
 			}
 			return false;
 		}
 
-		DotNetProject GetProject (ITreeBuilder builder)
-		{
-			return builder.GetParentDataItem (typeof(DotNetProject), false) as DotNetProject;
-		}
-
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			DotNetProject project = GetProject (treeBuilder);
-			if (project != null) {
+			ProjectPackagesFolderNode packagesFolder = GetPackagesFolderNode (treeBuilder);
+			if (packagesFolder != null && packagesFolder.AnyPackageReferences ()) {
 				var projectReferences = dataObject as ProjectReferenceCollection;
-				var folderNode = new ProjectReferencesFromPackagesFolderNode (project, projectReferences);
+				var folderNode = new ProjectReferencesFromPackagesFolderNode (packagesFolder, projectReferences);
 				if (folderNode.AnyReferencesFromPackages ()) {
 					treeBuilder.AddChild (folderNode);
 				}
 			}
+		}
+
+		ProjectPackagesFolderNode GetPackagesFolderNode (ITreeBuilder treeBuilder)
+		{
+			NodePosition originalPosition = treeBuilder.CurrentPosition;
+
+			if (!treeBuilder.MoveToParent ()) {
+				return null;
+			}
+
+			ProjectPackagesFolderNode packagesFolder = null;
+			if (treeBuilder.MoveToChild (ProjectPackagesFolderNode.NodeName, typeof(ProjectPackagesFolderNode))) {
+				packagesFolder = treeBuilder.DataItem as ProjectPackagesFolderNode;
+			}
+
+			treeBuilder.MoveToPosition (originalPosition);
+
+			return packagesFolder;
 		}
 	}
 }

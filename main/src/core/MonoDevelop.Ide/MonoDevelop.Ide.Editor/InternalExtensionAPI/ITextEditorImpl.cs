@@ -58,6 +58,10 @@ namespace MonoDevelop.Ide.Editor
 
 		SemanticHighlighting SemanticHighlighting { get; set; }
 
+		ISyntaxHighlighting SyntaxHighlighting { get; set; }
+	
+		int CaretOffset { get; set; }
+
 		bool IsSomethingSelected { get; }
 
 		IEnumerable<Selection> Selections { get; }
@@ -214,7 +218,10 @@ namespace MonoDevelop.Ide.Editor
 		IEnumerable<IDocumentLine> VisibleLines { get; }
 		IReadOnlyList<Caret> Carets { get; }
 
+		void GrabFocus ();
+
 		event EventHandler<LineEventArgs> LineShown;
 		event EventHandler FocusLost;
-	}
+
+}
 }

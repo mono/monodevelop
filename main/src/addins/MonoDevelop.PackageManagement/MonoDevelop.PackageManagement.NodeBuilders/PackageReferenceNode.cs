@@ -25,11 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using System.Runtime.Versioning;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
-using NuGet;
+using NuGet.Frameworks;
+using NuGet.Packaging;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -40,7 +42,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			PackageReference packageReference,
 			bool installed,
 			bool pending = false,
-			IPackageName updatedPackage = null)
+			PackageIdentity updatedPackage = null)
 		{
 			ParentNode = parentNode;
 			PackageReference = packageReference;
@@ -51,7 +53,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			IsReinstallNeeded = packageReference.RequireReinstallation;
 		}
 
-		SemanticVersion GetUpdatedPackageVersion (IPackageName updatedPackage)
+		NuGetVersion GetUpdatedPackageVersion (PackageIdentity updatedPackage)
 		{
 			if (updatedPackage != null) {
 				return updatedPackage.Version;
@@ -64,7 +66,6 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public bool IsInstallPending { get; private set; }
 		public bool IsReinstallNeeded { get; private set; }
 
-
 		ProjectPackagesFolderNode ParentNode { get; set; }
 
 		public IDotNetProject Project {
@@ -72,52 +73,57 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		public string Name {
-			get { return PackageReference.Id; }
+			get { return Id; }
 		}
 
 		public string Id {
-			get { return PackageReference.Id; }
+			get { return PackageReference.PackageIdentity.Id; }
 		}
 
-		public SemanticVersion Version {
-			get { return PackageReference.Version; }
+		public NuGetVersion Version {
+			get { return PackageReference.PackageIdentity.Version; }
 		}
 
-		public SemanticVersion UpdatedVersion { get; private set; }
+		public NuGetVersion UpdatedVersion { get; private set; }
 
 		public bool IsDevelopmentDependency {
 			get { return PackageReference.IsDevelopmentDependency; }
 		}
 
-		public FrameworkName TargetFramework {
+		public NuGetFramework TargetFramework {
 			get { return PackageReference.TargetFramework; }
 		}
 
-		public IVersionSpec VersionConstraint {
-			get { return PackageReference.VersionConstraint; }
+		public VersionRange VersionConstraint {
+			get { return PackageReference.AllowedVersions; }
 		}
 
 		public string GetLabel ()
 		{
+			return Id;
+		}
+
+		public string GetSecondaryLabel ()
+		{
 			if (UpdatedVersion != null) {
-				return Id + GetUpdatedVersionLabelText ();
+				return GetUpdatedVersionLabelText ();
 			}
 			if (IsInstallPending) {
-				return Id + GetInstallingLabelText ();
+				return GetInstallingLabelText ();
 			}
-			return Id;
+			return string.Empty;
 		}
 
 		string GetUpdatedVersionLabelText ()
 		{
-			return String.Format (" <span color='grey'>({0} {1})</span>",
+			return String.Format ("({0} {1})",
 				UpdatedVersion,
 				GettextCatalog.GetString ("available"));
 		}
 
 		string GetInstallingLabelText ()
 		{
-			return String.Format (" ({0})", GettextCatalog.GetString ("installing"));
+			return String.Format ("({0})", GettextCatalog.GetString ("installing"));
 		}
 
 		public IconId GetIconId ()
@@ -125,9 +131,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return Stock.Reference;
 		}
 
+		public string GetPackageDisplayVersion ()
+		{
+			if (PackageReference.IsFloating ()) {
+				return PackageReference.AllowedVersions.Float.ToString ();
+			}
+			return Version.ToString ();
+		}
+
 		public string GetPackageVersionLabel ()
 		{
-			return GettextCatalog.GetString ("Version {0}", Version);
+			return GettextCatalog.GetString ("Version {0}", GetPackageDisplayVersion ());
 		}
 
 		public TaskSeverity? GetStatusSeverity ()
@@ -160,7 +174,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public bool IsReleaseVersion ()
 		{
-			return PackageReference.IsReleaseVersion ();
+			return !PackageReference.PackageIdentity.Version.IsPrerelease;
+		}
+
+		public bool NeedsRestoreBeforeUninstall ()
+		{
+			return !ParentNode.IsNuGetIntegratedProject () &&
+				!ParentNode.IsPackageInstalled (PackageReference);
 		}
 	}
 }

@@ -26,50 +26,25 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-
 using MonoDevelop.Core;
-using MonoDevelop.PackageManagement;
-using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
 	internal class PackageManagementOptions
 	{
-		const string PackageDirectoryPropertyName = "PackagesDirectory";
-		const string RecentPackagesPropertyName = "RecentPackages";
 		const string AutomaticPackageRestoreOnOpeningSolutionPropertyName = "AutomaticPackageRestoreOnOpeningSolution";
 		const string CheckUpdatedPackagesOnOpeningSolutionPropertyName = "CheckUpdatedPackagesOnOpeningSolution";
 
-		RegisteredPackageSourceSettings registeredPackageSourceSettings;
 		Properties properties;
-		List<RecentPackageInfo> recentPackages;
-		PackageRestoreConsent packageRestoreConsent;
-
-		public PackageManagementOptions (
-			Properties properties,
-			ISettingsProvider settingsProvider)
-		{
-			this.properties = properties;
-			registeredPackageSourceSettings = new RegisteredPackageSourceSettings (settingsProvider);
-			packageRestoreConsent = new PackageRestoreConsent (settingsProvider.LoadSettings());
-		}
 
 		public PackageManagementOptions (Properties properties)
-			: this (properties, new SettingsProvider ())
 		{
+			this.properties = properties;
 		}
 
 		public PackageManagementOptions()
 			: this(PropertyService.Get("PackageManagementSettings", new Properties()))
 		{
-		}
-		
-		public bool IsPackageRestoreEnabled {
-			get { return packageRestoreConsent.IsGrantedInSettings; }
-			set { packageRestoreConsent.IsGrantedInSettings = value; }
 		}
 
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled {
@@ -80,40 +55,6 @@ namespace MonoDevelop.PackageManagement
 		public bool IsCheckForPackageUpdatesOnOpeningSolutionEnabled {
 			get { return properties.Get(CheckUpdatedPackagesOnOpeningSolutionPropertyName, true); }
 			set { properties.Set(CheckUpdatedPackagesOnOpeningSolutionPropertyName, value); }
-		}
-		
-		public RegisteredPackageSources PackageSources {
-			get { return registeredPackageSourceSettings.PackageSources; }
-		}
-		
-		public string PackagesDirectory {
-			get { return properties.Get(PackageDirectoryPropertyName, "packages"); }
-			set { properties.Set(PackageDirectoryPropertyName, value); }
-		}
-		
-		public PackageSource ActivePackageSource {
-			get { return registeredPackageSourceSettings.ActivePackageSource; }
-			set { registeredPackageSourceSettings.ActivePackageSource = value; }
-		}
-		
-		public IList<RecentPackageInfo> RecentPackages {
-			get {
-				if (recentPackages == null) {
-					ReadRecentPackages();
-				}
-				return recentPackages;
-			}
-		}
-		
-		void ReadRecentPackages()
-		{
-			var defaultRecentPackages = new List<RecentPackageInfo>();
-			recentPackages = properties.Get<List<RecentPackageInfo>>(RecentPackagesPropertyName, defaultRecentPackages);
-		}
-
-		public string GetCustomPackagesDirectory ()
-		{
-			return registeredPackageSourceSettings.Settings.GetRepositoryPath ();
 		}
 	}
 }

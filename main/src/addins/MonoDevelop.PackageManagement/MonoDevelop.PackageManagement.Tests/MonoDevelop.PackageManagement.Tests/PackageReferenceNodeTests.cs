@@ -26,11 +26,14 @@
 
 using System;
 using MonoDevelop.PackageManagement.NodeBuilders;
+using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
-using NuGet;
+using NuGet.Packaging;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Tasks;
+using NuGet.Packaging.Core;
+using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -43,17 +46,26 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreatePackageReferenceNode (
 			bool installed = true,
 			bool installPending = false,
-			PackageName updatedPackage = null)
+			PackageIdentity updatedPackage = null)
 		{
 			node = new PackageReferenceNode (null, packageReference, installed, installPending, updatedPackage);
 		}
 
 		void CreatePackageReference (
 			string packageId = "Id",
+			string packageVersion = "1.2.3",
 			bool requireReinstallation = false)
 		{
-			var version = new SemanticVersion ("1.2.3");
-			packageReference = new PackageReference (packageId, version, null, null, false, requireReinstallation);
+			var version = new NuGetVersion (packageVersion);
+			var identity = new PackageIdentity (packageId, version);
+			packageReference = new PackageReference (identity, null, true, false, requireReinstallation);
+		}
+
+		void CreatePackageReferenceWithProjectJsonWildcardVersion (string packageId, string version)
+		{
+			packageReference = TestPackageReferenceFactory.CreatePackageReferenceWithProjectJsonWildcardVersion (
+				packageId,
+				version);
 		}
 
 		[Test]
@@ -81,8 +93,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode ();
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual (String.Empty, secondaryLabel);
 		}
 
 		[Test]
@@ -92,8 +106,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode (installed: false);
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual (String.Empty, secondaryLabel);
 		}
 
 		[Test]
@@ -103,8 +119,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode (installed: true);
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
 			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual (String.Empty, secondaryLabel);
 		}
 
 		[Test]
@@ -114,8 +132,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreatePackageReferenceNode (installed: false, installPending: true);
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
-			Assert.AreEqual ("MyPackage (installing)", label);
+			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual ("(installing)", secondaryLabel);
 		}
 
 		[Test]
@@ -159,11 +179,13 @@ namespace MonoDevelop.PackageManagement.Tests
 				requireReinstallation: true);
 			CreatePackageReferenceNode (
 				installed: true,
-				updatedPackage: new PackageName ("MyPackage", new SemanticVersion ("1.2.3.4")));
+				updatedPackage: new PackageIdentity ("MyPackage", new NuGetVersion ("1.2.3.4")));
 
 			string label = node.GetLabel ();
+			string secondaryLabel = node.GetSecondaryLabel ();
 
-			Assert.AreEqual ("MyPackage <span color='grey'>(1.2.3.4 available)</span>", label);
+			Assert.AreEqual ("MyPackage", label);
+			Assert.AreEqual ("(1.2.3.4 available)", secondaryLabel);
 		}
 
 		[Test]
@@ -285,6 +307,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			string message = node.GetStatusMessage ();
 
 			Assert.IsNull (message);
+		}
+
+		[Test]
+		public void GetVersionLabel_SpecificVersionInstalled_ReturnsVersion ()
+		{
+			CreatePackageReference ("MyPackage", "1.2.3");
+			CreatePackageReferenceNode ();
+
+			string label = node.GetPackageVersionLabel ();
+
+			Assert.AreEqual (label, "Version 1.2.3");
+		}
+
+		[Test]
+		public void GetVersionLabel_FloatingVersionVersion_ReturnsFloatingVersion ()
+		{
+			CreatePackageReferenceWithProjectJsonWildcardVersion ("MyPackage", "1.2.3-*");
+			CreatePackageReferenceNode ();
+
+			string label = node.GetPackageVersionLabel ();
+
+			Assert.AreEqual (label, "Version 1.2.3-*");
 		}
 	}
 }

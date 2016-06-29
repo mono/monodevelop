@@ -24,14 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using System.Threading;
-using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -117,6 +114,7 @@ namespace MonoDevelop.PackageManagement
 
 		void OnCancelRequested ()
 		{
+			consoleMonitor.Log.WriteLine (GettextCatalog.GetString ("Cancelling operation..."));
 			CancellationTokenSource.Cancel ();
 		}
 	}

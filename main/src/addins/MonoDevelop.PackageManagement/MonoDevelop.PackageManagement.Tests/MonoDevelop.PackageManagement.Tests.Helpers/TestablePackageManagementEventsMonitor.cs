@@ -37,9 +37,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestablePackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
-			: base (progressMonitor, packageManagementEvents, progressProvider)
+			IPackageManagementEvents packageManagementEvents)
+			: base (progressMonitor, packageManagementEvents)
 		{
 		}
 
@@ -63,15 +62,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool IsPackageConsoleShown;
 		public ProgressMonitor ProgressMonitorPassedToShowPackageConsole;
-
-		protected override void ReconnectAssemblyReferences (IPackageManagementProject project)
-		{
-			ProjectsPassedToReconnectAssemblyReferences.Add (project);
-			IsTypeSystemRefreshed = true;
-		}
-
-		public List<IPackageManagementProject> ProjectsPassedToReconnectAssemblyReferences = new List<IPackageManagementProject> ();
-		public bool IsTypeSystemRefreshed;
 	}
 }
 

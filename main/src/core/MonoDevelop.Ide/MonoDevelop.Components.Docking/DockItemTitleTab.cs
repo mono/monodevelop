@@ -47,6 +47,7 @@ namespace MonoDevelop.Components.Docking
 		Gtk.Widget page;
 		ExtendedLabel labelWidget;
 		int labelWidth;
+		int minWidth;
 		DockVisualStyle visualStyle;
 		ImageView tabIcon;
 		DockFrame frame;
@@ -234,6 +235,8 @@ namespace MonoDevelop.Components.Docking
 			box.ShowAll ();
 			Show ();
 
+			minWidth = tabIcon.SizeRequest ().Width + al.SizeRequest ().Width + 10;
+
 			UpdateBehavior ();
 			UpdateVisualStyle ();
 		}
@@ -248,6 +251,10 @@ namespace MonoDevelop.Components.Docking
 
 		public int LabelWidth {
 			get { return labelWidth; }
+		}
+
+		public int MinWidth {
+			get { return minWidth; }
 		}
 		
 		public bool Active {
@@ -413,13 +420,6 @@ namespace MonoDevelop.Components.Docking
 
 			int leftPadding = (int)TabPadding.Left;
 			int rightPadding = (int)TabPadding.Right;
-			if (rect.Width < labelWidth) {
-				int red = (labelWidth - rect.Width) / 2;
-				leftPadding -= red;
-				rightPadding -= red;
-				if (leftPadding < 2) leftPadding = 2;
-				if (rightPadding < 2) rightPadding = 2;
-			}
 			
 			rect.X += leftPadding;
 			rect.Width -= leftPadding + rightPadding;

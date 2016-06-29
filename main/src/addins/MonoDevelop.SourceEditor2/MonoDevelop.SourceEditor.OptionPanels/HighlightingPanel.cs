@@ -55,6 +55,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			col.SetAttributes (crtext, "markup", 0);
 			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
+			styleTreeview.SearchColumn = -1; // disable the interactive search
 			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
 			MonoDevelop.Ide.Gui.Styles.Changed += HandleThemeChanged;
 		}

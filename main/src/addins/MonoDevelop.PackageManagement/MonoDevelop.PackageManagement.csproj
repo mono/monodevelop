@@ -58,188 +58,173 @@
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix" />
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Security" />
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\..\..\external\nuget-binary\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NuGet.Versioning">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NuGet.LibraryModel">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.LibraryModel.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Frameworks">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Frameworks.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Logging">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core.Types">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Packaging.Core">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="NuGet.Packaging">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Packaging.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Configuration">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Globalization" />
+    <Reference Include="NuGet.Protocol.Core.Types">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="NuGet.Protocol.Core.v3">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Concurrent" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="NuGet.Repositories">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Repositories.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.RuntimeModel">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.RuntimeModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections" />
+    <Reference Include="NuGet.DependencyResolver.Core">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.DependencyResolver.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.ProjectModel">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.ProjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.ProjectManagement">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.ProjectManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="NuGet.ContentModel">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.ContentModel.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Client">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.DependencyResolver">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.DependencyResolver.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Commands">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Commands.dll</HintPath>
+    </Reference>
     <Reference Include="NuGet.Core">
       <HintPath>..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cairo" />
-    <Reference Include="System.Security" />
+    <Reference Include="NuGet.Protocol.Core.v2">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.Core.v2.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="NuGet.Resolver">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Resolver.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.PackageManagement">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.PackageManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Common">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Protocol.VisualStudio">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Protocol.VisualStudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Indexing">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Indexing.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Credentials">
+      <HintPath>..\..\..\external\nuget-binary\NuGet.Credentials.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\ManagePackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesHandler.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\AcceptLicensesEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\AggregateExceptionErrorMessage.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\AvailablePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ConfigSettingsFileSystem.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\DefaultProjectTemplatePackageSource.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DelegateCommand.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FileConflictResolver.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FolderBrowser.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ICommand.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ICompilerMessageView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IFolderBrowser.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ILicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMachinePackageCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMessageViewCategory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\InstalledPackagesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\InstalledPackageViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\InstalledPackageViewModelFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\InstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageActionRunner.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageFromRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageFromRepositoryExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementFileService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageManagementOutputMessagesView.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProjectService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageManagementSelectedProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageManagementSolution.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageManagerFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageOperationResolverFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageRepositoryCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageRepositoryExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageRepositoryFactoryEvents.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageViewModelFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IPackageViewModelParent.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IProcess.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IProjectBrowserUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IPropertyService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IRecentPackageRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IRegisteredPackageRepositories.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISelectProjectsService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISettingsFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ISolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ITaskFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IThreadSafePackageManagementEvents.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IUpdatePackageActions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IUpdatePackagesAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IUpdatePackageSettings.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MachinePackageCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewTitle.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MSBuildProjectExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageActionRunner.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageFromRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageLicenseViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementEnumerableExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementOptionsViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSelectedProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSelectedProjects.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementTaskFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementViewModels.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRepositoryFactoryEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackagesForSelectedPageResult.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackagesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackagesViewModels.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageViewModelFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageViewModelOperationLogger.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\Page.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\Pages.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ParentPackagesOperationEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\Process.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RecentPackagesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ReducedPackageOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSourcesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageReferenceMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ResolveFileConflictEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SelectedProjectsForInstalledPackages.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SelectedProjectsForUpdatedPackages.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SelectProjectsEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SelectProjectsService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SelectProjectsViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MarkupString.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\OpenDotNetProjects.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageFiles.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageFilesForOperations.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementCompilerMessageView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementEvents.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementFileService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementLogger.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementMessageViewCategory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementOptions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementOutputMessagesView.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementInstrumentationService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectService.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementPropertyService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementServices.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationExceptionEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationMessage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageOperationMessageLoggedEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageOperationsResolverFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRepositoryCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceConverter.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageSourceExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ParentPackageOperationEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProcessPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProcessPackageOperationsAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectBrowserUpdater.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFramework.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageRepositoryCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplatePackageSettingsFileName.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RecentPackageInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RecentPackageRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageRepositories.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSource.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSources.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RegisteredPackageSourceSettings.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RegisteredProjectTemplatePackageSources.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SettingsFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpUserAgent.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SolutionPackageRepositoryPath.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ThreadSafePackageManagementEvents.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ThreadSafeProjectBrowserUpdater.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UninstallPackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackages.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackageViewModel.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackageViewModelFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatePackageAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesActionFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdateSolutionPackagesAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UserAgentGeneratorForRepositoryRequests.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ViewModelBase.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.ManagePackagesDialog.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackagesWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackagesWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.HyperlinkWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\HyperlinkWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseAcceptanceDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PackageLicenseWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageLicenseWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\SelectProjectsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.SelectProjectsDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageManagementOptionsWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\PagedResultsWidget.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PagedResultsWidget.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\AddPackagesHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialog.UI.cs">
@@ -259,19 +244,13 @@
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageReferenceNodeCommandHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageReferenceNodeCommands.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\UpdateAllPackagesInProjectHandler.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdateAllPackagesInProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatePackageActions.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodePropertyProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement.NodeBuilders\PackageReferenceNodeDescriptor.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdateAllPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\UpdateAllPackagesInSolutionHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IBackgroundPackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessageFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessage.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRestorer.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReferenceFile.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SearchPackagesSearchCategory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\AddPackagesDialogRunner.cs" />
@@ -296,12 +275,9 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageSourceViewModelChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourceCellRenderer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ImageCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackagesRequiringLicenseAcceptance.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewCheckBox.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackagesForSelectedPageQuery.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IProject.cs" />
@@ -311,8 +287,6 @@
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectProxy.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageSearchCriteria.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\WildcardVersionSpec.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectModifiedEventArgs.cs" />
@@ -320,26 +294,14 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityChecker.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageReinstaller.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ReinstallProjectPackagesAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageOperations.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\ReinstallAllPackagesInProjectHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackagesCompatibilityReport.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageManagementStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesProgressMonitorStatusMessage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatedPackagesAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RestoreBeforeUpdateAction.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopAggregateRepository.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RestorePackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesInProjectHandler.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\FailingPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FileRemovingEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PreventPackagesConfigFileBeingRemovedOnUpdateMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FilePathExtensions.cs" />
@@ -350,35 +312,102 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoredEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MSBuildTargetsRestoredMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementMSBuildExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\EnsureNuGetPackageBuildImportsTargetUpdater.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTaskRunner.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatesTask.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Refactoring\PackageCodeDiagnosticProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReloadedEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\OpenPackageReadmeMonitor.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IOpenPackageReadMeMonitor.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\NullOpenPackageReadMeMonitor.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectReferenceEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LocalCopyReferenceMaintainer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetSolutionEventArgs.cs" />
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectImportEventArgs.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopProjectManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopPackageManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageManagerFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopPackageRepositoryFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRepositoryFactory.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectManager.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystem.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopProjectSystemFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementBackgroundDispatcher.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementSolutionProjectService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetPackageNewImportsHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\INuGetPackageNewImportsHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AllPackagesViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryProvider.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\SearchResult.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageItemListViewModel.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageStatus.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\DisplayVersion.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SourceRepositoryViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\InstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopSolutionManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DeleteOnRestartManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetProjectContext.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCommonOperations.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetProjectFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopMSBuildNuGetProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\BuildIntegrationProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\INuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UninstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdateNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdateAllNuGetPackagesInProjectAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdateAllNuGetPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInProjectAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreAndCheckForUpdatesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IInstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedNuGetPackagesProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedNuGetPackagesInProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedNuGetPackagesInWorkspace.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForNuGetPackageUpdatesTaskRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IUpdatedNuGetPackagesInWorkspace.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreNuGetPackagesInNuGetIntegratedProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopBuildIntegratedRestorer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTemplateSourceRepositoryProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackagesFolderNodeCommands.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetSystemInformation.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageLicenseAuditor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageLicense.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementWorkspace.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IMonoDevelopSolutionManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetProjectExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageRestoreMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageEventsMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AnalyzerPackageMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\INuGetProjectActionsProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IFileConflictResolver.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NullDisposable.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreAndUninstallNuGetPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageUninstaller.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageForcedImportsRemover.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageItemLoader.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\IItemLoader.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\LoadingStatus.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageLoadContext.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\IPackageFeed.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\MultiSourcePackageFeed.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\TaskCombinators.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\SourceRepositoryExtensions.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\FeedSearchContinuationToken.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\INuGetUILogger.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AggregateSourceRepositoryViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementCredentialService.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\HttpHandlerResourceV3Extensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\AggregatePackageSourceErrorMessage.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\DetailedPackageMetadata.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageDependentSetMetadata.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageDependencyMetadata.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\MultiSourcePackageMetadataProvider.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\IPackageMetadataProvider.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\DetailControlModel.cs" />
+    <Compile Include="NuGet.PackageManagement.UI\PackageDetailControlModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RecentNuGetPackagesRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSearchResultViewModelComparer.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageSourceProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SettingsLoader.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\INuGetPackageManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetPackageManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IBuildIntegratedNuGetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPackageRestoreManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\BackgroundDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -524,11 +553,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
+    <Folder Include="NuGet.PackageManagement.UI\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -72,7 +72,7 @@ namespace MonoDevelop.PackageManagement
 
 		PackageSourceViewModelCheckedEventArgs CheckPackageSourceUrl (PackageSourceViewModel packageSource)
 		{
-			if (IsHttpPackageSource (packageSource.SourceUrl)) {
+			if (IsHttpPackageSource (packageSource.Source)) {
 				return CheckHttpPackageSource (packageSource);
 			}
 			return CheckFileSystemPackageSource (packageSource);
@@ -86,7 +86,7 @@ namespace MonoDevelop.PackageManagement
 					if (response.StatusCode == HttpStatusCode.OK) {
 						return new PackageSourceViewModelCheckedEventArgs (packageSource);
 					} else {
-						LoggingService.LogInfo ("Status code {0} returned from package source url '{1}'", response.StatusCode, packageSource.SourceUrl);
+						LoggingService.LogInfo ("Status code {0} returned from package source url '{1}'", response.StatusCode, packageSource.Source);
 						return new PackageSourceViewModelCheckedEventArgs (packageSource, GettextCatalog.GetString ("Unreachable"));
 					}
 				}
@@ -112,7 +112,7 @@ namespace MonoDevelop.PackageManagement
 		/// </summary>
 		HttpClient CreateHttpClient(PackageSourceViewModel packageSource)
 		{
-			var httpClient = new HttpClient (new Uri (packageSource.SourceUrl));
+			var httpClient = new HttpClient (new Uri (packageSource.Source));
 
 			bool resetCredentials = true;
 			httpClient.SendingRequest += (sender, e) => {
@@ -128,7 +128,7 @@ namespace MonoDevelop.PackageManagement
 
 		PackageSourceViewModelCheckedEventArgs CheckFileSystemPackageSource (PackageSourceViewModel packageSource)
 		{
-			var dir = packageSource.SourceUrl;
+			var dir = packageSource.Source;
 			if (dir.StartsWith ("file://", StringComparison.OrdinalIgnoreCase)) {
 				dir = new Uri (dir).LocalPath;
 			}
@@ -177,7 +177,7 @@ namespace MonoDevelop.PackageManagement
 
 		void LogPackageSourceException (PackageSourceViewModel packageSource, Exception ex)
 		{
-			LoggingService.LogInfo (String.Format ("Package source '{0}' returned exception.", packageSource.SourceUrl), ex);
+			LoggingService.LogInfo (String.Format ("Package source '{0}' returned exception.", packageSource.Source), ex);
 		}
 
 		void OnPackageSourceChecked (object sender, ITask<PackageSourceViewModelCheckedEventArgs> task)

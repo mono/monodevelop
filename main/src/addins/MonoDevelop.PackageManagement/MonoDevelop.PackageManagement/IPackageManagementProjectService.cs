@@ -43,9 +43,7 @@ namespace MonoDevelop.PackageManagement
 		ISolution OpenSolution { get; }
 
 		IEnumerable<IDotNetProject> GetOpenProjects ();
-		
-		IProjectBrowserUpdater CreateProjectBrowserUpdater();
-		
+
 		string GetDefaultCustomToolForFileName(ProjectFile projectItem);
 	}
 }

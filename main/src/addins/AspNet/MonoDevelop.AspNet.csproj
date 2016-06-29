@@ -193,17 +193,41 @@
     <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml">
       <LogicalName>MonoDevelop.AspNet.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\aspnet-empty-project.png">
-      <LogicalName>aspnet-empty-project.png</LogicalName>
+    <EmbeddedResource Include="Templates\images\project-aspnet-template.png">
+      <LogicalName>project-aspnet-template.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\aspnet-empty-project%402x.png">
-      <LogicalName>aspnet-empty-project@2x.png</LogicalName>
+    <EmbeddedResource Include="Templates\images\project-aspnet-template%402x.png">
+      <LogicalName>project-aspnet-template@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\aspnet-empty-project~dark.png">
-      <LogicalName>aspnet-empty-project~dark.png</LogicalName>
+    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark.png">
+      <LogicalName>project-aspnet-template~dark.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Templates\images\aspnet-empty-project~dark%402x.png">
-      <LogicalName>aspnet-empty-project~dark@2x.png</LogicalName>
+    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark%402x.png">
+      <LogicalName>project-aspnet-template~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32.png">
+      <LogicalName>project-aspnet-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32%402x.png">
+      <LogicalName>project-aspnet-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark.png">
+      <LogicalName>project-aspnet-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark%402x.png">
+      <LogicalName>project-aspnet-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel.png">
+      <LogicalName>project-aspnet-32~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel%402x.png">
+      <LogicalName>project-aspnet-32~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel.png">
+      <LogicalName>project-aspnet-32~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel%402x.png">
+      <LogicalName>project-aspnet-32~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
@@ -575,11 +599,4 @@
     <Folder Include="Templates\images\" />
     <Folder Include="WebForms\CSharp\" />
   </ItemGroup>
-  <Target Name="BeforeBuild">
-    <PropertyGroup>
-      <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
-      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
-    </PropertyGroup>
-    <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
-  </Target>
 </Project>

@@ -605,18 +605,31 @@ namespace MonoDevelop.VersionControl
 		
 		public static ProgressMonitor GetProgressMonitor (string operation, VersionControlOperationType op)
 		{
-			IconId icon;
+			IconId padIcon, statusIcon;
+			bool cancellable;
 			switch (op) {
-			case VersionControlOperationType.Pull: icon = Stock.StatusDownload; break;
-			case VersionControlOperationType.Push: icon = Stock.StatusUpload; break;
-			default: icon = "md-version-control"; break;
+			case VersionControlOperationType.Pull:
+				padIcon = Stock.PadDownload;
+				statusIcon = Stock.StatusDownload;
+				cancellable = true;
+				break;
+			case VersionControlOperationType.Push:
+				padIcon = Stock.PadUpload;
+				statusIcon = Stock.StatusUpload;
+				cancellable = true;
+				break;
+			default:
+				padIcon = "md-version-control";
+				statusIcon = "md-version-control";
+				cancellable = false;
+				break;
 			}
 
-			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", GettextCatalog.GetString ("Version Control"), "md-version-control", false, true);
+			ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor ("MonoDevelop.VersionControlOutput", GettextCatalog.GetString ("Version Control"), padIcon, false, true);
 			Pad outPad = IdeApp.Workbench.ProgressMonitors.GetPadForMonitor (monitor);
 			
 			AggregatedProgressMonitor mon = new AggregatedProgressMonitor (monitor);
-			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, icon, true, true, false, outPad));
+			mon.AddFollowerMonitor (IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (operation, statusIcon, true, true, false, outPad, cancellable));
 			return mon;
 		}
 		

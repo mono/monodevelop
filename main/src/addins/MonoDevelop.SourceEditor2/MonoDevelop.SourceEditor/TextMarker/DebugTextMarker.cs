@@ -42,6 +42,7 @@ namespace MonoDevelop.SourceEditor
 	class DebugIconMarker : MarginMarker
 	{
 		Image DebugIcon { get; }
+		public string Tooltip { get; set; }
 
 		public DebugIconMarker (Image debugIcon)
 		{
@@ -65,6 +66,21 @@ namespace MonoDevelop.SourceEditor
 			var deltaY = size / 2 - DebugIcon.Height / 2 + 0.5f;
 
 			cr.DrawImage (editor, DebugIcon, Math.Round (x + deltaX), Math.Round (y + deltaY));
+		}
+
+		public override void InformMouseHover (MonoTextEditor editor, Margin margin, MarginMouseEventArgs args)
+		{
+			base.InformMouseHover (editor, margin, args);
+			if (!string.IsNullOrEmpty (Tooltip)) {
+				if (CanDrawForeground (margin))
+					// update tooltip during the next ui loop run,
+					// otherwise Gtk will not update the position of the tooltip
+					Gtk.Application.Invoke (delegate {
+						args.Editor.TooltipText = Tooltip;
+					});
+				else if (args.Editor.TooltipText == Tooltip)
+					args.Editor.TooltipText = null;
+			}
 		}
 	}
 

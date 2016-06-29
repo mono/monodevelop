@@ -25,10 +25,8 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.PackageManagement;
 using NuGet;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -38,18 +36,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public TestablePackageCompatibilityRunner (
 			IDotNetProject project,
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IPackageManagementEvents packageManagementEvents)
 			: base (
 				project,
-				solution,
-				registeredRepositories,
 				progressMonitorFactory,
-				packageManagementEvents,
-				progressProvider)
+				packageManagementEvents)
 		{
 			PackageReferenceFile = new PackageReferenceFile (FileSystem, "packages.config");
 		}
@@ -66,10 +58,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		protected override PackageManagementEventsMonitor CreateEventMonitor (
 			ProgressMonitor monitor,
-			IPackageManagementEvents packageManagementEvents,
-			IProgressProvider progressProvider)
+			IPackageManagementEvents packageManagementEvents)
 		{
-			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents);
 			return EventsMonitor;
 		}
 
@@ -84,14 +75,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public ProgressMonitorStatusMessage ProgressStatusMessage;
 
 		protected override PackageCompatibilityChecker CreatePackageCompatibilityChecker (
-			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredRepositories)
+			ISolution solution)
 		{
-			return new TestablePackageCompatibilityChecker (solution, registeredRepositories) {
+			return new TestablePackageCompatibilityChecker (PackageRepository) {
 				PackageReferenceFile = PackageReferenceFile
 			};
 		}
 
+		public FakeSolutionPackageRepository PackageRepository = new FakeSolutionPackageRepository ();
 		public PackageReferenceFile PackageReferenceFile;
 		public FakeFileSystem FileSystem = new FakeFileSystem ();
 

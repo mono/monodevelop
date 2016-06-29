@@ -943,11 +943,23 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Bug 30591 - [Roslyn] Enum code-completion doesn't generate type on "."(dot)
 		/// </summary>
+		[Ignore ("See Bug #41922")]
 		[Test]
 		public void TestBug30591 ()
 		{
-			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" } );
+			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" });
 			Assert.AreEqual ("foo", output);
+		}
+
+		/// <summary>
+		/// Bug 41922 - Wrong Autocomplete When Typing Dot
+		/// </summary>
+		[Ignore ("See Bug #41922")]
+		[Test]
+		public void TestBug41922 ()
+		{
+			var output = RunSimulation ("", ".", false, false, false, new [] { "foo" });
+			Assert.AreEqual (null, output);
 		}
 
 		/// <summary>

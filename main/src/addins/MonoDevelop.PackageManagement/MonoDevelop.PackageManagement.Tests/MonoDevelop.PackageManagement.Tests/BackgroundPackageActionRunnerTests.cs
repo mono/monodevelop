@@ -27,10 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NUnit.Framework;
 using NuGet;
+using NuGet.PackageManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -41,11 +41,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		TestableBackgroundPackageActionRunner runner;
 		FakeProgressMonitorFactory progressMonitorFactory;
 		PackageManagementEvents packageManagementEvents;
-		PackageManagementProgressProvider progressProvider;
 		List<IPackageAction> actions;
 		ProgressMonitorStatusMessage progressMessage;
 		FakeProgressMonitor progressMonitor;
-		FakePackageRepositoryFactoryEvents repositoryFactoryEvents;
+		TestableInstrumentationService instrumentationService;
 
 		void CreateRunner ()
 		{
@@ -54,15 +53,12 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageManagementEvents = new PackageManagementEvents ();
 			progressMonitorFactory = new FakeProgressMonitorFactory ();
 			progressMonitor = progressMonitorFactory.ProgressMonitor;
-			repositoryFactoryEvents = new FakePackageRepositoryFactoryEvents ();
-			progressProvider = new PackageManagementProgressProvider (repositoryFactoryEvents, handler => {
-				handler.Invoke ();
-			});
+			instrumentationService = new TestableInstrumentationService ();
 
 			runner = new TestableBackgroundPackageActionRunner (
 				progressMonitorFactory,
 				packageManagementEvents,
-				progressProvider);
+				instrumentationService);
 		}
 
 		void Run ()
@@ -76,81 +72,104 @@ namespace MonoDevelop.PackageManagement.Tests
 			runner.Run (progressMessage, actions);
 		}
 
-		FakeInstallPackageAction AddInstallAction ()
+		TestableInstallNuGetPackageAction AddInstallAction ()
 		{
-			var action = new FakeInstallPackageAction (new FakePackageManagementProject (), packageManagementEvents);
-			action.Operations = new List <PackageOperation> ();
-			action.Logger = new FakeLogger ();
+			var action = new TestableInstallNuGetPackageAction (
+				new FakeSourceRepositoryProvider ().Repositories,
+				new FakeSolutionManager (),
+				new FakeDotNetProject ());
+
+			action.PackageId = "Test";
+
 			actions.Add (action);
+
 			return action;
 		}
 
-		FakeInstallPackageAction AddInstallActionWithPowerShellScript (string packageId = "Test")
+		TestableUpdateNuGetPackageAction AddUpdateAction ()
 		{
-			FakeInstallPackageAction action = AddInstallAction ();
-			var package = new FakePackage (packageId);
-			package.AddFile (@"tools\install.ps1");
-			var operations = new List<PackageOperation> ();
-			operations.Add (new PackageOperation (package, PackageAction.Install));
-			action.Operations = operations;
-			action.Package = package;
-			return action;
-		}
+			var action = new TestableUpdateNuGetPackageAction (
+				new FakeSolutionManager (),
+				new FakeDotNetProject ()
+			);
+			action.PackageId = "Test";
 
-		void AddInstallActionWithLicenseToAccept (string packageId = "Test")
-		{
-			FakeInstallPackageAction action = AddInstallAction ();
-			var package = new FakePackage (packageId) {
-				RequireLicenseAcceptance = true
-			};
-			var operations = new List<PackageOperation> ();
-			operations.Add (new PackageOperation (package, PackageAction.Install));
-			action.Operations = operations;
-			action.Package = package;
-			action.LicensesMustBeAccepted = false;
-		}
-
-		void AddInstallActionWithMissingPackageId (string packageId = "Unknown")
-		{
-			var action = new InstallPackageAction (new FakePackageManagementProject (), packageManagementEvents);
-			action.PackageId = packageId;
 			actions.Add (action);
+
+			return action;
 		}
 
-		void AddInstallActionWithCustomExecuteAction (Action executeAction)
+		void AddInstallActionWithMissingPackageId ()
 		{
-			FakeInstallPackageAction action = AddInstallAction ();
-			action.ExecuteAction = executeAction;
+			var action = AddInstallAction ();
+			action.PackageId = null;
 		}
 
-		FakeUninstallPackageAction AddUninstallAction ()
+		void AddInstallActionWithCustomExecuteAction (Action executionAction)
 		{
-			var action = new FakeUninstallPackageAction (new FakePackageManagementProject ());
-			action.Package = new FakePackage ();
-			action.Logger = new FakeLogger ();
+			var action = AddInstallAction ();
+			action.PackageManager.BeforeExecuteAction = executionAction;
+			var projectAction = new FakeNuGetProjectAction ("Test", "1.2", NuGetProjectActionType.Install);
+			action.PackageManager.InstallActions.Add (projectAction);
+		}
+
+		TestableUninstallNuGetPackageAction AddUninstallAction ()
+		{
+			var action = new TestableUninstallNuGetPackageAction (
+				new FakeSolutionManager (),
+				new FakeDotNetProject ());
+
+			action.PackageId = "Test";
+
 			actions.Add (action);
+
 			return action;
 		}
 
-		FakeInstallPackageAction AddInstallActionWithMSBuildTargetsFile (
-			string packageId = "Test",
-			PackageAction packageAction = PackageAction.Install)
+		void AssertInstallCounterIncrementedForPackage (string packageId, string packageVersion)
 		{
-			FakeInstallPackageAction action = AddInstallAction ();
-			var package = new FakePackage (packageId);
-			package.AddFile (@"build\net40\" + packageId + ".targets");
-			var operations = new List<PackageOperation> ();
-			operations.Add (new PackageOperation (package, packageAction));
-			action.Operations = operations;
-			action.Package = package;
-			return action;
+			AssertCounterIncrementedForPackage (instrumentationService.InstallPackageMetadata, packageId, packageVersion);
+		}
+
+		static void AssertCounterIncrementedForPackage (
+			IDictionary<string, string> metadata,
+			string packageId,
+			string packageVersion)
+		{
+			string fullInfo = packageId + " v" + packageVersion;
+			Assert.AreEqual (packageId, metadata["PackageId"]);
+			Assert.AreEqual (fullInfo, metadata["Package"]);
+		}
+
+		void AssertUninstallCounterIncrementedForPackage (string packageId, string packageVersion)
+		{
+			AssertCounterIncrementedForPackage (instrumentationService.UninstallPackageMetadata, packageId, packageVersion);
+		}
+
+		void AssertUninstallCounterIncrementedForPackage (string packageId)
+		{
+			Assert.AreEqual (packageId, instrumentationService.UninstallPackageMetadata["PackageId"]);
+			Assert.IsFalse (instrumentationService.UninstallPackageMetadata.ContainsKey ("PackageVersion"));
+			Assert.IsFalse (instrumentationService.UninstallPackageMetadata.ContainsKey ("Package"));
+		}
+
+		void AddInstallPackageIntoProjectAction (FakeNuGetPackageManager packageManager, string packageId, string version)
+		{
+			var projectAction = new FakeNuGetProjectAction (packageId, version, NuGetProjectActionType.Install);
+			packageManager.InstallActions.Add (projectAction);
+		}
+
+		void AddUninstallPackageIntoProjectAction (FakeNuGetPackageManager packageManager, string packageId, string version)
+		{
+			var projectAction = new FakeNuGetProjectAction (packageId, version, NuGetProjectActionType.Uninstall);
+			packageManager.InstallActions.Add (projectAction);
 		}
 
 		[Test]
 		public void Run_OneInstallActionAndOneUninstallActionAndRunNotCompleted_InstallActionMarkedAsPending ()
 		{
 			CreateRunner ();
-			InstallPackageAction expectedAction = AddInstallAction ();
+			var expectedAction = AddInstallAction ();
 			AddUninstallAction ();
 
 			RunWithoutBackgroundDispatch ();
@@ -162,8 +181,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Run_OneInstallActionAndRunNotCompleted_PackageOperationsStartedEventRaisedAfterInstallActionMarkedAsPending ()
 		{
 			CreateRunner ();
-			InstallPackageAction expectedAction = AddInstallAction ();
-			List<InstallPackageAction> actions = null;
+			var expectedAction = AddInstallAction ();
+			List<IInstallNuGetPackageAction> actions = null;
 			packageManagementEvents.PackageOperationsStarting += (sender, e) => {
 				actions = runner.PendingInstallActions.ToList ();
 			};
@@ -189,7 +208,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			AddInstallAction ();
-			List<InstallPackageAction> actions = null;
+			List<IInstallNuGetPackageAction> actions = null;
 			packageManagementEvents.PackageOperationsFinished += (sender, e) => {
 				actions = runner.PendingInstallActions.ToList ();
 			};
@@ -237,13 +256,13 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Run_TwoActions_BothActionsExecuted ()
 		{
 			CreateRunner ();
-			FakeInstallPackageAction action1 = AddInstallAction ();
-			FakeUninstallPackageAction action2 = AddUninstallAction ();
+			var action1 = AddInstallAction ();
+			var action2 = AddUninstallAction ();
 
 			Run ();
 
-			Assert.IsTrue (action1.IsExecuteCalled);
-			Assert.IsTrue (action2.IsExecuted);
+			Assert.IsNotNull (action1.PackageManager.PreviewInstallProject);
+			Assert.IsNotNull (action2.PackageManager.PreviewUninstallProject);
 		}
 
 		[Test]
@@ -271,54 +290,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Run_OneInstallActionWithPowerShellScripts_WarningNotReportedToProgressMonitor ()
-		{
-			CreateRunner ();
-			AddInstallActionWithPowerShellScript ();
-
-			Run ();
-
-			Assert.IsNull (progressMonitor.ReportedWarningMessage);
-		}
-
-		[Test]
-		public void Run_OneInstallActionWithPowerShellScripts_WarningMessageLoggedInPackageConsole ()
-		{
-			CreateRunner ();
-			AddInstallActionWithPowerShellScript ("Test");
-
-			Run ();
-
-			progressMonitor.AssertMessageIsLogged ("WARNING: Test Package contains PowerShell scripts which will not be run.");
-		}
-
-		[Test]
-		public void Run_OneInstallActionWithLicenseToAccept_WarningReportedToProgressMonitor ()
-		{
-			CreateRunner ();
-			AddInstallActionWithLicenseToAccept ();
-
-			Run ();
-
-			Assert.AreEqual ("Warning", progressMonitor.ReportedWarningMessage);
-		}
-
-		[Test]
-		public void Run_OneInstallActionWithLicenseToAccept_WarningMessageLoggedInPackageConsole ()
-		{
-			CreateRunner ();
-			AddInstallActionWithLicenseToAccept ("Test");
-
-			Run ();
-
-			progressMonitor.AssertMessageIsLogged ("The Test package has a license agreement");
-		}
-
-		[Test]
 		public void Run_OneInstallActionWithMissingPackageId_ErrorReportedToProgressMonitor ()
 		{
 			CreateRunner ();
-			AddInstallActionWithMissingPackageId ("Unknown");
+			AddInstallActionWithMissingPackageId ();
 
 			Run ();
 
@@ -329,18 +304,18 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Run_OneInstallActionWithMissingPackageId_ErrorLoggedInPackageConsole ()
 		{
 			CreateRunner ();
-			AddInstallActionWithMissingPackageId ("Unknown");
+			AddInstallActionWithMissingPackageId ();
 
 			Run ();
 
-			progressMonitor.AssertMessageIsLogged ("Unable to find package 'Unknown'.");
+			progressMonitor.AssertMessageIsLogged ("Value cannot be null.");
 		}
 
 		[Test]
 		public void Run_OneInstallActionWithMissingPackageId_PackageOperationsFinishedEventFired ()
 		{
 			CreateRunner ();
-			AddInstallActionWithMissingPackageId ("Unknown");
+			AddInstallActionWithMissingPackageId ();
 			bool eventFired = false;
 			packageManagementEvents.PackageOperationsFinished += (sender, e) => {
 				eventFired = true;
@@ -355,22 +330,22 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Run_OneInstallActionWithMissingPackageId_PackageOperationErrorEventFired ()
 		{
 			CreateRunner ();
-			AddInstallActionWithMissingPackageId ("Unknown");
+			AddInstallActionWithMissingPackageId ();
 			string exceptionMessage = null;
 			packageManagementEvents.PackageOperationError += (sender, e) => {
-				exceptionMessage = e.Exception.Message;
+				exceptionMessage = e.Exception.GetBaseException ().Message;
 			};
 
 			Run ();
 
-			Assert.AreEqual ("Unable to find package 'Unknown'.", exceptionMessage);
+			Assert.IsTrue (exceptionMessage.Contains ("Value cannot be null."));
 		}
 
 		[Test]
 		public void Run_OneInstallActionWithMissingPackageId_PackageConsoleDisplayedDueToError ()
 		{
 			CreateRunner ();
-			AddInstallActionWithMissingPackageId ("Unknown");
+			AddInstallActionWithMissingPackageId ();
 
 			Run ();
 
@@ -382,7 +357,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Run_OneInstallActionWithMissingPackageId_InstallPackageOperationsRemovedFromPendingListWhenPackageOperationErrorEventFired ()
 		{
 			CreateRunner ();
-			AddInstallActionWithMissingPackageId ("Unknown");
+			AddInstallActionWithMissingPackageId ();
 			int pendingInstallActionsCount = -1;
 			packageManagementEvents.PackageOperationError += (sender, e) => {
 				pendingInstallActionsCount = runner.PendingInstallActions.Count ();
@@ -423,75 +398,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (2, filesChanged.Count);
 			Assert.That (filesChanged, Contains.Item (new FilePath (file1)));
 			Assert.That (filesChanged, Contains.Item (new FilePath (file2)));
-		}
-
-		[Test]
-		public void Run_ActionDownloadsTwoPackages_DownloadingMessageLoggedOnceForEachDownloadOperationByProgressMonitor ()
-		{
-			CreateRunner ();
-			AddInstallActionWithCustomExecuteAction (() => {
-				var repository = new FakePackageRepository ();
-				repositoryFactoryEvents.RaiseRepositoryCreatedEvent (new PackageRepositoryFactoryEventArgs (repository));
-
-				var progress = new ProgressEventArgs ("Download1", 100);
-				repository.RaiseProgressAvailableEvent (progress);
-
-				progress = new ProgressEventArgs ("Download2", 50);
-				repository.RaiseProgressAvailableEvent (progress);
-
-				progress = new ProgressEventArgs ("Download2", 100);
-				repository.RaiseProgressAvailableEvent (progress);
-			});
-
-			Run ();
-
-			progressMonitor.AssertMessageIsLogged ("Download1");
-			progressMonitor.AssertMessageIsLogged ("Download2");
-			progressMonitor.AssertMessageIsNotLogged ("Download2" + Environment.NewLine + "Download2");
-		}
-
-		[Test]
-		public void Run_OneInstallActionWithPackageOperationWithCustomMSBuildTask_TypeSystemIsRefreshed ()
-		{
-			CreateRunner ();
-			FakeInstallPackageAction action = AddInstallActionWithMSBuildTargetsFile ();
-			action.ExecuteAction = () => {
-				packageManagementEvents.OnParentPackageInstalled (action.Package, action.Project, action.Operations);
-			};
-
-			Run ();
-
-			Assert.IsTrue (runner.EventsMonitor.IsTypeSystemRefreshed);
-			Assert.AreEqual (action.Project, runner.EventsMonitor.ProjectsPassedToReconnectAssemblyReferences [0]);
-			Assert.IsNotNull (action.Project);
-		}
-
-		[Test]
-		public void Run_OneUninstallActionWithPackageOperationWithCustomMSBuildTask_TypeSystemIsNotRefreshed ()
-		{
-			CreateRunner ();
-			FakeInstallPackageAction action = AddInstallActionWithMSBuildTargetsFile ("Test", PackageAction.Uninstall);
-			action.ExecuteAction = () => {
-				packageManagementEvents.OnParentPackageInstalled (action.Package, action.Project, action.Operations);
-			};
-
-			Run ();
-
-			Assert.IsFalse (runner.EventsMonitor.IsTypeSystemRefreshed);
-		}
-
-		[Test]
-		public void Run_OneInstallActionNoCustomMSBuildTask_TypeSystemIsNotRefreshed ()
-		{
-			CreateRunner ();
-			FakeInstallPackageAction action = AddInstallActionWithPowerShellScript ();
-			action.ExecuteAction = () => {
-				packageManagementEvents.OnParentPackageInstalled (action.Package, action.Project, action.Operations);
-			};
-
-			Run ();
-
-			Assert.IsFalse (runner.EventsMonitor.IsTypeSystemRefreshed);
 		}
 
 		[Test]
@@ -560,13 +466,84 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			AddUninstallAction ();
-			runner.CreateEventMonitorAction = (monitor, packageManagementEvents, progressProvider) => {
+			runner.CreateEventMonitorAction = (monitor, packageManagementEvents) => {
 				throw new ApplicationException ("Error");
 			};
 
 			Run ();
 
 			Assert.IsFalse (runner.IsRunning);
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageUninstalled_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			var action = AddUninstallAction ();
+			var projectAction = new FakeNuGetProjectAction ("Test", "1.2", NuGetProjectActionType.Uninstall);
+			action.PackageManager.UninstallActions.Add (projectAction);
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackage ("Test", "1.2");
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageUninstalledWithNoVersion_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			var action = AddUninstallAction ();
+			var projectAction = new FakeNuGetProjectAction ("Test", null, NuGetProjectActionType.Uninstall);
+			action.PackageManager.UninstallActions.Add (projectAction);
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackage ("Test");
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageInstalledWithTwoPackageOperations_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			AddInstallPackageIntoProjectAction (action.PackageManager, "Bar", "1.3");
+			AddUninstallPackageIntoProjectAction (action.PackageManager, "Foo", "1.1");
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackage ("Foo", "1.1");
+			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageUpdatedWithTwoPackageOperations_UninstallCounterIncremented ()
+		{
+			CreateRunner ();
+			var action = AddUpdateAction ();
+			var projectAction = new FakeNuGetProjectAction ("Bar", "1.3", NuGetProjectActionType.Install);
+			action.PackageManager.UpdateActions.Add (projectAction);
+			projectAction = new FakeNuGetProjectAction ("Foo", "1.1", NuGetProjectActionType.Uninstall);
+			action.PackageManager.UpdateActions.Add (projectAction);
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackage ("Foo", "1.1");
+			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
+		}
+
+		[Test]
+		public void Instrumentation_OnePackageInstalledWithOneInstallAndOneUninstallPackageActions_BothCountersIncremented ()
+		{
+			CreateRunner ();
+			var action = AddInstallAction ();
+			AddInstallPackageIntoProjectAction (action.PackageManager, "Bar", "1.3");
+			AddUninstallPackageIntoProjectAction (action.PackageManager, "Foo", "1.1");
+			actions.Add (action);
+
+			Run ();
+
+			AssertUninstallCounterIncrementedForPackage ("Foo", "1.1");
+			AssertInstallCounterIncrementedForPackage ("Bar", "1.3");
 		}
 	}
 }

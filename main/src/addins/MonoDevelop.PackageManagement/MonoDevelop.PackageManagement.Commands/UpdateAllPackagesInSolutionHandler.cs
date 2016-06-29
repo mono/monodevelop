@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -37,35 +36,20 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			try {
-				IPackageManagementSolution solution = GetPackageManagementSolution ();
-				UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution (solution);
-				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage (updateAllPackages.Projects);
-				RestoreBeforeUpdateAction.Restore (solution, updateAllPackages.Projects, () => {
-					Runtime.RunInMainThread (() => {
-						Update (updateAllPackages, progressMessage);
-					}).Wait ();
-				});
+				Update ();
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
 		}
 
-		void Update (UpdateAllPackagesInSolution updateAllPackages, ProgressMonitorStatusMessage progressMessage)
+		void Update ()
 		{
-			try {
-				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
-			} catch (Exception ex) {
-				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
-			}
-		}
+			var updateAllPackages = new UpdateAllNuGetPackagesInSolution (GetSelectedSolution ());
+			List<IPackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
 
-		UpdateAllPackagesInSolution CreateUpdateAllPackagesInSolution (IPackageManagementSolution solution)
-		{
-			return new UpdateAllPackagesInSolution (
-				solution,
-				PackageManagementServices.PackageRepositoryCache.CreateAggregateRepository ());
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage (updateAllPackages.GetProjects ());
+			PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 		}
 
 		protected override void Update (CommandInfo info)

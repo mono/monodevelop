@@ -70,7 +70,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void TearDown ()
 		{
 			// This resets SettingsProvider.LoadDefaultSettings.
-			TestablePackageManagementOptions.CreateSettingsProvider (fakeSettings, projectService);
+			SettingsProvider.LoadDefaultSettings = (fileSystem, configFile, machineSettings) => {
+				return fakeSettings;
+			};
 		}
 
 		[Test]

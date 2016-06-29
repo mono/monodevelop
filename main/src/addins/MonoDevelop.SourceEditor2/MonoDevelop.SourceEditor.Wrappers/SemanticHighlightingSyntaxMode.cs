@@ -93,7 +93,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		bool isDisposed;
 		Queue<Tuple<DocumentLine, HighlightingSegmentTree>> lineSegments = new Queue<Tuple<DocumentLine, HighlightingSegmentTree>> ();
 
-		public SemanticHighlightingSyntaxMode (ExtensibleTextEditor editor, ISyntaxMode syntaxMode, SemanticHighlighting semanticHighlighting)
+		public SemanticHighlightingSyntaxMode (ExtensibleTextEditor editor, Mono.TextEditor.Highlighting.ISyntaxMode syntaxMode, SemanticHighlighting semanticHighlighting)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");

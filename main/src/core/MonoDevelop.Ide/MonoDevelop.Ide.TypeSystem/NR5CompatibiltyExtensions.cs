@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static ITypeSymbol GetReturnType (this ISymbol symbol)
 		{
 			if (symbol == null)
-				throw new ArgumentNullException ("symbol");
+				throw new ArgumentNullException (nameof (symbol));
 			switch (symbol.Kind) {
 			case SymbolKind.Field:
 				var field = (IFieldSymbol)symbol;
@@ -199,7 +199,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static IEnumerable<INamedTypeSymbol> GetAllTypesInMainAssembly (this Compilation compilation, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (compilation == null)
-				throw new ArgumentNullException ("compilation");
+				throw new ArgumentNullException (nameof (compilation));
 			return compilation.Assembly.GlobalNamespace.GetAllTypes (cancellationToken);
 		}
 
@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static string GetComponentCategory (this ISymbol symbol)
 		{
 			if (symbol == null)
-				throw new ArgumentNullException ("symbol");
+				throw new ArgumentNullException (nameof (symbol));
 			var browsableState = symbol.GetAttributes ().FirstOrDefault (attr => attr.AttributeClass.Name == "CategoryAttribute" && attr.AttributeClass.ContainingNamespace.MetadataName == "System.ComponentModel");
 			if (browsableState != null && browsableState.ConstructorArguments.Length == 1) {
 				try {
@@ -293,7 +293,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static bool IsToolboxItem (this ITypeSymbol symbol)
 		{
 			if (symbol == null)
-				throw new ArgumentNullException ("symbol");
+				throw new ArgumentNullException (nameof (symbol));
 			if (symbol.DeclaredAccessibility != Accessibility.Public)
 				return false;
 			var toolboxItemAttr = symbol.GetAttributes ().FirstOrDefault (attr => attr.AttributeClass.Name == "ToolboxItemAttribute" && attr.AttributeClass.ContainingNamespace.MetadataName == "System.ComponentModel");
@@ -315,7 +315,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static bool IsDesignerBrowsable (this ISymbol symbol)
 		{
 			if (symbol == null)
-				throw new ArgumentNullException ("symbol");
+				throw new ArgumentNullException (nameof (symbol));
 			var browsableState = symbol.GetAttributes ().FirstOrDefault (attr => attr.AttributeClass.Name == "BrowsableAttribute" && attr.AttributeClass.ContainingNamespace.MetadataName == "System.ComponentModel");
 			if (browsableState != null && browsableState.ConstructorArguments.Length == 1) {
 				try {
@@ -355,6 +355,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			ISymbol within,
 			ITypeSymbol throughTypeOpt = null)
 		{
+			if (symbol == null)
+				throw new ArgumentNullException (nameof (symbol));
+			if (within == null)
+				throw new ArgumentNullException (nameof (within));
 			if (within is IAssemblySymbol)
 			{
 				return symbol.IsAccessibleWithin((IAssemblySymbol)within, throughTypeOpt);
@@ -377,6 +381,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			IAssemblySymbol within,
 			ITypeSymbol throughTypeOpt = null)
 		{
+			if (symbol == null)
+				throw new ArgumentNullException (nameof (symbol));
+			if (within == null)
+				throw new ArgumentNullException (nameof (within));
 			return (bool)isAccessibleWithin1Method.Invoke (null, new object [] { symbol, within, throughTypeOpt });
 		}
 
@@ -389,6 +397,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			INamedTypeSymbol within,
 			ITypeSymbol throughTypeOpt = null)
 		{
+			if (symbol == null)
+				throw new ArgumentNullException (nameof (symbol));
+			if (within == null)
+				throw new ArgumentNullException (nameof (within));
 			return (bool)isAccessibleWithin2Method.Invoke (null, new object [] { symbol, within, throughTypeOpt });
 		}
 	}

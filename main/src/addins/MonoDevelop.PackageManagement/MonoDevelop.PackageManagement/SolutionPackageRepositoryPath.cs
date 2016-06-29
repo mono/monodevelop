@@ -37,44 +37,42 @@ namespace MonoDevelop.PackageManagement
 	internal class SolutionPackageRepositoryPath
 	{
 		ISolution solution;
-		DefaultPackagePathResolver pathResolver;
 
 		public SolutionPackageRepositoryPath(Project project)
-			: this (new ProjectProxy (project), PackageManagementServices.Options)
+			: this (new ProjectProxy (project))
+		{
+		}
+
+		public SolutionPackageRepositoryPath (IProject project)
+			: this (project, new SettingsProvider (project.ParentSolution))
 		{
 		}
 
 		public SolutionPackageRepositoryPath (
 			IProject project,
-			PackageManagementOptions options)
-			: this (project.ParentSolution, options)
+			ISettingsProvider settingsProvider)
+			: this (project.ParentSolution, settingsProvider)
 		{
 		}
 
 		public SolutionPackageRepositoryPath (
 			ISolution solution,
-			PackageManagementOptions options)
+			ISettingsProvider settingsProvider)
 		{
 			this.solution = solution;
-			PackageRepositoryPath = GetSolutionPackageRepositoryPath (options);
+			PackageRepositoryPath = GetSolutionPackageRepositoryPath (settingsProvider);
 		}
 
-		string GetSolutionPackageRepositoryPath (PackageManagementOptions options)
+		string GetSolutionPackageRepositoryPath (ISettingsProvider settingsProvider)
 		{
-			string customPath = options.GetCustomPackagesDirectory ();
+			string customPath = settingsProvider.LoadSettings ().GetRepositoryPath ();
 			if (!String.IsNullOrEmpty (customPath)) {
 				return Path.GetFullPath (customPath);
 			}
 
-			return Path.Combine (solution.BaseDirectory, options.PackagesDirectory);
+			return Path.Combine (solution.BaseDirectory, "packages");
 		}
 		
 		public string PackageRepositoryPath { get; private set; }
-		
-		public string GetInstallPath(IPackage package)
-		{
-			pathResolver = new DefaultPackagePathResolver(PackageRepositoryPath);
-			return pathResolver.GetInstallPath(package);
-		}
 	}
 }

@@ -24,8 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
+using NuGet.ProjectManagement.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -33,31 +35,37 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			IDotNetProject project = GetSelectedProject ();
-			if (project == null)
-				return;
-
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-			var runner = new PackageRestoreRunner (GetPackageManagementSolution ());
-			PackageManagementBackgroundDispatcher.Dispatch (() => {
-				runner.Run (project, progressMessage);
-				runner = null;
-				project = null;
-			});
-		}
-
-		IDotNetProject GetSelectedProject ()
-		{
-			DotNetProject project = GetSelectedDotNetProject ();
-			if (project != null) {
-				return new DotNetProjectProxy (project);
+			try {
+				ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
+				IPackageAction action = CreateRestorePackagesAction (GetSelectedDotNetProject ());
+				PackageManagementServices.BackgroundPackageActionRunner.Run (message, action);
+			} catch (Exception ex) {
+				ShowStatusBarError (ex);
 			}
-			return null;
 		}
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
+			info.Enabled = SelectedDotNetProjectHasPackages ();
+		}
+
+		IPackageAction CreateRestorePackagesAction (DotNetProject project)
+		{
+			var solutionManager = PackageManagementServices.Workspace.GetSolutionManager (project.ParentSolution);
+			var nugetProject = solutionManager.GetNuGetProject (new DotNetProjectProxy (project));
+
+			var buildIntegratedProject = nugetProject as BuildIntegratedNuGetProject;
+			if (buildIntegratedProject != null) {
+				return new RestoreNuGetPackagesInNuGetIntegratedProject (project, buildIntegratedProject, solutionManager);
+			}
+
+			return new RestoreNuGetPackagesInProjectAction (project, nugetProject, solutionManager);
+		}
+
+		void ShowStatusBarError (Exception ex)
+		{
+			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
+			PackageManagementServices.BackgroundPackageActionRunner.ShowError (message, ex);
 		}
 	}
 }

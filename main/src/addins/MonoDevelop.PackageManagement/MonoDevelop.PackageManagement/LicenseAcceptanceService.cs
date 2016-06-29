@@ -27,6 +27,7 @@
 //
 
 using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
@@ -37,29 +38,38 @@ namespace MonoDevelop.PackageManagement
 	{
 		public bool AcceptLicenses (IEnumerable<IPackage> packages)
 		{
+			var licenses = packages
+				.Select (package => new NuGetPackageLicense (package))
+				.ToList ();
+			
+			return AcceptLicenses (licenses);
+		}
+
+		public bool AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
+		{
 			if (Runtime.IsMainThread) {
-				return ShowLicenseAcceptanceDialog (packages);
+				return ShowLicenseAcceptanceDialog (licenses);
 			}
 
 			bool accepted = false;
 			Runtime.RunInMainThread (() => {
-				accepted = ShowLicenseAcceptanceDialog (packages);
+				accepted = ShowLicenseAcceptanceDialog (licenses);
 			}).Wait ();
 			return accepted;
 		}
 
-		bool ShowLicenseAcceptanceDialog (IEnumerable<IPackage> packages)
+		bool ShowLicenseAcceptanceDialog (IEnumerable<NuGetPackageLicense> licenses)
 		{
-			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (packages)) {
+			using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
 				dialog.Modal = false;
 				int result = MessageService.ShowCustomDialog (dialog, IdeApp.Workbench.RootWindow);
 				return result == (int)Gtk.ResponseType.Ok;
 			}
 		}
 
-		LicenseAcceptanceDialog CreateLicenseAcceptanceDialog(IEnumerable<IPackage> packages)
+		LicenseAcceptanceDialog CreateLicenseAcceptanceDialog (IEnumerable<NuGetPackageLicense> licenses)
 		{
-			var viewModel = new LicenseAcceptanceViewModel(packages);
+			var viewModel = new LicenseAcceptanceViewModel (licenses);
 			return new LicenseAcceptanceDialog(viewModel);
 		}
 	}

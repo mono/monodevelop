@@ -108,6 +108,14 @@ namespace MonoDevelop.PackageManagement
 				projectRemoved (this, new DotNetProjectEventArgs (project));
 			}
 		}
+
+		public bool Equals (ISolution solution)
+		{
+			if (solution == null)
+				return false;
+
+			return Solution == solution.Solution;
+		}
 	}
 }
 

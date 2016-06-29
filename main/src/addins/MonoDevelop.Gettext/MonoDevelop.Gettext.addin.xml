@@ -44,8 +44,7 @@
 		<StockIcon stockid = "md-gettext-project" resource = "project-locale-16.png" size = "Menu" />
 		<StockIcon stockid = "md-po-file" resource = "file-locale-16.png" size = "Menu" />
 		<StockIcon stockid = "md-po-file" resource = "file-locale-32.png" size = "Dnd" />
-		<StockIcon stockid = "md-locale-overlay" resource="project-locale-overlay-32.png" size="Dnd" />
-		<StockIcon stockid = "md-project-locale" icon="md-project|md-locale-overlay" size="Dnd" />
+		<StockIcon stockid = "md-locale-project" resource = "project-locale-32.png" size = "Dnd" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Core/MimeTypes">
@@ -90,7 +89,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TemplateImages">
-		<Image id = "md-locale-project" resource = "locale-project.png" />
+		<Image id = "md-locale-project" resource = "project-locale-template.png" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
@@ -136,24 +135,47 @@
 			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
 			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
 			<Exclude regex='/\*(?:.|\n)*?\*/' />          <!-- Block comments -->
+			<Exclude regex='ResourceManager\.GetString' />
 			
 			<Include regex='\[\s*LocalizedDisplayName?\s*\(\s*"(.*?[^\\])"\s*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='\[\s*LocalizedDescription\s*\(\s*"(.*?[^\\])"\s*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='\[\s*LocalizedCategory\s*\(\s*"(.*?[^\\])"\s*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
-			
-			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
-			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
 
-			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
-
+			<!-- Regular string -->
 			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharp"/>
+			<!-- Verbatim string -->
 			<Include regex='GetString\s*\(\s*@"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
 			<Include regex='GetPluralString\s*\(\s*@"(.*?[^\\])"\s*,\s*@"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
 			<Transform regex='([^\\])"\s*\+\s*"' value='$1' regexOptions="Singleline"/><!-- strip out "+" concatenations -->
 			
 			<Include regex='\[\s*IssueDescription\s*\(\s*"(.*?[^\\])".*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='\[\s*ContextAction\s*\(\s*"(.*?[^\\])".*\)\s*\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='TranslateString\s*\(\s*"(.*?[^\\])"\s*[\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+		</RegexScanner>
+		<RegexScanner extension="fs">
+			<Exclude regex='@".*?"' />	                  <!-- Strings starting with @ -->
+			<Exclude regex='(?&lt;!@)".*?(?&lt;!\\)"' />  <!-- Strings-->
+			<Exclude regex='//(?:(?!//).)*' />            <!-- Line comments -->
+			<Exclude regex='(\*(?:.|\n)*?\*)' />          <!-- Block comments -->
+			<Exclude regex='ResourceManager\.GetString' />
+
+			<Include regex='\[&lt;\s*LocalizedDisplayName?\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='\[&lt;\s*LocalizedDescription\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='\[&lt;\s*LocalizedCategory\s*\(\s*"(.*?[^\\])"\s*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<!-- Regular string -->
+			<Include regex='GetString\s*\(\s*"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='GetPluralString\s*\(\s*"(.*?[^\\])"\s*,\s*"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharp"/>
+			<!-- Verbatim string -->
+			<Include regex='GetString\s*\(\s*@"(.*?[^\\])"\s*[,\)]' regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
+			<Include regex='GetPluralString\s*\(\s*@"(.*?[^\\])"\s*,\s*@"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
+			<!-- Triple quoted string -->
+			<Include regex='GetString\s*\(\s*"""(.*?[^\\])"""\s*[,\)]' regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
+			<Include regex='GetPluralString\s*\(\s*"""(.*?[^\\])"""\s*,\s*@"(.*?[^\\])"\s*[,\)]' plural="true" regexOptions="Singleline" escapeMode="CSharpVerbatim"/>
+			<Transform regex='([^\\])"\s*\+\s*"' value='$1' regexOptions="Singleline"/><!-- strip out "+" concatenations -->
+			
+			<Include regex='\[&lt;\s*IssueDescription\s*\(\s*"(.*?[^\\])".*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
+			<Include regex='\[&lt;\s*ContextAction\s*\(\s*"(.*?[^\\])".*\)\s*&gt;\]' regexOptions="Singleline" escapeMode="CSharp"/>
 			<Include regex='TranslateString\s*\(\s*"(.*?[^\\])"\s*[\)]' regexOptions="Singleline" escapeMode="CSharp"/>
 		</RegexScanner>
 	</Extension>

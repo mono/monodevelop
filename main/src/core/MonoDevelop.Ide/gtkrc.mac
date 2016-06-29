@@ -29,14 +29,14 @@ gtk-toolbar-icon-size = large-toolbar
 gtk-auto-mnemonics = 1
 gtk-error-bell = 0
 gtk-show-input-method-menu = 0
-gtk-font-name = "Helvetica Neue 12"
+gtk-font-name = "-apple-system-font 12"
 
 
 style "default" {
     xthickness = 1
     ythickness = 1
 
-    font_name = "Helvetica Neue 12"
+    font_name = "-apple-system-font 12"
 
     ### colours
 
@@ -135,7 +135,7 @@ style "button" = "default" {
     xthickness = 2
     ythickness = 4
 
-    font_name = "Helvetica Neue 12"
+    font_name = "-apple-system-font 12"
 
     bg[NORMAL] = @base_color
     bg[PRELIGHT] = @base_color # Mac buttons have no hover state
@@ -177,7 +177,7 @@ style "menu" {
     xthickness = 1
     # ythickness = 0
 
-    font_name = "Helvetica Neue 12"
+    font_name = "-apple-system-font 12"
 
     bg[PRELIGHT] = @selected_fg_color
     fg[PRELIGHT] = @selected_fg_color
@@ -232,7 +232,7 @@ style "tooltip"
     bg[NORMAL] = @tooltip_bg_color
     bg[SELECTED] = @tooltip_border_color
 
-    font_name = "Helvetica Neue 12"
+    font_name = "-apple-system-font 12"
 
     engine "xamarin" {
         roundness = 0
@@ -318,7 +318,7 @@ style "wizard-dialog"
 }
 
 style "combo-box-menu" = "menu" {
-    font_name = "Helvetica Neue 12"
+    font_name = "-apple-system-font 12"
 }
 
 style "notebook" = "default"

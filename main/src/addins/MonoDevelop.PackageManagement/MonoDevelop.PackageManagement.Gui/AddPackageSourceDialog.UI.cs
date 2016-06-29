@@ -38,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 		PasswordEntry packageSourcePasswordTextEntry;
 		DialogButton addPackageSourceButton;
 		DialogButton savePackageSourceButton;
+		Button browseButton;
 
 		void Build ()
 		{
@@ -66,13 +67,18 @@ namespace MonoDevelop.PackageManagement
 			mainVBox.PackStart (packageSourceUrlHBox);
 
 			var packageSourceUrlLabel = new Label ();
-			packageSourceUrlLabel.Text = GettextCatalog.GetString ("URL");
+			packageSourceUrlLabel.Text = GettextCatalog.GetString ("Location");
 			packageSourceUrlLabel.TextAlignment = Alignment.End;
 			packageSourceUrlLabel.WidthRequest = labelWidth;
 			packageSourceUrlHBox.PackStart (packageSourceUrlLabel);
 
 			packageSourceUrlTextEntry = new TextEntry ();
-			packageSourceUrlHBox.PackEnd (packageSourceUrlTextEntry, true);
+			packageSourceUrlTextEntry.PlaceholderText = GettextCatalog.GetString ("URL or folder");
+			packageSourceUrlHBox.PackStart (packageSourceUrlTextEntry, true);
+
+			browseButton = new Button ();
+			browseButton.Label = GettextCatalog.GetString ("_Browse...");
+			packageSourceUrlHBox.PackStart (browseButton);
 
 			// Package source username.
 			var packageSourceUserNameHBox = new HBox ();

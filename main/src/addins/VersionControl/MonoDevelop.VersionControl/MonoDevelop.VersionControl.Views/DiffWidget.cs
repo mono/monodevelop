@@ -153,7 +153,38 @@ namespace MonoDevelop.VersionControl.Views
 				return GettextCatalog.GetString ("(base)");
 			return string.Format (GettextCatalog.GetString ("(revision {0})"), rev.ToString ());
 		}
-			
+
+		[Components.Commands.CommandUpdateHandler (Ide.Commands.ViewCommands.ShowNext)]
+		public void ShowNextUpdateHandler (Components.Commands.CommandInfo info)
+		{
+			if (!Visible)
+				info.Bypass = true;
+			else {
+				info.Text = GettextCatalog.GetString ("Show Next (Difference)");
+			}
+		}
+
+		[Components.Commands.CommandHandler (Ide.Commands.ViewCommands.ShowNext)]
+		public void ShowNextHandler ()
+		{
+			ComparisonWidget.GotoNext ();
+		}
+
+		[Components.Commands.CommandUpdateHandler (Ide.Commands.ViewCommands.ShowPrevious)]
+		public void ShowPreviousUpdateHandler (Components.Commands.CommandInfo info)
+		{
+			if (!Visible)
+				info.Bypass = true;
+			else {
+				info.Text = GettextCatalog.GetString ("Show Previous (Difference)");
+			}
+		}
+
+		[Components.Commands.CommandHandler (Ide.Commands.ViewCommands.ShowPrevious)]
+		public void ShowPreviousHandler ()
+		{
+			ComparisonWidget.GotoPrev ();
+		}
 	}
 }
 

@@ -203,7 +203,12 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		public string Name {
-			get { return AddinManager.CurrentLocalizer.GetString ("Default"); }
+			get {
+				if (BrandingService.ApplicationName == "MonoDevelop")
+					return AddinManager.CurrentLocalizer.GetString ("Custom");
+				else
+					return BrandingService.ApplicationName;
+			}
 		}
 		
 		public KeyBindingSet GetKeyBindingSet ()

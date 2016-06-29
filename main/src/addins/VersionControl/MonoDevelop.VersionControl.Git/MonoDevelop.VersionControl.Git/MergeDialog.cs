@@ -53,6 +53,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			store = new TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string), typeof(string));
 			tree.Model = store;
+			tree.SearchColumn = -1; // disable the interactive search
 
 			var crp = new CellRendererImage ();
 			var col = new TreeViewColumn ();
