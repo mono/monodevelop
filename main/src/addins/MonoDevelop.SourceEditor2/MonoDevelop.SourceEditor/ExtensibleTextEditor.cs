@@ -779,12 +779,6 @@ namespace MonoDevelop.SourceEditor
 			RunAction (ScrollActions.Bottom);
 		}
 
-		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace)]
-		internal void OnGotoMatchingBrace ()
-		{
-			RunAction (MiscActions.GotoMatchingBracket);
-		}
-
 		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft)]
 		internal void OnSelectionMoveLeft ()
 		{
