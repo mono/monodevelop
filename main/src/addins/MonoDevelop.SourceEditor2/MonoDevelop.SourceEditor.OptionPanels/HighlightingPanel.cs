@@ -40,7 +40,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		string schemeName;
-		ListStore styleStore = new ListStore (typeof (string), typeof (Mono.TextEditor.Highlighting.ColorScheme), typeof(bool));
+		ListStore styleStore = new ListStore (typeof (string), typeof (MonoDevelop.Ide.Editor.Highlighting.ColorScheme), typeof(bool));
 		static Lazy<Gdk.Pixbuf> errorPixbuf = new Lazy<Gdk.Pixbuf> (() => ImageService.GetIcon (Stock.DialogError, IconSize.Menu).ToPixbuf ());
 
 		public HighlightingPanel ()
@@ -122,7 +122,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (!styleTreeview.Selection.GetSelected (out iter)) 
 				return;
-			var sheme = (Mono.TextEditor.Highlighting.ColorScheme)styleStore.GetValue (iter, 1);
+			var sheme = (MonoDevelop.Ide.Editor.Highlighting.ColorScheme)styleStore.GetValue (iter, 1);
 			if (sheme == null)
 				return;
 			var isError = (bool)styleStore.GetValue (iter, 2);
@@ -144,25 +144,25 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				using (var editor = new ColorShemeEditor (this)) {
-					var colorScheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+					var colorScheme = (MonoDevelop.Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
 					editor.SetSheme (colorScheme);
 					MessageService. ShowCustomDialog (editor, dialog);
 				}
 			}
 		}
 		
-		Mono.TextEditor.Highlighting.ColorScheme LoadStyle (string styleName, out bool error)
+		MonoDevelop.Ide.Editor.Highlighting.ColorScheme LoadStyle (string styleName, out bool error)
 		{
 			try {
 				error = false;
 				return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (styleName);
-			} catch (StyleImportException e) {
+			} catch (Ide.Editor.Highlighting.StyleImportException e) {
 				error = true;
 
 				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
 				style.Name = styleName;
 				switch (e.Reason) {
-				case StyleImportException.ImportFailReason.NoValidColorsFound:
+				case Ide.Editor.Highlighting.StyleImportException.ImportFailReason.NoValidColorsFound:
 					style.Description = GettextCatalog.GetString ("No valid colors found inside the settings. (Maybe only theme is defined - check <FontsAndColors> node?)");
 					break;
 				default:
@@ -217,7 +217,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			TreeIter selectedIter;
 			if (!styleTreeview.Selection.GetSelected (out selectedIter)) 
 				return;
-			var sheme = (ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+			var sheme = (Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
 			
 			string fileName = sheme.FileName;
 
@@ -238,7 +238,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				var sheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+				var sheme = (Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
 				var selectedFile = dialog.SelectedFile.ToString ();
 				if (!selectedFile.EndsWith (".json", StringComparison.Ordinal))
 					selectedFile += ".json";
@@ -299,7 +299,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				ColorScheme sheme = ((Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1));
+				var sheme = ((Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1));
 				DefaultSourceEditorOptions.Instance.ColorScheme = schemeName = sheme != null ? sheme.Name : null;
 			}
 		}

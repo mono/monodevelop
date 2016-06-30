@@ -52,12 +52,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			var highlighting = Sublime3Format.ReadHighlighting (input);
 			highlighting.Document = Editor;
 
-			var editorTheme = TextMateFormat.LoadEditorTheme ("/home/mkrueger/b/Monokai.tmTheme");
 
 			Editor.CaretPositionChanged += delegate {
 				var line = Editor.GetLine (Editor.CaretLine);
 				Console.WriteLine ("------------------");
-				foreach (var seg in highlighting.GetColoredSegments (line)) {
+				foreach (var seg in highlighting.GetColoredSegments (line, line.Offset, line.Length)) {
 					Console.WriteLine (seg);
 				}
 			};

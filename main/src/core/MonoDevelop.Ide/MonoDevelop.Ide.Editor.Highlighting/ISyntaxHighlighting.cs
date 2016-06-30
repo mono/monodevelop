@@ -42,6 +42,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// <param name='line'>
 		/// The starting line at (offset). This is the same as Document.GetLineByOffset (offset).
 		/// </param>
-		IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line);
+		IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length);
+	}
+
+	public sealed class DefaultSyntaxHighlighting : ISyntaxHighlighting
+	{
+		public static readonly DefaultSyntaxHighlighting Instance = new DefaultSyntaxHighlighting ();
+
+		DefaultSyntaxHighlighting ()
+		{
+		}
+
+		public IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length)
+		{
+			yield return new ColoredSegment (offset, length, "");
+		}
 	}
 }

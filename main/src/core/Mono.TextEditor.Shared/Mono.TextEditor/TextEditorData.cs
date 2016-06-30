@@ -325,13 +325,19 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		ColorScheme colorStyle;
-		internal ColorScheme ColorStyle {
+		MonoDevelop.Ide.Editor.Highlighting.ColorScheme colorStyle;
+		internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme ColorStyle {
 			get {
 				return colorStyle ?? SyntaxModeService.DefaultColorStyle;
 			}
 			set {
 				colorStyle = value;
+			}
+		}
+
+		internal MonoDevelop.Ide.Editor.Highlighting.EditorTheme EditorTheme {
+			get {
+				return MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.GetEditorTheme (Options.ColorScheme);
 			}
 		}
 
@@ -385,12 +391,12 @@ namespace Mono.TextEditor
 			while (curOffset < offset + length && curOffset < Document.Length) {
 				DocumentLine line = Document.GetLineByOffset (curOffset);
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
-				var styleStack = new Stack<ChunkStyle> ();
+				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
 
 				foreach (var chunk in mode.GetChunks (style, line, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
 						continue;
-					var chunkStyle = style.GetChunkStyle (chunk);
+					var chunkStyle = style.GetChunkStyle (chunk.Style);
 					bool setBold = (styleStack.Count > 0 && styleStack.Peek ().FontWeight != chunkStyle.FontWeight) || 
 						chunkStyle.FontWeight != FontWeight.Normal;
 					bool setItalic = (styleStack.Count > 0 && styleStack.Peek ().FontStyle != chunkStyle.FontStyle) || 
@@ -406,7 +412,7 @@ namespace Mono.TextEditor
 						result.Append ("<span");
 						if (useColors) {
 							result.Append (" foreground=\"");
-							result.Append (SyntaxMode.ColorToPangoMarkup (chunkStyle.Foreground));
+							result.Append (SyntaxMode.ColorToPangoMarkup ((Cairo.Color)chunkStyle.Foreground));
 							result.Append ("\"");
 						}
 						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
@@ -1527,7 +1533,7 @@ namespace Mono.TextEditor
 		{
 			SetCaretTo (line, column, true);
 		}
-		
+
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
 			SetCaretTo (line, column, highlight, true);

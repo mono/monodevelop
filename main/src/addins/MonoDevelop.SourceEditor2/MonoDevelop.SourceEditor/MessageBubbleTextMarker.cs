@@ -205,37 +205,37 @@ namespace MonoDevelop.SourceEditor
 		internal Pango.Layout errorCountLayout;
 		List<MessageBubbleCache.LayoutDescriptor> layouts;
 		
-		internal AmbientColor MarkerColor {
+		internal Ide.Editor.Highlighting.AmbientColor MarkerColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorMarker : editor.ColorStyle.MessageBubbleWarningMarker;
 			}
 		}
 
-		internal AmbientColor TagColor {
+		internal Ide.Editor.Highlighting.AmbientColor TagColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorTag : editor.ColorStyle.MessageBubbleWarningTag;
 			}
 		}
 
-		internal AmbientColor TooltipColor {
+		internal Ide.Editor.Highlighting.AmbientColor TooltipColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorTooltip : editor.ColorStyle.MessageBubbleWarningTooltip;
 			}
 		}
 
-		internal AmbientColor LineColor {
+		internal Ide.Editor.Highlighting.AmbientColor LineColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorLine : editor.ColorStyle.MessageBubbleWarningLine;
 			}
 		}
 
-		internal AmbientColor CounterColor {
+		internal Ide.Editor.Highlighting.AmbientColor CounterColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorCounter : editor.ColorStyle.MessageBubbleWarningCounter;
 			}
 		}
 
-		internal AmbientColor IconMarginColor {
+		internal Ide.Editor.Highlighting.AmbientColor IconMarginColor {
 			get {
 				return isError ? editor.ColorStyle.MessageBubbleErrorIconMargin : editor.ColorStyle.MessageBubbleWarningIconMargin;
 			}
@@ -245,7 +245,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!selected)
 				return color;
-			var selectionColor = editor.ColorStyle.SelectedText.Background;
+			var selectionColor = (Cairo.Color)editor.ColorStyle.SelectedText.Background;
 			const double bubbleAlpha = 0.1;
 			return new Cairo.Color (
 				(color.R * bubbleAlpha + selectionColor.R * (1 - bubbleAlpha)), 
@@ -258,7 +258,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!highlighted)
 				return color;
-			var selectionColor = editor.ColorStyle.PlainText.Background;
+			var selectionColor = (Cairo.Color)editor.ColorStyle.PlainText.Background;
 			const double bubbleAlpha = 0.7;
 			return new Cairo.Color (
 				(color.R * bubbleAlpha + selectionColor.R * (1 - bubbleAlpha)), 
@@ -538,7 +538,8 @@ namespace MonoDevelop.SourceEditor
 			cr.Stroke ();
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this) {
 				cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-				cr.SetSourceRGBA (ed.ColorStyle.IndicatorMargin.Color.R, ed.ColorStyle.IndicatorMargin.Color.G, ed.ColorStyle.IndicatorMargin.Color.B, 0.5);
+				var color = (Cairo.Color)ed.ColorStyle.IndicatorMargin.Color;
+				cr.SetSourceRGBA (color.R, color.G, color.B, 0.5);
 				cr.Fill ();
 			}
 		}

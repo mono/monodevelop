@@ -153,7 +153,7 @@ namespace Mono.TextEditor
 			internal List<List<ColoredSegment>> copiedColoredChunks;
 			byte[] copyData;
 
-			internal ColorScheme docStyle;
+			internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme docStyle;
 			ITextEditorOptions options;
 
 			public static readonly TargetEntry[] TargetEntries;

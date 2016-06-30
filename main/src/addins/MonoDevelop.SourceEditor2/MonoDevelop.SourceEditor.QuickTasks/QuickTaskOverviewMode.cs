@@ -709,7 +709,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (lineCache[0].Contains (y))
 					return;
 				lineCache[0].Add (y);
-				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
+				var usageColor = (Cairo.Color)TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
 				HslColor color;
 				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declariton) != 0) {
@@ -756,7 +756,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.MoveTo (0.5, 0);
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.ColorStyle != null) {
-				var col = TextEditor.ColorStyle.PlainText.Background.ToXwtColor ();
+				var col = (Xwt.Drawing.Color)TextEditor.ColorStyle.PlainText.Background;
 				if (!MonoDevelop.Core.Platform.IsWindows) {
 					col.Light *= 0.95;
 				}

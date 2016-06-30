@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Highlighting
 			private set;
 		}
 		
-		public virtual bool GetIsValid (ColorScheme style)
+		public virtual bool GetIsValid (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
 		{
 			return style.GetChunkStyle (Color) != null;
 		}
@@ -165,7 +165,7 @@ namespace Mono.TextEditor.Highlighting
 			return false;
 		}
 		
-		public override bool GetIsValid (ColorScheme style)
+		public override bool GetIsValid (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
 		{
 			return true;
 		}

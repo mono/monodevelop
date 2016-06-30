@@ -47,7 +47,7 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 		
-		public virtual bool GetIsValid (ColorScheme style)
+		public virtual bool GetIsValid (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
 		{
 			return style.GetChunkStyle (Color) != null;
 		}

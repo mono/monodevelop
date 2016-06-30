@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Highlighting
 	static class SyntaxModeService
 	{
 		static Dictionary<string, ISyntaxModeProvider> syntaxModes = new Dictionary<string, ISyntaxModeProvider> ();
-		static Dictionary<string, ColorScheme> styles      = new Dictionary<string, ColorScheme> ();
+		static Dictionary<string, MonoDevelop.Ide.Editor.Highlighting.ColorScheme> styles      = new Dictionary<string, MonoDevelop.Ide.Editor.Highlighting.ColorScheme> ();
 		static Dictionary<string, IStreamProvider> syntaxModeLookup = new Dictionary<string, IStreamProvider> ();
 		static Dictionary<string, IStreamProvider> styleLookup      = new Dictionary<string, IStreamProvider> ();
 
@@ -67,7 +67,7 @@ namespace Mono.TextEditor.Highlighting
 		}
 
 
-		public static ColorScheme GetColorStyle (string name)
+		public static MonoDevelop.Ide.Editor.Highlighting.ColorScheme GetColorStyle (string name)
 		{
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
@@ -88,7 +88,7 @@ namespace Mono.TextEditor.Highlighting
 			return null;
 		}
 		
-		public static IStreamProvider GetProvider (ColorScheme style)
+		public static IStreamProvider GetProvider (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
 		{
 			if (styleLookup.ContainsKey (style.Name)) 
 				return styleLookup[style.Name];
@@ -117,16 +117,16 @@ namespace Mono.TextEditor.Highlighting
 				if (provider is UrlStreamProvider) {
 					var usp = provider as UrlStreamProvider;
 					if (usp.Url.EndsWith (".vssettings", StringComparison.Ordinal)) {
-						styles [name] = ColorScheme.Import (usp.Url, stream);
+						styles [name] = MonoDevelop.Ide.Editor.Highlighting.ColorScheme.Import (usp.Url, stream);
 					} else {
-						styles [name] = ColorScheme.LoadFrom (stream);
+						styles [name] = MonoDevelop.Ide.Editor.Highlighting.ColorScheme.LoadFrom (stream);
 					}
 					styles [name].FileName = usp.Url;
 				} else {
-					styles [name] = ColorScheme.LoadFrom (stream);
+					styles [name] = MonoDevelop.Ide.Editor.Highlighting.ColorScheme.LoadFrom (stream);
 				}
 				styleLookup.Remove (name); 
-			} catch (StyleImportException)  {
+			} catch (MonoDevelop.Ide.Editor.Highlighting.StyleImportException)  {
 				throw;
 			} catch (Exception e) {
 				throw new IOException ("Error while loading style :" + name, e);
@@ -188,7 +188,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 			styleLookup.Clear ();
 			bool result = true;
-			foreach (KeyValuePair<string, ColorScheme> style in styles) {
+			foreach (KeyValuePair<string, MonoDevelop.Ide.Editor.Highlighting.ColorScheme> style in styles) {
 				var checkedModes = new HashSet<ISyntaxModeProvider> ();
 				foreach (var mode in syntaxModes) {
 					if (checkedModes.Contains (mode.Value))
@@ -203,7 +203,7 @@ namespace Mono.TextEditor.Highlighting
 			return result;
 		}
 		
-		public static void Remove (ColorScheme style)
+		public static void Remove (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
 		{
 			if (styleLookup.ContainsKey (style.Name))
 				styleLookup.Remove (style.Name);
@@ -526,7 +526,7 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 		
-		public static void AddStyle (ColorScheme style)
+		public static void AddStyle (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
 		{
 			styles [style.Name] = style;
 		}
@@ -554,7 +554,7 @@ namespace Mono.TextEditor.Highlighting
 			semanticRules.Add (Tuple.Create (mime, ruleName, rule));
 		}
 
-		public static ColorScheme DefaultColorStyle {
+		public static MonoDevelop.Ide.Editor.Highlighting.ColorScheme DefaultColorStyle {
 			get {
 				var defaultStyle = GetColorStyle (TextEditorOptions.DefaultColorStyle);
 				if (defaultStyle == null)

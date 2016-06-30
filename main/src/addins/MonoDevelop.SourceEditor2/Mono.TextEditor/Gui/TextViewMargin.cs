@@ -110,7 +110,7 @@ namespace Mono.TextEditor
 			get { return textEditor.Caret; }
 		}
 
-		internal Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
+		internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme ColorStyle {
 			get { return this.textEditor.ColorStyle; }
 		}
 
@@ -797,7 +797,7 @@ namespace Mono.TextEditor
 
 		Dictionary<DocumentLine, LayoutDescriptor> layoutDict = new Dictionary<DocumentLine, LayoutDescriptor> ();
 		
-		internal LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
+		internal LayoutWrapper CreateLinePartLayout (DocumentLine line, int logicalRulerColumn, int offset, int length, int selectionStart, int selectionEnd)
 		{
 			textEditor.CheckUIThread ();
 			bool containsPreedit = textEditor.ContainsPreedit (offset, length);
@@ -823,7 +823,7 @@ namespace Mono.TextEditor
 				wrapper.Layout.Width = (int)((textEditor.Allocation.Width - XOffset - TextStartPosition) * Pango.Scale.PangoScale);
 			}
 			StringBuilder textBuilder = new StringBuilder ();
-			var chunks = GetCachedChunks (mode, Document, textEditor.ColorStyle, line, offset, length);
+			var chunks = GetCachedChunks (Document, textEditor.ColorStyle, line, offset, length);
 			var markers = TextDocument.OrderTextSegmentMarkersByInsertion (Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)).ToArray ();
 			foreach (var marker in markers) {
 				var chunkMarker = marker as IChunkMarker;
@@ -863,10 +863,10 @@ namespace Mono.TextEditor
 			sw.Start ();
 			try {
 				restart:
-				foreach (Chunk chunk in chunks) {
+				foreach (var chunk in chunks) {
 					if (!disableHighlighting && sw.ElapsedMilliseconds > 50) {
 						chunks.Clear ();
-						chunks.Add (new Chunk (line.Offset, line.Length, "Plain Text"));
+						chunks.Add (new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (line.Offset, line.Length, ""));
 						disableHighlighting = true;
 						atts.Dispose ();
 						atts = new FastPangoAttrList ();
@@ -875,7 +875,8 @@ namespace Mono.TextEditor
 						oldEndIndex = 0;
 						goto restart;
 					}
-					ChunkStyle chunkStyle = chunk != null ? textEditor.ColorStyle.GetChunkStyle (chunk) : null;
+					var theme = textEditor.GetTextEditorData ().EditorTheme;
+					var chunkStyle = theme.GetChunkStyle(chunk.ColorStyleKey);
 					foreach (TextLineMarker marker in line.Markers)
 						chunkStyle = marker.GetStyle (chunkStyle);
 
@@ -895,7 +896,7 @@ namespace Mono.TextEditor
 							}
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-							var color = ColorStyle.GetForeground (chunkStyle);
+							var color = (Cairo.Color)ColorStyle.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
 								if (chunkMarker == null)
@@ -906,7 +907,7 @@ namespace Mono.TextEditor
 
 							if (!chunkStyle.TransparentBackground && GetPixel (ColorStyle.PlainText.Background) != GetPixel (chunkStyle.Background)) {
 								wrapper.AddBackground (chunkStyle.Background, (int)si, (int)ei);
-							} else if (chunk.SpanStack != null && ColorStyle != null) {
+							} /*else if (chunk.SpanStack != null && ColorStyle != null) {
 								foreach (var span in chunk.SpanStack) {
 									if (span == null || string.IsNullOrEmpty (span.Color))
 										continue;
@@ -916,7 +917,7 @@ namespace Mono.TextEditor
 										break;
 									}
 								}
-							}
+							}*/
 						}, delegate (int start, int end) {
 							if (containsPreedit) {
 								if (textEditor.preeditOffset < start)
@@ -926,7 +927,7 @@ namespace Mono.TextEditor
 							}
 							var si = TranslateToUTF8Index (lineChars, (uint)(startIndex + start - chunk.Offset), ref curIndex, ref byteIndex);
 							var ei = TranslateToUTF8Index (lineChars, (uint)(startIndex + end - chunk.Offset), ref curIndex, ref byteIndex);
-							var color = !SelectionColor.TransparentForeground ? SelectionColor.Foreground : ColorStyle.GetForeground (chunkStyle);
+							var color = !SelectionColor.TransparentForeground ? (Cairo.Color)SelectionColor.Foreground : (Cairo.Color)ColorStyle.GetForeground (chunkStyle);
 							foreach (var marker in markers) {
 								var chunkMarker = marker as IChunkMarker;
 								if (chunkMarker == null)
@@ -1067,12 +1068,12 @@ namespace Mono.TextEditor
 
 		class ChunkDescriptor : LineDescriptor
 		{
-			public List<Chunk> Chunk {
+			public List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> Chunk {
 				get;
 				private set;
 			}
 
-			public ChunkDescriptor (DocumentLine line, int offset, int length, List<Chunk> chunk) : base(line, offset, length)
+			public ChunkDescriptor (DocumentLine line, int offset, int length, List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunk) : base(line, offset, length)
 			{
 				this.Chunk = chunk;
 			}
@@ -1080,7 +1081,7 @@ namespace Mono.TextEditor
 
 		Dictionary<DocumentLine, ChunkDescriptor> chunkDict = new Dictionary<DocumentLine, ChunkDescriptor> ();
 
-		List<Chunk> GetCachedChunks (ISyntaxMode mode, TextDocument doc, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line, int offset, int length)
+		List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetCachedChunks (TextDocument doc, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line, int offset, int length)
 		{
 			ChunkDescriptor descriptor;
 			if (chunkDict.TryGetValue (line, out descriptor)) {
@@ -1090,7 +1091,7 @@ namespace Mono.TextEditor
 				chunkDict.Remove (line);
 			}
 
-			var chunks = mode.GetChunks (style, line, offset, length).ToList ();
+			var chunks = doc.SyntaxHighlighting.GetColoredSegments (line, offset, length).ToList ();
 			descriptor = new ChunkDescriptor (line, offset, length, chunks);
 			chunkDict [line] = descriptor;
 			return chunks;
@@ -1193,7 +1194,7 @@ namespace Mono.TextEditor
 				set;
 			}
 
-			internal IEnumerable<Chunk> Chunks {
+			internal List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> Chunks {
 				get;
 				set;
 			}
@@ -1289,8 +1290,8 @@ namespace Mono.TextEditor
 			}
 		}
 
-		ChunkStyle selectionColor;
-		ChunkStyle SelectionColor {
+		MonoDevelop.Ide.Editor.Highlighting.ChunkStyle selectionColor;
+		MonoDevelop.Ide.Editor.Highlighting.ChunkStyle SelectionColor {
 			get {
 				if (selectionColor == null)
 					selectionColor = textEditor.HasFocus ? ColorStyle.SelectedText : ColorStyle.SelectedInactiveText;
@@ -1298,8 +1299,8 @@ namespace Mono.TextEditor
 			}
 		}
 
-		AmbientColor currentLineColor;
-		AmbientColor CurrentLineColor {
+		MonoDevelop.Ide.Editor.Highlighting.AmbientColor currentLineColor;
+		MonoDevelop.Ide.Editor.Highlighting.AmbientColor CurrentLineColor {
 			get {
 				if (currentLineColor == null)
 					currentLineColor = textEditor.HasFocus ? ColorStyle.LineMarker : ColorStyle.LineMarkerInactive;
@@ -1307,9 +1308,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal LayoutWrapper CreateLinePartLayout (ISyntaxMode mode, DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
+		internal LayoutWrapper CreateLinePartLayout (DocumentLine line, int offset, int length, int selectionStart, int selectionEnd)
 		{
-			return CreateLinePartLayout (mode, line, -1, offset, length, selectionStart, selectionEnd);
+			return CreateLinePartLayout (line, -1, offset, length, selectionStart, selectionEnd);
 		}
 
 		#endregion
@@ -1328,7 +1329,7 @@ namespace Mono.TextEditor
 
 			uint curIndex = 0, byteIndex = 0;
 			bool first = true, oldSelected = false;
-			var curchunk = layout.Chunks != null ? layout.Chunks.FirstOrDefault () : null;
+			var curchunk = 0;
 
 			var dotThickness = textEditor.Options.Zoom * 2;
 			var textEditorWidth = textEditor.Allocation.Width;
@@ -1380,13 +1381,13 @@ namespace Mono.TextEditor
 				double xpos2 = x + posX / Pango.Scale.PangoScale;
 				var col = new Cairo.Color (0, 0, 0);
 				if (SelectionColor.TransparentForeground) {
-					while (curchunk != null && curchunk.EndOffset < offset + i)
-						curchunk = curchunk.Next;
-					if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "Plain Text") {
+					while (layout.Chunks [curchunk].Offset < offset + i)
+						curchunk++;
+					/*if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "Plain Text") {
 						var chunkStyle = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color);
 						if (chunkStyle != null)
 							col = ColorStyle.GetForeground (chunkStyle);
-					} else {
+					} else */{
 						col = foregroundColor;
 					}
 				} else {
@@ -1427,8 +1428,7 @@ namespace Mono.TextEditor
 
 		public LayoutWrapper GetLayout (DocumentLine line)
 		{
-			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
-			return CreateLinePartLayout (mode, line, line.Offset, line.Length, -1, -1);
+			return CreateLinePartLayout (line, line.Offset, line.Length, -1, -1);
 		}
 
 		public void DrawCaretLineMarker (Cairo.Context cr, double xPos, double y, double width, double lineHeight)
@@ -1507,7 +1507,6 @@ namespace Mono.TextEditor
 
 		void DrawLinePart (Cairo.Context cr, DocumentLine line, int lineNumber, int logicalRulerColumn, int offset, int length, ref double position, ref bool isSelectionDrawn, double y, double maxX, double _lineHeight)
 		{
-			ISyntaxMode mode = Document.SyntaxMode != null && textEditor.Options.EnableSyntaxHighlighting ? Document.SyntaxMode : new SyntaxMode (Document);
 			int selectionStartOffset;
 			int selectionEndOffset;
 			if (this.HideSelection) {
@@ -1517,7 +1516,7 @@ namespace Mono.TextEditor
 			}
 
 			// ---- new renderer
-			LayoutWrapper layout = CreateLinePartLayout (mode, line, logicalRulerColumn, offset, length, selectionStartOffset, selectionEndOffset);
+			LayoutWrapper layout = CreateLinePartLayout (line, logicalRulerColumn, offset, length, selectionStartOffset, selectionEndOffset);
 			int lineOffset = line.Offset;
 			double width = layout.Width;
 			double xPos = position;
@@ -1811,7 +1810,7 @@ namespace Mono.TextEditor
 			rect = eolMarkerLayoutRect [index];
 			cr.Save ();
 			cr.Translate (x, y + System.Math.Max (0, LineHeight - rect.Height - 1));
-			var col = ColorStyle.PlainText.Foreground;
+			var col = (Cairo.Color)ColorStyle.PlainText.Foreground;
 
 			if (selected && !SelectionColor.TransparentForeground) {
 				col = SelectionColor.Foreground;
@@ -1832,6 +1831,11 @@ namespace Mono.TextEditor
 		static internal ulong GetPixel (Color color)
 		{
 			return (((ulong)color.Red) << 32) | (((ulong)color.Green) << 16) | ((ulong)color.Blue);
+		}
+
+		static internal ulong GetPixel (HslColor color)
+		{
+			return GetPixel ((Color)color);
 		}
 
 		static internal ulong GetPixel (Cairo.Color color)
@@ -2629,7 +2633,7 @@ namespace Mono.TextEditor
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
-			defaultBgColor = Document.IsReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
+			defaultBgColor = Document.IsReadOnly ? (Cairo.Color)ColorStyle.BackgroundReadOnly.Color : (Cairo.Color)ColorStyle.PlainText.Background;
 			var startLineNr = lineNr;
 			// Draw the default back color for the whole line. Colors other than the default
 			// background will be drawn when rendering the text chunks.
@@ -2956,7 +2960,7 @@ namespace Mono.TextEditor
 						int foldOffset = folding.StartLine.Offset + folding.Column - 1;
 						if (foldOffset < offset)
 							continue;
-						layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
+						layoutWrapper = margin.CreateLinePartLayout (line, logicalRulerColumn, line.Offset, foldOffset - offset, -1, -1);
 						done |= ConsumeLayout ((int)(xp - xPos), (int)(yp - yPos));
 						if (done)
 							break;
@@ -2996,7 +3000,7 @@ namespace Mono.TextEditor
 						}
 					}
 					if (!done) {
-						layoutWrapper = margin.CreateLinePartLayout (mode, line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
+						layoutWrapper = margin.CreateLinePartLayout (line, logicalRulerColumn, offset, line.Offset + line.Length - offset, -1, -1);
 						if (!ConsumeLayout ((int)(xp - xPos), (int)(yp - yPos))) {
 							if (endAtEol)
 								return DocumentLocation.Empty; 

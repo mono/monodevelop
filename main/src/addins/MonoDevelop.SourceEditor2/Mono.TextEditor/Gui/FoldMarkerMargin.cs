@@ -237,7 +237,7 @@ namespace Mono.TextEditor
 			foldLineGC = editor.ColorStyle.FoldLineColor.Color;
 			foldLineHighlightedGC = editor.ColorStyle.PlainText.Foreground;
 			
-			HslColor hslColor = new HslColor (editor.ColorStyle.PlainText.Background);
+			HslColor hslColor = editor.ColorStyle.PlainText.Background;
 			double brightness = HslColor.Brightness (hslColor);
 			if (brightness < 0.5) {
 				hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25;

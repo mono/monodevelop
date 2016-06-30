@@ -78,11 +78,11 @@ namespace MonoDevelop.SourceEditor
 			@from = Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				Mono.TextEditor.Highlighting.AmbientColor colorStyle;
+				MonoDevelop.Ide.Editor.Highlighting.AmbientColor colorStyle;
 				if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write ||
 					(usage.UsageType & ReferenceUsageType.Declariton) == ReferenceUsageType.Declariton) {
 					colorStyle = editor.ColorStyle.ChangingUsagesRectangle;
-					if (colorStyle.Color.A == 0.0)
+					if (colorStyle.Color.Alpha == 0.0)
 						colorStyle = editor.ColorStyle.UsagesRectangle;
 				} else {
 					colorStyle = editor.ColorStyle.UsagesRectangle;

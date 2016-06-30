@@ -62,7 +62,7 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		internal virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal virtual MonoDevelop.Ide.Editor.Highlighting.ChunkStyle GetStyle (MonoDevelop.Ide.Editor.Highlighting.ChunkStyle baseStyle)
 		{
 			return baseStyle;
 		}
@@ -70,9 +70,9 @@ namespace Mono.TextEditor
 
 	internal interface IChunkMarker
 	{
-		void TransformChunks (List<Chunk> chunks);
+		void TransformChunks (List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunks);
 
-		void ChangeForeColor (MonoTextEditor editor, Chunk chunk, ref Cairo.Color color);
+		void ChangeForeColor (MonoTextEditor editor, MonoDevelop.Ide.Editor.Highlighting.ColoredSegment chunk, ref Cairo.Color color);
 	}
 
 	class UnderlineTextSegmentMarker : TextSegmentMarker
@@ -158,7 +158,7 @@ namespace Mono.TextEditor
 			if (selected) {
 				cr.SetSourceColor (editor.ColorStyle.SelectedText.Foreground);
 			} else {
-				cr.SetSourceColor (ColorName == null ? Color : editor.ColorStyle.GetChunkStyle (ColorName).Foreground);
+				cr.SetSourceColor (ColorName == null ? (Cairo.Color)Color : (Cairo.Color)editor.ColorStyle.GetChunkStyle (ColorName).Foreground);
 			}
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);

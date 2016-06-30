@@ -57,7 +57,7 @@ namespace Mono.TextEditor.Highlighting
 		/// <param name='length'>
 		/// The length of the text converted to chunks.
 		/// </param>
-		IEnumerable<Chunk> GetChunks (ColorScheme style, DocumentLine line, int offset, int length);
+		IEnumerable<Chunk> GetChunks (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line, int offset, int length);
 	}
 }
 

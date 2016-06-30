@@ -255,5 +255,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				LoggingService.LogError ("Can't lookup Mono.TextEditor assembly. Default styles won't be loaded.");
 			}
 		}
+
+		static EditorTheme editorTheme;
+
+		public static EditorTheme GetEditorTheme (string themeName)
+		{
+			if (editorTheme != null)
+				return editorTheme;
+			return editorTheme = TextMateFormat.LoadEditorTheme ("/home/mkrueger/b/Monokai.tmTheme");
+		}
 	}
 }

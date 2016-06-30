@@ -679,8 +679,8 @@ namespace Mono.TextEditor
 				return textArea.EolMarker;
 			}
 		}
-		
-		internal Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
+
+		internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme ColorStyle {
 			get {
 				return textArea.ColorStyle;
 			}

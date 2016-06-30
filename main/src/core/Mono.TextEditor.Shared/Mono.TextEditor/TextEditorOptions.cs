@@ -554,7 +554,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual ColorScheme GetColorStyle ()
+		public virtual MonoDevelop.Ide.Editor.Highlighting.ColorScheme GetColorStyle ()
 		{
 			return SyntaxModeService.GetColorStyle (ColorScheme);
 		}

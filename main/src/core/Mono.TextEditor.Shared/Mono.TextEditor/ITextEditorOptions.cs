@@ -97,7 +97,7 @@ namespace Mono.TextEditor
 		bool GenerateFormattingUndoStep { get; set; }
 		event EventHandler ZoomChanged;
 
-		ColorScheme GetColorStyle ();
+		MonoDevelop.Ide.Editor.Highlighting.ColorScheme GetColorStyle ();
 
 		event EventHandler Changed;
 	}

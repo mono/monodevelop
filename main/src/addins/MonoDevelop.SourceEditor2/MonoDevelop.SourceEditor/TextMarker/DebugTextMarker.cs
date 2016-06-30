@@ -86,11 +86,11 @@ namespace MonoDevelop.SourceEditor
 
 	class DebugTextMarker : TextSegmentMarker, IChunkMarker
 	{
-		readonly Func<MonoTextEditor, AmbientColor> background;
-		readonly Func<MonoTextEditor, ChunkStyle> forground;
+		readonly Func<MonoTextEditor, Ide.Editor.Highlighting.AmbientColor> background;
+		readonly Func<MonoTextEditor, MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> forground;
 		MonoTextEditor editor;
 
-		public DebugTextMarker (int offset, int length, Func<MonoTextEditor, AmbientColor> background, Func<MonoTextEditor, ChunkStyle> forground = null)
+		public DebugTextMarker (int offset, int length, Func<MonoTextEditor, Ide.Editor.Highlighting.AmbientColor> background, Func<MonoTextEditor, MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> forground = null)
 			: base (offset, length)
 		{
 			this.forground = forground;
@@ -148,12 +148,12 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		internal override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal override MonoDevelop.Ide.Editor.Highlighting.ChunkStyle GetStyle (MonoDevelop.Ide.Editor.Highlighting.ChunkStyle baseStyle)
 		{
 			if (baseStyle == null)
 				return null;
 
-			var style = new ChunkStyle (baseStyle);
+			var style = new MonoDevelop.Ide.Editor.Highlighting.ChunkStyle (baseStyle);
 			if (forground != null && editor != null) {
 				style.Foreground = forground(editor).Foreground;
 			}
@@ -162,7 +162,7 @@ namespace MonoDevelop.SourceEditor
 
 		#region IChunkMarker implementation
 
-		void IChunkMarker.TransformChunks (List<Chunk> chunks)
+		void IChunkMarker.TransformChunks (List<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> chunks)
 		{
 			if (forground == null) {
 				return;
@@ -176,16 +176,15 @@ namespace MonoDevelop.SourceEditor
 				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
 					return;
 				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
-					var newChunk = new Chunk (chunk.Offset, markerStart - chunk.Offset, chunk.Style);
+					var newChunk = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ColorStyleKey);
+					chunks [i] = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset + newChunk.Length, chunk.Length - newChunk.Length, chunk.ColorStyleKey);
 					chunks.Insert (i, newChunk);
-					chunk.Offset += newChunk.Length;
-					chunk.Length -= newChunk.Length;
 					continue;
 				}
 			}
 		}
 
-		void IChunkMarker.ChangeForeColor (MonoTextEditor editor, Chunk chunk, ref Cairo.Color color)
+		void IChunkMarker.ChangeForeColor (MonoTextEditor editor, MonoDevelop.Ide.Editor.Highlighting.ColoredSegment chunk, ref Cairo.Color color)
 		{
 			if (forground == null || editor == null) {
 				return;

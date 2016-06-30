@@ -27,12 +27,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\SyntaxModeChangeEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor\Document\TextDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Vi\ViActions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\AmbientColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Chunk.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ChunkStyle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\CloneableStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ColorDescriptionAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ColorScheme.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\IStreamProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ISyntaxMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />

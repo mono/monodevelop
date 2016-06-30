@@ -45,7 +45,7 @@ namespace Mono.TextEditor.Utils
 			return GenerateHtml (ColoredSegment.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
 		}
 
-		internal static string GenerateHtml (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
+		internal static string GenerateHtml (List<List<ColoredSegment>> chunks, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, ITextEditorOptions options)
 		{
 			var htmlText = new StringBuilder ();
 			htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");

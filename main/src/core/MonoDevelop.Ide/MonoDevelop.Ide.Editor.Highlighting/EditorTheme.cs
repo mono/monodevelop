@@ -28,6 +28,7 @@ using MonoDevelop.Components;
 using Xwt.Drawing;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -111,6 +112,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				throw new ArgumentNullException (nameof (settings));
 			Name = name;
 			this.settings = settings;
+		}
+
+		HslColor GetColor (string key, string colorName)
+		{
+			HslColor result = default(HslColor);
+			foreach (var setting in settings) {
+				if (setting.Scopes.Count == 0 || setting.Scopes.Any (scope => key.StartsWith (scope, StringComparison.Ordinal))) {
+					HslColor tryC;
+					if (setting.TryGetColor (key, out tryC))
+						result = tryC;
+				}
+			}
+			return result;
+		}
+
+		internal ChunkStyle GetChunkStyle (string colorStyleKey)
+		{
+			return new ChunkStyle () {
+				Name = colorStyleKey,
+				Foreground = GetColor (ThemeSettingColors.Foreground, colorStyleKey),
+				Background = GetColor (ThemeSettingColors.Background, colorStyleKey)
+			};
 		}
 	}
 }

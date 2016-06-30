@@ -1824,8 +1824,17 @@ namespace Mono.TextEditor
 				ReplaceText (offset, 1, value.ToString ());
 			}
 		}
+		MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting syntaxHighlighting;
 
-		public MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting SyntaxHighlighting { get; set; }
+		public MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting SyntaxHighlighting {
+			get {
+				return syntaxHighlighting ?? MonoDevelop.Ide.Editor.Highlighting.DefaultSyntaxHighlighting.Instance;
+			}
+
+			set {
+				syntaxHighlighting = value;
+			}
+		}
 
 		public class SnapshotDocument : TextDocument
 		{

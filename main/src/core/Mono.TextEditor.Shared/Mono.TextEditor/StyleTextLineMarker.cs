@@ -91,9 +91,9 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		protected virtual ChunkStyle CreateStyle (ChunkStyle baseStyle, Cairo.Color color, Cairo.Color bgColor)
+		protected virtual MonoDevelop.Ide.Editor.Highlighting.ChunkStyle CreateStyle (MonoDevelop.Ide.Editor.Highlighting.ChunkStyle baseStyle, Cairo.Color color, Cairo.Color bgColor)
 		{
-			var style = new ChunkStyle (baseStyle);
+			var style = new MonoDevelop.Ide.Editor.Highlighting.ChunkStyle (baseStyle);
 			if ((IncludedStyles & StyleFlag.Color) != 0)
 				style.Foreground = color;
 			
@@ -109,7 +109,7 @@ namespace Mono.TextEditor
 			return style;
 		}
 		
-		internal override ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal override MonoDevelop.Ide.Editor.Highlighting.ChunkStyle GetStyle (MonoDevelop.Ide.Editor.Highlighting.ChunkStyle baseStyle)
 		{
 			if (baseStyle == null || IncludedStyles == StyleFlag.None)
 				return baseStyle;

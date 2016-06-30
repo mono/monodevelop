@@ -104,6 +104,13 @@ namespace MonoDevelop.Components
 			return new Cairo.Color (r, g, b, hsl.Alpha);
 		}
 
+		public static implicit operator Xwt.Drawing.Color (HslColor hsl)
+		{
+			double r = 0, g = 0, b = 0;
+			hsl.ToRgb (out r, out g, out b);
+			return new Xwt.Drawing.Color (r, g, b, hsl.Alpha);
+		}
+
 		public static implicit operator HslColor (Color color)
 		{
 			return new HslColor (color);

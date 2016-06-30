@@ -36,6 +36,23 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	public class StyleImportException : Exception
+	{
+		public ImportFailReason Reason { get; private set; }
+
+		public StyleImportException (ImportFailReason reason)
+		{
+			Reason = reason;
+		}
+
+		public enum ImportFailReason
+		{
+			Unknown,
+			NoValidColorsFound
+		}
+
+	}
+
 	public sealed class ColorScheme
 	{
 		public static string DefaultColorStyle = "Light";
@@ -664,29 +681,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public ChunkStyle RegexAltEscapeCharacter { get; private set; }
 		#endregion
 
-		internal class PropertyDecsription
+		internal class PropertyDescription
 		{
 			public readonly PropertyInfo Info;
 			public readonly ColorDescriptionAttribute Attribute;
 
-			public PropertyDecsription (PropertyInfo info, ColorDescriptionAttribute attribute)
+			public PropertyDescription (PropertyInfo info, ColorDescriptionAttribute attribute)
 			{
 				this.Info = info;
 				this.Attribute = attribute;
 			}
 		}
 
-		static Dictionary<string, PropertyDecsription> textColors = new Dictionary<string, PropertyDecsription> ();
+		static Dictionary<string, PropertyDescription> textColors = new Dictionary<string, PropertyDescription> ();
 
-		internal static IEnumerable<PropertyDecsription> TextColors {
+		internal static IEnumerable<PropertyDescription> TextColors {
 			get {
 				return textColors.Values;
 			}
 		}
 
-		static Dictionary<string, PropertyDecsription> ambientColors = new Dictionary<string, PropertyDecsription> ();
+		static Dictionary<string, PropertyDescription> ambientColors = new Dictionary<string, PropertyDescription> ();
 
-		internal static IEnumerable<PropertyDecsription> AmbientColors {
+		internal static IEnumerable<PropertyDescription> AmbientColors {
 			get {
 				return ambientColors.Values;
 			}
@@ -698,9 +715,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (description == null)
 					continue;
 				if (property.PropertyType == typeof (ChunkStyle)) {
-					textColors.Add (description.Name, new PropertyDecsription (property, description));
+					textColors.Add (description.Name, new PropertyDescription (property, description));
 				} else {
-					ambientColors.Add (description.Name, new PropertyDecsription (property, description));
+					ambientColors.Add (description.Name, new PropertyDescription (property, description));
 				}
 			}
 		}
@@ -741,7 +758,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			if (color == null)
 				return GetChunkStyle ("Plain Text");
-			PropertyDecsription val;
+			PropertyDescription val;
 			if (!textColors.TryGetValue (color, out val)) {
 				Console.WriteLine ("Chunk style : " + color + " is undefined.");
 				return GetChunkStyle ("Plain Text");
@@ -807,7 +824,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			foreach (var colorElement in root.XPathSelectElements("//colors/*")) {
 				var color = AmbientColor.Create (colorElement, palette);
-				PropertyDecsription info;
+				PropertyDescription info;
 				if (!ambientColors.TryGetValue (color.Name, out info)) {
 					Console.WriteLine ("Ambient color:" + color.Name + " not found.");
 					continue;
@@ -817,7 +834,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			foreach (var textColorElement in root.XPathSelectElements("//text/*")) {
 				var color = ChunkStyle.Create (textColorElement, palette);
-				PropertyDecsription info;
+				PropertyDescription info;
 				if (!textColors.TryGetValue (color.Name, out info)) {
 					Console.WriteLine ("Text color:" + color.Name + " not found.");
 					continue;
@@ -1040,7 +1057,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (!found && !importedAmbientColors.Contains (vsc.Name))
 					Console.WriteLine (vsc.Name + " not imported!");
 			}
-
+			if (result.PlainText == null)
+				throw new StyleImportException (StyleImportException.ImportFailReason.NoValidColorsFound);
+			
 			result.IndentationGuide = new AmbientColor ();
 			result.IndentationGuide.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.3)));
 

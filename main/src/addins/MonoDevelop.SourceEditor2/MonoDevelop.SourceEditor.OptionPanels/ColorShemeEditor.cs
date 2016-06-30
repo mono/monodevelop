@@ -36,8 +36,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class ColorShemeEditor : Gtk.Dialog
 	{
 		MonoTextEditor textEditor;
-		ColorScheme colorSheme;
-		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ColorScheme.PropertyDescription), typeof(object));
+		Ide.Editor.Highlighting.ColorScheme colorSheme;
+		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(Ide.Editor.Highlighting.ColorScheme.PropertyDescription), typeof(object));
 		string fileName;
 		HighlightingPanel panel;
 
@@ -75,12 +75,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void SyntaxCellRenderer (Gtk.CellLayout cell_layout, Gtk.CellRenderer cell, Gtk.TreeModel tree_model, Gtk.TreeIter iter)
 		{
 			var renderer = (Gtk.CellRendererText)cell;
-			var data = (ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
+			var data = (Ide.Editor.Highlighting.ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
 			string markup = GLib.Markup.EscapeText (data.Attribute.Name);
 			renderer.Markup = markup;
 		}
 
-		void ApplyStyle (ColorScheme sheme)
+		void ApplyStyle (Ide.Editor.Highlighting.ColorScheme sheme)
 		{
 			sheme.Name = entryName.Text;
 			sheme.Description = entryDescription.Text;
@@ -88,7 +88,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (colorStore.GetIterFirst (out iter)) {
 				do {
-					var data = (ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
+					var data = (Ide.Editor.Highlighting.ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
 					var style = colorStore.GetValue (iter, 2);
 					data.Info.SetValue (sheme, style, null);
 				} while (colorStore.IterNext (ref iter));
@@ -133,10 +133,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			var o = colorStore.GetValue (iter, 2);
 
-			if (o is ChunkStyle) {
-				SetChunkStyle (iter, (ChunkStyle)o);
-			} else if (o is AmbientColor) {
-				SetAmbientColor (iter, (AmbientColor)o);
+			if (o is Ide.Editor.Highlighting.ChunkStyle) {
+				SetChunkStyle (iter, (Ide.Editor.Highlighting.ChunkStyle)o);
+			} else if (o is Ide.Editor.Highlighting.AmbientColor) {
+				SetAmbientColor (iter, (Ide.Editor.Highlighting.AmbientColor)o);
 			}
 		}
 
@@ -145,9 +145,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			return new Cairo.Color (button.Color.Red / (double)ushort.MaxValue, button.Color.Green / (double)ushort.MaxValue, button.Color.Blue / (double)ushort.MaxValue, button.Alpha / (double)ushort.MaxValue);
 		}
 
-		void SetAmbientColor (Gtk.TreeIter iter, AmbientColor oldStyle)
+		void SetAmbientColor (Gtk.TreeIter iter, Ide.Editor.Highlighting.AmbientColor oldStyle)
 		{
-			var newStyle = new AmbientColor ();
+			var newStyle = new Ide.Editor.Highlighting.AmbientColor ();
 			newStyle.Color = GetColorFromButton (colorbuttonPrimary);
 			newStyle.SecondColor = GetColorFromButton (colorbuttonSecondary);
 
@@ -162,9 +162,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.textEditor.QueueDraw ();
 		}
 
-		void SetChunkStyle (Gtk.TreeIter iter, ChunkStyle oldStyle)
+		void SetChunkStyle (Gtk.TreeIter iter, MonoDevelop.Ide.Editor.Highlighting.ChunkStyle oldStyle)
 		{
-			var newStyle = new ChunkStyle (oldStyle);
+			var newStyle = new MonoDevelop.Ide.Editor.Highlighting.ChunkStyle (oldStyle);
 			newStyle.Foreground = GetColorFromButton (colorbuttonFg);
 			newStyle.Background =GetColorFromButton (colorbuttonBg);
 
@@ -202,11 +202,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (!this.treeviewColors.Selection.GetSelected (out iter))
 				return;
 			var o = colorStore.GetValue (iter, 2);
-			if (o is ChunkStyle)
-				SelectChunkStyle (iter, (ChunkStyle)o);
+			if (o is Ide.Editor.Highlighting.ChunkStyle)
+				SelectChunkStyle (iter, (Ide.Editor.Highlighting.ChunkStyle)o);
 
-			if (o is AmbientColor)
-				SelectAmbientColor (iter, (AmbientColor)o);
+			if (o is Ide.Editor.Highlighting.AmbientColor)
+				SelectAmbientColor (iter, (Ide.Editor.Highlighting.AmbientColor)o);
 		}
 
 		void SetColorToButton (ColorButton button, Cairo.Color color)
@@ -215,7 +215,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			button.Alpha = (ushort)(color.A * ushort.MaxValue);
 		}
 
-		void SelectAmbientColor (TreeIter iter, AmbientColor ambientColor)
+		void SelectAmbientColor (TreeIter iter, Ide.Editor.Highlighting.AmbientColor ambientColor)
 		{
 			notebookColorChooser.Page = 1;
 			SetColorToButton (colorbuttonPrimary, ambientColor.Color);
@@ -225,7 +225,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			colorbuttonBorder.Sensitive = ambientColor.HasBorderColor;
 		}
 
-		void SelectChunkStyle (TreeIter iter, ChunkStyle chunkStyle)
+		void SelectChunkStyle (TreeIter iter, MonoDevelop.Ide.Editor.Highlighting.ChunkStyle chunkStyle)
 		{
 			notebookColorChooser.Page = 0;
 			SetColorToButton (colorbuttonFg, chunkStyle.Foreground);
@@ -243,7 +243,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.checkbuttonItalic.Sensitive = true;
 		}
 
-		internal void SetSheme (ColorScheme style)
+		internal void SetSheme (Ide.Editor.Highlighting.ColorScheme style)
 		{
 			if (style == null)
 				throw new ArgumentNullException ("style");
@@ -263,10 +263,10 @@ class Example
 		Console.WriteLine (""Hello World"");
 	}
 }";
-			foreach (var data in ColorScheme.TextColors) {
+			foreach (var data in Ide.Editor.Highlighting.ColorScheme.TextColors) {
 				colorStore.AppendValues (data.Attribute.Name, data, data.Info.GetValue (style, null));
 			}
-			foreach (var data in ColorScheme.AmbientColors) {
+			foreach (var data in Ide.Editor.Highlighting.ColorScheme.AmbientColors) {
 				colorStore.AppendValues (data.Attribute.Name, data, data.Info.GetValue (style, null));
 			}
 			Stylechanged (null, null);

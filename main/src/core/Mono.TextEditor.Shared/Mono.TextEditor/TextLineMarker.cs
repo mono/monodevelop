@@ -140,7 +140,7 @@ namespace Mono.TextEditor
 		{
 		}
 
-		internal virtual ChunkStyle GetStyle (ChunkStyle baseStyle)
+		internal virtual MonoDevelop.Ide.Editor.Highlighting.ChunkStyle GetStyle (MonoDevelop.Ide.Editor.Highlighting.ChunkStyle baseStyle)
 		{
 			return baseStyle;
 		}

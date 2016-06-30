@@ -1976,7 +1976,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal Mono.TextEditor.Highlighting.ColorScheme ColorStyle {
+		internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme ColorStyle {
 			get {
 				return this.textEditorData?.ColorStyle;
 			}
@@ -2608,7 +2608,7 @@ namespace Mono.TextEditor
 				int lineNr = Editor.Document.OffsetToLineNumber (Result.Offset);
 				ISyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : new SyntaxMode (Editor.Document);
 				int logicalRulerColumn = line.GetLogicalColumn (Editor.GetTextEditorData (), Editor.Options.RulerColumn);
-				var lineLayout = Editor.TextViewMargin.CreateLinePartLayout (mode, line, logicalRulerColumn, line.Offset, line.Length, -1, -1);
+				var lineLayout = Editor.TextViewMargin.CreateLinePartLayout (line, logicalRulerColumn, line.Offset, line.Length, -1, -1);
 				if (lineLayout == null)
 					return new Cairo.Rectangle ();
 				

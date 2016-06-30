@@ -161,7 +161,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return syntaxMode.CreateSpanParser (line, spanStack);
 		}
 
-		public override ChunkParser CreateChunkParser (SpanParser spanParser, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line)
+		public override ChunkParser CreateChunkParser (SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line)
 		{
 			return new CSharpChunkParser (this, spanParser, style, line);
 		}
@@ -171,7 +171,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			const int MaximumCachedLineSegments = 200;
 			SemanticHighlightingSyntaxMode semanticMode;
 
-			public CSharpChunkParser (SemanticHighlightingSyntaxMode semanticMode, SpanParser spanParser, Mono.TextEditor.Highlighting.ColorScheme style, DocumentLine line) : base (semanticMode, spanParser, style, line)
+			public CSharpChunkParser (SemanticHighlightingSyntaxMode semanticMode, SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line) : base (semanticMode, spanParser, style, line)
 			{
 				this.semanticMode = semanticMode;
 			}

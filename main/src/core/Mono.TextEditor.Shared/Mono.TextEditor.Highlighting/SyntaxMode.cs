@@ -114,7 +114,7 @@ namespace Mono.TextEditor.Highlighting
 			this.doc = doc;
 		}
 
-		public bool Validate (ColorScheme style)
+		public bool Validate (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
 		{
 			if (!GetIsValid (style)) {
 				return false;
@@ -127,7 +127,7 @@ namespace Mono.TextEditor.Highlighting
 			return true;
 		}
 
-		public virtual IEnumerable<Chunk> GetChunks (ColorScheme style, DocumentLine line, int offset, int length)
+		public virtual IEnumerable<Chunk> GetChunks (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line, int offset, int length)
 		{
 			SpanParser spanParser = CreateSpanParser (line, null);
 			ChunkParser chunkParser = CreateChunkParser (spanParser, style, line);
@@ -195,7 +195,7 @@ namespace Mono.TextEditor.Highlighting
 			return new SpanParser (this, spanStack ?? line.StartSpan.Clone ());
 		}
 
-		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, DocumentLine line)
+		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line)
 		{
 			return new ChunkParser (this, spanParser, style, line);
 		}
@@ -475,7 +475,7 @@ namespace Mono.TextEditor.Highlighting
 			internal int lineOffset;
 			protected SyntaxMode mode;
 
-			public ChunkParser (SyntaxMode mode, SpanParser spanParser, ColorScheme style, DocumentLine line)
+			public ChunkParser (SyntaxMode mode, SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line)
 			{
 				this.mode = mode;
 				this.doc = mode.Document;

@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			FirstLineMatch = firstLineMatch;
 		}
 
-		public IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line)
+		public IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length)
 		{
 			var cur = Document.GetLine (1);
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				foreach (var ctx in currentContexts) {
 					foreach (var curMatch in ctx.Matches) {
 						var r = new Regex (curMatch.Match);
-						var match = r.Match (this.Document, line.Offset, line.Length);
+						var match = r.Match (this.Document, offset, length);
 						if (match.Success) {
 							curSegmentOffset = match.Index + match.Length - line.Offset;
 
