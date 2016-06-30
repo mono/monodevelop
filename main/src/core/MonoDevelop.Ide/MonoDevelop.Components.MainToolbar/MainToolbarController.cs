@@ -796,6 +796,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public bool Enabled { get; set; }
 			public bool Visible { get; set; }
 			public string Tooltip { get; set; }
+			public string Title { get; set; }
 			public bool IsSeparator {
 				get { return CommandId == null; }
 			}
@@ -834,12 +835,17 @@ namespace MonoDevelop.Components.MainToolbar
 					if (VisibleChanged != null)
 						VisibleChanged (this, null);
 				}
+				if (ci.Text != Title) {
+					Title = ci.Text;
+					TitleChanged?.Invoke (this, null);
+				}
 			}
 
 			public event EventHandler EnabledChanged;
 			public event EventHandler ImageChanged;
 			public event EventHandler VisibleChanged;
 			public event EventHandler TooltipChanged;
+			public event EventHandler TitleChanged;
 		}
 
 		class RuntimeModel : IRuntimeModel

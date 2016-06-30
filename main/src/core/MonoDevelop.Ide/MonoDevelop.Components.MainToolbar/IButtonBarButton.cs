@@ -77,6 +77,12 @@ namespace MonoDevelop.Components.MainToolbar
 		string Tooltip { get; }
 
 		/// <summary>
+		/// Gets the button title
+		/// </summary>
+		/// <value>The title.</value>
+		string Title { get; }
+
+		/// <summary>
 		/// Use this when the button is clicked.
 		/// </summary>
 		void NotifyPushed ();
@@ -100,6 +106,9 @@ namespace MonoDevelop.Components.MainToolbar
 		/// Occurs when the tooltip changed.
 		/// </summary>
 		event EventHandler TooltipChanged;
+
+		/// Occurs when the title is changed
+		event EventHandler TitleChanged;
 	}
 }
 
