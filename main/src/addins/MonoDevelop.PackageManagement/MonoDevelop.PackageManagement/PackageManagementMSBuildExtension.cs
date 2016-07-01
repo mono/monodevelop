@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -73,7 +74,13 @@ namespace MonoDevelop.PackageManagement
 
 		async Task<BuildResult> WaitForRestoreThenBuild (Task restoreTask, ProgressMonitor monitor, ConfigurationSelector configuration, OperationContext operationContext)
 		{
-			await restoreTask;
+			try {
+				await restoreTask;
+			} catch (Exception ex) {
+				var result = new BuildResult ();
+				result.AddError (GettextCatalog.GetString ("{0}. Please see the Package Console for more details.", ex.Message));
+				return result;
+			}
 			return await base.OnBuild (monitor, configuration, operationContext);
 		}
 	}
