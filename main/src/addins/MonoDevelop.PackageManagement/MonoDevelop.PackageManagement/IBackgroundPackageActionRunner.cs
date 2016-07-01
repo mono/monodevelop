@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
@@ -37,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 
 		void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action);
 		void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
+		Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions);
 
 		void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception);
 		void ShowError (ProgressMonitorStatusMessage progressMessage, string message);

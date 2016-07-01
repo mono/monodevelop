@@ -26,7 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.PackageManagement;
+using System.Threading.Tasks;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -66,6 +66,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			ShowErrorProgressMessage = progressMessage;
 			ShowErrorMessage = message;
+		}
+
+		public Task RunAsync (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
+		{
+			throw new NotImplementedException ();
 		}
 
 		public ProgressMonitorStatusMessage ShowErrorProgressMessage;
