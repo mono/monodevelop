@@ -571,7 +571,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" design-size="368 436">
+  <widget class="Gtk.Bin" id="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" design-size="426 436">
     <property name="MemberName" />
     <child>
       <widget class="Gtk.VBox" id="vbox1">
@@ -745,7 +745,7 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Label" id="GtkLabel7">
+          <widget class="Gtk.Label" id="GtkLabel8">
             <property name="MemberName" />
             <property name="Xalign">0</property>
             <property name="LabelProp" translatable="yes">&lt;b&gt;Indentation&lt;/b&gt;</property>
@@ -822,6 +822,22 @@
                     <property name="Fill">False</property>
                   </packing>
                 </child>
+                <child>
+                  <widget class="Gtk.CheckButton" id="smartBackspaceCheckbutton">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Label" translatable="yes">Backspace removes indentation</property>
+                    <property name="DrawIndicator">True</property>
+                    <property name="HasLabel">True</property>
+                    <property name="UseUnderline">True</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">2</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
               </widget>
             </child>
           </widget>
@@ -833,7 +849,7 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Label" id="GtkLabel9">
+          <widget class="Gtk.Label" id="GtkLabel10">
             <property name="MemberName" />
             <property name="Xalign">0</property>
             <property name="LabelProp" translatable="yes">&lt;b&gt;Navigation&lt;/b&gt;</property>

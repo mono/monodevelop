@@ -144,6 +144,11 @@ namespace MonoDevelop.Ide.Editor
 			get;
 			set;
 		}
+		
+		public bool SmartBackspace {
+			get;
+			set;
+		}
 		#endregion
 
 		public CustomEditorOptions ()
@@ -180,6 +185,7 @@ namespace MonoDevelop.Ide.Editor
 			EnableSelectionWrappingKeys = initializeFrom.EnableSelectionWrappingKeys;
 			ShowWhitespaces = initializeFrom.ShowWhitespaces;
 			IncludeWhitespaces = initializeFrom.IncludeWhitespaces;
+			SmartBackspace = initializeFrom.SmartBackspace;
 		}
 
 		#region IDisposable implementation

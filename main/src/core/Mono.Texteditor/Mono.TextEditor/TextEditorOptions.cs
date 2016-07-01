@@ -554,6 +554,19 @@ namespace Mono.TextEditor
 			}
 		}
 
+		bool smartBackspace = true;
+		public virtual bool SmartBackspace {
+			get {
+				return smartBackspace;
+			}
+			set {
+				if (smartBackspace != value) {
+					smartBackspace = value;
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+
 		public virtual ColorScheme GetColorStyle ()
 		{
 			return SyntaxModeService.GetColorStyle (ColorScheme);
@@ -583,6 +596,7 @@ namespace Mono.TextEditor
 			showWhitespaces = other.showWhitespaces;
 			includeWhitespaces = other.includeWhitespaces;
 			generateFormattingUndoStep = other.generateFormattingUndoStep;
+			smartBackspace = other.smartBackspace;
 			DisposeFont ();
 			OnChanged (EventArgs.Empty);
 		}

@@ -235,7 +235,12 @@ namespace MonoDevelop.Ide.Editor
 					return DefaultSourceEditorOptions.Instance.IncludeWhitespaces;
 				}
 			}
-
+			
+			bool ITextEditorOptions.SmartBackspace {
+				get {
+					return DefaultSourceEditorOptions.Instance.SmartBackspace;
+				}
+			}
 			#endregion
 
 
@@ -743,6 +748,17 @@ namespace MonoDevelop.Ide.Editor
 			}
 			set {
 				if (includeWhitespaces.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
+
+		ConfigurationProperty<bool> smartBackspace = ConfigurationProperty.Create ("SmartBackspace", true);
+		public bool SmartBackspace{
+			get {
+				return smartBackspace;
+			}
+			set {
+				if (smartBackspace.Set (value))
 					OnChanged (EventArgs.Empty);
 			}
 		}

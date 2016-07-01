@@ -96,7 +96,10 @@ namespace MonoDevelop.Ide.Editor
 		string DefaultEolMarker { get; }
 
 		bool GenerateFormattingUndoStep { get; }
+
 		bool EnableSelectionWrappingKeys { get; }
+
+		bool SmartBackspace { get; }
 
 		ShowWhitespaces ShowWhitespaces { get; }
 
