@@ -1684,10 +1684,14 @@ namespace MonoDevelop.Ide
 					ProjectFile vfile;
 					var vpath = targetPath.ToRelative (project.BaseDirectory);
 					if (vpathsInProject.TryGetValue (vpath, out vfile)) {
-						if (vfile.FilePath != file)
+						if (vfile.IsLink) {
 							MessageService.ShowWarning (GettextCatalog.GetString (
-								"There is a already a file or link in the project with the name '{0}'", vpath));
-						continue;
+								"There is already a link in the project with the name '{0}'", vpath));
+							continue;
+						} else if (vfile.FilePath == file) {
+							// File already exists in project.
+							continue;
+						}
 					}
 					
 					string fileBuildAction = buildAction;
@@ -1696,7 +1700,10 @@ namespace MonoDevelop.Ide
 					
 					//files in the target directory get added directly in their current location without moving/copying
 					if (file.CanonicalPath == targetPath) {
-						AddFileToFolder (newFileList, vpathsInProject, filesInProject, file, fileBuildAction);
+						if (vfile != null)
+							ShowFileExistsInProjectMessage (vpath);
+						else
+							AddFileToFolder (newFileList, vpathsInProject, filesInProject, file, fileBuildAction);
 						continue;
 					}
 					
@@ -1735,11 +1742,18 @@ namespace MonoDevelop.Ide
 						}
 						
 						if (action == AddAction.Keep) {
-							AddFileToFolder (newFileList, vpathsInProject, filesInProject, file, fileBuildAction);
+							if (vfile != null)
+								ShowFileExistsInProjectMessage (vpath);
+							else
+								AddFileToFolder (newFileList, vpathsInProject, filesInProject, file, fileBuildAction);
 							continue;
 						}
 						
 						if (action == AddAction.Link) {
+							if (vfile != null) {
+								ShowFileExistsInProjectMessage (vpath);
+								continue;
+							}
 							ProjectFile pf = new ProjectFile (file, fileBuildAction) {
 								Link = vpath
 							};
@@ -1754,10 +1768,12 @@ namespace MonoDevelop.Ide
 								FileService.CreateDirectory (targetPath.ParentDirectory);
 							
 							if (MoveCopyFile (file, targetPath, action == AddAction.Move)) {
-								var pf = new ProjectFile (targetPath, fileBuildAction);
-								vpathsInProject [pf.ProjectVirtualPath] = pf;
-								filesInProject [pf.FilePath] = pf;
-								newFileList.Add (pf);
+								if (vfile == null) {
+									var pf = new ProjectFile (targetPath, fileBuildAction);
+									vpathsInProject [pf.ProjectVirtualPath] = pf;
+									filesInProject [pf.FilePath] = pf;
+									newFileList.Add (pf);
+								}
 							}
 							else {
 								newFileList.Add (null);
@@ -1778,6 +1794,12 @@ namespace MonoDevelop.Ide
 			}
 			project.Files.AddRange (newFileList.Where (f => f != null));
 			return newFileList;
+		}
+
+		static void ShowFileExistsInProjectMessage (FilePath path)
+		{
+			MessageService.ShowWarning (GettextCatalog.GetString (
+				"There is already a file in the project with the name '{0}'", path));
 		}
 		
 		void AddFileToFolder (List<ProjectFile> newFileList, Dictionary<FilePath, ProjectFile> vpathsInProject, Dictionary<FilePath, ProjectFile> filesInProject, FilePath file, string fileBuildAction)
