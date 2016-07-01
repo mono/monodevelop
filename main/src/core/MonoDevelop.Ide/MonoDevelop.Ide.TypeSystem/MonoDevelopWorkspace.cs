@@ -610,6 +610,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (netProj == null)
 				yield break;
 			foreach (var pr in netProj.References.Where (pr => pr.ReferenceType == MonoDevelop.Projects.ReferenceType.Project)) {
+				if (!pr.ReferenceOutputAssembly)
+					continue;
 				var referencedProject = pr.ResolveProject (p.ParentSolution) as MonoDevelop.Projects.DotNetProject;
 				if (referencedProject == null)
 					continue;
