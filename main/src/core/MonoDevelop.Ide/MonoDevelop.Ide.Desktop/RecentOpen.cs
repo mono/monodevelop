@@ -54,11 +54,47 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			recentFiles = new RecentFileStorage (storageFile);
 			recentFiles.RemoveMissingFiles (fileGroup);
+
+			recentFiles.RecentFilesChanged += OnRecentFilesChanged;
 		}
-		
+
+		void OnRecentFilesChanged (object sender, RecentItemsChangedEventArgs args)
+		{
+			changed?.Invoke (sender, args);
+			if (args.Groups.Any (i => i.Contains (projGroup)))
+				projectsChanged?.Invoke (sender, args);
+			if (args.Groups.Any (i => i.Contains (fileGroup)))
+				filesChanged?.Invoke (sender, args);
+		}
+
+		event EventHandler changed;
 		public override event EventHandler Changed {
-			add { recentFiles.RecentFilesChanged += value; }
-			remove { recentFiles.RecentFilesChanged -= value; }
+			add {
+				changed += value;
+			}
+			remove {
+				changed -= value;
+			}
+		}
+
+		event EventHandler projectsChanged;
+		public override event EventHandler ProjectsChanged {
+			add {
+				projectsChanged += value;
+			}
+			remove {
+				projectsChanged -= value;
+			}
+		}
+
+		event EventHandler filesChanged;
+		public override event EventHandler FilesChanged {
+			add {
+				filesChanged += value;
+			}
+			remove {
+				filesChanged -= value;
+			}
 		}
 		
 		protected override IList<RecentFile> OnGetProjects ()
@@ -147,8 +183,11 @@ namespace MonoDevelop.Ide.Desktop
 		
 		public void Dispose ()
 		{
-			recentFiles.Dispose ();
-			recentFiles = null;
+			if (recentFiles != null) {
+				recentFiles.RecentFilesChanged -= OnRecentFilesChanged;
+				recentFiles.Dispose ();
+				recentFiles = null;
+			}
 		}
 	}
 		
@@ -196,6 +235,9 @@ namespace MonoDevelop.Ide.Desktop
 		}
 
 		public abstract event EventHandler Changed;
+		// TODO: Make these abstract for 7.0.
+		public virtual event EventHandler ProjectsChanged;
+		public virtual event EventHandler FilesChanged;
 		public abstract void ClearProjects ();
 		public abstract void ClearFiles ();
 		public abstract void AddFile (string fileName, string displayName);
