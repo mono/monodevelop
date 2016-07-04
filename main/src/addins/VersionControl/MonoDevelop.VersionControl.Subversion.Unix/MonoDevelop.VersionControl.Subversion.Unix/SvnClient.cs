@@ -1344,7 +1344,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			progressData.LogTimer.Interval = 1000;
 			progressData.LogTimer.Elapsed += delegate {
 				progressData.Seconds += 1;
-				updatemonitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds));
+				Runtime.RunInMainThread (() => {
+					updatemonitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds.", BytesToSize (progressData.KBytes), progressData.Seconds));
+				});
 			};
 			progressData.LogTimer.Start ();
 		}
