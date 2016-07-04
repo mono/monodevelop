@@ -584,6 +584,16 @@ namespace MonoDevelop.Components.MainToolbar
 				}
 			}
 
+			public string Title {
+				get;
+				set;
+			}
+
+			public string Help {
+				get;
+				set;
+			}
+
 			public EventBox EventBox {
 				get { return box; }
 			}

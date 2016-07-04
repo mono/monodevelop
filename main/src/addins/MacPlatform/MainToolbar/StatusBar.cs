@@ -51,6 +51,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public StatusIcon (StatusBar bar) : base (CGRect.Empty)
 		{
 			imageView = new NSImageView (CGRect.Empty);
+			// Hide this image from the accessibility tree
+			imageView.AccessibilityElement = false;
 			AddSubview (imageView);
 
 			var trackingArea = new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.ActiveInKeyWindow | NSTrackingAreaOptions.InVisibleRect | NSTrackingAreaOptions.MouseEnteredAndExited, this, null);
@@ -81,14 +83,35 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			base.Dispose ();
 		}
 
+		string tooltip;
 		public new string ToolTip {
-			get;
-			set;
+			get {
+				return tooltip;
+			}
+
+			set {
+				tooltip = value;
+				AccessibilityTitle = tooltip;
+				AccessibilityValue = new NSString (tooltip);
+			}
 		}
 
+		string help;
+		public string Help {
+			get {
+				return help;
+			}
+
+			set {
+				help = value;
+				AccessibilityHelp = value;
+			}
+		}
+
+		public string Title { get; set; }
 		string INSAccessibilityButton.AccessibilityLabel {
 			get {
-				return ToolTip;
+				return Title;
 			}
 		}
 
@@ -399,7 +422,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		}
 	}
 
-	class CancelButton : NSButton
+	class CancelButton : NSButton, INSAccessibilityButton
 	{
 		readonly NSImage stopIcon = MultiResImage.CreateMultiResImage ("status-stop-16", string.Empty);
 		readonly NSImage stopIconHover = MultiResImage.CreateMultiResImage ("status-stop-16", "hover");
@@ -412,6 +435,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			ImagePosition = NSCellImagePosition.ImageOnly;
 			SetButtonType (NSButtonType.MomentaryChange);
 			AddTrackingArea (new NSTrackingArea (CGRect.Empty, NSTrackingAreaOptions.MouseEnteredAndExited | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.InVisibleRect, this, null));
+
+			AccessibilityHelp = GettextCatalog.GetString ("Cancel the current operation");
+			AccessibilityTitle = GettextCatalog.GetString ("Cancel");
+
+			var nsa = (INSAccessibility) this;
+			nsa.AccessibilityIdentifier = "MainToolbar.StatusDisplay.Cancel";
 		}
 
 		public override void MouseEntered (NSEvent theEvent)
@@ -424,6 +453,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		{
 			Image = stopIcon;
 			base.MouseExited (theEvent);
+		}
+
+		string INSAccessibilityButton.AccessibilityLabel {
+			get {
+				return GettextCatalog.GetString ("Cancel");
+			}
 		}
 	}
 

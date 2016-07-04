@@ -486,7 +486,9 @@ namespace MonoDevelop.Ide
 			if (IdeApp.Preferences.EnableInstrumentation) {
 				if (instrumentationStatusIcon == null) {
 					instrumentationStatusIcon = IdeApp.Workbench.StatusBar.ShowStatusIcon (ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.StatusInstrumentation));
-					instrumentationStatusIcon.ToolTip = "Instrumentation service enabled";
+					instrumentationStatusIcon.Title = GettextCatalog.GetString ("Instrumentation");
+					instrumentationStatusIcon.ToolTip = GettextCatalog.GetString ("Instrumentation service enabled");
+					instrumentationStatusIcon.Help = GettextCatalog.GetString ("Information about the Instrumentation Service");
 					instrumentationStatusIcon.Clicked += delegate {
 						InstrumentationService.StartMonitor ();
 					};
