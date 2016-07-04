@@ -211,6 +211,10 @@
   <Extension path="/MonoDevelop/Ide/Commands">
         <!-- RefactoryCommands -->
     <Category _name = "Refactoring" id = "Refactoring" >
+      <Command id = "MonoDevelop.FSharp.QuickFix"
+			   _label = "Quick Fix F#..."
+			   shortcut = ""
+			   macShortcut = "" />
       <Command id = "MonoDevelop.FSharp.CurrentRefactoringOperations"
 	           defaultHandler = "MonoDevelop.FSharp.CurrentRefactoringOperationsHandler"
 		       type="array"
@@ -283,6 +287,7 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
+	  <CommandItem id = "MonoDevelop.FSharp.QuickFix" />
       <SeparatorItem id = "FSharpInteractiveStart" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
       <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />

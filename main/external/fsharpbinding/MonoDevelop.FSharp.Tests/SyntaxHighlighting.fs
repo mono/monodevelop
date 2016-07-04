@@ -21,11 +21,25 @@ type SyntaxHighlighting() =
         let chunks = syntaxMode.GetChunks(style, line, offset, line.Length)
         let chunk = chunks |> Seq.tryFind (fun c -> c.Offset = offset && c.Length = length)
 
+        let chunks = syntaxMode.GetChunks(style, line, 0, line.Length)
+        let printChunks() =
+            chunks |> Seq.iter (fun chunk -> printfn "%A %s" chunk input.[chunk.Offset..chunk.Offset+chunk.Length-1])
+
+        
         match chunk with
         | Some (c) -> c.Style |> should equal expectedStyle
         | _ -> printfn "Offset - %d, Length - %d" offset length
-               printfn "%A" chunks
+               printChunks()
                Assert.Fail()
+
+        let assertOffsets expectedOffset (chunk:Chunk) =
+            //printfn "%d %d" chunk.Offset expectedOffset
+            if chunk.Offset <> expectedOffset then
+                printChunks()
+                Assert.Fail("Overlapping chunks detected")
+            chunk.Offset + chunk.Length
+
+        Seq.fold assertOffsets 0 chunks |> ignore
 
     [<TestCase("let simpleBinding = §1§", "Number")>]
     [<TestCase("§let§ simpleBinding = 1", "Keyword(Iteration)")>]
@@ -46,7 +60,7 @@ type SyntaxHighlighting() =
     [<TestCase("§module§ MyModule =", "Keyword(Namespace)")>]
     [<TestCase("module §MyModule§ =", "User Types")>]
     [<TestCase("[<§TestCase§(", "User Types")>]
-    [<TestCase("[§<§TestCase(", "Punctuation(Brackets)")>]
+    [<TestCase("§[<§TestCase(", "Punctuation(Brackets)")>]
     [<TestCase("inherits §SyntaxHighlighting§ () =", "User Types")>]
     [<TestCase("new §DefaultBraceMatcher§()", "User Types")>]
     [<TestCase("§match§ (startOffset, endOffset) with", "Keyword(Iteration)")>]
@@ -61,12 +75,12 @@ type SyntaxHighlighting() =
     [<TestCase("let §mutable§ x   = 1", "Keyword(Modifiers)")>]
     [<TestCase("let mutable  §x§ = 1", "User Field Declaration")>]
     [<TestCase("let mutable x§ = §1", "Plain Text")>]
-    [<TestCase("c.Style §|> §should equal", "Plain Text")>]
+    [<TestCase("c.Style§ |> §should equal", "Plain Text")>]
     [<TestCase("c.Style |> §should§ equal", "User Method Declaration")>]
     [<TestCase("match §x§ with", "User Field Declaration")>]
     [<TestCase("Unchecked.defaultof<§_§>", "Plain Text")>]
     [<TestCase("Seq.§add§", "User Method Declaration")>]
-    [<TestCase("let inline §add§ x y = x + y", "User Method Declaration")>]
+    [<TestCase("let inline§ add§ x y = x + y", "User Method Declaration")>]
     [<TestCase("§override§ x.Something()", "Keyword(Modifiers)")>]
     [<TestCase("member x.§``some identifier``§ = 1", "User Field Declaration")>]
     [<TestCase("member x.§``some identifier``§ () = 1", "User Method Declaration")>]
@@ -84,14 +98,14 @@ type SyntaxHighlighting() =
     [<TestCase("let shouldEqual (x: §'a§) (y: 'a) =", "User Types")>]
     [<TestCase("| :? §string§", "User Types")>]
     [<TestCase("let inline §private§ is expr s =", "Keyword(Modifiers)")>]
-    [<TestCase("let inline private §is§ expr s =", "User Method Declaration")>]
+    [<TestCase("let inline private§ is§ expr s =", "User Method Declaration")>]
     [<TestCase("override x.§CanHandle§ editor", "User Method Declaration")>]
     [<TestCase("let addEdge ((n1, n2): 'n * §'n§)", "User Types")>]
     [<TestCase("Map<'n, Set<'n§>>§", "Punctuation(Brackets)")>]
     [<TestCase("let docs = §openDocuments§()", "User Method Declaration")>]
     [<TestCase("let x = §true§", "Keyword(Constants)")>]
     [<TestCase("let §``simple binding``§ = 1", "User Field Declaration")>]
-    [<TestCase("let inline §``add number``§ x y = x + y", "User Method Declaration")>]
+    [<TestCase("let inline§ ``add number``§ x y = x + y", "User Method Declaration")>]
     [<TestCase("§|>§ Option.bind", "Punctuation(Brackets)")>]
     [<TestCase("§typeof§<int>", "User Field Declaration")>]
     [<TestCase("editor.CaretOffset §<-§ offset", "Punctuation(Brackets)")>]
@@ -110,6 +124,12 @@ type SyntaxHighlighting() =
     [<TestCase("§and§ Forest =", "Keyword(Namespace)")>]
     [<TestCase("let rec go §xs§ =", "User Field Declaration")>]
     [<TestCase("let x = §Some§ 1", "User Types(Enums)")>]
+    [<TestCase("type §A§ =", "User Types")>]
+    [<TestCase("type §A §", "User Types")>]
+    [<TestCase("type A§ = A §of a", "Plain Text")>]
+    [<TestCase("type A = A of §a§:int", "User Types")>]
+    [<TestCase("type A = A of a:§int§", "User Types")>]
+    [<TestCase("module A§=§", "Plain Text")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
