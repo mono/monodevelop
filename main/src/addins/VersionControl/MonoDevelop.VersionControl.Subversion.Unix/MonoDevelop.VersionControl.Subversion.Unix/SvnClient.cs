@@ -214,9 +214,28 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		}
 
 		const string commandLineToolsSvn = "/Library/Developer/CommandLineTools/usr/lib/libsvn_client-1.0.dylib";
-		static Lazy<bool> IsDependentOnXcodeCLITools = new Lazy<bool> (
+		readonly static Lazy<bool> IsDependentOnXcodeCLITools = new Lazy<bool> (
 			() => Platform.IsMac && Environment.Is64BitOperatingSystem && !File.Exists (commandLineToolsSvn)
 		);
+
+		internal protected override bool InstallDependencies ()
+		{
+			if (IsDependentOnXcodeCLITools.Value) {
+				var button = new AlertButton (GettextCatalog.GetString ("Install"));
+				if (MessageService.AskQuestion (
+					GettextCatalog.GetString ("This solution may be using Subversion. Do you want to install Xcode Command Line Tools now?"),
+					BrandingService.BrandApplicationName (
+						GettextCatalog.GetString ("Xcode Command Line Tools are not currently installed, and are required to use Subversion.\nPlease restart MonoDevelop after the installation to enable Subversion support.")),
+					AlertButton.Cancel,
+					button) == button) {
+					var p = Process.Start ("xcode-select", "--install");
+					p.WaitForExit ();
+				}
+				return false;
+			}
+			return true;
+		}
+
 
 		bool macDisabled;
 		public override string GetDirectoryDotSvn (FilePath path)
@@ -232,16 +251,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (!FallbackProbeDirectoryDotSvn (path))
 					return string.Empty;
 
-				var button = new AlertButton (GettextCatalog.GetString ("Install"));
-				if (MessageService.AskQuestion (
-					GettextCatalog.GetString ("This solution may be using Subversion. Do you want to install Xcode Command Line Tools now?"),
-					BrandingService.BrandApplicationName (
-						GettextCatalog.GetString ("Xcode Command Line Tools are not currently installed, and are required to use Subversion.\nPlease restart MonoDevelop after the installation to enable Subversion support.")),
-					AlertButton.Cancel,
-					button) == button) {
-					var p = Process.Start ("xcode-select", "--install");
-					p.WaitForExit ();
-				}
+				InstallDependencies ();
 				macDisabled = true;
 				return string.Empty;
 			}
