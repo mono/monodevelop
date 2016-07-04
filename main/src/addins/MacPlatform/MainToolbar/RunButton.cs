@@ -148,17 +148,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nsa.AccessibilityLabel = title;
 		}
 
-		/*
-		string INSAccessibility.AccessibilityLabel {
-			get {
-				return "test";
-			}
-
-			set {
-				Console.WriteLine ($"{value}");
-			}
-		}
-*/
 		public override bool AccessibilityPerformPress ()
 		{
 			return base.AccessibilityPerformPress ();
