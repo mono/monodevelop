@@ -128,6 +128,7 @@ type ``Completion Tests``() =
         let results = getCompletions @"let add first second = z|" false
         results |> shouldnot contain "z"
 
+     
     [<Test>]
     member x.``Completes lambda``() =
         let results = getCompletions @"let x = ""string"" |> Seq.map (fun c -> c.|" true
@@ -136,8 +137,6 @@ type ``Completion Tests``() =
 
     [<Test>]
     member x.``Completes local identifier with mismatched parens``() =
-        let identifier = 1
-
         let results = getCompletions
                         """
                         type rectangle(width, height) =
@@ -148,6 +147,30 @@ type ``Completion Tests``() =
                             let x = rectangle(he|
                         """ true
         results |> should contain "height"
+
+    [<Test>]
+    member x.``Does not complete inside multiline comment``() =
+        let results = getCompletions
+                        """
+                        (*
+                        Li|
+                        *)
+                        """ true
+        results |> should be Empty
+
+    [<Test>]
+    member x.``Does not complete inside multiline comment without end delimiter``() =
+        let results = getCompletions
+                        """
+                        (*
+                        Li|
+                        """ true
+        results |> should be Empty
+
+    [<Test>]
+    member x.``Does not complete inside single line comment``() =
+        let results = getCompletions "// Li|" true
+        results |> should be Empty
 
     [<Test>]
     member x.``Completes attribute``() =
