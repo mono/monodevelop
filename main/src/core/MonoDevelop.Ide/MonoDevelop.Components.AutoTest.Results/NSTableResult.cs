@@ -40,6 +40,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 	{
 		NSTableView table;
 		nint row = -1;
+		string columnName;
+		NSTableColumn column;
 		
 		internal NSTableResult (NSObject resultObject) : base (resultObject)
 		{
@@ -50,6 +52,13 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			table = resultObject;
 			this.row = row;
+		}
+		
+		internal NSTableResult (NSObject resultObject, string columnName) : base (resultObject)
+		{
+			table = resultObject as NSTableView;
+			this.columnName = columnName;
+			this.column = table.TableColumns ().FirstOrDefault (x => x.Identifier == columnName || x.Title == columnName);
 		}
 
 		public override List<AppResult> Children (bool recursive = true)

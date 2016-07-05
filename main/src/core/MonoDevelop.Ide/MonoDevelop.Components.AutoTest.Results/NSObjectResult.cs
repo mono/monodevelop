@@ -133,7 +133,7 @@ namespace MonoDevelop.Components.AutoTest.Results
 		{
 			if (column == null)
 				return new NSTableResult (ResultObject);
-			return null;
+			return new NSTableResult (ResultObject, column);
 		}
 
 		object GetPropertyValue (string propertyName)
