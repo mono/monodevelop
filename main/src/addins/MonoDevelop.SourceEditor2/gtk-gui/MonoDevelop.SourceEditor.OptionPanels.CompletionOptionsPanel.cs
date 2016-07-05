@@ -92,10 +92,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			w2.Padding = ((uint)(6));
 			// Container child hbox6.Gtk.Box+BoxChild
 			this.automaticCompletionModeCheckbutton = new global::Gtk.CheckButton ();
-			this.automaticCompletionModeCheckbutton.TooltipMarkup = "Enables automatic completion with the Space key or Punctation";
+			this.automaticCompletionModeCheckbutton.TooltipMarkup = "Enables automatic completion with the Space key or Punctuation";
 			this.automaticCompletionModeCheckbutton.CanFocus = true;
 			this.automaticCompletionModeCheckbutton.Name = "automaticCompletionModeCheckbutton";
-			this.automaticCompletionModeCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Complete with Space or Punctation");
+			this.automaticCompletionModeCheckbutton.Label = global::Mono.Unix.Catalog.GetString ("Complete with Space or Punctuation");
 			this.automaticCompletionModeCheckbutton.DrawIndicator = true;
 			this.automaticCompletionModeCheckbutton.UseUnderline = true;
 			this.hbox6.Add (this.automaticCompletionModeCheckbutton);
