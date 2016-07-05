@@ -325,6 +325,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public override bool SmartBackspace {
+			get {
+				return optionsCore.SmartBackspace;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
 		#endregion
 
 

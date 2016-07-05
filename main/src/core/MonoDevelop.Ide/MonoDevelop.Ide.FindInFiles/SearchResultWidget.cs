@@ -861,7 +861,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (buf != null) {
 					doc.DisableAutoScroll ();
 					buf.RunWhenLoaded (() => {
-						buf.SetCaretLocation (Math.Max (Line, 1), Math.Max (Column, 1));
+						JumpToCurrentLocation (buf);
 					});
 				}
 				

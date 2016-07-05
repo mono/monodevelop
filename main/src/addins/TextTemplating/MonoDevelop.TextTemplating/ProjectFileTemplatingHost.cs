@@ -27,6 +27,7 @@
 using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.TextTemplating
 {
@@ -45,6 +46,12 @@ namespace MonoDevelop.TextTemplating
 		{
 			var model = file.Project.GetStringTagModel (activeConfiguration);
 			return StringParserService.Parse (s, model);
+		}
+
+		protected override string ResolveAssemblyReference (string assemblyReference)
+		{
+			assemblyReference = StringParserService.Parse (assemblyReference, IdeApp.Workbench.GetStringTagModel ());
+			return base.ResolveAssemblyReference (assemblyReference);
 		}
 	}
 }

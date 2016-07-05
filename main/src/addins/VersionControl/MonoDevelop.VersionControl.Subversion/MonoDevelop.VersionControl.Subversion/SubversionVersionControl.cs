@@ -44,6 +44,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return new UrlBasedRepositoryEditor ((SubversionRepository)repo);
 		}
+
+		internal protected virtual bool InstallDependencies ()
+		{
+			return true;
+		}
 	}
 
 	public abstract class SubversionBackend

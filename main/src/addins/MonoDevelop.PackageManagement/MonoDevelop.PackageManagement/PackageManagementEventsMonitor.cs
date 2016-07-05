@@ -73,6 +73,10 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 
+			if (taskCompletionSource != null && taskCompletionSource.Task == PackageManagementMSBuildExtension.PackageRestoreTask) {
+				PackageManagementMSBuildExtension.PackageRestoreTask = null;
+			}
+
 			NotifyFilesChanged ();
 			UnloadMSBuildHost ();
 		}

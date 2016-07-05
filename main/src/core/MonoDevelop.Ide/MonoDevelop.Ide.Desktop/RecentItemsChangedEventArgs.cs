@@ -1,10 +1,10 @@
 ﻿//
-// DiffTests.cs
+// RecentItemsChangedEventArgs.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       therzok <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 (c) Marius Ungureanu
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,30 +25,16 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using System.Linq;
-using Mono.TextEditor.Utils;
-using UnitTests;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Desktop
 {
-	[TestFixture]
-	class DiffTests : TestBase
+	class RecentItemsChangedEventArgs : EventArgs
 	{
-		[Test]
-		public void EmptyTreeList ()
+		public IEnumerable<string> Groups { get; }
+
+		public RecentItemsChangedEventArgs (IEnumerable<string> groups)
 		{
-			var editor = TextEditorFactory.CreateNewEditor ();
-			editor.Text = "1\n2\n3\n4\n5\n";
-
-			var editor2 = TextEditorFactory.CreateNewEditor ();
-			editor2.Text = "4\n1\n5\n2\n3\n";
-
-			var diff = editor.GetDiffAsString (editor2);
-
-			Assert.AreEqual ("--- \n+++ \n@@ -1,5 +1,5 @@\n+4\n 1\n+5\n 2\n 3\n-4\n-5\n", diff.Replace ("\r", ""));
-
+			Groups = groups;
 		}
-
 	}
 }

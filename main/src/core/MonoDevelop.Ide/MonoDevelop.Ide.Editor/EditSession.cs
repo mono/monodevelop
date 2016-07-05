@@ -73,7 +73,6 @@ namespace MonoDevelop.Ide.Editor
 			if (editor == null)
 				throw new InvalidOperationException ("Session not yet started.");
 			if (StartOffset  > editor.CaretOffset || EndOffset < editor.CaretOffset) {
-				Console.WriteLine ($"session ended !!!! {StartOffset}-{EndOffset}:{editor.CaretOffset}");
 				editor.EndSession ();
 				return false;
 			}

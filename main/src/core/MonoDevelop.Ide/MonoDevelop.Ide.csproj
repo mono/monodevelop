@@ -8579,6 +8579,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\PObject.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorTheme.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TextMateFormat.cs" />
+    <Compile Include="MonoDevelop.Ide.Desktop\RecentItemsChangedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

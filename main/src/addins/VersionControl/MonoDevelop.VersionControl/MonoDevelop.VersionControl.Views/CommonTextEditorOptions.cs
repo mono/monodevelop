@@ -369,6 +369,14 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		public override bool SmartBackspace {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.SmartBackspace;
+			}
+			set {
+			}
+		}
+
 		#endregion
 	}
 }

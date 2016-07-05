@@ -86,6 +86,7 @@ namespace MonoDevelop.Ide.Desktop
 					cachedItemList = ReadStore (stream);
 					cachedItemList.Sort ();
 				}
+				OnRecentFilesChanged (cachedItemList);
 			});
 		}
 		
@@ -346,21 +347,46 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return fileName.StartsWith ("file://") ? fileName : "file://" + fileName;
 		}
-		
+
+		RecentItemUnionComparer comparer = new RecentItemUnionComparer ();
 		void OnRecentFilesChanged (List<RecentItem> list)
 		{
+			string[] union;
 			lock (cacheLock) {
+				union = cachedItemList
+					// Filter what changed only.
+					.Except (list, comparer)
+					.Concat (list.Except (cachedItemList, comparer))
+					// Get the distinct groups
+					.SelectMany (it => it.Groups)
+					.Distinct ()
+					.ToArray ();
 				cachedItemList = list;
 			}
 
-			Runtime.RunInMainThread (() => {
-				if (changed != null)
-					changed (this, EventArgs.Empty);
-			});
+			if (union.Length > 0) {
+				Runtime.RunInMainThread (() => {
+					if (changed != null)
+						changed (this, new RecentItemsChangedEventArgs (union));
+				});
+			}
 		}
-		
-		EventHandler changed;
-		public event EventHandler RecentFilesChanged {
+
+		class RecentItemUnionComparer : IEqualityComparer<RecentItem>
+		{
+			public bool Equals (RecentItem x, RecentItem y)
+			{
+				return x.Uri.Equals (y.Uri) && x.Timestamp.Equals (y.Timestamp);
+			}
+
+			public int GetHashCode (RecentItem obj)
+			{
+				return obj.Uri.GetHashCode () ^ obj.Timestamp.GetHashCode ();
+			}
+		}
+
+		EventHandler<RecentItemsChangedEventArgs> changed;
+		public event EventHandler<RecentItemsChangedEventArgs> RecentFilesChanged {
 			add {
 				lock (this) {
 					if (changed == null)

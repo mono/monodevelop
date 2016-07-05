@@ -61,7 +61,10 @@ namespace MonoDevelop.PackageManagement
 
 		public void Execute (CancellationToken cancellationToken)
 		{
-			ExecuteAsync (cancellationToken).Wait ();
+			Task task = ExecuteAsync (cancellationToken);
+			using (var restoreTask = new PackageRestoreTask (task)) {
+				task.Wait ();
+			}
 		}
 
 		public bool HasPackageScriptsToRun ()

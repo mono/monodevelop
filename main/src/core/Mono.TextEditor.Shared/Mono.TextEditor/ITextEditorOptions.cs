@@ -76,6 +76,7 @@ namespace Mono.TextEditor
 		bool EnableSyntaxHighlighting { get; set; }
 		bool EnableAnimations { get; }
 		bool EnableSelectionWrappingKeys { get; }
+		bool SmartBackspace { get; }
 
 		bool EnableQuickDiff { get; set; }
 

@@ -728,7 +728,9 @@ namespace SubversionAddinWindows
 			data.LogTimer.Interval = 1000;
 			data.LogTimer.Elapsed += delegate {
 				data.Seconds += 1;
-				monitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds."), BytesToSize (data.KBytes), data.Seconds);
+				Runtime.RunInMainThread (() => {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Transferred {0} in {1} seconds."), BytesToSize (data.KBytes), data.Seconds);
+				});
 			};
 			data.LogTimer.Start ();
 		}
@@ -839,10 +841,12 @@ namespace SubversionAddinWindows
 			}
 
 			if (monitor != null) {
-				if (skipEol)
-					monitor.Log.Write (actiondesc);
-				else
-					monitor.Log.WriteLine (actiondesc);
+				Runtime.RunInMainThread (() => {
+					if (skipEol)
+						monitor.Log.Write (actiondesc);
+					else
+						monitor.Log.WriteLine (actiondesc);
+				});
 			}
 
 			if (notifyChange && File.Exists (file))

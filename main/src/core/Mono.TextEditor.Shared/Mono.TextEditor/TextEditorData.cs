@@ -580,7 +580,7 @@ namespace Mono.TextEditor
 		{
 			if (IsDisposed)
 				return;
-			document.WaitForFoldUpdateFinished ();
+			document.InterruptFoldWorker ();
 			IsDisposed = true;
 			options = options.Kill ();
 			HeightTree.Dispose ();

@@ -33,20 +33,27 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Navigation
 {
 	public class TextFileNavigationPoint : DocumentNavigationPoint
 	{
-		int line;
-		int column;
+		readonly int line;
+		readonly int column;
+
+		readonly int offset;
+		readonly ITextSourceVersion version;
+
 		
 		public TextFileNavigationPoint (Document doc, TextEditor buffer)
 			: base (doc)
 		{
 			var location = buffer.CaretLocation;
+			version = buffer.Version;
 			line = location.Line;
 			column = location.Column;
+			offset = buffer.CaretOffset;
 		}
 		
 		public TextFileNavigationPoint (FilePath file, int line, int column)
@@ -87,13 +94,24 @@ namespace MonoDevelop.Ide.Navigation
 				if (buf != null) {
 					doc.DisableAutoScroll ();
 					buf.RunWhenLoaded (() => {
-						buf.SetCaretLocation (Math.Max (line, 1), Math.Max (column, 1));
+						JumpToCurrentLocation (buf);
 					});
 				}
 			}
 			return doc;
 		}
-		
+
+		protected void JumpToCurrentLocation (TextEditor editor)
+		{
+			if (version.BelongsToSameDocumentAs (editor.Version)) {
+				var currentOffset = version.MoveOffsetTo (editor.Version, offset);
+				var loc = editor.OffsetToLocation (currentOffset);
+				editor.SetCaretLocation (loc);
+			} else {
+				editor.SetCaretLocation (Math.Max (line, 1), Math.Max (column, 1));
+			}
+		}
+
 		/*
 		
 		//FIXME: this currently isn't hooked up to any GUI. In addition, it should be done lazily, since it's expensive 
@@ -160,7 +178,7 @@ namespace MonoDevelop.Ide.Navigation
 			}
 			return indent;
 		}*/
-		
+
 		public override bool Equals (object o)
 		{
 			TextFileNavigationPoint other = o as TextFileNavigationPoint;

@@ -633,16 +633,6 @@ namespace MonoDevelop.AssemblyBrowser
 					if (!nav.MoveToParent ()) {
 						return null;
 					}
-					try {
-						if (nav.DataItem is TypeDefinition && PublicApiOnly) {
-							nav.MoveToFirstChild ();
-							result = SearchMember (nav, helpUrl, expandNode);
-							if (result != null)
-								return result;
-							nav.MoveToParent ();
-						}
-					} catch (Exception) {
-					}
 				}
 			} while (nav.MoveNext());
 			return null;

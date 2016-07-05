@@ -1,10 +1,10 @@
 ﻿//
-// DiffTests.cs
+// DummyTemplateGenerator.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       David Karlaš <david.karlas@xamarin.com>
 //
-// Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using System.Linq;
-using Mono.TextEditor.Utils;
-using UnitTests;
+using System.Reflection;
 
-namespace MonoDevelop.Ide.Editor
+namespace Mono.TextTemplating.Tests
 {
-	[TestFixture]
-	class DiffTests : TestBase
+	public class DummyTemplateGenerator : TemplateGenerator
 	{
-		[Test]
-		public void EmptyTreeList ()
+		protected override string ResolveAssemblyReference (string assemblyReference)
 		{
-			var editor = TextEditorFactory.CreateNewEditor ();
-			editor.Text = "1\n2\n3\n4\n5\n";
-
-			var editor2 = TextEditorFactory.CreateNewEditor ();
-			editor2.Text = "4\n1\n5\n2\n3\n";
-
-			var diff = editor.GetDiffAsString (editor2);
-
-			Assert.AreEqual ("--- \n+++ \n@@ -1,5 +1,5 @@\n+4\n 1\n+5\n 2\n 3\n-4\n-5\n", diff.Replace ("\r", ""));
-
+			var assemblyName = new AssemblyName (assemblyReference).Name;
+			if (assemblyName == typeof (Uri).Assembly.GetName ().Name)
+				return typeof (Uri).Assembly.Location;//System.dll
+			else if (assemblyName == typeof (System.Linq.Enumerable).Assembly.GetName ().Name)
+				return typeof (System.Linq.Enumerable).Assembly.Location;//System.Core.dll
+			return base.ResolveAssemblyReference (assemblyReference);
 		}
-
 	}
 }
+

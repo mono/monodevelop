@@ -34,6 +34,7 @@ using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -159,7 +160,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 						// Else we underline the error
 						if (errors != null) {
 							foreach (var error in errors) {
-								if (ctx.IsAdHocProject && !lexicalError.Contains (error.Id))
+								if ((ctx.IsAdHocProject || !(ctx.Project is MonoDevelop.Projects.DotNetProject)) && !lexicalError.Contains (error.Id))
 									continue;
 								UnderLineError (error);
 							}

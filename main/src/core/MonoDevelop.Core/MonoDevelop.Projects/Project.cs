@@ -2371,7 +2371,8 @@ namespace MonoDevelop.Projects
 		{
 			if (loadedItems != null)
 				loadedItems.Clear ();
-			
+
+			var localItems = new List<ProjectItem> ();
 			foreach (var buildItem in msproject.EvaluatedItemsIgnoringCondition) {
 				if (buildItem.IsImported)
 					continue;
@@ -2381,10 +2382,11 @@ namespace MonoDevelop.Projects
 				if (it == null)
 					continue;
 				it.Flags = flags;
-				Items.Add (it);
+				localItems.Add (it);
 				if (loadedItems != null)
 					loadedItems.Add (buildItem.SourceItem);
 			}
+			Items.AddRange (localItems);
 		}
 
 		protected override void OnSetFormat (MSBuildFileFormat format)

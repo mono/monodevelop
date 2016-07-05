@@ -70,8 +70,12 @@ namespace MonoDevelop.TextTemplating
 			var fx = Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5);
 			var ctx = Runtime.SystemAssemblyService.CurrentRuntime.AssemblyContext;
 
-			var fullname = ctx.FindInstalledAssembly (assemblyReference, null, fx);
+			if (assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase))
+				assemblyReference = assemblyReference.Remove (assemblyReference.Length - 4);
 
+			var fullname = ctx.FindInstalledAssembly (assemblyReference, null, fx);
+			if (fullname == null)
+				return null;
 			var asm = ctx.GetAssemblyFromFullName (fullname, null, fx);
 			if (asm != null)
 				return asm.Location;

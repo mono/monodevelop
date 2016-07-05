@@ -1,8 +1,8 @@
 ﻿//
-// DiffTests.cs
+// PackageRestoreTask.cs
 //
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Matt Ward <matt.ward@xamarin.com>
 //
 // Copyright (c) 2016 Xamarin Inc. (http://xamarin.com)
 //
@@ -23,32 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using System.Linq;
-using Mono.TextEditor.Utils;
-using UnitTests;
+using System.Threading.Tasks;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.PackageManagement
 {
-	[TestFixture]
-	class DiffTests : TestBase
+	class PackageRestoreTask : IDisposable
 	{
-		[Test]
-		public void EmptyTreeList ()
+		public PackageRestoreTask (Task task)
 		{
-			var editor = TextEditorFactory.CreateNewEditor ();
-			editor.Text = "1\n2\n3\n4\n5\n";
-
-			var editor2 = TextEditorFactory.CreateNewEditor ();
-			editor2.Text = "4\n1\n5\n2\n3\n";
-
-			var diff = editor.GetDiffAsString (editor2);
-
-			Assert.AreEqual ("--- \n+++ \n@@ -1,5 +1,5 @@\n+4\n 1\n+5\n 2\n 3\n-4\n-5\n", diff.Replace ("\r", ""));
-
+			PackageManagementMSBuildExtension.PackageRestoreTask = task;
 		}
 
+		public void Dispose ()
+		{
+			PackageManagementMSBuildExtension.PackageRestoreTask = null;
+		}
 	}
 }
+
