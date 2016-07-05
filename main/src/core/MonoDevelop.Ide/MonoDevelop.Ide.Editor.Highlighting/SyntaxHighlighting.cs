@@ -5,6 +5,7 @@ using YamlDotNet.RepresentationModel;
 using System.Linq;
 using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 using System.Collections.Immutable;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -39,7 +40,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length)
 		{
 			var cur = Document.GetLine (1);
-
 			var contextStack = ImmutableStack<SyntaxContext>.Empty;
 			contextStack = contextStack.Push (GetContext ("main"));
 			var scopeStack = ImmutableStack<string>.Empty;
@@ -47,77 +47,128 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			SyntaxContext currentContext;
 
 			var matchStack = ImmutableStack<SyntaxMatch>.Empty;
-			if (cur != line) {
+			if (cur != null && cur.Offset < line.EndOffsetIncludingDelimiter) {
 				do {
 					currentContext = contextStack.Peek ();
-					foreach (var curMatch in currentContext.Matches) {
-						var r = new Regex (curMatch.Match);
-						var match = r.Match (this.Document, cur.Offset, cur.Length);
-						if (match.Success) {
-							if (curMatch.Pop) {
+					foreach (var m in currentContext.Matches) {
+						var r = new Regex (m.Match);
+						var possibleMatch = r.Match (this.Document, cur.Offset, cur.Length);
+						if (possibleMatch.Success) {
+							if (m.Pop) {
 								contextStack = contextStack.Pop ();
 								scopeStack = scopeStack.Pop ();
 							}
-							if (curMatch.Push != null) {
-								var nextContext = curMatch.Push.GetContexts (this).FirstOrDefault ();
+							if (m.Push != null) {
+								var nextContext = m.Push.GetContexts (this).FirstOrDefault ();
 								if (nextContext != null) {
 									contextStack = contextStack.Push (nextContext);
-									scopeStack = scopeStack.Push (curMatch.Scope ?? scopeStack.Peek ());
+									scopeStack = scopeStack.Push (m.Scope ?? scopeStack.Peek ());
 								}
 							}
 						}
 					}
 					cur = cur.NextLine;
 				} while (cur != null && cur.Offset < line.Offset);
-				currentContext = contextStack.Peek ();
-
-				int curSegmentOffset = line.Offset;
-
-				var currentContexts = new List<SyntaxContext> ();
-				currentContexts.Add (currentContext);
-				currentContexts.AddRange (currentContext.Includes.Select (ctx => GetContext (ctx)).Where (ctx => ctx != null));
-				foreach (var ctx in currentContexts) {
-					foreach (var curMatch in ctx.Matches) {
-						var r = new Regex (curMatch.Match);
-						var match = r.Match (this.Document, offset, length);
-						if (match.Success) {
-							curSegmentOffset = match.Index + match.Length - line.Offset;
-
-							if (curMatch.Captures.Count > 0) {
-
-								foreach (var capture in curMatch.Captures) {
-									var grp = match.Groups [capture.Item1];
-									if (curSegmentOffset < grp.Index) {
-										yield return new ColoredSegment (curSegmentOffset, grp.Index - curSegmentOffset, scopeStack.Peek ());
-									}
-									yield return new ColoredSegment (grp.Index, grp.Length, capture.Item2);
-									curSegmentOffset = grp.Index + grp.Length;
-								}
-
-								if (curSegmentOffset < match.Index + match.Length) {
-									yield return new ColoredSegment (curSegmentOffset, match.Index + match.Length - curSegmentOffset, scopeStack.Peek ());
-								}
-							}
-
-							if (curMatch.Pop) {
-								contextStack = contextStack.Pop ();
-								scopeStack = scopeStack.Pop ();
-							}
-
-							if (curMatch.Push != null) {
-								var nextContext = curMatch.Push.GetContexts (this).FirstOrDefault ();
-								if (nextContext != null) {
-									contextStack = contextStack.Push (nextContext);
-									scopeStack = scopeStack.Push (curMatch.Scope ?? scopeStack.Peek ());
-								}
-							}
-						}
+			}
+			int curSegmentOffset = line.Offset;
+			bool deep = true;
+		restart:
+			currentContext = contextStack.Peek ();
+			Match match = null;
+			SyntaxMatch curMatch = null;
+			foreach (var m in currentContext.GetMatches (this, deep)) {
+				var r = new Regex (m.Match);
+				var possibleMatch = r.Match (this.Document, offset, length);
+				if (possibleMatch.Success) {
+					if (match == null || possibleMatch.Index < match.Index) {
+						match = possibleMatch;
+						curMatch = m;
 					}
 				}
-			
-				if (line.EndOffset - curSegmentOffset > 0)
-					yield return new ColoredSegment (curSegmentOffset, line.EndOffset - curSegmentOffset, scopeStack.Peek ());
 			}
+			if (match != null) {
+				if (curSegmentOffset < match.Index) {
+					yield return new ColoredSegment (curSegmentOffset, match.Index - curSegmentOffset, scopeStack.Peek ());
+					curSegmentOffset = match.Index;
+				}
+
+				if (curMatch.Captures.Count > 0) {
+					var captureList = new List<ColoredSegment> ();
+					foreach (var capture in curMatch.Captures) {
+						var grp = match.Groups [capture.Item1];
+						if (curSegmentOffset < grp.Index) {
+							Insert (captureList, new ColoredSegment (curSegmentOffset, grp.Index - curSegmentOffset, scopeStack.Peek ()));
+						}
+
+						Insert (captureList, new ColoredSegment (grp.Index, grp.Length, capture.Item2));
+						curSegmentOffset = grp.Index + grp.Length;
+					}
+					foreach (var item in captureList)
+						yield return item;
+				}
+
+				if (curMatch.Pop) {
+					if (match.Index + match.Length - curSegmentOffset > 0) {
+						yield return new ColoredSegment (curSegmentOffset, match.Index + match.Length - curSegmentOffset, scopeStack.Peek ());
+					}
+					curSegmentOffset = match.Index + match.Length;
+					contextStack = contextStack.Pop ();
+					scopeStack = scopeStack.Pop ();
+				}
+
+				if (curMatch.Push != null) {
+					if (curMatch.Scope != null && curSegmentOffset < match.Index + match.Length) {
+						yield return new ColoredSegment (curSegmentOffset, match.Index + match.Length - curSegmentOffset, curMatch.Scope);
+						curSegmentOffset = match.Index + match.Length;
+					}
+
+					var nextContext = curMatch.Push.GetContexts (this).FirstOrDefault ();
+					if (nextContext != null) {
+						contextStack = contextStack.Push (nextContext);
+						scopeStack = scopeStack.Push (curMatch.Scope ?? scopeStack.Peek ());
+
+						// deep = false;
+						length -= (match.Index + match.Length) - offset;
+						offset = match.Index + match.Length;
+
+						goto restart;
+					}
+				}
+				offset += match.Length;
+				length -= match.Length;
+				if (length > 0) {
+					deep = true;
+					goto restart;
+				}
+			}
+		
+			if (line.EndOffset - curSegmentOffset > 0) {
+				yield return new ColoredSegment (curSegmentOffset, line.EndOffset - curSegmentOffset, scopeStack.Peek ());
+			}
+		}
+
+		static void Insert (List<ColoredSegment> list, ColoredSegment newSegment)
+		{
+			if (list.Count == 0) {
+				list.Add (newSegment);
+				return;
+			}
+			int i = list.Count;
+			while (i > 0 && list [i - 1].EndOffset > newSegment.Offset) {
+				i--;
+			}
+			if (i >= list.Count) {
+				list.Add (newSegment);
+				return;
+			}
+			var item = list [i];
+
+
+			if (newSegment.EndOffset - item.EndOffset > 0)
+				list.Insert (i + 1, new ColoredSegment(newSegment.EndOffset, newSegment.EndOffset - item.EndOffset, item.ColorStyleKey));
+			
+			list.Insert (i + 1, newSegment);
+			list [i] = new ColoredSegment (item.Offset, newSegment.Offset - item.Offset, item.ColorStyleKey);
 		}
 
 		internal SyntaxContext GetContext (string name)
@@ -144,28 +195,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		readonly List<SyntaxMatch> matches = new List<SyntaxMatch> ();
 		public IReadOnlyList<SyntaxMatch> Matches { get { return matches; } }
 
-		internal void ParseMapping (KeyValuePair<YamlNode, YamlNode> mapping)
+		internal void ParseMapping (YamlSequenceNode seqNode)
 		{
-			var seqNode = mapping.Value as YamlSequenceNode;
 			if (seqNode != null) {
 				foreach (var node in seqNode.Children.OfType<YamlMappingNode> ()) {
-					if (node.Children.ContainsKey (new YamlScalarNode ("match"))) {
-						matches.Add (Sublime3Format.ReadMatch (node));
-						continue;
-					}
-					YamlNode val;
-					if (node.Children.TryGetValue (new YamlScalarNode ("meta_scope"), out val)) {
-						MetaScope = ((YamlScalarNode)val).Value;
-					}
-					if (node.Children.TryGetValue (new YamlScalarNode ("meta_content_scope"), out val)) {
-						MetaContentScope = ((YamlScalarNode)val).Value;
-					}
-					if (node.Children.TryGetValue (new YamlScalarNode ("meta_include_prototype"), out val)) {
-						MetaIncludePrototype = ((YamlScalarNode)val).Value;
-					}
-					if (node.Children.TryGetValue (new YamlScalarNode ("include"), out val)) {
-						includes.Add (((YamlScalarNode)val).Value);
-					}
+					ParseMapping (node);
 				}
 			}
 
@@ -175,9 +209,49 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			//}
 		}
 
+		internal void ParseMapping (YamlMappingNode node)
+		{
+			var children = node.Children;
+			if (children.ContainsKey (new YamlScalarNode ("match"))) {
+				matches.Add (Sublime3Format.ReadMatch (node));
+				return;
+			}
+
+			YamlNode val;
+			if (children.TryGetValue (new YamlScalarNode ("meta_scope"), out val)) {
+				MetaScope = ((YamlScalarNode)val).Value;
+			}
+			if (children.TryGetValue (new YamlScalarNode ("meta_content_scope"), out val)) {
+				MetaContentScope = ((YamlScalarNode)val).Value;
+			}
+			if (children.TryGetValue (new YamlScalarNode ("meta_include_prototype"), out val)) {
+				MetaIncludePrototype = ((YamlScalarNode)val).Value;
+			}
+			if (children.TryGetValue (new YamlScalarNode ("include"), out val)) {
+				includes.Add (((YamlScalarNode)val).Value);
+			}
+		}
+
 		public SyntaxContext (string name)
 		{
 			Name = name;
+		}
+
+		public IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlighting highlighting, bool deep)
+		{
+			foreach (var match in Matches)
+				yield return match;
+			if (!deep)
+				yield break;
+			foreach (var include in Includes) {
+				var ctx = highlighting.GetContext (include);
+				if (ctx == null) {
+					LoggingService.LogWarning ($"highlighting {highlighting.Name} can't find include {include}.");
+					continue;
+				}
+				foreach (var match in ctx.GetMatches (highlighting, deep))
+					yield return match;
+			}
 		}
 	}
 

@@ -118,13 +118,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			HslColor result = default(HslColor);
 			foreach (var setting in settings) {
-				if (setting.Scopes.Count == 0 || setting.Scopes.Any (scope => key.StartsWith (scope, StringComparison.Ordinal))) {
+				if (setting.Scopes.Count == 0 || setting.Scopes.Any (scope => IsCompatibleScope (scope.Trim (), colorName))) {
 					HslColor tryC;
 					if (setting.TryGetColor (key, out tryC))
 						result = tryC;
 				}
 			}
 			return result;
+		}
+
+		static bool IsCompatibleScope (string key, string scope)
+		{
+			var idx = key.IndexOf (' ');
+			if (idx >= 0)
+				key = key.Substring (0, idx);
+			return scope.Contains (key);
 		}
 
 		internal ChunkStyle GetChunkStyle (string colorStyleKey)

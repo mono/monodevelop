@@ -51,15 +51,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 			var highlighting = Sublime3Format.ReadHighlighting (input);
 			highlighting.Document = Editor;
-
-
-			Editor.CaretPositionChanged += delegate {
-				var line = Editor.GetLine (Editor.CaretLine);
-				Console.WriteLine ("------------------");
-				foreach (var seg in highlighting.GetColoredSegments (line, line.Offset, line.Length)) {
-					Console.WriteLine (seg);
-				}
-			};
+			Editor.SyntaxHighlighting = highlighting;
 		}
 
 		public override void Dispose ()

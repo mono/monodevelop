@@ -47,10 +47,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static SyntaxContext ReadContext (KeyValuePair<YamlNode, YamlNode> mapping)
 		{
 			var result = new SyntaxContext (((YamlScalarNode)mapping.Key).Value);
-			result.ParseMapping (mapping);
+			result.ParseMapping (mapping.Value as YamlSequenceNode);
 			return result;
 		}
-
 
 		internal static SyntaxMatch ReadMatch (YamlMappingNode mapping)
 		{
@@ -95,7 +94,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new SyntaxMatch (match, scope, captures, push, pop, set);
 		}
 
-
 		internal static ContextReference ReadContextReference (YamlNode value)
 		{
 			var seq = value as YamlSequenceNode;
@@ -107,10 +105,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static ContextReference ReadAnonymousMatchContextReference (YamlSequenceNode seq)
 		{
 			var ctx = new SyntaxContext (null);
+
 			foreach (var c in seq.Children.OfType<YamlMappingNode> ()) {
-				foreach (var mapping in c.Children) {
-					ctx.ParseMapping (mapping);
-				}
+				ctx.ParseMapping (c);
 			}
 
 			return new AnonymousMatchContextReference (ctx);
