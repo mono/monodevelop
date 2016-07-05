@@ -68,6 +68,18 @@ namespace MonoDevelop.Components.AutoTest.Results
 				list.Add (new NSTableResult(table, i));
 			return list;
 		}
+		
+		public override AppResult Text (string text, bool exact)
+		{
+			if (column != null) {
+				for (int i = 0; i < table.RowCount; i++) {
+					var data = table.DataSource.GetObjectValue (table, column, i);
+					if (CheckForText (data.ToString (), text, exact))
+						return new NSTableResult (table, i);
+				}
+			}
+			return null;
+		}
 
 		public override bool Select ()
 		{
