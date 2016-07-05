@@ -131,6 +131,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override AppResult Model (string column)
 		{
+			if (column == null)
+				return new NSTableResult (ResultObject);
 			return null;
 		}
 
