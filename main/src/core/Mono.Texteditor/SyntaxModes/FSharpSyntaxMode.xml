@@ -344,11 +344,15 @@
 		<Group color="User Field Declaration"/>
 		<Group color="Plain Text" />
 	</Match>
-	
-	<Match expression="\b([A-Z][\w]+)\b" ignorecase="False">
-		<Group color="User Types"/>
+
+	<Match expression="\b(Some|None)\b" ignorecase="False">
+		<Group color="User Types(Enums)"/>
 	</Match>
 	
+	<Match expression="\b([A-Z][\w]*)\b" ignorecase="False">
+		<Group color="User Types"/>
+	</Match>
+
 	<Match expression="(:\s*)(['\w]+)\b">
 		<Group color="Plain Text"/>
 		<Group color="User Types"/>
@@ -375,7 +379,14 @@
 		<Group color="Plain Text"/>
 	</Match>
 	
-	<Match expression="(module|type|and)(\s+)(\w+|``[^`]*``)" ignorecase="False">
+	<Match expression="(module|type|and)(\s+)(\w+|``[^`]+``)(\s?=)" ignorecase="False">
+		<Group color="Keyword(Namespace)"/>
+		<Group color="Plain Text"/>
+		<Group color="User Types"/>
+		<Group color="Plain Text"/>
+	</Match>
+	
+	<Match expression="(module|type|and)(\s+)(\w+|``[^`]+``)" ignorecase="False">
 		<Group color="Keyword(Namespace)"/>
 		<Group color="Plain Text"/>
 		<Group color="User Types"/>
