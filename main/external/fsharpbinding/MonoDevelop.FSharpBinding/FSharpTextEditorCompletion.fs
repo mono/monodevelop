@@ -129,6 +129,17 @@ module Completion =
         else
             None
 
+    let (|InsideBlockComment|_|) context =
+        let leftCommentDelimiter = context.editor.Text.LastIndexOf("(*", context.triggerOffset)
+        if leftCommentDelimiter = -1 then
+            None
+        else
+            let rightCommentDelimiter = context.editor.Text.IndexOf("*)", leftCommentDelimiter)
+            if rightCommentDelimiter = -1 || rightCommentDelimiter > context.triggerOffset then
+                Some InsideBlockComment
+            else
+                None
+
     let (|InvalidCompletionChar|_|) context =
         if Char.IsLetter context.completionChar || context.ctrlSpace || context.completionChar = '.' || context.completionChar = '#' then
             None
@@ -554,6 +565,7 @@ module Completion =
                     let completions = MonoDevelop.FSharp.Shared.Completion.getPathCompletion workingFolder directive path
                     return getCompletionList completions
                 | InvalidToken
+                | InsideBlockComment
                 | InvalidCompletionChar
                 | DoubleDot
                 | LiteralNumber
