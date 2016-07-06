@@ -98,6 +98,82 @@ namespace MonoDevelop.Components.AutoTest
 
 			return firstChild;
 		}
+
+		AppResult GenerateChildrenForNSWindow (NSWindow window, List<AppResult> fullResultSet)
+		{
+			AppResult node = new NSObjectResult (window) { SourceQuery = ToString () };
+			AppResult nsWindowLastNode = null;
+			fullResultSet.Add (node);
+
+			AppResult lastChild = null;
+			if (rootNode.FirstChild == null) {
+				rootNode.FirstChild = node;
+				lastChild = node;
+			} else {
+				lastChild.NextSibling = node;
+				node.PreviousSibling = lastChild;
+				lastChild = node;
+			}
+
+			foreach (var child in window.ContentView.Subviews) {
+				AppResult childNode = new NSObjectResult (child) { SourceQuery = ToString () };
+				fullResultSet.Add (childNode);
+
+				if (node.FirstChild == null) {
+					node.FirstChild = childNode;
+					nsWindowLastNode = childNode;
+				} else {
+					nsWindowLastNode.NextSibling = childNode;
+					childNode.PreviousSibling = nsWindowLastNode;
+					nsWindowLastNode = childNode;
+				}
+
+				if (child.Subviews != null) {
+					AppResult children = GenerateChildrenForNSView (child, fullResultSet);
+					childNode.FirstChild = children;
+				}
+			}
+			
+			foreach (var childWindow in window.ChildWindows)
+				GenerateChildrenForNSWindow (childWindow, fullResultSet);
+
+			NSToolbar toolbar = window.Toolbar;
+			AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = ToString () };
+
+			if (node.FirstChild == null) {
+				node.FirstChild = toolbarNode;
+				nsWindowLastNode = toolbarNode;
+			} else {
+				nsWindowLastNode.NextSibling = toolbarNode;
+				toolbarNode.PreviousSibling = nsWindowLastNode;
+				nsWindowLastNode = toolbarNode;
+			}
+
+			if (toolbar != null) {
+				AppResult lastItemNode = null;
+				foreach (var item in toolbar.Items) {
+					if (item.View != null) {
+						AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = ToString () };
+						fullResultSet.Add (itemNode);
+
+						if (toolbarNode.FirstChild == null) {
+							toolbarNode.FirstChild = itemNode;
+							lastItemNode = itemNode;
+						} else {
+							lastItemNode.NextSibling = itemNode;
+							itemNode.PreviousSibling = lastItemNode;
+							lastItemNode = itemNode;
+						}
+
+						if (item.View.Subviews != null) {
+							AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
+							itemNode.FirstChild = children;
+						}
+					}
+				}
+			}
+			return node;
+		}
 #endif
 
 		List<AppResult> ResultSetFromWindows ()
@@ -133,73 +209,7 @@ namespace MonoDevelop.Components.AutoTest
 			NSWindow[] nswindows = NSApplication.SharedApplication.Windows;
 			if (nswindows != null) {
 				foreach (var window in nswindows) {
-					AppResult node = new NSObjectResult (window) { SourceQuery = ToString () };
-					AppResult nsWindowLastNode = null;
-					fullResultSet.Add (node);
-
-					if (rootNode.FirstChild == null) {
-						rootNode.FirstChild = node;
-						lastChild = node;
-					} else {
-						lastChild.NextSibling = node;
-						node.PreviousSibling = lastChild;
-						lastChild = node;
-					}
-
-					foreach (var child in window.ContentView.Subviews) {
-						AppResult childNode = new NSObjectResult (child) { SourceQuery = ToString () };
-						fullResultSet.Add (childNode);
-
-						if (node.FirstChild == null) {
-							node.FirstChild = childNode;
-							nsWindowLastNode = childNode;
-						} else {
-							nsWindowLastNode.NextSibling = childNode;
-							childNode.PreviousSibling = nsWindowLastNode;
-							nsWindowLastNode = childNode;
-						}
-
-						if (child.Subviews != null) {
-							AppResult children = GenerateChildrenForNSView (child, fullResultSet);
-							childNode.FirstChild = children;
-						}
-					}
-
-					NSToolbar toolbar = window.Toolbar;
-					AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = ToString () };
-
-					if (node.FirstChild == null) {
-						node.FirstChild = toolbarNode;
-						nsWindowLastNode = toolbarNode;
-					} else {
-						nsWindowLastNode.NextSibling = toolbarNode;
-						toolbarNode.PreviousSibling = nsWindowLastNode;
-						nsWindowLastNode = toolbarNode;
-					}
-
-					if (toolbar != null) {
-						AppResult lastItemNode = null;
-						foreach (var item in toolbar.Items) {
-							if (item.View != null) {
-								AppResult itemNode = new NSObjectResult (item.View) { SourceQuery = ToString () };
-								fullResultSet.Add (itemNode);
-
-								if (toolbarNode.FirstChild == null) {
-									toolbarNode.FirstChild = itemNode;
-									lastItemNode = itemNode;
-								} else {
-									lastItemNode.NextSibling = itemNode;
-									itemNode.PreviousSibling = lastItemNode;
-									lastItemNode = itemNode;
-								}
-
-								if (item.View.Subviews != null) {
-									AppResult children = GenerateChildrenForNSView (item.View, fullResultSet);
-									itemNode.FirstChild = children;
-								}
-							}
-						}
-					}
+					GenerateChildrenForNSWindow (window, fullResultSet);
 				}
 			}
 #endif
