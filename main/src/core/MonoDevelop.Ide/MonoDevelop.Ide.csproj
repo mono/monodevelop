@@ -8555,7 +8555,6 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AutoInsertBracketTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\ErrorDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide\LocalizationService.cs" />
-    <Compile Include="MonoDevelop.Ide.Desktop\RecentItemsChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest.Results\NSTableResult.cs" />
   </ItemGroup>
   <ItemGroup>
