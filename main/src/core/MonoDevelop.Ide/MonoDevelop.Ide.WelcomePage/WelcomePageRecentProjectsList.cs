@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			itemCount = count;
 			
-			DesktopService.RecentFiles.ProjectsChanged += RecentFilesChanged;
+			DesktopService.RecentFiles.Changed += RecentFilesChanged;
 			RecentFilesChanged (null, null);
 
 			SetContent (box);
@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			destroyed = true;
 			base.OnDestroyed ();
-			DesktopService.RecentFiles.ProjectsChanged -= RecentFilesChanged;
+			DesktopService.RecentFiles.Changed -= RecentFilesChanged;
 		}
 
 		void RecentFilesChanged (object sender, EventArgs e)
