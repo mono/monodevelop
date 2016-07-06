@@ -1429,24 +1429,27 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			AssemblyDefinition cu = null;
 			foreach (var unit in definitions) {
-				if (unit.UnresolvedAssembly.AssemblyName == fileName)
+				if (unit.UnresolvedAssembly.AssemblyName == fileName || unit.UnresolvedAssembly.Location == fileName) {
 					cu = unit.CecilLoader.GetCecilObject (unit.UnresolvedAssembly);
-			}
-			if (cu == null)
-				return;
-			
-			ITreeNavigator nav = TreeView.GetRootNode ();
-			if (nav == null)
-				return;
-			
-			do {
-				if (nav.DataItem == cu) {
-					nav.ExpandToNode ();
-					nav.Selected = true;
-					nav.ScrollToNode ();
+					unit.LoadingTask.ContinueWith (t => {
+						Application.Invoke (delegate {
+							ITreeNavigator nav = TreeView.GetRootNode ();
+							if (nav == null)
+								return;
+
+							do {
+								if (nav.DataItem == cu || (nav.DataItem as AssemblyLoader)?.Assembly == cu) {
+									nav.ExpandToNode ();
+									nav.Selected = true;
+									nav.ScrollToNode ();
+									return;
+								}
+							} while (nav.MoveNext ());
+						});
+					});
 					return;
 				}
-			} while (nav.MoveNext());
+			}
 		}
 		
 		void Dispose (ITreeNavigator nav)
@@ -1643,10 +1646,17 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public NavigationPoint BuildNavigationPoint ()
 		{
-			var selectedEntity = TreeView.GetSelectedNode ()?.DataItem as IUnresolvedEntity;
-			if (selectedEntity == null)
-				return null;
-			return new AssemblyBrowserNavigationPoint (definitions, GetIdString (selectedEntity));
+			var node = TreeView.GetSelectedNode ();
+			var selectedEntity = node?.DataItem as IUnresolvedEntity;
+			AssemblyLoader loader = null;
+			if (selectedEntity != null) {
+				loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof (AssemblyLoader), true);
+				return new AssemblyBrowserNavigationPoint (definitions, loader, GetIdString (selectedEntity));
+			}
+			loader = node?.DataItem as AssemblyLoader;
+			if (loader != null)
+				return new AssemblyBrowserNavigationPoint (definitions, loader, null);
+			return null;
 		}
 		#endregion
 

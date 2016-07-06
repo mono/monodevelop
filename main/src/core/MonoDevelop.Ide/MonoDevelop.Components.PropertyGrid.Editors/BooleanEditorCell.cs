@@ -64,6 +64,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		
 		public override void GetSize (int availableWidth, out int width, out int height)
 		{
+			if (style == null)
+				InitializeStyle (Container);
 			width = indicatorSize;
 			height = indicatorSize;
 		}
