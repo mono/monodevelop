@@ -99,13 +99,12 @@ namespace MonoDevelop.Components.AutoTest
 			return firstChild;
 		}
 
-		AppResult GenerateChildrenForNSWindow (NSWindow window, List<AppResult> fullResultSet)
+		AppResult GenerateChildrenForNSWindow (NSWindow window, List<AppResult> fullResultSet, AppResult lastChild)
 		{
 			AppResult node = new NSObjectResult (window) { SourceQuery = ToString () };
 			AppResult nsWindowLastNode = null;
 			fullResultSet.Add (node);
 
-			AppResult lastChild = null;
 			if (rootNode.FirstChild == null) {
 				rootNode.FirstChild = node;
 				lastChild = node;
@@ -135,7 +134,7 @@ namespace MonoDevelop.Components.AutoTest
 			}
 			
 			foreach (var childWindow in window.ChildWindows)
-				GenerateChildrenForNSWindow (childWindow, fullResultSet);
+				GenerateChildrenForNSWindow (childWindow, fullResultSet, lastChild);
 
 			NSToolbar toolbar = window.Toolbar;
 			AppResult toolbarNode = new NSObjectResult (toolbar) { SourceQuery = ToString () };
@@ -209,7 +208,7 @@ namespace MonoDevelop.Components.AutoTest
 			NSWindow[] nswindows = NSApplication.SharedApplication.Windows;
 			if (nswindows != null) {
 				foreach (var window in nswindows) {
-					GenerateChildrenForNSWindow (window, fullResultSet);
+					GenerateChildrenForNSWindow (window, fullResultSet, lastChild);
 				}
 			}
 #endif
