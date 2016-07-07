@@ -691,7 +691,7 @@ namespace Mono.TextEditor.Highlighting
 					AddRealChunk (curChunk);
 				}
 				return startChunk;
-			}	
+			}
 		}
 
 		public override Rule GetRule (TextDocument document, string name)
