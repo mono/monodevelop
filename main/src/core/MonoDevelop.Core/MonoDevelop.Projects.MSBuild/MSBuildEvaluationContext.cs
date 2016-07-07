@@ -582,8 +582,16 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 				if (args.Length != argInfo.Length)
 					continue;
-				
-				return m;
+
+				bool isValid = true;
+				for (int n = 0; n < args.Length; n++) {
+					if (!CanConvertArg (m, n, args [n], argInfo [n].ParameterType)) {
+						isValid = false;
+						break;
+					}
+				}
+				if (isValid)
+					return m;
 			}
 			return methodWithParams;
 		}
@@ -593,13 +601,25 @@ namespace MonoDevelop.Projects.MSBuild
 			return pi.ParameterType.IsArray && pi.IsDefined (typeof (ParamArrayAttribute));
 		}
 
+		bool CanConvertArg (MethodBase method, int argNum, object value, Type parameterType)
+		{
+			var sval = value as string;
+			if (sval == "null" || value == null)
+				return !parameterType.IsValueType || typeof(Nullable).IsInstanceOfType (parameterType);
+
+			if (sval != null && parameterType == typeof (char []))
+				return true;
+
+			if (parameterType == typeof (char) && sval != null && sval.Length != 1)
+				return false;
+
+			return true;
+		}
+
 		object ConvertArg (MethodBase method, int argNum, object value, Type parameterType)
 		{
 			var sval = value as string;
-			if (sval == "null")
-				return null;
-
-			if (value == null)
+			if (sval == "null" || value == null)
 				return null;
 
 			if (sval != null && parameterType == typeof (char[]))
