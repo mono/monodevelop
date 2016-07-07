@@ -160,7 +160,7 @@ namespace Mono.TextEditor.Highlighting
 						yield break;
 					}
 				}
-				while (result.Next != null && result.Offset < minOffset) {
+				while (result.Next != null && result.EndOffset < minOffset) {
 					result = result.Next;
 				}
 				minOffset = result.Offset + result.Length;
