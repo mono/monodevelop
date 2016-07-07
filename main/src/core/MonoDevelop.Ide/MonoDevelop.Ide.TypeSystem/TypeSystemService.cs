@@ -598,12 +598,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		static void CleanupCache ()
 		{
 			string derivedDataPath = UserProfile.Current.CacheDir.Combine ("DerivedData");
-			string[] cacheDirectories;
+			IEnumerable<string> cacheDirectories;
 			
 			try {
 				if (!Directory.Exists (derivedDataPath))
 					return;
-				cacheDirectories = Directory.GetDirectories (derivedDataPath);
+				cacheDirectories = Directory.EnumerateDirectories (derivedDataPath);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting derived data directories.", e);
 				return;
@@ -611,7 +611,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var now = DateTime.Now;
 			foreach (var cacheDirectory in cacheDirectories) {
 				try {
-					foreach (var subDir in Directory.GetDirectories (cacheDirectory)) {
+					foreach (var subDir in Directory.EnumerateDirectories (cacheDirectory)) {
 						try {
 							var days = Math.Abs ((now - Directory.GetLastWriteTime (subDir)).TotalDays);
 							if (days > 30)
