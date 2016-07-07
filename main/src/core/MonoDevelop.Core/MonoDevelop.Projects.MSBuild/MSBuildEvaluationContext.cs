@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> ();
+		Dictionary<string, string> envVars = new Dictionary<string, string> ();
 
 		bool allResolved;
 		MSBuildProject project;
@@ -214,8 +215,11 @@ namespace MonoDevelop.Projects.MSBuild
 				return val;
 			if (parentContext != null)
 				return parentContext.GetPropertyValue (name);
-			else
-				return Environment.GetEnvironmentVariable (name);
+
+			if (envVars.TryGetValue (name, out val))
+				return val;
+
+			return envVars[name] = Environment.GetEnvironmentVariable (name);
 		}
 
 		public string GetMetadataValue (string name)
