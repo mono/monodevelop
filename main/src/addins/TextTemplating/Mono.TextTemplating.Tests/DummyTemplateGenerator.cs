@@ -32,6 +32,12 @@ namespace Mono.TextTemplating.Tests
 	{
 		protected override string ResolveAssemblyReference (string assemblyReference)
 		{
+			if (System.IO.Path.IsPathRooted (assemblyReference))
+				return assemblyReference;
+
+			if (assemblyReference.EndsWith (".dll", StringComparison.OrdinalIgnoreCase))
+				assemblyReference = assemblyReference.Remove (assemblyReference.Length - 4);
+
 			var assemblyName = new AssemblyName (assemblyReference).Name;
 			if (assemblyName == typeof (Uri).Assembly.GetName ().Name)
 				return typeof (Uri).Assembly.Location;//System.dll
