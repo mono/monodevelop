@@ -327,18 +327,22 @@ namespace MonoDevelop.Projects.MSBuild
 
 		readonly static char[] tagStart = new [] {'$','%','@'};
 
-		public string Evaluate (string str)
+		StringBuilder evaluationSb = new StringBuilder ();
+		string Evaluate (string str, StringBuilder sb)
 		{
 			if (str == null)
 				return null;
-			
 			int i = FindNextTag (str, 0);
 			if (i == -1)
 				return str;
 
 			int last = 0;
 
-			StringBuilder sb = new StringBuilder ();
+			if (sb == null) {
+				evaluationSb.Length = 0;
+				sb = evaluationSb;
+			}
+
 			do {
 				sb.Append (str, last, i - last);
 				int j = i;
@@ -354,6 +358,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 			sb.Append (str, last, str.Length - last);
 			return sb.ToString ();
+		}
+
+		public string Evaluate (string str)
+		{
+			return Evaluate (str, null);
 		}
 
 		bool EvaluateReference (string str, ref int i, out object val)
@@ -543,7 +552,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (arg.Length > 1 && IsQuote(arg [0]) && arg[arg.Length - 1] == arg [0])
 					arg = arg.Substring (1, arg.Length - 2);
 
-				list.Add (Evaluate (arg));
+				list.Add (Evaluate (arg, new StringBuilder ()));
 
 				if (str [j] == ')') {
 					// End of parameters list
