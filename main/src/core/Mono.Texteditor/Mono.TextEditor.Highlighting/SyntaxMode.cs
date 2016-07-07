@@ -160,7 +160,7 @@ namespace Mono.TextEditor.Highlighting
 						yield break;
 					}
 				}
-				while (result.Next != null && result.EndOffset < minOffset) {
+				while (result.Next != null && result.Offset < minOffset) {
 					result = result.Next;
 				}
 				minOffset = result.Offset + result.Length;
@@ -691,7 +691,7 @@ namespace Mono.TextEditor.Highlighting
 					AddRealChunk (curChunk);
 				}
 				return startChunk;
-			}
+			}	
 		}
 
 		public override Rule GetRule (TextDocument document, string name)
