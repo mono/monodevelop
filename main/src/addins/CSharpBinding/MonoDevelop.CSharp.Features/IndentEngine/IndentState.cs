@@ -481,7 +481,7 @@ namespace ICSharpCode.NRefactory6.CSharp
 				if (true /*Engine.options.AlignToMemberReferenceDot*/ && !Engine.isLineStart)
 				{
 					IsMemberReferenceDotHandled = true;
-					NextLineIndent.RemoveAlignment();
+					NextLineIndent.RemoveAlignment ();
 					NextLineIndent.SetAlignment(Engine.column - NextLineIndent.CurIndent - 1, true);
 				}
 				else if (Engine.isLineStart)
@@ -503,6 +503,10 @@ namespace ICSharpCode.NRefactory6.CSharp
 			else if (ch == Engine.newLineChar)
 			{
 				PreviousLineIndent = ThisLineIndent.CurIndent;
+			}
+			else if (ch == ',') {
+				if (IsMemberReferenceDotHandled)
+					NextLineIndent.RemoveAlignment ();
 			}
 
 			if (Engine.wordToken.ToString() == "else")
