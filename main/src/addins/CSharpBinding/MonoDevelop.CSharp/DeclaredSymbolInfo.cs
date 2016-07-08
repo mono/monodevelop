@@ -211,8 +211,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			names.Reverse();
-			return string.Join(".", names);
+			return string.Join(".", names.Reverse<string> ());
 		}
 
 		private static string GetNodeName(SyntaxNode node, bool includeTypeParameters)
