@@ -16,12 +16,17 @@ type ``Completion Tests``() =
             return documentContext.TryGetAst()
         }
 
-    let getCompletions (input: string) =
+    let getCompletions (input: string) parse =
         let offset = input.LastIndexOf "|"
         if offset = -1 then
             failwith "Input must contain a |"
         let input = input.Remove(offset, 1)
-        let doc = TestHelpers.createDoc input "defined"
+        let doc = 
+            if parse then
+                TestHelpers.createDoc input "defined"
+            else
+                TestHelpers.createDocWithoutParsing input "defined"
+
         let editor = doc.Editor
         editor.CaretOffset <- offset
         let ctx = new CodeCompletionContext()
@@ -35,7 +40,7 @@ type ``Completion Tests``() =
 
     [<Test>]
     member x.``Completes namespace``() =
-        let results = getCompletions "open System.Text.|"
+        let results = getCompletions "open System.Text.|" true
         results |> should contain "RegularExpressions"
 
     [<Test>]
@@ -45,7 +50,7 @@ type ``Completion Tests``() =
                         module mymodule =
                             let completeme = 1
                             let x = compl|
-                        """
+                        """ true
                         
         results |> should contain "completeme"
 
@@ -67,7 +72,7 @@ type ``Completion Tests``() =
     [<TestCase("[ for i in 0 .|. 99")>]
     [<TestCase("for s|")>]
     member x.``Empty completions``(input: string) =
-        let results = getCompletions input
+        let results = getCompletions input true
         results |> should be Empty
 
     [<TestCase("let x = s|")>]
@@ -75,49 +80,63 @@ type ``Completion Tests``() =
     [<TestCase("let x (y:strin|")>]
     [<TestCase("member x.Something (y:strin|")>]
     member x.``Not empty completions``(input: string) =
-        let results = getCompletions input
+        let results = getCompletions input true
         results |> shouldnot be Empty
 
     [<Test>]
     member x.``Keywords don't appear after dot``() =
-        let results = getCompletions @"let x = string.l|"
+        let results = getCompletions @"let x = string.l|" true
         results |> shouldnot contain "let"
 
     [<Test>]
     member x.``Keywords appear after whitespace``() =
-        let results = getCompletions @" l|"
+        let results = getCompletions @" l|" true
         results |> should contain "let"
 
     [<Test>]
     member x.``Keywords appear at start of line``() =
-        let results = getCompletions @" l|"
+        let results = getCompletions @" l|"true
         results |> should contain "let"
 
     [<Test>]
     member x.``Keywords appear at column 0``() =
-        let results = getCompletions @"o|"
+        let results = getCompletions @"o|"true
         results |> should contain "open"
 
     [<Test>]
     member x.``Keywords can be parameters``() =
-        let results = getCompletions @"let x = new System.IO.FileInfo(n|"
+        let results = getCompletions @"let x = new System.IO.FileInfo(n|" true
         results |> should contain "null"
 
     [<Test>]
     member x.``Completes modifiers``() =
-        let results = getCompletions @"let mut|"
+        let results = getCompletions @"let mut|" true
         results |> should contain "mutable"
 
     [<Test>]
+    member x.``Completes idents without parse results``() =
+        let results = getCompletions @"let add first second = f|" false
+        results |> should contain "first"
+
+    [<Test>]
+    member x.``Does not complete long idents without parse results``() =
+        let results = getCompletions @"let add first second = first.|" false
+        results |> shouldnot contain "first"
+
+    [<Test>]
+    member x.``Does not complete current residue without parse results``() =
+        let results = getCompletions @"let add first second = z|" false
+        results |> shouldnot contain "z"
+
+     
+    [<Test>]
     member x.``Completes lambda``() =
-        let results = getCompletions @"let x = ""string"" |> Seq.map (fun c -> c.|"
+        let results = getCompletions @"let x = ""string"" |> Seq.map (fun c -> c.|" true
         results |> should contain "ToString"
         results |> shouldnot contain "mutable"
 
     [<Test>]
     member x.``Completes local identifier with mismatched parens``() =
-        let identifier = 1
-
         let results = getCompletions
                         """
                         type rectangle(width, height) =
@@ -126,8 +145,32 @@ type ``Completion Tests``() =
                         module s =
                             let height = 10
                             let x = rectangle(he|
-                        """
+                        """ true
         results |> should contain "height"
+
+    [<Test>]
+    member x.``Does not complete inside multiline comment``() =
+        let results = getCompletions
+                        """
+                        (*
+                        Li|
+                        *)
+                        """ true
+        results |> should be Empty
+
+    [<Test>]
+    member x.``Does not complete inside multiline comment without end delimiter``() =
+        let results = getCompletions
+                        """
+                        (*
+                        Li|
+                        """ true
+        results |> should be Empty
+
+    [<Test>]
+    member x.``Does not complete inside single line comment``() =
+        let results = getCompletions "// Li|" true
+        results |> should be Empty
 
     [<Test>]
     member x.``Completes attribute``() =
@@ -140,7 +183,7 @@ type ``Completion Tests``() =
               inherit TestAttribute()
             [<t|
             """
-        let results = getCompletions input
+        let results = getCompletions input true
         results |> should contain "Test"
         results |> should contain "TestCase"
         results |> shouldnot contain "Array"

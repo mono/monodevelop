@@ -21,8 +21,11 @@
     <ExternalConsole>true</ExternalConsole>
     <PlatformTarget>
     </PlatformTarget>
+    <GenerateTailCalls>true</GenerateTailCalls>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\build\AddIns\BackendBindings</OutputPath>
     <DefineConstants>
