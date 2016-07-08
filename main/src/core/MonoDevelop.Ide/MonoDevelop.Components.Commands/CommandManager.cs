@@ -816,6 +816,18 @@ namespace MonoDevelop.Components.Commands
 		{
 			return GetCommand (cmdId) as ActionCommand;
 		}
+
+		/// <summary>
+		/// Gets all registered commands with the specified binding
+		/// </summary>
+		internal IEnumerable<Command> GetCommands (KeyBinding binding)
+		{
+			var cmds = bindings.Commands (binding);
+			if (cmds == null)
+				yield break;
+			foreach (var cmd in bindings.Commands (binding))
+				yield return cmd;
+		}
 		
 		/// <summary>
 		/// Creates a menu bar.
