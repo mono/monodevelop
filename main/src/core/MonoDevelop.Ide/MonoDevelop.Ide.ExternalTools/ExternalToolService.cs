@@ -76,7 +76,7 @@ namespace MonoDevelop.Ide.ExternalTools
 				ActionCommand cmd = new ActionCommand ("MonoDevelop.CustomCommands.Command" + i, tool.MenuCommand, null);
 				cmd.DefaultHandler = new RunCustomToolHandler (tool);
 				cmd.Category = GettextCatalog.GetString ("Tools (Custom)");
-				cmd.Description = GettextCatalog.GetString ("Start tool") + " " + string.Join (string.Empty, tool.MenuCommand.Split ('&'));
+				cmd.Description = GettextCatalog.GetString ("Start tool {0}", string.Join (string.Empty, tool.MenuCommand.Split ('&')));
 				cmd.AccelKey = tool.AccelKey;
 				IdeApp.CommandService.RegisterCommand (cmd);
 			}

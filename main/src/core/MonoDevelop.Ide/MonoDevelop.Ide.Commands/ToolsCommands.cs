@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Commands
 				//Create CommandInfo object
 				CommandInfo commandInfo = new CommandInfo ();
 				commandInfo.Text = externalTool.MenuCommand;
-				commandInfo.Description = GettextCatalog.GetString ("Start tool") + " " + string.Join (string.Empty, externalTool.MenuCommand.Split('&'));
+				commandInfo.Description = GettextCatalog.GetString ("Start tool {0}", string.Join (string.Empty, externalTool.MenuCommand.Split('&')));
 				commandInfo.AccelKey = externalTool.AccelKey;
 
 				//Add menu item
