@@ -265,6 +265,10 @@ namespace MonoDevelop.Ide
 			GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
 			
 			switch (accels [0].Key) {
+			case Gdk.Key.space:
+			case Gdk.Key.KP_Space:
+				RightItem (true);
+				break;
 			case Gdk.Key.Left:
 			case Gdk.Key.KP_Left:
 				LeftItem ();
@@ -332,7 +336,7 @@ namespace MonoDevelop.Ide
 
 		public event EventHandler<RequestActionEventArgs> RequestClose;
 		
-		void LeftItem ()
+		void LeftItem (bool wrap = false)
 		{
 			for (int i = 0; i < categories.Count; i++) {
 				var cat = categories[i];
@@ -340,6 +344,10 @@ namespace MonoDevelop.Ide
 				if (idx < 0)
 					continue;
 				int relIndex = idx - cat.FirstVisibleItem;
+				if (wrap && i == 0) {
+					LastCategory (relIndex);
+					return;
+				}
 				if (relIndex / maxItems == 0) {
 					Category prevCat = GetPrevCat (i);
 					if (prevCat == cat)
@@ -353,7 +361,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		void RightItem ()
+		void RightItem (bool wrap = false)
 		{
 			for (int i = 0; i < categories.Count; i++) {
 				var cat = categories[i];
@@ -368,9 +376,37 @@ namespace MonoDevelop.Ide
 					if (i + 1 < categories.Count) {
 						int newIndex = Math.Min (nextCat.Items.Count - 1, nextCat.FirstVisibleItem + relIndex);
 						ActiveItem = nextCat.Items [newIndex];
-					}
+					} else if (wrap)
+						FirstCategory (relIndex);
 				} else {
 					ActiveItem = cat.Items [relIndex + maxItems];
+				}
+				return;
+			}
+		}
+
+		public void LastCategory (int selIndex = 0)
+		{
+			for (int i = categories.Count - 1; i >= 0; i--) {
+				var cat = categories [i];
+
+				if (cat.Items.Count > 0) {
+					int newIndex = Math.Min (cat.Items.Count - 1, cat.FirstVisibleItem + selIndex);
+					ActiveItem = cat.Items [newIndex];
+					return;
+				}
+			}
+		}
+
+		public void FirstCategory (int selIndex = 0)
+		{
+			for (int i = 0; i < categories.Count; i++) {
+				var cat = categories [i];
+
+				if (cat.Items.Count > 0) {
+					int newIndex = Math.Min (cat.Items.Count - 1, cat.FirstVisibleItem + selIndex);
+					ActiveItem = cat.Items [newIndex];
+					return;
 				}
 			}
 		}
