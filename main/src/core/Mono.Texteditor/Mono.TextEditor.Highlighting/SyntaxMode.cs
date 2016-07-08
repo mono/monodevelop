@@ -146,7 +146,7 @@ namespace Mono.TextEditor.Highlighting
 						int endOffset = result.EndOffset;
 						result.Offset = offset;
 						result.Length = endOffset - offset;
-						minOffset = result.Offset + result.Length;
+						minOffset = result.Offset;
 					}
 				}
 			}
