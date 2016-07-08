@@ -466,10 +466,10 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		async Task<ProjectFile[]> GetCompileItemsFromCoreCompileDependenciesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
-			List<ProjectFile> result = null;
+			ProjectFile[] result = null;
 			lock (evaluatedCompileItemsTask) {
 				if (!evaluatedCoreCompileDependencies) {
-					result = new List<ProjectFile> ();
+					result = new ProjectFile[0];
 					evaluatedCoreCompileDependencies = true;
 				}
 			}
@@ -490,17 +490,15 @@ namespace MonoDevelop.Projects
 
 					var evalResult = await this.RunTarget (monitor, dependsList, configuration, ctx);
 					if (evalResult != null && !evalResult.BuildResult.HasErrors && evalResult.Items != null) {
-						var evalItems = evalResult
+						result = evalResult
 							.Items
 							.Select (i => CreateProjectFile (i))
-							.ToList ();
-
-						result.AddRange (evalItems);
+							.ToArray ();
 					}
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (string.Format ("Error running target {0}", dependsList), ex);
 				}
-				evaluatedCompileItemsTask.SetResult (result.ToArray ());
+				evaluatedCompileItemsTask.SetResult (result);
 			}
 
 			return await evaluatedCompileItemsTask.Task;
