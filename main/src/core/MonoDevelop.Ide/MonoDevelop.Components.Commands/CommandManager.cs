@@ -822,10 +822,10 @@ namespace MonoDevelop.Components.Commands
 		/// </summary>
 		internal IEnumerable<Command> GetCommands (KeyBinding binding)
 		{
-			var cmds = bindings.Commands (binding);
-			if (cmds == null)
+			var commands = bindings.Commands (binding);
+			if (commands == null)
 				yield break;
-			foreach (var cmd in bindings.Commands (binding))
+			foreach (var cmd in commands)
 				yield return cmd;
 		}
 		
