@@ -417,7 +417,7 @@ namespace MonoDevelop.CSharp
 			: this()
 		{
 			this.FilePath = node.SyntaxTree.FilePath;
-			Name = string.Intern (name);
+			Name = name;
 //			ContainerDisplayName = string.Intern (containerDisplayName);
 			FullyQualifiedContainerName = fullyQualifiedContainerName;
 			Kind = kind;
