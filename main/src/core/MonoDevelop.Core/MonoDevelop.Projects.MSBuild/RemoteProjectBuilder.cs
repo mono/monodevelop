@@ -47,6 +47,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public int ReferenceCount { get; set; }
 		public DateTime ReleaseTime { get; set; }
+		public SemaphoreSlim Semaphore { get; } = new SemaphoreSlim (1, 1);
 		
 		public RemoteBuildEngine (Process proc, IBuildEngine engine)
 		{
@@ -290,18 +291,18 @@ namespace MonoDevelop.Projects.MSBuild
 					MSBuildResult result;
 					try {
 						BeginOperation ();
-						lock (engine) {
-							// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
-							result = builder.Run (
-										configurations, null, MSBuildVerbosity.Normal,
-										new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
-									);
-						}
+						await engine.Semaphore.WaitAsync (cancellationToken);
+						// FIXME: This lock should not be necessary, but remoting seems to have problems when doing many concurrent calls.
+						result = builder.Run (
+									configurations, null, MSBuildVerbosity.Normal,
+									new [] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null, null, taskId
+								);
 					} catch (Exception ex) {
 						CheckDisconnected ();
 						LoggingService.LogError ("ResolveAssemblyReferences failed", ex);
 						return new AssemblyReference [0];
 					} finally {
+						engine.Semaphore.Release ();
 						EndOperation ();
 					}
 
