@@ -338,6 +338,21 @@ namespace MonoDevelop.Components.Docking
 			frame.SetDockLocation (this, location);
 		}
 
+		internal bool HasFocus {
+			get {
+				if (gtkContent.HasFocus || widget.HasFocus)
+					return true;
+				
+				Gtk.Window win = gtkContent.Toplevel as Gtk.Window;
+				if (win != null) {
+					if (Status == DockItemStatus.AutoHide)
+						return win.HasToplevelFocus;
+					return (win.HasToplevelFocus && win.Focus?.IsChildOf (widget) == true);
+				}
+				return false;
+			}
+		}
+
 		internal void SetFocus ()
 		{
 			SetFocus (gtkContent);

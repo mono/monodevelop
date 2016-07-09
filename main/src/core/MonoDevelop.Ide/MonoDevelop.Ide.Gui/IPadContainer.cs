@@ -88,6 +88,8 @@ namespace MonoDevelop.Ide.Gui
 		/// will be automatically reset when the pad is made visible.
 		/// </summary>
 		bool HasNewData { get; set; }
+
+		bool HasFocus { get; }
 		
 		/// <summary>
 		/// Interface providing the content widget
@@ -226,6 +228,10 @@ namespace MonoDevelop.Ide.Gui
 			set {
 				Item.Visible = value;
 			}
+		}
+
+		public bool HasFocus {
+			get { return Item.HasFocus; }
 		}
 		
 		public bool AutoHide {

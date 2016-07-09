@@ -1409,6 +1409,17 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		public static bool IsChildOf (this Gtk.Widget child, Gtk.Widget widget)
+		{
+			var parent = child.Parent;
+			while (parent != null) {
+				if (parent == widget)
+					return true;
+				parent = parent.Parent;
+			};
+			return false;
+		}
+
 #if MAC
 		static void OnMappedDisableButtons (object sender, EventArgs args)
 		{

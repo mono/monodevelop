@@ -652,7 +652,7 @@ namespace MonoDevelop.Ide
 					Title = pad.Title,
 					Tag = pad
 				};
-				if (pad.InternalContent.Initialized && pad.Window.Content.Control.HasFocus)
+				if (pad.InternalContent.Initialized && pad.Window.HasFocus)
 					activeItem = item;
 				padCategory.AddItem (item);
 			}
