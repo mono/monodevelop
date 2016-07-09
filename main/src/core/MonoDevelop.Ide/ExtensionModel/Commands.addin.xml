@@ -774,13 +774,13 @@
 			_description = "Switch to previous document" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchNextPad"
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchNextPad"
-			shortcut = "Control+Alt+Tab"
+			shortcut = "Alt+F6"
 			macShortcut = "Control+Alt+Tab"
 			_label = "Switch to next pad"
 			_description = "Switch to next pad" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchPreviousPad"
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchPreviousPad"
-			shortcut = "Control+Shift+Alt+Tab"
+			shortcut = "Shift+Alt+F6"
 			macShortcut = "Control+Shift+Alt+Tab"
 			_label = "Switch to previous pad"
 			_description = "Switch to previous pad" />

@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide
 		const int headerDistance = 4;
 		const int maxRows = 2;
 		const int itemPadding = 3;
+		KeyboardShortcut initialKey;
 		
 		Item activeItem;
 		public Item ActiveItem {
@@ -263,49 +264,69 @@ namespace MonoDevelop.Ide
 			Gdk.ModifierType mod;
 			KeyboardShortcut[] accels;
 			GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
-			
-			switch (accels [0].Key) {
-			case Gdk.Key.space:
-			case Gdk.Key.KP_Space:
-				RightItem (true);
-				break;
-			case Gdk.Key.Left:
-			case Gdk.Key.KP_Left:
-				LeftItem ();
-				break;
-			case Gdk.Key.Right:
-			case Gdk.Key.KP_Right:
-				RightItem ();
-				break;
-			case Gdk.Key.Up:
-			case Gdk.Key.KP_Up:
-				PrevItem (false);
-				break;
-			case Gdk.Key.Down:
-			case Gdk.Key.KP_Down:
-				NextItem (false);
-				break;
-			case Gdk.Key.Tab:
+			if (initialKey.IsEmpty)
+				initialKey = new KeyboardShortcut (key, mod);
+
+			if (accels [0].Key == initialKey.Key) {
 				if ((accels [0].Modifier & ModifierType.ShiftMask) == 0)
 					NextItem (true);
 				else
 					PrevItem (true);
-				break;
-			case Gdk.Key.Return:
-			case Gdk.Key.KP_Enter:
-			case Gdk.Key.ISO_Enter:
-				OnRequestClose (new RequestActionEventArgs (true));
-				break;
-			case Gdk.Key.Escape:
-				OnRequestClose (new RequestActionEventArgs (false));
-				break;
+			} else {
+				switch (accels [0].Key) {
+					case Gdk.Key.space:
+					case Gdk.Key.KP_Space:
+						RightItem (true);
+						break;
+					case Gdk.Key.Left:
+					case Gdk.Key.KP_Left:
+						LeftItem ();
+						break;
+					case Gdk.Key.Right:
+					case Gdk.Key.KP_Right:
+						RightItem ();
+						break;
+					case Gdk.Key.Up:
+					case Gdk.Key.KP_Up:
+						PrevItem (false);
+						break;
+					case Gdk.Key.Down:
+					case Gdk.Key.KP_Down:
+						NextItem (false);
+						break;
+					case Gdk.Key.Tab:
+						if ((accels [0].Modifier & ModifierType.ShiftMask) == 0)
+							NextItem (true);
+						else
+							PrevItem (true);
+						break;
+					case Gdk.Key.Return:
+					case Gdk.Key.KP_Enter:
+					case Gdk.Key.ISO_Enter:
+						OnRequestClose (new RequestActionEventArgs (true));
+						break;
+					case Gdk.Key.Escape:
+						OnRequestClose (new RequestActionEventArgs (false));
+					break;
+				}
 			}
 			return base.OnKeyPressEvent (evnt);
 		}
 		
 		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
 		{
-			if (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R) {
+			if (initialKey.IsEmpty) {
+				Gdk.Key key;
+				Gdk.ModifierType mod;
+				KeyboardShortcut [] accels;
+				GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
+				initialKey = new KeyboardShortcut (key, mod);
+			}
+
+			var releaseMods = GtkWorkarounds.KeysForMod (initialKey.Modifier);
+
+			if ((releaseMods.Length == 0 && (evnt.Key == Gdk.Key.Control_L || evnt.Key == Gdk.Key.Control_R)) ||
+			    releaseMods.Contains (evnt.Key)) {
 				OnRequestClose (new RequestActionEventArgs (true));
 			}
 			return base.OnKeyReleaseEvent (evnt);

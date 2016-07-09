@@ -759,6 +759,21 @@ namespace MonoDevelop.Components
 			return mod;
 		}
 
+		public static Gdk.Key[] KeysForMod (Gdk.ModifierType mod)
+		{
+			switch (mod) {
+			case Gdk.ModifierType.ControlMask:
+				return new Gdk.Key [] { Gdk.Key.Control_R, Gdk.Key.Control_L };
+			case Gdk.ModifierType.Mod1Mask:
+				return new Gdk.Key [] { Gdk.Key.Alt_R, Gdk.Key.Alt_L };
+			case Gdk.ModifierType.ShiftMask:
+				return new Gdk.Key [] { Gdk.Key.Shift_R, Gdk.Key.Shift_L };
+			case Gdk.ModifierType.MetaMask:
+				return new Gdk.Key [] { Gdk.Key.Meta_R, Gdk.Key.Meta_L };
+			}
+			return new Gdk.Key [0];
+		}
+
 		static void AddIfNotDuplicate<T> (List<T> list, T item) where T : IEquatable<T>
 		{
 			for (int i = 0; i < list.Count; i++) {
