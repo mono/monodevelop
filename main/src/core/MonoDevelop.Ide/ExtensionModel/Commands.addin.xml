@@ -772,6 +772,18 @@
 			macShortcut = "Control|Shift|Tab"
 			_label = "Switch to previous document"
 			_description = "Switch to previous document" />
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchNextPad"
+			defaultHandler = "MonoDevelop.Ide.Commands.SwitchNextPad"
+			shortcut = "Control+Alt+Tab"
+			macShortcut = "Control+Alt+Tab"
+			_label = "Switch to next pad"
+			_description = "Switch to next pad" />
+	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchPreviousPad"
+			defaultHandler = "MonoDevelop.Ide.Commands.SwitchPreviousPad"
+			shortcut = "Control+Shift+Alt+Tab"
+			macShortcut = "Control+Shift+Alt+Tab"
+			_label = "Switch to previous pad"
+			_description = "Switch to previous pad" />
 	</Category>
 
 	<!-- HelpCommands -->

@@ -593,9 +593,16 @@ namespace MonoDevelop.Ide
 		Label labelType     = new Label ();
 		Label labelTitle    = new Label ();
 		DocumentList documentList = new DocumentList ();
-		
-		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : base(Gtk.WindowType.Toplevel)
+
+		public DocumentSwitcher (Gtk.Window parent, bool startWithNext) : this (parent, null, startWithNext)
 		{
+		}
+
+		public DocumentSwitcher (Gtk.Window parent, string category, bool startWithNext) : base(Gtk.WindowType.Toplevel)
+		{
+			if (string.IsNullOrEmpty (category))
+				category = GettextCatalog.GetString ("Documents");
+			
 			IdeApp.CommandService.IsEnabled = false;
 			this.documents = new List<MonoDevelop.Ide.Gui.Document> (
 				IdeApp.Workbench.Documents.OrderByDescending (d => d.LastTimeActive));
@@ -652,8 +659,10 @@ namespace MonoDevelop.Ide
 					Title = pad.Title,
 					Tag = pad
 				};
-				if (pad.InternalContent.Initialized && pad.Window.HasFocus)
-					activeItem = item;
+				if (category == padCategory.Title) {
+					if (activeItem == null || (pad.InternalContent.Initialized && pad.Window.HasFocus))
+						activeItem = item;
+				}
 				padCategory.AddItem (item);
 			}
 			documentList.AddCategory (padCategory);
@@ -668,8 +677,10 @@ namespace MonoDevelop.Ide
 					Path = doc.Name,
 					Tag = doc
 				};
-				if (doc.Window.ActiveViewContent.Control.HasFocus)
-					activeItem = item;
+				if (category == padCategory.Title) {
+					if (activeItem == null || doc.Window.ActiveViewContent.Control.HasFocus)
+						activeItem = item;
+				}
 				documentCategory.AddItem (item);
 			}
 			documentList.AddCategory (documentCategory);
