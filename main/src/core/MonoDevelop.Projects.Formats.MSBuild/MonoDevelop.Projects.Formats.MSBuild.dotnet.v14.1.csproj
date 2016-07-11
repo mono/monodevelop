@@ -39,7 +39,7 @@
   <!-- TODO: Linux -->
   <PropertyGroup>
     <MSBuild_14_1_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_14_1_BinDir>
-    <MSBuild_14_1_BinDir Condition="'$(OS)' == 'Unix'">\Library\Frameworks\Mono.framework\Versions\Current\lib\mono\msbuild\14.1\bin\</MSBuild_14_1_BinDir>
+    <MSBuild_14_1_BinDir Condition="'$(OS)' == 'Unix'">$(MSBuildToolsPath)\..\msbuild\14.1\bin\</MSBuild_14_1_BinDir>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
