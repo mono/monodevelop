@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.CustomTools
 			CustomToolExtensionNode node;
 			if (nodes.TryGetValue (name, out node)) {
 				try {
-					return new SingleFileCustomToolWrapper (node.Tool);
+					return node.Tool;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error loading generator '" + name + "'", ex);
 					nodes.Remove (name);
