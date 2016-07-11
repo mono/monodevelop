@@ -34,7 +34,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.CustomTools
 {
-	class MSBuildCustomTool : ISingleFileCustomTool
+	class MSBuildCustomTool : SingleProjectFileCustomTool
 	{
 		readonly string targetName;
 
@@ -43,9 +43,13 @@ namespace MonoDevelop.Ide.CustomTools
 			this.targetName = targetName;
 		}
 
-		public async Task Generate (ProgressMonitor monitor, ProjectFile file, SingleFileCustomToolResult result)
+		public override async Task Generate (ProgressMonitor monitor, Project project, ProjectFile file, SingleFileCustomToolResult result)
 		{
-			var buildResult = await file.Project.PerformGeneratorAsync (monitor, IdeApp.Workspace.ActiveConfiguration, this.targetName);
+			if (project == null) {
+				return;
+			}
+
+			var buildResult = await project.PerformGeneratorAsync (monitor, IdeApp.Workspace.ActiveConfiguration, this.targetName);
 
 			foreach (var err in buildResult.BuildResult.Errors) {
 				result.Errors.Add (new CompilerError (err.FileName, err.Line, err.Column, err.ErrorNumber, err.ErrorText) {
