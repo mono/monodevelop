@@ -28,6 +28,7 @@ using Mono.TextEditor;
 using Gtk;
 using MonoDevelop.Components;
 using Gdk;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -105,13 +106,14 @@ namespace MonoDevelop.SourceEditor
 			using (var cr = CairoHelper.Create (evnt.Window)) {
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
+
+				cr.SetSourceColor (SyntaxModeService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationTextBackground));
 				cr.Fill ();
 				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
-				cr.SetSourceColor (textEditor.ColorStyle.NotificationText.Background);
+				cr.SetSourceColor (SyntaxModeService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationTextBackground));
 				cr.FillPreserve ();
 
-				cr.SetSourceColor (textEditor.ColorStyle.NotificationBorder.Color);
+				cr.SetSourceColor (SyntaxModeService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationBorder));
 				cr.Stroke();
 			}
 

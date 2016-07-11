@@ -38,6 +38,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core;
 using System.IO;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -46,7 +47,7 @@ namespace Mono.TextEditor
 		ImmutableText buffer;
 		readonly ILineSplitter splitter;
 
-		ISyntaxMode syntaxMode = null;
+		MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting syntaxMode = null;
 
 		TextSourceVersionProvider versionProvider = new TextSourceVersionProvider ();
 
@@ -63,7 +64,7 @@ namespace Mono.TextEditor
 				if (mimeType != value) {
 					lock (this) {
 						mimeType = value;
-						SyntaxMode = SyntaxModeService.GetSyntaxMode (this, value);
+						SyntaxMode = SyntaxModeService.GetSyntaxHighlighting (FileName, value);
 						OnMimeTypeChanged (EventArgs.Empty);
 					}
 				}
@@ -128,17 +129,13 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal ISyntaxMode SyntaxMode {
+		internal MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting SyntaxMode {
 			get {
-				return syntaxMode ?? new SyntaxMode (this);
+				return syntaxMode ?? MonoDevelop.Ide.Editor.Highlighting.DefaultSyntaxHighlighting.Instance;
 			}
 			set {
-				if (syntaxMode != null)
-					syntaxMode.Document = null;
 				var old = syntaxMode;
 				syntaxMode = value;
-				if (syntaxMode != null)
-					syntaxMode.Document = this;
 				OnSyntaxModeChanged (new SyntaxModeChangeEventArgs (old, syntaxMode));
 			}
 		}
@@ -1824,17 +1821,7 @@ namespace Mono.TextEditor
 				ReplaceText (offset, 1, value.ToString ());
 			}
 		}
-		MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting syntaxHighlighting;
 
-		public MonoDevelop.Ide.Editor.Highlighting.ISyntaxHighlighting SyntaxHighlighting {
-			get {
-				return syntaxHighlighting ?? MonoDevelop.Ide.Editor.Highlighting.DefaultSyntaxHighlighting.Instance;
-			}
-
-			set {
-				syntaxHighlighting = value;
-			}
-		}
 
 		public class SnapshotDocument : TextDocument
 		{

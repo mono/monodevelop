@@ -25,22 +25,23 @@
 // THE SOFTWARE.
 using System;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
 	class SyntaxModeChangeEventArgs : EventArgs
 	{
-		public ISyntaxMode OldMode {
+		public ISyntaxHighlighting OldMode {
 			get;
 			private set;
 		}
 		
-		public ISyntaxMode NewMode {
+		public ISyntaxHighlighting NewMode {
 			get;
 			private set;
 		}
 
-		public SyntaxModeChangeEventArgs (ISyntaxMode oldMode, ISyntaxMode newMode)
+		public SyntaxModeChangeEventArgs (ISyntaxHighlighting oldMode, ISyntaxHighlighting newMode)
 		{
 			OldMode = oldMode;
 			NewMode = newMode;

@@ -31,25 +31,26 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor.Utils
 {
-	class ColoredSegment
+	class ClipboardColoredText
 	{
 		public string Style { get; set; }
 		public string Text { get; set; }
 
-		public ColoredSegment (Chunk chunk, TextDocument doc)
+		public ClipboardColoredText (ColoredSegment chunk, TextDocument doc)
 		{
-			this.Style = chunk.Style;
+			this.Style = chunk.ColorStyleKey;
 			this.Text = doc.GetTextAt (chunk);
 		}
 
-		public static List<List<ColoredSegment>> GetChunks (TextEditorData data, ISegment selectedSegment)
+		public static List<List<ClipboardColoredText>> GetChunks (TextEditorData data, ISegment selectedSegment)
 		{
 			int startLineNumber = data.OffsetToLineNumber (selectedSegment.Offset);
 			int endLineNumber = data.OffsetToLineNumber (selectedSegment.EndOffset);
-			var copiedColoredChunks = new List<List<ColoredSegment>> ();
+			var copiedColoredChunks = new List<List<ClipboardColoredText>> ();
 			foreach (var line in data.Document.GetLinesBetween (startLineNumber, endLineNumber)) {
 				var offset = System.Math.Max (selectedSegment.Offset, line.Offset);
 				var length = System.Math.Min (selectedSegment.EndOffset, line.EndOffset) - offset;
@@ -59,7 +60,7 @@ namespace Mono.TextEditor.Utils
 					offset,
 					length
 				)
-					.Select (chunk => new ColoredSegment (chunk, data.Document))
+					.Select (chunk => new ClipboardColoredText (chunk, data.Document))
 					.ToList ()
 				);
 			}

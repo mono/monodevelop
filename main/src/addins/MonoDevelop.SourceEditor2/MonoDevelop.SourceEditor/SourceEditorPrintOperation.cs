@@ -30,6 +30,7 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -63,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 			SetHeaderFormat (settings.HeaderFormat);
 			SetFooterFormat (settings.FooterFormat);
 			
-			style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (settings.ColorScheme);
+			style = SyntaxModeService.GetEditorTheme (settings.ColorScheme);
 			
 			pageWidth = context.PageSetup.GetPageWidth (Unit.Pixel);
 			pageHeight = context.PageSetup.GetPageHeight (Unit.Pixel);
@@ -93,7 +94,7 @@ namespace MonoDevelop.SourceEditor
 		double pageWidth, pageHeight;
 		
 		Pango.Layout layout;
-		Ide.Editor.Highlighting.ColorScheme style;
+		Ide.Editor.Highlighting.EditorTheme style;
 		
 		string headerText;
 		string footerText;
@@ -300,7 +301,7 @@ namespace MonoDevelop.SourceEditor
 			TabSize = DefaultSourceEditorOptions.Instance.TabSize;
 			HeaderFormat = "%F";
 			FooterFormat = GettextCatalog.GetString ("Page %N of %Q");
-			ColorScheme = MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle;
+			ColorScheme = EditorTheme.DefaultColorStyle;
 			HeaderSeparatorWeight = FooterSeparatorWeight = 0.5;
 			HeaderPadding = FooterPadding = 6;
 			UseHighlighting = true;

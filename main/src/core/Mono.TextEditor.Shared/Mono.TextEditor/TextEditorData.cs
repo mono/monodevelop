@@ -34,6 +34,7 @@ using Xwt.Drawing;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -324,9 +325,9 @@ namespace Mono.TextEditor
 				return caret;
 			}
 		}
-		
-		MonoDevelop.Ide.Editor.Highlighting.ColorScheme colorStyle;
-		internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme ColorStyle {
+
+		MonoDevelop.Ide.Editor.Highlighting.EditorTheme colorStyle;
+		internal MonoDevelop.Ide.Editor.Highlighting.EditorTheme ColorStyle {
 			get {
 				return colorStyle ?? SyntaxModeService.DefaultColorStyle;
 			}
@@ -374,8 +375,8 @@ namespace Mono.TextEditor
 		
 		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
-			ISyntaxMode mode = Document.SyntaxMode;
-			var style = fitIdeStyle ? SyntaxModeService.GetColorStyle(Parent.GetIdeColorStyleName()) : ColorStyle;
+			var mode = Document.SyntaxMode;
+			var style = fitIdeStyle ? SyntaxModeService.GetEditorTheme(Parent.GetIdeColorStyleName()) : ColorStyle;
 
 			if (style == null) {
 				var str = Document.GetTextAt (offset, length);
@@ -383,8 +384,8 @@ namespace Mono.TextEditor
 					str = str.TrimStart (' ', '\t');
 				return ConvertToPangoMarkup (str, replaceTabs);
 			}
-
-			int indentLength = SyntaxMode.GetIndentLength (Document, offset, length, false);
+			// TODO : EditorTheme
+			int indentLength = 4; //SyntaxMode.GetIndentLength (Document, offset, length, false);
 			int curOffset = offset;
 
 			StringBuilder result = new StringBuilder ();
@@ -393,10 +394,10 @@ namespace Mono.TextEditor
 				int toOffset = System.Math.Min (line.Offset + line.Length, offset + length);
 				var styleStack = new Stack<MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> ();
 
-				foreach (var chunk in mode.GetChunks (style, line, curOffset, toOffset - curOffset)) {
+				foreach (var chunk in mode.GetColoredSegments (line, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
 						continue;
-					var chunkStyle = style.GetChunkStyle (chunk.Style);
+					var chunkStyle = style.GetChunkStyle (chunk.ColorStyleKey);
 					bool setBold = (styleStack.Count > 0 && styleStack.Peek ().FontWeight != chunkStyle.FontWeight) || 
 						chunkStyle.FontWeight != FontWeight.Normal;
 					bool setItalic = (styleStack.Count > 0 && styleStack.Peek ().FontStyle != chunkStyle.FontStyle) || 
@@ -412,7 +413,7 @@ namespace Mono.TextEditor
 						result.Append ("<span");
 						if (useColors) {
 							result.Append (" foreground=\"");
-							result.Append (SyntaxMode.ColorToPangoMarkup ((Cairo.Color)chunkStyle.Foreground));
+							result.Append (chunkStyle.Foreground.ToPangoString ());
 							result.Append ("\"");
 						}
 						if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
@@ -440,9 +441,9 @@ namespace Mono.TextEditor
 			return result.ToString ();
 		}
 
-		internal IEnumerable<Chunk> GetChunks (DocumentLine line, int offset, int length)
+		internal IEnumerable<MonoDevelop.Ide.Editor.Highlighting.ColoredSegment> GetChunks (DocumentLine line, int offset, int length)
 		{
-			return document.SyntaxMode.GetChunks (ColorStyle, line, offset, length);
+			return document.SyntaxMode.GetColoredSegments (line, offset, length);
 		}		
 	
 		public int Insert (int offset, string value)

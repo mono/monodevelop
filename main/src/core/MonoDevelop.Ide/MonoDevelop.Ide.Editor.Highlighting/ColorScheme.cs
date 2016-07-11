@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+/*
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -55,9 +56,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public sealed class ColorScheme
 	{
-		public static string DefaultColorStyle = "Light";
-		public static string DefaultDarkColorStyle = "Dark";
-
 		public string Name { get; set; }
 		public string Description { get; set; }
 		public string Originator { get; set; }
@@ -90,29 +88,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription("Indicator Margin(Separator)", VSSetting="color=Indicator Margin/Background")]
 		public AmbientColor IndicatorMarginSeparator { get; private set; }
 
-		[ColorDescription("Tooltip Pager Top")]
-		public AmbientColor TooltipPager { get; private set; }
-
-		[ColorDescription("Tooltip Pager Triangle")]
-		public AmbientColor TooltipPagerTriangle { get; private set; }
-
-		[ColorDescription("Tooltip Pager Text")]
-		public AmbientColor TooltipPagerText { get; private set; }
-
-		[ColorDescription("Notification Border")]
-		public AmbientColor NotificationBorder { get; private set; }
 
 		[ColorDescription("Bookmarks")]
 		public AmbientColor Bookmarks { get; private set; }
 
-		[ColorDescription("Underline(Error)", VSSetting="color=Syntax Error/Foreground")]
-		public AmbientColor UnderlineError { get; private set; }
-
-		[ColorDescription("Underline(Warning)", VSSetting="color=Warning/Foreground")]
-		public AmbientColor UnderlineWarning { get; private set; }
-
-		[ColorDescription("Underline(Suggestion)", VSSetting="color=Other Error/Foreground")]
-		public AmbientColor UnderlineSuggestion { get; private set; }
 
 		[ColorDescription("Underline(Hint)", VSSetting="color=Other Error/Foreground")]
 		public AmbientColor UnderlineHint { get; private set; }
@@ -125,12 +104,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Brace Matching(Rectangle)", VSSetting="color=Brace Matching (Rectangle)/Background,secondcolor=Brace Matching (Rectangle)/Foreground")]
 		public AmbientColor BraceMatchingRectangle { get; private set; }
-
-		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
-		public AmbientColor UsagesRectangle { get; private set; }
-
-		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Foreground,secondcolor=MarkerFormatDefinition/HighlightedReference/Foreground,bordercolor=MarkerFormatDefinition/HighlightedReference/Foreground")]
-		public AmbientColor ChangingUsagesRectangle { get; private set; }
 
 		[ColorDescription("Breakpoint Marker", VSSetting = "color=Breakpoint (Enabled)/Background")]
 		public AmbientColor BreakpointMarker { get; private set; }
@@ -186,41 +159,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription("Completion Selection Bar Background(Inactive)", VSSetting = "color=Inactive Selected Text/Background,secondcolor=Inactive Selected Text/Background")]
 		public AmbientColor CompletionSelectionBarBackgroundInactive { get; private set; }
 
-		[ColorDescription("Message Bubble Error Marker")]
-		public AmbientColor MessageBubbleErrorMarker { get; private set; }
-
-		[ColorDescription("Message Bubble Error Tag")]
-		public AmbientColor MessageBubbleErrorTag { get; private set; }
-
-		[ColorDescription("Message Bubble Error Tooltip")]
-		public AmbientColor MessageBubbleErrorTooltip { get; private set; }
-
-		[ColorDescription("Message Bubble Error Line")]
-		public AmbientColor MessageBubbleErrorLine { get; private set; }
-
-		[ColorDescription("Message Bubble Error Counter")]
-		public AmbientColor MessageBubbleErrorCounter { get; private set; }
-
-		[ColorDescription("Message Bubble Error IconMargin")]
-		public AmbientColor MessageBubbleErrorIconMargin { get; private set; }
-
-		[ColorDescription("Message Bubble Warning Marker")]
-		public AmbientColor MessageBubbleWarningMarker { get; private set; }
-
-		[ColorDescription("Message Bubble Warning Tag")]
-		public AmbientColor MessageBubbleWarningTag { get; private set; }
-
-		[ColorDescription("Message Bubble Warning Tooltip")]
-		public AmbientColor MessageBubbleWarningTooltip { get; private set; }
-
-		[ColorDescription("Message Bubble Warning Line")]
-		public AmbientColor MessageBubbleWarningLine { get; private set; }
-
-		[ColorDescription("Message Bubble Warning Counter")]
-		public AmbientColor MessageBubbleWarningCounter { get; private set; }
-
-		[ColorDescription("Message Bubble Warning IconMargin")]
-		public AmbientColor MessageBubbleWarningIconMargin { get; private set; }
 
 		[ColorDescription("Link Color")]
 		public AmbientColor LinkColor { get; private set; }
@@ -343,10 +281,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public const string TooltipTextKey = "Tooltip Text";
 		[ColorDescription(TooltipTextKey)] // not defined in vs.net
 		public ChunkStyle TooltipText { get; private set; }
-
-		public const string NotificationTextKey = "Notification Text";
-		[ColorDescription(NotificationTextKey)] // not defined in vs.net
-		public ChunkStyle NotificationText { get; private set; }
 
 		public const string CompletionTextKey = "Completion Text";
 		[ColorDescription(CompletionTextKey, VSSetting = "Plain Text")]
@@ -1041,11 +975,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					var split = color.Value.Attribute.VSSetting.Split ('?');
 					foreach (var s in split) {
 						if (s == vsc.Name) {
-							/*	if (vsc.Foreground == "0x02000000" && vsc.Background == "0x02000000") {
-								color.Value.Info.SetValue (result, result.PlainText, null);
-								found = true;
-								continue;
-							}*/
 							var textColor = ChunkStyle.Import (color.Value.Attribute.Name, vsc);
 							if (textColor != null) {
 								color.Value.Info.SetValue (result, textColor, null);
@@ -1097,3 +1026,4 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 	}
 }
+*/

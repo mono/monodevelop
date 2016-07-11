@@ -35,9 +35,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class ColorShemeEditor : Gtk.Dialog
 	{
-		MonoTextEditor textEditor;
-		Ide.Editor.Highlighting.ColorScheme colorSheme;
-		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(Ide.Editor.Highlighting.ColorScheme.PropertyDescription), typeof(object));
+		/*MonoTextEditor textEditor;
+		Ide.Editor.Highlighting.EditorTheme colorSheme;
+		TreeStore colorStore = new Gtk.TreeStore (typeof (string), string, typeof(object));
 		string fileName;
 		HighlightingPanel panel;
 
@@ -243,7 +243,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.checkbuttonItalic.Sensitive = true;
 		}
 
-		internal void SetSheme (Ide.Editor.Highlighting.ColorScheme style)
+		internal void SetSheme (Ide.Editor.Highlighting.EditorTheme style)
 		{
 			if (style == null)
 				throw new ArgumentNullException ("style");
@@ -271,7 +271,6 @@ class Example
 			}
 			Stylechanged (null, null);
 			
-		}
+		}*/
 	}
 }
-

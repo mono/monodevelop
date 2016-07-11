@@ -26,6 +26,7 @@
 using System;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -71,7 +72,8 @@ namespace Mono.TextEditor
 				return;
 			}
 			cr.Rectangle (x, y, Width, lineHeight);
-			cr.SetSourceColor (editor.ColorStyle.LineNumbers.Background);
+
+			cr.SetSourceColor (SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbersBackground));
 			cr.Fill ();
 		}
 

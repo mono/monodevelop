@@ -33,6 +33,7 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -159,10 +160,15 @@ namespace Mono.TextEditor
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
 			if (textGC == null) {
-				textGC = editor.ColorStyle.PlainText.CreateFgGC (ev.Window);
-				textBgGC = editor.ColorStyle.PlainText.CreateBgGC (ev.Window);
-				foldGC = editor.ColorStyle.CollapsedText.CreateFgGC (ev.Window);
-				foldBgGC = editor.ColorStyle.CollapsedText.CreateBgGC (ev.Window);
+				var plainText = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
+
+				textGC = plainText.CreateGC (ev.Window);
+				textBgGC = plainText.CreateGC (ev.Window);
+
+				var collapsedText = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.CollapsedText);
+
+				foldGC = collapsedText.CreateGC (ev.Window);
+				foldBgGC = collapsedText.CreateGC (ev.Window);
 			}
 			
 			ev.Window.DrawRectangle (textBgGC, true, ev.Area);

@@ -53,7 +53,7 @@ namespace Mono.TextEditor.Utils
 
 		public static string GenerateRtf (TextEditorData data)
 		{
-			return GenerateRtf (ColoredSegment.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
+			return GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
 		}
 
 		static void AppendRtfText (StringBuilder rtfText, string text, ref bool appendSpace)
@@ -93,7 +93,7 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 		}
-		internal static string GenerateRtf (List<List<ColoredSegment>> chunks, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, ITextEditorOptions options)
+		internal static string GenerateRtf (List<List<ClipboardColoredText>> chunks, MonoDevelop.Ide.Editor.Highlighting.EditorTheme style, ITextEditorOptions options)
 		{
 			var rtfText = new StringBuilder ();
 			var colorList = new List<Cairo.Color> ();
@@ -115,7 +115,7 @@ namespace Mono.TextEditor.Utils
 						rtfText.Append (isItalic ? @"\i" : @"\i0");
 						appendSpace = true;
 					}
-					var foreground = style.GetForeground (chunkStyle);
+					var foreground = chunkStyle.Foreground;
 					if (!colorList.Contains (foreground)) 
 						colorList.Add (foreground);
 					int color = colorList.IndexOf (foreground);

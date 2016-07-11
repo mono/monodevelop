@@ -355,7 +355,7 @@ namespace MonoDevelop.VersionControl.Views
 
 		public override string ColorScheme {
 			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ColorScheme;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EditorTheme;
 			}
 			set {
 			}

@@ -95,44 +95,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal static ChunkStyle Create (XElement element, Dictionary<string, HslColor> palette)
-		{
-			var result = new ChunkStyle ();
-
-			foreach (var node in element.DescendantNodes ()) {
-				if (node.NodeType == System.Xml.XmlNodeType.Element) {
-					var el = (XElement)node;
-					switch (el.Name.LocalName) {
-					case "name":
-						result.Name = el.Value;
-						break;
-					case "fore":
-						result.Foreground = ColorScheme.ParsePaletteColor (palette, el.Value);
-						break;
-					case "back":
-						result.Background = ColorScheme.ParsePaletteColor (palette, el.Value);
-						break;
-					case "weight":
-						Xwt.Drawing.FontWeight weight;
-						if (!Enum.TryParse<Xwt.Drawing.FontWeight> (el.Value, true, out weight)) 
-							throw new InvalidDataException (el.Value + " is no valid text weight values are: " + string.Join (",", Enum.GetNames (typeof(Xwt.Drawing.FontWeight))) );
-						result.FontWeight = weight;
-						break;
-					case "style":
-						Xwt.Drawing.FontStyle style;
-						if (!Enum.TryParse<Xwt.Drawing.FontStyle> (el.Value, true, out style)) 
-							throw new InvalidDataException (el.Value + " is no valid text weight values are: " + string.Join (",", Enum.GetNames (typeof(Xwt.Drawing.FontStyle))) );
-						result.FontStyle = style;
-						break;
-					default:
-						throw new InvalidDataException ("Invalid element in text color:" + el.Name);
-					}
-				}
-			}
-
-			return result;
-		}
-
 		internal Gdk.GC CreateBgGC (Gdk.Drawable drawable)
 		{
 			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Foreground, RgbFgColor = (HslColor)Background };
@@ -148,6 +110,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", Name, Foreground, Background, FontWeight, FontStyle);
 		}
 
+		/*
 		internal static ChunkStyle Import (string name, ColorScheme.VSSettingColor vsc)
 		{
 			var textColor = new ChunkStyle ();
@@ -162,7 +125,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (vsc.BoldFont)
 				textColor.FontWeight = Xwt.Drawing.FontWeight.Bold;
 			return textColor;
-		}
+		}*/
 
 		public ChunkStyle Clone ()
 		{

@@ -31,6 +31,7 @@ using Gdk;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -216,10 +217,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				backgroundPixbuf = new Pixmap (GdkWindow, curWidth, curHeight);
 				backgroundBuffer = new Pixmap (GdkWindow, curWidth, curHeight);
 
-				if (TextEditor.ColorStyle != null) {
+				if (TextEditor.EditorTheme != null) {
 					using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
 						cr.Rectangle (0, 0, curWidth, curHeight);
-						cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
+						cr.SetSourceColor (SyntaxModeService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background));
 						cr.Fill ();
 					}
 				}
@@ -249,8 +250,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					int w = mode.backgroundBuffer.ClipRegion.Clipbox.Width;
 					int h = mode.backgroundBuffer.ClipRegion.Clipbox.Height;
 					cr.Rectangle (0, 0, w, h);
-					if (mode.TextEditor.ColorStyle != null)
-						cr.SetSourceColor (mode.TextEditor.ColorStyle.PlainText.Background);
+					if (mode.TextEditor.EditorTheme != null)
+						cr.SetSourceColor (SyntaxModeService.GetColor (mode.TextEditor.EditorTheme, ThemeSettingColors.Background));
 					cr.Fill ();
 
 					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
@@ -326,8 +327,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						e.Window.DrawDrawable (Style.BlackGC, backgroundPixbuf, 0, GetBufferYOffset (), 0, 0, Allocation.Width, Allocation.Height);
 					} else {
 						cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-						if (TextEditor.ColorStyle != null)
-							cr.SetSourceColor (TextEditor.ColorStyle.PlainText.Background);
+						if (TextEditor.EditorTheme != null)
+							cr.SetSourceColor (SyntaxModeService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background));
 						cr.Fill ();
 					}
 					/*

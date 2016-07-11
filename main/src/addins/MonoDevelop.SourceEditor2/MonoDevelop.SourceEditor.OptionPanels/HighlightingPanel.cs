@@ -34,13 +34,14 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		string schemeName;
-		ListStore styleStore = new ListStore (typeof (string), typeof (MonoDevelop.Ide.Editor.Highlighting.ColorScheme), typeof(bool));
+		ListStore styleStore = new ListStore (typeof (string), typeof (MonoDevelop.Ide.Editor.Highlighting.EditorTheme), typeof(bool));
 		static Lazy<Gdk.Pixbuf> errorPixbuf = new Lazy<Gdk.Pixbuf> (() => ImageService.GetIcon (Stock.DialogError, IconSize.Menu).ToPixbuf ());
 
 		public HighlightingPanel ()
@@ -56,7 +57,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			styleTreeview.AppendColumn (col);
 			styleTreeview.Model = styleStore;
 			styleTreeview.SearchColumn = -1; // disable the interactive search
-			schemeName = DefaultSourceEditorOptions.Instance.ColorScheme;
+			schemeName = DefaultSourceEditorOptions.Instance.EditorTheme;
 			MonoDevelop.Ide.Gui.Styles.Changed += HandleThemeChanged;
 		}
 
@@ -76,7 +77,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		
 		protected override void OnDestroyed ()
 		{
-			DefaultSourceEditorOptions.Instance.ColorScheme = schemeName;
+			DefaultSourceEditorOptions.Instance.EditorTheme = schemeName;
 
 			if (styleStore != null) {
 				styleStore.Dispose ();
@@ -122,7 +123,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (!styleTreeview.Selection.GetSelected (out iter)) 
 				return;
-			var sheme = (MonoDevelop.Ide.Editor.Highlighting.ColorScheme)styleStore.GetValue (iter, 1);
+			var sheme = (MonoDevelop.Ide.Editor.Highlighting.EditorTheme)styleStore.GetValue (iter, 1);
 			if (sheme == null)
 				return;
 			var isError = (bool)styleStore.GetValue (iter, 2);
@@ -130,7 +131,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				this.removeButton.Sensitive = true;
 				return;
 			}
-			DefaultSourceEditorOptions.Instance.ColorScheme = sheme.Name;
+			DefaultSourceEditorOptions.Instance.EditorTheme = sheme.Name;
 			this.buttonExport.Sensitive = true;
 			string fileName = sheme.FileName;
 			if (fileName == null)
@@ -143,20 +144,21 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
+				/* TODO: Color scheme editor.
 				using (var editor = new ColorShemeEditor (this)) {
-					var colorScheme = (MonoDevelop.Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+					var colorScheme = (MonoDevelop.Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
 					editor.SetSheme (colorScheme);
 					MessageService. ShowCustomDialog (editor, dialog);
-				}
+				}*/ 
 			}
 		}
 		
-		MonoDevelop.Ide.Editor.Highlighting.ColorScheme LoadStyle (string styleName, out bool error)
+		MonoDevelop.Ide.Editor.Highlighting.EditorTheme LoadStyle (string styleName, out bool error)
 		{
 			try {
 				error = false;
-				return Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (styleName);
-			} catch (Ide.Editor.Highlighting.StyleImportException e) {
+				return SyntaxModeService.GetEditorTheme (styleName);
+			} /* catch (Ide.Editor.Highlighting.StyleImportException e) {
 				error = true;
 
 				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
@@ -171,13 +173,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				}
 				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
 				return style;
-			} catch (Exception e) {
+			}*/ catch (Exception e) {
+				// TODO : EditorTheme
 				LoggingService.LogError ("Error while loading color style " + styleName, e);
 				error = true;
-				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
-				style.Name = styleName;
-				style.Description = GettextCatalog.GetString ("Loading error:" + e.Message);
-				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
+				var style = SyntaxModeService.DefaultColorStyle/*.Clone ()*/;
+				//style.Name = styleName;
+				//style.Description = GettextCatalog.GetString ("Loading error:" + e.Message);
+				// style.FileName = SyntaxModeService.GetFileName (styleName);
 				return style;
 			}
 		
@@ -187,14 +190,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			styleStore.Clear ();
 			bool error;
-			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle, out error);
-			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (defaultStyle.Name, defaultStyle.Description), defaultStyle);
-			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
-				if (styleName == MonoDevelop.Ide.Editor.Highlighting.ColorScheme.DefaultColorStyle)
+			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultColorStyle, out error);
+			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (defaultStyle.Name, ""), defaultStyle);
+			foreach (string styleName in SyntaxModeService.Styles) {
+				if (styleName == MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultColorStyle)
 					continue;
 				var style = LoadStyle (styleName, out error);
 				string name = style.Name ?? "";
-				string description = style.Description ?? "";
+				string description = "";
 				// translate only build-in sheme names
 				if (string.IsNullOrEmpty (style.FileName)) {
 					try {
@@ -205,7 +208,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					}
 				}
 				TreeIter iter = styleStore.AppendValues (GetMarkup (name, description), style, error);
-				if (style.Name == DefaultSourceEditorOptions.Instance.ColorScheme)
+				if (style.Name == DefaultSourceEditorOptions.Instance.EditorTheme)
 					selectedIter = iter;
 			}
 			if (styleTreeview.Selection != null)
@@ -217,12 +220,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			TreeIter selectedIter;
 			if (!styleTreeview.Selection.GetSelected (out selectedIter)) 
 				return;
-			var sheme = (Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+			var sheme = (Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
 			
 			string fileName = sheme.FileName;
 
 			if (fileName != null && fileName.StartsWith (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath, StringComparison.Ordinal)) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.Remove (sheme);
+				SyntaxModeService.Remove (sheme);
 				File.Delete (fileName);
 				ShowStyles ();
 			}
@@ -238,11 +241,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				var sheme = (Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
+				var sheme = (Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
 				var selectedFile = dialog.SelectedFile.ToString ();
 				if (!selectedFile.EndsWith (".json", StringComparison.Ordinal))
 					selectedFile += ".json";
-				sheme.Save (selectedFile);
+				// TODO : Saving
+				// sheme.Save (selectedFile);
 			}
 
 		}
@@ -272,7 +276,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				LoggingService.LogError ("Can't copy syntax mode file.", e);
 			}
 			if (success) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
+				SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
@@ -299,8 +303,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				var sheme = ((Ide.Editor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1));
-				DefaultSourceEditorOptions.Instance.ColorScheme = schemeName = sheme != null ? sheme.Name : null;
+				var sheme = ((EditorTheme)this.styleStore.GetValue (selectedIter, 1));
+				DefaultSourceEditorOptions.Instance.EditorTheme = schemeName = sheme != null ? sheme.Name : null;
 			}
 		}
 

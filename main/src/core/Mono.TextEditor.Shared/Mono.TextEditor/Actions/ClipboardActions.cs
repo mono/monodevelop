@@ -150,10 +150,10 @@ namespace Mono.TextEditor
 				// NOTHING ?
 			}
 	
-			internal List<List<ColoredSegment>> copiedColoredChunks;
+			internal List<List<ClipboardColoredText>> copiedColoredChunks;
 			byte[] copyData;
 
-			internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme docStyle;
+			internal MonoDevelop.Ide.Editor.Highlighting.EditorTheme docStyle;
 			ITextEditorOptions options;
 
 			public static readonly TargetEntry[] TargetEntries;
@@ -208,7 +208,7 @@ namespace Mono.TextEditor
 					case MonoDevelop.Ide.Editor.SelectionMode.Normal:
 						isBlockMode = false;
 						var segment = selection.GetSelectionRange (data);
-						copiedColoredChunks = ColoredSegment.GetChunks (data, segment);
+						copiedColoredChunks = ClipboardColoredText.GetChunks (data, segment);
 						var pasteHandler = data.TextPasteHandler;
 						if (pasteHandler != null) {
 							try {
@@ -224,15 +224,15 @@ namespace Mono.TextEditor
 						var visEnd = data.LogicalToVisualLocation (selection.Lead);
 						int startCol = System.Math.Min (visStart.Column, visEnd.Column);
 						int endCol = System.Math.Max (visStart.Column, visEnd.Column);
-						copiedColoredChunks = new List<List<ColoredSegment>> ();
+						copiedColoredChunks = new List<List<ClipboardColoredText>> ();
 						for (int lineNr = selection.MinLine; lineNr <= selection.MaxLine; lineNr++) {
 							DocumentLine curLine = data.Document.GetLine (lineNr);
 							int col1 = curLine.GetLogicalColumn (data, startCol) - 1;
 							int col2 = System.Math.Min (curLine.GetLogicalColumn (data, endCol) - 1, curLine.Length);
 							if (col1 < col2) {
-								copiedColoredChunks.Add (ColoredSegment.GetChunks (data, new TextSegment (curLine.Offset + col1, col2 - col1)).First ());
+								copiedColoredChunks.Add (ClipboardColoredText.GetChunks (data, new TextSegment (curLine.Offset + col1, col2 - col1)).First ());
 							} else {
-								copiedColoredChunks.Add (new List<ColoredSegment> ());
+								copiedColoredChunks.Add (new List<ClipboardColoredText> ());
 							}
 						}
 						break;

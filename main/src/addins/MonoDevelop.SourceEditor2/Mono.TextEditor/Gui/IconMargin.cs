@@ -28,6 +28,7 @@
 using System;
 using Gtk;
 using Gdk;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -50,8 +51,8 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			backgroundColor = editor.ColorStyle.IndicatorMargin.Color;
-			separatorColor = editor.ColorStyle.IndicatorMarginSeparator.Color;
+			backgroundColor = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.IndicatorMargin);
+			separatorColor = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.IndicatorMarginSeparator);
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)

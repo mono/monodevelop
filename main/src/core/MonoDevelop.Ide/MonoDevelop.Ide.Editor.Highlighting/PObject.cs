@@ -678,22 +678,34 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static PDictionary FromFile (string fileName, out bool isBinary)
 		{
 			using (var stream = new FileStream (fileName, FileMode.Open, FileAccess.Read)) {
-				isBinary = true;
-				var ctx = PropertyListFormat.Binary.StartReading (stream);
-				try {
-					if (ctx == null) {
-						isBinary = false;
-						ctx = PropertyListFormat.CreateReadContext (stream);
-						if (ctx == null)
-							throw new FormatException ("Unrecognized property list format.");
-					}
-					return (PDictionary)ctx.ReadObject ();
-				} finally {
-					if (ctx != null)
-						ctx.Dispose ();
-				}
+				return FromStream(stream, out isBinary);
 			}
 		}
+
+		public static PDictionary FromStream (Stream stream)
+		{
+			bool isBinary;
+			return FromStream (stream, out isBinary);
+		}
+
+		public static PDictionary FromStream (Stream stream, out bool isBinary)
+		{
+			isBinary = true;
+			var ctx = PropertyListFormat.Binary.StartReading (stream);
+			try {
+				if (ctx == null) {
+					isBinary = false;
+					ctx = PropertyListFormat.CreateReadContext (stream);
+					if (ctx == null)
+						throw new FormatException ("Unrecognized property list format.");
+				}
+				return (PDictionary)ctx.ReadObject ();
+			} finally {
+				if (ctx != null)
+					ctx.Dispose ();
+			}
+		}
+
 
 		public static PDictionary FromBinaryXml (string fileName)
 		{

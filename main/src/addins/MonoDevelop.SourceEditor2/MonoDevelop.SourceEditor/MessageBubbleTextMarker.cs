@@ -39,6 +39,7 @@ using MonoDevelop.Components;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -205,47 +206,80 @@ namespace MonoDevelop.SourceEditor
 		internal Pango.Layout errorCountLayout;
 		List<MessageBubbleCache.LayoutDescriptor> layouts;
 		
-		internal Ide.Editor.Highlighting.AmbientColor MarkerColor {
+		internal HslColor MarkerColor {
 			get {
-				return isError ? editor.ColorStyle.MessageBubbleErrorMarker : editor.ColorStyle.MessageBubbleWarningMarker;
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorMarker : ThemeSettingColors.MessageBubbleWarningMarker);
 			}
 		}
 
-		internal Ide.Editor.Highlighting.AmbientColor TagColor {
+		internal HslColor TagColor {
 			get {
-				return isError ? editor.ColorStyle.MessageBubbleErrorTag : editor.ColorStyle.MessageBubbleWarningTag;
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTag : ThemeSettingColors.MessageBubbleWarningTag);
 			}
 		}
 
-		internal Ide.Editor.Highlighting.AmbientColor TooltipColor {
+		internal HslColor TagColor2 {
 			get {
-				return isError ? editor.ColorStyle.MessageBubbleErrorTooltip : editor.ColorStyle.MessageBubbleWarningTooltip;
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTag2 : ThemeSettingColors.MessageBubbleWarningTag2);
 			}
 		}
 
-		internal Ide.Editor.Highlighting.AmbientColor LineColor {
+		internal HslColor TooltipColor {
 			get {
-				return isError ? editor.ColorStyle.MessageBubbleErrorLine : editor.ColorStyle.MessageBubbleWarningLine;
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTooltip : ThemeSettingColors.MessageBubbleWarningTooltip);
 			}
 		}
 
-		internal Ide.Editor.Highlighting.AmbientColor CounterColor {
+		internal HslColor LineColor {
 			get {
-				return isError ? editor.ColorStyle.MessageBubbleErrorCounter : editor.ColorStyle.MessageBubbleWarningCounter;
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorLine : ThemeSettingColors.MessageBubbleWarningLine);
 			}
 		}
 
-		internal Ide.Editor.Highlighting.AmbientColor IconMarginColor {
+		internal HslColor LineColor2 {
 			get {
-				return isError ? editor.ColorStyle.MessageBubbleErrorIconMargin : editor.ColorStyle.MessageBubbleWarningIconMargin;
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorLine2 : ThemeSettingColors.MessageBubbleWarningLine2);
 			}
 		}
+
+		internal HslColor BorderLineColor {
+			get {
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorBorderLine : ThemeSettingColors.MessageBubbleWarningBorderLine);
+			}
+		}
+
+
+		internal HslColor CounterColor {
+			get {
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorCounter : ThemeSettingColors.MessageBubbleWarningCounter);
+			}
+		}
+
+		internal HslColor CounterColor2 {
+			get {
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorCounter2 : ThemeSettingColors.MessageBubbleWarningCounter2);
+			}
+		}
+
+		internal HslColor IconMarginColor {
+			get {
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorIconMargin : ThemeSettingColors.MessageBubbleWarningIconMargin);
+			}
+		}
+
+		internal HslColor IconMarginBorderColor {
+			get {
+				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorIconMarginBorder : ThemeSettingColors.MessageBubbleWarningIconMarginBorder);
+			}
+		}
+
 
 		Cairo.Color BlendSelection (Cairo.Color color, bool selected)
 		{
 			if (!selected)
 				return color;
-			var selectionColor = (Cairo.Color)editor.ColorStyle.SelectedText.Background;
+
+			var selectionColor = (Cairo.Color)Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Selection);
 			const double bubbleAlpha = 0.1;
 			return new Cairo.Color (
 				(color.R * bubbleAlpha + selectionColor.R * (1 - bubbleAlpha)), 
@@ -258,7 +292,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!highlighted)
 				return color;
-			var selectionColor = (Cairo.Color)editor.ColorStyle.PlainText.Background;
+			var selectionColor = (Cairo.Color)Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
 			const double bubbleAlpha = 0.7;
 			return new Cairo.Color (
 				(color.R * bubbleAlpha + selectionColor.R * (1 - bubbleAlpha)), 
@@ -269,22 +303,22 @@ namespace MonoDevelop.SourceEditor
 
 		Cairo.Color GetLineColor (bool highlighted, bool selected) 
 		{
-			return BlendSelection (Highlight (LineColor.Color, highlighted), selected);
+			return BlendSelection (Highlight (LineColor, highlighted), selected);
 		}
 
 		Cairo.Color GetMarkerColor (bool highlighted, bool selected) 
 		{
-			return BlendSelection (Highlight (MarkerColor.Color, highlighted), selected);
+			return BlendSelection (Highlight (MarkerColor, highlighted), selected);
 		}
 
 		Cairo.Color GetLineColorBottom (bool highlighted, bool selected) 
 		{
-			return BlendSelection (Highlight (LineColor.SecondColor, highlighted), selected);
+			return BlendSelection (Highlight (LineColor2, highlighted), selected);
 		}
 
 		Cairo.Color GetLineColorBorder (bool highlighted, bool selected) 
 		{
-			return BlendSelection (Highlight (LineColor.BorderColor, highlighted), selected);
+			return BlendSelection (Highlight (BorderLineColor, highlighted), selected);
 		}
 
 		internal IList<MessageBubbleCache.LayoutDescriptor> Layouts {
@@ -442,7 +476,7 @@ namespace MonoDevelop.SourceEditor
 			var bubbleHeight = editor.LineHeight;
 
 			g.RoundedRectangle (sx, y, width, bubbleHeight, roundingRadius);
-			g.SetSourceColor (TagColor.Color);
+			g.SetSourceColor (TagColor);
 			g.Fill ();
 
 			// Draw error count icon
@@ -461,8 +495,8 @@ namespace MonoDevelop.SourceEditor
 
 				// FIXME: VV: Remove gradient features
 				using (var lg = new Cairo.LinearGradient (errorCounterX, errorCounterY, errorCounterX, errorCounterY + errorCounterHeight)) {
-					lg.AddColorStop (0, CounterColor.Color);
-					lg.AddColorStop (1, CounterColor.Color.AddLight (-0.1));
+					lg.AddColorStop (0, CounterColor);
+					lg.AddColorStop (1, CounterColor.AddLight (-0.1));
 					g.SetSource (lg);
 					g.Fill ();
 				}
@@ -476,7 +510,7 @@ namespace MonoDevelop.SourceEditor
 				var ty = Math.Round (errorCounterY + (-1 + errorCounterHeight - eh) / 2);
 
 				g.Translate (tx, ty);
-				g.SetSourceColor (CounterColor.SecondColor);
+				g.SetSourceColor (CounterColor2);
 				g.ShowLayout (errorCountLayout);
 				g.Restore ();
 			}
@@ -490,7 +524,7 @@ namespace MonoDevelop.SourceEditor
 
 				for (int i = 0; i < 3; i++) {
 					g.Arc (sx, y + bubbleHeight / 2, radius, 0, Math.PI * 2);
-					g.SetSourceColor (TagColor.SecondColor);
+					g.SetSourceColor (TagColor2);
 					g.Fill ();
 					sx += radius * 2 + spacing;
 				}
@@ -502,7 +536,7 @@ namespace MonoDevelop.SourceEditor
 				g.Save ();
 				g.Translate (tx, ty);
 
-				g.SetSourceColor (TagColor.SecondColor);
+				g.SetSourceColor (TagColor2);
 				g.ShowLayout (drawLayout);
 				g.Restore ();
 			}
@@ -530,15 +564,15 @@ namespace MonoDevelop.SourceEditor
 		void DrawIconMarginBackground (MonoTextEditor ed, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-			cr.SetSourceColor (IconMarginColor.Color);
+			cr.SetSourceColor (IconMarginColor);
 			cr.Fill ();
 			cr.MoveTo (metrics.Right - 0.5, metrics.Y);
 			cr.LineTo (metrics.Right - 0.5, metrics.Bottom);
-			cr.SetSourceColor (IconMarginColor.BorderColor);
+			cr.SetSourceColor (IconMarginBorderColor);
 			cr.Stroke ();
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this) {
 				cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-				var color = (Cairo.Color)ed.ColorStyle.IndicatorMargin.Color;
+				var color = (Cairo.Color)IconMarginColor;
 				cr.SetSourceRGBA (color.R, color.G, color.B, 0.5);
 				cr.Fill ();
 			}
@@ -571,7 +605,7 @@ namespace MonoDevelop.SourceEditor
 			if (cache.CurrentSelectedTextMarker != null && cache.CurrentSelectedTextMarker != this)
 				return false;
 			cr.Rectangle (x, y, margin.Width, lineHeight);
-			cr.SetSourceColor (LineColor.Color);
+			cr.SetSourceColor (LineColor);
 			cr.Fill ();
 			return true;
 		}
@@ -607,7 +641,7 @@ namespace MonoDevelop.SourceEditor
 			// draw background
 			if (!markerShouldDrawnAsHidden) {
 				DrawRectangle (g, x, y, right, editor.LineHeight);
-				g.SetSourceColor (LineColor.Color);
+				g.SetSourceColor (LineColor);
 				g.Fill ();
 
 				if (metrics.Layout.StartSet || metrics.SelectionStart == metrics.TextEndOffset) {

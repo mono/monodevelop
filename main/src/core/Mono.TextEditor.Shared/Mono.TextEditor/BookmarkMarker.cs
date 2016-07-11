@@ -51,37 +51,12 @@ namespace Mono.TextEditor
 
 		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
-			DrawBookmarkFunc (editor, cr, LineSegment, metrics.X, metrics.Y, metrics.Width, metrics.Height);
+			if (DrawBookmarkFunc != null)
+				DrawBookmarkFunc (editor, cr, LineSegment, metrics.X, metrics.Y, metrics.Width, metrics.Height);
 		}
 
-		public static Action<MonoTextEditor, Cairo.Context, DocumentLine, double, double, double, double> DrawBookmarkFunc = DrawIcon;
+		public static Action<MonoTextEditor, Cairo.Context, DocumentLine, double, double, double, double> DrawBookmarkFunc;
 
-		static void DrawIcon (MonoTextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height)
-		{
-			if (lineSegment.IsBookmarked) {
-				var color1 = editor.ColorStyle.Bookmarks.Color;
-				var color2 = editor.ColorStyle.Bookmarks.SecondColor;
-				
-				DrawRoundRectangle (cr, x + 1, y + 1, 8, width - 4, height - 4);
-
-				// FIXME: VV: Remove gradient features
-				using (var pat = new Cairo.LinearGradient (x + width / 4, y, x + width / 2, y + height - 4)) {
-					pat.AddColorStop (0, color1);
-					pat.AddColorStop (1, color2);
-					cr.SetSource (pat);
-					cr.FillPreserve ();
-				}
-
-				// FIXME: VV: Remove gradient features
-				using (var pat = new Cairo.LinearGradient (x, y + height, x + width, y)) {
-					pat.AddColorStop (0, color2);
-					//pat.AddColorStop (1, color1);
-					cr.SetSource (pat);
-					cr.Stroke ();
-				}
-			}
-		}
-		
 		static void DrawRoundRectangle (Cairo.Context cr, double x, double y, double r, double w, double h)
 		{
 			const double ARC_TO_BEZIER = 0.55228475;

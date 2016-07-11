@@ -273,7 +273,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override string ColorScheme {
 			get {
-				return optionsCore.ColorScheme;
+				return optionsCore.EditorTheme;
 			}
 			set {
 				throw new NotSupportedException ();

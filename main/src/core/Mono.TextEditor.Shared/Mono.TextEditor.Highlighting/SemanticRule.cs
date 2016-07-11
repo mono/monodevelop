@@ -56,8 +56,8 @@ namespace Mono.TextEditor
 		{
 			if (endOffset <= startOffset || startOffset >= doc.Length || inUpdate)
 				return;
-			if (startChunk.Style != MonoDevelop.Ide.Editor.Highlighting.ColorScheme.CommentsSingleLineKey && startChunk.Style != MonoDevelop.Ide.Editor.Highlighting.ColorScheme.CommentsBlockKey)
-				return;
+			if (!startChunk.Style.Contains ("comment"))
+			 	return;
 			inUpdate = true;
 			try {
 				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.Length) - startOffset);

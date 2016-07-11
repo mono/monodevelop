@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.Build ();
 			
-			foreach (string styleName in Mono.TextEditor.Highlighting.SyntaxModeService.Styles) {
+			foreach (string styleName in SyntaxModeService.Styles) {
 				store.AppendValues (styleName);
 			}
 			comboboxBaseStyle.Model = store;
@@ -61,7 +62,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (!store.IterNthChild (out iter, comboboxBaseStyle.Active))
 				return;
 			string name = (string)store.GetValue (iter, 0);
-			
+			/* TODO : EditorTheme
 			var style = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (name);
 			
 			style = style.Clone ();
@@ -82,7 +83,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
-			}
+			}*/
 		}
 	}
 }

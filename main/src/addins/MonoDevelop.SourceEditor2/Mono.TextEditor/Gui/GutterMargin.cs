@@ -31,6 +31,7 @@ using Gdk;
 using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -191,8 +192,9 @@ namespace Mono.TextEditor
 
 		internal protected override void OptionsChanged ()
 		{
-			lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
-			lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
+			
+			lineNumberBgGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbersBackground);
+			lineNumberGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbers);
 			gutterFont = editor.Options.GutterFont;
 //			gutterFont.Weight = (Pango.Weight)editor.ColorStyle.LineNumbers.FontWeight;
 //			gutterFont.Style = (Pango.Style)editor.ColorStyle.LineNumbers.FontStyle;

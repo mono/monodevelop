@@ -27,6 +27,7 @@ using System;
 using Mono.TextEditor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.SourceEditor
@@ -45,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override void Draw (Mono.TextEditor.MonoTextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
-			Color = info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
+			Color = SyntaxModeService.GetColor (editor.EditorTheme, info.ErrorType == ErrorType.Warning ? ThemeSettingColors.UnderlineWarning : ThemeSettingColors.UnderlineError);
 			base.Draw (editor, cr, metrics, startOffset, endOffset);
 		}
 

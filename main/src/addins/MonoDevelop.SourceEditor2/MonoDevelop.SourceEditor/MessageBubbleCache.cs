@@ -148,7 +148,7 @@ namespace MonoDevelop.SourceEditor
 			protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
 			{
 				g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-				g.SetSourceColor (marker.TooltipColor.Color);
+				g.SetSourceColor (marker.TooltipColor);
 				g.Fill ();
 
 				using (var drawingLayout = new Pango.Layout (this.PangoContext)) {
@@ -178,7 +178,7 @@ namespace MonoDevelop.SourceEditor
 						g.Save ();
 
 						g.Translate (showBulletedList ? textBorder + iconTextSpacing + icon.Width: textBorder, y + verticalTextSpace / 2);
-						g.SetSourceColor (marker.TagColor.SecondColor);
+						g.SetSourceColor (marker.TagColor2);
 						g.ShowLayout (drawingLayout);
 
 						g.Restore ();

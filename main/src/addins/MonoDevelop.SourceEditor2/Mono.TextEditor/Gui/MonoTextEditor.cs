@@ -40,6 +40,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -680,9 +681,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme ColorStyle {
+		internal EditorTheme EditorTheme {
 			get {
-				return textArea.ColorStyle;
+				return textArea.EditorTheme;
 			}
 		}
 		

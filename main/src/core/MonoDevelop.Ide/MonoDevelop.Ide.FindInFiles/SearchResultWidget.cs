@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int SearchResultColumn = 0;
 		const int DidReadColumn      = 1;
 		
-		ColorScheme highlightStyle;
+		EditorTheme highlightStyle;
 		
 		ScrolledWindow scrolledwindowLogView; 
 		PadTreeView treeviewSearchResults;
@@ -216,7 +216,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		void UpdateStyles (object sender = null, EventArgs e = null)
 		{
-			highlightStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			highlightStyle = SyntaxModeService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!highlightStyle.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
 				highlightStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
 
@@ -598,12 +598,13 @@ namespace MonoDevelop.Ide.FindInFiles
 					textMarkup = markup;
 
 					if (!isSelected) {
-						var searchColor = searchResult.GetBackgroundMarkerColor (highlightStyle).Color;
+						var searchColor = searchResult.GetBackgroundMarkerColor (highlightStyle);
 						double b1 = HslColor.Brightness (searchColor);
-						double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), (HslColor)highlightStyle.PlainText.Foreground));
+
+						double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), SyntaxModeService.GetColor (highlightStyle, ThemeSettingColors.Foreground)));
 						double delta = Math.Abs (b1 - b2);
 						if (delta < 0.1) {
-							var color1 = highlightStyle.SearchResult.Color;
+							var color1 = SyntaxModeService.GetColor (highlightStyle, ThemeSettingColors.FindHighlight);
 							if (color1.L + 0.5 > 1.0) {
 								color1.L -= 0.5;
 							} else {

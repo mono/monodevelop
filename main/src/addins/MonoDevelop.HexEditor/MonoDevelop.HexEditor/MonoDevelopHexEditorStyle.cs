@@ -37,7 +37,7 @@ namespace MonoDevelop.HexEditor
 {
 	class MonoDevelopHexEditorStyle : HexEditorStyle, IDisposable
 	{
-		ColorScheme colorStyle;
+		EditorTheme colorStyle;
 		Mono.MHex.HexEditor hexEditor;
 		
 		public MonoDevelopHexEditorStyle (Mono.MHex.HexEditor hexEditor)
@@ -57,7 +57,7 @@ namespace MonoDevelop.HexEditor
 		
 		void SetStyle ()
 		{
-			colorStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			colorStyle = SyntaxModeService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 		}
 
 		Color ConvertColor (Cairo.Color foreground)

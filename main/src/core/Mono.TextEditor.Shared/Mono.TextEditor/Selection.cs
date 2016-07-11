@@ -23,7 +23,7 @@ namespace Mono.TextEditor
 				return 0;
 			var startChunk = data.GetChunks (line, line.Offset, line.LengthIncludingDelimiter);
 			int col = 1;
-			foreach (Chunk chunk in startChunk) {
+			foreach (var chunk in startChunk) {
 				if (col <= loc.Column && loc.Column < col + chunk.Length)
 					return chunk.Offset - col + loc.Column;
 				col += chunk.Length;

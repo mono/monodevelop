@@ -32,6 +32,7 @@ using System.Threading;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -567,11 +568,13 @@ namespace Mono.TextEditor
 						x_pos2 = (int)(x_pos2 / Pango.Scale.PangoScale);
 						Cairo.Color fillGc, rectangleGc;
 						if (segment.Equals (link.PrimaryLink)) {
-							fillGc = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : editor.ColorStyle.PrimaryTemplate.SecondColor;
-							rectangleGc = isPrimaryHighlighted ? editor.ColorStyle.PrimaryTemplateHighlighted.SecondColor : editor.ColorStyle.PrimaryTemplate.SecondColor;
+
+
+							fillGc = SyntaxModeService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.PrimaryTemplateHighlighted2 : ThemeSettingColors.PrimaryTemplate2);
+							rectangleGc = SyntaxModeService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.PrimaryTemplateHighlighted2 : ThemeSettingColors.PrimaryTemplate2);
 						} else {
-							fillGc = isPrimaryHighlighted ? editor.ColorStyle.SecondaryTemplateHighlighted.SecondColor : editor.ColorStyle.SecondaryTemplate.SecondColor;
-							rectangleGc = isPrimaryHighlighted ? editor.ColorStyle.SecondaryTemplateHighlighted.Color : editor.ColorStyle.SecondaryTemplate.Color;
+							fillGc = SyntaxModeService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.SecondaryTemplateHighlighted2 : ThemeSettingColors.SecondaryTemplate2);
+							rectangleGc = SyntaxModeService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.SecondaryTemplateHighlighted : ThemeSettingColors.SecondaryTemplate);
 						}
 						
 						// Draw segment
@@ -607,8 +610,8 @@ namespace Mono.TextEditor
 			var width = metrics.Width;
 
 			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-			var lineNumberGC = editor.ColorStyle.LineNumbers.Foreground;
-			cr.SetSourceColor (editor.Caret.Line == metrics.LineNumber ? editor.ColorStyle.LineMarker.Color : lineNumberGC);
+			var lineNumberGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbers);
+			cr.SetSourceColor (editor.Caret.Line == metrics.LineNumber ? SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.LineHighlight) : lineNumberGC);
 			cr.Fill ();
 
 			return true;
@@ -617,7 +620,9 @@ namespace Mono.TextEditor
 		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var width = metrics.Width;
-			var lineNumberBgGC = editor.ColorStyle.LineNumbers.Background;
+			var lineNumberBgGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbersBackground);
+
+
 
 			if (metrics.LineNumber <= editor.Document.LineCount) {
 				// Due to a mac? gtk bug I need to re-create the layout here

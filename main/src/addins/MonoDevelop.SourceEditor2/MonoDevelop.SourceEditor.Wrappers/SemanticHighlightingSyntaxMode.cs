@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
 using Gtk;
-
+/*
 namespace MonoDevelop.SourceEditor.Wrappers
 {
 	sealed class SemanticHighlightingSyntaxMode : SyntaxMode, IDisposable
@@ -161,7 +161,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return syntaxMode.CreateSpanParser (line, spanStack);
 		}
 
-		public override ChunkParser CreateChunkParser (SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line)
+		public override ChunkParser CreateChunkParser (SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.EditorTheme style, DocumentLine line)
 		{
 			return new CSharpChunkParser (this, spanParser, style, line);
 		}
@@ -171,7 +171,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			const int MaximumCachedLineSegments = 200;
 			SemanticHighlightingSyntaxMode semanticMode;
 
-			public CSharpChunkParser (SemanticHighlightingSyntaxMode semanticMode, SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, DocumentLine line) : base (semanticMode, spanParser, style, line)
+			public CSharpChunkParser (SemanticHighlightingSyntaxMode semanticMode, SpanParser spanParser, MonoDevelop.Ide.Editor.Highlighting.EditorTheme style, DocumentLine line) : base ()
 			{
 				this.semanticMode = semanticMode;
 			}
@@ -225,12 +225,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 			protected override string GetStyle (Chunk chunk)
 			{
-				/*if (spanParser.CurRule.Name == "Comment") {
-					if (tags.Contains (doc.GetTextAt (chunk))) 
-						return "Comment Tag";
-				}*/
 				return base.GetStyle (chunk);
 			}
 		}
 	}
-}
+}*/

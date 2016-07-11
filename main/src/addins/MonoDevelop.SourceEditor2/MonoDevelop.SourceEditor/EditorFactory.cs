@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -74,13 +75,14 @@ namespace MonoDevelop.SourceEditor
 
 		string[] ITextEditorFactory.GetSyntaxProperties (string mimeType, string name)
 		{
-			var mode = SyntaxModeService.GetSyntaxMode (null, mimeType);
+			var mode = SyntaxModeService.GetSyntaxHighlighting (null, mimeType);
 			if (mode == null)
 				return null;
-			System.Collections.Generic.List<string> value;
-			if (!mode.Properties.TryGetValue (name, out value))
+			// TODO: EditorTheme - remove the syntax properties or translate them to new language properties/services
+//			System.Collections.Generic.List<string> value;
+//			if (!mode.Properties.TryGetValue (name, out value))
 				return null;
-			return value.ToArray ();
+//			return value.ToArray ();
 		}
 		#endregion
 	}

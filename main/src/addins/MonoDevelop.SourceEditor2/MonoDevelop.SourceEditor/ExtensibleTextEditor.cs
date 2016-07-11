@@ -84,16 +84,17 @@ namespace MonoDevelop.SourceEditor
 
 		public ISyntaxHighlighting SyntaxHighlighting {
 			get {
-				return Document.SyntaxHighlighting;
+				return Document.SyntaxMode;
 			}
 			internal set {
-				Document.SyntaxHighlighting = value;
+				Document.SyntaxMode = value;
 			} 
 		}
 
 
 		void UpdateSemanticHighlighting ()
 		{
+			/* TODO : EditorTheme semantic highlighting
 			var oldSemanticHighighting = Document.SyntaxMode as SemanticHighlightingSyntaxMode;
 
 			if (semanticHighlighting == null) {
@@ -105,7 +106,7 @@ namespace MonoDevelop.SourceEditor
 				} else {
 					oldSemanticHighighting.UpdateSemanticHighlighting (semanticHighlighting);
 				}
-			}
+			}*/
 		}
 
 		class LastEditorExtension : TextEditorExtension
@@ -237,7 +238,7 @@ namespace MonoDevelop.SourceEditor
 
 		protected internal override string GetIdeColorStyleName ()
 		{
-			var scheme = Ide.Editor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = Ide.Editor.Highlighting.SyntaxModeService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
 				scheme = Ide.Editor.Highlighting.SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 			return scheme.Name;

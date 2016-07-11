@@ -25,13 +25,14 @@
 // THE SOFTWARE.
 using System;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor.Highlighting;
 namespace Mono.TextEditor
 {
 	class CodeSegmentEditorWindow : Gtk.Window
 	{
 		MonoTextEditor codeSegmentEditor = new MonoTextEditor ();
 		
-		internal ISyntaxMode SyntaxMode {
+		internal ISyntaxHighlighting SyntaxMode {
 			get {
 				return codeSegmentEditor.Document.SyntaxMode;
 			}

@@ -42,10 +42,10 @@ namespace Mono.TextEditor.Utils
 	{
 		public static string GenerateHtml (TextEditorData data)
 		{
-			return GenerateHtml (ColoredSegment.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
+			return GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
 		}
 
-		internal static string GenerateHtml (List<List<ColoredSegment>> chunks, MonoDevelop.Ide.Editor.Highlighting.ColorScheme style, ITextEditorOptions options)
+		internal static string GenerateHtml (List<List<ClipboardColoredText>> chunks, MonoDevelop.Ide.Editor.Highlighting.EditorTheme style, ITextEditorOptions options)
 		{
 			var htmlText = new StringBuilder ();
 			htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");

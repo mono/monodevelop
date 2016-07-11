@@ -168,50 +168,50 @@ namespace MonoDevelop.CSharp.Highlighting
 		void Setup ()
 		{
 			
-			defaultTextColor = ColorScheme.PlainTextKey;
-			referenceTypeColor = ColorScheme.UserTypesKey;
-			valueTypeColor = ColorScheme.UserTypesValueTypesKey;
-			interfaceTypeColor = ColorScheme.UserTypesInterfacesKey;
-			enumerationTypeColor = ColorScheme.UserTypesEnumsKey;
-			typeParameterTypeColor = ColorScheme.UserTypesTypeParametersKey;
-			delegateTypeColor = ColorScheme.UserTypesDelegatesKey;
+			defaultTextColor = ThemeSettingColors.Foreground;
+			referenceTypeColor = "entity.name.type.namespace.source.cs";
+			valueTypeColor = "entity.name.type.namespace.source.cs";
+			interfaceTypeColor = "entity.name.type.namespace.source.cs";
+			enumerationTypeColor = "entity.name.type.namespace.source.cs";
+			typeParameterTypeColor = "entity.name.type.namespace.source.cs";
+			delegateTypeColor = "entity.name.type.namespace.source.cs";
 
-			methodCallColor = ColorScheme.UserMethodUsageKey;
-			methodDeclarationColor = ColorScheme.UserMethodDeclarationKey;
+			methodCallColor = "entity.name.function.source.cs";
+			methodDeclarationColor = "entity.name.function.source.cs";
 
-			eventDeclarationColor = ColorScheme.UserEventDeclarationKey;
-			eventAccessColor = ColorScheme.UserEventUsageKey;
+			eventDeclarationColor = "entity.name.event.source.cs";
+			eventAccessColor = "entity.name.event.source.cs";
 
-			fieldDeclarationColor = ColorScheme.UserFieldDeclarationKey;
-			fieldAccessColor = ColorScheme.UserFieldUsageKey;
+			fieldDeclarationColor = "entity.name.field.source.cs";
+			fieldAccessColor = "entity.name.field.source.cs";
 
-			propertyDeclarationColor = ColorScheme.UserPropertyDeclarationKey;
-			propertyAccessColor = ColorScheme.UserPropertyUsageKey;
+			propertyDeclarationColor = "entity.name.property.source.cs";
+			propertyAccessColor = "entity.name.property.source.cs";
 
-			variableDeclarationColor = ColorScheme.UserVariableDeclarationKey;
-			variableAccessColor = ColorScheme.UserVariableUsageKey;
+			variableDeclarationColor = "entity.name.local.source.cs";
+			variableAccessColor = "entity.name.local.source.cs";
 
-			parameterDeclarationColor = ColorScheme.UserParameterDeclarationKey;
-			parameterAccessColor = ColorScheme.UserParameterUsageKey;
+			parameterDeclarationColor = "entity.name.parameter.source.cs";
+			parameterAccessColor = "entity.name.parameter.source.cs";
 
-			valueKeywordColor = ColorScheme.KeywordContextKey;
-			externAliasKeywordColor = ColorScheme.KeywordNamespaceKey;
-			varKeywordTypeColor = ColorScheme.KeywordTypesKey;
+			valueKeywordColor = "keyword.other.source.cs";
+			externAliasKeywordColor = "keyword.other.source.cs";
+			varKeywordTypeColor = "keyword.other.source.cs";
 
-			parameterModifierColor = ColorScheme.KeywordParameterKey;
-			inactiveCodeColor = ColorScheme.ExcludedCodeKey;
+			parameterModifierColor = "keyword.other.source.cs";
+			inactiveCodeColor = "punctuation.definition.comment.source.cs";
 
-			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
-			nameofKeywordColor = ColorScheme.KeywordOtherKey;
-			whenKeywordColor = ColorScheme.KeywordOtherKey; 
+			stringFormatItemColor = "constant.character.escape.source.cs";
+			nameofKeywordColor = "keyword.other.source.cs";
+			whenKeywordColor = "keyword.other.source.cs";
 
-			stringRegexCharacterClass = ColorScheme.RegexCharacterClassKey;
-			stringRegexGroupingConstructs = ColorScheme.RegexGroupingConstructsKey;
-			stringRegexSetConstructs = ColorScheme.RegexSetConstructsKey;
-			stringRegexErrors = ColorScheme.SyntaxErrorKey;
-			stringRegexComments = ColorScheme.CommentsSingleLineKey;
-			stringRegexEscapeCharacter = ColorScheme.RegexEscapeCharacterKey;
-			stringRegexAltEscapeCharacter = ColorScheme.RegexAltEscapeCharacterKey;
+			stringRegexCharacterClass = "constant.character.regex.characterclass.source.cs";
+			stringRegexGroupingConstructs = "constant.character.regex.grouping.source.cs";
+			stringRegexSetConstructs = "constant.character.regex.set.source.cs";
+			stringRegexErrors = "constant.character.regex.errors.source.cs";
+			stringRegexComments = "constant.character.regex.comments.source.cs";
+			stringRegexEscapeCharacter = "constant.character.regex.escape.source.cs";
+			stringRegexAltEscapeCharacter = "constant.character.regex.altescape.source.cs";
 		}
 
 		protected override void Colorize (TextSpan span, string color)

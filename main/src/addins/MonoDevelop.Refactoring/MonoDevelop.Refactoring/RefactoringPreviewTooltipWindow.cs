@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Editor.Util;
 using System.Linq;
 using MonoDevelop.Core;
 using Pango;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Refactoring
 {
@@ -212,9 +213,10 @@ namespace MonoDevelop.Refactoring
 
 		protected override void OnDrawContent (Gdk.EventExpose evnt, Cairo.Context g)
 		{
-			var style = editor.Options.GetColorStyle ();
+			var style = editor.Options.GetEditorTheme ();
 			g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
-			g.SetSourceColor (style.PlainText.Background);
+
+			g.SetSourceColor (SyntaxModeService.GetColor (style, ThemeSettingColors.Background));
 			g.Fill ();
 
 			int y = verticalTextSpace / 2;
@@ -260,17 +262,18 @@ namespace MonoDevelop.Refactoring
 
 				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffRemoved.Background);
+
+					g.SetSourceColor (SyntaxModeService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffRemovedBackground));
 					g.Fill ();
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffRemoved.Foreground);
+					g.SetSourceColor (SyntaxModeService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffRemoved));
 					DrawTextLine (g, editor, i, ref y);
 				}
 
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffAddedd.Background);
+					g.SetSourceColor (SyntaxModeService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffAddedBackground));
 					g.Fill ();
-					g.SetSourceColor (editor.Options.GetColorStyle ().PreviewDiffAddedd.Foreground);
+					g.SetSourceColor (SyntaxModeService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffAdded));
 					DrawTextLine (g, changedDocument, i, ref y);
 				}
 

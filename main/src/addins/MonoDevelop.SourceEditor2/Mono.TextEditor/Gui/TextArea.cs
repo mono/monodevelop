@@ -47,6 +47,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -723,7 +724,7 @@ namespace Mono.TextEditor
 				return;
 			if (currentStyleName != Options.ColorScheme) {
 				currentStyleName = Options.ColorScheme;
-				this.textEditorData.ColorStyle = Options.GetColorStyle ();
+				this.textEditorData.ColorStyle = Options.GetEditorTheme ();
 				SetWidgetBgFromStyle ();
 			}
 			
@@ -762,14 +763,15 @@ namespace Mono.TextEditor
 				}
 
 				if (parent != null) {
-					parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+					
+					parent.ModifyBg (StateType.Normal, SyntaxModeService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
 				}
 
 				// set additionally the real parent background for gtk themes that use the content background
 				// to draw the scrollbar slider trough.
-				this.Parent.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+				this.Parent.ModifyBg (StateType.Normal, SyntaxModeService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
 
-				this.ModifyBg (StateType.Normal, (HslColor)this.textEditorData.ColorStyle.PlainText.Background);
+				this.ModifyBg (StateType.Normal, SyntaxModeService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
 				settingWidgetBg = false;
 			}
 		}
@@ -1976,7 +1978,7 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		internal MonoDevelop.Ide.Editor.Highlighting.ColorScheme ColorStyle {
+		internal EditorTheme EditorTheme {
 			get {
 				return this.textEditorData?.ColorStyle;
 			}
@@ -2413,7 +2415,7 @@ namespace Mono.TextEditor
 				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
 				                                                    width,
 				                                                    editor.LineHeight + 2 * extend * editor.Options.Zoom);
-				Cairo.Color color = editor.ColorStyle.PlainText.Foreground;
+				Cairo.Color color = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
 				cr.SetSourceColor (color);
@@ -2477,7 +2479,7 @@ namespace Mono.TextEditor
 				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
 				                                                    width,
 				                                                    (int)(region.Height + 2 * animationPosition * editor.Options.Zoom));
-				Cairo.Color color = editor.ColorStyle.PlainText.Foreground;
+				Cairo.Color color = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
 				cr.SetSourceColor (color);
@@ -2606,7 +2608,6 @@ namespace Mono.TextEditor
 			{
 				DocumentLine line = Editor.Document.GetLineByOffset (Result.Offset);
 				int lineNr = Editor.Document.OffsetToLineNumber (Result.Offset);
-				ISyntaxMode mode = Editor.Document.SyntaxMode != null && Editor.Options.EnableSyntaxHighlighting ? Editor.Document.SyntaxMode : new SyntaxMode (Editor.Document);
 				int logicalRulerColumn = line.GetLogicalColumn (Editor.GetTextEditorData (), Editor.Options.RulerColumn);
 				var lineLayout = Editor.TextViewMargin.CreateLinePartLayout (line, logicalRulerColumn, line.Offset, line.Length, -1, -1);
 				if (lineLayout == null)
@@ -2673,7 +2674,9 @@ namespace Mono.TextEditor
 				//draw the shadow
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true,
 					shadowOffset, shadowOffset, corner, width, height);
-				var color = TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 0.3);
+				// TODO: EditorTheme : searchResultMainColor? 
+				var searchResultMainColor = SyntaxModeService.GetColor (Editor.EditorTheme, ThemeSettingColors.FindHighlight);
+				var color = TextViewMargin.DimColor (searchResultMainColor, 0.3);
 				color.A = 0.5 * opacity * opacity;
 				cr.SetSourceColor (color);
 				cr.Fill ();
@@ -2684,13 +2687,13 @@ namespace Mono.TextEditor
 				// FIXME: VV: Remove gradient features
 				using (var gradient = new Cairo.LinearGradient (0, 0, 0, height)) {
 					color = ColorLerp (
-						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 1.1),
-						Editor.ColorStyle.SearchResultMain.Color,
+						TextViewMargin.DimColor (searchResultMainColor, 1.1),
+						searchResultMainColor,
 						1 - opacity);
 					gradient.AddColorStop (0, color);
 					color = ColorLerp (
-						TextViewMargin.DimColor (Editor.ColorStyle.SearchResultMain.Color, 0.9),
-						Editor.ColorStyle.SearchResultMain.Color,
+						TextViewMargin.DimColor (searchResultMainColor, 0.9),
+						searchResultMainColor,
 						1 - opacity);
 					gradient.AddColorStop (1, color);
 					cr.SetSource (gradient);

@@ -30,17 +30,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Chunk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\CloneableStack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ColorDescriptionAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\IStreamProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ISyntaxMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\JaySyntaxMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Keywords.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Marker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Match.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Rule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\SemanticRule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Span.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\SyntaxMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\SyntaxModeService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\XmlReadHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\Regex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\RegexMatch.cs" />
@@ -59,7 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\CompressingTreeList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\Diff.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\HtmlWriter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ColoredSegment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\ClipboardColoredText.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\RedBlackTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\TextFileUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Utils\FileSettingsStore.cs" />

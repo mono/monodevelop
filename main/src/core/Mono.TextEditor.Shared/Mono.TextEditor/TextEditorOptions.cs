@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -567,9 +568,9 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual MonoDevelop.Ide.Editor.Highlighting.ColorScheme GetColorStyle ()
+		public virtual MonoDevelop.Ide.Editor.Highlighting.EditorTheme GetEditorTheme ()
 		{
-			return SyntaxModeService.GetColorStyle (ColorScheme);
+			return SyntaxModeService.GetEditorTheme (ColorScheme);
 		}
 		
 		public virtual void CopyFrom (TextEditorOptions other)

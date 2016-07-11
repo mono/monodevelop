@@ -60,11 +60,9 @@ namespace Mono.TextEditor.Highlighting
 		{
 		}
 
-		public virtual bool GetIsValid (MonoDevelop.Ide.Editor.Highlighting.ColorScheme style)
+		public virtual bool GetIsValid (MonoDevelop.Ide.Editor.Highlighting.EditorTheme style)
 		{
-			return (string.IsNullOrEmpty (Color) || style.GetChunkStyle (Color) != null) &&
-			        (string.IsNullOrEmpty (TagColor) || style.GetChunkStyle (TagColor) != null) &&
-			        (string.IsNullOrEmpty (NextColor) || style.GetChunkStyle (NextColor) != null);
+			return false;
 		}
 
 		public const string Node    = "Span";

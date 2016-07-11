@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -71,7 +72,7 @@ namespace Mono.TextEditor
 
 		HslColor GetColor (int i, double brightness, int colorCount)
 		{
-			HslColor hslColor = editor.ColorStyle.PlainText.Background;
+			HslColor hslColor = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
 			int colorPosition = i + 1;
 			if (i == foldSegments.Count - 1)
 				return hslColor;
@@ -88,7 +89,7 @@ namespace Mono.TextEditor
 			TextViewMargin textViewMargin = editor.TextViewMargin;
 
 			TextViewMargin.LayoutWrapper lineLayout = null;
-			double brightness = HslColor.Brightness (editor.ColorStyle.PlainText.Background);
+			double brightness = HslColor.Brightness (SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background));
 
 			int colorCount = foldSegments.Count + 2;
 			cr.SetSourceColor (GetColor (-1, brightness, colorCount));
@@ -186,7 +187,7 @@ namespace Mono.TextEditor
 						alpha = 0.1 + (1.0 - animationState) / 5;
 					}
 
-					var bg = (Cairo.Color)editor.ColorStyle.PlainText.Foreground;
+					var bg = (Cairo.Color)SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
 					cr.SetSourceRGBA (bg.R, bg.G, bg.B, alpha);
 					clampedRect = ClampRect (rect.X - editor.HAdjustment.Value - curPadSize , rect.Y - editor.VAdjustment.Value - curPadSize, editor.LineHeight / 2, rect.Width + curPadSize * 2, rect.Height + curPadSize * 2, area);
 					DrawRoundRectangle (cr, true, true, clampedRect.X, clampedRect.Y, editor.LineHeight / 2, clampedRect.Width, clampedRect.Height);

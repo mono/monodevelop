@@ -155,11 +155,12 @@ namespace Mono.TextEditor
 				return;
 			}
 			double height = editor.LineHeight / 5;
-			if (selected) {
-				cr.SetSourceColor (editor.ColorStyle.SelectedText.Foreground);
-			} else {
-				cr.SetSourceColor (ColorName == null ? (Cairo.Color)Color : (Cairo.Color)editor.ColorStyle.GetChunkStyle (ColorName).Foreground);
-			}
+			// TODO : EditorTheme does that look ok ?
+			// if (selected) {
+			//	cr.SetSourceColor (editor.EditorTheme.SelectedText.Foreground);
+			// } else {
+			cr.SetSourceColor (ColorName == null ? (Cairo.Color)Color : (Cairo.Color)editor.EditorTheme.GetChunkStyle (ColorName).Foreground);
+			// }
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);
 			} else {

@@ -29,6 +29,7 @@ using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -72,7 +73,8 @@ namespace MonoDevelop.SourceEditor
 			int markerEnd = Segment.EndOffset;
 			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
-			var bgc = (Cairo.Color)editor.ColorStyle.PlainText.Background;
+			
+			var bgc = (Cairo.Color)SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
 			double alpha = 0.6;
 			color = new Cairo.Color (
 				color.R * alpha + bgc.R * (1.0 - alpha),

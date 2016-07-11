@@ -55,11 +55,11 @@ namespace MonoDevelop.SourceEditor
 			bool inStringOrComment = false;
 
 			var stack = line.StartSpan.Clone ();
-			var sm = extEditor.Document.SyntaxMode as SyntaxMode;
-			if (sm != null)
+			// var sm = extEditor.Document.SyntaxMode;
+			// if (sm != null)
 				// extEditor.Caret.Offset - 1 means we care if we were inside string
 				// before typing current char
-				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (extEditor.Document, sm, sm, stack, line.Offset, extEditor.Caret.Offset - 1);
+				// Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (extEditor.Document, sm, sm, stack, line.Offset, extEditor.Caret.Offset - 1);
 			foreach (var span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
 					continue;

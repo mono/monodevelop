@@ -36,6 +36,7 @@ using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Editor;
 using Xwt.Drawing;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -86,11 +87,11 @@ namespace MonoDevelop.SourceEditor
 
 	class DebugTextMarker : TextSegmentMarker, IChunkMarker
 	{
-		readonly Func<MonoTextEditor, Ide.Editor.Highlighting.AmbientColor> background;
+		readonly Func<MonoTextEditor, HslColor> background;
 		readonly Func<MonoTextEditor, MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> forground;
 		MonoTextEditor editor;
 
-		public DebugTextMarker (int offset, int length, Func<MonoTextEditor, Ide.Editor.Highlighting.AmbientColor> background, Func<MonoTextEditor, MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> forground = null)
+		public DebugTextMarker (int offset, int length, Func<MonoTextEditor, HslColor> background, Func<MonoTextEditor, MonoDevelop.Ide.Editor.Highlighting.ChunkStyle> forground = null)
 			: base (offset, length)
 		{
 			this.forground = forground;
@@ -134,17 +135,17 @@ namespace MonoDevelop.SourceEditor
 			@from = Math.Max (@from, editor.TextViewMargin.XOffset);
 			to = Math.Max (to, editor.TextViewMargin.XOffset);
 			if (@from < to) {
-				cr.SetSourceColor (background(editor).Color);
+				cr.SetSourceColor (background(editor));
 				cr.RoundedRectangle (@from + 2.5, y + 0.5, to - @from, editor.LineHeight - 1, 2); // 2.5 to make space for the column guideline
-
+				/* TODO: EditorTheme - do we need a border here ?
 				if (background(editor).HasBorderColor) {
 					cr.FillPreserve ();
 
 					cr.SetSourceColor (background(editor).BorderColor);
 					cr.Stroke ();
-				} else {
+				} else {*/
 					cr.Fill ();
-				}
+//				}
 			}
 		}
 
@@ -229,7 +230,8 @@ namespace MonoDevelop.SourceEditor
 		public BreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
 			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
-			TextMarker = new DebugTextMarker (offset, length, e => e.ColorStyle.BreakpointMarker, e => e.ColorStyle.BreakpointText);
+
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarker), e => SyntaxModeService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.BreakpointText));
 		}
 	}
 
@@ -241,7 +243,7 @@ namespace MonoDevelop.SourceEditor
 		public DisabledBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
 			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
-			TextMarker = new DebugTextMarker (offset, length, e => e.ColorStyle.BreakpointMarkerDisabled);
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarkerDisabled));
 		}
 	}
 
@@ -253,7 +255,7 @@ namespace MonoDevelop.SourceEditor
 		public InvalidBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
 			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
-			TextMarker = new DebugTextMarker (offset, length, e => e.ColorStyle.BreakpointMarkerInvalid);
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarkerInvalid));
 		}
 	}
 
@@ -264,7 +266,7 @@ namespace MonoDevelop.SourceEditor
 		public DebugStackLineTextMarker (MonoTextEditor editor, int offset, int length)
 		{
 			IconMarker = new DebugIconMarker (stackLine);
-			TextMarker = new DebugTextMarker (offset, length, e => e.ColorStyle.DebuggerStackLineMarker, e => e.ColorStyle.DebuggerStackLine);
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.DebuggerStackLineMarker), e => SyntaxModeService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.DebuggerStackLine));
 		}
 	}
 
@@ -275,7 +277,7 @@ namespace MonoDevelop.SourceEditor
 		public CurrentDebugLineTextMarker (MonoTextEditor editor, int offset, int length)
 		{
 			IconMarker = new DebugIconMarker (currentLine);
-			TextMarker = new DebugTextMarker (offset, length, e => e.ColorStyle.DebuggerCurrentLineMarker, e => e.ColorStyle.DebuggerCurrentLine);
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.DebuggerCurrentLineMarker), e => SyntaxModeService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.DebuggerCurrentLine));
 		}
 
 		public bool IsVisible { get { return IconMarker.IsVisible; } set { IconMarker.IsVisible = value; } }

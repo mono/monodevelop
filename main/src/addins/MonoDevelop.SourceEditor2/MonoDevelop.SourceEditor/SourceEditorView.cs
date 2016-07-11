@@ -246,12 +246,13 @@ namespace MonoDevelop.SourceEditor
 		void Document_MimeTypeChanged (object sender, EventArgs e)
 		{
 			//if the mimetype doesn't have a syntax mode, try to load one for its base mimetypes
-			var sm = Document.SyntaxMode as Mono.TextEditor.Highlighting.SyntaxMode;
-			if (sm != null && sm.MimeType == null) {
+			var sm = Document.SyntaxMode;
+			if (sm == DefaultSyntaxHighlighting.Instance) {
 				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
-					var syntaxMode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
+					var syntaxMode = SyntaxModeService.GetSyntaxHighlighting (Document.FileName, mt);
 					if (syntaxMode != null) {
 						Document.SyntaxMode = syntaxMode;
+
 						break;
 					}
 				}
@@ -2137,7 +2138,7 @@ namespace MonoDevelop.SourceEditor
 					ClipbardRingUpdated (null, EventArgs.Empty);
 			};
 			SyntaxModeLoader.Init ();
-			Mono.TextEditor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
+			SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 		}
 		
 		public void UpdateClipboardRing (object sender, EventArgs e)
@@ -3066,11 +3067,10 @@ namespace MonoDevelop.SourceEditor
 					if (fromX < toX) {
 						var bracketMatch = new Cairo.Rectangle (fromX + 0.5, metrics.LineYRenderStartPosition + 0.5, toX - fromX - 1, editor.LineHeight - 2);
 						if (editor.TextViewMargin.BackgroundRenderer == null) {
-							cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.Color);
+							
+							cr.SetSourceColor (SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.BracketsForeground));
 							cr.Rectangle (bracketMatch);
-							cr.FillPreserve ();
-							cr.SetSourceColor (editor.ColorStyle.BraceMatchingRectangle.SecondColor);
-							cr.Stroke ();
+							cr.Fill ();
 						}
 					}
 				} catch (Exception e) {

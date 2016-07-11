@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor
 {
@@ -46,7 +47,7 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			color = editor.ColorStyle.CollapsedText.Foreground;
+			color = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.CollapsedText);
 		}
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)

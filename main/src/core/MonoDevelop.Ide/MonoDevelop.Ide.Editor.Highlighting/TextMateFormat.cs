@@ -26,17 +26,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	static class TextMateFormat
 	{
-		public static EditorTheme LoadEditorTheme (string fileName)
+		public static EditorTheme LoadEditorTheme (Stream stream)
 		{
-			if (fileName == null)
-				throw new ArgumentNullException (nameof (fileName));
-
-			var dictionary = PDictionary.FromFile (fileName);
+			if (stream == null)
+				throw new ArgumentNullException (nameof (stream));
+			var dictionary = PDictionary.FromStream (stream);
 			var name = (PString)dictionary ["name"];
 			var contentArray = dictionary ["settings"] as PArray;
 			if (contentArray == null || contentArray.Count == 0)
@@ -52,6 +52,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			return new EditorTheme (name, settings);
 		}
+
+
 
 		static ThemeSetting LoadThemeSetting(PDictionary dict)
 		{

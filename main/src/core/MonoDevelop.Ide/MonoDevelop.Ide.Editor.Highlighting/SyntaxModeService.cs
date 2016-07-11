@@ -37,13 +37,14 @@ using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public static class SyntaxModeService
 	{
-		static Dictionary<string, ColorScheme> styles      = new Dictionary<string, ColorScheme> ();
-		static Dictionary<string, IStreamProvider> styleLookup      = new Dictionary<string, IStreamProvider> ();
+		static Dictionary<string, EditorTheme> styles          = new Dictionary<string, EditorTheme> ();
+		static Dictionary<string, IStreamProvider> styleLookup = new Dictionary<string, IStreamProvider> ();
 
 		public static string[] Styles {
 			get {
@@ -60,15 +61,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static ColorScheme DefaultColorStyle {
+		public static EditorTheme DefaultColorStyle {
 			get {
-				return GetColorStyle (ColorScheme.DefaultColorStyle);
+				return GetEditorTheme (EditorTheme.DefaultColorStyle);
 			}
 		}
 
-		public static ColorScheme GetDefaultColorStyle (this Theme theme)
+		public static EditorTheme GetDefaultColorStyle (this Theme theme)
 		{
-			return GetColorStyle (GetDefaultColorStyleName (theme));
+			return GetEditorTheme (GetDefaultColorStyleName (theme));
 		}
 
 		public static string GetDefaultColorStyleName ()
@@ -88,20 +89,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static ColorScheme GetUserColorStyle (this Theme theme)
+		public static EditorTheme GetUserColorStyle (this Theme theme)
 		{
 			var schemeName = IdeApp.Preferences.ColorScheme.ValueForTheme (theme);
-			return GetColorStyle (schemeName);
+			return GetEditorTheme (schemeName);
 		}
 
-		public static bool FitsIdeTheme (this ColorScheme scheme, Theme theme)
+		public static bool FitsIdeTheme (this EditorTheme editorTheme, Theme theme)
 		{
+			Components.HslColor bgColor;
+			editorTheme.TryGetColor (ThemeSettingColors.Background, out bgColor);
 			if (theme == Theme.Dark)
-				return (scheme.PlainText.Background.L <= 0.5);
-			return (scheme.PlainText.Background.L > 0.5);
+				return (bgColor.L <= 0.5);
+			return (bgColor.L > 0.5);
 		}
 
-		public static ColorScheme GetColorStyle (string name)
+		public static EditorTheme GetEditorTheme (string name)
 		{
 			if (styleLookup.ContainsKey (name)) {
 				LoadStyle (name);
@@ -117,7 +120,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return styles [name];
 		}
 
-		static IStreamProvider GetProvider (ColorScheme style)
+		static IStreamProvider GetProvider (EditorTheme style)
 		{
 			if (styleLookup.ContainsKey (style.Name)) 
 				return styleLookup[style.Name];
@@ -135,13 +138,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (provider is UrlStreamProvider) {
 					var usp = provider as UrlStreamProvider;
 					if (usp.Url.EndsWith (".vssettings", StringComparison.Ordinal)) {
-						styles [name] = ColorScheme.Import (usp.Url, stream);
+						// TODO: Write vssettings -> tmTheme converter
+						LoggingService.LogWarning ("VS.NET styles no longer supported.");
 					} else {
-						styles [name] = ColorScheme.LoadFrom (stream);
+						styles [name] = TextMateFormat.LoadEditorTheme (stream);
 					}
 					styles [name].FileName = usp.Url;
 				} else {
-					styles [name] = ColorScheme.LoadFrom (stream);
+					styles [name] = TextMateFormat.LoadEditorTheme (stream);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading style :" + name, e);
@@ -152,7 +156,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 		
 
-		static void Remove (ColorScheme style)
+		internal static void Remove (EditorTheme style)
 		{
 			if (styleLookup.ContainsKey (style.Name))
 				styleLookup.Remove (style.Name);
@@ -197,7 +201,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static void LoadStylesAndModes (Assembly assembly)
 		{
 			foreach (string resource in assembly.GetManifestResourceNames ()) {
-				if (resource.EndsWith ("Style.json", StringComparison.Ordinal)) {
+				if (resource.EndsWith (".tmTheme", StringComparison.Ordinal)) {
 					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
 						string styleName = ScanStyle (stream);
 						styleLookup [styleName] = new ResourceStreamProvider (assembly, resource);
@@ -225,7 +229,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal static void AddStyle (ColorScheme style)
+		internal static void AddStyle (EditorTheme style)
 		{
 			styles [style.Name] = style;
 		}
@@ -248,6 +252,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxModeService ()
 		{
+			LoadStylesAndModes (typeof (SyntaxModeService).Assembly);
 			var textEditorAssembly = Assembly.Load ("MonoDevelop.SourceEditor");
 			if (textEditorAssembly != null) {
 				LoadStylesAndModes (textEditorAssembly);
@@ -256,13 +261,26 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		static EditorTheme editorTheme;
-
-		public static EditorTheme GetEditorTheme (string themeName)
+		internal static HslColor GetColor (EditorTheme style, string key)
 		{
-			if (editorTheme != null)
-				return editorTheme;
-			return editorTheme = TextMateFormat.LoadEditorTheme ("/home/mkrueger/b/Monokai.tmTheme");
+			HslColor result;
+			if (!style.TryGetColor (key, out result))
+				DefaultColorStyle.TryGetColor (key, out result);
+			return result;
+		}
+
+		internal static ChunkStyle GetChunkStyle (EditorTheme style, string key)
+		{
+			HslColor result;
+			if (!style.TryGetColor (key, out result))
+				DefaultColorStyle.TryGetColor (key, out result);
+			return new ChunkStyle() { Foreground = result };
+		}
+
+
+		internal static ISyntaxHighlighting GetSyntaxHighlighting (FilePath fileName, string mimeType)
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

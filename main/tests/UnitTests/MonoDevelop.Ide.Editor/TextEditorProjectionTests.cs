@@ -86,7 +86,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			var options = new CustomEditorOptions (editor.Options);
-			options.ColorScheme = "Tango";
+			options.EditorTheme = "Tango";
 			editor.Options = options;
 			editor.Text = "1234567890";
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.Editor
 				for (int i = 0; i < segment.Length; i++) {
 					char ch = base.editor.GetCharAt (segment.Offset + i);
 					if (ch == '1' || ch == '5' || ch == '9')
-						yield return new ColoredSegment (segment.Offset + i, 1, ColorScheme.UserTypesKey);
+						yield return new ColoredSegment (segment.Offset + i, 1, "entity.name.type.namespace.source.cs");
 				}
 			}
 
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			var options = new CustomEditorOptions (editor.Options);
-			options.ColorScheme = "Tango";
+			options.EditorTheme = "Tango";
 			editor.Options = options;
 			editor.Text = "12345678901234567890";
 
