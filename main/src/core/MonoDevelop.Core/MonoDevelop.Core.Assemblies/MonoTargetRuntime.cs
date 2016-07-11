@@ -188,11 +188,13 @@ namespace MonoDevelop.Core.Assemblies
 				return null;
 			}
 
-			//fall back to xbuild. it only has one version, which lives in Mono's 4.5 directory.
-			var xbpath = Path.Combine (monoDir, "4.5");
-			if (File.Exists (Path.Combine (xbpath, "xbuild.exe"))) {
+			var xbpath = Path.Combine (monoDir, toolsVersion);
+			if (File.Exists (Path.Combine (xbpath, "xbuild.exe")))
 				return xbpath;
-			}
+
+			if (toolsVersion == "4.0")
+				//HACK: Mono puts xbuild 4.0 in 4.5 directory, even though there is no such thing as ToolsVersion 4.5
+				return GetMSBuildBinPath ("4.5");
 
 			return null;
 		}
