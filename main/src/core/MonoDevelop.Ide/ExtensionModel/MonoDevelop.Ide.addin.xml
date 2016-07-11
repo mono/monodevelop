@@ -119,7 +119,7 @@
 	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/Ide/CustomTools" name = "Custom code generation tools">
-		<Description>Extensions to the text editor. Classes must be a subclass of TextEditorExtension.</Description>
+		<Description>Custom code generation tools. Classes must be a subclass of SingleProjectFileCustomTool or ISingleFileCustomTool.</Description>
 		<ExtensionNode name="Tool" type="MonoDevelop.Ide.Extensions.CustomToolExtensionNode"/>
 	</ExtensionPoint>
 	
