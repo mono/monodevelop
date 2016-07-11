@@ -26,6 +26,8 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
@@ -38,28 +40,40 @@ namespace MonoDevelop.Projects.MSBuild
 	class MainClass
 	{
 		static readonly ManualResetEvent exitEvent = new ManualResetEvent (false);
+		static string msbuildBinDir = null;
 		
 		[STAThread]
-		public static void Main ()
+		public static void Main (string [] args)
 		{
 			try {
-				RegisterRemotingChannel ();
-				WatchProcess (Console.ReadLine ());
-				
-				var builderEngine = new BuildEngine ();
-				var bf = new BinaryFormatter ();
-				ObjRef oref = RemotingServices.Marshal (builderEngine);
-				var ms = new MemoryStream ();
-				bf.Serialize (ms, oref);
-				Console.Error.WriteLine ("[MonoDevelop]" + Convert.ToBase64String (ms.ToArray ()));
-				
-				if (WaitHandle.WaitAny (new WaitHandle[] { builderEngine.WaitHandle, exitEvent }) == 0) {
-					// Wait before exiting, so that the remote call that disposed the builder can be completed
-					Thread.Sleep (400);
+				msbuildBinDir = Console.ReadLine ();
+				if (msbuildBinDir.Trim ().Length > 0) {
+					// if we have a "binDir" argument, then we want to build with
+					// OSS msbuild on OSX/Linux
+					AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler (MSBuildAssemblyResolver);
 				}
-				
+
+				Start ();
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
+			}
+		}
+
+		static void Start()
+		{
+			RegisterRemotingChannel ();
+			WatchProcess (Console.ReadLine ());
+
+			var builderEngine = new BuildEngine ();
+			var bf = new BinaryFormatter ();
+			ObjRef oref = RemotingServices.Marshal (builderEngine);
+			var ms = new MemoryStream ();
+			bf.Serialize (ms, oref);
+			Console.Error.WriteLine ("[MonoDevelop]" + Convert.ToBase64String (ms.ToArray ()));
+
+			if (WaitHandle.WaitAny (new WaitHandle[] { builderEngine.WaitHandle, exitEvent }) == 0) {
+				// Wait before exiting, so that the remote call that disposed the builder can be completed
+				Thread.Sleep (400);
 			}
 		}
 		
@@ -96,6 +110,31 @@ namespace MonoDevelop.Projects.MSBuild
 			});
 			t.IsBackground = true;
 			t.Start ();
+		}
+
+		static Assembly MSBuildAssemblyResolver (object sender, ResolveEventArgs args)
+		{
+			// MSBuild 14.0 assemblies are being redirected to 14.1 assemblies,
+			// so we just need to look for 14.1 here
+			var msbuildAssembles = new string[] {
+							"Microsoft.Build",
+							"Microsoft.Build.Framework",
+							"Microsoft.Build.Tasks.Core",
+							"Microsoft.Build.Utilities.Core" };
+
+			var asmName = new AssemblyName (args.Name);
+			if (msbuildAssembles.Any (n => String.Compare (n, asmName.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
+						&& asmName.Version < new Version (14, 1))
+				return null;
+
+			string fullPath = Path.Combine (msbuildBinDir, asmName.Name + ".dll");
+			if (File.Exists (fullPath)) {
+				// If the file exists under the msbuild bin dir, then we need
+				// to load it only from there. If that fails, then let that exception
+				// escape
+				return Assembly.LoadFrom (fullPath);
+			} else
+				return null;
 		}
 	}
 }
