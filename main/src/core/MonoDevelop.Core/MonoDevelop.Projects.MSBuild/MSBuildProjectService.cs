@@ -1043,9 +1043,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (useMicrosoftBuild) {
 				toolsVersion = "dotnet." + toolsVersion;
-			} else if (version >= new Version (14, 1)) {
-				// ToolsVersion >= 14.1 is supported only by msbuild
-				// FIXME: should this fallback to 14.0 with xbuild?
+			} else {
+				// We only have a 4.0 builder on non-windows systems
 				toolsVersion = "4.0";
 			}
 

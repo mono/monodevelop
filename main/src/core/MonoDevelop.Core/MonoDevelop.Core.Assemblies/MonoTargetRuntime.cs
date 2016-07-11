@@ -188,7 +188,7 @@ namespace MonoDevelop.Core.Assemblies
 				return null;
 			}
 
-			var xbpath = Path.Combine (monoDir, toolsVersion);
+			var xbpath = Path.Combine (monoDir, "xbuild", toolsVersion, "bin");
 			if (File.Exists (Path.Combine (xbpath, "xbuild.exe")))
 				return xbpath;
 
