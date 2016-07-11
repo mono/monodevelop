@@ -573,6 +573,15 @@ namespace MonoDevelop.Ide.Projects
 					}
 					ParentFolder.AddItem (currentEntry, true);
 				}
+			} else {
+				string solutionFileName = Path.Combine (projectConfiguration.SolutionLocation, finalConfigurationPage.SolutionFileName);
+				if (File.Exists (solutionFileName)) {
+					if (!MessageService.Confirm (GettextCatalog.GetString ("File {0} already exists. Overwrite?", solutionFileName), AlertButton.OverwriteFile)) {
+						ParentFolder = null;//Reset process of creating solution
+						return;
+					}
+					File.Delete (solutionFileName);
+				}
 			}
 
 			if (ParentFolder != null)

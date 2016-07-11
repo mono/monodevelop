@@ -1,4 +1,3 @@
-/*
 //
 // ImportCompletionTests.cs
 //
@@ -31,28 +30,38 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.NRefactory6.CSharp.Completion;
 using NUnit.Framework;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Immutable;
+using ICSharpCode.NRefactory6.CSharp.CodeGeneration;
+using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.CSharp.Completion;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion
 {
 	[TestFixture]
 	class ImportCompletionTests
 	{
-		public static CompletionDataList CreateProvider(string text, params IUnresolvedAssembly[] references)
+		public static CSharpCompletionTextEditorExtension.CSharpCompletionDataList CreateProvider (string text)
 		{
 			int cursorPosition;
-			var engine = CodeCompletionBugTests.CreateEngine(text, out cursorPosition, references);
-			var data = engine.GetImportCompletionData (cursorPosition);
-			
-			return new CompletionDataList () {
-				Data = data,
-				AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch,
-				AutoSelect = engine.AutoSelect,
-				DefaultCompletionString = engine.DefaultCompletionString
-			};
+			SemanticModel semanticModel;
+			Document document;
+
+			var engine = CodeCompletionBugTests.CreateEngine (text, out cursorPosition, out semanticModel, out document, null);
+			var ext = new CSharpCompletionTextEditorExtension ();
+			var list = new CSharpCompletionTextEditorExtension.CSharpCompletionDataList ();
+			var result = CodeCompletionBugTests.CreateProvider (text);
+			list.AddRange (result);
+			ext.AddImportCompletionData (result, list, new RoslynCodeCompletionFactory (ext, semanticModel), semanticModel, cursorPosition);
+
+			return list;
 		}
 
-
+		/*
 		[Test]
 		public void TestSimpleCase ()
 		{
@@ -122,23 +131,21 @@ class Test
 			Assert.True(data.UseFullName);
 		}
 
-
+*/
 		[Test]
 		public void TestAutomaticImport ()
 		{
-			var provider = CodeCompletionBugTests.CreateProvider(@"class Test
+			var provider = CreateProvider (@"class Test
 {
 	public static void Main (string[] args)
 	{
 		$c$
 	}
 }");
-			var data = provider.Find ("Console", true) as CodeCompletionBugTests.TestFactory.ImportCompletionData;
+			var data = provider.OfType<ImportSymbolCompletionData> ().FirstOrDefault (item => item.DisplayText == "Console");
 			Assert.NotNull(data);
-			Assert.False(data.UseFullName);
-
 		}
-
+		/*
 		[Test]
 		public void TestAutomaticImportClash1 ()
 		{
@@ -191,8 +198,26 @@ class Test
 			var data = provider.OfType<CodeCompletionBugTests.TestFactory.ImportCompletionData>().FirstOrDefault(d => d.DisplayText == "Dictionary");
 			Assert.IsNull(data);
 
+		}*/
+
+		/// <summary>
+		/// Bug 40888 - Extension methods shown on types
+		/// </summary>
+		[Test]
+		public void TestBug40888 ()
+		{
+			var provider = CreateProvider (@"
+using System.Collections.Generic;
+
+class X
+{
+    y ()
+    {
+        $List<int>.$
+    }
+}");
+			var data = provider.OfType<ImportSymbolCompletionData> ();
+			Assert.IsTrue (!data.Any ());
 		}
 	}
 }
-
-*/

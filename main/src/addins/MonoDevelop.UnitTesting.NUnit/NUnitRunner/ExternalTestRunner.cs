@@ -101,7 +101,7 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 
 			TestPackage package = new TestPackage (assemblyPath);
 			package.Settings ["ShadowCopyFiles"] = false;
-			package.BasePath = basePath;
+			package.BasePath = Path.GetDirectoryName(assemblyPath);
 			
 			AppDomain domain = Services.DomainManager.CreateDomain (package);
 			string asm = Path.Combine (basePath, "NUnitRunner.exe");

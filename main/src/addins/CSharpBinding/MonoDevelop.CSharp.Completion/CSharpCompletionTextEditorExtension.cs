@@ -362,7 +362,7 @@ namespace MonoDevelop.CSharp.Completion
 				//				timer.Dispose ();
 			}		}
 
-		class CSharpCompletionDataList : CompletionDataList
+		internal class CSharpCompletionDataList : CompletionDataList
 		{
 		}
 
@@ -372,7 +372,7 @@ namespace MonoDevelop.CSharp.Completion
 		}
 
 
-		void AddImportCompletionData (CompletionResult completionResult, CSharpCompletionDataList result, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
+		internal void AddImportCompletionData (CompletionResult completionResult, CSharpCompletionDataList result, RoslynCodeCompletionFactory factory, SemanticModel semanticModel, int position, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (result.Count == 0)
 				return;
@@ -391,6 +391,9 @@ namespace MonoDevelop.CSharp.Completion
 			if (extensionMethodImport) {
 				var memberAccess = completionResult.SyntaxContext.TargetToken.Parent as MemberAccessExpressionSyntax;
 				if (memberAccess != null) {
+					var symbolInfo = completionResult.SyntaxContext.SemanticModel.GetSymbolInfo (memberAccess.Expression);
+					if (symbolInfo.Symbol.Kind == SymbolKind.NamedType)
+						return;
 					extensionType = completionResult.SyntaxContext.SemanticModel.GetTypeInfo (memberAccess.Expression).Type;
 					if (extensionType == null) {
 						return;

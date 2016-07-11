@@ -27,6 +27,7 @@ using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using ICSharpCode.NRefactory6.CSharp.CodeCompletion.Roslyn;
+using System.Reflection.Metadata.Ecma335.Blobs;
 
 namespace ICSharpCode.NRefactory6.CSharp.CodeCompletion.NR6
 {

@@ -428,7 +428,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return false;
 			
 			var member = ResolveMember (type, memberName, instance == null);
-			if (member.Length == 0)
+			if (member == null || member.Length == 0)
 				return false;
 
 			if (j < str.Length && str[j] == '(') {
@@ -640,6 +640,8 @@ namespace MonoDevelop.Projects.MSBuild
 
 		MemberInfo[] ResolveMember (Type type, string memberName, bool isStatic)
 		{
+			if (type.IsArray)
+				type = typeof (Array);
 			var flags = isStatic ? BindingFlags.Static : BindingFlags.Instance;
 			if (type != typeof (Microsoft.Build.Evaluation.IntrinsicFunctions)) {
 				var t = supportedTypeMembers.FirstOrDefault (st => st.Item1 == type);
@@ -654,6 +656,7 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		static Tuple<Type, string []> [] supportedTypeMembers = {
+			Tuple.Create (typeof(System.Array), (string[]) null),
 			Tuple.Create (typeof(System.Byte), (string[]) null),
 			Tuple.Create (typeof(System.Char), (string[]) null),
 			Tuple.Create (typeof(System.Convert), (string[]) null),

@@ -55,7 +55,13 @@ namespace MonoDevelop.Projects
 			outputDirectory = pset.GetPathValue ("OutputPath", defaultValue:"." + Path.DirectorySeparatorChar);
 			debugMode = pset.GetValue<bool> ("DebugSymbols", false);
 			pauseConsoleOutput = pset.GetValue ("ConsolePause", true);
-			externalConsole = pset.GetValue<bool> ("ExternalConsole");
+			if (pset.HasProperty ("Externalconsole")) {//for backward compatiblity before version 6.0 it was lowercase
+				writeExternalConsoleLowercase = true;
+				externalConsole = pset.GetValue<bool> ("Externalconsole");
+			} else {
+				writeExternalConsoleLowercase = false;
+				externalConsole = pset.GetValue<bool> ("ExternalConsole");
+			}
 			commandLineParameters = pset.GetValue ("Commandlineparameters", "");
 			runWithWarnings = pset.GetValue ("RunWithWarnings", true);
 
@@ -111,7 +117,10 @@ namespace MonoDevelop.Projects
 			
 			pset.SetValue ("OutputPath", outputDirectory, defaultValue:new FilePath ("." + Path.DirectorySeparatorChar));
 			pset.SetValue ("ConsolePause", pauseConsoleOutput, true);
-			pset.SetValue ("ExternalConsole", externalConsole, false);
+			if (writeExternalConsoleLowercase)
+				pset.SetValue ("Externalconsole", externalConsole, false);
+			else
+				pset.SetValue ("ExternalConsole", externalConsole, false);
 			pset.SetValue ("Commandlineparameters", commandLineParameters, "");
 			pset.SetValue ("RunWithWarnings", runWithWarnings, true);
 
@@ -214,6 +223,7 @@ namespace MonoDevelop.Projects
 			set { pauseConsoleOutput = value; }
 		}
 
+		bool writeExternalConsoleLowercase = false;
 		bool externalConsole = false;
 		public bool ExternalConsole {
 			get { return externalConsole; }

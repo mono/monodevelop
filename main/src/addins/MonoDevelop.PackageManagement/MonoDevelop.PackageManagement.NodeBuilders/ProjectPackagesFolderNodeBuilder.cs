@@ -57,6 +57,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			var node = (ProjectPackagesFolderNode)dataObject;
 			nodeInfo.Label = node.GetLabel ();
+			nodeInfo.SecondaryLabel = node.GetSecondaryLabel ();
 			nodeInfo.Icon = Context.GetIcon (node.Icon);
 			nodeInfo.ClosedIcon = Context.GetIcon (node.ClosedIcon);
 		}
