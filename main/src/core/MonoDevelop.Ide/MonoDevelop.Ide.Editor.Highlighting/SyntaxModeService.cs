@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		static Dictionary<string, EditorTheme> styles          = new Dictionary<string, EditorTheme> ();
 		static Dictionary<string, IStreamProvider> styleLookup = new Dictionary<string, IStreamProvider> ();
+		static List<SyntaxHighlightingDefinition> highlightings = new List<SyntaxHighlightingDefinition> ();
 
 		public static string[] Styles {
 			get {
@@ -194,7 +195,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						string styleName = Path.GetFileNameWithoutExtension (file);
 						styleLookup [styleName] = new UrlStreamProvider (file);
 					}
-				}
+				} 
 			}
 		}
 
@@ -206,16 +207,45 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						string styleName = ScanStyle (stream);
 						styleLookup [styleName] = new ResourceStreamProvider (assembly, resource);
 					}
+					continue;
+				}
+				if (resource.EndsWith (".sublime-package", StringComparison.Ordinal)) {
+					using (var stream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream (assembly.GetManifestResourceStream (resource))) {
+						var entry = stream.GetNextEntry ();
+						while (entry != null) {
+							if (entry.IsFile && !entry.IsCrypted && entry.Name.EndsWith (".sublime-syntax", StringComparison.Ordinal)) {
+								if (stream.CanDecompressEntry) {
+									byte [] data = new byte [entry.Size];
+									stream.Read (data, 0, (int)entry.Size);
+									using (var tr = new StringReader (TextFileUtility.GetText (data))) {
+										var highlighting = Sublime3Format.ReadHighlighting (tr);
+										if (highlighting != null)
+											highlightings.Add (highlighting);
+									}
+								}
+							}
+							entry = stream.GetNextEntry ();
+						}
+					}
 				}
 			}
 		}
-		static System.Text.RegularExpressions.Regex nameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"name\"\\s*:\\s*\"(.*)\"\\s*,");
+
+		static System.Text.RegularExpressions.Regex nameRegex = new System.Text.RegularExpressions.Regex ("\\<string\\>(.*)\\<\\/string\\>");
 
 		static string ScanStyle (Stream stream)
 		{
 			try {
 				var file = TextFileUtility.OpenStream (stream);
-				file.ReadLine ();
+				string keyString = "<key>name</key>";
+				while (true) {
+					var line = file.ReadLine ();
+					if (line == null)
+						return "";
+					if (line.Contains (keyString))
+						break;
+				}
+
 				var nameLine = file.ReadLine ();
 				file.Close ();
 				var match = nameRegex.Match (nameLine);
@@ -261,7 +291,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal static HslColor GetColor (EditorTheme style, string key)
+		public static HslColor GetColor (EditorTheme style, string key)
 		{
 			HslColor result;
 			if (!style.TryGetColor (key, out result))
@@ -278,9 +308,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 
-		internal static ISyntaxHighlighting GetSyntaxHighlighting (FilePath fileName, string mimeType)
+		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
-			throw new NotImplementedException ();
+			var ext = fileName.Extension;
+			foreach (var h in highlightings) {
+				if (h.FileExtensions.Contains (ext))
+					return h;
+				foreach (var fe in h.FileExtensions) {
+					var mime = DesktopService.GetMimeTypeForUri ("a." + fe);
+					if (mimeType == mime)
+						return h;
+				}
+			}
+			return null;
 		}
 	}
 }

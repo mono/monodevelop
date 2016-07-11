@@ -7590,6 +7590,9 @@
     <EmbeddedResource Include="themes\Light.tmTheme">
       <LogicalName>Light.tmTheme</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="tmPackages\C#.sublime-package">
+      <LogicalName>C#.sublime-package</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -8588,6 +8591,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorTheme.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TextMateFormat.cs" />
     <Compile Include="MonoDevelop.Ide.Desktop\RecentItemsChangedEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlightingDefinition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -8639,6 +8643,7 @@
     <Folder Include="MonoDevelop.Components\Windows\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\RegexEngine\" />
     <Folder Include="themes\" />
+    <Folder Include="tmPackages\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

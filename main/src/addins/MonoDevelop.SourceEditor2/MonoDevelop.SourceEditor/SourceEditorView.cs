@@ -249,11 +249,13 @@ namespace MonoDevelop.SourceEditor
 			var sm = Document.SyntaxMode;
 			if (sm == DefaultSyntaxHighlighting.Instance) {
 				foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (Document.MimeType)) {
-					var syntaxMode = SyntaxModeService.GetSyntaxHighlighting (Document.FileName, mt);
+					var syntaxMode = SyntaxModeService.GetSyntaxHighlightingDefinition (Document.FileName, mt);
 					if (syntaxMode != null) {
-						Document.SyntaxMode = syntaxMode;
+						Document.SyntaxMode = new SyntaxHighlighting (syntaxMode, Document);
 
 						break;
+					} else {
+						Document.SyntaxMode = DefaultSyntaxHighlighting.Instance;
 					}
 				}
 			}

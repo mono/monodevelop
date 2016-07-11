@@ -44,14 +44,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 		protected override void Initialize ()
 		{
 			DocumentContext.DocumentParsed += DocumentContext_DocumentParsed;
-
-			var input = new StreamReader ("/home/mkrueger/b/C#.sublime-syntax");
-			input.ReadLine ();
-			input.ReadLine ();
-
-			var highlighting = Sublime3Format.ReadHighlighting (input);
-			highlighting.Document = Editor;
-			Editor.SyntaxHighlighting = highlighting;
 		}
 
 		public override void Dispose ()

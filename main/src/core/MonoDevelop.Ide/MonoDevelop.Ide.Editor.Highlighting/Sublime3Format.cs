@@ -8,8 +8,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	static class Sublime3Format
 	{
-		public static SyntaxHighlighting ReadHighlighting (TextReader input)
+		public static SyntaxHighlightingDefinition ReadHighlighting (TextReader input)
 		{
+			input.ReadLine ();
+			input.ReadLine ();
 			string name = null, scope = null, firstLineMatch = null;
 			var extensions = new List<string> ();
 			var contexts = new List<SyntaxContext> ();
@@ -40,7 +42,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				}
 			}
-			return new SyntaxHighlighting (name, scope, firstLineMatch, extensions, contexts);
+			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, extensions, contexts);
 		}
 
 

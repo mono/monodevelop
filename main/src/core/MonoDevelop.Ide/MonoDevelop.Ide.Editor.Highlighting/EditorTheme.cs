@@ -244,7 +244,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal Cairo.Color GetForeground (ChunkStyle chunkStyle)
 		{
-			throw new NotImplementedException ();
+			if (chunkStyle.TransparentForeground)
+				return GetColor (ThemeSettingColors.Foreground, "");
+			return chunkStyle.Foreground;
 		}
 	}
 }

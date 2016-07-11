@@ -1381,15 +1381,15 @@ namespace Mono.TextEditor
 				double xpos2 = x + posX / Pango.Scale.PangoScale;
 				var col = new Cairo.Color (0, 0, 0);
 				//if (SelectionColor.TransparentForeground) {
-					while (layout.Chunks [curchunk].Offset < offset + i)
-						curchunk++;
+				while (curchunk + 1 < layout.Chunks.Count && layout.Chunks [curchunk].Offset < offset + i)
+					curchunk++;
 					/*if (curchunk != null && curchunk.SpanStack.Count > 0 && curchunk.SpanStack.Peek ().Color != "Plain Text") {
 						var chunkStyle = ColorStyle.GetChunkStyle (curchunk.SpanStack.Peek ().Color);
 						if (chunkStyle != null)
 							col = ColorStyle.GetForeground (chunkStyle);
 					} else */{
-						col = foregroundColor;
-					}
+					col = foregroundColor;
+				}
 				// } else {
 				//	col = selected ? SelectionColor.Foreground : foregroundColor;
 				// }

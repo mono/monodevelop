@@ -39,7 +39,7 @@ namespace MonoDevelop.HexEditor
 	{
 		EditorTheme colorStyle;
 		Mono.MHex.HexEditor hexEditor;
-		
+
 		public MonoDevelopHexEditorStyle (Mono.MHex.HexEditor hexEditor)
 		{
 			this.hexEditor = hexEditor;
@@ -54,7 +54,7 @@ namespace MonoDevelop.HexEditor
 			this.hexEditor.PurgeLayoutCaches ();
 			this.hexEditor.Repaint ();
 		}
-		
+
 		void SetStyle ()
 		{
 			colorStyle = SyntaxModeService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
@@ -72,85 +72,85 @@ namespace MonoDevelop.HexEditor
 
 		public override Color HexOffset {
 			get {
-				return ConvertColor (colorStyle.LineNumbers.Foreground);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.LineNumbers));
 			}
 		}
-		
+
 		public override Color HexOffsetBg {
 			get {
-				return ConvertColor (colorStyle.LineNumbers.Background);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.LineNumbersBackground));
 			}
 		}
-		
-/*		public override Color HexOffsetHighlighted {
-			get {
-				return ConvertColor (colorStyle.LineNumbers.fo);
-			}
-		}*/
-		
+
+		/*		public override Color HexOffsetHighlighted {
+					get {
+						return ConvertColor (colorStyle.LineNumbers.fo);
+					}
+				}*/
+
 		public override Color HexDigit {
 			get {
-				return ConvertColor (colorStyle.PlainText.Foreground);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Foreground));
 			}
 		}
-		
+
 		public override Color HexDigitBg {
 			get {
-				return ConvertColor (colorStyle.PlainText.Background);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Background));
 			}
 		}
-		
+
 		public override Color DashedLineFg {
 			get {
-				return ConvertColor (colorStyle.PlainText.Foreground);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Foreground));
 			}
 		}
-		
+
 		public override Color DashedLineBg {
 			get {
-				return ConvertColor (colorStyle.PlainText.Background);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Background));
 			}
 		}
-		
+
 		public override Color IconBarBg {
 			get {
-				return ConvertColor (colorStyle.IndicatorMarginSeparator.Color);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.IndicatorMarginSeparator));
 			}
 		}
-		
+
 		public override Color IconBarSeperator {
 			get {
-				return ConvertColor (colorStyle.IndicatorMarginSeparator.Color);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.IndicatorMarginSeparator));
 			}
 		}
-		
+
 		public override Color BookmarkColor1 {
 			get {
-				return ConvertColor (colorStyle.Bookmarks.Color);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.MessageBubbleWarningLine));
 			}
 		}
-		
+
 		public override Color BookmarkColor2 {
 			get {
-				return ConvertColor (colorStyle.Bookmarks.SecondColor);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.MessageBubbleWarningLine2));
 			}
 		}
 		
 		public override Color Selection {
 			get {
-				return ConvertColor (colorStyle.SelectedText.Foreground);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Foreground));
 			}
 		}
 		
 		public override Color SelectionBg {
 			get {
-				return ConvertColor (colorStyle.SelectedText.Background);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Selection));
 			}
 		}
 		
 		public override Color HighlightOffset {
 			get {
-				return ConvertColor (colorStyle.SearchResult.Color);
+				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.FindHighlight));
 			}
 		}
 	}

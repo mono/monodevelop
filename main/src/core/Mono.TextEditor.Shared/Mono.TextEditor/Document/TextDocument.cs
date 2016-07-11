@@ -64,7 +64,12 @@ namespace Mono.TextEditor
 				if (mimeType != value) {
 					lock (this) {
 						mimeType = value;
-						SyntaxMode = SyntaxModeService.GetSyntaxHighlighting (FileName, value);
+						var def = SyntaxModeService.GetSyntaxHighlightingDefinition (FileName, value);
+						if (def != null) {
+							SyntaxMode = new SyntaxHighlighting (def, this);
+						} else {
+							SyntaxMode = null;
+						}
 						OnMimeTypeChanged (EventArgs.Empty);
 					}
 				}

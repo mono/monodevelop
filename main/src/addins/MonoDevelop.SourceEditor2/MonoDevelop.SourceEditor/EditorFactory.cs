@@ -75,7 +75,7 @@ namespace MonoDevelop.SourceEditor
 
 		string[] ITextEditorFactory.GetSyntaxProperties (string mimeType, string name)
 		{
-			var mode = SyntaxModeService.GetSyntaxHighlighting (null, mimeType);
+			var mode = SyntaxModeService.GetSyntaxHighlightingDefinition (null, mimeType);
 			if (mode == null)
 				return null;
 			// TODO: EditorTheme - remove the syntax properties or translate them to new language properties/services
