@@ -7593,6 +7593,9 @@
     <EmbeddedResource Include="tmPackages\C#.sublime-package">
       <LogicalName>C#.sublime-package</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="themes\LightStyle.json">
+      <LogicalName>LightStyle.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

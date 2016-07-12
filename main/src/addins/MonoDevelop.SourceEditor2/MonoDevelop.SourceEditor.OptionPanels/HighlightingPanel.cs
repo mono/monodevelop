@@ -152,36 +152,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				}*/ 
 			}
 		}
-		
-		MonoDevelop.Ide.Editor.Highlighting.EditorTheme LoadStyle (string styleName, out bool error)
+
+		EditorTheme LoadStyle (string styleName, out bool error)
 		{
 			try {
 				error = false;
 				return SyntaxModeService.GetEditorTheme (styleName);
-			} /* catch (Ide.Editor.Highlighting.StyleImportException e) {
+			} catch (StyleImportException) {
 				error = true;
-
-				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
-				style.Name = styleName;
-				switch (e.Reason) {
-				case Ide.Editor.Highlighting.StyleImportException.ImportFailReason.NoValidColorsFound:
-					style.Description = GettextCatalog.GetString ("No valid colors found inside the settings. (Maybe only theme is defined - check <FontsAndColors> node?)");
-					break;
-				default:
-					style.Description = GettextCatalog.GetString ("Loading error");
-					break;
-				}
-				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
-				return style;
-			}*/ catch (Exception e) {
-				// TODO : EditorTheme
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxModeService.DefaultColorStyle.Settings));
+			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading color style " + styleName, e);
 				error = true;
-				var style = SyntaxModeService.DefaultColorStyle/*.Clone ()*/;
-				//style.Name = styleName;
-				//style.Description = GettextCatalog.GetString ("Loading error:" + e.Message);
-				// style.FileName = SyntaxModeService.GetFileName (styleName);
-				return style;
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxModeService.DefaultColorStyle.Settings));
 			}
 		
 		}
@@ -243,10 +226,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
 				var sheme = (Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
 				var selectedFile = dialog.SelectedFile.ToString ();
-				if (!selectedFile.EndsWith (".json", StringComparison.Ordinal))
-					selectedFile += ".json";
-				// TODO : Saving
-				// sheme.Save (selectedFile);
+				if (!selectedFile.EndsWith (".tmTheme", StringComparison.Ordinal))
+					selectedFile += ".tmTheme";
+				try {
+					using (var writer = new StreamWriter (selectedFile))
+						TextMateFormat.Save (writer, sheme);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Error while exporting color scheme to :" + selectedFile, ex);
+					MessageService.ShowError (GettextCatalog.GetString ("Error while exporting color scheme."), ex); 
+				}
 			}
 
 		}
@@ -269,7 +257,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 					MessageService.ShowError (string.Format (GettextCatalog.GetString ("Highlighting with the same name already exists. Remove {0} first."), System.IO.Path.GetFileNameWithoutExtension (newFileName)));
 					return;
 				}
-
 				File.Copy (dialog.SelectedFile.FullPath, newFileName);
 			} catch (Exception e) {
 				success = false;
@@ -277,7 +264,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 			if (success) {
 				SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
-				MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}

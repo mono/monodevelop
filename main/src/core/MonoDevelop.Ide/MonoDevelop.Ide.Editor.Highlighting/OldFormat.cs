@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("diff.inserted", new List<string> { "markup.inserted" }, ConvertChunkStyle (colorScheme.DiffLineAdded)));
 			settings.Add (new ThemeSetting ("diff.changed", new List<string> { "markup.changed" }, ConvertChunkStyle (colorScheme.DiffLineChanged)));
 
-			return new EditorTheme (colorScheme.Name, settings, Guid.NewGuid ().ToString ());
+			return new EditorTheme (colorScheme.Name, settings);
 		}
 
 		sealed class AmbientColor
@@ -1101,8 +1101,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				// The fields we'd like to extract
 				result.Name = root.XPathSelectElement ("name").Value;
 
-				// if (result.Name != TextEditorOptions.DefaultColorStyle)
-				//	result.CopyValues (SyntaxModeService.DefaultColorStyle);
+				if (result.Name != "")
+					result.CopyValues (LoadFrom (Assembly.GetCallingAssembly ().GetManifestResourceStream ("LightStyle.json")));
 
 				var version = Version.Parse (root.XPathSelectElement ("version").Value);
 				if (version.Major != 1) {

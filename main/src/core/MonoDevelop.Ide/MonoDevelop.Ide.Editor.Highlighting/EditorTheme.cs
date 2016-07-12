@@ -200,7 +200,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal EditorTheme (string name) : this (name, new List<ThemeSetting> (), Guid.NewGuid ().ToString ())
+		internal EditorTheme (string name) : this (name, new List<ThemeSetting> ())
+		{
+		}
+
+		internal EditorTheme (string name, List<ThemeSetting> settings) : this (name, new List<ThemeSetting> (), Guid.NewGuid ().ToString ())
 		{
 		}
 
@@ -262,6 +266,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (chunkStyle.TransparentForeground)
 				return GetColor (ThemeSettingColors.Foreground, "");
 			return chunkStyle.Foreground;
+		}
+
+		internal EditorTheme Clone ()
+		{
+			return (EditorTheme)this.MemberwiseClone ();
 		}
 	}
 }

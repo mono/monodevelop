@@ -139,8 +139,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (provider is UrlStreamProvider) {
 					var usp = provider as UrlStreamProvider;
 					if (usp.Url.EndsWith (".vssettings", StringComparison.Ordinal)) {
-						// TODO: Write vssettings -> tmTheme converter
-						LoggingService.LogWarning ("VS.NET styles no longer supported.");
+						styles [name] = OldFormat.ImportVsSetting (usp.Url, stream);
+					} else if (usp.Url.EndsWith (".json", StringComparison.Ordinal)) {
+						styles [name] = OldFormat.ImportColorScheme (stream);
 					} else {
 						styles [name] = TextMateFormat.LoadEditorTheme (stream);
 					}
@@ -155,7 +156,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				stream.Close ();
 			}
 		}
-		
 
 		internal static void Remove (EditorTheme style)
 		{
@@ -183,11 +183,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (string file in Directory.GetFiles (path)) {
 				if (file.EndsWith (".json", StringComparison.Ordinal)) {
 					using (var stream = File.OpenRead (file)) {
-						string styleName = ScanStyle (stream);
+						string styleName = ScanOldJsonStyle (stream);
 						if (!string.IsNullOrEmpty (styleName)) {
 							styleLookup [styleName] = new UrlStreamProvider (file);
 						} else {
-							Console.WriteLine ("Invalid .json syntax sheme file : " + file);
+							LoggingService.LogError ("Invalid .json syntax sheme file : " + file);
+						}
+					}
+				} else if (file.EndsWith (".tmTheme", StringComparison.Ordinal)) {
+					using (var stream = File.OpenRead (file)) {
+						string styleName = ScanTextMateStyle (stream);
+						if (!string.IsNullOrEmpty (styleName)) {
+							styleLookup [styleName] = new UrlStreamProvider (file);
+						} else {
+							LoggingService.LogError ("Invalid .tmTheme theme file : " + file);
 						}
 					}
 				} else if (file.EndsWith (".vssettings", StringComparison.Ordinal)) {
@@ -195,7 +204,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						string styleName = Path.GetFileNameWithoutExtension (file);
 						styleLookup [styleName] = new UrlStreamProvider (file);
 					}
-				} 
+				}
 			}
 		}
 
@@ -204,7 +213,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (string resource in assembly.GetManifestResourceNames ()) {
 				if (resource.EndsWith (".tmTheme", StringComparison.Ordinal)) {
 					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
-						string styleName = ScanStyle (stream);
+						string styleName = ScanTextMateStyle (stream);
 						styleLookup [styleName] = new ResourceStreamProvider (assembly, resource);
 					}
 					continue;
@@ -231,9 +240,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		static System.Text.RegularExpressions.Regex nameRegex = new System.Text.RegularExpressions.Regex ("\\<string\\>(.*)\\<\\/string\\>");
+		static System.Text.RegularExpressions.Regex jsonNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"name\"\\s*:\\s*\"(.*)\"\\s*,");
 
-		static string ScanStyle (Stream stream)
+		static string ScanOldJsonStyle (Stream stream)
+		{
+			try {
+				var file = TextFileUtility.OpenStream (stream);
+				file.ReadLine ();
+				var nameLine = file.ReadLine ();
+				file.Close ();
+				var match = jsonNameRegex.Match (nameLine);
+				if (!match.Success)
+					return null;
+				return match.Groups [1].Value;
+			} catch (Exception e) {
+				Console.WriteLine ("Error while scanning json:");
+				Console.WriteLine (e);
+				return null;
+			}
+		}
+
+		static System.Text.RegularExpressions.Regex textMateNameRegex = new System.Text.RegularExpressions.Regex ("\\<string\\>(.*)\\<\\/string\\>");
+
+		static string ScanTextMateStyle (Stream stream)
 		{
 			try {
 				var file = TextFileUtility.OpenStream (stream);
@@ -248,7 +277,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 				var nameLine = file.ReadLine ();
 				file.Close ();
-				var match = nameRegex.Match (nameLine);
+				var match = textMateNameRegex.Match (nameLine);
 				if (!match.Success)
 					return null;
 				return match.Groups[1].Value;
@@ -267,7 +296,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static void AddStyle (IStreamProvider provider)
 		{
 			using (var stream = provider.Open ()) {
-				string styleName = ScanStyle (stream);
+				string styleName = ScanTextMateStyle (stream);
 				styleLookup [styleName] = provider;
 			}
 		}
@@ -275,7 +304,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static void RemoveStyle (IStreamProvider provider)
 		{
 			using (var stream = provider.Open ()) {
-				string styleName = ScanStyle (stream);
+				string styleName = ScanTextMateStyle (stream);
 				styleLookup.Remove (styleName);
 			}
 		}
@@ -322,6 +351,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (mimeType == mime)
 						return h;
 				}
+			}
+			return null;
+		}
+
+		public static string GetFileName (string name)
+		{
+			if (!styleLookup.ContainsKey (name))
+				throw new System.ArgumentException ("Style " + name + " not found", "name");
+			var provider = styleLookup [name];
+			if (provider is UrlStreamProvider) {
+				var usp = provider as UrlStreamProvider;
+				return usp.Url;
 			}
 			return null;
 		}
