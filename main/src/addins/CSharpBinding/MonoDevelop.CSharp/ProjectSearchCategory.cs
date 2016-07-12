@@ -264,7 +264,7 @@ namespace MonoDevelop.CSharp
 		{
 			return Task.Run (async delegate {
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
-					return null;
+					return;
 				try {
 					var newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
@@ -285,8 +285,7 @@ namespace MonoDevelop.CSharp
 					AllResults (searchResultCallback, oldLastResult, newResult, allTypes, token);
 					//newResult.results.SortUpToN (new DataItemComparer (token), resultsCount);
 					lastResult = newResult;
-//					Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
-					return (ISearchDataSource)newResult.results;
+					//					Console.WriteLine ((now - DateTime.Now).TotalMilliseconds);
 				} catch {
 					token.ThrowIfCancellationRequested ();
 					throw;
@@ -341,7 +340,6 @@ namespace MonoDevelop.CSharp
 				SearchResult curResult = newResult.CheckType (type);
 				if (curResult != null) {
 					newResult.filteredSymbols.Add (type);
-					newResult.results.AddResult (curResult);
 					searchResultCallback.ReportResult (curResult);
 				}
 			}
@@ -375,13 +373,11 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public ResultsDataSource results;
 			public bool FullSearch;
 			public StringMatcher matcher;
 
 			public WorkerResult ()
 			{
-				results = new ResultsDataSource ();
 			}
 
 			internal SearchResult CheckType (DeclaredSymbolInfo symbol)
