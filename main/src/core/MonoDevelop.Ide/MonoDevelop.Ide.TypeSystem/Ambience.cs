@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (text == null)
 				return null;
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = new StringBuilder (text.Length);
 			foreach (char ch in text) {
 				switch (ch) {
 				case '<':
