@@ -308,7 +308,7 @@ namespace MonoDevelop.CSharp
 					return;
 				try {
 					if (SymbolInfoTask == null)
-						SymbolInfoTask = Task.FromResult (GetSymbolInfos (token));
+						SymbolInfoTask = Task.FromResult (default(SymbolCache)).ContinueWith(t => GetSymbolInfos (token));
 					var cache = await SymbolInfoTask.ConfigureAwait (false);
 					var allTypes = cache.GetAllTypes (searchPattern.Tag, token);
 					if (token.IsCancellationRequested)

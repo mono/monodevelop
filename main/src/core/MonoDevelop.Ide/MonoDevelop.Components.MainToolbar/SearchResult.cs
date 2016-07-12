@@ -103,6 +103,8 @@ namespace MonoDevelop.Components.MainToolbar
 		protected static string HighlightMatch (string text, string toMatch, bool selected)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
+			var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
+			var matchHexColor = Styles.ColorGetHex (matchColor);
 			StringBuilder result = new StringBuilder ();
 			if (lane != null) {
 				int lastPos = 0;
@@ -110,8 +112,9 @@ namespace MonoDevelop.Components.MainToolbar
 					int pos = lane[n];
 					if (pos - lastPos > 0)
 						MarkupUtilities.AppendEscapedString (result, text, lastPos, pos - lastPos);
-					var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
-					result.Append ("<span foreground=\"" + Styles.ColorGetHex (matchColor) + "\" font_weight=\"bold\">");
+					result.Append ("<span foreground=\"");
+					result.Append (matchHexColor);
+					result.Append ("\" font_weight=\"bold\">");
 					MarkupUtilities.AppendEscapedString (result, text, pos, 1);
 					result.Append ("</span>");
 					lastPos = pos + 1;
