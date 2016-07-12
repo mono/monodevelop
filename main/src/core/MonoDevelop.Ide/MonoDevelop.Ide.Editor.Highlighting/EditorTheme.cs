@@ -79,7 +79,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static readonly string MessageBubbleErrorCounter2 = "messageBubbleErrorCounter2";
 		public static readonly string MessageBubbleErrorIconMargin = "messageBubbleErrorIconMargin";
 		public static readonly string MessageBubbleErrorIconMarginBorder = "messageBubbleErrorIconMarginBorder";
-		public static readonly string MessageBubbleWarningMarker = "messageBubbleErrorWarningMarker";
+
+		public static readonly string MessageBubbleWarningMarker = "messageBubbleWarningMarker";
 		public static readonly string MessageBubbleWarningTag = "messageBubbleWarningTag";
 		public static readonly string MessageBubbleWarningTag2 = "messageBubbleWarningTag2";
 		public static readonly string MessageBubbleWarningTooltip = "messageBubbleWarningTooltip";
@@ -106,19 +107,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static readonly string IndicatorMargin = "indicatorMargin";
 		public static readonly string IndicatorMarginSeparator = "indicatorSeparator";
 		public static readonly string BreakpointMarker = "breakpointMarker";
-		public static readonly string BreakpointText = "breakpointTetx";
+		public static readonly string BreakpointText = "breakpointText";
 		public static readonly string BreakpointMarkerDisabled = "breakpointMarkerDisabled";
 		public static readonly string BreakpointMarkerInvalid = "breakpointMarkerInvalid";
 		public static readonly string DebuggerStackLineMarker = "debuggerStackLineMarker";
 		public static readonly string DebuggerCurrentLineMarker = "debuggerCurrentLineMarker";
-		public static readonly string DebuggerCurrentLine = "debuggerStackLine";
+		public static readonly string DebuggerCurrentLine = "debuggerCurrentLine";
 		public static readonly string DebuggerStackLine = "debuggerStackLine";
 		public static readonly string IndentationGuide = "indentationGuide";
 		public static readonly string Ruler = "ruler";
 
 		public static readonly string PrimaryTemplate2 = "primaryTemplate2";
 		public static readonly string PrimaryTemplateHighlighted2 = "primaryTemplateHighlighted2";
-		public static readonly string SecondaryTemplate = "secondaryTemplate2";
+		public static readonly string SecondaryTemplate = "secondaryTemplate";
 		public static readonly string SecondaryTemplateHighlighted = "secondaryTemplateHighlighted";
 		public static readonly string SecondaryTemplateHighlighted2 = "secondaryTemplateHighlighted2";
 		public static readonly string SecondaryTemplate2 = "secondaryTemplate2";
@@ -136,6 +137,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public IReadOnlyList<string> Scopes { get { return scopes; } }
 
 		Dictionary<string, string> settings = new Dictionary<string, string> ();
+
+		internal IReadOnlyDictionary<string, string> Settings {
+			get {
+				return settings;
+			}
+		}
 
 		internal ThemeSetting (string name, List<string> scopes, Dictionary<string, string> settings)
 		{
@@ -169,10 +176,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public sealed class EditorTheme
 	{
-		public readonly static string DefaultColorStyle = "Light";
-		public readonly static string DefaultDarkColorStyle = "Dark";
+		public readonly static string DefaultThemeName = "Light";
+		public readonly static string DefaultDarkThemeName = "Dark";
 
 		public string Name {
+			get;
+			private set;
+		}
+
+		public string Uuid {
 			get;
 			private set;
 		}
@@ -188,18 +200,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal EditorTheme (string name) : this (name, new List<ThemeSetting> ())
+		internal EditorTheme (string name) : this (name, new List<ThemeSetting> (), Guid.NewGuid ().ToString ())
 		{
 		}
 
-		internal EditorTheme (string name, List<ThemeSetting> settings)
+		internal EditorTheme (string name, List<ThemeSetting> settings, string uuuid)
 		{
 			if (name == null)
 				throw new ArgumentNullException (nameof (name));
 			if (settings == null)
 				throw new ArgumentNullException (nameof (settings));
+			if (uuuid == null)
+				throw new ArgumentNullException (nameof (uuuid));
 			Name = name;
 			this.settings = settings;
+			this.Uuid = uuuid;
 		}
 
 		HslColor GetColor (string key, string scope)

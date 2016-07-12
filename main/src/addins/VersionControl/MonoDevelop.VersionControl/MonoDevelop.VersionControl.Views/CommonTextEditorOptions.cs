@@ -353,7 +353,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		public override string ColorScheme {
+		public override string EditorThemeName {
 			get {
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EditorTheme;
 			}

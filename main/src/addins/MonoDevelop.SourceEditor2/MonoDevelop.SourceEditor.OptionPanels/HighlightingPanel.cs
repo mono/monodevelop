@@ -190,10 +190,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			styleStore.Clear ();
 			bool error;
-			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultColorStyle, out error);
+			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName, out error);
 			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (defaultStyle.Name, ""), defaultStyle);
 			foreach (string styleName in SyntaxModeService.Styles) {
-				if (styleName == MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultColorStyle)
+				if (styleName == MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName)
 					continue;
 				var style = LoadStyle (styleName, out error);
 				string name = style.Name ?? "";

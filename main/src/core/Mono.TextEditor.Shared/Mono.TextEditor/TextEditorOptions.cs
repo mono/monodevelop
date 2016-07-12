@@ -438,7 +438,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		public virtual string ColorScheme {
+		public virtual string EditorThemeName {
 			get {
 				return colorStyle;
 			}
@@ -570,7 +570,7 @@ namespace Mono.TextEditor
 
 		public virtual MonoDevelop.Ide.Editor.Highlighting.EditorTheme GetEditorTheme ()
 		{
-			return SyntaxModeService.GetEditorTheme (ColorScheme);
+			return SyntaxModeService.GetEditorTheme (EditorThemeName);
 		}
 		
 		public virtual void CopyFrom (TextEditorOptions other)

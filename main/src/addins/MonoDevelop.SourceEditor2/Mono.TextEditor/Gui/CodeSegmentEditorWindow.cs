@@ -60,7 +60,7 @@ namespace Mono.TextEditor
 			((SimpleEditMode)codeSegmentEditor.CurrentMode).AddBinding (Gdk.Key.Escape, Close, true);
 			TextEditorOptions options = new TextEditorOptions (true);
 			options.FontName = editor.Options.FontName;
-			options.ColorScheme = editor.Options.ColorScheme;
+			options.EditorThemeName = editor.Options.EditorThemeName;
 			options.ShowRuler =  false;
 			options.ShowLineNumberMargin = false;
 			options.ShowFoldMargin = false;

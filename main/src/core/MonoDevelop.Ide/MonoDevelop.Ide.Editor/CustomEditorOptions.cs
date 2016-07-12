@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public CustomEditorOptions ()
 		{
-			this.EditorTheme = MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultColorStyle;
+			this.EditorTheme = MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName;
 			this.TabSize = this.IndentationSize = 4;
 			this.DefaultEolMarker = "\n";
 		}

@@ -271,7 +271,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override string ColorScheme {
+		public override string EditorThemeName {
 			get {
 				return optionsCore.EditorTheme;
 			}

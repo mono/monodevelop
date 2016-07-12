@@ -10,38 +10,180 @@
 			<key>settings</key>
 			<dict>
 				<key>background</key>
-				<string>#272822</string>
+				<string>#1c1e1f</string>
 				<key>caret</key>
-				<string>#F8F8F0</string>
+				<string>#eeeeec</string>
 				<key>foreground</key>
-				<string>#F8F8F2</string>
+				<string>#eeeeec</string>
 				<key>invisibles</key>
-				<string>#3B3A32</string>
+				<string>#888a85</string>
 				<key>lineHighlight</key>
-				<string>#3E3D32</string>
+				<string>#2a2c2f</string>
 				<key>selection</key>
-				<string>#49483E</string>
+				<string>#245176</string>
 				<key>findHighlight</key>
-				<string>#FFE792</string>
+				<string>#006060</string>
 				<key>findHighlightForeground</key>
-				<string>#000000</string>
+				<string>#eeeeec</string>
 				<key>selectionBorder</key>
-				<string>#222218</string>
+				<string>#245176</string>
 				<key>activeGuide</key>
 				<string>#9D550FB0</string>
 
 				<key>bracketsForeground</key>
-				<string>#F8F8F2A5</string>
+				<string>#888a85</string>
 				<key>bracketsOptions</key>
 				<string>underline</string>
 
 				<key>bracketContentsForeground</key>
-				<string>#F8F8F2A5</string>
+				<string>#eeeeec</string>
 				<key>bracketContentsOptions</key>
 				<string>underline</string>
 
 				<key>tagsOptions</key>
 				<string>stippled_underline</string>
+
+				<key>usagesRectangle_nonchanging</key>
+				<string>#204a87</string>
+				<key>usagesRectangle_changing</key>
+				<string>#356904</string>
+
+				<key>tooltipPager</key>
+				<string>#555753</string>
+				<key>tooltipPagerTriangle</key>
+				<string>#d3d7c</string>
+				<key>tooltipPagerText</key>
+				<string>#d3d7cf</string>
+
+				<key>tooltipBackground</key>
+				<string>#525759</string>
+				<key>notificationText</key>
+				<string>#eeeeec</string>
+				<key>notificationTextBackground</key>
+				<string>#555753</string>
+				<key>notificationBorder</key>
+				<string>#eeeeec</string>
+
+				<key>messageBubbleErrorMarker</key>
+				<string>#b28d37</string>
+				<key>messageBubbleErrorTag</key>
+				<string>#e3a6a1</string>
+				<key>messageBubbleErrorTag2</key>
+				<string>#000000</string>
+				<key>messageBubbleErrorTooltip</key>
+				<string>#e3a6a</string>
+				<key>messageBubbleErrorLine</key>
+				<string>#7b645c</string>
+				<key>messageBubbleErrorLine2</key>
+				<string>#7b645c</string>
+				<key>messageBubbleErrorBorderLine</key>
+				<string>#7b645c</string>
+				<key>messageBubbleErrorCounter</key>
+				<string>#000000</string>
+				<key>messageBubbleErrorCounter2</key>
+				<string>#e3a6a1</string>
+				<key>messageBubbleErrorIconMargin</key>
+				<string>#735c54</string>
+				<key>messageBubbleErrorIconMarginBorder</key>
+				<string>#805b4d</string>
+
+				<key>messageBubbleWarningMarker</key>
+				<string>#b28d37</string>
+				<key>messageBubbleWarningTag</key>
+				<string>#efe89d</string>
+				<key>messageBubbleWarningTag2</key>
+				<string>#000000</string>
+				<key>messageBubbleWarningTooltip</key>
+				<string>#efe89d</string>
+				<key>messageBubbleWarningLine</key>
+				<string>#807e5c</string>
+				<key>messageBubbleWarningLine2</key>
+				<string>#807e5c</string>
+				<key>messageBubbleWarningBorderLine</key>
+				<string>#807e5c</string>
+				<key>messageBubbleWarningCounter</key>
+				<string>#000000</string>
+				<key>messageBubbleWarningCounter2</key>
+				<string>#efe89d</string>
+				<key>messageBubbleIconMargin</key>
+				<string>#777553</string>
+				<key>messageBubbleIconMarginBorder</key>
+				<string>#948e51</string>
+
+				<key>underlineError</key>
+				<string>#cc0000</string>
+				<key>underlineWarning</key>
+				<string>#edd400</string>
+				<key>underlineSuggestion</key>
+				<string>#4e9a06</string>
+
+				<key>link</key>
+				<string>#41e2cb</string>
+				<key>gutterBackground</key>
+				<string>#242424</string>
+				<key>collapsedText</key>
+				<string>#888a85</string>
+				<key>foldLine</key>
+				<string>#888a85</string>
+				<key>foldCross</key>
+				<string>#888a85</string>
+				<key>foldCrossBackground</key>
+				<string>#1c1e1f</string>
+
+				<key>quickdiffChanged</key>
+				<string>#73d216</string>
+				<key>quickdiffDirty</key>
+				<string>#edd400</string>
+
+				<key>lineNumbers</key>
+				<string>#555753</string>
+				<key>indicatorMargin</key>
+				<string>#303030</string>
+				<key>indicatorSeparator</key>
+				<string>#303030</string>
+				<key>breakpointMarker</key>
+				<string>#6f3535</string>
+				<key>breakpointText</key>
+				<string>#6f3535</string>
+				<key>breakpointMarkerDisabled</key>
+				<string>#4d4d4d</string>
+				<key>breakpointMarkerInvalid</key>
+				<string>#604343</string>
+				<key>debuggerStackLineMarker</key>
+				<string>#5f7247</string>
+				<key>debuggerCurrentLineMarker</key>
+				<string>#69684c</string>
+				<key>debuggerCurrentLine</key>
+				<string>#2a2c2f</string>
+				<key>debuggerStackLine</key>
+				<string>#69684c</string>
+
+				<key>indentationGuide</key>
+				<string>#444a4d</string>
+				<key>ruler</key>
+				<string>#2a2c2f</string>
+
+				<key>primaryTemplate2</key>
+				<string>#e9b96e</string>
+				<key>primaryTemplateHighlighted2</key>
+				<string>#e9b96e</string>
+				<key>secondaryTemplate</key>
+				<string>#eeeeec</string>
+				<key>secondaryTemplateHighlighted</key>
+				<string>#eeeeec</string>
+				<key>secondaryTemplateHighlighted2</key>
+				<string>#eeeeec</string>
+				<key>secondaryTemplate2</key>
+				<string>#eeeeec</string>
+
+				<key>previewDiffRemoved</key>
+				<string>#5c2c2c</string>
+				<key>previewDiffRemovedBackground</key>
+				<string>#dcb4b4</string>
+				<key>previewDiffAdded</key>
+				<string>#235423</string>
+				<key>previewDiffAddedBackground</key>
+				<string>#a4d9a</string>
 			</dict>
 		</dict>
 		<dict>
@@ -52,7 +194,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#75715E</string>
+				<string>#888a85</string>
 			</dict>
 		</dict>
 		<dict>
@@ -74,7 +216,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#AE81FF</string>
+				<string>#8ae234</string>
 			</dict>
 		</dict>
 
@@ -86,7 +228,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#AE81FF</string>
+				<string>#8ae234</string>
 			</dict>
 		</dict>
 		<dict>
@@ -97,7 +239,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#AE81FF</string>
+				<string>#8ae234</string>
 			</dict>
 		</dict>
 		<dict>
@@ -119,7 +261,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#F92672</string>
+				<string>#729fcf</string>
 			</dict>
 		</dict>
 		<dict>
@@ -169,7 +311,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#A6E22E</string>
+				<string>#4ec9b0</string>
 			</dict>
 		</dict>
 		<dict>
@@ -182,7 +324,7 @@
 				<key>fontStyle</key>
 				<string>italic underline</string>
 				<key>foreground</key>
-				<string>#A6E22E</string>
+				<string>#4ec9b0</string>
 			</dict>
 		</dict>
 		<dict>
@@ -195,7 +337,7 @@
 				<key>fontStyle</key>
 				<string>italic</string>
 				<key>foreground</key>
-				<string>#FD971F</string>
+				<string>#4ec9b0</string>
 			</dict>
 		</dict>
 		<dict>
@@ -208,7 +350,7 @@
 				<key>fontStyle</key>
 				<string>italic</string>
 				<key>foreground</key>
-				<string>#FD971F</string>
+				<string>#4ec9b0</string>
 			</dict>
 		</dict>
 		<dict>
@@ -247,7 +389,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#66D9EF</string>
+				<string>#eeeeec</string>
 			</dict>
 		</dict>
 		<dict>
@@ -260,7 +402,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#66D9EF</string>
+				<string>#eeeeec</string>
 			</dict>
 		</dict>
 		<dict>
@@ -273,7 +415,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#66D9EF</string>
+				<string>#eeeeec</string>
 			</dict>
 		</dict>
 		<dict>
@@ -286,7 +428,7 @@
 				<key>fontStyle</key>
 				<string>italic</string>
 				<key>foreground</key>
-				<string>#66D9EF</string>
+				<string>#eeeeec</string>
 			</dict>
 		</dict>
 		<dict>
@@ -312,7 +454,7 @@
 				<key>fontStyle</key>
 				<string></string>
 				<key>foreground</key>
-				<string>#F8F8F0</string>
+				<string>#ef2929</string>
 			</dict>
 		</dict>
 		<dict>
@@ -359,7 +501,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#75715E</string>
+				<string>#8ae234</string>
 			</dict>
 		</dict>
 		<dict>
@@ -370,7 +512,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#F92672</string>
+				<string>#cc0000</string>
 			</dict>
 		</dict>
 		<dict>
@@ -381,7 +523,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#A6E22E</string>
+				<string>#8ae234</string>
 			</dict>
 		</dict>
 		<dict>
@@ -392,7 +534,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#E6DB74</string>
+				<string>#ad7fa8</string>
 			</dict>
 		</dict>
 
@@ -421,7 +563,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#F83333</string>
+				<string>#ef2929</string>
 			</dict>
 		</dict>
 

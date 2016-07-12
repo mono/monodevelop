@@ -89,7 +89,7 @@ namespace Mono.TextEditor
 		string GutterFontName { get; set; }
 		Pango.FontDescription GutterFont { get; }
 
-		string ColorScheme { get; set; }
+		string EditorThemeName { get; set; }
 		string DefaultEolMarker { get; set; }
 
 		ShowWhitespaces ShowWhitespaces { get; set; }

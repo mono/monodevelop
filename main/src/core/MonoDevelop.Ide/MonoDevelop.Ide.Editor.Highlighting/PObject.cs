@@ -40,6 +40,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Security;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -490,7 +491,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public void Add (string key, PObject value)
 		{
-			dict.Add (key, value);
+			try {
+				dict.Add (key, value);
+			} catch (Exception e) {
+				LoggingService.LogError ("error while adding " + key);
+				throw e;
+			}
 			order.Add (key);
 
 			OnChildAdded (key, value);

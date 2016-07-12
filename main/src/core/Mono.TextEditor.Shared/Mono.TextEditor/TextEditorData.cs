@@ -338,7 +338,7 @@ namespace Mono.TextEditor
 
 		internal MonoDevelop.Ide.Editor.Highlighting.EditorTheme EditorTheme {
 			get {
-				return MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.GetEditorTheme (Options.ColorScheme);
+				return MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.GetEditorTheme (Options.EditorThemeName);
 			}
 		}
 

@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 			SetHeaderFormat (settings.HeaderFormat);
 			SetFooterFormat (settings.FooterFormat);
 			
-			style = SyntaxModeService.GetEditorTheme (settings.ColorScheme);
+			style = SyntaxModeService.GetEditorTheme (settings.EditorTheme);
 			
 			pageWidth = context.PageSetup.GetPageWidth (Unit.Pixel);
 			pageHeight = context.PageSetup.GetPageHeight (Unit.Pixel);
@@ -301,7 +301,7 @@ namespace MonoDevelop.SourceEditor
 			TabSize = DefaultSourceEditorOptions.Instance.TabSize;
 			HeaderFormat = "%F";
 			FooterFormat = GettextCatalog.GetString ("Page %N of %Q");
-			ColorScheme = EditorTheme.DefaultColorStyle;
+			EditorTheme = MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName;
 			HeaderSeparatorWeight = FooterSeparatorWeight = 0.5;
 			HeaderPadding = FooterPadding = 6;
 			UseHighlighting = true;
@@ -310,7 +310,7 @@ namespace MonoDevelop.SourceEditor
 		public bool UseHighlighting { get; private set; }
 		public Pango.FontDescription Font { get; private set; }
 		public int TabSize { get; private set; }
-		public string ColorScheme { get; private set; }
+		public string EditorTheme { get; private set; }
 		
 		public string HeaderFormat { get; private set; }
 		public string FooterFormat { get; private set; }

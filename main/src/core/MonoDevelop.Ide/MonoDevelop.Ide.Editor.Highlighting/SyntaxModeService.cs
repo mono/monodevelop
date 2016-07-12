@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static EditorTheme DefaultColorStyle {
 			get {
-				return GetEditorTheme (EditorTheme.DefaultColorStyle);
+				return GetEditorTheme (EditorTheme.DefaultThemeName);
 			}
 		}
 
@@ -289,6 +289,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			} else {
 				LoggingService.LogError ("Can't lookup Mono.TextEditor assembly. Default styles won't be loaded.");
 			}
+			using (var sw = new StreamWriter ("/home/mkrueger/dark.tmTheme"))
+				TextMateFormat.Save (sw, GetEditorTheme (EditorTheme.DefaultThemeName));
+
 		}
 
 		public static HslColor GetColor (EditorTheme style, string key)

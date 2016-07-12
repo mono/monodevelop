@@ -722,8 +722,8 @@ namespace Mono.TextEditor
 		{
 			if (Options == null)
 				return;
-			if (currentStyleName != Options.ColorScheme) {
-				currentStyleName = Options.ColorScheme;
+			if (currentStyleName != Options.EditorThemeName) {
+				currentStyleName = Options.EditorThemeName;
 				this.textEditorData.ColorStyle = Options.GetEditorTheme ();
 				SetWidgetBgFromStyle ();
 			}
