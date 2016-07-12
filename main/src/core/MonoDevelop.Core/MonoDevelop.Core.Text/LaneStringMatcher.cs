@@ -127,8 +127,6 @@ namespace MonoDevelop.Core.Text
 				return null;
 			
 			// Pre-match check
-			
-			string textLowerCase = text.ToLowerInvariant ();
 	
 			bool lastWasSeparator = false;
 			int firstMatchPos = -1;
@@ -136,7 +134,7 @@ namespace MonoDevelop.Core.Text
 			int tlen = text.Length;
 			int flen = filterLowerCase.Length;
 			for (int n=0; n<tlen && j < flen; n++) {
-				char ctLower = textLowerCase[n];
+				char ctLower = char.ToLowerInvariant (text[n]);
 				char cfLower = filterLowerCase [j];
 				bool wordStart = (ctLower != text[n]) || n == 0 || lastWasSeparator;
 				if (wordStart)
@@ -170,7 +168,7 @@ namespace MonoDevelop.Core.Text
 			
 			while (tn < text.Length) {
 				char ct = text [tn];
-				char ctLower = textLowerCase [tn];
+				char ctLower = char.ToLowerInvariant (ct);
 				bool ctIsUpper = ct != ctLower;
 				bool wordStart = ctIsUpper || tn == 0 || lastWasSeparator;
 				
