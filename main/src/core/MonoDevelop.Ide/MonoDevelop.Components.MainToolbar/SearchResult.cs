@@ -109,17 +109,17 @@ namespace MonoDevelop.Components.MainToolbar
 				for (int n=0; n < lane.Length; n++) {
 					int pos = lane[n];
 					if (pos - lastPos > 0)
-						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
+						MarkupUtilities.AppendEscapedString (result, text, lastPos, pos - lastPos);
 					var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
 					result.Append ("<span foreground=\"" + Styles.ColorGetHex (matchColor) + "\" font_weight=\"bold\">");
-					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
+					MarkupUtilities.AppendEscapedString (result, text, pos, 1);
 					result.Append ("</span>");
 					lastPos = pos + 1;
 				}
 				if (lastPos < text.Length)
-					MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, text.Length - lastPos));
+					MarkupUtilities.AppendEscapedString (result, text, lastPos, text.Length - lastPos);
 			} else {
-				MarkupUtilities.AppendEscapedString (result, text);
+				MarkupUtilities.AppendEscapedString (result, text, 0, text.Length);
 			}
 			return result.ToString ();
 		}

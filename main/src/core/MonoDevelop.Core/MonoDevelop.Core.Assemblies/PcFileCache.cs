@@ -538,7 +538,7 @@ namespace Mono.PkgConfig
 			StringBuilder sb = new StringBuilder ();
 			int last = 0;
 			while (i != -1 && i < value.Length) {
-				sb.Append (value.Substring (last, i - last));
+				sb.Append (value, last, i - last);
 				if (i == 0 || value [i - 1] != '$') {
 					// Evaluate if var is not escaped
 					i += 2;
@@ -564,7 +564,7 @@ namespace Mono.PkgConfig
 				if (i < value.Length)
 					i = value.IndexOf ("${", i);
 			}
-			sb.Append (value.Substring (last, value.Length - last));
+			sb.Append (value, last, value.Length - last);
 			return sb.ToString ();
 		}
 	}
