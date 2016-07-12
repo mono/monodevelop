@@ -231,7 +231,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (i != -1) {
 					int fi = val.IndexOf ('\\');
 					if (fi != -1 && fi < i) i = fi;
-					sb.Append (val, 0,i));
+					sb.Append (val, 0,i);
 				} else
 					i = 0;
 				for (int n = i; n < val.Length; n++) {
@@ -258,14 +258,32 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static string DecodeString (string val)
 		{
-			val = val.Trim (' ', '\t');
-			if (val.Length == 0)
-				return val;
-			if (val [0] == '\"')
-				val = val.Substring (1, val.Length - 2);
-			if (val [0] == '@') {
+			int start = 0;
+			int end = val.Length;
+
+			for (; start < val.Length; ++start) {
+				if (val [start] == ' ' || val [start] == '\t')
+					continue;
+				break;
+			}
+			for (int i = end - 1; i >= start; --i) {
+				if (val [i] == ' ' || val [i] == '\t') {
+					end--;
+					continue;
+				}
+				break;
+			}
+
+			if (end == start)
+				return string.Empty;
+			
+			if (val [start] == '\"') {
+				start++;
+				end--;
+			}
+			if (val [start] == '@') {
 				StringBuilder sb = new StringBuilder (val.Length);
-				for (int n = 1; n < val.Length; n++) {
+				for (int n = start + 1; n < end; n++) {
 					char c = val [n];
 					if (c == '\\') {
 						c = val [++n];
@@ -278,7 +296,7 @@ namespace MonoDevelop.Projects.MSBuild
 				return sb.ToString ();
 			}
 			else
-				return val;
+				return val.Substring (start, end - start);
 		}
 
 		static DataItem ReadDataItem (SlnSection pset)
