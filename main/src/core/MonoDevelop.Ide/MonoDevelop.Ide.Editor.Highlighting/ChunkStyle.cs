@@ -110,22 +110,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", Name, Foreground, Background, FontWeight, FontStyle);
 		}
 
-		/*
-		internal static ChunkStyle Import (string name, ColorScheme.VSSettingColor vsc)
-		{
-			var textColor = new ChunkStyle ();
-			textColor.Name = name;
-			if (!string.IsNullOrEmpty (vsc.Foreground) && vsc.Foreground != "0x02000000") {
-				textColor.Foreground = ColorScheme.ImportVsColor (vsc.Foreground);
-				if (textColor.TransparentForeground && name != "Selected Text" && name != "Selected Text(Inactive)")
-					textColor.Foreground = new HslColor (0, 0, 0);
-			}
-			if (!string.IsNullOrEmpty (vsc.Background) && vsc.Background != "0x02000000")
-				textColor.Background = ColorScheme.ImportVsColor (vsc.Background);
-			if (vsc.BoldFont)
-				textColor.FontWeight = Xwt.Drawing.FontWeight.Bold;
-			return textColor;
-		}*/
 
 		public ChunkStyle Clone ()
 		{
