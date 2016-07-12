@@ -231,7 +231,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (i != -1) {
 					int fi = val.IndexOf ('\\');
 					if (fi != -1 && fi < i) i = fi;
-					sb.Append (val.Substring (0,i));
+					sb.Append (val, 0,i));
 				} else
 					i = 0;
 				for (int n = i; n < val.Length; n++) {

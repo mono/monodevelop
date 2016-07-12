@@ -247,7 +247,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				LoggingService.LogWarning ("Invalid cref:" + cref, e);
 			}
 
-			if (cref.Substring (1, 1) == ":")
+			if (cref[1] == ':')
 				return cref.Substring (2, cref.Length - 2);
 			
 			return cref;
@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static string UnescapeText (string text)
 		{
-			var sb = new StringBuilder ();
+			var sb = new StringBuilder (text.Length);
 			for (int i = 0; i < text.Length; i++) {
 				char ch = text[i];
 				if (ch == '&') {
