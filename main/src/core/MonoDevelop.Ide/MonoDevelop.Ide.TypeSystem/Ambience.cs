@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return string.Empty;
 			
 			StringBuilder sb = new StringBuilder (str.Length);
-			MarkupUtilities.AppendEscapedString (sb, str);
+			MarkupUtilities.AppendEscapedString (sb, str, 0, str.Length);
 			return sb.ToString (); 
 		}
 
