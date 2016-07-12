@@ -120,13 +120,54 @@ namespace MonoDevelop.CSharp
 				}
 			}
 
-			public List<DeclaredSymbolInfo> AllTypes {
-				get {
-					var result = new List<DeclaredSymbolInfo> ();
-					foreach (var infos in documentInfos.Values)
-						result.AddRange (infos);
-					return result;
+			public IReadOnlyList<DeclaredSymbolInfo> GetAllTypes(string tag, CancellationToken token)
+			{
+				int count = 0;
+				foreach (var infos in documentInfos.Values)
+					count += infos.Count;
+
+				var result = new List<DeclaredSymbolInfo>(count);
+				foreach (var infos in documentInfos.Values) {
+					foreach (var type in infos) {
+						if (token.IsCancellationRequested)
+							return new DeclaredSymbolInfo [0];
+						
+						var kind = type.Kind;
+						if (kind == DeclaredSymbolInfoKind.Constructor ||
+							kind == DeclaredSymbolInfoKind.Module ||
+							kind == DeclaredSymbolInfoKind.Indexer)
+							continue;
+
+						if (tag != null) {
+							if ((tag == "type" || tag == "t") && kind != DeclaredSymbolInfoKind.Class && kind != DeclaredSymbolInfoKind.Struct && kind != DeclaredSymbolInfoKind.Interface && kind != DeclaredSymbolInfoKind.Enum && kind != DeclaredSymbolInfoKind.Delegate)
+								continue;
+
+							if (tag == "class" && kind != DeclaredSymbolInfoKind.Class)
+								continue;
+							if (tag == "struct" && kind != DeclaredSymbolInfoKind.Struct)
+								continue;
+							if (tag == "interface" && kind != DeclaredSymbolInfoKind.Interface)
+								continue;
+							if (tag == "enum" && kind != DeclaredSymbolInfoKind.Enum)
+								continue;
+							if (tag == "delegate" && kind != DeclaredSymbolInfoKind.Delegate)
+								continue;
+
+							if ((tag == "member" || tag == "m") && kind != DeclaredSymbolInfoKind.Method && kind != DeclaredSymbolInfoKind.Property && kind != DeclaredSymbolInfoKind.Field && kind != DeclaredSymbolInfoKind.Event)
+								continue;
+							if (tag == "method" && kind != DeclaredSymbolInfoKind.Method)
+								continue;
+							if (tag == "property" && kind != DeclaredSymbolInfoKind.Property)
+								continue;
+							if (tag == "field" && kind != DeclaredSymbolInfoKind.Field)
+								continue;
+							if (tag == "event" && kind != DeclaredSymbolInfoKind.Event)
+								continue;
+						}
+						result.Add (type);
+					}
 				}
+				return result;
 			}
 
 			static async void SearchAsync (ConcurrentDictionary<Microsoft.CodeAnalysis.DocumentId, List<DeclaredSymbolInfo>> result, Microsoft.CodeAnalysis.Project project, CancellationToken cancellationToken)
@@ -269,11 +310,10 @@ namespace MonoDevelop.CSharp
 					var newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
 					newResult.Tag = searchPattern.Tag;
-					List<DeclaredSymbolInfo> allTypes;
 					if (SymbolInfoTask == null)
 						SymbolInfoTask = Task.FromResult (GetSymbolInfos (token));
 					var cache = await SymbolInfoTask.ConfigureAwait (false);
-					allTypes = cache.AllTypes;
+					var allTypes = cache.GetAllTypes (newResult.Tag, token);
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
@@ -303,39 +343,6 @@ namespace MonoDevelop.CSharp
 				if (token.IsCancellationRequested) {
 					newResult.filteredSymbols = null;
 					return;
-				}
-
-				if (type.Kind == DeclaredSymbolInfoKind.Constructor ||
-				    type.Kind == DeclaredSymbolInfoKind.Module ||
-				    type.Kind == DeclaredSymbolInfoKind.Indexer)
-					continue;
-				
-				if (newResult.Tag != null) {
-					if ((newResult.Tag == "type" || newResult.Tag == "t") && type.Kind != DeclaredSymbolInfoKind.Class && type.Kind != DeclaredSymbolInfoKind.Struct && type.Kind != DeclaredSymbolInfoKind.Interface && type.Kind != DeclaredSymbolInfoKind.Enum && type.Kind != DeclaredSymbolInfoKind.Delegate)
-					    continue;
-					
-					if (newResult.Tag == "class" && type.Kind != DeclaredSymbolInfoKind.Class)
-						continue;
-				    if (newResult.Tag == "struct" && type.Kind != DeclaredSymbolInfoKind.Struct)
-						continue;
-				    if (newResult.Tag == "interface" && type.Kind != DeclaredSymbolInfoKind.Interface)
-						continue;
-				    if (newResult.Tag == "enum" && type.Kind != DeclaredSymbolInfoKind.Enum)
-						continue;
-				    if (newResult.Tag == "delegate" && type.Kind != DeclaredSymbolInfoKind.Delegate)
-						continue;
-
-					if ((newResult.Tag == "member" || newResult.Tag == "m") && type.Kind != DeclaredSymbolInfoKind.Method && type.Kind != DeclaredSymbolInfoKind.Property && type.Kind != DeclaredSymbolInfoKind.Field && type.Kind != DeclaredSymbolInfoKind.Event)
-					    continue;
-					if (newResult.Tag == "method" && type.Kind != DeclaredSymbolInfoKind.Method)
-						continue;
-					if (newResult.Tag == "property" && type.Kind != DeclaredSymbolInfoKind.Property)
-						continue;
-					if (newResult.Tag == "field" && type.Kind != DeclaredSymbolInfoKind.Field)
-						continue;
-					if (newResult.Tag == "event" && type.Kind != DeclaredSymbolInfoKind.Event)
-						continue;
-					
 				}
 				SearchResult curResult = newResult.CheckType (type);
 				if (curResult != null) {
