@@ -341,6 +341,8 @@ namespace MonoDevelop.CSharp
 			newResult.filteredSymbols = new List<DeclaredSymbolInfo> ();
 			bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredSymbols != null;
 			var allTypes = startsWithLastFilter ? lastResult.filteredSymbols : completeTypeList;
+
+			newResult.InitializeSavedMatches (allTypes.Count);
 			foreach (var type in allTypes) {
 				if (token.IsCancellationRequested) {
 					newResult.filteredSymbols = null;
@@ -409,7 +411,11 @@ namespace MonoDevelop.CSharp
 				return null;
 			}
 
-			Dictionary<string, MatchResult> savedMatches = new Dictionary<string, MatchResult> (StringComparer.Ordinal);
+			Dictionary<string, MatchResult> savedMatches;
+			public void InitializeSavedMatches (int length)
+			{
+				savedMatches = new Dictionary<string, MatchResult> (length, StringComparer.Ordinal);
+			}
 
 			bool MatchName (string name, out int matchRank)
 			{
