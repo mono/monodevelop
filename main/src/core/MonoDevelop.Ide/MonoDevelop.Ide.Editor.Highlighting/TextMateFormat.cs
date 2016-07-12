@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -49,11 +50,48 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 				settings.Add (LoadThemeSetting (dict));
 			}
+			var uuid = (PString)dictionary ["uuid"];
 
-			return new EditorTheme (name, settings);
+			return new EditorTheme (name, settings, uuid);
 		}
 
-
+		public static void Save (TextWriter writer, EditorTheme theme)
+		{
+			writer.WriteLine ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+			writer.WriteLine ("<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">");
+			writer.WriteLine ("<plist version=\"1.0\">");
+			writer.WriteLine ("<dict>");
+			writer.WriteLine ("\t<key>name</key>");
+			writer.WriteLine ("\t<string>" + Ambience.EscapeText (theme.Name) + "</string>");
+			writer.WriteLine ("\t<key>settings</key>");
+			writer.WriteLine ("\t<array>");
+			foreach (var setting in theme.Settings) {
+				writer.WriteLine ("\t\t<dict>");
+				if (setting.Name != null) {
+					writer.WriteLine ("\t\t\t<key>name</key>");
+					writer.WriteLine ("\t\t\t<string>" + Ambience.EscapeText (setting.Name) + "</string>");
+				}
+				if (setting.Scopes.Count > 0) {
+					writer.WriteLine ("\t\t\t<key>scope</key>");
+					writer.WriteLine ("\t\t\t<string>" + Ambience.EscapeText (string.Join (", ", setting.Scopes)) + "</string>");
+				}
+				if (setting.Settings.Count > 0) {
+					writer.WriteLine ("\t\t\t<key>settings</key>");
+					writer.WriteLine ("\t\t\t<dict>");
+					foreach (var kv in setting.Settings) {
+						writer.WriteLine ("\t\t\t\t<key>" + Ambience.EscapeText (kv.Key) + "</key>");
+						writer.WriteLine ("\t\t\t\t<string>" + Ambience.EscapeText (kv.Value) + "</string>");
+					}
+					writer.WriteLine ("\t\t\t</dict>");
+				}
+				writer.WriteLine ("\t\t</dict>");
+			}
+			writer.WriteLine ("\t</array>");
+			writer.WriteLine ("\t<key>uuid</key>");
+			writer.WriteLine ("\t<string>" + theme.Uuid +  "</string>");
+			writer.WriteLine ("</dict>");
+			writer.WriteLine ("</plist>");
+		}
 
 		static ThemeSetting LoadThemeSetting(PDictionary dict)
 		{
