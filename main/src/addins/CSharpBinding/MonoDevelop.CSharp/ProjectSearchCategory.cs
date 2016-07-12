@@ -307,14 +307,16 @@ namespace MonoDevelop.CSharp
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return;
 				try {
-					var newResult = new WorkerResult ();
-					newResult.pattern = searchPattern.Pattern;
-					newResult.Tag = searchPattern.Tag;
 					if (SymbolInfoTask == null)
 						SymbolInfoTask = Task.FromResult (GetSymbolInfos (token));
 					var cache = await SymbolInfoTask.ConfigureAwait (false);
-					var allTypes = cache.GetAllTypes (newResult.Tag, token);
+					var allTypes = cache.GetAllTypes (searchPattern.Tag, token);
+					if (token.IsCancellationRequested)
+						return;
 					string toMatch = searchPattern.Pattern;
+					var newResult = new WorkerResult ();
+					newResult.pattern = searchPattern.Pattern;
+					newResult.Tag = searchPattern.Tag;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
 					var oldLastResult = lastResult;
