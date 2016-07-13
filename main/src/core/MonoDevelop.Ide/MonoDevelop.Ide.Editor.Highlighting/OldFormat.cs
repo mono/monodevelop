@@ -1101,7 +1101,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				result.Name = root.XPathSelectElement ("name").Value;
 
 				if (result.Name != "")
-					result.CopyValues (LoadFrom (Assembly.GetCallingAssembly ().GetManifestResourceStream ("LightStyle.json")));
+					result.CopyValues (LoadFrom (Assembly.GetCallingAssembly ().GetManifestResourceStream ("FallbackStyle.json")));
 
 				var version = Version.Parse (root.XPathSelectElement ("version").Value);
 				if (version.Major != 1) {
