@@ -241,7 +241,6 @@
     <Compile Include="Services\UnitTestCollection.cs" />
     <Compile Include="Services\UnitTest.cs" />
     <Compile Include="Services\UnitTestGroup.cs" />
-    <Compile Include="Services\GeneralTestOptions.cs" />
     <Compile Include="Services\IResultsStore.cs" />
     <Compile Include="Services\UnitTestResultsStore.cs" />
     <Compile Include="Services\WorkspaceTestGroup.cs" />
@@ -254,9 +253,19 @@
     <Compile Include="Services\AbstractResultsStore.cs" />
     <Compile Include="Services\BinaryResultsStore.cs" />
     <Compile Include="Services\NUnitSourceCodeLocationFinder.cs" />
-    <Compile Include="Services\RemoteUnhandledException.cs" />
     <Compile Include="Services\AbstractUnitTestEditorExtension.cs" />
     <Compile Include="Services\UnitTestMarkersExtension.cs" />
+    <Compile Include="Services\IResultsStoreSerializer.cs" />
+    <Compile Include="Services\IUnitTestMarkers.cs" />
+    <Compile Include="Services\BinaryResultsStoreSerializer.cs" />
+    <Compile Include="Services\SourceCodeLocation.cs" />
+    <Compile Include="Services\TestSession.cs" />
+    <Compile Include="Services\CustomConsoleFactory.cs" />
+    <Compile Include="Services\TestSessionEventArgs.cs" />
+    <Compile Include="Services\RemoteUnhandledException.cs" />
+    <Compile Include="Services\TestRecord.cs" />
+    <Compile Include="Services\TestRecordCollection.cs" />
+    <Compile Include="Services\UnitTestResultCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

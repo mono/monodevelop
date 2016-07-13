@@ -56,12 +56,12 @@ namespace MonoDevelop.UnitTesting
 			IdeApp.Workspace.WorkspaceItemClosed += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
-			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;;
+			IdeApp.Workspace.ItemAddedToSolution += OnItemsChangedInSolution;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnItemsChangedInSolution;
-			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;;
+			IdeApp.Workspace.ReferenceAddedToProject += OnReferenceChangedInProject;
 			IdeApp.Workspace.ReferenceRemovedFromProject += OnReferenceChangedInProject;
 
-			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/UnitTesting/TestProviders", OnExtensionChange);
 
 			RebuildTests ();
 		}
@@ -69,7 +69,7 @@ namespace MonoDevelop.UnitTesting
 		static void OnExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
 			if (args.Change == ExtensionChange.Add) {
-				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+				ProjectService ps = Projects.Services.ProjectService;
 				ITestProvider provider = args.ExtensionObject as ITestProvider;
 				providers.Add (provider);
 			}
@@ -98,20 +98,21 @@ namespace MonoDevelop.UnitTesting
 			}
 		}
 
-		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context)
+		public static AsyncOperation RunTest (UnitTest test, Projects.ExecutionContext context)
 		{
 			var result = RunTest (test, context, IdeApp.Preferences.BuildBeforeRunningTests);
 			result.Task.ContinueWith (t => OnTestSessionCompleted (), TaskScheduler.FromCurrentSynchronizationContext ());
 			return result;
 		}
 		
-		public static AsyncOperation RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject)
+		public static AsyncOperation RunTest (UnitTest test, Projects.ExecutionContext context, bool buildOwnerObject)
 		{
 			var cs = new CancellationTokenSource ();
 			return new AsyncOperation (RunTest (test, context, buildOwnerObject, true, cs), cs);
 		}
 
-		internal static async Task RunTest (UnitTest test, MonoDevelop.Projects.ExecutionContext context, bool buildOwnerObject, bool checkCurrentRunOperation, CancellationTokenSource cs)
+		internal static async Task RunTest (UnitTest test, Projects.ExecutionContext context, bool buildOwnerObject,
+		                                    bool checkCurrentRunOperation, CancellationTokenSource cs)
 		{
 			string testName = test.FullName;
 			
@@ -119,7 +120,7 @@ namespace MonoDevelop.UnitTesting
 				IBuildTarget bt = test.OwnerObject as IBuildTarget;
 				if (bt != null) {
 					if (!IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted) {
-						MonoDevelop.Ide.Commands.StopHandler.StopBuildOperations ();
+						Ide.Commands.StopHandler.StopBuildOperations ();
 						await IdeApp.ProjectOperations.CurrentRunOperation.Task;
 					}
 	
@@ -140,7 +141,8 @@ namespace MonoDevelop.UnitTesting
 			
 			Pad resultsPad = IdeApp.Workbench.GetPad <TestResultsPad>();
 			if (resultsPad == null) {
-				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.UnitTesting.TestResultsPad", GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
+				resultsPad = IdeApp.Workbench.ShowPad (new TestResultsPad (), "MonoDevelop.UnitTesting.TestResultsPad",
+				                                       GettextCatalog.GetString ("Test results"), "Bottom", "md-solution");
 			}
 			
 			// Make the pad sticky while the tests are runnig, so the results pad is always visible (even if minimized)
@@ -200,7 +202,6 @@ namespace MonoDevelop.UnitTesting
 			return null;
 		}
 
-		
 		static UnitTest SearchTest (UnitTest test, string fullName)
 		{
 			if (test == null)
@@ -342,7 +343,6 @@ namespace MonoDevelop.UnitTesting
 			return Path.Combine (newCache, "test-results");
 		}
 
-
 		public static UnitTest[] RootTests {
 			get { return rootTests; }
 		}
@@ -388,73 +388,6 @@ namespace MonoDevelop.UnitTesting
 		/// Occurs just before a test session is started
 		/// </summary>
 		public static event EventHandler<TestSessionEventArgs> TestSessionStarting;
-	}
-	
-
-
-	class TestSession: AsyncOperation
-	{
-		UnitTest test;
-		TestMonitor monitor;
-		MonoDevelop.Projects.ExecutionContext context;
-		TestResultsPad resultsPad;
-
-		public TestSession (UnitTest test, MonoDevelop.Projects.ExecutionContext context, TestResultsPad resultsPad, CancellationTokenSource cs)
-		{
-			this.test = test;
-			if (context != null)
-				this.context = new Projects.ExecutionContext (context.ExecutionHandler, new CustomConsoleFactory (context.ConsoleFactory, cs), context.ExecutionTarget);
-			CancellationTokenSource = cs;
-			this.monitor = new TestMonitor (resultsPad, CancellationTokenSource);
-			this.resultsPad = resultsPad;
-			resultsPad.InitializeTestRun (test, cs);
-			Task = new Task ((Action)RunTests);
-		}
-		
-		public Task Start ()
-		{
-			Task.Start ();
-			return Task;
-		}
-
-		void RunTests ()
-		{
-			try {
-				UnitTestService.ResetResult (test);
-
-				TestContext ctx = new TestContext (monitor, resultsPad, context, DateTime.Now);
-				test.Run (ctx);
-				test.SaveResults ();
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				monitor.ReportRuntimeError (null, ex);
-			} finally {
-				monitor.FinishTestRun ();
-			}
-		}
-	}
-
-	public class TestSessionEventArgs: EventArgs
-	{
-		public AsyncOperation Session { get; set; }
-		public UnitTest Test { get; set; }
-	}
-
-	class CustomConsoleFactory : OperationConsoleFactory
-	{
-		OperationConsoleFactory factory;
-		CancellationTokenSource cancelSource;
-
-		public CustomConsoleFactory (OperationConsoleFactory factory, CancellationTokenSource cs)
-		{
-			this.factory = factory;
-			cancelSource = cs;
-		}
-
-		protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
-		{
-			return factory.CreateConsole (options.WithBringToFront (false)).WithCancelCallback (cancelSource.Cancel);
-		}
 	}
 }
 

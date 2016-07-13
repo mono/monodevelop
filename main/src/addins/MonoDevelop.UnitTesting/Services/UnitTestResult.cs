@@ -198,7 +198,7 @@ namespace MonoDevelop.UnitTesting
 				return null;
 			string[] stackLines = stackTrace.Replace ("\r", "").Split ('\n');
 			foreach (string line in stackLines) {
-				if (line.IndexOf ("NUnit.Framework") != -1)
+				if (line.IndexOf ("NUnit.Framework", StringComparison.Ordinal) != -1)
 					continue;
 				Regex r = new Regex (@".*?\(.*?\)\s\[.*?\]\s.*?\s(?<file>.*)\:(?<line>\d*)");
 				Match m = r.Match (line);

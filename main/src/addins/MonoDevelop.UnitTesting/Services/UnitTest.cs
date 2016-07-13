@@ -26,7 +26,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-
 using System;
 using System.Collections;
 using MonoDevelop.Core;
@@ -306,8 +305,6 @@ namespace MonoDevelop.UnitTesting
 			return true;
 		}
 
-		bool building;
-
 		/// <summary>
 		/// Builds the project that contains this unit test or group of unit tests.
 		/// It returns when the project has been built and the tests have been updated. 
@@ -331,8 +328,6 @@ namespace MonoDevelop.UnitTesting
 				return;
 
 			result.TestDate = context.TestDate;
-//			if ((int)result.Status == 0)
-//				result.Status = ResultStatus.Ignored;
 
 			lastResult = result;
 			historicResult = false;
@@ -422,32 +417,6 @@ namespace MonoDevelop.UnitTesting
 		
 		public event EventHandler TestChanged;
 		public event EventHandler TestStatusChanged;
-	}
-	
-	public class SourceCodeLocation
-	{
-		string fileName;
-		int line;
-		int column;
-		
-		public SourceCodeLocation (string fileName, int line, int column)
-		{
-			this.fileName = fileName;
-			this.line = line;
-			this.column = column;
-		}
-		
-		public string FileName {
-			get { return fileName; }
-		}
-		
-		public int Line {
-			get { return line; }
-		}
-		
-		public int Column {
-			get { return column; }
-		}
 	}
 }
 

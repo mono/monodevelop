@@ -1,5 +1,5 @@
 //
-// TestNodeBuilder.cs
+// IResultsStoreSerializer.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,49 +27,29 @@
 //
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Xml.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class UnitTestResultsStore
+	/// <summary>
+	/// Encapsulates serialization/deserialization logic
+	/// </summary>
+	public interface IResultsStoreSerializer
 	{
-		UnitTest test;
-		IResultsStore store;
+		/// <summary>
+		/// Serialize the record into the specified path.
+		/// </summary>
+		void Serialize(string filePath, TestRecord testRecord);
 		
-		internal UnitTestResultsStore (UnitTest test, IResultsStore store)
-		{
-			this.test = test;
-			this.store = store;
-		}
-		
-		public UnitTestResult GetLastResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetLastResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult GetNextResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetNextResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult GetPreviousResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetPreviousResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult[] GetResults (DateTime startDate, DateTime endDate)
-		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResults (test.ActiveConfiguration, test, startDate, endDate);
-		}
-		
-		public UnitTestResult[] GetResultsToDate (DateTime endDate, int count)
-		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResultsToDate (test.ActiveConfiguration, test, endDate, count);
-		}
+		/// <summary>
+		/// Deserialize the TestRecord from the sepcified path if possible.
+		/// Return null if deserialization is impossible.
+		/// </summary>
+		TestRecord Deserialize(string filePath);
 	}
 }
-

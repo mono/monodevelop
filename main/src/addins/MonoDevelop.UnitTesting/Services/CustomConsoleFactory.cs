@@ -1,5 +1,5 @@
 //
-// TestNodeBuilder.cs
+// CustomConsoleFactory.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,49 +27,38 @@
 //
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using Mono.Addins;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide;
+using System.Threading.Tasks;
+using System.Linq;
+using MonoDevelop.Ide.TypeSystem;
+using System.IO;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class UnitTestResultsStore
+	class CustomConsoleFactory : OperationConsoleFactory
 	{
-		UnitTest test;
-		IResultsStore store;
-		
-		internal UnitTestResultsStore (UnitTest test, IResultsStore store)
+		OperationConsoleFactory factory;
+		CancellationTokenSource cancelSource;
+
+		public CustomConsoleFactory (OperationConsoleFactory factory, CancellationTokenSource cs)
 		{
-			this.test = test;
-			this.store = store;
+			this.factory = factory;
+			cancelSource = cs;
 		}
-		
-		public UnitTestResult GetLastResult (DateTime date)
+
+		protected override OperationConsole OnCreateConsole (CreateConsoleOptions options)
 		{
-			if (store == null) return null;
-			return store.GetLastResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult GetNextResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetNextResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult GetPreviousResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetPreviousResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult[] GetResults (DateTime startDate, DateTime endDate)
-		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResults (test.ActiveConfiguration, test, startDate, endDate);
-		}
-		
-		public UnitTestResult[] GetResultsToDate (DateTime endDate, int count)
-		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResultsToDate (test.ActiveConfiguration, test, endDate, count);
+			return factory.CreateConsole (options.WithBringToFront (false)).WithCancelCallback (cancelSource.Cancel);
 		}
 	}
 }
-

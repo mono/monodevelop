@@ -76,7 +76,8 @@ namespace MonoDevelop.UnitTesting
 			return unitTestFound;
 		}
 
-		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
+		protected override async Task OnExecute (ProgressMonitor monitor, Projects.ExecutionContext context,
+		                                         ConfigurationSelector configuration)
 		{
 			bool defaultCanExecute;
 
@@ -113,7 +114,7 @@ namespace MonoDevelop.UnitTesting
 			return sf;
 		}
 		
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (Projects.ExecutionContext context, ConfigurationSelector configuration)
 		{
 			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
 			

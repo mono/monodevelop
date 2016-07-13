@@ -40,13 +40,14 @@ namespace MonoDevelop.UnitTesting
 		ITestProgressMonitor monitor;
 		DateTime testDate;
 		object contextData;
-		MonoDevelop.Projects.ExecutionContext executionContext;
+		ExecutionContext executionContext;
 
-		internal TestContext (ITestProgressMonitor monitor, TestResultsPad resultsPad, MonoDevelop.Projects.ExecutionContext executionContext, DateTime testDate)
+		internal TestContext (ITestProgressMonitor monitor, ExecutionContext executionContext, DateTime testDate)
 		{
 			this.monitor = monitor;
 			if (executionContext == null)
-				executionContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+				executionContext = new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler,
+				                                         IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
 			this.executionContext = executionContext;
 			// Round to seconds
 			this.testDate = new DateTime ((testDate.Ticks / TimeSpan.TicksPerSecond) * TimeSpan.TicksPerSecond);

@@ -48,7 +48,7 @@ namespace MonoDevelop.UnitTesting
 		public AbstractResultsStore (IResultsStoreSerializer serializer, string directory, string storeId)
 		{
 			this.serializer = serializer;
-			this.basePath = directory;
+			basePath = directory;
 			this.storeId = storeId;
 		}
 		
@@ -115,7 +115,7 @@ namespace MonoDevelop.UnitTesting
 				TestRecord tr = FindRecord (root, test.StoreRelativeName);
 				if (tr != null && tr.Results != null) {
 					for (int n = tr.Results.Count - 1; n >= 0; n--) {
-						UnitTestResult res = (UnitTestResult) tr.Results [n];
+						UnitTestResult res = tr.Results [n];
 						if (res.TestDate < date)
 							return res;
 					}
@@ -173,7 +173,7 @@ namespace MonoDevelop.UnitTesting
 				TestRecord tr = FindRecord (root, test.StoreRelativeName);
 				if (tr != null && tr.Results != null) {
 					for (int m = tr.Results.Count - 1; m >= 0 && list.Count < count; m--) {
-						UnitTestResult res = (UnitTestResult) tr.Results [m];
+						UnitTestResult res = tr.Results [m];
 						if (res.TestDate <= endDate)
 							list.Add (res);
 					}
@@ -238,7 +238,7 @@ namespace MonoDevelop.UnitTesting
 			}
 			
 			try {
-				res = (TestRecord) serializer.Deserialize (filePath);
+				res = serializer.Deserialize (filePath);
 			} catch (Exception ex) {
 				LoggingService.LogError (ex.ToString ());
 				return null;
@@ -327,81 +327,4 @@ namespace MonoDevelop.UnitTesting
 			return res;
 		}
 	}
-	
-	/// <summary>
-	/// Encapsulates serialization/deserialization logic
-	/// </summary>
-	public interface IResultsStoreSerializer
-	{
-		/// <summary>
-		/// Serialize the record into the specified path.
-		/// </summary>
-		void Serialize(string filePath, TestRecord testRecord);
-		
-		/// <summary>
-		/// Deserialize the TestRecord from the sepcified path if possible.
-		/// Return null if deserialization is impossible.
-		/// </summary>
-		TestRecord Deserialize(string filePath);
-	}
-	
-	[Serializable]
-	public class TestRecord
-	{
-		string name;
-		UnitTestResultCollection results;
-		TestRecordCollection tests;
-		internal bool Modified;
-		
-		[XmlAttribute]
-		public string Name {
-			get { return name; }
-			set { name = value; }
-		}
-		
-		public UnitTestResultCollection Results {
-			get { return results; }
-			set { results = value; }
-		}
-		
-		public TestRecordCollection Tests {
-			get { return tests; }
-			set { tests = value; }
-		}
-	}
-	
-	[Serializable]
-	public class TestRecordCollection: CollectionBase
-	{
-		public new TestRecord this [int n] {
-			get { return (TestRecord) ((IList)this) [n]; }
-		}
-		
-		public new TestRecord this [string name] {
-			get {
-				for (int n=0; n<List.Count; n++)
-					if (((TestRecord)List [n]).Name == name)
-						return (TestRecord) List [n];
-				return null;
-			}
-		}
-		
-		public void Add (TestRecord test)
-		{
-			((IList)this).Add (test);
-		}
-	}
-	
-	[Serializable]
-	public class UnitTestResultCollection: CollectionBase
-	{
-		public new UnitTestResult this [int n] {
-			get { return (UnitTestResult) ((IList)this) [n]; }
-		}
-		
-		public void Add (UnitTestResult test)
-		{
-			((IList)this).Add (test);
-		}
-	}	
 }

@@ -1,5 +1,5 @@
 //
-// TestNodeBuilder.cs
+// TestRecord.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -27,49 +27,39 @@
 //
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Xml.Serialization;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting
 {
-	public class UnitTestResultsStore
+	
+	[Serializable]
+	public class TestRecord
 	{
-		UnitTest test;
-		IResultsStore store;
+		string name;
+		UnitTestResultCollection results;
+		TestRecordCollection tests;
+		internal bool Modified;
 		
-		internal UnitTestResultsStore (UnitTest test, IResultsStore store)
-		{
-			this.test = test;
-			this.store = store;
+		[XmlAttribute]
+		public string Name {
+			get { return name; }
+			set { name = value; }
 		}
 		
-		public UnitTestResult GetLastResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetLastResult (test.ActiveConfiguration, test, date);
+		public UnitTestResultCollection Results {
+			get { return results; }
+			set { results = value; }
 		}
 		
-		public UnitTestResult GetNextResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetNextResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult GetPreviousResult (DateTime date)
-		{
-			if (store == null) return null;
-			return store.GetPreviousResult (test.ActiveConfiguration, test, date);
-		}
-		
-		public UnitTestResult[] GetResults (DateTime startDate, DateTime endDate)
-		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResults (test.ActiveConfiguration, test, startDate, endDate);
-		}
-		
-		public UnitTestResult[] GetResultsToDate (DateTime endDate, int count)
-		{
-			if (store == null) return new UnitTestResult [0];
-			return store.GetResultsToDate (test.ActiveConfiguration, test, endDate, count);
+		public TestRecordCollection Tests {
+			get { return tests; }
+			set { tests = value; }
 		}
 	}
+		
 }
-
