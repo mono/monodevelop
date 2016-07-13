@@ -74,11 +74,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		readonly List<SyntaxMatch> matches = new List<SyntaxMatch> ();
 		public IReadOnlyList<SyntaxMatch> Matches { get { return matches; } }
 
-		internal void ParseMapping (YamlSequenceNode seqNode)
+		internal void ParseMapping (YamlSequenceNode seqNode, Dictionary<string, string> variables)
 		{
 			if (seqNode != null) {
 				foreach (var node in seqNode.Children.OfType<YamlMappingNode> ()) {
-					ParseMapping (node);
+					ParseMapping (node, variables);
 				}
 			}
 
@@ -88,11 +88,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			//}
 		}
 
-		internal void ParseMapping (YamlMappingNode node)
+		internal void ParseMapping (YamlMappingNode node, Dictionary<string, string> variables)
 		{
 			var children = node.Children;
 			if (children.ContainsKey (new YamlScalarNode ("match"))) {
-				matches.Add (Sublime3Format.ReadMatch (node));
+				matches.Add (Sublime3Format.ReadMatch (node, variables));
 				return;
 			}
 
@@ -151,6 +151,27 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			Push = push;
 			Pop = pop;
 			Set = set;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[SyntaxMatch: Match={0}, Scope={1}]", Match, Scope);
+		}
+
+		bool hasRegex;
+		Regex cachedRegex;
+
+		internal Regex GetRegex ()
+		{
+			if (hasRegex)
+				return cachedRegex;
+			hasRegex = true;
+			try {
+				cachedRegex = new Regex (Match);
+			} catch (Exception e) {
+				LoggingService.LogWarning ("Warning regex : '" + Match + "' can't be parsed.", e);
+			}
+			return cachedRegex;
 		}
 	}
 

@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public static EditorTheme DefaultColorStyle {
 			get {
-				return GetEditorTheme (EditorTheme.DefaultThemeName);
+				return GetEditorTheme (EditorTheme.DefaultDarkThemeName);
 			}
 		}
 
@@ -334,8 +334,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static ChunkStyle GetChunkStyle (EditorTheme style, string key)
 		{
 			HslColor result;
-			if (!style.TryGetColor (key, out result))
+			if (!style.TryGetColor (key, out result)) {
 				DefaultColorStyle.TryGetColor (key, out result);
+			}
 			return new ChunkStyle() { Foreground = result };
 		}
 
