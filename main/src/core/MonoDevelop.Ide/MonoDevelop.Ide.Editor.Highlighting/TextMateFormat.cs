@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
@@ -48,7 +49,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var dict = contentArray [i] as PDictionary;
 				if (dict == null)
 					continue;
-				settings.Add (LoadThemeSetting (dict));
+				var themeSetting = LoadThemeSetting (dict);
+				if (i == 0)
+					themeSetting  = CalculateMissingColors (themeSetting);
+				settings.Add (themeSetting);
 			}
 			var uuid = (PString)dictionary ["uuid"];
 
@@ -111,7 +115,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					settings.Add (setting.Key, ((PString)setting.Value).Value);
 				}
 			}
+
 			return new ThemeSetting (name, scopes, settings);
+		}
+
+		static ThemeSetting CalculateMissingColors (ThemeSetting themeSetting)
+		{
+			var settings = (Dictionary<string, string>)themeSetting.Settings;
+			settings [ThemeSettingColors.LineNumbersBackground] = HslColor.Parse (settings [ThemeSettingColors.Background]).AddLight (0.01).ToPangoString ();
+			settings [ThemeSettingColors.LineNumbers] = HslColor.Parse (settings [ThemeSettingColors.Foreground]).AddLight (-0.1).ToPangoString ();
+
+			return new ThemeSetting (themeSetting.Name, themeSetting.Scopes, settings);
 		}
 	}
 }

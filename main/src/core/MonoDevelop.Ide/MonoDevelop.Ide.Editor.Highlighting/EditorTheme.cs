@@ -133,10 +133,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		public readonly string Name = ""; // not defined in vs.net
 
-		List<string> scopes;
+		IReadOnlyList<string> scopes;
 		public IReadOnlyList<string> Scopes { get { return scopes; } }
 
-		Dictionary<string, string> settings = new Dictionary<string, string> ();
+		IReadOnlyDictionary<string, string> settings;
 
 		internal IReadOnlyDictionary<string, string> Settings {
 			get {
@@ -144,11 +144,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal ThemeSetting (string name, List<string> scopes, Dictionary<string, string> settings)
+		internal ThemeSetting (string name, IReadOnlyList<string> scopes, IReadOnlyDictionary<string, string> settings)
 		{
 			Name = name;
 			this.scopes = scopes ?? new List<string> ();
-			this.settings = settings;
+			this.settings = settings ?? new Dictionary<string, string> ();
 		}
 
 		public bool TryGetSetting (string key, out string value)
