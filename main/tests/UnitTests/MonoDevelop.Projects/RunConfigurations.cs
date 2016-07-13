@@ -61,7 +61,7 @@ namespace MonoDevelop.Projects
 			string projectXml = File.ReadAllText (p.FileName);
 			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.new-project.csproj");
 			string newProjectXml = File.ReadAllText (projFile);
-			Assert.AreEqual (newProjectXml, projectXml);
+			Assert.AreEqual (Util.ToWindowsEndings (newProjectXml), projectXml);
 		}
 
 		[Test]
@@ -91,7 +91,7 @@ namespace MonoDevelop.Projects
 			string projectXml = File.ReadAllText (p.FileName);
 			string projFile = Util.GetSampleProject ("run-configurations", "ConsoleProject", "ConsoleProject.new-project-extra.csproj");
 			string newProjectXml = File.ReadAllText (projFile);
-			Assert.AreEqual (newProjectXml, projectXml);
+			Assert.AreEqual (Util.ToWindowsEndings (newProjectXml), projectXml);
 
 			Assert.IsTrue (File.Exists (p.FileName + ".user"));
 
