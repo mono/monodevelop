@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			defaultSettings ["foldCrossBackground"] = colorScheme.FoldCross.SecondColor.ToPangoString ();
 			defaultSettings ["quickdiffChanged"] = colorScheme.QuickDiffChanged.Color.ToPangoString ();
 			defaultSettings ["quickdiffDirty"] = colorScheme.QuickDiffDirty.Color.ToPangoString ();
-			defaultSettings ["lineNumbers"] = colorScheme.LineNumbers.Background.ToPangoString ();
+			defaultSettings ["lineNumbers"] = colorScheme.LineNumbers.Foreground.ToPangoString ();
 			defaultSettings ["indicatorMargin"] = colorScheme.IndicatorMargin.Color.ToPangoString ();
 			defaultSettings ["indicatorSeparator"] = colorScheme.IndicatorMarginSeparator.Color.ToPangoString ();
 			defaultSettings ["breakpointMarker"] = colorScheme.BreakpointMarker.Color.ToPangoString ();
@@ -186,7 +186,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("diff.deleted", new List<string> { "markup.deleted" }, ConvertChunkStyle (colorScheme.DiffLineRemoved)));
 			settings.Add (new ThemeSetting ("diff.inserted", new List<string> { "markup.inserted" }, ConvertChunkStyle (colorScheme.DiffLineAdded)));
 			settings.Add (new ThemeSetting ("diff.changed", new List<string> { "markup.changed" }, ConvertChunkStyle (colorScheme.DiffLineChanged)));
-
 			return new EditorTheme (colorScheme.Name, settings);
 		}
 

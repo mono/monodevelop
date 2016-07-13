@@ -131,9 +131,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public sealed class ThemeSetting 
 	{
-		public string Name = ""; // not defined in vs.net
+		public readonly string Name = ""; // not defined in vs.net
 
-		List<string> scopes = new List<string> ();
+		List<string> scopes;
 		public IReadOnlyList<string> Scopes { get { return scopes; } }
 
 		Dictionary<string, string> settings = new Dictionary<string, string> ();
@@ -147,7 +147,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal ThemeSetting (string name, List<string> scopes, Dictionary<string, string> settings)
 		{
 			Name = name;
-			this.scopes = scopes;
+			this.scopes = scopes ?? new List<string> ();
 			this.settings = settings;
 		}
 
@@ -204,7 +204,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 		}
 
-		internal EditorTheme (string name, List<ThemeSetting> settings) : this (name, new List<ThemeSetting> (), Guid.NewGuid ().ToString ())
+		internal EditorTheme (string name, List<ThemeSetting> settings) : this (name, settings, Guid.NewGuid ().ToString ())
 		{
 		}
 
