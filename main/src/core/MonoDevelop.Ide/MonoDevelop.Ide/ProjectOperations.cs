@@ -1971,9 +1971,9 @@ namespace MonoDevelop.Ide
 					}
 				}
 				
-				if (sourceProject != null) {
-					if (fileIsLink) {
-						var linkFile = (ProjectFile) file.Clone ();
+				if (fileIsLink) {
+					if (sourceProject != null) {
+						var linkFile = (ProjectFile)file.Clone ();
 						if (movingFolder) {
 							var abs = linkFile.Link.ToAbsolute (sourceProject.BaseDirectory);
 							var relSrc = abs.ToRelative (sourcePath);
@@ -1983,24 +1983,24 @@ namespace MonoDevelop.Ide
 							linkFile.Link = newFile.ToRelative (targetProject.BaseDirectory);
 						}
 						targetProject.Files.Add (linkFile);
-					} else if (targetProject.Files.GetFile (newFile) == null) {
-						ProjectFile projectFile = (ProjectFile) file.Clone ();
-						projectFile.Name = newFile;
-						targetProject.Files.Add (projectFile);
-						if (targetParent == null) {
-							if (file == sourceParent)
-								targetParent = projectFile;
-						} else if (sourceParent != null) {
-							if (projectFile.DependsOn == sourceParent.Name)
-								projectFile.DependsOn = targetParent.Name;
-						}
+					}
+				} else if (targetProject.Files.GetFile (newFile) == null) {
+					ProjectFile projectFile = (ProjectFile) file.Clone ();
+					projectFile.Name = newFile;
+					targetProject.Files.Add (projectFile);
+					if (targetParent == null) {
+						if (file == sourceParent)
+							targetParent = projectFile;
+					} else if (sourceParent != null) {
+						if (projectFile.DependsOn == sourceParent.Name)
+							projectFile.DependsOn = targetParent.Name;
 					}
 				}
-				
+
 				monitor.Step (1);
 			}
 			
-			if (removeFromSource) {
+			if (removeFromSource && sourceProject != null) {
 				// Remove all files and directories under 'sourcePath'
 				foreach (var v in filesToRemove)
 					sourceProject.Files.Remove (v);
