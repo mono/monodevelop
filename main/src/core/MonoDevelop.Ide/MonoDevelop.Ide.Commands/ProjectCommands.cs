@@ -244,9 +244,7 @@ namespace MonoDevelop.Ide.Commands
 		
 		static IBuildTarget GetRunTarget ()
 		{
-			return IdeApp.ProjectOperations.CurrentSelectedSolution != null && IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem != null ? 
-				IdeApp.ProjectOperations.CurrentSelectedSolution.StartupItem : 
-					IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
+			return IdeApp.ProjectOperations.CurrentSelectedSolution ?? IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
 		}
 		
 		public static bool CanRun (IExecutionHandler executionHandler)
@@ -285,19 +283,15 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (sol != null) {
-				ExecutionModeCommandService.GenerateExecutionModeCommands (
-				    sol.StartupItem as Project,
-				    RunHandler.CanRun,
-				    info);
-			}
+			if (sol != null && sol.StartupItem != null)
+				ExecutionModeCommandService.GenerateExecutionModeCommands (sol.StartupItem, info);
 		}
 
 		protected override void Run (object dataItem)
 		{
-			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
-			if (h != null)
-				RunHandler.RunMethod (h);
+			Solution sol = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (sol != null && sol.StartupItem != null)
+				ExecutionModeCommandService.ExecuteCommand (sol.StartupItem, dataItem);
 		}
 	}
 
@@ -322,23 +316,15 @@ namespace MonoDevelop.Ide.Commands
 		{
 			SolutionItem item = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as SolutionItem;
 			if (item != null) {
-				ExecutionModeCommandService.GenerateExecutionModeCommands (
-				    item,
-				    delegate (IExecutionHandler h) {
-						return IdeApp.ProjectOperations.CanExecute (item, h);
-					},
-				    info);
+				ExecutionModeCommandService.GenerateExecutionModeCommands (item, info);
 			}
 		}
 
 		protected override void Run (object dataItem)
 		{
-			IExecutionHandler h = ExecutionModeCommandService.GetExecutionModeForCommand (dataItem);
-			IBuildTarget target = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-			if (h == null || !IdeApp.ProjectOperations.CurrentRunOperation.IsCompleted)
-				return;
-
-			IdeApp.ProjectOperations.Execute (target, h);
+			SolutionItem item = IdeApp.ProjectOperations.CurrentSelectedBuildTarget as SolutionItem;
+			if (item != null)
+				ExecutionModeCommandService.ExecuteCommand (item, dataItem);
 		}
 	}
 

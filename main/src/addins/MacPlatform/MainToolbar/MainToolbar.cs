@@ -113,6 +113,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					ConfigurationChanged (sender, e);
 			};
 
+			selectorView.RunConfigurationChanged += (sender, e) => {
+				if (RunConfigurationChanged != null)
+					RunConfigurationChanged (sender, e);
+			};
+
 			selectorView.RuntimeChanged += (sender, ea) => {
 				if (RuntimeChanged != null)
 					RuntimeChanged (sender, ea);
@@ -217,19 +222,29 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			set { selectorView.Enabled = value; }
 		}
 
+		public bool RunConfigurationVisible {
+			get { return selectorView.RunConfigurationVisible; }
+			set { selectorView.RunConfigurationVisible = value; }
+		}
+
 		public event EventHandler ConfigurationChanged;
+		public event EventHandler RunConfigurationChanged;
 		public event EventHandler<HandledEventArgs> RuntimeChanged;
 
 		public bool PlatformSensitivity {
 			set {
-				var cell = (NSPathCell)selectorView.Cell;
-				cell.PathComponentCells [SelectorView.RuntimeIdx].Enabled = value;
+				selectorView.PlatformSensitivity = value;
 			}
 		}
 
 		public IConfigurationModel ActiveConfiguration {
 			get { return selectorView.ActiveConfiguration; }
 			set { selectorView.ActiveConfiguration = value; }
+		}
+
+		public IRunConfigurationModel ActiveRunConfiguration {
+			get { return selectorView.ActiveRunConfiguration; }
+			set { selectorView.ActiveRunConfiguration = value; }
 		}
 
 		public IRuntimeModel ActiveRuntime {
@@ -240,6 +255,11 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
 			get { return selectorView.ConfigurationModel; }
 			set { selectorView.ConfigurationModel = value; }
+		}
+
+		public IEnumerable<IRunConfigurationModel> RunConfigurationModel {
+			get { return selectorView.RunConfigurationModel; }
+			set { selectorView.RunConfigurationModel = value; }
 		}
 
 		public IEnumerable<IRuntimeModel> RuntimeModel {

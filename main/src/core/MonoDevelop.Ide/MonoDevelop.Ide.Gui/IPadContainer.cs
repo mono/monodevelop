@@ -107,12 +107,12 @@ namespace MonoDevelop.Ide.Gui
 		/// <summary>
 		/// Fired when the pad is shown in the current layout (although it may be minimized)
 		/// </summary>
-		event EventHandler PadShown;
+		event EventHandler<VisibilityChangeEventArgs> PadShown;
 		
 		/// <summary>
 		/// Fired when the pad is hidden in the current layout
 		/// </summary>
-		event EventHandler PadHidden;
+		event EventHandler<VisibilityChangeEventArgs> PadHidden;
 		
 		/// <summary>
 		/// Fired when the content of the pad is shown
@@ -277,14 +277,14 @@ namespace MonoDevelop.Ide.Gui
 			return content as IMementoCapable;
 		}
 		
-		internal void NotifyShown ()
+		internal void NotifyShown (VisibilityChangeEventArgs args)
 		{
-			PadShown?.Invoke (this, EventArgs.Empty);
+			PadShown?.Invoke (this, args);
 		}
 		
-		internal void NotifyHidden ()
+		internal void NotifyHidden (VisibilityChangeEventArgs args)
 		{
-			PadHidden?.Invoke (this, EventArgs.Empty);
+			PadHidden?.Invoke (this, args);
 		}
 		
 		internal void NotifyContentShown ()
@@ -307,8 +307,8 @@ namespace MonoDevelop.Ide.Gui
 			content?.Dispose ();
 		}
 		
-		public event EventHandler PadShown;
-		public event EventHandler PadHidden;
+		public event EventHandler<VisibilityChangeEventArgs> PadShown;
+		public event EventHandler<VisibilityChangeEventArgs> PadHidden;
 		public event EventHandler PadContentShown;
 		public event EventHandler PadContentHidden;
 		public event EventHandler PadDestroyed;

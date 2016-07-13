@@ -210,7 +210,6 @@
     <Compile Include="MonoDevelop.Core.Assemblies\SystemAssemblyService.cs" />
     <Compile Include="MonoDevelop.Core.Assemblies\MonoRuntimeInfo.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IExecutionModeSet.cs" />
-    <Compile Include="MonoDevelop.Core.Assemblies\CustomRuntimeExecutionModeSet.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionMode.cs" />
     <Compile Include="MonoDevelop.Core.Execution\ExecutionCommand.cs" />
     <Compile Include="MonoDevelop.Core.Execution\DotNetExecutionCommand.cs" />
@@ -562,6 +561,19 @@
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessConnection.cs" />
     <Compile Include="MonoDevelop.Core.Execution\RemoteProcessServer.cs" />
     <Compile Include="MonoDevelop.Projects\AssemblyReference.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionItemRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\ProjectRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfigurationCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\AssemblyRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\MonoExecutionParameters.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\SingleItemSolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\MultiItemSolutionRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\SolutionRunConfigurationCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\EnvironmentVariableCollection.cs" />
+    <Compile Include="MonoDevelop.Projects\RunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Projects\IRunTarget.cs" />
+    <Compile Include="MonoDevelop.Projects\ProcessRunConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

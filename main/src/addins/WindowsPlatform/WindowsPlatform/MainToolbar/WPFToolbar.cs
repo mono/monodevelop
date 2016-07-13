@@ -37,9 +37,19 @@ namespace WindowsPlatform.MainToolbar
 
 				Runtime.RunInMainThread(() => {
 					ActiveConfiguration = newModel;
+					ConfigurationChanged?.Invoke (o, e);
+				});
+			};
 
-					if (ConfigurationChanged != null)
-						ConfigurationChanged(o, e);
+			toolbar.RunConfigurationMenu.SelectionChanged += (o, e) => {
+				var comboMenu = (ComboMenu<IRunConfigurationModel>)o;
+				var newModel = e.Added;
+				if (newModel == null)
+					return;
+
+				Runtime.RunInMainThread (() => {
+					ActiveRunConfiguration = newModel;
+					RunConfigurationChanged?.Invoke (o, e);
 				});
 			};
 
@@ -53,8 +63,7 @@ namespace WindowsPlatform.MainToolbar
 						ActiveRuntime = newModel;
 
 						var ea = new MonoDevelop.Components.MainToolbar.HandledEventArgs();
-						if (RuntimeChanged != null)
-							RuntimeChanged(o, ea);
+						RuntimeChanged?.Invoke (o, ea);
 
 						if (ea.Handled)
 							ActiveRuntime = e.Removed;
@@ -128,6 +137,11 @@ namespace WindowsPlatform.MainToolbar
 			set	{ toolbar.RuntimeMenu.Active = value; }
 		}
 
+		public IRunConfigurationModel ActiveRunConfiguration {
+			get { return toolbar.RunConfigurationMenu.Active; }
+			set { toolbar.RunConfigurationMenu.Active = value; }
+		}
+
 		public bool ButtonBarSensitivity {
 			set	{ toolbar.ButtonBarPanel.IsEnabled = value; }
 		}
@@ -135,6 +149,16 @@ namespace WindowsPlatform.MainToolbar
 		public IEnumerable<IConfigurationModel> ConfigurationModel {
 			get	{ return toolbar.ConfigurationMenu.Model; }
 			set { toolbar.ConfigurationMenu.Model = value; }
+		}
+
+		public IEnumerable<IRuntimeModel> RuntimeModel {
+			get { return toolbar.RuntimeMenu.Model; }
+			set { toolbar.RuntimeMenu.Model = value; }
+		}
+
+		public IEnumerable<IRunConfigurationModel> RunConfigurationModel {
+			get { return toolbar.RunConfigurationMenu.Model; }
+			set { toolbar.RunConfigurationMenu.Model = value; }
 		}
 
 		bool configurationPlatformSensitivity;
@@ -167,10 +191,14 @@ namespace WindowsPlatform.MainToolbar
 			get { return toolbar.RunButton.IsEnabled; }
 			set { toolbar.RunButton.IsEnabled = value; }
 		}
-		
-		public IEnumerable<IRuntimeModel> RuntimeModel {
-			get { return toolbar.RuntimeMenu.Model; }
-			set { toolbar.RuntimeMenu.Model = value; }
+
+		public bool RunConfigurationVisible {
+			get { return toolbar.RunConfigurationMenu.IsVisible; }
+			set {
+				System.Windows.Visibility visible = value ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+				toolbar.RunConfigurationMenu.Visibility = visible;
+				toolbar.RunConfigurationSeparator.Visibility = visible;
+			}
 		}
 
 		public string SearchCategory {
@@ -265,6 +293,7 @@ namespace WindowsPlatform.MainToolbar
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
+		public event EventHandler RunConfigurationChanged;
 	}
 
 	public class NotNullConverter : IValueConverter

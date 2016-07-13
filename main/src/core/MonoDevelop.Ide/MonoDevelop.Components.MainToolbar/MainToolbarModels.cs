@@ -43,6 +43,21 @@ namespace MonoDevelop.Components.MainToolbar
 		string DisplayString { get; }
 	}
 
+	public interface IRunConfigurationModel
+	{
+		/// <summary>
+		/// Gets the original identifier for the configuration.
+		/// </summary>
+		/// <value>The original identifier.</value>
+		string OriginalId { get; }
+
+		/// <summary>
+		/// Gest the display string to be used inside a context menu.
+		/// </summary>
+		/// <value>The display string.</value>
+		string DisplayString { get; }
+	}
+
 	public interface IRuntimeModel
 	{
 		/// <summary>

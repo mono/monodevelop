@@ -34,7 +34,7 @@ namespace MonoDevelop.Core.Serialization
 	public class DataValue: DataNode
 	{
 		string value;
-		bool storeAsAttribute;
+		bool? storeAsAttribute;
 		
 		public DataValue (string name, string value)
 		{
@@ -45,8 +45,8 @@ namespace MonoDevelop.Core.Serialization
 		public string Value {
 			get { return value; }
 		}
-
-		internal bool StoreAsAttribute {
+			
+		internal bool? StoreAsAttribute {
 			get {
 				return storeAsAttribute;
 			}
@@ -54,7 +54,15 @@ namespace MonoDevelop.Core.Serialization
 				storeAsAttribute = value;
 			}
 		}
-		
+
+		internal bool StoreAsAttributeRequired {
+			get { return storeAsAttribute.HasValue && storeAsAttribute.Value; }
+		}
+
+		internal bool StoreAsElementRequired {
+			get { return storeAsAttribute.HasValue && !storeAsAttribute.Value; }
+		}
+
 		public override string ToString ()
 		{
 			return ToString (0);

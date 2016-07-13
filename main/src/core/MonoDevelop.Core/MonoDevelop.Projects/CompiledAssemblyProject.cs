@@ -143,7 +143,7 @@ namespace MonoDevelop.Projects
 			return Task.FromResult (BuildResult.CreateSuccess ());
 		}
 		
-		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		protected async override Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			ProjectConfiguration conf = (ProjectConfiguration) GetConfiguration (configuration);
 			monitor.Log.WriteLine (GettextCatalog.GetString ("Running {0} ...", FileName));
@@ -178,7 +178,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration)
+		protected override bool OnGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
 		{
 			ProjectConfiguration config = (ProjectConfiguration) GetConfiguration (configuration);
 			if (config == null)

@@ -57,6 +57,7 @@ namespace MonoDevelop.Projects.MSBuild
 			DataSerializer ser = new DataSerializer (Services.ProjectService.DataContext);
 			var props = Services.ProjectService.DataContext.GetProperties (ser.SerializationContext, ob);
 			XmlConfigurationWriter cwriter = null;
+			XmlDocument xdoc = null;
 
 			var mso = pset as IMSBuildProjectObject;
 			if (mso != null && mso.ParentProject != null)
@@ -84,13 +85,14 @@ namespace MonoDevelop.Projects.MSBuild
 				} else {
 					var val = prop.GetValue (ob);
 					if (val != null) {
-						if (cwriter == null)
-							cwriter = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema };
-						var w = new StringWriter ();
+						if (cwriter == null) {
+							cwriter = new XmlConfigurationWriter { Namespace = MSBuildProject.Schema, StoreAllInElements = true };
+							xdoc = new XmlDocument ();
+						}
 						var data = prop.Serialize (ser.SerializationContext, ob, val);
 						if (data != null) {
-							cwriter.Write (new XmlTextWriter (w), data);
-							pset.SetValue (prop.Name, w.ToString ());
+							var elem = cwriter.Write (xdoc, data);
+							pset.SetValue (prop.Name, prop.WrapObject ? elem.OuterXml : elem.InnerXml);
 						} else
 							pset.RemoveProperty (prop.Name);
 					} else
@@ -130,6 +132,8 @@ namespace MonoDevelop.Projects.MSBuild
 					var val = pset.GetValue (prop.Name);
 					if (!string.IsNullOrEmpty (val)) {
 						try {
+							if (!prop.WrapObject)
+								val = "<a>" + val + "</a>";
 							var data = XmlConfigurationReader.DefaultReader.Read (new XmlTextReader (new StringReader (val)));
 							if (prop.HasSetter && prop.DataType.CanCreateInstance) {
 								readVal = prop.Deserialize (ser.SerializationContext, ob, data);

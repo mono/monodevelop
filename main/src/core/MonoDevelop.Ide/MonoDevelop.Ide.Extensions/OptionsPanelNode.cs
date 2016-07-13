@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Extensions
 		protected string replaces;
 
 		Type panelType;
+		string headerLabel;
 		
 		public OptionsPanelNode ()
 		{
@@ -67,6 +68,15 @@ namespace MonoDevelop.Ide.Extensions
 			}
 			set {
 				label = value;
+			}
+		}
+
+		public string HeaderLabel {
+			get {
+				return headerLabel ?? label;
+			}
+			set {
+				headerLabel = value;
 			}
 		}
 

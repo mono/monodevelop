@@ -229,7 +229,7 @@
 		</Condition>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Core/ExecutionModes">
+	<Extension path = "/MonoDevelop/Core/ExecutionModes/Debug">
 		<ModeSetType id="MonoDevelop.Debugger" class="MonoDevelop.Debugger.DebugExecutionModeSet"/>
 	</Extension>
 
