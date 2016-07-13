@@ -2414,7 +2414,14 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (customArrayHandlerChain != null) {
 				info.UpdateHandlerData = Method;
+
+				var sw = Stopwatch.StartNew ();
+
 				customArrayHandlerChain.CommandUpdate (cmdTarget, info);
+
+				sw.Stop ();
+				if (sw.ElapsedMilliseconds > CommandManager.SlowCommandWarningTime)
+					LoggingService.LogWarning ("Slow command update ({0}ms): Command:{1}, Method:{2}, CommandTargetType:{3}", (int)sw.ElapsedMilliseconds, CommandId, Method.DeclaringType + "." + Method.Name, cmdTarget.GetType ());
 			} else {
 				if (Method == null)
 					throw new InvalidOperationException ("Invalid custom update handler. An implementation of ICommandArrayUpdateHandler was expected.");
