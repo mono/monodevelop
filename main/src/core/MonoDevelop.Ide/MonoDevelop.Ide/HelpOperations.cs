@@ -55,7 +55,10 @@ namespace MonoDevelop.Ide
 				var url = topic != null ? "monodoc://" + System.Web.HttpUtility.UrlEncode (topic) : null;
 				var mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("..", "..", "..", "..", "MacOS", "MonoDoc.app").FullPath;
 				if (Directory.Exists (mdapp)) {
-					builder.AddQuoted ("-a", mdapp, url, "--args");
+					builder.Add ("-a");
+					builder.AddQuoted (mdapp);
+					builder.Add ("--args");
+					builder.AddQuoted (url);
 					AddDirArgs (builder);
 					builder.AddQuoted (extraArgs);
 				} else {
