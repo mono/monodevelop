@@ -172,7 +172,11 @@ namespace MonoDevelop.Debugger.Win32
 						flags |= DebuggerExtensions.CREATE_REDIRECT_STD;
 				}
 
-				process = dbg.CreateProcess (startInfo.Command, cmdLine, startInfo.WorkingDirectory, env, flags);
+				var dir = startInfo.WorkingDirectory;
+				if (string.IsNullOrEmpty (dir))
+					dir = System.IO.Path.GetDirectoryName (startInfo.Command);
+				
+				process = dbg.CreateProcess (startInfo.Command, cmdLine, dir, env, flags);
 				processId = process.Id;
 
 				process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);

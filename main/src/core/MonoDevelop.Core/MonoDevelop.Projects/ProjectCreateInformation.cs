@@ -25,6 +25,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Core;
 using MonoDevelop.Core.StringParsing;
 
@@ -82,5 +83,10 @@ namespace MonoDevelop.Projects
 			ActiveConfiguration = projectCreateInformation.ActiveConfiguration;
 			Parameters = projectCreateInformation.Parameters;
 		}
+
+		/// <summary>
+		/// A callback that will be invoked to initialize the project
+		/// </summary>
+		public Action<SolutionItem> TemplateInitializationCallback { get; set; }
 	}
 }

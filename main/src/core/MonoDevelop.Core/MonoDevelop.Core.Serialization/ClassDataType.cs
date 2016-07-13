@@ -123,6 +123,7 @@ namespace MonoDevelop.Core.Serialization
 			prop.SkipEmpty = at.SkipEmpty;
 			prop.ReadOnly = at.ReadOnly;
 			prop.WriteOnly = at.WriteOnly;
+			prop.WrapObject = at.WrapObject;
 
 			if (prop.ExpandedCollection) {
 				ICollectionHandler handler = Context.GetCollectionHandler (memberType);

@@ -1008,25 +1008,51 @@ namespace MonoDevelop.Ide
 			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
 			return Execute (entry, context, buildBeforeExecuting);
 		}
-		
+
+		public AsyncOperation Execute (IBuildTarget entry, IExecutionHandler handler, ConfigurationSelector configuration = null, RunConfiguration runConfiguration = null, bool buildBeforeExecuting = true)
+		{
+			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, IdeApp.Workspace.ActiveExecutionTarget);
+			return Execute (entry, context, configuration, runConfiguration, buildBeforeExecuting);
+		}
+
 		public AsyncOperation Execute (IBuildTarget entry, ExecutionContext context, bool buildBeforeExecuting = true)
 		{
 			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
 
 			var cs = new CancellationTokenSource ();
-			return new AsyncOperation (ExecuteAsync (entry, context, cs, buildBeforeExecuting), cs);
+			return new AsyncOperation (ExecuteAsync (entry, context, cs, IdeApp.Workspace.ActiveConfiguration, null, buildBeforeExecuting), cs);
 		}
 
-		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, bool buildBeforeExecuting)
+		public AsyncOperation Execute (IBuildTarget entry, ExecutionContext context, ConfigurationSelector configuration = null, RunConfiguration runConfiguration = null, bool buildBeforeExecuting = true)
 		{
+			if (currentRunOperation != null && !currentRunOperation.IsCompleted) return currentRunOperation;
+
+			var cs = new CancellationTokenSource ();
+			return new AsyncOperation (ExecuteAsync (entry, context, cs, configuration, runConfiguration, buildBeforeExecuting), cs);
+		}
+
+		async Task ExecuteAsync (IBuildTarget entry, ExecutionContext context, CancellationTokenSource cs, ConfigurationSelector configuration, RunConfiguration runConfiguration, bool buildBeforeExecuting)
+		{
+			if (configuration == null)
+				configuration = IdeApp.Workspace.ActiveConfiguration;
+			
+			var bth = context.ExecutionHandler as IConfigurableExecutionHandler;
+			var rt = entry as IRunTarget;
+			if (bth != null && rt != null) {
+				var h = await bth.Configure (rt, context, configuration, runConfiguration);
+				if (h == null)
+					return;
+				context = new ExecutionContext (h, context.ConsoleFactory, context.ExecutionTarget);
+			}
+			
 			if (buildBeforeExecuting) {
-				if (!await CheckAndBuildForExecute (entry, context))
+				if (!await CheckAndBuildForExecute (entry, context, configuration, runConfiguration))
 					return;
 			}
 
 			ProgressMonitor monitor = new ProgressMonitor (cs);
 
-			var t = ExecuteSolutionItemAsync (monitor, entry, context);
+			var t = ExecuteSolutionItemAsync (monitor, entry, context, configuration, runConfiguration);
 
 			var op = new AsyncOperation (t, cs);
 			CurrentRunOperation = op;
@@ -1040,11 +1066,14 @@ namespace MonoDevelop.Ide
 			currentRunOperationOwner = null;
 		}
 		
-		async Task ExecuteSolutionItemAsync (ProgressMonitor monitor, IBuildTarget entry, ExecutionContext context)
+		async Task ExecuteSolutionItemAsync (ProgressMonitor monitor, IBuildTarget entry, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
 			try {
 				OnBeforeStartProject ();
-				await entry.Execute (monitor, context, IdeApp.Workspace.ActiveConfiguration);
+				if (entry is IRunTarget)
+					await ((IRunTarget)entry).Execute (monitor, context, configuration, runConfiguration);
+				else
+					await entry.Execute (monitor, context, configuration);
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Execution failed."), ex);
 				LoggingService.LogError ("Execution failed", ex);
@@ -1200,7 +1229,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
-		async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context)
+		async Task<bool> CheckAndBuildForExecute (IBuildTarget executionTarget, ExecutionContext context, ConfigurationSelector configuration, RunConfiguration runConfiguration)
 		{
 			if (currentBuildOperation != null && !currentBuildOperation.IsCompleted) {
 				var bres = await currentBuildOperation.Task;
@@ -1212,8 +1241,6 @@ namespace MonoDevelop.Ide
 			var r = await DoBeforeCompileAction ();
 			if (r.Failed)
 				return false;
-
-			var configuration = IdeApp.Workspace.ActiveConfiguration;
 
 			var buildTarget = executionTarget;
 			var buildDeps = buildTarget.GetExecutionDependencies ().ToList ();
@@ -1231,7 +1258,12 @@ namespace MonoDevelop.Ide
 				// Building the project may take some time, so we call PrepareExecution so that the target can
 				// prepare the execution (for example, it could start a simulator).
 				var cs = new CancellationTokenSource ();
-				var prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
+				Task prepareExecution;
+				if (buildTarget is IRunTarget)
+					prepareExecution = ((IRunTarget)buildTarget).PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration, runConfiguration);
+				else
+					prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
+				
 				var result = await Build (buildTarget, true).Task;
 
 				if (result.HasErrors || (!IdeApp.Preferences.RunWithWarnings && result.HasWarnings)) {
@@ -1266,7 +1298,13 @@ namespace MonoDevelop.Ide
 				// Building the project may take some time, so we call PrepareExecution so that the target can
 				// prepare the execution (for example, it could start a simulator).
 				var cs = new CancellationTokenSource ();
-				var prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
+
+				Task prepareExecution;
+				if (buildTarget is IRunTarget)
+					prepareExecution = ((IRunTarget)buildTarget).PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration, runConfiguration);
+				else
+					prepareExecution = buildTarget.PrepareExecution (new ProgressMonitor ().WithCancellationSource (cs), context, configuration);
+				
 				var result = await Build (buildTarget, true).Task;
 
 				if (result.HasErrors || (!IdeApp.Preferences.RunWithWarnings && result.HasWarnings)) {

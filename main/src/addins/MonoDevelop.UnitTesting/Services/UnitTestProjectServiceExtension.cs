@@ -25,12 +25,15 @@
 //
 //
 
+using System;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -76,56 +79,40 @@ namespace MonoDevelop.UnitTesting
 			return unitTestFound;
 		}
 
-		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
-		{
-			bool defaultCanExecute;
+		static UnitTestingRunConfiguration unitTestingRunConfigurationInstance = new UnitTestingRunConfiguration ();
 
-			lock (canExecuteCheckLock) {
-				try {
-					checkingCanExecute = true;
-					defaultCanExecute = Project.CanExecute (context, configuration);
-				} finally {
-					checkingCanExecute = false;
-				}
-			}
-			if (defaultCanExecute) {
-				// It is executable by default
-				await base.OnExecute (monitor, context, configuration);
-				return;
-			}
-			UnitTest test = FindRootTest ();
-			if (test != null) {
-				var cs = new CancellationTokenSource ();
-				using (monitor.CancellationToken.Register (cs.Cancel))
-					await UnitTestService.RunTest (test, context, false, false, cs);
-			}
-		}
+		protected override IEnumerable<SolutionItemRunConfiguration> OnGetRunConfigurations (OperationContext ctx)
+		{
+			var configs = base.OnGetRunConfigurations (ctx);
 
-		protected override ProjectFeatures OnGetSupportedFeatures ()
-		{
-			var sf = base.OnGetSupportedFeatures ();
-			if (!sf.HasFlag (ProjectFeatures.Execute)) {
-				// Unit test projects support execution
-				UnitTest test = FindRootTest ();
-				if (test != null)
-					sf |= ProjectFeatures.Execute;
-			}
-			return sf;
-		}
-		
-		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration)
-		{
-			// We check for DefaultExecutionHandlerFactory because the tests can't run using any other execution mode
+			// If the project has unit tests, add a configuration for running the tests
+			if (FindRootTest () != null)
+				configs = configs.Concat (unitTestingRunConfigurationInstance);
 			
-			var res = base.OnGetCanExecute (context, configuration);
-			lock (canExecuteCheckLock) {
-				if (checkingCanExecute)
-					return res;
+			return configs;
+		}
+
+		protected override async Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		{
+			if (runConfiguration == unitTestingRunConfigurationInstance) {
+				// The user selected to run the tests
+				UnitTest test = FindRootTest ();
+				if (test != null) {
+					var cs = new CancellationTokenSource ();
+					using (monitor.CancellationToken.Register (cs.Cancel))
+						await UnitTestService.RunTest (test, context, false, false, cs);
+				}
+			} else
+				await base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		protected override bool OnGetCanExecute (MonoDevelop.Projects.ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
+		{
+			if (runConfiguration == unitTestingRunConfigurationInstance) {
+				UnitTest test = FindRootTest ();
+				return (test != null) && test.CanRun (context.ExecutionHandler);
 			}
-			if (res)
-				return true;
-			UnitTest test = FindRootTest ();
-			return (test != null) && test.CanRun (context.ExecutionHandler);
+			return base.OnGetCanExecute (context, configuration, runConfiguration);
 		}
 	}
 }

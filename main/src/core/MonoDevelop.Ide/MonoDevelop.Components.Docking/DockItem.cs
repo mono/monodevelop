@@ -68,7 +68,7 @@ namespace MonoDevelop.Components.Docking
 		DockVisualStyle itemStyle;
 		DockVisualStyle currentVisualStyle;
 
-		public event EventHandler VisibleChanged;
+		public event EventHandler<VisibilityChangeEventArgs> VisibleChanged;
 		public event EventHandler ContentVisibleChanged;
 		public event EventHandler ContentRequired;
 		
@@ -365,7 +365,7 @@ namespace MonoDevelop.Components.Docking
 			if (vis != lastVisibleStatus) {
 				lastVisibleStatus = vis;
 				if (VisibleChanged != null)
-					VisibleChanged (this, EventArgs.Empty);
+					VisibleChanged (this, new VisibilityChangeEventArgs { SwitchingLayout = frame.Container.IsSwitchingLayout});
 			}
 			UpdateContentVisibleStatus ();
 		}
@@ -586,5 +586,10 @@ namespace MonoDevelop.Components.Docking
 		}
 
 		public Gtk.Window DockParent { get; private set; }
+	}
+
+	public class VisibilityChangeEventArgs: EventArgs
+	{
+		public bool SwitchingLayout { get; set; }
 	}
 }

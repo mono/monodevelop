@@ -28,12 +28,12 @@ using System;
 using MonoDevelop.Ide.Execution;
 using MonoDevelop.Components.PropertyGrid;
 using MonoDevelop.Core;
-
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Execution
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	partial class MonoExecutionParametersWidget : Gtk.Bin, IExecutionConfigurationEditor
+	partial class MonoExecutionParametersWidget : Gtk.Bin
 	{
 		MonoExecutionParameters config;
 		public MonoExecutionParametersWidget ()
@@ -41,16 +41,10 @@ namespace MonoDevelop.Ide.Execution
 			this.Build ();
 		}
 
-		public Gtk.Widget Load (CommandExecutionContext ctx, object data)
+		public void Load (MonoExecutionParameters config)
 		{
-			config = (MonoExecutionParameters) data;
-			if (config != null)
-				config = config.Clone ();
-			else
-				config = new MonoExecutionParameters ();
+			this.config = config;
 			propertyGrid.CurrentObject = config;
-			
-			return this;
 		}
 		
 		public object Save ()
