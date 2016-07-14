@@ -489,9 +489,9 @@ namespace MonoDevelop.Ide.Execution
 				info.Add (c.ModeSet.Name + " – " + c.RunConfiguration.Name, c);
 			}
 			info.AddSeparator ();
-			info.Add (GettextCatalog.GetString ("Select Project Configuration..."), "selector");
+			info.Add (GettextCatalog.GetString ("Select Project Configuration..."), "selector");*/
 			if (item is Project)
-				info.Add (GettextCatalog.GetString ("Custom Configuration..."), "custom");*/
+				info.Add (GettextCatalog.GetString ("Custom Configuration..."), "custom");
 		}
 
 		public static void ExecuteCommand (SolutionItem item, object data)
