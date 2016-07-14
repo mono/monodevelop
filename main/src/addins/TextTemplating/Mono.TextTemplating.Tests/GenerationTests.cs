@@ -40,7 +40,7 @@ namespace Mono.TextTemplating.Tests
 		[Test]
 		public void TemplateGeneratorTest ()
 		{
-			var gen = new DummyTemplateGenerator ();
+			var gen = new TemplateGenerator ();
 			string tmp = null;
 			gen.ProcessTemplate (null, "<#@ template language=\"C#\" #>", ref tmp, out tmp);
 			Assert.AreEqual (0, gen.Errors.Count, "ProcessTemplate");
@@ -49,7 +49,7 @@ namespace Mono.TextTemplating.Tests
 		[Test]
 		public void ImportReferencesTest ()
 		{
-			var gen = new DummyTemplateGenerator ();
+			var gen = new TemplateGenerator ();
 			string tmp = null;
 			gen.ProcessTemplate (null, "<#@ assembly name=\"System.dll\" #>\n<#@ assembly name=\"System.Core.dll\" #>", ref tmp, out tmp);
 			Assert.AreEqual (0, gen.Errors.Count, "ImportReferencesTest");

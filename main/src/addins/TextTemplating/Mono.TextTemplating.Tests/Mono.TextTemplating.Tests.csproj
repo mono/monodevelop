@@ -44,7 +44,6 @@
     <Compile Include="GenerateIndentedClassCodeTests.cs" />
     <Compile Include="TextTemplatingSessionTests.cs" />
     <Compile Include="EngineTests.cs" />
-    <Compile Include="DummyTemplateGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.TextTemplating\Mono.TextTemplating.csproj">
