@@ -236,6 +236,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							entry = stream.GetNextEntry ();
 						}
 					}
+					continue;
+				}
+
+				if (resource.EndsWith (".tmLanguage", StringComparison.Ordinal)) {
+					using (var stream = assembly.GetManifestResourceStream (resource)) {
+						var highlighting = TextMateFormat.ReadHighlighting (stream);
+						if (highlighting != null)
+							highlightings.Add (highlighting);
+					}
+					continue;
 				}
 			}
 		}

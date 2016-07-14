@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			input.ReadLine ();
 			string name = null, scope = null, firstLineMatch = null;
 			var variables = new Dictionary<string, string> ();
-			
+
 			var extensions = new List<string> ();
 			var contexts = new List<SyntaxContext> ();
 

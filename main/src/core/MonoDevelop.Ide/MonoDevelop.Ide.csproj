@@ -7581,20 +7581,26 @@
     <EmbeddedResource Include="options\KeyBindingSchemeRider-mac.xml">
       <LogicalName>KeyBindingSchemeRider-mac.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="themes\Dark.tmTheme">
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\Dark.tmTheme">
       <LogicalName>Dark.tmTheme</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="themes\Monokai.tmTheme">
-      <LogicalName>Monokai.tmTheme</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\FallbackStyle.json">
+      <LogicalName>FallbackStyle.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="themes\Light.tmTheme">
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\Light.tmTheme">
       <LogicalName>Light.tmTheme</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="tmPackages\C#.sublime-package">
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\Monokai.tmTheme">
+      <LogicalName>Monokai.tmTheme</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\C#.sublime-package">
       <LogicalName>C#.sublime-package</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="themes\FallbackStyle.json">
-      <LogicalName>FallbackStyle.json</LogicalName>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\JavaScript.tmLanguage">
+      <LogicalName>JavaScript.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Regular Expressions %28JavaScript%29.tmLanguage">
+      <LogicalName>Regular Expressions (JavaScript).tmLanguage</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -8645,8 +8651,8 @@
     <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
     <Folder Include="MonoDevelop.Components\Windows\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\RegexEngine\" />
-    <Folder Include="themes\" />
-    <Folder Include="tmPackages\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\themes\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

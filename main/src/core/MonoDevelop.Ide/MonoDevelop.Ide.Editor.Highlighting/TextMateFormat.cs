@@ -29,11 +29,14 @@ using System.Collections.Generic;
 using System.IO;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	static class TextMateFormat
 	{
+		#region Themes
+
 		public static EditorTheme LoadEditorTheme (Stream stream)
 		{
 			if (stream == null)
@@ -42,8 +45,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var name = (PString)dictionary ["name"];
 			var contentArray = dictionary ["settings"] as PArray;
 			if (contentArray == null || contentArray.Count == 0)
-				return new EditorTheme(name);
-			
+				return new EditorTheme (name);
+
 			var settings = new List<ThemeSetting> ();
 			for (int i = 0; i < contentArray.Count; i++) {
 				var dict = contentArray [i] as PDictionary;
@@ -51,7 +54,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 				var themeSetting = LoadThemeSetting (dict);
 				if (i == 0)
-					themeSetting  = CalculateMissingColors (themeSetting);
+					themeSetting = CalculateMissingColors (themeSetting);
 				settings.Add (themeSetting);
 			}
 			var uuid = (PString)dictionary ["uuid"];
@@ -92,12 +95,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			writer.WriteLine ("\t</array>");
 			writer.WriteLine ("\t<key>uuid</key>");
-			writer.WriteLine ("\t<string>" + theme.Uuid +  "</string>");
+			writer.WriteLine ("\t<string>" + theme.Uuid + "</string>");
 			writer.WriteLine ("</dict>");
 			writer.WriteLine ("</plist>");
 		}
 
-		static ThemeSetting LoadThemeSetting(PDictionary dict)
+		static ThemeSetting LoadThemeSetting (PDictionary dict)
 		{
 			string name = null;
 			var scopes = new List<string> ();
@@ -127,5 +130,135 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			return new ThemeSetting (themeSetting.Name, themeSetting.Scopes, settings);
 		}
+
+		#endregion
+
+		#region Syntax highlighting
+
+		internal static SyntaxHighlightingDefinition ReadHighlighting (Stream stream)
+		{
+			var dictionary = PDictionary.FromStream (stream);
+
+			string firstLineMatch = null;
+
+			var extensions = new List<string> ();
+			var contexts = new List<SyntaxContext> ();
+
+			var name = (dictionary ["name"] as PString)?.Value;
+			var scope = (dictionary ["scopeName"] as PString)?.Value;
+
+
+
+			var fileTypesArray = dictionary ["fileTypes"] as PArray;
+			if (fileTypesArray != null) {
+				foreach (var type in fileTypesArray.OfType<PString> ()) {
+					extensions.Add (type.Value);
+				}
+			}
+
+			// Construct main context
+			var patternsArray = dictionary ["patterns"] as PArray;
+			if (patternsArray != null) {
+				var includes = new List<string> ();
+				var matches = new List<SyntaxMatch> ();
+				ReadPatterns (patternsArray, includes, matches);
+				contexts.Add (new SyntaxContext ("main", includes, matches));
+			}
+
+			var repository = dictionary ["repository"] as PDictionary;
+			if (repository != null) {
+				foreach (var kv in repository) {
+					string contextName = kv.Key;
+					var includes = new List<string> ();
+					var matches = new List<SyntaxMatch> ();
+
+					var contents = kv.Value as PDictionary;
+					if (contents != null) {
+						var newMatch = ReadMatch (contents);
+						if (newMatch != null) {
+
+							matches.Add (newMatch);
+
+						}
+
+						patternsArray = contents ["patterns"] as PArray;
+						if (patternsArray != null) {
+							ReadPatterns (patternsArray, includes, matches);
+						}
+					}
+
+					contexts.Add (new SyntaxContext (contextName, includes, matches));
+				}
+			}
+
+			// var uuid = (dictionary ["uuid"] as PString)?.Value;
+			// var hideFromUser = (dictionary ["hideFromUser"] as PBoolean)?.Value;
+			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, extensions, contexts);
+		}
+
+		static void ReadPatterns (PArray patternsArray, List<string> includes, List<SyntaxMatch> matches)
+		{
+			foreach (var type in patternsArray) {
+				var dict = type as PDictionary;
+				if (dict == null)
+					continue;
+				var incl = (dict ["include"] as PString)?.Value;
+				if (incl != null) {
+					includes.Add (incl);
+					continue;
+				}
+				var newMatch = ReadMatch (dict);
+				if (newMatch != null)
+					matches.Add (newMatch);
+			}
+		}
+
+		static SyntaxMatch ReadMatch (PDictionary dict)
+		{
+			var match = (dict ["match"] as PString)?.Value;
+			var matchScope = (dict ["name"] as PString)?.Value;
+			if (match == null)
+				return null;
+			List<Tuple<int, string>> captures = null;
+			var captureDict = dict ["captures"] as PDictionary;
+			if (captureDict != null)
+				captures = ReadCaptureDictionary (captureDict);
+
+			ContextReference pushContext = null;
+
+			var begin = (dict ["begin"] as PString)?.Value;
+			if (begin != null) {
+
+				List<Tuple<int, string>> beginCaptures = null;
+				captureDict = dict ["beginCaptures"] as PDictionary;
+				if (captureDict != null)
+					beginCaptures = ReadCaptureDictionary (captureDict);
+
+				var end = (dict ["end"] as PString)?.Value;
+				List<Tuple<int, string>> endCaptures = null;
+				if (end != null) {
+					captureDict = dict ["endCaptures"] as PDictionary;
+					if (captureDict != null)
+						endCaptures = ReadCaptureDictionary (captureDict);
+				}
+
+				var list = new List<SyntaxMatch> { new SyntaxMatch (begin, null, beginCaptures, null, false, null) };
+				if (end != null)
+					list.Add (new SyntaxMatch (end, null, endCaptures, null, true, null));
+				pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", null, list));
+			}
+
+			return new SyntaxMatch (match, matchScope, captures, pushContext, false, null);
+		}
+
+		static List<Tuple<int, string>> ReadCaptureDictionary (PDictionary captureDict)
+		{
+			var captures = new List<Tuple<int, string>> ();
+			foreach (var kv in captureDict) {
+				captures.Add (Tuple.Create (int.Parse (kv.Key), ((kv.Value as PDictionary) ["name"] as PString).Value));
+			}
+			return captures;
+		}
+		#endregion
 	}
 }

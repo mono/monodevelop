@@ -68,10 +68,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public string MetaContentScope { get; private set; }
 		public string MetaIncludePrototype { get; private set; }
 
-		readonly List<string> includes = new List<string> ();
+		readonly List<string> includes;
 		public IReadOnlyList<string> Includes { get { return includes; } }
 
-		readonly List<SyntaxMatch> matches = new List<SyntaxMatch> ();
+		readonly List<SyntaxMatch> matches;
 		public IReadOnlyList<SyntaxMatch> Matches { get { return matches; } }
 
 		internal void ParseMapping (YamlSequenceNode seqNode, Dictionary<string, string> variables)
@@ -111,9 +111,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public SyntaxContext (string name)
+		internal SyntaxContext (string name)
 		{
 			Name = name;
+			includes = new List<string> ();
+			matches = new List<SyntaxMatch> ();
+		}
+
+		internal SyntaxContext (string name, List<string> includes, List<SyntaxMatch> matches, string metaScope = null, string metaContentScope = null, string metaIncludePrototype = null)
+		{
+			this.includes = includes;
+			this.matches = matches;
+			Name = name;
+			MetaScope = metaScope;
+			MetaContentScope = metaContentScope;
+			MetaIncludePrototype = metaIncludePrototype;
 		}
 
 		public IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlighting highlighting, bool deep)
@@ -147,7 +159,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			Match = match;
 			Scope = scope;
-			Captures = captures;
+			Captures = captures ?? new List<Tuple<int, string>> ();
 			Push = push;
 			Pop = pop;
 			Set = set;
