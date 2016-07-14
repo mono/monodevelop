@@ -153,6 +153,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			get; set;
 		}
 
+		static FolderCommandHandler ()
+		{
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => PreviousFolderPath = null;
+		}
+
 		public abstract string GetFolderPath (object dataObject);
 
 		public override bool CanDropNode (object dataObject, DragOperation operation)
@@ -396,7 +401,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			var targetRoot = ((FilePath) GetFolderPath (CurrentNode.DataItem)).CanonicalPath;
 
 			AddFileDialog fdiag  = new AddFileDialog (GettextCatalog.GetString ("Add files"));
-			fdiag.CurrentFolder = !PreviousFolderPath.IsNullOrEmpty ? PreviousFolderPath : targetRoot;
+			fdiag.CurrentFolder = !PreviousFolderPath.IsNullOrEmpty && !PreviousFolderPath.IsChildPathOf (project.ParentSolution.BaseDirectory) ? PreviousFolderPath : targetRoot;
 			fdiag.SelectMultiple = true;
 			fdiag.TransientFor = IdeApp.Workbench.RootWindow;
 			fdiag.BuildActions = project.GetBuildActions ();	
