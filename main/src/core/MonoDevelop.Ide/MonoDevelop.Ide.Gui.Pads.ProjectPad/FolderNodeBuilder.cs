@@ -153,6 +153,11 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			get; set;
 		}
 
+		static FolderCommandHandler ()
+		{
+			IdeApp.Workspace.LastWorkspaceItemClosed += (sender, e) => PreviousFolderPath = null;
+		}
+
 		public abstract string GetFolderPath (object dataObject);
 
 		public override bool CanDropNode (object dataObject, DragOperation operation)
