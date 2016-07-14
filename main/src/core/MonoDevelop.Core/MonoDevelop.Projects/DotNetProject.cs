@@ -1530,33 +1530,35 @@ namespace MonoDevelop.Projects
 
 		protected override void OnItemsAdded (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemsAdded (objs);
-			foreach (var pref in objs.OfType<ProjectReference> ()) {
+			foreach (var pref in objs.OfType<ProjectReference> ())
 				pref.SetOwnerProject (this);
-				NotifyReferenceAddedToProject (pref);
-			}
+
+			base.OnItemsAdded (objs);
+
+			// Notify that references have been added after the owner project has been set for all references.
+			// Otherwise the subscriber of the reference added event may try to access reference information
+			// while it is not yet properly set.
+
+			foreach (var pref in objs.OfType<ProjectReference> ())
+				ProjectExtension.OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, pref));
+			
+			NotifyReferencedAssembliesChanged ();
 		}
 
 		protected override void OnItemsRemoved (IEnumerable<ProjectItem> objs)
 		{
-			base.OnItemsRemoved (objs);
-			foreach (var pref in objs.OfType<ProjectReference> ()) {
+			foreach (var pref in objs.OfType<ProjectReference> ())
 				pref.SetOwnerProject (null);
-				NotifyReferenceRemovedFromProject (pref);
-			}
-		}
 
-		internal void NotifyReferenceRemovedFromProject (ProjectReference reference)
-		{
-			NotifyModified ("References");
-			ProjectExtension.OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, reference));
-			NotifyReferencedAssembliesChanged ();
-		}
+			base.OnItemsRemoved (objs);
 
-		internal void NotifyReferenceAddedToProject (ProjectReference reference)
-		{
-			NotifyModified ("References");
-			ProjectExtension.OnReferenceAddedToProject (new ProjectReferenceEventArgs (this, reference));
+			// Notify that references have been removed after the owner project has been set for all references.
+			// Otherwise the subscriber of the reference removed event may try to access reference information
+			// while it is not yet properly set.
+
+			foreach (var pref in objs.OfType<ProjectReference> ())
+				ProjectExtension.OnReferenceRemovedFromProject (new ProjectReferenceEventArgs (this, pref));
+			
 			NotifyReferencedAssembliesChanged ();
 		}
 
