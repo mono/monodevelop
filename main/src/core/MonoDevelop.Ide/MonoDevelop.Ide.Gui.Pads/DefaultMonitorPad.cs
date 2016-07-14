@@ -183,7 +183,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 					buttonClear.Sensitive = false;
 				
 				if (monitor.Errors.Length > 0) {
-					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Error, monitor.Errors [monitor.Errors.Length - 1].Message);
+					var e = monitor.Errors [monitor.Errors.Length - 1];
+					IdeApp.Workbench.StatusBar.ShowMessage (Stock.Error, e.DisplayMessage);
 					IdeApp.Workbench.StatusBar.SetMessageSourcePad (statusSourcePad);
 				} else if (monitor.SuccessMessages.Length > 0) {
 					IdeApp.Workbench.StatusBar.ShowMessage (monitor.SuccessMessages [monitor.SuccessMessages.Length - 1]);
