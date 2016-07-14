@@ -870,35 +870,32 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		static bool runLocal = false;
+
+		static string GetNewestInstalledToolsVersion (TargetRuntime runtime, out string binDir)
+		{
+			var supportedToolsVersions = new [] { "14.1", "14.0", "12.0", "4.0" };
+
+			foreach (var toolsVersion in supportedToolsVersions) {
+				binDir = runtime.GetMSBuildBinPath (toolsVersion);
+				if (binDir != null) {
+					return toolsVersion;
+				}
+			}
+			throw new Exception ("Did not find MSBuild for runtime " + runtime.Id);
+		}
 		
 		internal static async Task<RemoteProjectBuilder> GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile, int customId, bool lockBuilder = false)
 		{
 			using (await buildersLock.EnterAsync ())
 			{
-				//attempt to use 14.0 builder first if available
-				string toolsVersion = "14.0";
-				string binDir = runtime.GetMSBuildBinPath ("14.0");
-				if (binDir == null) {
-					toolsVersion = "12.0";
-					binDir = runtime.GetMSBuildBinPath ("12.0");
-					if (binDir == null) {
-						//fall back to 4.0, we know it's always available
-						toolsVersion = "4.0";
-					}
-				}
+				string binDir;
+				var toolsVersion = GetNewestInstalledToolsVersion (runtime, out binDir);
 
-				// Check the ToolsVersion we found can handle the project
-				// The check is only done for the .NET framework since Mono doesn't really have the concept of ToolsVersion.
-				// On Mono we'll just try to build with whatever is installed.
 				Version tv, mtv;
-				if (runtime is MsNetTargetRuntime && Version.TryParse (toolsVersion, out tv) && Version.TryParse (minToolsVersion, out mtv) && tv < mtv) {
-					string error = null;
-					if (minToolsVersion == "12.0")
-						error = "MSBuild 2013 is not installed. Please download and install it from " +
-						"http://www.microsoft.com/en-us/download/details.aspx?id=40760";
-					throw new InvalidOperationException (error ?? string.Format (
-						"Runtime '{0}' does not have MSBuild '{1}' ToolsVersion installed",
-						runtime.Id, toolsVersion)
+				if (Version.TryParse (toolsVersion, out tv) && Version.TryParse (minToolsVersion, out mtv) && tv < mtv) {
+					throw new InvalidOperationException (string.Format (
+						"Project requires MSBuild ToolsVersion '{0}' which is not supported by runtime '{1}'",
+						toolsVersion, runtime.Id)
 					);
 				}
 
@@ -930,6 +927,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 					MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 					var pinfo = new ProcessStartInfo (exe) {
+						WorkingDirectory = binDir,
 						UseShellExecute = false,
 						CreateNoWindow = true,
 						RedirectStandardError = true,
@@ -963,6 +961,13 @@ namespace MonoDevelop.Projects.MSBuild
 									Console.WriteLine (e.Data);
 							};
 							p.BeginErrorReadLine ();
+
+							// first line: path for locating the msbuild (oss) assemblies
+							if (Runtime.Preferences.BuildWithMSBuild)
+								p.StandardInput.WriteLine (binDir);
+							else
+								p.StandardInput.WriteLine ();
+
 							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
 							if (await Task.WhenAny (processStartedSignal.Task, Task.Delay (5000)) != processStartedSignal.Task)
 								throw new Exception ("MSBuild process could not be started");
@@ -1029,12 +1034,21 @@ namespace MonoDevelop.Projects.MSBuild
 		
 		static string GetExeLocation (TargetRuntime runtime, string toolsVersion)
 		{
-			FilePath sourceExe = typeof(MSBuildProjectService).Assembly.Location;
+			var builderDir = new FilePath (typeof(MSBuildProjectService).Assembly.Location).ParentDirectory.Combine ("MSBuild");
 
-			if ((runtime is MsNetTargetRuntime) && int.Parse (toolsVersion.Split ('.')[0]) >= 4)
+			var version = Version.Parse (toolsVersion);
+			bool useMicrosoftBuild =
+				((version >= new Version (14, 1)) && Runtime.Preferences.BuildWithMSBuild) ||
+				(version >= new Version (4, 0) && runtime is MsNetTargetRuntime);
+
+			if (useMicrosoftBuild) {
 				toolsVersion = "dotnet." + toolsVersion;
+			} else {
+				// We only have a 4.0 builder on non-windows systems
+				toolsVersion = "4.0";
+			}
 
-			var exe = sourceExe.ParentDirectory.Combine ("MSBuild", toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
+			var exe = builderDir.Combine (toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
 			if (File.Exists (exe))
 				return exe;
 			
