@@ -140,13 +140,6 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 
 		protected override void OnErrorReported (string message, Exception ex)
 		{
-			if (message == null && ex != null)
-				message = ex.Message;
-			else if (message != null && ex != null) {
-				if (!message.EndsWith (".")) message += ".";
-				message += " " + ex.Message;
-			}
-
 			errorsMessages.Add (message);
 			if (ex != null) {
 				LoggingService.LogError (ex.ToString ());
@@ -154,7 +147,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 			}
 
 			if (dialog != null) {
-				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + message + "\n");
+				dialog.WriteText (GettextCatalog.GetString ("ERROR: ") + ErrorHelper.GetErrorMessage (message, ex) + "\n");
 				DispatchService.RunPendingEvents ();
 			}
 			base.OnErrorReported (message, ex);

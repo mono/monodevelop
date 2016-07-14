@@ -133,14 +133,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 
 		protected override void OnErrorReported (string message, Exception ex)
 		{
-			if (message == null && ex != null)
-				message = ex.Message;
-			else if (message != null && ex != null) {
-				if (!message.EndsWith (".")) message += ".";
-				message += " " + ex.Message;
-			}
-
-			WriteText ("ERROR: " + message + "\n");
+			WriteText ("ERROR: " + ErrorHelper.GetErrorMessage (message, ex) + "\n");
 		}
 		
 		void WriteText (string text)
