@@ -570,7 +570,7 @@ namespace Mono.TextEditor
 
 		public virtual MonoDevelop.Ide.Editor.Highlighting.EditorTheme GetEditorTheme ()
 		{
-			return SyntaxModeService.GetEditorTheme (EditorThemeName);
+			return SyntaxHighlightingService.GetEditorTheme (EditorThemeName);
 		}
 		
 		public virtual void CopyFrom (TextEditorOptions other)

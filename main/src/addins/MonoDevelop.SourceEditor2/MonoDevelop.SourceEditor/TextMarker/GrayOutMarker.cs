@@ -74,7 +74,7 @@ namespace MonoDevelop.SourceEditor
 			if (chunk.EndOffset <= markerStart || markerEnd <= chunk.Offset) 
 				return;
 			
-			var bgc = (Cairo.Color)SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
+			var bgc = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
 			double alpha = 0.6;
 			color = new Cairo.Color (
 				color.R * alpha + bgc.R * (1.0 - alpha),

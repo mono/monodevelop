@@ -48,8 +48,8 @@ namespace MonoDevelop.SourceEditor
 				if (metrics.TextEndOffset < markerEnd)
 					to = metrics.WholeLineWidth + metrics.TextRenderStartPosition;
 				
-				var c1 = (Cairo.Color)SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
-				var c2 = (Cairo.Color)SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Selection);
+				var c1 = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
+				var c2 = (Cairo.Color)SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Selection);
 				cr.SetSourceRGB ((c1.R + c2.R) / 2, (c1.G + c2.G) / 2, (c1.B + c2.B) / 2);
 				cr.Rectangle (@from, y, to - @from, metrics.LineHeight);
 				cr.Fill ();

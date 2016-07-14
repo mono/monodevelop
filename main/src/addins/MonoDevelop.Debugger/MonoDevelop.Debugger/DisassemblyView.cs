@@ -106,7 +106,7 @@ namespace MonoDevelop.Debugger
 			var label = new Label (GettextCatalog.GetString ("{0} not found. Find source file at alternative location.", Path.GetFileName (sf.SourceLocation.FileName)));
 			hbox.TooltipText = sf.SourceLocation.FileName;
 
-			var color = SyntaxModeService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.NotificationText);
+			var color = SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.NotificationText);
 			label.ModifyFg (StateType.Normal, color);
 
 			int w, h;

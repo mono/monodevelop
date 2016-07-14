@@ -329,7 +329,7 @@ namespace Mono.TextEditor
 		MonoDevelop.Ide.Editor.Highlighting.EditorTheme colorStyle;
 		internal MonoDevelop.Ide.Editor.Highlighting.EditorTheme ColorStyle {
 			get {
-				return colorStyle ?? SyntaxModeService.DefaultColorStyle;
+				return colorStyle ?? SyntaxHighlightingService.DefaultColorStyle;
 			}
 			set {
 				colorStyle = value;
@@ -338,7 +338,7 @@ namespace Mono.TextEditor
 
 		internal MonoDevelop.Ide.Editor.Highlighting.EditorTheme EditorTheme {
 			get {
-				return MonoDevelop.Ide.Editor.Highlighting.SyntaxModeService.GetEditorTheme (Options.EditorThemeName);
+				return MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlightingService.GetEditorTheme (Options.EditorThemeName);
 			}
 		}
 
@@ -376,7 +376,7 @@ namespace Mono.TextEditor
 		public string GetMarkup (int offset, int length, bool removeIndent, bool useColors = true, bool replaceTabs = true, bool fitIdeStyle = false)
 		{
 			var mode = Document.SyntaxMode;
-			var style = fitIdeStyle ? SyntaxModeService.GetEditorTheme(Parent.GetIdeColorStyleName()) : ColorStyle;
+			var style = fitIdeStyle ? SyntaxHighlightingService.GetEditorTheme(Parent.GetIdeColorStyleName()) : ColorStyle;
 
 			if (style == null) {
 				var str = Document.GetTextAt (offset, length);

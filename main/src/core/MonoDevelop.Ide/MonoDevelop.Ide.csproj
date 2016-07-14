@@ -8358,7 +8358,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\SelectionSurroundingProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextPasteHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentLocation.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxModeService.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlightingService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\OldFormat.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColorDescriptionAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateCodon.cs" />

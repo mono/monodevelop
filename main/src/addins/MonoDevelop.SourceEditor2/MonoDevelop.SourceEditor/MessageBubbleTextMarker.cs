@@ -208,68 +208,68 @@ namespace MonoDevelop.SourceEditor
 		
 		internal HslColor MarkerColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorMarker : ThemeSettingColors.MessageBubbleWarningMarker);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorMarker : ThemeSettingColors.MessageBubbleWarningMarker);
 			}
 		}
 
 		internal HslColor TagColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTag : ThemeSettingColors.MessageBubbleWarningTag);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTag : ThemeSettingColors.MessageBubbleWarningTag);
 			}
 		}
 
 		internal HslColor TagColor2 {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTag2 : ThemeSettingColors.MessageBubbleWarningTag2);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTag2 : ThemeSettingColors.MessageBubbleWarningTag2);
 			}
 		}
 
 		internal HslColor TooltipColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTooltip : ThemeSettingColors.MessageBubbleWarningTooltip);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorTooltip : ThemeSettingColors.MessageBubbleWarningTooltip);
 			}
 		}
 
 		internal HslColor LineColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorLine : ThemeSettingColors.MessageBubbleWarningLine);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorLine : ThemeSettingColors.MessageBubbleWarningLine);
 			}
 		}
 
 		internal HslColor LineColor2 {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorLine2 : ThemeSettingColors.MessageBubbleWarningLine2);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorLine2 : ThemeSettingColors.MessageBubbleWarningLine2);
 			}
 		}
 
 		internal HslColor BorderLineColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorBorderLine : ThemeSettingColors.MessageBubbleWarningBorderLine);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorBorderLine : ThemeSettingColors.MessageBubbleWarningBorderLine);
 			}
 		}
 
 
 		internal HslColor CounterColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorCounter : ThemeSettingColors.MessageBubbleWarningCounter);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorCounter : ThemeSettingColors.MessageBubbleWarningCounter);
 			}
 		}
 
 		internal HslColor CounterColor2 {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorCounter2 : ThemeSettingColors.MessageBubbleWarningCounter2);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorCounter2 : ThemeSettingColors.MessageBubbleWarningCounter2);
 			}
 		}
 
 		internal HslColor IconMarginColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorIconMargin : ThemeSettingColors.MessageBubbleWarningIconMargin);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorIconMargin : ThemeSettingColors.MessageBubbleWarningIconMargin);
 			}
 		}
 
 		internal HslColor IconMarginBorderColor {
 			get {
-				return Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorIconMarginBorder : ThemeSettingColors.MessageBubbleWarningIconMarginBorder);
+				return Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, isError ? ThemeSettingColors.MessageBubbleErrorIconMarginBorder : ThemeSettingColors.MessageBubbleWarningIconMarginBorder);
 			}
 		}
 
@@ -279,7 +279,7 @@ namespace MonoDevelop.SourceEditor
 			if (!selected)
 				return color;
 
-			var selectionColor = (Cairo.Color)Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Selection);
+			var selectionColor = (Cairo.Color)Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Selection);
 			const double bubbleAlpha = 0.1;
 			return new Cairo.Color (
 				(color.R * bubbleAlpha + selectionColor.R * (1 - bubbleAlpha)), 
@@ -292,7 +292,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!highlighted)
 				return color;
-			var selectionColor = (Cairo.Color)Ide.Editor.Highlighting.SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
+			var selectionColor = (Cairo.Color)Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
 			const double bubbleAlpha = 0.7;
 			return new Cairo.Color (
 				(color.R * bubbleAlpha + selectionColor.R * (1 - bubbleAlpha)), 

@@ -41,7 +41,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public static class SyntaxModeService
+	public static class SyntaxHighlightingService
 	{
 		static Dictionary<string, EditorTheme> styles          = new Dictionary<string, EditorTheme> ();
 		static Dictionary<string, IStreamProvider> styleLookup = new Dictionary<string, IStreamProvider> ();
@@ -319,9 +319,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		static SyntaxModeService ()
+		static SyntaxHighlightingService ()
 		{
-			LoadStylesAndModes (typeof (SyntaxModeService).Assembly);
+			LoadStylesAndModes (typeof (SyntaxHighlightingService).Assembly);
 			var textEditorAssembly = Assembly.Load ("MonoDevelop.SourceEditor");
 			if (textEditorAssembly != null) {
 				LoadStylesAndModes (textEditorAssembly);

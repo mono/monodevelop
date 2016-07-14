@@ -208,13 +208,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 			{
 				switch (result.Level) {
 				case DiagnosticSeverity.Hidden:
-					return SyntaxModeService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.Background);
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.Background);
 				case DiagnosticSeverity.Error:
-					return SyntaxModeService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.UnderlineError);
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.UnderlineError);
 				case DiagnosticSeverity.Warning:
-					return SyntaxModeService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.UnderlineWarning);
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.UnderlineWarning);
 				case DiagnosticSeverity.Info:
-					return SyntaxModeService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.UnderlineSuggestion);
+					return SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.UnderlineSuggestion);
 				default:
 					throw new System.ArgumentOutOfRangeException ();
 				}

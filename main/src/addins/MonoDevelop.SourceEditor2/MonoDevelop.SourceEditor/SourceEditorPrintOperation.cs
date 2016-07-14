@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 			SetHeaderFormat (settings.HeaderFormat);
 			SetFooterFormat (settings.FooterFormat);
 			
-			style = SyntaxModeService.GetEditorTheme (settings.EditorTheme);
+			style = SyntaxHighlightingService.GetEditorTheme (settings.EditorTheme);
 			
 			pageWidth = context.PageSetup.GetPageWidth (Unit.Pixel);
 			pageHeight = context.PageSetup.GetPageHeight (Unit.Pixel);

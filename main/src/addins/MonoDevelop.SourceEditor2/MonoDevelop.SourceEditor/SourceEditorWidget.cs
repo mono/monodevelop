@@ -357,7 +357,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				var editor = (Mono.TextEditor.MonoTextEditor)scrolledWindow.Child;
 
-				scrolledBackground.ModifyBg (StateType.Normal, SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background));
+				scrolledBackground.ModifyBg (StateType.Normal, SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background));
 			}
 			
 			void RemoveEvents ()
@@ -889,7 +889,7 @@ namespace MonoDevelop.SourceEditor
 			var image = new HoverCloseButton ();
 			hbox.PackStart (image, false, false, 0);
 			var label = new Label (string.Format ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString (DetectedEolMarker), GetEolString (textEditor.Options.DefaultEolMarker)));
-			var color = (HslColor)SyntaxModeService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationText);
+			var color = (HslColor)SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationText);
 			label.ModifyFg (StateType.Normal, color);
 
 			int w, h;

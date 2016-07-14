@@ -46,9 +46,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add) {
-				SyntaxModeService.AddStyle (codon);
+				SyntaxHighlightingService.AddStyle (codon);
 			} else {
-				SyntaxModeService.RemoveStyle (codon);
+				SyntaxHighlightingService.RemoveStyle (codon);
 			}
 		}
 	}

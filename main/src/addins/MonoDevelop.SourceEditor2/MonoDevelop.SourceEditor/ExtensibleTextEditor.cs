@@ -238,9 +238,9 @@ namespace MonoDevelop.SourceEditor
 
 		protected internal override string GetIdeColorStyleName ()
 		{
-			var scheme = Ide.Editor.Highlighting.SyntaxModeService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
+			var scheme = Ide.Editor.Highlighting.SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!scheme.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
-				scheme = Ide.Editor.Highlighting.SyntaxModeService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
+				scheme = Ide.Editor.Highlighting.SyntaxHighlightingService.GetDefaultColorStyle (IdeApp.Preferences.UserInterfaceTheme);
 			return scheme.Name;
 		}
 		

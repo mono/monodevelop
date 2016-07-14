@@ -234,11 +234,11 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			foldBgGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
-			foldLineGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldLine);
-			foldLineHighlightedGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
+			foldBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
+			foldLineGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldLine);
+			foldLineHighlightedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
 			
-			HslColor hslColor = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
+			HslColor hslColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
 			double brightness = HslColor.Brightness (hslColor);
 			if (brightness < 0.5) {
 				hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25;
@@ -247,10 +247,10 @@ namespace Mono.TextEditor
 			}
 			
 			foldLineHighlightedGCBg = hslColor;
-			foldToggleMarkerGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldCross);
-			foldToggleMarkerBackground = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldCross2);
-			lineStateChangedGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.QuickDiffChanged);
-			lineStateDirtyGC = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.QuickDiffDirty);
+			foldToggleMarkerGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldCross);
+			foldToggleMarkerBackground = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldCross2);
+			lineStateChangedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.QuickDiffChanged);
+			lineStateDirtyGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.QuickDiffDirty);
 			
 			marginWidth = editor.LineHeight  * 3 / 4;
 		}

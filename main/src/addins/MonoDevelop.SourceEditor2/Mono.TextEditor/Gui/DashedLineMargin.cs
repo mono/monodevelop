@@ -47,7 +47,7 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			color = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.CollapsedText);
+			color = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.CollapsedText);
 		}
 		
 		internal protected override void Draw (Cairo.Context cr, Cairo.Rectangle area, DocumentLine lineSegment, int line, double x, double y, double lineHeight)

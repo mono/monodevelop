@@ -216,9 +216,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		void UpdateStyles (object sender = null, EventArgs e = null)
 		{
-			highlightStyle = SyntaxModeService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
+			highlightStyle = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 			if (!highlightStyle.FitsIdeTheme (IdeApp.Preferences.UserInterfaceTheme))
-				highlightStyle = SyntaxModeService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
+				highlightStyle = SyntaxHighlightingService.GetDefaultColorStyle (Ide.IdeApp.Preferences.UserInterfaceTheme);
 
 			if (markupCache != null)
 				markupCache = new List<Tuple<SearchResult, string>> ();
@@ -601,10 +601,10 @@ namespace MonoDevelop.Ide.FindInFiles
 						var searchColor = searchResult.GetBackgroundMarkerColor (highlightStyle);
 						double b1 = HslColor.Brightness (searchColor);
 
-						double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), SyntaxModeService.GetColor (highlightStyle, ThemeSettingColors.Foreground)));
+						double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), SyntaxHighlightingService.GetColor (highlightStyle, ThemeSettingColors.Foreground)));
 						double delta = Math.Abs (b1 - b2);
 						if (delta < 0.1) {
-							var color1 = SyntaxModeService.GetColor (highlightStyle, ThemeSettingColors.FindHighlight);
+							var color1 = SyntaxHighlightingService.GetColor (highlightStyle, ThemeSettingColors.FindHighlight);
 							if (color1.L + 0.5 > 1.0) {
 								color1.L -= 0.5;
 							} else {

@@ -46,7 +46,7 @@ namespace MonoDevelop.SourceEditor
 
 		public LinkMarker (int offset, int length, Action<LinkRequest> activateLink) : base (null, new TextSegment (offset, length))
 		{
-			this.Color = SyntaxModeService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.Link);
+			this.Color = SyntaxHighlightingService.GetColor (DefaultSourceEditorOptions.Instance.GetEditorTheme (), ThemeSettingColors.Link);
 			this.activateLink = activateLink;
 			this.Wave = false;
 		}
@@ -117,7 +117,7 @@ namespace MonoDevelop.SourceEditor
 					return; 
 			}
 
-			this.Color = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Link);
+			this.Color = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Link);
 
 			if (!OnlyShowLinkOnHover) {
 				if (editor.TextViewMargin.MarginCursor == textLinkCursor && editor.TextViewMargin.HoveredLine != null) {

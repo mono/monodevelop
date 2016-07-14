@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				(ReferenceUsageType & ReferenceUsageType.Declariton) != 0 ?
 				ThemeSettingColors.ChangingUsagesRectangle : ThemeSettingColors.UsagesRectangle;
 
-			return SyntaxModeService.GetColor (style, key);
+			return SyntaxHighlightingService.GetColor (style, key);
 		}
 	}
 }

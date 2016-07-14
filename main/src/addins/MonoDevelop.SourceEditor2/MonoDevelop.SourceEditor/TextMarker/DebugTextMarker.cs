@@ -231,7 +231,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
 
-			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarker), e => SyntaxModeService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.BreakpointText));
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarker), e => SyntaxHighlightingService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.BreakpointText));
 		}
 	}
 
@@ -243,7 +243,7 @@ namespace MonoDevelop.SourceEditor
 		public DisabledBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
 			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
-			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarkerDisabled));
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarkerDisabled));
 		}
 	}
 
@@ -255,7 +255,7 @@ namespace MonoDevelop.SourceEditor
 		public InvalidBreakpointTextMarker (MonoTextEditor editor, int offset, int length, bool isTracepoint)
 		{
 			IconMarker = new DebugIconMarker (isTracepoint ? tracepoint : breakpoint);
-			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarkerInvalid));
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, ThemeSettingColors.BreakpointMarkerInvalid));
 		}
 	}
 
@@ -266,7 +266,7 @@ namespace MonoDevelop.SourceEditor
 		public DebugStackLineTextMarker (MonoTextEditor editor, int offset, int length)
 		{
 			IconMarker = new DebugIconMarker (stackLine);
-			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.DebuggerStackLineMarker), e => SyntaxModeService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.DebuggerStackLine));
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, ThemeSettingColors.DebuggerStackLineMarker), e => SyntaxHighlightingService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.DebuggerStackLine));
 		}
 	}
 
@@ -277,7 +277,7 @@ namespace MonoDevelop.SourceEditor
 		public CurrentDebugLineTextMarker (MonoTextEditor editor, int offset, int length)
 		{
 			IconMarker = new DebugIconMarker (currentLine);
-			TextMarker = new DebugTextMarker (offset, length, e => SyntaxModeService.GetColor (e.EditorTheme, ThemeSettingColors.DebuggerCurrentLineMarker), e => SyntaxModeService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.DebuggerCurrentLine));
+			TextMarker = new DebugTextMarker (offset, length, e => SyntaxHighlightingService.GetColor (e.EditorTheme, ThemeSettingColors.DebuggerCurrentLineMarker), e => SyntaxHighlightingService.GetChunkStyle (e.EditorTheme, ThemeSettingColors.DebuggerCurrentLine));
 		}
 
 		public bool IsVisible { get { return IconMarker.IsVisible; } set { IconMarker.IsVisible = value; } }

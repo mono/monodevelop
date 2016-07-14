@@ -764,14 +764,14 @@ namespace Mono.TextEditor
 
 				if (parent != null) {
 					
-					parent.ModifyBg (StateType.Normal, SyntaxModeService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
+					parent.ModifyBg (StateType.Normal, SyntaxHighlightingService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
 				}
 
 				// set additionally the real parent background for gtk themes that use the content background
 				// to draw the scrollbar slider trough.
-				this.Parent.ModifyBg (StateType.Normal, SyntaxModeService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
+				this.Parent.ModifyBg (StateType.Normal, SyntaxHighlightingService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
 
-				this.ModifyBg (StateType.Normal, SyntaxModeService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
+				this.ModifyBg (StateType.Normal, SyntaxHighlightingService.GetColor (textEditorData.ColorStyle, ThemeSettingColors.Background));
 				settingWidgetBg = false;
 			}
 		}
@@ -2415,7 +2415,7 @@ namespace Mono.TextEditor
 				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
 				                                                    width,
 				                                                    editor.LineHeight + 2 * extend * editor.Options.Zoom);
-				Cairo.Color color = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
+				Cairo.Color color = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
 				cr.SetSourceColor (color);
@@ -2479,7 +2479,7 @@ namespace Mono.TextEditor
 				                                                    System.Math.Min (editor.TextViewMargin.charWidth / 2, width), 
 				                                                    width,
 				                                                    (int)(region.Height + 2 * animationPosition * editor.Options.Zoom));
-				Cairo.Color color = SyntaxModeService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
+				Cairo.Color color = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
 				color.A = 0.8;
 				cr.LineWidth = editor.Options.Zoom;
 				cr.SetSourceColor (color);
@@ -2675,7 +2675,7 @@ namespace Mono.TextEditor
 				FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true,
 					shadowOffset, shadowOffset, corner, width, height);
 				// TODO: EditorTheme : searchResultMainColor? 
-				var searchResultMainColor = SyntaxModeService.GetColor (Editor.EditorTheme, ThemeSettingColors.FindHighlight);
+				var searchResultMainColor = SyntaxHighlightingService.GetColor (Editor.EditorTheme, ThemeSettingColors.FindHighlight);
 				var color = TextViewMargin.DimColor (searchResultMainColor, 0.3);
 				color.A = 0.5 * opacity * opacity;
 				cr.SetSourceColor (color);

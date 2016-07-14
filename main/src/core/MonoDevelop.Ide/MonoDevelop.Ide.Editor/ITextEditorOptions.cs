@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (options == null)
 				throw new ArgumentNullException ("options");
-			return SyntaxModeService.GetEditorTheme (options.EditorTheme);
+			return SyntaxHighlightingService.GetEditorTheme (options.EditorTheme);
 		}
 
 		/// <summary>

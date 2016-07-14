@@ -57,7 +57,7 @@ namespace MonoDevelop.HexEditor
 
 		void SetStyle ()
 		{
-			colorStyle = SyntaxModeService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
+			colorStyle = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme);
 		}
 
 		Color ConvertColor (Cairo.Color foreground)
@@ -72,13 +72,13 @@ namespace MonoDevelop.HexEditor
 
 		public override Color HexOffset {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.LineNumbers));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.LineNumbers));
 			}
 		}
 
 		public override Color HexOffsetBg {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.LineNumbersBackground));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.LineNumbersBackground));
 			}
 		}
 
@@ -90,67 +90,67 @@ namespace MonoDevelop.HexEditor
 
 		public override Color HexDigit {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Foreground));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Foreground));
 			}
 		}
 
 		public override Color HexDigitBg {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Background));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Background));
 			}
 		}
 
 		public override Color DashedLineFg {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Foreground));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Foreground));
 			}
 		}
 
 		public override Color DashedLineBg {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Background));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Background));
 			}
 		}
 
 		public override Color IconBarBg {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.IndicatorMarginSeparator));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.IndicatorMarginSeparator));
 			}
 		}
 
 		public override Color IconBarSeperator {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.IndicatorMarginSeparator));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.IndicatorMarginSeparator));
 			}
 		}
 
 		public override Color BookmarkColor1 {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.MessageBubbleWarningLine));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.MessageBubbleWarningLine));
 			}
 		}
 
 		public override Color BookmarkColor2 {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.MessageBubbleWarningLine2));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.MessageBubbleWarningLine2));
 			}
 		}
 		
 		public override Color Selection {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Foreground));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Foreground));
 			}
 		}
 		
 		public override Color SelectionBg {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.Selection));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Selection));
 			}
 		}
 		
 		public override Color HighlightOffset {
 			get {
-				return ConvertColor (SyntaxModeService.GetColor (colorStyle, ThemeSettingColors.FindHighlight));
+				return ConvertColor (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.FindHighlight));
 			}
 		}
 	}

@@ -220,7 +220,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (TextEditor.EditorTheme != null) {
 					using (var cr = Gdk.CairoHelper.Create (backgroundPixbuf)) {
 						cr.Rectangle (0, 0, curWidth, curHeight);
-						cr.SetSourceColor (SyntaxModeService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background));
+						cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background));
 						cr.Fill ();
 					}
 				}
@@ -251,7 +251,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					int h = mode.backgroundBuffer.ClipRegion.Clipbox.Height;
 					cr.Rectangle (0, 0, w, h);
 					if (mode.TextEditor.EditorTheme != null)
-						cr.SetSourceColor (SyntaxModeService.GetColor (mode.TextEditor.EditorTheme, ThemeSettingColors.Background));
+						cr.SetSourceColor (SyntaxHighlightingService.GetColor (mode.TextEditor.EditorTheme, ThemeSettingColors.Background));
 					cr.Fill ();
 
 					maxLine = mode.TextEditor.GetTextEditorData ().VisibleLineCount;
@@ -328,7 +328,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 					} else {
 						cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 						if (TextEditor.EditorTheme != null)
-							cr.SetSourceColor (SyntaxModeService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background));
+							cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background));
 						cr.Fill ();
 					}
 					/*

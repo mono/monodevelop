@@ -157,14 +157,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			try {
 				error = false;
-				return SyntaxModeService.GetEditorTheme (styleName);
+				return SyntaxHighlightingService.GetEditorTheme (styleName);
 			} catch (StyleImportException) {
 				error = true;
-				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxModeService.DefaultColorStyle.Settings));
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading color style " + styleName, e);
 				error = true;
-				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxModeService.DefaultColorStyle.Settings));
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			}
 		
 		}
@@ -175,7 +175,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			bool error;
 			var defaultStyle = LoadStyle (MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName, out error);
 			TreeIter selectedIter = styleStore.AppendValues (GetMarkup (defaultStyle.Name, ""), defaultStyle);
-			foreach (string styleName in SyntaxModeService.Styles) {
+			foreach (string styleName in SyntaxHighlightingService.Styles) {
 				if (styleName == MonoDevelop.Ide.Editor.Highlighting.EditorTheme.DefaultThemeName)
 					continue;
 				var style = LoadStyle (styleName, out error);
@@ -208,7 +208,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			string fileName = sheme.FileName;
 
 			if (fileName != null && fileName.StartsWith (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath, StringComparison.Ordinal)) {
-				SyntaxModeService.Remove (sheme);
+				SyntaxHighlightingService.Remove (sheme);
 				File.Delete (fileName);
 				ShowStyles ();
 			}
@@ -263,7 +263,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				LoggingService.LogError ("Can't copy syntax mode file.", e);
 			}
 			if (success) {
-				SyntaxModeService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
+				SyntaxHighlightingService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}

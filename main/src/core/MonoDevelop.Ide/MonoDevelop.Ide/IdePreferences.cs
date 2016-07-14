@@ -214,13 +214,13 @@ namespace MonoDevelop.Ide
 			protected override string OnGetValue ()
 			{
 				var style = base.OnGetValue ();
-				if (SyntaxModeService.Styles.Contains (style))
+				if (SyntaxHighlightingService.Styles.Contains (style))
 					return style;
 
-				var defaultStyle = SyntaxModeService.GetDefaultColorStyleName ();
+				var defaultStyle = SyntaxHighlightingService.GetDefaultColorStyleName ();
 				LoggingService.LogWarning ("Highlighting Theme \"{0}\" not found, using default \"{1}\" instead", style, defaultStyle);
 				Value = defaultStyle;
-				return SyntaxModeService.GetDefaultColorStyleName ();
+				return SyntaxHighlightingService.GetDefaultColorStyleName ();
 			}
 		}
 	}

@@ -38,7 +38,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.Build ();
 			
-			foreach (string styleName in SyntaxModeService.Styles) {
+			foreach (string styleName in SyntaxHighlightingService.Styles) {
 				store.AppendValues (styleName);
 			}
 			comboboxBaseStyle.Model = store;
