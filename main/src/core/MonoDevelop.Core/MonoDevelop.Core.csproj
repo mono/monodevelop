@@ -574,6 +574,7 @@
     <Compile Include="MonoDevelop.Projects\RunConfiguration.cs" />
     <Compile Include="MonoDevelop.Projects\IRunTarget.cs" />
     <Compile Include="MonoDevelop.Projects\ProcessRunConfiguration.cs" />
+    <Compile Include="MonoDevelop.Core\ErrorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
