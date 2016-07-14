@@ -62,6 +62,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				return new FilePath[0];
 			}
 		}
+
+		/// <summary>
+		/// Checks whether or not a restart is needed when the SDK location is changed.
+		/// </summary>
+		/// <value><c>true</c> if a change requires a restart; otherwise, <c>false</c>.</value>
+		public virtual bool RequiresRestart {
+			get {
+				return false;
+			}
+		}
 		
 		/// <summary>
 		/// Check whether the SDK exists at a location.
@@ -115,6 +125,34 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				Validate ();
 			};
 			Validate ();
+
+			if (panel.RequiresRestart) {
+				PackStart (new HSeparator (), false, false, 0);
+
+				var tableRestart = new Table (2, 3, false) {
+					RowSpacing = 6, ColumnSpacing = 6
+				};
+
+				var btnRestart = new Button () {
+					Label = GettextCatalog.GetString ("Restart {0}", BrandingService.ApplicationName),
+					CanFocus = true, UseUnderline = true
+				};
+				tableRestart.Attach (btnRestart, 1, 2, 1, 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
+
+				var imageRestart = new ImageView ("md-information", IconSize.Menu);
+				tableRestart.Attach (imageRestart, 0, 1, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
+
+				var labelRestart = new Label (GettextCatalog.GetString ("These preferences will take effect next time you start {0}", BrandingService.ApplicationName));
+				tableRestart.Attach (labelRestart, 1, 3, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
+
+				PackStart (tableRestart, false, false, 0);
+
+				btnRestart.Clicked += (sender, e) => {
+					ApplyChanges ();
+					IdeApp.Restart (true);
+				};
+			}
+
 			ShowAll ();
 		}
 		
