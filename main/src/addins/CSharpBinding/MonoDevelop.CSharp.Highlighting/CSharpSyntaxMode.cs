@@ -164,17 +164,17 @@ namespace MonoDevelop.CSharp.Highlighting
 			this.region = new TextSpan (textSpan.Offset, textSpan.Length);
 			Setup ();
 		}
-		
+
 		void Setup ()
 		{
 			
 			defaultTextColor = ThemeSettingColors.Foreground;
-			referenceTypeColor = "entity.name.type.namespace.source.cs";
-			valueTypeColor = "entity.name.type.namespace.source.cs";
-			interfaceTypeColor = "entity.name.type.namespace.source.cs";
-			enumerationTypeColor = "entity.name.type.namespace.source.cs";
-			typeParameterTypeColor = "entity.name.type.namespace.source.cs";
-			delegateTypeColor = "entity.name.type.namespace.source.cs";
+			referenceTypeColor = "entity.name.type.class.source.cs";
+			valueTypeColor = "entity.name.type.struct.source.cs";
+			interfaceTypeColor = "entity.name.type.interface.source.cs";
+			enumerationTypeColor = "entity.name.type.enum.source.cs";
+			typeParameterTypeColor = "entity.name.type.typeparameter.source.cs";
+			delegateTypeColor = "entity.name.type.delegate.source.cs";
 
 			methodCallColor = "entity.name.function.source.cs";
 			methodDeclarationColor = "entity.name.function.source.cs";
