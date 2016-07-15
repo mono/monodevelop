@@ -126,9 +126,10 @@ type SyntaxHighlighting() =
     [<TestCase("let x = $Some$ 1", "User Types(Enums)")>]
     [<TestCase("type $A$ =", "User Types")>]
     [<TestCase("type $A $", "User Types")>]
-    [<TestCase("type A$ = A $of a", "Plain Text")>]
+    [<TestCase("type A$ = $A of a", "Plain Text")>]
     [<TestCase("type A = A of $a$:int", "User Types")>]
     [<TestCase("type A = A of a:$int$", "User Types")>]
+    [<TestCase("type string=$String$", "User Types")>]
     [<TestCase("module A$=$", "Plain Text")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
