@@ -11,10 +11,11 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PerformanceDiagnosticsAddIn
 {
-	public class UIThreadMonitor
+	class UIThreadMonitor
 	{
 		public static UIThreadMonitor Instance { get; } = new UIThreadMonitor ();
 
@@ -44,6 +45,21 @@ namespace PerformanceDiagnosticsAddIn
 				waitUIThread.WaitOne ();
 				socket.Send (buffer);
 			}
+		}
+
+		TimeSpan forceProfileTime = TimeSpan.Zero;
+
+		public void Profile (int seconds)
+		{
+			var outputFilePath = Path.GetTempFileName ();
+			var startInfo = new ProcessStartInfo ("sample");
+			startInfo.UseShellExecute = false;
+			startInfo.Arguments = $"{Process.GetCurrentProcess ().Id} {seconds} -file {outputFilePath}";
+			var sampleProcess = Process.Start (startInfo);
+			sampleProcess.EnableRaisingEvents = true;
+			sampleProcess.Exited += delegate {
+				ConvertJITAddressesToMethodNames (outputFilePath, "Profile");
+			};
 		}
 
 		public bool IsListening { get; private set; }
@@ -101,32 +117,9 @@ namespace PerformanceDiagnosticsAddIn
 
 		void DumpsReader ()
 		{
-			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
 			while (!(process?.HasExited ?? true)) {
 				var fileName = process.StandardOutput.ReadLine ();
-				if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
-					var outputFilename = Path.Combine (Options.OutputPath, BrandingService.ApplicationName + "_UIThreadHang_" + DateTime.Now.ToString ("yyyy-MM-dd__HH-mm-ss") + ".txt");
-					using (var sr = new StreamReader (fileName))
-					using (var sw = new StreamWriter (outputFilename)) {
-						string line;
-						while ((line = sr.ReadLine ()) != null) {
-							if (rx.IsMatch (line)) {
-								var match = rx.Match (line);
-								var offset = long.Parse (match.Groups [1].Value, NumberStyles.HexNumber);
-								string pmipMethodName;
-								if (!methodsCache.TryGetValue (offset, out pmipMethodName)) {
-									pmipMethodName = mono_pmip (offset)?.TrimStart ();
-									methodsCache.Add (offset, pmipMethodName);
-								}
-								if (pmipMethodName != null) {
-									line = line.Remove (match.Index, match.Length);
-									line = line.Insert (match.Index, pmipMethodName);
-								}
-							}
-							sw.WriteLine (line);
-						}
-					}
-				}
+				ConvertJITAddressesToMethodNames (fileName, "UIThreadHang");
 			}
 		}
 
@@ -139,6 +132,34 @@ namespace PerformanceDiagnosticsAddIn
 			listener = null;
 			process.Kill ();
 			process = null;
+		}
+
+		void ConvertJITAddressesToMethodNames (string fileName, string profilingType)
+		{
+			var rx = new Regex (@"\?\?\?  \(in <unknown binary>\)  \[0x([0-9a-f]+)\]", RegexOptions.Compiled);
+			if (File.Exists (fileName) && new FileInfo (fileName).Length > 0) {
+				var outputFilename = Path.Combine (Options.OutputPath, $"{BrandingService.ApplicationName}_{profilingType}_{DateTime.Now:yyyy-MM-dd__HH-mm-ss}.txt");
+				using (var sr = new StreamReader (fileName))
+				using (var sw = new StreamWriter (outputFilename)) {
+					string line;
+					while ((line = sr.ReadLine ()) != null) {
+						if (rx.IsMatch (line)) {
+							var match = rx.Match (line);
+							var offset = long.Parse (match.Groups [1].Value, NumberStyles.HexNumber);
+							string pmipMethodName;
+							if (!methodsCache.TryGetValue (offset, out pmipMethodName)) {
+								pmipMethodName = mono_pmip (offset)?.TrimStart ();
+								methodsCache.Add (offset, pmipMethodName);
+							}
+							if (pmipMethodName != null) {
+								line = line.Remove (match.Index, match.Length);
+								line = line.Insert (match.Index, pmipMethodName);
+							}
+						}
+						sw.WriteLine (line);
+					}
+				}
+			}
 		}
 	}
 }

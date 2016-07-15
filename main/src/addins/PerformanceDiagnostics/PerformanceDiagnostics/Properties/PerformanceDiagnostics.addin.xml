@@ -4,9 +4,13 @@
 		<Command id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
 			defaultHandler="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
 			_label="Start monitoring UIThread hangs" />
+		<Command id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler"
+			defaultHandler="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler"
+			_label="Profile for 5 seconds" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/MainMenu/Help/Diagnostics">
 		<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
+		<CommandItem id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler" />
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
 		<Section id="PerformanceDiagnostics"
