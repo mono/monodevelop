@@ -131,6 +131,10 @@ namespace MonoDevelop.Core
 
 		static string GetStringInternal (string phrase)
 		{
+			if (Platform.IsWindows && Thread.CurrentThread.CurrentUICulture != UICulture) {
+				Thread.CurrentThread.CurrentUICulture = UICulture;
+				SetThreadUILanguage (UICulture.LCID);
+			}
 			try {
 				return Catalog.GetString (phrase);
 			} catch (Exception e) {
@@ -170,6 +174,10 @@ namespace MonoDevelop.Core
 
 		static string GetPluralStringInternal (string singular, string plural, int number)
 		{
+			if (Platform.IsWindows && Thread.CurrentThread.CurrentUICulture != UICulture) {
+				Thread.CurrentThread.CurrentUICulture = UICulture;
+				SetThreadUILanguage (UICulture.LCID);
+			}
 			try {
 				return Catalog.GetPluralString (singular, plural, number);
 			} catch (Exception e) {
