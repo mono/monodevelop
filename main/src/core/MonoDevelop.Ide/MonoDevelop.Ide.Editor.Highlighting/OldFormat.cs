@@ -182,10 +182,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Invalid deprecated", new List<string> { "invalid.deprecated" }, ConvertChunkStyle (colorScheme.SyntaxError)));
 			settings.Add (new ThemeSetting ("JSON String", new List<string> { "meta.structure.dictionary.json string.quoted.double.json" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("YAML String", new List<string> { "string.unquoted.yaml" }, ConvertChunkStyle (colorScheme.String)));
-			settings.Add (new ThemeSetting ("diff.header", new List<string> { "meta.diff", "meta.diff.header" }, ConvertChunkStyle (colorScheme.DiffHeader)));
-			settings.Add (new ThemeSetting ("diff.deleted", new List<string> { "markup.deleted" }, ConvertChunkStyle (colorScheme.DiffLineRemoved)));
-			settings.Add (new ThemeSetting ("diff.inserted", new List<string> { "markup.inserted" }, ConvertChunkStyle (colorScheme.DiffLineAdded)));
-			settings.Add (new ThemeSetting ("diff.changed", new List<string> { "markup.changed" }, ConvertChunkStyle (colorScheme.DiffLineChanged)));
+
+			settings.Add (new ThemeSetting ("Diff Header", new List<string> { "meta.diff", "meta.diff.header" }, ConvertChunkStyle (colorScheme.DiffHeader)));
+			settings.Add (new ThemeSetting ("Diff Line(Removed)", new List<string> { "markup.deleted" }, ConvertChunkStyle (colorScheme.DiffLineRemoved)));
+			settings.Add (new ThemeSetting ("Diff Line(Added)", new List<string> { "markup.inserted" }, ConvertChunkStyle (colorScheme.DiffLineAdded)));
+			settings.Add (new ThemeSetting ("Diff Line(Changed)", new List<string> { "markup.changed" }, ConvertChunkStyle (colorScheme.DiffLineChanged)));
+
+			settings.Add (new ThemeSetting ("String(Regex Character Class)", new List<string> { "constant.character.regex.characterclass" }, ConvertChunkStyle (colorScheme.RegexCharacterClass)));
+			settings.Add (new ThemeSetting ("String(Regex Grouping Constructs)", new List<string> { "constant.character.regex.grouping" }, ConvertChunkStyle (colorScheme.RegexGroupingConstructs)));
+			settings.Add (new ThemeSetting ("String(Regex Set Constructs)", new List<string> { "constant.character.regex.set" }, ConvertChunkStyle (colorScheme.RegexSetConstructs)));
+			settings.Add (new ThemeSetting ("String(Regex Errors)", new List<string> { "constant.character.regex.errors" }, ConvertChunkStyle (colorScheme.SyntaxError)));
+			settings.Add (new ThemeSetting ("String(Regex Comments)", new List<string> { "constant.character.regex.comments" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
+			settings.Add (new ThemeSetting ("String(Regex Escape Character)", new List<string> { "constant.character.regex.escape" }, ConvertChunkStyle (colorScheme.RegexEscapeCharacter)));
+			settings.Add (new ThemeSetting ("String(Regex Alternate Escape Character)", new List<string> { "constant.character.regex.altescape" }, ConvertChunkStyle (colorScheme.RegexAltEscapeCharacter)));
+
+			settings.Add (new ThemeSetting ("User Types", new List<string> { "entity.name.type" }, ConvertChunkStyle (colorScheme.UserTypes)));
+			settings.Add (new ThemeSetting ("User Types(Value types)", new List<string> { "entity.name.type.struct" }, ConvertChunkStyle (colorScheme.UserTypesValueTypes)));
+			settings.Add (new ThemeSetting ("User Types(Interfaces)", new List<string> { "entity.name.type.interface" }, ConvertChunkStyle (colorScheme.UserTypesInterfaces)));
+			settings.Add (new ThemeSetting ("User Types(Enums)", new List<string> { "entity.name.type.enum" }, ConvertChunkStyle (colorScheme.UserTypesEnums)));
+			settings.Add (new ThemeSetting ("User Types(Type parameters)", new List<string> { "entity.name.type.typeparameter" }, ConvertChunkStyle (colorScheme.UserTypesDelegates)));
+			settings.Add (new ThemeSetting ("User Types(Delegates)", new List<string> { "entity.name.type.delegate" }, ConvertChunkStyle (colorScheme.UserTypesDelegates)));
+			settings.Add (new ThemeSetting ("User Types(Mutable)", new List<string> { "entity.name.type.mutable" }, ConvertChunkStyle (colorScheme.UserTypesMutable)));
+
 			return new EditorTheme (colorScheme.Name, settings);
 		}
 

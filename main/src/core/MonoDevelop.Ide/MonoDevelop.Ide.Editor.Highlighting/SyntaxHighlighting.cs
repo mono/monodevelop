@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			bool deep = true;
 
 			var matchStack = ImmutableStack<SyntaxMatch>.Empty;
-			if (cur != null && cur.Offset < line.EndOffsetIncludingDelimiter) {
+			if (cur != null && cur.Offset < line.Offset) {
 				do {
 					int co = cur.Offset;
 					int cl = cur.Length;
@@ -101,6 +101,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				} while (cur != null && cur.Offset < line.Offset);
 			}
 			int curSegmentOffset = line.Offset;
+			deep = true;
 		restart:
 			currentContext = contextStack.Peek ();
 			match = null;
@@ -111,14 +112,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 
 				var possibleMatch = r.Match (this.Document, offset, length);
-				if (possibleMatch.Success) {
-					if (match == null || possibleMatch.Index < match.Index) {
+				if (possibleMatch.Success && possibleMatch.Length > 0) {
+					if (match == null || possibleMatch.Index < match.Index || possibleMatch.Index == match.Index && possibleMatch.Length > match.Length) {
 						match = possibleMatch;
 						curMatch = m;
+						// Console.WriteLine (match.Index + "possible match : " + m+ "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+					} else {
+						// Console.WriteLine (match.Index + "skip match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
 					}
+				} else {
+					// Console.WriteLine ("fail match : " + m);
 				}
 			}
+
 			if (match != null) {
+				var matchEndOffset = match.Index + match.Length;
+
 				if (curSegmentOffset < match.Index) {
 					yield return new ColoredSegment (curSegmentOffset, match.Index - curSegmentOffset, scopeStack.Peek ());
 					curSegmentOffset = match.Index;
@@ -139,14 +148,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 					foreach (var item in captureList)
 						yield return item;
+					
 				}
 
-				var matchEndOffset = match.Index + match.Length;
-
-				if (curSegmentOffset < matchEndOffset) {
-					yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, curMatch.Scope ?? scopeStack.Peek ());
-					curSegmentOffset = matchEndOffset;
-				}
 
 				if (curMatch.Pop) {
 					if (matchEndOffset - curSegmentOffset > 0) {
@@ -156,27 +160,26 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					contextStack = contextStack.Pop ();
 					scopeStack = scopeStack.Pop ();
 				}
+				if (curMatch.Scope != null && curSegmentOffset < matchEndOffset) {
+					yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, curMatch.Scope);
+					curSegmentOffset = matchEndOffset;
+				}
 
 				if (curMatch.Push != null) {
-					if (curMatch.Scope != null && curSegmentOffset < matchEndOffset) {
-						yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, curMatch.Scope);
-						curSegmentOffset = matchEndOffset;
-					}
-
 					var nextContext = curMatch.Push.GetContexts (this).FirstOrDefault ();
 					if (nextContext != null) {
 						contextStack = contextStack.Push (nextContext);
 						scopeStack = scopeStack.Push (curMatch.Scope ?? scopeStack.Peek ());
 
 						// deep = false;
-						length -= matchEndOffset - offset;
-						offset = matchEndOffset;
-
+						length -= curSegmentOffset - offset;
+						offset = curSegmentOffset;
 						goto restart;
 					}
 				}
-				length -= matchEndOffset - offset;
-				offset = matchEndOffset;
+
+				length -= curSegmentOffset - offset;
+				offset = curSegmentOffset;
 				if (length > 0) {
 					deep = true;
 					goto restart;

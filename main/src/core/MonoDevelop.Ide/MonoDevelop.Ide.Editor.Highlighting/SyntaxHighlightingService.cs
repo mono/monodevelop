@@ -136,19 +136,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			styleLookup.Remove (name); 
 			var stream = provider.Open ();
 			try {
-				if (provider is UrlStreamProvider) {
-					var usp = provider as UrlStreamProvider;
-					if (usp.Url.EndsWith (".vssettings", StringComparison.Ordinal)) {
-						styles [name] = OldFormat.ImportVsSetting (usp.Url, stream);
-					} else if (usp.Url.EndsWith (".json", StringComparison.Ordinal)) {
-						styles [name] = OldFormat.ImportColorScheme (stream);
-					} else {
-						styles [name] = TextMateFormat.LoadEditorTheme (stream);
-					}
-					styles [name].FileName = usp.Url;
+				if (provider.Name.EndsWith (".vssettings", StringComparison.Ordinal)) {
+					styles [name] = OldFormat.ImportVsSetting (provider.Name, stream);
+				} else if (provider.Name.EndsWith (".json", StringComparison.Ordinal)) {
+					styles [name] = OldFormat.ImportColorScheme (stream);
 				} else {
 					styles [name] = TextMateFormat.LoadEditorTheme (stream);
 				}
+				styles [name].FileName = provider.Name;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading style :" + name, e);
 				throw new IOException ("Error while loading style :" + name, e);
@@ -213,11 +208,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (string resource in assembly.GetManifestResourceNames ()) {
 				if (resource.EndsWith (".tmTheme", StringComparison.Ordinal)) {
 					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
-						string styleName = ScanTextMateStyle (stream);
+						var styleName = ScanTextMateStyle (stream);
 						styleLookup [styleName] = new ResourceStreamProvider (assembly, resource);
 					}
 					continue;
 				}
+				if (resource.EndsWith (".json", StringComparison.Ordinal)) {
+					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
+						var styleName = ScanOldJsonStyle (stream);
+						styleLookup [styleName] = new ResourceStreamProvider (assembly, resource);
+					}
+					continue;
+				}
+
 				if (resource.EndsWith (".sublime-package", StringComparison.Ordinal)) {
 					using (var stream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream (assembly.GetManifestResourceStream (resource))) {
 						var entry = stream.GetNextEntry ();
@@ -328,9 +331,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			} else {
 				LoggingService.LogError ("Can't lookup Mono.TextEditor assembly. Default styles won't be loaded.");
 			}
-			using (var sw = new StreamWriter ("/home/mkrueger/dark.tmTheme"))
-				TextMateFormat.Save (sw, GetEditorTheme (EditorTheme.DefaultThemeName));
-
 		}
 
 		public static HslColor GetColor (EditorTheme style, string key)
@@ -373,7 +373,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var provider = styleLookup [name];
 			if (provider is UrlStreamProvider) {
 				var usp = provider as UrlStreamProvider;
-				return usp.Url;
+				return usp.Name;
 			}
 			return null;
 		}

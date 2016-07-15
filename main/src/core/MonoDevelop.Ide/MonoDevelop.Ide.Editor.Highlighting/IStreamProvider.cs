@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public interface IStreamProvider
 	{
+		string Name { get; }
 		Stream Open ();
 	}
 
@@ -41,7 +42,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		Assembly assembly;
 		string   manifestResourceName;
 		
-		public string ManifestResourceName {
+		public string Name {
 			get {
 				return manifestResourceName;
 			}
@@ -61,7 +62,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		
 		public Stream Open ()
 		{
-			return assembly.GetManifestResourceStream (this.ManifestResourceName);
+			return assembly.GetManifestResourceStream (this.Name);
 		}
 	}
 	
@@ -69,7 +70,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	{
 		string  url;
 		
-		public string Url {
+		public string Name {
 			get {
 				return url;
 			}
