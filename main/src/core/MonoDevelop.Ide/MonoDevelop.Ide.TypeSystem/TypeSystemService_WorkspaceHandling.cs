@@ -122,8 +122,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static void NotifyFileChange (string fileName, string text)
 		{
-			foreach (var ws in workspaces)
-				ws.UpdateFileContent (fileName, text);
+			try {
+				foreach (var ws in workspaces)
+					ws.UpdateFileContent (fileName, text);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while notify file change.", e);
+			}
 		}
 
 		internal static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))

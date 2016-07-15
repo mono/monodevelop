@@ -118,13 +118,14 @@ namespace MonoDevelop.Ide.TypeSystem
 							var text = MonoDevelop.Core.Text.StringTextSource.ReadFrom (file).Text;
 							foreach (var w in workspaces)
 								w.UpdateFileContent (file, text);
-							Gtk.Application.Invoke (delegate {
-								if (IdeApp.Workbench != null)
-									foreach (var w in IdeApp.Workbench.Documents)
-										w.StartReparseThread ();
-							});
 						}
-					} catch (FileNotFoundException) {}
+
+						Gtk.Application.Invoke (delegate {
+							if (IdeApp.Workbench != null)
+								foreach (var w in IdeApp.Workbench.Documents)
+									w.StartReparseThread ();
+						});
+					} catch (Exception) {}
 				});
 			};
 
