@@ -331,6 +331,18 @@ namespace MonoDevelop.Components.AutoTest
 			return false;
 		}
 
+		public const string SaveDialogTextFieldID = "_NS:142";
+		public const string SaveDialogSaveButtonID = "_NS:76";
+		public bool NSASetText (string identifier, string text)
+		{
+			return session.NSASetText (identifier, text);
+		}
+
+		public bool NSAClickButton (string identifier)
+		{
+			return session.NSAClickButton (identifier);
+		}
+
 		public bool TypeKey (Func<AppQuery, AppQuery> query, char key, string modifiers)
 		{
 			AppResult[] results = Query (query);

@@ -41,6 +41,11 @@ using MonoDevelop.Core;
 
 using System.Xml;
 
+#if MAC
+using AppKit;
+using Foundation;
+#endif
+
 namespace MonoDevelop.Components.AutoTest
 {
 	public class AutoTestSession: MarshalByRefObject
@@ -536,6 +541,60 @@ namespace MonoDevelop.Components.AutoTest
 			}
 
 			return true;
+		}
+
+		INSAccessibility FindAccessibleChild (NSObject [] children, string identifier)
+		{
+			if (children == null || children.Length == 0) {
+				return null;
+			}
+
+			foreach (INSAccessibility c in children) {
+				if (c.AccessibilityIdentifier == identifier) {
+					return c;
+				}
+
+				var ret = FindAccessibleChild (c.AccessibilityChildren, identifier);
+				if (ret != null) {
+					return ret;
+				}
+			}
+
+			return null;
+		}
+
+		public bool NSASetText (string identifier, string text)
+		{
+#if MAC
+			var appAccessibleChildren = NSApplication.SharedApplication.AccessibilityChildren;
+			var child = FindAccessibleChild (appAccessibleChildren, identifier);
+
+			if (child == null) {
+				return false;
+			}
+
+			child.AccessibilityValue = new NSString (text);
+			return true;
+#else
+			return false;
+#endif
+		}
+
+		public bool NSAClickButton (string identifier)
+		{
+#if MAC
+			var appAccessibleChildren = NSApplication.SharedApplication.AccessibilityChildren;
+			var child = FindAccessibleChild (appAccessibleChildren, identifier);
+
+			if (child == null) {
+				return false;
+			}
+
+			child.AccessibilityPerformPress ();
+			return true;
+#else
+			return false;
+#endif
 		}
 
 		public bool TypeKey (AppResult result, char key, string modifiers)
