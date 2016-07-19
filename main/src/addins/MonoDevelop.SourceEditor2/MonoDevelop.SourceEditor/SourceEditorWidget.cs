@@ -889,7 +889,7 @@ namespace MonoDevelop.SourceEditor
 
 			var image = new HoverCloseButton ();
 			hbox.PackStart (image, false, false, 0);
-			var label = new Label (string.Format ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString (DetectedEolMarker), GetEolString (textEditor.Options.DefaultEolMarker)));
+			var label = new Label (GettextCatalog.GetString ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString (DetectedEolMarker), GetEolString (textEditor.Options.DefaultEolMarker)));
 			var color = (HslColor)textEditor.ColorStyle.NotificationText.Foreground;
 			label.ModifyFg (StateType.Normal, color);
 
@@ -907,12 +907,13 @@ namespace MonoDevelop.SourceEditor
 			vbox.PackEnd (okButton, true, true, verticalPadding);
 			hbox.PackEnd (vbox, false, false, 0);
 
-			var list = new List<string> ();
-			list.Add (string.Format ("Convert to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
-			list.Add (string.Format ("Convert all files to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)));
-			list.Add (string.Format ("Keep {0} line endings", GetEolString (DetectedEolMarker)));
-			list.Add (string.Format ("Keep {0} line endings in all files", GetEolString (DetectedEolMarker)));
-			var combo = new ComboBox (list.ToArray ());
+			var list = new string [] {
+				GettextCatalog.GetString ("Convert to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)),
+				GettextCatalog.GetString ("Convert all files to {0} line endings", GetEolString (textEditor.Options.DefaultEolMarker)),
+				GettextCatalog.GetString ("Keep {0} line endings", GetEolString (DetectedEolMarker)),
+				GettextCatalog.GetString ("Keep {0} line endings in all files", GetEolString (DetectedEolMarker))
+			};
+			var combo = new ComboBox (list);
 			combo.Active = 0;
 			hbox.PackEnd (combo, false, false, 0);
 			incorrectEolMessage = new HBox ();
