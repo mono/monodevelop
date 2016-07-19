@@ -84,7 +84,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			defaultSettings ["foreground"] = colorScheme.PlainText.Foreground.ToPangoString ();
 			defaultSettings ["invisibles"] = colorScheme.PlainText.Foreground.ToPangoString ();
 			defaultSettings ["lineHighlight"] = colorScheme.LineMarker.Color.ToPangoString ();
+			defaultSettings [ThemeSettingColors.InactiveLineHighlight] = colorScheme.LineMarkerInactive.Color.ToPangoString ();
 			defaultSettings ["selection"] = colorScheme.SelectedText.Background.ToPangoString ();
+			defaultSettings [ThemeSettingColors.InactiveSelection] = colorScheme.SelectedInactiveText.Background.ToPangoString ();
 			defaultSettings ["findHighlight"] = colorScheme.SearchResult.Color.ToPangoString ();
 			defaultSettings ["findHighlightForeground"] = colorScheme.PlainText.Foreground.ToPangoString ();
 			// selectionBorder ?, activeGuide?
@@ -159,7 +161,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			defaultSettings ["previewDiffRemovedBackground"] = colorScheme.PreviewDiffRemoved.Background.ToPangoString ();
 			defaultSettings ["previewDiffAdded"] = colorScheme.PreviewDiffAddedd.Foreground.ToPangoString ();
 			defaultSettings ["previewDiffAddedBackground"] = colorScheme.PreviewDiffAddedd.Background.ToPangoString ();
-
+			
 			settings.Add (new ThemeSetting (null, null, defaultSettings));
 
 			settings.Add (new ThemeSetting ("Comment", new List<string> { "Comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));

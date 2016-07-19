@@ -192,8 +192,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			// var uuid = (dictionary ["uuid"] as PString)?.Value;
-			// var hideFromUser = (dictionary ["hideFromUser"] as PBoolean)?.Value;
-			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, extensions, contexts);
+			var hideFromUser = (dictionary ["hideFromUser"] as PBoolean)?.Value;
+			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, hideFromUser == true, extensions, contexts);
 		}
 
 		static void ReadPatterns (PArray patternsArray, List<string> includes, List<SyntaxMatch> matches)

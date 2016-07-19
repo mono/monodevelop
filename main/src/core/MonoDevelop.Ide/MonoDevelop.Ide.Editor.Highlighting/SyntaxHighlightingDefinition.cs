@@ -44,18 +44,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public string Scope { get; internal set; }
 
+		public bool Hidden { get; internal set; }
+
 		public string FirstLineMatch { get; internal set; }
 
 		readonly List<SyntaxContext> contexts;
 		public IReadOnlyList<SyntaxContext> Contexts { get { return contexts; } }
 
-		internal SyntaxHighlightingDefinition (string name, string scope, string firstLineMatch, List<string> extensions, List<SyntaxContext> contexts)
+		internal SyntaxHighlightingDefinition (string name, string scope, string firstLineMatch, bool hidden, List<string> extensions, List<SyntaxContext> contexts)
 		{
 			this.extensions = extensions;
 			this.contexts = contexts;
 			Name = name;
 			Scope = scope;
 			FirstLineMatch = firstLineMatch;
+			Hidden = hidden;
 		}
 
 	}

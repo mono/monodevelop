@@ -16,7 +16,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			input.ReadLine ();
 			string name = null, scope = null, firstLineMatch = null;
 			var variables = new Dictionary<string, string> ();
-
+			bool hidden = false;
 			var extensions = new List<string> ();
 			var contexts = new List<SyntaxContext> ();
 
@@ -47,6 +47,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case "scope":
 					scope = ((YamlScalarNode)entry.Value).Value;
 					break;
+				case "hidden":
+					try {
+						hidden = bool.Parse (((YamlScalarNode)entry.Value).Value);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while parsing hidden flag of " + name, e);
+					}
+					break;
 				case "first_line_match":
 					firstLineMatch = CompileRegex (((YamlScalarNode)entry.Value).Value);
 					break;
@@ -57,7 +64,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				}
 			}
-			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, extensions, contexts);
+			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, hidden, extensions, contexts);
 		}
 
 
