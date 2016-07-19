@@ -101,6 +101,64 @@ test foo ""th\tis"" bar
 
 		}
 
+		[Test]
+		public void TestCaptures ()
+		{
+			string highlighting = @"%YAML 1.2
+---
+name: Test
+file_extensions: [t]
+scope: source
+
+contexts:
+  main:
+    - match: ""^\\s*(#)\\s*\\b(region)\\b""
+      captures:
+        1: meta.preprocessor
+        2: keyword.control.region
+
+";
+			string test = @"
+#region
+^ meta.preprocessor
+ ^ keyword.control.region
+";
+			RunHighlightingTest (highlighting, test);
+
+		}
+
+		[Test]
+		public void TestIncludes ()
+		{
+			string highlighting = @"%YAML 1.2
+---
+name: Test
+file_extensions: [t]
+scope: source
+
+contexts:
+  main:
+    - match: \b(foo|bar)\b
+      scope: keyword
+    - include: comments
+  comments:
+    - match: //
+      scope: comment
+      push:
+        - match: $\n?
+          pop: true
+";
+			string test = @"
+test foo // this bar
+^ source
+     ^ keyword
+         ^ comment
+              ^ comment
+";
+			RunHighlightingTest (highlighting, test);
+
+		}
+
 		static void RunHighlightingTest (string highlightingSrc, string inputText)
 		{
 			var highlighting = Sublime3Format.ReadHighlighting (new StringReader (highlightingSrc));
