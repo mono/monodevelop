@@ -36,7 +36,7 @@ using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.Projects
 {
-	public class AssemblyRunConfiguration: ProcessRunConfiguration
+	public class AssemblyRunConfiguration: DotNetProjectRunConfiguration
 	{
 		MonoExecutionParameters monoParameters = new MonoExecutionParameters ();
 
@@ -120,6 +120,12 @@ namespace MonoDevelop.Projects
 
 		[ItemProperty (DefaultValue = "")]
 		public string TargetRuntimeId { get; set; } = "";
+
+		public override bool CanRunLibrary {
+			get {
+				return StartAction == AssemblyRunConfiguration.StartActions.Program && !string.IsNullOrEmpty (StartProgram);
+			}
+		}
 
 		protected override void OnCopyFrom (ProjectRunConfiguration config, bool isRename)
 		{

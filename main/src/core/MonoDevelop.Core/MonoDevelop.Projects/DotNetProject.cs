@@ -1234,8 +1234,8 @@ namespace MonoDevelop.Projects
 			if (compileTarget == CompileTarget.Library) {
 				// A library project can't run by itself, so discard configurations which have "Project" as startup action
 				foreach (var c in configs) {
-					var dc = c as AssemblyRunConfiguration;
-					if (dc != null && (dc.StartAction == AssemblyRunConfiguration.StartActions.Project || string.IsNullOrEmpty (dc.StartProgram)))
+					var dc = c as DotNetProjectRunConfiguration;
+					if (dc != null && !dc.CanRunLibrary)
 						continue;
 					yield return c;
 				}
