@@ -336,8 +336,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static HslColor GetColor (EditorTheme style, string key)
 		{
 			HslColor result;
-			if (!style.TryGetColor (key, out result))
+			if (!style.TryGetColor (key, out result)) {
 				DefaultColorStyle.TryGetColor (key, out result);
+			}
+			return result;
+		}
+
+		public static HslColor GetColorFromScope (EditorTheme style, string scope, string key)
+		{
+			HslColor result;
+			if (!style.TryGetColor (scope, key, out result)) {
+				DefaultColorStyle.TryGetColor (scope, key, out result);
+			}
 			return result;
 		}
 

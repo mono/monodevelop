@@ -164,13 +164,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			
 			settings.Add (new ThemeSetting (null, null, defaultSettings));
 
-			settings.Add (new ThemeSetting ("Comment", new List<string> { "Comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
+			settings.Add (new ThemeSetting ("Comment", new List<string> { "comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
 			settings.Add (new ThemeSetting ("String", new List<string> { "string" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("Number", new List<string> { "constant.numeric" }, ConvertChunkStyle (colorScheme.Number)));
 			settings.Add (new ThemeSetting ("Built-in constant", new List<string> { "constant.language" }, ConvertChunkStyle (colorScheme.KeywordConstants)));
 			settings.Add (new ThemeSetting ("User-defined constant", new List<string> { "constant.character", "constant.other" }, ConvertChunkStyle (colorScheme.Number)));
 			settings.Add (new ThemeSetting ("Variable", new List<string> { "variable" }, ConvertChunkStyle (colorScheme.UserVariableUsage)));
 			settings.Add (new ThemeSetting ("Keyword", new List<string> { "keyword - (source.c keyword.operator | source.c++ keyword.operator | source.objc keyword.operator | source.objc++ keyword.operator), keyword.operator.word" }, ConvertChunkStyle (colorScheme.KeywordOther)));
+			settings.Add (new ThemeSetting ("storage", new List<string> { "storage" }, ConvertChunkStyle (colorScheme.KeywordOther)));
+			settings.Add (new ThemeSetting ("storage.type", new List<string> { "storage.type" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("Entity name", new List<string> { "entity.name - (entity.name.filename | entity.name.section | entity.name.tag | entity.name.label)" }, ConvertChunkStyle (colorScheme.UserTypes)));
 			settings.Add (new ThemeSetting ("Tag name", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 

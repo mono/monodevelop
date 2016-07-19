@@ -172,6 +172,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			return true;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ThemeSetting: Name={0}]", Name);
+		}
 	}
 
 	public sealed class EditorTheme
@@ -232,6 +237,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			return result;
+		}
+
+		public bool TryGetColor (string scope, string key, out HslColor result)
+		{
+			bool found = false;
+			var foundColor = default (HslColor);
+			foreach (var setting in settings) {
+				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s, scope))) {
+					if (setting.TryGetColor (key, out foundColor))
+						found = true;
+				}
+			}
+			if (found) {
+				result = foundColor;
+				return true;
+			}
+			result = default (HslColor);
+			return false;
 		}
 
 		public bool TryGetColor (string key, out HslColor color)
