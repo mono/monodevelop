@@ -197,7 +197,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public class ContextNameContextReference : ContextReference
 	{
+
 		public string Name { get; private set; }
+
+		internal ContextNameContextReference (string value)
+		{
+			this.Name = value;
+		}
 
 		public override IEnumerable<SyntaxContext> GetContexts (SyntaxHighlighting highlighting)
 		{

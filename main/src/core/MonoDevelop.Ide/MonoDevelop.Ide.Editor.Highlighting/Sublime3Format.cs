@@ -124,6 +124,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var seq = value as YamlSequenceNode;
 			if (seq != null)
 				return ReadAnonymousMatchContextReference (seq, variables);
+			if (value.NodeType == YamlNodeType.Scalar)
+				return new ContextNameContextReference (((YamlScalarNode)value).Value);
 			return null;
 		}
 
