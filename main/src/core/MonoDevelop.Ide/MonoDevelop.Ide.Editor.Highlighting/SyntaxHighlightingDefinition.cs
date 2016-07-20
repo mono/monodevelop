@@ -71,11 +71,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public string MetaContentScope { get; private set; }
 		public string MetaIncludePrototype { get; private set; }
 
-		readonly List<string> includes;
-		public IReadOnlyList<string> Includes { get { return includes; } }
-
-		readonly List<SyntaxMatch> matches;
-		public IReadOnlyList<SyntaxMatch> Matches { get { return matches; } }
+		readonly List<object> includesAndMatches;
 
 		internal void ParseMapping (YamlSequenceNode seqNode, Dictionary<string, string> variables)
 		{
@@ -95,7 +91,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			var children = node.Children;
 			if (children.ContainsKey (new YamlScalarNode ("match"))) {
-				matches.Add (Sublime3Format.ReadMatch (node, variables));
+				includesAndMatches.Add (Sublime3Format.ReadMatch (node, variables));
 				return;
 			}
 
@@ -110,41 +106,41 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				MetaIncludePrototype = ((YamlScalarNode)val).Value;
 			}
 			if (children.TryGetValue (new YamlScalarNode ("include"), out val)) {
-				includes.Add (((YamlScalarNode)val).Value);
+				includesAndMatches.Add (((YamlScalarNode)val).Value);
 			}
 		}
 
 		internal SyntaxContext (string name)
 		{
 			Name = name;
-			includes = new List<string> ();
-			matches = new List<SyntaxMatch> ();
+			includesAndMatches = new List<object> ();
 		}
 
-		internal SyntaxContext (string name, List<string> includes, List<SyntaxMatch> matches, string metaScope = null, string metaContentScope = null, string metaIncludePrototype = null)
+		internal SyntaxContext (string name, List<object> includesAndMatches, string metaScope = null, string metaContentScope = null, string metaIncludePrototype = null)
 		{
-			this.includes = includes;
-			this.matches = matches;
+			this.includesAndMatches = includesAndMatches;
 			Name = name;
 			MetaScope = metaScope;
 			MetaContentScope = metaContentScope;
 			MetaIncludePrototype = metaIncludePrototype;
 		}
 
-		public IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlighting highlighting, bool deep)
+		public IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlighting highlighting)
 		{
-			foreach (var match in Matches)
-				yield return match;
-			if (!deep)
-				yield break;
-			foreach (var include in Includes) {
+			foreach (var o in includesAndMatches) {
+				var match = o as SyntaxMatch;
+				if (match != null) {
+					yield return match;
+					continue;
+				}
+				var include = o as string;
 				var ctx = highlighting.GetContext (include);
 				if (ctx == null) {
 					LoggingService.LogWarning ($"highlighting {highlighting.Definition.Name} can't find include {include}.");
 					continue;
 				}
-				foreach (var match in ctx.GetMatches (highlighting, deep))
-					yield return match;
+				foreach (var match2 in ctx.GetMatches (highlighting))
+					yield return match2;
 			}
 		}
 	}
@@ -213,6 +209,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 	public class ContextNameListContextReference : ContextReference
 	{
+		public ContextNameListContextReference (IReadOnlyList<string> names)
+		{
+			this.Names = names;
+		}
+
 		public IReadOnlyList<string> Names { get; private set; }
 
 		public override IEnumerable<SyntaxContext> GetContexts (SyntaxHighlighting highlighting)

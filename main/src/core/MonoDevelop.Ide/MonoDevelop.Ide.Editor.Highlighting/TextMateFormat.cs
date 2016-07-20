@@ -159,35 +159,33 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			// Construct main context
 			var patternsArray = dictionary ["patterns"] as PArray;
 			if (patternsArray != null) {
-				var includes = new List<string> ();
-				var matches = new List<SyntaxMatch> ();
-				ReadPatterns (patternsArray, includes, matches);
-				contexts.Add (new SyntaxContext ("main", includes, matches));
+				var includes = new List<object> ();
+				ReadPatterns (patternsArray, includes);
+				contexts.Add (new SyntaxContext ("main", includes));
 			}
 
 			var repository = dictionary ["repository"] as PDictionary;
 			if (repository != null) {
 				foreach (var kv in repository) {
 					string contextName = kv.Key;
-					var includes = new List<string> ();
-					var matches = new List<SyntaxMatch> ();
+					var includes = new List<object> ();
 
 					var contents = kv.Value as PDictionary;
 					if (contents != null) {
 						var newMatch = ReadMatch (contents);
 						if (newMatch != null) {
 
-							matches.Add (newMatch);
+							includes.Add (newMatch);
 
 						}
 
 						patternsArray = contents ["patterns"] as PArray;
 						if (patternsArray != null) {
-							ReadPatterns (patternsArray, includes, matches);
+							ReadPatterns (patternsArray, includes);
 						}
 					}
 
-					contexts.Add (new SyntaxContext (contextName, includes, matches));
+					contexts.Add (new SyntaxContext (contextName, includes));
 				}
 			}
 
@@ -196,7 +194,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, hideFromUser == true, extensions, contexts);
 		}
 
-		static void ReadPatterns (PArray patternsArray, List<string> includes, List<SyntaxMatch> matches)
+		static void ReadPatterns (PArray patternsArray, List<object> includesAndMatches)
 		{
 			foreach (var type in patternsArray) {
 				var dict = type as PDictionary;
@@ -204,12 +202,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 				var incl = (dict ["include"] as PString)?.Value;
 				if (incl != null) {
-					includes.Add (incl);
+					includesAndMatches.Add (incl);
 					continue;
 				}
 				var newMatch = ReadMatch (dict);
 				if (newMatch != null)
-					matches.Add (newMatch);
+					includesAndMatches.Add (newMatch);
 			}
 		}
 
@@ -242,10 +240,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						endCaptures = ReadCaptureDictionary (captureDict);
 				}
 
-				var list = new List<SyntaxMatch> { new SyntaxMatch (begin, null, beginCaptures, null, false, null) };
+				var list = new List<object> { new SyntaxMatch (begin, null, beginCaptures, null, false, null) };
 				if (end != null)
 					list.Add (new SyntaxMatch (end, null, endCaptures, null, true, null));
-				pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", null, list));
+				pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", list));
 			}
 
 			return new SyntaxMatch (match, matchScope, captures, pushContext, false, null);

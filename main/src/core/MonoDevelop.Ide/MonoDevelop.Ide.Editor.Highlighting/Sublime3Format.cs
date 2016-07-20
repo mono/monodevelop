@@ -82,7 +82,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			ContextReference push = null, set = null;
 			bool pop = false;
-
 			foreach (var entry in mapping.Children) {
 				switch (((YamlScalarNode)entry.Key).Value) {
 				case "match":
@@ -122,8 +121,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static ContextReference ReadContextReference (YamlNode value, Dictionary<string, string> variables)
 		{
 			var seq = value as YamlSequenceNode;
-			if (seq != null)
+			if (seq != null) {
+				var l = seq.Children.OfType<YamlScalarNode> ().Select (s => s.Value).ToList ();
+				if (l.Count > 0) {
+					return new ContextNameListContextReference (l);
+				}
+
 				return ReadAnonymousMatchContextReference (seq, variables);
+			}
 			if (value.NodeType == YamlNodeType.Scalar)
 				return new ContextNameContextReference (((YamlScalarNode)value).Value);
 			return null;
