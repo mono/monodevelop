@@ -244,8 +244,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.FileChooserAction.Open) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
-			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");
-			dialog.AddFilter (GettextCatalog.GetString ("Visual Studio .NET settings"), "*.vssettings");
+			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json", "*.vssettings", "*.tmTheme");
 			if (!dialog.Run ())
 				return;
 
