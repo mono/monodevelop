@@ -41,6 +41,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using ICSharpCode.NRefactory.CSharp;
 using Gtk;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -125,7 +126,7 @@ namespace MonoDevelop.Ide.Editor
 				for (int i = 0; i < segment.Length; i++) {
 					char ch = base.editor.GetCharAt (segment.Offset + i);
 					if (ch == '1' || ch == '5' || ch == '9')
-						yield return new ColoredSegment (segment.Offset + i, 1, "entity.name.type.namespace.source.cs");
+						yield return new ColoredSegment (segment.Offset + i, 1, ImmutableStack<string>.Empty.Push ("entity.name.type.namespace.source.cs"));
 				}
 			}
 

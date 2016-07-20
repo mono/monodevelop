@@ -190,17 +190,17 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					if (seg.Offset <= treeseg.Offset) {
 						var lengthBefore = treeseg.Offset - seg.Offset;
 						if (lengthBefore > 0)
-							yield return new ColoredSegment (seg.Offset, lengthBefore, seg.ColorStyleKey);
-						yield return new ColoredSegment (treeseg.Offset, treeseg.Length, treeseg.Style);
+							yield return new ColoredSegment (seg.Offset, lengthBefore, seg.ScopeStack);
+						yield return new ColoredSegment (treeseg.Offset, treeseg.Length, seg.ScopeStack.Push (treeseg.Style));
 						var lengthAfter = seg.EndOffset - treeseg.EndOffset;
 						if (lengthAfter > 0)
-							yield return new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ColorStyleKey);
+							yield return new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack);
 					} else if (seg.EndOffset < treeseg.EndOffset) {
 						continue;
 					} else {
 						var lengthAfter = seg.EndOffset - treeseg.EndOffset;
 						if (lengthAfter > 0)
-							yield return new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ColorStyleKey);
+							yield return new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack);
 					}
 				} else {
 					yield return seg;

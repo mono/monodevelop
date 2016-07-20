@@ -42,6 +42,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Collections.Immutable;
 
 namespace Mono.TextEditor
 {
@@ -866,7 +867,7 @@ namespace Mono.TextEditor
 				foreach (var chunk in chunks) {
 					if (!disableHighlighting && sw.ElapsedMilliseconds > 50) {
 						chunks.Clear ();
-						chunks.Add (new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (line.Offset, line.Length, ""));
+						chunks.Add (new MonoDevelop.Ide.Editor.Highlighting.ColoredSegment (line.Offset, line.Length, ImmutableStack<string>.Empty.Push ("")));
 						disableHighlighting = true;
 						atts.Dispose ();
 						atts = new FastPangoAttrList ();

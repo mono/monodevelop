@@ -177,8 +177,8 @@ namespace MonoDevelop.SourceEditor
 				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
 					return;
 				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
-					var newChunk = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ColorStyleKey);
-					chunks [i] = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset + newChunk.Length, chunk.Length - newChunk.Length, chunk.ColorStyleKey);
+					var newChunk = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset, markerStart - chunk.Offset, chunk.ScopeStack);
+					chunks [i] = new Ide.Editor.Highlighting.ColoredSegment (chunk.Offset + newChunk.Length, chunk.Length - newChunk.Length, chunk.ScopeStack);
 					chunks.Insert (i, newChunk);
 					continue;
 				}

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -55,7 +56,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length)
 		{
-			yield return new ColoredSegment (offset, length, "");
+			yield return  new ColoredSegment (offset, length, ImmutableStack<string>.Empty.Push (""));
 		}
 	}
 }

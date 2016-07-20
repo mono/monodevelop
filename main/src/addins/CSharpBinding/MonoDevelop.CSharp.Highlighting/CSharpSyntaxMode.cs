@@ -39,6 +39,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -143,7 +144,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		public ColoredSegment GetColoredSegment ()
 		{
-			return new ColoredSegment (Offset, Length, style);
+			return new ColoredSegment (Offset, Length, ImmutableStack<string>.Empty.Push (style));
 		}
 	}
 
