@@ -79,10 +79,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			return buildActions.Any (action => string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase));
 		}
 
-		public static bool IsCompileableFile(ProjectFile file)
+		public static bool IsCompileableFile(ProjectFile file, out Microsoft.CodeAnalysis.SourceCodeKind sck)
 		{
-			if (!FilePath.PathComparer.Equals (file.FilePath.Extension, ".cs"))
+			var ext = file.FilePath.Extension;
+			if (FilePath.PathComparer.Equals (ext, ".cs")) {
+				sck = Microsoft.CodeAnalysis.SourceCodeKind.Regular;
+			} else if (FilePath.PathComparer.Equals (ext, ".sketchcs"))
+				sck = Microsoft.CodeAnalysis.SourceCodeKind.Script;
+			else {
+				sck = default (Microsoft.CodeAnalysis.SourceCodeKind);
 				return false;
+			}
 			return
 				file.BuildAction == MonoDevelop.Projects.BuildAction.Compile ||
 				file.BuildAction == ApiDefinitionBuildAction ||
