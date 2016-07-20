@@ -430,7 +430,7 @@ namespace MonoDevelop.Core.Text
 
 		public static async Task<byte[]> ReadAllBytesAsync (string file, CancellationToken token)
 		{
-			using (var f = File.OpenRead (file)) {
+			using (var f = new FileStream (file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4 * 1024, useAsync: true)) {
 				var res = new byte [f.Length];
 				int nr = 0;
 				int c = 0;
