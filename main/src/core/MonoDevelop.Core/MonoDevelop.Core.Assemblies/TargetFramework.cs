@@ -297,15 +297,10 @@ namespace MonoDevelop.Core.Assemblies
 					case "4.0":
 						fx.clrVersion = ClrVersion.Net_4_0;
 						break;
-					case "4.5":
-					case "4.5.1":
-					// PCL 4.6 uses 4.6 as the "Rutime version", not sure why, since it has nothing to do with .NET 4.6
-					case "4.6":
+					//The concept of "ClrVersion" breaks down hard after 4.5 and is essentially meaningless
+					default:
 						fx.clrVersion = ClrVersion.Net_4_5;
 						break;
-					default:
-						LoggingService.LogInfo ("Framework {0} has unknown RuntimeVersion {1}", moniker, runtimeVersion);
-						return null;
 					}
 				}
 				
