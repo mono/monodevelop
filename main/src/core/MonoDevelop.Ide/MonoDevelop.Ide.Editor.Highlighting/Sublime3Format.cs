@@ -221,13 +221,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 					inCharacterClass = true;
 					break;
-				case '?':
-					if (next == '=') { // (?=...) -> (?:...)
-						result.Append ("?:");
-						i++;
-						continue;
-					}
-					break;
 				case ']':
 					inCharacterClass = false;
 					break;

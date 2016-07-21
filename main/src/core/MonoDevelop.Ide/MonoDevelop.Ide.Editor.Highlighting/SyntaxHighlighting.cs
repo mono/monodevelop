@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						continue;
 
 					var possibleMatch = r.Match (highlighting.Document, offset, length);
-					if (possibleMatch.Success && possibleMatch.Length > 0) {
+					if (possibleMatch.Success) {
 						if (match == null || possibleMatch.Index < match.Index) {
 							match = possibleMatch;
 							curMatch = m;
@@ -120,54 +120,32 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							yield return item;
 					}
 
-					if (curMatch.Pop || curMatch.Set != null) {
-						if (matchEndOffset - curSegmentOffset > 0) {
-							yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, scopeStack);
-						}
-						curSegmentOffset = matchEndOffset;
-						if (curMatch.Pop || contextStack.Count () > 1) {
-							contextStack = contextStack.Pop ();
-							if (!matchStack.IsEmpty) {
-								if (matchStack.Peek ()?.Scope != null)
-									scopeStack = scopeStack.Pop ();
-								matchStack = matchStack.Pop ();
-							}
-							if (currentContext.MetaScope != null)
-								scopeStack = scopeStack.Pop ();
-							if (currentContext.MetaContentScope != null)
-								scopeStack = scopeStack.Pop ();
-						}
-					}
 					if (curMatch.Scope != null && curSegmentOffset < matchEndOffset) {
 						yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, scopeStack);
 						curSegmentOffset = matchEndOffset;
 					}
 
-					if (curMatch.Push != null || curMatch.Set != null) {
-						var nextContexts = (curMatch.Push ?? curMatch.Set).GetContexts (highlighting);
-						if (nextContexts != null) {
-							bool first = true;
-							foreach (var nextContext in nextContexts) {
-								if (first) {
-									matchStack = matchStack.Push (curMatch);
-									if (curMatch.Scope != null) {
-										scopeStack = scopeStack.Push (curMatch.Scope);
-									}
-									first = false;
-								} else {
-									matchStack = matchStack.Push (null);
-								}
-								contextStack = contextStack.Push (nextContext);
-								if (nextContext.MetaScope != null)
-									scopeStack = scopeStack.Push (nextContext.MetaScope);
-								if (nextContext.MetaContentScope != null)
-									scopeStack = scopeStack.Push (nextContext.MetaContentScope);
-							}
-
+					if (curMatch.Pop) {
+						if (matchEndOffset - curSegmentOffset > 0)
+							yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, scopeStack);
+						if (curMatch.Scope != null)
+							scopeStack = scopeStack.Pop ();
+						curSegmentOffset = PopStack (currentContext, curMatch, matchEndOffset);
+					} else if (curMatch.Set != null) {
+						if (matchEndOffset - curSegmentOffset > 0)
+							yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, scopeStack);
+						if (curMatch.Scope != null)
+							scopeStack = scopeStack.Pop ();
+						curSegmentOffset = PopStack (currentContext, curMatch, matchEndOffset);
+						var nextContexts = curMatch.Set.GetContexts (highlighting);
+						PushStack (curMatch, nextContexts);
+					} else if (curMatch.Push != null) {
+						var nextContexts = curMatch.Push.GetContexts (highlighting);
+						PushStack (curMatch, nextContexts);
+					} else {
+						if (curMatch.Scope != null) {
+							scopeStack = scopeStack.Pop ();
 						}
-					}
-					if (curMatch.Scope != null) {
-						scopeStack = scopeStack.Pop ();
 					}
 					length -= curSegmentOffset - offset;
 					offset = curSegmentOffset;
@@ -177,6 +155,45 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (endOffset - curSegmentOffset > 0) {
 					yield return new ColoredSegment (curSegmentOffset, endOffset - curSegmentOffset, scopeStack);
 				}
+			}
+
+			void PushStack (SyntaxMatch curMatch, IEnumerable<SyntaxContext> nextContexts)
+			{
+				if (nextContexts != null) {
+					bool first = true;
+					foreach (var nextContext in nextContexts) {
+						if (first) {
+							matchStack = matchStack.Push (curMatch);
+							first = false;
+						} else {
+							matchStack = matchStack.Push (null);
+						}
+						contextStack = contextStack.Push (nextContext);
+						if (nextContext.MetaScope != null)
+							scopeStack = scopeStack.Push (nextContext.MetaScope);
+						if (nextContext.MetaContentScope != null)
+							scopeStack = scopeStack.Push (nextContext.MetaContentScope);
+					}
+				}
+			}
+
+			int PopStack (SyntaxContext currentContext, SyntaxMatch curMatch, int matchEndOffset)
+			{
+				int curSegmentOffset = matchEndOffset;
+				if (curMatch.Pop || contextStack.Count () > 1) {
+					contextStack = contextStack.Pop ();
+					if (!matchStack.IsEmpty) {
+						if (matchStack.Peek ()?.Scope != null)
+							scopeStack = scopeStack.Pop ();
+						matchStack = matchStack.Pop ();
+					}
+					if (currentContext.MetaScope != null)
+						scopeStack = scopeStack.Pop ();
+					if (currentContext.MetaContentScope != null)
+						scopeStack = scopeStack.Pop ();
+				}
+
+				return curSegmentOffset;
 			}
 		}
 	
