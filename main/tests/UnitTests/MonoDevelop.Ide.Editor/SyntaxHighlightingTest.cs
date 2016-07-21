@@ -158,6 +158,35 @@ test foo // this bar
 		}
 
 		[Test]
+		public void TestEol ()
+		{
+			string highlighting = @"%YAML 1.2
+---
+name: Test
+file_extensions: [t]
+scope: source
+
+contexts:
+  main:
+    - match: \b(foo|bar)\b
+      scope: keyword
+    - include: comments
+  comments:
+    - match: //
+      scope: comment
+      push:
+        - match: $\n?
+          pop: true
+";
+			string test = @"
+test foo // this
+test
+^ source
+";
+			RunSublimeHighlightingTest (highlighting, test);
+		}
+
+		[Test]
 		public void TestVariables ()
 		{
 			string highlighting = @"%YAML 1.2

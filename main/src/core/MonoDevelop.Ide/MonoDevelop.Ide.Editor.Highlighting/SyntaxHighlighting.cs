@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			
 			if (cur != null && cur.Offset < line.Offset) {
 				do {
-					high.GetColoredSegments (cur.Offset, cur.Length).Count ();
+					high.GetColoredSegments (cur.Offset, cur.LengthIncludingDelimiter).Count ();
 					cur = cur.NextLine;
 				} while (cur != null && cur.Offset < line.Offset);
 			}
