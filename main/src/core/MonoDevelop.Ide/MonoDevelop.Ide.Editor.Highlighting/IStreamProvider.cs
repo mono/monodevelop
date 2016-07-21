@@ -40,32 +40,32 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	class ResourceStreamProvider : IStreamProvider
 	{
 		Assembly assembly;
-		string   manifestResourceName;
-		
+		string manifestResourceName;
+
 		public string Name {
 			get {
 				return manifestResourceName;
 			}
 		}
-		
+
 		public Assembly Assembly {
 			get {
 				return assembly;
 			}
 		}
-		
+
 		public ResourceStreamProvider (Assembly assembly, string manifestResourceName)
 		{
-			this.assembly             = assembly;
+			this.assembly = assembly;
 			this.manifestResourceName = manifestResourceName;
 		}
-		
+
 		public Stream Open ()
 		{
 			return assembly.GetManifestResourceStream (this.Name);
 		}
 	}
-	
+
 	class UrlStreamProvider : IStreamProvider
 	{
 		string  url;
@@ -86,4 +86,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return File.OpenRead (url);
 		}
 	}
+
+	class MemoryStreamProvider : IStreamProvider
+	{
+		byte [] data;
+		string name;
+
+		public string Name {
+			get {
+				return name;
+			}
+		}
+
+		public MemoryStreamProvider (byte [] data, string name)
+		{
+			this.data = data;
+			this.name = name;
+		}
+
+		public Stream Open ()
+		{
+			return new MemoryStream (data);
+		}
+	}
+
 }

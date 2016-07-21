@@ -176,80 +176,67 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static void LoadStylesAndModes (string path)
 		{
 			foreach (string file in Directory.GetFiles (path)) {
-				if (file.EndsWith (".json", StringComparison.Ordinal)) {
-					using (var stream = File.OpenRead (file)) {
-						string styleName = ScanOldJsonStyle (stream);
-						if (!string.IsNullOrEmpty (styleName)) {
-							styleLookup [styleName] = new UrlStreamProvider (file);
-						} else {
-							LoggingService.LogError ("Invalid .json syntax sheme file : " + file);
+				LoadFile (file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
+			}
+		}
+
+		static void LoadFile (string file, Func<Stream> openStream, Func<IStreamProvider> getStreamProvider)
+		{
+			if (file.EndsWith (".json", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = openStream ()) {
+					string styleName = ScanOldJsonStyle (stream);
+					if (!string.IsNullOrEmpty (styleName)) {
+						styleLookup [styleName] = getStreamProvider ();
+					} else {
+						LoggingService.LogError ("Invalid .json syntax sheme file : " + file);
+					}
+				}
+			} else if (file.EndsWith (".tmTheme", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = openStream ()) {
+					string styleName = ScanTextMateStyle (stream);
+					if (!string.IsNullOrEmpty (styleName)) {
+						styleLookup [styleName] = getStreamProvider ();
+					} else {
+						LoggingService.LogError ("Invalid .tmTheme theme file : " + file);
+					}
+				}
+			} else if (file.EndsWith (".vssettings", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = openStream ()) {
+					string styleName = Path.GetFileNameWithoutExtension (file);
+					styleLookup [styleName] = getStreamProvider ();
+				}
+			} else if (file.EndsWith (".tmLanguage", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = openStream ()) {
+					var highlighting = TextMateFormat.ReadHighlighting (stream);
+					if (highlighting != null)
+						highlightings.Add (highlighting);
+				}
+			} else if (file.EndsWith (".sublime-package", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".tmbundle", StringComparison.OrdinalIgnoreCase)) {
+				try {
+					using (var stream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream (openStream ())) {
+						var entry = stream.GetNextEntry ();
+						while (entry != null) {
+							if (entry.IsFile && !entry.IsCrypted) {
+								if (stream.CanDecompressEntry) {
+									byte [] data = new byte [entry.Size];
+									stream.Read (data, 0, (int)entry.Size);
+									LoadFile (entry.Name, () => new MemoryStream (data), () => new MemoryStreamProvider (data, entry.Name));
+								}
+							} 
+							entry = stream.GetNextEntry ();
 						}
 					}
-				} else if (file.EndsWith (".tmTheme", StringComparison.Ordinal)) {
-					using (var stream = File.OpenRead (file)) {
-						string styleName = ScanTextMateStyle (stream);
-						if (!string.IsNullOrEmpty (styleName)) {
-							styleLookup [styleName] = new UrlStreamProvider (file);
-						} else {
-							LoggingService.LogError ("Invalid .tmTheme theme file : " + file);
-						}
-					}
-				} else if (file.EndsWith (".vssettings", StringComparison.Ordinal)) {
-					using (var stream = File.OpenRead (file)) {
-						string styleName = Path.GetFileNameWithoutExtension (file);
-						styleLookup [styleName] = new UrlStreamProvider (file);
-					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while reading : " + file, e); 
 				}
 			}
 		}
 
+
 		static void LoadStylesAndModes (Assembly assembly)
 		{
 			foreach (string resource in assembly.GetManifestResourceNames ()) {
-				if (resource.EndsWith (".tmTheme", StringComparison.Ordinal)) {
-					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
-						var styleName = ScanTextMateStyle (stream);
-						styleLookup [styleName] = new ResourceStreamProvider (assembly, resource);
-					}
-					continue;
-				}
-				if (resource.EndsWith (".json", StringComparison.Ordinal)) {
-					using (Stream stream = assembly.GetManifestResourceStream (resource)) {
-						var styleName = ScanOldJsonStyle (stream);
-						styleLookup [styleName] = new ResourceStreamProvider (assembly, resource);
-					}
-					continue;
-				}
-
-				if (resource.EndsWith (".sublime-package", StringComparison.Ordinal)) {
-					using (var stream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream (assembly.GetManifestResourceStream (resource))) {
-						var entry = stream.GetNextEntry ();
-						while (entry != null) {
-							if (entry.IsFile && !entry.IsCrypted && entry.Name.EndsWith (".sublime-syntax", StringComparison.Ordinal)) {
-								if (stream.CanDecompressEntry) {
-									byte [] data = new byte [entry.Size];
-									stream.Read (data, 0, (int)entry.Size);
-									using (var tr = new StringReader (TextFileUtility.GetText (data))) {
-										var highlighting = Sublime3Format.ReadHighlighting (tr);
-										if (highlighting != null)
-											highlightings.Add (highlighting);
-									}
-								}
-							}
-							entry = stream.GetNextEntry ();
-						}
-					}
-					continue;
-				}
-
-				if (resource.EndsWith (".tmLanguage", StringComparison.Ordinal)) {
-					using (var stream = assembly.GetManifestResourceStream (resource)) {
-						var highlighting = TextMateFormat.ReadHighlighting (stream);
-						if (highlighting != null)
-							highlightings.Add (highlighting);
-					}
-					continue;
-				}
+				LoadFile (resource, () => assembly.GetManifestResourceStream (resource), () => new ResourceStreamProvider (assembly, resource));
 			}
 		}
 
