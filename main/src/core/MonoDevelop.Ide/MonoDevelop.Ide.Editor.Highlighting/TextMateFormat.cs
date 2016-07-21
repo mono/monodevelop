@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 				var incl = (dict ["include"] as PString)?.Value;
 				if (incl != null) {
-					includesAndMatches.Add (incl);
+					includesAndMatches.Add (incl.TrimStart ('#'));
 					continue;
 				}
 				var newMatch = ReadMatch (dict);
