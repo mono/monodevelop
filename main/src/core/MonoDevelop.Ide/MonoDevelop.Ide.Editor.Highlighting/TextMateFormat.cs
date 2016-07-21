@@ -213,10 +213,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxMatch ReadMatch (PDictionary dict)
 		{
-			var match = (dict ["match"] as PString)?.Value;
 			var matchScope = (dict ["name"] as PString)?.Value;
-			if (match == null)
-				return null;
 			List<Tuple<int, string>> captures = null;
 			var captureDict = dict ["captures"] as PDictionary;
 			if (captureDict != null)
@@ -226,26 +223,38 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var begin = (dict ["begin"] as PString)?.Value;
 			if (begin != null) {
-
+				
 				List<Tuple<int, string>> beginCaptures = null;
 				captureDict = dict ["beginCaptures"] as PDictionary;
+
 				if (captureDict != null)
 					beginCaptures = ReadCaptureDictionary (captureDict);
 
 				var end = (dict ["end"] as PString)?.Value;
 				List<Tuple<int, string>> endCaptures = null;
+				string endScope = null;
 				if (end != null) {
 					captureDict = dict ["endCaptures"] as PDictionary;
 					if (captureDict != null)
 						endCaptures = ReadCaptureDictionary (captureDict);
+
+					var list = new List<object> ();
+					if (end != null)
+						list.Add (new SyntaxMatch (end, endScope, endCaptures, null, true, null));
+					var patternsArray = dict ["patterns"] as PArray;
+					if (patternsArray != null) {
+						ReadPatterns (patternsArray, list);
+					}
+					pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", list));
 				}
 
-				var list = new List<object> { new SyntaxMatch (begin, null, beginCaptures, null, false, null) };
-				if (end != null)
-					list.Add (new SyntaxMatch (end, null, endCaptures, null, true, null));
-				pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", list));
+
+				return new SyntaxMatch (begin, matchScope, beginCaptures, pushContext, false, null);
 			}
 
+			var match = (dict ["match"] as PString)?.Value;
+			if (match == null)
+				return null;
 			return new SyntaxMatch (match, matchScope, captures, pushContext, false, null);
 		}
 
@@ -253,7 +262,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			var captures = new List<Tuple<int, string>> ();
 			foreach (var kv in captureDict) {
-				captures.Add (Tuple.Create (int.Parse (kv.Key), ((kv.Value as PDictionary) ["name"] as PString).Value));
+				var g = int.Parse (kv.Key);
+				var s = ((kv.Value as PDictionary) ["name"] as PString).Value;
+			/*	if (g == 0) {
+					scope = s;
+					continue;
+				}*/
+				captures.Add (Tuple.Create (g, s));
 			}
 			return captures;
 		}

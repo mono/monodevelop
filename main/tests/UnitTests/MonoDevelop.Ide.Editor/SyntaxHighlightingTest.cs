@@ -62,8 +62,7 @@ test foo this bar
          ^ source
               ^ keyword
 ";
-			RunHighlightingTest (highlighting, test);
-
+			RunSublimeHighlightingTest (highlighting, test);
 		}
 
 		[Test]
@@ -98,7 +97,7 @@ test foo ""th\tis"" bar test
                   ^ keyword
                         ^ source
 ";
-			RunHighlightingTest (highlighting, test);
+			RunSublimeHighlightingTest (highlighting, test);
 
 		}
 
@@ -124,7 +123,7 @@ contexts:
 ^ meta.preprocessor
  ^ keyword.control.region
 ";
-			RunHighlightingTest (highlighting, test);
+			RunSublimeHighlightingTest (highlighting, test);
 		}
 
 		[Test]
@@ -155,7 +154,7 @@ test foo // this bar
          ^ comment
               ^ comment
 ";
-			RunHighlightingTest (highlighting, test);
+			RunSublimeHighlightingTest (highlighting, test);
 		}
 
 		[Test]
@@ -178,7 +177,7 @@ test 45345ne
       ^ source
  ^ keyword.control
 ";
-			RunHighlightingTest (highlighting, test);
+			RunSublimeHighlightingTest (highlighting, test);
 		}
 
 		[Test]
@@ -224,7 +223,7 @@ typedef struct
 } point_t;
   ^ entity.name.type
 ";
-			RunHighlightingTest (highlighting, test);
+			RunSublimeHighlightingTest (highlighting, test);
 
 		}
 
@@ -584,14 +583,17 @@ public class Coo
 }
 ";
 
-			RunHighlightingTest (highlighting, test);
-
+			RunSublimeHighlightingTest (highlighting, test);
 		}
 
-
-		static void RunHighlightingTest (string highlightingSrc, string inputText)
+		static void RunSublimeHighlightingTest (string highlightingSrc, string inputText)
 		{
 			var highlighting = Sublime3Format.ReadHighlighting (new StringReader (highlightingSrc));
+			RunHighlightingTest (highlighting, inputText);
+		}
+
+		internal static void RunHighlightingTest (SyntaxHighlightingDefinition highlighting, string inputText)
+		{
 			var editor = TextEditorFactory.CreateNewEditor ();
 			var sb = new StringBuilder ();
 			int lineNumber = 0;

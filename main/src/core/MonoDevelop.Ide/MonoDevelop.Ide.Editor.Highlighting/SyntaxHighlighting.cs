@@ -128,14 +128,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (curMatch.Pop) {
 						if (matchEndOffset - curSegmentOffset > 0)
 							yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, scopeStack);
-						if (curMatch.Scope != null)
-							scopeStack = scopeStack.Pop ();
+						//if (curMatch.Scope != null)
+						//	scopeStack = scopeStack.Pop ();
 						curSegmentOffset = PopStack (currentContext, curMatch, matchEndOffset);
 					} else if (curMatch.Set != null) {
 						if (matchEndOffset - curSegmentOffset > 0)
 							yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, scopeStack);
-						if (curMatch.Scope != null)
-							scopeStack = scopeStack.Pop ();
+						//if (curMatch.Scope != null)
+						//	scopeStack = scopeStack.Pop ();
 						curSegmentOffset = PopStack (currentContext, curMatch, matchEndOffset);
 						var nextContexts = curMatch.Set.GetContexts (highlighting);
 						PushStack (curMatch, nextContexts);
