@@ -71,17 +71,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		HighlightState GetState (IDocumentLine line)
 		{
-			var pl = line.PreviousLine;
+ 			var pl = line.PreviousLine;
 			if (pl == null)
 				return HighlightState.CreateNewState (this);
-
+			if (stateCache.Count == 0)
+				stateCache.Add (HighlightState.CreateNewState (this));
 			var ln = line.LineNumber;
 			if (ln <= stateCache.Count) {
 				return stateCache [ln - 1].Clone ();
 			}
 
-			var lastState = stateCache.Count > 0 ? stateCache [stateCache.Count - 1] : HighlightState.CreateNewState (this);
-			var cur = Document.GetLine (stateCache.Count + 1);
+			var lastState = stateCache [stateCache.Count - 1];
+			var cur = Document.GetLine (stateCache.Count);
 			if (cur != null && cur.Offset < line.Offset) {
 				do {
 					var high = new Highlighter (this, lastState.Clone ());
@@ -91,9 +92,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				} while (cur != null && cur.Offset < line.Offset);
 			}
 
-			var h2 = new Highlighter (this, lastState.Clone ());
-			h2.GetColoredSegments (pl.Offset, pl.LengthIncludingDelimiter).Count ();
-			return h2.State;
+			return lastState.Clone ();
 		}
 
 			
