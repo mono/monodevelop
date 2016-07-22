@@ -211,6 +211,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (highlighting != null)
 						highlightings.Add (highlighting);
 				}
+			} else if (file.EndsWith (".sublime-syntax", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = new StreamReader (openStream ())) {
+					var highlighting = Sublime3Format.ReadHighlighting (stream);
+					if (highlighting != null)
+						highlightings.Add (highlighting);
+				}
 			} else if (file.EndsWith (".sublime-package", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".tmbundle", StringComparison.OrdinalIgnoreCase)) {
 				try {
 					using (var stream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream (openStream ())) {
