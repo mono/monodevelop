@@ -234,11 +234,11 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			foldBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
-			foldLineGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldLine);
-			foldLineHighlightedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
+			foldBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
+			foldLineGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.FoldLine);
+			foldLineHighlightedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Foreground);
 			
-			HslColor hslColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Background);
+			HslColor hslColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Background);
 			double brightness = HslColor.Brightness (hslColor);
 			if (brightness < 0.5) {
 				hslColor.L = hslColor.L * 0.85 + hslColor.L * 0.25;
@@ -247,10 +247,10 @@ namespace Mono.TextEditor
 			}
 			
 			foldLineHighlightedGCBg = hslColor;
-			foldToggleMarkerGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldCross);
-			foldToggleMarkerBackground = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.FoldCross2);
-			lineStateChangedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.QuickDiffChanged);
-			lineStateDirtyGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.QuickDiffDirty);
+			foldToggleMarkerGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.FoldCross);
+			foldToggleMarkerBackground = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.FoldCross2);
+			lineStateChangedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.QuickDiffChanged);
+			lineStateDirtyGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.QuickDiffDirty);
 			
 			marginWidth = editor.LineHeight  * 3 / 4;
 		}

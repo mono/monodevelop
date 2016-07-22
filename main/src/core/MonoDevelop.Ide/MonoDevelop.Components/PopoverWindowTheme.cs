@@ -245,10 +245,10 @@ namespace MonoDevelop.Components
 		public void SetSchemeColors (EditorTheme scheme)
 		{
 			;
-			BackgroundColor = SyntaxHighlightingService.GetColor (scheme, ThemeSettingColors.TooltipBackground);
-			PagerTextColor = SyntaxHighlightingService.GetColor (scheme, ThemeSettingColors.TooltipPagerText);
-			PagerBackgroundColor = SyntaxHighlightingService.GetColor (scheme, ThemeSettingColors.TooltipPager);
-			PagerTriangleColor = SyntaxHighlightingService.GetColor (scheme, ThemeSettingColors.TooltipPagerTriangle);
+			BackgroundColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipBackground);
+			PagerTextColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPagerText);
+			PagerBackgroundColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPager);
+			PagerTriangleColor = SyntaxHighlightingService.GetColor (scheme, EditorThemeColors.TooltipPagerTriangle);
 		}
 		
 		void EmitRedrawNeeded ()

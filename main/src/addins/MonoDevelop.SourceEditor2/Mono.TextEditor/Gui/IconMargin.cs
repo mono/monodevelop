@@ -51,8 +51,8 @@ namespace Mono.TextEditor
 		
 		internal protected override void OptionsChanged ()
 		{
-			backgroundColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.IndicatorMargin);
-			separatorColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.IndicatorMarginSeparator);
+			backgroundColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMargin);
+			separatorColor = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.IndicatorMarginSeparator);
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)

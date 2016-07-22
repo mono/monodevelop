@@ -169,7 +169,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		void Setup ()
 		{
 			
-			defaultTextColor = ThemeSettingColors.Foreground;
+			defaultTextColor = EditorThemeColors.Foreground;
 			referenceTypeColor = "entity.name.type.class.source.cs";
 			valueTypeColor = "entity.name.type.struct.source.cs";
 			interfaceTypeColor = "entity.name.type.interface.source.cs";

@@ -382,7 +382,7 @@ namespace MonoDevelop.CSharp
 			var highlightedTypeName = Highlight (FilterEntityName (t.Name), GetThemeColor (userTypes));
 			result.Append (highlightedTypeName);
 
-			var color = AlphaBlend (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Foreground), SyntaxHighlightingService.GetColor (colorStyle,ThemeSettingColors.Background), optionalAlpha);
+			var color = AlphaBlend (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Foreground), SyntaxHighlightingService.GetColor (colorStyle,EditorThemeColors.Background), optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 
 			result.Append ("<span foreground=\"" + colorString + "\">" + " (type parameter)</span>");
@@ -981,7 +981,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 
-			var color = AlphaBlend (SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Foreground), SyntaxHighlightingService.GetColor (colorStyle, ThemeSettingColors.Background), optionalAlpha);
+			var color = AlphaBlend (SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Foreground), SyntaxHighlightingService.GetColor (colorStyle, EditorThemeColors.Background), optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 
 			var keywordSign = "<span foreground=\"" + colorString + "\"> " + GettextCatalog.GetString ("(keyword)") + "</span>";
@@ -1481,7 +1481,7 @@ namespace MonoDevelop.CSharp
 		{
 			var result = new TooltipInformation ();
 
-			var color = AlphaBlend (SyntaxHighlightingService.GetColor (colorStyle,ThemeSettingColors.Foreground), SyntaxHighlightingService.GetColor (colorStyle,ThemeSettingColors.Background), optionalAlpha);
+			var color = AlphaBlend (SyntaxHighlightingService.GetColor (colorStyle,EditorThemeColors.Foreground), SyntaxHighlightingService.GetColor (colorStyle,EditorThemeColors.Background), optionalAlpha);
 			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 
 			var keywordSign = "<span foreground=\"" + colorString + "\"> " + GettextCatalog.GetString ("(keyword)") + "</span>";
@@ -1722,7 +1722,7 @@ namespace MonoDevelop.CSharp
 
 		HslColor GetThemeColor (string scope)
 		{
-			return SyntaxHighlightingService.GetColorFromScope (this.colorStyle, scope, ThemeSettingColors.Foreground);
+			return SyntaxHighlightingService.GetColorFromScope (this.colorStyle, scope, EditorThemeColors.Foreground);
 		}
 
 		void AppendVariance (StringBuilder sb, VarianceKind variance)
@@ -1792,7 +1792,7 @@ namespace MonoDevelop.CSharp
 		string Highlight (string str, HslColor color)
 		{
 			if (grayOut) {
-				color = AlphaBlend ((Gdk.Color)color, (Gdk.Color)GetThemeColor (ThemeSettingColors.Background), optionalAlpha);
+				color = AlphaBlend ((Gdk.Color)color, (Gdk.Color)GetThemeColor (EditorThemeColors.Background), optionalAlpha);
 			}
 			return "<span foreground=\"" + color.ToPangoString () + "\">" + str + "</span>";
 		}

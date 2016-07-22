@@ -521,13 +521,13 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				return new Cairo.Color (0, 0, 0);
 			switch (severity) {
 			case DiagnosticSeverity.Error:
-				return SyntaxHighlightingService.GetColor (style, ThemeSettingColors.UnderlineError);
+				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.UnderlineError);
 			case DiagnosticSeverity.Warning:
-				return SyntaxHighlightingService.GetColor (style, ThemeSettingColors.UnderlineWarning);
+				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.UnderlineWarning);
 			case DiagnosticSeverity.Info:
-				return SyntaxHighlightingService.GetColor (style, ThemeSettingColors.UnderlineSuggestion);
+				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.UnderlineSuggestion);
 			case DiagnosticSeverity.Hidden:
-				return SyntaxHighlightingService.GetColor (style, ThemeSettingColors.Background);
+				return SyntaxHighlightingService.GetColor (style, EditorThemeColors.Background);
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -688,7 +688,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.LineTo (7, y);
 			cr.LineTo (0, y + 4);
 			cr.ClosePath ();
-			cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Foreground));
+			cr.SetSourceColor (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground));
 			cr.Fill ();
 		}
 
@@ -710,19 +710,19 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (lineCache[0].Contains (y))
 					return;
 				lineCache[0].Add (y);
-				var usageColor = (Cairo.Color)SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Foreground);
+				var usageColor = (Cairo.Color)SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Foreground);
 				usageColor.A = 0.4;
 				HslColor color;
 				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declariton) != 0) {
-					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.ChangingUsagesRectangle);
+					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
 					if (color.Alpha == 0.0)
-						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.UsagesRectangle);
+						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
-					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.ChangingUsagesRectangle);
+					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
 					if (color.Alpha == 0.0)
-						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.UsagesRectangle);
+						color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0 || (usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Keyword) != 0) {
-					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.UsagesRectangle);
+					color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.UsagesRectangle);
 				} else {
 					color = usageColor;
 				}
@@ -757,7 +757,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.MoveTo (0.5, 0);
 			cr.LineTo (0.5, Allocation.Height);
 			if (TextEditor.EditorTheme != null) {
-				var col = (Xwt.Drawing.Color)SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background);
+				var col = (Xwt.Drawing.Color)SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background);
 				if (!MonoDevelop.Core.Platform.IsWindows) {
 					col.Light *= 0.95;
 				}
@@ -811,9 +811,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			if (MonoDevelop.Core.Platform.IsWindows) {
 				c = prelight ? win81SliderPrelight : win81Slider;
 				//compute new color such that it will produce same color when blended with bg
-				c = AddAlpha (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background), c, 0.5d);
+				c = AddAlpha (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background), c, 0.5d);
 			} else {
-				var brightness = HslColor.Brightness (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background));
+				var brightness = HslColor.Brightness (SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background));
 				c = new Cairo.Color (1 - brightness, 1 - brightness, 1 - brightness, barColorValue * (barAlphaMax - barAlphaMin) + barAlphaMin);
 			}
 			cr.SetSourceColor (c);
@@ -848,7 +848,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			bool isMainSelection = false;
 			if (!TextEditor.TextViewMargin.MainSearchResult.IsInvalid ())
 				isMainSelection = region.Offset == TextEditor.TextViewMargin.MainSearchResult.Offset;
-			var color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.FindHighlight);
+			var color = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.FindHighlight);
 			if (isMainSelection) {
 				// TODO: EditorTheme does that look ok ?
 				if (HslColor.Brightness (color) < 0.5) {
@@ -1059,7 +1059,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			cr.Rectangle (0, 0, allocation.Width, allocation.Height);
 
 			if (TextEditor.EditorTheme != null) {
-				var bgColor = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, ThemeSettingColors.Background);
+				var bgColor = SyntaxHighlightingService.GetColor (TextEditor.EditorTheme, EditorThemeColors.Background);
 				if (MonoDevelop.Core.Platform.IsWindows) {
 					using (var pattern = new Cairo.SolidPattern (bgColor)) {
 						cr.SetSource (pattern);

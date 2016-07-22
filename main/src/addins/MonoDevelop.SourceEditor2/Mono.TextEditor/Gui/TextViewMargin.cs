@@ -152,14 +152,14 @@ namespace Mono.TextEditor
 
 		void HandleFocusInEvent (object o, FocusInEventArgs args)
 		{
-			selectionColor = SyntaxHighlightingService.GetColor (EditorTheme, ThemeSettingColors.Selection);
-			currentLineColor = SyntaxHighlightingService.GetColor (EditorTheme, ThemeSettingColors.LineHighlight);
+			selectionColor = SyntaxHighlightingService.GetColor (EditorTheme, EditorThemeColors.Selection);
+			currentLineColor = SyntaxHighlightingService.GetColor (EditorTheme, EditorThemeColors.LineHighlight);
 		}
 
 		void HandleFocusOutEvent (object o, FocusOutEventArgs args)
 		{
-			selectionColor = SyntaxHighlightingService.GetColor (EditorTheme, ThemeSettingColors.InactiveSelection);
-			currentLineColor = SyntaxHighlightingService.GetColor (EditorTheme, ThemeSettingColors.InactiveLineHighlight);
+			selectionColor = SyntaxHighlightingService.GetColor (EditorTheme, EditorThemeColors.InactiveSelection);
+			currentLineColor = SyntaxHighlightingService.GetColor (EditorTheme, EditorThemeColors.InactiveLineHighlight);
 		}
 
 		void HandleTextReplaced (object sender, TextChangeEventArgs e)
@@ -615,7 +615,7 @@ namespace Mono.TextEditor
 					caretVAdjustmentValue = textEditor.VAdjustment.Value;
 				}
 
-				var fgColor = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Foreground);
+				var fgColor = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Foreground);
 //				var bgColor = textEditor.ColorStyle.Default.CairoBackgroundColor;
 				var line = Document.GetLine (Caret.Line);
 				if (line != null) {
@@ -654,7 +654,7 @@ namespace Mono.TextEditor
 							layout.FontDescription = textEditor.Options.Font;
 							layout.SetText (caretChar.ToString ());
 							cr.MoveTo (caretRectangle.X, caretRectangle.Y);
-							cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Background));
+							cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background));
 							cr.ShowLayout (layout);
 						}
 					}
@@ -905,7 +905,7 @@ namespace Mono.TextEditor
 							}
 							atts.AddForegroundAttribute ((HslColor)color, si, ei);
 
-							if (!chunkStyle.TransparentBackground && GetPixel (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Background)) != GetPixel (chunkStyle.Background)) {
+							if (!chunkStyle.TransparentBackground && GetPixel (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background)) != GetPixel (chunkStyle.Background)) {
 								wrapper.AddBackground (chunkStyle.Background, (int)si, (int)ei);
 							} /*else if (chunk.SpanStack != null && ColorStyle != null) {
 								foreach (var span in chunk.SpanStack) {
@@ -963,10 +963,10 @@ namespace Mono.TextEditor
 						ei += len;
 					}
 
-					atts.AddForegroundAttribute (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Foreground), si, ei);
+					atts.AddForegroundAttribute (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Foreground), si, ei);
 					var hasBackground = wrapper.BackgroundColors.Any (bg => bg.FromIdx <= si && bg.ToIdx >= ei);
 					if (hasBackground)
-						atts.AddBackgroundAttribute (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Background), si, ei);
+						atts.AddBackgroundAttribute (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background), si, ei);
 					atts.InsertOffsetList (textEditor.preeditAttrs, si, ei);
 				}
 				wrapper.LineChars = lineChars;
@@ -1293,7 +1293,7 @@ namespace Mono.TextEditor
 		HslColor SelectionColor {
 			get {
 				if (selectionColor == null)
-					selectionColor = MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (EditorTheme, textEditor.HasFocus ? ThemeSettingColors.Selection : ThemeSettingColors.InactiveSelection);
+					selectionColor = MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (EditorTheme, textEditor.HasFocus ? EditorThemeColors.Selection : EditorThemeColors.InactiveSelection);
 				return selectionColor.Value;
 			}
 		}
@@ -1302,7 +1302,7 @@ namespace Mono.TextEditor
 		HslColor CurrentLineColor {
 			get {
 				if (currentLineColor == null)
-					currentLineColor = MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (EditorTheme, textEditor.HasFocus ? ThemeSettingColors.LineHighlight : ThemeSettingColors.InactiveLineHighlight);
+					currentLineColor = MonoDevelop.Ide.Editor.Highlighting.SyntaxHighlightingService.GetColor (EditorTheme, textEditor.HasFocus ? EditorThemeColors.LineHighlight : EditorThemeColors.InactiveLineHighlight);
 				return currentLineColor.Value;
 			}
 		}
@@ -1348,7 +1348,7 @@ namespace Mono.TextEditor
 
 			var lastColor = new Cairo.Color ();
 			bool firstDraw = true;
-			var foregroundColor = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Foreground);
+			var foregroundColor = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Foreground);
 
 			int lastIndex = -1;
 			int lastPosX = 0;
@@ -1436,7 +1436,7 @@ namespace Mono.TextEditor
 				return;
 			xPos = System.Math.Floor (xPos);
 			cr.Rectangle (xPos, y, width, lineHeight);
-			var color = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.LineHighlight);
+			var color = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.LineHighlight);
 			cr.SetSourceColor (color);
 			cr.Fill ();
 			//double halfLine = (cr.LineWidth / 2.0);
@@ -1475,7 +1475,7 @@ namespace Mono.TextEditor
 				cr.MoveTo (x + 0.5, top);
 				cr.LineTo (x + 0.5, bottom);
 
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.IndentationGuide));
+				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.IndentationGuide));
 				cr.Stroke ();
 			}
 			cr.Restore ();
@@ -1603,7 +1603,7 @@ namespace Mono.TextEditor
 						cr,
 						xPos + textEditor.HAdjustment.Value - TextStartPosition,
 						new Cairo.Rectangle (xPos + startX, startY, endX - startX, LineHeight),
-						SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection),
+						SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection),
 						true
 						);
 				} else {
@@ -1611,7 +1611,7 @@ namespace Mono.TextEditor
 						cr,
 						xPos + textEditor.HAdjustment.Value - TextStartPosition,
 						new Cairo.Rectangle (xPos + startX, startY, textEditor.Allocation.Width - xPos - startX, LineHeight),
-						SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection),
+						SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection),
 						true
 					);
 
@@ -1620,7 +1620,7 @@ namespace Mono.TextEditor
 							cr,
 							xPos,
 							new Cairo.Rectangle (xPos, startY + LineHeight, textEditor.Allocation.Width - xPos, endY - startY - LineHeight),
-							SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection),
+							SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection),
 							true
 						);
 					}
@@ -1629,7 +1629,7 @@ namespace Mono.TextEditor
 						cr,
 						xPos,
 						new Cairo.Rectangle (xPos, endY, endX, LineHeight),
-						SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection),
+						SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection),
 						true
 						);
 				}
@@ -1658,7 +1658,7 @@ namespace Mono.TextEditor
 
 							// TODO : EditorTheme
 							// var color = MainSearchResult.IsInvalid () || MainSearchResult.Offset != firstSearch.Offset ? EditorTheme.SearchResult.Color : EditorTheme.SearchResultMain.Color;
-							var color = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.FindHighlight);
+							var color = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.FindHighlight);
 							cr.SetSourceColor (color);
 							FoldingScreenbackgroundRenderer.DrawRoundRectangle (cr, true, true, s, y, corner, w + 1, LineHeight);
 							cr.Fill ();
@@ -1689,7 +1689,7 @@ namespace Mono.TextEditor
 						startX = xPos;
 						endX = position + wrapper.Width + layout.Width;
 
-						DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection), true);
+						DrawRectangleWithRuler (cr, xPos + textEditor.HAdjustment.Value - TextStartPosition, new Cairo.Rectangle (startX, y, endX - startX, _lineHeight), SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection), true);
 
 						if (lineNumber == Caret.Line &&
 						    textEditor.Options.ShowWhitespaces == ShowWhitespaces.Selection &&
@@ -1813,7 +1813,7 @@ namespace Mono.TextEditor
 			rect = eolMarkerLayoutRect [index];
 			cr.Save ();
 			cr.Translate (x, y + System.Math.Max (0, LineHeight - rect.Height - 1));
-			var col = (Cairo.Color)SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Foreground);
+			var col = (Cairo.Color)SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Foreground);
 
 /*			if (selected && !SelectionColor.TransparentForeground) {
 				col = SelectionColor.Foreground;
@@ -2445,7 +2445,7 @@ namespace Mono.TextEditor
 
 					if (beforeDividerWidth > 0) {
 						cr.DrawLine (
-							SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Ruler),
+							SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Ruler),
 							divider + 0.5, area.Y,
 							divider + 0.5, area.Y + area.Height);
 					}
@@ -2637,7 +2637,7 @@ namespace Mono.TextEditor
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
-			var bgColor = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Background);
+			var bgColor = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background);
 			// TODO : EditorTheme does that look good ?
 			if (Document.IsReadOnly) {
 				if (HslColor.Brightness (bgColor) < 0.5)
@@ -2697,13 +2697,13 @@ namespace Mono.TextEditor
 						this.LineHeight);
 
 					if (BackgroundRenderer == null && isFoldingSelected) {
-						cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection));
+						cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection));
 						cr.Rectangle (foldingRectangle);
 						cr.Fill ();
 					}
 
 					// if (isFoldingSelected && SelectionColor.TransparentForeground) {
-					cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.CollapsedText));
+					cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.CollapsedText));
 					// } else {
 					//	cr.SetSourceColor (isFoldingSelected ? SelectionColor.Foreground : EditorTheme.CollapsedText.Foreground);
 					//}
@@ -2785,7 +2785,7 @@ namespace Mono.TextEditor
 						DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x1 - lineArea.X, lineArea.Height), defaultBgColor, false);
 						lineArea = new Cairo.Rectangle (x1, lineArea.Y, lineArea.Width, lineArea.Height);
 					}
-					DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection), false);
+					DrawRectangleWithRuler (cr, x, new Cairo.Rectangle (lineArea.X, lineArea.Y, x2 - lineArea.X, lineArea.Height), SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection), false);
 					lineArea = new Cairo.Rectangle (x2, lineArea.Y, textEditor.Allocation.Width - lineArea.X, lineArea.Height);
 				}
 			}
@@ -2805,7 +2805,7 @@ namespace Mono.TextEditor
 							LineHeight);
 					}
 					if (lineNr != textEditor.MainSelection.End.Line)
-						DrawRectangleWithRuler (cr, x, lineArea, SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Selection), false);
+						DrawRectangleWithRuler (cr, x, lineArea, SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Selection), false);
 					if (line.Length == 0)
 						DrawIndent (cr, wrapper, line, lx, y);
 				} else if (!(HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) || Caret.Line != lineNr && Caret.Line != startLineNr) {
@@ -2815,7 +2815,7 @@ namespace Mono.TextEditor
 							var spanStyle = textEditor.EditorTheme.GetChunkStyle (span.Color);
 							if (spanStyle == null)
 								continue;
-							if (!spanStyle.TransparentBackground && GetPixel (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.Background)) != GetPixel (spanStyle.Background)) {
+							if (!spanStyle.TransparentBackground && GetPixel (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background)) != GetPixel (spanStyle.Background)) {
 								DrawRectangleWithRuler (cr, x, lineArea, spanStyle.Background, false);
 								break;
 							}

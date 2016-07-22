@@ -125,8 +125,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static ThemeSetting CalculateMissingColors (ThemeSetting themeSetting)
 		{
 			var settings = (Dictionary<string, string>)themeSetting.Settings;
-			settings [ThemeSettingColors.LineNumbersBackground] = HslColor.Parse (settings [ThemeSettingColors.Background]).AddLight (0.01).ToPangoString ();
-			settings [ThemeSettingColors.LineNumbers] = HslColor.Parse (settings [ThemeSettingColors.Foreground]).AddLight (-0.1).ToPangoString ();
+			settings [EditorThemeColors.LineNumbersBackground] = HslColor.Parse (settings [EditorThemeColors.Background]).AddLight (0.01).ToPangoString ();
+			settings [EditorThemeColors.LineNumbers] = HslColor.Parse (settings [EditorThemeColors.Foreground]).AddLight (-0.1).ToPangoString ();
 
 			return new ThemeSetting (themeSetting.Name, themeSetting.Scopes, settings);
 		}

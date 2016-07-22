@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static bool FitsIdeTheme (this EditorTheme editorTheme, Theme theme)
 		{
 			Components.HslColor bgColor;
-			editorTheme.TryGetColor (ThemeSettingColors.Background, out bgColor);
+			editorTheme.TryGetColor (EditorThemeColors.Background, out bgColor);
 			if (theme == Theme.Dark)
 				return (bgColor.L <= 0.5);
 			return (bgColor.L > 0.5);

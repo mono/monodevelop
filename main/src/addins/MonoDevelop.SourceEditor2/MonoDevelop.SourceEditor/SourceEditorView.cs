@@ -3070,7 +3070,7 @@ namespace MonoDevelop.SourceEditor
 						var bracketMatch = new Cairo.Rectangle (fromX + 0.5, metrics.LineYRenderStartPosition + 0.5, toX - fromX - 1, editor.LineHeight - 2);
 						if (editor.TextViewMargin.BackgroundRenderer == null) {
 							
-							cr.SetSourceColor (SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.BracketsForeground));
+							cr.SetSourceColor (SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.BracketsForeground));
 							cr.Rectangle (bracketMatch);
 							cr.Fill ();
 						}

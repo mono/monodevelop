@@ -601,10 +601,10 @@ namespace MonoDevelop.Ide.FindInFiles
 						var searchColor = searchResult.GetBackgroundMarkerColor (highlightStyle);
 						double b1 = HslColor.Brightness (searchColor);
 
-						double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), SyntaxHighlightingService.GetColor (highlightStyle, ThemeSettingColors.Foreground)));
+						double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), SyntaxHighlightingService.GetColor (highlightStyle, EditorThemeColors.Foreground)));
 						double delta = Math.Abs (b1 - b2);
 						if (delta < 0.1) {
-							var color1 = SyntaxHighlightingService.GetColor (highlightStyle, ThemeSettingColors.FindHighlight);
+							var color1 = SyntaxHighlightingService.GetColor (highlightStyle, EditorThemeColors.FindHighlight);
 							if (color1.L + 0.5 > 1.0) {
 								color1.L -= 0.5;
 							} else {

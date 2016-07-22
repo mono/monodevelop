@@ -570,11 +570,11 @@ namespace Mono.TextEditor
 						if (segment.Equals (link.PrimaryLink)) {
 
 
-							fillGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.PrimaryTemplateHighlighted2 : ThemeSettingColors.PrimaryTemplate2);
-							rectangleGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.PrimaryTemplateHighlighted2 : ThemeSettingColors.PrimaryTemplate2);
+							fillGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? EditorThemeColors.PrimaryTemplateHighlighted2 : EditorThemeColors.PrimaryTemplate2);
+							rectangleGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? EditorThemeColors.PrimaryTemplateHighlighted2 : EditorThemeColors.PrimaryTemplate2);
 						} else {
-							fillGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.SecondaryTemplateHighlighted2 : ThemeSettingColors.SecondaryTemplate2);
-							rectangleGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? ThemeSettingColors.SecondaryTemplateHighlighted : ThemeSettingColors.SecondaryTemplate);
+							fillGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? EditorThemeColors.SecondaryTemplateHighlighted2 : EditorThemeColors.SecondaryTemplate2);
+							rectangleGc = SyntaxHighlightingService.GetColor (editor.EditorTheme, isPrimaryHighlighted ? EditorThemeColors.SecondaryTemplateHighlighted : EditorThemeColors.SecondaryTemplate);
 						}
 						
 						// Draw segment
@@ -610,8 +610,8 @@ namespace Mono.TextEditor
 			var width = metrics.Width;
 
 			cr.Rectangle (metrics.X, metrics.Y, metrics.Width, metrics.Height);
-			var lineNumberGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbers);
-			cr.SetSourceColor (editor.Caret.Line == metrics.LineNumber ? SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.LineHighlight) : lineNumberGC);
+			var lineNumberGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineNumbers);
+			cr.SetSourceColor (editor.Caret.Line == metrics.LineNumber ? SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineHighlight) : lineNumberGC);
 			cr.Fill ();
 
 			return true;
@@ -620,7 +620,7 @@ namespace Mono.TextEditor
 		public override void DrawForeground (MonoTextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
 		{
 			var width = metrics.Width;
-			var lineNumberBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbersBackground);
+			var lineNumberBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineNumbersBackground);
 
 
 

@@ -33,7 +33,7 @@ using Cairo;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public static class ThemeSettingColors
+	public static class EditorThemeColors
 	{
 		public static readonly string Background = "background";
 		public static readonly string Foreground = "foreground";
@@ -279,15 +279,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			return new ChunkStyle () {
 				Name = scope,
-				Foreground = GetColor (ThemeSettingColors.Foreground, scope),
-				Background = GetColor (ThemeSettingColors.Background, scope)
+				Foreground = GetColor (EditorThemeColors.Foreground, scope),
+				Background = GetColor (EditorThemeColors.Background, scope)
 			};
 		}
 
 		internal Cairo.Color GetForeground (ChunkStyle chunkStyle)
 		{
 			if (chunkStyle.TransparentForeground)
-				return GetColor (ThemeSettingColors.Foreground, "");
+				return GetColor (EditorThemeColors.Foreground, "");
 			return chunkStyle.Foreground;
 		}
 

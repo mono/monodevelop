@@ -216,7 +216,7 @@ namespace MonoDevelop.Refactoring
 			var style = editor.Options.GetEditorTheme ();
 			g.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 
-			g.SetSourceColor (SyntaxHighlightingService.GetColor (style, ThemeSettingColors.Background));
+			g.SetSourceColor (SyntaxHighlightingService.GetColor (style, EditorThemeColors.Background));
 			g.Fill ();
 
 			int y = verticalTextSpace / 2;
@@ -263,17 +263,17 @@ namespace MonoDevelop.Refactoring
 				for (int i = item.RemoveStart; i < item.RemoveStart + item.Removed; i++) {
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
 
-					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffRemovedBackground));
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffRemovedBackground));
 					g.Fill ();
-					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffRemoved));
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffRemoved));
 					DrawTextLine (g, editor, i, ref y);
 				}
 
 				for (int i = item.InsertStart; i < item.InsertStart + item.Inserted; i++) {
 					g.Rectangle (0, y, Allocation.Width, lineHeight);
-					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffAddedBackground));
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffAddedBackground));
 					g.Fill ();
-					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), ThemeSettingColors.PreviewDiffAdded));
+					g.SetSourceColor (SyntaxHighlightingService.GetColor (editor.Options.GetEditorTheme (), EditorThemeColors.PreviewDiffAdded));
 					DrawTextLine (g, changedDocument, i, ref y);
 				}
 

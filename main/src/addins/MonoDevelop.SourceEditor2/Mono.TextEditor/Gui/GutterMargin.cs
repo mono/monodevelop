@@ -193,8 +193,8 @@ namespace Mono.TextEditor
 		internal protected override void OptionsChanged ()
 		{
 			
-			lineNumberBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbersBackground);
-			lineNumberGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbers);
+			lineNumberBgGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineNumbersBackground);
+			lineNumberGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineNumbers);
 			gutterFont = editor.Options.GutterFont;
 //			gutterFont.Weight = (Pango.Weight)editor.ColorStyle.LineNumbers.FontWeight;
 //			gutterFont.Style = (Pango.Style)editor.ColorStyle.LineNumbers.FontStyle;

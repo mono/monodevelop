@@ -73,7 +73,7 @@ namespace Mono.TextEditor
 			}
 			cr.Rectangle (x, y, Width, lineHeight);
 
-			cr.SetSourceColor (SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.LineNumbersBackground));
+			cr.SetSourceColor (SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.LineNumbersBackground));
 			cr.Fill ();
 		}
 

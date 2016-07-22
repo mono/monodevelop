@@ -160,12 +160,12 @@ namespace Mono.TextEditor
 		protected override bool OnExposeEvent (Gdk.EventExpose ev)
 		{
 			if (textGC == null) {
-				var plainText = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.Foreground);
+				var plainText = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.Foreground);
 
 				textGC = plainText.CreateGC (ev.Window);
 				textBgGC = plainText.CreateGC (ev.Window);
 
-				var collapsedText = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.CollapsedText);
+				var collapsedText = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.CollapsedText);
 
 				foldGC = collapsedText.CreateGC (ev.Window);
 				foldBgGC = collapsedText.CreateGC (ev.Window);

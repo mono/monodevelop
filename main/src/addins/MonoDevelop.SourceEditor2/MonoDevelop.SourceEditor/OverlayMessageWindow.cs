@@ -107,13 +107,13 @@ namespace MonoDevelop.SourceEditor
 				cr.LineWidth = 1;
 				cr.Rectangle (0, 0, Allocation.Width, Allocation.Height);
 
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationTextBackground));
+				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationTextBackground));
 				cr.Fill ();
 				cr.RoundedRectangle (0, 0, Allocation.Width, Allocation.Height, 3);
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationTextBackground));
+				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationTextBackground));
 				cr.FillPreserve ();
 
-				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, ThemeSettingColors.NotificationBorder));
+				cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.NotificationBorder));
 				cr.Stroke();
 			}
 

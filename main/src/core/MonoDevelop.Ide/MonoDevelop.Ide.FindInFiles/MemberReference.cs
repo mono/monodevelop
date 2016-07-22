@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			var key = (ReferenceUsageType & ReferenceUsageType.Write) != 0 ||
 				(ReferenceUsageType & ReferenceUsageType.Declariton) != 0 ?
-				ThemeSettingColors.ChangingUsagesRectangle : ThemeSettingColors.UsagesRectangle;
+				EditorThemeColors.ChangingUsagesRectangle : EditorThemeColors.UsagesRectangle;
 
 			return SyntaxHighlightingService.GetColor (style, key);
 		}

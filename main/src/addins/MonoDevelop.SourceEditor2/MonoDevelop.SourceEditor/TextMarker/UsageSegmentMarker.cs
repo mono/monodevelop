@@ -83,11 +83,11 @@ namespace MonoDevelop.SourceEditor
 				if ((usage.UsageType & ReferenceUsageType.Write) == ReferenceUsageType.Write ||
 					(usage.UsageType & ReferenceUsageType.Declariton) == ReferenceUsageType.Declariton) {
 					
-					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.ChangingUsagesRectangle);
+					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.ChangingUsagesRectangle);
 					if (colorStyle.Alpha == 0.0)
-						colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.UsagesRectangle);
+						colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.UsagesRectangle);
 				} else {
-					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, ThemeSettingColors.UsagesRectangle);
+					colorStyle = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.UsagesRectangle);
 				}
 
 				using (var lg = new LinearGradient (@from + 1, y + 1.5, to , y + editor.LineHeight - 1)) {

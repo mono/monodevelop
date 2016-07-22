@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public virtual Components.HslColor GetBackgroundMarkerColor (EditorTheme style)
 		{
-			return SyntaxHighlightingService.GetColor (style, ThemeSettingColors.FindHighlight);;
+			return SyntaxHighlightingService.GetColor (style, EditorThemeColors.FindHighlight);;
 		}
 	}
 }
