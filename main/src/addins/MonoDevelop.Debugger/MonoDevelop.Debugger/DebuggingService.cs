@@ -47,6 +47,7 @@ using MonoDevelop.Ide.TextEditing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace MonoDevelop.Debugger
 {
@@ -114,6 +115,12 @@ namespace MonoDevelop.Debugger
 
 		public static DebuggerSession DebuggerSession {
 			get { return currentSession?.Session; }
+		}
+
+
+		public static DebuggerSession [] GetSessions ()
+		{
+			return sessions.Keys.ToArray ();
 		}
 
 		public static ProcessInfo [] GetProcesses ()
@@ -309,7 +316,7 @@ namespace MonoDevelop.Debugger
 		public static DebuggerFeatures GetSupportedFeatures (IBuildTarget target)
 		{
 			var fc = new FeatureCheckerHandlerFactory ();
-			var ctx = new ExecutionContext (fc, null, IdeApp.Workspace.ActiveExecutionTarget);
+			var ctx = new Projects.ExecutionContext (fc, null, IdeApp.Workspace.ActiveExecutionTarget);
 
 			target.CanExecute (ctx, IdeApp.Workspace.ActiveConfiguration);
 
@@ -855,6 +862,7 @@ namespace MonoDevelop.Debugger
 		static void NotifyPaused ()
 		{
 			Runtime.RunInMainThread (delegate {
+				stepSwitchCts?.Cancel ();
 				if (PausedEvent != null)
 					PausedEvent (null, EventArgs.Empty);
 				NotifyLocationChanged ();
@@ -911,14 +919,9 @@ namespace MonoDevelop.Debugger
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
-			if (HandleStopQueue ())
-				return;
-
-			foreach (var session in sessions.Keys.ToArray ()) {
-				if (!session.IsRunning)
-					session.StepLine ();
-			}
+			currentSession.Session.StepLine ();
 			NotifyLocationChanged ();
+			DelayHandleStopQueue ();
 		}
 
 		public static void StepOver ()
@@ -927,14 +930,9 @@ namespace MonoDevelop.Debugger
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
-			if (HandleStopQueue ())
-				return;
-
-			foreach (var session in sessions.Keys.ToArray ()) {
-				if (!session.IsRunning)
-					session.NextLine ();
-			}
+			currentSession.Session.NextLine ();
 			NotifyLocationChanged ();
+			DelayHandleStopQueue ();
 		}
 
 		public static void StepOut ()
@@ -943,14 +941,30 @@ namespace MonoDevelop.Debugger
 
 			if (!IsDebugging || !IsPaused || CheckIsBusy ())
 				return;
-			if (HandleStopQueue ())
-				return;
-
-			foreach (var session in sessions.Keys.ToArray ()) {
-				if (!session.IsRunning)
-					session.Finish ();
-			}
+			currentSession.Session.Finish ();
 			NotifyLocationChanged ();
+			DelayHandleStopQueue ();
+		}
+
+		static CancellationTokenSource stepSwitchCts;
+		static void DelayHandleStopQueue ()
+		{
+			stepSwitchCts?.Cancel ();
+			if (StopsQueue.Count > 0) {
+				stepSwitchCts = new CancellationTokenSource ();
+				var token = stepSwitchCts.Token;
+				Task.Delay (500, token).ContinueWith ((t) => {
+					if (token.IsCancellationRequested)
+						return;
+					Runtime.RunInMainThread (() => {
+						if (token.IsCancellationRequested)
+							return;
+						if (IsPaused)//If session is already paused(stepping finished in time), don't switch
+							return;
+						HandleStopQueue ();
+					});
+				});
+			}
 		}
 
 		public static Backtrace CurrentCallStack {
@@ -1002,19 +1016,30 @@ namespace MonoDevelop.Debugger
 					Runtime.RunInMainThread (delegate {
 						NotifyCurrentFrameChanged ();
 					});
-				}
-				else
+				} else
 					currentFrame = -1;
 			}
 		}
 
 		public static ThreadInfo ActiveThread {
 			get {
-				return currentSession.Session.ActiveThread;
+				return currentSession?.Session.ActiveThread;
 			}
 			set {
-				currentSession.Session.ActiveThread = value;
-				SetCurrentBacktrace (value.Backtrace);
+				if (currentSession != null && currentSession.Session.GetProcesses () [0].GetThreads ().Contains (value)) {
+					currentSession.Session.ActiveThread = value;
+					SetCurrentBacktrace (value.Backtrace);
+				} else {
+					foreach (var session in sessions) {
+						if (session.Key.GetProcesses () [0].GetThreads ().Contains (value)) {
+							currentSession = session.Value;
+							currentSession.Session.ActiveThread = value;
+							SetCurrentBacktrace (value.Backtrace);
+							return;
+						}
+					}
+					throw new Exception ("Thread not found in any of active sessions.");
+				}
 			}
 		}
 
