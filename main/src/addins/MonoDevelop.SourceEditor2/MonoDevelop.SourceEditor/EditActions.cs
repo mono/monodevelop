@@ -75,13 +75,8 @@ namespace MonoDevelop.SourceEditor
 			if (!data.IsSomethingSelected && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) {
 				if (data.Caret.Offset > 0) {
 					var line = data.GetLine (data.Caret.Line);
-					var stack = line.StartSpan.Clone();
-					if (stack.Any (s => s.Color == "string.other")) {
-						DeleteActions.Backspace (data);
-						return;
-					}
-					stack = line.StartSpan.Clone();
-					if (stack.Any (s => s.Color == "string.other")) {
+					var stack = data.Document.SyntaxMode.GetLinStartScopeStack (line);
+					if (stack.Any (s => s.Contains ("string"))) {
 						DeleteActions.Backspace (data);
 						return;
 					}

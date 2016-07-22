@@ -62,6 +62,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return high.GetColoredSegments (offset, length);
 		}
 
+		public ImmutableStack<string> GetLinStartScopeStack (IDocumentLine line)
+		{
+			return GetState (line).ScopeStack;
+		}
+
 		List<HighlightState> stateCache = new List<HighlightState> ();
 
 		HighlightState GetState (IDocumentLine line)

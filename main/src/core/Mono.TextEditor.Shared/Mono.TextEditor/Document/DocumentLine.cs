@@ -89,18 +89,6 @@ namespace Mono.TextEditor
 			}
 		}
 
-		CloneableStack<Span> startSpan;
-		static readonly CloneableStack<Span> EmptySpan = new CloneableStack<Span> ();
-
-		internal CloneableStack<Span> StartSpan {
-			get {
-				return startSpan ?? EmptySpan;
-			}
-			set {
-				startSpan = value != null && value.Count == 0 ? null : value;
-			}
-		}
-
 		/// <summary>
 		/// Gets the start offset of the line.
 		/// </summary>
@@ -356,7 +344,7 @@ namespace Mono.TextEditor
 
 		public override string ToString ()
 		{
-			return String.Format ("[DocumentLine: Offset={0}, Length={1}, DelimiterLength={2}, StartSpan={3}]", Offset, LengthIncludingDelimiter, DelimiterLength, StartSpan == null ? "null" : StartSpan.Count.ToString());
+			return String.Format ("[DocumentLine: Offset={0}, Length={1}, DelimiterLength={2}]", Offset, LengthIncludingDelimiter, DelimiterLength);
 		}
 	}
 }

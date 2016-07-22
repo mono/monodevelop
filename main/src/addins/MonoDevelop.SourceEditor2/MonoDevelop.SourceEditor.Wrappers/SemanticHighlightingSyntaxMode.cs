@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
 using Gtk;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -206,6 +207,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					yield return seg;
 				}
 			}
+		}
+
+		ImmutableStack<string> ISyntaxHighlighting.GetLinStartScopeStack (IDocumentLine line)
+		{
+			return syntaxMode.GetLinStartScopeStack (line);
 		}
 	}
 }

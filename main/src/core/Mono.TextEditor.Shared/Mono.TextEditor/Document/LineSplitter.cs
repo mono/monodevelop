@@ -451,7 +451,7 @@ namespace Mono.TextEditor
 
 		TreeNode InsertAfter (TreeNode segment, int length, UnicodeNewline newLine)
 		{
-			var result = new TreeNode (length, newLine) { StartSpan = segment.StartSpan };
+			var result = new TreeNode (length, newLine);
 			if (segment == null) {
 				tree.Root = result;
 				tree.Count = 1;

@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// The starting line at (offset). This is the same as Document.GetLineByOffset (offset).
 		/// </param>
 		IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length);
+		ImmutableStack<string> GetLinStartScopeStack (IDocumentLine line);
 	}
 
 	public sealed class DefaultSyntaxHighlighting : ISyntaxHighlighting
@@ -57,6 +58,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length)
 		{
 			yield return  new ColoredSegment (offset, length, ImmutableStack<string>.Empty.Push (""));
+		}
+
+		public ImmutableStack<string> GetLinStartScopeStack (IDocumentLine line)
+		{
+			return ImmutableStack<string>.Empty;
 		}
 	}
 }

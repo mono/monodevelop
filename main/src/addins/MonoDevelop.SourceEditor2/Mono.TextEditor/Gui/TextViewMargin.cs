@@ -722,12 +722,11 @@ namespace Mono.TextEditor
 				this.Offset = offset;
 				this.Length = length;
 				this.MarkerLength = line.MarkerCount;
-				this.Spans = line.StartSpan;
 			}
 
 			public bool Equals (DocumentLine line, int offset, int length, out bool isInvalid)
 			{
-				isInvalid = MarkerLength != line.MarkerCount || !line.StartSpan.Equals (Spans);
+				isInvalid = MarkerLength != line.MarkerCount;
 				return offset == Offset && Length == length && !isInvalid;
 			}
 		}
@@ -986,7 +985,6 @@ namespace Mono.TextEditor
 				}
 
 				var nextLine = line.NextLine;
-				wrapper.EolSpanStack = nextLine != null ? nextLine.StartSpan : null;
 				atts.AssignTo (wrapper.Layout);
 				atts.Dispose ();
 				int w, h;
@@ -1820,9 +1818,9 @@ namespace Mono.TextEditor
 /*			if (selected && !SelectionColor.TransparentForeground) {
 				col = SelectionColor.Foreground;
 			} else {*/
-				if (line != null && line.NextLine != null && line.NextLine.StartSpan != null && line.NextLine.StartSpan.Count > 0) {
-					var span = line.NextLine.StartSpan.Peek ();
-					var chunkStyle = EditorTheme.GetChunkStyle (span.Color);
+				if (line != null && line.NextLine != null) {
+					var span = textEditor.Document.SyntaxMode.GetLinStartScopeStack (line.NextLine);
+					var chunkStyle = EditorTheme.GetChunkStyle (!span.IsEmpty ? span.Peek () : "");
 					if (chunkStyle != null)
 						col = EditorTheme.GetForeground (chunkStyle);
 				}
