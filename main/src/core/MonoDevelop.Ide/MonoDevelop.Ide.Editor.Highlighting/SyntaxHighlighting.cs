@@ -215,13 +215,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, ScopeStack);
 						//if (curMatch.Scope != null)
 						//	scopeStack = scopeStack.Pop ();
-						curSegmentOffset = PopStack (currentContext, curMatch, matchEndOffset);
+						PopStack (currentContext, curMatch);
+
+						curSegmentOffset = matchEndOffset;
 					} else if (curMatch.Set != null) {
 						if (matchEndOffset - curSegmentOffset > 0)
 							yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, ScopeStack);
 						//if (curMatch.Scope != null)
 						//	scopeStack = scopeStack.Pop ();
-						curSegmentOffset = PopStack (currentContext, curMatch, matchEndOffset);
+						PopStack (currentContext, curMatch);
+						curSegmentOffset = matchEndOffset;
 						var nextContexts = curMatch.Set.GetContexts (highlighting);
 						PushStack (curMatch, nextContexts);
 					} else if (curMatch.Push != null) {
@@ -262,23 +265,28 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 
-			int PopStack (SyntaxContext currentContext, SyntaxMatch curMatch, int matchEndOffset)
+			void PopStack (SyntaxContext currentContext, SyntaxMatch curMatch)
 			{
-				int curSegmentOffset = matchEndOffset;
-				if (curMatch.Pop || ContextStack.Count () > 1) {
-					ContextStack = ContextStack.Pop ();
-					if (!MatchStack.IsEmpty) {
-						if (MatchStack.Peek ()?.Scope != null)
-							ScopeStack = ScopeStack.Pop ();
-						MatchStack = MatchStack.Pop ();
-					}
-					if (currentContext.MetaScope != null)
-						ScopeStack = ScopeStack.Pop ();
-					if (currentContext.MetaContentScope != null)
-						ScopeStack = ScopeStack.Pop ();
+				if (ContextStack.Count () == 1) {
+					MatchStack = MatchStack.Clear ();
+					ScopeStack = ImmutableStack<string>.Empty.Push (highlighting.definition.Scope);
+					return;
 				}
+ 				ContextStack = ContextStack.Pop ();
+				if (!MatchStack.IsEmpty) {
+					if (MatchStack.Peek ()?.Scope != null) {
+						ScopeStack = ScopeStack.Pop ();
+					}
 
-				return curSegmentOffset;
+					MatchStack = MatchStack.Pop ();
+				}
+				if (currentContext.MetaScope != null)
+					ScopeStack = ScopeStack.Pop ();
+				if (currentContext.MetaContentScope != null)
+					ScopeStack = ScopeStack.Pop ();
+				if (curMatch.Scope != null)
+					ScopeStack = ScopeStack.Pop ();
+
 			}
 		}
 	

@@ -143,6 +143,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					yield return match2;
 			}
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[SyntaxContext: Name={0}, MetaScope={1}, MetaContentScope={2}, MetaIncludePrototype={3}]", Name, MetaScope, MetaContentScope, MetaIncludePrototype);
+		}
 	}
 
 	public class SyntaxMatch

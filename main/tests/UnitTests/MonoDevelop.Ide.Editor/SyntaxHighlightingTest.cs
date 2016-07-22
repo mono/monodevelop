@@ -66,7 +66,7 @@ test foo this bar
 		}
 
 		[Test]
-		public void TestPushPop()
+		public void TestPushPop ()
 		{
 			string highlighting = @"%YAML 1.2
 ---
@@ -100,6 +100,37 @@ test foo ""th\tis"" bar test
 			RunSublimeHighlightingTest (highlighting, test);
 
 		}
+
+		[Test]
+		public void TestFallbak ()
+		{
+			string highlighting = @"%YAML 1.2
+---
+name: Test
+file_extensions: [t]
+scope: source
+
+contexts:
+  main:
+    - match: '""'
+      scope: punctuation.definition.string.begin
+      push:
+        - meta_scope: string.quoted.double
+        - match: '""'
+          scope: punctuation.definition.string.end
+          pop: true
+";
+			string test = @"
+""123"" test
+^ punctuation.definition.string.begin
+  ^ string.quoted.double
+    ^ punctuation.definition.string.end
+      ^ source
+";
+			RunSublimeHighlightingTest (highlighting, test);
+
+		}
+
 
 		[Test]
 		public void TestCaptures ()
@@ -604,7 +635,7 @@ public partial class Employee
 public class Coo
 {
     public Object text = ObjectMaker.MakeSomeText (""In order to publish your text, you need to do some texty things 'Like this' and then say hello."");
-                                                                                                                                                    ^ - string
+                                                                                                                                                  ^ - string
     public Vector curves;
     int Zoo()
         ^ entity.name.function
