@@ -41,11 +41,13 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+
 	public static class SyntaxHighlightingService
 	{
 		static Dictionary<string, EditorTheme> styles          = new Dictionary<string, EditorTheme> ();
 		static Dictionary<string, IStreamProvider> styleLookup = new Dictionary<string, IStreamProvider> ();
 		static List<SyntaxHighlightingDefinition> highlightings = new List<SyntaxHighlightingDefinition> ();
+		static List<TmSetting> settings = new List<TmSetting> ();
 
 		public static string[] Styles {
 			get {
@@ -234,6 +236,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading : " + file, e); 
+				}
+			} else if (file.EndsWith (".tmPreferences", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = openStream ()) {
+					var preference = TextMateFormat.ReadPreferences (stream);
+					if (preference != null)
+						settings.Add (preference);
 				}
 			}
 		}

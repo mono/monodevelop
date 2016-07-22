@@ -122,6 +122,30 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new ThemeSetting (name, scopes, settings);
 		}
 
+		internal static TmSetting ReadPreferences (Stream stream)
+		{
+			var dict = PDictionary.FromStream (stream);
+
+			string name = null;
+			var scopes = new List<string> ();
+			var settings = new Dictionary<string, PObject> ();
+
+			PObject val;
+			if (dict.TryGetValue ("name", out val))
+				name = ((PString)val).Value;
+			if (dict.TryGetValue ("scope", out val)) {
+				scopes.AddRange (((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+			}
+			if (dict.TryGetValue ("settings", out val)) {
+				var settingsDictionary = val as PDictionary;
+				foreach (var setting in settingsDictionary) {
+					settings.Add (setting.Key, setting.Value);
+				}
+			}
+
+			return new TmSetting (name, scopes, settings);
+		}
+
 		static ThemeSetting CalculateMissingColors (ThemeSetting themeSetting)
 		{
 			var settings = (Dictionary<string, string>)themeSetting.Settings;

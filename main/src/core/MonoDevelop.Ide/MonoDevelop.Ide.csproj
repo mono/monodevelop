@@ -8624,6 +8624,8 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TextMateFormat.cs" />
     <Compile Include="MonoDevelop.Ide.Desktop\RecentItemsChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlightingDefinition.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TmSetting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorThemeColors.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
