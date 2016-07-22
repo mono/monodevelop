@@ -160,11 +160,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return SyntaxHighlightingService.GetEditorTheme (styleName);
 			} catch (StyleImportException) {
 				error = true;
-				return new EditorTheme (styleName, new System.Collections.Generic.List<TmSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading color style " + styleName, e);
 				error = true;
-				return new EditorTheme (styleName, new System.Collections.Generic.List<TmSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			}
 		
 		}

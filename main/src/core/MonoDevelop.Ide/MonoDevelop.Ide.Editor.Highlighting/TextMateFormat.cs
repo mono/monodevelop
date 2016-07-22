@@ -146,6 +146,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new TmSetting (name, scopes, settings);
 		}
 
+		internal static TmSnippet ReadSnippet (Stream stream)
+		{
+			var dict = PDictionary.FromStream (stream);
+
+			string name = null;
+			string content  = null;
+			string tabTrigger = null;
+			var scopes = new List<string> ();
+
+			PObject val;
+			if (dict.TryGetValue ("name", out val))
+				name = ((PString)val).Value;
+			if (dict.TryGetValue ("content", out val))
+				content = ((PString)val).Value;
+			if (dict.TryGetValue ("tabTrigger", out val))
+				tabTrigger = ((PString)val).Value;
+			if (dict.TryGetValue ("scope", out val)) {
+				scopes.AddRange (((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+			}
+
+			return new TmSnippet (name, scopes, content, tabTrigger);
+		}
+
 		static ThemeSetting CalculateMissingColors (ThemeSetting themeSetting)
 		{
 			var settings = (Dictionary<string, string>)themeSetting.Settings;

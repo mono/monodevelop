@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Linq;
 using Cairo;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -82,6 +83,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			return string.Format ("[ThemeSetting: Name={0}]", Name);
 		}
+
+		internal static bool IsSettingMatch (ImmutableStack<string> scopes, string matchScope)
+		{
+			foreach (var scope in scopes) {
+				if (scope.Contains (matchScope))
+					return true;
+			}
+			return false;
+		}
 	}
-	
 }

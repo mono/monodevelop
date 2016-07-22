@@ -503,7 +503,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			CodeTemplateContext ctx = CodeTemplateContext.Standard;
 			if (templateWidget != null)
 				ctx = templateWidget.GetCodeTemplateContext ();
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (DocumentContext.Name)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Editor)) {
 				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith) {
 					if (ctx == template.CodeTemplateContext)
 						list.Add (new CodeTemplateCompletionData (this, template));
@@ -518,7 +518,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			list.AutoSelect = true;
 			list.AutoCompleteEmptyMatch = true;
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (DocumentContext.Name)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Editor)) {
 				if (template.CodeTemplateType != CodeTemplateType.SurroundsWith) {
 					list.Add (new CodeTemplateCompletionData (this, template));
 				}

@@ -37,6 +37,9 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.Text;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -88,10 +91,85 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var savedTemplates = templates;
 			if (savedTemplates == null || string.IsNullOrEmpty (mimeType))
-				return new CodeTemplate[0];
+				return new CodeTemplate [0];
 			return savedTemplates.ToArray ().Where (t => t != null && t.MimeType == mimeType);
 		}
-		
+
+		public static IEnumerable<CodeTemplate> GetCodeTemplates (TextEditor editor)
+		{
+			foreach (var template in GetCodeTemplates (editor.MimeType))
+				yield return template;
+
+			var scope = editor.SyntaxHighlighting.GetLinStartScopeStack (editor.GetLine (editor.CaretLine));
+			foreach (var setting in SyntaxHighlightingService.GetSnippets (scope)) {
+				var convertedTemplate = ConvertToTemplate (setting);
+				if (convertedTemplate != null)
+					yield return convertedTemplate;
+			}
+		}
+
+		static CodeTemplate ConvertToTemplate (TmSnippet setting)
+		{
+			var result = new CodeTemplate ();
+			result.Shortcut = setting.TabTrigger;
+			var sb = new StringBuilder ();
+			var nameBuilder = new StringBuilder ();
+			bool readDollar = false;
+			bool invariable = false;
+			bool invariablename = false;
+			int number = 0;
+			foreach (var ch in setting.Content) {
+				if (ch == '$') {
+					readDollar = true;
+					continue;
+				}
+				if (readDollar) {
+					if (ch == '{') {
+						number = 0;
+						invariable = true;
+						readDollar = false;
+						continue;
+					} else {
+						sb.Append ("$$");
+						readDollar = false;
+					}	
+				}
+				if (invariable) {
+					if (ch == ':') {
+						invariable = false;
+						invariablename = true;
+						continue;
+					}
+					number = number * 10 + (ch - '0');
+					continue;
+				}
+
+				if (invariablename) {
+					if (ch == '}') {
+						if (number == 0) {
+							sb.Append ("$end$");
+							sb.Append (nameBuilder);
+						} else {
+							sb.Append ("$" + nameBuilder + "$");
+							result.AddVariable (new CodeTemplateVariable (nameBuilder.ToString ()) { Default = nameBuilder.ToString (), IsEditable = true });
+						}
+						nameBuilder.Length = 0;
+						number = 0;
+						invariablename = false;
+						continue;
+					}
+					nameBuilder.Append (ch);
+					continue;
+				}
+				sb.Append (ch);
+			}
+
+			result.Code = sb.ToString ();
+			result.CodeTemplateContext = CodeTemplateContext.Standard;
+			result.CodeTemplateType = CodeTemplateType.Expansion;
+			return result;
+		}
+
 		public static IEnumerable<CodeTemplate> GetCodeTemplatesForFile (string fileName)
 		{
 			return GetCodeTemplates (DesktopService.GetMimeTypeForUri (fileName));

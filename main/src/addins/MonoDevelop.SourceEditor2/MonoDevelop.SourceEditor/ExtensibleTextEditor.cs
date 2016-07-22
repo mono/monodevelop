@@ -574,7 +574,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			bool result = false;
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (EditorExtension.Editor)) {
 				if (template.Shortcut == shortcut) {
 					result = true;
 				} else if (template.Shortcut.StartsWith (shortcut)) {
@@ -588,7 +588,7 @@ namespace MonoDevelop.SourceEditor
 		public bool DoInsertTemplate ()
 		{
 			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (EditorExtension.Editor)) {
 				if (template.Shortcut == shortcut) {
 					InsertTemplate (template, view.WorkbenchWindow.Document.Editor, view.WorkbenchWindow.Document);
 					return true;

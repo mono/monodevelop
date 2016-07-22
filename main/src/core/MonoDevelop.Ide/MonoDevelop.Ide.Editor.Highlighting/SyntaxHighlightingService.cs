@@ -38,6 +38,7 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -48,6 +49,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static Dictionary<string, IStreamProvider> styleLookup = new Dictionary<string, IStreamProvider> ();
 		static List<SyntaxHighlightingDefinition> highlightings = new List<SyntaxHighlightingDefinition> ();
 		static List<TmSetting> settings = new List<TmSetting> ();
+		static List<TmSnippet> snippets = new List<TmSnippet> ();
 
 		public static string[] Styles {
 			get {
@@ -105,6 +107,23 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (theme == Theme.Dark)
 				return (bgColor.L <= 0.5);
 			return (bgColor.L > 0.5);
+		}
+
+		internal static IEnumerable<TmSetting> GetSettings (ImmutableStack<string> scope)
+		{
+			foreach (var setting in settings) {
+				if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
+					continue;
+				yield return setting;
+			}
+		}
+		internal static IEnumerable<TmSnippet> GetSnippets (ImmutableStack<string> scope)
+		{
+			foreach (var setting in snippets) {
+				if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
+					continue;
+				yield return setting;
+			}
 		}
 
 		public static EditorTheme GetEditorTheme (string name)
@@ -242,6 +261,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					var preference = TextMateFormat.ReadPreferences (stream);
 					if (preference != null)
 						settings.Add (preference);
+				}
+			} else if (file.EndsWith (".tmSnippet", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = openStream ()) {
+					var preference = TextMateFormat.ReadSnippet (stream);
+					if (preference != null)
+						snippets.Add (preference);
 				}
 			}
 		}
