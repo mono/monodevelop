@@ -962,11 +962,7 @@ namespace MonoDevelop.Projects.MSBuild
 							};
 							p.BeginErrorReadLine ();
 
-							// first line: path for locating the msbuild (oss) assemblies
-							if (Runtime.Preferences.BuildWithMSBuild)
-								p.StandardInput.WriteLine (binDir);
-							else
-								p.StandardInput.WriteLine ();
+							p.StandardInput.WriteLine (binDir);
 
 							p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
 							if (await Task.WhenAny (processStartedSignal.Task, Task.Delay (5000)) != processStartedSignal.Task)
@@ -1043,9 +1039,6 @@ namespace MonoDevelop.Projects.MSBuild
 
 			if (useMicrosoftBuild) {
 				toolsVersion = "dotnet." + toolsVersion;
-			} else {
-				// We only have a 4.0 builder on non-windows systems
-				toolsVersion = "4.0";
 			}
 
 			var exe = builderDir.Combine (toolsVersion, "MonoDevelop.Projects.Formats.MSBuild.exe");
