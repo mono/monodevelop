@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor.Util
 {
@@ -55,12 +56,6 @@ namespace MonoDevelop.Ide.Editor.Util
 			return result;
 		}
 
-		static readonly string [] emptyList = new string [0];
-		static string [] GetList (IReadonlyTextDocument document, string name)
-		{
-			return TextEditorFactory.GetSyntaxProperties (document.MimeType, name) ?? emptyList;
-		}
-
 		static int StartsWithListMember (IReadonlyTextDocument document, IList<string> list, int offset)
 		{
 			if (document == null)
@@ -85,10 +80,14 @@ namespace MonoDevelop.Ide.Editor.Util
 
 			bool startsInLineComment = StartsInLineComment (document, offset);
 
-			var lineComments = GetList (document, "LineComment");
-			var blockCommentStarts = GetList (document, "BlockCommentStart");
-			var blockCommentEnds = GetList (document, "BlockCommentEnd");
-			var stringQuotes = GetList (document, "StringQuote");
+
+			string lineComment = null;
+			List<string> blockCommentStarts = new List<string> ();
+			List<string> blockCommentEnds = new List<string> ();
+			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
+			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+
+			var stringQuotes = new string [] { "\"", "'" };
 			int depth = -1;
 			while (offset >= 0 && offset < document.Length) {
 				if (offset % 100 == 0 && cancellationToken.IsCancellationRequested)
@@ -148,7 +147,12 @@ namespace MonoDevelop.Ide.Editor.Util
 
 		static bool StartsInLineComment (IReadonlyTextDocument document, int offset)
 		{
-			IList<string> lineComments = GetList (document, "LineComment");
+			string lineComment = null;
+			List<string> blockCommentStarts = new List<string> ();
+			List<string> blockCommentEnds = new List<string> ();
+			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
+			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+
 			var line = document.GetLineByOffset (offset);
 			for (int i = line.Offset; i < offset; i++) {
 				if (StartsWithListMember (document, lineComments, i) >= 0)
@@ -164,10 +168,13 @@ namespace MonoDevelop.Ide.Editor.Util
 			bool isInLineComment = false;
 			int curStringQuote = -1;
 
-			IList<string> lineComments = GetList (document, "LineComment");
-			IList<string> blockCommentStarts = GetList (document, "BlockCommentStart");
-			IList<string> blockCommentEnds = GetList (document, "BlockCommentEnd");
-			IList<string> stringQuotes = GetList (document, "StringQuote");
+			string lineComment = null;
+			List<string> blockCommentStarts = new List<string> ();
+			List<string> blockCommentEnds = new List<string> ();
+			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
+			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+
+			var stringQuotes = new string [] { "\"", "'" };
 
 			for (int i = 0; i < line.Length; i++) {
 				int offset = line.Offset + i;
@@ -207,9 +214,13 @@ namespace MonoDevelop.Ide.Editor.Util
 			bool isInLineComment = false;
 			int curStringQuote = -1;
 
-			IList<string> blockCommentStarts = GetList (document, "BlockCommentStart");
-			IList<string> blockCommentEnds = GetList (document, "BlockCommentEnd");
-			IList<string> stringQuotes = GetList (document, "StringQuote");
+			string lineComment = null;
+			List<string> blockCommentStarts = new List<string> ();
+			List<string> blockCommentEnds = new List<string> ();
+			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
+			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+
+			var stringQuotes = new string [] { "\"", "'" };
 
 			bool startsInLineComment = StartsInLineComment (document, offset);
 			int depth = -1;

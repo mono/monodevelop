@@ -111,14 +111,5 @@ namespace MonoDevelop.Ide.Editor
 			result.InitializeExtensionChain (ctx);
 			return result;
 		}
-
-		public static string[] GetSyntaxProperties (string mimeType, string name)
-		{
-			if (mimeType == null)
-				throw new System.ArgumentNullException ("mimeType");
-			if (name == null)
-				throw new System.ArgumentNullException ("name");
-			return currentFactory.GetSyntaxProperties (mimeType, name);
-		}
 	}
 }

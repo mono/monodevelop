@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -39,9 +40,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		#region Commands
 		void ToggleCodeCommentWithBlockComments ()
 		{
-			var blockStarts = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentStart");
-			var blockEnds = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentEnd");
-			if (blockStarts == null || blockEnds == null || blockStarts.Length == 0 || blockEnds.Length == 0)
+			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
+			string lineComment = null;
+			List<string> blockStarts = new List<string> ();
+			List<string> blockEnds = new List<string> ();
+			GetCommentTags (scope, ref lineComment, blockStarts, blockEnds);
+
+			if (blockStarts.Count == 0 || blockEnds.Count == 0)
 				return;
 
 			string blockStart = blockStarts[0];
@@ -82,12 +87,17 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		bool TryGetLineCommentTag (out string commentTag)
 		{
-			var lineComments = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "LineComment");
-			if (lineComments == null || lineComments.Length == 0) {
+			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
+			string lineComment = null;
+			List<string> blockStarts = new List<string> ();
+			List<string> blockEnds = new List<string> ();
+			GetCommentTags (scope, ref lineComment, blockStarts, blockEnds);
+
+			if (lineComment == null) {
 				commentTag = null;
 				return false;
 			}
-			commentTag = lineComments [0];
+			commentTag = lineComment;
 			return true;
 		}
 
@@ -96,14 +106,33 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		void OnUpdateToggleComment (CommandInfo info)
 		{
-			var lineComments = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "LineComment");
-			if (lineComments != null && lineComments.Length > 0) {
+			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
+			string lineComment = null;
+			List<string> blockStarts = new List<string> ();
+			List<string> blockEnds = new List<string> ();
+			GetCommentTags (scope, ref lineComment, blockStarts, blockEnds);
+
+			if (lineComment != null) {
 				info.Visible = true;
 				return;
 			}
-			var blockStarts = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentStart");
-			var blockEnds = TextEditorFactory.GetSyntaxProperties (Editor.MimeType, "BlockCommentEnd");
-			info.Visible = blockStarts != null && blockStarts.Length > 0 && blockEnds != null && blockEnds.Length > 0;
+			info.Visible = blockStarts != null && blockStarts.Count > 0 && blockEnds != null && blockEnds.Count > 0;
+		}
+
+		internal static void GetCommentTags (System.Collections.Immutable.ImmutableStack<string> scope, ref string lineComment, List<string> blockStarts, List<string> blockEnds)
+		{
+			foreach (var setting in SyntaxHighlightingService.GetSettings (scope).Where (s => s.Settings.ContainsKey ("shellVariables"))) {
+				var vars = (PArray)setting.Settings ["shellVariables"];
+				foreach (var d in vars.OfType<PDictionary> ()) {
+					var name = d.Get<PString> ("name").Value;
+					if (name == "TM_COMMENT_START")
+						lineComment = d.Get<PString> ("value").Value;
+					if (name == "TM_COMMENT_START_2")
+						blockStarts.Add (d.Get<PString> ("value").Value);
+					if (name == "TM_COMMENT_END_2")
+						blockEnds.Add (d.Get<PString> ("value").Value);
+				}
+			}
 		}
 
 		[CommandHandler (EditCommands.ToggleCodeComment)]

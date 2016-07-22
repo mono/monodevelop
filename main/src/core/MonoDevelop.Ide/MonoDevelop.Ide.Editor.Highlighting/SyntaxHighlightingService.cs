@@ -71,7 +71,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return GetEditorTheme (EditorTheme.DefaultDarkThemeName);
 			}
 		}
-
 		public static EditorTheme GetDefaultColorStyle (this Theme theme)
 		{
 			return GetEditorTheme (GetDefaultColorStyleName (theme));
@@ -412,6 +411,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return usp.Name;
 			}
 			return null;
+		}
+
+		internal static ImmutableStack<string> GetScopeForFileName (string fileName)
+		{
+			string scope = null;
+			foreach (var highlight in highlightings) {
+				if (highlight.FileExtensions.Any (ext => fileName.EndsWith ("." + ext, FilePath.PathComparison))) {
+					scope = highlight.Scope;
+					break;
+				}
+			}
+			if (scope == null)
+				return ImmutableStack<string>.Empty;
+
+			return ImmutableStack<string>.Empty.Push (scope);
 		}
 	}
 }

@@ -56,6 +56,8 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Projects.SharedAssetsProjects;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -1021,19 +1023,22 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 			}
 		}
-		
+
 		public static string[] GetCommentTags (string fileName)
 		{
 			//Document doc = IdeApp.Workbench.ActiveDocument;
 			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
 
-			var result = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "LineComment");
-			if (result != null)
-				return result;
+			
+			string lineComment = null;
+			List<string> start = new List<string> ();
+			List<string> end = new List<string> ();
+			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (fileName), ref lineComment, start, end);
 
-			var start = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentStart");
-			var end = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentEnd");
-			if (start != null && end != null)
+			if (lineComment != null)
+				return new string[] { lineComment };
+
+			if (start.Count > 0  && end.Count > 0)
 				return new [] { start[0], end[0] };
 			return null;
 		}
