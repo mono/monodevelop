@@ -28,6 +28,8 @@ using Mono.Addins;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.StringParsing;
+using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -77,13 +79,15 @@ namespace MonoDevelop.Ide.TypeSystem
 			return buildActions.Any (action => string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase));
 		}
 
-		public static bool IsCompileBuildAction(string buildAction)
+		public static bool IsCompileableFile(ProjectFile file)
 		{
+			if (!FilePath.PathComparer.Equals (file.FilePath.Extension, ".cs"))
+				return false;
 			return
-				buildAction == MonoDevelop.Projects.BuildAction.Compile ||
-				buildAction == ApiDefinitionBuildAction ||
-				buildAction == "BundleResource" ||
-				buildAction == "BMacInputs";
+				file.BuildAction == MonoDevelop.Projects.BuildAction.Compile ||
+				file.BuildAction == ApiDefinitionBuildAction ||
+				file.BuildAction == "BundleResource" ||
+				file.BuildAction == "BMacInputs";
 		}
 	}
 }

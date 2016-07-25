@@ -484,7 +484,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					yield break;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
-				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
+				if (TypeSystemParserNode.IsCompileableFile (f)) {
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
 					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f);
@@ -1109,7 +1109,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
 				var projectData = GetProjectData (GetProjectId (project));
-				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+				if (TypeSystemParserNode.IsCompileableFile (projectFile)) {
 					if (projectData.GetDocumentId (projectFile.FilePath) != null) // may already been added by a rename event.
 						return;
 					var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile);
@@ -1165,7 +1165,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				var projectId = GetProjectId (project);
 				var data = GetProjectData (projectId);
-				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+				if (TypeSystemParserNode.IsCompileableFile (projectFile)) {
 					var id = data.GetDocumentId (fargs.OldName);
 					if (id != null) {
 						if (this.IsDocumentOpen (id)) {
