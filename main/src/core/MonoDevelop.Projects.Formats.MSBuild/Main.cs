@@ -41,18 +41,13 @@ namespace MonoDevelop.Projects.MSBuild
 	{
 		static readonly ManualResetEvent exitEvent = new ManualResetEvent (false);
 		static string msbuildBinDir = null;
-		
+
 		[STAThread]
 		public static void Main (string [] args)
 		{
 			try {
-				msbuildBinDir = Console.ReadLine ();
-				if (msbuildBinDir.Trim ().Length > 0) {
-					// if we have a "binDir" argument, then we want to build with
-					// OSS msbuild on OSX/Linux
-					AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler (MSBuildAssemblyResolver);
-				}
-
+				msbuildBinDir = Console.ReadLine ().Trim ();
+				AppDomain.CurrentDomain.AssemblyResolve += MSBuildAssemblyResolver;
 				Start ();
 			} catch (Exception ex) {
 				Console.WriteLine (ex);
@@ -114,17 +109,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 		static Assembly MSBuildAssemblyResolver (object sender, ResolveEventArgs args)
 		{
-			// MSBuild 14.0 assemblies are being redirected to 14.1 assemblies,
-			// so we just need to look for 14.1 here
-			var msbuildAssembles = new string[] {
+			var msbuildAssemblies = new string[] {
 							"Microsoft.Build",
+							"Microsoft.Build.Engine",
 							"Microsoft.Build.Framework",
 							"Microsoft.Build.Tasks.Core",
 							"Microsoft.Build.Utilities.Core" };
 
 			var asmName = new AssemblyName (args.Name);
-			if (msbuildAssembles.Any (n => String.Compare (n, asmName.Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-						&& asmName.Version < new Version (14, 1))
+			if (!msbuildAssemblies.Any (n => string.Compare (n, asmName.Name, StringComparison.OrdinalIgnoreCase) == 0))
 				return null;
 
 			string fullPath = Path.Combine (msbuildBinDir, asmName.Name + ".dll");
