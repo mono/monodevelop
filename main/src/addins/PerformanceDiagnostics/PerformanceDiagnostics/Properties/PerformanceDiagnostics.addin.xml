@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Command id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
+			defaultHandler="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler"
+			_label="Start monitoring UIThread hangs" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/MainMenu/Help/Diagnostics">
+		<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
+		<Section id="PerformanceDiagnostics"
+			_label="Performance Diagnostics"
+			insertafter="VersionControl">
+			<Section id="General"
+				_label="General"
+				fill="true"
+				class="PerformanceDiagnosticsAddIn.GlobalOptionsPanel" />
+		</Section>
+	</Extension>
+</ExtensionModel>
