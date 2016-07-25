@@ -112,7 +112,6 @@ namespace MonoDevelop.PackageManagement
 			if (uri.IsFile) {
 				var request = WebRequest.Create (uri);
 				response = request.GetResponse ();
-				return request.GetResponse ().GetResponseStream ();
 			} else {
 				var httpClient = new HttpClient (uri);
 				response = httpClient.GetResponse ();
