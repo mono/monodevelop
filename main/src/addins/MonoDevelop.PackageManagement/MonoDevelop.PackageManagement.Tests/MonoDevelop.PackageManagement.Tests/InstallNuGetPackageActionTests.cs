@@ -31,6 +31,7 @@ using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
+using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Resolver;
 using NuGet.Versioning;
@@ -88,6 +89,15 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var projectAction = new FakeNuGetProjectAction (packageId, version, NuGetProjectActionType.Install);
 			packageManager.InstallActions.Add (projectAction);
+		}
+
+		void ThrowPackageAlreadyInstalledExceptionOnPreviewInstallPackageAsync (string message)
+		{
+			packageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				throw new InvalidOperationException(
+					message,
+					new PackageAlreadyInstalledException(message));
+			};
 		}
 
 		[Test]
@@ -418,6 +428,34 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual ("Test", packageManager.SetDirectInstallPackageIdentity.Id);
 			Assert.AreEqual ("1.2", packageManager.SetDirectInstallPackageIdentity.Version.ToString ());
+		}
+
+		[Test]
+		public void Execute_PackageAlreadyInstalled_ExceptionNotThrownAndAndInstallCompletesSuccessfullyWithMessageLogged ()
+		{
+			CreateAction ("Test", "1.2");
+			action.LicensesMustBeAccepted = false;
+			ThrowPackageAlreadyInstalledExceptionOnPreviewInstallPackageAsync ("Package already installed");
+
+			action.Execute ();
+
+			Assert.AreEqual ("Package already installed", action.ProjectContext.LastMessageLogged);
+			Assert.AreEqual (MessageLevel.Info, action.ProjectContext.LastLogLevel);
+		}
+
+		[Test]
+		public void Execute_InvalidOperationExceptionThrownDuringPreview_ExceptionIsThrown ()
+		{
+			CreateAction ("Test", "1.2");
+			action.LicensesMustBeAccepted = false;
+			packageManager.BeforePreviewInstallPackageAsyncAction = () => {
+				throw new InvalidOperationException ("Error");
+			};
+
+			var ex = Assert.Throws<AggregateException> (() => action.Execute ());
+			var invalidOperationException = ex.GetBaseException () as InvalidOperationException;
+
+			Assert.AreEqual ("Error", invalidOperationException.Message);
 		}
 	}
 }
