@@ -68,24 +68,11 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		{
 			this.editor = editor;
 			var startScope = editor.SyntaxHighlighting.GetLinStartScopeStack (editor.GetLine (1));
-			foreach (var setting in SyntaxHighlightingService.GetSettings (startScope)) {
-				PObject val;
-				if (setting.TryGetSetting ("increaseIndentPattern", out val)) {
-					increaseIndentPattern = new Regex (((PString)val).Value);
-				}
-
-				if (setting.TryGetSetting ("indentNextLinePattern", out val)) {
-					indentNextLinePattern = new Regex (((PString)val).Value);
-				}
-
-				if (setting.TryGetSetting ("decreaseIndentPattern", out val)) {
-					decreaseIndentPattern = new Regex (((PString)val).Value);
-				}
-
-				if (setting.TryGetSetting ("unIndentedLinePattern", out val)) {
-					unIndentedLinePattern = new Regex (((PString)val).Value);
-				}
-			}
+			var lang = TextMateLanguage.Create (startScope);
+			increaseIndentPattern = lang.IncreaseIndentPattern;
+			decreaseIndentPattern = lang.DecreaseIndentPattern;
+			indentNextLinePattern = lang.IndentNextLinePattern;
+			unIndentedLinePattern = lang.UnIndentedLinePattern;
 		}
 
 		/// <summary>

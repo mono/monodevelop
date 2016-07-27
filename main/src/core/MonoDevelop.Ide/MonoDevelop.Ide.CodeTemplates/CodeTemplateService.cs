@@ -40,6 +40,7 @@ using System.Linq;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Text;
+using MonoDevelop.Ide.Editor.TextMate;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -101,7 +102,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				yield return template;
 
 			var scope = editor.SyntaxHighlighting.GetLinStartScopeStack (editor.GetLine (editor.CaretLine));
-			foreach (var setting in SyntaxHighlightingService.GetSnippets (scope)) {
+			foreach (var setting in TextMateLanguage.Create (scope).Snippets) {
 				var convertedTemplate = ConvertToTemplate (setting);
 				if (convertedTemplate != null)
 					yield return convertedTemplate;

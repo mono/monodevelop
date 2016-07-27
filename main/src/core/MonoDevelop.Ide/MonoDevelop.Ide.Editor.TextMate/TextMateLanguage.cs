@@ -30,6 +30,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
@@ -95,6 +96,21 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			}
 		}
 
+		Lazy<Regex> cancelCompletion;
+		internal Regex CancelCompletion { get { return cancelCompletion.Value; } }
+
+		Lazy<Regex> increaseIndentPattern;
+		internal Regex IncreaseIndentPattern { get { return increaseIndentPattern.Value; } }
+
+		Lazy<Regex> decreaseIndentPattern;
+		internal Regex DecreaseIndentPattern { get { return decreaseIndentPattern.Value; } }
+
+		Lazy<Regex> indentNextLinePattern;
+		internal Regex IndentNextLinePattern { get { return indentNextLinePattern.Value; } }
+
+		Lazy<Regex> unIndentedLinePattern;
+		internal Regex UnIndentedLinePattern { get { return unIndentedLinePattern.Value; } }
+
 		void ExtractComments ()
 		{
 			lineComments = new List<string> ();
@@ -115,6 +131,26 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		TextMateLanguage (System.Collections.Immutable.ImmutableStack<string> scope)
 		{
 			this.scope = scope;
+			cancelCompletion = new Lazy<Regex> (() => ReadSetting ("cancelCompletion"));
+			increaseIndentPattern = new Lazy<Regex> (() => ReadSetting ("increaseIndentPattern"));
+			decreaseIndentPattern = new Lazy<Regex> (() => ReadSetting ("decreaseIndentPattern"));
+			indentNextLinePattern = new Lazy<Regex> (() => ReadSetting ("indentNextLinePattern"));
+			unIndentedLinePattern = new Lazy<Regex> (() => ReadSetting ("unIndentedLinePattern"));
+		}
+
+		Regex ReadSetting (string settingName)
+		{
+			foreach (var setting in SyntaxHighlightingService.GetSettings (scope)) {
+				PObject val;
+				if (setting.TryGetSetting (settingName, out val)) {
+					try {
+						return new Regex (((PString)val).Value);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while parsing " + settingName + ": " + val, e);
+					}
+				}
+			}
+			return null;
 		}
 
 		public static TextMateLanguage Create (System.Collections.Immutable.ImmutableStack<string> scope) => new TextMateLanguage (scope);
