@@ -67,7 +67,6 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		public TextMateDocumentIndentEngine(TextEditor editor)
 		{
 			this.editor = editor;
-
 			var startScope = editor.SyntaxHighlighting.GetLinStartScopeStack (editor.GetLine (1));
 			foreach (var setting in SyntaxHighlightingService.GetSettings (startScope)) {
 				PObject val;
@@ -157,7 +156,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			if (unIndentedLinePattern != null) {
 				var match = unIndentedLinePattern.Match (sourceText, lineOffset, line.LengthIncludingDelimiter);
 				if (match.Success)
-					indentLevel =  0;
+					indentLevel = 0;
 			}
 		}
 

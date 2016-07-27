@@ -32,7 +32,18 @@ namespace MonoDevelop.Ide.Editor.TextMate
 	{
 		protected override void Initialize ()
 		{
+			Editor.MimeTypeChanged += Editor_MimeTypeChanged;
+			Editor_MimeTypeChanged (this, EventArgs.Empty);
+		}
+
+		void Editor_MimeTypeChanged (object sender, EventArgs e)
+		{
 			Editor.SetIndentationTracker (new TextMateIndentationTracker (Editor));
+		}
+
+		public override void Dispose ()
+		{
+			Editor.MimeTypeChanged -= Editor_MimeTypeChanged;
 		}
 
 		public override bool KeyPress (KeyDescriptor descriptor)
