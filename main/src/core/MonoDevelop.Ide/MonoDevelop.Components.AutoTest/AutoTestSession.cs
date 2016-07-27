@@ -566,14 +566,16 @@ namespace MonoDevelop.Components.AutoTest
 		public bool NSASetText (string identifier, string text)
 		{
 #if MAC
-			var appAccessibleChildren = NSApplication.SharedApplication.AccessibilityChildren;
-			var child = FindAccessibleChild (appAccessibleChildren, identifier);
+			NSApplication.SharedApplication.InvokeOnMainThread (() => {
+				var appAccessibleChildren = NSApplication.SharedApplication.AccessibilityChildren;
+				var child = FindAccessibleChild (appAccessibleChildren, identifier) as NSTextField;
 
-			if (child == null) {
-				return false;
-			}
+				if (child == null) {
+					return;
+				}
 
-			child.AccessibilityValue = new NSString (text);
+				child.StringValue = text;
+			});
 			return true;
 #else
 			return false;
@@ -583,14 +585,16 @@ namespace MonoDevelop.Components.AutoTest
 		public bool NSAClickButton (string identifier)
 		{
 #if MAC
-			var appAccessibleChildren = NSApplication.SharedApplication.AccessibilityChildren;
-			var child = FindAccessibleChild (appAccessibleChildren, identifier);
+			NSApplication.SharedApplication.InvokeOnMainThread (() => {
+				var appAccessibleChildren = NSApplication.SharedApplication.AccessibilityChildren;
+				var child = FindAccessibleChild (appAccessibleChildren, identifier) as NSControl;
 
-			if (child == null) {
-				return false;
-			}
+				if (child == null) {
+					return;
+				}
 
-			child.AccessibilityPerformPress ();
+				child.PerformClick (null);
+			});
 			return true;
 #else
 			return false;
