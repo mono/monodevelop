@@ -96,6 +96,33 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			}
 		}
 
+		List<Tuple<string, string>> highlightPairs;
+		public IReadOnlyList<Tuple<string, string>> HighlightPairs {
+			get {
+				if (highlightPairs != null)
+					return highlightPairs;
+				highlightPairs = new List<Tuple<string, string>> ();
+				foreach (var setting in SyntaxHighlightingService.GetSettings (scope)) {
+					PObject val;
+					if (setting.TryGetSetting ("highlightPairs", out val)) {
+						var arr = val as PArray;
+						if (arr == null)
+							continue;
+						foreach (var pair in arr.OfType<PArray> ()) {
+							if (pair.Count != 2)
+								continue;
+							try {
+								highlightPairs.Add (Tuple.Create (((PString)pair [0]).Value, ((PString)pair [1]).Value));
+							} catch (Exception e) {
+								LoggingService.LogError ("Error while loading highlight pairs from :" + setting);
+							}
+						}
+					}
+				}
+				return highlightPairs;
+			}
+		}
+
 		Lazy<Regex> cancelCompletion;
 		internal Regex CancelCompletion { get { return cancelCompletion.Value; } }
 
