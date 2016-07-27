@@ -58,6 +58,7 @@ using MonoDevelop.Components.Extensions;
 using MonoDevelop.Projects.SharedAssetsProjects;
 using MonoDevelop.Ide.Editor.Extension;
 using System.Collections.Immutable;
+using MonoDevelop.Ide.Editor.TextMate;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -1029,17 +1030,14 @@ namespace MonoDevelop.Ide.Gui
 			//Document doc = IdeApp.Workbench.ActiveDocument;
 			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
 
-			
-			string lineComment = null;
-			List<string> start = new List<string> ();
-			List<string> end = new List<string> ();
-			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (fileName), ref lineComment, start, end);
 
-			if (lineComment != null)
-				return new string[] { lineComment };
+			var lang = TextMateLanguage.Create (SyntaxHighlightingService.GetScopeForFileName (fileName));
 
-			if (start.Count > 0  && end.Count > 0)
-				return new [] { start[0], end[0] };
+			if (lang.LineComments.Count > 0)
+				return lang.LineComments.ToArray ();
+
+			if (lang.BlockComments.Count> 0)
+				return new [] { lang.BlockComments[0].Item1, lang.BlockComments[0].Item2 };
 			return null;
 		}
 

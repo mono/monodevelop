@@ -32,6 +32,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.TextMate;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -41,10 +42,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 		void ToggleCodeCommentWithBlockComments ()
 		{
 			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
-			string lineComment = null;
-			List<string> blockStarts = new List<string> ();
-			List<string> blockEnds = new List<string> ();
-			GetCommentTags (scope, ref lineComment, blockStarts, blockEnds);
+			var lang = TextMateLanguage.Create (scope);
+			var lineComments = lang.LineComments.ToArray ();
+			var blockStarts = lang.BlockComments.Select (b => b.Item1).ToList ();
+			var blockEnds = lang.BlockComments.Select (b => b.Item2).ToList ();
 
 			if (blockStarts.Count == 0 || blockEnds.Count == 0)
 				return;
@@ -88,16 +89,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		bool TryGetLineCommentTag (out string commentTag)
 		{
 			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
-			string lineComment = null;
-			List<string> blockStarts = new List<string> ();
-			List<string> blockEnds = new List<string> ();
-			GetCommentTags (scope, ref lineComment, blockStarts, blockEnds);
+			var lang = TextMateLanguage.Create (scope);
 
-			if (lineComment == null) {
+			if (lang.LineComments.Count == 0) {
 				commentTag = null;
 				return false;
 			}
-			commentTag = lineComment;
+			commentTag = lang.LineComments [0];
 			return true;
 		}
 
@@ -107,32 +105,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 		void OnUpdateToggleComment (CommandInfo info)
 		{
 			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
-			string lineComment = null;
-			List<string> blockStarts = new List<string> ();
-			List<string> blockEnds = new List<string> ();
-			GetCommentTags (scope, ref lineComment, blockStarts, blockEnds);
-
-			if (lineComment != null) {
-				info.Visible = true;
-				return;
-			}
-			info.Visible = blockStarts != null && blockStarts.Count > 0 && blockEnds != null && blockEnds.Count > 0;
-		}
-
-		internal static void GetCommentTags (System.Collections.Immutable.ImmutableStack<string> scope, ref string lineComment, List<string> blockStarts, List<string> blockEnds)
-		{
-			foreach (var setting in SyntaxHighlightingService.GetSettings (scope).Where (s => s.Settings.ContainsKey ("shellVariables"))) {
-				var vars = (PArray)setting.Settings ["shellVariables"];
-				foreach (var d in vars.OfType<PDictionary> ()) {
-					var name = d.Get<PString> ("name").Value;
-					if (name == "TM_COMMENT_START")
-						lineComment = d.Get<PString> ("value").Value;
-					if (name == "TM_COMMENT_START_2")
-						blockStarts.Add (d.Get<PString> ("value").Value);
-					if (name == "TM_COMMENT_END_2")
-						blockEnds.Add (d.Get<PString> ("value").Value);
-				}
-			}
+			var lang = TextMateLanguage.Create (scope);
+			info.Visible = lang.LineComments.Count + lang.BlockComments.Count > 0;
 		}
 
 		[CommandHandler (EditCommands.ToggleCodeComment)]

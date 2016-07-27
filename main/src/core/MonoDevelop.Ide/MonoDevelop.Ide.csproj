@@ -8631,6 +8631,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateIndentationTracker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\IIndentEngine.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateDocumentIndentEngine.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateLanguage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

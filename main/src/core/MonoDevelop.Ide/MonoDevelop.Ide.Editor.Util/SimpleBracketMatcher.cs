@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.TextMate;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor.Util
 {
@@ -80,12 +82,10 @@ namespace MonoDevelop.Ide.Editor.Util
 
 			bool startsInLineComment = StartsInLineComment (document, offset);
 
-
-			string lineComment = null;
-			List<string> blockCommentStarts = new List<string> ();
-			List<string> blockCommentEnds = new List<string> ();
-			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
-			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+			var lang = TextMateLanguage.Create (SyntaxHighlightingService.GetScopeForFileName (document.FileName));
+			var lineComments = lang.LineComments.ToArray ();
+			var blockCommentStarts = lang.BlockComments.Select (b => b.Item1).ToList ();
+			var blockCommentEnds = lang.BlockComments.Select (b => b.Item2).ToList ();
 
 			var stringQuotes = new string [] { "\"", "'" };
 			int depth = -1;
@@ -147,11 +147,10 @@ namespace MonoDevelop.Ide.Editor.Util
 
 		static bool StartsInLineComment (IReadonlyTextDocument document, int offset)
 		{
-			string lineComment = null;
-			List<string> blockCommentStarts = new List<string> ();
-			List<string> blockCommentEnds = new List<string> ();
-			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
-			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+			var lang = TextMateLanguage.Create (SyntaxHighlightingService.GetScopeForFileName (document.FileName));
+			var lineComments = lang.LineComments.ToArray ();
+			var blockCommentStarts = lang.BlockComments.Select (b => b.Item1).ToList ();
+			var blockCommentEnds = lang.BlockComments.Select (b => b.Item2).ToList ();
 
 			var line = document.GetLineByOffset (offset);
 			for (int i = line.Offset; i < offset; i++) {
@@ -168,11 +167,10 @@ namespace MonoDevelop.Ide.Editor.Util
 			bool isInLineComment = false;
 			int curStringQuote = -1;
 
-			string lineComment = null;
-			List<string> blockCommentStarts = new List<string> ();
-			List<string> blockCommentEnds = new List<string> ();
-			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
-			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+			var lang = TextMateLanguage.Create (SyntaxHighlightingService.GetScopeForFileName (document.FileName));
+			var lineComments = lang.LineComments.ToArray ();
+			var blockCommentStarts = lang.BlockComments.Select (b => b.Item1).ToList ();
+			var blockCommentEnds = lang.BlockComments.Select (b => b.Item2).ToList ();
 
 			var stringQuotes = new string [] { "\"", "'" };
 
@@ -213,12 +211,10 @@ namespace MonoDevelop.Ide.Editor.Util
 			bool isInBlockComment = false;
 			bool isInLineComment = false;
 			int curStringQuote = -1;
-
-			string lineComment = null;
-			List<string> blockCommentStarts = new List<string> ();
-			List<string> blockCommentEnds = new List<string> ();
-			DefaultCommandTextEditorExtension.GetCommentTags (SyntaxHighlightingService.GetScopeForFileName (document.FileName), ref lineComment, blockCommentStarts, blockCommentEnds);
-			string [] lineComments = lineComment != null ? new string [] { lineComment } : new string [0];
+			var lang = TextMateLanguage.Create (SyntaxHighlightingService.GetScopeForFileName (document.FileName));
+			var lineComments = lang.LineComments;
+			var blockCommentStarts = lang.BlockComments.Select (b => b.Item1).ToList ();
+			var blockCommentEnds = lang.BlockComments.Select (b => b.Item2).ToList ();
 
 			var stringQuotes = new string [] { "\"", "'" };
 
