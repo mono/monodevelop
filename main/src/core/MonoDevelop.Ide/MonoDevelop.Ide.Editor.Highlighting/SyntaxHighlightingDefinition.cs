@@ -183,7 +183,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return cachedRegex;
 			hasRegex = true;
 			try {
-				cachedRegex = new Regex (Match);
+				cachedRegex = new Regex (Match, RegexOptions.Compiled);
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Warning regex : '" + Match + "' can't be parsed.", e);
 			}

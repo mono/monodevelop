@@ -1352,8 +1352,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
         /// <devdoc>
         /// </devdoc>
         protected bool UseOptionC() {
-		/* Mono: Set to false until we investigate  https://bugzilla.xamarin.com/show_bug.cgi?id=25671 */
-	    return false;
             return(roptions & RegexOptions.Compiled) != 0;
         }
 #endif

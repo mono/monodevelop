@@ -7,6 +7,7 @@
 // The RegexCompiler class is internal to the Regex package.
 // It translates a block of RegexCode to MSIL, and creates a
 // subclass of the RegexRunner type.
+using MonoDevelop.Core.Text;
 
 
 #if !SILVERLIGHT && !FULL_AOT_RUNTIME
@@ -164,7 +165,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
                 _checkTimeoutM  = RegexRunnerMethod("CheckTimeout");
 
                 _chartolowerM   = typeof(Char).GetMethod("ToLower", new Type[] {typeof(Char), typeof(CultureInfo)});
-                _getcharM       = typeof(String).GetMethod("get_Chars", new Type[] {typeof(int)});
+				_getcharM       = typeof(ITextSource).GetMethod("get_Item", new Type[] {typeof(int)});
                 _getCurrentCulture   = typeof(CultureInfo).GetMethod("get_CurrentCulture");
                 _getInvariantCulture = typeof(CultureInfo).GetMethod("get_InvariantCulture");
                 
@@ -1534,7 +1535,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting.RegexEngine {
          * Declares a local string
          */
         internal LocalBuilder DeclareString() {
-            return _ilg.DeclareLocal(typeof(string));
+			return _ilg.DeclareLocal(typeof(ITextSource));
         }
         
         /*
