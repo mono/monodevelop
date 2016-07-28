@@ -218,7 +218,7 @@ namespace MonoDevelop.CSharp
 				workspaces = null;
 				documentInfos = null;
 			}
-
+			Dictionary<DocumentId, CancellationTokenSource> documentChangedCts = new Dictionary<DocumentId, CancellationTokenSource> ();
 			async void Ws_WorkspaceChanged (object sender, WorkspaceChangeEventArgs e)
 			{
 				var ws = (Microsoft.CodeAnalysis.Workspace)sender;
@@ -250,9 +250,30 @@ namespace MonoDevelop.CSharp
 					case WorkspaceChangeKind.DocumentChanged:
 						var doc = currentSolution.GetDocument (e.DocumentId);
 						if (doc != null) {
-							await Task.Run (async delegate {
-								await UpdateDocument (documentInfos, doc, default (CancellationToken));
-							}).ConfigureAwait (false);
+							CancellationTokenSource tcs;
+							lock(documentChangedCts) {
+								CancellationTokenSource oldTcs;
+								if (documentChangedCts.TryGetValue (e.DocumentId, out oldTcs)) {
+									oldTcs.Cancel ();
+								}
+								tcs = new CancellationTokenSource ();
+								documentChangedCts [e.DocumentId] = tcs;
+							}
+							try {
+								//Delaying parsing of new content for 1 second shouldn't be noticable by user
+								//since he would have to edit file and instantlly go to search for newly written member...
+								await Task.Delay (1000, tcs.Token).ConfigureAwait (false);
+								await Task.Run (delegate {
+									return UpdateDocument (documentInfos, doc, tcs.Token);
+								}, tcs.Token).ConfigureAwait (false);
+							} finally {
+								lock (documentChangedCts) {
+									//cts might be replaced by newer call cts
+									CancellationTokenSource existingCts;
+									if (documentChangedCts.TryGetValue (e.DocumentId, out existingCts) && tcs == existingCts)
+										documentChangedCts.Remove (e.DocumentId);
+								}
+							}
 						}
 						break;
 					}
