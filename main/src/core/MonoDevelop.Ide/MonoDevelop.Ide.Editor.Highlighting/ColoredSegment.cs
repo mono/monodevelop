@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// </summary>
 		public string ColorStyleKey {
 			get {
-				return scopeStack.Peek ();
+				return scopeStack.IsEmpty ? "" : scopeStack.Peek ();
 			}
 		}
 

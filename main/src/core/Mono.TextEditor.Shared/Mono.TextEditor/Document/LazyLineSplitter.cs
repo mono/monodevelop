@@ -51,13 +51,17 @@ namespace Mono.TextEditor
 
 			public override DocumentLine NextLine {
 				get {
-					return splitter.Get (lineNumber + 1);
+					if (lineNumber + 2 >= splitter.Count)
+						return null;
+					return splitter.Get (lineNumber + 2);
 				}
 			}
 
 			public override DocumentLine PreviousLine {
 				get {
-					return splitter.Get (lineNumber - 1);
+					if (lineNumber == 0)
+						return null;
+					return splitter.Get (lineNumber);
 				}
 			}
 
@@ -66,6 +70,10 @@ namespace Mono.TextEditor
 				this.splitter = splitter;
 				this.lineNumber = lineNumber;
 				Offset = offset;
+			}
+			public override string ToString ()
+			{
+				return string.Format ("[LineSegment: lineNumber={0}, Offset={1}]", lineNumber, Offset);
 			}
 		}
 

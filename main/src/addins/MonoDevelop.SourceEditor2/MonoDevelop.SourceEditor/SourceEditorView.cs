@@ -2766,7 +2766,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (this.isDisposed || !TextEditor.Options.ShowFoldMargin)
 				return;
-			TextEditor.Document.UpdateFoldSegments (foldings.Cast<FoldSegment> ().ToList (), true);
+			var convertedList = foldings.Select (f => {
+				if (f is FoldSegment)
+					return (FoldSegment)f;
+				return new FoldSegment (TextEditor.Document, f.CollapsedText, f.Offset, f.Length, f.FoldingType);
+			}).ToList ();
+
+			TextEditor.Document.UpdateFoldSegments (convertedList, true);
 		}
 
 		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsContaining (int offset)
