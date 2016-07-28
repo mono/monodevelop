@@ -107,6 +107,13 @@ namespace MonoDevelop.Ide.Execution
 				runButton.Label = SelectedExecutionModeSet.Name;
 		}
 
+		protected override void OnCommandActivated (Command cmd)
+		{
+			if (cmd == runButton.Command)
+				editor.Save ();
+			base.OnCommandActivated (cmd);
+		}
+
 		List<ExecutionConfiguration> GetExecutionConfigurations ()
 		{
 			var ctx = new CommandExecutionContext (project, h => project.CanExecute (new ExecutionContext (h, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration, runConfig));
