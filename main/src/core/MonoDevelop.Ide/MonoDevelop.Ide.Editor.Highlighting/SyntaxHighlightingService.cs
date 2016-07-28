@@ -207,8 +207,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					string styleName = ScanOldJsonStyle (stream);
 					if (!string.IsNullOrEmpty (styleName)) {
 						styleLookup [styleName] = getStreamProvider ();
-					} else {
-						LoggingService.LogError ("Invalid .json syntax sheme file : " + file);
 					}
 				}
 			} else if (file.EndsWith (".tmTheme", StringComparison.OrdinalIgnoreCase)) {
@@ -388,9 +386,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
-			var ext = fileName.Extension;
+			var ext = fileName.Extension.TrimStart ('.');
 			foreach (var h in highlightings) {
-				if (h.FileExtensions.Contains (ext))
+				if (h.FileExtensions.Any (e => FilePath.PathComparer.Compare (e, ext) == 0))
 					return h;
 				foreach (var fe in h.FileExtensions) {
 					var mime = DesktopService.GetMimeTypeForUri ("a." + fe);

@@ -165,7 +165,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					var r = m.GetRegex ();
 					if (r == null)
 						continue;
-
 					var possibleMatch = r.Match (highlighting.Document, offset, length);
 					if (possibleMatch.Success) {
 						if (match == null || possibleMatch.Index < match.Index) {
@@ -235,6 +234,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							ScopeStack = ScopeStack.Pop ();
 						}
 					}
+
+					if (curSegmentOffset < matchEndOffset) {
+						yield return new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, ScopeStack);
+						curSegmentOffset = matchEndOffset;
+					}
+
 					length -= curSegmentOffset - offset;
 					offset = curSegmentOffset;
 					goto restart;
@@ -277,16 +282,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (MatchStack.Peek ()?.Scope != null) {
 						ScopeStack = ScopeStack.Pop ();
 					}
-
 					MatchStack = MatchStack.Pop ();
 				}
-				if (currentContext.MetaScope != null)
+				if (currentContext.MetaScope != null && !ScopeStack.IsEmpty)
 					ScopeStack = ScopeStack.Pop ();
-				if (currentContext.MetaContentScope != null)
+				if (currentContext.MetaContentScope != null && !ScopeStack.IsEmpty)
 					ScopeStack = ScopeStack.Pop ();
-				if (curMatch.Scope != null)
+				if (curMatch.Scope != null && !ScopeStack.IsEmpty)
 					ScopeStack = ScopeStack.Pop ();
-
 			}
 		}
 	
