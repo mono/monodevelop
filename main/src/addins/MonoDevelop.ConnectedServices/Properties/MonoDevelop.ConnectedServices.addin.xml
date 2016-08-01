@@ -1,0 +1,12 @@
+﻿<ExtensionModel>
+
+	<ExtensionPoint path = "/MonoDevelop/ConnectedServices/ServiceProviders" name = "Connected Service Provider">
+		<Description>A class implementing IConnectedServiceProvider.</Description>
+		<ExtensionNode name="ConnectedServiceProvider"/>
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class class = "MonoDevelop.ConnectedServices.ConnectedServiceProjectExtension"/>
+	</Extension>
+
+</ExtensionModel>

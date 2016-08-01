@@ -1,0 +1,36 @@
+﻿<ExtensionModel>
+	
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServicesFolderNodeBuilderExtension"/>
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServicesFolderNodeBuilder"/>
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServicesFolderNodeHiderExtension"/>
+		<NodeBuilder class = "MonoDevelop.ConnectedServices.Gui.SolutionPad.ConnectedServiceNodeBuilder"/>
+	</Extension>
+
+	<ExtensionPoint path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedService">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "Connected Services" id = "ConnectedServices">
+			<Command id = "MonoDevelop.ConnectedServices.Commands.AddService"
+					 _label = "Add Connected Service" />
+			
+			<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServiceDetails"
+					 _label = "Open Service Details" />
+		</Category>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder">
+		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.AddService" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedService">
+		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.OpenServiceDetails" />
+	</Extension>
+
+</ExtensionModel>
