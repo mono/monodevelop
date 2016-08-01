@@ -478,7 +478,7 @@ namespace MonoDevelop.Ide
 
 		static string InternalGetStockIdFromAnimation (RuntimeAddin addin, string id, Gtk.IconSize size)
 		{
-			if (!id.StartsWith ("animation:"))
+			if (!id.StartsWith ("animation:", StringComparison.Ordinal))
 				return id;
 
 			id = id.Substring (10);
@@ -576,10 +576,10 @@ namespace MonoDevelop.Ide
 
 		static string PrivGetStockId (RuntimeAddin addin, string filename, Gtk.IconSize size)
 		{
-			if (addin != null && filename.StartsWith ("res:"))
+			if (addin != null && filename.StartsWith ("res:", StringComparison.Ordinal))
 				return InternalGetStockIdFromResource (addin, filename, size);
 
-			if (filename.StartsWith ("animation:"))
+			if (filename.StartsWith ("animation:", StringComparison.Ordinal))
 				return InternalGetStockIdFromAnimation (addin, filename, size);
 
 			return filename;

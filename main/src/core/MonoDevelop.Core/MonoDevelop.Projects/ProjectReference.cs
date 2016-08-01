@@ -482,8 +482,10 @@ namespace MonoDevelop.Projects
 					if (ownerProject != null && ownerProject.ParentSolution != null && ReferenceOutputAssembly) {
 						DotNetProject p = ResolveProject (ownerProject.ParentSolution) as DotNetProject;
 						if (p != null) {
-							if (!ownerProject.TargetFramework.CanReferenceAssembliesTargetingFramework (p.TargetFramework))
-								return GettextCatalog.GetString ("Incompatible target framework ({0})", p.TargetFramework.Name);
+							string reason;
+
+							if (!ownerProject.CanReferenceProject (p, out reason))
+								return reason;
 						}
 					}
 				} else if (ReferenceType == ReferenceType.Assembly) {

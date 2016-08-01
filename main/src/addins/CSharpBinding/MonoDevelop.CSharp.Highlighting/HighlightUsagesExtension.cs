@@ -159,10 +159,6 @@ namespace MonoDevelop.CSharp.Highlighting
 						span = node.Span;
 					}
 
-
-
-
-
 					if (span.Start != loc.Location.SourceSpan.Start) {
 						span = loc.Location.SourceSpan;
 					}
@@ -225,7 +221,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			return results ?? SpecializedCollections.EmptyEnumerable<Location> ();
 		}
 
-		static ReferenceUsageType GetUsage (SyntaxNode node)
+		internal static ReferenceUsageType GetUsage (SyntaxNode node)
 		{
 			if (node == null)
 				return ReferenceUsageType.Read;

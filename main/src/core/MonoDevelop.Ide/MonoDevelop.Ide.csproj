@@ -7835,8 +7835,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Components.ExecutionModeComboBox.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\IExecutionCommandCustomizer.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\CustomExecutionMode.cs" />
-    <Compile Include="MonoDevelop.Ide.Execution\MonoExecutionParameters.cs" />
-    <Compile Include="MonoDevelop.Ide.Execution\MonoExecutionCustomizer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SelectFileFormatDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Gui.Dialogs.SelectFileFormatDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\MaintenanceOptionsPanel.cs" />
@@ -8510,10 +8508,10 @@
     <Compile Include="MonoDevelop.Ide.Execution\TargetedExecutionHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\IMainToolbarView.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarController.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarModels.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarCommandHandlers.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\StatusBarContextHandler.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\IButtonBarButton.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbarModels.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\MruCache.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TooltipExtensionNode.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Projection\IProjectionExtension.cs" />
@@ -8633,6 +8631,22 @@
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateDocumentIndentEngine.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateLanguage.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateFoldingTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\RunConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\RunConfigurationEditorExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunConfigurationsPanel.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunConfigurationPanel.cs" />
+    <Compile Include="MonoDevelop.Components\XwtControl.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\RunConfigurationService.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\AssemblyRunConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.Components\EnvironmentVariableCollectionEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\ExecutionModeSelectorDialog.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunConfigurationsList.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\ProcessRunConfigurationEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Extensions\ErrorDocumentationProvider.cs" />
+    <Compile Include="MonoDevelop.Ide\LocalizationService.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\SingleProjectFileCustomTool.cs" />
+    <Compile Include="MonoDevelop.Ide.Execution\RunWithCustomParametersDialog.cs" />
+    <Compile Include="MonoDevelop.Components\InformationPopoverWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

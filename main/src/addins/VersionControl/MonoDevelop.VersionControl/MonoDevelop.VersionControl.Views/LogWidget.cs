@@ -776,7 +776,7 @@ namespace MonoDevelop.VersionControl.Views
 			int last = 0;
 			while (i != -1) {
 				sb.Append (GLib.Markup.EscapeText (txt.Substring (last, i - last)));
-				sb.Append ("<span color='" + Styles.LogView.SearchSnippetTextColor + "'>").Append (txt.Substring (i, filter.Length)).Append ("</span>");
+				sb.Append ("<span color='" + Styles.LogView.SearchSnippetTextColor + "'>").Append (txt, i, filter.Length).Append ("</span>");
 				last = i + filter.Length;
 				i = txt.IndexOf (filter, last, StringComparison.CurrentCultureIgnoreCase);
 			}

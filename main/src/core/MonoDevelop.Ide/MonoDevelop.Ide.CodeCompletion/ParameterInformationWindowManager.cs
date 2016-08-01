@@ -212,7 +212,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public static int X { get; private set; }
 		public static int Y { get; private set; }
 		public static bool wasAbove = false;
-		static bool wasVisi;
+		/// <summary>
+		/// This stores information about code completion window(not about Parameter information window)
+		/// at time of last showing of Parameter window, so we know if we have reposition
+		/// </summary>
+		static bool wasCompletionWindowVisible;
 		static int lastW = -1, lastH = -1;
 
 		internal static async void UpdateWindow (CompletionTextEditorExtension textEditorExtension, ICompletionWidget completionWidget)
@@ -225,7 +229,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					window.Ext = textEditorExtension;
 					window.Widget = completionWidget;
 					window.SizeAllocated += delegate(object o, SizeAllocatedArgs args) {
-						if (args.Allocation.Width == lastW && args.Allocation.Height == lastH && wasVisi == CompletionWindowManager.IsVisible)
+						if (args.Allocation.Width == lastW && args.Allocation.Height == lastH && wasCompletionWindowVisible == (CompletionWindowManager.Wnd?.Visible ?? false))
 							return;
 						PositionParameterInfoWindow (args.Allocation);
 					};
@@ -249,7 +253,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					window.HideParameterInfo ();
 //					DestroyWindow ();
 					wasAbove = false;
-					wasVisi = false;
+					wasCompletionWindowVisible = false;
 					lastW = -1;
 					lastH = -1;
 				}
@@ -262,12 +266,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			lastW = allocation.Width;
 			lastH = allocation.Height;
-			wasVisi = CompletionWindowManager.IsVisible;
+			var isCompletionWindowVisible = wasCompletionWindowVisible = (CompletionWindowManager.Wnd?.Visible ?? false);
 			var ctx = window.Widget.CurrentCodeCompletionContext;
 			int cparam = window.Ext != null ? await window.Ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset) : 0;
 
 			X = currentMethodGroup.CompletionContext.TriggerXCoord;
-			if (CompletionWindowManager.IsVisible) {
+			if (isCompletionWindowVisible) {
 				// place above
 				Y = ctx.TriggerYCoord - ctx.TriggerTextHeight - allocation.Height - 10;
 			} else {
@@ -288,7 +292,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				wasAbove = true;
 			}
 
-			if (CompletionWindowManager.IsVisible) {
+			if (isCompletionWindowVisible) {
 				var completionWindow = new Xwt.Rectangle (CompletionWindowManager.X, CompletionWindowManager.Y, CompletionWindowManager.Wnd.Allocation.Width, CompletionWindowManager.Wnd.Allocation.Height);
 				if (completionWindow.IntersectsWith (new Xwt.Rectangle (X, Y, allocation.Width, allocation.Height))) {
 					X = (int) completionWindow.X;

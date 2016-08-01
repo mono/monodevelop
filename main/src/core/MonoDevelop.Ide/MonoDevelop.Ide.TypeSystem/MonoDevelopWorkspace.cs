@@ -446,13 +446,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static Func<SolutionData, string, TextLoader> CreateTextLoader = (data, fileName) => data.Files.GetOrAdd (fileName, a => new MonoDevelopTextLoader (a));
 
-		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f)
+		static DocumentInfo CreateDocumentInfo (SolutionData data, string projectName, ProjectData id, MonoDevelop.Projects.ProjectFile f, SourceCodeKind sourceCodeKind)
 		{
 			var filePath = f.FilePath;
-			var sourceCodeKind = filePath.Extension == ".sketchcs" ? SourceCodeKind.Script : SourceCodeKind.Regular;
 			return DocumentInfo.Create (
 				id.GetOrCreateDocumentId (filePath),
-				f.FilePath,
+				filePath,
 				new [] { projectName }.Concat (f.ProjectVirtualPath.ParentDirectory.ToString ().Split (Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)),
 				sourceCodeKind,
 				CreateTextLoader (data, f.Name),
@@ -484,10 +483,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					yield break;
 				if (f.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
-				if (TypeSystemParserNode.IsCompileBuildAction (f.BuildAction)) {
+				SourceCodeKind sck;
+				if (TypeSystemParserNode.IsCompileableFile (f, out sck)) {
 					if (!duplicates.Add (projectData.GetOrCreateDocumentId (f.Name)))
 						continue;
-					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f);
+					yield return CreateDocumentInfo (solutionData, p.Name, projectData, f, sck);
 				} else {
 					foreach (var projectedDocument in GenerateProjections (f, projectData, p)) {
 						if (!duplicates.Add (projectData.GetOrCreateDocumentId (projectedDocument.FilePath)))
@@ -1109,10 +1109,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (projectFile.Subtype == MonoDevelop.Projects.Subtype.Directory)
 					continue;
 				var projectData = GetProjectData (GetProjectId (project));
-				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+				SourceCodeKind sck;
+				if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck)) {
 					if (projectData.GetDocumentId (projectFile.FilePath) != null) // may already been added by a rename event.
 						return;
-					var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile);
+					var newDocument = CreateDocumentInfo (solutionData, project.Name, projectData, projectFile, sck);
 					OnDocumentAdded (newDocument);
 				} else {
 					foreach (var projectedDocument in GenerateProjections (projectFile, projectData, project)) {
@@ -1165,7 +1166,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				var projectId = GetProjectId (project);
 				var data = GetProjectData (projectId);
-				if (TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction)) {
+				SourceCodeKind sck;
+				if (TypeSystemParserNode.IsCompileableFile (projectFile, out sck)) {
 					var id = data.GetDocumentId (fargs.OldName);
 					if (id != null) {
 						if (this.IsDocumentOpen (id)) {
@@ -1174,7 +1176,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						OnDocumentRemoved (id);
 						data.RemoveDocument (fargs.OldName);
 					}
-					var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile);
+					var newDocument = CreateDocumentInfo (solutionData, project.Name, GetProjectData (projectId), projectFile, sck);
 					OnDocumentAdded (newDocument);
 				} else {
 					foreach (var entry in ProjectionList) {

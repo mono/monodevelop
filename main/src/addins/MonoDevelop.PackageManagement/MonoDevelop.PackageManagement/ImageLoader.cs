@@ -99,9 +99,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			try {
 				Stream stream = GetResponseStream (uri);
-				Image image = Image.FromStream (stream);
-
-				return new ImageLoadedEventArgs (image, uri, state);
+				var loader = Runtime.RunInMainThread (() => Image.FromStream (stream));
+				return new ImageLoadedEventArgs (loader.Result, uri, state);
 			} catch (Exception ex) {
 				return new ImageLoadedEventArgs (ex, uri, state);
 			}
@@ -109,13 +108,19 @@ namespace MonoDevelop.PackageManagement
 
 		static Stream GetResponseStream (Uri uri)
 		{
+			WebResponse response = null;
 			if (uri.IsFile) {
 				var request = WebRequest.Create (uri);
-				return request.GetResponse ().GetResponseStream ();
+				response = request.GetResponse ();
+			} else {
+				var httpClient = new HttpClient (uri);
+				response = httpClient.GetResponse ();
 			}
 
-			var httpClient = new HttpClient (uri);
-			return httpClient.GetResponse ().GetResponseStream ();
+			var stream = new MemoryStream ();
+			response.GetResponseStream ().CopyTo (stream); // force the download to complete
+			stream.Position = 0;
+			return stream;
 		}
 
 		void OnLoaded (ImageLoadedEventArgs eventArgs)

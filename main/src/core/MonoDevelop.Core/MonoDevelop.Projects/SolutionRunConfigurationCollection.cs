@@ -1,21 +1,21 @@
-// 
-// CustomRuntimeExecutionModeSet.cs
-//  
+﻿//
+// RunConfigurationCollection.cs
+//
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//       Lluis Sanchez Gual <lluis@xamarin.com>
+//
+// Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,30 +23,43 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core.Assemblies;
 
-namespace MonoDevelop.Core.Assemblies
+namespace MonoDevelop.Projects
 {
-	public class CustomRuntimeExecutionModeSet: IExecutionModeSet
+	public class SolutionRunConfigurationCollection: ItemCollection<SolutionRunConfiguration>
 	{
-		#region IExecutionModeSet implementation
-		public string Name {
-			get {
-				return "Custom Runtime";
-			}
+		Solution parentSolution;
+
+		public SolutionRunConfigurationCollection ()
+		{
 		}
-		
-		public IEnumerable<IExecutionMode> ExecutionModes {
-			get {
-				foreach (TargetRuntime tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {
-					yield return new ExecutionMode (tr.Id, tr.DisplayName, tr.GetExecutionHandler ());
-				}
-			}
+
+		internal SolutionRunConfigurationCollection (Solution parentSolution)
+		{
+			this.parentSolution = parentSolution;
 		}
-		#endregion
+
+		protected override void OnItemsAdded (IEnumerable<SolutionRunConfiguration> items)
+		{
+			if (parentSolution != null) {
+				foreach (var conf in items)
+					conf.ParentSolution = parentSolution;
+			}
+			base.OnItemsAdded (items);
+			parentSolution.OnRunConfigurationsAdded (items);
+		}
+
+		protected override void OnItemsRemoved (IEnumerable<SolutionRunConfiguration> items)
+		{
+			if (parentSolution != null) {
+				foreach (var conf in items)
+					conf.ParentSolution = null;
+			}
+			base.OnItemsRemoved (items);
+			parentSolution.OnRunConfigurationRemoved (items);
+		}
 	}
 }
+

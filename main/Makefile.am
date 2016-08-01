@@ -43,6 +43,9 @@ buildinfo_DATA = $(buildinfo)
 desktopdir = $(datadir)/applications
 desktop_DATA = monodevelop.desktop
 
+appdatadir = $(datadir)/appdata
+appdata_DATA = monodevelop.appdata.xml
+
 xdgmimedir = $(datadir)/mime/packages
 xdgmime_DATA = monodevelop.xml
 
@@ -181,7 +184,7 @@ app-dir: all
 #cp -a build/bin $(MAC_APP_LIB_DIR)
 
 # we can't use the variables that are conditionally defined
-EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(pixmap_DATA) \
+EXTRA_DIST = $(bin_SCRIPTS) $(desktop_DATA) $(appdata_DATA) $(pixmap_DATA) \
 	monodevelop.xml $(pkgconfig_in_files) external/Makefile.in \
 	Main.sln \
 	md.targets

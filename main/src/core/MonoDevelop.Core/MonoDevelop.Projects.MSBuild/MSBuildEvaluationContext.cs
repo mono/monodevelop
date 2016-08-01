@@ -44,6 +44,7 @@ namespace MonoDevelop.Projects.MSBuild
 	class MSBuildEvaluationContext: IExpressionContext
 	{
 		Dictionary<string,string> properties = new Dictionary<string, string> ();
+		Dictionary<string, string> envVars = new Dictionary<string, string> ();
 
 		bool allResolved;
 		MSBuildProject project;
@@ -214,8 +215,11 @@ namespace MonoDevelop.Projects.MSBuild
 				return val;
 			if (parentContext != null)
 				return parentContext.GetPropertyValue (name);
-			else
-				return Environment.GetEnvironmentVariable (name);
+
+			if (envVars.TryGetValue (name, out val))
+				return val;
+
+			return envVars[name] = Environment.GetEnvironmentVariable (name);
 		}
 
 		public string GetMetadataValue (string name)
@@ -323,18 +327,22 @@ namespace MonoDevelop.Projects.MSBuild
 
 		readonly static char[] tagStart = new [] {'$','%','@'};
 
-		public string Evaluate (string str)
+		StringBuilder evaluationSb = new StringBuilder ();
+		string Evaluate (string str, StringBuilder sb)
 		{
 			if (str == null)
 				return null;
-			
 			int i = FindNextTag (str, 0);
 			if (i == -1)
 				return str;
 
 			int last = 0;
 
-			StringBuilder sb = new StringBuilder ();
+			if (sb == null) {
+				evaluationSb.Length = 0;
+				sb = evaluationSb;
+			}
+
 			do {
 				sb.Append (str, last, i - last);
 				int j = i;
@@ -350,6 +358,11 @@ namespace MonoDevelop.Projects.MSBuild
 
 			sb.Append (str, last, str.Length - last);
 			return sb.ToString ();
+		}
+
+		public string Evaluate (string str)
+		{
+			return Evaluate (str, null);
 		}
 
 		bool EvaluateReference (string str, ref int i, out object val)
@@ -539,7 +552,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (arg.Length > 1 && IsQuote(arg [0]) && arg[arg.Length - 1] == arg [0])
 					arg = arg.Substring (1, arg.Length - 2);
 
-				list.Add (Evaluate (arg));
+				list.Add (Evaluate (arg, new StringBuilder ()));
 
 				if (str [j] == ')') {
 					// End of parameters list
@@ -569,8 +582,16 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 				if (args.Length != argInfo.Length)
 					continue;
-				
-				return m;
+
+				bool isValid = true;
+				for (int n = 0; n < args.Length; n++) {
+					if (!CanConvertArg (m, n, args [n], argInfo [n].ParameterType)) {
+						isValid = false;
+						break;
+					}
+				}
+				if (isValid)
+					return m;
 			}
 			return methodWithParams;
 		}
@@ -580,13 +601,25 @@ namespace MonoDevelop.Projects.MSBuild
 			return pi.ParameterType.IsArray && pi.IsDefined (typeof (ParamArrayAttribute));
 		}
 
+		bool CanConvertArg (MethodBase method, int argNum, object value, Type parameterType)
+		{
+			var sval = value as string;
+			if (sval == "null" || value == null)
+				return !parameterType.IsValueType || typeof(Nullable).IsInstanceOfType (parameterType);
+
+			if (sval != null && parameterType == typeof (char []))
+				return true;
+
+			if (parameterType == typeof (char) && sval != null && sval.Length != 1)
+				return false;
+
+			return true;
+		}
+
 		object ConvertArg (MethodBase method, int argNum, object value, Type parameterType)
 		{
 			var sval = value as string;
-			if (sval == "null")
-				return null;
-
-			if (value == null)
+			if (sval == "null" || value == null)
 				return null;
 
 			if (sval != null && parameterType == typeof (char[]))

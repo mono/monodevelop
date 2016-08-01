@@ -3538,6 +3538,9 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.GrabFocus ()
 		{
+			var topLevelWindow = this.TextEditor.Toplevel as Gtk.Window;
+			if (topLevelWindow != null)
+				topLevelWindow.Present ();
 			this.TextEditor.GrabFocus ();
 		}
 

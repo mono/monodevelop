@@ -41,13 +41,13 @@ namespace MonoDevelop.TextTemplating
 
 	class GenerateCommandHandler : CommandHandler
 	{
-		protected override void Run ()
+		protected async override void Run ()
 		{
 			var wob = IdeApp.ProjectOperations.CurrentSelectedItem;
 
 			var pf = wob as ProjectFile;
 			if (pf != null) {
-				CustomToolService.Update (pf, true);
+				CustomToolService.Update (pf, pf.Project, true);
 				return;
 			}
 
@@ -62,7 +62,7 @@ namespace MonoDevelop.TextTemplating
 				return;
 			}
 
-			CustomToolService.Update (files, true);
+			await CustomToolService.Update (files, true);
 		}
 
 		static IEnumerable<ProjectFile> GetFilesToUpdate (Project project)

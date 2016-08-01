@@ -33,6 +33,8 @@ using System.Collections.Generic;
 using System.Xml;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.Ide.ExternalTools
 {
@@ -48,17 +50,45 @@ namespace MonoDevelop.Ide.ExternalTools
 				return tools;
 			}
 			set {
+				UnregisterCommands ();
 				tools = value;
+				RegisterCommands ();
+			}
+		}
+
+		static void UnregisterCommands ()
+		{
+			if (tools == null)
+				return;
+			for (int i = 0; i < tools.Count; i++) {
+				var cmd = IdeApp.CommandService.GetActionCommand ("MonoDevelop.CustomCommands.Command" + i);
+				if (cmd != null)
+					IdeApp.CommandService.UnregisterCommand (cmd);
+			}
+		}
+
+		static void RegisterCommands ()
+		{
+			if (tools == null)
+				return;
+			for (int i = 0; i < tools.Count; i++) {
+				var tool = tools [i];
+				ActionCommand cmd = new ActionCommand ("MonoDevelop.CustomCommands.Command" + i, tool.MenuCommand, null);
+				cmd.DefaultHandler = new RunCustomToolHandler (tool);
+				cmd.Category = GettextCatalog.GetString ("Tools (Custom)");
+				cmd.Description = GettextCatalog.GetString ("Start tool {0}", string.Join (string.Empty, tool.MenuCommand.Split ('&')));
+				cmd.AccelKey = tool.AccelKey;
+				IdeApp.CommandService.RegisterCommand (cmd);
 			}
 		}
 		
 		static ExternalToolService ()
 		{
 			try {
-				tools = LoadTools ();
+				Tools = LoadTools ();
 			} catch (Exception e) {
 				LoggingService.LogError ("ExternalToolService: Exception while loading tools.", e);
-				tools = new List<ExternalTool> ();
+				Tools = new List<ExternalTool> ();
 			}
 		}
 		

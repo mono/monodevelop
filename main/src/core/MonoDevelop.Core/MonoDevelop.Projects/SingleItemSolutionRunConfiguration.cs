@@ -1,8 +1,8 @@
 ﻿//
-// DummyTemplateGenerator.cs
+// SingleItemSolutionRunConfiguration.cs
 //
 // Author:
-//       David Karlaš <david.karlas@xamarin.com>
+//       Lluis Sanchez Gual <lluis@xamarin.com>
 //
 // Copyright (c) 2016 Xamarin, Inc (http://www.xamarin.com)
 //
@@ -24,21 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Reflection;
-
-namespace Mono.TextTemplating.Tests
+namespace MonoDevelop.Projects
 {
-	public class DummyTemplateGenerator : TemplateGenerator
+	public sealed class SingleItemSolutionRunConfiguration: SolutionRunConfiguration
 	{
-		protected override string ResolveAssemblyReference (string assemblyReference)
+		public SingleItemSolutionRunConfiguration (SolutionItem item, SolutionItemRunConfiguration config): base (item.ItemId + "|" + config?.Name)
 		{
-			var assemblyName = new AssemblyName (assemblyReference).Name;
-			if (assemblyName == typeof (Uri).Assembly.GetName ().Name)
-				return typeof (Uri).Assembly.Location;//System.dll
-			else if (assemblyName == typeof (System.Linq.Enumerable).Assembly.GetName ().Name)
-				return typeof (System.Linq.Enumerable).Assembly.Location;//System.Core.dll
-			return base.ResolveAssemblyReference (assemblyReference);
+			Item = item;
+			RunConfiguration = config;
+			if (config != null && !config.IsDefaultConfiguration)
+				SetName (item.Name + " – " + config.Name);
+			else
+				SetName (item.Name);
 		}
+
+		public SolutionItem Item { get; private set; }
+		public SolutionItemRunConfiguration RunConfiguration { get; private set; }
 	}
 }
 

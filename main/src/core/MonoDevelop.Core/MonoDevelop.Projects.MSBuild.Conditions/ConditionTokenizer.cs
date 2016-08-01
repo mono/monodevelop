@@ -139,7 +139,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 		{
 			putback = token;
 		}
-		
+
+		StringBuilder nextTokenSb = new StringBuilder ();
 		public void GetNextToken ()
 		{
 			if (putback != null) {
@@ -167,32 +168,30 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			
 			char ch = (char) i;
 
-			
+			nextTokenSb.Length = 0;
 			// FIXME: looks like a hack: if '-' is here '->' won't be tokenized
 			// maybe we should treat item reference as a token
 			if (ch == '-' && PeekChar () == '>') {
 				ReadChar ();
 				token = new Token ("->", TokenType.Transform, tokenPosition);
 			} else if (Char.IsDigit (ch) || ch == '-') {
-				StringBuilder sb = new StringBuilder ();
-				
-				sb.Append (ch);
+
+				nextTokenSb.Append (ch);
 				
 				while ((i = PeekChar ()) != -1) {
 					ch = (char) i;
 					
 					if (Char.IsDigit (ch) || ch == '.')
-						sb.Append ((char) ReadChar ());
+						nextTokenSb.Append ((char) ReadChar ());
 					else
 						break;
 				}
 				
-				token = new Token (sb.ToString (), TokenType.Number, tokenPosition);
+				token = new Token (nextTokenSb.ToString (), TokenType.Number, tokenPosition);
 			} else if (ch == '\'' && position < inputString.Length) {
-				StringBuilder sb = new StringBuilder ();
-				string temp;
-				
-				sb.Append (ch);
+
+				nextTokenSb.Append (ch);
+
 				bool is_itemref = (PeekChar () == '@');
 				int num_open_braces = 0;
 				bool in_literal = false;
@@ -204,7 +203,7 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					if (ch == ')' && !in_literal && is_itemref)
 						num_open_braces --;
 					
-					sb.Append ((char) ReadChar ());
+					nextTokenSb.Append ((char) ReadChar ());
 					
 					if (ch == '\'') {
 						if (num_open_braces == 0)
@@ -213,23 +212,19 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 					}
 				}
 				
-				temp = sb.ToString ();
-				
-				token = new Token (temp.Substring (1, temp.Length - 2), TokenType.String, tokenPosition);
+				token = new Token (nextTokenSb.ToString (1, nextTokenSb.Length - 2), TokenType.String, tokenPosition);
 				
 			} else 	if (ch == '_' || Char.IsLetter (ch)) {
-				StringBuilder sb = new StringBuilder ();
-				
-				sb.Append ((char) ch);
+				nextTokenSb.Append ((char) ch);
 				
 				while ((i = PeekChar ()) != -1) {
 					if ((char) i == '_' || Char.IsLetterOrDigit ((char) i))
-						sb.Append ((char) ReadChar ());
+						nextTokenSb.Append ((char) ReadChar ());
 					else
 						break;
 				}
 				
-				string temp = sb.ToString ();
+				string temp = nextTokenSb.ToString ();
 				
 				if (keywords.ContainsKey (temp))
 					token = new Token (temp, keywords [temp], tokenPosition);

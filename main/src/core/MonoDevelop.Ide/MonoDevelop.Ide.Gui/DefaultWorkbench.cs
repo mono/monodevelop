@@ -1386,11 +1386,11 @@ namespace MonoDevelop.Ide.Gui
 				};
 			}
 			
-			item.VisibleChanged += delegate {
+			item.VisibleChanged += (s,a) => {
 				if (item.Visible)
-					window.NotifyShown ();
+					window.NotifyShown (a);
 				else
-					window.NotifyHidden ();
+					window.NotifyHidden (a);
 			};
 			
 			item.ContentVisibleChanged += delegate {

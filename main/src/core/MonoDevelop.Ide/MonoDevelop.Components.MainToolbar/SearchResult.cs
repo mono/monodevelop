@@ -103,23 +103,26 @@ namespace MonoDevelop.Components.MainToolbar
 		protected static string HighlightMatch (string text, string toMatch, bool selected)
 		{
 			var lane = StringMatcher.GetMatcher (toMatch, true).GetMatch (text);
+			var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
+			var matchHexColor = Styles.ColorGetHex (matchColor);
 			StringBuilder result = new StringBuilder ();
 			if (lane != null) {
 				int lastPos = 0;
 				for (int n=0; n < lane.Length; n++) {
 					int pos = lane[n];
 					if (pos - lastPos > 0)
-						MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, pos - lastPos));
-					var matchColor = selected ? Styles.GlobalSearch.SelectedResultMatchTextColor : Styles.GlobalSearch.ResultMatchTextColor;
-					result.Append ("<span foreground=\"" + Styles.ColorGetHex (matchColor) + "\" font_weight=\"bold\">");
-					MarkupUtilities.AppendEscapedString (result, text[pos].ToString ());
+						MarkupUtilities.AppendEscapedString (result, text, lastPos, pos - lastPos);
+					result.Append ("<span foreground=\"");
+					result.Append (matchHexColor);
+					result.Append ("\" font_weight=\"bold\">");
+					MarkupUtilities.AppendEscapedString (result, text, pos, 1);
 					result.Append ("</span>");
 					lastPos = pos + 1;
 				}
 				if (lastPos < text.Length)
-					MarkupUtilities.AppendEscapedString (result, text.Substring (lastPos, text.Length - lastPos));
+					MarkupUtilities.AppendEscapedString (result, text, lastPos, text.Length - lastPos);
 			} else {
-				MarkupUtilities.AppendEscapedString (result, text);
+				MarkupUtilities.AppendEscapedString (result, text, 0, text.Length);
 			}
 			return result.ToString ();
 		}

@@ -24,11 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading;
 
 namespace MonoDevelop.DocFood
 {
@@ -72,9 +75,10 @@ namespace MonoDevelop.DocFood
 			if (l != null && Editor.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
 				return base.KeyPress (descriptor);
 
-			var member = GetMemberToDocument ();
-			if (member == null)
+			var memberTask = GetMemberToDocument ();
+			if (!memberTask.Wait (250) || memberTask.Result == null)
 				return base.KeyPress (descriptor);
+			var member = memberTask.Result;
 			
 			string documentation = GenerateDocumentation (member, Editor.GetLineIndent (line));
 			if (string.IsNullOrEmpty (documentation))
@@ -156,12 +160,14 @@ namespace MonoDevelop.DocFood
 			return true;
 		}	
 		
-		ISymbol GetMemberToDocument ()
+		async Task<ISymbol> GetMemberToDocument (CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
 				return null;
-			var semanticModel = parsedDocument.GetAst<SemanticModel> ();
+
+			var partialDoc = await CSharpCompletionTextEditorExtension.WithFrozenPartialSemanticsAsync (DocumentContext.AnalysisDocument, cancellationToken).ConfigureAwait (false);
+			var semanticModel = await partialDoc.GetSemanticModelAsync ();
 			if (semanticModel == null)
 				return null;
 			var caretOffset = Editor.CaretOffset;
@@ -182,6 +188,10 @@ namespace MonoDevelop.DocFood
 				if (eventDeclaration != null) {
 					node = eventDeclaration.Declaration.Variables.First ();
 				}
+
+				if (node.Span.Contains (caretOffset))
+					return null;
+
 				var declaredSymbol = semanticModel.GetDeclaredSymbol (node); 
 				if (declaredSymbol != null)
 					return declaredSymbol;

@@ -67,8 +67,9 @@ namespace MonoDevelop.Projects
 				entry.FileName = fileName;
 				return entry;
 			} catch (Exception ex) {
-				monitor.ReportError (string.Format (GettextCatalog.GetString ("Could not load solution item: {0}"), fileName), ex);
-				throw;
+				string msg = string.Format (GettextCatalog.GetString ("Could not load workspace item: {0}"), fileName);
+				LoggingService.LogError (msg, ex);
+				throw new UserException (msg, ErrorHelper.GetErrorMessage (ex));
 			} finally {
 				monitor.EndTask ();
 				reader.Close ();
