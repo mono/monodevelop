@@ -316,7 +316,7 @@ namespace MonoDevelop.Projects
 		              "'M:Type:Method'  a method, " +
 		              "'N:Namespace' a namespace. " +
 		              "'disabled' don't print any output until toggled via SIGUSR2. " +
-		              "Prefix with '-' to exclude and expression.")]
+		              "Prefix with '-' to exclude an expression.")]
 		[MonoArg ("--trace={0}")]
 		[ItemProperty (DefaultValue="")]
 		public string MonoTraceExpressions { get; set; }
