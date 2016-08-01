@@ -410,6 +410,7 @@ namespace MonoDevelop.Core.Execution
 			lock (messageWaiters) {
 				foreach (var m in messageWaiters.Values)
 					NotifyResponse (m, m.Request.CreateErrorResponse ("Connection closed"));
+				messageWaiters.Clear ();
 				messageQueue.Clear ();
 			}
 		}
