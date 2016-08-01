@@ -28,6 +28,7 @@ using Cairo;
 using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Components;
 
 namespace Mono.TextEditor
 {

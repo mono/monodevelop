@@ -156,8 +156,8 @@ namespace Mono.TextEditor.Tests
    " + text + @"
     }
 }"));
-			data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
-			data.ColorStyle = SyntaxModeService.GetColorStyle ("Light");
+			//data.Document.SyntaxMode = SyntaxModeService.GetSyntaxMode (data.Document, "text/x-csharp");
+			//data.ColorStyle = SyntaxModeService.GetColorStyle ("Light");
 			var line = data.GetLine (5);
 			var chunks = data.GetChunks (line, line.Offset + 3, line.Length - 3);
 			StringBuilder sb = new StringBuilder ();

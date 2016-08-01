@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor

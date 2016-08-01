@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Linq;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 

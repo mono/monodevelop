@@ -8620,7 +8620,6 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\PObject.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorTheme.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TextMateFormat.cs" />
-    <Compile Include="MonoDevelop.Ide.Desktop\RecentItemsChangedEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlightingDefinition.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TmSetting.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorThemeColors.cs" />
@@ -8642,8 +8641,6 @@
     <Compile Include="MonoDevelop.Ide.Execution\ExecutionModeSelectorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\RunConfigurationsList.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\ProcessRunConfigurationEditor.cs" />
-    <Compile Include="MonoDevelop.Ide.Extensions\ErrorDocumentationProvider.cs" />
-    <Compile Include="MonoDevelop.Ide\LocalizationService.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\SingleProjectFileCustomTool.cs" />
     <Compile Include="MonoDevelop.Ide.Execution\RunWithCustomParametersDialog.cs" />
     <Compile Include="MonoDevelop.Components\InformationPopoverWidget.cs" />

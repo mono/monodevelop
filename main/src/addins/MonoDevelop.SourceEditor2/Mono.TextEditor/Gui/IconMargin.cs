@@ -29,6 +29,7 @@ using System;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Components;
 
 namespace Mono.TextEditor
 {

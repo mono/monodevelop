@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Mono.TextEditor.PopupWindow;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor;
 
 namespace Mono.TextEditor

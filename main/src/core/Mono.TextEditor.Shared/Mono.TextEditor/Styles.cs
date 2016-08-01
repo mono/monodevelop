@@ -74,11 +74,6 @@ namespace Mono.TextEditor.PopupWindow
 			TableLayoutModeTextColor = new Color (0.3, 0.3, 1);
 			TableLayoutModeGridColor = new Color (0.8, 0.8, 0.8);
 		}
-
-		public static Cairo.Color ToCairoColor (this Xwt.Drawing.Color color)
-		{
-			return new Cairo.Color (color.Red, color.Green, color.Blue, color.Alpha);
-		}
 	}
 }
 

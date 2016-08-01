@@ -3,7 +3,7 @@
 namespace Stetic
 {
 #pragma warning disable 436
-
+	/*
 	internal class Gui
 	{
 		private static bool initialized;
@@ -85,5 +85,6 @@ namespace Stetic
 			return null;
 		}
 	}
+	*/
 #pragma warning restore 436
 }
