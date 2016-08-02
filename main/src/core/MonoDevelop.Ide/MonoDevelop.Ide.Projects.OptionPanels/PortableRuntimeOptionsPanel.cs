@@ -54,8 +54,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		}
 	}
 
-	[System.ComponentModel.ToolboxItem (true)]
-	partial class PortableRuntimeOptionsPanelWidget : Gtk.Bin
+	class PortableRuntimeOptionsPanelWidget : Gtk.VBox
 	{
 		DotNetProject project;
 		TargetFramework target;
@@ -65,13 +64,13 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			this.project = project;
 			this.target = project.TargetFramework;
 
-			this.Build ();
+			Spacing = 6;
 
 			var frameworkPickerButton = new Button (GettextCatalog.GetString ("Change Targets..."));
-			vbox1.PackStart (frameworkPickerButton);
+			PackStart (frameworkPickerButton);
 			frameworkPickerButton.Clicked += PickFramework;
 
-			vbox1.ShowAll ();
+			ShowAll ();
 		}
 
 		void PickFramework (object sender, EventArgs e)

@@ -11582,20 +11582,6 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget" design-size="300 300">
-    <property name="MemberName" />
-    <property name="Visible">False</property>
-    <property name="GeneratePublic">False</property>
-    <child>
-      <widget class="Gtk.VBox" id="vbox1">
-        <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <placeholder />
-        </child>
-      </widget>
-    </child>
-  </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.Ide.Projects.GtkProjectFolderPreviewWidget" design-size="300 416">
     <property name="MemberName" />
     <property name="Visible">False</property>
