@@ -142,9 +142,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					statusIcon.Dispose ();
 					statusIcon = null;
 					OnLoadingFinished (EventArgs.Empty);
+					WorkspaceLoded?.Invoke (this, EventArgs.Empty);
 				}
 			});
 		}
+
+		public event EventHandler WorkspaceLoded;
 
 		internal void ShowStatusIcon ()
 		{
