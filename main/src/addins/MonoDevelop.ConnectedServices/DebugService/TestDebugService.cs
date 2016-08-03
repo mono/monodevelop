@@ -32,7 +32,7 @@ namespace MonoDevelop.ConnectedServices.DebugService
 
 		public override bool IsAdded {
 			get {
-				return false;
+				return true;
 			}
 		}
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui;
@@ -48,14 +49,14 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 			var folder = (ConnectedServiceFolderNode)dataObject;
 
 			var connectedServices = folder.Project.GetConnectedServicesBinding ();
-			return connectedServices != null && connectedServices.HasServices;
+			return connectedServices != null && connectedServices.HasAddedServices;
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			if (HasChildNodes(treeBuilder, dataObject)) {
 				var connectedServices = ((ConnectedServiceFolderNode)dataObject).Project.GetConnectedServicesBinding ();
-				foreach (var service in connectedServices.Services) {
+				foreach (var service in connectedServices.SupportedServices.Where(x => x.IsAdded)) {
 					treeBuilder.AddChild (new ConnectedServiceNode (service.Id, service.DisplayName));
 				}
 			}

@@ -26,7 +26,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		{
 			var connectedServices = ((DotNetProject)dataObject).GetConnectedServicesBinding ();
 			if (connectedServices != null) {
-				return connectedServices.HasServices;
+				return connectedServices.HasSupportedServices;
 			}
 
 			return false;
@@ -34,8 +34,9 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
-			if (HasChildNodes (treeBuilder, dataObject))
+			if (HasChildNodes (treeBuilder, dataObject)) {
 				treeBuilder.AddChild (new ConnectedServiceFolderNode ((DotNetProject)dataObject));
+			}
 		}
 	}
 }

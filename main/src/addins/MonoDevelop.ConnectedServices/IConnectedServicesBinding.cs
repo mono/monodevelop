@@ -14,13 +14,18 @@ namespace MonoDevelop.ConnectedServices
 		DotNetProject Project { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has services.
+		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has any services that support the project.
 		/// </summary>
-		bool HasServices { get; }
+		bool HasSupportedServices { get; }
 
 		/// <summary>
 		/// Gets the services that support the project
 		/// </summary>
-		IConnectedService [] Services { get; }
+		IConnectedService [] SupportedServices { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has any services that have been added.
+		/// </summary>
+		bool HasAddedServices { get; }
 	}
 }

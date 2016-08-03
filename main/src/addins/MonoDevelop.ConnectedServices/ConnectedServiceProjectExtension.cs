@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Xml;
 using MonoDevelop.Projects;
 
@@ -13,9 +14,9 @@ namespace MonoDevelop.ConnectedServices
 		IConnectedService[] services;
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has services.
+		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has any services that support the project.
 		/// </summary>
-		public bool HasServices {
+		public bool HasSupportedServices {
 			get {
 				return this.services != null && this.services.Length > 0;
 			}
@@ -25,9 +26,18 @@ namespace MonoDevelop.ConnectedServices
 		/// Gets the services that support the project
 		/// </summary>
 		/// <value>The services.</value>
-		public IConnectedService [] Services { 
+		public IConnectedService [] SupportedServices { 
 			get {
 				return this.services;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has any services that have been added.
+		/// </summary>
+		public bool HasAddedServices { 
+			get {
+				return this.services.Any(x => x.IsAdded);
 			}
 		}
 
