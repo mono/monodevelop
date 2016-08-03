@@ -45,7 +45,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		public override Control CreatePanelWidget ()
 		{
-			return (widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject) ConfiguredProject, ItemConfigurations));
+			widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject) ConfiguredProject, ItemConfigurations);
+
+			return widget;
 		}
 		
 		public override void ApplyChanges ()
@@ -56,6 +58,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 	class PortableRuntimeOptionsPanelWidget : Gtk.VBox
 	{
+		const string netstandardDocsUrl = "https://docs.microsoft.com/en-us/dotnet/articles/standard/library";
+		const string pcldDocsUrl = "https://developer.xamarin.com/guides/cross-platform/application_fundamentals/pcl/introduction_to_portable_class_libraries/";
+
 		DotNetProject project;
 		TargetFramework target;
 
@@ -69,17 +74,25 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			"netstandard1.6",
 		};
 
-		readonly ComboBox netStandardCombo;
-		readonly Entry targetFrameworkEntry;
-		readonly RadioButton netstandardRadio;
-		readonly RadioButton pclRadio;
-		readonly Button frameworkPickerButton;
+		ComboBox netStandardCombo;
+		Entry targetFrameworkEntry;
+		RadioButton netstandardRadio;
+		RadioButton pclRadio;
+		Button frameworkPickerButton;
 
 		public PortableRuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
-			this.project = project;
-			this.target = project.TargetFramework;
+			Build ();
 
+			this.project = project;
+
+			//TODO: read from the project.json
+			TargetFramework = project.TargetFramework;
+			NetStandardVersion = null;
+		}
+
+		void Build ()
+		{
 			Spacing = 6;
 
 			PackStart (new Label { Markup = string.Format ("<b>{0}</b>", GettextCatalog.GetString ("Target Framework")), Xalign = 0f });
@@ -95,7 +108,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			netstandardPickerHbox.PackStart (netstandardRadio, false, false, 0);
 			netstandardPickerHbox.PackStart (netStandardCombo = ComboBox.NewText (), false, false, 0);
 
-			var netstandardDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with all frameworks that support the selected <a href='{0}'>.NET Standard</a> version.", "netstandard"), Xalign = 0f };
+			var netstandardDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with all frameworks that support the selected <a href='{0}'>.NET Standard</a> version.", netstandardDocsUrl), Xalign = 0f };
+			GtkWorkarounds.SetLinkHandler (netstandardDesc, HandleLink);
 			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = netstandardDesc, LeftPadding = 24 });
 
 			var pclPickerHbox = new HBox { Spacing = 10 };
@@ -106,17 +120,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			frameworkPickerButton = new Button (GettextCatalog.GetString ("Change..."));
 			pclPickerHbox.PackStart (frameworkPickerButton, false, false, 0);
 
-			var pclDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with the frameworks supported by the selected <a href='{0}'>PCL profile</a>.", "pcl"), Xalign = 0f };
+			var pclDesc = new Label { Markup = GettextCatalog.GetString ("Your library will be compatible with the frameworks supported by the selected <a href='{0}'>PCL profile</a>.", pcldDocsUrl), Xalign = 0f };
+			GtkWorkarounds.SetLinkHandler (pclDesc, HandleLink);
 			radioBox.PackStart (new Alignment (0f, 0f, 1f, 1f) { Child = pclDesc, LeftPadding = 24 });
 
 			frameworkPickerButton.Clicked += PickFramework;
-
-			foreach (var val in KnownNetStandardVersions) {
-				netStandardCombo.AppendText (val);
-			};
-			netStandardCombo.Active = KnownNetStandardVersions.Length - 1;
-
-			targetFrameworkEntry.Text = string.Format ("PCL {0} - {1}", target.Id.Version, target.Id.Profile);
 
 			// both toggle when we switch between them, only need to subscribe to one event
 			netstandardRadio.Toggled += RadioToggled;
@@ -124,6 +132,45 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			UpdateSensitivity ();
 
 			ShowAll ();
+		}
+
+		string NetStandardVersion {
+			get {
+				return netStandardCombo.ActiveText;
+			}
+			set {
+				((ListStore)netStandardCombo.Model).Clear ();
+
+				int selected = -1;
+
+				for (int i = 0; i < KnownNetStandardVersions.Length; i++) {
+					var version = KnownNetStandardVersions[i];
+					netStandardCombo.AppendText (version);
+					if (version == value) {
+						selected = i;
+					}
+				}
+
+				if (value == null) {
+					selected = KnownNetStandardVersions.Length - 1;
+				} else if (selected < 0) {
+					//project uses some version we don't know about, add it
+					netStandardCombo.AppendText (value);
+					selected = KnownNetStandardVersions.Length;
+				}
+
+				netStandardCombo.Active = selected;
+			}
+		}
+
+		TargetFramework TargetFramework {
+			get {
+				return target;
+			}
+			set {
+				target = value;
+				targetFrameworkEntry.Text = PortableRuntimeSelectorDialog.GetPclShortDisplayName (target, false);
+			}
 		}
 
 		void RadioToggled (object sender, EventArgs e)
@@ -140,13 +187,18 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			frameworkPickerButton.Sensitive = pcl;
 		}
 
+		void HandleLink (string url)
+		{
+			DesktopService.ShowUrl (url);
+		}
+
 		void PickFramework (object sender, EventArgs e)
 		{
 			var dlg = new PortableRuntimeSelectorDialog (target);
 			try {
 				var result = MessageService.RunCustomDialog (dlg, (Gtk.Window)Toplevel);
 				if (result == (int)Gtk.ResponseType.Ok) {
-					target = dlg.TargetFramework;
+					TargetFramework = dlg.TargetFramework;
 				}
 			} finally {
 				dlg.Destroy ();
@@ -155,8 +207,18 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		public void Store ()
 		{
-			if (target != null && target != project.TargetFramework) {
-				project.TargetFramework = target;
+			//TODO set these in the project
+			var fx = TargetFramework;
+			var isNetStandard = netstandardRadio.Active;
+			var nsVersion = NetStandardVersion;
+
+			//netstandard always used PCL5 framework
+			if (isNetStandard) {
+				fx = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, "v5.0"));
+			}
+
+			if (fx != null && fx != project.TargetFramework) {
+				project.TargetFramework = fx;
 				IdeApp.ProjectOperations.SaveAsync (project);
 			}
 		}

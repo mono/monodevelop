@@ -48,7 +48,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		readonly SortedDictionary<string, List<SupportedFramework>> supportedFrameworks;
 		readonly List<OptionCombo> options;
 
-		TargetFramework target;
 		HBox warningHBox;
 		Label warning;
 		ImageView warningImage;
@@ -176,7 +175,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		static bool TryParseProfileID (string profile, out int id)
 		{
-			if (profile.StartsWith ("Profile", StringComparison.Ordinal))
+			if (profile != null && profile.StartsWith ("Profile", StringComparison.Ordinal))
 				return int.TryParse (profile.Substring ("Profile".Length), out id);
 			id = -1;
 			return false;
@@ -217,12 +216,16 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 		}
 
-		string FormatTargetFramework (TargetFramework fx)
+		internal static string GetPclShortDisplayName (TargetFramework fx, bool markNotInstalled)
 		{
-			if (fx == missingFramework)
-				return GettextCatalog.GetString ("PCL {0} - {1} - not installed", fx.Id.Version, fx.Id.Profile);
+			string shortName = string.IsNullOrEmpty (fx.Id.Profile)
+				? fx.Id.Version
+				: fx.Id.Version + " - " + fx.Id.Profile;
+
+			if (markNotInstalled)
+				return GettextCatalog.GetString ("PCL {0} - not installed", shortName);
 			else
-				return GettextCatalog.GetString ("PCL {0} - {1}", fx.Id.Version, fx.Id.Profile);
+				return GettextCatalog.GetString ("PCL {0}", shortName);
 		}
 
 		IEnumerable<TargetFramework> GetPortableTargetFrameworks ()
@@ -230,7 +233,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return Runtime.SystemAssemblyService.GetTargetFrameworks ().Where (fx =>
 				!fx.Hidden &&
 				fx.Id.Identifier == ".NETPortable" &&
-				!string.IsNullOrEmpty (fx.Id.Profile)
+				fx.SupportedFrameworks.Count > 0
 			);
 		}
 
@@ -282,7 +285,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			for (int i = 0; i < targetFrameworks.Count; i++) {
 				var fx = targetFrameworks[i];
 
-				model.AppendValues (FormatTargetFramework (fx), fx);
+				model.AppendValues (GetPclShortDisplayName (fx, fx == missingFramework), fx);
 				if (fx.Id.Equals (TargetFramework.Id))
 					combo.Active = i;
 			}
@@ -538,7 +541,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				AddWarning (GettextCatalog.GetString ("You must manually pick a profile in the drop-down selector."));
 				// This is very bad UX, we should really disable "Ok" / add an "Apply"
 				// button, but it's better than nothing.
-				target = exactMatches[0];
+				TargetFramework = exactMatches[0];
 				return;
 			}
 
@@ -558,7 +561,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				// Ok, the user must pick something.
 				AddWarning (GettextCatalog.GetString ("Found multiple applicable frameworks, you need to select additional check boxes."));
 				// Same here: randomly pick a profile to make "Ok" happy.
-				target = applicable[0];
+				TargetFramework = applicable[0];
 				return;
 			}
 
@@ -597,7 +600,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var frameworks = targetFrameworks.Select ((t, i) => new { Framework = t, Index = i });
 			var index = frameworks.First (t => t.Framework == framework).Index;
 			selectorCombo.Active = index;
-			target = framework;
+			TargetFramework = framework;
 		}
 
 		bool IsApplicable (TargetFramework fx, bool allowExtra, IEnumerable<SupportedFramework> selected)
@@ -623,7 +626,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			try {
 				disableEvents = true;
 				CurrentProfileChanged_internal (framework);
-				target = framework;
+				TargetFramework = framework;
 			} finally {
 				disableEvents = false;
 			}
