@@ -152,6 +152,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 				} else {
 					lineComments.Add (start);
 				}
+				i++;
 			}
 		}
 
