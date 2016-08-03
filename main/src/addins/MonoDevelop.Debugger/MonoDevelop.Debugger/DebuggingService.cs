@@ -376,7 +376,10 @@ namespace MonoDevelop.Debugger
 			session.TypeResolverHandler = ResolveType;
 			session.BreakpointTraceHandler = BreakpointTraceHandler;
 			session.GetExpressionEvaluator = OnGetExpressionEvaluator;
-			session.ConnectionDialogCreator = delegate {
+			session.ConnectionDialogCreator = delegate (DebuggerStartInfo dsi) {
+				if (dsi.RequiresManualStart)
+					return new GtkConnectionDialog ();
+
 				return new StatusBarConnectionDialog ();
 			};
 			currentDebugOperation = new DebugAsyncOperation ();
