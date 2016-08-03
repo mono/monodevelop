@@ -92,7 +92,6 @@
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="ICSharpCode.SharpZipLib" />
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -116,6 +115,9 @@
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
