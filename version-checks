@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=36e6f034f3dd35e5acccc217680a40dce8bc13ad
+DEP_NEEDED_VERSION[0]=a5d5cd6dc56aaef8e30fd53d0ca378f2988d345c
 DEP_BRANCH_AND_REMOTE[0]="appex-debug origin/appex-debug"
 
 # heap-shot
