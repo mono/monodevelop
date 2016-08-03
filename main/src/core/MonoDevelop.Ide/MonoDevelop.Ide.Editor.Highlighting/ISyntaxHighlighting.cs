@@ -29,9 +29,21 @@ using System.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	public sealed class HighlightedLine
+	{
+		public IReadOnlyList<ColoredSegment> Segments { get; private set; }
+
+		internal HighlightedLine (IReadOnlyList<ColoredSegment> segments)
+		{
+			Segments = segments;
+		}
+	}
+
 	/// <summary>
 	/// The basic interface for all syntax modes
 	/// </summary>
@@ -43,8 +55,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// <param name='line'>
 		/// The starting line at (offset). This is the same as Document.GetLineByOffset (offset).
 		/// </param>
-		IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length);
-		ImmutableStack<string> GetLinStartScopeStack (IDocumentLine line);
+		Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken);
+		Task<ImmutableStack<string>> GetLinStartScopeStackAsync (IDocumentLine line, CancellationToken cancellationToken);
 	}
 
 	public sealed class DefaultSyntaxHighlighting : ISyntaxHighlighting
@@ -55,14 +67,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 		}
 
-		public IEnumerable<ColoredSegment> GetColoredSegments (IDocumentLine line, int offset, int length)
+		public Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			yield return  new ColoredSegment (offset, length, ImmutableStack<string>.Empty.Push (""));
+			return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (line.Offset, line.Length, ImmutableStack<string>.Empty.Push ("")) }));
 		}
 
-		public ImmutableStack<string> GetLinStartScopeStack (IDocumentLine line)
+		public Task<ImmutableStack<string>> GetLinStartScopeStackAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			return ImmutableStack<string>.Empty;
+			return Task.FromResult (ImmutableStack<string>.Empty);
 		}
 	}
 }

@@ -43,6 +43,8 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Collections.Immutable;
+using System.Threading;
+using MonoDevelop.Ide;
 
 namespace Mono.TextEditor
 {
@@ -1090,10 +1092,35 @@ namespace Mono.TextEditor
 				chunkDict.Remove (line);
 			}
 
-			var chunks = doc.SyntaxMode.GetColoredSegments (line, offset, length).ToList ();
+			var highlightedLine = doc.SyntaxMode.GetHighlightedLineAsync (line, CancellationToken.None).Result;
+			var chunks = TrimChunks(highlightedLine.Segments, offset, length);
 			descriptor = new ChunkDescriptor (line, offset, length, chunks);
 			chunkDict [line] = descriptor;
 			return chunks;
+		}
+
+		internal static List<ColoredSegment> TrimChunks (IReadOnlyList<ColoredSegment> segments, int offset, int length)
+		{
+			var result = new List<ColoredSegment> ();
+			int i = 0;
+			while (i < segments.Count && segments [i].EndOffset <= offset)
+				i++;
+			if (i < segments.Count && segments [i].Offset < offset) {
+				result.Add (segments [i].WithOffsetAndLength (offset, segments [i].EndOffset - offset));
+				i++;
+			}
+
+			var endOffset = offset + length;
+			while (i < segments.Count && segments [i].EndOffset <= endOffset) {
+				result.Add (segments [i]);
+				i++;
+			}
+
+			if (i < segments.Count && segments [i].Offset < endOffset) {
+				result.Add (segments [i].WithOffsetAndLength (segments [i].Offset, endOffset - segments [i].Offset));
+				i++;
+			}
+			return result;
 		}
 
 		public void ForceInvalidateLine (int lineNr)
@@ -1819,7 +1846,7 @@ namespace Mono.TextEditor
 				col = SelectionColor.Foreground;
 			} else {*/
 				if (line != null && line.NextLine != null) {
-					var span = textEditor.Document.SyntaxMode.GetLinStartScopeStack (line.NextLine);
+					var span = textEditor.Document.SyntaxMode.GetLinStartScopeStackAsync (line.NextLine, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 					var chunkStyle = EditorTheme.GetChunkStyle (!span.IsEmpty ? span.Peek () : "");
 					if (chunkStyle != null)
 						col = EditorTheme.GetForeground (chunkStyle);

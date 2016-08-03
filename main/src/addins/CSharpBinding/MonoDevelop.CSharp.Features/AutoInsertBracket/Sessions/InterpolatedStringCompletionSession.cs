@@ -33,6 +33,7 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using Roslyn.Utilities;
 using MonoDevelop.Ide.Editor;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Features.AutoInsertBracket
 {

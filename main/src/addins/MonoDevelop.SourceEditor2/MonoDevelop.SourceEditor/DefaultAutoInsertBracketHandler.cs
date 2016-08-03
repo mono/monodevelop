@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -54,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 
 			bool inStringOrComment = false;
 
-			var stack = extEditor.SyntaxHighlighting.GetLinStartScopeStack (line);
+			var stack = extEditor.SyntaxHighlighting.GetLinStartScopeStackAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			// var sm = extEditor.Document.SyntaxMode;
 			// if (sm != null)
 				// extEditor.Caret.Offset - 1 means we care if we were inside string

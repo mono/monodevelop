@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		{
 			if (TypeSystemService.GetParser (Editor.MimeType) != null || DocumentContext.ParsedDocument != null)
 				return;
-			var scopeStack = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (1));
+			var scopeStack = Editor.SyntaxHighlighting.GetLinStartScopeStackAsync (Editor.GetLine (1), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			if (!scopeStack.Any (s => s.Contains ("source")))
 				return;
 

@@ -32,6 +32,8 @@ using MonoDevelop.Ide.Editor;
 using System.Linq;
 using Gtk;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -155,16 +157,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		const int MaximumCachedLineSegments = 200;
 
-		IEnumerable<ColoredSegment> ISyntaxHighlighting.GetColoredSegments (IDocumentLine line, int offset, int length)
+		async Task<HighlightedLine> ISyntaxHighlighting.GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
 			if (!DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting) {
-				foreach (var chunk in syntaxMode.GetColoredSegments (line, offset, length)) {
-					yield return chunk;
-				}
-				yield break;
+				return await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
 			}
-
-			foreach (var seg in syntaxMode.GetColoredSegments (line, offset, length)) {
+			var syntaxLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
+			var segments = new List<ColoredSegment> ();
+			foreach (var seg in syntaxLine.Segments) {
 				StyledTreeSegment treeseg = null;
 				try {
 					var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
@@ -191,27 +191,28 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					if (seg.Offset <= treeseg.Offset) {
 						var lengthBefore = treeseg.Offset - seg.Offset;
 						if (lengthBefore > 0)
-							yield return new ColoredSegment (seg.Offset, lengthBefore, seg.ScopeStack);
-						yield return new ColoredSegment (treeseg.Offset, treeseg.Length, seg.ScopeStack.Push (treeseg.Style));
+							segments.Add (new ColoredSegment (seg.Offset, lengthBefore, seg.ScopeStack));
+						segments.Add (new ColoredSegment (treeseg.Offset, treeseg.Length, seg.ScopeStack.Push (treeseg.Style)));
 						var lengthAfter = seg.EndOffset - treeseg.EndOffset;
 						if (lengthAfter > 0)
-							yield return new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack);
+							segments.Add (new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack));
 					} else if (seg.EndOffset < treeseg.EndOffset) {
 						continue;
 					} else {
 						var lengthAfter = seg.EndOffset - treeseg.EndOffset;
 						if (lengthAfter > 0)
-							yield return new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack);
+							segments.Add (new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack));
 					}
 				} else {
-					yield return seg;
+					segments.Add (seg);
 				}
 			}
+			return new HighlightedLine (segments);
 		}
 
-		ImmutableStack<string> ISyntaxHighlighting.GetLinStartScopeStack (IDocumentLine line)
+		Task<ImmutableStack<string>> ISyntaxHighlighting.GetLinStartScopeStackAsync (IDocumentLine line, CancellationToken cancellationToken)
 		{
-			return syntaxMode.GetLinStartScopeStack (line);
+			return syntaxMode.GetLinStartScopeStackAsync (line, cancellationToken);
 		}
 	}
 }

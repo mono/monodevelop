@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
 using Roslyn.Utilities;
 

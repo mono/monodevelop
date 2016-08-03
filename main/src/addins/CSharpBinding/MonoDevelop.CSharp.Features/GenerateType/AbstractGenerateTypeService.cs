@@ -20,6 +20,7 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.FindSymbols;
 using System.IO;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace ICSharpCode.NRefactory6.CSharp.GenerateType
 {

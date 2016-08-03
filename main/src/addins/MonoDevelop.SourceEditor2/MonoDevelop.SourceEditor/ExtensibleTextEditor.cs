@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Core.Text;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -570,11 +571,11 @@ namespace MonoDevelop.SourceEditor
 		
 #region Templates
 
-		public bool IsTemplateKnown ()
+		public bool IsTemplateKnown (ExtensibleTextEditor instance)
 		{
 			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
 			bool result = false;
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (EditorExtension.Editor)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (EditorExtension.Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == shortcut) {
 					result = true;
 				} else if (template.Shortcut.StartsWith (shortcut)) {
@@ -588,7 +589,7 @@ namespace MonoDevelop.SourceEditor
 		public bool DoInsertTemplate ()
 		{
 			string shortcut = CodeTemplate.GetTemplateShortcutBeforeCaret (EditorExtension.Editor);
-			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (EditorExtension.Editor)) {
+			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesAsync (EditorExtension.Editor).WaitAndGetResult (CancellationToken.None)) {
 				if (template.Shortcut == shortcut) {
 					InsertTemplate (template, view.WorkbenchWindow.Document.Editor, view.WorkbenchWindow.Document);
 					return true;

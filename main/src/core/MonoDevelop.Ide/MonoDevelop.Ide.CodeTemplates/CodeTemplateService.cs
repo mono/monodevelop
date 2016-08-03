@@ -41,6 +41,8 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Text;
 using MonoDevelop.Ide.Editor.TextMate;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -96,17 +98,18 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return savedTemplates.ToArray ().Where (t => t != null && t.MimeType == mimeType);
 		}
 
-		public static IEnumerable<CodeTemplate> GetCodeTemplates (TextEditor editor)
+		public static async Task<IEnumerable<CodeTemplate>> GetCodeTemplatesAsync (TextEditor editor, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			foreach (var template in GetCodeTemplates (editor.MimeType))
-				yield return template;
+			var result = new List<CodeTemplate> ();
+			result.AddRange (GetCodeTemplates (editor.MimeType));
 
-			var scope = editor.SyntaxHighlighting.GetLinStartScopeStack (editor.GetLine (editor.CaretLine));
+			var scope = await editor.SyntaxHighlighting.GetLinStartScopeStackAsync (editor.GetLine (editor.CaretLine), cancellationToken);
 			foreach (var setting in TextMateLanguage.Create (scope).Snippets) {
 				var convertedTemplate = ConvertToTemplate (setting);
 				if (convertedTemplate != null)
-					yield return convertedTemplate;
+					result.Add (convertedTemplate);
 			}
+			return result;
 		}
 
 		static CodeTemplate ConvertToTemplate (TmSnippet setting)

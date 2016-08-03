@@ -33,15 +33,16 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.TextMate;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	class DefaultCommandTextEditorExtension : TextEditorExtension
 	{
 		#region Commands
-		void ToggleCodeCommentWithBlockComments ()
+		async void ToggleCodeCommentWithBlockComments ()
 		{
-			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
+			var scope = await Editor.SyntaxHighlighting.GetLinStartScopeStackAsync (Editor.GetLine (Editor.CaretLine), CancellationToken.None);
 			var lang = TextMateLanguage.Create (scope);
 			var lineComments = lang.LineComments.ToArray ();
 			var blockStarts = lang.BlockComments.Select (b => b.Item1).ToList ();
@@ -88,7 +89,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		bool TryGetLineCommentTag (out string commentTag)
 		{
-			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
+			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStackAsync (Editor.GetLine (Editor.CaretLine), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			var lang = TextMateLanguage.Create (scope);
 
 			if (lang.LineComments.Count == 0) {
@@ -104,7 +105,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
 		void OnUpdateToggleComment (CommandInfo info)
 		{
-			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStack (Editor.GetLine (Editor.CaretLine));
+			var scope = Editor.SyntaxHighlighting.GetLinStartScopeStackAsync (Editor.GetLine (Editor.CaretLine), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			var lang = TextMateLanguage.Create (scope);
 			info.Visible = lang.LineComments.Count + lang.BlockComments.Count > 0;
 		}

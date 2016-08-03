@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Ide.Editor.Highlighting.RegexEngine;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.TextMate
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		public TextMateDocumentIndentEngine(TextEditor editor)
 		{
 			this.editor = editor;
-			var startScope = editor.SyntaxHighlighting.GetLinStartScopeStack (editor.GetLine (1));
+			var startScope = editor.SyntaxHighlighting.GetLinStartScopeStackAsync (editor.GetLine (1), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			var lang = TextMateLanguage.Create (startScope);
 			increaseIndentPattern = lang.IncreaseIndentPattern;
 			decreaseIndentPattern = lang.DecreaseIndentPattern;

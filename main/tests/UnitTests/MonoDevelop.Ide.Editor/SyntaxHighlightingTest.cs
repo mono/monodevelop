@@ -35,6 +35,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Text;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -677,7 +678,7 @@ public class Coo
 			editor.SyntaxHighlighting = new SyntaxHighlighting (highlighting, editor);
 			//var line = editor.GetLine (6); {
 			foreach (var line in editor.GetLines ()) {
-				var coloredSegments = editor.SyntaxHighlighting.GetColoredSegments (line, line.Offset, line.Length).ToList ();
+				var coloredSegments = editor.SyntaxHighlighting.GetHighlightedLineAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None).Segments;
 				for (int i = 0; i < expectedSegments.Count; i++) {
 					var seg = expectedSegments [i];
 					if (seg.Item1.Line == line.LineNumber) {

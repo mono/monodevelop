@@ -26,6 +26,7 @@
 using System;
 using Mono.TextEditor;
 using System.Linq;
+using System.Threading;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -70,12 +71,12 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		static void RemoveCharBeforCaret (TextEditorData data)
+		static async void RemoveCharBeforCaret (TextEditorData data)
 		{
 			if (!data.IsSomethingSelected && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) {
 				if (data.Caret.Offset > 0) {
 					var line = data.GetLine (data.Caret.Line);
-					var stack = data.Document.SyntaxMode.GetLinStartScopeStack (line);
+					var stack = await data.Document.SyntaxMode.GetLinStartScopeStackAsync (line, CancellationToken.None);
 					if (stack.Any (s => s.Contains ("string"))) {
 						DeleteActions.Backspace (data);
 						return;
