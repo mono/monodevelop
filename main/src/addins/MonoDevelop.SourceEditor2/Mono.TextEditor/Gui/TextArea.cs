@@ -2883,6 +2883,12 @@ namespace Mono.TextEditor
 				HideTooltip ();
 			return;
 		}
+
+		internal void SetTooltip (Gtk.Window tooltipWindow)
+		{
+			HideTooltip ();
+			tipWindow = tooltipWindow;
+		}
 		
 		public void HideTooltip (bool checkMouseOver = true)
 		{

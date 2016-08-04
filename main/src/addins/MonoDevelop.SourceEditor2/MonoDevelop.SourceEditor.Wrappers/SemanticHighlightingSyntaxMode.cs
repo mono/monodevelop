@@ -210,9 +210,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return new HighlightedLine (segments);
 		}
 
-		Task<ImmutableStack<string>> ISyntaxHighlighting.GetLinStartScopeStackAsync (IDocumentLine line, CancellationToken cancellationToken)
+		Task<ImmutableStack<string>> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
-			return syntaxMode.GetLinStartScopeStackAsync (line, cancellationToken);
+			return syntaxMode.GetScopeStackAsync (offset, cancellationToken);
 		}
 	}
 }

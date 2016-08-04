@@ -75,8 +75,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (!data.IsSomethingSelected && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) {
 				if (data.Caret.Offset > 0) {
-					var line = data.GetLine (data.Caret.Line);
-					var stack = await data.Document.SyntaxMode.GetLinStartScopeStackAsync (line, CancellationToken.None);
+					var stack = await data.Document.SyntaxMode.GetScopeStackAsync (data.Caret.Offset, CancellationToken.None);
 					if (stack.Any (s => s.Contains ("string"))) {
 						DeleteActions.Backspace (data);
 						return;

@@ -1846,7 +1846,7 @@ namespace Mono.TextEditor
 				col = SelectionColor.Foreground;
 			} else {*/
 				if (line != null && line.NextLine != null) {
-					var span = textEditor.Document.SyntaxMode.GetLinStartScopeStackAsync (line.NextLine, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+					var span = textEditor.Document.SyntaxMode.GetScopeStackAsync (line.NextLine.Offset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 					var chunkStyle = EditorTheme.GetChunkStyle (!span.IsEmpty ? span.Peek () : "");
 					if (chunkStyle != null)
 						col = EditorTheme.GetForeground (chunkStyle);

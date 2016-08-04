@@ -9,6 +9,7 @@ using MonoDevelop.Core;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -60,9 +61,20 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return high.GetColoredSegments (line.Offset, line.Length);
 		}
 
-		public Task<ImmutableStack<string>> GetLinStartScopeStackAsync (IDocumentLine line, CancellationToken cancellationToken)
+		public async Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
-			return Task.FromResult (GetState (line).ScopeStack);
+			var line = Document.GetLineByOffset (offset);
+			var state = GetState (line);
+
+			if (line.Offset == offset) 
+				return state.ScopeStack;
+
+			var high = new Highlighter (this, state);
+			foreach (var seg in (await high.GetColoredSegments (line.Offset, line.Length)).Segments) {
+				if (seg.Contains (offset))
+					return seg.ScopeStack;
+			}
+			return high.State.ScopeStack;
 		}
 
 		List<HighlightState> stateCache = new List<HighlightState> ();

@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		/// The starting line at (offset). This is the same as Document.GetLineByOffset (offset).
 		/// </param>
 		Task<HighlightedLine> GetHighlightedLineAsync (IDocumentLine line, CancellationToken cancellationToken);
-		Task<ImmutableStack<string>> GetLinStartScopeStackAsync (IDocumentLine line, CancellationToken cancellationToken);
+		Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
 	}
 
 	public sealed class DefaultSyntaxHighlighting : ISyntaxHighlighting
@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (line.Offset, line.Length, ImmutableStack<string>.Empty.Push ("")) }));
 		}
 
-		public Task<ImmutableStack<string>> GetLinStartScopeStackAsync (IDocumentLine line, CancellationToken cancellationToken)
+		public Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
 			return Task.FromResult (ImmutableStack<string>.Empty);
 		}

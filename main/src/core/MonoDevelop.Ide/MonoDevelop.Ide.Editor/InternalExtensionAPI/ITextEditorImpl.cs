@@ -223,5 +223,6 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler<LineEventArgs> LineShown;
 		event EventHandler FocusLost;
 
-}
+		void ShowTooltipWindow (Control window, TooltipWindowOptions options);
+	}
 }

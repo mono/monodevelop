@@ -56,7 +56,7 @@ namespace MonoDevelop.SourceEditor
 
 			bool inStringOrComment = false;
 
-			var stack = extEditor.SyntaxHighlighting.GetLinStartScopeStackAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+			var stack = extEditor.SyntaxHighlighting.GetScopeStackAsync (extEditor.Caret.Offset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			// var sm = extEditor.Document.SyntaxMode;
 			// if (sm != null)
 				// extEditor.Caret.Offset - 1 means we care if we were inside string

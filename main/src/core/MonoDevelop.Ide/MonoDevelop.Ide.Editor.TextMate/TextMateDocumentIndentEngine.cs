@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		public TextMateDocumentIndentEngine(TextEditor editor)
 		{
 			this.editor = editor;
-			var startScope = editor.SyntaxHighlighting.GetLinStartScopeStackAsync (editor.GetLine (1), CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+			var startScope = editor.SyntaxHighlighting.GetScopeStackAsync (0, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 			var lang = TextMateLanguage.Create (startScope);
 			increaseIndentPattern = lang.IncreaseIndentPattern;
 			decreaseIndentPattern = lang.DecreaseIndentPattern;

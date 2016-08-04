@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
+
 		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
 
 		public ITextSourceVersion Version {
@@ -1451,6 +1452,11 @@ namespace MonoDevelop.Ide.Editor
 		public new void GrabFocus ()
 		{
 			this.textEditorImpl.GrabFocus ();
+		}
+
+		public void ShowTooltipWindow (Control window, TooltipWindowOptions options = null)
+		{
+			textEditorImpl.ShowTooltipWindow (window, options);
 		}
 	}
 }

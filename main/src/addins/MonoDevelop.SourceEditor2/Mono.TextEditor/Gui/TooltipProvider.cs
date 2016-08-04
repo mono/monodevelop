@@ -52,39 +52,44 @@ namespace Mono.TextEditor
 
 		public virtual Gtk.Window ShowTooltipWindow (MonoTextEditor editor, Gtk.Window tipWindow, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, MonoDevelop.Ide.Editor.TooltipItem item)
 		{
-			int ox = 0, oy = 0;
-			if (editor.GdkWindow != null)
-				editor.GdkWindow.GetOrigin (out ox, out oy);
-			
 			int w;
 			double xalign;
 			GetRequiredPosition (editor, tipWindow, out w, out xalign);
-			w += 10;
+
+			ShowAndPositionTooltip (editor, tipWindow, mouseX, mouseY, w, xalign);
+
+			return tipWindow;
+		}
+
+		internal static void ShowAndPositionTooltip (MonoTextEditor editor, Gtk.Window tipWindow, int mouseX, int mouseY, int width, double xalign)
+		{
+			int ox = 0, oy = 0;
+			if (editor.GdkWindow != null)
+				editor.GdkWindow.GetOrigin (out ox, out oy);
+
+			width += 10;
 
 			int x = mouseX + ox + editor.Allocation.X;
 			int y = mouseY + oy + editor.Allocation.Y;
 			Gdk.Rectangle geometry = editor.Screen.GetUsableMonitorGeometry (editor.Screen.GetMonitorAtPoint (x, y));
-			
-			x -= (int) ((double) w * xalign);
+
+			x -= (int)((double)width * xalign);
 			y += 10;
-			
-			if (x + w >= geometry.X + geometry.Width)
-				x = geometry.X + geometry.Width - w;
+
+			if (x + width >= geometry.X + geometry.Width)
+				x = geometry.X + geometry.Width - width;
 			if (x < geometry.Left)
 				x = geometry.Left;
-			
+
 			int h = tipWindow.SizeRequest ().Height;
 			if (y + h >= geometry.Y + geometry.Height)
 				y = geometry.Y + geometry.Height - h;
 			if (y < geometry.Top)
 				y = geometry.Top;
-			
-			tipWindow.Move (x, y);
-			
-			tipWindow.ShowAll ();
 
-			return tipWindow;
+			tipWindow.Move (x, y);
+
+			tipWindow.ShowAll ();
 		}
 	}
 }
-
