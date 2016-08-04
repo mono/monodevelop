@@ -166,6 +166,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting (null, null, defaultSettings));
 
 			settings.Add (new ThemeSetting ("Comment", new List<string> { "comment" }, ConvertChunkStyle (colorScheme.CommentsSingleLine)));
+			settings.Add (new ThemeSetting ("Comment Tags", new List<string> { "markup.other" }, ConvertChunkStyle (colorScheme.CommentTags)));
+
 			settings.Add (new ThemeSetting ("String", new List<string> { "string" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("Number", new List<string> { "constant.numeric" }, ConvertChunkStyle (colorScheme.Number)));
 			settings.Add (new ThemeSetting ("Built-in constant", new List<string> { "constant.language" }, ConvertChunkStyle (colorScheme.KeywordConstants)));
@@ -176,6 +178,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("storage.type", new List<string> { "storage.type" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("Entity name", new List<string> { "entity.name - (entity.name.filename | entity.name.section | entity.name.tag | entity.name.label)" }, ConvertChunkStyle (colorScheme.UserTypes)));
 			settings.Add (new ThemeSetting ("Tag name", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
+			settings.Add (new ThemeSetting ("Preprocessor", new List<string> { "meta.preprocessor" }, ConvertChunkStyle (colorScheme.Preprocessor)));
+			settings.Add (new ThemeSetting ("Preprocessor region name", new List<string> { "meta.preprocessor.region.name" }, ConvertChunkStyle (colorScheme.PreprocessorRegionName)));
 
 			settings.Add (new ThemeSetting ("Tag attribute", new List<string> { "entity.other.attribute-name" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("Function call", new List<string> { "variable.function" }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));

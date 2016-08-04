@@ -7586,15 +7586,6 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\FallbackStyle.json">
       <LogicalName>FallbackStyle.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\C#.sublime-package">
-      <LogicalName>C#.sublime-package</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\JavaScript.tmLanguage">
-      <LogicalName>JavaScript.tmLanguage</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Regular Expressions %28JavaScript%29.tmLanguage">
-      <LogicalName>Regular Expressions (JavaScript).tmLanguage</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\DarkStyle.json">
       <LogicalName>DarkStyle.json</LogicalName>
     </EmbeddedResource>
@@ -7624,6 +7615,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\VisualStudioStyle.json">
       <LogicalName>VisualStudioStyle.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\C#.sublime-syntax">
+      <LogicalName>C#.sublime-syntax</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
