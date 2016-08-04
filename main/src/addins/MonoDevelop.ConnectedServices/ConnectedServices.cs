@@ -27,6 +27,11 @@ namespace MonoDevelop.ConnectedServices
 		internal const string ProjectStateFolderName = "Service Capabilities";
 
 		/// <summary>
+		/// The name of the .json file that is stored in the ProjectStateFolderName/&lt;ServiceId&gt; folder.
+		/// </summary>
+		internal const string ConnectedServicesJsonFileName = "ConnectedService.json";
+
+		/// <summary>
 		/// Gets the list of IConnectedService instances that support project
 		/// </summary>
 		public static IConnectedService[] GetServices (DotNetProject project)

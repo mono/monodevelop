@@ -31,6 +31,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -74,6 +77,7 @@
     <Compile Include="IConnectedServiceProvider.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ConnectedService.cs" />
+    <Compile Include="ConnectedServiceState.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
@@ -89,9 +93,11 @@
   <ItemGroup>
     <Folder Include="Gui.SolutionPad\" />
     <Folder Include="DebugService\" />
+    <Folder Include="Internal\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.md" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

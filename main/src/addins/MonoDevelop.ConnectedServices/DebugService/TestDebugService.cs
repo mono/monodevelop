@@ -30,12 +30,6 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			this.Description = "This is a simple service example to show how you might construct your own service implementation.";
 		}
 
-		public override bool IsAdded {
-			get {
-				return true;
-			}
-		}
-
 		public override bool IsConfigured {
 			get {
 				return false;
@@ -51,6 +45,19 @@ namespace MonoDevelop.ConnectedServices.DebugService
 		{
 			throw new NotImplementedException ();
 		}
+
+		protected override void OnAddToProject ()
+		{
+		}
+
+		protected override void OnStoreAddedState(ConnectedServiceState state)
+		{
+			base.OnStoreAddedState (state);
+			state.ProviderId = "MonoDevelop.TestDebugService";
+			state.GettingStartedDocument = "https://www.google.com/webhp?q=how+do+i+get+started";
+			state.Version = "1.1";
+		}
+
 	}
 	#endif
 }

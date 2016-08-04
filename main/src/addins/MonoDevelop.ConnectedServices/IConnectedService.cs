@@ -66,6 +66,11 @@ namespace MonoDevelop.ConnectedServices
 		/// Creates and returns the widget to display in the Getting Started section of the service details view.
 		/// </summary>
 		object GetGettingStartedWidget ();
+
+		/// <summary>
+		/// Adds the service to the project
+		/// </summary>
+		void AddToProject ();
 	}
 
 	// TODO: WIP
