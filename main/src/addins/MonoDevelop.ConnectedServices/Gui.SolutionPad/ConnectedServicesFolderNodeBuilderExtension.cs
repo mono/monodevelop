@@ -9,10 +9,6 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 	/// </summary>
 	sealed class ConnectedServicesFolderNodeBuilderExtension : NodeBuilderExtension
 	{
-		public ConnectedServicesFolderNodeBuilderExtension ()
-		{
-
-		}
 		public override bool CanBuildNode (Type dataType)
 		{
 			return typeof (DotNetProject).IsAssignableFrom (dataType);

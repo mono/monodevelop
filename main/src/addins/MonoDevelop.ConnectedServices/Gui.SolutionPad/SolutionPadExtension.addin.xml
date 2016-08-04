@@ -15,18 +15,16 @@
 		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 	</ExtensionPoint>
 
-	<Extension path = "/MonoDevelop/Ide/Commands">
-		<Category _name = "Connected Services" id = "ConnectedServices">
-			<Command id = "MonoDevelop.ConnectedServices.Commands.AddService"
-					 _label = "Add Connected Service" />
-			
-			<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServiceDetails"
-					 _label = "Open Service Details" />
-		</Category>
+	<Extension path = "/MonoDevelop/Ide/Commands/Hidden">
+		<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGalleryFromServicesNode"
+				 _label = "Open Service Gallery" />
+		
+		<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServiceDetails"
+				 _label = "Open Service Details" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder">
-		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.AddService" />
+		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGalleryFromServicesNode" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedService">

@@ -1,25 +1,27 @@
 using System;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 {
 	/// <summary>
 	/// Command handler for the Connected Services node.
 	/// </summary>
-	sealed class ConnectedServicesFolderCommandHandler : NodeCommandHandler
+	sealed class ConnectedServicesFolderCommandHandler : DotNetProjectNodeCommandHandler
 	{
-		[CommandUpdateHandler (Commands.AddService)]
-		public void UpdateAddCommand (CommandInfo info)
+		[CommandUpdateHandler (Commands.OpenServicesGalleryFromServicesNode)]
+		public void UpdateOpenServicesGalleryCommand (CommandInfo info)
 		{
-			info.Visible = info.Enabled = true;
+			if (this.CurrentNode != null) {
+				info.Visible = info.Enabled = this.Project.GetConnectedServicesBinding ().HasSupportedServices;
+			} else {
+				info.Visible = info.Enabled = false;
+			}
 		}
 
-		[CommandHandler (Commands.AddService)]
-		public void AddService ()
+		[CommandHandler (Commands.OpenServicesGalleryFromServicesNode)]
+		public void OpenServicesGallery ()
 		{
-			//var project = (DotNetProject)CurrentNode.GetParentDataItem (typeof (DotNetProject), true);
-			// TODO: open up the tab that lists the available services that can be applied to the project.
+			ConnectedServices.OpenServicesTab (this.Project);
 		}
 	}
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Mono.Addins;
+using MonoDevelop.ConnectedServices.Gui.ServicesTab;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices
@@ -47,6 +49,24 @@ namespace MonoDevelop.ConnectedServices
 			}
 
 			return result.ToArray ();
+		}
+
+		public static void OpenServicesTab(DotNetProject project, string serviceId = null)
+		{
+			ConnectedServicesViewContent servicesView = null;
+
+			foreach (var view in IdeApp.Workbench.Documents) {
+				servicesView = view.PrimaryView.GetContent<ConnectedServicesViewContent> ();
+				if (servicesView != null && servicesView.Project == project) {
+					servicesView.UpdateContent(serviceId);
+					view.Window.SelectWindow ();
+					return;
+				}
+			}
+
+			servicesView = new ConnectedServicesViewContent (project);
+			servicesView.UpdateContent (serviceId);
+			IdeApp.Workbench.OpenDocument (servicesView, true);
 		}
 	}
 }

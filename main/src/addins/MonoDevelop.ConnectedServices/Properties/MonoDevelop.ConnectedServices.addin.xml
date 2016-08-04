@@ -9,4 +9,15 @@
 		<Class class = "MonoDevelop.ConnectedServices.ConnectedServiceProjectExtension"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/Ide/Commands/Project">
+		<Command id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGallery"
+				defaultHandler = "MonoDevelop.ConnectedServices.CommandHandlers.OpenServicesGalleryCommandHandler"
+				_label = "Service Capabilities" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu/Project">
+		<SeparatorItem id = "ConnectedServicesGallerySeparator" insertafter = "MonoDevelop.PackageManagement.Commands.RestorePackages" />
+		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.OpenServicesGallery" />
+	</Extension>
+
 </ExtensionModel>

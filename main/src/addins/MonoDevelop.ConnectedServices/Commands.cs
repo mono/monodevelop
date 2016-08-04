@@ -8,9 +8,10 @@ namespace MonoDevelop.ConnectedServices
 	public enum Commands
 	{
 		/// <summary>
-		/// Adds a new Connected Service to the project by taking the user to the gallery of services
+		/// Opens the services gallery tab
 		/// </summary>
-		AddService,
+		OpenServicesGallery,
+		OpenServicesGalleryFromServicesNode,
 
 		/// <summary>
 		/// Opens the service details tab for the given service

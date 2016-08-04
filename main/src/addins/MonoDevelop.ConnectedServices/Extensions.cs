@@ -14,7 +14,12 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static IConnectedServicesBinding GetConnectedServicesBinding(this DotNetProject project)
 		{
-			return project?.GetService<IConnectedServicesBinding> ();
+			if (project == null) {
+				return NullConnectedServicesBinding.Null;
+			}
+
+			// we should always have a binding for any given project because the extension loads for all projects
+			return project.GetService<IConnectedServicesBinding> ();
 		}
 	}
 }

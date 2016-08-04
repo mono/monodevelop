@@ -1,13 +1,12 @@
 using System;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 {
 	/// <summary>
 	/// Command handler for a Connected Service node.
 	/// </summary>
-	sealed class ConnectedServiceCommandHandler : NodeCommandHandler
+	sealed class ConnectedServiceCommandHandler : DotNetProjectNodeCommandHandler
 	{
 		[CommandUpdateHandler (Commands.OpenServiceDetails)]
 		public void UpdateOpenServiceDetailsommand (CommandInfo info)
@@ -18,8 +17,8 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		[CommandHandler (Commands.OpenServiceDetails)]
 		public void OpenServiceDetails ()
 		{
-			//var project = (DotNetProject)CurrentNode.GetParentDataItem (typeof (DotNetProject), true);
-			// TODO: open the tab that displays the service details, or navigate to the details view of the tab if it is already open.
+			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
+			ConnectedServices.OpenServicesTab (this.Project, service.Id);
 		}
 	}
 }

@@ -12,6 +12,8 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	public abstract class ConnectedService : IConnectedService
 	{
+		public static readonly IConnectedService[] Empty = new IConnectedService[0];
+
 		protected ConnectedService (DotNetProject project)
 		{
 			this.Project = project;

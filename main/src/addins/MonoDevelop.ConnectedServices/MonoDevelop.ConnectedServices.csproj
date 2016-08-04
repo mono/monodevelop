@@ -31,6 +31,16 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Cairo" />
+	<Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+	<Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\build\bin\System.Collections.Immutable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -78,6 +88,13 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="ConnectedService.cs" />
     <Compile Include="ConnectedServiceState.cs" />
+    <Compile Include="CommandHandlers\OpenServicesGalleryCommandHandler.cs" />
+    <Compile Include="Gui.ServicesTab\ConnectedServicesViewContent.cs" />
+    <Compile Include="NullConnectedServicesBinding.cs" />
+    <Compile Include="Gui.ServicesTab\ConnectedServicesWidget.cs" />
+    <Compile Include="Gui.SolutionPad\DotNetProjectNodeCommandHandler.cs" />
+    <Compile Include="Gui.ServicesTab\ServicesGalleryWidget.cs" />
+    <Compile Include="Gui.ServicesTab\ServiceDetailsWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
@@ -94,6 +111,8 @@
     <Folder Include="Gui.SolutionPad\" />
     <Folder Include="DebugService\" />
     <Folder Include="Internal\" />
+    <Folder Include="CommandHandlers\" />
+    <Folder Include="Gui.ServicesTab\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.md" />
