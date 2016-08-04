@@ -18,13 +18,13 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// The name of the node to display in the solution tree
 		/// </summary>
-		internal const string SolutionTreeNodeName = "Connected Services";
+		internal const string SolutionTreeNodeName = "Service Capabilities";
 
 		/// <summary>
 		/// The name of the folder that is used to store state about each connected service
 		/// that has been added to the project
 		/// </summary>
-		internal const string ProjectStateFolderName = "Connected Services";
+		internal const string ProjectStateFolderName = "Service Capabilities";
 
 		/// <summary>
 		/// Gets the list of IConnectedService instances that support project
