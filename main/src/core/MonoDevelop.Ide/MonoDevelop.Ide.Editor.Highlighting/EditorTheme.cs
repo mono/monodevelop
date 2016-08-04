@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Linq;
 using Cairo;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -130,14 +131,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			this.Uuid = uuuid;
 		}
 
-		HslColor GetColor (string key, string scope)
+		HslColor GetColor (string key, ImmutableStack<string> scopeStack)
 		{
 			HslColor result = default (HslColor);
-			foreach (var setting in settings) {
-				if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s.Trim (), scope))) {
-					HslColor tryC;
-					if (setting.TryGetColor (key, out tryC))
-						result = tryC;
+			foreach (var scope in scopeStack) {
+				var found = false;
+				foreach (var setting in settings) {
+					if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s.Trim (), scope))) {
+						HslColor tryC;
+						if (setting.TryGetColor (key, out tryC)) {
+							found = true;
+							result = tryC;
+						}
+					}
+				}
+				if (found) {
+					return result;
 				}
 			}
 			return result;
@@ -176,13 +185,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var idx = key.IndexOf (' ');
 			if (idx >= 0)
 				key = key.Substring (0, idx);
-			return scope.Contains (key);
+			bool isCompatible = scope.StartsWith (key, StringComparison.Ordinal);
+			return isCompatible;
 		}
 
-		internal ChunkStyle GetChunkStyle (string scope)
+		internal ChunkStyle GetChunkStyle (ImmutableStack<string> scope)
 		{
 			return new ChunkStyle () {
-				Name = scope,
+				ScopeStack = scope,
 				Foreground = GetColor (EditorThemeColors.Foreground, scope),
 				Background = GetColor (EditorThemeColors.Background, scope)
 			};
@@ -191,7 +201,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal Cairo.Color GetForeground (ChunkStyle chunkStyle)
 		{
 			if (chunkStyle.TransparentForeground)
-				return GetColor (EditorThemeColors.Foreground, "");
+				return GetColor (EditorThemeColors.Foreground, ImmutableStack<string>.Empty.Push (""));
 			return chunkStyle.Foreground;
 		}
 

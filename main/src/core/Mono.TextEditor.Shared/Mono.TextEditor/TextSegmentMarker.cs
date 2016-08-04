@@ -157,10 +157,18 @@ namespace Mono.TextEditor
 			}
 			double height = editor.LineHeight / 5;
 			// TODO : EditorTheme does that look ok ?
+
 			// if (selected) {
 			//	cr.SetSourceColor (editor.EditorTheme.SelectedText.Foreground);
-			// } else {
-			cr.SetSourceColor (ColorName == null ? (Cairo.Color)Color : (Cairo.Color)editor.EditorTheme.GetChunkStyle (ColorName).Foreground);
+			// } else 
+
+			if (ColorName == null) {
+				cr.SetSourceColor (Color);
+			} else {
+				HslColor color;
+				editor.EditorTheme.TryGetColor (ColorName, out color);
+				cr.SetSourceColor (color);
+			}
 			// }
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);

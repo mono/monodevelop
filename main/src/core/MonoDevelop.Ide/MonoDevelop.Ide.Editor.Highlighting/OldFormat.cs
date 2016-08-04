@@ -35,6 +35,7 @@ using System.Text;
 using System.Xml;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -1077,7 +1078,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						var el = (XElement)node;
 						switch (el.Name.LocalName) {
 						case "name":
-							result.Name = el.Value;
+							result.ScopeStack = ImmutableStack<string>.Empty.Push (el.Value);
 							break;
 						case "fore":
 							result.Foreground = ColorScheme.ParsePaletteColor (palette, el.Value);
@@ -1170,8 +1171,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				foreach (var textColorElement in root.XPathSelectElements ("//text/*")) {
 					var color = CreateChunkStyle (textColorElement, palette);
 					PropertyDescription info;
-					if (!textColors.TryGetValue (color.Name, out info)) {
-						Console.WriteLine ("Text color:" + color.Name + " not found.");
+					if (!textColors.TryGetValue (color.ScopeStack.Peek (), out info)) {
+						Console.WriteLine ("Text color:" + color.ScopeStack + " not found.");
 						continue;
 					}
 					info.Info.SetValue (result, color, null);
@@ -1338,7 +1339,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			internal static ChunkStyle ImportChunkStyle (string name, VSSettingColor vsc)
 			{
 				var textColor = new ChunkStyle ();
-				textColor.Name = name;
+				textColor.ScopeStack = ImmutableStack<string>.Empty.Push (name);
 				if (!string.IsNullOrEmpty (vsc.Foreground) && vsc.Foreground != "0x02000000") {
 					textColor.Foreground = ColorScheme.ImportVsColor (vsc.Foreground);
 					if (textColor.TransparentForeground && name != "Selected Text" && name != "Selected Text(Inactive)")

@@ -67,7 +67,7 @@ namespace Mono.TextEditor.Utils
 				}
 
 				foreach (var chunk in line) {
-					var chunkStyle = style.GetChunkStyle (chunk.Style);
+					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
 					htmlText.Append ("<SPAN style='");
 					if (chunkStyle.FontWeight != Xwt.Drawing.FontWeight.Normal)
 						htmlText.Append ("font-weight:" + ((int)chunkStyle.FontWeight) + ";");

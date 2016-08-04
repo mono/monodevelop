@@ -69,17 +69,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		class HighlightingSegmentTree : Mono.TextEditor.SegmentTree<StyledTreeSegment>
 		{
-			public bool GetStyle (Chunk chunk, ref int endOffset, out string style)
-			{
-				var segment = GetSegmentsAt (chunk.Offset).FirstOrDefault (s => s.EndOffset > chunk.Offset);
-				if (segment == null) {
-					style = null;
-					return false;
-				}
-				endOffset = segment.EndOffset;
-				style = segment.Style;
-				return true;
-			}
 
 			public void AddStyle (MonoDevelop.Core.Text.ISegment segment, string style)
 			{

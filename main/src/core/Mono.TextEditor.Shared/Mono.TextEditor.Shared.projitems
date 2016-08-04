@@ -29,12 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Vi\ViActions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Chunk.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\CloneableStack.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\ColorDescriptionAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Keywords.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Marker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Match.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\SemanticRule.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\Span.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting\XmlReadHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\Regex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mono.TextEditor.Highlighting.Regex\RegexMatch.cs" />

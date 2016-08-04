@@ -128,7 +128,14 @@ namespace Mono.TextEditor
 			// if (selected) {
 			//	cr.SetSourceColor (editor.EditorTheme.SelectedText.Foreground);
 			//} else {
-			cr.SetSourceColor (ColorName == null ? Color : (Cairo.Color)editor.EditorTheme.GetChunkStyle (ColorName).Foreground);
+			if (ColorName == null) {
+				cr.SetSourceColor (Color);
+
+			} else {
+				HslColor color;
+				editor.EditorTheme.TryGetColor (ColorName, out color);
+				cr.SetSourceColor (color);
+			}
 			//}
 			if (Wave) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, @from, y + editor.LineHeight - height, to - @from, height);

@@ -43,17 +43,6 @@ namespace Mono.TextEditor
 			set;
 		}
 
-		CloneableStack<Span> spanStack;
-		static CloneableStack<Span> emptySpan = new CloneableStack<Span> ();
-		public CloneableStack<Span> SpanStack {
-			get { 
-				if (spanStack == null)
-					spanStack = emptySpan.Clone ();
-				return spanStack; 
-			}
-			set { spanStack = value; }
-		}
-
 		public int Offset {
 			get;
 			set;

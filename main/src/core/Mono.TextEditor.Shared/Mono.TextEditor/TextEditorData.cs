@@ -399,7 +399,7 @@ namespace Mono.TextEditor
 				foreach (var chunk in TextViewMargin.TrimChunks (mode.GetHighlightedLineAsync (line, CancellationToken.None).WaitAndGetResult (CancellationToken.None).Segments, curOffset, toOffset - curOffset)) {
 					if (chunk.Length == 0)
 						continue;
-					var chunkStyle = style.GetChunkStyle (chunk.ColorStyleKey);
+					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
 					bool setBold = (styleStack.Count > 0 && styleStack.Peek ().FontWeight != chunkStyle.FontWeight) || 
 						chunkStyle.FontWeight != FontWeight.Normal;
 					bool setItalic = (styleStack.Count > 0 && styleStack.Peek ().FontStyle != chunkStyle.FontStyle) || 

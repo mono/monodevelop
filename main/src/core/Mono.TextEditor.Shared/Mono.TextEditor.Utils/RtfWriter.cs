@@ -104,7 +104,7 @@ namespace Mono.TextEditor.Utils
 			foreach (var line in chunks) {
 				bool appendSpace = false;
 				foreach (var chunk in line) {
-					var chunkStyle = style.GetChunkStyle (chunk.Style);
+					var chunkStyle = style.GetChunkStyle (chunk.ScopeStack);
 					if (isBold != (chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold)) {
 						isBold = chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold;
 						rtfText.Append (isBold ? @"\b" : @"\b0");

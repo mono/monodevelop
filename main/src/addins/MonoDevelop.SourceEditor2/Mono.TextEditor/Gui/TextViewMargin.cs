@@ -714,11 +714,6 @@ namespace Mono.TextEditor
 				private set;
 			}
 
-			public Mono.TextEditor.Highlighting.CloneableStack<Mono.TextEditor.Highlighting.Span> Spans {
-				get;
-				private set;
-			}
-
 			protected LineDescriptor (DocumentLine line, int offset, int length)
 			{
 				this.Offset = offset;
@@ -786,7 +781,7 @@ namespace Mono.TextEditor
 				if (obj.GetType () != typeof(LayoutDescriptor))
 					return false;
 				Mono.TextEditor.TextViewMargin.LayoutDescriptor other = (Mono.TextEditor.TextViewMargin.LayoutDescriptor)obj;
-				return MarkerLength == other.MarkerLength && Offset == other.Offset && Length == other.Length && Spans.Equals (other.Spans) && SelectionStart == other.SelectionStart && SelectionEnd == other.SelectionEnd;
+				return MarkerLength == other.MarkerLength && Offset == other.Offset && Length == other.Length && SelectionStart == other.SelectionStart && SelectionEnd == other.SelectionEnd;
 			}
 
 			public override int GetHashCode ()
@@ -878,7 +873,7 @@ namespace Mono.TextEditor
 						goto restart;
 					}
 					var theme = textEditor.GetTextEditorData ().EditorTheme;
-					var chunkStyle = theme.GetChunkStyle(chunk.ColorStyleKey);
+					var chunkStyle = theme.GetChunkStyle(chunk.ScopeStack);
 					foreach (TextLineMarker marker in line.Markers)
 						chunkStyle = marker.GetStyle (chunkStyle);
 
@@ -1226,11 +1221,6 @@ namespace Mono.TextEditor
 			}
 
 			public char[] LineChars {
-				get;
-				set;
-			}
-
-			internal CloneableStack<Mono.TextEditor.Highlighting.Span> EolSpanStack {
 				get;
 				set;
 			}
@@ -1847,7 +1837,7 @@ namespace Mono.TextEditor
 			} else {*/
 				if (line != null && line.NextLine != null) {
 					var span = textEditor.Document.SyntaxMode.GetScopeStackAsync (line.NextLine.Offset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
-					var chunkStyle = EditorTheme.GetChunkStyle (!span.IsEmpty ? span.Peek () : "");
+					var chunkStyle = EditorTheme.GetChunkStyle (span);
 					if (chunkStyle != null)
 						col = EditorTheme.GetForeground (chunkStyle);
 				}
@@ -2837,17 +2827,17 @@ namespace Mono.TextEditor
 						DrawIndent (cr, wrapper, line, lx, y);
 				} else if (!(HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) || Caret.Line != lineNr && Caret.Line != startLineNr) {
 					wrapper = GetLayout (line);
-					if (wrapper.EolSpanStack != null) {
-						foreach (var span in wrapper.EolSpanStack) {
-							var spanStyle = textEditor.EditorTheme.GetChunkStyle (span.Color);
-							if (spanStyle == null)
-								continue;
-							if (!spanStyle.TransparentBackground && GetPixel (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background)) != GetPixel (spanStyle.Background)) {
-								DrawRectangleWithRuler (cr, x, lineArea, spanStyle.Background, false);
-								break;
-							}
-						}
-					}
+					//if (wrapper.EolSpanStack != null) {
+					//	foreach (var span in wrapper.EolSpanStack) {
+					//		var spanStyle = textEditor.EditorTheme.GetChunkStyle (span.Color);
+					//		if (spanStyle == null)
+					//			continue;
+					//		if (!spanStyle.TransparentBackground && GetPixel (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background)) != GetPixel (spanStyle.Background)) {
+					//			DrawRectangleWithRuler (cr, x, lineArea, spanStyle.Background, false);
+					//			break;
+					//		}
+					//	}
+					//}
 				} else {
 					double xPos = position;
 					if (line.Length == 0 && Caret.Column > 1) {

@@ -32,17 +32,18 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Collections.Immutable;
 
 namespace Mono.TextEditor.Utils
 {
 	class ClipboardColoredText
 	{
-		public string Style { get; set; }
+		public ImmutableStack<string> ScopeStack { get; set; }
 		public string Text { get; set; }
 
 		public ClipboardColoredText (ColoredSegment chunk, TextDocument doc)
 		{
-			this.Style = chunk.ColorStyleKey;
+			this.ScopeStack = chunk.ScopeStack;
 			this.Text = doc.GetTextAt (chunk);
 		}
 

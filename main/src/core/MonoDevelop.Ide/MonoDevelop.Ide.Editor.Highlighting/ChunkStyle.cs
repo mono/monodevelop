@@ -29,12 +29,13 @@ using System.IO;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using MonoDevelop.Components;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class ChunkStyle
 	{
-		public string Name { get; set; }
+		public ImmutableStack<string> ScopeStack { get; set; }
 		public HslColor Foreground { get; set; }
 		public HslColor Background { get; set; }
 
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public ChunkStyle (ChunkStyle baseStyle)
 		{
-			this.Name = baseStyle.Name;
+			this.ScopeStack = baseStyle.ScopeStack;
 			this.Foreground = baseStyle.Foreground;
 			this.Background = baseStyle.Background;
 			this.FontWeight = baseStyle.FontWeight;
@@ -85,13 +86,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (obj.GetType () != typeof(ChunkStyle))
 				return false;
 			ChunkStyle other = (ChunkStyle)obj;
-			return Name == other.Name && Foreground.Equals (other.Foreground) && Background.Equals (other.Background) && FontWeight == other.FontWeight && FontStyle == other.FontStyle;
+			return ScopeStack == other.ScopeStack && Foreground.Equals (other.Foreground) && Background.Equals (other.Background) && FontWeight == other.FontWeight && FontStyle == other.FontStyle;
 		}
 
 		public override int GetHashCode ()
 		{
 			unchecked {
-				return (Name != null ? Name.GetHashCode () : 0) ^ Foreground.GetHashCode () ^ Background.GetHashCode () ^ FontWeight.GetHashCode () ^ FontStyle.GetHashCode ();
+				return (ScopeStack != null ? ScopeStack.GetHashCode () : 0) ^ Foreground.GetHashCode () ^ Background.GetHashCode () ^ FontWeight.GetHashCode () ^ FontStyle.GetHashCode ();
 			}
 		}
 
@@ -107,7 +108,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public override string ToString ()
 		{
-			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", Name, Foreground, Background, FontWeight, FontStyle);
+			return string.Format ("[ChunkStyle: ScopeStack={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", ScopeStack, Foreground, Background, FontWeight, FontStyle);
 		}
 
 
