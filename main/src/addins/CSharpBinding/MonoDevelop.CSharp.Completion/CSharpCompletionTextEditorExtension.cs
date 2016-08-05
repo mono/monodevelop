@@ -278,18 +278,6 @@ namespace MonoDevelop.CSharp.Completion
 			HandleDocumentParsed (null, null);
 		}
 		
-		public override bool KeyPress (KeyDescriptor descriptor)
-		{
-			bool result = base.KeyPress (descriptor);
-			
-			if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
-				base.RunParameterCompletionCommand ();
-			
-//			if (IsInsideComment ())
-//				ParameterInformationWindowManager.HideWindow (CompletionWidget);
-			return result;
-		}
-		
 		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 //			if (!EnableCodeCompletion)
