@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 
-		internal static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
+		public static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException ("solution");
