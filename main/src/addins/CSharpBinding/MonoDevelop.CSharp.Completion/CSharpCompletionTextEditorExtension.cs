@@ -766,8 +766,8 @@ namespace MonoDevelop.CSharp.Completion
 			var caretOffset = Editor.CaretOffset;
 			if (analysisDocument == null || startOffset > caretOffset)
 				return -1;
-			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, default(CancellationToken)).ConfigureAwait (false);
-			var result = ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset).Result;
+			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token).ConfigureAwait (false);
+			var result = await ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset, token).ConfigureAwait (false);
 			return result.ParameterIndex;
 		}
 
