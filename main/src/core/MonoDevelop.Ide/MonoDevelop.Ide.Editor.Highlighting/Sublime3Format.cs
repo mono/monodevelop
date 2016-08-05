@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					recordWord = false;
 					string replacement;
 					if (variables.TryGetValue (wordBuilder.ToString (), out replacement)) {
-						result.Append (replacement);
+						result.Append (ReplaceVariables (replacement, variables));
 					} else { 
 						LoggingService.LogWarning ("Sublime3Format: Can't find variable " + wordBuilder.ToString ());
 					}
@@ -183,7 +183,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			result.Append (str [str.Length - 1]);
-
 			return result.ToString ();
 		}
 
