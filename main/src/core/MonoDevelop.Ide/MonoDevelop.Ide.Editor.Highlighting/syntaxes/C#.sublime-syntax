@@ -66,47 +66,13 @@ contexts:
         - match : '(>|$\n?)'
           pop: true
   keywords:
-    - match: '\b(this|base)\b'
-      scope: keyword.access.source.cs
-    - match: '\b(as|is|new|sizeof|typeof|stackalloc)\b'
-      scope: keyword.operator.source.cs
-    - match: '\b(else|if|switch|case|default)\b'
-      scope: keyword.selection.source.cs
-    - match: '\b(do|for|foreach|in|while)\b'
-      scope: keyword.iteration.source.cs
-    - match: '\b(break|continue|goto|return)\b'
-      scope: keyword.jump.source.cs
-    - match: '\b(yield|partial|global|where|__arglist|__makeref|__reftype|__refvalue|by|descending|from|group|into|orderby|select|let|ascending|join|on|equals)\b'
-      scope: keyword.context.source.cs
-    - match: '\b(try|throw|catch|finally)\b'
-      scope: keyword.exception.source.cs
-    - match: '\b(true|false|null)\b'
-      scope: keyword.constants.source.cs
-    - match: '\b(abstract|async|await|const|event|extern|override|readonly|sealed|static|virtual|volatile|public|protected|private|internal)\b'
-      scope: keyword.modifiers.source.cs
-    - match: '\b(bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ushort|ulong|object|string|var|dynamic)\b'
-      scope: keyword.type.source.cs
-    - match: '\b(void)\b'
-      scope: keyword.void.source.cs
-    - match: '\b(namespace|using)\b'
-      scope: keyword.namespace.source.cs
-    - match: '\b(get|set|add|remove|value)\b'
-      scope: keyword.property.source.cs
-    - match: '\b(class|interface|delegate|enum|struct)\b'
-      scope: keyword.declaration.source.cs
-    - match: '\b(params|ref|out)\b'
-      scope: keyword.parameter.source.cs
-    - match: '\b(explicit|implicit|operator)\b'
-      scope: keyword.operatordeclaration.source.cs
-    - match: '\b(checked|unchecked|fixed|unsafe|lock)\b'
-      scope: keyword.other.source.cs
+    - match: '\b(this|base|as|is|new|sizeof|typeof|stackalloc|else|if|switch|case|default|do|for|foreach|in|while|break|continue|goto|return|yield|partial|global|where|__arglist|__makeref|__reftype|__refvalue|by|descending|from|group|into|orderby|select|let|ascending|join|on|equals|try|throw|catch|finally|true|false|null|abstract|async|await|const|event|extern|override|readonly|sealed|static|virtual|volatile|public|protected|private|internal|bool|byte|char|decimal|double|float|int|long|sbyte|short|uint|ushort|ulong|object|string|var|dynamic|void|namespace|using|get|set|add|remove|value|class|interface|delegate|enum|struct|params|ref|out|explicit|implicit|operator|checked|unchecked|fixed|unsafe|lock)\b'
+      scope: keyword.source.cs
   numbers:
     - match: '((\b\d+\.?\d+)|(\.\d+))([eE][+-]?\d*)?(F|f|D|d|M|m)?\b'
-      scope: constant.numeric.float
-    - match: '\b\d+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
-      scope: constant.numeric.integer
-    - match: '\b0[xX][0-9a-fA-F]+?(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
-      scope: constant.numeric.hex
+      scope: constant.numeric.float.source.cs
+    - match: '\b(0[xX][0-9a-fA-F]+?|\d+)(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b'
+      scope: constant.numeric.source.cs
   strings:
     - match: "'"
       scope: string.quoted.single.source.cs
