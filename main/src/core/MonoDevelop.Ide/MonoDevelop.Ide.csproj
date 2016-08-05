@@ -7619,6 +7619,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\C#.sublime-syntax">
       <LogicalName>C#.sublime-syntax</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\YAML.sublime-syntax">
+      <LogicalName>YAML.sublime-syntax</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
