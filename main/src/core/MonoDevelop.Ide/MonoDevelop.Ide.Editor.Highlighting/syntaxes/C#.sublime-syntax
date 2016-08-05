@@ -147,12 +147,12 @@ contexts:
         - match: '("|$\n?)'
           pop: true
   preprocessor:
-    - match: '^#(if|else|elif|endif|define|undef|warning|error|line|endregion|pragma)\b'
+    - match: '^\s*#(if|else|elif|endif|define|undef|warning|error|line|endregion|pragma)\b'
       scope: meta.preprocessor.source.cs
       push:
         - match: '\n?'
           pop: true
-    - match: '^(#region)(.*)$\n?'
+    - match: '^\s*(#region)(.*)$\n?'
       captures:
         1: meta.preprocessor.source.cs
         2: meta.preprocessor.region.name.source.cs
