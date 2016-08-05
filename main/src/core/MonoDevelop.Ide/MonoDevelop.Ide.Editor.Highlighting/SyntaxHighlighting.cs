@@ -116,7 +116,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			public static HighlightState CreateNewState (SyntaxHighlighting highlighting)
 			{
 				return new HighlightState {
-					ContextStack = ImmutableStack<SyntaxContext>.Empty.Push (highlighting.GetContext ("main")),
+					ContextStack = ImmutableStack<SyntaxContext>.Empty.Push (highlighting.Definition.GetContext ("main")),
 					ScopeStack = ImmutableStack<string>.Empty.Push (highlighting.definition.Scope),
 					MatchStack = ImmutableStack<SyntaxMatch>.Empty
 				};
@@ -167,11 +167,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var segments = new List<ColoredSegment> ();
 				int curSegmentOffset = offset;
 				int endOffset = offset + length;
+				int lastMatch = -1;
 			restart:
+				if (lastMatch == offset) {
+					offset++;
+					length--;
+					if (length <= 0)
+						goto end;
+				}
+				lastMatch = offset;
 				currentContext = ContextStack.Peek ();
 				match = null;
 				curMatch = null;
-				foreach (var m in currentContext.GetMatches (highlighting)) {
+				foreach (var m in currentContext.Matches) {
 					var r = m.GetRegex ();
 					if (r == null)
 						continue;
@@ -231,10 +239,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						//	scopeStack = scopeStack.Pop ();
 						PopStack (currentContext, curMatch);
 						curSegmentOffset = matchEndOffset;
-						var nextContexts = curMatch.Set.GetContexts (highlighting);
+						var nextContexts = curMatch.Set.GetContexts (highlighting.Definition);
 						PushStack (curMatch, nextContexts);
 					} else if (curMatch.Push != null) {
-						var nextContexts = curMatch.Push.GetContexts (highlighting);
+						var nextContexts = curMatch.Push.GetContexts (highlighting.Definition);
 						PushStack (curMatch, nextContexts);
 					} else {
 						if (curMatch.Scope != null) {
@@ -252,6 +260,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					goto restart;
 				}
 
+				end:
 				if (endOffset - curSegmentOffset > 0) {
 					segments.Add (new ColoredSegment (curSegmentOffset, endOffset - curSegmentOffset, ScopeStack));
 				}
@@ -300,7 +309,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					ScopeStack = ScopeStack.Pop ();
 			}
 		}
-	
+
 		static void Insert (List<ColoredSegment> list, ColoredSegment newSegment)
 		{
 			if (list.Count == 0) {
@@ -327,11 +336,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal SyntaxContext GetContext (string name)
 		{
-			foreach (var ctx in definition.Contexts) {
-				if (ctx.Name == name)
-					return ctx;
-			}
-			return null;
+			return definition.GetContext (name);
 		}
 	}
 }
