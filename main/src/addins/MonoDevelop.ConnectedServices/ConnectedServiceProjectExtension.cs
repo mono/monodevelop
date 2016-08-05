@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Xml;
+using MonoDevelop.ConnectedServices.Gui.SolutionPad;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices
@@ -40,6 +41,14 @@ namespace MonoDevelop.ConnectedServices
 				return this.services.Any(x => x.IsAdded);
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the services node that is shown in the solution pad.
+		/// </summary>
+		/// <remarks>
+		/// Only the node builder should set this.
+		/// </remarks>
+		public ConnectedServiceFolderNode ServicesNode { get; set; }
 
 		/// <summary>
 		/// Handles when the project is initialised from a template and gathers the list of services that support this project

@@ -1,4 +1,5 @@
 using System;
+using MonoDevelop.ConnectedServices.Gui.SolutionPad;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices
@@ -29,5 +30,7 @@ namespace MonoDevelop.ConnectedServices
 		public IConnectedService [] SupportedServices {
 			get { return ConnectedService.Empty; }
 		}
+
+		public ConnectedServiceFolderNode ServicesNode { get; set; }
 	}
 }

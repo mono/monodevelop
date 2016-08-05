@@ -8,6 +8,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// </summary>
 	class ServiceDetailsWidget : VBox
 	{
+		/// <summary>
+		/// A service that can be added to the project
+		/// </summary>
+		IConnectedService service;
+
 		public ServiceDetailsWidget ()
 		{
 			this.Build ();
@@ -18,6 +23,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void LoadService (IConnectedService service)
 		{
+			this.service = service;
+
 			// test code
 			var label = new Label ("service: " + service.DisplayName);
 			this.PackStart (label, false, false, 0);
@@ -32,6 +39,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			var label = new Label ("details");
 			this.PackStart (label, false, false, 0);
+
+			var btn = new Button () { Label = "Add" };
+			btn.Clicked += (sender, e) => {
+				if (this.service != null && !this.service.IsAdded) {
+					this.service.AddToProject ();
+				}
+			};
+
+			this.PackStart (btn, false, false, 10);
 		}
 	}
 }

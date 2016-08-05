@@ -13,6 +13,35 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 			Project = project;
 		}
 
+		/// <summary>
+		/// Gets the project that this component services node is contained in
+		/// </summary>
 		public DotNetProject Project { get; private set; }
+
+		/// <summary>
+		/// Occurs when services that have been added to the project have changed
+		/// </summary>
+		public event EventHandler<ServicesChangedEventArgs> ServicesChanged;
+
+		internal void X()
+		{
+			this.OnServicesChanged (new ServicesChangedEventArgs());
+		}
+
+		void OnServicesChanged(ServicesChangedEventArgs args)
+		{
+			var handler = this.ServicesChanged;
+			if (handler != null) {
+				handler (this, args);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Event args that are passed when the services that have been added to a project change.
+	/// </summary>
+	public class ServicesChangedEventArgs : EventArgs
+	{
+
 	}
 }

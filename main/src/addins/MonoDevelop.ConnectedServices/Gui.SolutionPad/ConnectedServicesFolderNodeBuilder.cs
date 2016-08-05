@@ -67,5 +67,37 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 			// we want to go after the project references node
 			return (otherNode.DataItem is MonoDevelop.Projects.ProjectReferenceCollection) ? 1 : -1;
 		}
+
+		public override void OnNodeAdded (object dataObject)
+		{
+			var services = (ConnectedServiceFolderNode)dataObject;
+			services.ServicesChanged += this.ServicesChanged;
+
+			services.Project.GetConnectedServicesBinding ().ServicesNode = services;
+
+			base.OnNodeAdded (dataObject);
+		}
+
+		public override void OnNodeRemoved (object dataObject)
+		{
+			var services = (ConnectedServiceFolderNode)dataObject;
+			services.ServicesChanged -= this.ServicesChanged;
+
+			services.Project.GetConnectedServicesBinding ().ServicesNode = null;
+
+			base.OnNodeRemoved (dataObject);
+		}
+
+		/// <summary>
+		/// Handles the services that have been added to the project by updating the services node
+		/// </summary>
+		void ServicesChanged (object sender, ServicesChangedEventArgs e)
+		{
+			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+			if (builder != null) {
+				builder.UpdateAll ();
+				builder.Expanded = true;
+			}
+		}
 	}
 }

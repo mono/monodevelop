@@ -22,6 +22,18 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			foreach (var service in services) {
 				var label = new Label ("service: " + service.DisplayName);
 				this.PackStart (label, false, false, 0);
+
+				var svc = service;
+				var btn = new Button () { Label = "Add " + service.DisplayName };
+				btn.Clicked += (sender, e) => {
+					if (!svc.IsAdded) {
+						svc.AddToProject ();
+						var node = svc.Project.GetConnectedServicesBinding ().ServicesNode;
+						node?.X ();
+					}
+				};
+
+				this.PackStart (btn, false, false, 10);
 			}
 
 			this.ShowAll ();

@@ -10,7 +10,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// <summary>
 	/// ViewContent host for the services gallery and service details widgets
 	/// </summary>
-	public class ConnectedServicesViewContent : ViewContent
+	class ConnectedServicesViewContent : ViewContent
 	{
 		ConnectedServicesWidget widget;
 

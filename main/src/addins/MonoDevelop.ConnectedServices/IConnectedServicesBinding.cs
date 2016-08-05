@@ -1,4 +1,5 @@
 ﻿using System;
+using MonoDevelop.ConnectedServices.Gui.SolutionPad;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices
@@ -27,5 +28,13 @@ namespace MonoDevelop.ConnectedServices
 		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has any services that have been added.
 		/// </summary>
 		bool HasAddedServices { get; }
+
+		/// <summary>
+		/// Gets or sets the services node that is shown in the solution pad.
+		/// </summary>
+		/// <remarks>
+		/// Only the node builder should set this.
+		/// </remarks>
+		ConnectedServiceFolderNode ServicesNode { get; set; }
 	}
 }
