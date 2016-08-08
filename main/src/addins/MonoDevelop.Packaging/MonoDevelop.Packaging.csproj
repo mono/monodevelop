@@ -34,6 +34,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="MonoDevelop.Packaging\PackagingProjectFlavor.cs" />
+    <Compile Include="MonoDevelop.Packaging\PackagingProject.cs" />
+    <Compile Include="MonoDevelop.Packaging\PackagingCompilerParameters.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

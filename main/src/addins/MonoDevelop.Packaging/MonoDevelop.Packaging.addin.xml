@@ -4,4 +4,33 @@
 		<Import assembly="MonoDevelop.Packaging.dll" />
 	</Runtime>
 
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProjectType
+			language="NuGet.Packaging"
+			extension="nuproj"
+			guid="{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}"
+			type="MonoDevelop.Packaging.PackagingProject"
+			alias="NuGetPackaging"
+			msbuildSupport="Required" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<ProjectFlavor
+			id="MonoDevelop.Packaging.PackagingProjectFlavor"
+			guid="{5DD5E4FA-CB73-4610-85AB-557B54E96AA9}"
+			type="MonoDevelop.Packaging.PackagingProjectFlavor"
+			alias="NuGetPackaging">
+		</ProjectFlavor>
+	</Extension>
+
+	<!--
+		Need to define a language binding otherwise it is not possible to
+	 	open a .nuproj since the DotNetProject.SupportsPartialTypes is called
+		when initializing a project and it requires a non-null language binding.
+	-->
+	<Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding
+			id="NuGet.Packaging" />
+	</Extension>
+
 </ExtensionModel>

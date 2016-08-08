@@ -43,7 +43,8 @@ namespace MonoDevelop.Projects
 		Exe,
 		Library,
 		WinExe, 
-		Module
+		Module,
+		Package
 	};
 	
 	public class DotNetProjectConfiguration: ProjectConfiguration
