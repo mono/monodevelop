@@ -5,11 +5,14 @@ using YamlDotNet.RepresentationModel;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	static class Sublime3Format
 	{
+		internal static bool Debug;
+
 		public static SyntaxHighlightingDefinition ReadHighlighting (TextReader input)
 		{
 			input.ReadLine ();
@@ -38,6 +41,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				switch (((YamlScalarNode)entry.Key).Value) {
 				case "name":
 					name = ((YamlScalarNode)entry.Value).Value;
+					Console.WriteLine ("READ !!!!!!!!!" + name);
 					break;
 				case "file_extensions":
 					foreach (var nn in entry.Value.AllNodes.OfType<YamlScalarNode> ()) {
@@ -187,20 +191,334 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 
+		class CharacterClass
+		{
+			bool first = true;
+			bool negativeGroup;
+			StringBuilder wordBuilder;
+
+			bool hasLast;
+			bool escape, range;
+			char lastChar = '\0';
+			int[] table = new int [256];
+			StringBuilder org = new StringBuilder ();
+			public void Push (char ch)
+			{
+				org.Append (ch);
+				switch (ch) {
+				case ':':
+					if (first) {
+						wordBuilder = new StringBuilder ();
+						break;
+					}
+					if (wordBuilder == null)
+						goto default;
+					break;
+				case '^':
+					if (first) {
+						negativeGroup = true;
+						break;
+					}
+					goto default;
+				case '[':
+					if (escape)
+						goto default;
+					break;
+				case ']':
+					if (escape)
+						goto default;
+					break;
+				case '\\':
+					if (escape)
+						goto default;
+					escape = true;
+					break;
+				case '-':
+					if (escape)
+						goto default;
+					range = true;
+					break;
+				default:
+					if (escape) {
+						PushLastChar ();
+
+						switch (ch) {
+						case 'w': // A word character ([a - zA - Z0 - 9_])
+							AddRange ('a', 'z');
+							AddRange ('A', 'Z');
+							AddRange ('0', '9');
+							table ['_'] = negativeGroup ? -1 : 1;
+							break;
+						case 'W': // A non-word character ([^a-zA-Z0-9_]). 
+							for (int i = 0; i < table.Length; i++) {
+								if ('0' <= i && i <= '9')
+									continue;
+								if ('a' <= i && i <= 'z')
+									continue;
+								if ('A' <= i && i <= 'Z')
+									continue;
+								if (i == '_')
+									continue;
+								table [i] = negativeGroup ? -1 : 1;
+							}
+							break;
+						case 'd': // A digit character ([0-9])
+							AddRange ('0', '9');
+							break;
+						case 'D': // A non-digit character ([^0-9])
+							for (int i = 0; i < table.Length; i++) {
+								if ('0' <= i && i <= '9')
+									continue;
+								table [i] = negativeGroup ? -1 : 1;
+							}
+							break;
+						case 'h': // A hexdigit character ([0-9a-fA-F])
+							AddRange ('0', '9');
+							AddRange ('a', 'f');
+							AddRange ('A', 'F');
+							break;
+						case 'H': // A non-hexdigit character ([^0-9a-fA-F])
+							for (int i = 0; i < table.Length; i++) {
+								if ('0' <= i && i <= '9')
+									continue;
+								if ('a' <= i && i <= 'f')
+									continue;
+								if ('A' <= i && i <= 'F')
+									continue;
+								table [i] = negativeGroup ? -1 : 1;
+							}
+							break;
+						case 's': // A whitespace character: /[ \t\r\n\f]/
+							table [' '] = negativeGroup ? -1 : 1;
+							table ['\t'] = negativeGroup ? -1 : 1;
+							table ['\r'] = negativeGroup ? -1 : 1;
+							table ['\n'] = negativeGroup ? -1 : 1;
+							table ['\f'] = negativeGroup ? -1 : 1;
+							break;
+						case 'S': // A non-whitespace character: /[^ \t\r\n\f]/
+							for (int i = 0; i < table.Length; i++) {
+								if (" \\t\\r\\n\\f".Contains ((char)i))
+									continue;
+								table [i] = negativeGroup ? -1 : 1;
+							}
+							break;
+						case 'a':
+							table ['\a'] = negativeGroup ? -1 : 1;
+							break;
+						case 'b':
+							table ['\b'] = negativeGroup ? -1 : 1;
+							break;
+						case 't':
+							table ['\t'] = negativeGroup ? -1 : 1;
+							break;
+						case 'r':
+							table ['\r'] = negativeGroup ? -1 : 1;
+							break;
+						case 'v':
+							table ['\v'] = negativeGroup ? -1 : 1;
+							break;
+						case 'f':
+							table ['\f'] = negativeGroup ? -1 : 1;
+							break;
+						case 'n':
+							table ['\n'] = negativeGroup ? -1 : 1;
+							break;
+						default:
+							lastChar = ch;
+							hasLast = true;
+							PushLastChar ();
+							break;
+						}
+
+						escape = false;
+						break;
+					}
+
+					if (wordBuilder != null) {
+						wordBuilder.Append (ch);
+						break;
+					}
+
+					if (!hasLast) {
+						lastChar = ch;
+						hasLast = true;
+						break;
+					}
+					if (range) {
+						for (int i = (int)lastChar; i <= (int)ch; i++) {
+							table [i] = negativeGroup ? -1 : 1;
+						}
+						hasLast = false;
+					} else {
+						PushLastChar ();
+						lastChar = ch;
+						hasLast = true;
+					}
+					range = false;
+					break;
+				}
+				first = false;
+			}
+
+			void PushLastChar ()
+			{
+				if (hasLast) {
+					table [(int)lastChar] = negativeGroup ? -1 : 1;
+					hasLast = false;
+				}
+			}
+
+			void AddRange (char fromC, char toC)
+			{
+				for (int i = fromC; i <= toC; i++) {
+					table [i] = negativeGroup ? -1 : 1;
+				}
+			}
+
+			bool HasRange (char fromC, char toC)
+			{
+				for (int i = fromC; i <= toC; i++) {
+					if (table [i] == 0)
+						return false;
+				}
+				return true;
+			}
+			
+			bool Has (string v)
+			{
+				foreach (var ch in v) {
+					if (table [ch] == 0)
+						return false;
+				}
+				return true;
+			}
+			
+			void RemoveRange (char fromC, char toC)
+			{
+				for (int i = fromC; i <= toC; i++) {
+					table [i] = 0;
+				}
+			}
+
+
+			public string Generate ()
+			{
+				if (wordBuilder != null)
+					return ConvertUnicodeCategory (wordBuilder.ToString (), false);
+				var result = new StringBuilder ();
+				result.Append ('[');
+				if (negativeGroup)
+					result.Append ('^');
+				PushLastChar ();
+
+				if (range) 
+					table ['-'] = negativeGroup ? -1 : 1;
+				if (escape)
+					table ['\\'] = negativeGroup ? -1 : 1;
+
+
+
+				if (HasRange ('a', 'z') && HasRange ('A', 'Z') && HasRange ('0', '9') &&  table ['_'] != 0) {
+
+					RemoveRange ('a', 'z');
+					RemoveRange ('A', 'Z');
+					RemoveRange ('0', '9');
+					table ['_'] = 0;
+
+					result.Append ("\\w");
+				}
+
+				if (HasRange ('0', '9')) {
+					RemoveRange ('0', '9');
+					result.Append ("\\d");
+				}
+
+				if (Has (" \t\r\n")) {
+					result.Append ("\\s");
+					table [' '] = 0;
+					table ['\t'] = 0;
+					table ['\r'] = 0;
+					table ['\n'] = 0;
+					table ['\f'] = 0;
+				}
+
+
+				for (int i = 0; i < table.Length; i++) {
+					int cur = table [i];
+					if (cur != 0) {
+						AddChar (result, (char)i);
+
+						int j = i + 1;
+						for (; j < table.Length; j++) {
+							if (table [j] == 0)
+								break;
+						}
+						if (j - i > 3) {
+							result.Append ("-");
+							AddChar (result, (char)(j - 1));
+							i = j - 1;
+						}
+					}
+				}
+				result.Append (']');
+				var oo = org.ToString ();
+				if (Debug && "[" + oo +"]" != result.ToString ())
+					Console.WriteLine ("!!!!!!!!!!!!!!! [" + org +"] --- "+result.ToString ());
+				return result.ToString ();
+			}
+
+			void AddChar (StringBuilder result, char ch)
+			{
+				if ("[]\\".Contains (ch)) {
+					result.Append ('\\');
+					result.Append (ch);
+					return;
+				}
+				switch (ch) {
+				case '\a':
+					result.Append ("\\a");
+					break;
+				case '\b':
+					result.Append ("\\b");
+					break;
+				case '\t':
+					result.Append ("\\t");
+					break;
+				case '\r':
+					result.Append ("\\r");
+					break;
+				case '\v':
+					result.Append ("\\v");
+					break;
+				case '\f':
+					result.Append ("\\f");
+					break;
+				case '\n':
+					result.Append ("\\n");
+					break;
+				default:
+					result.Append (ch);
+					break;
+				}
+			}
+		}
+
 		// translates ruby regex -> .NET regexes
-		static string CompileRegex (string regex)
+		internal static string CompileRegex (string regex)
 		{
 			if (string.IsNullOrEmpty (regex))
 				return regex;
 			var result = new StringBuilder ();
-			var wordBuilder = new StringBuilder ();
-			bool recordWord = false, inCharacterClass = false;
 
-			for (int i = 0; i < regex.Length - 1; i++) {
+			int characterClassLevel = 0;
+			CharacterClass curClass = null;
+			for (int i = 0; i < regex.Length; i++) {
 				var ch = regex [i];
-				var next = regex [i + 1];
 				switch (ch) {
 				case '\\':
+					if (i + 1 >= regex.Length)
+						break;
+					var next = regex [i + 1];
 					if (next == 'h') {
 						result.Append ("[0-9a-fA-F]");
 						i++;
@@ -213,36 +531,30 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 					break;
 				case '[':
-					if (next == ':') {
-						recordWord = true;
-						i++;
+					characterClassLevel++;
+					if (curClass == null) {
+						curClass = new CharacterClass ();
 						continue;
 					}
-					inCharacterClass = true;
 					break;
 				case ']':
-					inCharacterClass = false;
-					break;
-
-				case ':':
-					if (next == ']' && recordWord) {
-						result.Append (ConvertUnicodeCategory (wordBuilder.ToString (), inCharacterClass));
-						i++;
-						if (i >= regex.Length - 1)
-							return result.ToString ();
-						wordBuilder.Length = 0;
-						recordWord = false;
+					characterClassLevel--;
+					if (characterClassLevel == 0) {
+						result.Append (curClass.Generate());
+						curClass = null;
 						continue;
 					}
 					break;
 				}
-				if (recordWord) {
-					wordBuilder.Append (ch);
+
+				if (curClass != null) {
+					curClass.Push (ch);
 				} else {
 					result.Append (ch);
 				}
 			}
-			result.Append (regex [regex.Length - 1]);
+			if (Debug)
+				Console.WriteLine (regex +" -> " + result);
 			return result.ToString ();
 		}
 

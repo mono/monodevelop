@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Editor
 	class SyntaxHighlightingTest : TestBase
 	{
 		[Test]
-		public void TestMatch()
+		public void TestMatch ()
 		{
 			string highlighting = @"%YAML 1.2
 ---
@@ -649,7 +649,12 @@ public class Coo
 
 		static void RunSublimeHighlightingTest (string highlightingSrc, string inputText)
 		{
+			
 			var highlighting = Sublime3Format.ReadHighlighting (new StringReader (highlightingSrc));
+
+			Sublime3Format.Debug = true;
+			highlighting = Sublime3Format.ReadHighlighting (new StringReader (highlightingSrc));
+
 			RunHighlightingTest (highlighting, inputText);
 		}
 
@@ -696,6 +701,53 @@ public class Coo
 				}
 			}
 			Assert.AreEqual (0, expectedSegments.Count, "Not all segments matched.");
+		}
+
+		[Test]
+		public void TestPOSIXBracketExpressions ()
+		{
+			Assert.AreEqual ("[\\w\\d]", Sublime3Format.CompileRegex ("[:alnum:]"));
+			Assert.AreEqual ("\\w", Sublime3Format.CompileRegex ("[:alpha:]"));
+			Assert.AreEqual ("[ \t]", Sublime3Format.CompileRegex ("[:blank:]"));
+			Assert.AreEqual ("\\d", Sublime3Format.CompileRegex ("[:digit:]"));
+			Assert.AreEqual ("\\S", Sublime3Format.CompileRegex ("[:graph:]"));
+			Assert.AreEqual ("[a-z]", Sublime3Format.CompileRegex ("[:lower:]"));
+			Assert.AreEqual ("[\\S\\ ]", Sublime3Format.CompileRegex ("[:print:]"));
+			Assert.AreEqual ("\\s", Sublime3Format.CompileRegex ("[:space:]"));
+			Assert.AreEqual ("[A-Z]", Sublime3Format.CompileRegex ("[:upper:]"));
+			Assert.AreEqual ("[0-9a-fA-F]", Sublime3Format.CompileRegex ("[:xdigit:]"));
+		}
+
+		[Test]
+		public void TestNestedCharacterClasses ()
+		{
+			Assert.AreEqual ("[\\da-z]", Sublime3Format.CompileRegex ("[a-z[0-9]]"));
+		}
+
+		[Test]
+		public void TestCharConversion ()
+		{
+			Assert.AreEqual ("[.]", Sublime3Format.CompileRegex ("[.]"));
+		}
+
+		[Test]
+		public void TestMinusCHar ()
+		{
+			Assert.AreEqual ("[-:?]", Sublime3Format.CompileRegex ("[?:-]"));
+			Assert.AreEqual ("[+-]", Sublime3Format.CompileRegex ("[+-]"));
+		}
+
+		[Test]
+		public void TestBackslash ()
+		{
+			Assert.AreEqual ("[\\\\]", Sublime3Format.CompileRegex ("[\\]"));
+		}
+
+		[Test]
+		public void TestEscapes ()
+		{
+			Assert.AreEqual ("[\\t]", Sublime3Format.CompileRegex ("[\\t]"));
+			Assert.AreEqual ("[,\\[\\]{}]", Sublime3Format.CompileRegex ("[,\\[\\]{},]"));
 		}
 	}
 }
