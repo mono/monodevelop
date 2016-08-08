@@ -11,8 +11,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	static class Sublime3Format
 	{
-		internal static bool Debug;
-
 		public static SyntaxHighlightingDefinition ReadHighlighting (TextReader input)
 		{
 			input.ReadLine ();
@@ -41,7 +39,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				switch (((YamlScalarNode)entry.Key).Value) {
 				case "name":
 					name = ((YamlScalarNode)entry.Value).Value;
-					Console.WriteLine ("READ !!!!!!!!!" + name);
 					break;
 				case "file_extensions":
 					foreach (var nn in entry.Value.AllNodes.OfType<YamlScalarNode> ()) {
@@ -461,9 +458,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 				}
 				result.Append (']');
-				var oo = org.ToString ();
-				if (Debug && "[" + oo +"]" != result.ToString ())
-					Console.WriteLine ("!!!!!!!!!!!!!!! [" + org +"] --- "+result.ToString ());
 				return result.ToString ();
 			}
 
@@ -503,6 +497,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
+
 		// translates ruby regex -> .NET regexes
 		internal static string CompileRegex (string regex)
 		{
@@ -511,11 +506,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var result = new StringBuilder ();
 
 			int characterClassLevel = 0;
+			bool escape = false;
 			CharacterClass curClass = null;
 			for (int i = 0; i < regex.Length; i++) {
 				var ch = regex [i];
 				switch (ch) {
 				case '\\':
+					if (escape || curClass != null)
+						break;
 					if (i + 1 >= regex.Length)
 						break;
 					var next = regex [i + 1];
@@ -529,8 +527,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						i++;
 						continue;
 					}
-					break;
+					escape = true;
+					goto addChar;
 				case '[':
+					if (escape)
+						break;
 					characterClassLevel++;
 					if (curClass == null) {
 						curClass = new CharacterClass ();
@@ -538,6 +539,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 					break;
 				case ']':
+					if (escape)
+						break;
 					characterClassLevel--;
 					if (characterClassLevel == 0) {
 						result.Append (curClass.Generate());
@@ -546,15 +549,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					}
 					break;
 				}
-
+				escape = false;
+			addChar:
 				if (curClass != null) {
 					curClass.Push (ch);
 				} else {
 					result.Append (ch);
 				}
 			}
-			if (Debug)
-				Console.WriteLine (regex +" -> " + result);
 			return result.ToString ();
 		}
 

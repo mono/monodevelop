@@ -649,12 +649,7 @@ public class Coo
 
 		static void RunSublimeHighlightingTest (string highlightingSrc, string inputText)
 		{
-			
 			var highlighting = Sublime3Format.ReadHighlighting (new StringReader (highlightingSrc));
-
-			Sublime3Format.Debug = true;
-			highlighting = Sublime3Format.ReadHighlighting (new StringReader (highlightingSrc));
-
 			RunHighlightingTest (highlighting, inputText);
 		}
 
@@ -748,6 +743,12 @@ public class Coo
 		{
 			Assert.AreEqual ("[\\t]", Sublime3Format.CompileRegex ("[\\t]"));
 			Assert.AreEqual ("[,\\[\\]{}]", Sublime3Format.CompileRegex ("[,\\[\\]{},]"));
+			}
+
+		[Test]
+		public void TestEscapeBug ()
+		{
+			Assert.AreEqual ("\\[", Sublime3Format.CompileRegex ("\\["));
 		}
 	}
 }
