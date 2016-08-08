@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
@@ -79,6 +80,15 @@ namespace MonoDevelop.Packaging
 			ConfigurationSelector configuration)
 		{
 			list.Add (OnGetOutputFileName (configuration));
+		}
+
+		protected override void OnPrepareForEvaluation (MSBuildProject project)
+		{
+			MSBuildPropertyGroup globalGroup = project.GetGlobalPropertyGroup ();
+			var provider = new MSBuildGlobalPropertyProvider ();
+			foreach (KeyValuePair<string, string> property in provider.GetGlobalProperties ()) {
+				globalGroup.SetValue (property.Key, property.Value, property.Value);
+			}
 		}
 	}
 }

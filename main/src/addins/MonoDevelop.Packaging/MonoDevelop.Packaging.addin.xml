@@ -33,4 +33,10 @@
 			id="NuGet.Packaging" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders">
+		<Type
+			id="NuGetPackagingMSBuildPropertyProvider"
+			class="MonoDevelop.Packaging.MSBuildGlobalPropertyProvider" />
+	</Extension>
+
 </ExtensionModel>
