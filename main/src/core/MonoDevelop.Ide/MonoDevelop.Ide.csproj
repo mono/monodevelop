@@ -8555,6 +8555,14 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AutoInsertBracketTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\ErrorDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide\LocalizationService.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStarted.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNode.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeBuilderExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedNodeCommandHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProjectExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\IGettingStartedProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -8603,6 +8611,7 @@
     <Folder Include="MonoDevelop.Ide.Editor\MessageBubbles\" />
     <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
     <Folder Include="MonoDevelop.Components\Windows\" />
+    <Folder Include="MonoDevelop.Ide.GettingStarted\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
