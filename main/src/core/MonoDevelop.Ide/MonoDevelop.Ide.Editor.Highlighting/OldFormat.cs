@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("Keyword", new List<string> { "keyword - (source.c keyword.operator | source.c++ keyword.operator | source.objc keyword.operator | source.objc++ keyword.operator), keyword.operator.word" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("storage", new List<string> { "storage" }, ConvertChunkStyle (colorScheme.KeywordOther)));
 			settings.Add (new ThemeSetting ("storage.type", new List<string> { "storage.type" }, ConvertChunkStyle (colorScheme.KeywordOther)));
-			settings.Add (new ThemeSetting ("Entity name", new List<string> { "entity.name - (entity.name.filename | entity.name.section | entity.name.tag | entity.name.label)" }, ConvertChunkStyle (colorScheme.UserTypes)));
+			settings.Add (new ThemeSetting ("Entity name", new List<string> { "entity.name - (entity.name.filename | entity.name.section | entity.name.tag | entity.name.label)" }, ConvertChunkStyle (colorScheme.PlainText)));
 			settings.Add (new ThemeSetting ("Tag name", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.HtmlElementName)));
 			settings.Add (new ThemeSetting ("Preprocessor", new List<string> { "meta.preprocessor" }, ConvertChunkStyle (colorScheme.Preprocessor)));
 			settings.Add (new ThemeSetting ("Preprocessor region name", new List<string> { "meta.preprocessor.region.name" }, ConvertChunkStyle (colorScheme.PreprocessorRegionName)));
@@ -205,14 +205,27 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("String(Regex Escape Character)", new List<string> { "constant.character.regex.escape" }, ConvertChunkStyle (colorScheme.RegexEscapeCharacter)));
 			settings.Add (new ThemeSetting ("String(Regex Alternate Escape Character)", new List<string> { "constant.character.regex.altescape" }, ConvertChunkStyle (colorScheme.RegexAltEscapeCharacter)));
 
-			settings.Add (new ThemeSetting ("User Types", new List<string> { "entity.name.type" }, ConvertChunkStyle (colorScheme.UserTypes)));
-			settings.Add (new ThemeSetting ("User Types(Value types)", new List<string> { "entity.name.type.struct" }, ConvertChunkStyle (colorScheme.UserTypesValueTypes)));
-			settings.Add (new ThemeSetting ("User Types(Interfaces)", new List<string> { "entity.name.type.interface" }, ConvertChunkStyle (colorScheme.UserTypesInterfaces)));
-			settings.Add (new ThemeSetting ("User Types(Enums)", new List<string> { "entity.name.type.enum" }, ConvertChunkStyle (colorScheme.UserTypesEnums)));
-			settings.Add (new ThemeSetting ("User Types(Type parameters)", new List<string> { "entity.name.type.typeparameter" }, ConvertChunkStyle (colorScheme.UserTypesDelegates)));
-			settings.Add (new ThemeSetting ("User Types(Delegates)", new List<string> { "entity.name.type.delegate" }, ConvertChunkStyle (colorScheme.UserTypesDelegates)));
-			settings.Add (new ThemeSetting ("User Types(Mutable)", new List<string> { "entity.name.type.mutable" }, ConvertChunkStyle (colorScheme.UserTypesMutable)));
+			settings.Add (new ThemeSetting ("User Types", new List<string> { EditorThemeColors.UserTypes }, ConvertChunkStyle (colorScheme.UserTypes)));
+			settings.Add (new ThemeSetting ("User Types(Value types)", new List<string> { EditorThemeColors.UserTypesValueTypes }, ConvertChunkStyle (colorScheme.UserTypesValueTypes)));
+			settings.Add (new ThemeSetting ("User Types(Interfaces)", new List<string> { EditorThemeColors.UserTypesInterfaces }, ConvertChunkStyle (colorScheme.UserTypesInterfaces)));
+			settings.Add (new ThemeSetting ("User Types(Enums)", new List<string> { EditorThemeColors.UserTypesEnums }, ConvertChunkStyle (colorScheme.UserTypesEnums)));
+			settings.Add (new ThemeSetting ("User Types(Type parameters)", new List<string> { EditorThemeColors.UserTypesTypeParameters }, ConvertChunkStyle (colorScheme.UserTypesTypeParameters)));
+			settings.Add (new ThemeSetting ("User Types(Delegates)", new List<string> { EditorThemeColors.UserTypesDelegates }, ConvertChunkStyle (colorScheme.UserTypesDelegates)));
+			settings.Add (new ThemeSetting ("User Types(Mutable)", new List<string> { EditorThemeColors.UserTypesMutable }, ConvertChunkStyle (colorScheme.UserTypesMutable)));
 
+			settings.Add (new ThemeSetting ("User Field(Declaration)", new List<string> { EditorThemeColors.UserFieldDeclaration }, ConvertChunkStyle (colorScheme.UserFieldDeclaration)));
+			settings.Add (new ThemeSetting ("User Field(Usage)", new List<string> { EditorThemeColors.UserFieldUsage }, ConvertChunkStyle (colorScheme.UserFieldUsage)));
+			settings.Add (new ThemeSetting ("User Property(Declaration)", new List<string> { EditorThemeColors.UserPropertyDeclaration }, ConvertChunkStyle (colorScheme.UserPropertyDeclaration)));
+			settings.Add (new ThemeSetting ("User Property(Usage)", new List<string> { EditorThemeColors.UserPropertyUsage }, ConvertChunkStyle (colorScheme.UserPropertyUsage)));
+			settings.Add (new ThemeSetting ("User Event(Declaration)", new List<string> { EditorThemeColors.UserEventDeclaration }, ConvertChunkStyle (colorScheme.UserEventDeclaration)));
+			settings.Add (new ThemeSetting ("User Event(Usage)", new List<string> { EditorThemeColors.UserEventUsage }, ConvertChunkStyle (colorScheme.UserEventUsage)));
+			settings.Add (new ThemeSetting ("User Method(Declaration)", new List<string> { EditorThemeColors.UserMethodDeclaration }, ConvertChunkStyle (colorScheme.UserMethodDeclaration)));
+			settings.Add (new ThemeSetting ("User Method(Usage)", new List<string> { EditorThemeColors.UserMethodUsage }, ConvertChunkStyle (colorScheme.UserMethodUsage)));
+			settings.Add (new ThemeSetting ("User Parameter(Declaration)", new List<string> { EditorThemeColors.UserParameterDeclaration }, ConvertChunkStyle (colorScheme.UserParameterDeclaration)));
+			settings.Add (new ThemeSetting ("User Parameter(Usage)", new List<string> { EditorThemeColors.UserParameterUsage }, ConvertChunkStyle (colorScheme.UserParameterUsage)));
+			settings.Add (new ThemeSetting ("User Variable(Declaration)", new List<string> { EditorThemeColors.UserVariableDeclaration }, ConvertChunkStyle (colorScheme.UserVariableDeclaration)));
+			settings.Add (new ThemeSetting ("User Variable(Usage)", new List<string> { EditorThemeColors.UserVariableUsage }, ConvertChunkStyle (colorScheme.UserVariableUsage)));
+			
 			return new EditorTheme (colorScheme.Name, settings);
 		}
 

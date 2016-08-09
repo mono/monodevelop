@@ -168,32 +168,31 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void Setup ()
 		{
-			
 			defaultTextColor = EditorThemeColors.Foreground;
-			referenceTypeColor = "entity.name.type.class.source.cs";
-			valueTypeColor = "entity.name.type.struct.source.cs";
-			interfaceTypeColor = "entity.name.type.interface.source.cs";
-			enumerationTypeColor = "entity.name.type.enum.source.cs";
-			typeParameterTypeColor = "entity.name.type.typeparameter.source.cs";
-			delegateTypeColor = "entity.name.type.delegate.source.cs";
+			referenceTypeColor = EditorThemeColors.UserTypes;
+			valueTypeColor = EditorThemeColors.UserTypesValueTypes;
+			interfaceTypeColor = EditorThemeColors.UserTypesInterfaces;
+			enumerationTypeColor = EditorThemeColors.UserTypesEnums;
+			typeParameterTypeColor = EditorThemeColors.UserTypesTypeParameters;
+			delegateTypeColor = EditorThemeColors.UserTypesDelegates;
 
-			methodCallColor = "entity.name.function.source.cs";
-			methodDeclarationColor = "entity.name.function.source.cs";
+			methodCallColor = EditorThemeColors.UserMethodUsage;
+			methodDeclarationColor = EditorThemeColors.UserMethodDeclaration;
 
-			eventDeclarationColor = "entity.name.event.source.cs";
-			eventAccessColor = "entity.name.event.source.cs";
+			eventDeclarationColor = EditorThemeColors.UserEventDeclaration;
+			eventAccessColor = EditorThemeColors.UserEventUsage;
 
-			fieldDeclarationColor = "entity.name.field.source.cs";
-			fieldAccessColor = "entity.name.field.source.cs";
+			fieldDeclarationColor = EditorThemeColors.UserFieldDeclaration;
+			fieldAccessColor = EditorThemeColors.UserFieldUsage;
 
-			propertyDeclarationColor = "entity.name.property.source.cs";
-			propertyAccessColor = "entity.name.property.source.cs";
+			propertyDeclarationColor = EditorThemeColors.UserPropertyDeclaration;
+			propertyAccessColor = EditorThemeColors.UserPropertyUsage;
 
-			variableDeclarationColor = "entity.name.local.source.cs";
-			variableAccessColor = "entity.name.local.source.cs";
+			variableDeclarationColor = EditorThemeColors.UserVariableDeclaration;
+			variableAccessColor = EditorThemeColors.UserVariableUsage;
 
-			parameterDeclarationColor = "entity.name.parameter.source.cs";
-			parameterAccessColor = "entity.name.parameter.source.cs";
+			parameterDeclarationColor = EditorThemeColors.UserParameterDeclaration;
+			parameterAccessColor = EditorThemeColors.UserParameterUsage;
 
 			valueKeywordColor = "keyword.other.source.cs";
 			externAliasKeywordColor = "keyword.other.source.cs";
