@@ -66,6 +66,13 @@ namespace MonoDevelop.PackageManagement
 		void InstallPackages (Project project, IEnumerable<PackageManagementPackageReference> packages);
 
 		/// <summary>
+		/// Installs NuGet packages into the selected project using the enabled package sources.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		Task InstallPackagesAsync (Project project, IEnumerable<PackageManagementPackageReference> packages);
+
+		/// <summary>
 		/// Installs NuGet packages into the selected project. If a NuGet package requires a license to be
 		/// accepted then a dialog will be displayed.
 		/// </summary>
