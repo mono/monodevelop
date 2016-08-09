@@ -57,6 +57,11 @@ namespace System
 
 			return found ? index : -1;
 		}
+
+		public static Exception FlattenAggregate (this Exception ex)
+		{
+			return (ex as AggregateException)?.Flatten () ?? ex;
+		}
 	}
 }
 
