@@ -33,6 +33,8 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		internal const string ConnectedServicesJsonFileName = "ConnectedService.json";
 
+		internal const string GettingStartedSectionDisplayName = "Getting Started";
+
 		/// <summary>
 		/// Gets the list of IConnectedService instances that support project
 		/// </summary>

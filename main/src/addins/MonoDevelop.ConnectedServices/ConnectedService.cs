@@ -18,6 +18,7 @@ namespace MonoDevelop.ConnectedServices
 		{
 			this.Project = project;
 			this.Dependencies = ConnectedServiceDependency.Empty;
+			this.Sections = ConfigurationSection.Empty;
 		}
 
 		/// <summary>
@@ -71,19 +72,9 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedService"/> is configured or not.
+		/// Gets the array of sections to be displayed to the user after the dependencies section.
 		/// </summary>
-		public abstract bool IsConfigured { get; }
-
-		/// <summary>
-		/// Creates and returns the widget to display in the Configuration section of the service details view.
-		/// </summary>
-		public abstract object GetConfigurationWidget ();
-
-		/// <summary>
-		/// Creates and returns the widget to display in the Getting Started section of the service details view.
-		/// </summary>
-		public abstract object GetGettingStartedWidget ();
+		public IConfigurationSection [] Sections { get; protected set; }
 
 		/// <summary>
 		/// Adds the service to the project

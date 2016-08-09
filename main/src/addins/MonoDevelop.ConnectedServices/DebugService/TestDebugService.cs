@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -28,22 +30,10 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			this.Id = "MonoDevelop.ConnectedServices.DebugService.TestDebugService";
 			this.DisplayName = "Test Service";
 			this.Description = "This is a simple service example to show how you might construct your own service implementation.";
-		}
 
-		public override bool IsConfigured {
-			get {
-				return false;
-			}
-		}
-
-		public override object GetConfigurationWidget ()
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override object GetGettingStartedWidget ()
-		{
-			throw new NotImplementedException ();
+			this.Sections = new IConfigurationSection [] {
+				new TestDebugConfigurationSection(this),
+			};
 		}
 
 		protected override void OnAddToProject ()
@@ -57,7 +47,30 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			state.GettingStartedDocument = "https://www.google.com/webhp?q=how+do+i+get+started";
 			state.Version = "1.1";
 		}
-
 	}
-	#endif
+
+	sealed class TestDebugConfigurationSection : ConfigurationSection
+	{
+		public TestDebugConfigurationSection (IConnectedService service) : base (service, "Configure a setting")
+		{
+		}
+
+		public override Widget GetSectionWidget ()
+		{
+			var vbox = new VBox ();
+
+			var label = new Label { Text = "this configures a setting" };
+			vbox.PackStart (label, false, false, 0);
+
+
+
+			return vbox;	
+		}
+
+		protected override Task OnAddToProject ()
+		{
+			return Task.FromResult (true);
+		}
+	}
+#endif
 }
