@@ -65,6 +65,9 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		public string CurrentIndent { get; private set; } = "";
 
+		public bool IsValid { get { return increaseIndentPattern != null; } }
+
+
 		public TextMateDocumentIndentEngine(TextEditor editor)
 		{
 			this.editor = editor;

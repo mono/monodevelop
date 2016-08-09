@@ -36,10 +36,13 @@ namespace MonoDevelop.Ide.Editor.TextMate
 		readonly TextEditor editor;
 		readonly CacheIndentEngine engine;
 
+		public TextMateDocumentIndentEngine DocumentIndentEngine { get; private set; }
+
 		public TextMateIndentationTracker (TextEditor editor)
 		{
 			this.editor = editor;
-			engine = new CacheIndentEngine (new TextMateDocumentIndentEngine (editor));
+			DocumentIndentEngine = new TextMateDocumentIndentEngine (editor);
+			engine = new CacheIndentEngine (DocumentIndentEngine);
 		}
 
 		public override string GetIndentationString (int lineNumber)

@@ -30,6 +30,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 {
 	class TextMateIndentationTextEditorExtension : TextEditorExtension
 	{
+		bool isActive;
 		protected override void Initialize ()
 		{
 			Editor.MimeTypeChanged += Editor_MimeTypeChanged;
@@ -38,7 +39,10 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		void Editor_MimeTypeChanged (object sender, EventArgs e)
 		{
-			Editor.SetIndentationTracker (new TextMateIndentationTracker (Editor));
+			var engine = new TextMateIndentationTracker (Editor);
+			isActive = engine.DocumentIndentEngine.IsValid;
+			if (isActive)
+				Editor.SetIndentationTracker (engine);
 		}
 
 		public override void Dispose ()
@@ -48,7 +52,7 @@ namespace MonoDevelop.Ide.Editor.TextMate
 
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (descriptor.SpecialKey == SpecialKey.Return) {
+			if (isActive && descriptor.SpecialKey == SpecialKey.Return) {
 				if (Editor.Options.IndentStyle == IndentStyle.Virtual) {
 					if (Editor.GetLine (Editor.CaretLine).Length == 0)
 						Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);
