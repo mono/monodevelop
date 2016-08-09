@@ -7616,11 +7616,11 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\VisualStudioStyle.json">
       <LogicalName>VisualStudioStyle.json</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\C#.sublime-syntax">
-      <LogicalName>C#.sublime-syntax</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\YAML.sublime-syntax">
       <LogicalName>YAML.sublime-syntax</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#.sublime-syntax">
+      <LogicalName>C#.sublime-syntax</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -8655,6 +8655,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\Comments.tmPreferences" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -8696,6 +8697,7 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\themes\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\" />
     <Folder Include="MonoDevelop.Ide.Editor.TextMate\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
