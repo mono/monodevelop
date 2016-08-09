@@ -39,4 +39,8 @@
 			class="MonoDevelop.Packaging.MSBuildGlobalPropertyProvider" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id="MonoDevelop.Packaging.Project" resource="PackagingProject.xpt.xml"/>
+	</Extension>
+
 </ExtensionModel>

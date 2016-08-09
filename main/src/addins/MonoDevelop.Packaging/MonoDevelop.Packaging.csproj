@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +65,12 @@
     <EmbeddedResource Include="MonoDevelop.Packaging.addin.xml">
       <LogicalName>MonoDevelop.Packaging.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Templates\PackagingProject.xpt.xml">
+      <LogicalName>PackagingProject.xpt.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Templates\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
