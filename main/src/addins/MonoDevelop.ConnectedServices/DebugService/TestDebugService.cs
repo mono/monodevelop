@@ -15,10 +15,11 @@ namespace MonoDevelop.ConnectedServices.DebugService
 		public IConnectedService GetConnectedService (DotNetProject project)
 		{
 			#if DEBUG
-			return new TestDebugService (project);
-			#else
-			return null;
+			if (project.LanguageName == "C#") { 
+				return new TestDebugService (project);
+			}
 			#endif
+			return null;
 		}
 	}
 
@@ -31,13 +32,18 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			this.DisplayName = "Test Service";
 			this.Description = "This is a simple service example to show how you might construct your own service implementation.";
 
+			this.Dependencies = new IConnectedServiceDependency [] {
+				new ConnectedServiceDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8"),
+			};
+
 			this.Sections = new IConfigurationSection [] {
 				new TestDebugConfigurationSection(this),
 			};
 		}
 
-		protected override void OnAddToProject ()
+		protected override Task OnAddToProject ()
 		{
+			return Task.FromResult (true);
 		}
 
 		protected override void OnStoreAddedState(ConnectedServiceState state)

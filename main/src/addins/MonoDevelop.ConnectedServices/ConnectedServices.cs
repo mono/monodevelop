@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
 using MonoDevelop.Ide;

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using Newtonsoft.Json;
@@ -79,7 +80,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the service to the project
 		/// </summary>
-		public void AddToProject ()
+		public async Task AddToProject ()
 		{
 			try {
 				if (HasConnectedServiceJsonFile (this.Project, this.Id)) {
@@ -87,7 +88,7 @@ namespace MonoDevelop.ConnectedServices
 					return;
 				}
 
-				this.OnAddToProject ();
+				await this.OnAddToProject ();
 				this.StoreAddedState ();
 
 
@@ -101,7 +102,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Performs the logic of adding the service to the project, adds any scaffolding code etc.
 		/// </summary>
-		protected abstract void OnAddToProject ();
+		protected abstract Task OnAddToProject ();
 
 		/// <summary>
 		/// Creates a new object for storing state about the service in

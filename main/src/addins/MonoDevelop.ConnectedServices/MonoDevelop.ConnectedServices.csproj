@@ -67,6 +67,11 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
+      <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
+      <Name>MonoDevelop.PackageManagement</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,6 +101,14 @@
     <Compile Include="Gui.SolutionPad\DotNetProjectNodeCommandHandler.cs" />
     <Compile Include="Gui.ServicesTab\ServicesGalleryWidget.cs" />
     <Compile Include="Gui.ServicesTab\ServiceDetailsWidget.cs" />
+    <Compile Include="IConfigurationSection.cs" />
+    <Compile Include="DependenciesSection.cs" />
+    <Compile Include="ConfigurationSection.cs" />
+    <Compile Include="GettingStartedConfigurationSection.cs" />
+    <Compile Include="IConnectedServiceDependency.cs" />
+    <Compile Include="ConnectedServiceDependency.cs" />
+    <Compile Include="Gui.ServicesTab\ConfigurationSectionWidget.cs" />
+    <Compile Include="Gui.ServicesTab\DependenciesSectionWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
