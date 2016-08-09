@@ -29,8 +29,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			var project = (Project)dataObject;
-			if (HasChildNodes (treeBuilder, dataObject))
-				treeBuilder.AddChild (new GettingStartedNode (project));
+			if (HasChildNodes (treeBuilder, dataObject)) {
+				var node = project.GetGettingStartedNode ();
+				treeBuilder.AddChild (node);
+			}
 		}
 	}
 }

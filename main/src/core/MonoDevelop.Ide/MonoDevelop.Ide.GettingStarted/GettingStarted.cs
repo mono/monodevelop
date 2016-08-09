@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui.Pads.ProjectPad;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.GettingStarted
@@ -34,6 +35,11 @@ namespace MonoDevelop.Ide.GettingStarted
 			}
 
 			return null;
+		}
+
+		public static GettingStartedNode GetGettingStartedNode (this Project project)
+		{
+			return project.GetService<GettingStartedProjectExtension> ()?.ProjectPadNode;
 		}
 
 		public static void ShowGettingStarted (Project project)

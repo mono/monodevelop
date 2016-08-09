@@ -29,6 +29,17 @@ namespace MonoDevelop.Ide.GettingStarted
 				return true;
 			}
 		}
+
+		public override bool IsFile {
+			get {
+				return false;
+			}
+		}
+
+		public override object GetDocumentObject ()
+		{
+			return Project.GetGettingStartedNode ();
+		}
 	}
 }
 
