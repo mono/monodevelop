@@ -31,6 +31,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -39,6 +44,11 @@
     <Compile Include="MonoDevelop.Packaging\PackagingProject.cs" />
     <Compile Include="MonoDevelop.Packaging\PackagingCompilerParameters.cs" />
     <Compile Include="MonoDevelop.Packaging\MSBuildGlobalPropertyProvider.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MonoDevelop.Packaging.Templating\PackagingProjectTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.Packaging.Templating\PackagingProjectTemplateWizardPage.cs" />
+    <Compile Include="MonoDevelop.Packaging.Gui\GtkPackagingProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -68,9 +78,14 @@
     <EmbeddedResource Include="Templates\PackagingProject.xpt.xml">
       <LogicalName>PackagingProject.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Templates\" />
+    <Folder Include="MonoDevelop.Packaging.Templating\" />
+    <Folder Include="MonoDevelop.Packaging.Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

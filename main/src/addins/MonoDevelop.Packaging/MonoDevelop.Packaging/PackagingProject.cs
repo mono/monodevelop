@@ -141,12 +141,10 @@ namespace MonoDevelop.Packaging
 
 			CompileTarget = CompileTarget.Package;
 
-			// The following package metadata will eventually be provided by the
-			// project template wizard.
-			id = Name;
-			version = "1.0.0";
-			authors = AuthorInformation.Name;
-			description = Name;
+			id = projectCreateInfo.Parameters ["PackageId"];
+			version = projectCreateInfo.Parameters ["PackageVersion"];
+			authors = projectCreateInfo.Parameters ["PackageAuthors"];
+			description = projectCreateInfo.Parameters ["PackageDescription"];
 		}
 
 		protected override string OnGetDefaultBuildAction (string fileName)
