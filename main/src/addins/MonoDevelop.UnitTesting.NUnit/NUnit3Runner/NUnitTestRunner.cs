@@ -89,7 +89,7 @@ namespace NUnit3Runner
 			TestPackage package = new TestPackage (path);
 			package.AddSetting ("ShadowCopyFiles", false);
 			package.AddSetting ("ProcessModel", "InProcess");
-			package.AddSetting ("DomainUsage", "Single");
+			package.AddSetting ("DomainUsage", "None");
 			return package;
 		}
 		
