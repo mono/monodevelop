@@ -505,8 +505,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return regex;
 			var result = new StringBuilder ();
 
+			var charProperty = new StringBuilder ();
+
 			int characterClassLevel = 0;
 			bool escape = false;
+			bool readCharacterProperty = false, readCharPropertyIdentifier = false;
+
 			CharacterClass curClass = null;
 			for (int i = 0; i < regex.Length; i++) {
 				var ch = regex [i];
@@ -525,6 +529,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (next == 'H') {
 						result.Append ("[^0-9a-fA-F]");
 						i++;
+						continue;
+					}
+					if (next == 'p') {
+						i++;
+						readCharacterProperty = true;
+						readCharPropertyIdentifier = false;
 						continue;
 					}
 					escape = true;
@@ -551,6 +561,24 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				escape = false;
 			addChar:
+				if (readCharacterProperty) {
+					if (ch == '}') {
+						result.Append (ConvertCharacterProperty (charProperty.ToString ()));
+						charProperty.Length = 0;
+						readCharacterProperty = false;
+					} else if (ch == '{') {
+						if (readCharPropertyIdentifier)
+							LoggingService.LogWarning ("invalid regex character property group " + regex);
+						readCharPropertyIdentifier = true;
+					} else {
+						if (readCharPropertyIdentifier) {
+							charProperty.Append (ch);
+						} else {
+							LoggingService.LogWarning ("invalid regex character property group " + regex);
+						}
+					}
+					continue;
+				}
 				if (curClass != null) {
 					curClass.Push (ch);
 				} else {
@@ -558,6 +586,47 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			return result.ToString ();
+		}
+
+		static string ConvertCharacterProperty (string property)
+		{
+			switch (property) {
+			case "Alnum":
+				return "[a-zA-Z0-9]";
+			case "Alpha":
+				return "[a-zA-Z]";
+			case "Blank":
+				return "[\\t ]";
+			case "Cntrl":
+				return "\\p{P}";
+			case "Digit":
+				return "\\d";
+			case "Graph":
+				return "\\S";
+			case "Lower":
+				return "[a-z]";
+			case "Print":
+				return "[\\S ]";
+			case "Punct":
+				return "\\p{P}";
+			case "Space":
+				return "\\s";
+			case "Upper":
+				return "[A-Z]";
+			case "XDigit":
+				return "[0-9a-fA-F]";
+			case "Word":
+				return "\\w";
+			case "ASCII":
+				return "[\\x00-\\x7F]";
+			case "Any":
+				return ".";
+			case "Assigned": // TODO
+				return ".";
+			default:
+				// assume unicode character category (that's supported by C# regexes)
+				return "\\p{" + property + "}";
+			}
 		}
 
 		static string ConvertUnicodeCategory (string category, bool inCharacterClass)

@@ -750,5 +750,11 @@ public class Coo
 		{
 			Assert.AreEqual ("\\[", Sublime3Format.CompileRegex ("\\["));
 		}
+
+		[Test]
+		public void TestCharacterProperties ()
+		{
+			Assert.AreEqual ("[0-9a-fA-F]", Sublime3Format.CompileRegex ("\\p{XDigit}"));
+		}
 	}
 }
