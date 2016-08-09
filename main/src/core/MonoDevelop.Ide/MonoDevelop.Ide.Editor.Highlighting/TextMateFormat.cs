@@ -260,7 +260,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static SyntaxMatch ReadMatch (PDictionary dict)
 		{
-			var matchScope = (dict ["name"] as PString)?.Value;
+			List<string> matchScope  = new List<string> ();
+			Sublime3Format.ParseScopes (matchScope, (dict ["name"] as PString)?.Value);
+
 			List<Tuple<int, string>> captures = null;
 			var captureDict = dict ["captures"] as PDictionary;
 			if (captureDict != null)
@@ -279,7 +281,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 				var end = (dict ["end"] as PString)?.Value;
 				List<Tuple<int, string>> endCaptures = null;
-				string endScope = null;
+				List<string> endScope = new List<string> ();
 				if (end != null) {
 					captureDict = dict ["endCaptures"] as PDictionary;
 					if (captureDict != null)

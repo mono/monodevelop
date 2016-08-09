@@ -81,8 +81,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public string Name { get; private set; }
 
-		public string MetaScope { get; private set; }
-		public string MetaContentScope { get; private set; }
+		List<string> metaScope = new List<string> ();
+		public IReadOnlyList<string> MetaScope { get { return metaScope; } }
+
+		List<string> metaContentScope = new List<string> ();
+		public IReadOnlyList<string> MetaContentScope { get { return metaContentScope; } }
+
+
 		public bool MetaIncludePrototype { get; private set; }
 
 		public IEnumerable<SyntaxMatch> Matches { get { return matches; } }
@@ -113,10 +118,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			YamlNode val;
 			if (children.TryGetValue (new YamlScalarNode ("meta_scope"), out val)) {
-				MetaScope = ((YamlScalarNode)val).Value;
+				Sublime3Format.ParseScopes (metaScope, ((YamlScalarNode)val).Value);
 			}
 			if (children.TryGetValue (new YamlScalarNode ("meta_content_scope"), out val)) {
-				MetaContentScope = ((YamlScalarNode)val).Value;
+				Sublime3Format.ParseScopes (metaContentScope, ((YamlScalarNode)val).Value);
 			}
 			if (children.TryGetValue (new YamlScalarNode ("meta_include_prototype"), out val)) {
 				MetaIncludePrototype = ((YamlScalarNode)val).Value != "false";
@@ -133,12 +138,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			MetaIncludePrototype = true;
 		}
 
-		internal SyntaxContext (string name, List<object> includesAndMatches, string metaScope = null, string metaContentScope = null, bool metaIncludePrototype = true)
+		internal SyntaxContext (string name, List<object> includesAndMatches, IReadOnlyList<string> metaScope = null, IReadOnlyList<string> metaContentScope = null, bool metaIncludePrototype = true)
 		{
 			this.includesAndMatches = includesAndMatches;
 			Name = name;
-			MetaScope = metaScope;
-			MetaContentScope = metaContentScope;
+			if (metaScope != null)
+				this.metaScope.AddRange (metaScope);
+			if (metaContentScope !=  null)
+				this.metaContentScope.AddRange (metaScope);
+			
 			MetaIncludePrototype = metaIncludePrototype;
 		}
 
@@ -200,13 +208,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	public class SyntaxMatch
 	{
 		public string Match { get; private set; }
-		public string Scope { get; private set; }
-		public List<Tuple<int, string>> Captures { get; private set; }
+		public IReadOnlyList<string> Scope { get; private set; }
+		public IReadOnlyList<Tuple<int, string>> Captures { get; private set; }
 		public ContextReference Push { get; private set; }
 		public bool Pop { get; private set; }
 		public ContextReference Set { get; private set; }
 
-		internal SyntaxMatch (string match, string scope, List<Tuple<int, string>> captures, ContextReference push, bool pop, ContextReference set)
+		internal SyntaxMatch (string match, IReadOnlyList<string> scope, IReadOnlyList<Tuple<int, string>> captures, ContextReference push, bool pop, ContextReference set)
 		{
 			Match = match;
 			Scope = scope;
@@ -230,7 +238,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				return cachedRegex;
 			hasRegex = true;
 			try {
-				cachedRegex = new Regex (Match, RegexOptions.Compiled);
+				cachedRegex = new Regex (Match);
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Warning regex : '" + Match + "' can't be parsed.", e);
 			}

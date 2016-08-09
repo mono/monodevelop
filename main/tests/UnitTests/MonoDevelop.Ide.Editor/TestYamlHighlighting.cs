@@ -1,10 +1,86 @@
-%YAML 1.2
+﻿//
+// SyntaxHighlightingTest.cs
+//
+// Author:
+//       Mike Krüger <mkrueger@xamarin.com>
+//
+// Copyright (c) 2016 Microsoft
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+using System;
+using Mono.TextEditor;
+using MonoDevelop.Ide.Editor.Util;
+using NUnit.Framework;
+using UnitTests;
+using MonoDevelop.Ide.Editor.Highlighting;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core.Text;
+using System.Threading;
+
+namespace MonoDevelop.Ide.Editor
+{
+	[TestFixture]
+	class TestYamlHighlighting : TestBase
+	{
+		[Test]
+		public void TestComplexHighlighting ()
+		{
+			SyntaxHighlightingTest.RunSublimeHighlightingTest (yamlSyntax,
+@"# SYNTAX TEST ""Packages/YAML/YAML.sublime-syntax""
+^ source.yaml comment
+
+
+##############################################################################
+## Comments
+# http://www.yaml.org/spec/1.2/spec.html#comment//
+
+# comment
+^ punctuation.definition.comment.line.number-sign
+  ^ comment.line.number-sign
+
+
+##############################################################################
+## Document markers
+
+---
+^ entity.other.document.begin
+  ^ entity.other.document.begin
+
+...
+^ entity.other.document.end
+  ^ entity.other.document.end"
+			);
+
+		}
+
+
+		const string yamlSyntax = @"%YAML 1.2
 # The MIT License (MIT)
 #
 # Copyright (c) 2015 FichteFoll <fichtefoll2@googlemail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to
+# of this software and associated documentation files (the ""Software""), to
 # deal in the Software without restriction, including without limitation the
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 # sell copies of the Software, and to permit persons to whom the Software is
@@ -13,7 +89,7 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -48,7 +124,7 @@ scope: source.yaml
 variables:
   # General
   s_sep: '[ \t]+'
-  c_indicator: '[-?:,\[\]{}#&*!|>''"%@`]'
+  c_indicator: '[-?:,\[\]{}#&*!|>''""%@`]'
   c_flow_indicator: '[\[\]{},]'
   ns_word_char: '[0-9A-Za-z\-]'
   ns_uri_char: '(?x: %\p{XDigit}{2} | [0-9A-Za-z\-#;/?:@&=+$,_.!~*''()\[\]] )'
@@ -73,7 +149,7 @@ variables:
   ns_anchor_name: '{{ns_anchor_char}}+'
 
   # double-quoted scalar
-  c_ns_esc_char: \\([0abtnvfre "/\\N_Lp]|x\d\d|u\d{4}|U\d{8})
+  c_ns_esc_char: \\([0abtnvfre ""/\\N_Lp]|x\d\d|u\d{4}|U\d{8})
 
   # plain scalar begin and end patterns
   ns_plain_first_plain_in: |- # c=plain-in
@@ -294,7 +370,7 @@ contexts:
   flow-scalar-double-quoted:
     # http://yaml.org/spec/1.2/spec.html#style/flow/double-quoted
     # c-double-quoted(n,c)
-    - match: '"'
+    - match: '""'
       scope: punctuation.definition.string.begin.yaml
       push:
         # TODO consider scoping meaningful trailing whitespace for color
@@ -305,21 +381,21 @@ contexts:
           scope: constant.character.escape.double-quoted.yaml
         - match: \\\n
           scope: constant.character.escape.double-quoted.newline.yaml
-        - match: '"'
+        - match: '""'
           scope: punctuation.definition.string.end.yaml
           pop: true
 
   flow-scalar-single-quoted:
     # http://yaml.org/spec/1.2/spec.html#style/flow/single-quoted
     # c-single-quoted(n,c)
-    - match: "'"
+    - match: ""'""
       scope: punctuation.definition.string.begin.yaml
       push:
         - meta_scope: string.quoted.single.yaml
           meta_include_prototype: false
-        - match: "''"
+        - match: ""''""
           scope: constant.character.escape.single-quoted.yaml
-        - match: "'"
+        - match: ""'""
           scope: punctuation.definition.string.end.yaml
           pop: true
 
@@ -413,7 +489,7 @@ contexts:
         - match: :(?=\s|$|{{c_flow_indicator}})
           scope: punctuation.separator.mapping.key-value.yaml
           set: flow-pair-value
-    # Attempt to match plain-in scalars and highlight as "entity.name.tag",
+    # Attempt to match plain-in scalars and highlight as ""entity.name.tag"",
     # if followed by a colon
     - match: |
         (?x)
@@ -428,7 +504,7 @@ contexts:
           :\s
         )
       push:
-        # TODO Use a merge type here and add "pop: true" and "scope: entity.name.tag.yaml";
+        # TODO Use a merge type here and add ""pop: true"" and ""scope: entity.name.tag.yaml"";
         # https://github.com/SublimeTextIssues/Core/issues/966
         - meta_scope: meta.flow-pair.key.yaml
         - include: flow-scalar-plain-in-implicit-type
@@ -502,7 +578,7 @@ contexts:
           scope: invalid.illegal.expected-newline.yaml
           pop: true
         - include: block-node
-    # Attempt to match plain-out scalars and highlight as "entity.name.tag",
+    # Attempt to match plain-out scalars and highlight as ""entity.name.tag"",
     # if followed by a colon
     - match: |
         (?x)
@@ -540,3 +616,6 @@ contexts:
       captures:
         1: punctuation.definition.comment.line.number-sign.yaml
 ...
+";
+	}
+}

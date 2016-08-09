@@ -180,7 +180,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return false;
 		}
 
-		static bool IsCompatibleScope (string key, string scope)
+		internal static bool IsCompatibleScope (string key, string scope)
 		{
 			var idx = key.IndexOf (' ');
 			if (idx >= 0)

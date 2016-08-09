@@ -192,6 +192,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			settings.Add (new ThemeSetting ("JSON String", new List<string> { "meta.structure.dictionary.json string.quoted.double.json" }, ConvertChunkStyle (colorScheme.String)));
 			settings.Add (new ThemeSetting ("YAML String", new List<string> { "string.unquoted.yaml" }, ConvertChunkStyle (colorScheme.String)));
 
+			settings.Add (new ThemeSetting ("Entity Names", new List<string> { "entity.name.tag" }, ConvertChunkStyle (colorScheme.HtmlEntity)));
+			settings.Add (new ThemeSetting ("Entity Attributes", new List<string> { "entity.other.attribute" }, ConvertChunkStyle (colorScheme.HtmlAttributeName)));
+
 			settings.Add (new ThemeSetting ("Diff Header", new List<string> { "meta.diff", "meta.diff.header" }, ConvertChunkStyle (colorScheme.DiffHeader)));
 			settings.Add (new ThemeSetting ("Diff Line(Removed)", new List<string> { "markup.deleted" }, ConvertChunkStyle (colorScheme.DiffLineRemoved)));
 			settings.Add (new ThemeSetting ("Diff Line(Added)", new List<string> { "markup.inserted" }, ConvertChunkStyle (colorScheme.DiffLineAdded)));

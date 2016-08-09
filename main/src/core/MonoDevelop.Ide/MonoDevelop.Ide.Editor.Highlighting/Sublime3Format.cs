@@ -78,7 +78,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static SyntaxMatch ReadMatch (YamlMappingNode mapping, Dictionary<string, string> variables)
 		{
-			string match = null, scope = null;
+			string match = null;
+			List<string> scope = new List<string> ();
 			var captures  = new List<Tuple<int, string>> ();
 
 			ContextReference push = null, set = null;
@@ -89,7 +90,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					match = CompileRegex (ReplaceVariables (((YamlScalarNode)entry.Value).Value, variables));
 					break;
 				case "scope":
-					scope = ((YamlScalarNode)entry.Value).Value;
+					ParseScopes (scope, ((YamlScalarNode)entry.Value).Value);
 					break;
 				case "captures":
 					foreach (var captureEntry in ((YamlMappingNode)entry.Value).Children) {
@@ -117,6 +118,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 			}
 			return new SyntaxMatch (match, scope, captures, push, pop, set);
+		}
+
+		internal static void ParseScopes (List<string> scope, string value)
+		{
+			scope.AddRange (value.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries));
 		}
 
 		internal static ContextReference ReadContextReference (YamlNode value, Dictionary<string, string> variables)

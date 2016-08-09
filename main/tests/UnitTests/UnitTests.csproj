@@ -296,6 +296,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\SyntaxHighlightingTest_TextMate.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextMateDocumentIndentEngineTests.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextMateFoldingTextEditorExtensionTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TestCSharpHighlighting.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TestYamlHighlighting.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />

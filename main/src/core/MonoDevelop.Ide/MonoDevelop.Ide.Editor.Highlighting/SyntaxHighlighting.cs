@@ -161,7 +161,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			public Task<HighlightedLine> GetColoredSegments (int offset, int length)
 			{
-				SyntaxContext currentContext = null, lastContext = null;
+				SyntaxContext currentContext = null;
+				List<SyntaxContext> lastContexts = new List<SyntaxContext> ();
 				Match match = null;
 				SyntaxMatch curMatch = null;
 				var segments = new List<ColoredSegment> ();
@@ -169,14 +170,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				int endOffset = offset + length;
 				int lastMatch = -1;
 			restart:
-				if (lastMatch == offset && lastContext == currentContext) {
-					offset++;
-					length--;
-					if (length <= 0)
-						goto end;
+				if (lastMatch == offset) {
+					if (lastContexts.Contains (currentContext)) {
+						offset++;
+						length--;
+						if (length <= 0)
+							goto end;
+					} else {
+						lastContexts.Add (currentContext);
+					}
+				} else {
+					lastContexts.Clear ();
+					lastContexts.Add (currentContext);
 				}
 				lastMatch = offset;
-				lastContext = currentContext;
+
 				currentContext = ContextStack.Peek ();
 				match = null;
 				curMatch = null;
@@ -189,9 +197,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						if (match == null || possibleMatch.Index < match.Index) {
 							match = possibleMatch;
 							curMatch = m;
-							// Console.WriteLine (match.Index + "possible match : " + m+ "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+							// Console.WriteLine (match.Index + " possible match : " + m+ "/" + possibleMatch.Index + "-" + possibleMatch.Length);
 						} else {
-							// Console.WriteLine (match.Index + "skip match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
+							// Console.WriteLine (match.Index + " skip match : " + m + "/" + possibleMatch.Index + "-" + possibleMatch.Length);
 						}
 					} else {
 						// Console.WriteLine ("fail match : " + m);
@@ -199,14 +207,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 
 				if (match != null) {
+					Console.WriteLine (match.Index + " match : " + curMatch + "/" + match.Index + "-" + match.Length);
 					var matchEndOffset = match.Index + match.Length;
 					if (curSegmentOffset < match.Index) {
 						segments.Add (new ColoredSegment (curSegmentOffset, match.Index - curSegmentOffset, ScopeStack));
 						curSegmentOffset = match.Index;
 					}
-					if (curMatch.Scope != null) {
-						ScopeStack = ScopeStack.Push (curMatch.Scope);
-					}
+					PushScopeStack (curMatch.Scope);
+
 					if (curMatch.Captures.Count > 0) {
 						foreach (var capture in curMatch.Captures) {
 							var grp = match.Groups [capture.Item1];
@@ -220,7 +228,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						}
 					}
 
-					if (curMatch.Scope != null && curSegmentOffset < matchEndOffset) {
+					if (curMatch.Scope.Count > 0 && curSegmentOffset < matchEndOffset) {
 						segments.Add (new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, ScopeStack));
 						curSegmentOffset = matchEndOffset;
 					}
@@ -234,8 +242,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 						curSegmentOffset = matchEndOffset;
 					} else if (curMatch.Set != null) {
-						if (matchEndOffset - curSegmentOffset > 0)
-							segments.Add (new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, ScopeStack));
+						// if (matchEndOffset - curSegmentOffset > 0)
+						//	segments.Add (new ColoredSegment (curSegmentOffset, matchEndOffset - curSegmentOffset, ScopeStack));
 						//if (curMatch.Scope != null)
 						//	scopeStack = scopeStack.Pop ();
 						PopStack (currentContext, curMatch);
@@ -246,8 +254,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 						var nextContexts = curMatch.Push.GetContexts (highlighting.Definition);
 						PushStack (curMatch, nextContexts);
 					} else {
-						if (curMatch.Scope != null) {
-							ScopeStack = ScopeStack.Pop ();
+						if (curMatch.Scope.Count > 0) {
+							for (int i = 0; i < curMatch.Scope.Count; i++)
+								ScopeStack = ScopeStack.Pop ();
 						}
 					}
 
@@ -280,13 +289,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 							MatchStack = MatchStack.Push (null);
 						}
 						ContextStack = ContextStack.Push (nextContext);
-						if (nextContext.MetaScope != null)
-							ScopeStack = ScopeStack.Push (nextContext.MetaScope);
-						if (nextContext.MetaContentScope != null)
-							ScopeStack = ScopeStack.Push (nextContext.MetaContentScope);
+						PushScopeStack (nextContext.MetaScope);
+						PushScopeStack (nextContext.MetaContentScope);
 					}
 				}
 			}
+
+			void PushScopeStack (IReadOnlyList<string> scopeList)
+			{
+				if (scopeList == null)
+					return;
+				foreach (var scope in scopeList)
+					ScopeStack = ScopeStack.Push (scope);
+			}
+
+			void PopScopeStack (IReadOnlyList<string> scopeList)
+			{
+				if (scopeList == null)
+					return;
+				for (int i = 0; !ScopeStack.IsEmpty && i < scopeList.Count; i++)
+					ScopeStack = ScopeStack.Pop ();
+			}
+			
+
 
 			void PopStack (SyntaxContext currentContext, SyntaxMatch curMatch)
 			{
@@ -297,19 +322,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
  				ContextStack = ContextStack.Pop ();
 				if (!MatchStack.IsEmpty) {
-					if (MatchStack.Peek ()?.Scope != null) {
-						ScopeStack = ScopeStack.Pop ();
-					}
+					PopScopeStack (MatchStack.Peek ()?.Scope); 
 					MatchStack = MatchStack.Pop ();
 				}
-				if (currentContext.MetaScope != null && !ScopeStack.IsEmpty)
-					ScopeStack = ScopeStack.Pop ();
-				if (currentContext.MetaContentScope != null && !ScopeStack.IsEmpty)
-					ScopeStack = ScopeStack.Pop ();
-				if (curMatch.Scope != null && !ScopeStack.IsEmpty)
-					ScopeStack = ScopeStack.Pop ();
+				PopScopeStack (currentContext.MetaScope);
+				PopScopeStack (currentContext.MetaContentScope);
+
+				if (curMatch.Scope.Count > 0 && !ScopeStack.IsEmpty) {
+					for (int i = 0; i < curMatch.Scope.Count; i++)
+						ScopeStack = ScopeStack.Pop ();
+				}
 			}
-		}
+
+	}
 
 		static void Insert (List<ColoredSegment> list, ColoredSegment newSegment)
 		{
