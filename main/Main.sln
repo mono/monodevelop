@@ -314,6 +314,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Packaging", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGet.Packaging.Tasks", "external\NuGetizer3000\src\NuGet.Packaging.Tasks\NuGet.Packaging.Tasks.csproj", "{F46DEF57-56D2-4996-BCC5-1ED39493CB06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Packaging.Tests", "src\addins\MonoDevelop.Packaging\MonoDevelop.Packaging.Tests\MonoDevelop.Packaging.Tests.csproj", "{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2098,6 +2100,26 @@ Global
 		{F46DEF57-56D2-4996-BCC5-1ED39493CB06}.Debug|x86.Build.0 = Debug|Any CPU
 		{F46DEF57-56D2-4996-BCC5-1ED39493CB06}.Release|x86.ActiveCfg = Release|Any CPU
 		{F46DEF57-56D2-4996-BCC5-1ED39493CB06}.Release|x86.Build.0 = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Debug|x86.Build.0 = Debug|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Release|x86.ActiveCfg = Release|Any CPU
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7525BB88-6142-4A26-93B9-A30C6983390A} = {9D360D43-0C05-49D6-84DB-4E7AB2F38F82}
@@ -2238,6 +2260,7 @@ Global
 		{07BADCA3-CE39-42D4-8EFB-B1E5573FF2BD} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{443311BF-766D-4863-B5A1-AFAA7F41DBDA} = {07BADCA3-CE39-42D4-8EFB-B1E5573FF2BD}
 		{F46DEF57-56D2-4996-BCC5-1ED39493CB06} = {07BADCA3-CE39-42D4-8EFB-B1E5573FF2BD}
+		{25FBDD35-1CA0-4BED-93F6-927FAF33F96B} = {07BADCA3-CE39-42D4-8EFB-B1E5573FF2BD}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
