@@ -90,24 +90,30 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		void SelectActiveFile ()
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
-			if (doc != null && doc.Project != null) {
+			if (doc != null) {
 				string file = doc.FileName;
-				if (file != null) {
+				if (file != null && doc.Project != null) {
 					if (!SelectFile (doc.Project, file)) {
 						foreach (var project in IdeApp.Workspace.GetAllProjects ()) {
 							if (project is SharedAssetsProject && SelectFile (project, file))
 								return;
 						}
 					}
-				}
+				} else
+					SelectObject (doc.GetDocumentObject ());
 			}
 		}
 
 		bool SelectFile (Project project, string file)
 		{
 			var pf = project.Files.GetFile (file);
-			if (pf != null) {
-				var nav = treeView.GetNodeAtObject (pf, true);
+			return SelectObject (pf);
+		}
+
+		bool SelectObject (object dataObject)
+		{
+			if (dataObject != null) {
+				var nav = treeView.GetNodeAtObject (dataObject, true);
 				if (nav != null) {
 					nav.ExpandToNode ();
 					nav.Selected = true;

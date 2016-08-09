@@ -89,6 +89,15 @@ namespace MonoDevelop.Ide.Gui
 			get { return true; }
 		}
 
+		public virtual object GetDocumentObject ()
+		{
+			string path = IsUntitled ? UntitledName : ContentName;
+			if (IsFile && !string.IsNullOrEmpty (path) && Project != null) {
+					return Project.Files.GetFile (path);
+			}
+			return null;
+		}
+
 		public virtual string StockIconId {
 			get { return null; }
 		}

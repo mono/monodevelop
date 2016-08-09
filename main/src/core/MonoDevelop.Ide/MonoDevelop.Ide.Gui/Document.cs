@@ -205,6 +205,11 @@ namespace MonoDevelop.Ide.Gui
 			set { Window.ViewContent.IsDirty = value; }
 		}
 
+		public object GetDocumentObject ()
+		{
+			return Window?.ViewContent?.GetDocumentObject ();
+		}
+
 		FilePath adHocFile;
 		Project adhocProject;
 		Solution adhocSolution;
