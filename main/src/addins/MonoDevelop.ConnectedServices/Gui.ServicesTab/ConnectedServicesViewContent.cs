@@ -51,5 +51,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				this.widget.ShowServiceDetails (service);
 			}
 		}
+
+		public override object GetDocumentObject ()
+		{
+			var binding = ((DotNetProject)this.Project).GetConnectedServicesBinding ();
+			return binding?.ServicesNode;
+		}
 	}
 }
