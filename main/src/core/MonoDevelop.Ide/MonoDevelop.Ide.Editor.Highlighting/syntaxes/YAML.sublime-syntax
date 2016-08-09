@@ -40,14 +40,14 @@ file_extensions:
   - yaml
   - yml
   - sublime-syntax
-first_line_match: ^%YAML( ?1.\d+)? # Technically the number is required, but we'll be a bit loose here
+first_line_match: ^%YAML( ?1.\d+)?
 scope: source.yaml
 
 ##############################################################################
 
 variables:
   # General
-  s_sep: '[ \t]+' # actually s-separate-in-line
+  s_sep: '[ \t]+'
   c_indicator: '[-?:,\[\]{}#&*!|>''"%@`]'
   c_flow_indicator: '[\[\]{},]'
   ns_word_char: '[0-9A-Za-z\-]'
@@ -55,13 +55,13 @@ variables:
 
   # Tag stuff
   c_tag_handle: (?:!(?:{{ns_word_char}}*!)?)
-  ns_tag_char: '(?x: %\p{XDigit}{2} | [0-9A-Za-z\-#;/?:@&=+$_.~*''()] )' # ns-uri-char - "!" - c-flow-indicator
-  ns_tag_prefix: |- # "!" ns-uri-char*  | ns-tag-char ns-uri-char*
+  ns_tag_char: '(?x: %\p{XDigit}{2} | [0-9A-Za-z\-#;/?:@&=+$_.~*''()] )'
+  ns_tag_prefix: |-
     (?x:
         !              {{ns_uri_char}}*
       | (?![,!\[\]{}]) {{ns_uri_char}}+
     )
-  c_ns_tag_property: |- # c-verbatim-tag | c-ns-shorthand-tag | c-non-specific-tag
+  c_ns_tag_property: |-
     (?x:
         ! < {{ns_uri_char}}+ >
       | {{c_tag_handle}} {{ns_tag_char}}+
@@ -119,33 +119,33 @@ variables:
     )
   _type_int: |- # http://yaml.org/type/int.html
     (?x:
-        [-+]? 0b [0-1_]+ # (base 2)
-      | [-+]? 0  [0-7_]+ # (base 8)
-      | [-+]? (?: 0|[1-9][0-9_]*) # (base 10)
-      | [-+]? 0x [0-9a-fA-F_]+ # (base 16)
-      | [-+]? [1-9] [0-9_]* (?: :[0-5]?[0-9])+ # (base 60)
+        [-+]? 0b [0-1_]+
+      | [-+]? 0  [0-7_]+
+      | [-+]? (?: 0|[1-9][0-9_]*)
+      | [-+]? 0x [0-9a-fA-F_]+
+      | [-+]? [1-9] [0-9_]* (?: :[0-5]?[0-9])+
     )
   _type_float: |- # http://yaml.org/type/float.html
     (?x:
-        [-+]? (?: [0-9] [0-9_]*)? \. [0-9.]* (?: [eE] [-+] [0-9]+)? # (base 10)
-      | [-+]? [0-9] [0-9_]* (?: :[0-5]?[0-9])+ \. [0-9_]* # (base 60)
-      | [-+]? \. (?: inf|Inf|INF) # (infinity)
-      |       \. (?: nan|NaN|NAN) # (not a number)
+        [-+]? (?: [0-9] [0-9_]*)? \. [0-9.]* (?: [eE] [-+] [0-9]+)?
+      | [-+]? [0-9] [0-9_]* (?: :[0-5]?[0-9])+ \. [0-9_]*
+      | [-+]? \. (?: inf|Inf|INF)
+      |       \. (?: nan|NaN|NAN)
     )
   _type_timestamp: |- # http://yaml.org/type/timestamp.html
     (?x:
-        \d{4} - \d{2} - \d{2}           # (y-m-d)
-      | \d{4}                           # (year)
-        - \d{1,2}                       # (month)
-        - \d{1,2}                       # (day)
-        (?: [Tt] | [ \t]+) \d{1,2}      # (hour)
-        : \d{2}                         # (minute)
-        : \d{2}                         # (second)
-        (?: \.\d*)?                     # (fraction)
+        \d{4} - \d{2} - \d{2}
+      | \d{4}
+        - \d{1,2}
+        - \d{1,2}
+        (?: [Tt] | [ \t]+) \d{1,2}
+        : \d{2}
+        : \d{2}
+        (?: \.\d*)?
         (?:
             (?:[ \t]*) Z
           | [-+] \d{1,2} (?: :\d{1,2})?
-        )?                              # (time zone)
+        )?
     )
   _type_value: '=' # http://yaml.org/type/value.html
   _type_merge: '<<' # http://yaml.org/type/merge.html

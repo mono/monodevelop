@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public string MetaScope { get; private set; }
 		public string MetaContentScope { get; private set; }
-		public string MetaIncludePrototype { get; private set; }
+		public bool MetaIncludePrototype { get; private set; }
 
 		public IEnumerable<SyntaxMatch> Matches { get { return matches; } }
 
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				MetaContentScope = ((YamlScalarNode)val).Value;
 			}
 			if (children.TryGetValue (new YamlScalarNode ("meta_include_prototype"), out val)) {
-				MetaIncludePrototype = ((YamlScalarNode)val).Value;
+				MetaIncludePrototype = ((YamlScalarNode)val).Value != "false";
 			}
 			if (children.TryGetValue (new YamlScalarNode ("include"), out val)) {
 				includesAndMatches.Add (((YamlScalarNode)val).Value);
@@ -130,9 +130,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			Name = name;
 			includesAndMatches = new List<object> ();
+			MetaIncludePrototype = true;
 		}
 
-		internal SyntaxContext (string name, List<object> includesAndMatches, string metaScope = null, string metaContentScope = null, string metaIncludePrototype = null)
+		internal SyntaxContext (string name, List<object> includesAndMatches, string metaScope = null, string metaContentScope = null, bool metaIncludePrototype = true)
 		{
 			this.includesAndMatches = includesAndMatches;
 			Name = name;
@@ -163,7 +164,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal void PrepareMatches(SyntaxHighlightingDefinition definiton)
 		{
 			var preparedMatches = new List<SyntaxMatch> ();
-			foreach (var o in includesAndMatches) {
+			IEnumerable<object> list = includesAndMatches;
+			if (MetaIncludePrototype &&  Name != "prototype") {
+				var prototypeContext = definiton.GetContext ("prototype");
+				if (prototypeContext != null)
+					list = list.Concat (prototypeContext.GetMatches (definiton));
+			}
+			foreach (var o in list) {
 				var match = o as SyntaxMatch;
 				if (match != null) {
 					if (match.Push is AnonymousMatchContextReference)

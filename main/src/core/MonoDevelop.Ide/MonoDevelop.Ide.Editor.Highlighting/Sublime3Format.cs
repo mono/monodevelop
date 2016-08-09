@@ -137,7 +137,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static ContextReference ReadAnonymousMatchContextReference (YamlSequenceNode seq, Dictionary<string, string> variables)
 		{
-			var ctx = new SyntaxContext ("__Anonymous__");
+			var ctx = new SyntaxContext ("__Anonymous__", new List<object> (), metaIncludePrototype: false);
 
 			foreach (var c in seq.Children.OfType<YamlMappingNode> ()) {
 				ctx.ParseMapping (c, variables);
