@@ -14,6 +14,16 @@ namespace MonoDevelop.ConnectedServices
 	static class ConnectedServices
 	{
 		/// <summary>
+		/// The category string for packages, this will be localised to the user
+		/// </summary>
+		public const string PackageDependencyCategory = "Packages";
+
+		/// <summary>
+		/// The category string for code, this will be localised to the user
+		/// </summary>
+		public const string CodeDependencyCategory = "Code";
+
+		/// <summary>
 		/// The extension point for service providers
 		/// </summary>
 		static readonly string ServiceProvidersExtensionPoint = "/MonoDevelop/ConnectedServices/ServiceProviders";

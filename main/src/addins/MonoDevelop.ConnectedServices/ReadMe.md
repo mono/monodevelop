@@ -6,3 +6,8 @@
  disk. Is this an issue if the user manually deletes things from the project?
   
  - the CS node can then query the extension on the project to get state about the services that are connected.
+
+
+
+ - by default all dependencies are assumed to be added to the project when the service is added to the project. Nuget dependencies have an additional property so that 
+ we can tell if the package was removed and offer a fix it button

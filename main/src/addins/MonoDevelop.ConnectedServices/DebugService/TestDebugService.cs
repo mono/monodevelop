@@ -33,17 +33,12 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			this.Description = "This is a simple service example to show how you might construct your own service implementation.";
 
 			this.Dependencies = new IConnectedServiceDependency [] {
-				new ConnectedServiceDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8"),
+				new PackageDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8"),
 			};
 
 			this.Sections = new IConfigurationSection [] {
 				new TestDebugConfigurationSection(this),
 			};
-		}
-
-		protected override Task OnAddToProject ()
-		{
-			return Task.FromResult (true);
 		}
 
 		protected override void OnStoreAddedState(ConnectedServiceState state)

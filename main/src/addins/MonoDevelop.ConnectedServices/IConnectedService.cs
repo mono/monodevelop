@@ -25,6 +25,12 @@ namespace MonoDevelop.ConnectedServices
 		string Description { get; }
 
 		/// <summary>
+		/// Gets a description of the supported platforms. This is largely just informational as the service provider decides
+		/// whether a project is supported or not.
+		/// </summary>
+		string SupportedPlatforms { get; }
+
+		/// <summary>
 		/// Gets the project that this service instance is attached to
 		/// </summary>
 		DotNetProject Project { get; }
@@ -55,6 +61,11 @@ namespace MonoDevelop.ConnectedServices
 		/// Gets the array of sections to be displayed to the user after the dependencies section.
 		/// </summary>
 		IConfigurationSection [] Sections { get; }
+
+		/// <summary>
+		/// Occurs when service is added to the project;
+		/// </summary>
+		event EventHandler<EventArgs> ServiceAdded;
 
 		/// <summary>
 		/// Adds the service to the project

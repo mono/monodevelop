@@ -15,7 +15,8 @@ namespace MonoDevelop.ConnectedServices
 		{
 			this.Service = service;
 			this.DisplayName = GettextCatalog.GetString ("Dependencies");
-			this.CanBeAdded = service.Dependencies.Length > 0 && !service.AreDependenciesInstalled;
+			// dependencies are added when the service is added, therefore it's not really optional
+			this.CanBeAdded = false;
 		}
 
 		/// <summary>
@@ -41,7 +42,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets a value indicating that whatever changes to the project that can be added by this section have been added.
 		/// </summary>
-		public bool IsAdded { get; }
+		public bool IsAdded { get { return this.Service.IsAdded; } }
 
 		/// <summary>
 		/// Occurs when the section is added to the project
@@ -59,10 +60,9 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the service dependencies to the project
 		/// </summary>
-		public async Task AddToProject ()
+		public Task AddToProject ()
 		{
-			await this.Service.Project.AddDependencies (this.Service.Dependencies);
-			this.NotifyAddedToProject ();
+			return Task.FromResult (true);
 		}
 
 		/// <summary>

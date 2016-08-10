@@ -38,6 +38,12 @@ namespace MonoDevelop.ConnectedServices
 		public string Description { get; protected set; }
 
 		/// <summary>
+		/// Gets a description of the supported platforms. This is largely just informational as the service provider decides
+		/// whether a project is supported or not.
+		/// </summary>
+		public string SupportedPlatforms { get; protected set; }
+
+		/// <summary>
 		/// Gets the project that this service instance is attached to
 		/// </summary>
 		public DotNetProject Project { get; private set; }
@@ -78,6 +84,11 @@ namespace MonoDevelop.ConnectedServices
 		public IConfigurationSection [] Sections { get; protected set; }
 
 		/// <summary>
+		/// Occurs when service is added to the project;
+		/// </summary>
+		public event EventHandler<EventArgs> ServiceAdded;
+
+		/// <summary>
 		/// Adds the service to the project
 		/// </summary>
 		public async Task AddToProject ()
@@ -88,9 +99,10 @@ namespace MonoDevelop.ConnectedServices
 					return;
 				}
 
-				await this.OnAddToProject ();
+				await this.AddDependencies ().ConfigureAwait (false);
+				await this.OnAddToProject ().ConfigureAwait (false);
 				this.StoreAddedState ();
-
+				this.NotifyServiceAdded ();
 
 				// TODO: not here, but somewhere, we need to refresh the sln pad.
 
@@ -100,9 +112,29 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Performs the logic of adding the service to the project, adds any scaffolding code etc.
+		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
 		/// </summary>
-		protected abstract Task OnAddToProject ();
+		protected virtual Task OnAddToProject ()
+		{
+			return Task.FromResult (true);
+		}
+
+		/// <summary>
+		/// Adds the dependencies to the project
+		/// </summary>
+		protected virtual async Task AddDependencies()
+		{
+			// ask all the dependencies to add themselves to the project
+			// we'll do them one at a time in case there are interdependencies between them
+			foreach (var dependency in this.Dependencies) {
+				try {
+					await dependency.AddToProject ().ConfigureAwait (false);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not add dependency", ex);
+					throw;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Creates a new object for storing state about the service in
@@ -171,6 +203,17 @@ namespace MonoDevelop.ConnectedServices
 			}
 
 			return dir.Combine (ConnectedServices.ConnectedServicesJsonFileName);
+		}
+
+		/// <summary>
+		/// Notifies subscribers that the service has been added to the project
+		/// </summary>
+		void NotifyServiceAdded()
+		{
+			var handler = this.ServiceAdded;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
 		}
 	}
 }

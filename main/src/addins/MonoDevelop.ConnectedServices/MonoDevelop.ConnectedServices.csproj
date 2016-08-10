@@ -109,6 +109,9 @@
     <Compile Include="ConnectedServiceDependency.cs" />
     <Compile Include="Gui.ServicesTab\ConfigurationSectionWidget.cs" />
     <Compile Include="Gui.ServicesTab\DependenciesSectionWidget.cs" />
+    <Compile Include="IPackageDependency.cs" />
+    <Compile Include="ICodeDependency.cs" />
+    <Compile Include="PackageDependency.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
@@ -124,7 +127,6 @@
   <ItemGroup>
     <Folder Include="Gui.SolutionPad\" />
     <Folder Include="DebugService\" />
-    <Folder Include="Internal\" />
     <Folder Include="CommandHandlers\" />
     <Folder Include="Gui.ServicesTab\" />
   </ItemGroup>

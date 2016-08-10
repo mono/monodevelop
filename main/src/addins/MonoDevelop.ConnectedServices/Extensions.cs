@@ -30,36 +30,38 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependencies to the project
 		/// </summary>
-		public static Task AddDependencies (this DotNetProject project, IConnectedServiceDependency[] dependencies)
+		public static Task AddPackageDependency (this DotNetProject project, IPackageDependency dependency)
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof (project));
 
 			LoggingService.LogInfo ("Adding connected service dependencies");
-			if (dependencies.Length == 0) {
-				LoggingService.LogInfo ("Skipped, there were no dependencies to add");
-				return Task.FromResult (true);
-			}
 
-			if (dependencies.Count(x => !x.IsAdded) == 0) {
+			if (dependency.IsAdded) {
 				LoggingService.LogInfo ("Skipped, all dependencies have already been added");
 				return Task.FromResult (true);
 			}
 
 			try {
 				var references = new List<PackageManagementPackageReference> ();
-				foreach (var dependency in dependencies.Where (x => !x.IsAdded)) {
-					references.Add (new PackageManagementPackageReference (dependency.PackageId, dependency.PackageVersion));
-				}
+				references.Add (new PackageManagementPackageReference (dependency.PackageId, dependency.PackageVersion));
 
 				var task = PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, references);
 
-				LoggingService.LogInfo ("Queued dependencies for installation");
+				LoggingService.LogInfo ("Queued dependency for installation");
 				return task;
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Could not queue dependencies for installation", ex);
 				throw;
 			}
+		}
+
+		/// <summary>
+		/// Determines if the given package dependency has been added to the project or not
+		/// </summary>
+		public static bool PackageAdded(this DotNetProject project, IPackageDependency dependency)
+		{
+			return PackageManagementServices.ProjectOperations.GetInstalledPackages (project).Any (p => p.Id == dependency.PackageId);
 		}
 	}
 }
