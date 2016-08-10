@@ -514,7 +514,7 @@ namespace MonoDevelop.Projects
 			string solFile = Util.GetSampleProject ("portable-library", "portable-library.sln");
 			Solution sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
 			var res = await sol.Build (Util.GetMonitor (), "Debug");
-			Assert.AreEqual (0, res.Errors.Count);
+			Assert.IsNull (res.Errors.FirstOrDefault ()?.ToString ());
 		}
 
 		[Test]
