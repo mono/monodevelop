@@ -84,12 +84,12 @@ namespace NUnit3Runner
 			return new GetTestInfoResponse { Result = r };
 		}
 
-		TestPackage CreatePackage (string path)
+		TestPackage CreatePackage (string path, bool useAppDomain)
 		{
 			TestPackage package = new TestPackage (path);
 			package.AddSetting ("ShadowCopyFiles", false);
 			package.AddSetting ("ProcessModel", "InProcess");
-			package.AddSetting ("DomainUsage", "Single");
+			package.AddSetting ("DomainUsage", useAppDomain ? "Single" : "None");
 			return package;
 		}
 		
@@ -113,7 +113,7 @@ namespace NUnit3Runner
 				tr = (ITestRunner)Activator.CreateInstance (runnerType);
 			}
 
-			TestPackage package = CreatePackage (path);
+			TestPackage package = CreatePackage (path, !supportAssemblies.Any (asm => asm.EndsWith ("nunit.framework.dll")));
 
 			if (tr == null)
 				tr = engine.GetRunner (package);
@@ -124,7 +124,7 @@ namespace NUnit3Runner
 		public NunitTestInfo GetTestInfo (string path, string[] supportAssemblies)
 		{
 			InitSupportAssemblies (supportAssemblies);
-			TestPackage package = CreatePackage (path);
+			TestPackage package = CreatePackage (path, useAppDomain: !supportAssemblies.Any (asm => asm.EndsWith ("nunit.framework.dll")));
 			var tr = engine.GetRunner (package);
 			var r = tr.Explore (TestFilter.Empty);
 			var root = r.SelectSingleNode ("test-suite") as XmlElement;
