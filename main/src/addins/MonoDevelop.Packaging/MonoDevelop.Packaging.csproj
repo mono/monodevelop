@@ -49,6 +49,10 @@
     <Compile Include="MonoDevelop.Packaging.Templating\PackagingProjectTemplateWizardPage.cs" />
     <Compile Include="MonoDevelop.Packaging.Gui\GtkPackagingProjectTemplateWizardPageWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="MonoDevelop.Packaging.OptionPanels\NuGetPackageMetadataOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.Packaging.Gui\GtkNuGetPackageMetadataOptionsPanelWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs" />
+    <Compile Include="MonoDevelop.Packaging\NuGetPackageMetadata.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -86,6 +90,7 @@
     <Folder Include="Templates\" />
     <Folder Include="MonoDevelop.Packaging.Templating\" />
     <Folder Include="MonoDevelop.Packaging.Gui\" />
+    <Folder Include="MonoDevelop.Packaging.OptionPanels\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -55,6 +55,39 @@ namespace MonoDevelop.Packaging
 		[ItemProperty ("Description")]
 		string description;
 
+		[ItemProperty ("Owners")]
+		string owners;
+
+		[ItemProperty ("Copyright")]
+		string copyright;
+
+		[ItemProperty ("Tags")]
+		string tags;
+
+		[ItemProperty ("Title")]
+		string title;
+
+		[ItemProperty ("Language")]
+		string language;
+
+		[ItemProperty ("ReleaseNotes")]
+		string releaseNotes;
+
+		[ItemProperty ("Summary")]
+		string summary;
+
+		[ItemProperty ("ProjectUrl")]
+		string projectUrl;
+
+		[ItemProperty ("IconUrl")]
+		string iconUrl;
+
+		[ItemProperty ("LicenseUrl")]
+		string licenseUrl;
+
+		[ItemProperty ("RequireLicenseAcceptance")]
+		bool requireLicenseAcceptance;
+
 		protected override DotNetCompilerParameters OnCreateCompilationParameters (
 			DotNetProjectConfiguration config,
 			ConfigurationKind kind)
@@ -150,6 +183,55 @@ namespace MonoDevelop.Packaging
 		protected override string OnGetDefaultBuildAction (string fileName)
 		{
 			return "NuGetFile";
+		}
+
+		public NuGetPackageMetadata GetPackageMetadata ()
+		{
+			return new NuGetPackageMetadata {
+				Id = id,
+				Authors = authors,
+				Description = description,
+				Version = version,
+
+				Copyright = copyright,
+				IconUrl = iconUrl,
+				Language = language,
+				LicenseUrl = licenseUrl,
+				ProjectUrl = projectUrl,
+				Owners = owners,
+				ReleaseNotes = releaseNotes,
+				RequireLicenseAcceptance = requireLicenseAcceptance,
+				Summary = summary,
+				Tags = tags,
+				Title = title
+			};
+		}
+
+		public void UpdatePackageMetadata (NuGetPackageMetadata metadata)
+		{
+			id = ToNullIfEmpty (metadata.Id);
+			version = ToNullIfEmpty (metadata.Version);
+			authors = ToNullIfEmpty (metadata.Authors);
+			description = ToNullIfEmpty (metadata.Description);
+			copyright = ToNullIfEmpty (metadata.Copyright);
+			iconUrl = ToNullIfEmpty (metadata.IconUrl);
+			language = ToNullIfEmpty (metadata.Language);
+			licenseUrl = ToNullIfEmpty (metadata.LicenseUrl);
+			projectUrl = ToNullIfEmpty (metadata.ProjectUrl);
+			owners = ToNullIfEmpty (metadata.Owners);
+			releaseNotes = ToNullIfEmpty (metadata.ReleaseNotes);
+			requireLicenseAcceptance = metadata.RequireLicenseAcceptance;
+			summary = ToNullIfEmpty (metadata.Summary);
+			tags = ToNullIfEmpty (metadata.Tags);
+			title = ToNullIfEmpty (metadata.Title);
+		}
+
+		static string ToNullIfEmpty (string text)
+		{
+			if (String.IsNullOrEmpty (text))
+				return null;
+
+			return text;
 		}
 	}
 }

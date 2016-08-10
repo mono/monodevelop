@@ -47,4 +47,15 @@
 		<Class id="MonoDevelop.Packaging.ProjectTemplateWizard" class="MonoDevelop.Packaging.Templating.PackagingProjectTemplateWizard" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
+		<Section id="NuGetPackage" _label="NuGet Package">
+			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
+				<Section
+					id="Metadata"
+					_label="Metadata"
+					fill="true"
+					class="MonoDevelop.Packaging.OptionPanels.NuGetPackageMetadataOptionsPanel" />
+			</Condition>
+		</Section>
+	</Extension>
 </ExtensionModel>
