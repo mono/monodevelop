@@ -88,6 +88,10 @@ namespace MonoDevelop.Packaging.Tests
 				SolutionName = "SolutionName",
 				SolutionPath = dir
 			};
+			cinfo.Parameters["PackageAuthors"] = "authors";
+			cinfo.Parameters["PackageId"] = "ProjectName";
+			cinfo.Parameters["PackageDescription"] = "Description";
+			cinfo.Parameters["PackageVersion"] = "1.0.0";
 
 			var workspaceItem = template.CreateWorkspaceItem (cinfo);
 			string solutionFileName = Path.Combine (dir, "SolutionName.sln");
