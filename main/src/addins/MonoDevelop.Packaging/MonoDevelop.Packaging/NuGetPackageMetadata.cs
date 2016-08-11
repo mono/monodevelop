@@ -34,6 +34,7 @@ namespace MonoDevelop.Packaging
 		public string Description { get; set; }
 
 		public string Copyright { get; set; }
+		public bool DevelopmentDependency { get; set; }
 		public string IconUrl { get; set; }
 		public string Language { get; set; }
 		public string LicenseUrl { get; set; }

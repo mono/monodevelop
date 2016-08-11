@@ -344,16 +344,19 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget" design-size="591 552">
+  <widget class="Gtk.Bin" id="MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget" design-size="591 582">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
       <widget class="Gtk.Table" id="mainTable">
         <property name="MemberName" />
-        <property name="NRows">15</property>
+        <property name="NRows">16</property>
         <property name="NColumns">3</property>
         <property name="RowSpacing">6</property>
         <property name="ColumnSpacing">6</property>
+        <child>
+          <placeholder />
+        </child>
         <child>
           <placeholder />
         </child>
@@ -561,6 +564,52 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.CheckButton" id="packageDevelopmentDependencyCheckBox">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes" />
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+            <property name="Xalign">0</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">12</property>
+            <property name="BottomAttach">13</property>
+            <property name="LeftAttach">1</property>
+            <property name="RightAttach">2</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="packageDevelopmentDependencyLabel">
+            <property name="MemberName" />
+            <property name="Xalign">0</property>
+            <property name="LabelProp" translatable="yes">Development Dependency:</property>
+          </widget>
+          <packing>
+            <property name="TopAttach">12</property>
+            <property name="BottomAttach">13</property>
+            <property name="AutoSize">True</property>
+            <property name="XOptions">Fill</property>
+            <property name="YOptions">Fill</property>
+            <property name="XExpand">False</property>
+            <property name="XFill">True</property>
+            <property name="XShrink">False</property>
+            <property name="YExpand">False</property>
+            <property name="YFill">True</property>
+            <property name="YShrink">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.Label" id="packageIconUrlLabel">
             <property name="MemberName" />
             <property name="Xalign">0</property>
@@ -649,8 +698,8 @@
             <property name="LabelProp" translatable="yes">Language:</property>
           </widget>
           <packing>
-            <property name="TopAttach">13</property>
-            <property name="BottomAttach">14</property>
+            <property name="TopAttach">14</property>
+            <property name="BottomAttach">15</property>
             <property name="AutoSize">True</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
@@ -670,8 +719,8 @@
             <property name="InvisibleChar">●</property>
           </widget>
           <packing>
-            <property name="TopAttach">13</property>
-            <property name="BottomAttach">14</property>
+            <property name="TopAttach">14</property>
+            <property name="BottomAttach">15</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">True</property>
@@ -845,8 +894,8 @@
             </child>
           </widget>
           <packing>
-            <property name="TopAttach">14</property>
-            <property name="BottomAttach">15</property>
+            <property name="TopAttach">15</property>
+            <property name="BottomAttach">16</property>
             <property name="AutoSize">True</property>
             <property name="XOptions">Fill</property>
             <property name="XExpand">False</property>
@@ -873,8 +922,8 @@
             </child>
           </widget>
           <packing>
-            <property name="TopAttach">14</property>
-            <property name="BottomAttach">15</property>
+            <property name="TopAttach">15</property>
+            <property name="BottomAttach">16</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">True</property>
@@ -983,8 +1032,8 @@
             <property name="LabelProp" translatable="yes">Tags:</property>
           </widget>
           <packing>
-            <property name="TopAttach">12</property>
-            <property name="BottomAttach">13</property>
+            <property name="TopAttach">13</property>
+            <property name="BottomAttach">14</property>
             <property name="AutoSize">True</property>
             <property name="XOptions">Fill</property>
             <property name="YOptions">Fill</property>
@@ -1004,8 +1053,8 @@
             <property name="InvisibleChar">●</property>
           </widget>
           <packing>
-            <property name="TopAttach">12</property>
-            <property name="BottomAttach">13</property>
+            <property name="TopAttach">13</property>
+            <property name="BottomAttach">14</property>
             <property name="LeftAttach">1</property>
             <property name="RightAttach">2</property>
             <property name="AutoSize">True</property>

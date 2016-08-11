@@ -48,6 +48,7 @@ namespace MonoDevelop.Packaging.Gui
 			packageDescriptionTextView.Buffer.Text = metadata.Description;
 
 			packageCopyrightTextBox.Text = metadata.Copyright;
+			packageDevelopmentDependencyCheckBox.Active = metadata.DevelopmentDependency;
 			packageIconUrlTextBox.Text = metadata.IconUrl;
 			packageLanguageTextBox.Text = metadata.Language;
 			packageLicenseUrlTextBox.Text = metadata.LicenseUrl;
@@ -68,6 +69,7 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Description = packageDescriptionTextView.Buffer.Text;
 
 			metadata.Copyright = packageCopyrightTextBox.Text;
+			metadata.DevelopmentDependency = packageDevelopmentDependencyCheckBox.Active;
 			metadata.IconUrl = packageIconUrlTextBox.Text;
 			metadata.Language = packageLanguageTextBox.Text;
 			metadata.LicenseUrl = packageLicenseUrlTextBox.Text;

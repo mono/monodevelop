@@ -61,6 +61,9 @@ namespace MonoDevelop.Packaging
 		[ItemProperty ("Copyright")]
 		string copyright;
 
+		[ItemProperty ("DevelopmentDependency")]
+		bool developmentDependency;
+
 		[ItemProperty ("Tags")]
 		string tags;
 
@@ -194,6 +197,7 @@ namespace MonoDevelop.Packaging
 				Version = version,
 
 				Copyright = copyright,
+				DevelopmentDependency = developmentDependency,
 				IconUrl = iconUrl,
 				Language = language,
 				LicenseUrl = licenseUrl,
@@ -214,6 +218,7 @@ namespace MonoDevelop.Packaging
 			authors = ToNullIfEmpty (metadata.Authors);
 			description = ToNullIfEmpty (metadata.Description);
 			copyright = ToNullIfEmpty (metadata.Copyright);
+			developmentDependency = metadata.DevelopmentDependency;
 			iconUrl = ToNullIfEmpty (metadata.IconUrl);
 			language = ToNullIfEmpty (metadata.Language);
 			licenseUrl = ToNullIfEmpty (metadata.LicenseUrl);
