@@ -70,6 +70,7 @@ namespace MonoDevelop.PackageManagement
 
 		public string PackageId { get; set; }
 		public bool ForceRemove { get; set; }
+		public bool RemoveDependencies { get; set; }
 
 		public void Execute ()
 		{
@@ -112,7 +113,7 @@ namespace MonoDevelop.PackageManagement
 
 		UninstallationContext CreateUninstallationContext ()
 		{
-			return new UninstallationContext (false, ForceRemove);
+			return new UninstallationContext (RemoveDependencies, ForceRemove);
 		}
 
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()

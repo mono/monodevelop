@@ -61,6 +61,16 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateRemovingMultiplePackagesMessage (int count)
+		{
+			return new ProgressMonitorStatusMessage (
+				GettextCatalog.GetString ("Removing {0} packages...", count),
+				GettextCatalog.GetString ("{0} packages successfully removed.", count),
+				GettextCatalog.GetString ("Could not remove packages."),
+				GettextCatalog.GetString ("{0} packages removed with warnings.", count)
+			);
+		}
+
 		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInSolutionMessage ()
 		{
 			return new ProgressMonitorStatusMessage (

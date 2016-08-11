@@ -149,6 +149,25 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (packageManager.UninstallActions, nugetProject.ActionsPassedToOnBeforeUninstall);
 		}
+
+		[Test]
+		public void Execute_RemoveDependenciesIsTrue_PackageDependenciesAreRemoved ()
+		{
+			CreateAction ("Test");
+			action.RemoveDependencies = true;
+
+			action.Execute ();
+
+			Assert.IsTrue (packageManager.PreviewUninstallContext.RemoveDependencies);
+		}
+
+		[Test]
+		public void RemoveDependencies_NewInstance_IsFalseByDefault ()
+		{
+			CreateAction ("Test");
+
+			Assert.IsFalse (action.RemoveDependencies);
+		}
 	}
 }
 

@@ -82,6 +82,15 @@ namespace MonoDevelop.PackageManagement
 		/// <param name="packages">Packages.</param>
 		Task InstallPackagesAsync (string packageSourceUrl, Project project, IEnumerable<PackageManagementPackageReference> packages);
 
+		/// <summary>
+		/// Removes the NuGet packages from the selected project and optionally removes any
+		/// dependencies for the NuGet packages.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		/// <param name="removeDependencies">If set to <c>true</c> remove dependencies.</param>
+		void UninstallPackages (Project project, IEnumerable<string> packages, bool removeDependencies = false);
+
 		IEnumerable<PackageManagementPackageReference> GetInstalledPackages (Project project);
 
 		event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;
