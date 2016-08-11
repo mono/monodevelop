@@ -327,8 +327,10 @@ typedef struct
 					if (seg.Item1.Line == line.LineNumber) {
 						var matchedSegment = coloredSegments.FirstOrDefault (s => s.Contains (seg.Item1.Column + line.Offset - 1));
 						Assert.NotNull (matchedSegment, "No segment found at : " + seg.Item1);
-						foreach (var segi in seg.Item2.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries))
+						foreach (var segi in seg.Item2.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries)) {
+							Console.WriteLine ("line " + line.LineNumber + " : " + editor.GetTextAt (line));
 							Assert.IsTrue (matchedSegment.ScopeStack.Any (ss => EditorTheme.IsCompatibleScope (segi, ss)), "Wrong color at " + seg.Item1 + " expected " + segi + " was " + string.Join (", ", matchedSegment.ScopeStack.ToArray ()));
+						}
 						expectedSegments.RemoveAt (i);
 						i--;
 					}

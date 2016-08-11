@@ -152,50 +152,33 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
 			}
 			var syntaxLine = await syntaxMode.GetHighlightedLineAsync (line, cancellationToken);
-			var segments = new List<ColoredSegment> ();
-			foreach (var seg in syntaxLine.Segments) {
-				StyledTreeSegment treeseg = null;
-				try {
-					var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
-					if (tree == null) {
-						tree = Tuple.Create (line, new HighlightingSegmentTree ());
-						tree.Item2.InstallListener (editor.Document);
-						int lineOffset = line.Offset;
-						foreach (var seg2 in semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
-							tree.Item2.AddStyle (seg2, seg2.ColorStyleKey);
-						}
-						while (lineSegments.Count > MaximumCachedLineSegments) {
-							var removed = lineSegments.Dequeue ();
-							try {
-								removed.Item2.RemoveListener ();
-							} catch (Exception) { }
-						}
-						lineSegments.Enqueue (tree);
+			var segments = new List<ColoredSegment> (syntaxLine.Segments);
+			try {
+				var tree = lineSegments.FirstOrDefault (t => t.Item1 == line);
+				if (tree == null) {
+					tree = Tuple.Create (line, new HighlightingSegmentTree ());
+					tree.Item2.InstallListener (editor.Document);
+					int lineOffset = line.Offset;
+					foreach (var seg2 in semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (lineOffset, line.Length))) {
+						tree.Item2.AddStyle (seg2, seg2.ColorStyleKey);
 					}
-					treeseg = tree.Item2.GetSegmentsOverlapping (seg).FirstOrDefault (s => s.Offset < seg.EndOffset && s.EndOffset > seg.Offset);
-				} catch (Exception e) {
-					Console.WriteLine ("Error in semantic highlighting: " + e);
-				}
-				if (treeseg != null) {
-					if (seg.Offset <= treeseg.Offset) {
-						var lengthBefore = treeseg.Offset - seg.Offset;
-						if (lengthBefore > 0)
-							segments.Add (new ColoredSegment (seg.Offset, lengthBefore, seg.ScopeStack));
-						segments.Add (new ColoredSegment (treeseg.Offset, treeseg.Length, seg.ScopeStack.Push (treeseg.Style)));
-						var lengthAfter = seg.EndOffset - treeseg.EndOffset;
-						if (lengthAfter > 0)
-							segments.Add (new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack));
-					} else if (seg.EndOffset < treeseg.EndOffset) {
-						continue;
-					} else {
-						var lengthAfter = seg.EndOffset - treeseg.EndOffset;
-						if (lengthAfter > 0)
-							segments.Add (new ColoredSegment (treeseg.EndOffset, lengthAfter, seg.ScopeStack));
+					while (lineSegments.Count > MaximumCachedLineSegments) {
+						var removed = lineSegments.Dequeue ();
+						try {
+							removed.Item2.RemoveListener ();
+						} catch (Exception) { }
 					}
-				} else {
-					segments.Add (seg);
+					lineSegments.Enqueue (tree);
 				}
+
+				foreach (var treeseg in tree.Item2.GetSegmentsOverlapping (line)) {
+					SyntaxHighlighting.ReplaceSegment (segments, new ColoredSegment (treeseg.Offset, treeseg.Length, syntaxLine.Segments [0].ScopeStack.Push (treeseg.Style)));
+				}
+			} catch (Exception e) {
+				Console.WriteLine ("Error in semantic highlighting: " + e);
 			}
+
+
 			return new HighlightedLine (segments);
 		}
 

@@ -122,6 +122,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static void ParseScopes (List<string> scope, string value)
 		{
+			if (value == null)
+				return;
 			scope.AddRange (value.Split (new [] { " " }, StringSplitOptions.RemoveEmptyEntries));
 		}
 
