@@ -166,6 +166,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal static string DefaultExtensionsPath {
 			get {
+				if (extensionsPath == null)
+					extensionsPath = Environment.GetEnvironmentVariable ("MSBuildExtensionsPath");
+
 				if (extensionsPath == null) {
 					// NOTE: code from mcs/tools/gacutil/driver.cs
 					PropertyInfo gac = typeof (System.Environment).GetProperty (
