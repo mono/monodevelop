@@ -185,7 +185,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var idx = key.IndexOf (' ');
 			if (idx >= 0)
 				key = key.Substring (0, idx);
-			bool isCompatible = scope.StartsWith (key, StringComparison.Ordinal);
+			bool isCompatible = scope.Contains (key);
 			return isCompatible;
 		}
 
