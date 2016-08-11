@@ -19,7 +19,8 @@
 			<Section id="General"
 				_label="General"
 				fill="true"
-				class="PerformanceDiagnosticsAddIn.GlobalOptionsPanel" />
+				class="PerformanceDiagnosticsAddIn.GlobalOptionsPanel"
+				icon="md-prefs-performance" />
 		</Section>
 	</Extension>
 </ExtensionModel>
