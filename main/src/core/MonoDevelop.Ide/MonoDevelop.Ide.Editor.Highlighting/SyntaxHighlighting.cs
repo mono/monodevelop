@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 
 				if (match != null) {
-					Console.WriteLine (match.Index + " match : " + curMatch + "/" + match.Index + "-" + match.Length);
+					// Console.WriteLine (match.Index + " match : " + curMatch + "/" + match.Index + "-" + match.Length);
 					var matchEndOffset = match.Index + match.Length;
 					if (curSegmentOffset < match.Index) {
 						segments.Add (new ColoredSegment (curSegmentOffset, match.Index - curSegmentOffset, ScopeStack));

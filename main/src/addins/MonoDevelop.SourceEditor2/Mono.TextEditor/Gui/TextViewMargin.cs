@@ -1100,12 +1100,18 @@ namespace Mono.TextEditor
 			int i = 0;
 			while (i < segments.Count && segments [i].EndOffset <= offset)
 				i++;
+			var endOffset = offset + length;
+			
 			if (i < segments.Count && segments [i].Offset < offset) {
-				result.Add (segments [i].WithOffsetAndLength (offset, segments [i].EndOffset - offset));
+				if (segments [i].EndOffset <= endOffset) {
+					result.Add (segments [i].WithOffsetAndLength (offset, segments [i].EndOffset - offset));
+				} else {
+					result.Add (segments [i].WithOffsetAndLength (offset, endOffset - offset));
+					return result;
+				}
 				i++;
 			}
 
-			var endOffset = offset + length;
 			while (i < segments.Count && segments [i].EndOffset <= endOffset) {
 				result.Add (segments [i]);
 				i++;
