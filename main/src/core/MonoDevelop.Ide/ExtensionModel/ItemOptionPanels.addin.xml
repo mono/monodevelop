@@ -71,7 +71,7 @@
 		</Condition>
 		<Condition id="ItemType" value="Project">
 			<Condition id="SupportsTarget" value="RunCodeAnalysis">
-				<Section id = "CodeAnalysis" _label="Code Analysis">
+				<Section id = "CodeAnalysis" _label="Code Analysis" icon="md-prefs-code-analysis">
 					<Panel id = "CodeAnalysisPanel" _label="Code Analysis" class = "MonoDevelop.Ide.Projects.OptionPanels.CodeAnalysisPanel" />
 				</Section>
 			</Condition>
