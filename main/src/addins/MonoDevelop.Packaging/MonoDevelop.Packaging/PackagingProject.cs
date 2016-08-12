@@ -238,6 +238,66 @@ namespace MonoDevelop.Packaging
 
 			return text;
 		}
+
+		protected override void OnReferenceAddedToProject (ProjectReferenceEventArgs e)
+		{
+			base.OnReferenceAddedToProject (e);
+
+			DotNetProject project = GetDotNetProject (e.ProjectReference);
+			if (project != null) {
+				AddCommonPackagingImports (project);
+			}
+		}
+
+		DotNetProject GetDotNetProject (ProjectReference projectReference)
+		{
+			if (ParentSolution == null)
+				return null;
+
+			var project = projectReference.ResolveProject (ParentSolution) as DotNetProject;
+			if (!(project is PackagingProject))
+				return project;
+
+			return null;
+		}
+
+		protected override void OnReferenceRemovedFromProject (ProjectReferenceEventArgs e)
+		{
+			base.OnReferenceRemovedFromProject (e);
+
+			DotNetProject project = GetDotNetProject (e.ProjectReference);
+			if (project != null) {
+				RemoveCommonPackagingImports (project);
+			}
+		}
+
+		readonly string packagingCommonProps = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.props";
+		readonly string packagingCommonTargets = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.targets";
+
+		void AddCommonPackagingImports (DotNetProject project)
+		{
+			bool modified = false;
+
+			if (!project.MSBuildProject.ImportExists (packagingCommonProps)) {
+				project.MSBuildProject.AddImportIfMissing (packagingCommonProps, true, null);
+				modified = true;
+			}
+
+			if (!project.MSBuildProject.ImportExists (packagingCommonTargets)) {
+				project.MSBuildProject.AddImportIfMissing (packagingCommonTargets, false, null);
+				modified = true;
+			}
+
+			if (modified)
+				project.SaveAsync (new ProgressMonitor ());
+		}
+
+		void RemoveCommonPackagingImports (DotNetProject project)
+		{
+			project.MSBuildProject.RemoveImportIfExists (packagingCommonProps);
+			project.MSBuildProject.RemoveImportIfExists (packagingCommonTargets);
+			project.SaveAsync (new ProgressMonitor ());
+		}
 	}
 }
 
