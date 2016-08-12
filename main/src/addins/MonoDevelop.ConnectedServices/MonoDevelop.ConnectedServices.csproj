@@ -117,9 +117,6 @@
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
       <LogicalName>MonoDevelop.ConnectedServices.addin.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui.SolutionPad\SolutionPadExtension.addin.xml">
-      <LogicalName>SolutionPadExtension.addin.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="DebugService\TestDebugService.addin.xml">
       <LogicalName>TestDebugService.addin.xml</LogicalName>
     </EmbeddedResource>
