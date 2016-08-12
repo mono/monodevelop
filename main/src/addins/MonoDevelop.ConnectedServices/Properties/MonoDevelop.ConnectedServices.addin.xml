@@ -55,4 +55,12 @@
 	
 	<!-- end Solution Pad -->
 
+	<!-- TestDebugServiceProvider -->
+	
+	<Extension path = "/MonoDevelop/ConnectedServices/ServiceProviders">
+		<ConnectedServiceProvider type="MonoDevelop.ConnectedServices.DebugService.TestDebugServiceProvider"/>
+	</Extension>
+
+	<!-- end TestDebugServiceProvider -->
+
 </ExtensionModel>

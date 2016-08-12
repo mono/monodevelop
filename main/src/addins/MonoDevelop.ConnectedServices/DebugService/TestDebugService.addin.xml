@@ -1,7 +1,0 @@
-﻿<ExtensionModel>
-
-	<Extension path = "/MonoDevelop/ConnectedServices/ServiceProviders">
-		<ConnectedServiceProvider type="MonoDevelop.ConnectedServices.DebugService.TestDebugServiceProvider"/>
-	</Extension>
-
-</ExtensionModel>
