@@ -29,7 +29,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		protected virtual Widget GetSectionWidget()
 		{
-			return this.Section.GetSectionWidget ();
+			var widget = this.Section.GetSectionWidget ().GetNativeWidget<Gtk.Widget> ();
+			return Xwt.Toolkit.CurrentEngine.WrapWidget (widget);
 		}
 
 		/// <summary>

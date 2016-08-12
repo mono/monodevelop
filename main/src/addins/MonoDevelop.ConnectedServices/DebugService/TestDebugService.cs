@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Xwt;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.ConnectedServices.DebugService
 {
@@ -56,21 +57,34 @@ namespace MonoDevelop.ConnectedServices.DebugService
 		{
 		}
 
-		public override Widget GetSectionWidget ()
+		public override Control GetSectionWidget ()
+		{
+			return new TestConfigurationWidget ();
+		}
+
+		protected override Task OnAddToProject ()
+		{
+			return Task.FromResult (true);
+		}
+	}
+
+	sealed class TestConfigurationWidget : Control
+	{
+		Widget content;
+		
+		public TestConfigurationWidget ()
 		{
 			var vbox = new VBox ();
 
 			var label = new Label { Text = "this configures a setting" };
 			vbox.PackStart (label);
 
-
-
-			return vbox;	
+			content = vbox;
 		}
 
-		protected override Task OnAddToProject ()
+		protected override object CreateNativeWidget<T> ()
 		{
-			return Task.FromResult (true);
+			return content.Surface.NativeWidget;
 		}
 	}
 #endif

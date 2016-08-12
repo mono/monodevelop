@@ -1,4 +1,5 @@
 using System;
+using MonoDevelop.Components;
 using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
@@ -6,13 +7,17 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// <summary>
 	/// Default widget that displays the dependencies for a service
 	/// </summary>
-	class DependenciesSectionWidget : VBox
+	class DependenciesSectionWidget : Control
 	{
 		readonly IConfigurationSection section;
+		readonly VBox widget;
 
 		public DependenciesSectionWidget (IConfigurationSection section) 
 		{
 			this.section = section;
+
+			widget = new VBox ();
+
 			this.Build ();
 		}
 
@@ -21,14 +26,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			// list the dependecies in a tree
 
 			if (this.section.Service.Dependencies.Length == 0) {
-				this.PackStart (new Label { Text = "None" });
+				widget.PackStart (new Label { Text = "None" });
 				return;
 			}
 
 			foreach (var dependency in this.section.Service.Dependencies) {
-				this.PackStart (new Label { Text = dependency.DisplayName });
-				this.PackStart (new Label { Text = dependency.DisplayName + " is " + (dependency.IsAdded ? "Added" : " Not added") });
+				widget.PackStart (new Label { Text = dependency.DisplayName });
+				widget.PackStart (new Label { Text = dependency.DisplayName + " is " + (dependency.IsAdded ? "Added" : " Not added") });
 			}
+		}
+
+		protected override object CreateNativeWidget<T> ()
+		{
+			return widget.Surface.NativeWidget;
 		}
 	}
 }

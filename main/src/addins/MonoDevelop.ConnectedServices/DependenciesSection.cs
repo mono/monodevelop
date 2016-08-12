@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Xwt;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -52,7 +52,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the widget to display to the user
 		/// </summary>
-		public Widget GetSectionWidget ()
+		public Control GetSectionWidget ()
 		{
 			return new DependenciesSectionWidget (this);
 		}

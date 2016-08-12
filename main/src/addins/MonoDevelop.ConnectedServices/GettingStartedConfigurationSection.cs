@@ -1,6 +1,6 @@
 using System;
-using Xwt;
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -16,7 +16,7 @@ namespace MonoDevelop.ConnectedServices
 
 		public int SnippetCount { get; private set; }
 
-		public override Widget GetSectionWidget ()
+		public override Control GetSectionWidget ()
 		{
 			// TODO: create a wiget that contains the sections of code snippets that have been set in tabs
 			throw new NotImplementedException ();

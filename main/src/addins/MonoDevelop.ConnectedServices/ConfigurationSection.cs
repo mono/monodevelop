@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Xwt;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -51,7 +51,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the widget to display to the user
 		/// </summary>
-		public abstract Widget GetSectionWidget ();
+		public abstract Control GetSectionWidget ();
 
 		/// <summary>
 		/// Performs the tasks necessary to add the components that this section represents to the project
