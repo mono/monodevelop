@@ -44,19 +44,9 @@ namespace MonoDevelop.Ide.GettingStarted
 
 		public static void ShowGettingStarted (Project project)
 		{
-			GettingStartedViewContent view;
-			foreach (var doc in IdeApp.Workbench.Documents) {
-				view = doc.PrimaryView.GetContent<GettingStartedViewContent> ();
-				if (view != null && view.Project == project) {
-					view.WorkbenchWindow.SelectWindow ();
-					return;
-				}
-			}
-
 			var provider = project.GetGettingStartedProvider ();
 			if (provider != null) {
-				var vc = new GettingStartedViewContent (project, provider);
-				IdeApp.Workbench.OpenDocument (vc, true);
+				provider.ShowGettingStarted (project);
 			}
 		}
 	}

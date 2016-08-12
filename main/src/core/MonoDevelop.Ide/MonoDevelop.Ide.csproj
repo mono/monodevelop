@@ -8563,6 +8563,7 @@
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProjectExtension.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\IGettingStartedProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProviderBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
