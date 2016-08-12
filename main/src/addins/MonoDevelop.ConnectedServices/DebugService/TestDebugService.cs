@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Gtk;
+using Xwt;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -61,7 +61,7 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			var vbox = new VBox ();
 
 			var label = new Label { Text = "this configures a setting" };
-			vbox.PackStart (label, false, false, 0);
+			vbox.PackStart (label);
 
 
 

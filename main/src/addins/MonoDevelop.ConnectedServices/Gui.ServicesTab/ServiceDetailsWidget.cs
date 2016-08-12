@@ -1,5 +1,5 @@
 using System;
-using Gtk;
+using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
@@ -26,11 +26,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			// test code
 			var label = new Label ("service: " + service.DisplayName);
-			this.PackStart (label, false, false, 0);
+			this.PackStart (label);
 
 			this.Build ();
-
-			this.ShowAll ();
 		}
 
 		/// <summary>
@@ -50,7 +48,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			var vbox = new VBox ();
 
 			// always add the dependencies
-			vbox.PackStart (BuildDependencySection (service), false, false, 0);
+			vbox.PackStart (BuildDependencySection (service));
 
 			// now add the services sections
 			foreach (var section in service.Sections) {
@@ -71,7 +69,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			// TODO: make this pretty
 			var label = new Label ("details");
-			this.PackStart (label, false, false, 0);
+			this.PackStart (label);
 
 			var btn = new Button () { Label = "Add" };
 			btn.Clicked += (sender, e) => {
@@ -80,9 +78,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 			};
 
-			this.PackStart (btn, false, false, 10);
+			this.PackStart (btn);
 
-			this.PackStart (BuildSections (this.service), false, false, 0);
+			this.PackStart (BuildSections (this.service));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 using System;
-using Gtk;
+using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
@@ -21,13 +21,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			// list the dependecies in a tree
 
 			if (this.section.Service.Dependencies.Length == 0) {
-				this.PackStart (new Label { Text = "None" }, false, false, 0);
+				this.PackStart (new Label { Text = "None" });
 				return;
 			}
 
 			foreach (var dependency in this.section.Service.Dependencies) {
-				this.PackStart (new Label { Text = dependency.DisplayName }, false, false, 0);
-				this.PackStart (new Label { Text = dependency.DisplayName + " is " + (dependency.IsAdded ? "Added" : " Not added") }, false, false, 0);
+				this.PackStart (new Label { Text = dependency.DisplayName });
+				this.PackStart (new Label { Text = dependency.DisplayName + " is " + (dependency.IsAdded ? "Added" : " Not added") });
 			}
 		}
 	}

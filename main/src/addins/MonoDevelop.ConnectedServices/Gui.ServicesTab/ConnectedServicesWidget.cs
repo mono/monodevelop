@@ -1,12 +1,12 @@
 using System;
-using Gtk;
+using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
 	/// <summary>
-	/// Gtk host for the gallery and service details widgets
+	/// Xwt host for the gallery and service details widgets
 	/// </summary>
-	class ConnectedServicesWidget : EventBox
+	class ConnectedServicesWidget : Widget
 	{
 		/*
 		 * This widget has a container to hold the current widget (services gallery or service details)
@@ -19,7 +19,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		public ConnectedServicesWidget ()
 		{
-			this.Build ();
+			container = new VBox ();
+			Content = container;
 		}
 
 		/// <summary>
@@ -27,20 +28,17 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void ShowGallery(IConnectedService[] services)
 		{
-			if (this.details != null && this.details.Parent != null) {
-				this.container.Remove (this.details);
+			if (details?.Parent == container)
+				container.Remove (details);
+
+			if (gallery == null)
+				gallery = new ServicesGalleryWidget ();
+
+			if (gallery.Parent == null) {
+				container.PackStart (gallery);
 			}
 
-			if (this.gallery == null) {
-				this.gallery = new ServicesGalleryWidget ();
-			}
-
-			if (this.gallery.Parent == null) {
-				this.container.Add (this.gallery);
-				this.container.ShowAll ();
-			}
-
-			this.gallery.LoadServices (services);
+			gallery.LoadServices (services);
 		}
 
 		/// <summary>
@@ -48,30 +46,16 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void ShowServiceDetails (IConnectedService service)
 		{
-			if (this.gallery != null && this.gallery.Parent != null) {
-				this.container.Remove (this.gallery);
-			}
+			if (gallery?.Parent == container)
+				container.Remove (gallery);
 
-			if (this.details == null) {
-				this.details = new ServiceDetailsWidget ();
-			}
+			if (details == null)
+				details = new ServiceDetailsWidget ();
 
-			if (this.details.Parent == null) {
-				this.container.Add (this.details);
-				this.container.ShowAll ();
-			}
+			if (details.Parent == null)
+				container.PackStart (details);
 
-			this.details.LoadService (service);
-		}
-
-		/// <summary>
-		/// Builds the widget
-		/// </summary>
-		void Build()
-		{
-			this.container = new VBox ();
-
-			this.Add (this.container);
+			details.LoadService (service);
 		}
 	}
 }

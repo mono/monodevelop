@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Gtk;
+using Xwt;
 
 namespace MonoDevelop.ConnectedServices
 {

@@ -1,5 +1,5 @@
 using System;
-using Gtk;
+using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
@@ -18,10 +18,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void LoadServices(IConnectedService[] services)
 		{
+			
 			// test code
 			foreach (var service in services) {
 				var label = new Label ("service: " + service.DisplayName);
-				this.PackStart (label, false, false, 0);
+				this.PackStart (label);
 
 				var svc = service;
 				var btn = new Button () { Label = "Add " + service.DisplayName };
@@ -33,10 +34,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					}
 				};
 
-				this.PackStart (btn, false, false, 10);
+				this.PackStart (btn);
 			}
-
-			this.ShowAll ();
 		}
 
 		/// <summary>
@@ -45,7 +44,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void Build ()
 		{
 			var label = new Label ("gallery");
-			this.PackStart (label, false, false, 0);
+			this.PackStart (label);
 		}
 	}
 }

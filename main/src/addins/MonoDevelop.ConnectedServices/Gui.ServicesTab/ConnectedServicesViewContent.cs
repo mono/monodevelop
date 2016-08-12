@@ -4,13 +4,14 @@ using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
+using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
 	/// <summary>
 	/// ViewContent host for the services gallery and service details widgets
 	/// </summary>
-	class ConnectedServicesViewContent : ViewContent
+	class ConnectedServicesViewContent : AbstractXwtViewContent
 	{
 		ConnectedServicesWidget widget;
 
@@ -19,10 +20,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			this.Project = project;
 			this.ContentName = string.Format ("{0} - {1}", GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName), project.Name); 
 			widget = new ConnectedServicesWidget ();
-			widget.Show ();
 		}
 
-		public override Control Control {
+		public override Widget Widget {
 			get {
 				return widget;
 			}

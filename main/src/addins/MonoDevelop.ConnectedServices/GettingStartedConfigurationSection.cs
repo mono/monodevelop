@@ -1,5 +1,5 @@
 using System;
-using Gtk;
+using Xwt;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.ConnectedServices

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Gtk;
+using Xwt;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
 using MonoDevelop.Core;
 

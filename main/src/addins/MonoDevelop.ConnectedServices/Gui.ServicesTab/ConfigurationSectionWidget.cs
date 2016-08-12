@@ -1,5 +1,5 @@
 using System;
-using Gtk;
+using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
@@ -46,13 +46,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void Build()
 		{
 			var label = new Label { Text = this.Section.DisplayName };
-			this.PackStart (label, false, false, 0);
+			this.PackStart (label);
 
 			// TODO: expander
 
 			if (this.Section.CanBeAdded) {
 				var addBtn = new Button () { Label = "add '" + this.Section.DisplayName + "' to the project" };
-				this.PackStart (addBtn, false, false, 0);
+				this.PackStart (addBtn);
 				addBtn.Clicked += this.AddBtnClicked;
 
 				this.Section.Added += (sender, e) => {
