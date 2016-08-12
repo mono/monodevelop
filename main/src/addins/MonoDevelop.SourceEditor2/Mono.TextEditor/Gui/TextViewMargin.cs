@@ -1459,9 +1459,11 @@ namespace Mono.TextEditor
 				return;
 			xPos = System.Math.Floor (xPos);
 			cr.Rectangle (xPos, y, width, lineHeight);
-			var color = SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.LineHighlight);
-			cr.SetSourceColor (color);
+			cr.SetSourceColor (SyntaxHighlightingService.GetColor (textEditor.EditorTheme, EditorThemeColors.Background));
+			cr.FillPreserve ();
+			cr.SetSourceColor (CurrentLineColor);
 			cr.Fill ();
+
 			//double halfLine = (cr.LineWidth / 2.0);
 			//cr.MoveTo (xPos, y + halfLine);
 			//cr.LineTo (xPos + width, y + halfLine);

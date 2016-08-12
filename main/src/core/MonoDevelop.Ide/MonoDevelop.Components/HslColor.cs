@@ -173,6 +173,8 @@ namespace MonoDevelop.Components
 
 		public HslColor (double r, double g, double b, double a = 1.0) : this ()
 		{
+			this.Alpha = a;
+
 			double v = System.Math.Max (r, g);
 			v = System.Math.Max (v, b);
 
@@ -204,7 +206,6 @@ namespace MonoDevelop.Components
 			}
 			this.H /= 6.0;
 
-			this.Alpha = a;
 		}
 
 		public HslColor (Color color) : this (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue, color.Blue / (double)ushort.MaxValue)
@@ -218,6 +219,15 @@ namespace MonoDevelop.Components
 
 		public static HslColor Parse (string color)
 		{
+			if (color.Length == 9 && color.StartsWith ("#", StringComparison.Ordinal)) {
+				double r = ((double)int.Parse (color.Substring (1, 2), System.Globalization.NumberStyles.HexNumber)) / 255.0;
+				double g = ((double)int.Parse (color.Substring (3, 2), System.Globalization.NumberStyles.HexNumber)) / 255.0;
+				double b = ((double)int.Parse (color.Substring (5, 2), System.Globalization.NumberStyles.HexNumber)) / 255.0;
+				double a = ((double)int.Parse (color.Substring (7, 2), System.Globalization.NumberStyles.HexNumber)) / 255.0;
+				Console.WriteLine ("a:" + a);
+				return new HslColor (r, g, b, a);
+			}
+
 			Gdk.Color col = new Gdk.Color (0, 0, 0);
 			Gdk.Color.Parse (color, ref col);
 			return (HslColor)col;

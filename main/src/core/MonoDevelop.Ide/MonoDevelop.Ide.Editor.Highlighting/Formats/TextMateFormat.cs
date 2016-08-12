@@ -46,7 +46,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var contentArray = dictionary ["settings"] as PArray;
 			if (contentArray == null || contentArray.Count == 0)
 				return new EditorTheme (name);
-
 			var settings = new List<ThemeSetting> ();
 			for (int i = 0; i < contentArray.Count; i++) {
 				var dict = contentArray [i] as PDictionary;
@@ -172,9 +171,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		static ThemeSetting CalculateMissingColors (ThemeSetting themeSetting)
 		{
 			var settings = (Dictionary<string, string>)themeSetting.Settings;
-			settings [EditorThemeColors.LineNumbersBackground] = HslColor.Parse (settings [EditorThemeColors.Background]).AddLight (0.01).ToPangoString ();
-			settings [EditorThemeColors.LineNumbers] = HslColor.Parse (settings [EditorThemeColors.Foreground]).AddLight (-0.1).ToPangoString ();
+			var bgColor = HslColor.Parse (settings [EditorThemeColors.Background]);
+			var darkModificator = HslColor.Brightness (bgColor) < 0.5 ? 1 : -1;
+			// copy all missing settings from main template theme
+			var templateTheme = SyntaxHighlightingService.GetEditorTheme (darkModificator == 1 ? EditorTheme.DefaultDarkThemeName : EditorTheme.DefaultThemeName);
+			foreach (var kv in templateTheme.Settings [0].Settings) {
+				if (settings.ContainsKey (kv.Key))
+					continue;
+				settings.Add (kv.Key, kv.Value);
+			}
 
+			// do some better best-fit calculations
+			settings [EditorThemeColors.LineNumbersBackground] = bgColor.AddLight (0.01 * darkModificator).ToPangoString ();
+			settings [EditorThemeColors.LineNumbers] = HslColor.Parse (settings [EditorThemeColors.Foreground]).AddLight (-0.1 * darkModificator).ToPangoString ();
 			return new ThemeSetting (themeSetting.Name, themeSetting.Scopes, settings);
 		}
 

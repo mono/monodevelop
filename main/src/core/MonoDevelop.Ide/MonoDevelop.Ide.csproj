@@ -8377,8 +8377,6 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextPasteHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentLocation.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlightingService.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\OldFormat.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColorDescriptionAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\IStreamProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateExtensionNodeLoader.cs" />
@@ -8409,6 +8407,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IUnitTestMarker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColorDescriptionAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextMarkerFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorImpl.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextMarkerFactory.cs" />
@@ -8586,7 +8585,6 @@
     <Compile Include="MonoDevelop.Ide.Editor\Selection.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\ErrorDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide\LocalizationService.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Sublime3Format.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlighting.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ISyntaxHighlighting.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RegexEngine\Regex.cs" />
@@ -8616,7 +8614,6 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\RegexEngine\compiledregexrunnerfactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\PObject.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorTheme.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TextMateFormat.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlightingDefinition.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TmSetting.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorThemeColors.cs" />
@@ -8643,6 +8640,9 @@
     <Compile Include="MonoDevelop.Components\InformationPopoverWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\ShowTextMateScopesHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TooltipWindowOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Formats\OldFormat.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Formats\Sublime3Format.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Formats\TextMateFormat.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -8698,6 +8698,7 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\" />
     <Folder Include="MonoDevelop.Ide.Editor.TextMate\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\Formats\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
