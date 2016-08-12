@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextEditor.cs
 //
 // Author:
@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Editor.Projection;
 using Xwt;
 using System.Collections.Immutable;
 using MonoDevelop.Components.Commands;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -1457,6 +1458,11 @@ namespace MonoDevelop.Ide.Editor
 		public void ShowTooltipWindow (Control window, TooltipWindowOptions options = null)
 		{
 			textEditorImpl.ShowTooltipWindow (window, options);
+		}
+
+		public Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		{
+			return textEditorImpl.GetScopeStackAsync (offset, cancellationToken);
 		}
 	}
 }

@@ -97,14 +97,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static readonly string UnderlineWarning = "underlineWarning";
 		public static readonly string UnderlineSuggestion = "underlineSuggestion";
 		public static readonly string Link = "link";
-		public static readonly string LineNumbersBackground = "gutterBackground";
+		public static readonly string LineNumbersBackground = "gutter";
 		public static readonly string CollapsedText = "collapsedText";
 		public static readonly string FoldLine = "foldLine";
 		public static readonly string FoldCross = "foldCross";
 		public static readonly string FoldCross2 = "foldCrossBackground";
 		public static readonly string QuickDiffChanged = "quickdiffChanged";
 		public static readonly string QuickDiffDirty = "quickdiffDirty";
-		public static readonly string LineNumbers = "lineNumbers";
+		public static readonly string LineNumbers = "gutterForeground";
 		public static readonly string IndicatorMargin = "indicatorMargin";
 		public static readonly string IndicatorMarginSeparator = "indicatorSeparator";
 		public static readonly string BreakpointMarker = "breakpointMarker";
@@ -131,24 +131,29 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		// Semantic
 
-		public static readonly string UserTypes = "entity.name.type";
-		public static readonly string UserTypesValueTypes = "entity.name.type.struct";
-		public static readonly string UserTypesInterfaces = "entity.name.type.interface";
-		public static readonly string UserTypesEnums = "entity.name.type.enum";
-		public static readonly string UserTypesTypeParameters = "entity.name.type.typeparameter";
-		public static readonly string UserTypesDelegates = "entity.name.type.delegate";
-		public static readonly string UserTypesMutable = "entity.name.type.mutable";
+		public static readonly string UserTypes = "entity.name.class";
+		public static readonly string UserTypesValueTypes = "entity.name.struct";
+		public static readonly string UserTypesInterfaces = "entity.name.interface";
+		public static readonly string UserTypesEnums = "entity.name.enum";
+		public static readonly string UserTypesTypeParameters = "entity.name.typeparameter";
+		public static readonly string UserTypesDelegates = "entity.name.delegate";
+		public static readonly string UserTypesMutable = "entity.name.mutable";
 
 		public static readonly string UserFieldDeclaration = "entity.name.field";
 		public static readonly string UserFieldUsage = "entity.name.field.usage";
+
 		public static readonly string UserPropertyDeclaration = "entity.name.property";
 		public static readonly string UserPropertyUsage = "entity.name.property.usage";
+
 		public static readonly string UserEventDeclaration = "entity.name.event";
 		public static readonly string UserEventUsage = "entity.name.event.usage";
+
 		public static readonly string UserMethodDeclaration = "entity.name.function";
 		public static readonly string UserMethodUsage = "entity.name.function.usage";
+
 		public static readonly string UserParameterDeclaration = "entity.name.parameter";
 		public static readonly string UserParameterUsage = "entity.name.parameter.usage";
+
 		public static readonly string UserVariableDeclaration = "entity.name.local";
 		public static readonly string UserVariableUsage = "entity.name.local.usage";
 	}

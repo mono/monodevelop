@@ -42,7 +42,8 @@ namespace MonoDevelop.Ide.Editor.TextMate
 			if (editor == null)
 				return;
 
-			var scopeStack = editor.SyntaxHighlighting.GetScopeStackAsync (editor.CaretOffset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
+
+			var scopeStack = editor.GetScopeStackAsync (editor.CaretOffset, CancellationToken.None).WaitAndGetResult (CancellationToken.None);
 
 			var sb = new StringBuilder ();
 			sb.AppendLine ();

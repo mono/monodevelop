@@ -61,6 +61,7 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -3554,6 +3555,11 @@ namespace MonoDevelop.SourceEditor
 			var p = TextEditor.LocationToPoint (caret.Location);
 			Mono.TextEditor.TooltipProvider.ShowAndPositionTooltip (TextEditor, tooltipWindow, p.X, p.Y, tooltipWindow.SizeRequest ().Width, 0.5);
 			TextEditor.TextArea.SetTooltip (tooltipWindow);
+		}
+
+		Task<ImmutableStack<string>> ITextEditorImpl.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		{
+			return TextEditor.SyntaxHighlighting.GetScopeStackAsync (offset, cancellationToken);
 		}
 	}
 } 

@@ -224,7 +224,6 @@ namespace MonoDevelop.Components
 				double g = ((double)int.Parse (color.Substring (3, 2), System.Globalization.NumberStyles.HexNumber)) / 255.0;
 				double b = ((double)int.Parse (color.Substring (5, 2), System.Globalization.NumberStyles.HexNumber)) / 255.0;
 				double a = ((double)int.Parse (color.Substring (7, 2), System.Globalization.NumberStyles.HexNumber)) / 255.0;
-				Console.WriteLine ("a:" + a);
 				return new HslColor (r, g, b, a);
 			}
 

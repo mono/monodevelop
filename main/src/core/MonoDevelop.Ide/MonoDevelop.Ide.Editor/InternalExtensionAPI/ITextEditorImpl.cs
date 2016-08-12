@@ -1,4 +1,4 @@
-﻿//
+//
 // ITextEditorImpl.cs
 //
 // Author:
@@ -32,6 +32,8 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Components;
 using Xwt;
 using System.Collections.Immutable;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -224,5 +226,6 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler FocusLost;
 
 		void ShowTooltipWindow (Control window, TooltipWindowOptions options);
+		Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
 	}
 }

@@ -152,6 +152,27 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return result;
 		}
 
+		string GetSetting (string key, ImmutableStack<string> scopeStack)
+		{
+			string result = null;
+			foreach (var scope in scopeStack) {
+				var found = false;
+				foreach (var setting in settings) {
+					if (setting.Scopes.Count == 0 || setting.Scopes.Any (s => IsCompatibleScope (s.Trim (), scope))) {
+						string tryC;
+						if (setting.TryGetSetting (key, out tryC)) {
+							found = true;
+							result = tryC;
+						}
+					}
+				}
+				if (found) {
+					return result;
+				}
+			}
+			return result;
+		}
+
 		public bool TryGetColor (string scope, string key, out HslColor result)
 		{
 			bool found = false;
@@ -191,11 +212,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal ChunkStyle GetChunkStyle (ImmutableStack<string> scope)
 		{
+			var fontStyle = GetSetting ("fontStyle", scope);
+
 			return new ChunkStyle () {
 				ScopeStack = scope,
 				Foreground = GetColor (EditorThemeColors.Foreground, scope),
-				Background = GetColor (EditorThemeColors.Background, scope)
+				Background = GetColor (EditorThemeColors.Background, scope),
+				FontStyle = ConvertFontStyle (fontStyle)
 			};
+		}
+
+		FontStyle ConvertFontStyle (string fontStyle)
+		{
+			if (fontStyle == "italic")
+				return FontStyle.Italic;
+			return FontStyle.Normal;
 		}
 
 		internal Cairo.Color GetForeground (ChunkStyle chunkStyle)

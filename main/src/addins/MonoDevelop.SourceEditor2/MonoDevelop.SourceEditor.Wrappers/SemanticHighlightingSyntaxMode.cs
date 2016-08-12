@@ -34,6 +34,7 @@ using Gtk;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -182,9 +183,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return new HighlightedLine (segments);
 		}
 
-		Task<ImmutableStack<string>> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
+		async Task<ImmutableStack<string>> ISyntaxHighlighting.GetScopeStackAsync (int offset, CancellationToken cancellationToken)
 		{
-			return syntaxMode.GetScopeStackAsync (offset, cancellationToken);
+			var line = editor.GetLineByOffset (offset);
+
+			foreach (var seg in (await ((ISyntaxHighlighting)this).GetHighlightedLineAsync (line, cancellationToken)).Segments) {
+				if (seg.Contains (offset))
+					return seg.ScopeStack;
+			}
+			return await syntaxMode.GetScopeStackAsync (offset, cancellationToken);
 		}
 	}
 }

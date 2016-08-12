@@ -53,12 +53,87 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					continue;
 				var themeSetting = LoadThemeSetting (dict);
 				if (i == 0)
-					themeSetting = CalculateMissingColors (themeSetting);
+					themeSetting = CalculateMissingDefaultColors (themeSetting);
 				settings.Add (themeSetting);
 			}
+
 			var uuid = (PString)dictionary ["uuid"];
 
+			var methodDecl = GetSetting (settings, EditorThemeColors.UserMethodDeclaration);
+			var methodUsage = GetSetting (settings, EditorThemeColors.UserMethodUsage);
+			if (methodUsage == null && methodDecl != null) {
+				settings.Add (new ThemeSetting (
+					"User Method(Usage)",
+					new List<string> { EditorThemeColors.UserMethodUsage },
+					settings [0].Settings
+				));
+			}
+			ConvertSetting (settings, "storage.type", EditorThemeColors.UserTypesInterfaces);
+			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypes);
+			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypesEnums);
+			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypesMutable);
+			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypesDelegates);
+			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypesValueTypes);
+			ConvertSetting (settings, "entity.name", EditorThemeColors.UserTypesTypeParameters);
+			ConvertSetting (settings, "support.constant", "markup.other");
+			ConvertSetting (settings, "constant.character", "meta.preprocessor");
+			settings.Add (new ThemeSetting ("", new List<string> { "meta.preprocessor.region.name" }, settings [0].Settings));
+
+			// set all remaining semantic colors to default.
+			var semanticColors = new [] {
+				EditorThemeColors.UserTypes,
+				EditorThemeColors.UserTypesValueTypes,
+				EditorThemeColors.UserTypesInterfaces,
+				EditorThemeColors.UserTypesEnums,
+				EditorThemeColors.UserTypesTypeParameters,
+				EditorThemeColors.UserTypesDelegates,
+				EditorThemeColors.UserTypesMutable,
+				EditorThemeColors.UserFieldDeclaration,
+				EditorThemeColors.UserFieldUsage,
+				EditorThemeColors.UserPropertyDeclaration,
+				EditorThemeColors.UserPropertyUsage,
+				EditorThemeColors.UserEventDeclaration,
+				EditorThemeColors.UserEventUsage,
+				EditorThemeColors.UserMethodDeclaration,
+				EditorThemeColors.UserMethodUsage,
+				EditorThemeColors.UserParameterDeclaration,
+				EditorThemeColors.UserParameterUsage,
+				EditorThemeColors.UserVariableDeclaration,
+				EditorThemeColors.UserVariableUsage
+			};
+			foreach (var semanticColor in semanticColors) {
+				if (GetSetting (settings, semanticColor) == null) {
+					settings.Add (new ThemeSetting ("", new List<string> { semanticColor }, settings [0].Settings));
+				}
+			}
+
 			return new EditorTheme (name, settings, uuid);
+		}
+
+		static void ConvertSetting (List<ThemeSetting> settings, string fromSetting, string toSetting)
+		{
+			var fs = GetSetting (settings, fromSetting, false);
+			var ts = GetSetting (settings, toSetting);
+			if (ts == null && fs != null) {
+				settings.Add (new ThemeSetting (
+					"Copied From (" + fs + ")",
+					new List<string> { toSetting },
+					fs.Settings
+				));
+			}
+		}
+
+		static ThemeSetting GetSetting (List<ThemeSetting> settings, string scope, bool exact = true)
+		{
+			ThemeSetting result = null;
+			foreach (var s in settings.Skip (1)) {
+				if (s.Scopes.Any (a => exact ? a == scope : EditorTheme.IsCompatibleScope (a, scope))) {
+					if (result == null || result.Scopes.Last ().Length < s.Scopes.Last ().Length)
+						result = s;
+				}
+			}
+			
+			return result;
 		}
 
 		public static void Save (TextWriter writer, EditorTheme theme)
@@ -109,7 +184,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (dict.TryGetValue ("name", out val))
 				name = ((PString)val).Value;
 			if (dict.TryGetValue ("scope", out val)) {
-				scopes.AddRange (((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+				scopes.AddRange (((PString)val).Value.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select (s => s.Trim ()));
 			}
 			if (dict.TryGetValue ("settings", out val)) {
 				var settingsDictionary = val as PDictionary;
@@ -168,11 +243,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new TmSnippet (name, scopes, content, tabTrigger);
 		}
 
-		static ThemeSetting CalculateMissingColors (ThemeSetting themeSetting)
+		static ThemeSetting CalculateMissingDefaultColors (ThemeSetting themeSetting)
 		{
 			var settings = (Dictionary<string, string>)themeSetting.Settings;
 			var bgColor = HslColor.Parse (settings [EditorThemeColors.Background]);
 			var darkModificator = HslColor.Brightness (bgColor) < 0.5 ? 1 : -1;
+
+			// do some better best-fit calculations
+			if (!settings.ContainsKey (EditorThemeColors.LineNumbersBackground))
+				settings [EditorThemeColors.LineNumbersBackground] = bgColor.AddLight (0.01 * darkModificator).ToPangoString ();
+			if (!settings.ContainsKey (EditorThemeColors.IndicatorMarginSeparator))
+				settings [EditorThemeColors.IndicatorMarginSeparator] = bgColor.AddLight (0.03 * darkModificator).ToPangoString ();
+			if (!settings.ContainsKey (EditorThemeColors.LineNumbers))
+				settings [EditorThemeColors.LineNumbers] = HslColor.Parse (settings [EditorThemeColors.Foreground]).AddLight (-0.1 * darkModificator).ToPangoString ();
+			if (!settings.ContainsKey (EditorThemeColors.IndicatorMargin))
+				settings [EditorThemeColors.IndicatorMargin] = bgColor.AddLight (0.02 * darkModificator).ToPangoString ();
+
 			// copy all missing settings from main template theme
 			var templateTheme = SyntaxHighlightingService.GetEditorTheme (darkModificator == 1 ? EditorTheme.DefaultDarkThemeName : EditorTheme.DefaultThemeName);
 			foreach (var kv in templateTheme.Settings [0].Settings) {
@@ -181,9 +267,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				settings.Add (kv.Key, kv.Value);
 			}
 
-			// do some better best-fit calculations
-			settings [EditorThemeColors.LineNumbersBackground] = bgColor.AddLight (0.01 * darkModificator).ToPangoString ();
-			settings [EditorThemeColors.LineNumbers] = HslColor.Parse (settings [EditorThemeColors.Foreground]).AddLight (-0.1 * darkModificator).ToPangoString ();
 			return new ThemeSetting (themeSetting.Name, themeSetting.Scopes, settings);
 		}
 

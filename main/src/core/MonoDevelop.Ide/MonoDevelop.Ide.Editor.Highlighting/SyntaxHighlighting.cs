@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var line = Document.GetLineByOffset (offset);
 			var state = GetState (line);
 
-			if (line.Offset == offset) 
+			if (line.Offset == offset)
 				return state.ScopeStack;
 
 			var high = new Highlighter (this, state);
