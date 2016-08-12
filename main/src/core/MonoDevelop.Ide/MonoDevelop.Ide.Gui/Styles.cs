@@ -1,4 +1,4 @@
- //
+//
 // Styles.cs
 //
 // Author:
@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Components;
 using Xwt.Drawing;
 using System.Security.Policy;
+using MonoDevelop.Core.StringParsing;
 
 #if MAC
 using AppKit;
@@ -620,6 +621,15 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
 			NewProjectDialog.TemplateLanguageButtonBackground = SecondaryBackgroundDarkerColor;
 			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#6e6e6e");
+		}
+
+		static StylesStringTagModel tagModel;
+
+		public static IStringTagModel GetStringTagModel ()
+		{
+			if (tagModel == null)
+				tagModel = new StylesStringTagModel ();
+			return tagModel;
 		}
 	}
 }
