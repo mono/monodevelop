@@ -588,10 +588,9 @@ namespace MonoDevelop.SourceEditor
 					if (task.Severity == TaskSeverity.Error || task.Severity == TaskSeverity.Warning) {
 						if (IdeApp.Preferences.ShowMessageBubbles == ShowMessageBubbles.ForErrors && task.Severity == TaskSeverity.Warning)
 							continue;
+						task.Completed = IdeApp.Preferences.DefaultHideMessageBubbles;
 						var errorTextMarker = new MessageBubbleTextMarker (messageBubbleCache, task, task.Severity == TaskSeverity.Error, task.Description);
 						errorMarkers.Add (errorTextMarker);
-
-						errorTextMarker.IsVisible = !IdeApp.Preferences.DefaultHideMessageBubbles;
 					}
 				}
 				return errorMarkers;
