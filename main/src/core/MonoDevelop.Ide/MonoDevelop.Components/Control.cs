@@ -154,6 +154,23 @@ namespace MonoDevelop.Components
 			return control;
 		}
 
+		public static implicit operator Xwt.Widget (Control d)
+		{
+			if (d is AbstractXwtControl)
+				return ((AbstractXwtControl)d).Widget;
+			
+			object nativeWidget;
+			if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.Gtk && (nativeWidget = d?.GetNativeWidget<Gtk.Widget> ()) != null) {
+				return Xwt.Toolkit.CurrentEngine.WrapWidget (nativeWidget);
+			}
+#if MAC
+			else if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.XamMac && (nativeWidget = d?.GetNativeWidget<NSView> ()) != null) {
+				return Xwt.Toolkit.CurrentEngine.WrapWidget (nativeWidget);
+			}
+#endif
+			throw new NotSupportedException ();
+		}
+
 		internal static T GetImplicit<T, U> (U native) where T : Control where U : class
 		{
 			WeakReference<Control> cached;
@@ -223,6 +240,18 @@ namespace MonoDevelop.Components
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return GetNextCommandTarget ();
+		}
+	}
+
+	public abstract class AbstractXwtControl : Control
+	{
+		protected override object CreateNativeWidget<T> ()
+		{
+			return Widget.Surface.NativeWidget;
+		}
+
+		public abstract Xwt.Widget Widget {
+			get;
 		}
 	}
 }
