@@ -265,6 +265,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (preference != null)
 						snippets.Add (preference);
 				}
+			} else if (file.EndsWith (".sublime-snippet", StringComparison.OrdinalIgnoreCase)) {
+				using (var stream = openStream ()) {
+					var preference = Sublime3Format.ReadSnippet (stream);
+					if (preference != null)
+						snippets.Add (preference);
+				}
 			}
 		}
 

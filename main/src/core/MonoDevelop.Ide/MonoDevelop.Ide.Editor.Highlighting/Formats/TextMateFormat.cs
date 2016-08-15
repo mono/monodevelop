@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var dict = PDictionary.FromStream (stream);
 
 			string name = null;
-			string content  = null;
+			string content = null;
 			string tabTrigger = null;
 			var scopes = new List<string> ();
 

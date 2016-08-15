@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
 using System.Diagnostics;
+using System.Xml;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -667,6 +668,40 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 			LoggingService.LogWarning ("unknown unicode category : " + category);
 			return "";
+		}
+
+
+		internal static TmSnippet ReadSnippet (Stream stream)
+		{
+			string name = null;
+			string content = null;
+			string tabTrigger = null;
+			var scopes = new List<string> ();
+			using (var reader = XmlReader.Create (stream)) {
+				while (reader.Read ()) {
+					if (reader.NodeType != XmlNodeType.Element)
+						continue;
+					switch (reader.LocalName) {
+					case "content":
+						if (reader.Read ())
+							content = reader.Value;
+						break;
+					case "tabTrigger":
+						if (reader.Read ())
+							tabTrigger = reader.Value;
+						break;
+					case "scope":
+						if (reader.Read ())
+							scopes.Add (reader.Value);
+						break;
+					case "description":
+						if (reader.Read ())
+							name = reader.Value;
+						break;
+					}
+				}
+			}
+			return new TmSnippet (name, scopes, content, tabTrigger);
 		}
 	}
 }
