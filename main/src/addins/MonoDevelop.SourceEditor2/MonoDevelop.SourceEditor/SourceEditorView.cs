@@ -2141,7 +2141,6 @@ namespace MonoDevelop.SourceEditor
 					ClipbardRingUpdated (null, EventArgs.Empty);
 			};
 			SyntaxModeLoader.Init ();
-			SyntaxHighlightingService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
 		}
 		
 		public void UpdateClipboardRing (object sender, EventArgs e)
