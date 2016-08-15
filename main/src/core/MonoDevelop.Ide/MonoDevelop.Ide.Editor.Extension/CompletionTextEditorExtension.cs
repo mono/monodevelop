@@ -95,6 +95,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 		// Return true if the key press should be processed by the editor.
 		public override bool KeyPress (KeyDescriptor descriptor)
 		{
+			if (!IsActiveExtension ())
+				return base.KeyPress (descriptor);
 			bool res;
 			if (CurrentCompletionContext != null) {
 				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
@@ -168,7 +170,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 							var result = t.Result;
 							if (result != null) {
 								int triggerWordLength = result.TriggerWordLength + (Editor.CaretOffset - caretOffset);
-
 								if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
 								                              || (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
 									CurrentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
@@ -269,8 +270,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 				} catch (TaskCanceledException) {
 				} catch (AggregateException) {
 				}
-
 			}
+
 			/*			autoHideCompletionWindow = true;
 						autoHideParameterWindow = keyChar != ':';*/
 			return res;
@@ -320,13 +321,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandUpdateHandler(TextEditorCommands.ShowCompletionWindow)]
 		internal void OnUpdateCompletionCommand (CommandInfo info)
 		{
-			info.Bypass = !CanRunCompletionCommand () && !CompletionWindowManager.IsVisible;
+			info.Bypass = !IsActiveExtension () || (!CanRunCompletionCommand () && !CompletionWindowManager.IsVisible);
 		}
 
 		[CommandUpdateHandler(TextEditorCommands.ShowParameterCompletionWindow)]
 		internal void OnUpdateParameterCompletionCommand (CommandInfo info)
 		{
-			info.Bypass = !CanRunParameterCompletionCommand ();
+			info.Bypass = !IsActiveExtension () || !CanRunParameterCompletionCommand ();
 		}
 
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
@@ -379,7 +380,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		internal void OnUpdateShowCodeTemplatesWindow (CommandInfo info)
 		{
 			info.Enabled = !Editor.IsSomethingSelected;
-			info.Bypass = !info.Enabled;
+			info.Bypass = !IsActiveExtension () || !info.Enabled;
 			if (info.Enabled) {
 				int cpos, wlen;
 				if (!GetCompletionCommandOffset (out cpos, out wlen)) {
@@ -402,7 +403,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		internal void OnUpdateSelectionSurroundWith (CommandInfo info)
 		{
 			info.Enabled = Editor.IsSomethingSelected;
-			info.Bypass = !info.Enabled;
+			info.Bypass = !IsActiveExtension () || !info.Enabled;
 			if (info.Enabled) {
 				int cpos, wlen;
 				if (!GetCompletionCommandOffset (out cpos, out wlen)) {

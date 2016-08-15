@@ -102,7 +102,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var result = new List<CodeTemplate> ();
 			result.AddRange (GetCodeTemplates (editor.MimeType));
-
 			var scope = await editor.SyntaxHighlighting.GetScopeStackAsync (editor.CaretOffset, cancellationToken);
 			foreach (var setting in TextMateLanguage.Create (scope).Snippets) {
 				var convertedTemplate = ConvertToTemplate (setting);
@@ -171,6 +170,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			result.Code = sb.ToString ();
 			result.CodeTemplateContext = CodeTemplateContext.Standard;
 			result.CodeTemplateType = CodeTemplateType.Expansion;
+			result.Description = setting.Name;
 			return result;
 		}
 
