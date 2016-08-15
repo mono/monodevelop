@@ -321,6 +321,16 @@ namespace MonoDevelop.PackageManagement
 			}
 			return ProgressMonitorStatusMessageFactory.CreateRemovingMultiplePackagesMessage (packageActions.Count);
 		}
+
+		public Task UninstallPackagesAsync (
+			Project project,
+			IEnumerable<string> packages,
+			bool removeDependencies = false)
+		{
+			var actions = CreateUninstallActions (project, packages, removeDependencies).ToList ();
+			ProgressMonitorStatusMessage progressMessage = GetUninstallingStatusMessages (actions);
+			return backgroundActionRunner.RunAsync (progressMessage, actions);
+		}
 	}
 }
 
