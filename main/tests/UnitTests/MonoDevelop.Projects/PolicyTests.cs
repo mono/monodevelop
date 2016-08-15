@@ -23,7 +23,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using System.IO;
+using System.Threading.Tasks;
+using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Projects.Policies;
 using NUnit.Framework;
 using UnitTests;
 
@@ -32,6 +36,31 @@ namespace MonoDevelop.Projects
 	[TestFixture]
 	public class PolicyTests: TestBase
 	{
+		[Test]
+		public async Task CSharpFormattingPolicyIndentSwitchCaseSectionChangedMultipleTimes ()
+		{
+			string dir = Util.CreateTmpDir ("IndentSwitchCaseSectionChangedMultipleTimes");
+			var pset = PolicyService.GetPolicySet ("Mono");
+			var monoFormattingPolicy = pset.Get<CSharpFormattingPolicy> ("text/x-csharp");
+			var formattingPolicy = monoFormattingPolicy.Clone ();
+			var solution = new Solution ();
+			solution.Policies.Set (formattingPolicy);
+
+			bool expectedSetting = !formattingPolicy.IndentSwitchCaseSection;
+			string fileName = Path.Combine (dir, "IndentSwitchCaseSectionChangedMultipleTimes.sln");
+
+			for (int i = 0; i < 3; ++i) {
+				formattingPolicy.IndentSwitchCaseSection = expectedSetting;
+
+				await solution.SaveAsync (fileName, Util.GetMonitor ());
+
+				var savedSolution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), fileName);
+				var savedFormattingPolicy = savedSolution.Policies.Get<CSharpFormattingPolicy> ();
+				Assert.AreEqual (expectedSetting, savedFormattingPolicy.IndentSwitchCaseSection);
+
+				expectedSetting = !expectedSetting;
+			}
+		}
 	}
 }
 

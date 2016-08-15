@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Core.Serialization
 {
@@ -87,6 +88,16 @@ namespace MonoDevelop.Core.Serialization
 					}
 				} else if (!d.IsDefaultValue && !(d is DataDeletedNode)) {
 					ItemData.Add (d);
+				}
+			}
+
+			// Remove items that are missing from the passed DataItem.
+			foreach (var d in ItemData.ToArray ()) {
+				var current = item.ItemData[d.Name];
+				if (current == null) {
+					if (d is DataItem)
+						removedItems.Add ((DataItem)d);
+					ItemData.Remove (d);
 				}
 			}
 		}
