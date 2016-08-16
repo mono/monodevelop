@@ -23,6 +23,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Content = container;
 		}
 
+		public IConnectedService ShowingService { get; private set; }
+
 		/// <summary>
 		/// Shows the services gallery and removes the details widget if it is visible
 		/// </summary>
@@ -41,6 +43,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 
 			gallery.LoadServices (services);
+			ShowingService = null;
 		}
 
 		void HandleServiceSelected (object sender, ServiceEventArgs e)
@@ -63,6 +66,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				container.PackStart (details);
 
 			details.LoadService (service);
+			ShowingService = service;
 		}
 
 		protected override void Dispose (bool disposing)

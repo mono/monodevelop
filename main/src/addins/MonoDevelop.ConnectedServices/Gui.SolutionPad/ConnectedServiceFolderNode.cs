@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
@@ -8,9 +10,35 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 	/// </summary>
 	sealed class ConnectedServiceFolderNode 
 	{
+		List<ConnectedServiceNode> childNodes = new List<ConnectedServiceNode>();
+
 		public ConnectedServiceFolderNode (DotNetProject project)
 		{
 			Project = project;
+			CreateChildNodes ();
+		}
+
+		public bool HasChildNodes {
+			get {
+				return Project.GetConnectedServicesBinding ()?.HasAddedServices == true;
+			}
+		}
+
+		internal ConnectedServiceNode GetServiceNode (IConnectedService service)
+		{
+			return childNodes.Find (node => node.Id == service.Id);
+		}
+
+		public IEnumerable<ConnectedServiceNode> GetChildNodes ()
+		{
+			return childNodes;
+		}
+
+		void CreateChildNodes ()
+		{
+			childNodes.Clear ();
+			foreach (var service in Project.GetConnectedServicesBinding ()?.SupportedServices.Where (x => x.IsAdded))
+				childNodes.Add (new ConnectedServiceNode (service.Id, service.DisplayName));
 		}
 
 		/// <summary>
@@ -25,6 +53,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 
 		internal void NotifyServicesChanged()
 		{
+			CreateChildNodes ();
 			this.OnServicesChanged (new ServicesChangedEventArgs());
 		}
 

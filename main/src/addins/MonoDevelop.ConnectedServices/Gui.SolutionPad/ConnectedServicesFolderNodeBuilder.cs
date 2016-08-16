@@ -56,8 +56,8 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		{
 			if (HasChildNodes(treeBuilder, dataObject)) {
 				var connectedServices = ((ConnectedServiceFolderNode)dataObject).Project.GetConnectedServicesBinding ();
-				foreach (var service in connectedServices.SupportedServices.Where(x => x.IsAdded)) {
-					treeBuilder.AddChild (new ConnectedServiceNode (service.Id, service.DisplayName));
+				foreach (var node in ((ConnectedServiceFolderNode)dataObject).GetChildNodes ()) {
+					treeBuilder.AddChild (node);
 				}
 			}
 		}
