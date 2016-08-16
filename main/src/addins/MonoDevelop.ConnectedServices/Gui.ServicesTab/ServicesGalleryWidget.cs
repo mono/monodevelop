@@ -80,13 +80,14 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void HandleServiceAdded (object sender, EventArgs e)
 		{
-			foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast <ServiceWidget> ()) {
-				if (widget.Service == sender) {
-					widget.Service.ServiceAdded -= HandleServiceAdded;
-					availableList.Remove (widget);
-					enabledList.PackStart (widget);
+			Application.Invoke (delegate {
+				foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
+					if (widget.Service == sender) {
+						availableList.Remove (widget);
+						enabledList.PackStart (widget);
+					}
 				}
-			}
+			});
 		}
 
 		void HandleServiceWidgetButtonReleased (object sender, ButtonEventArgs e)
@@ -154,7 +155,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				showDetails = value;
 				platforms.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
 				addButton.Visible = showDetails;
-				addedWidget.Visible = service?.IsAdded == true && showDetails;
+				addedWidget.Visible = service?.IsAdded == true && !showDetails;
 			}
 		}
 
@@ -186,6 +187,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			addButton = new Button (GettextCatalog.GetString ("Enable"));
 			addButton.Visible = false;
+			addButton.Clicked += HandleAddButtonClicked;
 
 			var header = new HBox ();
 			header.Spacing = 10;
@@ -217,9 +219,25 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			ShowDetails = showDetails;
 		}
 
+		void HandleAddButtonClicked (object sender, EventArgs e)
+		{
+			if (!service.IsAdded) {
+				addButton.Label = GettextCatalog.GetString ("Enabling ...");
+				addButton.Sensitive = false;
+				service.AddToProject ();
+				var node = service.Project.GetConnectedServicesBinding ().ServicesNode;
+				node.X ();
+			}
+		}
+
 		void HandleServiceAdded (object sender, EventArgs e)
 		{
-			addedWidget.Visible = Service.IsAdded && showDetails;
+			Application.Invoke (delegate {
+				addedWidget.Visible = Service.IsAdded && !showDetails;
+				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small).WithAlpha (0.4) : null;
+				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
+				addButton.Sensitive = false;
+			});
 		}
 
 		protected override void Dispose (bool disposing)
