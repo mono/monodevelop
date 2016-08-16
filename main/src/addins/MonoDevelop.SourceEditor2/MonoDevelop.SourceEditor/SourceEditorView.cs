@@ -3039,9 +3039,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		string ITextEditorImpl.GetPangoMarkup (int offset, int length, bool fitIdeStyle)
+		string ITextEditorImpl.GetMarkup (int offset, int length, MarkupOptions options)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false, fitIdeStyle:fitIdeStyle);
+			var data = TextEditor.GetTextEditorData ();
+			switch (options.MarkupFormat) {
+			case MarkupFormat.Pango:
+				return data.GetMarkup (offset, length, false, replaceTabs: false, fitIdeStyle: options.FitIdeStyle);
+			case MarkupFormat.Html:
+				return HtmlWriter.GenerateHtml (Mono.TextEditor.Utils.ColoredSegment.GetChunks (data, new Mono.TextEditor.TextSegment (offset, length)), data.ColorStyle, data.Options, false);
+			case MarkupFormat.RichtText:
+				return RtfWriter.GenerateRtf (Mono.TextEditor.Utils.ColoredSegment.GetChunks (data, new Mono.TextEditor.TextSegment (offset, length)), data.ColorStyle, data.Options);
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
 		}
 
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)
