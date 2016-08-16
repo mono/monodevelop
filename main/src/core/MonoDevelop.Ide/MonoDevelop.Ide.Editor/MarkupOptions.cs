@@ -42,6 +42,6 @@ namespace MonoDevelop.Ide.Editor
 	{
 		Pango,
 		Html,
-		RichtText
+		RichText
 	}
 }
