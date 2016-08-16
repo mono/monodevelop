@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -30,16 +31,16 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependencies to the project
 		/// </summary>
-		public static Task AddPackageDependency (this DotNetProject project, IPackageDependency dependency)
+		public static async Task<bool> AddPackageDependency (this DotNetProject project, IPackageDependency dependency)
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof (project));
 
-			LoggingService.LogInfo ("Adding connected service dependencies");
+			LoggingService.LogInfo ("Adding package dependency '{0}' to project", dependency.DisplayName);
 
 			if (dependency.IsAdded) {
-				LoggingService.LogInfo ("Skipped, all dependencies have already been added");
-				return Task.FromResult (true);
+				LoggingService.LogInfo ("Skipped, the package dependency is already added to the project");
+				return true;
 			}
 
 			try {
@@ -48,10 +49,11 @@ namespace MonoDevelop.ConnectedServices
 
 				var task = PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, references);
 
-				LoggingService.LogInfo ("Queued dependency for installation");
-				return task;
+				LoggingService.LogInfo ("Queued for installation");
+				await task.ConfigureAwait (false);
+				return true;
 			} catch (Exception ex) {
-				LoggingService.LogInternalError ("Could not queue dependencies for installation", ex);
+				LoggingService.LogInternalError ("Could not queue package for installation", ex);
 				throw;
 			}
 		}

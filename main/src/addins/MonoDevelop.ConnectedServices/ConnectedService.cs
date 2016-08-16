@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
@@ -99,7 +100,9 @@ namespace MonoDevelop.ConnectedServices
 					return;
 				}
 
-				await this.AddDependencies ().ConfigureAwait (false);
+				// TODO: add ProgressMonitor support and cancellation
+
+				await this.AddDependencies (CancellationToken.None).ConfigureAwait (false);
 				await this.OnAddToProject ().ConfigureAwait (false);
 				this.StoreAddedState ();
 				this.NotifyServiceAdded ();
@@ -122,13 +125,13 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependencies to the project
 		/// </summary>
-		protected virtual async Task AddDependencies()
+		protected virtual async Task AddDependencies(CancellationToken token)
 		{
 			// ask all the dependencies to add themselves to the project
 			// we'll do them one at a time in case there are interdependencies between them
 			foreach (var dependency in this.Dependencies) {
 				try {
-					await dependency.AddToProject ().ConfigureAwait (false);
+					await dependency.AddToProject (token).ConfigureAwait (false);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not add dependency", ex);
 					throw;

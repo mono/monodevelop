@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.ConnectedServices
@@ -25,8 +26,8 @@ namespace MonoDevelop.ConnectedServices
 		bool IsAdded { get; }
 
 		/// <summary>
-		/// Adds the nuget to the project
+		/// Adds the nuget to the project and returns true if the dependency was added to the project
 		/// </summary>
-		Task AddToProject ();
+		Task<bool> AddToProject (CancellationToken token);
 	}
 }

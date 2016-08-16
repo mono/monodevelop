@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.ConnectedServices
@@ -8,6 +9,9 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	public class ConnectedServiceDependency : IConnectedServiceDependency
 	{
+		/// <summary>
+		/// The empty set of IConnectedServiceDependencys
+		/// </summary>
 		public static readonly IConnectedServiceDependency [] Empty = new IConnectedServiceDependency [0];
 
 		public ConnectedServiceDependency (IConnectedService service, string category, string displayName)
@@ -38,9 +42,9 @@ namespace MonoDevelop.ConnectedServices
 		public virtual bool IsAdded { get { return this.Service.IsAdded; } }
 
 		/// <summary>
-		/// Adds the nuget to the project
+		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		public virtual Task AddToProject ()
+		public virtual Task<bool> AddToProject (CancellationToken token)
 		{
 			return Task.FromResult (true);
 		}

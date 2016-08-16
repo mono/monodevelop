@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.ConnectedServices
@@ -34,9 +35,9 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Adds the nuget to the project
+		/// Adds the package to the project and returns true if the package was added to the project
 		/// </summary>
-		public override Task AddToProject()
+		public override Task<bool> AddToProject(CancellationToken token)
 		{
 			return this.Service.Project.AddPackageDependency (this);
 		}
