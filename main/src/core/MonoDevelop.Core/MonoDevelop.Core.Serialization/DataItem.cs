@@ -87,17 +87,17 @@ namespace MonoDevelop.Core.Serialization
 						((DataItem)current).UpdateFromItem ((DataItem)d, removedItems);
 					}
 				} else if (!d.IsDefaultValue && !(d is DataDeletedNode)) {
-					ItemData.Add (d);
-				}
-			}
-
-			// Remove items that are missing from the passed DataItem.
-			foreach (var d in ItemData.ToArray ()) {
-				var current = item.ItemData[d.Name];
-				if (current == null) {
-					if (d is DataItem)
-						removedItems.Add ((DataItem)d);
-					ItemData.Remove (d);
+					var dataItem = d as DataItem;
+					if (dataItem != null) {
+						var newDataItem = new DataItem () {
+							Name = d.Name,
+							UniqueNames = dataItem.UniqueNames
+						};
+						newDataItem.UpdateFromItem (dataItem, removedItems);
+						ItemData.Add (newDataItem);
+					} else {
+						ItemData.Add (d);
+					}
 				}
 			}
 		}

@@ -279,11 +279,12 @@ namespace MonoDevelop.Projects.Policies
 			return null;
 		}
 		
-		internal static DataNode DiffSerialize (Type policyType, object policy, string scope)
+		internal static DataNode DiffSerialize (Type policyType, object policy, string scope, bool keepDeletedNodes = false)
 		{
 			string minSetId = null;
 			int min = Int32.MaxValue;
 			DataNode node = null;
+			DataItem baseNode = null;
 			string baseScope = null;
 			
 			if (policy is UnknownPolicy)
@@ -304,6 +305,7 @@ namespace MonoDevelop.Projects.Policies
 							minSetId = set.Id;
 							min = size;
 							node = tempNode;
+							baseNode = baseline as DataItem;
 							baseScope = sp.Scope;
 						}
 					}
@@ -314,6 +316,20 @@ namespace MonoDevelop.Projects.Policies
 			}
 			
 			if (node != null) {
+				if (keepDeletedNodes && baseNode != null) {
+					foreach (var item in baseNode.ItemData) {
+						item.IsDefaultValue = true;
+					}
+					foreach (var item in ((DataItem)node).ItemData) {
+						var baseItem = baseNode.ItemData[item.Name];
+						if (baseItem != null)
+							baseNode.ItemData.Remove(baseItem);
+
+						baseNode.ItemData.Add (item);
+					}
+					node = baseNode;
+				}
+
 				((DataItem)node).ItemData.Add (new DataValue ("inheritsSet", minSetId));
 				if (baseScope != null)
 					((DataItem)node).ItemData.Add (new DataValue ("inheritsScope", baseScope));
