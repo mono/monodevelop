@@ -25,8 +25,11 @@
 // THE SOFTWARE.
 
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Projects.MSBuild;
 using MonoDevelop.Projects.Policies;
 using NUnit.Framework;
 using UnitTests;
@@ -60,6 +63,38 @@ namespace MonoDevelop.Projects
 
 				expectedSetting = !expectedSetting;
 			}
+		}
+
+		/// <summary>
+		/// Test to make sure that all the formatting policy items are not written to the 
+		/// solution only those which differ from the inherited formatting policy should be
+		/// saved in the solution file.
+		/// </summary>
+		[Test]
+		public async Task SaveSolutionAfterChangingCSharpFormattingPolicyForTheFirstTime ()
+		{
+			string dir = Util.CreateTmpDir ("FormattingPolicyChangedOnce");
+			var pset = PolicyService.GetPolicySet ("Mono");
+			var monoFormattingPolicy = pset.Get<CSharpFormattingPolicy> ("text/x-csharp");
+			var formattingPolicy = monoFormattingPolicy.Clone ();
+			var solution = new Solution ();
+			solution.Policies.Set (formattingPolicy);
+
+			bool expectedSetting = !formattingPolicy.IndentSwitchCaseSection;
+			formattingPolicy.IndentSwitchCaseSection = expectedSetting;
+			string fileName = Path.Combine (dir, "FormattingPolicyChangedOnce.sln");
+
+			await solution.SaveAsync (fileName, Util.GetMonitor ());
+
+			var file = new SlnFile ();
+			file.Read (fileName);
+			var s = file.Sections.GetSection ("MonoDevelopProperties", SlnSectionType.PreProcess);
+			var missingItem = default(KeyValuePair<string, string>);
+			Assert.AreEqual (expectedSetting.ToString (), s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentSwitchCaseSection")).Value);
+			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentSwitchSection")));
+			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("IndentBlock")));
+			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("SpaceBeforeDot")));
+			Assert.AreEqual (missingItem, s.Properties.SingleOrDefault (p => p.Key.Contains ("NewLineForElse")));
 		}
 	}
 }
