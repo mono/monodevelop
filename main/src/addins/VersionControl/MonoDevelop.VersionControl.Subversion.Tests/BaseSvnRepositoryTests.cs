@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 	{
 		protected Process SvnServe = null;
 
-		const string MacSvnAdminPath = "/Library/Developer/CommandLineTools/usr/bin/svnadmin"
+		const string MacSvnAdminPath = "/Library/Developer/CommandLineTools/usr/bin/svnadmin";
 		[SetUp]
 		public override void Setup ()
 		{
