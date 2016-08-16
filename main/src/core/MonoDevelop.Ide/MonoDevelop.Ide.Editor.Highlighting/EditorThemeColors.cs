@@ -101,7 +101,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public static readonly string CollapsedText = "collapsedText";
 		public static readonly string FoldLine = "foldLine";
 		public static readonly string FoldCross = "foldCross";
-		public static readonly string FoldCross2 = "foldCrossBackground";
+		public static readonly string FoldCrossBackground = "foldCrossBackground";
 		public static readonly string QuickDiffChanged = "quickdiffChanged";
 		public static readonly string QuickDiffDirty = "quickdiffDirty";
 		public static readonly string LineNumbers = "gutterForeground";

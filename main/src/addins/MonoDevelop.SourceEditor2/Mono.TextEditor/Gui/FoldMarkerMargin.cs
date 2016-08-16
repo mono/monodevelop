@@ -248,7 +248,7 @@ namespace Mono.TextEditor
 			
 			foldLineHighlightedGCBg = hslColor;
 			foldToggleMarkerGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.FoldCross);
-			foldToggleMarkerBackground = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.FoldCross2);
+			foldToggleMarkerBackground = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.FoldCrossBackground);
 			lineStateChangedGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.QuickDiffChanged);
 			lineStateDirtyGC = SyntaxHighlightingService.GetColor (editor.EditorTheme, EditorThemeColors.QuickDiffDirty);
 			
