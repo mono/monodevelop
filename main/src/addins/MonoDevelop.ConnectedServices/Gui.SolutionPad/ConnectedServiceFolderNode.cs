@@ -23,7 +23,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		/// </summary>
 		public event EventHandler<ServicesChangedEventArgs> ServicesChanged;
 
-		internal void X()
+		internal void NotifyServicesChanged()
 		{
 			this.OnServicesChanged (new ServicesChangedEventArgs());
 		}
