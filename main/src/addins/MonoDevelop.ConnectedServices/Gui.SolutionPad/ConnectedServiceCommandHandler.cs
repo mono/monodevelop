@@ -15,7 +15,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		}
 
 		[CommandHandler (Commands.OpenServiceDetails)]
-		public void OpenServiceDetails ()
+		public override void ActivateItem ()
 		{
 			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
 			ConnectedServices.OpenServicesTab (this.Project, service.Id);

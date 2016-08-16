@@ -19,7 +19,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		}
 
 		[CommandHandler (Commands.OpenServicesGalleryFromServicesNode)]
-		public void OpenServicesGallery ()
+		public override void ActivateItem ()
 		{
 			ConnectedServices.OpenServicesTab (this.Project);
 		}
