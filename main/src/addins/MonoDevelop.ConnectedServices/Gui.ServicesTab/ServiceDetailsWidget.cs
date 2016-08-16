@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using MonoDevelop.Ide.Gui;
 using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
@@ -6,8 +8,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// <summary>
 	/// Widget that displays the service details
 	/// </summary>
-	class ServiceDetailsWidget : VBox
+	class ServiceDetailsWidget : Widget
 	{
+		ServiceWidget details;
+		VBox sections;
+
 		/// <summary>
 		/// A service that can be added to the project
 		/// </summary>
@@ -15,6 +20,23 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		public ServiceDetailsWidget ()
 		{
+			Margin = 30;
+
+			var container = new VBox ();
+
+			details = new ServiceWidget (true);
+			details.BorderWidth = 0;
+			sections = new VBox ();
+
+			container.Spacing = sections.Spacing = 0;
+			container.PackStart (details);
+			container.PackStart (sections);
+
+			var frame = new FrameBox (container);
+			frame.BackgroundColor = Styles.BaseBackgroundColor;
+			frame.BorderColor = Styles.ThinSplitterColor;
+			frame.BorderWidth = 1;
+			Content = frame;
 		}
 
 		/// <summary>
@@ -22,65 +44,29 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void LoadService (IConnectedService service)
 		{
-			this.service = service;
+			this.service = details.Service = service;
+			sections.Clear ();
 
-			// test code
-			var label = new Label ("service: " + service.DisplayName);
-			this.PackStart (label);
+			var dependencies = new ConfigurationSectionWidget (new DependenciesSection (service));
+			dependencies.ExpandedChanged += HandleSectionExpandedChanged;
+			sections.PackStart (dependencies);
 
-			this.Build ();
-		}
-
-		/// <summary>
-		/// Builds widget for the default configuration widget for the dependencies of a service
-		/// </summary>
-		static Widget BuildDependencySection(IConnectedService service)
-		{
-			return new ConfigurationSectionWidget (new DependenciesSection (service));
-		}
-
-		/// <summary>
-		/// Builds widget for the sections for the service and insert the dependencies widget at the start
-		/// </summary>
-		static Widget BuildSections(IConnectedService service)
-		{
-			// TODO: make this pretty
-			var vbox = new VBox ();
-
-			// always add the dependencies
-			vbox.PackStart (BuildDependencySection (service));
-
-			// now add the services sections
 			foreach (var section in service.Sections) {
-				vbox.PackStart (new ConfigurationSectionWidget(section));
+				var w = new ConfigurationSectionWidget (section);
+				w.ExpandedChanged += HandleSectionExpandedChanged;
+				sections.PackStart (w);
 			}
-
-			return vbox;
 		}
 
-		/// <summary>
-		/// Builds the widget
-		/// </summary>
-		void Build()
+		void HandleSectionExpandedChanged (object sender, EventArgs e)
 		{
-			if (this.service == null) {
-				return;
-			}
-
-			// TODO: make this pretty
-			var label = new Label ("details");
-			this.PackStart (label);
-
-			var btn = new Button () { Label = "Add" };
-			btn.Clicked += (sender, e) => {
-				if (this.service != null && !this.service.IsAdded) {
-					this.service.AddToProject ();
+			var section = sender as ConfigurationSectionWidget;
+			if (section?.Expanded == true) {
+				foreach (ConfigurationSectionWidget child in sections.Children.Where (c => c is ConfigurationSectionWidget)) {
+					if (child != sender)
+						child.Expanded = false;
 				}
-			};
-
-			this.PackStart (btn);
-
-			this.PackStart (BuildSections (this.service));
+			}
 		}
 	}
 }

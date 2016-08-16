@@ -31,14 +31,21 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			if (details?.Parent == container)
 				container.Remove (details);
 
-			if (gallery == null)
+			if (gallery == null) {
 				gallery = new ServicesGalleryWidget ();
+				gallery.ServiceSelected += HandleServiceSelected;
+			}
 
 			if (gallery.Parent == null) {
 				container.PackStart (gallery);
 			}
 
 			gallery.LoadServices (services);
+		}
+
+		void HandleServiceSelected (object sender, ServiceEventArgs e)
+		{
+			ShowServiceDetails (e.Service);
 		}
 
 		/// <summary>
@@ -56,6 +63,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				container.PackStart (details);
 
 			details.LoadService (service);
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing) {
+				if (gallery != null)
+					gallery.ServiceSelected -= HandleServiceSelected;
+			}
+			base.Dispose (disposing);
 		}
 	}
 }

@@ -112,6 +112,7 @@
     <Compile Include="IPackageDependency.cs" />
     <Compile Include="ICodeDependency.cs" />
     <Compile Include="PackageDependency.cs" />
+    <Compile Include="Gui.ServicesTab\ServiceEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
