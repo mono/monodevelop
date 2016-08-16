@@ -118,10 +118,21 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var sb = new StringBuilder ();
 			var nameBuilder = new StringBuilder ();
 			bool readDollar = false;
-			bool invariable = false;
-			bool invariablename = false;
+			bool inBracketExpression = false;
+			bool inExpressionContent = false;
+			bool inVariable = false;
 			int number = 0;
 			foreach (var ch in setting.Content) {
+				if (inVariable) {
+					if (char.IsLetter (ch)) {
+						nameBuilder.Append (ch);
+					} else {
+						sb.Append (ConvertVariable (nameBuilder.ToString ()));
+						nameBuilder.Length = 0;
+						inVariable = false;
+					}
+				}
+
 				if (ch == '$') {
 					readDollar = true;
 					continue;
@@ -129,25 +140,28 @@ namespace MonoDevelop.Ide.CodeTemplates
 				if (readDollar) {
 					if (ch == '{') {
 						number = 0;
-						invariable = true;
+						inBracketExpression = true;
 						readDollar = false;
 						continue;
+					} else if (char.IsLetter (ch)) {
+						inVariable = true;
 					} else {
 						sb.Append ("$$");
 						readDollar = false;
 					}	
 				}
-				if (invariable) {
+				if (inBracketExpression) {
 					if (ch == ':') {
-						invariable = false;
-						invariablename = true;
+						inBracketExpression = false;
+						inExpressionContent = true;
 						continue;
 					}
 					number = number * 10 + (ch - '0');
 					continue;
 				}
 
-				if (invariablename) {
+
+				if (inExpressionContent) {
 					if (ch == '}') {
 						if (number == 0) {
 							sb.Append ("$end$");
@@ -158,7 +172,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 						}
 						nameBuilder.Length = 0;
 						number = 0;
-						invariablename = false;
+						inExpressionContent = false;
 						continue;
 					}
 					nameBuilder.Append (ch);
@@ -166,12 +180,37 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				sb.Append (ch);
 			}
+			if (inVariable) {
+				sb.Append (ConvertVariable (nameBuilder.ToString ()));
+				nameBuilder.Length = 0;
+				inVariable = false;
+			}
 
 			result.Code = sb.ToString ();
 			result.CodeTemplateContext = CodeTemplateContext.Standard;
 			result.CodeTemplateType = CodeTemplateType.Expansion;
 			result.Description = setting.Name;
 			return result;
+		}
+
+		static string ConvertVariable (string textmateVariable)
+		{
+			switch (textmateVariable) {
+			case "SELECTION":
+			case "TM_SELECTED_TEXT":
+				return "$selected$";
+			case "TM_CURRENT_LINE":
+			case "TM_CURRENT_WORD":
+			case "TM_FILENAME":
+			case "TM_FILEPATH":
+			case "TM_FULLNAME":
+			case "TM_LINE_INDEX":
+			case "TM_LINE_NUMBER":
+			case "TM_SOFT_TABS":
+			case "TM_TAB_SIZE":
+				return "$" + textmateVariable + "$";
+			}
+			return "";
 		}
 
 		public static IEnumerable<CodeTemplate> GetCodeTemplatesForFile (string fileName)
