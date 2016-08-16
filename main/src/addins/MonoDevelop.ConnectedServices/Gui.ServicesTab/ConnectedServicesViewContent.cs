@@ -14,17 +14,20 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	class ConnectedServicesViewContent : AbstractXwtViewContent
 	{
 		ConnectedServicesWidget widget;
+		ScrollView scrollContainer;
 
 		public ConnectedServicesViewContent (DotNetProject project)
 		{
 			this.Project = project;
-			this.ContentName = string.Format ("{0} - {1}", GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName), project.Name); 
+			this.ContentName = string.Format ("{0} - {1}", GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName), project.Name);
+
 			widget = new ConnectedServicesWidget ();
+			scrollContainer = new ScrollView (widget);
 		}
 
 		public override Widget Widget {
 			get {
-				return widget;
+				return scrollContainer;
 			}
 		}
 
