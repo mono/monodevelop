@@ -277,16 +277,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static SyntaxHighlightingDefinition ReadHighlighting (Stream stream)
 		{
 			var dictionary = PDictionary.FromStream (stream);
-
 			string firstLineMatch = null;
-
 			var extensions = new List<string> ();
 			var contexts = new List<SyntaxContext> ();
 
 			var name = (dictionary ["name"] as PString)?.Value;
 			var scope = (dictionary ["scopeName"] as PString)?.Value;
-
-
 
 			var fileTypesArray = dictionary ["fileTypes"] as PArray;
 			if (fileTypesArray != null) {
@@ -381,7 +377,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 					var list = new List<object> ();
 					if (end != null)
-						list.Add (new SyntaxMatch (end, endScope, endCaptures, null, true, null));
+						list.Add (new SyntaxMatch (Sublime3Format.CompileRegex (end), endScope, endCaptures, null, true, null));
 					var patternsArray = dict ["patterns"] as PArray;
 					if (patternsArray != null) {
 						ReadPatterns (patternsArray, list);
@@ -389,14 +385,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", list));
 				}
 
-
-				return new SyntaxMatch (begin, matchScope, beginCaptures, pushContext, false, null);
+				return new SyntaxMatch (Sublime3Format.CompileRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null);
 			}
 
 			var match = (dict ["match"] as PString)?.Value;
 			if (match == null)
 				return null;
-			return new SyntaxMatch (match, matchScope, captures, pushContext, false, null);
+			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null);
 		}
 
 		static List<Tuple<int, string>> ReadCaptureDictionary (PDictionary captureDict)

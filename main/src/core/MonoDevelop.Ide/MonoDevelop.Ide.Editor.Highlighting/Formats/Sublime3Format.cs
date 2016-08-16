@@ -519,11 +519,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			int characterClassLevel = 0;
 			bool escape = false;
 			bool readCharacterProperty = false, readCharPropertyIdentifier = false;
-
+			bool readPlusQuantifier = false, readStarQuantifier = false;
 			CharacterClass curClass = null;
 			for (int i = 0; i < regex.Length; i++) {
 				var ch = regex [i];
 				switch (ch) {
+				case '+':
+					if (readPlusQuantifier)
+						continue;
+					readPlusQuantifier = true;
+					break;
+				case '*':
+					if (readStarQuantifier)
+						continue;
+					readStarQuantifier = true;
+					break;
 				case '\\':
 					if (escape || curClass != null)
 						break;
@@ -570,6 +580,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				}
 				escape = false;
 			addChar:
+				if (ch != '+')
+					readPlusQuantifier = false;
+				if (ch != '*')
+					readStarQuantifier = false;
 				if (readCharacterProperty) {
 					if (ch == '}') {
 						result.Append (ConvertCharacterProperty (charProperty.ToString ()));

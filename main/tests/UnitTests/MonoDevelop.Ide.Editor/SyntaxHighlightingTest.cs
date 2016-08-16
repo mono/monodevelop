@@ -39,8 +39,6 @@ using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
-	
-
 	[TestFixture]
 	class SyntaxHighlightingTest : TestBase
 	{
@@ -396,6 +394,13 @@ typedef struct
 		public void TestCharacterProperties ()
 		{
 			Assert.AreEqual ("[0-9a-fA-F]", Sublime3Format.CompileRegex ("\\p{XDigit}"));
+		}
+
+		[Test]
+		public void TestQuantifierConversion ()
+		{
+			Assert.AreEqual ("\\w+", Sublime3Format.CompileRegex ("\\w++"));
+			Assert.AreEqual ("\\w*", Sublime3Format.CompileRegex ("\\w**"));
 		}
 	}
 }
