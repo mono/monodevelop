@@ -7,10 +7,16 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// <summary>
 	/// Default widget that displays the dependencies for a service
 	/// </summary>
-	class DependenciesSectionWidget : Control
+	class DependenciesSectionWidget : AbstractXwtControl
 	{
 		readonly IConfigurationSection section;
 		readonly VBox widget;
+
+		public override Widget Widget {
+			get {
+				return widget;
+			}
+		}
 
 		public DependenciesSectionWidget (IConfigurationSection section) 
 		{
@@ -34,11 +40,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				widget.PackStart (new Label { Text = dependency.DisplayName });
 				widget.PackStart (new Label { Text = dependency.DisplayName + " is " + (dependency.IsAdded ? "Added" : " Not added") });
 			}
-		}
-
-		protected override object CreateNativeWidget<T> ()
-		{
-			return widget.Surface.NativeWidget;
 		}
 	}
 }

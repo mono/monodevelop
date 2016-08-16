@@ -68,9 +68,9 @@ namespace MonoDevelop.ConnectedServices.DebugService
 		}
 	}
 
-	sealed class TestConfigurationWidget : Control
+	sealed class TestConfigurationWidget : AbstractXwtControl
 	{
-		Widget content;
+		readonly Widget content;
 		
 		public TestConfigurationWidget ()
 		{
@@ -82,9 +82,10 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			content = vbox;
 		}
 
-		protected override object CreateNativeWidget<T> ()
-		{
-			return content.Surface.NativeWidget;
+		public override Widget Widget {
+			get {
+				return content;
+			}
 		}
 	}
 #endif
