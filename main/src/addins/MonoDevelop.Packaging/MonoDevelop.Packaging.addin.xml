@@ -4,6 +4,8 @@
 		<Import assembly="MonoDevelop.Packaging.dll" />
 	</Runtime>
 
+	<ConditionType id="ProjectHasNuGetMetadata" type="MonoDevelop.Packaging.ProjectHasNuGetMetadataCondition" />
+
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
 		<DotNetProjectType
 			language="NuGet.Packaging"
@@ -57,5 +59,41 @@
 					class="MonoDevelop.Packaging.OptionPanels.NuGetPackageMetadataOptionsPanel" />
 			</Condition>
 		</Section>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Category _name="NuGet" id="NuGet">
+			<Command
+				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
+				_description="Creates a NuGet package"
+				_label="Create NuGet _Package"
+				defaultHandler="MonoDevelop.Packaging.CreateNuGetPackageHandler" />
+		</Category>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/MainMenu/Build">
+		<Condition id="ProjectHasNuGetMetadata">
+			<SeparatorItem
+				id="CreateNuGetPackageSeparator"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Clean"
+				insertbefore="Separator1" />
+			<CommandItem
+				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
+				insertafter="CreateNuGetPackageSeparator"
+				insertbefore="Separator1" />
+		</Condition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		<Condition id="ProjectHasNuGetMetadata">
+			<SeparatorItem
+				id="CreateNuGetPackageSeparator"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Unload"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+			<CommandItem
+				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
+				insertafter="CreateNuGetPackageSeparator"
+				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+		</Condition>
 	</Extension>
 </ExtensionModel>

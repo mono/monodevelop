@@ -76,5 +76,15 @@ namespace MonoDevelop.Packaging
 		{
 			return project.GetImport (importedProjectFile) != null;
 		}
+
+		public static MSBuildPropertyGroup GetNuGetMetadataPropertyGroup (this MSBuildProject project)
+		{
+			foreach (MSBuildPropertyGroup propertyGroup in project.PropertyGroups) {
+				if (propertyGroup.HasProperty ("NuGetId"))
+					return propertyGroup;
+			}
+
+			return project.GetGlobalPropertyGroup ();
+		}
 	}
 }

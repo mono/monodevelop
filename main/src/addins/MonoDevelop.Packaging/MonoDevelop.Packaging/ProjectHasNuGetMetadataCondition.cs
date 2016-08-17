@@ -1,5 +1,5 @@
 ﻿//
-// DotNetProjectExtensions.cs
+// ProjectHasNuGetMetadataCondition.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,44 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
+using Mono.Addins;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
-	static class DotNetProjectExtensions
+	class ProjectHasNuGetMetadataCondition : ConditionType
 	{
-		static readonly string packagingCommonProps = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.props";
-		static readonly string packagingCommonTargets = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.targets";
-
-		public static bool AddCommonPackagingImports (this DotNetProject project)
+		public ProjectHasNuGetMetadataCondition ()
 		{
-			bool modified = false;
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonProps)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonProps, true, null);
-				modified = true;
-			}
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonTargets)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonTargets, false, null);
-				modified = true;
-			}
-
-			return modified;
+			IdeApp.ProjectOperations.CurrentProjectChanged += delegate { NotifyChanged (); };
 		}
 
-		public static void RemoveCommonPackagingImports (this DotNetProject project)
+		public override bool Evaluate (NodeElement conditionNode)
 		{
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonProps);
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonTargets);
-		}
-
-		public static bool HasNuGetMetadata (this DotNetProject project)
-		{
-			MSBuildPropertyGroup propertyGroup = project.MSBuildProject.GetNuGetMetadataPropertyGroup ();
-			return propertyGroup.HasProperty ("NuGetId");
+			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			if (project != null && !(project is PackagingProject)) {
+				return project.HasNuGetMetadata ();
+			}
+			return false;
 		}
 	}
 }

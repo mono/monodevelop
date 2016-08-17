@@ -62,7 +62,7 @@ namespace MonoDevelop.Packaging
 
 		void Load (MSBuildProject project)
 		{
-			MSBuildPropertyGroup propertyGroup = GetPropertyGroup (project);
+			MSBuildPropertyGroup propertyGroup = project.GetNuGetMetadataPropertyGroup ();
 			Id = GetProperty (propertyGroup, "NuGetId");
 			Version = GetProperty (propertyGroup, "NuGetVersion");
 			Authors = GetProperty (propertyGroup, "NuGetAuthors");
@@ -78,16 +78,6 @@ namespace MonoDevelop.Packaging
 			Summary = GetProperty (propertyGroup, "NuGetSummary");
 			Tags = GetProperty (propertyGroup, "NuGetTags");
 			Title = GetProperty (propertyGroup, "NuGetTitle");
-		}
-
-		MSBuildPropertyGroup GetPropertyGroup (MSBuildProject project)
-		{
-			foreach (MSBuildPropertyGroup propertyGroup in project.PropertyGroups) {
-				if (propertyGroup.HasProperty ("NuGetId"))
-					return propertyGroup;
-			}
-
-			return project.GetGlobalPropertyGroup ();
 		}
 
 		string GetProperty (MSBuildPropertyGroup propertyGroup, string name)
@@ -110,7 +100,7 @@ namespace MonoDevelop.Packaging
 
 		void Update (MSBuildProject project)
 		{
-			MSBuildPropertyGroup propertyGroup = GetPropertyGroup (project);
+			MSBuildPropertyGroup propertyGroup = project.GetNuGetMetadataPropertyGroup ();
 			SetProperty (propertyGroup, "NuGetId", Id);
 			SetProperty (propertyGroup, "NuGetVersion", Version);
 			SetProperty (propertyGroup, "NuGetAuthors", Authors);
