@@ -1108,7 +1108,7 @@ msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for "
 ".NET projects."
 msgstr ""
-"Nelze provést \{0}\. Vybraný režim provádění se u projektů .NET nepodporuje."
+"Nelze provést \"{0}\". Vybraný režim provádění se u projektů .NET nepodporuje."
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:212
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:10
@@ -8558,12 +8558,12 @@ msgstr "Chcete odkaz na něj odebrat seznamu posledních?"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:21
 #, fuzzy
 msgid "file \"{0}\" in project \"{1}\""
-msgstr "soubor \{0}\ v projektu \{1}\"
+msgstr "soubor \"{0}\" v projektu \"{1}\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:21
 #, fuzzy
 msgid "file \"{0}\""
-msgstr "soubor \{0}\"
+msgstr "soubor \"{0}\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:4
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:30
@@ -9345,7 +9345,7 @@ msgstr "Projekt se publikuje do úložiště {0}, modulu {1}."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:31
 msgid "Publishing \"{0}\" Project..."
-msgstr "Publikování projektu \{0}\..."
+msgstr "Publikování projektu \"{0}\"..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:46
 #, fuzzy
@@ -11180,7 +11180,7 @@ msgstr "Zakázat návrháře"
 #: ../src/addins/MonoDevelop.GtkCore/gtk-gui/MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs:1
 msgid ""
 "Automatically switch to the \"GUI Builder\" layout when opening the designer"
-msgstr "Při otevření návrháře automaticky přepnout do rozložení \Tvůrce GUI\"
+msgstr "Při otevření návrháře automaticky přepnout do rozložení \"Tvůrce GUI\""
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/Accelerator.cs:10
 msgid "Press a key..."
@@ -11794,7 +11794,7 @@ msgid ""
 msgstr ""
 "Pokud chcete změnit zásady vytváření a aktualizace protokolu změn, otevřete "
 "dialogové okno možnosti projektu nebo řešení a klikněte do části Integrace "
-"protokolu změn\."
+"protokolu změn\"."
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:2
 msgid "ChangeLog _Policy"
@@ -12395,7 +12395,7 @@ msgid ""
 "the generated configure script."
 msgstr ""
 " -d:default-config\n"
-"\Konfigurace, kterou soubor pravidel vytvoří ve výchozím nastavení. Další "
+"\tKonfigurace, kterou soubor pravidel vytvoří ve výchozím nastavení. Další "
 "konfigurace se dají vybrat pomocí možnosti --config nebo --enable-* "
 "vygenerovaného skriptu konfigurace."
 
@@ -13527,17 +13527,17 @@ msgstr "Možnosti nových řádků pro klíčová slova"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:16
 #, fuzzy
 msgid "Place \"else\" on new line"
-msgstr "Umístit klíčové slovo \else\ na nový řádek"
+msgstr "Umístit klíčové slovo \"else\" na nový řádek"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:16
 #, fuzzy
 msgid "Place \"catch\" on new line"
-msgstr "Umístit klíčové slovo \catch\ na nový řádek"
+msgstr "Umístit klíčové slovo \"catch\" na nový řádek"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:16
 #, fuzzy
 msgid "Place \"finally\" on new line"
-msgstr "Umístit klíčové slovo \finally\ na nový řádek"
+msgstr "Umístit klíčové slovo \"finally\" na nový řádek"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:17
 #, fuzzy
@@ -13653,7 +13653,7 @@ msgstr "Vložit mezeru za tečku"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space after semicolon in \"for\" statement"
-msgstr "Vložit mezeru za středník v příkazu \for\"
+msgstr "Vložit mezeru za středník v příkazu \"for\""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space before colon for base or interface in type declaration"
@@ -13672,7 +13672,7 @@ msgstr "Vložit mezeru před tečku"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space before semicolon in \"for\" statement"
-msgstr "Vložit mezeru před středník v příkazu \for\"
+msgstr "Vložit mezeru před středník v příkazu \"for\""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:33
 msgid "Set spacing for operators"
@@ -26578,7 +26578,7 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/AddOptionalParameterToInvocationCodeRefactoringProvider.cs:9
 #, fuzzy
 msgid "Add optional parameter \"{0}\""
-msgstr "Přidat volitelný parametr \{0}\"
+msgstr "Přidat volitelný parametr \"{0}\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AddOptionalParameterToInvocationAction.cs:5
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/AddOptionalParameterToInvocationCodeRefactoringProvider.cs:10

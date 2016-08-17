@@ -11920,8 +11920,8 @@ msgstr "Wyłącz projektanta"
 msgid ""
 "Automatically switch to the \"GUI Builder\" layout when opening the designer"
 msgstr ""
-"Automatycznie przełącza na układ \„Konstruktor graficznego interfejsu "
-"użytkownika\” podczas otwierania projektanta"
+"Automatycznie przełącza na układ „Konstruktor graficznego interfejsu "
+"użytkownika” podczas otwierania projektanta"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/Accelerator.cs:10
 msgid "Press a key..."
@@ -12609,7 +12609,7 @@ msgid ""
 msgstr ""
 "Aby zmienić zasady tworzenia i aktualizowania dziennika zmian, otwórz okno "
 "dialogowe projektu lub rozwiązania i kliknij sekcję „Integracja dziennika "
-"zmian\”."
+"zmian”."
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:2
 #, fuzzy
@@ -14628,7 +14628,7 @@ msgstr "Wstaw odstęp po kropce"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space after semicolon in \"for\" statement"
-msgstr "Wstaw spację po średniku w instrukcji \„for\”"
+msgstr "Wstaw spację po średniku w instrukcji „for”"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space before colon for base or interface in type declaration"
@@ -14648,7 +14648,7 @@ msgstr "Wstaw odstęp przed kropką"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:32
 msgid "Insert space before semicolon in \"for\" statement"
-msgstr "Wstaw spację przed średnikiem w instrukcji \„for\”"
+msgstr "Wstaw spację przed średnikiem w instrukcji „for”"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Formatting/CSharpFormattingProfileDialog.cs:33
 msgid "Set spacing for operators"

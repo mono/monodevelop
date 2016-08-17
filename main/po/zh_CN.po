@@ -1082,12 +1082,12 @@ msgstr "正在运行 {0} ..."
 msgid ""
 "Can not execute \"{0}\". The selected execution mode is not supported for "
 ".NET projects."
-msgstr "无法执行\“{0}\”。.NET 项目不支持选定的执行模式。"
+msgstr "无法执行“{0}”。.NET 项目不支持选定的执行模式。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:212
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CompiledAssemblyProject.cs:10
 msgid "Cannot execute \"{0}\""
-msgstr "无法执行\“{0}\”"
+msgstr "无法执行“{0}”"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/CyclicDependencyException.cs:2
 msgid "A cyclic build dependency has been detected."
@@ -1136,7 +1136,7 @@ msgstr "无法为 {0} 生成 ResourceId。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:21
 msgid "Unable to find 'resgen' tool."
-msgstr "找不到 "resgen" 工具。"
+msgstr "找不到 \"resgen\" 工具。"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MD1/MD1DotNetProjectHandler.cs:22
 msgid "Compiling resource {0} with {1}"
@@ -1829,7 +1829,7 @@ msgstr "枚举名称"
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:9
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:10
 msgid "Template for 'for' loop"
-msgstr ""for" 循环模板"
+msgstr "\"for\" 循环模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:7
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:8
@@ -1852,13 +1852,13 @@ msgstr "迭代次数"
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:11
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:13
 msgid "Template for reverse 'for' loop"
-msgstr "反向 "for" 循环模板"
+msgstr "反向 \"for\" 循环模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:8
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:14
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:15
 msgid "Template for 'while' loop"
-msgstr ""while" 循环模板"
+msgstr "\"while\" 循环模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:8
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:9
@@ -1895,18 +1895,18 @@ msgstr "用于反向循环访问集合的模板"
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:16
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:17
 msgid "Template for 'do...while' loop"
-msgstr ""do...while" 循环模板"
+msgstr "\"do...while\" 循环模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:8
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:18
 msgid "Template for 'else'"
-msgstr ""else" 模板"
+msgstr "\"else\" 模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:9
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:19
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:20
 msgid "Template for 'foreach' loop"
-msgstr ""foreach" 循环模板"
+msgstr "\"foreach\" 循环模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:9
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:19
@@ -1918,13 +1918,13 @@ msgstr "当前元素的标识符"
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:21
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:22
 msgid "Template for 'if' statement"
-msgstr ""if" 语句模板"
+msgstr "\"if\" 语句模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:10
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:23
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:24
 msgid "Template for 'lock' statement"
-msgstr ""lock" 语句模板"
+msgstr "\"lock\" 语句模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:10
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:23
@@ -1962,11 +1962,11 @@ msgstr "try...finally 模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:11
 msgid "Template for 'unchecked' block"
-msgstr ""unchecked" 块模板"
+msgstr "\"unchecked\" 块模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:11
 msgid "Template for 'unsafe' block"
-msgstr ""unsafe" 块模板"
+msgstr "\"unsafe\" 块模板"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:11
 msgid "Html"
@@ -5203,15 +5203,15 @@ msgstr "找不到控件!"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:15
 msgid "The command of tool \"{0}\" is not set."
-msgstr "未设置工具\“{0}\”的命令。"
+msgstr "未设置工具“{0}”的命令。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:16
 msgid "The command of tool \"{0}\" is invalid."
-msgstr "工具\“{0}\”的命令无效。"
+msgstr "工具“{0}”的命令无效。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.ExternalTools/ExternalToolPanel.cs:16
 msgid "The working directory of tool \"{0}\" is invalid."
-msgstr "工具\“{0}\”的工作目录无效。"
+msgstr "工具“{0}”的工作目录无效。"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.ExternalTools.ExternalToolPanelWidget.cs:2
 msgid "_Command:"
@@ -5947,9 +5947,9 @@ msgid ""
 "'N:Namespace' a namespace. 'disabled' don't print any output until toggled "
 "via SIGUSR2. Prefix with '-' to exclude and expression."
 msgstr ""
-"要跟踪的逗号分隔表达式列表。"all" 指定所有程序集，"none" 指定无程序集，"program" 指定入口点程序集，"assembly" "
-"指定程序集，"T:Type" 指定类型，"M:Type:Method" 指定方法，"N:Namespace" 指定命名空间。"disabled" "
-"指定通过 SIGUSR2 进行切换之前不打印任何输出。添加前缀 "-" 可排除 and 表达式。"
+"要跟踪的逗号分隔表达式列表。\"all\" 指定所有程序集，\"none\" 指定无程序集，\"program\" 指定入口点程序集，\"assembly\" "
+"指定程序集，\"T:Type\" 指定类型，\"M:Type:Method\" 指定方法，\"N:Namespace\" 指定命名空间。\"disabled\" "
+"指定通过 SIGUSR2 进行切换之前不打印任何输出。添加前缀 \"-\" 可排除 and 表达式。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid ""
@@ -5969,10 +5969,10 @@ msgid ""
 "use multiple masks by comma separating them. For example to  see config file "
 "messages and assembly loader messages set you mask to 'asm,cfg'."
 msgstr ""
-"可能的值为 "asm" (程序集加载器)、"type"、"dll" (本机库加载器)、"gc" (垃圾回收器)、"cfg" "
-"(配置文件加载器)、"aot" (预编译器) 和 "all"。默认值为 "
-""all"。通过更改掩码值，可以仅显示特定组件的消息。可以按逗号分隔的方式使用多个掩码。例如，若要查看配置文件消息和程序集加载器消息，可将掩码设置为 "
-""asm,cfg"。"
+"可能的值为 \"asm\" (程序集加载器)、\"type\"、\"dll\" (本机库加载器)、\"gc\" (垃圾回收器)、\"cfg\" "
+"(配置文件加载器)、\"aot\" (预编译器) 和 \"all\"。默认值为 "
+"\"all\"。通过更改掩码值，可以仅显示特定组件的消息。可以按逗号分隔的方式使用多个掩码。例如，若要查看配置文件消息和程序集加载器消息，可将掩码设置为 "
+"\"asm,cfg\"。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid ""
@@ -5986,7 +5986,7 @@ msgid ""
 msgstr ""
 "可能的值为“否”(禁用 C# 自定义序列化程序)，或者一个整数(运行时生成自定义序列化程序之前的最低使用次数: 0 "
 "将在首次访问时生成自定义序列化程序，50 将在第 50 次使用时生成序列化程序)。如果序列化程序生成由于某种原因失败，Mono "
-"将回退到已解释的序列化程序。此行为可通过设置 "nofallback" 选项(例如: "0,nofallback")来禁用。"
+"将回退到已解释的序列化程序。此行为可通过设置 \"nofallback\" 选项(例如: \"0,nofallback\")来禁用。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid ""
@@ -6074,7 +6074,7 @@ msgid ""
 "The name of the theme to be used by Windows.Forms. Available themes include "
 "'clearlooks', 'nice' and 'win32'. The default is 'win32'"
 msgstr ""
-"Windows.Forms 要使用的主题名称。可用的主题包括 "clearlooks"、"nice" 和 "win32"。默认值是 "win32""
+"Windows.Forms 要使用的主题名称。可用的主题包括 \"clearlooks\"、\"nice\" 和 \"win32\"。默认值是 \"win32\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
 msgid ""
@@ -6711,7 +6711,7 @@ msgid ""
 "Only use letters, digits, space, '.' or '_'."
 msgstr ""
 "项目名称非法。\n"
-"仅使用字母、数字、空格、"." 或 "_"。"
+"仅使用字母、数字、空格、\".\" 或 \"_\"。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectOptionsDialog.cs:4
 msgid "The project could not be renamed."
@@ -8268,12 +8268,12 @@ msgstr "是否要从“最近”列表中删除对其的引用?"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:21
 #, fuzzy
 msgid "file \"{0}\" in project \"{1}\""
-msgstr "项目\“{1}\”中的文件\“{0}\”"
+msgstr "项目“{1}”中的文件“{0}”"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchResult.cs:21
 #, fuzzy
 msgid "file \"{0}\""
-msgstr "文件\“{0}\”"
+msgstr "文件“{0}”"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:4
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:30
@@ -8612,7 +8612,7 @@ msgid ""
 "Only use letters, digits, '.' or '_'."
 msgstr ""
 "解决方案名称非法。\n"
-"仅使用字母、数字、"." 或 "_"。"
+"仅使用字母、数字、\".\" 或 \"_\"。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:157
 #, fuzzy
@@ -8621,7 +8621,7 @@ msgid ""
 "Only use letters, digits, '.' or '_'."
 msgstr ""
 "项目名称非法。\n"
-"仅使用字母、数字、"." 或 "_"。"
+"仅使用字母、数字、\".\" 或 \"_\"。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectConfiguration.cs:162
 msgid "Illegal characters used in project location."
@@ -9109,7 +9109,7 @@ msgstr "该项目将发布到存储库“{0}”的模块“{1}”。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:31
 msgid "Publishing \"{0}\" Project..."
-msgstr "正在发布\“{0}\”项目..."
+msgstr "正在发布“{0}”项目..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/PublishCommand.cs:46
 #, fuzzy
@@ -10209,8 +10209,8 @@ msgid ""
 "Contain a ' ', '..', '~', '^', ':', '\\', '?', '['"
 msgstr ""
 "分支名称不能:\n"
-"以 "." 开头或者以 "/" 或 ".lock" 结尾\n"
-"包含 " "、".."、"~"、"^"、":"、"\\"、"?"、"[""
+"以 \".\" 开头或者以 \"/\" 或 \".lock\" 结尾\n"
+"包含 \" \"、\"..\"、\"~\"、\"^\"、\":\"、\"\\\"、\"?\"、\"[\""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:2
 #, fuzzy
@@ -10643,7 +10643,7 @@ msgstr "无法初始化 Subversion 外接程序"
 msgid ""
 "This add-in requires the 'Microsoft Visual C++ 2010 Redistributable'. You "
 "may need to install it."
-msgstr "此外接程序需要 "Microsoft Visual C++ 2010 Redistributable"。您可能需要安装它。"
+msgstr "此外接程序需要 \"Microsoft Visual C++ 2010 Redistributable\"。您可能需要安装它。"
 
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:695
 msgid "{0:0.00} MBytes"
@@ -11002,7 +11002,7 @@ msgstr "禁用设计器"
 #: ../src/addins/MonoDevelop.GtkCore/gtk-gui/MonoDevelop.GtkCore.Dialogs.GtkDesignerOptionsPanelWidget.cs:1
 msgid ""
 "Automatically switch to the \"GUI Builder\" layout when opening the designer"
-msgstr "打开设计器时自动切换到\“GUI 生成器\”布局"
+msgstr "打开设计器时自动切换到“GUI 生成器”布局"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/Accelerator.cs:10
 msgid "Press a key..."
@@ -11665,7 +11665,7 @@ msgid ""
 "To change the ChangeLog creation and update policies, open the options "
 "dialog of the project or solution and click on the 'ChangeLog Integration\" "
 "section."
-msgstr "若要更改 ChangeLog 创建和更新策略，请打开项目或解决方案的选项对话框，然后单击“ChangeLog 集成\”部分。"
+msgstr "若要更改 ChangeLog 创建和更新策略，请打开项目或解决方案的选项对话框，然后单击“ChangeLog 集成”部分。"
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:2
 #, fuzzy
@@ -12294,7 +12294,7 @@ msgid ""
 "the generated configure script."
 msgstr ""
 " -d:default-config\n"
-"\t生成文件默认生成的配置。其他配置可通过已生成的配置脚本的 "--config" 或 "--enable-*" 选项来选择。"
+"\t生成文件默认生成的配置。其他配置可通过已生成的配置脚本的 \"--config\" 或 \"--enable-*\" 选项来选择。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileOptionPanelWidget.cs:29
 msgid "Specified makefile is invalid: {0}"
@@ -12749,7 +12749,7 @@ msgid ""
 "Select the configuration that the Makefile will build by default. Other "
 "configurations can be selected via the '--config' option of the generated "
 "configure script."
-msgstr "选择生成文件默认生成的配置。其他配置可通过已生成的配置脚本的 "--config" 选项来选择。"
+msgstr "选择生成文件默认生成的配置。其他配置可通过已生成的配置脚本的 \"--config\" 选项来选择。"
 
 #: ../src/addins/MonoDevelop.Autotools/gtk-gui/MonoDevelop.Autotools.MakefileSwitchEditorWidget.cs:1
 #, fuzzy
@@ -13265,7 +13265,7 @@ msgstr "C# 语言版本:"
 
 #: ../src/addins/CSharpBinding/gtk-gui/MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs:2
 msgid "Allow '_unsafe' code"
-msgstr "允许 "unsafe" 代码(_U)"
+msgstr "允许 \"unsafe\" 代码(_U)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/CSharpBindingCompilerManager.cs:6
 #, fuzzy
@@ -14091,7 +14091,7 @@ msgid ""
 "value and stores the result in an {1}. It can also be stored in a group for "
 "further use in the query with 'into'."
 msgstr ""
-"{0} 关键字将某个查询中与键值匹配的元素组合在一起，并将结果存储在 {1} 中。它也可以存储在组中，以供将来在含有 "into" 的查询中使用。"
+"{0} 关键字将某个查询中与键值匹配的元素组合在一起，并将结果存储在 {1} 中。它也可以存储在组中，以供将来在含有 \"into\" 的查询中使用。"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:109
 msgid ""
@@ -14803,7 +14803,7 @@ msgstr "修复"
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.CodeActions/CodeActionEditorExtension.cs:63
 #, fuzzy
 msgid "_Options for \"{0}\""
-msgstr "\“{0}\”选项(_O)"
+msgstr "“{0}”选项(_O)"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:8
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Refactoring/RefactoryCommands.cs:15
@@ -14860,7 +14860,7 @@ msgstr "使 {0} 返回任务，而不返回 void"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeFixes/Async/CSharpAddAwaitCodeFixProvider.cs:17
 #, fuzzy
 msgid "Insert 'await'"
-msgstr "插入 "await""
+msgstr "插入 \"await\""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeFixes/Async/CSharpAddAsyncCodeFixProvider.cs:16
 msgid "Make async"
@@ -14908,7 +14908,7 @@ msgstr "简化成员访问“{0}”"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeFixes/SimplifyTypeNames/SimplifyTypeNamesCodeFixProvider.cs:13
 #, fuzzy
 msgid "Remove 'this' qualification"
-msgstr "删除 "this" 限定"
+msgstr "删除 \"this\" 限定"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeFixes/RemoveUnnecessaryUsings/RemoveUnnecessaryUsingsCodeFixProvider.cs:7
 #, fuzzy
@@ -14944,7 +14944,7 @@ msgstr "简化名称"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:15
 #, fuzzy
 msgid "Remove 'this'"
-msgstr "删除 "this""
+msgstr "删除 \"this\""
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:3
 #, fuzzy
@@ -15833,7 +15833,7 @@ msgstr "“{0}”的翻译没有以 " " 结尾。"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Translation for '{0}' doesn't end with '.'."
-msgstr "“{0}”的翻译没有以 "." 结尾。"
+msgstr "“{0}”的翻译没有以 \".\" 结尾。"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Casing mismatch in '{0}'"
@@ -15841,11 +15841,11 @@ msgstr "“{0}”中的大小写不匹配"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Original string '{0}' contains '_', translation doesn't."
-msgstr "原始字符串“{0}”包含 "_"，而翻译不包含。"
+msgstr "原始字符串“{0}”包含 \"_\"，而翻译不包含。"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Original string '{0}' doesn't contain '_', translation does."
-msgstr "原始字符串“{0}”不包含 "_"，而翻译包含。"
+msgstr "原始字符串“{0}”不包含 \"_\"，而翻译包含。"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Original string '{0}' contains '{1}', translation doesn't."
@@ -15911,7 +15911,7 @@ msgstr "窗体 {0}"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/Catalog.cs:14
 msgid "Form {0} (e.g. \"{1}\")"
-msgstr "窗体 {0} (例如，\“{1}\”)"
+msgstr "窗体 {0} (例如，“{1}”)"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/PropertyProvider.cs:4
 #, fuzzy
@@ -16236,7 +16236,7 @@ msgstr "$number"
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid ""
 "Substitutes the last substring matched by group number 'number' (decimal)."
-msgstr "替换按组号 "number" (十进制)匹配的最后一个子字符串。"
+msgstr "替换按组号 \"number\" (十进制)匹配的最后一个子字符串。"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 #, fuzzy
@@ -16253,7 +16253,7 @@ msgstr "$$"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Substitutes a single '$' literal."
-msgstr "替换单个 "$" 字符。"
+msgstr "替换单个 \"$\" 字符。"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 #, fuzzy
@@ -16891,7 +16891,7 @@ msgstr "(?(expression)yes|no)"
 msgid ""
 "Matches the 'yes' part if the expression matches at this point; otherwise, "
 "matches the 'no' part."
-msgstr "如果表达式在此位置匹配，则与 "yes" 部分匹配；否则，与 "no" 部分匹配。"
+msgstr "如果表达式在此位置匹配，则与 \"yes\" 部分匹配；否则，与 \"no\" 部分匹配。"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "(?(name)yes|no)"
@@ -16905,8 +16905,8 @@ msgid ""
 "capturing group used in this expression, the alternation construct \n"
 "is interpreted as an expression test."
 msgstr ""
-"如果命名捕获字符串有匹配，则与 "yes" 部分匹配；\n"
-"否则，与 "no" 部分匹配。"no" 部分可省略。\n"
+"如果命名捕获字符串有匹配，则与 \"yes\" 部分匹配；\n"
+"否则，与 \"no\" 部分匹配。\"no\" 部分可省略。\n"
 "如果给定的名称不与此表达式中使用的\n"
 "捕获组的名称或编号对应，则替换构造将\n"
 "解释为表达式测试。"
@@ -16992,7 +16992,7 @@ msgid ""
 "<b>The file \"{0}\" has been changed outside of {1}.</b>\n"
 "Do you want to keep your changes, or reload the file from disk?"
 msgstr ""
-"<b>文件\“{0}\”已在 {1} 外部更改。</b>\n"
+"<b>文件“{0}”已在 {1} 外部更改。</b>\n"
 "是要保存您的更改，还是要从磁盘重载该文件?"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorWidget.cs:60
@@ -17905,7 +17905,7 @@ msgstr "安装目录中的文件的相对路径。"
 msgid ""
 "Set to 'true' if the text file contains unresolved references to paths (e.g. "
 "@ProgramFiles@)"
-msgstr "如果文本文件包含对路径的未解析的引用(例如，@ProgramFiles@)，则设置为 "true""
+msgstr "如果文本文件包含对路径的未解析的引用(例如，@ProgramFiles@)，则设置为 \"true\""
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:3
 msgid ""
@@ -17952,7 +17952,7 @@ msgstr "本地文件系统"
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:4
 #, fuzzy
 msgid "Could not resolve target directory ID \"{0}\""
-msgstr "无法解析目标目录 ID\“{0}\”"
+msgstr "无法解析目标目录 ID“{0}”"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Targets/LocalFileCopyHandler.cs:4
 #, fuzzy
@@ -20643,7 +20643,7 @@ msgstr "格式错误的服务器注释"
 #: ../src/addins/AspNet/WebForms/Parser/WebFormsDirectiveState.cs:8
 #, fuzzy
 msgid "Unexpected '<' in directive."
-msgstr "指令中意外出现 "<"。"
+msgstr "指令中意外出现 \"<\"。"
 
 #: ../src/addins/AspNet/WebForms/Parser/WebFormsDirectiveState.cs:8
 msgid "Directive closed prematurely."
@@ -20800,7 +20800,7 @@ msgstr "“{0}”指令需要一个或两个参数"
 msgid ""
 "If '{0}' directive has two arguments, the first must be 'public' or "
 "'internal'."
-msgstr "如果“{0}”指令具有两个参数，则第一个参数必须是 "public" 或 "internal"。"
+msgstr "如果“{0}”指令具有两个参数，则第一个参数必须是 \"public\" 或 \"internal\"。"
 
 #: ../src/addins/AspNet/Razor/Generator/PreprocessedCSharpRazorCodeParser.cs:8
 msgid "Only one '{0}' directive is permitted"
@@ -20834,19 +20834,19 @@ msgstr "意外出现第二个 mastertype 指令"
 msgid ""
 "Mastertype directive must have non-empty 'typename' or 'virtualpath' "
 "attribute"
-msgstr "Mastertype 指令必须具有非空的 "typename" 或 "virtualpath" 属性"
+msgstr "Mastertype 指令必须具有非空的 \"typename\" 或 \"virtualpath\" 属性"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:7
 msgid "Assembly directive must have non-empty 'name' or 'src' attribute"
-msgstr "Assembly 指令必须具有非空的 "name" 或 "src" 属性"
+msgstr "Assembly 指令必须具有非空的 \"name\" 或 \"src\" 属性"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:7
 msgid "Import directive must have non-empty 'namespace' attribute"
-msgstr "Import 指令必须具有非空的 "namespace" 属性"
+msgstr "Import 指令必须具有非空的 \"namespace\" 属性"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:7
 msgid "Implements directive must have non-empty 'interface' attribute"
-msgstr "Implements 指令必须具有非空的 "interface" 属性"
+msgstr "Implements 指令必须具有非空的 \"interface\" 属性"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:8
 msgid "Unexpected directive {0}"
@@ -21418,7 +21418,7 @@ msgstr "无法获取用户程序集“{0}”的程序集名称。调试程序现
 msgid ""
 "The \"{0}\" web server cannot be started. Please ensure that it is "
 "installed."
-msgstr "\“{0}\”Web 服务器无法启动。请确保已安装。"
+msgstr "“{0}”Web 服务器无法启动。请确保已安装。"
 
 #: ../src/addins/MonoDevelop.HexEditor/MonoDevelop.HexEditor/DisplayBinding.cs:2
 #, fuzzy
@@ -21788,11 +21788,11 @@ msgstr "例如，System.InvalidOperationException"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:6
 msgid "e.g. colorName == \"Red\""
-msgstr "例如，colorName == \“红色\”"
+msgstr "例如，colorName == “红色”"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:6
 msgid "e.g. Value of 'name' is {name}"
-msgstr "例如，"name" 的值是 {name}"
+msgstr "例如，\"name\" 的值是 {name}"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:20
 #, fuzzy
@@ -21871,7 +21871,7 @@ msgstr "文件不存在。"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:59
 #, fuzzy
 msgid "Missing ':' for line declaration."
-msgstr "行声明缺少 ":"。"
+msgstr "行声明缺少 \":\"。"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:59
 #, fuzzy
@@ -22195,7 +22195,7 @@ msgstr "无法保存包源更改。{0}{0}{1}"
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/PackageSourcesOptionsPanel.cs:156
 #, fuzzy
 msgid "Unable to read or write to \"{0}\"."
-msgstr "无法读取或写入\“{0}\”。"
+msgstr "无法读取或写入“{0}”。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/gtk-gui/MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs:43
 #, fuzzy
@@ -23395,7 +23395,7 @@ msgstr "缺少命名空间 {0}。"
 #: ../external/nrefactory/ICSharpCode.NRefactory.Tests/CSharp/CodeIssues/UnusedParameterIssueTests.cs:10
 #, fuzzy
 msgid "\"Text\""
-msgstr "\“文本\”"
+msgstr "“文本”"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AbstractAndVirtualConversionAction.cs:1
 msgid "Make abstract member virtual"
@@ -23499,24 +23499,24 @@ msgstr "转换为 lambda"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertAsToCastAction.cs:1
 #, fuzzy
 msgid "Convert 'as' to cast."
-msgstr "将 "as" 转换为转换。"
+msgstr "将 \"as\" 转换为转换。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertAsToCastAction.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceSafeCastWithDirectCastCodeRefactoringProvider.cs:4
 #, fuzzy
 msgid "Convert 'as' to cast"
-msgstr "将 "as" 转换为转换"
+msgstr "将 \"as\" 转换为转换"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertCastToAsAction.cs:2
 #, fuzzy
 msgid "Convert cast to 'as'."
-msgstr "将转换转换为 "as"。"
+msgstr "将转换转换为 \"as\"。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertCastToAsAction.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceDirectCastWithSafeCastCodeRefactoringProvider.cs:2
 #, fuzzy
 msgid "Convert cast to 'as'"
-msgstr "将转换转换为 "as""
+msgstr "将转换转换为 \"as\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertDecToHexAction.cs:1
 #, fuzzy
@@ -23541,24 +23541,24 @@ msgstr "转换为 while 循环"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualityOperatorToEqualsAction.cs:1
 #, fuzzy
 msgid "Convert '==' to 'Equals'"
-msgstr "将 "==" 转换为 "Equals""
+msgstr "将 \"==\" 转换为 \"Equals\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualityOperatorToEqualsAction.cs:2
 msgid "Use 'Equals'"
-msgstr "使用 "Equals""
+msgstr "使用 \"Equals\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualsToEqualityOperatorAction.cs:1
 #, fuzzy
 msgid "Convert 'Equals' to '=='"
-msgstr "将 "Equals" 转换为 "==""
+msgstr "将 \"Equals\" 转换为 \"==\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualsToEqualityOperatorAction.cs:1
 msgid "Use '=='"
-msgstr "使用 "==""
+msgstr "使用 \"==\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertEqualsToEqualityOperatorAction.cs:1
 msgid "Use '!='"
-msgstr "使用 "!=""
+msgstr "使用 \"!=\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertExplicitToImplicitImplementationAction.cs:2
 msgid "Convert explicit to implict implementation"
@@ -23571,12 +23571,12 @@ msgstr "将显式实现转换为隐式实现"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertForeachToForAction.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertForeachToForAction.cs:5
 msgid "Convert 'foreach' loop to 'for'"
-msgstr "将 "foreach" 循环转换为 "for""
+msgstr "将 \"foreach\" 循环转换为 \"for\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertForeachToForAction.cs:11
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertForeachToForCodeRefactoringProvider.cs:16
 msgid "Convert 'foreach' loop to optimized 'for'"
-msgstr "将 "foreach" 循环转换为经过优化的 "for""
+msgstr "将 \"foreach\" 循环转换为经过优化的 \"for\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertHexToDecAction.cs:1
 #, fuzzy
@@ -23641,12 +23641,12 @@ msgstr "将方法组转换为 lambda 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertSwitchToIfAction.cs:2
 msgid "Convert 'switch' to 'if'"
-msgstr "将 "switch" 转换为 "if""
+msgstr "将 \"switch\" 转换为 \"if\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertSwitchToIfAction.cs:6
 #, fuzzy
 msgid "Convert to 'if'"
-msgstr "转换为 "if""
+msgstr "转换为 \"if\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertToInitializer/ConvertInitializerToExplicitInitializationsAction.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertToInitializer/ConvertInitializerToExplicitInitializationsAction.cs:2
@@ -23869,13 +23869,13 @@ msgstr "提取方法"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/FlipEqualsTargetAndArgumentAction.cs:1
 msgid "Swap 'Equals' target and argument"
-msgstr "交换 "Equals" 目标和参数"
+msgstr "交换 \"Equals\" 目标和参数"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/FlipEqualsTargetAndArgumentAction.cs:5
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/FlipEqualsTargetAndArgumentCodeRefactoringProvider.cs:6
 #, fuzzy
 msgid "Flip 'Equals' target and argument"
-msgstr "翻转 "Equals" 目标和参数"
+msgstr "翻转 \"Equals\" 目标和参数"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/FlipOperatorArgumentsAction.cs:1
 msgid "Swaps left and right arguments."
@@ -23997,7 +23997,7 @@ msgstr "反转条件运算符"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/InvertConditionalOperatorCodeRefactoringProvider.cs:4
 #, fuzzy
 msgid "Invert '?:'"
-msgstr "反转 "?:""
+msgstr "反转 \"?:\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/InvertIfAction.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/InvertIfAction.cs:2
@@ -24066,11 +24066,11 @@ msgstr "转换为查询语法"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/MergeNestedIfAction.cs:2
 msgid "Merge nested 'if'"
-msgstr "合并嵌套的 "if""
+msgstr "合并嵌套的 \"if\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/MergeNestedIfAction.cs:5
 msgid "Merge nested 'if's"
-msgstr "合并嵌套的 "if""
+msgstr "合并嵌套的 \"if\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/MoveToOuterScopeAction.cs:1
 #, fuzzy
@@ -24090,7 +24090,7 @@ msgstr "将初始值设定项移到外部范围"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/NegateIsExpressionAction.cs:0
 #, fuzzy
 msgid "Negate 'is' expression"
-msgstr "对 "is" 表达式求反"
+msgstr "对 \"is\" 表达式求反"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/NegateIsExpressionAction.cs:0
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/NegateIsExpressionAction.cs:1
@@ -24109,7 +24109,7 @@ msgstr "对关系表达式求反"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/PutInsideUsingAction.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/PutInsideUsingAction.cs:7
 msgid "put inside 'using'"
-msgstr "放入 "using""
+msgstr "放入 \"using\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/RemoveBackingStoreAction.cs:1
 #, fuzzy
@@ -24193,39 +24193,39 @@ msgstr "使用 string.Format()"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/UseStringFormatAction.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Uncategorized/UseStringFormatAction.cs:17
 msgid "Use 'string.Format()'"
-msgstr "使用 "string.Format()""
+msgstr "使用 \"string.Format()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/UseVarKeywordAction.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/UseVarKeywordAction.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/SuggestUseVarKeywordEvidentIssue.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/SuggestUseVarKeywordEvidentAnalyzer.cs:1
 msgid "Use 'var' keyword"
-msgstr "使用 "var" 关键字"
+msgstr "使用 \"var\" 关键字"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:1
 msgid "'if' statement can be re-written as '&&' expression"
-msgstr ""if" 语句可以重写为 "&&" 表达式"
+msgstr "\"if\" 语句可以重写为 \"&&\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
 #, fuzzy
 msgid "Convert to '&&' expresssion"
-msgstr "转换为 "&&" 表达式"
+msgstr "转换为 \"&&\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
 #, fuzzy
 msgid "Replace with '&&'"
-msgstr "替换为 "&&""
+msgstr "替换为 \"&&\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
 #, fuzzy
 msgid "Convert to '&=' expresssion"
-msgstr "转换为 "&=" 表达式"
+msgstr "转换为 \"&=\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConvertIfToAndExpressionIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConvertIfToAndExpressionAnalyzer.cs:4
 #, fuzzy
 msgid "Replace with '&='"
-msgstr "替换为 "&=""
+msgstr "替换为 \"&=\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/LockThisIssue.cs:2
 msgid "Use of lock (this) or MethodImplOptions.Synchronized is discouraged"
@@ -24261,25 +24261,25 @@ msgstr "引发 NotImplemented 异常"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantInternalIssue.cs:2
 msgid "Remove redundant 'internal' modifier"
-msgstr "删除冗余的 "internal" 修饰符"
+msgstr "删除冗余的 \"internal\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantInternalIssue.cs:4
 msgid "Keyword 'internal' is redundant.  This is the default modifier."
-msgstr "关键字 "internal" 是冗余的。这是默认修饰符。"
+msgstr "关键字 \"internal\" 是冗余的。这是默认修饰符。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantInternalIssue.cs:4
 #, fuzzy
 msgid "Remove 'internal' modifier"
-msgstr "删除 "internal" 修饰符"
+msgstr "删除 \"internal\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantPrivateIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantPrivateIssue.cs:4
 msgid "Remove redundant 'private' modifier"
-msgstr "删除冗余的 "private" 修饰符"
+msgstr "删除冗余的 \"private\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantPrivateIssue.cs:4
 msgid "Keyword 'private' is redundant. This is the default modifier."
-msgstr "关键字 "private" 是冗余的。这是默认修饰符。"
+msgstr "关键字 \"private\" 是冗余的。这是默认修饰符。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/XmlDocIssue.cs:1
 #, fuzzy
@@ -24362,7 +24362,7 @@ msgstr "对没有标记 Flags 属性的枚举执行位运算"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CanBeReplacedWithTryCastAndCheckForNullIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CanBeReplacedWithTryCastAndCheckForNullIssue.cs:5
 msgid "Type check and casts can be replaced with 'as' and null check"
-msgstr "类型检查和转换可以替换为 "as" 和 null 检查"
+msgstr "类型检查和转换可以替换为 \"as\" 和 null 检查"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorIssue.cs:2
 msgid "Compare floating point numbers with equality operator"
@@ -24372,7 +24372,7 @@ msgstr "使用相等运算符比较浮点数"
 msgid ""
 "NaN doesn't equal to any floating point number including to itself. Use "
 "'IsNaN' instead."
-msgstr "NaN 不等于包括其自身的任何浮点数。改用 "IsNaN"。"
+msgstr "NaN 不等于包括其自身的任何浮点数。改用 \"IsNaN\"。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorIssue.cs:16
 #, fuzzy
@@ -24388,7 +24388,7 @@ msgstr "替换为“{0}.IsNaN(...)”调用"
 msgid ""
 "Comparison of floating point numbers with equality operator. Use "
 "'IsNegativeInfinity' method."
-msgstr "使用相等运算符进行的浮点数比较。使用 "IsNegativeInfinity" 方法。"
+msgstr "使用相等运算符进行的浮点数比较。使用 \"IsNegativeInfinity\" 方法。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorIssue.cs:17
 msgid "Replace with '!{0}.IsNegativeInfinity(...)' call"
@@ -24402,7 +24402,7 @@ msgstr "替换为“{0}.IsNegativeInfinity(...)”调用"
 msgid ""
 "Comparison of floating point numbers with equality operator. Use "
 "'IsPositiveInfinity' method."
-msgstr "使用相等运算符进行的浮点数比较。使用 "IsPositiveInfinity" 方法。"
+msgstr "使用相等运算符进行的浮点数比较。使用 \"IsPositiveInfinity\" 方法。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorIssue.cs:18
 msgid "Replace with '!{0}.IsPositiveInfinity(...)' call"
@@ -24428,12 +24428,12 @@ msgstr "固定浮点数比较。使用 epsilon 比较差异。"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ConditionalTernaryEqualBranchIssue.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ConditionalTernaryEqualBranchAnalyzer.cs:1
 msgid "'?:' expression has identical true and false branches"
-msgstr ""?:" 表达式具有相同的 true 分支和 false 分支"
+msgstr "\"?:\" 表达式具有相同的 true 分支和 false 分支"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ConditionalTernaryEqualBranchIssue.cs:6
 #, fuzzy
 msgid "Replace '?:' with branch"
-msgstr "将 "?:" 替换为分支"
+msgstr "将 \"?:\" 替换为分支"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorIssue.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/DoNotCallOverridableMethodsInConstructorIssue.cs:16
@@ -24463,12 +24463,12 @@ msgstr "相等表达式比较"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/EqualExpressionComparisonIssue.cs:2
 #, fuzzy
 msgid "Replace with 'true'"
-msgstr "替换为 "true""
+msgstr "替换为 \"true\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/EqualExpressionComparisonIssue.cs:2
 #, fuzzy
 msgid "Replace with 'false'"
-msgstr "替换为 "false""
+msgstr "替换为 \"false\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/EventUnsubscriptionViaAnonymousDelegateIssue.cs:1
 #, fuzzy
@@ -24485,7 +24485,7 @@ msgstr "通过匿名委托取消订阅事件是无用的"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ForControlVariableIsNeverModifiedIssue.cs:13
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ForControlVariableIsNeverModifiedAnalyzer.cs:1
 msgid "'for' loop control variable is never modified"
-msgstr ""for" 循环控制变量从未修改"
+msgstr "\"for\" 循环控制变量从未修改"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/FunctionNeverReturnsIssue.cs:2
 #, fuzzy
@@ -24523,7 +24523,7 @@ msgstr "局部变量“{0}”隐藏成员“{1}”"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/LongLiteralEndingLowerLIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LongLiteralEndingLowerLAnalyzer.cs:1
 msgid "Long literal ends with 'l' instead of 'L'"
-msgstr "长整型文本以 "l" 结尾，而不以 "L" 结尾"
+msgstr "长整型文本以 \"l\" 结尾，而不以 \"L\" 结尾"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/LongLiteralEndingLowerLIssue.cs:7
 msgid "Make suffix upper case"
@@ -24558,11 +24558,11 @@ msgstr "从基“{0}”添加默认值"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OptionalParameterRefOutIssue.cs:1
 msgid "[Optional] attribute with 'ref' or 'out' parameter"
-msgstr "具有 "ref" 或 "out" 参数的[可选]属性"
+msgstr "具有 \"ref\" 或 \"out\" 参数的[可选]属性"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OptionalParameterRefOutIssue.cs:3
 msgid "A 'ref' or 'out' parameter can't be optional"
-msgstr ""ref" 或 "out" 参数不能是可选的"
+msgstr "\"ref\" 或 \"out\" 参数不能是可选的"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ParameterHidesMemberIssue.cs:2
 msgid "Parameter hides a member"
@@ -24626,19 +24626,19 @@ msgstr "使字段变为静态"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ValueParameterNotUsedIssue.cs:2
 #, fuzzy
 msgid "'value' parameter not used"
-msgstr "未使用 "value" 参数"
+msgstr "未使用 \"value\" 参数"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ValueParameterNotUsedIssue.cs:3
 msgid "The setter does not use the 'value' parameter"
-msgstr "Setter 没有使用 "value" 参数"
+msgstr "Setter 没有使用 \"value\" 参数"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ValueParameterNotUsedIssue.cs:3
 msgid "The add accessor does not use the 'value' parameter"
-msgstr "Add 访问器没有使用 "value" 参数"
+msgstr "Add 访问器没有使用 \"value\" 参数"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ValueParameterNotUsedIssue.cs:3
 msgid "The remove accessor does not use the 'value' parameter"
-msgstr "Remove 访问器没有使用 "value" 参数"
+msgstr "Remove 访问器没有使用 \"value\" 参数"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerWarnings/CS1573ParameterHasNoMatchingParamTagIssue.cs:1
 msgid "Parameter has no matching param tag in the XML comment"
@@ -24736,14 +24736,14 @@ msgstr "“{0}”不应使用下划线分隔单词。(规则“{1}”)"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:35
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
 msgid "after '_' a lower letter should follow. (Rule '{0}')"
-msgstr ""_" 应后接小写字母。(规则“{0}”)"
+msgstr "\"_\" 应后接小写字母。(规则“{0}”)"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:24
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:25
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:35
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
-msgstr ""_" 应后接大写字母。(规则“{0}”)"
+msgstr "\"_\" 应后接大写字母。(规则“{0}”)"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:25
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
@@ -24793,40 +24793,40 @@ msgstr "替换为方法组"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingAnalyzer.cs:1
 msgid "'?:' expression can be converted to '??' expression"
-msgstr ""?:" 表达式可以转换为 "??" 表达式"
+msgstr "\"?:\" 表达式可以转换为 \"??\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingIssue.cs:9
 msgid "'?:' expression can be re-written as '??' expression"
-msgstr ""?:" 表达式可以重写为 "??" 表达式"
+msgstr "\"?:\" 表达式可以重写为 \"??\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertConditionalTernaryToNullCoalescingIssue.cs:9
 #, fuzzy
 msgid "Replace '?:'  operator with '??"
-msgstr "将 "?:" 运算符替换为 "??""
+msgstr "将 \"?:\" 运算符替换为 \"??\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToConditionalTernaryExpressionIssue.cs:1
 msgid "'if' statement can be re-written as '?:' expression"
-msgstr ""if" 语句可以重写为 "?:" 表达式"
+msgstr "\"if\" 语句可以重写为 \"?:\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToConditionalTernaryExpressionIssue.cs:10
 #, fuzzy
 msgid "Convert to '?:' expression"
-msgstr "转换为 "?:" 表达式"
+msgstr "转换为 \"?:\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionIssue.cs:1
 msgid "'if' statement can be re-written as '??' expression"
-msgstr ""if" 语句可以重写为 "??" 表达式"
+msgstr "\"if\" 语句可以重写为 \"??\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionIssue.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:1
 #, fuzzy
 msgid "Convert to '??' expresssion"
-msgstr "转换为 "??" 表达式"
+msgstr "转换为 \"??\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertNullableToShortFormIssue.cs:1
 #, fuzzy
 msgid "Convert 'Nullable<T>' to 'T?'"
-msgstr "将 "Nullable<T>" 转换为 "T?""
+msgstr "将 \"Nullable<T>\" 转换为 \"T?\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertNullableToShortFormIssue.cs:4
 #, fuzzy
@@ -24851,16 +24851,16 @@ msgstr "转换为扩展方法调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/RewriteIfReturnToReturnIssue.cs:1
 msgid "'if...return' statement can be re-written as 'return' statement"
-msgstr ""if...return" 语句可以重写为 "return" 语句"
+msgstr "\"if...return\" 语句可以重写为 \"return\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/RewriteIfReturnToReturnIssue.cs:3
 #, fuzzy
 msgid "Convert to 'return' statement"
-msgstr "转换为 "return" 语句"
+msgstr "转换为 \"return\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/SuggestUseVarKeywordEvidentIssue.cs:1
 msgid "Use 'var'"
-msgstr "使用 "var""
+msgstr "使用 \"var\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/AccessToStaticMemberViaDerivedTypeIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/AccessToStaticMemberViaDerivedTypeAnalyzer.cs:1
@@ -24879,30 +24879,30 @@ msgstr "使用 base 限定符"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/BaseMemberHasParamsAnalyzer.cs:1
 msgid "Base parameter has 'params' modifier, but missing in overrider"
-msgstr "基参数具有 "params" 修饰符，但替代项中没有"
+msgstr "基参数具有 \"params\" 修饰符，但替代项中没有"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:3
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/BaseMemberHasParamsAnalyzer.cs:1
 msgid "Base method '{0}' has a 'params' modifier"
-msgstr "基方法“{0}”具有 "params" 修饰符"
+msgstr "基方法“{0}”具有 \"params\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:3
 msgid "Add 'params' modifier"
-msgstr "添加 "params" 修饰符"
+msgstr "添加 \"params\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfDoToWhileIssue.cs:1
 msgid "'if-do-while' statement can be re-written as 'while' statement"
-msgstr ""if-do-while" 语句可以重写为 "while" 语句"
+msgstr "\"if-do-while\" 语句可以重写为 \"while\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfDoToWhileIssue.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfDoToWhileAnalyzer.cs:1
 msgid "Statement can be simplified to 'while' statement"
-msgstr "语句可以简化为 "while" 语句"
+msgstr "语句可以简化为 \"while\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfDoToWhileIssue.cs:4
 #, fuzzy
 msgid "Replace with 'while'"
-msgstr "替换为 "while""
+msgstr "替换为 \"while\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertToConstantIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertToConstantAnalyzer.cs:1
@@ -24932,7 +24932,7 @@ msgstr "空控制语句体"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/EmptyEmbeddedStatementIssue.cs:10
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/EmptyEmbeddedStatementAnalyzer.cs:1
 msgid "';' should be avoided. Use '{}' instead"
-msgstr "应避免使用 ";"，改用 "{}""
+msgstr "应避免使用 \";\"，改用 \"{}\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/EmptyEmbeddedStatementIssue.cs:4
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/EmptyEmbeddedStatementIssue.cs:6
@@ -24940,7 +24940,7 @@ msgstr "应避免使用 ";"，改用 "{}""
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/EmptyEmbeddedStatementIssue.cs:10
 #, fuzzy
 msgid "Replace with '{}'"
-msgstr "替换为 "{}""
+msgstr "替换为 \"{}\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/FieldCanBeMadeReadOnlyIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/FieldCanBeMadeReadOnlyAnalyzer.cs:1
@@ -25006,11 +25006,11 @@ msgstr "替换为 FirstOrDefault<T>()"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithFirstOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Expression can be simlified to 'FirstOrDefault<T>()'"
-msgstr "表达式可以简化为 "FirstOrDefault<T>()""
+msgstr "表达式可以简化为 \"FirstOrDefault<T>()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithFirstOrDefaultIssue.cs:5
 msgid "Replace with 'FirstOrDefault<T>()'"
-msgstr "替换为 "FirstOrDefault<T>()""
+msgstr "替换为 \"FirstOrDefault<T>()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithLastOrDefaultIssue.cs:1
 msgid "Replace with LastOrDefault<T>()"
@@ -25020,11 +25020,11 @@ msgstr "替换为 LastOrDefault<T>()"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithLastOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Expression can be simlified to 'LastOrDefault<T>()'"
-msgstr "表达式可以简化为 "LastOrDefault<T>()""
+msgstr "表达式可以简化为 \"LastOrDefault<T>()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithLastOrDefaultIssue.cs:5
 msgid "Replace with 'LastOrDefault<T>()'"
-msgstr "替换为 "LastOrDefault<T>()""
+msgstr "替换为 \"LastOrDefault<T>()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithOfTypeAny.cs:1
 msgid "Replace with OfType<T>().Any()"
@@ -25136,7 +25136,7 @@ msgstr "替换为对 SingleOrDefault(...) 的单一调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithStringIsNullOrEmptyIssue.cs:1
 msgid "Use 'String.IsNullOrEmpty'"
-msgstr "使用 "String.IsNullOrEmpty""
+msgstr "使用 \"String.IsNullOrEmpty\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReplaceWithStringIsNullOrEmptyIssue.cs:4
 #, fuzzy
@@ -25165,11 +25165,11 @@ msgstr "简化条件表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringEndsWithIsCultureSpecificIssue.cs:1
 msgid "'string.EndsWith' is culture-aware"
-msgstr ""string.EndsWith" 可以识别区域性"
+msgstr "\"string.EndsWith\" 可以识别区域性"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificIssue.cs:1
 msgid "'string.IndexOf' is culture-aware"
-msgstr ""string.IndexOf" 可以识别区域性"
+msgstr "\"string.IndexOf\" 可以识别区域性"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificIssue.cs:6
 msgid "'{0}' is culture-aware and missing a StringComparison argument"
@@ -25177,36 +25177,36 @@ msgstr "“{0}”可以识别区域性，但缺少 StringComparison 参数"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificIssue.cs:6
 msgid "Add 'StringComparison.Ordinal'"
-msgstr "添加 "StringComparison.Ordinal""
+msgstr "添加 \"StringComparison.Ordinal\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificIssue.cs:6
 msgid "Add 'StringComparison.CurrentCulture'"
-msgstr "添加 "StringComparison.CurrentCulture""
+msgstr "添加 \"StringComparison.CurrentCulture\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringLastIndexOfIsCultureSpecificIssue.cs:1
 msgid "'string.LastIndexOf' is culture-aware"
-msgstr ""string.LastIndexOf" 可以识别区域性"
+msgstr "\"string.LastIndexOf\" 可以识别区域性"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringStartsWithIsCultureSpecificIssue.cs:1
 msgid "'string.StartsWith' is culture-aware"
-msgstr ""string.StartsWith" 可以识别区域性"
+msgstr "\"string.StartsWith\" 可以识别区域性"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseMethodAnyIssue.cs:1
 #, fuzzy
 msgid "Use method 'Any()'"
-msgstr "使用方法 "Any()""
+msgstr "使用方法 \"Any()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseMethodAnyIssue.cs:6
 msgid "Use 'Any()' for increased performance."
-msgstr "使用 "Any()" 提高性能。"
+msgstr "使用 \"Any()\" 提高性能。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseMethodAnyIssue.cs:6
 msgid "Replace with call to '!Any()'"
-msgstr "替换为对 "!Any()" 的调用"
+msgstr "替换为对 \"!Any()\" 的调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseMethodAnyIssue.cs:6
 msgid "Replace with call to 'Any()'"
-msgstr "替换为对 "Any()" 的调用"
+msgstr "替换为对 \"Any()\" 的调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodIsInstanceOfTypeAnalyzer.cs:1
@@ -25224,7 +25224,7 @@ msgstr "替换为对 IsInstanceOfType 的调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/ConstantNullCoalescingConditionIssue.cs:1
 msgid "'??' condition is known to be null or not null"
-msgstr "已知 "??" 条件为 null 或非 null"
+msgstr "已知 \"??\" 条件为 null 或非 null"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/ConstantNullCoalescingConditionIssue.cs:7
 msgid "Redundant ??. Left side is never null."
@@ -25262,7 +25262,7 @@ msgstr "双重否定是冗余的"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/DoubleNegationOperatorIssue.cs:8
 #, fuzzy
 msgid "Remove '!!'"
-msgstr "删除 "!!""
+msgstr "删除 \"!!\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantAttributeParenthesesIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantAttributeParenthesesIssue.cs:6
@@ -25274,33 +25274,33 @@ msgstr "如果属性没有参数，则圆括号是冗余的"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEmptyObjectCreationArgumentListssue.cs:5
 #, fuzzy
 msgid "Remove '()'"
-msgstr "删除 "()""
+msgstr "删除 \"()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantBaseQualifierIssue.cs:1
 msgid "Redundant 'base.' qualifier"
-msgstr "冗余的 "base." 限定符"
+msgstr "冗余的 \"base.\" 限定符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantBaseQualifierIssue.cs:17
 msgid "'base.' is redundant and can be removed safely."
-msgstr ""base." 是冗余的，可以安全删除。"
+msgstr "\"base.\" 是冗余的，可以安全删除。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantBaseQualifierIssue.cs:17
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CallToObjectEqualsViaBaseIssue.cs:4
 #, fuzzy
 msgid "Remove 'base.'"
-msgstr "删除 "base.""
+msgstr "删除 \"base.\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantBoolCompareIssue.cs:2
 msgid "Comparison of boolean with 'true' or 'false'"
-msgstr "使用 "true" 或 "false" 比较布尔"
+msgstr "使用 \"true\" 或 \"false\" 比较布尔"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantBoolCompareIssue.cs:10
 msgid "Comparison with 'true' is redundant"
-msgstr "使用 "true" 的比较是冗余的"
+msgstr "使用 \"true\" 的比较是冗余的"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantBoolCompareIssue.cs:10
 msgid "Comparison with 'false' is redundant"
-msgstr "使用 "false" 的比较是冗余的"
+msgstr "使用 \"false\" 的比较是冗余的"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantBoolCompareIssue.cs:10
 #, fuzzy
@@ -25309,7 +25309,7 @@ msgstr "删除冗余的比较"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCaseLabelIssue.cs:2
 msgid "Redundant 'case' label"
-msgstr "冗余的 "case" 标签"
+msgstr "冗余的 \"case\" 标签"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCaseLabelIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:1
@@ -25353,13 +25353,13 @@ msgstr "集合初始值设定项中的冗余逗号"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCommaInArrayInitializerIssue.cs:5
 #, fuzzy
 msgid "Remove ','"
-msgstr "删除 ",""
+msgstr "删除 \",\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantComparisonWithNullIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantComparisonWithNullIssue.cs:5
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:1
 msgid "Redundant comparison with 'null'"
-msgstr "使用 "null" 的冗余比较"
+msgstr "使用 \"null\" 的冗余比较"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantComparisonWithNullIssue.cs:5
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantLogicalConditionalExpressionOperandIssue.cs:4
@@ -25397,12 +25397,12 @@ msgstr "删除冗余的基类型引用"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantIfElseBlockIssue.cs:9
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:1
 msgid "Redundant 'else' keyword"
-msgstr "冗余的 "else" 关键字"
+msgstr "冗余的 \"else\" 关键字"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantIfElseBlockIssue.cs:9
 #, fuzzy
 msgid "Remove redundant 'else'"
-msgstr "删除冗余的 "else""
+msgstr "删除冗余的 \"else\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantNameQualifierIssue.cs:3
 #, fuzzy
@@ -25446,20 +25446,20 @@ msgstr "按条件替换"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantThisQualifierIssue.cs:2
 msgid "Redundant 'this.' qualifier"
-msgstr "冗余的 "this." 限定符"
+msgstr "冗余的 \"this.\" 限定符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantThisQualifierIssue.cs:25
 msgid "'this.' is redundant and can be removed safely."
-msgstr ""this." 是冗余的，可以安全删除。"
+msgstr "\"this.\" 是冗余的，可以安全删除。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantThisQualifierIssue.cs:25
 #, fuzzy
 msgid "Remove 'this.'"
-msgstr "删除 "this.""
+msgstr "删除 \"this.\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantToStringCallForValueTypesIssue.cs:1
 msgid "Redundant 'object.ToString()' call for value types"
-msgstr "对值类型而言冗余的 "object.ToString()" 调用"
+msgstr "对值类型而言冗余的 \"object.ToString()\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantToStringCallForValueTypesIssue.cs:10
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantToStringCallIssue.cs:5
@@ -25471,11 +25471,11 @@ msgstr "冗余的 ToString() 调用"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantToStringCallIssue.cs:5
 #, fuzzy
 msgid "Remove redundant '.ToString()'"
-msgstr "删除冗余的 ".ToString()""
+msgstr "删除冗余的 \".ToString()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantToStringCallIssue.cs:1
 msgid "Redundant 'object.ToString()' call"
-msgstr "冗余的 "object.ToString()" 调用"
+msgstr "冗余的 \"object.ToString()\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantUsingDirectiveIssue.cs:2
 #, fuzzy
@@ -25546,7 +25546,7 @@ msgstr "枚举的默认基础类型已经是 int"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntIssue.cs:6
 #, fuzzy
 msgid "Remove redundant ': int'"
-msgstr "删除冗余的 ": int""
+msgstr "删除冗余的 \": int\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/EnumUnderlyingTypeIsIntIssue.cs:7
 #, fuzzy
@@ -25574,7 +25574,7 @@ msgstr "局部变量从未被使用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartIssue.cs:2
 msgid "Redundant 'partial' modifier in type declaration"
-msgstr "类型声明中的冗余 "partial" 修饰符"
+msgstr "类型声明中的冗余 \"partial\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartAnalyzer.cs:1
@@ -25587,7 +25587,7 @@ msgstr "具有单一部分的分部类"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartCodeFixProvider.cs:3
 #, fuzzy
 msgid "Remove 'partial'"
-msgstr "删除 "partial""
+msgstr "删除 \"partial\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/RedundantBaseConstructorCallIssue.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/RedundantBaseConstructorCallIssue.cs:4
@@ -25599,7 +25599,7 @@ msgstr "冗余的基构造函数调用"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/RedundantBaseConstructorCallIssue.cs:4
 #, fuzzy
 msgid "Remove redundant 'base()'"
-msgstr "删除冗余的 "base()""
+msgstr "删除冗余的 \"base()\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/RedundantDefaultFieldInitializerIssue.cs:1
 #, fuzzy
@@ -25690,7 +25690,7 @@ msgstr "显式使用该变量时会重新引发异常"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/ExceptionRethrowIssue.cs:3
 msgid "Change to 'throw;'"
-msgstr "更改为 "throw;""
+msgstr "更改为 \"throw;\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/ExplicitConversionInForEachIssue.cs:3
 msgid "Collection element type '{0}' is not implicitly convertible to '{1}'"
@@ -25735,78 +25735,78 @@ msgstr "将方法替换为更简单的版本"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToConditionalTernaryExpressionAction.cs:1
 msgid "Convert 'if' to '?:'"
-msgstr "将 "if" 转换为 "?:""
+msgstr "将 \"if\" 转换为 \"?:\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToConditionalTernaryExpressionAction.cs:4
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertNullCoalescingToConditionalExpressionAction.cs:1
 #, fuzzy
 msgid "Replace with '?:' expression"
-msgstr "替换为 "?:" 表达式"
+msgstr "替换为 \"?:\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToReturnStatementAction.cs:1
 #, fuzzy
 msgid "Convert 'if' to 'return'"
-msgstr "将 "if" 转换为 "return""
+msgstr "将 \"if\" 转换为 \"return\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToReturnStatementAction.cs:11
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Uncategorized/ConvertIfStatementToReturnStatementAction.cs:4
 #, fuzzy
 msgid "Replace with 'return'"
-msgstr "替换为 "return""
+msgstr "替换为 \"return\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToNullCoalescingExpressionAction.cs:2
 #, fuzzy
 msgid "Convert 'if' to '??' expression"
-msgstr "将 "if" 转换为 "??" 表达式"
+msgstr "将 \"if\" 转换为 \"??\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToNullCoalescingExpressionAction.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Uncategorized/ConvertIfStatementToNullCoalescingExpressionAction.cs:4
 #, fuzzy
 msgid "Replace with '??'"
-msgstr "替换为 "??""
+msgstr "替换为 \"??\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToSwitchStatementIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToSwitchStatementAnalyzer.cs:1
 msgid "'if' statement can be re-written as 'switch' statement"
-msgstr ""if" 语句可以重写为 "switch" 语句"
+msgstr "\"if\" 语句可以重写为 \"switch\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertIfStatementToSwitchStatementIssue.cs:5
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToSwitchStatementAnalyzer.cs:1
 #, fuzzy
 msgid "Convert to 'switch' statement"
-msgstr "转换为 "switch" 语句"
+msgstr "转换为 \"switch\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToSwitchStatementAction.cs:2
 msgid "Convert 'if' to 'switch'"
-msgstr "将 "if" 转换为 "switch""
+msgstr "将 \"if\" 转换为 \"switch\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertIfStatementToSwitchStatementAction.cs:5
 #, fuzzy
 msgid "Convert to 'switch'"
-msgstr "转换为 "switch""
+msgstr "转换为 \"switch\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/RedundantParamsIssue.cs:1
 msgid "'params' is ignored on overrides"
-msgstr ""params" 在替代时被忽略"
+msgstr "\"params\" 在替代时被忽略"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/RedundantParamsIssue.cs:3
 msgid "'params' is always ignored in overrides"
-msgstr ""params" 始终在替代时被忽略"
+msgstr "\"params\" 始终在替代时被忽略"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/RedundantParamsIssue.cs:3
 #, fuzzy
 msgid "Remove 'params' modifier"
-msgstr "删除 "params" 修饰符"
+msgstr "删除 \"params\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertNullCoalescingToConditionalExpressionAction.cs:1
 #, fuzzy
 msgid "Convert '??' to '?:'"
-msgstr "将 "??" 转换为 "?:""
+msgstr "将 \"??\" 转换为 \"?:\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertReturnStatementToIfAction.cs:1
 #, fuzzy
 msgid "Convert 'return' to 'if'"
-msgstr "将 "return" 转换为 "if""
+msgstr "将 \"return\" 转换为 \"if\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertReturnStatementToIfAction.cs:3
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertReturnStatementToIfAction.cs:4
@@ -25816,30 +25816,30 @@ msgstr "将 "return" 转换为 "if""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertTernaryExpressionToIfStatementCodeRefactoringProvider.cs:5
 #, fuzzy
 msgid "Replace with 'if' statement"
-msgstr "替换为 "if" 语句"
+msgstr "替换为 \"if\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertAssignmentToIfAction.cs:1
 #, fuzzy
 msgid "Convert assignment to 'if'"
-msgstr "将赋值转换为 "if""
+msgstr "将赋值转换为 \"if\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ForCanBeConvertedToForeachIssue.cs:1
 msgid "'for' can be converted into 'foreach'"
-msgstr ""for" 可以转换为 "foreach""
+msgstr "\"for\" 可以转换为 \"foreach\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ForCanBeConvertedToForeachIssue.cs:15
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ForCanBeConvertedToForeachAnalyzer.cs:1
 msgid "'for' loop can be converted to 'foreach'"
-msgstr ""for" 循环可以转换为 "foreach""
+msgstr "\"for\" 循环可以转换为 \"foreach\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ForCanBeConvertedToForeachIssue.cs:15
 #, fuzzy
 msgid "Convert to 'foreach'"
-msgstr "转换为 "foreach""
+msgstr "转换为 \"foreach\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/UseAsAndNullCheckAction.cs:1
 msgid "Use 'as' and null check"
-msgstr "使用 "as" 和 null 检查"
+msgstr "使用 \"as\" 和 null 检查"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/UseAsAndNullCheckAction.cs:8
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/UseAsAndNullCheckAction.cs:14
@@ -25848,17 +25848,17 @@ msgstr "使用 "as" 和 null 检查"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/UseAsAndNullCheckCodeRefactoringProvider.cs:10
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/UseAsAndNullCheckCodeRefactoringProvider.cs:24
 msgid "Use 'as' and check for null"
-msgstr "使用 "as" 和 null 检查"
+msgstr "使用 \"as\" 和 null 检查"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertForToWhileAction.cs:1
 #, fuzzy
 msgid "Convert 'for' loop to 'while'"
-msgstr "将 "for" 循环转换为 "while""
+msgstr "将 \"for\" 循环转换为 \"while\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertForToWhileAction.cs:1
 #, fuzzy
 msgid "Convert to 'while'"
-msgstr "转换为 "while""
+msgstr "转换为 \"while\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AddBracesAction.cs:1
 #, fuzzy
@@ -25876,12 +25876,12 @@ msgstr "向“{0}”添加大括号"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEmptyDefaultSwitchBranchAnalyzer.cs:1
 #, fuzzy
 msgid "Redundant empty 'default' switch branch"
-msgstr "冗余的空 "default" 切换分支"
+msgstr "冗余的空 \"default\" 切换分支"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEmptyDefaultSwitchBranchIssue.cs:4
 #, fuzzy
 msgid "Remove redundant 'default' branch"
-msgstr "删除冗余的 "default" 分支"
+msgstr "删除冗余的 \"default\" 分支"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/CS0126ReturnMustBeFollowedByAnyExpression.cs:1
 msgid "CS0126: A method with return type cannot return without value."
@@ -25893,7 +25893,7 @@ msgstr "返回默认值"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/CS0126ReturnMustBeFollowedByAnyExpression.cs:17
 msgid "Change method return type to 'void'"
-msgstr "将方法返回类型更改为 "void""
+msgstr "将方法返回类型更改为 \"void\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/CS0126ReturnMustBeFollowedByAnyExpression.cs:18
 msgid ""
@@ -25916,7 +25916,7 @@ msgstr "更改方法的返回类型。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/CS0127ReturnMustNotBeFollowedByAnyExpression.cs:6
 msgid "Return type is 'void'"
-msgstr "返回类型为 "void""
+msgstr "返回类型为 \"void\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/CS0152DuplicateCaseLabelValueIssue.cs:1
 msgid "Duplicate case label value issue"
@@ -25940,7 +25940,7 @@ msgstr "CS0759: 分部方法“{0}”实现缺少分部方法声明"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/CS0029InvalidConversionIssue.cs:2
 msgid "CS0029: Cannot implicitly convert type 'A' to 'B'."
-msgstr "CS0029: 无法将类型 "A" 隐式转换为 "B"。"
+msgstr "CS0029: 无法将类型 \"A\" 隐式转换为 \"B\"。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/CS0029InvalidConversionIssue.cs:10
 msgid ""
@@ -25978,36 +25978,36 @@ msgstr "密封类中的密封成员"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassIssue.cs:3
 msgid "Keyword 'sealed' is redundant in sealed classes."
-msgstr "关键字 "sealed" 在密封类中是冗余的。"
+msgstr "关键字 \"sealed\" 在密封类中是冗余的。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassIssue.cs:3
 #, fuzzy
 msgid "Remove redundant 'sealed' modifier"
-msgstr "删除冗余的 "sealed" 修饰符"
+msgstr "删除冗余的 \"sealed\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:1
 msgid "'if' statement can be re-written as '||' expression"
-msgstr ""if" 语句可以重写为 "||" 表达式"
+msgstr "\"if\" 语句可以重写为 \"||\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
 #, fuzzy
 msgid "Convert to '||' expresssion"
-msgstr "转换为 "||" 表达式"
+msgstr "转换为 \"||\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
 #, fuzzy
 msgid "Replace with '||'"
-msgstr "替换为 "||""
+msgstr "替换为 \"||\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
 #, fuzzy
 msgid "Convert to '|=' expresssion"
-msgstr "转换为 "|=" 表达式"
+msgstr "转换为 \"|=\" 表达式"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ConvertIfToOrExpressionIssue.cs:8
 #, fuzzy
 msgid "Replace with '|='"
-msgstr "替换为 "|=""
+msgstr "替换为 \"|=\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureIssue.cs:2
 #, fuzzy
@@ -26033,7 +26033,7 @@ msgstr "空语句是冗余的"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/EmptyStatementIssue.cs:4
 #, fuzzy
 msgid "Remove ';'"
-msgstr "删除 ";""
+msgstr "删除 \";\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantArgumentDefaultValueIssue.cs:2
 msgid "Redundant argument with default value"
@@ -26066,7 +26066,7 @@ msgstr "冗余的空 finally 程序块"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEmptyFinallyBlockIssue.cs:5
 #, fuzzy
 msgid "Remove 'finally'"
-msgstr "删除 "finally""
+msgstr "删除 \"finally\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/PartialMethodParameterNameMismatchIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/PartialMethodParameterNameMismatchIssue.cs:10
@@ -26091,7 +26091,7 @@ msgstr "替换为“{0}”"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificIssue.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificAnalyzer.cs:1
 msgid "'string.CompareTo' is culture-aware"
-msgstr ""string.CompareTo" 可以识别区域性"
+msgstr "\"string.CompareTo\" 可以识别区域性"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificIssue.cs:6
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificIssue.cs:11
@@ -26111,7 +26111,7 @@ msgstr "使用可以识别区域性的比较"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificIssue.cs:11
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:1
 msgid "'string.Compare' is culture-aware"
-msgstr ""string.Compare" 可以识别区域性"
+msgstr "\"string.Compare\" 可以识别区域性"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseArrayCreationExpressionIssue.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseArrayCreationExpressionAnalyzer.cs:1
@@ -26128,7 +26128,7 @@ msgstr "使用数组创建表达式"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseArrayCreationExpressionIssue.cs:7
 #, fuzzy
 msgid "Replace with 'new'"
-msgstr "替换为 "new""
+msgstr "替换为 \"new\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/BaseMethodParameterNameMismatchIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/BaseMethodParameterNameMismatchAnalyzer.cs:1
@@ -26153,24 +26153,24 @@ msgstr "删除“{0}”"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantUnsafeContextIssue.cs:2
 #, fuzzy
 msgid "Redundant 'unsafe' modifier"
-msgstr "冗余的 "unsafe" 修饰符"
+msgstr "冗余的 \"unsafe\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantUnsafeContextIssue.cs:12
 msgid "'unsafe' modifier is redundant."
-msgstr ""unsafe" 修饰符是冗余的。"
+msgstr "\"unsafe\" 修饰符是冗余的。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantUnsafeContextIssue.cs:12
 #, fuzzy
 msgid "Remove redundant 'unsafe' modifier"
-msgstr "删除冗余的 "unsafe" 修饰符"
+msgstr "删除冗余的 \"unsafe\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantUnsafeContextIssue.cs:19
 msgid "'unsafe' statement is redundant."
-msgstr ""unsafe" 语句是冗余的。"
+msgstr "\"unsafe\" 语句是冗余的。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantUnsafeContextIssue.cs:19
 msgid "Replace 'unsafe' statement with it's body"
-msgstr "将 "unsafe" 语句替换为 "unsafe" 体"
+msgstr "将 \"unsafe\" 语句替换为 \"unsafe\" 体"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:2
 msgid "Checks for prohibited modifiers"
@@ -26178,38 +26178,38 @@ msgstr "检查禁止的修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:5
 msgid "'static' modifier is required inside a static class"
-msgstr "静态类内部需要 "static" 修饰符"
+msgstr "静态类内部需要 \"static\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:5
 #, fuzzy
 msgid "Add 'static' modifier"
-msgstr "添加 "static" 修饰符"
+msgstr "添加 \"static\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:9
 msgid "'virtual' members can't be private"
-msgstr ""virtual" 成员不能是专用的"
+msgstr "\"virtual\" 成员不能是专用的"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:11
 msgid "'sealed' modifier is not usable without override"
-msgstr ""sealed" 修饰符在没有替代的情况下不可用"
+msgstr "\"sealed\" 修饰符在没有替代的情况下不可用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:11
 #, fuzzy
 msgid "Remove 'sealed' modifier"
-msgstr "删除 "sealed" 修饰符"
+msgstr "删除 \"sealed\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:13
 msgid "'virtual' modifier is not usable in a sealed class"
-msgstr ""virtual" 修饰符在密封类中不可用"
+msgstr "\"virtual\" 修饰符在密封类中不可用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:13
 #, fuzzy
 msgid "Remove 'virtual' modifier"
-msgstr "删除 "virtual" 修饰符"
+msgstr "删除 \"virtual\" 修饰符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:14
 msgid "Make class 'static'"
-msgstr "使类变为 "static""
+msgstr "使类变为 \"static\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerErrors/ProhibitedModifiersIssue.cs:16
 msgid "Extension methods are only allowed in static classes"
@@ -26240,7 +26240,7 @@ msgstr "语句是冗余的"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ExtractWhileConditionToInternalIfStatementAction.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ExtractWhileConditionToInternalIfStatementCodeRefactoringProvider.cs:2
 msgid "Extract condition to internal 'if' statement"
-msgstr "将条件提取到内部 "if" 语句"
+msgstr "将条件提取到内部 \"if\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ReverseDirectionForForLoopAction.cs:1
 msgid "Reverse the direction of a for loop"
@@ -26248,7 +26248,7 @@ msgstr "使 for 循环的方向反向"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ReverseDirectionForForLoopAction.cs:24
 msgid "Reverse 'for' loop"
-msgstr "使 "for" 循环反向"
+msgstr "使 \"for\" 循环反向"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/AutoAsyncIssue.cs:55
 msgid "Function can be converted to C# 5-style async function"
@@ -26318,7 +26318,7 @@ msgstr "向调用添加一个或多个可选参数(使用其默认值)"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/AddOptionalParameterToInvocationCodeRefactoringProvider.cs:9
 #, fuzzy
 msgid "Add optional parameter \"{0}\""
-msgstr "添加可选参数\“{0}\”"
+msgstr "添加可选参数“{0}”"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/AddOptionalParameterToInvocationAction.cs:5
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/AddOptionalParameterToInvocationCodeRefactoringProvider.cs:10
@@ -26348,37 +26348,37 @@ msgstr "删除冗余的检查"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertShiftToMultiplyAction.cs:1
 #, fuzzy
 msgid "Convert '<<'/'>>' to '*'/'/'"
-msgstr "将 "<<'/'>>" 转换为 "*'/'/""
+msgstr "将 \"<<\"/\">>\" 转换为 \"*\"/\"/\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertShiftToMultiplyAction.cs:3
 #, fuzzy
 msgid "Replace with '*'"
-msgstr "替换为 "*""
+msgstr "替换为 \"*\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertShiftToMultiplyAction.cs:3
 #, fuzzy
 msgid "Replace with '/'"
-msgstr "替换为 "/""
+msgstr "替换为 \"/\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertMultiplyToShiftAction.cs:2
 #, fuzzy
 msgid "Convert '*'/'/' to '<<'/'>>'"
-msgstr "将 "*'/'/" 转换为 "<<'/'>>""
+msgstr "将 \"*\"/'/' 转换为 \"<<\"/\">>\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertMultiplyToShiftAction.cs:5
 #, fuzzy
 msgid "Replace with '<<'"
-msgstr "替换为 "<<""
+msgstr "替换为 \"<<\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertMultiplyToShiftAction.cs:5
 #, fuzzy
 msgid "Replace with '>>'"
-msgstr "替换为 ">>""
+msgstr "替换为 \">>\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/SplitIfAction.cs:1
 #, fuzzy
 msgid "Split 'if' statement"
-msgstr "拆分 "if" 语句"
+msgstr "拆分 \"if\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/SplitIfAction.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/SplitIfAction.cs:3
@@ -26395,12 +26395,12 @@ msgstr "逻辑条件表达式中的冗余操作数"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/ForStatementConditionIsTrueIssue.cs:3
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ForStatementConditionIsTrueAnalyzer.cs:1
 msgid "'true' is redundant as for statement condition"
-msgstr ""true" 对于语句条件是冗余的"
+msgstr "\"true\" 对于语句条件是冗余的"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/ForStatementConditionIsTrueIssue.cs:3
 #, fuzzy
 msgid "Remove 'true'"
-msgstr "删除 "true""
+msgstr "删除 \"true\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertToStaticTypeIssue.cs:2
 msgid "Class can be converted to static"
@@ -26461,26 +26461,26 @@ msgstr "将运算符赋值替换为赋值"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ReplaceOperatorAssignmentWithAssignmentCodeRefactoringProvider.cs:3
 #, fuzzy
 msgid "Replace with '='"
-msgstr "替换为 "=""
+msgstr "替换为 \"=\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OperatorIsCanBeUsedIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OperatorIsCanBeUsedIssue.cs:9
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OperatorIsCanBeUsedAnalyzer.cs:1
 #, fuzzy
 msgid "Operator 'is' can be used"
-msgstr "可以使用运算符 "is""
+msgstr "可以使用运算符 \"is\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OperatorIsCanBeUsedIssue.cs:9
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseIsOperatorIssue.cs:6
 #, fuzzy
 msgid "Replace with 'is' operator"
-msgstr "替换为 "is" 运算符"
+msgstr "替换为 \"is\" 运算符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseIsOperatorIssue.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/UseIsOperatorIssue.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:1
 msgid "Use 'is' operator"
-msgstr "使用 "is" 运算符"
+msgstr "使用 \"is\" 运算符"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/FormatStringProblemIssue.cs:1
 msgid "String formatting problems"
@@ -26523,21 +26523,21 @@ msgstr "冗余的 catch 子句"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:4
 #, fuzzy
 msgid "Remove all '{0}' redundant 'catch' clauses"
-msgstr "删除所有“{0}”冗余 "catch" 子句"
+msgstr "删除所有“{0}”冗余 \"catch\" 子句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:4
 #, fuzzy
 msgid "Remove 'catch'"
-msgstr "删除 "catch""
+msgstr "删除 \"catch\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:4
 msgid "Catch clause with a single 'throw' statement is redundant."
-msgstr "具有单一 "throw" 语句的 catch 子句是冗余的。"
+msgstr "具有单一 \"throw\" 语句的 catch 子句是冗余的。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:6
 #, fuzzy
 msgid "Remove 'try' statement"
-msgstr "删除 "try" 语句"
+msgstr "删除 \"try\" 语句"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/PossibleMultipleEnumerationIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/PossibleMultipleEnumerationIssue.cs:21
@@ -26558,7 +26558,7 @@ msgstr "枚举到列表"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/ConditionIsAlwaysTrueOrFalseIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ConditionIsAlwaysTrueOrFalseAnalyzer.cs:1
 msgid "Expression is always 'true' or always 'false'"
-msgstr "表达式始终为 "true" 或始终为 "false""
+msgstr "表达式始终为 \"true\" 或始终为 \"false\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/ConditionIsAlwaysTrueOrFalseIssue.cs:11
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/ConditionIsAlwaysTrueOrFalseAnalyzer.cs:1
@@ -26659,7 +26659,7 @@ msgstr "改为检查引用相等"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeIssue.cs:7
 #, fuzzy
 msgid "Replace expression with 'false'"
-msgstr "将表达式替换为 "false""
+msgstr "将表达式替换为 \"false\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ReferenceEqualsWithValueTypeIssue.cs:8
 msgid "Use Equals()"
@@ -26670,18 +26670,18 @@ msgstr "使用 Equals()"
 msgid ""
 "'Object.ReferenceEquals' is always false because it is called with value "
 "type"
-msgstr ""Object.ReferenceEquals" 始终为 false，因为它是使用值类型调用的"
+msgstr "\"Object.ReferenceEquals\" 始终为 false，因为它是使用值类型调用的"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareNonConstrainedGenericWithNullIssue.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareNonConstrainedGenericWithNullIssue.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/CompareNonConstrainedGenericWithNullAnalyzer.cs:1
 msgid "Possible compare of value type with 'null'"
-msgstr "具有 "null" 的值类型的可能比较"
+msgstr "具有 \"null\" 的值类型的可能比较"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareNonConstrainedGenericWithNullIssue.cs:4
 #, fuzzy
 msgid "Replace with 'default'"
-msgstr "替换为 "default""
+msgstr "替换为 \"default\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantDelegateCreationIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantDelegateCreationAnalyzer.cs:1
@@ -26698,25 +26698,25 @@ msgstr "冗余的显式委托声明"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantExplicitNullableCreationIssue.cs:5
 #, fuzzy
 msgid "Remove redundant 'new'"
-msgstr "删除冗余的 "new""
+msgstr "删除冗余的 \"new\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEnumerableCastCallIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:1
 msgid "Redundant 'IEnumerable.Cast<T>' or 'IEnumerable.OfType<T>' call"
-msgstr "冗余的 "IEnumerable.Cast<T>" 或 "IEnumerable.OfType<T>" 调用"
+msgstr "冗余的 \"IEnumerable.Cast<T>\" 或 \"IEnumerable.OfType<T>\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEnumerableCastCallIssue.cs:3
 msgid "Redundant 'IEnumerable.Cast<T>' call"
-msgstr "冗余的 "IEnumerable.Cast<T>" 调用"
+msgstr "冗余的 \"IEnumerable.Cast<T>\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEnumerableCastCallIssue.cs:3
 #, fuzzy
 msgid "Remove 'Cast<T>' call"
-msgstr "删除 "Cast<T>" 调用"
+msgstr "删除 \"Cast<T>\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEnumerableCastCallIssue.cs:3
 msgid "Redundant 'IEnumerable.OfType<T>' call."
-msgstr "冗余的 "IEnumerable.OfType<T>" 调用。"
+msgstr "冗余的 \"IEnumerable.OfType<T>\" 调用。"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEnumerableCastCallIssue.cs:3
 msgid "Compare items with null"
@@ -26724,7 +26724,7 @@ msgstr "比较具有 null 的项"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantEnumerableCastCallIssue.cs:3
 msgid "Remove 'OfType<T>' call"
-msgstr "删除 "OfType<T>" 调用"
+msgstr "删除 \"OfType<T>\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/CompilerErrors/MissingInterfaceMemberImplementationIssue.cs:1
 #, fuzzy
@@ -26752,7 +26752,7 @@ msgstr "if/else 或切换分支中的程序块可以简化为任何分支(如果
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/NonReadonlyReferencedInGetHashCodeIssue.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/NonReadonlyReferencedInGetHashCodeAnalyzer.cs:1
 msgid "Non-readonly field referenced in 'GetHashCode()'"
-msgstr ""GetHashCode()" 中引用的非只读字段"
+msgstr "\"GetHashCode()\" 中引用的非只读字段"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeIssue.cs:1
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/ParameterCanBeDeclaredWithBaseTypeIssue.cs:14
@@ -26771,7 +26771,7 @@ msgstr "找到重复条件"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertHasFlagsToBitwiseFlagComparisonAction.cs:1
 msgid "Replace 'Enum.HasFlag' call with bitwise flag comparison"
-msgstr "将 "Enum.HasFlag" 调用替换为位标志比较"
+msgstr "将 \"Enum.HasFlag\" 调用替换为位标志比较"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertHasFlagsToBitwiseFlagComparisonAction.cs:1
 msgid "Replace with bitwise flag comparison"
@@ -26779,11 +26779,11 @@ msgstr "替换为位标志比较"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertBitwiseFlagComparisonToHasFlagsAction.cs:1
 msgid "Replace bitwise flag comparison with call to 'Enum.HasFlag'"
-msgstr "将位标志比较替换为对 "Enum.HasFlag" 的调用"
+msgstr "将位标志比较替换为对 \"Enum.HasFlag\" 的调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertBitwiseFlagComparisonToHasFlagsAction.cs:9
 msgid "Replace with 'Enum.HasFlag'"
-msgstr "替换为 "Enum.HasFlag""
+msgstr "替换为 \"Enum.HasFlag\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantExplicitArrayCreationIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantExplicitArrayCreationAnalyzer.cs:1
@@ -26846,12 +26846,12 @@ msgstr "只读字段不能用作赋值目标。"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ObjectCreationAsStatementIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ObjectCreationAsStatementAnalyzer.cs:1
 msgid "Possible unassigned object created by 'new'"
-msgstr ""new" 创建的可能的未赋值对象"
+msgstr "\"new\" 创建的可能的未赋值对象"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ObjectCreationAsStatementIssue.cs:3
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ObjectCreationAsStatementAnalyzer.cs:1
 msgid "Possible unassigned object created by 'new' expression"
-msgstr ""new" 表达式创建的可能的未赋值对象"
+msgstr "\"new\" 表达式创建的可能的未赋值对象"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/NotResolvedInTextIssue.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/NotResolvedInTextAnalyzer.cs:1
@@ -26925,12 +26925,12 @@ msgstr "冗余的显式 nullable 类型创建"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantStringToCharArrayCallIssue.cs:3
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantStringToCharArrayCallAnalyzer.cs:1
 msgid "Redundant 'string.ToCharArray()' call"
-msgstr "冗余的 "string.ToCharArray()" 调用"
+msgstr "冗余的 \"string.ToCharArray()\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantStringToCharArrayCallIssue.cs:3
 #, fuzzy
 msgid "Remove redundant 'string.ToCharArray()' call"
-msgstr "删除冗余的 "string.ToCharArray()" 调用"
+msgstr "删除冗余的 \"string.ToCharArray()\" 调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/Opportunities/ConvertToAutoPropertyIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertToAutoPropertyAnalyzer.cs:1
@@ -26957,13 +26957,13 @@ msgstr "CS0183: 给定表达式始终为提供的类型"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerWarnings/CS0183ExpressionIsAlwaysOfProvidedTypeIssue.cs:8
 msgid "Compare with 'null'"
-msgstr "使用 "null" 比较"
+msgstr "使用 \"null\" 比较"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CompilerWarnings/CS0183ExpressionIsAlwaysOfProvidedTypeIssue.cs:8
 msgid ""
 "Given expression is always of the provided type. Consider comparing with "
 "'null' instead"
-msgstr "给定表达式始终为提供的类型。考虑改用 "null" 进行比较"
+msgstr "给定表达式始终为提供的类型。考虑改用 \"null\" 进行比较"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationIssue.cs:1
 msgid "Invocation of polymorphic field event"
@@ -26974,7 +26974,7 @@ msgstr "多态字段事件调用"
 msgid ""
 "The event `{0}' can only appear on the left hand side of `+=' or `-=' "
 "operator"
-msgstr "事件“{0}”仅可在 "+=" 或 "-=" 运算符的左侧出现"
+msgstr "事件“{0}”仅可在 \"+=\" 或 \"-=\" 运算符的左侧出现"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/PolymorphicFieldLikeEventInvocationIssue.cs:3
 msgid "Invocation of polymorphic field like event"
@@ -26984,11 +26984,11 @@ msgstr "事件等多态字段的调用"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeIssue.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeAnalyzer.cs:1
 msgid "Possible mistaken call to 'object.GetType()'"
-msgstr "对 "object.GetType()" 的可能错误调用"
+msgstr "对 \"object.GetType()\" 的可能错误调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/PossibleMistakenCallToGetTypeIssue.cs:4
 msgid "Remove call to 'object.GetType()'"
-msgstr "删除对 "object.GetType()" 的调用"
+msgstr "删除对 \"object.GetType()\" 的调用"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Uncategorized/RedundantNotNullAttributeInNonNullableTypeIssue.cs:5
 msgid "NotNullAttribute is not needed for non-nullable types"
@@ -27091,17 +27091,17 @@ msgstr "将调用更改为调用 Object.ReferenceEquals"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConstantConditionIssue.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConstantConditionAnalyzer.cs:1
 msgid "Condition is always 'true' or always 'false'"
-msgstr "条件始终为 "true" 或始终为 "false""
+msgstr "条件始终为 \"true\" 或始终为 \"false\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConstantConditionIssue.cs:17
 #, fuzzy
 msgid "Replace '?:' with '{0}' branch"
-msgstr "将 "?:" 替换为“{0}”分支"
+msgstr "将 \"?:\" 替换为“{0}”分支"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConstantConditionIssue.cs:17
 #, fuzzy
 msgid "Replace 'if' with '{0}' branch"
-msgstr "将 "if" 替换为“{0}”分支"
+msgstr "将 \"if\" 替换为“{0}”分支"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/ConstantConditionIssue.cs:18
 #, fuzzy
@@ -27202,7 +27202,7 @@ msgstr "不允许在此上下文中使用 Roslyn 功能。"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/AddCatchExceptionCodeRefactoringProvider.cs:3
 msgid "To 'catch (Exception)'"
-msgstr "转为 "catch (Exception)""
+msgstr "转为 \"catch (Exception)\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/AddExceptionDescriptionCodeRefactoringProvider.cs:4
 #, fuzzy
@@ -27222,7 +27222,7 @@ msgstr "转为 lambda 表达式"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertCoalescingToConditionalExpressionCodeRefactoringProvider.cs:3
 #, fuzzy
 msgid "Replace '??' operator with '?:' expression"
-msgstr "将 "??" 运算符替换为 "?:" 表达式"
+msgstr "将 \"??\" 运算符替换为 \"?:\" 表达式"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertDecToHexCodeRefactoringProvider.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertDecToHexCodeRefactoringProvider.cs:2
@@ -27231,21 +27231,21 @@ msgstr "转为十六进制"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertEqualityOperatorToEqualsCodeRefactoringProvider.cs:1
 msgid "To 'Equals' call"
-msgstr "转为 "Equals" 调用"
+msgstr "转为 \"Equals\" 调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertEqualityOperatorToReferenceEqualsCodeRefactoringProvider.cs:3
 msgid "To 'ReferenceEquals' call"
-msgstr "转为 "ReferenceEquals" 调用"
+msgstr "转为 \"ReferenceEquals\" 调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertEqualsToEqualityOperatorCodeRefactoringProvider.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertReferenceEqualsToEqualityOperatorCodeRefactoringProvider.cs:6
 msgid "To '=='"
-msgstr "转为 "==""
+msgstr "转为 \"==\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertEqualsToEqualityOperatorCodeRefactoringProvider.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertReferenceEqualsToEqualityOperatorCodeRefactoringProvider.cs:6
 msgid "To '!='"
-msgstr "转为 "!=""
+msgstr "转为 \"!=\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertExplicitToImplicitImplementationCodeRefactoringProvider.cs:9
 msgid "To implicit implementation"
@@ -27253,7 +27253,7 @@ msgstr "转为隐式实现"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertForeachToForCodeRefactoringProvider.cs:4
 msgid "To 'for'"
-msgstr "转为 "for""
+msgstr "转为 \"for\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertHexToDecCodeRefactoringProvider.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertHexToDecCodeRefactoringProvider.cs:2
@@ -27262,11 +27262,11 @@ msgstr "转为十进制"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertIfStatementToConditionalTernaryExpressionCodeRefactoringProvider.cs:11
 msgid "To '?:' expression"
-msgstr "转为 "?:" 表达式"
+msgstr "转为 \"?:\" 表达式"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertIfStatementToSwitchStatementCodeRefactoringProvider.cs:5
 msgid "To 'switch'"
-msgstr "转为 "switch""
+msgstr "转为 \"switch\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertImplicitToExplicitImplementationCodeRefactoringProvider.cs:7
 msgid "To explicit implementation"
@@ -27284,7 +27284,7 @@ msgstr "转为匿名方法"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ConvertSwitchToIfCodeRefactoringProvider.cs:4
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertSelectCaseToIfCodeRefactoringProvider.cs:5
 msgid "To 'if'"
-msgstr "转为 "if""
+msgstr "转为 \"if\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/FlipOperatorOperandsCodeRefactoringProvider.cs:3
 #, fuzzy
@@ -27305,12 +27305,12 @@ msgstr "插入签名"
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/InvertIfCodeRefactoringProvider.cs:1
 #, fuzzy
 msgid "Invert 'if'"
-msgstr "转换 "if""
+msgstr "转换 \"if\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/RemoveCatchExceptionCodeRefactoringProvider.cs:4
 #, fuzzy
 msgid "To 'catch'"
-msgstr "转为 "catch""
+msgstr "转为 \"catch\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/InvokeAsStaticMethodCodeRefactoringProvider.cs:5
 #, fuzzy
@@ -27344,7 +27344,7 @@ msgstr "转换为 auto 属性"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceExplicitTypeWithVarCodeRefactoringProvider.cs:6
 msgid "To 'var'"
-msgstr "转为 "var""
+msgstr "转为 \"var\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/ReplaceVarWithExplicitTypeCodeRefactoringProvider.cs:2
 #, fuzzy
@@ -27355,7 +27355,7 @@ msgstr "转为显式类型"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/SplitIfWithOrConditionInTwoCodeRefactoringProvider.cs:5
 #, fuzzy
 msgid "Split into two 'if' statements"
-msgstr "拆分为两个 "if" 语句"
+msgstr "拆分为两个 \"if\" 语句"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/SplitLocalVariableDeclarationAndAssignmentCodeRefactoringProvider.cs:2
 #, fuzzy
@@ -27368,23 +27368,23 @@ msgstr "转为位标志比较"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertBitwiseFlagComparisonToHasFlagsCodeRefactoringProvider.cs:4
 msgid "To 'Enum.HasFlag'"
-msgstr "转为 "Enum.HasFlag""
+msgstr "转为 \"Enum.HasFlag\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/UseSystemStringEmptyCodeRefactoringProvider.cs:2
 msgid "Use 'string.Empty'"
-msgstr "使用 "string.Empty""
+msgstr "使用 \"string.Empty\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/UseSystemEnvironmentNewLineCodeRefactoringProvider.cs:2
 msgid "Use 'System.Environment.NewLine'"
-msgstr "使用 "System.Environment.NewLine""
+msgstr "使用 \"System.Environment.NewLine\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertForToWhileCodeRefactoringProvider.cs:2
 msgid "To 'while'"
-msgstr "转为 "while""
+msgstr "转为 \"while\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertDoWhileToWhileLoopCodeRefactoringProvider.cs:3
 msgid "To 'while { ... }'"
-msgstr "转为 "while { ... }""
+msgstr "转为 \"while { ... }\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ReplacePostfixExpressionWithAssignmentCodeRefactoringProvider.cs:3
 #, fuzzy
@@ -27410,23 +27410,23 @@ msgstr "转为“{0}--”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertShiftToMultiplyCodeRefactoringProvider.cs:2
 msgid "To '*'"
-msgstr "转为 "*""
+msgstr "转为 \"*\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertShiftToMultiplyCodeRefactoringProvider.cs:2
 msgid "To '/'"
-msgstr "转为 "/""
+msgstr "转为 \"/\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertMultiplyToShiftCodeRefactoringProvider.cs:4
 msgid "To '<<'"
-msgstr "转为 "<<""
+msgstr "转为 \"<<\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertMultiplyToShiftCodeRefactoringProvider.cs:4
 msgid "To '>>'"
-msgstr "转为 ">>""
+msgstr "转为 \">>\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertWhileToDoWhileLoopCodeRefactoringProvider.cs:3
 msgid "To 'do...while'"
-msgstr "转为 "do...while""
+msgstr "转为 \"do...while\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/PublicConstructorInAbstractClass.cs:1
 msgid "Constructor in abstract class should not be public"
@@ -27438,7 +27438,7 @@ msgstr "替换为对 OfType<T>().Any() 的调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeAny.cs:1
 msgid "Replace with 'OfType<T>().Any()'"
-msgstr "替换为 "OfType<T>().Any()""
+msgstr "替换为 \"OfType<T>().Any()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:2
 msgid "Replace with call to OfType<T> (extended cases)"
@@ -27447,7 +27447,7 @@ msgstr "替换为对 OfType<T> 的调用(扩展用例)"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/AdditionalOfTypeAnalyzer.cs:2
 #, fuzzy
 msgid "Replace with 'OfType<T>'"
-msgstr "替换为 "OfType<T>""
+msgstr "替换为 \"OfType<T>\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/CallToObjectEqualsViaBaseAnalyzer.cs:1
 msgid "Finds potentially erroneous calls to Object.Equals"
@@ -27456,12 +27456,12 @@ msgstr "查找对 Object.Equals 的潜在错误调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConvertIfToAndExpressionAnalyzer.cs:1
 #, fuzzy
 msgid "Convert 'if' to '&&' expression"
-msgstr "将 "if" 转换为 "&&" 表达式"
+msgstr "将 \"if\" 转换为 \"&&\" 表达式"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/ConvertIfToAndExpressionAnalyzer.cs:4
 #, fuzzy
 msgid "Convert to '&&' expression"
-msgstr "转换为 "&&" 表达式"
+msgstr "转换为 \"&&\" 表达式"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/LockThisAnalyzer.cs:1
 msgid "Warns about using lock (this) or MethodImplOptions.Synchronized"
@@ -27482,19 +27482,19 @@ msgstr "赋予变量或参数的值未在所有执行路径中使用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:1
 msgid "Removes 'internal' modifiers that are not required"
-msgstr "删除不需要的 "internal" 修饰符"
+msgstr "删除不需要的 \"internal\" 修饰符"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantInternalAnalyzer.cs:1
 msgid "'internal' modifier is redundant"
-msgstr ""internal" 修饰符是冗余的"
+msgstr "\"internal\" 修饰符是冗余的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantPrivateAnalyzer.cs:1
 msgid "Removes 'private' modifiers that are not required"
-msgstr "删除不需要的 "private" 修饰符"
+msgstr "删除不需要的 \"private\" 修饰符"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/RedundantPrivateAnalyzer.cs:1
 msgid "'private' modifier is redundant"
-msgstr ""private" 修饰符是冗余的"
+msgstr "\"private\" 修饰符是冗余的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/StaticEventSubscriptionAnalyzer.cs:1
 msgid "Checks if static events are removed"
@@ -27538,12 +27538,12 @@ msgstr "查找格式字符串问题"
 msgid ""
 "Function does not reach its end or a 'return' statement by any of possible "
 "execution paths"
-msgstr "函数未达到其结尾或未达到任何可能执行路径的 "return" 语句"
+msgstr "函数未达到其结尾或未达到任何可能执行路径的 \"return\" 语句"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FunctionNeverReturnsAnalyzer.cs:1
 #, fuzzy
 msgid "{0} never reaches end or a 'return' statement"
-msgstr "{0} 从未达到结尾或 "return" 语句"
+msgstr "{0} 从未达到结尾或 \"return\" 语句"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LocalVariableHidesMemberAnalyzer.cs:1
 msgid "Local variable has the same name as a member and hides it"
@@ -27556,7 +27556,7 @@ msgstr "局部变量“{0}”隐藏 {1} “{2}”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LongLiteralEndingLowerLAnalyzer.cs:1
 msgid "Lowercase 'l' is often confused with '1'"
-msgstr "小写的 "l" 经常会与 "1" 混淆"
+msgstr "小写的 \"l\" 经常会与 \"1\" 混淆"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/MethodOverloadWithOptionalParameterAnalyzer.cs:1
 msgid "{0} with optional parameter is hidden by overload"
@@ -27589,7 +27589,7 @@ msgstr "可选参数值 {0} 与基 {1}“{2}”之间存在差异"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:1
 msgid "C# doesn't support optional 'ref' or 'out' parameters"
-msgstr "C# 不支持可选的 "ref" 或 "out" 参数"
+msgstr "C# 不支持可选的 \"ref\" 或 \"out\" 参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ParameterHidesMemberAnalyzer.cs:1
 msgid "Parameter has the same name as a member and hides it"
@@ -27621,7 +27621,7 @@ msgstr "就不使用值参数的属性或索引器 setter 以及事件添加器�
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ValueParameterNotUsedAnalyzer.cs:1
 msgid "The {0} does not use the 'value' parameter"
-msgstr "{0} 不使用 "value" 参数"
+msgstr "{0} 不使用 \"value\" 参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ValueParameterNotUsedAnalyzer.cs:5
 msgid "setter"
@@ -27647,12 +27647,12 @@ msgstr "NUnit 找不到非公共方法"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertIfStatementToNullCoalescingExpressionAnalyzer.cs:1
 msgid "Convert 'if' to '??'"
-msgstr "将 "if" 转换为 "??""
+msgstr "将 \"if\" 转换为 \"??\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertNullableToShortFormAnalyzer.cs:1
 #, fuzzy
 msgid "Convert 'Nullable<T>' to the short form 'T?'"
-msgstr "将 "Nullable<T>" 转换为简短形式的 "T?""
+msgstr "将 \"Nullable<T>\" 转换为简短形式的 \"T?\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/ConvertNullableToShortFormAnalyzer.cs:1
 #, fuzzy
@@ -27682,7 +27682,7 @@ msgstr "如果将扩展方法作为静态方法调用，请将它转换为方法
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/SuggestUseVarKeywordEvidentAnalyzer.cs:1
 msgid "Use 'var' keyword when possible"
-msgstr "使用 "var" 关键字(如果可能)"
+msgstr "使用 \"var\" 关键字(如果可能)"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:1
 msgid "An empty public constructor without paramaters is redundant."
@@ -27719,7 +27719,7 @@ msgstr "替代虚拟成员是冗余的，因为它仅由对基项的调用组成
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassAnalyzer.cs:1
 msgid "'sealed' modifier is redundant in sealed classes"
-msgstr ""sealed" 修饰符在密封类中是冗余的"
+msgstr "\"sealed\" 修饰符在密封类中是冗余的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/UnusedParameterAnalyzer.cs:1
 msgid "Parameter is never used"
@@ -27759,11 +27759,11 @@ msgstr "具有相同默认值的参数是可选的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBaseQualifierAnalyzer.cs:1
 msgid "'base.' is redundant and can safely be removed"
-msgstr ""base." 是冗余的，可以安全删除"
+msgstr "\"base.\" 是冗余的，可以安全删除"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:1
 msgid "Comparison of a boolean value with 'true' or 'false' constant"
-msgstr "使用 "true" 或 "false" 常量比较布尔值"
+msgstr "使用 \"true\" 或 \"false\" 常量比较布尔值"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantBoolCompareAnalyzer.cs:1
 msgid "Comparison with '{0}' is redundant"
@@ -27772,11 +27772,11 @@ msgstr "使用“{0}”的比较是冗余的"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCaseLabelAnalyzer.cs:1
 #, fuzzy
 msgid "'case' label is redundant"
-msgstr ""case" 标签是冗余的"
+msgstr "\"case\" 标签是冗余的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCatchClauseAnalyzer.cs:1
 msgid "Catch clause with a single 'throw' statement is redundant"
-msgstr "具有单一 "throw" 语句的 catch 子句是冗余的"
+msgstr "具有单一 \"throw\" 语句的 catch 子句是冗余的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCheckBeforeAssignmentAnalyzer.cs:1
 msgid ""
@@ -27786,7 +27786,7 @@ msgstr "如果 (x != value) x = value;，则在赋值前检查不相等"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:1
 msgid "When 'is' keyword is used, which implicitly check null"
-msgstr "使用 "is" 关键字时(隐式检查 null)"
+msgstr "使用 \"is\" 关键字时(隐式检查 null)"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:1
 #, fuzzy
@@ -27830,7 +27830,7 @@ msgstr "查找对 ToString() 的调用，该调用可能会由编译器自动生
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantToStringCallAnalyzer.cs:2
 #, fuzzy
 msgid "Redundant 'ToString()' call"
-msgstr "冗余的 "ToString()" 调用"
+msgstr "冗余的 \"ToString()\" 调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantUnsafeContextAnalyzer.cs:1
 msgid ""
@@ -27841,7 +27841,7 @@ msgstr "Unsafe 修饰符在不安全的上下文中或未使用 unsafe 构造时
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantUnsafeContextAnalyzer.cs:1
 #, fuzzy
 msgid "'unsafe' modifier is redundant"
-msgstr ""unsafe" 修饰符是冗余的"
+msgstr "\"unsafe\" 修饰符是冗余的"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/UnusedAnonymousMethodSignatureAnalyzer.cs:1
 msgid "Detects when no delegate parameter is used in the anonymous method body"
@@ -27849,7 +27849,7 @@ msgstr "检测匿名方法体中何时没有使用委托参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:1
 msgid "Replace usages of 'Count()' with call to 'Any()'"
-msgstr "将使用 "Count()" 替换为对 "Any()" 的调用"
+msgstr "将使用 \"Count()\" 替换为对 \"Any()\" 的调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseMethodAnyAnalyzer.cs:1
 msgid "Use '{0}' for increased performance"
@@ -27858,47 +27858,47 @@ msgstr "使用“{0}”提高性能"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/UseIsOperatorAnalyzer.cs:1
 #, fuzzy
 msgid "'is' operator can be used"
-msgstr "可以使用 "is" 运算符"
+msgstr "可以使用 \"is\" 运算符"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringStartsWithIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'StartsWith' call is used by default."
-msgstr "在默认使用可以识别区域性的 "StartsWith" 调用时发出警告。"
+msgstr "在默认使用可以识别区域性的 \"StartsWith\" 调用时发出警告。"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringStartsWithIsCultureSpecificAnalyzer.cs:1
 msgid "'StartsWith' is culture-aware and missing a StringComparison argument"
-msgstr ""StartsWith" 可以识别区域性，但缺少 StringComparison 参数"
+msgstr "\"StartsWith\" 可以识别区域性，但缺少 StringComparison 参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringLastIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'LastIndexOf' call is used by default."
-msgstr "在默认使用可以识别区域性的 "LastIndexOf" 调用时发出警告。"
+msgstr "在默认使用可以识别区域性的 \"LastIndexOf\" 调用时发出警告。"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringLastIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "'LastIndexOf' is culture-aware and missing a StringComparison argument"
-msgstr ""LastIndexOf" 可以识别区域性，但缺少 StringComparison 参数"
+msgstr "\"LastIndexOf\" 可以识别区域性，但缺少 StringComparison 参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'IndexOf' call is used by default."
-msgstr "在默认使用可以识别区域性的 "IndexOf" 调用时发出警告。"
+msgstr "在默认使用可以识别区域性的 \"IndexOf\" 调用时发出警告。"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "'IndexOf' is culture-aware and missing a StringComparison argument"
-msgstr ""IndexOf" 可以识别区域性，但缺少 StringComparison 参数"
+msgstr "\"IndexOf\" 可以识别区域性，但缺少 StringComparison 参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringEndsWithIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'EndsWith' call is used by default."
-msgstr "在默认使用可以识别区域性的 "EndsWith" 调用时发出警告。"
+msgstr "在默认使用可以识别区域性的 \"EndsWith\" 调用时发出警告。"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringEndsWithIsCultureSpecificAnalyzer.cs:1
 msgid "'EndsWith' is culture-aware and missing a StringComparison argument"
-msgstr ""EndsWith" 可以识别区域性，但缺少 StringComparison 参数"
+msgstr "\"EndsWith\" 可以识别区域性，但缺少 StringComparison 参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareToIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'string.CompareTo' call is used by default"
-msgstr "在默认使用可以识别区域性的 "string.CompareTo" 调用时发出警告"
+msgstr "在默认使用可以识别区域性的 \"string.CompareTo\" 调用时发出警告"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringCompareIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'Compare' call is used by default"
-msgstr "在默认使用可以识别区域性的 "Compare" 调用时发出警告"
+msgstr "在默认使用可以识别区域性的 \"Compare\" 调用时发出警告"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/SimplifyConditionalTernaryExpressionAnalyzer.cs:1
 msgid "Conditional expression can be simplified"
@@ -27920,7 +27920,7 @@ msgstr "谓词后跟 SingleOrDefault() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSingleOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'SingleOrDefault()'"
-msgstr "替换为对 "SingleOrDefault()" 的单一调用"
+msgstr "替换为对 \"SingleOrDefault()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSingleAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Single()"
@@ -27929,7 +27929,7 @@ msgstr "谓词后跟 Single() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToSingleAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'Single()'"
-msgstr "替换为对 "Single()" 的单一调用"
+msgstr "替换为对 \"Single()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLongCountAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by LongCount()"
@@ -27938,7 +27938,7 @@ msgstr "谓词后跟 LongCount() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLongCountAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'LongCount()'"
-msgstr "替换为对 "LongCount()" 的单一调用"
+msgstr "替换为对 \"LongCount()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastOrDefaultAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by LastOrDefault()"
@@ -27947,7 +27947,7 @@ msgstr "谓词后跟 LastOrDefault() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'LastOrDefault()'"
-msgstr "替换为对 "LastOrDefault()" 的单一调用"
+msgstr "替换为对 \"LastOrDefault()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Last()"
@@ -27956,7 +27956,7 @@ msgstr "谓词后跟 Last() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToLastAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'Last()'"
-msgstr "替换为对 "Last()" 的单一调用"
+msgstr "替换为对 \"Last()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstOrDefaultAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by FirstOrDefault()"
@@ -27965,7 +27965,7 @@ msgstr "谓词后跟 FirstOrDefault() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'FirstOrDefault()'"
-msgstr "替换为对 "FirstOrDefault()" 的单一调用"
+msgstr "替换为对 \"FirstOrDefault()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by First()"
@@ -27974,7 +27974,7 @@ msgstr "谓词后跟 First() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToFirstAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'First()'"
-msgstr "替换为对 "First()" 的单一调用"
+msgstr "替换为对 \"First()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToCountAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Count()"
@@ -27983,7 +27983,7 @@ msgstr "谓词后跟 Count() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToCountAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'Count()'"
-msgstr "替换为对 "Count()" 的单一调用"
+msgstr "替换为对 \"Count()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAnyAnalyzer.cs:1
 msgid "Redundant Where() call with predicate followed by Any()"
@@ -27992,7 +27992,7 @@ msgstr "谓词后跟 Any() 的冗余 Where() 调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithSingleCallToAnyAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with single call to 'Any()'"
-msgstr "替换为对 "Any()" 的单一调用"
+msgstr "替换为对 \"Any()\" 的单一调用"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeWhereAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().Where()"
@@ -28001,7 +28001,7 @@ msgstr "替换为对 OfType<T>().Where() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeWhereAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().Where()'"
-msgstr "替换为 "OfType<T>().Where()""
+msgstr "替换为 \"OfType<T>().Where()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeSingleOrDefaultAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().SingleOrDefault()"
@@ -28010,7 +28010,7 @@ msgstr "替换为对 OfType<T>().SingleOrDefault() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeSingleOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().SingleOrDefault()'"
-msgstr "替换为 "OfType<T>().SingleOrDefault()""
+msgstr "替换为 \"OfType<T>().SingleOrDefault()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeSingleAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().Single()"
@@ -28019,7 +28019,7 @@ msgstr "替换为对 OfType<T>().Single() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeSingleAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().Single()'"
-msgstr "替换为 "OfType<T>().Single()""
+msgstr "替换为 \"OfType<T>().Single()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeLongCountAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().LongCount()"
@@ -28028,7 +28028,7 @@ msgstr "替换为对 OfType<T>().LongCount() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeLongCountAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().LongCount()'"
-msgstr "替换为 "OfType<T>().LongCount()""
+msgstr "替换为 \"OfType<T>().LongCount()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeLastOrDefaultAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().LastOrDefault()"
@@ -28037,7 +28037,7 @@ msgstr "替换为对 OfType<T>().LastOrDefault() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeLastOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().LastOrDefault()'"
-msgstr "替换为 "OfType<T>().LastOrDefault()""
+msgstr "替换为 \"OfType<T>().LastOrDefault()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeLastAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().Last()"
@@ -28046,12 +28046,12 @@ msgstr "替换为对 OfType<T>().Last() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeLastAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().Last()'"
-msgstr "替换为 "OfType<T>().Last()""
+msgstr "替换为 \"OfType<T>().Last()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>()'"
-msgstr "替换为 "OfType<T>()""
+msgstr "替换为 \"OfType<T>()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeFirstOrDefaultAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().FirstOrDefault()"
@@ -28060,7 +28060,7 @@ msgstr "替换为对 OfType<T>().FirstOrDefault() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeFirstOrDefaultAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().FirstOrDefault()'"
-msgstr "替换为 "OfType<T>().FirstOrDefault()""
+msgstr "替换为 \"OfType<T>().FirstOrDefault()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeFirstAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().First()"
@@ -28069,7 +28069,7 @@ msgstr "替换为对 OfType<T>().First() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeFirstAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().First()'"
-msgstr "替换为 "OfType<T>().First()""
+msgstr "替换为 \"OfType<T>().First()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeCountAnalyzer.cs:1
 msgid "Replace with call to OfType<T>().Count()"
@@ -28078,7 +28078,7 @@ msgstr "替换为对 OfType<T>().Count() 的调用"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithOfTypeCountAnalyzer.cs:1
 #, fuzzy
 msgid "Replace with 'OfType<T>().Count()'"
-msgstr "替换为 "OfType<T>().Count()""
+msgstr "替换为 \"OfType<T>().Count()\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ReplaceWithLastOrDefaultAnalyzer.cs:1
 #, fuzzy
@@ -28097,12 +28097,12 @@ msgstr "查找可以降级为基类的参数"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfToOrExpressionAnalyzer.cs:1
 #, fuzzy
 msgid "Convert 'if' to '||' expression"
-msgstr "将 "if" 转换为 "||" 表达式"
+msgstr "将 \"if\" 转换为 \"||\" 表达式"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/ConvertIfDoToWhileAnalyzer.cs:1
 #, fuzzy
 msgid "Convert 'if-do-while' to 'while' statement"
-msgstr "将 "if-do-while" 转换为 "while" 语句"
+msgstr "将 \"if-do-while\" 转换为 \"while\" 语句"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/AccessToStaticMemberViaDerivedTypeAnalyzer.cs:1
 msgid "Suggests using the class declaring a static function when calling it"
@@ -28135,7 +28135,7 @@ msgstr "使用“if ({0}.TryGetValue({1}, out val))”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ReverseDirectionForForLoopCodeRefactoringProvider.cs:6
 msgid "Reverse 'for' loop'"
-msgstr "使 "for" 循环反向"
+msgstr "使 \"for\" 循环反向"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/InitializeFieldFromConstructorParameterCodeRefactoringProvider.cs:2
 msgid "Initialize field from parameter"
@@ -28151,7 +28151,7 @@ msgstr "修复构造函数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/CS0108UseNewKeywordIfHidingIntendedCodeFixProvider.cs:5
 msgid "Add 'new' modifier"
-msgstr "添加 "new" 修饰符"
+msgstr "添加 \"new\" 修饰符"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/ReturnMustNotBeFollowedByAnyExpressionCodeFixProvider.cs:6
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeFixes/Custom/InvalidConversionCodeFixProvider.cs:11
@@ -28176,7 +28176,7 @@ msgstr "交换参数"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/FieldCanBeMadeReadOnlyCodeFixProvider.cs:3
 msgid "To 'readonly'"
-msgstr "转为 "readonly""
+msgstr "转为 \"readonly\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Custom/NameOfSuggestionAnalyzer.cs:1
 msgid "Suggest the usage of the nameof operator"
@@ -28192,11 +28192,11 @@ msgstr "转为“nameof({0})”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleAnalyzer.cs:2
 msgid "Sample analyzer: Class name should not have a 'C' prefix."
-msgstr "示例分析器: 类名不应具有 "C" 前缀。"
+msgstr "示例分析器: 类名不应具有 \"C\" 前缀。"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleCodeRefactoringProvider.cs:9
 msgid "Sample: Prepend with 'I'"
-msgstr "示例: 在前面预置 "I""
+msgstr "示例: 在前面预置 \"I\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertInterpolatedStringToStringFormatCodeRefactoringProvider.cs:1
 msgid "To format string"
@@ -28216,11 +28216,11 @@ msgstr "添加 Nothing 检查"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/CheckIfParameterIsNothingCodeRefactoringProvider.cs:2
 msgid "Add 'Is Nothing' check for parameter"
-msgstr "为参数添加 "Is Nothing" 检查"
+msgstr "为参数添加 \"Is Nothing\" 检查"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertIfStatementToSelectCaseStatementCodeRefactoringProvider.cs:6
 msgid "To 'Select Case'"
-msgstr "转为 "Select Case""
+msgstr "转为 \"Select Case\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertToCustomEventCodeRefactoringProvider.cs:6
 msgid "Convert to custom event"
@@ -28232,11 +28232,11 @@ msgstr "检查“If {0}.TryGetValue({1}, val)”"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ReplaceDirectCastWithSafeCastCodeRefactoringProvider.cs:1
 msgid "Convert cast to 'TryCast'"
-msgstr "将转换转换为 "TryCast""
+msgstr "将转换转换为 \"TryCast\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ReplaceSafeCastWithDirectCastCodeRefactoringProvider.cs:3
 msgid "Convert 'TryCast' to 'DirectCast'"
-msgstr "将 "TryCast" 转换为 "DirectCast""
+msgstr "将 \"TryCast\" 转换为 \"DirectCast\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/Diagnostics/Custom/NameOfSuggestionAnalyzer.cs:1
 msgid "Suggest the usage of the NameOf operator"

@@ -668,7 +668,7 @@ msgstr ""
 "Algunos caracteres Unicode de este archivo no se pueden guardar con la "
 "codificación actual.\n"
 "¿Quiere volver a guardar el archivo como Unicode?\n"
-"Puede elegir otra codificación en el cuadro de diálogo "Guardar como"."
+"Puede elegir otra codificación en el cuadro de diálogo \"Guardar como\"."
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor/SourceEditorView.cs:115
 #, fuzzy
@@ -16747,7 +16747,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "Matches a new line \\u000A."
-msgstr "Busca un carácter de nueva línea \u000A."
+msgstr "Busca un carácter de nueva línea \\u000A."
 
 #: ../src/addins/MonoDevelop.RegexToolkit/RegexElements.xml:1
 msgid "\\e"
