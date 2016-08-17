@@ -15,9 +15,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	{
 		static readonly Image arrowRight = ImageService.GetIcon ("arrow-right").WithSize (IconSize.Small);
 		static readonly Image arrowDown = ImageService.GetIcon ("arrow-down").WithSize (IconSize.Small);
-		
-		Label status, title;
-		ImageView expanderImage;
+
+		Label titleLabel, statusLabel;
+		HBox statusBox;
+		ImageView expanderImage, statusImage;
+		Button addBtn;
 		Widget sectionWidget;
 		bool expanded;
 		
@@ -59,23 +61,28 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			expanderImage = new ImageView (ImageService.GetIcon ("arrow-right").WithSize (IconSize.Small));
 
+			titleLabel = new Label { Markup = this.Section.DisplayName };
 
-			title = new Label { Markup = this.Section.DisplayName };
-			status = new Label ();
+			statusLabel = new Label (GettextCatalog.GetString ("Enabled"));
+			statusLabel.Font = Font.WithSize (12);
+			statusLabel.TextColor = Styles.SecondaryTextColor;
+
+			statusImage = new ImageView (ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small));
+
+			statusBox = new HBox ();
+			statusBox.MarginLeft = 10;
+			statusBox.Spacing = 3;
+			statusBox.PackStart (statusImage);
+			statusBox.PackStart (statusLabel);
 
 			header.PackStart (expanderImage);
-			header.PackStart (title);
-			header.PackStart (status);
+			header.PackStart (titleLabel);
+			header.PackStart (statusBox);
 
-			if (this.Section.CanBeAdded) {
-				var addBtn = new Button () { Label = GettextCatalog.GetString ("Add to the project") };
-				header.PackEnd (addBtn);
-				addBtn.Clicked += this.AddBtnClicked;
+			addBtn = new Button (GettextCatalog.GetString ("Add to the project"));
 
-				this.Section.Added += (sender, e) => {
-					addBtn.Sensitive = this.Section.IsAdded;
-				};
-			}
+			header.PackEnd (addBtn);
+			addBtn.Clicked += this.AddBtnClicked;
 
 			var container = new VBox ();
 			sectionWidget = GetSectionWidget ();
@@ -88,6 +95,26 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			container.PackStart (sectionWidget);
 
 			Content = container;
+
+			UpdateStatus ();
+			Section.Adding += HandleSectionAdding;
+			Section.Added += HandleSectionAdded;
+		}
+
+		void UpdateStatus ()
+		{
+			if (Section.IsAdded) {
+				if (Section is DependenciesSection)
+					statusLabel.Text = GettextCatalog.GetString ("Installed");
+				else
+					statusLabel.Text = GettextCatalog.GetString ("Configured");
+				statusImage.Visible = true;
+				statusBox.Visible = true;
+				addBtn.Visible = false;
+			} else {
+				statusBox.Visible = false;
+				addBtn.Visible = Section.CanBeAdded;
+			}
 		}
 
 		/// <summary>
@@ -106,6 +133,22 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			return this.Section.GetSectionWidget ();
 		}
 
+		void HandleSectionAdding (object sender, EventArgs e)
+		{
+			if (Section is DependenciesSection)
+				statusLabel.Text = GettextCatalog.GetString ("Installing \u2026");
+			else
+				statusLabel.Text = GettextCatalog.GetString ("Adding \u2026");
+			statusImage.Visible = false;
+			statusBox.Visible = true;
+			addBtn.Visible = false;
+		}
+
+		void HandleSectionAdded (object sender, EventArgs e)
+		{
+			UpdateStatus ();
+		}
+
 		protected override void OnButtonReleased (ButtonEventArgs args)
 		{
 			base.OnButtonReleased (args);
@@ -120,7 +163,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				// FIXME: Background bounds calculation is broken in Xwt.FrameBox
 				//        temporaly: using bold text for highlighting
 				//BackgroundColor = Styles.BackgroundColor;
-				title.Markup = "<b>" + Section.DisplayName + "</b>";
+				titleLabel.Markup = "<b>" + Section.DisplayName + "</b>";
 			}
 		}
 
@@ -128,7 +171,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			base.OnMouseExited (args);
 			BackgroundColor = Styles.BaseBackgroundColor;
-			title.Markup = Section.DisplayName;
+			titleLabel.Markup = Section.DisplayName;
 		}
 
 		/// <summary>
@@ -136,7 +179,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		void AddBtnClicked (object sender, EventArgs e)
 		{
-			this.OnAddSectionToProject ();
+			if (this.Section.CanBeAdded) {
+				this.OnAddSectionToProject ();
+			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (Section != null) {
+				Section.Adding -= HandleSectionAdding;
+				Section.Added -= HandleSectionAdded;
+				Section = null;
+			}
+			base.Dispose (disposing);
 		}
 	}
 }
