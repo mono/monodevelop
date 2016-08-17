@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging.Gui
 {
@@ -42,6 +43,18 @@ namespace MonoDevelop.Packaging.Gui
 		internal void Load (PackagingProject project)
 		{
 			metadata = project.GetPackageMetadata ();
+			LoadMetadata ();
+		}
+
+		internal void Load (DotNetProject project)
+		{
+			metadata = new NuGetPackageMetadata ();
+			metadata.Load (project);
+			LoadMetadata ();
+		}
+
+		void LoadMetadata ()
+		{
 			packageIdTextBox.Text = metadata.Id;
 			packageVersionTextBox.Text = metadata.Version;
 			packageAuthorsTextBox.Text = metadata.Authors;
@@ -63,6 +76,18 @@ namespace MonoDevelop.Packaging.Gui
 
 		internal void Save (PackagingProject project)
 		{
+			UpdateMetadata ();
+			project.UpdatePackageMetadata (metadata);
+		}
+
+		internal void Save (DotNetProject project)
+		{
+			UpdateMetadata ();
+			metadata.UpdateProject (project);
+		}
+
+		void UpdateMetadata ()
+		{
 			metadata.Id = packageIdTextBox.Text;
 			metadata.Version = packageVersionTextBox.Text;
 			metadata.Authors = packageAuthorsTextBox.Text;
@@ -80,8 +105,6 @@ namespace MonoDevelop.Packaging.Gui
 			metadata.Summary = packageSummaryTextBox.Text;
 			metadata.Tags = packageTagsTextBox.Text;
 			metadata.Title = packageTitleTextBox.Text;
-
-			project.UpdatePackageMetadata (metadata);
 		}
 	}
 }

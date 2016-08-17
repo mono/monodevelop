@@ -49,7 +49,7 @@
 
 	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
 		<Section id="NuGetPackage" _label="NuGet Package">
-			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject">
+			<Condition id="ItemType" value="MonoDevelop.Packaging.PackagingProject|DotNetProject">
 				<Section
 					id="Metadata"
 					_label="Metadata"

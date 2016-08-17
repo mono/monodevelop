@@ -24,6 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
+
 namespace MonoDevelop.Packaging
 {
 	class NuGetPackageMetadata
@@ -45,6 +48,99 @@ namespace MonoDevelop.Packaging
 		public string Summary { get; set; }
 		public string Tags { get; set; }
 		public string Title { get; set; }
+
+		public void Load (DotNetProject project)
+		{
+			Load (project.MSBuildProject);
+		}
+
+		public void UpdateProject (DotNetProject project)
+		{
+			Update (project.MSBuildProject);
+		}
+
+		void Load (MSBuildProject project)
+		{
+			MSBuildPropertyGroup propertyGroup = GetPropertyGroup (project);
+			Id = GetProperty (propertyGroup, "NuGetId");
+			Version = GetProperty (propertyGroup, "NuGetVersion");
+			Authors = GetProperty (propertyGroup, "NuGetAuthors");
+			Description = GetProperty (propertyGroup, "NuGetDescription");
+			DevelopmentDependency = GetProperty (propertyGroup, "NuGetDevelopmentDependency", false);
+			IconUrl = GetProperty (propertyGroup, "NuGetIconUrl");
+			Language = GetProperty (propertyGroup, "NuGetLanguage");
+			LicenseUrl = GetProperty (propertyGroup, "NuGetLicenseUrl");
+			Owners = GetProperty (propertyGroup, "NuGetOwners");
+			ProjectUrl = GetProperty (propertyGroup, "NuGetProjectUrl");
+			ReleaseNotes = GetProperty (propertyGroup, "NuGetReleaseNotes");
+			RequireLicenseAcceptance = GetProperty (propertyGroup, "NuGetRequireLicenseAcceptance", false);
+			Summary = GetProperty (propertyGroup, "NuGetSummary");
+			Tags = GetProperty (propertyGroup, "NuGetTags");
+			Title = GetProperty (propertyGroup, "NuGetTitle");
+		}
+
+		MSBuildPropertyGroup GetPropertyGroup (MSBuildProject project)
+		{
+			foreach (MSBuildPropertyGroup propertyGroup in project.PropertyGroups) {
+				if (propertyGroup.HasProperty ("NuGetId"))
+					return propertyGroup;
+			}
+
+			return project.GetGlobalPropertyGroup ();
+		}
+
+		string GetProperty (MSBuildPropertyGroup propertyGroup, string name)
+		{
+			return propertyGroup.GetProperty (name)?.Value;
+		}
+
+		bool GetProperty (MSBuildPropertyGroup propertyGroup, string name, bool defaultValue)
+		{
+			string value = GetProperty (propertyGroup, name);
+			if (string.IsNullOrEmpty (value))
+				return defaultValue;
+
+			bool result = false;
+			if (bool.TryParse (value, out result))
+				return result;
+
+			return defaultValue;
+		}
+
+		void Update (MSBuildProject project)
+		{
+			MSBuildPropertyGroup propertyGroup = GetPropertyGroup (project);
+			SetProperty (propertyGroup, "NuGetId", Id);
+			SetProperty (propertyGroup, "NuGetVersion", Version);
+			SetProperty (propertyGroup, "NuGetAuthors", Authors);
+			SetProperty (propertyGroup, "NuGetDescription", Description);
+			SetProperty (propertyGroup, "NuGetDevelopmentDependency", DevelopmentDependency);
+			SetProperty (propertyGroup, "NuGetLanguage", Language);
+			SetProperty (propertyGroup, "NuGetLicenseUrl", LicenseUrl);
+			SetProperty (propertyGroup, "NuGetOwners", Owners);
+			SetProperty (propertyGroup, "NuGetProjectUrl", ProjectUrl);
+			SetProperty (propertyGroup, "NuGetReleaseNotes", ReleaseNotes);
+			SetProperty (propertyGroup, "NuGetSummary", Summary);
+			SetProperty (propertyGroup, "NuGetTags", Tags);
+			SetProperty (propertyGroup, "NuGetTitle", Title);
+			SetProperty (propertyGroup, "NuGetRequireLicenseAcceptance", RequireLicenseAcceptance);
+		}
+
+		void SetProperty (MSBuildPropertyGroup propertyGroup, string name, string value)
+		{
+			if (string.IsNullOrEmpty (value))
+				propertyGroup.RemoveProperty (name);
+			else
+				propertyGroup.SetValue (name, value);
+		}
+
+		void SetProperty (MSBuildPropertyGroup propertyGroup, string name, bool value)
+		{
+			if (value)
+				propertyGroup.SetValue (name, value);
+			else
+				propertyGroup.RemoveProperty (name);
+		}
 	}
 }
 

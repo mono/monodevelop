@@ -27,30 +27,40 @@
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Packaging.Gui;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging.OptionPanels
 {
 	class NuGetPackageMetadataOptionsPanel : OptionsPanel
 	{
 		GtkNuGetPackageMetadataOptionsPanelWidget widget;
-		PackagingProject project;
+		PackagingProject packagingProject;
+		DotNetProject project;
 
 		public override Control CreatePanelWidget ()
 		{
 			widget = new GtkNuGetPackageMetadataOptionsPanelWidget ();
-			widget.Load (project);
+			if (packagingProject != null)
+				widget.Load (packagingProject);
+			else
+				widget.Load (project);
+
 			return widget;
 		}
 
 		public override void Initialize (OptionsDialog dialog, object dataObject)
 		{
-			project = dataObject as PackagingProject;
+			packagingProject = dataObject as PackagingProject;
+			project = dataObject as DotNetProject;
 			base.Initialize (dialog, dataObject);
 		}
 
 		public override void ApplyChanges ()
 		{
-			widget.Save (project);
+			if (packagingProject != null)
+				widget.Save (packagingProject);
+			else
+				widget.Save (project);
 		}
 	}
 }
