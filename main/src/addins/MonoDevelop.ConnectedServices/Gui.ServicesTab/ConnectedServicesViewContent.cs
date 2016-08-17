@@ -22,6 +22,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			this.ContentName = string.Format ("{0} - {1}", GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName), project.Name);
 
 			widget = new ConnectedServicesWidget ();
+			widget.GalleryShown += (sender, e) => {
+				this.ContentName = string.Format ("{0} - {1}", GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName), project.Name);
+			};
+			widget.ServiceShown += (sender, e) => {
+				this.ContentName = string.Format ("{0} - {1}", e.Service.DisplayName, project.Name);
+			};
 			scrollContainer = new ScrollView (widget);
 		}
 
@@ -48,7 +54,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			var binding = ((DotNetProject)this.Project).GetConnectedServicesBinding ();
 			if (string.IsNullOrEmpty (serviceId)) {
 				var services = binding.SupportedServices;
-				this.widget.ShowGallery (services);
+				this.widget.ShowGallery (services, Project);
 			} else {
 				var service = binding.SupportedServices.FirstOrDefault (x => x.Id == serviceId);
 				this.widget.ShowServiceDetails (service);
