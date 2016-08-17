@@ -7634,6 +7634,15 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\fsharp.json">
       <LogicalName>fsharp.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Diff\diff.tmLanguage">
+      <LogicalName>diff.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Json\JSON.tmLanguage">
+      <LogicalName>JSON.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Html\Html.tmLanguage">
+      <LogicalName>Html.tmLanguage</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -8671,6 +8680,9 @@
     <None Include="packages.config" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#Comments.tmPreferences" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\License.txt" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Diff\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Html\OSSREADME.json" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Json\OSSREADME.json" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -8716,6 +8728,9 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\Formats\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Diff\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Html\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Json\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

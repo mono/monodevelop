@@ -152,7 +152,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlightingDefinition definition)
 		{
+			return GetMatches (definition, new List<string> ());
+		}
+
+		IEnumerable<SyntaxMatch> GetMatches (SyntaxHighlightingDefinition definition, List<string> alreadyIncluded)
+		{
 			foreach (var o in includesAndMatches) {
+				
 				var match = o as SyntaxMatch;
 				if (match != null) {
 					yield return match;
@@ -164,7 +170,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					LoggingService.LogWarning ($"highlighting {definition.Name} can't find include {include}.");
 					continue;
 				}
-				foreach (var match2 in ctx.GetMatches (definition))
+				if (alreadyIncluded.Contains (include))
+					continue;
+				alreadyIncluded.Add (include);
+				foreach (var match2 in ctx.GetMatches (definition, alreadyIncluded))
 					yield return match2;
 			}
 		}
