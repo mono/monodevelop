@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -94,7 +95,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		protected virtual void OnAddSectionToProject()
 		{
-			this.Section.AddToProject ();
+			this.Section.AddToProject (CancellationToken.None);
 		}
 
 		/// <summary>

@@ -47,7 +47,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			this.service = details.Service = service;
 			sections.Clear ();
 
-			var dependencies = new ConfigurationSectionWidget (new DependenciesSection (service));
+			var dependencies = new ConfigurationSectionWidget (service.DependenciesSection);
 			dependencies.ExpandedChanged += HandleSectionExpandedChanged;
 			sections.PackStart (dependencies);
 

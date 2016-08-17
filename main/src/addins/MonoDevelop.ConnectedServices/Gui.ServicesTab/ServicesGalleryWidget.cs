@@ -57,7 +57,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					enabledLabel.Visible = true;
 				} else {
 					availableList.PackStart (serviceWidget);
-					service.ServiceAdded += HandleServiceAdded;
+					service.Added += HandleServiceAdded;
 					availableLabel.Visible = true;
 				}
 			}
@@ -66,7 +66,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void ClearServices ()
 		{
 			foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
-				widget.Service.ServiceAdded -= HandleServiceAdded;
+				widget.Service.Added -= HandleServiceAdded;
 				widget.ButtonReleased -= HandleServiceWidgetButtonReleased;
 			}
 			availableList.Clear ();
@@ -127,7 +127,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				if (value == null)
 					throw new InvalidOperationException ("Service can not be null");
 				if (service != null)
-					service.ServiceAdded -= HandleServiceAdded;
+					service.Added -= HandleServiceAdded;
 				
 				service = value;
 				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-project")).WithSize (IconSize.Medium);
@@ -143,7 +143,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
 
-				service.ServiceAdded += HandleServiceAdded;
+				service.Added += HandleServiceAdded;
 			}
 		}
 
@@ -243,7 +243,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && Service != null)
-				Service.ServiceAdded -= HandleServiceAdded;
+				Service.Added -= HandleServiceAdded;
 			base.Dispose (disposing);
 		}
 	}
