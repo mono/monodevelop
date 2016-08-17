@@ -1923,7 +1923,7 @@ msgstr "Número de iterações"
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:11
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:13
 msgid "Template for reverse 'for' loop"
-msgstr "Modelo para o loop "for" inverso"
+msgstr "Modelo para o loop \"for\" inverso"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:8
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:14
@@ -6170,11 +6170,11 @@ msgid ""
 "'N:Namespace' a namespace. 'disabled' don't print any output until toggled "
 "via SIGUSR2. Prefix with '-' to exclude and expression."
 msgstr ""
-"Lista de expressões a serem rastreadas separadas por vírgulas. "all" todos "
-"os assemlies, "none" nenhum assembly, "program" assembly de ponto de "
-"entrada, "assembly" especifica um assembly, "T:Type" especifica um tipo, "
-""M:Type:Method" um método, "N:Namespace" um namespace. "disabled" não "
-"imprimir nenhuma saída até ser alternado via SIGUSR2. Prefixe com "-" para "
+"Lista de expressões a serem rastreadas separadas por vírgulas. \"all\" todos "
+"os assemlies, \"none\" nenhum assembly, \"program\" assembly de ponto de "
+"entrada, \"assembly\" especifica um assembly, \"T:Type\" especifica um tipo, "
+"\"M:Type:Method\" um método, \"N:Namespace\" um namespace. \"disabled\" não "
+"imprimir nenhuma saída até ser alternado via SIGUSR2. Prefixe com \"-\" para "
 "excluir a expressão."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
@@ -6183,8 +6183,8 @@ msgid ""
 "'debug'. The default  value  is  'error'. Messages with a logging level "
 "greater then or equal to the log level will be printed to stdout/stderr."
 msgstr ""
-"Os valores possíveis são "error", "critical", "warning", "message", "info" e "
-""debug". O valor padrão é "error". Mensagens com nível de registro em log "
+"Os valores possíveis são \"error\", \"critical\", \"warning\", \"message\", \"info\" e "
+"\"debug\". O valor padrão é \"error\". Mensagens com nível de registro em log "
 "maior ou igual ao nível do log serão impressas para stdout/stderr."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Execution/MonoExecutionParameters.cs:3
@@ -6197,7 +6197,7 @@ msgid ""
 "messages and assembly loader messages set you mask to 'asm,cfg'."
 msgstr ""
 "Os valores possíveis são 'asm' (carregador de assembly), 'type', 'dll' "
-"(carregador da biblioteca nativa), 'gc" (coletor de lixo), 'cfg' (carregador "
+"(carregador da biblioteca nativa), 'gc' (coletor de lixo), 'cfg' (carregador "
 "do arquivo de configuração), 'aot' (pré-compilador) e 'all'. O valor padrão "
 "é 'all'. Alterar o valor da máscara permite exibir apenas as mensagens de um "
 "determinado componente. Você pode usar várias máscaras, separando-as por "
@@ -6214,7 +6214,7 @@ msgid ""
 "somehow fails. This behavior can be disabled by setting the option "
 "`nofallback' (for example: '0,nofallback')."
 msgstr ""
-"Os valores possíveis são "no" para desabilitar o uso de um serializador C# "
+"Os valores possíveis são \"no\" para desabilitar o uso de um serializador C# "
 "personalizado ou um número inteiro que indica o número mínimo de usos antes "
 "do tempo de execução produzir um serializador personalizado (0 produzirá um "
 "serializador personalizado no primeiro acesso, 50 produzirá um serializador "
@@ -6603,7 +6603,7 @@ msgid ""
 msgstr ""
 "A entrada do console não tem suporte ao usar o console de saída do {0}. Se "
 "seu aplicativo precisar ler os dados provenientes da entrada padrão, defina "
-"a opção "Executar no Console Externa" nas opções de projeto."
+"a opção \"Executar no Console Externa\" nas opções de projeto."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CustomTools/CustomToolService.cs:9
 #, fuzzy
@@ -8455,7 +8455,7 @@ msgstr ""
 "MonoDevelop.\n"
 "\n"
 "Se você optar por fazer backup do projeto antes da migração, uma cópia do "
-"arquivo de projeto será salva em um diretório "backup" no diretório do "
+"arquivo de projeto será salva em um diretório \"backup\" no diretório do "
 "projeto."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/LogAgentOptionsPanel.cs:5
@@ -10477,7 +10477,7 @@ msgid ""
 "Contain a ' ', '..', '~', '^', ':', '\\', '?', '['"
 msgstr ""
 "Um nome de ramificação não pode:\n"
-"Começar com "." ou terminar com "/" ou ".lock"\n"
+"Começar com \".\" ou terminar com \"/\" ou \".lock\"\n"
 "Conter um ' ', '..', '~', '^', ':', '\\', '?', '['"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/gtk-gui/MonoDevelop.VersionControl.Git.EditBranchDialog.cs:2
@@ -10920,8 +10920,8 @@ msgid ""
 "This add-in requires the 'Microsoft Visual C++ 2010 Redistributable'. You "
 "may need to install it."
 msgstr ""
-"Este suplemento exige os "Pacotes Redistribuíveis do Microsoft Visual C++ "
-"2010". Você precisará instalá-lo."
+"Este suplemento exige os \"Pacotes Redistribuíveis do Microsoft Visual C++ "
+"2010\". Você precisará instalá-lo."
 
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:695
 msgid "{0:0.00} MBytes"
@@ -11294,7 +11294,7 @@ msgid ""
 "Are you sure you want to delete the action '{0}'? It will be removed from "
 "all menus and toolbars."
 msgstr ""
-"Você tem certeza de que deseja excluir a ação "{0}"? Ela será removida de "
+"Você tem certeza de que deseja excluir a ação \"{0}\"? Ela será removida de "
 "todos os menus e barras de ferramentas."
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/ActionMenu.cs:10
@@ -11839,7 +11839,7 @@ msgstr ""
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:2
 msgid "Click on the 'Details' button for more info."
-msgstr "Clique no botão "Detalhes" para ver mais informações."
+msgstr "Clique no botão \"Detalhes\" para ver mais informações."
 
 #: ../src/addins/ChangeLogAddIn/CommitDialogExtensionWidget.cs:2
 msgid "The following ChangeLog file will be updated:"
@@ -11886,7 +11886,7 @@ msgid ""
 "section."
 msgstr ""
 "Para alterar as políticas de criação e atualização do ChangeLog, abra o "
-"diálogo de opções do projeto ou da solução e clique na seção "Integração "
+"diálogo de opções do projeto ou da solução e clique na seção \"Integração "
 "ChangeLog\"."
 
 #: ../src/addins/ChangeLogAddIn/ProjectOptionPanel.cs:2
@@ -16203,12 +16203,12 @@ msgstr "Diferença de maiúsculas/minúsculas em '{0}'"
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Original string '{0}' contains '_', translation doesn't."
 msgstr ""
-"A cadeia de caracteres original '{0}' contém "_", mas a tradução não contém."
+"A cadeia de caracteres original '{0}' contém \"_\", mas a tradução não contém."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Original string '{0}' doesn't contain '_', translation does."
 msgstr ""
-"A cadeia de caracteres original '{0}' não contém "_", mas a tradução contém."
+"A cadeia de caracteres original '{0}' não contém \"_\", mas a tradução contém."
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:15
 msgid "Original string '{0}' contains '{1}', translation doesn't."
@@ -17185,7 +17185,7 @@ msgid ""
 "strings\n"
 "that would be matched by the subexpression alone.)"
 msgstr ""
-"Subexpressão sem retorno (também conhecida como subexpressão "greedy")\n"
+"Subexpressão sem retorno (também conhecida como subexpressão \"greedy\")\n"
 "A subexpressão corresponde totalmente uma vez e não participa \n"
 "de retorno por etapas (ou seja, a subexpressão corresponde apenas a cadeias "
 "de caracteres\n"
@@ -18247,7 +18247,7 @@ msgid ""
 "Set to 'true' if the text file contains unresolved references to paths (e.g. "
 "@ProgramFiles@)"
 msgstr ""
-"Definir para "true" se o arquivo de texto contiver referências não "
+"Definir para \"true\" se o arquivo de texto contiver referências não "
 "resolvidas para os caminhos (ex.: @ProgramFiles@)"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment.Gui/PropertyProvider.cs:3
@@ -18677,7 +18677,7 @@ msgid ""
 "System application, 'System Tools' such as say a log viewer or network "
 "monitor"
 msgstr ""
-"Aplicativo do sistema, "Ferramentas do Sistema" como, digamos, um "
+"Aplicativo do sistema, \"Ferramentas do Sistema\" como, digamos, um "
 "visualizador de logs ou monitor de rede"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:1
@@ -21184,20 +21184,20 @@ msgid ""
 "Mastertype directive must have non-empty 'typename' or 'virtualpath' "
 "attribute"
 msgstr ""
-"A diretiva mastertype deve ter um atributo "typename" ou "virtualpath" não "
+"A diretiva mastertype deve ter um atributo \"typename\" ou \"virtualpath\" não "
 "vazio"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:7
 msgid "Assembly directive must have non-empty 'name' or 'src' attribute"
-msgstr "A diretiva do assembly deve ter um atributo "name" ou "src" não vazio"
+msgstr "A diretiva do assembly deve ter um atributo \"name\" ou \"src\" não vazio"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:7
 msgid "Import directive must have non-empty 'namespace' attribute"
-msgstr "A diretiva de importação deve ter um atributo "namespace" não vazio"
+msgstr "A diretiva de importação deve ter um atributo \"namespace\" não vazio"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:7
 msgid "Implements directive must have non-empty 'interface' attribute"
-msgstr "A diretiva de implementação deve ter um atributo "interface" não vazio"
+msgstr "A diretiva de implementação deve ter um atributo \"interface\" não vazio"
 
 #: ../src/addins/AspNet/WebForms/WebFormsPageInfo.cs:8
 msgid "Unexpected directive {0}"
@@ -22107,7 +22107,7 @@ msgstr "ex.: colorName == \"Vermelho\""
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:6
 msgid "e.g. Value of 'name' is {name}"
-msgstr "ex.: o valor de "name" é {name}"
+msgstr "ex.: o valor de \"name\" é {name}"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:20
 #, fuzzy
@@ -24641,7 +24641,7 @@ msgstr "Exceção NotImplemented gerada"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantInternalIssue.cs:2
 msgid "Remove redundant 'internal' modifier"
-msgstr "Remover o modificador "internal" redundante"
+msgstr "Remover o modificador \"internal\" redundante"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantInternalIssue.cs:4
 msgid "Keyword 'internal' is redundant.  This is the default modifier."
@@ -24655,11 +24655,11 @@ msgstr "Remover modificador 'internal'"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantPrivateIssue.cs:2
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantPrivateIssue.cs:4
 msgid "Remove redundant 'private' modifier"
-msgstr "Remover o modificador "private" redundante"
+msgstr "Remover o modificador \"private\" redundante"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/RedundantPrivateIssue.cs:4
 msgid "Keyword 'private' is redundant. This is the default modifier."
-msgstr "A palavra-chave "private" é redundante. Esse é o modificador padrão."
+msgstr "A palavra-chave \"private\" é redundante. Esse é o modificador padrão."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Custom/XmlDocIssue.cs:1
 #, fuzzy
@@ -24744,7 +24744,7 @@ msgstr "Operações bit a bit em uma enumeração não marcada com o atributo Fl
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CanBeReplacedWithTryCastAndCheckForNullIssue.cs:5
 msgid "Type check and casts can be replaced with 'as' and null check"
 msgstr ""
-"Verificação e conversões de tipo podem ser substituídas por "as" e uma "
+"Verificação e conversões de tipo podem ser substituídas por \"as\" e uma "
 "verificação nula"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/CompareOfFloatsByEqualityOperatorIssue.cs:2
@@ -24919,7 +24919,7 @@ msgstr "A variável local '{0}' oculta o membro '{1}'"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/LongLiteralEndingLowerLIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/LongLiteralEndingLowerLAnalyzer.cs:1
 msgid "Long literal ends with 'l' instead of 'L'"
-msgstr "Literais longos terminam com "l" em vez de "L""
+msgstr "Literais longos terminam com \"l\" em vez de \"L\""
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/LongLiteralEndingLowerLIssue.cs:7
 msgid "Make suffix upper case"
@@ -24959,7 +24959,7 @@ msgstr "Atributo [Opcional] com parâmetro 'ref' ou 'out'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/OptionalParameterRefOutIssue.cs:3
 msgid "A 'ref' or 'out' parameter can't be optional"
-msgstr "Um parâmetro "ref" ou "out" não pode ser opcional"
+msgstr "Um parâmetro \"ref\" ou \"out\" não pode ser opcional"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/ParameterHidesMemberIssue.cs:2
 #, fuzzy
@@ -25141,14 +25141,14 @@ msgstr "'{0}' não deve separar palavras com um sublinhado. (Regra '{1}')"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:35
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
 msgid "after '_' a lower letter should follow. (Rule '{0}')"
-msgstr "depois de "_" deve vir uma letra minúscula. (Regra '{0}')"
+msgstr "depois de \"_\" deve vir uma letra minúscula. (Regra '{0}')"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:24
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:25
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:35
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
 msgid "after '_' an upper letter should follow. (Rule '{0}')"
-msgstr "depois de "_" deve vir uma letra maiúscula. (Regra '{0}')"
+msgstr "depois de \"_\" deve vir uma letra maiúscula. (Regra '{0}')"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/ConstraintViolations/InconsistentNamingIssue/NamingRule.cs:25
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/ConstraintViolations/InconsistentNaming/NamingRule.cs:36
@@ -25285,7 +25285,7 @@ msgstr "Usar qualificador de base"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:1
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/BaseMemberHasParamsAnalyzer.cs:1
 msgid "Base parameter has 'params' modifier, but missing in overrider"
-msgstr "O parâmetro de base tem o modificador "params", mas não é substituído"
+msgstr "O parâmetro de base tem o modificador \"params\", mas não é substituído"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/PracticesAndImprovements/BaseMemberHasParamsIssue.cs:3
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/BaseMemberHasParamsAnalyzer.cs:1
@@ -25817,7 +25817,7 @@ msgstr "Remover referência ao tipo de base redundante"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantIfElseBlockIssue.cs:9
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantIfElseBlockAnalyzer.cs:1
 msgid "Redundant 'else' keyword"
-msgstr "Palavra-chave "else" redundante"
+msgstr "Palavra-chave \"else\" redundante"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantIfElseBlockIssue.cs:9
 #, fuzzy
@@ -26002,7 +26002,7 @@ msgstr "A variável local nunca é usada"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartIssue.cs:2
 msgid "Redundant 'partial' modifier in type declaration"
-msgstr "Modificador "partial" redundante na declaração de tipo"
+msgstr "Modificador \"partial\" redundante na declaração de tipo"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartIssue.cs:7
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/PartialTypeWithSinglePartAnalyzer.cs:1
@@ -26284,7 +26284,7 @@ msgstr "Usar 'as' e verificação nula"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/UseAsAndNullCheckCodeRefactoringProvider.cs:10
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Synced/UseAsAndNullCheckCodeRefactoringProvider.cs:24
 msgid "Use 'as' and check for null"
-msgstr "Use "as" e verifique se é nulo"
+msgstr "Use \"as\" e verifique se é nulo"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ConvertForToWhileAction.cs:1
 #, fuzzy
@@ -26428,7 +26428,7 @@ msgstr "Membro sealed em classe sealed"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassIssue.cs:3
 msgid "Keyword 'sealed' is redundant in sealed classes."
-msgstr "A palavra-chave "sealed" é redundante em classes sealed."
+msgstr "A palavra-chave \"sealed\" é redundante em classes sealed."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInDeclaration/SealedMemberInSealedClassIssue.cs:3
 #, fuzzy
@@ -26692,7 +26692,7 @@ msgstr "A instrução é redundante"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ExtractWhileConditionToInternalIfStatementAction.cs:2
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ExtractWhileConditionToInternalIfStatementCodeRefactoringProvider.cs:2
 msgid "Extract condition to internal 'if' statement"
-msgstr "Extrair condição para instrução "if" interna"
+msgstr "Extrair condição para instrução \"if\" interna"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeActions/ReverseDirectionForForLoopAction.cs:1
 msgid "Reverse the direction of a for loop"
@@ -26953,7 +26953,7 @@ msgstr "O argumento não é usado na cadeia de caracteres de formato"
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/FormatStringProblemIssue.cs:9
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FormatStringProblemAnalyzer.cs:10
 msgid "The index '{0}' is out of bounds of the passed arguments"
-msgstr "O índice "{0}" está fora dos limites dos argumentos passados"
+msgstr "O índice \"{0}\" está fora dos limites dos argumentos passados"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/FormatStringProblemIssue.cs:9
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FormatStringProblemAnalyzer.cs:11
@@ -26991,7 +26991,7 @@ msgstr "Remover 'catch'"
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:4
 msgid "Catch clause with a single 'throw' statement is redundant."
-msgstr "A cláusula catch com uma única instrução "throw" é redundante."
+msgstr "A cláusula catch com uma única instrução \"throw\" é redundante."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/RedundanciesInCode/RedundantCatchClauseIssue.cs:6
 #, fuzzy
@@ -27357,7 +27357,7 @@ msgstr "O nome do parâmetro é o argumento errado."
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/NotResolvedInTextIssueCodeFixProvider.cs:8
 #, fuzzy
 msgid "Replace with '\"{0}\"'."
-msgstr "Substituir por '\'{0}\''."
+msgstr "Substituir por '\"{0}\"'."
 
 #: ../external/nrefactory/ICSharpCode.NRefactory.CSharp.Refactoring/CodeIssues/Synced/CodeQuality/NotResolvedInTextIssue.cs:23
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/NotResolvedInTextIssueCodeFixProvider.cs:7
@@ -28069,7 +28069,7 @@ msgid ""
 "Function does not reach its end or a 'return' statement by any of possible "
 "execution paths"
 msgstr ""
-"A função não atinge seu fim ou uma instrução "return" por qualquer um dos "
+"A função não atinge seu fim ou uma instrução \"return\" por qualquer um dos "
 "caminhos de execução possíveis"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/FunctionNeverReturnsAnalyzer.cs:1
@@ -28124,7 +28124,7 @@ msgstr "O valor de parâmetro opcional {0} difere da base {1} '{2}'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/OptionalParameterRefOutAnalyzer.cs:1
 msgid "C# doesn't support optional 'ref' or 'out' parameters"
-msgstr "C# não dá suporte aos parâmetros "ref" ou "out" opcionais"
+msgstr "C# não dá suporte aos parâmetros \"ref\" ou \"out\" opcionais"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/CodeQuality/ParameterHidesMemberAnalyzer.cs:1
 msgid "Parameter has the same name as a member and hides it"
@@ -28229,7 +28229,7 @@ msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/Opportunities/SuggestUseVarKeywordEvidentAnalyzer.cs:1
 msgid "Use 'var' keyword when possible"
-msgstr "Use a palavra-chave "var" quando possível"
+msgstr "Use a palavra-chave \"var\" quando possível"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInDeclaration/EmptyConstructorAnalyzer.cs:1
 msgid "An empty public constructor without paramaters is redundant."
@@ -28334,7 +28334,7 @@ msgstr "O rótulo 'case' é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCatchClauseAnalyzer.cs:1
 msgid "Catch clause with a single 'throw' statement is redundant"
-msgstr "Cláusula catch com uma única instrução "throw" é redundante"
+msgstr "Cláusula catch com uma única instrução \"throw\" é redundante"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantCheckBeforeAssignmentAnalyzer.cs:1
 msgid ""
@@ -28346,7 +28346,7 @@ msgstr ""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantComparisonWithNullAnalyzer.cs:1
 msgid "When 'is' keyword is used, which implicitly check null"
-msgstr "Quando a palavra-chave "is" é usada, que verifica nulo implicitamente"
+msgstr "Quando a palavra-chave \"is\" é usada, que verifica nulo implicitamente"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/RedundanciesInCode/RedundantEnumerableCastCallAnalyzer.cs:1
 #, fuzzy
@@ -28437,7 +28437,7 @@ msgstr "O operador 'is' pode ser usado"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringStartsWithIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'StartsWith' call is used by default."
 msgstr ""
-"Avisa quando uma chamada "StartsWith" com reconhecimento de cultura é usada "
+"Avisa quando uma chamada \"StartsWith\" com reconhecimento de cultura é usada "
 "por padrão."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringStartsWithIsCultureSpecificAnalyzer.cs:1
@@ -28447,7 +28447,7 @@ msgstr "'StartsWith' reconhece culturas e não tem um argumento StringComparison
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringLastIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'LastIndexOf' call is used by default."
 msgstr ""
-"Avisa quando uma chamada "LastIndexOf" com reconhecimento de cultura é usada "
+"Avisa quando uma chamada \"LastIndexOf\" com reconhecimento de cultura é usada "
 "por padrão."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringLastIndexOfIsCultureSpecificAnalyzer.cs:1
@@ -28458,7 +28458,7 @@ msgstr ""
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'IndexOf' call is used by default."
 msgstr ""
-"Avisa quando uma chamada "IndexOf" com reconhecimento de cultura é usada por "
+"Avisa quando uma chamada \"IndexOf\" com reconhecimento de cultura é usada por "
 "padrão."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringIndexOfIsCultureSpecificAnalyzer.cs:1
@@ -28468,7 +28468,7 @@ msgstr "'IndexOf' reconhece culturas e não tem um argumento StringComparison"
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringEndsWithIsCultureSpecificAnalyzer.cs:1
 msgid "Warns when a culture-aware 'EndsWith' call is used by default."
 msgstr ""
-"Avisa quando uma chamada "EndsWith" com reconhecimento de cultura é usada "
+"Avisa quando uma chamada \"EndsWith\" com reconhecimento de cultura é usada "
 "por padrão."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/Diagnostics/Synced/PracticesAndImprovements/StringEndsWithIsCultureSpecificAnalyzer.cs:1
@@ -28802,12 +28802,12 @@ msgstr "Para 'nameof({0})'"
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleAnalyzer.cs:2
 msgid "Sample analyzer: Class name should not have a 'C' prefix."
-msgstr "Analisador de exemplos: o nome de classe não deve ter um prefixo "C"."
+msgstr "Analisador de exemplos: o nome de classe não deve ter um prefixo \"C\"."
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/Samples/CSharp/SampleCodeRefactoringProvider.cs:9
 #, fuzzy
 msgid "Sample: Prepend with 'I'"
-msgstr "Exemplo: preceder com "I""
+msgstr "Exemplo: preceder com \"I\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/CSharp/CodeRefactorings/Custom/ConvertInterpolatedStringToStringFormatCodeRefactoringProvider.cs:1
 #, fuzzy
@@ -28835,7 +28835,7 @@ msgstr "Adicionar a verificação 'Is Nothing' ao parâmetro"
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertIfStatementToSelectCaseStatementCodeRefactoringProvider.cs:6
 #, fuzzy
 msgid "To 'Select Case'"
-msgstr "Para "Selecionar Caso""
+msgstr "Para \"Selecionar Caso\""
 
 #: ../external/RefactoringEssentials/RefactoringEssentials/VB/CodeRefactorings/ConvertToCustomEventCodeRefactoringProvider.cs:6
 #, fuzzy

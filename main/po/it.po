@@ -30007,12 +30007,12 @@ msgstr "Aggiungi strumento personalizzato..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:17
 #, fuzzy
 msgid "_Delete “{0}” Layout"
-msgstr "_Elimina layout "{0}""
+msgstr "_Elimina layout \"{0}\""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Commands/ViewCommands.cs:17
 #, fuzzy
 msgid "Are you sure you want to delete the “{0}” layout?"
-msgstr "Eliminare il layout "{0}"?"
+msgstr "Eliminare il layout \"{0}\"?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/ViewCommandHandlers.cs:15
 #, fuzzy

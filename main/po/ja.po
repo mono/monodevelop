@@ -12436,7 +12436,7 @@ msgstr "プロジェクトをビルドできませんでした: "
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:28
 msgid "Build failed. See Build Output panel."
-msgstr "ビルドできませんでした。"ビルド出力パネル" をご覧ください。"
+msgstr "ビルドできませんでした。\"ビルド出力パネル\" をご覧ください。"
 
 #: ../src/addins/MonoDevelop.Autotools/MakefileProjectServiceExtension.cs:51
 msgid "Cleaning project"
@@ -28668,12 +28668,12 @@ msgstr "ログの表示(_L)"
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:34
 #, fuzzy
 msgid "Find Next Like Selection"
-msgstr "次の "いいね" 選択範囲を検索"
+msgstr "次の \"いいね\" 選択範囲を検索"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:34
 #, fuzzy
 msgid "Find Previous Like Selection"
-msgstr "前の "いいね" 選択範囲を検索"
+msgstr "前の \"いいね\" 選択範囲を検索"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:36
 #, fuzzy
@@ -28712,12 +28712,12 @@ msgstr "行へ移動..."
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:37
 #, fuzzy
 msgid "Find Like Selection"
-msgstr ""いいね" 選択範囲の検索"
+msgstr "\"いいね\" 選択範囲の検索"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:37
 #, fuzzy
 msgid "Replace Like Selection"
-msgstr ""いいね" 選択範囲の置換"
+msgstr "\"いいね\" 選択範囲の置換"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
 #, fuzzy
