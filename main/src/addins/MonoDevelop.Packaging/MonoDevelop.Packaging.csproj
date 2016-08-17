@@ -54,6 +54,7 @@
     <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Packaging\NuGetPackageMetadata.cs" />
     <Compile Include="MonoDevelop.Packaging\MSBuildProjectExtensions.cs" />
+    <Compile Include="MonoDevelop.Packaging\DotNetProjectExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

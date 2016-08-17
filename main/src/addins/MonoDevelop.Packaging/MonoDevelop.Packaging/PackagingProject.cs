@@ -245,7 +245,9 @@ namespace MonoDevelop.Packaging
 
 			DotNetProject project = GetDotNetProject (e.ProjectReference);
 			if (project != null) {
-				AddCommonPackagingImports (project);
+				if (project.AddCommonPackagingImports ()) {
+					project.SaveAsync (new ProgressMonitor ());
+				}
 			}
 		}
 
@@ -267,36 +269,9 @@ namespace MonoDevelop.Packaging
 
 			DotNetProject project = GetDotNetProject (e.ProjectReference);
 			if (project != null) {
-				RemoveCommonPackagingImports (project);
-			}
-		}
-
-		readonly string packagingCommonProps = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.props";
-		readonly string packagingCommonTargets = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.targets";
-
-		void AddCommonPackagingImports (DotNetProject project)
-		{
-			bool modified = false;
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonProps)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonProps, true, null);
-				modified = true;
-			}
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonTargets)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonTargets, false, null);
-				modified = true;
-			}
-
-			if (modified)
+				project.RemoveCommonPackagingImports ();
 				project.SaveAsync (new ProgressMonitor ());
-		}
-
-		void RemoveCommonPackagingImports (DotNetProject project)
-		{
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonProps);
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonTargets);
-			project.SaveAsync (new ProgressMonitor ());
+			}
 		}
 	}
 }

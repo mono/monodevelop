@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 
@@ -140,6 +141,25 @@ namespace MonoDevelop.Packaging
 				propertyGroup.SetValue (name, value);
 			else
 				propertyGroup.RemoveProperty (name);
+		}
+
+		public bool IsEmpty ()
+		{
+			return string.IsNullOrEmpty (Id) &&
+				string.IsNullOrEmpty (Version) &&
+				string.IsNullOrEmpty (Authors) &&
+				string.IsNullOrEmpty (Copyright) &&
+				string.IsNullOrEmpty (Description) &&
+				!DevelopmentDependency &&
+				string.IsNullOrEmpty (IconUrl) &&
+				string.IsNullOrEmpty (Language) &&
+				string.IsNullOrEmpty (Owners) &&
+				string.IsNullOrEmpty (ProjectUrl) &&
+				string.IsNullOrEmpty (ReleaseNotes) &&
+				!RequireLicenseAcceptance &&
+				string.IsNullOrEmpty (Summary) &&
+				string.IsNullOrEmpty (Tags) &&
+				string.IsNullOrEmpty (Title);
 		}
 	}
 }
