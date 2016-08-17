@@ -40,7 +40,9 @@ namespace MonoDevelop.Packaging
 		public override bool Evaluate (NodeElement conditionNode)
 		{
 			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
-			if (project != null && !(project is PackagingProject)) {
+			if (project is PackagingProject) {
+				return true;
+			} else if (project != null) {
 				return project.HasNuGetMetadata ();
 			}
 			return false;
