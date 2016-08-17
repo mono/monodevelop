@@ -30,6 +30,9 @@ using System.IO;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
+using MonoDevelop.Core.Text;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -400,10 +403,125 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			foreach (var kv in captureDict) {
 				var g = int.Parse (kv.Key);
 				var s = ((kv.Value as PDictionary) ["name"] as PString).Value;
-			/*	if (g == 0) {
-					scope = s;
-					continue;
-				}*/
+				/*	if (g == 0) {
+						scope = s;
+						continue;
+					}*/
+				captures.Add (Tuple.Create (g, s));
+			}
+			return captures;
+		}
+		#endregion
+
+		#region JSon Format
+		internal static SyntaxHighlightingDefinition ReadHighlightingFromJson(Stream stream)
+		{
+			byte [] bytes;
+			using (var sr = TextFileUtility.OpenStream (stream)) {
+				bytes = System.Text.Encoding.UTF8.GetBytes (sr.ReadToEnd ());
+			}
+
+			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (bytes, new System.Xml.XmlDictionaryReaderQuotas ());
+			var root = XElement.Load (reader);
+
+			string firstLineMatch = null;
+			var extensions = new List<string> ();
+			var contexts = new List<SyntaxContext> ();
+
+			var name = root.XPathSelectElement ("name").Value;
+			var scope = root.XPathSelectElement ("scopeName").Value;
+			foreach (var type in root.XPathSelectElements ("fileTypes/*")) {
+				extensions.Add (type.Value);
+			}
+
+			// Construct main context
+			var includes = new List<object> ();
+			foreach (var type in root.XPathSelectElements ("patterns/*")) {
+				ReadJSonPattern (type, includes);
+			}
+			contexts.Add (new SyntaxContext ("main", includes));
+			foreach (var kv in root.XPathSelectElements ("repository/*")) {
+				string contextName = kv.Name.LocalName;
+				includes = new List<object> ();
+				foreach (var node in kv.Nodes ().OfType<XElement> ()) {
+					if (node.Name.LocalName == "patterns") {
+						foreach (var match in node.Nodes ().OfType<XElement> ()) {
+							ReadJSonPattern (match, includes);
+						}
+					} else {
+						var newMatch = ReadJSonMatch (node);	
+						if (newMatch != null)
+							includes.Add (newMatch);
+					}
+				}
+				contexts.Add (new SyntaxContext (contextName, includes));
+			}
+
+			// var uuid = (dictionary ["uuid"] as PString)?.Value;*/
+			var hideFromUser = root.XPathSelectElement ("hideFromUser")?.Value == "true";
+			return new SyntaxHighlightingDefinition (name, scope, firstLineMatch, hideFromUser, extensions, contexts);
+		}
+
+		static void ReadJSonPattern (XElement type, List<object> includes)
+		{
+			var firstNode = ((XElement)type.FirstNode);
+			if (firstNode.Name.LocalName == "include") {
+				includes.Add (firstNode.Value.TrimStart ('#'));
+				return;
+			}
+			var newMatch = ReadJSonMatch (type);
+			if (newMatch != null)
+				includes.Add (newMatch);
+		}
+
+		static SyntaxMatch ReadJSonMatch (XElement dict)
+		{
+			List<string> matchScope = new List<string> ();
+			Sublime3Format.ParseScopes (matchScope, dict.XPathSelectElement ("name")?.Value);
+			var captures = ReadJSonCaptureDictionary (dict.XPathSelectElement ("captures"));
+			ContextReference pushContext = null;
+			
+			var begin = dict.XPathSelectElement ("begin")?.Value;
+			if (begin != null) {
+				List<Tuple<int, string>> beginCaptures = null;
+				beginCaptures = ReadJSonCaptureDictionary (dict.XPathSelectElement ("beginCaptures"));
+
+				var end = dict.XPathSelectElement ("end")?.Value;
+				List<Tuple<int, string>> endCaptures = null;
+				List<string> endScope = new List<string> ();
+				if (end != null) {
+					endCaptures = ReadJSonCaptureDictionary (dict.XPathSelectElement ("endCaptures"));
+
+
+					var list = new List<object> ();
+					if (end != null)
+						list.Add (new SyntaxMatch (Sublime3Format.CompileRegex (end), endScope, endCaptures, null, true, null));
+					var patternsArray = dict.XPathSelectElement ("patterns");
+					if (patternsArray != null) {
+						foreach (var match2 in patternsArray.Nodes ().OfType<XElement> ()) {
+							ReadJSonPattern (match2, list);
+						}
+					}
+					pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", list));
+				}
+
+				return new SyntaxMatch (Sublime3Format.CompileRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null);
+			}
+
+			var match = dict.XPathSelectElement ("match")?.Value;
+			if (match == null)
+				return null;
+			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null);
+		}
+
+		static List<Tuple<int, string>> ReadJSonCaptureDictionary (XElement captureDict)
+		{
+			if (captureDict == null)
+				return null;
+			var captures = new List<Tuple<int, string>> ();
+			foreach (var kv in captureDict.Nodes ().OfType<XElement> ()) {
+				var g = int.Parse (kv.Attribute ("item").Value);
+				var s = kv.XPathSelectElement ("name")?.Value;
 				captures.Add (Tuple.Create (g, s));
 			}
 			return captures;

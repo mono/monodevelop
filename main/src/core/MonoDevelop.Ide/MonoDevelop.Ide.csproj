@@ -7631,6 +7631,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\XmlComments.tmPreferences">
       <LogicalName>XmlComments.tmPreferences</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\fsharp.json">
+      <LogicalName>fsharp.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -8712,6 +8715,7 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\Formats\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\FSharp\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

@@ -161,6 +161,8 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			public Task<HighlightedLine> GetColoredSegments (int offset, int length)
 			{
+				if (ContextStack.IsEmpty)
+					return Task.FromResult (new HighlightedLine (new [] { new ColoredSegment (offset, length, ImmutableStack<string>.Empty.Push ("")) }));
 				SyntaxContext currentContext = null;
 				List<SyntaxContext> lastContexts = new List<SyntaxContext> ();
 				Match match = null;
@@ -184,7 +186,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					lastContexts.Add (currentContext);
 				}
 				lastMatch = offset;
-
 				currentContext = ContextStack.Peek ();
 				match = null;
 				curMatch = null;

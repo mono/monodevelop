@@ -204,9 +204,19 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			if (file.EndsWith (".json", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
-					string styleName = ScanOldJsonStyle (stream);
-					if (!string.IsNullOrEmpty (styleName)) {
-						styleLookup [styleName] = getStreamProvider ();
+					string styleName;
+					JSonFormat format;
+					if (TryScanJSonStyle (stream, out styleName, out format)) {
+						switch (format) {
+						case JSonFormat.OldSyntaxTheme:
+							styleLookup [styleName] = getStreamProvider ();
+							break;
+						case JSonFormat.TextMateJsonSyntax:
+							var highlighting = TextMateFormat.ReadHighlightingFromJson (getStreamProvider().Open ());
+							if (highlighting != null)
+								highlightings.Add (highlighting);
+							break;
+						}
 					}
 				}
 			} else if (file.EndsWith (".tmTheme", StringComparison.OrdinalIgnoreCase)) {
@@ -283,24 +293,44 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 		static System.Text.RegularExpressions.Regex jsonNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"name\"\\s*:\\s*\"(.*)\"\\s*,");
+		static System.Text.RegularExpressions.Regex jsonVersionRegex = new System.Text.RegularExpressions.Regex ("\\s*\"version\"\\s*:\\s*\"(.*)\"\\s*,");
+		static System.Text.RegularExpressions.Regex jsonScopeNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"scopeName\"\\s*:\\s*\"(.*)\"\\s*,");
+		enum JSonFormat { Unknown, OldSyntaxTheme, TextMateJsonSyntax }
 
-		static string ScanOldJsonStyle (Stream stream)
+		static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format)
 		{
+			name = null;
+			format = JSonFormat.Unknown;
+
 			try {
 				var file = TextFileUtility.OpenStream (stream);
 				file.ReadLine ();
 				var nameLine = file.ReadLine ();
+				var versionLine = file.ReadLine ();
 				file.Close ();
 				var match = jsonNameRegex.Match (nameLine);
 				if (!match.Success)
-					return null;
-				return match.Groups [1].Value;
+					return false;
+				
+				name = match.Groups [1].Value;
+
+				if (jsonVersionRegex.Match (versionLine).Success) {
+					format = JSonFormat.OldSyntaxTheme;
+					return true;
+				}
+
+				if (jsonScopeNameRegex.Match (versionLine).Success) {
+					format = JSonFormat.TextMateJsonSyntax;
+					return true;
+				}
 			} catch (Exception e) {
 				Console.WriteLine ("Error while scanning json:");
 				Console.WriteLine (e);
-				return null;
 			}
+			return false;
+			
 		}
+
 
 		static System.Text.RegularExpressions.Regex textMateNameRegex = new System.Text.RegularExpressions.Regex ("\\<string\\>(.*)\\<\\/string\\>");
 
