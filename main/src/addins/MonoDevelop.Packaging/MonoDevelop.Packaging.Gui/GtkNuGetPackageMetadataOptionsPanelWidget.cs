@@ -55,23 +55,28 @@ namespace MonoDevelop.Packaging.Gui
 
 		void LoadMetadata ()
 		{
-			packageIdTextBox.Text = metadata.Id;
-			packageVersionTextBox.Text = metadata.Version;
-			packageAuthorsTextBox.Text = metadata.Authors;
-			packageDescriptionTextView.Buffer.Text = metadata.Description;
+			packageIdTextBox.Text = GetTextBoxText (metadata.Id);
+			packageVersionTextBox.Text = GetTextBoxText (metadata.Version);
+			packageAuthorsTextBox.Text = GetTextBoxText (metadata.Authors);
+			packageDescriptionTextView.Buffer.Text = GetTextBoxText (metadata.Description);
 
-			packageCopyrightTextBox.Text = metadata.Copyright;
+			packageCopyrightTextBox.Text = GetTextBoxText (metadata.Copyright);
 			packageDevelopmentDependencyCheckBox.Active = metadata.DevelopmentDependency;
-			packageIconUrlTextBox.Text = metadata.IconUrl;
-			packageLanguageTextBox.Text = metadata.Language;
-			packageLicenseUrlTextBox.Text = metadata.LicenseUrl;
-			packageOwnersTextBox.Text = metadata.Owners;
-			packageProjectUrlTextBox.Text = metadata.ProjectUrl;
-			packageReleaseNotesTextView.Buffer.Text = metadata.ReleaseNotes;
+			packageIconUrlTextBox.Text = GetTextBoxText (metadata.IconUrl);
+			packageLanguageTextBox.Text = GetTextBoxText (metadata.Language);
+			packageLicenseUrlTextBox.Text = GetTextBoxText (metadata.LicenseUrl);
+			packageOwnersTextBox.Text = GetTextBoxText (metadata.Owners);
+			packageProjectUrlTextBox.Text = GetTextBoxText (metadata.ProjectUrl);
+			packageReleaseNotesTextView.Buffer.Text = GetTextBoxText (metadata.ReleaseNotes);
 			packageRequireLicenseAcceptanceCheckBox.Active = metadata.RequireLicenseAcceptance;
-			packageSummaryTextBox.Text = metadata.Summary;
-			packageTagsTextBox.Text = metadata.Tags;
-			packageTitleTextBox.Text = metadata.Title;
+			packageSummaryTextBox.Text = GetTextBoxText (metadata.Summary);
+			packageTagsTextBox.Text = GetTextBoxText (metadata.Tags);
+			packageTitleTextBox.Text = GetTextBoxText (metadata.Title);
+		}
+
+		static string GetTextBoxText (string text)
+		{
+			return text ?? string.Empty;
 		}
 
 		internal void Save (PackagingProject project)
