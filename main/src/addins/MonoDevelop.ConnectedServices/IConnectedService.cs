@@ -53,6 +53,11 @@ namespace MonoDevelop.ConnectedServices
 		IConnectedServiceDependency [] Dependencies { get; }
 
 		/// <summary>
+		/// Gets the dependencies section to be displayed before the configuration section
+		/// </summary>
+		IConfigurationSection DependenciesSection { get; }
+
+		/// <summary>
 		/// Gets a value indicating whether ALL the depenencies are installed.
 		/// </summary>
 		bool AreDependenciesInstalled { get; }
@@ -63,9 +68,14 @@ namespace MonoDevelop.ConnectedServices
 		IConfigurationSection [] Sections { get; }
 
 		/// <summary>
+		/// Occurs before the service is added to the project;
+		/// </summary>
+		event EventHandler<EventArgs> Adding;
+
+		/// <summary>
 		/// Occurs when service is added to the project;
 		/// </summary>
-		event EventHandler<EventArgs> ServiceAdded;
+		event EventHandler<EventArgs> Added;
 
 		/// <summary>
 		/// Adds the service to the project

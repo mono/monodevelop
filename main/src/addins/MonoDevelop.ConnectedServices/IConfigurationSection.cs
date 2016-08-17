@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
 
@@ -48,7 +49,12 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Performs the tasks necessary to add the components that this section represents to the project
 		/// </summary>
-		Task AddToProject ();
+		Task<bool> AddToProject (CancellationToken token);
+
+		/// <summary>
+		/// Occurs before the section is added to the project
+		/// </summary>
+		event EventHandler<EventArgs> Adding;
 
 		/// <summary>
 		/// Occurs when the section is added to the project

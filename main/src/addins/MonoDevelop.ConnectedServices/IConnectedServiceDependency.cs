@@ -26,8 +26,23 @@ namespace MonoDevelop.ConnectedServices
 		bool IsAdded { get; }
 
 		/// <summary>
-		/// Adds the nuget to the project and returns true if the dependency was added to the project
+		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
 		Task<bool> AddToProject (CancellationToken token);
+
+		/// <summary>
+		/// Occurs before the dependency is added to the project
+		/// </summary>
+		event EventHandler<EventArgs> Adding;
+
+		/// <summary>
+		/// Occurs when the dependency has been added to the project
+		/// </summary>
+		event EventHandler<EventArgs> Added;
+
+		/// <summary>
+		/// Occurs when adding the dependency to the project has failed
+		/// </summary>
+		event EventHandler<EventArgs> AddingFailed;
 	}
 }

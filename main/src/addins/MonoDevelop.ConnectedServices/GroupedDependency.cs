@@ -22,7 +22,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		public override async Task<bool> AddToProject (CancellationToken token)
+		protected override async Task<bool> OnAddToProject (CancellationToken token)
 		{
 			if (this.dependencies.Length == 0) {
 				return true;

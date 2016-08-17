@@ -37,7 +37,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the package to the project and returns true if the package was added to the project
 		/// </summary>
-		public override Task<bool> AddToProject(CancellationToken token)
+		protected override Task<bool> OnAddToProject(CancellationToken token)
 		{
 			return this.Service.Project.AddPackageDependency (this);
 		}

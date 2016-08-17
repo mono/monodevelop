@@ -21,6 +21,7 @@ namespace MonoDevelop.ConnectedServices
 			this.Project = project;
 			this.Dependencies = ConnectedServiceDependency.Empty;
 			this.Sections = ConfigurationSection.Empty;
+			this.DependenciesSection = new DependenciesSection (this);
 		}
 
 		/// <summary>
@@ -71,6 +72,11 @@ namespace MonoDevelop.ConnectedServices
 		public IConnectedServiceDependency [] Dependencies { get; protected set; }
 
 		/// <summary>
+		/// Gets the dependencies section to be displayed before the configuration section
+		/// </summary>
+		public IConfigurationSection DependenciesSection { get; protected set; }
+
+		/// <summary>
 		/// Gets a value indicating whether ALL the depenencies are installed.
 		/// </summary>
 		public bool AreDependenciesInstalled {
@@ -85,9 +91,14 @@ namespace MonoDevelop.ConnectedServices
 		public IConfigurationSection [] Sections { get; protected set; }
 
 		/// <summary>
+		/// Occurs before the service is added to the project;
+		/// </summary>
+		public event EventHandler<EventArgs> Adding;
+
+		/// <summary>
 		/// Occurs when service is added to the project;
 		/// </summary>
-		public event EventHandler<EventArgs> ServiceAdded;
+		public event EventHandler<EventArgs> Added;
 
 		/// <summary>
 		/// Adds the service to the project
@@ -99,7 +110,7 @@ namespace MonoDevelop.ConnectedServices
 					LoggingService.LogWarning ("Skipping adding of the service, it has already been added");
 					return;
 				}
-
+				this.NotifyServiceAdding ();
 				// TODO: add ProgressMonitor support and cancellation
 
 				await this.AddDependencies (CancellationToken.None).ConfigureAwait (false);
@@ -125,18 +136,9 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependencies to the project
 		/// </summary>
-		protected virtual async Task AddDependencies(CancellationToken token)
+		protected virtual async Task<bool> AddDependencies(CancellationToken token)
 		{
-			// ask all the dependencies to add themselves to the project
-			// we'll do them one at a time in case there are interdependencies between them
-			foreach (var dependency in this.Dependencies) {
-				try {
-					await dependency.AddToProject (token).ConfigureAwait (false);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Could not add dependency", ex);
-					throw;
-				}
-			}
+			return await DependenciesSection.AddToProject (token);
 		}
 
 		/// <summary>
@@ -209,11 +211,22 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Notifies subscribers that the service will be added to the project
+		/// </summary>
+		void NotifyServiceAdding ()
+		{
+			var handler = this.Adding;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		/// <summary>
 		/// Notifies subscribers that the service has been added to the project
 		/// </summary>
 		void NotifyServiceAdded()
 		{
-			var handler = this.ServiceAdded;
+			var handler = this.Added;
 			if (handler != null) {
 				handler (this, new EventArgs ());
 			}

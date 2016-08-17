@@ -52,7 +52,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		public override async Task<bool> AddToProject (CancellationToken token)
+		protected sealed override async Task<bool> OnAddToProject (CancellationToken token)
 		{
 			// TODO: get the code compilation
 			if (this.compilation == null) {
@@ -66,13 +66,13 @@ namespace MonoDevelop.ConnectedServices
 				this.InitLookupTypes (token, this.lookupTypes.Keys.ToArray ());
 			}
 
-			return await this.OnAddToProject(token).ConfigureAwait (false);
+			return await this.AddCodeToProject (token).ConfigureAwait (false);
 		}
 
 		/// <summary>
 		/// Performs the task of adding the code to the project
 		/// </summary>
-		protected abstract Task<bool> OnAddToProject (CancellationToken token);
+		protected abstract Task<bool> AddCodeToProject (CancellationToken token);
 
 		/// <summary>
 		/// Updates the given method region with the code required for this dependency.

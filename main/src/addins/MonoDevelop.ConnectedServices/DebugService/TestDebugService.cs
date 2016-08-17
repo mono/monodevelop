@@ -4,6 +4,7 @@ using Xwt;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
+using System.Threading;
 
 namespace MonoDevelop.ConnectedServices.DebugService
 {
@@ -53,6 +54,12 @@ namespace MonoDevelop.ConnectedServices.DebugService
 
 	sealed class TestDebugConfigurationSection : ConfigurationSection
 	{
+		bool added;
+		
+		public override bool IsAdded {
+			get { return added; }
+		}
+		
 		public TestDebugConfigurationSection (IConnectedService service) : base (service, "Configure a setting")
 		{
 		}
@@ -62,8 +69,9 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			return new TestConfigurationWidget ();
 		}
 
-		protected override Task OnAddToProject ()
+		protected override Task<bool> OnAddToProject (CancellationToken token)
 		{
+			added = true;
 			return Task.FromResult (true);
 		}
 	}

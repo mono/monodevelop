@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using System.Threading;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -42,12 +43,17 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets a value indicating that whatever changes to the project that can be added by this section have been added.
 		/// </summary>
-		public bool IsAdded { get { return this.Service.IsAdded; } }
+		public bool IsAdded { get { return this.Service.AreDependenciesInstalled; } }
 
 		/// <summary>
 		/// Occurs when the section is added to the project
 		/// </summary>
 		public event EventHandler<EventArgs> Added;
+
+		/// <summary>
+		/// Occurs before the section is added to the project
+		/// </summary>
+		public event EventHandler<EventArgs> Adding;
 
 		/// <summary>
 		/// Gets the widget to display to the user
@@ -60,9 +66,35 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the service dependencies to the project
 		/// </summary>
-		public Task AddToProject ()
+		public async Task<bool> AddToProject (CancellationToken token)
 		{
-			return Task.FromResult (true);
+			this.NotifyAddingToProject ();
+
+			// ask all the dependencies to add themselves to the project
+			// we'll do them one at a time in case there are interdependencies between them
+			foreach (var dependency in Service.Dependencies) {
+				try {
+					await dependency.AddToProject (token).ConfigureAwait (false);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not add dependency", ex);
+					throw;
+				}
+			}
+			NotifyAddedToProject ();
+			return true;
+		}
+
+		/// <summary>
+		/// Invokes the Adding event on the main thread
+		/// </summary>
+		void NotifyAddingToProject ()
+		{
+			var handler = this.Adding;
+			if (handler != null) {
+				Xwt.Application.Invoke (() => {
+					handler (this, new EventArgs ());
+				});
+			}
 		}
 
 		/// <summary>

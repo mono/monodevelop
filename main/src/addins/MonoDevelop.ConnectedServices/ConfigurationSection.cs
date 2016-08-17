@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
 
@@ -41,12 +42,17 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets a value indicating that whatever changes to the project that can be added by this section have been added.
 		/// </summary>
-		public bool IsAdded { get; }
+		public abstract bool IsAdded { get; }
 
 		/// <summary>
 		/// Occurs when the section is added to the project
 		/// </summary>
 		public event EventHandler<EventArgs> Added;
+
+		/// <summary>
+		/// Occurs before the section is added to the project
+		/// </summary>
+		public event EventHandler<EventArgs> Adding;
 
 		/// <summary>
 		/// Gets the widget to display to the user
@@ -56,13 +62,29 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Performs the tasks necessary to add the components that this section represents to the project
 		/// </summary>
-		public async Task AddToProject ()
+		public async Task<bool> AddToProject (CancellationToken token)
 		{
-			await this.OnAddToProject ();
-			this.NotifyAddedToProject ();
+			this.NotifyAddingToProject ();
+			var result = await this.OnAddToProject (token).ConfigureAwait (false);
+			if (result)
+				this.NotifyAddedToProject ();
+			return result;
 		}
 
-		protected abstract Task OnAddToProject ();
+		protected abstract Task<bool> OnAddToProject (CancellationToken token);
+
+		/// <summary>
+		/// Invokes the Adding event on the main thread
+		/// </summary>
+		protected void NotifyAddingToProject ()
+		{
+			var handler = this.Adding;
+			if (handler != null) {
+				Xwt.Application.Invoke (() => {
+					handler (this, new EventArgs ());
+				});
+			}
+		}
 
 		/// <summary>
 		/// Invokes the Added event on the main thread

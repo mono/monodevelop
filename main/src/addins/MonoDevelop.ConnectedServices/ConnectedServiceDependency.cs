@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 namespace MonoDevelop.ConnectedServices
 {
 	/// <summary>
-	/// Simple implementation of IConnectedServiceDependency.
+	/// Abstract implementation of IConnectedServiceDependency.
 	/// </summary>
-	public class ConnectedServiceDependency : IConnectedServiceDependency
+	public abstract class ConnectedServiceDependency : IConnectedServiceDependency
 	{
 		/// <summary>
 		/// The empty set of IConnectedServiceDependencys
 		/// </summary>
 		public static readonly IConnectedServiceDependency [] Empty = new IConnectedServiceDependency [0];
 
-		public ConnectedServiceDependency (IConnectedService service, string category, string displayName)
+		protected ConnectedServiceDependency (IConnectedService service, string category, string displayName)
 		{
 			this.Service = service;
 			this.Category = category;
@@ -44,9 +44,38 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		public virtual Task<bool> AddToProject (CancellationToken token)
+		public async Task<bool> AddToProject (CancellationToken token)
 		{
-			return Task.FromResult (true);
+			Adding?.Invoke (this, EventArgs.Empty);
+			bool result;
+			try {
+				result = await OnAddToProject (token).ConfigureAwait (false);
+			} catch {
+				AddingFailed?.Invoke (this, EventArgs.Empty);
+				throw;
+			}
+			Added?.Invoke (this, EventArgs.Empty);
+			return result;
 		}
+
+		/// <summary>
+		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
+		/// </summary>
+		protected abstract Task<bool> OnAddToProject (CancellationToken token);
+
+		/// <summary>
+		/// Occurs before the dependency is added to the project
+		/// </summary>
+		public event EventHandler<EventArgs> Adding;
+
+		/// <summary>
+		/// Occurs when adding the dependency to the project has failed
+		/// </summary>
+		public event EventHandler<EventArgs> AddingFailed;
+
+		/// <summary>
+		/// Occurs when dependency has been added to the project
+		/// </summary>
+		public event EventHandler<EventArgs> Added;
 	}
 }
