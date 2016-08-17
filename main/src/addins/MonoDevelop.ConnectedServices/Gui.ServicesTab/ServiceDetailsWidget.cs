@@ -44,17 +44,36 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void LoadService (IConnectedService service)
 		{
+			if (service != null)
+				service.Added -= HandleServiceAdded;
+			
 			this.service = details.Service = service;
 			sections.Clear ();
 
-			var dependencies = new ConfigurationSectionWidget (service.DependenciesSection);
-			dependencies.ExpandedChanged += HandleSectionExpandedChanged;
-			sections.PackStart (dependencies);
+			if (service.DependenciesSection != null) {
+				var dependencies = new ConfigurationSectionWidget (service.DependenciesSection);
+				dependencies.ExpandedChanged += HandleSectionExpandedChanged;
+				sections.PackStart (dependencies);
+				dependencies.Expanded = true;
+			}
 
 			foreach (var section in service.Sections) {
 				var w = new ConfigurationSectionWidget (section);
+				if (sections.Children.Count () == 0)
+					w.Expanded = true;
 				w.ExpandedChanged += HandleSectionExpandedChanged;
 				sections.PackStart (w);
+			}
+
+			service.Added += HandleServiceAdded;
+		}
+
+		void HandleServiceAdded (object sender, EventArgs e)
+		{
+			if (service.AreDependenciesInstalled) {
+				var configuration = sections.Children.FirstOrDefault (s => (s as ConfigurationSectionWidget)?.Section != service.DependenciesSection) as ConfigurationSectionWidget;
+				if (configuration != null)
+					configuration.Expanded = true;
 			}
 		}
 
@@ -67,6 +86,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 						child.Expanded = false;
 				}
 			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (service != null) {
+				service.Added -= HandleServiceAdded;
+				service = null;
+			}
+			base.Dispose (disposing);
 		}
 	}
 }
