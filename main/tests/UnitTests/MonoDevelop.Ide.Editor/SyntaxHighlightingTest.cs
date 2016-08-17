@@ -402,5 +402,14 @@ typedef struct
 			Assert.AreEqual ("\\w+", Sublime3Format.CompileRegex ("\\w++"));
 			Assert.AreEqual ("\\w*", Sublime3Format.CompileRegex ("\\w**"));
 		}
+
+		[Test]
+		public void TestCharacterClassBug ()
+		{
+			Assert.AreEqual ("(<!)(DOCTYPE)\\s+([:A-Z_a-z][\\w-.:]*)", Sublime3Format.CompileRegex ("(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)"));
+			Assert.AreEqual ("[\\w-]+", Sublime3Format.CompileRegex ("[-_a-zA-Z0-9]+"));
+
+		}
+
 	}
 }

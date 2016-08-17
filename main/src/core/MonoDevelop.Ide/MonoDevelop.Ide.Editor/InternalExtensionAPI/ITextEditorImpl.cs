@@ -171,6 +171,7 @@ namespace MonoDevelop.Ide.Editor
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
 		string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false);
+		string GetMarkup (int offset, int length, MarkupOptions options);
 
 		void SetIndentationTracker (IndentationTracker indentationTracker);
 		void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
@@ -227,5 +228,5 @@ namespace MonoDevelop.Ide.Editor
 
 		void ShowTooltipWindow (Control window, TooltipWindowOptions options);
 		Task<ImmutableStack<string>> GetScopeStackAsync (int offset, CancellationToken cancellationToken);
-	}
+}
 }

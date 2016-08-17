@@ -7622,6 +7622,15 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#.sublime-syntax">
       <LogicalName>C#.sublime-syntax</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\Xml.tmLanguage">
+      <LogicalName>Xml.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\Xsl.tmLanguage">
+      <LogicalName>Xsl.tmLanguage</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\XmlComments.tmPreferences">
+      <LogicalName>XmlComments.tmPreferences</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -8644,6 +8653,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Formats\Sublime3Format.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Formats\TextMateFormat.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateCompletionTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\MarkupOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -8656,7 +8666,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\Comments.tmPreferences" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#Comments.tmPreferences" />
+    <None Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\License.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -8700,6 +8711,7 @@
     <Folder Include="MonoDevelop.Ide.Editor.TextMate\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\Formats\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Xml\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

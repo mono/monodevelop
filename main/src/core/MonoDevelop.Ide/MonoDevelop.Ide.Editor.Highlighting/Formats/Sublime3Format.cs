@@ -206,20 +206,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			bool hasLast;
 			bool escape, range;
 			char lastChar = '\0';
+			char lastPushedChar;
 			int[] table = new int [256];
 			StringBuilder org = new StringBuilder ();
+
 			public void Push (char ch)
 			{
 				org.Append (ch);
 				switch (ch) {
 				case ':':
-					if (first) {
+					if (first)
 						wordBuilder = new StringBuilder ();
-						break;
-					}
-					if (wordBuilder == null)
-						goto default;
-					break;
+					goto default;
 				case '^':
 					if (first) {
 						negativeGroup = true;
@@ -240,7 +238,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					escape = true;
 					break;
 				case '-':
-					if (escape)
+					if (escape || first)
 						goto default;
 					range = true;
 					break;
@@ -342,7 +340,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 					if (wordBuilder != null) {
 						wordBuilder.Append (ch);
-						break;
 					}
 
 					if (!hasLast) {
@@ -364,6 +361,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					break;
 				}
 				first = false;
+				lastPushedChar = ch;
 			}
 
 			void PushLastChar ()
@@ -409,8 +407,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			public string Generate ()
 			{
-				if (wordBuilder != null)
-					return ConvertUnicodeCategory (wordBuilder.ToString (), false);
+				if (wordBuilder != null && lastPushedChar == ':') {
+					return ConvertUnicodeCategory (wordBuilder.ToString(1, wordBuilder.Length - 2), false);
+				}
 				var result = new StringBuilder ();
 				result.Append ('[');
 				if (negativeGroup)

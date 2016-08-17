@@ -3038,9 +3038,23 @@ namespace MonoDevelop.SourceEditor
 
 		string ITextEditorImpl.GetPangoMarkup (int offset, int length, bool fitIdeStyle)
 		{
-			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs:false, fitIdeStyle:fitIdeStyle);
+			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false, replaceTabs: false, fitIdeStyle: fitIdeStyle);
 		}
 
+		string ITextEditorImpl.GetMarkup (int offset, int length, MarkupOptions options)
+		{
+			var data = TextEditor.GetTextEditorData ();
+			switch (options.MarkupFormat) {
+			case MarkupFormat.Pango:
+				return data.GetMarkup (offset, length, false, replaceTabs: false, fitIdeStyle: options.FitIdeStyle);
+			case MarkupFormat.Html:
+				return HtmlWriter.GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)), data.ColorStyle, data.Options);
+			case MarkupFormat.RichtText:
+				return RtfWriter.GenerateRtf (ClipboardColoredText.GetChunks (data, new TextSegment (offset, length)), data.ColorStyle, data.Options);
+			default:
+				throw new ArgumentOutOfRangeException ();
+			}
+		}
 		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)
 		{
 			widget.ClearUsageTaskProvider ();
