@@ -85,6 +85,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					if (widget.Service == sender) {
 						availableList.Remove (widget);
 						enabledList.PackStart (widget);
+						return;
 					}
 				}
 			});
