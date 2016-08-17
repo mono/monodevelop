@@ -59,6 +59,35 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Removes the dependencies from the project
+		/// </summary>
+		public static async Task RemovePackageDependency(this DotNetProject project, IPackageDependency dependency)
+		{
+			if (project == null)
+				throw new ArgumentNullException (nameof (project));
+
+			LoggingService.LogInfo ("Removing package dependency '{0}' from project", dependency.DisplayName);
+
+			if (!dependency.IsAdded) {
+				LoggingService.LogInfo ("Skipped, the package dependency is not added to the project");
+				return;
+			}
+
+			try {
+				var references = new List<string> ();
+				references.Add (dependency.PackageId);
+
+				var task = PackageManagementServices.ProjectOperations.UninstallPackagesAsync (project, references, true);
+
+				LoggingService.LogInfo ("Queued for uninstallation");
+				await task.ConfigureAwait (false);
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Could not queue package for uninstallation", ex);
+				throw;
+			}
+		}
+
+		/// <summary>
 		/// Determines if the given package dependency has been added to the project or not
 		/// </summary>
 		public static bool PackageAdded(this DotNetProject project, IPackageDependency dependency)

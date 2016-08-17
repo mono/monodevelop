@@ -54,7 +54,6 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		protected sealed override async Task<bool> OnAddToProject (CancellationToken token)
 		{
-			// TODO: get the code compilation
 			if (this.compilation == null) {
 				this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
 
@@ -70,9 +69,38 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Removes the dependency from the project and returns true if the dependency was removed
+		/// </summary>
+		protected sealed override async Task<bool> OnRemoveFromProject (CancellationToken token)
+		{
+			if (this.compilation == null) {
+				this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
+
+				if (this.compilation == null) {
+					LoggingService.LogInternalError ("Could not get compilation object to be able to remove code dependency.", null);
+					return false;
+				}
+
+				this.InitLookupTypes (token, this.lookupTypes.Keys.ToArray ());
+			}
+
+			return await this.RemoveCodeFromProject (token).ConfigureAwait (false);
+		}
+
+		/// <summary>
 		/// Performs the task of adding the code to the project
 		/// </summary>
 		protected abstract Task<bool> AddCodeToProject (CancellationToken token);
+
+		/// <summary>
+		/// Performs the task of removing the code from the project. By default we do not assume that code can be removed from
+		/// project correctly. Therefore the default implementation of this is to simply return true and to do nothing to 
+		/// the project.
+		/// </summary>
+		protected virtual Task<bool> RemoveCodeFromProject (CancellationToken token)
+		{
+			return Task.FromResult (true);
+		}
 
 		/// <summary>
 		/// Updates the given method region with the code required for this dependency.
@@ -116,7 +144,10 @@ namespace MonoDevelop.ConnectedServices
 				newRoot = Formatter.Format (newRoot, proj.Solution.Workspace);
 
 				var newSolution = proj.Solution.WithDocumentSyntaxRoot (docID, newRoot);
-				proj.Solution.Workspace.TryApplyChanges (newSolution);
+
+				if (!proj.Solution.Workspace.TryApplyChanges (newSolution)) {
+					LoggingService.LogWarning ("FAIL:ED!!!!!");
+				}
 			}
 		}
 

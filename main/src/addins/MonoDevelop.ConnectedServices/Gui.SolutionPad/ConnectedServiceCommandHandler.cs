@@ -9,7 +9,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 	sealed class ConnectedServiceCommandHandler : DotNetProjectNodeCommandHandler
 	{
 		[CommandUpdateHandler (Commands.OpenServiceDetails)]
-		public void UpdateOpenServiceDetailsommand (CommandInfo info)
+		public void UpdateOpenServiceDetailsCommand (CommandInfo info)
 		{
 			info.Visible = info.Enabled = true;
 		}
@@ -19,6 +19,19 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		{
 			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
 			ConnectedServices.OpenServicesTab (this.Project, service.Id);
+		}
+
+		[CommandUpdateHandler (Commands.RemoveService)]
+		public void UpdateRemoveServiceCommand (CommandInfo info)
+		{
+			info.Visible = info.Enabled = true;
+		}
+
+		[CommandHandler (Commands.RemoveService)]
+		public void RemoveService()
+		{
+			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
+			ConnectedServices.RemoveServiceFromProject (this.Project, service.Id);
 		}
 	}
 }

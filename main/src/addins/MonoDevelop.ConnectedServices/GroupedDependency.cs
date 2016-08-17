@@ -68,5 +68,26 @@ namespace MonoDevelop.ConnectedServices
 				}
 			}
 		}
+
+		/// <summary>
+		/// Removes the dependency from the project
+		/// </summary>
+		protected override async Task<bool> OnRemoveFromProject (CancellationToken token)
+		{
+			if (this.dependencies.Length == 0) {
+				return true;
+			}
+
+			var result = true;
+			foreach (var dependency in this.dependencies.Reverse ()) {
+				if (dependency.IsAdded) {
+					if (!await dependency.RemoveFromProject (token).ConfigureAwait (false)) {
+						result = false;
+					}
+				}
+			}
+
+			return result;
+		}
 	}
 }

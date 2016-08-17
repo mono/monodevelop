@@ -106,7 +106,7 @@ namespace MonoDevelop.ConnectedServices
 		public async Task AddToProject ()
 		{
 			try {
-				if (HasConnectedServiceJsonFile (this.Project, this.Id)) {
+				if (this.IsAdded) {
 					LoggingService.LogWarning ("Skipping adding of the service, it has already been added");
 					return;
 				}
@@ -126,6 +126,36 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Removes the service from the project
+		/// </summary>
+		public async Task RemoveFromProject () {
+			try {
+				if (!this.IsAdded) {
+					LoggingService.LogWarning ("Skipping removing of the service, it is not added to the project");
+					return;
+				}
+
+				// TODO: add ProgressMonitor support and cancellation
+
+				await this.RemoveDependencies (CancellationToken.None).ConfigureAwait (false);
+				await this.OnRemoveFromProject ().ConfigureAwait (false);
+				this.RemoveAddedState ();
+				this.NotifyServiceAdded ();
+
+				// TODO: not here, but somewhere, we need to refresh the sln pad.
+
+			} catch (Exception ex) {
+				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
+			}
+		}
+
+		protected virtual Task OnRemoveFromProject()
+		{
+			return Task.FromResult (true);
+		}
+
+
+		/// <summary>
 		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
 		/// </summary>
 		protected virtual Task OnAddToProject ()
@@ -139,6 +169,23 @@ namespace MonoDevelop.ConnectedServices
 		protected virtual async Task<bool> AddDependencies(CancellationToken token)
 		{
 			return await DependenciesSection.AddToProject (token);
+		}
+
+		/// <summary>
+		/// Removes the dependencies from the project
+		/// </summary>
+		protected virtual async Task RemoveDependencies (CancellationToken token)
+		{
+			// ask all the dependencies to add themselves to the project
+			// we'll do them one at a time in case there are interdependencies between them
+			foreach (var dependency in this.Dependencies.Reverse ()) {
+				try {
+					await dependency.RemoveFromProject (token).ConfigureAwait (false);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Could not remove dependency", ex);
+					throw;
+				}
+			}
 		}
 
 		/// <summary>
@@ -157,6 +204,14 @@ namespace MonoDevelop.ConnectedServices
 			var state = this.CreateStateObject();
 			this.OnStoreAddedState (state);
 			WriteConnectedServiceJsonFile (this.Project, this.Id, state);
+		}
+
+		/// <summary>
+		/// Stores some state that the service has been added to the project.
+		/// </summary>
+		protected void RemoveAddedState ()
+		{
+			RemoveConnectedServiceJsonFile (this.Project, this.Id);
 		}
 
 		/// <summary>
@@ -185,6 +240,23 @@ namespace MonoDevelop.ConnectedServices
 			}
 
 			File.WriteAllText (jsonFilePath, json);
+		}
+
+		/// <summary>
+		/// Removes the ConnectedServices.json file in the connected services folder of the project for the given service
+		/// </summary>
+		internal static void RemoveConnectedServiceJsonFile (DotNetProject project, string id)
+		{
+			var jsonFilePath = GetConnectedServiceJsonFilePath (project, id, false);
+			var jsonFileDir = Path.GetDirectoryName (jsonFilePath);
+
+			if (Directory.Exists (jsonFileDir)) {
+				if (File.Exists (jsonFilePath)) {
+					File.Delete (jsonFilePath);
+				}
+
+				Directory.Delete (jsonFileDir);
+			}
 		}
 
 		/// <summary>

@@ -81,5 +81,10 @@ namespace MonoDevelop.ConnectedServices
 		/// Adds the service to the project
 		/// </summary>
 		Task AddToProject ();
+
+		/// <summary>
+		/// Removes the service from the project
+		/// </summary>
+		Task RemoveFromProject ();
 	}
 }

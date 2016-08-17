@@ -17,5 +17,10 @@ namespace MonoDevelop.ConnectedServices
 		/// Opens the service details tab for the given service
 		/// </summary>
 		OpenServiceDetails,
+
+		/// <summary>
+		/// Removes the selected service from the project
+		/// </summary>
+		RemoveService,
 	}
 }

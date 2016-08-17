@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
@@ -64,6 +65,9 @@ namespace MonoDevelop.ConnectedServices
 			return result.ToArray ();
 		}
 
+		/// <summary>
+		/// Displays the service details tab for the given service in the given project
+		/// </summary>
 		public static void OpenServicesTab(DotNetProject project, string serviceId = null)
 		{
 			ConnectedServicesViewContent servicesView = null;
@@ -80,6 +84,22 @@ namespace MonoDevelop.ConnectedServices
 			servicesView = new ConnectedServicesViewContent (project);
 			servicesView.UpdateContent (serviceId);
 			IdeApp.Workbench.OpenDocument (servicesView, true);
+		}
+
+		/// <summary>
+		/// Removes the given service from the given project
+		/// </summary>
+		public static async Task RemoveServiceFromProject (DotNetProject project, string serviceId)
+		{
+			// TODO: show the remove dialog
+
+
+			var binding = project.GetConnectedServicesBinding ();
+			var service = binding.SupportedServices.FirstOrDefault (x => x.Id == serviceId);
+			if (service != null) {
+				// TODO: progress monitor
+				await service.RemoveFromProject ();
+			}
 		}
 	}
 }

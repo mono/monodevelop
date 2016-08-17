@@ -41,5 +41,14 @@ namespace MonoDevelop.ConnectedServices
 		{
 			return this.Service.Project.AddPackageDependency (this);
 		}
+
+		/// <summary>
+		/// Removes the dependency from the project
+		/// </summary>
+		protected override async Task<bool> OnRemoveFromProject (CancellationToken token)
+		{
+			await this.Service.Project.RemovePackageDependency (this).ConfigureAwait (false);
+			return true;
+		}
 	}
 }
