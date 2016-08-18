@@ -64,9 +64,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		public override object GetDocumentObject ()
 		{
 			var node = ((DotNetProject)this.Project).GetConnectedServicesBinding ()?.ServicesNode;
-			if (node != null) {
-				if (widget.ShowingService != null)
-					return node.GetServiceNode (widget.ShowingService);
+			if (node != null && widget.ShowingService != null) {
+				var serviceNode = node.GetServiceNode (widget.ShowingService);
+				if (serviceNode != null)
+					return serviceNode;
 			}
 			return node;
 		}
