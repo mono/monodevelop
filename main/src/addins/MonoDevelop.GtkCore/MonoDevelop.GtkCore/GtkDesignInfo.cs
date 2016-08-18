@@ -198,9 +198,10 @@ namespace MonoDevelop.GtkCore
 			return File.Exists (Path.Combine (project.BaseDirectory, "gtk-gui", "gui.stetic"));
 		}
 
+		static bool steticDisabled = !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("DISABLE_STETIC"));
 		public static bool SupportsDesigner (Project project)
 		{
-			if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("DISABLE_STETIC"))) {
+			if (steticDisabled) {
 				return false;
 			}
 			DotNetProject dnp = project as DotNetProject;
