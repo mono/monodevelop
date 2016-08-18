@@ -1,0 +1,10 @@
+﻿using System;
+namespace JavaScript
+{
+	public class JavaScript
+	{
+		public JavaScript()
+		{
+		}
+	}
+}

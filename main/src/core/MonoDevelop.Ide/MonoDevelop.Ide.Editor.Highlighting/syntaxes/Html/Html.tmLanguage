@@ -383,6 +383,14 @@
 			</dict>
 			<key>end</key>
 			<string>(&gt;)</string>
+			<key>endCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.tag.end.html</string>
+				</dict>
+			</dict>
 			<key>name</key>
 			<string>meta.tag.structure.any.html</string>
 			<key>patterns</key>
