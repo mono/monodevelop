@@ -551,7 +551,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				};
 
 				foreach (var asm in assemblies) {
-					var metadataReference = MetadataReferenceCache.LoadReference (projectId, typeof (string).Assembly.Location);
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, asm);
 					result.Add (metadataReference);
 				}
 
