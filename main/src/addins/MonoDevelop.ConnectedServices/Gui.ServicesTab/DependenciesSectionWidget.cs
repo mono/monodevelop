@@ -75,10 +75,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			Dependency = dependency;
 			Service = service;
-			dependency.Added += HandleDependencyAdded;
-			dependency.Adding += HandleDependencyAdding;
-			dependency.AddingFailed += HandleDependencyAddingFailed;
-			dependency.Removed += HandleDependencyRemoved;
 
 			iconView = new ImageView (dependency.Icon);
 			nameLabel = new Label (dependency.DisplayName);
@@ -99,6 +95,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			Content = container;
 			Update ();
+
+			dependency.Added += HandleDependencyAdded;
+			dependency.Adding += HandleDependencyAdding;
+			dependency.AddingFailed += HandleDependencyAddingFailed;
+			dependency.Removed += HandleDependencyRemoved;
 		}
 
 		void SetStatusIcon (IconId stockId)
@@ -146,27 +147,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					statusLabel.Visible = false;
 				}
 			}
-			return;
-			
-			if (Dependency.IsAdded) {
-				nameLabel.TextColor = Styles.BaseForegroundColor;
-				iconView.Image = Dependency.Icon;
-				SetStatusIcon ("md-done");
-				statusLabel.Visible = false;
-			} else {
-				if (!Service.IsAdded) {
-					nameLabel.TextColor = Styles.BaseForegroundColor;
-					iconView.Image = Dependency.Icon;
-					statusIconView.Visible = false;
-					statusLabel.Visible = false;
-				} else {
-					nameLabel.TextColor = Styles.DimTextColor;
-					iconView.Image = Dependency.Icon.WithAlpha (0.4);
-					SetStatusIcon ("md-warning");
-					statusLabel.Markup = "<a href=''>" + GettextCatalog.GetString ("Add Dependency") + "</a>";
-					statusLabel.Visible = true;
-				}
-			}
 		}
 
 		void HandleDependencyAdding (object sender, EventArgs e)
@@ -194,13 +174,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			nameLabel.TextColor = Styles.DimTextColor;
 			iconView.Image = Dependency.Icon.WithAlpha (0.4);
 			SetStatusIcon ("md-error");
-			statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + " \u2013 <a href=''>" + GettextCatalog.GetString ("Retry") + "</a>";
+			statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + " – <a href=''>" + GettextCatalog.GetString ("Retry") + "</a>";
 			statusLabel.Visible = true;
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			if (Dependency != null) {
+				Dependency.Adding -= HandleDependencyAdding;
+				Dependency.AddingFailed += HandleDependencyAddingFailed;
 				Dependency.Added -= HandleDependencyAdded;
 				Dependency.Removed -= HandleDependencyRemoved;
 				Dependency = null;
