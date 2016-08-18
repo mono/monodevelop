@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Xwt.Drawing;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -13,12 +14,17 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the category of the dependency which is used to group dependencies together
 		/// </summary>
-		string Category { get; }
+		ConnectedServiceDependencyCategory Category { get; }
 
 		/// <summary>
 		/// Gets the display name of the dependency to present to the user
 		/// </summary>
 		string DisplayName { get; }
+
+		/// <summary>
+		/// Gets the icon of the dependency to present to the user
+		/// </summary>
+		Image Icon { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServiceDependency"/> is added to the project or not.

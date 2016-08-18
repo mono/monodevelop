@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -13,6 +14,8 @@ namespace MonoDevelop.ConnectedServices
 		{
 			this.PackageId = id;
 			this.PackageVersion = version;
+			base.Icon = ImageService.GetIcon ("md-package").WithSize (Xwt.IconSize.Small);
+
 		}
 
 		/// <summary>

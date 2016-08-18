@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
+using Xwt.Drawing;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -14,11 +16,12 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static readonly IConnectedServiceDependency [] Empty = new IConnectedServiceDependency [0];
 
-		protected ConnectedServiceDependency (IConnectedService service, string category, string displayName)
+		protected ConnectedServiceDependency (IConnectedService service, ConnectedServiceDependencyCategory category, string displayName)
 		{
 			this.Service = service;
 			this.Category = category;
 			this.DisplayName = displayName;
+			this.Icon = ImageService.GetIcon ("md-reference").WithSize (Xwt.IconSize.Small);
 		}
 
 		/// <summary>
@@ -29,12 +32,17 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the category of the dependency which is used to group dependencies together
 		/// </summary>
-		public string Category { get; private set; }
+		public ConnectedServiceDependencyCategory Category { get; private set; }
 
 		/// <summary>
 		/// Gets the display name of the dependency to present to the user
 		/// </summary>
 		public string DisplayName { get; private set; }
+
+		/// <summary>
+		/// Gets the icon of the dependency to present to the user
+		/// </summary>
+		public Image Icon { get; protected set; }
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServiceDependency"/> is added to the project or not.

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
@@ -17,12 +18,14 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// The category string for packages, this will be localised to the user
 		/// </summary>
-		public const string PackageDependencyCategory = "Packages";
+		public readonly static ConnectedServiceDependencyCategory PackageDependencyCategory =
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Packages"), ImageService.GetIcon (Ide.Gui.Stock.OpenReferenceFolder).WithSize (Xwt.IconSize.Small));
 
 		/// <summary>
 		/// The category string for code, this will be localised to the user
 		/// </summary>
-		public const string CodeDependencyCategory = "Code";
+		public readonly static ConnectedServiceDependencyCategory CodeDependencyCategory =
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Code"), ImageService.GetIcon ("md-file-source").WithSize (Xwt.IconSize.Small));
 
 		/// <summary>
 		/// The extension point for service providers
