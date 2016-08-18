@@ -101,6 +101,16 @@ namespace MonoDevelop.ConnectedServices
 		public event EventHandler<EventArgs> Added;
 
 		/// <summary>
+		/// Occurs before the service is removed from the project;
+		/// </summary>
+		public event EventHandler<EventArgs> Removing;
+
+		/// <summary>
+		/// Occurs when service has been removed from the project;
+		/// </summary>
+		public event EventHandler<EventArgs> Removed;
+
+		/// <summary>
 		/// Adds the service to the project
 		/// </summary>
 		public async Task AddToProject ()
@@ -137,10 +147,11 @@ namespace MonoDevelop.ConnectedServices
 
 				// TODO: add ProgressMonitor support and cancellation
 
+				this.NotifyServiceRemoving ();
 				await this.RemoveDependencies (CancellationToken.None).ConfigureAwait (false);
 				await this.OnRemoveFromProject ().ConfigureAwait (false);
 				this.RemoveAddedState ();
-				this.NotifyServiceAdded ();
+				this.NotifyServiceRemoved ();
 
 				// TODO: not here, but somewhere, we need to refresh the sln pad.
 
@@ -299,6 +310,28 @@ namespace MonoDevelop.ConnectedServices
 		void NotifyServiceAdded()
 		{
 			var handler = this.Added;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		/// <summary>
+		/// Notifies subscribers that the service will be removed from the project
+		/// </summary>
+		void NotifyServiceRemoving ()
+		{
+			var handler = this.Removing;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		/// <summary>
+		/// Notifies subscribers that the service has been removed from the project
+		/// </summary>
+		void NotifyServiceRemoved ()
+		{
+			var handler = this.Removed;
 			if (handler != null) {
 				handler (this, new EventArgs ());
 			}

@@ -78,6 +78,16 @@ namespace MonoDevelop.ConnectedServices
 		event EventHandler<EventArgs> Added;
 
 		/// <summary>
+		/// Occurs before the service is removed from the project;
+		/// </summary>
+		event EventHandler<EventArgs> Removing;
+
+		/// <summary>
+		/// Occurs when service has been removed from the project;
+		/// </summary>
+		event EventHandler<EventArgs> Removed;
+
+		/// <summary>
 		/// Adds the service to the project
 		/// </summary>
 		Task AddToProject ();

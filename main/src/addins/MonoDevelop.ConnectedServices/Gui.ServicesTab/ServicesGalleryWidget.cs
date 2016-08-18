@@ -14,6 +14,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	{
 		VBox enabledList, availableList;
 		Label enabledLabel, availableLabel;
+
+		IConnectedService [] services;
 		
 		public ServicesGalleryWidget ()
 		{
@@ -45,8 +47,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void LoadServices(IConnectedService [] services)
 		{
+			this.services = services;
+
 			ClearServices ();
-			
+
+			//TODO: sort the lists
 			foreach (var service in services) {
 				var serviceWidget = new ServiceWidget (service);
 				serviceWidget.MarginTop = 5;
@@ -57,20 +62,24 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					enabledLabel.Visible = true;
 				} else {
 					availableList.PackStart (serviceWidget);
-					service.Added += HandleServiceAdded;
 					availableLabel.Visible = true;
 				}
+				service.Added += HandleServiceAddedRemoved;
+				service.Removed += HandleServiceAddedRemoved;
 			}
 		}
 
 		void ClearServices ()
 		{
 			foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
-				widget.Service.Added -= HandleServiceAdded;
+				widget.Service.Added -= HandleServiceAddedRemoved;
+				widget.Service.Removed -= HandleServiceAddedRemoved;
 				widget.ButtonReleased -= HandleServiceWidgetButtonReleased;
 			}
 			availableList.Clear ();
 			foreach (var widget in enabledList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
+				widget.Service.Added -= HandleServiceAddedRemoved;
+				widget.Service.Removed -= HandleServiceAddedRemoved;
 				widget.ButtonReleased -= HandleServiceWidgetButtonReleased;
 			}
 			enabledList.Clear ();
@@ -78,23 +87,38 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			availableLabel.Visible = false;
 		}
 
-		void HandleServiceAdded (object sender, EventArgs e)
+		void HandleServiceAddedRemoved (object sender, EventArgs e)
 		{
+			var service = (IConnectedService)sender;
+			//TODO: sort the lists
 			Application.Invoke (delegate {
-				foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
-					if (widget.Service == sender) {
-						availableList.Remove (widget);
-						enabledList.PackStart (widget);
-						return;
+				if (service.IsAdded) {
+					foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
+						if (widget.Service == service) {
+							availableList.Remove (widget);
+							enabledList.PackStart (widget);
+							break;
+						}
+					}
+				} else {
+					foreach (var widget in enabledList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
+						if (widget.Service == service) {
+							enabledList.Remove (widget);
+							availableList.PackStart (widget);
+							break;
+						}
 					}
 				}
+
+				enabledLabel.Visible = services.Any (s => s.IsAdded);
+				availableLabel.Visible = services.Any (s => !s.IsAdded);
 			});
 		}
 
 		void HandleServiceWidgetButtonReleased (object sender, ButtonEventArgs e)
 		{
 			if (e.Button == PointerButton.Left) {
-				ServiceSelected?.Invoke (sender, new ServiceEventArgs ((sender as ServiceWidget)?.Service));
+				ServiceSelected?.Invoke (this, new ServiceEventArgs ((sender as ServiceWidget)?.Service));
 			}
 		}
 
@@ -127,8 +151,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					return;
 				if (value == null)
 					throw new InvalidOperationException ("Service can not be null");
-				if (service != null)
-					service.Added -= HandleServiceAdded;
+				if (service != null) {
+					service.Added -= HandleServiceAddedRemoved;
+					service.Removed -= HandleServiceAddedRemoved;
+				}
 				
 				service = value;
 				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-project")).WithSize (IconSize.Medium);
@@ -144,7 +170,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
 
-				service.Added += HandleServiceAdded;
+				service.Added += HandleServiceAddedRemoved;
+				service.Removed += HandleServiceAddedRemoved;
 			}
 		}
 
@@ -229,7 +256,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
-		void HandleServiceAdded (object sender, EventArgs e)
+		void HandleServiceAddedRemoved (object sender, EventArgs e)
 		{
 			Application.Invoke (delegate {
 				var node = service.Project.GetConnectedServicesBinding ().ServicesNode;
@@ -237,14 +264,14 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addedWidget.Visible = Service.IsAdded && !showDetails;
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
-				addButton.Sensitive = false;
+				addButton.Sensitive = !Service.IsAdded;
 			});
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && Service != null)
-				Service.Added -= HandleServiceAdded;
+				Service.Added -= HandleServiceAddedRemoved;
 			base.Dispose (disposing);
 		}
 	}
