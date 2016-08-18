@@ -194,7 +194,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			nameLabel.TextColor = Styles.DimTextColor;
 			iconView.Image = Dependency.Icon.WithAlpha (0.4);
 			SetStatusIcon ("md-error");
-			statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + ", <a href=''>" + GettextCatalog.GetString ("Retry") + "</a>";
+			statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + " \u2013 <a href=''>" + GettextCatalog.GetString ("Retry") + "</a>";
 			statusLabel.Visible = true;
 		}
 

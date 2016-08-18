@@ -223,7 +223,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleAddButtonClicked (object sender, EventArgs e)
 		{
 			if (!service.IsAdded) {
-				addButton.Label = GettextCatalog.GetString ("Enabling ...");
+				addButton.Label = GettextCatalog.GetString ("Enabling \u2026");
 				addButton.Sensitive = false;
 				service.AddToProject ();
 			}
