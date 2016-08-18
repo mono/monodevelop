@@ -71,5 +71,14 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 			return node;
 		}
+
+		public override void Dispose ()
+		{
+			if (widget != null) {
+				widget.Dispose ();
+				widget = null;
+			}
+			base.Dispose ();
+		}
 	}
 }

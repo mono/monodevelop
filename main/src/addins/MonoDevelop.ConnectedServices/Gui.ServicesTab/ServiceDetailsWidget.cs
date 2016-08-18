@@ -44,11 +44,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void LoadService (IConnectedService service)
 		{
-			if (service != null)
+			if (service != null) {
 				service.Added -= HandleServiceAdded;
+				foreach (var child in sections.Children.ToArray ()) {
+					sections.Remove (child);
+					child.Dispose ();
+				}
+			}
 			
 			this.service = details.Service = service;
-			sections.Clear ();
 
 			if (service.DependenciesSection != null) {
 				var dependencies = new ConfigurationSectionWidget (service.DependenciesSection);
