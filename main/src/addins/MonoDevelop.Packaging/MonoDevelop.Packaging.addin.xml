@@ -85,7 +85,11 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<Condition id="ProjectHasNuGetMetadata">
+		<ComplexCondition>
+			<And>
+				<Condition id="ItemType" value="DotNetProject|MonoDevelop.Packaging.PackagingProject" />
+				<Condition id="ProjectHasNuGetMetadata" />
+			</And>
 			<SeparatorItem
 				id="CreateNuGetPackageSeparator"
 				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.Unload"
@@ -94,7 +98,7 @@
 				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
 				insertafter="CreateNuGetPackageSeparator"
 				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
-		</Condition>
+		</ComplexCondition>
 	</Extension>
 
 	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
