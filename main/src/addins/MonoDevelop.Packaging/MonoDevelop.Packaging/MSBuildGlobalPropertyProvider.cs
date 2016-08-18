@@ -31,7 +31,7 @@ using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
-	public class MSBuildGlobalPropertyProvider : IMSBuildGlobalPropertyProvider
+	class MSBuildGlobalPropertyProvider : IMSBuildGlobalPropertyProvider
 	{
 		Dictionary<string, string> properties;
 

@@ -29,7 +29,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
 {
-	public class PackagingProjectFlavor : DotNetProjectExtension
+	class PackagingProjectFlavor : DotNetProjectExtension
 	{
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{

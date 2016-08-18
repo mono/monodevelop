@@ -28,7 +28,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
 {
-	public class PackagingCompilerParameters : DotNetCompilerParameters
+	class PackagingCompilerParameters : DotNetCompilerParameters
 	{
 	}
 }

@@ -30,7 +30,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
 {
-	public class CreateNuGetPackageHandler : CommandHandler
+	class CreateNuGetPackageHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
