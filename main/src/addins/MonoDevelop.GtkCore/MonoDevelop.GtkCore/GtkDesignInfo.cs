@@ -226,7 +226,7 @@ namespace MonoDevelop.GtkCore
 			if (pref.ReferenceType != ReferenceType.Package)
 				return false;
 
-			return pref.StoredReference.StartsWith ("gtk-sharp,");
+			return pref.StoredReference.StartsWith ("gtk-sharp,", StringComparison.Ordinal);
 		}
 
 		static bool HasGtkReference (DotNetProject project)
