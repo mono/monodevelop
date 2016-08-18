@@ -96,4 +96,8 @@
 				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
 		</Condition>
 	</Extension>
+
+	<Extension path="/MonoDevelop/DesignerSupport/PropertyProviders">
+		<Class class="MonoDevelop.Packaging.NuGetFilePropertyProvider" />
+	</Extension>
 </ExtensionModel>

@@ -57,6 +57,9 @@
     <Compile Include="MonoDevelop.Packaging\DotNetProjectExtensions.cs" />
     <Compile Include="MonoDevelop.Packaging\CreateNuGetPackageHandler.cs" />
     <Compile Include="MonoDevelop.Packaging\ProjectHasNuGetMetadataCondition.cs" />
+    <Compile Include="MonoDevelop.Packaging\NuGetFilePropertyProvider.cs" />
+    <Compile Include="MonoDevelop.Packaging\NuGetBuildAction.cs" />
+    <Compile Include="MonoDevelop.Packaging\NuGetFileDescriptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -77,6 +80,11 @@
     <ProjectReference Include="..\..\..\external\NuGetizer3000\src\NuGet.Packaging.Tasks\NuGet.Packaging.Tasks.csproj">
       <Project>{F46DEF57-56D2-4996-BCC5-1ED39493CB06}</Project>
       <Name>NuGet.Packaging.Tasks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -185,7 +185,7 @@ namespace MonoDevelop.Packaging
 
 		protected override string OnGetDefaultBuildAction (string fileName)
 		{
-			return "NuGetFile";
+			return NuGetBuildAction.NuGetFile;
 		}
 
 		public NuGetPackageMetadata GetPackageMetadata ()
