@@ -796,6 +796,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			list = new List<PObject> ();
 		}
 
+		public PArray (List<PObject> list)
+		{
+			this.list = list;
+		}
+
 		public override PObject Clone ()
 		{
 			var array = new PArray ();
