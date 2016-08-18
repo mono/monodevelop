@@ -21,6 +21,11 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static int DefaultCompilationTimeout = 5000;
 
+		/// <summary>
+		/// Determines how many times we should attempt to apply the code dependency if we get a version mismatch
+		/// </summary>
+		const int RetryCount = 3;
+
 		readonly Dictionary<string, INamedTypeSymbol> lookupTypes;
 
 		IList<INamedTypeSymbol> allTypes;
@@ -54,18 +59,37 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		protected sealed override async Task<bool> OnAddToProject (CancellationToken token)
 		{
-			if (this.compilation == null) {
-				this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
+			int tryCount = 1;
+			bool keepTrying = true;
+			while (keepTrying) {
+				try {
+					if (tryCount > 1) {
+						LoggingService.LogInfo ("Retrying to add code dependency...");
+					} else {
+						LoggingService.LogInfo ("Adding code dependency...");
+					}
 
-				if (this.compilation == null) {
-					LoggingService.LogInternalError ("Could not get compilation object to be able to add code dependency.", null);
-					return false;
+					this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
+
+					if (this.compilation == null) {
+						LoggingService.LogInternalError ("Could not get compilation object.", null);
+						return false;
+					}
+
+					this.InitLookupTypes (token, this.lookupTypes.Keys.ToArray ());
+
+					var result = await this.AddCodeToProject (token).ConfigureAwait (false);
+
+					LoggingService.LogInfo (result ? "Code dependency added." : "Code dependency was not added.");
+					return result;
+				} catch (SolutionVersionMismatchException) {
+					tryCount++;
 				}
 
-				this.InitLookupTypes (token, this.lookupTypes.Keys.ToArray ());
+				keepTrying = tryCount <= 3;
 			}
 
-			return await this.AddCodeToProject (token).ConfigureAwait (false);
+			return false;
 		}
 
 		/// <summary>
@@ -73,18 +97,37 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		protected sealed override async Task<bool> OnRemoveFromProject (CancellationToken token)
 		{
-			if (this.compilation == null) {
-				this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
+			int tryCount = 1;
+			bool keepTrying = true;
+			while (keepTrying) {
+				try {
+					if (tryCount > 1) {
+						LoggingService.LogInfo ("Retrying to remove code dependency...");
+					} else {
+						LoggingService.LogInfo ("Removing code dependency...");
+					}
 
-				if (this.compilation == null) {
-					LoggingService.LogInternalError ("Could not get compilation object to be able to remove code dependency.", null);
-					return false;
+					this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
+
+					if (this.compilation == null) {
+						LoggingService.LogInternalError ("Could not get compilation object.", null);
+						return false;
+					}
+
+					this.InitLookupTypes (token, this.lookupTypes.Keys.ToArray ());
+
+					var result = await this.RemoveCodeFromProject (token).ConfigureAwait (false);
+
+					LoggingService.LogInfo (result ? "Code dependency removed." : "Code dependency was not removed.");
+					return result;
+				} catch (SolutionVersionMismatchException) {
+					tryCount++;
 				}
 
-				this.InitLookupTypes (token, this.lookupTypes.Keys.ToArray ());
+				keepTrying = tryCount <= 3;
 			}
 
-			return await this.RemoveCodeFromProject (token).ConfigureAwait (false);
+			return false;
 		}
 
 		/// <summary>
@@ -117,7 +160,7 @@ namespace MonoDevelop.ConnectedServices
 			var proj = this.Service.Project.GetCodeAnalysisProject ();
 			if (proj == null) {
 				// this can happen if the TypeSystemService doesn't have the project in it (yet?)
-				LoggingService.LogWarning ("Could not get CodeAnalysisProject for the given project, cannot add code");
+				LoggingService.LogWarning ("Could not get CodeAnalysisProject for the given project, cannot modify code.");
 				return;
 			}
 
@@ -146,7 +189,13 @@ namespace MonoDevelop.ConnectedServices
 				var newSolution = proj.Solution.WithDocumentSyntaxRoot (docID, newRoot);
 
 				if (!proj.Solution.Workspace.TryApplyChanges (newSolution)) {
-					LoggingService.LogWarning ("FAIL:ED!!!!!");
+					LoggingService.LogWarning ("Failed to add code dependency changes to the workspace.");
+
+					// lets check the version (which is one reason why TryApplyChanges will return false
+					if (proj.Solution.Workspace.CurrentSolution.Version != newSolution.Version) {
+						LoggingService.LogWarning ("Solution version is different.");
+						throw new SolutionVersionMismatchException ();
+					}
 				}
 			}
 		}
@@ -260,9 +309,20 @@ namespace MonoDevelop.ConnectedServices
 		void InitLookupTypes (CancellationToken cancel, string [] types)
 		{
 			this.allTypes = this.compilation.GetAllTypesInMainAssembly (cancel).ToList ();
+			this.lookupTypes.Clear ();
 
 			foreach (var type in types) {
 				this.lookupTypes [type] = this.compilation.GetTypeByMetadataName (type);
+			}
+		}
+
+		/// <summary>
+		/// Thrown when we should attempt to generate the code dependency again
+		/// </summary>
+		class SolutionVersionMismatchException : Exception
+		{
+			public SolutionVersionMismatchException () : base ("The Solution versions were different.")
+			{
 			}
 		}
 	}
