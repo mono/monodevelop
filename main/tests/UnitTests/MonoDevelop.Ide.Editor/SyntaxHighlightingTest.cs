@@ -372,12 +372,6 @@ typedef struct
 		}
 
 		[Test]
-		public void TestBackslash ()
-		{
-			Assert.AreEqual ("[\\\\]", Sublime3Format.CompileRegex ("[\\]"));
-		}
-
-		[Test]
 		public void TestEscapes ()
 		{
 			Assert.AreEqual ("[\\t]", Sublime3Format.CompileRegex ("[\\t]"));
@@ -408,7 +402,7 @@ typedef struct
 		{
 			Assert.AreEqual ("(<!)(DOCTYPE)\\s+([:A-Z_a-z][\\w-.:]*)", Sublime3Format.CompileRegex ("(<!)(DOCTYPE)\\s+([:a-zA-Z_][:a-zA-Z0-9_.-]*)"));
 			Assert.AreEqual ("[\\w-]+", Sublime3Format.CompileRegex ("[-_a-zA-Z0-9]+"));
-
+			Assert.AreEqual ("\\[(\\\\]|[^\\]])*\\]", Sublime3Format.CompileRegex ("\\[(\\\\]|[^\\]])*\\]"));
 		}
 
 	}

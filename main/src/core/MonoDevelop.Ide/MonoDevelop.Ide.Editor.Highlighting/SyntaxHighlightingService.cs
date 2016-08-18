@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		static System.Text.RegularExpressions.Regex jsonNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"name\"\\s*:\\s*\"(.*)\"\\s*,");
 		static System.Text.RegularExpressions.Regex jsonVersionRegex = new System.Text.RegularExpressions.Regex ("\\s*\"version\"\\s*:\\s*\"(.*)\"\\s*,");
-		static System.Text.RegularExpressions.Regex jsonScopeNameRegex = new System.Text.RegularExpressions.Regex ("\\s*\"scopeName\"\\s*:\\s*\"(.*)\"\\s*,");
+
 		enum JSonFormat { Unknown, OldSyntaxTheme, TextMateJsonSyntax }
 
 		static bool TryScanJSonStyle (Stream stream, out string name, out JSonFormat format)
@@ -309,20 +309,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				var versionLine = file.ReadLine ();
 				file.Close ();
 				var match = jsonNameRegex.Match (nameLine);
-				if (!match.Success)
-					return false;
-				
-				name = match.Groups [1].Value;
-
-				if (jsonVersionRegex.Match (versionLine).Success) {
-					format = JSonFormat.OldSyntaxTheme;
-					return true;
+				if (match.Success) {
+					if (jsonVersionRegex.Match (versionLine).Success) {
+						name = match.Groups [1].Value;
+						format = JSonFormat.OldSyntaxTheme;
+						return true;
+					}
 				}
 
-				if (jsonScopeNameRegex.Match (versionLine).Success) {
-					format = JSonFormat.TextMateJsonSyntax;
-					return true;
-				}
+				format = JSonFormat.TextMateJsonSyntax;
+				return true;
 			} catch (Exception e) {
 				Console.WriteLine ("Error while scanning json:");
 				Console.WriteLine (e);

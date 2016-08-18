@@ -7643,6 +7643,9 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Html\Html.tmLanguage">
       <LogicalName>Html.tmLanguage</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\JavaScript\JavaScript.tmLanguage.json">
+      <LogicalName>JavaScript.tmLanguage.json</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -8731,6 +8734,7 @@
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Diff\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Html\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\Json\" />
+    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\JavaScript\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">

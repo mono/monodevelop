@@ -380,7 +380,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 					var list = new List<object> ();
 					if (end != null)
-						list.Add (new SyntaxMatch (Sublime3Format.CompileRegex (end), endScope, endCaptures, null, true, null));
+						list.Add (new SyntaxMatch (Sublime3Format.CompileRegex (end), endScope, endCaptures ?? captures, null, true, null));
 					var patternsArray = dict ["patterns"] as PArray;
 					if (patternsArray != null) {
 						ReadPatterns (patternsArray, list);
@@ -430,6 +430,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			var name = root.XPathSelectElement ("name").Value;
 			var scope = root.XPathSelectElement ("scopeName").Value;
+
+			if (name == null || scope == null)
+				return null;
+
 			foreach (var type in root.XPathSelectElements ("fileTypes/*")) {
 				extensions.Add (type.Value);
 			}
@@ -495,7 +499,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 					var list = new List<object> ();
 					if (end != null)
-						list.Add (new SyntaxMatch (Sublime3Format.CompileRegex (end), endScope, endCaptures, null, true, null));
+						list.Add (new SyntaxMatch (CompileJSonRegex (end), endScope, endCaptures ?? captures, null, true, null));
 					var patternsArray = dict.XPathSelectElement ("patterns");
 					if (patternsArray != null) {
 						foreach (var match2 in patternsArray.Nodes ().OfType<XElement> ()) {
@@ -505,13 +509,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					pushContext = new AnonymousMatchContextReference (new SyntaxContext ("__generated begin/end capture context", list));
 				}
 
-				return new SyntaxMatch (Sublime3Format.CompileRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null);
+				return new SyntaxMatch (CompileJSonRegex (begin), matchScope, beginCaptures ?? captures, pushContext, false, null);
 			}
 
 			var match = dict.XPathSelectElement ("match")?.Value;
 			if (match == null)
 				return null;
-			return new SyntaxMatch (Sublime3Format.CompileRegex (match), matchScope, captures, pushContext, false, null);
+			return new SyntaxMatch (CompileJSonRegex (match), matchScope, captures, pushContext, false, null);
+		}
+
+		static string CompileJSonRegex (string regex)
+		{
+			var replaced = regex.Replace ("\\\\", "\\");
+			var result = Sublime3Format.CompileRegex (replaced);
+			// Console.WriteLine (regex + "-->" + replaced + "-->" + result);
+			return result;
 		}
 
 		static List<Tuple<int, string>> ReadJSonCaptureDictionary (XElement captureDict)

@@ -421,8 +421,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				if (escape)
 					table ['\\'] = negativeGroup ? -1 : 1;
 
-
-
 				if (HasRange ('a', 'z') && HasRange ('A', 'Z') && HasRange ('0', '9') &&  table ['_'] != 0) {
 
 					RemoveRange ('a', 'z');
@@ -534,7 +532,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					readStarQuantifier = true;
 					break;
 				case '\\':
-					if (escape || curClass != null)
+					if (curClass != null) {
+						escape = !escape;
+						goto addChar;
+					}
+					if (escape)
 						break;
 					if (i + 1 >= regex.Length)
 						break;
@@ -569,11 +571,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				case ']':
 					if (escape)
 						break;
-					characterClassLevel--;
-					if (characterClassLevel == 0) {
-						result.Append (curClass.Generate());
-						curClass = null;
-						continue;
+					if (characterClassLevel > 0) {
+						characterClassLevel--;
+						if (characterClassLevel == 0) {
+							result.Append (curClass.Generate ());
+							curClass = null;
+							continue;
+						}
 					}
 					break;
 				}
