@@ -252,13 +252,19 @@ module SymbolTooltips =
         signatureline, summary, ""
 
     let getSummaryFromSymbol (symbol:FSharpSymbol) =
+        let getXmlDocSig() =
+            try
+                symbol.XmlDocSig
+            with
+            | exn -> ""
+
         let xmlDoc, xmlDocSig =
             match symbol with
-            | :? FSharpMemberOrFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
-            | :? FSharpEntity as fse -> fse.XmlDoc, fse.XmlDocSig
-            | :? FSharpField as fsf -> fsf.XmlDoc, fsf.XmlDocSig
-            | :? FSharpUnionCase as fsu -> fsu.XmlDoc, fsu.XmlDocSig
-            | :? FSharpActivePatternCase as apc -> apc.XmlDoc, apc.XmlDocSig
+            | :? FSharpMemberOrFunctionOrValue as func -> func.XmlDoc, getXmlDocSig()
+            | :? FSharpEntity as fse -> fse.XmlDoc, getXmlDocSig()
+            | :? FSharpField as fsf -> fsf.XmlDoc, getXmlDocSig()
+            | :? FSharpUnionCase as fsu -> fsu.XmlDoc, getXmlDocSig()
+            | :? FSharpActivePatternCase as apc -> apc.XmlDoc, getXmlDocSig()
             | :? FSharpGenericParameter as gp -> gp.XmlDoc, ""
             | _ -> ResizeArray() :> IList<_>, ""
 
@@ -500,12 +506,18 @@ module SymbolTooltips =
             if isDelegate then retType
             else modifiers ++ functionName ++ "() :" ++ retType
         | many ->
+              let formatParameter (p:FSharpParameter) =
+                  try
+                      p.Type.Format displayContext
+                  with
+                  | :? InvalidOperationException -> p.DisplayName
+
               let allParamsLengths =
-                  many |> List.map (List.map (fun p -> (p.Type.Format displayContext).Length) >> List.sum)
+                  many |> List.map (List.map (fun p -> (formatParameter p).Length) >> List.sum)
               let maxLength = (allParamsLengths |> List.maxUnderThreshold maxPadding)+1
 
               let parameterTypeWithPadding (p: FSharpParameter) length =
-                  (p.Type.Format displayContext) + (String.replicate (if length >= maxLength then 1 else maxLength - length) " ")
+                  (formatParameter p) + (String.replicate (if length >= maxLength then 1 else maxLength - length) " ")
 
               let allParams =
                   List.zip many allParamsLengths
