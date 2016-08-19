@@ -77,6 +77,14 @@ namespace MonoDevelop.Ide.Editor
 
 		}
 
+		protected override void OnContentNameChanged ()
+		{
+			base.OnContentNameChanged ();
+			textEditorImpl.ContentName = this.ContentName;
+			if (this.WorkbenchWindow?.Document != null)
+				textEditor.InitializeExtensionChain (this.WorkbenchWindow.Document);
+		}
+
 		void ViewContent_ContentNameChanged (object sender, EventArgs e)
 		{
 			this.ContentName = textEditorImpl.ViewContent.ContentName;
