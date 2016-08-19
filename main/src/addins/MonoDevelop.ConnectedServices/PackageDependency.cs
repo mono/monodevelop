@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide;
+using Xwt.Drawing;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -10,12 +11,21 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	public sealed class PackageDependency : ConnectedServiceDependency, IPackageDependency
 	{
+		Image icon;
+		
 		public PackageDependency (IConnectedService service, string id, string displayName, string version = null) : base(service, ConnectedServices.PackageDependencyCategory, displayName)
 		{
 			this.PackageId = id;
 			this.PackageVersion = version;
-			base.Icon = ImageService.GetIcon ("md-package").WithSize (Xwt.IconSize.Small);
 
+		}
+
+		public override Image Icon {
+			get {
+				if (icon == null)
+					icon = ImageService.GetIcon ("md-package").WithSize (Xwt.IconSize.Small);
+				return icon;
+			}
 		}
 
 		/// <summary>

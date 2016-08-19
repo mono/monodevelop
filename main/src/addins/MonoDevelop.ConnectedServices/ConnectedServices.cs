@@ -19,13 +19,13 @@ namespace MonoDevelop.ConnectedServices
 		/// The category string for packages, this will be localised to the user
 		/// </summary>
 		public readonly static ConnectedServiceDependencyCategory PackageDependencyCategory =
-			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Packages"), ImageService.GetIcon (Ide.Gui.Stock.OpenReferenceFolder).WithSize (Xwt.IconSize.Small));
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Packages"), Ide.Gui.Stock.OpenReferenceFolder);
 
 		/// <summary>
 		/// The category string for code, this will be localised to the user
 		/// </summary>
 		public readonly static ConnectedServiceDependencyCategory CodeDependencyCategory =
-			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Code"), ImageService.GetIcon ("md-file-source").WithSize (Xwt.IconSize.Small));
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Code"), "md-file-source");
 
 		/// <summary>
 		/// The extension point for service providers

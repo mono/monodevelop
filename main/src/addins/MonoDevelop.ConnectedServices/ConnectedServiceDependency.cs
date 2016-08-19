@@ -16,12 +16,13 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static readonly IConnectedServiceDependency [] Empty = new IConnectedServiceDependency [0];
 
+		Image icon;
+
 		protected ConnectedServiceDependency (IConnectedService service, ConnectedServiceDependencyCategory category, string displayName)
 		{
 			this.Service = service;
 			this.Category = category;
 			this.DisplayName = displayName;
-			this.Icon = ImageService.GetIcon ("md-reference").WithSize (Xwt.IconSize.Small);
 		}
 
 		/// <summary>
@@ -42,7 +43,13 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the icon of the dependency to present to the user
 		/// </summary>
-		public Image Icon { get; protected set; }
+		public virtual Image Icon {
+			get {
+				if (icon == null)
+					icon = ImageService.GetIcon ("md-reference").WithSize (Xwt.IconSize.Small);
+				return icon;
+			}
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServiceDependency"/> is added to the project or not.
