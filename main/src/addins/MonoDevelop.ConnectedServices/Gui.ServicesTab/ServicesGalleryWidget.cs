@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
 using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
@@ -91,7 +93,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			var service = (IConnectedService)sender;
 			//TODO: sort the lists
-			Application.Invoke (delegate {
+			Runtime.RunInMainThread (delegate {
 				if (service.IsAdded) {
 					foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
 						if (widget.Service == service) {
@@ -253,12 +255,43 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addButton.Label = GettextCatalog.GetString ("Enabling \u2026");
 				addButton.Sensitive = false;
 				service.AddToProject ();
+
+				var addProjects = new Dictionary<string, DotNetProject> ();
+
+				foreach (DotNetProject project in service.Project.ParentSolution.GetAllProjects ().Where (p => p is DotNetProject && p != service.Project)) {
+					var svc = project.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
+					if (svc != null && !svc.IsAdded)
+						addProjects [project.ItemId] = project;
+				}
+
+				if (addProjects.Count > 0) {
+					var cmd = new Command (GettextCatalog.GetString ("Continue \u2026"));
+					var confirmation = new Xwt.ConfirmationMessage (service.DisplayName, cmd);
+					confirmation.SecondaryText = GettextCatalog.GetString ("The service will be enabled for the following projects:");
+
+					foreach (var project in addProjects)
+						confirmation.AddOption (project.Key, project.Value.Name, true);
+					confirmation.ConfirmIsDefault = true;
+
+					Xwt.Toolkit.NativeEngine.Invoke (delegate {
+						var success = MessageDialog.Confirm (confirmation);
+
+						if (success) {
+							foreach (var project in addProjects) {
+								if (confirmation.GetOptionValue (project.Key)) {
+									var svc = project.Value.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
+									svc.AddToProject ();
+								}
+							}
+						}
+					});
+				}
 			}
 		}
 
 		void HandleServiceAddedRemoved (object sender, EventArgs e)
 		{
-			Application.Invoke (delegate {
+			Runtime.RunInMainThread (delegate {
 				var node = service.Project.GetConnectedServicesBinding ().ServicesNode;
 				node?.NotifyServicesChanged ();
 				addedWidget.Visible = Service.IsAdded && !showDetails;
