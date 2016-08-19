@@ -160,6 +160,7 @@
     <Compile Include="GroupedDependencyKind.cs" />
     <Compile Include="CodeExtensions.cs" />
     <Compile Include="ConnectedServiceDependencyCategory.cs" />
+    <Compile Include="Gui.ServicesTab\ServiceWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">
