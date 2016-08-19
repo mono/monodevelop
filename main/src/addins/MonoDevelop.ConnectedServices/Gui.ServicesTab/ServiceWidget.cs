@@ -127,9 +127,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleAddButtonClicked (object sender, EventArgs e)
 		{
 			if (!service.IsAdded) {
-				addButton.Label = GettextCatalog.GetString ("Enabling \u2026");
-				addButton.Sensitive = false;
-				service.AddToProject ();
 
 				var addProjects = new Dictionary<string, DotNetProject> ();
 
@@ -152,6 +149,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 						var success = MessageDialog.Confirm (confirmation);
 
 						if (success) {
+							addButton.Label = GettextCatalog.GetString ("Enabling \u2026");
+							addButton.Sensitive = false;
+							service.AddToProject ();
 							foreach (var project in addProjects) {
 								if (confirmation.GetOptionValue (project.Key)) {
 									var svc = project.Value.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
@@ -160,6 +160,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 							}
 						}
 					});
+				} else {
+					addButton.Label = GettextCatalog.GetString ("Enabling \u2026");
+					addButton.Sensitive = false;
+					service.AddToProject ();
 				}
 			}
 		}
