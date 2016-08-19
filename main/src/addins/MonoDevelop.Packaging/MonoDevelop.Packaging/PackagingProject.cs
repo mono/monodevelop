@@ -31,13 +31,14 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
 using NuGet.Packaging.Core;
 
 namespace MonoDevelop.Packaging
 {
-	class PackagingProject : DotNetProject
+	class PackagingProject : DotNetProject, INuGetAwareProject
 	{
 		PackageReferenceCollection packageReferences;
 		ReferenceAssemblyFrameworkCollection referenceAssemblyFrameworks;
@@ -292,6 +293,11 @@ namespace MonoDevelop.Packaging
 			referenceAssemblyFrameworks.Clear ();
 
 			referenceAssemblyFrameworks.AddRange (frameworks.Select (fx => new ReferenceAssemblyFramework (fx)));
+		}
+
+		public NuGet.ProjectManagement.NuGetProject CreateNuGetProject ()
+		{
+			return new PackagingNuGetProject (this);
 		}
 	}
 }
