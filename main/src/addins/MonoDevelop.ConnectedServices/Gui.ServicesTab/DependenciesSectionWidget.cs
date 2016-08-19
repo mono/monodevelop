@@ -156,7 +156,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 
 				SetStatusIcon ("md-spinner-16");
-				statusLabel.Markup = GettextCatalog.GetString ("Adding \u2026");
+				statusLabel.Markup = GettextCatalog.GetString ("Adding\u2026");
 				statusLabel.Visible = true;
 			});
 		}

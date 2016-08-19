@@ -137,7 +137,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 
 				if (addProjects.Count > 0) {
-					var cmd = new Command (GettextCatalog.GetString ("Continue \u2026"));
+					var cmd = new Command (GettextCatalog.GetString ("Continue"));
 					var confirmation = new Xwt.ConfirmationMessage (service.DisplayName, cmd);
 					confirmation.SecondaryText = GettextCatalog.GetString ("The service will be enabled for the following projects:");
 
@@ -149,7 +149,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 						var success = MessageDialog.Confirm (confirmation);
 
 						if (success) {
-							addButton.Label = GettextCatalog.GetString ("Enabling \u2026");
+							addButton.Label = GettextCatalog.GetString ("Enabling\u2026");
 							addButton.Sensitive = false;
 							service.AddToProject ();
 							foreach (var project in addProjects) {
@@ -161,7 +161,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 						}
 					});
 				} else {
-					addButton.Label = GettextCatalog.GetString ("Enabling \u2026");
+					addButton.Label = GettextCatalog.GetString ("Enabling\u2026");
 					addButton.Sensitive = false;
 					service.AddToProject ();
 				}

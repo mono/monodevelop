@@ -137,9 +137,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			Runtime.RunInMainThread (delegate {
 				if (Section is DependenciesSection)
-					statusLabel.Text = GettextCatalog.GetString ("Installing \u2026");
+					statusLabel.Text = GettextCatalog.GetString ("Installing\u2026");
 				else
-					statusLabel.Text = GettextCatalog.GetString ("Adding \u2026");
+					statusLabel.Text = GettextCatalog.GetString ("Adding\u2026");
 				statusImage.Visible = false;
 				statusBox.Visible = true;
 				addBtn.Visible = false;
