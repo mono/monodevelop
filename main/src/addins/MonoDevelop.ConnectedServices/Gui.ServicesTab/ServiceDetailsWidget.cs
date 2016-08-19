@@ -36,7 +36,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			frame.BackgroundColor = Styles.BaseBackgroundColor;
 			frame.BorderColor = Styles.ThinSplitterColor;
 			frame.BorderWidth = 1;
-			Content = frame;
+
+			// pack the frame into an additional VBox, to prevent it
+			// from filling the parent widget.
+			var contentBox = new VBox ();
+			contentBox.PackStart (frame);
+			Content = contentBox;
 		}
 
 		/// <summary>

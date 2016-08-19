@@ -17,7 +17,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		 * 
 		 */
 
-		VBox container;
+		ScrollView scrollContainer;
 		ImageView headerImage;
 		Label headerTitle, headerSubtitle;
 		ServicesGalleryWidget gallery;
@@ -57,8 +57,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				Content = headerBox,
 			};
 
-			container = new VBox ();
+			scrollContainer = new ScrollView ();
+			scrollContainer.BorderVisible = false;
+
+			var container = new VBox ();
 			container.PackStart (headerFrame);
+			container.PackStart (scrollContainer, true, true);
 			Content = container;
 		}
 
@@ -72,23 +76,20 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void ShowGallery(IConnectedService[] services, Project project)
 		{
-			if (details?.Parent == container)
-				container.Remove (details);
-
 			if (gallery == null) {
 				gallery = new ServicesGalleryWidget ();
 				gallery.ServiceSelected += HandleServiceSelected;
 			}
 
 			if (gallery.Parent == null) {
-				container.PackStart (gallery);
+				scrollContainer.Content = gallery;
 			}
 
 			gallery.LoadServices (services);
 
 			headerImage.Image = ImageService.GetIcon ("md-connected-service").WithSize (IconSize.Medium);
 			if (!string.IsNullOrEmpty (project?.Name))
-				headerSubtitle.Text = " - " + project.Name;
+				headerSubtitle.Text = " – " + project.Name;
 			else
 				headerSubtitle.Text = String.Empty;
 
@@ -106,14 +107,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		public void ShowServiceDetails (IConnectedService service)
 		{
-			if (gallery?.Parent == container)
-				container.Remove (gallery);
-
 			if (details == null)
 				details = new ServiceDetailsWidget ();
 
 			if (details.Parent == null)
-				container.PackStart (details);
+				scrollContainer.Content = details;
 
 			details.LoadService (service);
 
