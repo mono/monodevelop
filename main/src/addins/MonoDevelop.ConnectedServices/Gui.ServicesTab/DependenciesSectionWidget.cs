@@ -186,7 +186,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			if (Dependency != null) {
 				Dependency.Adding -= HandleDependencyAdding;
-				Dependency.AddingFailed += HandleDependencyAddingFailed;
+				Dependency.AddingFailed -= HandleDependencyAddingFailed;
 				Dependency.Added -= HandleDependencyAdded;
 				Dependency.Removed -= HandleDependencyRemoved;
 				Dependency = null;
