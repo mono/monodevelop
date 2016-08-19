@@ -71,7 +71,9 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		public override void OnNodeAdded (object dataObject)
 		{
 			var services = (ConnectedServiceFolderNode)dataObject;
-			services.ServicesChanged += this.ServicesChanged;
+			services.ServicesChanged += ServicesChanged;
+			services.SelectRequested += ServicesSelectRequested;
+			services.ExpandRequested += ServicesExpandRequested;
 
 			services.Project.GetConnectedServicesBinding ().ServicesNode = services;
 
@@ -81,7 +83,9 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		public override void OnNodeRemoved (object dataObject)
 		{
 			var services = (ConnectedServiceFolderNode)dataObject;
-			services.ServicesChanged -= this.ServicesChanged;
+			services.ServicesChanged -= ServicesChanged;
+			services.SelectRequested -= ServicesSelectRequested;
+			services.ExpandRequested -= ServicesExpandRequested;
 
 			var binding = services.Project?.GetConnectedServicesBinding ();
 			if (binding != null)
@@ -100,6 +104,23 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 				builder.UpdateAll ();
 				builder.Expanded = true;
 			}
+		}
+
+		/// <summary>
+		/// Selects the tree node on request
+		/// </summary>
+		void ServicesSelectRequested (object sender, EventArgs e)
+		{
+			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+			if (builder != null)
+				builder.Selected = true;
+		}
+
+		void ServicesExpandRequested (object sender, EventArgs e)
+		{
+			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+			if (builder != null)
+				builder.Expanded = true;
 		}
 	}
 }

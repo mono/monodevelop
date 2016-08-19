@@ -24,9 +24,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			widget = new ConnectedServicesWidget ();
 			widget.GalleryShown += (sender, e) => {
 				this.ContentName = string.Format ("{0} - {1}", GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName), project.Name);
+				UpdateCurrentNode ();
 			};
 			widget.ServiceShown += (sender, e) => {
 				this.ContentName = string.Format ("{0} - {1}", e.Service.DisplayName, project.Name);
+				UpdateCurrentNode ();
 			};
 			scrollContainer = new ScrollView (widget);
 		}
@@ -61,15 +63,29 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
-		public override object GetDocumentObject ()
+		object currentNodeObject;
+
+		void UpdateCurrentNode ()
 		{
 			var node = ((DotNetProject)this.Project).GetConnectedServicesBinding ()?.ServicesNode;
 			if (node != null && widget.ShowingService != null) {
 				var serviceNode = node.GetServiceNode (widget.ShowingService);
-				if (serviceNode != null)
-					return serviceNode;
+				if (serviceNode != null) {
+					node.Expand ();
+					serviceNode.Select ();
+					currentNodeObject = serviceNode;
+					return;
+				}
 			}
-			return node;
+			node?.Select ();
+			currentNodeObject = node;
+		}
+
+		public override object GetDocumentObject ()
+		{
+			if (currentNodeObject == null)
+				UpdateCurrentNode ();
+			return currentNodeObject;
 		}
 
 		public override void Dispose ()

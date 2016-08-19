@@ -42,5 +42,26 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 
 			// TODO: return true if we are showing all files -> we want to show the .json file
 		}
+
+		public override void OnNodeAdded (object dataObject)
+		{
+			var services = (ConnectedServiceNode)dataObject;
+			services.SelectRequested += SelectServiceRequested;
+			base.OnNodeAdded (dataObject);
+		}
+
+		public override void OnNodeRemoved (object dataObject)
+		{
+			var services = (ConnectedServiceNode)dataObject;
+			services.SelectRequested -= SelectServiceRequested;
+			base.OnNodeRemoved (dataObject);
+		}
+
+		void SelectServiceRequested (object sender, EventArgs e)
+		{
+			ITreeBuilder builder = Context.GetTreeBuilder (sender);
+			if (builder != null)
+				builder.Selected = true;
+		}
 	}
 }

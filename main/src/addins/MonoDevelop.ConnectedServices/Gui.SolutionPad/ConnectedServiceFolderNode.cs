@@ -24,7 +24,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 			}
 		}
 
-		internal ConnectedServiceNode GetServiceNode (IConnectedService service)
+		public ConnectedServiceNode GetServiceNode (IConnectedService service)
 		{
 			return childNodes.Find (node => node.Id == service.Id);
 		}
@@ -50,6 +50,20 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		/// Occurs when services that have been added to the project have changed
 		/// </summary>
 		public event EventHandler<ServicesChangedEventArgs> ServicesChanged;
+
+		public event EventHandler SelectRequested;
+
+		public event EventHandler ExpandRequested;
+
+		public void Select ()
+		{
+			SelectRequested?.Invoke (this, EventArgs.Empty);
+		}
+
+		public void Expand ()
+		{
+			ExpandRequested?.Invoke (this, EventArgs.Empty);
+		}
 
 		internal void NotifyServicesChanged()
 		{
