@@ -31,13 +31,17 @@ using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.MSBuild;
+using NuGet.Packaging.Core;
 
 namespace MonoDevelop.Packaging
 {
-	class PackagingProject : DotNetProject
+	class PackagingProject : DotNetProject, INuGetAwareProject
 	{
+		PackageReferenceCollection packageReferences;
+
 		public PackagingProject ()
 		{
 			UsePartialTypes = false;
@@ -272,6 +276,33 @@ namespace MonoDevelop.Packaging
 				project.RemoveCommonPackagingImports ();
 				project.SaveAsync (new ProgressMonitor ());
 			}
+		}
+
+		public NuGet.ProjectManagement.NuGetProject CreateNuGetProject ()
+		{
+			return new PackagingNuGetProject (this);
+		}
+
+		protected override void OnInitialize ()
+		{
+			packageReferences = new PackageReferenceCollection ();
+			Items.Bind (packageReferences);
+
+			base.OnInitialize ();
+		}
+
+		public PackageReferenceCollection PackageReferences {
+			get { return packageReferences; }
+		}
+
+		public PackageReference FindPackageReference (PackageIdentity packageIdentity)
+		{
+			return PackageReferences.FirstOrDefault (packageReference => IsMatch (packageReference, packageIdentity));
+		}
+
+		bool IsMatch (PackageReference packageReference, PackageIdentity packageIdentity)
+		{
+			return String.Equals (packageReference.Include, packageIdentity.Id, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }
