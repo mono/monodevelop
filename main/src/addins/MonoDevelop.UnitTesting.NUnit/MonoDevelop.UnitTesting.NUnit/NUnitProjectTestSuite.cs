@@ -120,7 +120,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 
 		protected override SourceCodeLocation GetSourceCodeLocation (string fixtureTypeNamespace, string fixtureTypeName, string testName)
 		{
-			if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
+			if (string.IsNullOrEmpty (fixtureTypeName))
 				return null;
 			var task = NUnitSourceCodeLocationFinder.TryGetSourceCodeLocationAsync (project, fixtureTypeNamespace, fixtureTypeName, testName);
 			if (!task.Wait (2000))
