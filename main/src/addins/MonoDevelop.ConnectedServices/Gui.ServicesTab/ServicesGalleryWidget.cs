@@ -292,8 +292,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceAddedRemoved (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (delegate {
-				var node = service.Project.GetConnectedServicesBinding ().ServicesNode;
-				node?.NotifyServicesChanged ();
 				addedWidget.Visible = Service.IsAdded && !showDetails;
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");

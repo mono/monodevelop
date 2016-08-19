@@ -53,11 +53,11 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Handles when the project is initialised from a template and gathers the list of services that support this project
 		/// </summary>
-		protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
-		{
-			base.OnInitializeFromTemplate (projectCreateInfo, template);
-			this.services = ConnectedServices.GetServices (this.Project);
-		}
+		//protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
+		//{
+		//	base.OnInitializeFromTemplate (projectCreateInfo, template);
+		//	this.services = ConnectedServices.GetServices (this.Project);
+		//}
 
 		/// <summary>
 		/// Handles the project being loaded and gathers the list of services that support this project
@@ -66,6 +66,26 @@ namespace MonoDevelop.ConnectedServices
 		{
 			base.OnEndLoad ();
 			this.services = ConnectedServices.GetServices (this.Project);
+			foreach (var service in services) {
+				service.Added += HandleServiceAddedRemoved;
+				service.Removed += HandleServiceAddedRemoved;
+			}
+		}
+
+		void HandleServiceAddedRemoved (object sender, EventArgs e)
+		{
+			if (ServicesNode != null)
+				Core.Runtime.RunInMainThread (() => ServicesNode.NotifyServicesChanged ());
+		}
+
+		public override void Dispose ()
+		{
+			if (services != null)
+				foreach (var service in services) {
+					service.Added -= HandleServiceAddedRemoved;
+					service.Removed -= HandleServiceAddedRemoved;
+				}
+			base.Dispose ();
 		}
 	}
 }

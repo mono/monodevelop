@@ -83,7 +83,9 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 			var services = (ConnectedServiceFolderNode)dataObject;
 			services.ServicesChanged -= this.ServicesChanged;
 
-			services.Project.GetConnectedServicesBinding ().ServicesNode = null;
+			var binding = services.Project?.GetConnectedServicesBinding ();
+			if (binding != null)
+				binding.ServicesNode = null;
 
 			base.OnNodeRemoved (dataObject);
 		}
