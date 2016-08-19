@@ -39,30 +39,38 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
 using System.Collections.Immutable;
+using ICSharpCode.NRefactory.MonoCSharp;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 
 	public static class SyntaxHighlightingService
 	{
-		static Dictionary<string, EditorTheme> styles          = new Dictionary<string, EditorTheme> ();
-		static Dictionary<string, IStreamProvider> styleLookup = new Dictionary<string, IStreamProvider> ();
-		static List<SyntaxHighlightingDefinition> highlightings = new List<SyntaxHighlightingDefinition> ();
-		static List<TmSetting> settings = new List<TmSetting> ();
-		static List<TmSnippet> snippets = new List<TmSnippet> ();
+		static LanguageBundle builtInBundle = new LanguageBundle ("default", null);
+		static List<LanguageBundle> languageBundles = new List<LanguageBundle> ();
+
+		internal static IEnumerable<LanguageBundle> LanguageBundles {
+			get {
+				return languageBundles.Skip (1);
+			}
+		}
 
 		public static string[] Styles {
 			get {
-				List<string> result = new List<string> ();
-				foreach (string style in styles.Keys) {
-					if (!result.Contains (style))
-						result.Add (style);
-				}
-				foreach (string style in styleLookup.Keys) {
-					if (!result.Contains (style))
-						result.Add (style);
+				var result = new List<string> ();
+				foreach (var bundle in languageBundles) {
+					foreach (var style in bundle.EditorThemes) {
+						if (!result.Contains (style.Name))
+							result.Add (style.Name);
+					}
 				}
 				return result.ToArray ();
+			}
+		}
+
+		public static FilePath LanguageBundlePath {
+			get {
+				return UserProfile.Current.UserDataRoot.Combine ("LanguageBundles");
 			}
 		}
 
@@ -110,81 +118,50 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		internal static IEnumerable<TmSetting> GetSettings (ImmutableStack<string> scope)
 		{
-			foreach (var setting in settings) {
-				if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
-					continue;
-				yield return setting;
+			foreach (var bundle in languageBundles) {
+				foreach (var setting in bundle.Settings) {
+					if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
+						continue;
+					yield return setting;
+				}
 			}
 		}
 		internal static IEnumerable<TmSnippet> GetSnippets (ImmutableStack<string> scope)
 		{
-			foreach (var setting in snippets) {
-				if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
-					continue;
-				yield return setting;
+			foreach (var bundle in languageBundles) {
+				foreach (var setting in bundle.Snippets) {
+					if (!setting.Scopes.Any (s => TmSetting.IsSettingMatch (scope, s)))
+						continue;
+					yield return setting;
+				}
 			}
 		}
 
 		public static EditorTheme GetEditorTheme (string name)
 		{
-			if (styleLookup.ContainsKey (name)) {
-				LoadStyle (name);
+			foreach (var bundle in languageBundles) {
+				var theme = bundle.EditorThemes.FirstOrDefault (t => t.Name == name);
+				if (theme != null)
+					return theme;
 			}
-			if (!styles.ContainsKey (name)) {
-				LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
-				name = GetDefaultColorStyleName ();
-			}
-			if (!styles.ContainsKey (name)) {
-				LoggingService.LogError ("Color style " + name + " not found.");
-				return null;
-			}
-			return styles [name];
+			LoggingService.LogWarning ("Color style " + name + " not found, switching to default.");
+			return GetEditorTheme (GetDefaultColorStyleName ());
 		}
 
-		static IStreamProvider GetProvider (EditorTheme style)
-		{
-			if (styleLookup.ContainsKey (style.Name)) 
-				return styleLookup[style.Name];
-			return null;
-		}
-		
 		static void LoadStyle (string name)
 		{
-			if (!styleLookup.ContainsKey (name))
-				throw new System.ArgumentException ("Style " + name + " not found", "name");
-			var provider = styleLookup [name];
-			styleLookup.Remove (name); 
-			var stream = provider.Open ();
-			try {
-				if (provider.Name.EndsWith (".vssettings", StringComparison.Ordinal)) {
-					styles [name] = OldFormat.ImportVsSetting (provider.Name, stream);
-				} else if (provider.Name.EndsWith (".json", StringComparison.Ordinal)) {
-					styles [name] = OldFormat.ImportColorScheme (stream);
-				} else {
-					styles [name] = TextMateFormat.LoadEditorTheme (stream);
-				}
-				styles [name].FileName = provider.Name;
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while loading style :" + name, e);
-				throw new IOException ("Error while loading style :" + name, e);
-			} finally {
-				stream.Close ();
-			}
 		}
 
 		internal static void Remove (EditorTheme style)
 		{
-			if (styleLookup.ContainsKey (style.Name))
-				styleLookup.Remove (style.Name);
-
-			foreach (var kv in styles) {
-				if (kv.Value == style) {
-					styles.Remove (kv.Key); 
-					return;
-				}
-			}
+			builtInBundle.Remove (style);
 		}
-		
+
+		internal static void Remove (LanguageBundle style)
+		{
+			languageBundles.Remove (style);
+		}
+
 
 		static List<ValidationEventArgs> ValidateStyleFile (string fileName)
 		{
@@ -193,14 +170,32 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 
-		internal static void LoadStylesAndModes (string path)
+		internal static void LoadStylesAndModesInPath (string path)
 		{
 			foreach (string file in Directory.GetFiles (path)) {
-				LoadFile (file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
+				LoadStyleOrMode (file);
 			}
 		}
 
-		static void LoadFile (string file, Func<Stream> openStream, Func<IStreamProvider> getStreamProvider)
+		internal static object LoadStyleOrMode (string file)
+		{
+			return LoadFile (builtInBundle, file, () => File.OpenRead (file), () => new UrlStreamProvider (file));
+		}
+
+
+			/*
+			 * 				if (provider.Name.EndsWith (".vssettings", StringComparison.Ordinal)) {
+					styles [name] = OldFormat.ImportVsSetting (provider.Name, stream);
+				} else if (provider.Name.EndsWith (".json", StringComparison.Ordinal)) {
+					styles [name] = OldFormat.ImportColorScheme (stream);
+				} else {
+					styles [name] = TextMateFormat.LoadEditorTheme (stream);
+				}
+				styles [name].FileName = provider.Name;
+
+			 * */
+
+		static object LoadFile (LanguageBundle bundle, string file, Func<Stream> openStream, Func<IStreamProvider> getStreamProvider)
 		{
 			if (file.EndsWith (".json", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
@@ -209,13 +204,15 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					if (TryScanJSonStyle (stream, out styleName, out format)) {
 						switch (format) {
 						case JSonFormat.OldSyntaxTheme:
-							styleLookup [styleName] = getStreamProvider ();
-							break;
+							var theme = OldFormat.ImportColorScheme (getStreamProvider ().Open ());
+							if (theme != null)
+								bundle.Add (theme);
+							return theme;
 						case JSonFormat.TextMateJsonSyntax:
-							var highlighting = TextMateFormat.ReadHighlightingFromJson (getStreamProvider().Open ());
+							SyntaxHighlightingDefinition highlighting = TextMateFormat.ReadHighlightingFromJson (getStreamProvider().Open ());
 							if (highlighting != null)
-								highlightings.Add (highlighting);
-							break;
+								bundle.Add (highlighting);
+							return highlighting;
 						}
 					}
 				}
@@ -223,7 +220,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				using (var stream = openStream ()) {
 					string styleName = ScanTextMateStyle (stream);
 					if (!string.IsNullOrEmpty (styleName)) {
-						styleLookup [styleName] = getStreamProvider ();
+						var theme = TextMateFormat.LoadEditorTheme (getStreamProvider ().Open ());
+						if (theme != null)
+							bundle.Add (theme);
+						return theme;
 					} else {
 						LoggingService.LogError ("Invalid .tmTheme theme file : " + file);
 					}
@@ -231,34 +231,42 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			} else if (file.EndsWith (".vssettings", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
 					string styleName = Path.GetFileNameWithoutExtension (file);
-					styleLookup [styleName] = getStreamProvider ();
+					var theme = OldFormat.ImportVsSetting (styleName, getStreamProvider ().Open ());
+					if (theme != null)
+						bundle.Add (theme);
+					return theme;
 				}
 			} else if (file.EndsWith (".tmLanguage", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
 					var highlighting = TextMateFormat.ReadHighlighting (stream);
 					if (highlighting != null)
-						highlightings.Add (highlighting);
+						bundle.Add (highlighting);
+					return highlighting;
 				}
 			} else if (file.EndsWith (".sublime-syntax", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = new StreamReader (openStream ())) {
 					var highlighting = Sublime3Format.ReadHighlighting (stream);
 					if (highlighting != null)
-						highlightings.Add (highlighting);
+						bundle.Add (highlighting);
+					return highlighting;
 				}
 			} else if (file.EndsWith (".sublime-package", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".tmbundle", StringComparison.OrdinalIgnoreCase)) {
 				try {
 					using (var stream = new ICSharpCode.SharpZipLib.Zip.ZipInputStream (openStream ())) {
 						var entry = stream.GetNextEntry ();
+						var newBundle = new LanguageBundle (Path.GetFileNameWithoutExtension (file), file);
 						while (entry != null) {
 							if (entry.IsFile && !entry.IsCrypted) {
 								if (stream.CanDecompressEntry) {
 									byte [] data = new byte [entry.Size];
 									stream.Read (data, 0, (int)entry.Size);
-									LoadFile (entry.Name, () => new MemoryStream (data), () => new MemoryStreamProvider (data, entry.Name));
+									LoadFile (newBundle, entry.Name, () => new MemoryStream (data), () => new MemoryStreamProvider (data, entry.Name));
 								}
 							} 
 							entry = stream.GetNextEntry ();
 						}
+						languageBundles.Add (newBundle); 
+						return newBundle;
 					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while reading : " + file, e); 
@@ -267,28 +275,31 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				using (var stream = openStream ()) {
 					var preference = TextMateFormat.ReadPreferences (stream);
 					if (preference != null)
-						settings.Add (preference);
+						bundle.Add (preference);
+					return preference;
 				}
 			} else if (file.EndsWith (".tmSnippet", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
-					var preference = TextMateFormat.ReadSnippet (stream);
-					if (preference != null)
-						snippets.Add (preference);
+					var snippet = TextMateFormat.ReadSnippet (stream);
+					if (snippet != null)
+						bundle.Add (snippet);
+					return snippet;
 				}
 			} else if (file.EndsWith (".sublime-snippet", StringComparison.OrdinalIgnoreCase)) {
 				using (var stream = openStream ()) {
-					var preference = Sublime3Format.ReadSnippet (stream);
-					if (preference != null)
-						snippets.Add (preference);
+					var snippet = Sublime3Format.ReadSnippet (stream);
+					if (snippet != null)
+						bundle.Add (snippet);
+					return snippet;
 				}
 			}
+			return null;
 		}
-
 
 		static void LoadStylesAndModes (Assembly assembly)
 		{
 			foreach (string resource in assembly.GetManifestResourceNames ()) {
-				LoadFile (resource, () => assembly.GetManifestResourceStream (resource), () => new ResourceStreamProvider (assembly, resource));
+				LoadFile (builtInBundle, resource, () => assembly.GetManifestResourceStream (resource), () => new ResourceStreamProvider (assembly, resource));
 			}
 		}
 
@@ -356,35 +367,59 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal static void AddStyle (EditorTheme style)
-		{
-			styles [style.Name] = style;
-		}
-
 		internal static void AddStyle (IStreamProvider provider)
 		{
+			string styleName;
+			JSonFormat format;
 			using (var stream = provider.Open ()) {
-				string styleName = ScanTextMateStyle (stream);
-				styleLookup [styleName] = provider;
+				if (TryScanJSonStyle (stream, out styleName, out format)) {
+					switch (format) {
+					case JSonFormat.OldSyntaxTheme:
+						var theme = OldFormat.ImportColorScheme (provider.Open ());
+						if (theme != null)
+							builtInBundle.Add (theme);
+						break;
+					case JSonFormat.TextMateJsonSyntax:
+						SyntaxHighlightingDefinition highlighting = TextMateFormat.ReadHighlightingFromJson (provider.Open ());
+						if (highlighting != null)
+							builtInBundle.Add (highlighting);
+						break;
+					}
+				}
 			}
 		}
 
 		internal static void RemoveStyle (IStreamProvider provider)
 		{
-			using (var stream = provider.Open ()) {
-				string styleName = ScanTextMateStyle (stream);
-				styleLookup.Remove (styleName);
-			}
 		}
 
 		static SyntaxHighlightingService ()
 		{
+			languageBundles.Add (builtInBundle);
+
 			LoadStylesAndModes (typeof (SyntaxHighlightingService).Assembly);
 			var textEditorAssembly = Assembly.Load ("MonoDevelop.SourceEditor");
 			if (textEditorAssembly != null) {
 				LoadStylesAndModes (textEditorAssembly);
 			} else {
 				LoggingService.LogError ("Can't lookup Mono.TextEditor assembly. Default styles won't be loaded.");
+			}
+
+			bool success = true;
+			if (!Directory.Exists (LanguageBundlePath)) {
+				try {
+					Directory.CreateDirectory (LanguageBundlePath);
+				} catch (Exception e) {
+					success = false;
+					LoggingService.LogError ("Can't create syntax mode directory", e);
+				}
+			}
+			if (success) {
+				foreach (string file in Directory.GetFiles (LanguageBundlePath)) {
+					if (file.EndsWith (".sublime-package", StringComparison.OrdinalIgnoreCase) || file.EndsWith (".tmbundle", StringComparison.OrdinalIgnoreCase)) {
+						LoadStyleOrMode (file); 
+					}
+				}
 			}
 		}
 
@@ -419,26 +454,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static SyntaxHighlightingDefinition GetSyntaxHighlightingDefinition (FilePath fileName, string mimeType)
 		{
 			var ext = fileName.Extension.TrimStart ('.');
-			foreach (var h in highlightings) {
-				if (h.FileExtensions.Any (e => FilePath.PathComparer.Compare (e, ext) == 0))
-					return h;
-				foreach (var fe in h.FileExtensions) {
-					var mime = DesktopService.GetMimeTypeForUri ("a." + fe);
-					if (mimeType == mime)
+			foreach (var bundle in languageBundles) {
+				foreach (var h in bundle.Highlightings) {
+					if (h.FileExtensions.Any (e => FilePath.PathComparer.Compare (e, ext) == 0))
 						return h;
+					foreach (var fe in h.FileExtensions) {
+						var mime = DesktopService.GetMimeTypeForUri ("a." + fe);
+						if (mimeType == mime)
+							return h;
+					}
 				}
-			}
-			return null;
-		}
 
-		public static string GetFileName (string name)
-		{
-			if (!styleLookup.ContainsKey (name))
-				throw new System.ArgumentException ("Style " + name + " not found", "name");
-			var provider = styleLookup [name];
-			if (provider is UrlStreamProvider) {
-				var usp = provider as UrlStreamProvider;
-				return usp.Name;
 			}
 			return null;
 		}
@@ -446,12 +472,16 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		internal static ImmutableStack<string> GetScopeForFileName (string fileName)
 		{
 			string scope = null;
-			foreach (var highlight in highlightings) {
-				if (highlight.FileExtensions.Any (ext => fileName.EndsWith ("." + ext, FilePath.PathComparison))) {
-					scope = highlight.Scope;
-					break;
+
+			foreach (var bundle in languageBundles) {
+				foreach (var highlight in bundle.Highlightings) {
+					if (highlight.FileExtensions.Any (ext => fileName.EndsWith ("." + ext, FilePath.PathComparison))) {
+						scope = highlight.Scope;
+						break;
+					}
 				}
 			}
+
 			if (scope == null)
 				return ImmutableStack<string>.Empty;
 

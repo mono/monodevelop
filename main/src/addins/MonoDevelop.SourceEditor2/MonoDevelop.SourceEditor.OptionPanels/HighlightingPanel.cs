@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	public partial class HighlightingPanel : Gtk.Bin, IOptionsPanel
 	{
 		string schemeName;
-		ListStore styleStore = new ListStore (typeof (string), typeof (MonoDevelop.Ide.Editor.Highlighting.EditorTheme), typeof(bool));
+		ListStore styleStore = new ListStore (typeof (string), typeof (MonoDevelop.Ide.Editor.Highlighting.EditorTheme), typeof (bool));
 		static Lazy<Gdk.Pixbuf> errorPixbuf = new Lazy<Gdk.Pixbuf> (() => ImageService.GetIcon (Stock.DialogError, IconSize.Menu).ToPixbuf ());
 
 		public HighlightingPanel ()
@@ -201,7 +201,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void RemoveColorScheme (object sender, EventArgs args)
 		{
 			TreeIter selectedIter;
-			if (!styleTreeview.Selection.GetSelected (out selectedIter)) 
+			if (!styleTreeview.Selection.GetSelected (out selectedIter))
 				return;
 			var sheme = (Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
 			
@@ -262,7 +262,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				LoggingService.LogError ("Can't copy syntax mode file.", e);
 			}
 			if (success) {
-				SyntaxHighlightingService.LoadStylesAndModes (TextEditorDisplayBinding.SyntaxModePath);
+				SyntaxHighlightingService.LoadStylesAndModesInPath (TextEditorDisplayBinding.SyntaxModePath);
 				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}

@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			if (success)
-				SyntaxHighlightingService.LoadStylesAndModes (SyntaxModePath);
+				SyntaxHighlightingService.LoadStylesAndModesInPath (SyntaxModePath);
 		}
 
 		public string Name {

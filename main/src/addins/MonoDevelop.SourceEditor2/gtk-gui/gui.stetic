@@ -7,7 +7,6 @@
   <import>
     <widget-library name="../../../../build/bin/MonoDevelop.Ide.dll" />
     <widget-library name="../../../../build/AddIns/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.dll" />
-    <widget-library name="../../../../build/bin/Mono.TextEditor.dll" />
     <widget-library name="../../../../external/xwt/Xwt.Gtk/bin/Debug/Xwt.Gtk.dll" />
     <widget-library name="../../../../build/AddIns/DisplayBindings/SourceEditor/MonoDevelop.SourceEditor.dll" internal="true" />
   </import>
