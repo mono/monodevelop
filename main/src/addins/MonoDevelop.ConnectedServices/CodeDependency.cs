@@ -54,6 +54,14 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:MonoDevelop.ConnectedServices.CodeDependency"/>.
+		/// </summary>
+		public override string ToString ()
+		{
+			return this.GetType ().ToString ();
+		}
+
+		/// <summary>
 		/// Gets the types defined in source files for the compilation
 		/// </summary>
 		protected IList<INamedTypeSymbol> SourceTypes {
@@ -78,7 +86,7 @@ namespace MonoDevelop.ConnectedServices
 					if (tryCount > 1) {
 						LoggingService.LogInfo ("Retrying to add code dependency...");
 					} else {
-						LoggingService.LogInfo ("Adding code dependency...");
+						LoggingService.LogInfo ("Adding code dependency '{0}' to '{1}'...", this, this.Service.Project.Name);
 					}
 
 					this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
@@ -116,7 +124,7 @@ namespace MonoDevelop.ConnectedServices
 					if (tryCount > 1) {
 						LoggingService.LogInfo ("Retrying to remove code dependency...");
 					} else {
-						LoggingService.LogInfo ("Removing code dependency...");
+						LoggingService.LogInfo ("Removing code dependency '{0}' from '{1}'...", this, this.Service.Project.Name);
 					}
 
 					this.compilation = await TypeSystemService.GetCompilationAsync (this.Service.Project).ConfigureAwait (false);
@@ -242,7 +250,15 @@ namespace MonoDevelop.ConnectedServices
 				newRoot = Formatter.Format (newRoot, proj.Solution.Workspace);
 
 				var newSolution = proj.Solution.WithDocumentSyntaxRoot (docID, newRoot);
-				proj.Solution.Workspace.TryApplyChanges (newSolution);
+				if (!proj.Solution.Workspace.TryApplyChanges (newSolution)) {
+					LoggingService.LogWarning ("Failed to add code dependency changes to the workspace.");
+
+					// lets check the version (which is one reason why TryApplyChanges will return false
+					if (proj.Solution.Workspace.CurrentSolution.Version != newSolution.Version) {
+						LoggingService.LogWarning ("Solution version is different.");
+						throw new SolutionVersionMismatchException ();
+					}
+				}
 			}
 		}
 

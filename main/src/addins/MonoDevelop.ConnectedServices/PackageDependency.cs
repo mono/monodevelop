@@ -48,6 +48,14 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:MonoDevelop.ConnectedServices.PackageDependency"/>.
+		/// </summary>
+		public override string ToString ()
+		{
+			return string.Format ("Package Dependency - {0}", this.PackageId);
+		}
+
+		/// <summary>
 		/// Adds the package to the project and returns true if the package was added to the project
 		/// </summary>
 		protected override Task<bool> OnAddToProject(CancellationToken token)
