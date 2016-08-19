@@ -135,18 +135,20 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void HandleSectionAdding (object sender, EventArgs e)
 		{
-			if (Section is DependenciesSection)
-				statusLabel.Text = GettextCatalog.GetString ("Installing \u2026");
-			else
-				statusLabel.Text = GettextCatalog.GetString ("Adding \u2026");
-			statusImage.Visible = false;
-			statusBox.Visible = true;
-			addBtn.Visible = false;
+			Runtime.RunInMainThread (delegate {
+				if (Section is DependenciesSection)
+					statusLabel.Text = GettextCatalog.GetString ("Installing \u2026");
+				else
+					statusLabel.Text = GettextCatalog.GetString ("Adding \u2026");
+				statusImage.Visible = false;
+				statusBox.Visible = true;
+				addBtn.Visible = false;
+			});
 		}
 
 		void HandleSectionAdded (object sender, EventArgs e)
 		{
-			UpdateStatus ();
+			Runtime.RunInMainThread (() => UpdateStatus ());
 		}
 
 		protected override void OnButtonReleased (ButtonEventArgs args)

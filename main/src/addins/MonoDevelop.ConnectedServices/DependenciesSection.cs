@@ -91,9 +91,7 @@ namespace MonoDevelop.ConnectedServices
 		{
 			var handler = this.Adding;
 			if (handler != null) {
-				Xwt.Application.Invoke (() => {
-					handler (this, new EventArgs ());
-				});
+				handler (this, new EventArgs ());
 			}
 		}
 
@@ -104,10 +102,7 @@ namespace MonoDevelop.ConnectedServices
 		{
 			var handler = this.Added;
 			if (handler != null) {
-				// make sure this gets called on the main thread in case we have async calls for adding a nuget
-				Xwt.Application.Invoke (() => {
-					handler (this, new EventArgs ());
-				});
+				handler (this, new EventArgs ());
 			}
 		}
 	}

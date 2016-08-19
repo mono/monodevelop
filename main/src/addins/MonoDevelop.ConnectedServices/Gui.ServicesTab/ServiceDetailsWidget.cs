@@ -75,9 +75,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceAdded (object sender, EventArgs e)
 		{
 			if (service.AreDependenciesInstalled) {
-				var configuration = sections.Children.FirstOrDefault (s => (s as ConfigurationSectionWidget)?.Section != service.DependenciesSection) as ConfigurationSectionWidget;
-				if (configuration != null)
-					configuration.Expanded = true;
+				Core.Runtime.RunInMainThread (delegate {
+					var configuration = sections.Children.FirstOrDefault (s => (s as ConfigurationSectionWidget)?.Section != service.DependenciesSection) as ConfigurationSectionWidget;
+					if (configuration != null)
+						configuration.Expanded = true;
+				});
 			}
 		}
 

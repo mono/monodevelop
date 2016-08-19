@@ -151,31 +151,35 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void HandleDependencyAdding (object sender, EventArgs e)
 		{
-			nameLabel.TextColor = Styles.DimTextColor;
-			iconView.Image = Dependency.Icon.WithAlpha (0.4);
+			Runtime.RunInMainThread (delegate {
+				nameLabel.TextColor = Styles.DimTextColor;
+				iconView.Image = Dependency.Icon.WithAlpha (0.4);
 
-			SetStatusIcon ("md-spinner-16");
-			statusLabel.Markup = GettextCatalog.GetString ("Adding \u2026");
-			statusLabel.Visible = true;
+				SetStatusIcon ("md-spinner-16");
+				statusLabel.Markup = GettextCatalog.GetString ("Adding \u2026");
+				statusLabel.Visible = true;
+			});
 		}
 
 		void HandleDependencyAdded (object sender, EventArgs e)
 		{
-			Update ();
+			Runtime.RunInMainThread (() => Update ());
 		}
 
 		void HandleDependencyRemoved (object sender, EventArgs e)
 		{
-			Update ();
+			Runtime.RunInMainThread (() => Update ());
 		}
 
 		void HandleDependencyAddingFailed (object sender, EventArgs e)
 		{
-			nameLabel.TextColor = Styles.DimTextColor;
-			iconView.Image = Dependency.Icon.WithAlpha (0.4);
-			SetStatusIcon ("md-error");
-			statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + " – <a href=''>" + GettextCatalog.GetString ("Retry") + "</a>";
-			statusLabel.Visible = true;
+			Runtime.RunInMainThread (delegate {
+				nameLabel.TextColor = Styles.DimTextColor;
+				iconView.Image = Dependency.Icon.WithAlpha (0.4);
+				SetStatusIcon ("md-error");
+				statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + " – <a href=''>" + GettextCatalog.GetString ("Retry") + "</a>";
+				statusLabel.Visible = true;
+			});
 		}
 
 		protected override void Dispose (bool disposing)
