@@ -76,7 +76,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Dependency = dependency;
 			Service = service;
 
-			iconView = new ImageView (dependency.Icon);
+			iconView = new ImageView (dependency.Icon.WithSize (Xwt.IconSize.Small));
 			nameLabel = new Label (dependency.DisplayName);
 
 			statusIconView = new ImageView ();
@@ -129,19 +129,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			if (Service.IsAdded) {
 				if (Dependency.IsAdded) {
 					nameLabel.TextColor = Styles.BaseForegroundColor;
-					iconView.Image = Dependency.Icon;
+					iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small);
 					SetStatusIcon (IconId.Null);
 					statusLabel.Visible = false;
 				} else {
 					nameLabel.TextColor = Styles.DimTextColor;
-					iconView.Image = Dependency.Icon.WithAlpha (0.4);
+					iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 					SetStatusIcon ("md-warning");
 					statusLabel.Markup = "<a href=''>" + GettextCatalog.GetString ("Add Dependency") + "</a>";
 					statusLabel.Visible = true;
 				}
 			} else {
 				nameLabel.TextColor = Styles.BaseForegroundColor;
-				iconView.Image = Dependency.Icon;
+				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small);
 				if (Dependency.IsAdded) {
 					SetStatusIcon ("md-done");
 					statusLabel.Visible = false;
@@ -153,7 +153,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			Runtime.RunInMainThread (delegate {
 				nameLabel.TextColor = Styles.DimTextColor;
-				iconView.Image = Dependency.Icon.WithAlpha (0.4);
+				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 
 				SetStatusIcon ("md-spinner-16");
 				statusLabel.Markup = GettextCatalog.GetString ("Adding \u2026");
@@ -175,7 +175,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			Runtime.RunInMainThread (delegate {
 				nameLabel.TextColor = Styles.DimTextColor;
-				iconView.Image = Dependency.Icon.WithAlpha (0.4);
+				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 				SetStatusIcon ("md-error");
 				statusLabel.Markup = GettextCatalog.GetString ("Adding failed") + " (<a>" + GettextCatalog.GetString ("Retry") + "</a>)";
 				statusLabel.Visible = true;

@@ -32,8 +32,8 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		{
 			var service = (ConnectedServiceNode)dataObject;
 			nodeInfo.Label = service.DisplayName;
-			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
-			nodeInfo.ClosedIcon = Context.GetIcon (Stock.Reference);
+			nodeInfo.Icon = Context.GetIcon ("md-connected-service");
+			nodeInfo.ClosedIcon = Context.GetIcon ("md-connected-service");
 		}
 
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)

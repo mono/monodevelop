@@ -14,7 +14,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	public class ConfigurationSectionWidget : FrameBox
 	{
 		static readonly Image arrowRight = ImageService.GetIcon ("arrow-right").WithSize (IconSize.Small);
-		static readonly Image arrowDown = ImageService.GetIcon ("arrow-down").WithSize (IconSize.Small);
+		static readonly Image arrowDown = ImageService.GetIcon ("md-expander-arrow-expanded").WithSize (IconSize.Small);
 
 		Label titleLabel, statusLabel;
 		HBox statusBox;
@@ -59,7 +59,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.MarginTop = MarginBottom = 10;
 			header.MarginRight = 30;
 
-			expanderImage = new ImageView (ImageService.GetIcon ("arrow-right").WithSize (IconSize.Small));
+			expanderImage = new ImageView (ImageService.GetIcon ("md-expander-arrow-closed").WithSize (IconSize.Small));
 
 			titleLabel = new Label { Markup = this.Section.DisplayName };
 
@@ -67,7 +67,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusLabel.Font = Font.WithSize (12);
 			statusLabel.TextColor = Styles.SecondaryTextColor;
 
-			statusImage = new ImageView (ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small));
+			statusImage = new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small));
 
 			statusBox = new HBox ();
 			statusBox.MarginLeft = 10;

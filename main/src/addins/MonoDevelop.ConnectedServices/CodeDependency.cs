@@ -7,7 +7,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
+using Xwt.Drawing;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -32,12 +34,22 @@ namespace MonoDevelop.ConnectedServices
 		Compilation compilation;
 		IList<INamedTypeSymbol> sourceTypes;
 
+		Image icon;
+
 		protected CodeDependency (IConnectedService service, string displayName, string [] lookupTypes) : base (service, ConnectedServices.CodeDependencyCategory, displayName)
 		{
 			this.lookupTypes = new Dictionary<string, INamedTypeSymbol> ();
 
 			foreach (var type in lookupTypes) {
 				this.lookupTypes [type] = null;
+			}
+		}
+
+		public override Image Icon {
+			get {
+				if (icon == null)
+					icon = ImageService.GetIcon ("md-connected-service-dependency-code");
+				return icon;
 			}
 		}
 

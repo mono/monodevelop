@@ -159,7 +159,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 				
 				service = value;
-				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-project")).WithSize (IconSize.Medium);
+				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-connected-service")).WithSize (IconSize.Medium);
 				title.Markup = "<b>" + service.DisplayName + "</b>";
 				description.Text = service.Description;
 
@@ -169,7 +169,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 				addButton.Visible = showDetails;
 				addButton.Sensitive = !service.IsAdded;
-				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small).WithAlpha (0.4) : null;
+				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
 
 				service.Added += HandleServiceAddedRemoved;
@@ -208,7 +208,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			addedWidget = new HBox ();
 			addedWidget.Spacing = 3;
-			addedWidget.PackStart (new ImageView (ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small)));
+			addedWidget.PackStart (new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small)));
 			addedWidget.PackStart (new Label (GettextCatalog.GetString ("Enabled")) {
 				Font = Font.WithSize (12),
 				TextColor = Styles.SecondaryTextColor,
@@ -293,7 +293,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			Runtime.RunInMainThread (delegate {
 				addedWidget.Visible = Service.IsAdded && !showDetails;
-				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-prefs-task-list").WithSize (IconSize.Small).WithAlpha (0.4) : null;
+				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
 				addButton.Sensitive = !Service.IsAdded;
 			});
