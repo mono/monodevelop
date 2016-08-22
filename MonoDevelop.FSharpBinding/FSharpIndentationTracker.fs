@@ -10,6 +10,7 @@ type FSharpTextPasteHandler(editor:TextEditor) =
 
     let rec getNextNonBlankLineNumber lineNumber endOffset=
         let line = editor.GetLine lineNumber
+        printfn "%A" line
         if line.Length <> 0 || line.EndOffset > endOffset then
             lineNumber
         else
@@ -63,6 +64,7 @@ type FSharpTextPasteHandler(editor:TextEditor) =
                 let lines = remainingLines
                             |> Seq.append (seq [(String.trimStart [|' '|] firstLine)])
                 let res = String.Join (editor.Options.DefaultEolMarker, lines)
+                LoggingService.logDebug "%s" (res.Replace(" ", "."))
                 res
             else
                 text
