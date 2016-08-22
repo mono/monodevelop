@@ -14,10 +14,6 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets a new instance of IConnectedService for the given project, or null if the project is not supported.
 		/// </summary>
-		/// <remarks>
-		/// GetConnectedService may be called several times for newly created projects.
-		/// Consider caching and reusing the same service instance for each project if necessary.
-		/// </remarks>
 		IConnectedService GetConnectedService (DotNetProject project);
 	}
 }

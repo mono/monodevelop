@@ -51,23 +51,21 @@ namespace MonoDevelop.ConnectedServices
 		public ConnectedServiceFolderNode ServicesNode { get; set; }
 
 		/// <summary>
-		/// Handles the extension being initialized and gathers the list of services that support this project.
+		/// Handles when the project is initialised from a template and gathers the list of services that support this project
 		/// </summary>
-		/// <remarks>
-		/// <see cref="M:MonoDevelop.ConnectedServices.ConnectedServiceProjectExtension.Initialize"/> will be called at the end
-		/// of the extension loading process, after
-		/// <see cref="M:MonoDevelop.Projects.DotNetProjectExtension.OnInitializeFromTemplate"/> and/or
-		/// <see cref="M:MonoDevelop.Projects.DotNetProjectExtension.OnEndLoad"/>.
-		/// </remarks>
-		protected override void Initialize ()
+		//protected override void OnInitializeFromTemplate (ProjectCreateInformation projectCreateInfo, XmlElement template)
+		//{
+		//	base.OnInitializeFromTemplate (projectCreateInfo, template);
+		//	this.services = ConnectedServices.GetServices (this.Project);
+		//}
+
+		/// <summary>
+		/// Handles the project being loaded and gathers the list of services that support this project
+		/// </summary>
+		protected override void OnEndLoad ()
 		{
-			base.Initialize ();
-			if (services != null) // Initialize might be called several times
-				foreach (var service in services) {
-					service.Added -= HandleServiceAddedRemoved;
-					service.Removed -= HandleServiceAddedRemoved;
-				}
-			services = ConnectedServices.GetServices (Project);
+			base.OnEndLoad ();
+			this.services = ConnectedServices.GetServices (this.Project);
 			foreach (var service in services) {
 				service.Added += HandleServiceAddedRemoved;
 				service.Removed += HandleServiceAddedRemoved;
