@@ -131,6 +131,7 @@ type SyntaxHighlighting() =
     [<TestCase("type A = A of a:$int$", "User Types")>]
     [<TestCase("type string=$String$", "User Types")>]
     [<TestCase("module A$=$", "Plain Text")>]
+    [<TestCase("let $defaultKeyword$ =", "User Field Declaration")>]
     member x.``Syntax highlighting``(source, expectedStyle) =
         assertStyle (source, expectedStyle)
 
