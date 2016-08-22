@@ -27,12 +27,11 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 using NUnit.Framework;
 using UnitTests;
-using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging.Tests
 {
@@ -42,6 +41,12 @@ namespace MonoDevelop.Packaging.Tests
 		public ProjectTemplateTests ()
 		{
 			Simulate ();
+
+			#pragma warning disable 219
+			// Ensure NuGet.ProjectManagement assembly is loaded otherwise creating
+			// a PackagingProject will fail.
+			string binDirectory = NuGet.ProjectManagement.Constants.BinDirectory;
+			#pragma warning restore 219
 		}
 
 		[Test]
