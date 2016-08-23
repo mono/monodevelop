@@ -236,9 +236,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return chunkStyle.Foreground;
 		}
 
-		internal EditorTheme Clone ()
+		internal EditorTheme CloneWithName (string newName)
 		{
-			return (EditorTheme)this.MemberwiseClone ();
+			var result = (EditorTheme)this.MemberwiseClone ();
+			result.Name = newName;
+			return result;
 		}
 	}
 }

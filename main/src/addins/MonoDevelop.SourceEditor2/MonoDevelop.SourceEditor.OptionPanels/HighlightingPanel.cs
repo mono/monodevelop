@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Diagnostics;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -120,7 +121,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void HandleStyleTreeviewSelectionChanged (object sender, EventArgs e)
 		{
 			this.removeButton.Sensitive = false;
-			this.buttonEdit.Sensitive = false;
 			this.buttonExport.Sensitive = false;
 			Gtk.TreeIter iter;
 			if (!styleTreeview.Selection.GetSelected (out iter)) 
@@ -139,19 +139,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (fileName == null)
 				return;
 			this.removeButton.Sensitive = true;
-			this.buttonEdit.Sensitive = true;
 		}
 
 		void HandleButtonEdithandleClicked (object sender, EventArgs e)
 		{
 			TreeIter selectedIter;
 			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				/* TODO: Color scheme editor.
-				using (var editor = new ColorShemeEditor (this)) {
-					var colorScheme = (MonoDevelop.Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
-					editor.SetSheme (colorScheme);
-					MessageService. ShowCustomDialog (editor, dialog);
-				}*/ 
+				var browseButton = new AlertButton (GettextCatalog.GetString ("Start browser"));
+				var button = MessageService.AskQuestion ("The color schemes are edited using an external program inside the web browser.\nEdit your highlghting schemes in:\n" + TextEditorDisplayBinding.SyntaxModePath + "\n\nyou've to open a local file inside the browser.\nRestart the IDE for changes to take effect", new AlertButton [] { browseButton, AlertButton.Cancel }); 
+				if (button == browseButton)
+					Process.Start ("http://tmtheme-editor.herokuapp.com");
 			}
 		}
 

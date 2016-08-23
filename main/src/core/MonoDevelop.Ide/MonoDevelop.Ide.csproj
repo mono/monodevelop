@@ -8640,8 +8640,8 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorTheme.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxHighlightingDefinition.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TmSetting.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorThemeColors.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TmSnippet.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\EditorThemeColors.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateIndentationTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\TextMateIndentationTracker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.TextMate\IIndentEngine.cs" />

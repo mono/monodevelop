@@ -154,8 +154,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorShemeEditor.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.ColorShemeEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\NewColorShemeDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.NewColorShemeDialog.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskStrip.cs" />
