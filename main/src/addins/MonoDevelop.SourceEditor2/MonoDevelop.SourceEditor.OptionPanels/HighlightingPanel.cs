@@ -112,6 +112,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			using (var newShemeDialog = new NewColorShemeDialog ()) {
 				MessageService.ShowCustomDialog (newShemeDialog, dialog);
 			}
+			SyntaxHighlightingService.LoadStylesAndModesInPath (TextEditorDisplayBinding.SyntaxModePath);
+			TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 			ShowStyles ();
 		}
 
@@ -263,7 +265,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 			if (success) {
 				SyntaxHighlightingService.LoadStylesAndModesInPath (TextEditorDisplayBinding.SyntaxModePath);
-				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
+				TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}
 		}
