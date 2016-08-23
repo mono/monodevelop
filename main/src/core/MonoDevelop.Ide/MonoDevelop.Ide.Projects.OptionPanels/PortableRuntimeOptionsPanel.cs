@@ -36,20 +36,22 @@ using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Newtonsoft.Json.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
 	internal class PortableRuntimeOptionsPanel : ItemOptionsPanel
 	{
 		PortableRuntimeOptionsPanelWidget widget;
-		
+
 		public override Control CreatePanelWidget ()
 		{
-			widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject) ConfiguredProject, ItemConfigurations);
+			widget = new PortableRuntimeOptionsPanelWidget ((DotNetProject)ConfiguredProject, ItemConfigurations);
 
 			return widget;
 		}
-		
+
 		public override void ApplyChanges ()
 		{
 			widget.Store ();
@@ -64,7 +66,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		DotNetProject project;
 		TargetFramework target;
 
-		string[] KnownNetStandardVersions = new [] {
+		TargetFrameworkMoniker pcl5Tfm = new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, "v5.0");
+
+		string [] KnownNetStandardVersions = new [] {
 			"netstandard1.0",
 			"netstandard1.1",
 			"netstandard1.2",
@@ -73,6 +77,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			"netstandard1.5",
 			"netstandard1.6",
 		};
+
+		const string NetStandardPackageName = "NETStandard.Library";
+		const string NetStandardPackageVersion = "1.6.0";
 
 		ComboBox netStandardCombo;
 		Entry targetFrameworkEntry;
@@ -86,9 +93,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			this.project = project;
 
-			//TODO: read from the project.json
 			TargetFramework = project.TargetFramework;
-			NetStandardVersion = null;
+
+			//TODO: error handling
+			NetStandardVersion = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
 		}
 
 		void Build ()
@@ -144,7 +152,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				int selected = -1;
 
 				for (int i = 0; i < KnownNetStandardVersions.Length; i++) {
-					var version = KnownNetStandardVersions[i];
+					var version = KnownNetStandardVersions [i];
 					netStandardCombo.AppendText (version);
 					if (version == value) {
 						selected = i;
@@ -178,7 +186,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			UpdateSensitivity ();
 		}
 
-		void UpdateSensitivity()
+		void UpdateSensitivity ()
 		{
 			bool pcl = pclRadio.Active;
 
@@ -207,20 +215,132 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		public void Store ()
 		{
-			//TODO set these in the project
+			//TODO error handling
 			var fx = TargetFramework;
 			var isNetStandard = netstandardRadio.Active;
 			var nsVersion = NetStandardVersion;
 
-			//netstandard always used PCL5 framework
+			bool projectFileDirty = false;
+
+			//netstandard always uses PCL5 framework
 			if (isNetStandard) {
-				fx = Runtime.SystemAssemblyService.GetTargetFramework (new TargetFrameworkMoniker (TargetFrameworkMoniker.ID_PORTABLE, "v5.0"));
+				fx = Runtime.SystemAssemblyService.GetTargetFramework (pcl5Tfm);
+				SetProjectJsonValues (project, nsVersion, out projectFileDirty);
+			} else {
+				//TODO: set target to PCL ID and remove dep
 			}
 
 			if (fx != null && fx != project.TargetFramework) {
+				projectFileDirty = true;
 				project.TargetFramework = fx;
+			}
+
+			if (projectFileDirty) {
 				IdeApp.ProjectOperations.SaveAsync (project);
 			}
+		}
+
+		static IEnumerable<string> GetProjectJsonFrameworks (DotNetProject project)
+		{
+			var packagesJsonFile = project.Files.GetFileWithVirtualPath ("project.json");
+			if (packagesJsonFile == null) {
+				return null;
+			}
+
+			var file = TextFileProvider.Instance.GetEditableTextFile (packagesJsonFile.FilePath.ToString ());
+
+			JObject json;
+
+			using (var tr = file.CreateReader ())
+			using (var jr = new Newtonsoft.Json.JsonTextReader (tr)) {
+				json = (JObject)JToken.Load (jr);
+			}
+
+			var frameworks = json ["frameworks"] as JObject;
+			if (frameworks == null)
+				return null;
+
+			return frameworks.Properties ().Select (p => p.Name);
+		}
+
+		static void SetProjectJsonValues (DotNetProject project, string framework, out bool projectFileDirty)
+		{
+			projectFileDirty = false;
+			var packagesJsonFile = project.Files.GetFileWithVirtualPath ("project.json");
+
+			if (packagesJsonFile == null) {
+				packagesJsonFile = AddProjectJson (project);
+				projectFileDirty = true;
+			}
+
+			bool isOpen;
+			var file = TextFileProvider.Instance.GetTextEditorData (packagesJsonFile.FilePath.ToString (), out isOpen);
+
+			JObject json;
+
+			using (var tr = file.CreateReader ())
+			using (var jr = new Newtonsoft.Json.JsonTextReader (tr)) {
+				json = (JObject)JToken.Load (jr);
+			}
+
+			var deps = (json ["dependencies"] as JObject) ?? ((JObject) (json ["dependencies"] = new JObject ()));
+			var existingRefVersion = deps.Property (NetStandardPackageName)?.Value?.Value<string> ();
+			deps [NetStandardPackageName] = EnsureMinimumVersion (NetStandardPackageVersion, existingRefVersion);
+
+			var existingFxValue = (json ["frameworks"] as JObject)?.Properties ()?.SingleOrDefault ();
+			json ["frameworks"] = new JObject (
+				new JProperty (framework, existingFxValue?.Value ?? new JObject ())
+			);
+
+			file.Text = json.ToString ();
+
+			if (!isOpen) {
+				file.Save ();
+			}
+		}
+
+		static ProjectFile AddProjectJson (DotNetProject project)
+		{
+			//TODO: migrate packages.config
+			ProjectFile packagesJsonFile = new ProjectFile (project.BaseDirectory.Combine ("project.json"), BuildAction.None);
+
+			if (!System.IO.File.Exists (packagesJsonFile.FilePath)) {
+				System.IO.File.WriteAllText (packagesJsonFile.FilePath,
+@"{
+  ""supports"": {},
+  ""dependencies"": {},
+  ""frameworks"": {}
+}");
+			}
+
+			project.AddFile (packagesJsonFile);
+			return packagesJsonFile;
+		}
+
+		static string EnsureMinimumVersion (string minimum, string existing)
+		{
+			if (existing == null) {
+				return minimum;
+			}
+
+			var minimumSplit = minimum.Split (new char [] { '.', '-' });
+			var existingSplit = existing.Split (new char [] { '.', '-' });
+
+			for (int i = 0; i < minimumSplit.Length; i++) {
+				var m = int.Parse (minimumSplit [i]);
+				int e;
+				if (existingSplit.Length <= i || !int.TryParse (existingSplit [i], out e)) {
+					return minimum;
+				}
+				if (m > e) {
+					return minimum;
+				}
+				if (e > m) {
+					return existing;
+				}
+			}
+
+			return minimum;
 		}
 	}
 }
