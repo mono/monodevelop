@@ -34,11 +34,13 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
+		/// <returns> <c>true</c> if the dependency has been added successfully; otherwise <c>false</c> </returns>
 		Task<bool> AddToProject (CancellationToken token);
 
 		/// <summary>
 		/// Removes the dependency from the project
 		/// </summary>
+		/// <returns> <c>true</c> if the dependency has been removed successfully; otherwise <c>false</c> </returns>
 		Task<bool> RemoveFromProject (CancellationToken token);
 
 		/// <summary>
@@ -67,7 +69,7 @@ namespace MonoDevelop.ConnectedServices
 		event EventHandler<EventArgs> Removed;
 
 		/// <summary>
-		/// Occurs when removing the dependency to the project has failed
+		/// Occurs when removing the dependency from the project has failed
 		/// </summary>
 		event EventHandler<EventArgs> RemovingFailed;
 	}

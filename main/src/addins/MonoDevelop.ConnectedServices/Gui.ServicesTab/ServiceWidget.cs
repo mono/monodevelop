@@ -4,6 +4,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
 using Xwt;
 
@@ -15,6 +16,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		ImageView image;
 		Label title, description, platforms;
 		Button addButton;
+		AnimatedIcon animatedStatusIcon;
+		IDisposable statusIconAnimation;
 		bool showDetails = false;
 
 		IConnectedService service;
@@ -30,6 +33,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					throw new InvalidOperationException ("Service can not be null");
 				if (service != null) {
 					service.Added -= HandleServiceAddedRemoved;
+					service.Adding -= HandleServiceAdding;
+					service.AddingFailed -= HandleServiceAddingFailed;
 					service.Removed -= HandleServiceAddedRemoved;
 				}
 				
@@ -48,6 +53,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
 
 				service.Added += HandleServiceAddedRemoved;
+				service.Adding += HandleServiceAdding;
+				service.AddingFailed += HandleServiceAddingFailed;
 				service.Removed += HandleServiceAddedRemoved;
 			}
 		}
@@ -93,6 +100,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			addButton = new Button (GettextCatalog.GetString ("Enable"));
 			addButton.Visible = false;
 			addButton.Clicked += HandleAddButtonClicked;
+
+			if (ImageService.IsAnimation ("md-spinner-16", Gtk.IconSize.Menu))
+				animatedStatusIcon = ImageService.GetAnimatedIcon ("md-spinner-16", Gtk.IconSize.Menu);
 
 			var header = new HBox ();
 			header.Spacing = 10;
@@ -149,8 +159,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 						var success = MessageDialog.Confirm (confirmation);
 
 						if (success) {
-							addButton.Label = GettextCatalog.GetString ("Enabling\u2026");
-							addButton.Sensitive = false;
 							service.AddToProject ();
 							foreach (var project in addProjects) {
 								if (confirmation.GetOptionValue (project.Key)) {
@@ -160,18 +168,55 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 							}
 						}
 					});
-				} else {
-					addButton.Label = GettextCatalog.GetString ("Enabling\u2026");
-					addButton.Sensitive = false;
+				} else
 					service.AddToProject ();
-				}
 			}
+		}
+
+		void HandleServiceAdding (object sender, EventArgs e)
+		{
+			// TODO: should adding be visible without details / in the gallery view?
+			if (!showDetails)
+				return;
+			Runtime.RunInMainThread (delegate {
+				addButton.Label = GettextCatalog.GetString ("Enabling\u2026");
+				if (statusIconAnimation == null) {
+					if (animatedStatusIcon != null) {
+						addButton.Image = animatedStatusIcon.FirstFrame;
+						statusIconAnimation = animatedStatusIcon.StartAnimation (p => {
+							addButton.Image = p;
+						});
+					} else
+						addButton.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
+				}
+				addButton.Sensitive = false;
+			});
+		}
+
+		void StopButtonAnimation ()
+		{
+			if (statusIconAnimation != null) {
+				statusIconAnimation.Dispose ();
+				statusIconAnimation = null;
+			}
+		}
+
+		void HandleServiceAddingFailed (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (delegate {
+				addedWidget.Visible = false;
+				StopButtonAnimation ();
+				addButton.Image = ImageService.GetIcon ("md-error").WithSize (IconSize.Small);
+				addButton.Label = GettextCatalog.GetString ("Retry");
+				addButton.Sensitive = true;
+			});
 		}
 
 		void HandleServiceAddedRemoved (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (delegate {
 				addedWidget.Visible = Service.IsAdded && !showDetails;
+				StopButtonAnimation ();
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
 				addButton.Sensitive = !Service.IsAdded;
@@ -180,8 +225,16 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		protected override void Dispose (bool disposing)
 		{
-			if (disposing && Service != null)
-				Service.Added -= HandleServiceAddedRemoved;
+			if (disposing)
+				StopButtonAnimation ();
+
+			if (service != null) {
+				service.Added -= HandleServiceAddedRemoved;
+				service.Adding -= HandleServiceAdding;
+				service.AddingFailed -= HandleServiceAddingFailed;
+				service.Removed -= HandleServiceAddedRemoved;
+				service = null;
+			}
 			base.Dispose (disposing);
 		}
 	}

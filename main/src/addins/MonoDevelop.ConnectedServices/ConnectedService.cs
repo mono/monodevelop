@@ -96,6 +96,11 @@ namespace MonoDevelop.ConnectedServices
 		public event EventHandler<EventArgs> Adding;
 
 		/// <summary>
+		/// Occurs when adding the service to the project has failed;
+		/// </summary>
+		public event EventHandler<EventArgs> AddingFailed;
+
+		/// <summary>
 		/// Occurs when service is added to the project;
 		/// </summary>
 		public event EventHandler<EventArgs> Added;
@@ -106,6 +111,11 @@ namespace MonoDevelop.ConnectedServices
 		public event EventHandler<EventArgs> Removing;
 
 		/// <summary>
+		/// Occurs when removing the service from the project has failed;
+		/// </summary>
+		public event EventHandler<EventArgs> RemovingFailed;
+
+		/// <summary>
 		/// Occurs when service has been removed from the project;
 		/// </summary>
 		public event EventHandler<EventArgs> Removed;
@@ -113,12 +123,12 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the service to the project
 		/// </summary>
-		public async Task AddToProject ()
+		public async Task<bool> AddToProject ()
 		{
 			try {
 				if (this.IsAdded) {
 					LoggingService.LogWarning ("Skipping adding of the service, it has already been added");
-					return;
+					return true;
 				}
 				this.NotifyServiceAdding ();
 				// TODO: add ProgressMonitor support and cancellation
@@ -128,21 +138,23 @@ namespace MonoDevelop.ConnectedServices
 				this.StoreAddedState ();
 				this.NotifyServiceAdded ();
 
-				// TODO: not here, but somewhere, we need to refresh the sln pad.
+				return true;
 
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
+				NotifyServiceAddingFailed ();
+				return false;
 			}
 		}
 
 		/// <summary>
 		/// Removes the service from the project
 		/// </summary>
-		public async Task RemoveFromProject () {
+		public async Task<bool> RemoveFromProject () {
 			try {
 				if (!this.IsAdded) {
 					LoggingService.LogWarning ("Skipping removing of the service, it is not added to the project");
-					return;
+					return true;
 				}
 
 				// TODO: add ProgressMonitor support and cancellation
@@ -153,10 +165,12 @@ namespace MonoDevelop.ConnectedServices
 				this.RemoveAddedState ();
 				this.NotifyServiceRemoved ();
 
-				// TODO: not here, but somewhere, we need to refresh the sln pad.
+				return true;
 
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
+				NotifyServiceRemovingFailed ();
+				return false;
 			}
 		}
 
@@ -305,6 +319,17 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Notifies subscribers that adding the service to the project has failed
+		/// </summary>
+		void NotifyServiceAddingFailed ()
+		{
+			var handler = this.AddingFailed;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		/// <summary>
 		/// Notifies subscribers that the service has been added to the project
 		/// </summary>
 		void NotifyServiceAdded()
@@ -321,6 +346,17 @@ namespace MonoDevelop.ConnectedServices
 		void NotifyServiceRemoving ()
 		{
 			var handler = this.Removing;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		/// <summary>
+		/// Notifies subscribers that removing the service from the project has failed
+		/// </summary>
+		void NotifyServiceRemovingFailed ()
+		{
+			var handler = this.RemovingFailed;
 			if (handler != null) {
 				handler (this, new EventArgs ());
 			}

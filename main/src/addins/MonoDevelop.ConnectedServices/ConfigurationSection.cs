@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -50,9 +51,19 @@ namespace MonoDevelop.ConnectedServices
 		public event EventHandler<EventArgs> Added;
 
 		/// <summary>
+		/// Occurs when adding the section to the project has failed
+		/// </summary>
+		public event EventHandler<EventArgs> AddingFailed;
+
+		/// <summary>
 		/// Occurs before the section is added to the project
 		/// </summary>
 		public event EventHandler<EventArgs> Adding;
+
+		/// <summary>
+		/// Occurs when the section has been removed from the project
+		/// </summary>
+		public event EventHandler<EventArgs> Removed;
 
 		/// <summary>
 		/// Gets the widget to display to the user
@@ -65,9 +76,16 @@ namespace MonoDevelop.ConnectedServices
 		public async Task<bool> AddToProject (CancellationToken token)
 		{
 			this.NotifyAddingToProject ();
-			var result = await this.OnAddToProject (token).ConfigureAwait (false);
+			var result = false;
+			try {
+				result = await this.OnAddToProject (token).ConfigureAwait (false);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Could not add configuration", ex);
+			}
 			if (result)
 				this.NotifyAddedToProject ();
+			else
+				this.NotifyAddingToProjectFailed ();
 			return result;
 		}
 
@@ -87,9 +105,36 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
+		/// Invokes the AddingFailed event on the main thread
+		/// </summary>
+		protected void NotifyAddingToProjectFailed ()
+		{
+			var handler = this.AddingFailed;
+			if (handler != null) {
+				Xwt.Application.Invoke (() => {
+					handler (this, new EventArgs ());
+				});
+			}
+		}
+
+		/// <summary>
 		/// Invokes the Added event on the main thread
 		/// </summary>
 		protected void NotifyAddedToProject ()
+		{
+			var handler = this.Added;
+			if (handler != null) {
+				// make sure this gets called on the main thread in case we have async calls for adding a nuget
+				Xwt.Application.Invoke (() => {
+					handler (this, new EventArgs ());
+				});
+			}
+		}
+
+		/// <summary>
+		/// Invokes the Removed event on the main thread
+		/// </summary>
+		protected void NotifyRemovedFromProject ()
 		{
 			var handler = this.Added;
 			if (handler != null) {

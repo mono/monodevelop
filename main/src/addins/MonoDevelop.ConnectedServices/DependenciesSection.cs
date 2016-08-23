@@ -18,6 +18,14 @@ namespace MonoDevelop.ConnectedServices
 			this.DisplayName = GettextCatalog.GetString ("Dependencies");
 			// dependencies are added when the service is added, therefore it's not really optional
 			this.CanBeAdded = false;
+
+			Service.Removed += HandleServiceRemoved;
+		}
+
+		void HandleServiceRemoved (object sender, EventArgs e)
+		{
+			if (!IsAdded)
+				NotifyRemovedFromProject ();
 		}
 
 		/// <summary>
@@ -51,9 +59,19 @@ namespace MonoDevelop.ConnectedServices
 		public event EventHandler<EventArgs> Added;
 
 		/// <summary>
+		/// Occurs when adding dependencies to the project has failed
+		/// </summary>
+		public event EventHandler<EventArgs> AddingFailed;
+
+		/// <summary>
 		/// Occurs before the section is added to the project
 		/// </summary>
 		public event EventHandler<EventArgs> Adding;
+
+		/// <summary>
+		/// Occurs when the section has been removed from the project
+		/// </summary>
+		public event EventHandler<EventArgs> Removed;
 
 		/// <summary>
 		/// Gets the widget to display to the user
@@ -77,7 +95,8 @@ namespace MonoDevelop.ConnectedServices
 					await dependency.AddToProject (token).ConfigureAwait (false);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not add dependency", ex);
-					throw;
+					NotifyAddingToProjectFailed ();
+					return false;
 				}
 			}
 			NotifyAddedToProject ();
@@ -96,11 +115,33 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Invokes the Added event on the main thread
+		/// Notifies subscribers that adding the dependencies to the project has failed
+		/// </summary>
+		void NotifyAddingToProjectFailed ()
+		{
+			var handler = this.AddingFailed;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		/// <summary>
+		/// Notifies subscribers that all dependencies have been added to the project
 		/// </summary>
 		void NotifyAddedToProject ()
 		{
 			var handler = this.Added;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		/// <summary>
+		/// Notifies subscribers that a dependency has been removed from the project
+		/// </summary>
+		void NotifyRemovedFromProject ()
+		{
+			var handler = this.Removed;
 			if (handler != null) {
 				handler (this, new EventArgs ());
 			}

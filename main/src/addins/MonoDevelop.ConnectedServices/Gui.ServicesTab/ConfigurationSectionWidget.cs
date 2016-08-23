@@ -98,13 +98,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			UpdateStatus ();
 			Section.Adding += HandleSectionAdding;
+			Section.AddingFailed += HandleSectionAddingFailed;
 			Section.Added += HandleSectionAdded;
+			Section.Removed += HandleSectionRemoved;
 		}
 
 		void UpdateStatus ()
 		{
 			if (Section.IsAdded) {
-				if (Section is DependenciesSection)
+				if (Section == Section.Service.DependenciesSection)
 					statusLabel.Text = GettextCatalog.GetString ("Installed");
 				else
 					statusLabel.Text = GettextCatalog.GetString ("Configured");
@@ -146,7 +148,17 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			});
 		}
 
+		void HandleSectionAddingFailed (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => UpdateStatus ());
+		}
+
 		void HandleSectionAdded (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => UpdateStatus ());
+		}
+
+		void HandleSectionRemoved (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (() => UpdateStatus ());
 		}
