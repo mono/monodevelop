@@ -24,9 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
@@ -38,18 +41,38 @@ namespace MonoDevelop.Packaging
 		public NuGetFileDescriptor (ProjectFile file)
 		{
 			this.file = file;
-			target = file.Metadata.GetValue ("TargetPath");
+
+			target = GetTargetDirectory (file);
+		}
+
+		static string GetTargetDirectory (ProjectFile file)
+		{
+			string logicalName = file.ResourceId;
+			if (!string.IsNullOrEmpty (logicalName))
+				return GetDirectoryName (logicalName);
+
+			string link = file.Metadata.GetValue ("Link");
+			if (!string.IsNullOrEmpty (link))
+				return GetDirectoryName (link);
+
+			return GetDirectoryName (file.Include);
+		}
+
+		static string GetDirectoryName (string path)
+		{
+			try {
+				path = MSBuildProjectService.FromMSBuildPath (null, path);
+				return Path.GetDirectoryName (path);
+			} catch (Exception) {
+				return string.Empty;
+			}
 		}
 
 		[LocalizedCategory ("NuGet Package")]
 		[LocalizedDisplayName ("Target")]
-		[LocalizedDescription ("This is the directory where the file will be stored in the NuGet package.")]
+		[LocalizedDescription ("This is the directory where the file will be stored in the NuGet package. The file's directory relative to the project is used by default.")]
 		public string Target {
 			get { return target; }
-			set {
-				file.Metadata.SetValue ("TargetPath", value);
-				target = value;
-			}
 		}
 	}
 }
