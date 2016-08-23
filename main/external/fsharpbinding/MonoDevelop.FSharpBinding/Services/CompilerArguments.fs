@@ -230,18 +230,11 @@ module CompilerArguments =
             else
                 Seq.empty
 
-        let refs =
+        let projectReferences =
             project.References
             |> Seq.collect Project.getAssemblyLocations
             |> Seq.append portableRefs
             |> Seq.append (getReferencedAssemblies project |> Seq.map (fun a -> a.FilePath |> string))
-
-        let projectReferences =
-            refs
-            // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be
-            // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
-            |> Seq.filter (fun (ref: string) -> not (ref.Contains("FSharp.Core")))
-            |> set
 
         let find assemblyName=
             projectReferences

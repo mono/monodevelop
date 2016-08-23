@@ -121,7 +121,7 @@
     <Compile Include="TestViewContent.fs" />
     <Compile Include="TestHelpers.fs" />
     <Compile Include="DebuggerExpressionResolver.fs" />
-    <Compile Include="Checker.fs" />
+    <Compile Include="CompilerArguments.fs" />
     <Compile Include="IndentationTrackerTests.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
     <Compile Include="SyntaxHighlighting.fs" />
