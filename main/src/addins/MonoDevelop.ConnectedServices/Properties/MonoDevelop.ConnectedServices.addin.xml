@@ -62,7 +62,6 @@
 	<!-- Icons -->
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-connected-service" resource = "service-16.png" size = "Menu"/>
 		<StockIcon stockid = "md-connected-service" resource = "service-24.png" size = "Button" />
 		<StockIcon stockid = "md-connected-service" resource = "service-24.png" size = "LargeToolbar" />
 		
@@ -76,9 +75,11 @@
 		<StockIcon stockid = "md-connected-service-dependency-package-category" icon = "md-open-reference-folder" size = "Menu"/>
 		<StockIcon stockid = "md-connected-service-dependency-code-category" resource = "connected-service-dependency-code-category-16.png" size = "Menu"/>
 
-		<!-- TODO: This could be moved to MonoDevelop.Ide -->
-		<StockIcon stockid = "md-expander-arrow-closed" resource = "md-expander-arrow-closed-16.png" size = "Menu"/>
-		<StockIcon stockid = "md-expander-arrow-expanded" resource = "md-expander-arrow-expanded-16.png" size = "Menu"/>
+		<!-- TODO: This should be moved to MonoDevelop.Ide -->
+		<StockIcon stockid = "md-connected-service" resource = "service-16.png" size = "Menu"/>
+
+		<StockIcon stockid = "md-expander-arrow-closed" resource = "expander-arrow-closed-8.png"/>
+		<StockIcon stockid = "md-expander-arrow-expanded" resource = "expander-arrow-expanded-8.png"/>
 
 		<StockIcon stockid = "md-checkmark" resource = "md-checkmark-16.png" size = "Menu"/>
 		<!-- end TODO -->

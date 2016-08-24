@@ -238,6 +238,54 @@
     <EmbeddedResource Include="icons\service-24~dark~sel%402x.png">
       <LogicalName>service-24~dark~sel@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8.png">
+      <LogicalName>expander-arrow-closed-8.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8%402x.png">
+      <LogicalName>expander-arrow-closed-8@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark.png">
+      <LogicalName>expander-arrow-closed-8~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark%402x.png">
+      <LogicalName>expander-arrow-closed-8~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~sel.png">
+      <LogicalName>expander-arrow-closed-8~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~sel%402x.png">
+      <LogicalName>expander-arrow-closed-8~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark~sel.png">
+      <LogicalName>expander-arrow-closed-8~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-closed-8~dark~sel%402x.png">
+      <LogicalName>expander-arrow-closed-8~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8.png">
+      <LogicalName>expander-arrow-expanded-8.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8%402x.png">
+      <LogicalName>expander-arrow-expanded-8@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark.png">
+      <LogicalName>expander-arrow-expanded-8~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark%402x.png">
+      <LogicalName>expander-arrow-expanded-8~dark@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~sel.png">
+      <LogicalName>expander-arrow-expanded-8~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~sel%402x.png">
+      <LogicalName>expander-arrow-expanded-8~sel@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark~sel.png">
+      <LogicalName>expander-arrow-expanded-8~dark~sel.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark~sel%402x.png">
+      <LogicalName>expander-arrow-expanded-8~dark~sel@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Gui.SolutionPad\" />

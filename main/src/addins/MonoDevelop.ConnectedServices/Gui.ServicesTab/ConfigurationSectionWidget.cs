@@ -14,7 +14,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	public class ConfigurationSectionWidget : FrameBox
 	{
 		static readonly Image arrowRight = ImageService.GetIcon ("arrow-right").WithSize (IconSize.Small);
-		static readonly Image arrowDown = ImageService.GetIcon ("md-expander-arrow-expanded").WithSize (IconSize.Small);
+		static readonly Image arrowDown = ImageService.GetIcon ("md-expander-arrow-expanded").WithSize (8, 8);
 
 		Label titleLabel, statusLabel;
 		HBox statusBox;
@@ -59,7 +59,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.MarginTop = MarginBottom = 10;
 			header.MarginRight = 30;
 
-			expanderImage = new ImageView (ImageService.GetIcon ("md-expander-arrow-closed").WithSize (IconSize.Small));
+			expanderImage = new ImageView (ImageService.GetIcon ("md-expander-arrow-closed").WithSize (8, 8));
 
 			titleLabel = new Label { Markup = this.Section.DisplayName };
 
