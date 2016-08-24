@@ -13,7 +13,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	/// </summary>
 	public class ConfigurationSectionWidget : FrameBox
 	{
-		static readonly Image arrowRight = ImageService.GetIcon ("arrow-right").WithSize (IconSize.Small);
+		static readonly Image arrowRight = ImageService.GetIcon ("md-expander-arrow-closed").WithSize (8, 8);
 		static readonly Image arrowDown = ImageService.GetIcon ("md-expander-arrow-expanded").WithSize (8, 8);
 
 		Label titleLabel, statusLabel;
