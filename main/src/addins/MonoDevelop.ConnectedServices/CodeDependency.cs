@@ -48,7 +48,7 @@ namespace MonoDevelop.ConnectedServices
 		public override Image Icon {
 			get {
 				if (icon == null)
-					icon = ImageService.GetIcon ("md-connected-service-dependency-code");
+					icon = ImageService.GetIcon ("md-code");
 				return icon;
 			}
 		}

@@ -46,7 +46,7 @@ namespace MonoDevelop.ConnectedServices
 		public virtual Image Icon {
 			get {
 				if (icon == null)
-					icon = ImageService.GetIcon ("md-connected-service-dependency");
+					icon = ImageService.GetIcon ("md-dependency");
 				return icon;
 			}
 		}

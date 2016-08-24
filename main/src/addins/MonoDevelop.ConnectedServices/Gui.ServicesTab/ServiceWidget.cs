@@ -34,7 +34,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 				
 				service = value;
-				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-connected-service")).WithSize (IconSize.Medium);
+				image.Image = (service.GalleryIcon ?? ImageService.GetIcon ("md-service")).WithSize (IconSize.Medium);
 				title.Markup = "<b>" + service.DisplayName + "</b>";
 				description.Text = service.Description;
 

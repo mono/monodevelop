@@ -28,7 +28,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			var headerBox = new HBox ();
 
-			headerImage = new ImageView (ImageService.GetIcon ("md-connected-service").WithSize (IconSize.Medium));
+			headerImage = new ImageView (ImageService.GetIcon ("md-service").WithSize (IconSize.Medium));
 			headerImage.ButtonReleased += (sender, e) => {
 				if (ShowingService != null) {
 					var project = (DotNetProject)ShowingService.Project;
@@ -87,7 +87,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			gallery.LoadServices (services);
 
-			headerImage.Image = ImageService.GetIcon ("md-connected-service").WithSize (IconSize.Medium);
+			headerImage.Image = ImageService.GetIcon ("md-service").WithSize (IconSize.Medium);
 			if (!string.IsNullOrEmpty (project?.Name))
 				headerSubtitle.Text = " – " + project.Name;
 			else
