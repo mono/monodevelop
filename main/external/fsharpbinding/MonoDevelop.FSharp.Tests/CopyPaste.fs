@@ -20,7 +20,7 @@ type ``Copy and Paste tests``() =
         let pasteHandler = FSharpTextPasteHandler doc.Editor
         let copyData = pasteHandler.GetCopyData(offset, length)
         let pasteText = pasteHandler.FormatPlainText(pastePosition, copyText, copyData)
-        pasteText |> should equal expected
+        pasteText |> shouldEqualIgnoringLineEndings expected
 
     [<Test>]
     member x.``Plain copy paste``() =
