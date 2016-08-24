@@ -4,12 +4,14 @@ open System.IO
 open NUnit.Framework
 open FsUnit
 open System.Reflection
+open MonoDevelop.Core
 open MonoDevelop.FSharp
 open MonoDevelop.Projects
 
 type TestPlatform =
     | Windows = 0
-    | Mono = 1
+    | OSX = 1
+    | Linux = 2
 
 [<TestFixture>]
 type CompilerArgumentsTests() =
@@ -67,27 +69,34 @@ type CompilerArgumentsTests() =
 
         mscorlibContained |> should equal mscorlibReferenced
 
-    [<TestCase(TestPlatform.Mono,"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/mscorlib.dll")>]
-    [<TestCase(TestPlatform.Mono,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
-    [<TestCase(TestPlatform.Windows,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
+    [<TestCase(TestPlatform.OSX,"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/mscorlib.dll")>]
+    [<TestCase(TestPlatform.Linux,"/usr/lib/mono/4.5/mscorlib.dll")>]
+    [<TestCase(TestPlatform.OSX,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
+    [<TestCase(TestPlatform.Linux,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
+    //[<TestCase(TestPlatform.Windows,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
     member x.``Only mscorlib referenced`` (platform, assemblyName:string) =
         match platform with
-            | TestPlatform.Mono when MonoDevelop.Core.Platform.IsWindows -> ()
-            | TestPlatform.Mono -> x.``Run Only mscorlib referenced`` (assemblyName)
-            | TestPlatform.Windows when not MonoDevelop.Core.Platform.IsWindows -> ()
-            | TestPlatform.Windows -> x.``Run Only mscorlib referenced`` (assemblyName)
-            | _ -> ()
+        | TestPlatform.Linux when Platform.IsLinux ->
+            x.``Run Only mscorlib referenced``(assemblyName)
+        | TestPlatform.OSX when Platform.IsMac ->
+            x.``Run Only mscorlib referenced``(assemblyName)
+        | TestPlatform.Windows when Platform.IsWindows -> 
+            x.``Run Only mscorlib referenced``(assemblyName)
+        | _ -> ()
 
-    [<TestCase(TestPlatform.Windows,"FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCase(TestPlatform.Mono,"FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCase(TestPlatform.Mono, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
-    [<TestCase(TestPlatform.Mono, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
+    //[<TestCase(TestPlatform.Windows,"FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
+    [<TestCase(TestPlatform.OSX,"FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
+    [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>]
+    [<TestCase(TestPlatform.Linux, "/usr/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
+    [<TestCase(TestPlatform.OSX, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
     member x.``Only FSharp.Core referenced`` (platform: TestPlatform, assemblyName:string) =
         match platform with
-        | TestPlatform.Mono when MonoDevelop.Core.Platform.IsWindows -> ()
-        | TestPlatform.Mono -> x.``Run Only FSharp.Core referenced``(assemblyName)
-        | TestPlatform.Windows when not MonoDevelop.Core.Platform.IsWindows -> ()
-        | TestPlatform.Windows -> x.``Run Only FSharp.Core referenced``(assemblyName)
+        | TestPlatform.Linux when Platform.IsLinux ->
+            x.``Run Only FSharp.Core referenced``(assemblyName)
+        | TestPlatform.OSX when Platform.IsMac ->
+            x.``Run Only FSharp.Core referenced``(assemblyName)
+        | TestPlatform.Windows when Platform.IsWindows -> 
+            x.``Run Only FSharp.Core referenced``(assemblyName)
         | _ -> ()
     
     [<Test>]
