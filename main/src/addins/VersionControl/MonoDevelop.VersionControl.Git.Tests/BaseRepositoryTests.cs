@@ -52,7 +52,11 @@ namespace MonoDevelop.VersionControl.Tests
 		protected int CommitNumber = 0;
 
 		[SetUp]
-		public abstract void Setup ();
+		public virtual void Setup ()
+		{
+			var vcs = Repo.VersionControlSystem;
+			Console.WriteLine ("Running tests for {0} (v{1})", vcs.Name, vcs.Version);
+		}
 
 		[TearDown]
 		public virtual void TearDown ()

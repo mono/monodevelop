@@ -56,6 +56,8 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			((GitRepository)Repo).RootRepository.Config.Set ("core.ignorecase", false);
 			ModifyPath (Repo, ref LocalPath);
 			DotDir = ".git";
+
+			base.Setup ();
 		}
 
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()

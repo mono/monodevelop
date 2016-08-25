@@ -80,6 +80,8 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			Checkout (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
 			DotDir = ".svn";
+
+			base.Setup ();
 		}
 
 		[Test]
