@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Core.Serialization
 {
@@ -86,7 +87,17 @@ namespace MonoDevelop.Core.Serialization
 						((DataItem)current).UpdateFromItem ((DataItem)d, removedItems);
 					}
 				} else if (!d.IsDefaultValue && !(d is DataDeletedNode)) {
-					ItemData.Add (d);
+					var dataItem = d as DataItem;
+					if (dataItem != null) {
+						var newDataItem = new DataItem () {
+							Name = d.Name,
+							UniqueNames = dataItem.UniqueNames
+						};
+						newDataItem.UpdateFromItem (dataItem, removedItems);
+						ItemData.Add (newDataItem);
+					} else {
+						ItemData.Add (d);
+					}
 				}
 			}
 		}
