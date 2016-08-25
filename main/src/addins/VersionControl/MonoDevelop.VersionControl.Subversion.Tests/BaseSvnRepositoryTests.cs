@@ -90,6 +90,14 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		{
 		}
 
+		[Test]
+		public override void LogIsProper ()
+		{
+			if (!Platform.IsWindows)
+				Assert.Inconclusive ("Linux/Mac Svn seems to hiccup on symlinks.");
+			base.LogIsProper ();
+		}
+
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
 		{
 			return Is.InstanceOf<SubversionRepository> ();

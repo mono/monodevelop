@@ -273,11 +273,8 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.GetHistory.
-		public void LogIsProper ()
+		public virtual void LogIsProper ()
 		{
-			if (!Platform.IsWindows)
-				Assert.Ignore ("Linux/Mac Svn seems to hiccup on symlinks.");
-
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
 			AddFile ("testfile3", null, true, true);
