@@ -6,16 +6,18 @@
 	-->
 	<Choose>
 		<When Condition="'$(Configuration)'==''">
-			<When Condition="'$(OS)'!='Unix'">
-				<PropertyGroup>
-					<Configuration>DebugWin32</Configuration>
-				</PropertyGroup>
-			</When>
-			<When Condition="Exists('/System/Library/Frameworks/CoreFoundation.framework')">
-				<PropertyGroup>
-					<Configuration>DebugMac</Configuration>
-				</PropertyGroup>
-			</When>
+			<Choose>
+				<When Condition="'$(OS)'!='Unix'">
+					<PropertyGroup>
+						<Configuration>DebugWin32</Configuration>
+					</PropertyGroup>
+				</When>
+				<When Condition="Exists('/System/Library/Frameworks/CoreFoundation.framework')">
+					<PropertyGroup>
+						<Configuration>DebugMac</Configuration>
+					</PropertyGroup>
+				</When>
+			</Choose>
 		</When>
 	</Choose>
 </Project>
