@@ -4,7 +4,7 @@
 	Ensure that when a configuration is not provided, we use a good default
 	for the current OS.
 	-->
-	<Choose Condition>
+	<Choose>
 		<When Condition="'$(Configuration)'==''">
 			<When Condition="'$(OS)'!='Unix'">
 				<PropertyGroup>
