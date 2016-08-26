@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
@@ -94,15 +95,48 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static async Task RemoveServiceFromProject (DotNetProject project, string serviceId)
 		{
-			// TODO: show the remove dialog
-
-
 			var binding = project.GetConnectedServicesBinding ();
 			var service = binding.SupportedServices.FirstOrDefault (x => x.Id == serviceId);
 			if (service != null) {
+				if (!ConfirmServiceRemoval (service))
+					return;
+
+
 				// TODO: progress monitor
 				await service.RemoveFromProject ();
 			}
+		}
+
+		static bool ConfirmServiceRemoval(IConnectedService service)
+		{
+			var msg1 = GettextCatalog.GetString ("Remove {0}", service.DisplayName);
+			var msg2 = GettextCatalog.GetString ("Removing this service will result in the following changes to this project:\n\n{0}\n\nThis action does not remove any added or user code that uses the service. "+
+			                                     "Removing the service will likely prevent the project from compiling until all usage of the service is removed.\n\n"+
+			                                     "Are you sure you want to remove the service?", BuildRemovalInfo(service));
+			
+			if (service.Dependencies.Length == 0) {
+				msg2 = GettextCatalog.GetString ("This action does not remove any added or user code that uses the service. " +
+													 "Removing the service will likely prevent the project from compiling until all usage of the service is removed.\n\n" +
+													 "Are you sure you want to remove the service?", BuildRemovalInfo (service));
+			}
+
+			return MessageService.Confirm (msg1, msg2, AlertButton.Remove);
+		}
+
+		static string BuildRemovalInfo(IConnectedService service)
+		{
+			var sb = new StringBuilder ();
+			for (int i = 0; i < service.Dependencies.Length; i++) {
+				if (i > 0) {
+					sb.AppendLine ();
+				}
+
+				if (service.Dependencies [i].Category == ConnectedServices.PackageDependencyCategory) {
+					sb.Append (GettextCatalog.GetString ("Remove {0} package and dependencies.", service.Dependencies [i].DisplayName));
+				}
+			}
+
+			return sb.ToString ();
 		}
 	}
 }

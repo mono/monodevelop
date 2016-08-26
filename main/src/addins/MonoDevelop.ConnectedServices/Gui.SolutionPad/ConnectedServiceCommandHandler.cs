@@ -1,5 +1,6 @@
 using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 {
@@ -28,10 +29,14 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		}
 
 		[CommandHandler (Commands.RemoveService)]
-		public void RemoveService()
+		public async void RemoveService()
 		{
 			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
-			ConnectedServices.RemoveServiceFromProject (this.Project, service.Id);
+			try {
+				await ConnectedServices.RemoveServiceFromProject (this.Project, service.Id);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error during service removal", ex);
+			}
 		}
 	}
 }
