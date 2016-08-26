@@ -70,6 +70,10 @@ module CompilerArguments =
               else
                   []
 
+          let hasExplicitFSharpCore =
+              let project = reference.Project :?> DotNetProject
+              project.References |> Seq.exists (fun r -> r.Include = "FSharp.Core")
+
           match reference.ReferenceType with
           | ReferenceType.Assembly ->
               tryGetFromHintPath()
@@ -86,7 +90,9 @@ module CompilerArguments =
                       | None -> []
                   else
                       reference.Package.Assemblies
-                      |> Seq.map (fun a -> a.Location)
+                      |> Seq.choose (fun a -> match hasExplicitFSharpCore, a.Name with
+                                              | true, "FSharp.Core" -> None
+                                              | _ -> Some a.Location)
                       |> List.ofSeq
 
           | ReferenceType.Project ->
@@ -218,9 +224,18 @@ module CompilerArguments =
        let wrapf = if shouldWrap then wrapFile else id
 
        let getReferencedAssemblies (project: DotNetProject) =
+            let hasExplicitFSharpCore =
+                project.References |> Seq.exists (fun r -> r.Include = "FSharp.Core")
+
             LoggingService.logDebug "Fetching referenced assemblies for %s " project.Name
             async {
-                return! project.GetReferencedAssemblies configSelector |> Async.AwaitTask
+                let! refs =  project.GetReferencedAssemblies configSelector |> Async.AwaitTask
+
+                return 
+                    if hasExplicitFSharpCore then
+                        refs |> Seq.filter (fun r -> not (r.FilePath.ToString().EndsWith "FSharp.Core.dll"))
+                    else
+                        refs
             } |> Async.RunSynchronously
 
        [
@@ -232,11 +247,20 @@ module CompilerArguments =
             else
                 Seq.empty
 
+        let getAbsolutePath (ref:AssemblyReference) =
+            let assemblyPath = ref.FilePath
+            if assemblyPath.IsAbsolute then
+                assemblyPath |> string
+            else
+                let s = Path.Combine(project.FileName.ParentDirectory.ToString(), assemblyPath.ToString())
+                Path.GetFullPath s
+
         let projectReferences =
             project.References
             |> Seq.collect Project.getAssemblyLocations
             |> Seq.append portableRefs
-            |> Seq.append (getReferencedAssemblies project |> Seq.map (fun a -> a.FilePath |> string))
+            |> Seq.append (getReferencedAssemblies project |> Seq.map getAbsolutePath)
+            |> Seq.distinct
 
         let find assemblyName=
             projectReferences
