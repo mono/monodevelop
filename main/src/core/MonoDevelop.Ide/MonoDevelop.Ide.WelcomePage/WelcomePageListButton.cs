@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		string title, subtitle, actionUrl, fileName;
 		protected Xwt.Drawing.Image icon;
 		protected Xwt.Drawing.Image disabledIcon;
+		protected Xwt.Drawing.Image removeIcon;
 		protected bool mouseOver;
 		protected bool pinned;
 		protected readonly bool hasRemoveButton;
@@ -51,7 +52,6 @@ namespace MonoDevelop.Ide.WelcomePage
 		static protected readonly Xwt.Drawing.Image starNormalHover;
 		static protected readonly Xwt.Drawing.Image starPinned;
 		static protected readonly Xwt.Drawing.Image starPinnedHover;
-		static protected readonly Xwt.Drawing.Image removeImage;
 
 		public event EventHandler PinClicked;
 
@@ -84,7 +84,6 @@ namespace MonoDevelop.Ide.WelcomePage
 			starNormalHover = Xwt.Drawing.Image.FromResource ("unstar-hover-16.png");
 			starPinned = Xwt.Drawing.Image.FromResource ("star-16.png");
 			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-hover-16.png");
-			removeImage = Xwt.Drawing.Image.FromResource ("remove-16.png");
 		}
 
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl) : this(title, subtitle, icon, actionUrl, null)
@@ -98,6 +97,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.subtitle = subtitle;
 			this.icon = icon;
 			this.disabledIcon = icon.WithStyles ("hover");
+			this.removeIcon = Xwt.Drawing.Image.FromResource ("remove-16.png");
 			this.actionUrl = actionUrl;
 			this.fileName = fileName;
 			hasRemoveButton = fileName != null;
@@ -295,9 +295,9 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			if (hasRemoveButton && (mouseOver || !ItemAccessible)) {
 				x = Allocation.Right - InternalPadding;
-				y = Allocation.Y + Allocation.Height / 2 - (int)removeImage.Height;
-				ctx.DrawImage (this, removeImage, x, y);
-				removeRect = new Gdk.Rectangle (x, y, (int)removeImage.Width, (int)removeImage.Height);
+				y = Allocation.Y + Allocation.Height / 2 - (int)removeIcon.Height;
+				ctx.DrawImage (this, removeIcon, x, y);
+				removeRect = new Gdk.Rectangle (x, y, (int)removeIcon.Width, (int)removeIcon.Height);
 			}
 		}
 
