@@ -60,6 +60,7 @@ namespace MonoDevelop.Core.Execution
 		SynchronizationContext syncContext;
 		IExecutionHandler executionHandler;
 		OperationConsole console;
+		ConcurrentExclusiveSchedulerPair schedulerPair = new ConcurrentExclusiveSchedulerPair ();
 
 		public event EventHandler<MessageEventArgs> MessageReceived;
 		public event EventHandler StatusChanged;
@@ -488,15 +489,16 @@ namespace MonoDevelop.Core.Execution
 				}
 
 				lock (pendingMessageTasks) {
-					var t = Task.Run (() => {
+					var t = Task.Factory.StartNew (() => {
 						msg = LoadMessageData (msg);
 						if (type == 0)
 							ProcessResponse (msg);
 						else
 							ProcessRemoteMessage (msg);
-					});
+					}, mainCancelSource.Token, TaskCreationOptions.None, schedulerPair.ExclusiveScheduler);
 					t.ContinueWith (ta => {
-						pendingMessageTasks.Remove (ta);
+						lock(pendingMessageTasks)
+							pendingMessageTasks.Remove (ta);
 					});
 					pendingMessageTasks.Add (t);
 				}
