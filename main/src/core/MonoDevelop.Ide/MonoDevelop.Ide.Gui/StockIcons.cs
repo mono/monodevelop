@@ -138,11 +138,11 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId SolutionFolderOpen = "md-solution-folder-open";
 		public static readonly IconId SolutionFolderClosed = "md-solution-folder-closed";
 		public static readonly IconId Package = "md-package";
-		public static readonly IconId StatusSolutionOperation = "md-status-open";
+		public static readonly IconId StatusSolutionOperation = "md-status-waiting";
 		public static readonly IconId StatusDownload = "md-status-download";
 		public static readonly IconId StatusUpload = "md-status-upload";
 		public static readonly IconId StatusSearch = "md-status-search";
-		public static readonly IconId StatusBuild = "md-status-build";
+		public static readonly IconId StatusBuild = "md-status-waiting";
 		public static readonly IconId StatusSteady = BrandingService.StatusSteadyIconId;
 		public static readonly IconId StatusSuccess = "md-status-success";
 		public static readonly IconId StatusWarning = "md-status-warning";
