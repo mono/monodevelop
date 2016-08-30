@@ -8789,6 +8789,7 @@
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\IGettingStartedProvider.cs" />
     <Compile Include="MonoDevelop.Ide.GettingStarted\GettingStartedProviderBase.cs" />
+    <Compile Include="MonoDevelop.Components\ExtendedHeaderBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
