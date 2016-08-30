@@ -27,8 +27,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 
 			var headerBox = new HBox ();
+			headerBox.Spacing = 0;
 
 			headerImage = new ImageView (ImageService.GetIcon ("md-service").WithSize (IconSize.Medium));
+			headerImage.MarginRight = 6;
 			headerImage.ButtonReleased += (sender, e) => {
 				if (ShowingService != null) {
 					var project = (DotNetProject)ShowingService.Project;
@@ -36,7 +38,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 			};
 			headerTitle = new Label {
-				Markup = "<b>" + GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName) + "</b>"
+				Text = GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName)
 			};
 			headerTitle.Font = headerTitle.Font.WithSize (16);
 			headerSubtitle = new Label {
