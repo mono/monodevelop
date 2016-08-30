@@ -215,6 +215,11 @@ namespace MonoDevelop.CSharp
 					return;
 				foreach (var ws in workspaces)
 					ws.WorkspaceChanged -= Ws_WorkspaceChanged;
+				lock (documentChangedCts) {
+					foreach (var cts in documentChangedCts.Values)
+						cts.Cancel ();
+					documentChangedCts.Clear ();
+				}
 				workspaces = null;
 				documentInfos = null;
 			}

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -19,8 +19,7 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <ConsolePause>true</ConsolePause>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
@@ -34,23 +33,17 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget>
-    </PlatformTarget>
+    <PlatformTarget></PlatformTarget>
     <ConsolePause>false</ConsolePause>
     <Tailcalls>true</Tailcalls>
     <DefineConstants>$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="pango-sharp">
-    </Reference>
-    <Reference Include="atk-sharp">
-    </Reference>
-    <Reference Include="gdk-sharp">
-    </Reference>
-    <Reference Include="gtk-sharp">
-    </Reference>
-    <Reference Include="glib-sharp">
-    </Reference>
+    <Reference Include="pango-sharp"></Reference>
+    <Reference Include="atk-sharp"></Reference>
+    <Reference Include="gdk-sharp"></Reference>
+    <Reference Include="gtk-sharp"></Reference>
+    <Reference Include="glib-sharp"></Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -128,7 +121,7 @@
     <Compile Include="TestViewContent.fs" />
     <Compile Include="TestHelpers.fs" />
     <Compile Include="DebuggerExpressionResolver.fs" />
-    <Compile Include="Checker.fs" />
+    <Compile Include="CompilerArguments.fs" />
     <Compile Include="IndentationTrackerTests.fs" />
     <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
     <Compile Include="SyntaxHighlighting.fs" />
@@ -164,9 +157,25 @@
   <ItemGroup>
     <Compile Include="ParameterHinting.fs" />
     <Compile Include="HighlightUsagesTests.fs" />
+    <Compile Include="CopyPaste.fs" />
     <Compile Include="SelectionTests.fs" />
     <None Include="paket.references" />
     <None Include="Samples\Xamarin.iOS.fsproj" />
+    <None Include="Samples\android\fsandroid.fsproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Samples\android\fsandroidnuget2.sln">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Samples\android\fsandroidnuget2\fsandroidnuget2.fsproj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Samples\android\packages\FSharp.Core.4.0.0.1\lib\portable-net45+monoandroid10+monotouch10+xamarinios10\FSharp.Core.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Samples\android\fsandroidnuget2\MainActivity.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="..\.paket\paket.targets" />
   <ProjectExtensions>

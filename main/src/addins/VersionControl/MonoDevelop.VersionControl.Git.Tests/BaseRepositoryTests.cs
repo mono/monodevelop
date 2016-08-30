@@ -52,7 +52,11 @@ namespace MonoDevelop.VersionControl.Tests
 		protected int CommitNumber = 0;
 
 		[SetUp]
-		public abstract void Setup ();
+		public virtual void Setup ()
+		{
+			var vcs = Repo.VersionControlSystem;
+			Console.WriteLine ("Running tests for {0} (v{1})", vcs.Name, vcs.Version);
+		}
 
 		[TearDown]
 		public virtual void TearDown ()
@@ -269,11 +273,8 @@ namespace MonoDevelop.VersionControl.Tests
 
 		[Test]
 		// Tests Repository.GetHistory.
-		public void LogIsProper ()
+		public virtual void LogIsProper ()
 		{
-			if (!Platform.IsWindows)
-				Assert.Ignore ("Linux/Mac Svn seems to hiccup on symlinks.");
-
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
 			AddFile ("testfile3", null, true, true);

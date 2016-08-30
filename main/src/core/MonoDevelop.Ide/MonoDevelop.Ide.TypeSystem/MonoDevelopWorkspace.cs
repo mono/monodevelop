@@ -551,7 +551,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				};
 
 				foreach (var asm in assemblies) {
-					var metadataReference = MetadataReferenceCache.LoadReference (projectId, typeof (string).Assembly.Location);
+					var metadataReference = MetadataReferenceCache.LoadReference (projectId, asm);
 					result.Add (metadataReference);
 				}
 
@@ -573,10 +573,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (hashSet.Contains (fileName))
 						continue;
 					hashSet.Add (fileName);
-					if (!File.Exists (fileName)) {
-						LoggingService.LogError ("Error while getting referenced Assembly " + fileName + " for project " + netProject.Name + ": File doesn't exist"); 
-						continue;
-					}
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
 					if (metadataReference == null)
 						continue;
@@ -595,10 +591,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					continue;
 				if (TypeSystemService.IsOutputTrackedProject (referencedProject)) {
 					var fileName = referencedProject.GetOutputFileName (configurationSelector);
-					if (!File.Exists (fileName)) {
-						LoggingService.LogError ("Error while getting project Reference (" + referencedProject.Name + ") " + fileName + " for project " + netProject.Name + ": File doesn't exist");
-						continue;
-					}
 					var metadataReference = MetadataReferenceCache.LoadReference (projectId, fileName);
 					if (metadataReference != null)
 						result.Add (metadataReference);
