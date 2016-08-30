@@ -161,11 +161,11 @@ namespace MonoDevelop.Components
 			
 			object nativeWidget;
 			if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.Gtk && (nativeWidget = d?.GetNativeWidget<Gtk.Widget> ()) != null) {
-				return Xwt.Toolkit.CurrentEngine.WrapWidget (nativeWidget);
+				return Xwt.Toolkit.CurrentEngine.WrapWidget (nativeWidget, Xwt.NativeWidgetSizing.DefaultPreferredSize);
 			}
 #if MAC
 			else if (Xwt.Toolkit.CurrentEngine.Type == Xwt.ToolkitType.XamMac && (nativeWidget = d?.GetNativeWidget<NSView> ()) != null) {
-				return Xwt.Toolkit.CurrentEngine.WrapWidget (nativeWidget);
+				return Xwt.Toolkit.CurrentEngine.WrapWidget (nativeWidget, Xwt.NativeWidgetSizing.DefaultPreferredSize);
 			}
 #endif
 			throw new NotSupportedException ();
