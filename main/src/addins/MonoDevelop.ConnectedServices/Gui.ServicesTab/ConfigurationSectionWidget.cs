@@ -33,6 +33,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				if (expanded != value) {
 					if (value) {
 						expanderImage.Image = arrowDown;
+						BackgroundColor = Styles.BaseBackgroundColor;
 					} else {
 						expanderImage.Image = arrowRight;
 					}
@@ -56,12 +57,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			var header = new HBox ();
 			header.Spacing = 7;
 			header.MarginLeft = 7;
-			header.MarginTop = MarginBottom = 10;
 			header.MarginRight = 30;
+			header.MinHeight = 34;
 
 			expanderImage = new ImageView (ImageService.GetIcon ("md-expander-arrow-closed").WithSize (8, 8));
 
-			titleLabel = new Label { Markup = this.Section.DisplayName };
+			titleLabel = new Label { Text = this.Section.DisplayName };
 
 			statusLabel = new Label (GettextCatalog.GetString ("Enabled"));
 			statusLabel.Font = Font.WithSize (12);
@@ -75,12 +76,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusBox.PackStart (statusImage);
 			statusBox.PackStart (statusLabel);
 
-			header.PackStart (expanderImage);
-			header.PackStart (titleLabel);
-			header.PackStart (statusBox);
+			var headerTitle = new HBox ();
+			headerTitle.Spacing = 7;
+			headerTitle.PackStart (expanderImage);
+			headerTitle.PackStart (titleLabel);
+			headerTitle.PackStart (statusBox);
+
+			header.PackStart (headerTitle);
 
 			addBtn = new Button (GettextCatalog.GetString ("Add to the project"));
-
 			header.PackEnd (addBtn);
 			addBtn.Clicked += this.AddBtnClicked;
 
@@ -105,7 +109,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void UpdateStatus ()
 		{
-			if (Section.IsAdded) {
+			if (Section.IsAdded && (Section.CanBeAdded || Section == Section.Service.DependenciesSection)) {
 				if (Section == Section.Service.DependenciesSection)
 					statusLabel.Text = GettextCatalog.GetString ("Installed");
 				else
@@ -174,10 +178,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			base.OnMouseEntered (args);
 			if (!Expanded) {
-				// FIXME: Background bounds calculation is broken in Xwt.FrameBox
-				//        temporaly: using bold text for highlighting
-				//BackgroundColor = Styles.BackgroundColor;
-				titleLabel.Markup = "<b>" + Section.DisplayName + "</b>";
+				BackgroundColor = Styles.BackgroundColor;
 			}
 		}
 
@@ -185,7 +186,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			base.OnMouseExited (args);
 			BackgroundColor = Styles.BaseBackgroundColor;
-			titleLabel.Markup = Section.DisplayName;
 		}
 
 		/// <summary>
