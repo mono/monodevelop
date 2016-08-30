@@ -109,6 +109,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void UpdateStatus ()
 		{
+			if (Section == null) {
+				return;
+			}
+
 			if (Section.IsAdded && (Section.CanBeAdded || Section == Section.Service.DependenciesSection)) {
 				if (Section == Section.Service.DependenciesSection)
 					statusLabel.Text = GettextCatalog.GetString ("Installed");
