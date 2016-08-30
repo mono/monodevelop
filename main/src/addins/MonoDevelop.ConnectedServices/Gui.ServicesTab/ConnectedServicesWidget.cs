@@ -1,4 +1,5 @@
 using System;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -18,52 +19,27 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		 */
 
 		ScrollView scrollContainer;
-		ImageView headerImage;
-		Label headerTitle, headerSubtitle;
+		ExtendedHeaderBox header;
 		ServicesGalleryWidget gallery;
 		ServiceDetailsWidget details;
 
 		public ConnectedServicesWidget ()
 		{
-
-			var headerBox = new HBox ();
-			headerBox.Spacing = 0;
-
-			headerImage = new ImageView (ImageService.GetIcon ("md-service").WithSize (IconSize.Medium));
-			headerImage.MarginRight = 6;
-			headerImage.ButtonReleased += (sender, e) => {
+			header = new ExtendedHeaderBox (GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName));
+			header.Image = ImageService.GetIcon ("md-service");
+			header.BackButtonClicked += (sender, e) => {
 				if (ShowingService != null) {
 					var project = (DotNetProject)ShowingService.Project;
 					ShowGallery (project.GetConnectedServicesBinding ().SupportedServices, project);
 				}
 			};
-			headerTitle = new Label {
-				Text = GettextCatalog.GetString (ConnectedServices.SolutionTreeNodeName)
-			};
-			headerTitle.Font = headerTitle.Font.WithSize (16);
-			headerSubtitle = new Label {
-				TextColor = Styles.SecondaryTextColor
-			};
-			headerSubtitle.Font = headerTitle.Font.WithSize (14);
-
-
-			headerBox.PackStart (headerImage);
-			headerBox.PackStart (headerTitle);
-			headerBox.PackStart (headerSubtitle);
-
-			var headerFrame = new FrameBox {
-				BackgroundColor = Styles.BaseBackgroundColor,
-				BorderColor = Styles.ThinSplitterColor,
-				BorderWidthBottom = 1,
-				Padding = 20,
-				Content = headerBox,
-			};
+			header.BackButtonTooltip = GettextCatalog.GetString ("Back to Service Gallery");
 
 			scrollContainer = new ScrollView ();
 			scrollContainer.BorderVisible = false;
 
 			var container = new VBox ();
-			container.PackStart (headerFrame);
+			container.PackStart (header);
 			container.PackStart (scrollContainer, true, true);
 			Content = container;
 		}
@@ -89,11 +65,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			gallery.LoadServices (services);
 
-			headerImage.Image = ImageService.GetIcon ("md-service").WithSize (IconSize.Medium);
-			if (!string.IsNullOrEmpty (project?.Name))
-				headerSubtitle.Text = " – " + project.Name;
-			else
-				headerSubtitle.Text = String.Empty;
+			header.Image = ImageService.GetIcon ("md-service");
+			header.Subtitle = project?.Name;
+			header.BackButtonVisible = false;
 
 			ShowingService = null;
 			GalleryShown?.Invoke (this, EventArgs.Empty);
@@ -117,8 +91,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			details.LoadService (service);
 
-			headerSubtitle.Text = String.Empty;
-			headerImage.Image = ImageService.GetIcon ("md-navigate-back").WithSize (IconSize.Medium);
+			header.Subtitle = String.Empty;
+			header.BackButtonVisible = true;
 
 			ShowingService = service;
 			ServiceShown?.Invoke (this, new ServiceEventArgs (service));
