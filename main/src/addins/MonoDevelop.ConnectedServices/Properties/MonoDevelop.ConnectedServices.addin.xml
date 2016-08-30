@@ -65,6 +65,10 @@
 		<ConnectedServiceProvider type="MonoDevelop.ConnectedServices.DebugService.TestDebugServiceProvider"/>
 	</Extension>
 
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class class = "MonoDevelop.ConnectedServices.DebugService.TestDebugServiceProjectExtension"/>
+	</Extension>
+
 	<!-- end TestDebugServiceProvider -->
 
 </ExtensionModel>

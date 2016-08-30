@@ -5,6 +5,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using System.Threading;
+using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.ConnectedServices.DebugService
 {
@@ -25,10 +26,19 @@ namespace MonoDevelop.ConnectedServices.DebugService
 		}
 	}
 
-	#if DEBUG
-	sealed class TestDebugService : ConnectedService
+	sealed class TestDebugServiceProjectExtension : DotNetProjectExtension
 	{
-		public TestDebugService (DotNetProject project) : base(project)
+		#if DEBUG
+		[ItemProperty]
+		public string TestDebugServiceProperty { get; set; }
+		#endif
+	}
+
+	#if DEBUG
+	#if USE_CONNECTED_SERVICES_JSON_FILE
+	sealed class TestDebugService : JsonFileConnectedService
+	{
+		public TestDebugService (DotNetProject project) : base (project)
 		{
 			this.Id = "MonoDevelop.ConnectedServices.DebugService.TestDebugService";
 			this.DisplayName = "Test Service";
@@ -51,6 +61,48 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			state.Version = "1.1";
 		}
 	}
+	#else
+
+	sealed class TestDebugService : ConnectedService
+	{
+		public TestDebugService (DotNetProject project) : base(project)
+		{
+			this.Id = "MonoDevelop.ConnectedServices.DebugService.TestDebugService";
+			this.DisplayName = "Test Service";
+			this.Description = "This is a simple service example to show how you might construct your own service implementation.";
+
+			this.Dependencies = new IConnectedServiceDependency [] {
+				new PackageDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8"),
+			};
+
+			this.Sections = new IConfigurationSection [] {
+				new TestDebugConfigurationSection(this),
+			};
+		}
+
+		protected override bool GetIsAddedToProject ()
+		{
+			var ext = this.Project.GetService<TestDebugServiceProjectExtension> ();
+			return !string.IsNullOrEmpty (ext.TestDebugServiceProperty);
+		}
+
+		protected override async Task OnAddToProject ()
+		{
+			var ext = this.Project.GetService<TestDebugServiceProjectExtension> ();
+			ext.TestDebugServiceProperty = "Installed";
+
+			await base.OnAddToProject ().ConfigureAwait (false);
+		}
+
+		protected override async Task OnRemoveFromProject ()
+		{
+			var ext = this.Project.GetService<TestDebugServiceProjectExtension> ();
+			ext.TestDebugServiceProperty = null;
+
+			await base.OnRemoveFromProject ().ConfigureAwait (false);
+		}
+	}
+	#endif
 
 	sealed class TestDebugConfigurationSection : ConfigurationSection
 	{

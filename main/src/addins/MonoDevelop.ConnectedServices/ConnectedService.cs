@@ -1,19 +1,21 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using Newtonsoft.Json;
 
 namespace MonoDevelop.ConnectedServices
 {
 	/// <summary>
-	/// Base class for implementing IConnectedService
+	/// Base class for implementing IConnectedService. It stores state in a .json file that is created in a sub-folder of the project
 	/// </summary>
 	public abstract class ConnectedService : IConnectedService
 	{
+		/// <summary>
+		/// Empty array of IConnectedService
+		/// </summary>
 		public static readonly IConnectedService[] Empty = new IConnectedService[0];
 
 		protected ConnectedService (DotNetProject project)
@@ -62,7 +64,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public bool IsAdded {
 			get {
-				return HasConnectedServiceJsonFile (this.Project, this.Id);
+				return this.GetIsAddedToProject ();
 			}
 		}
 
@@ -125,21 +127,21 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public async Task<bool> AddToProject ()
 		{
-			try {
-				if (this.IsAdded) {
-					LoggingService.LogWarning ("Skipping adding of the service, it has already been added");
-					return true;
-				}
-				this.NotifyServiceAdding ();
-				// TODO: add ProgressMonitor support and cancellation
+			if (this.IsAdded) {
+				LoggingService.LogWarning ("Skipping adding of the service, it has already been added");
+				return true;
+			}
 
+			// TODO: add ProgressMonitor support ? 
+			this.NotifyServiceAdding ();
+
+			try {
 				await this.AddDependencies (CancellationToken.None).ConfigureAwait (false);
 				await this.OnAddToProject ().ConfigureAwait (false);
-				this.StoreAddedState ();
+				await this.StoreAddedState ().ConfigureAwait (false);
+
 				this.NotifyServiceAdded ();
-
 				return true;
-
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
 				NotifyServiceAddingFailed ();
@@ -150,35 +152,61 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Removes the service from the project
 		/// </summary>
-		public async Task<bool> RemoveFromProject () {
+		public async Task<bool> RemoveFromProject () 
+		{
+			if (!this.IsAdded) {
+				LoggingService.LogWarning ("Skipping removing of the service, it is not added to the project");
+				return true;
+			}
+
+			// TODO: add ProgressMonitor support ? 
+
+			this.NotifyServiceRemoving ();
+
+			// try to remove the dependencies first, these may sometimes fail if one of the packages is or has dependencies
+			// that other packages are dependent upon. A common one might be Json.Net for instance
+			// we need to allow for this and continue on afterwards.
+			var dependenciesFailed = false;
 			try {
-				if (!this.IsAdded) {
-					LoggingService.LogWarning ("Skipping removing of the service, it is not added to the project");
-					return true;
-				}
-
-				// TODO: add ProgressMonitor support and cancellation
-
-				this.NotifyServiceRemoving ();
 				await this.RemoveDependencies (CancellationToken.None).ConfigureAwait (false);
+			} catch (Exception ex) {
+				LoggingService.LogError ("An error occurred while removing the service dependencies from the project", ex);
+				dependenciesFailed = true;
+			}
+
+			// right, now remove the service
+			try {
 				await this.OnRemoveFromProject ().ConfigureAwait (false);
-				this.RemoveAddedState ();
+				await this.RemoveAddedState ().ConfigureAwait (false);
 				this.NotifyServiceRemoved ();
 
-				return true;
+				if (dependenciesFailed) {
+					// TODO: notify the user about the dependencies that failed, we might already have this from the package console and that might be enough for now
+				}
 
+				return true;
 			} catch (Exception ex) {
-				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
+				LoggingService.LogError ("An error occurred while removing the service from the project", ex);
 				NotifyServiceRemovingFailed ();
 				return false;
 			}
 		}
 
+		/// <summary>
+		/// Determines if the service has been added to the project.
+		/// </summary>
+		protected virtual bool GetIsAddedToProject()
+		{
+			return false;
+		}
+
+		/// <summary>
+		/// Performs the logic of removing the service from the project. This is called after the dependencies have been removed.
+		/// </summary>
 		protected virtual Task OnRemoveFromProject()
 		{
 			return Task.FromResult (true);
 		}
-
 
 		/// <summary>
 		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
@@ -214,97 +242,19 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Creates a new object for storing state about the service in
+		/// Stores some state that the service has been added to the project.
 		/// </summary>
-		protected virtual ConnectedServiceState CreateStateObject()
+		protected virtual Task StoreAddedState()
 		{
-			return new ConnectedServiceState ();
+			return IdeApp.ProjectOperations.SaveAsync (this.Project);
 		}
 
 		/// <summary>
 		/// Stores some state that the service has been added to the project.
 		/// </summary>
-		protected void StoreAddedState()
+		protected virtual Task RemoveAddedState ()
 		{
-			var state = this.CreateStateObject();
-			this.OnStoreAddedState (state);
-			WriteConnectedServiceJsonFile (this.Project, this.Id, state);
-		}
-
-		/// <summary>
-		/// Stores some state that the service has been added to the project.
-		/// </summary>
-		protected void RemoveAddedState ()
-		{
-			RemoveConnectedServiceJsonFile (this.Project, this.Id);
-		}
-
-		/// <summary>
-		/// Modifies the state object to set any service specific values.
-		/// </summary>
-		/// <remarks>
-		/// The api for this might change, we're introducing a "ProvideId" that appears to have little to do with the Id of 
-		/// the service as well as a Version and GettingStartedUrl that may or may not be relevant at this point. 
-		/// Override this method to store what you need into the state object.
-		/// </remarks>
-		protected virtual void OnStoreAddedState(ConnectedServiceState state)
-		{
-			state.ProviderId = this.Id;
-		}
-
-		/// <summary>
-		/// Writes a ConnectedServices.json file in the connected services folder of the project for the given service, overwriting the file if it exists already
-		/// </summary>
-		internal static void WriteConnectedServiceJsonFile(DotNetProject project, string id, ConnectedServiceState state)
-		{
-			var jsonFilePath = GetConnectedServiceJsonFilePath (project, id, true);
-			var json = JsonConvert.SerializeObject (state, Formatting.Indented);
-
-			if (File.Exists (jsonFilePath)) {
-				File.Delete (jsonFilePath);
-			}
-
-			File.WriteAllText (jsonFilePath, json);
-		}
-
-		/// <summary>
-		/// Removes the ConnectedServices.json file in the connected services folder of the project for the given service
-		/// </summary>
-		internal static void RemoveConnectedServiceJsonFile (DotNetProject project, string id)
-		{
-			var jsonFilePath = GetConnectedServiceJsonFilePath (project, id, false);
-			var jsonFileDir = Path.GetDirectoryName (jsonFilePath);
-
-			if (Directory.Exists (jsonFileDir)) {
-				if (File.Exists (jsonFilePath)) {
-					File.Delete (jsonFilePath);
-				}
-
-				Directory.Delete (jsonFileDir);
-			}
-		}
-
-		/// <summary>
-		/// Gets whether or not a ConnectedService.json file exists for the given projec and service id.
-		/// </summary>
-		internal static bool HasConnectedServiceJsonFile (DotNetProject project, string id)
-		{
-			var jsonFilePath = GetConnectedServiceJsonFilePath (project, id, false);
-			return File.Exists (jsonFilePath);
-		}
-
-		/// <summary>
-		/// Gets the file path for the ConnectedService.json file for the given project and optionally ensures that the folder
-		/// that the file should reside in exists.
-		/// </summary>
-		static string GetConnectedServiceJsonFilePath(DotNetProject project, string id, bool ensureFolderExists)
-		{
-			var dir = project.BaseDirectory.Combine (ConnectedServices.ProjectStateFolderName).Combine (id);
-			if (ensureFolderExists) {
-				Directory.CreateDirectory (dir);
-			}
-
-			return dir.Combine (ConnectedServices.ConnectedServicesJsonFileName);
+			return IdeApp.ProjectOperations.SaveAsync (this.Project);
 		}
 
 		/// <summary>
