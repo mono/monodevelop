@@ -169,8 +169,8 @@ namespace MonoDevelop.ConnectedServices
 			var dependenciesFailed = false;
 			try {
 				await this.RemoveDependencies (CancellationToken.None).ConfigureAwait (false);
-			} catch (Exception ex) {
-				LoggingService.LogError ("An error occurred while removing the service dependencies from the project", ex);
+			} catch (Exception) {
+				LoggingService.LogError ("An error occurred while removing the service dependencies from the project");
 				dependenciesFailed = true;
 			}
 

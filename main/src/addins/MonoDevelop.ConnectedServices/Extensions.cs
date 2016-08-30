@@ -81,6 +81,9 @@ namespace MonoDevelop.ConnectedServices
 
 				LoggingService.LogInfo ("Queued for uninstallation");
 				await task.ConfigureAwait (false);
+			} catch (InvalidOperationException) {
+				// Nuget throws these and logs them, let's not pollute the log anymore than we need to
+				throw;
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Could not queue package for uninstallation", ex);
 				throw;
