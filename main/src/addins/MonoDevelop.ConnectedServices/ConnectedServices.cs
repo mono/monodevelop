@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mono.Addins;
 using MonoDevelop.ConnectedServices.Gui.ServicesTab;
+using MonoDevelop.ConnectedServices.Gui.SolutionPad;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -49,6 +50,9 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		internal const string ConnectedServicesJsonFileName = "ConnectedService.json";
 
+		/// <summary>
+		/// The name of the Getting Started section that is displayed to the user
+		/// </summary>
 		internal const string GettingStartedSectionDisplayName = "Getting Started";
 
 		/// <summary>
@@ -100,13 +104,60 @@ namespace MonoDevelop.ConnectedServices
 			if (service != null) {
 				if (! (await ConfirmServiceRemoval (service).ConfigureAwait (false)))
 					return;
-
+				
+				EnsureServiceDetailTabIsClosed (project, serviceId);
 
 				// TODO: progress monitor
 				await service.RemoveFromProject ();
 			}
 		}
 
+		/// <summary>
+		/// Looks for open documents that are showing the detail for the service that is being removed and updates the content to show the gallery instead
+		/// </summary>
+		static void EnsureServiceDetailTabIsClosed (DotNetProject project, string serviceId)
+		{
+			Ide.Gui.Document view = null;
+			var servicesView = LocateServiceView(project, out view);
+			if (servicesView != null) {
+				var docObject = view.GetDocumentObject ();
+				var serviceNode = docObject as ConnectedServiceNode;
+				if (serviceNode != null && serviceNode.Id == serviceId) {
+					servicesView.UpdateContent (null);
+					view.Window.SelectWindow ();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Searches for open documents and locates the ConnectedServicesViewContent for the given project
+		/// </summary>
+		internal static ConnectedServicesViewContent LocateServiceView(DotNetProject project)
+		{
+			Ide.Gui.Document view = null;
+			return LocateServiceView (project, out view);
+		}
+
+		/// <summary>
+		/// Searches for open documents and locates the ConnectedServicesViewContent for the given project
+		/// </summary>
+		internal static ConnectedServicesViewContent LocateServiceView (DotNetProject project, out Ide.Gui.Document documentView)
+		{
+			documentView = null;
+			foreach (var view in IdeApp.Workbench.Documents) {
+				var servicesView = view.PrimaryView.GetContent<ConnectedServicesViewContent> ();
+				if (servicesView != null && servicesView.Project == project) {
+					documentView = view;
+					return servicesView;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Confirms with the user about removing the specified service
+		/// </summary>
 		static Task<bool> ConfirmServiceRemoval(IConnectedService service)
 		{
 			var msg1 = GettextCatalog.GetString ("Remove {0}", service.DisplayName);
@@ -127,6 +178,10 @@ namespace MonoDevelop.ConnectedServices
 			return result.Task;
 		}
 
+		/// <summary>
+		/// Builds up the text describing what will happen when the service is removed. This just lists
+		/// package dependencies
+		/// </summary>
 		static string BuildRemovalInfo(IConnectedService service)
 		{
 			var sb = new StringBuilder ();

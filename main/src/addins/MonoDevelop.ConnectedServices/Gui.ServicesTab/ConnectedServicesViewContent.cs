@@ -63,7 +63,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		object currentNodeObject;
 
-		void UpdateCurrentNode ()
+		/// <summary>
+		/// Tells the view content to update it's DocumentObject
+		/// </summary>
+		internal void UpdateCurrentNode ()
 		{
 			var node = ((DotNetProject)this.Project).GetConnectedServicesBinding ()?.ServicesNode;
 			if (node != null && widget.ShowingService != null) {

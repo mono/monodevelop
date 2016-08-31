@@ -227,6 +227,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Added") : GettextCatalog.GetString ("Add");
 				addButton.Sensitive = !Service.IsAdded;
+
+				// if the service has just been added then the document view won't know this and does not have the correct DocumentObject
+				// tell it to update
+				var servicesView = ConnectedServices.LocateServiceView (this.Service.Project);
+				servicesView?.UpdateCurrentNode ();
 			});
 		}
 
