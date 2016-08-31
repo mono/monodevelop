@@ -13,6 +13,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 	class ServiceWidget : FrameBox
 	{
 		HBox addedWidget;
+		HBox removingWidget;
 		ImageView image;
 		Label title, description, platforms;
 		Button addButton;
@@ -36,6 +37,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					service.Adding -= HandleServiceAdding;
 					service.AddingFailed -= HandleServiceAddingFailed;
 					service.Removed -= HandleServiceAddedRemoved;
+					service.Removing -= HandleServiceRemoving;
 				}
 				
 				service = value;
@@ -46,6 +48,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				platforms.Text = service.SupportedPlatforms;
 
 				addedWidget.Visible = service.IsAdded && !showDetails;
+				removingWidget.Visible = false;
 
 				addButton.Visible = showDetails;
 				addButton.Sensitive = !service.IsAdded;
@@ -56,6 +59,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				service.Adding += HandleServiceAdding;
 				service.AddingFailed += HandleServiceAddingFailed;
 				service.Removed += HandleServiceAddedRemoved;
+				service.Removing += HandleServiceRemoving;
 			}
 		}
 
@@ -68,6 +72,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				platforms.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
 				addButton.Visible = showDetails;
 				addedWidget.Visible = service?.IsAdded == true && !showDetails;
+				removingWidget.Visible = false;
 			}
 		}
 
@@ -97,6 +102,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			});
 			addedWidget.Visible = false;
 
+			removingWidget = new HBox ();
+			removingWidget.Spacing = 3;
+			removingWidget.PackStart (new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small)));
+			removingWidget.PackStart (new Label (GettextCatalog.GetString ("Removing")) {
+				Font = Font.WithSize (12),
+				TextColor = Styles.SecondaryTextColor,
+			});
+			removingWidget.Visible = false;
+
 			addButton = new Button (GettextCatalog.GetString ("Add"));
 			addButton.Visible = false;
 			addButton.Clicked += HandleAddButtonClicked;
@@ -109,6 +123,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			header.PackStart (image);
 			header.PackStart (title);
 			header.PackStart (addedWidget);
+			header.PackStart (removingWidget);
 
 			var vbox = new VBox ();
 			vbox.Spacing = 10;
@@ -222,6 +237,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceAddedRemoved (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (delegate {
+				removingWidget.Visible = false;
 				addedWidget.Visible = Service.IsAdded && !showDetails;
 				StopButtonAnimation ();
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
@@ -235,6 +251,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			});
 		}
 
+		void HandleServiceRemoving (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (delegate {
+				var isAdded = this.Service.IsAdded;
+				addedWidget.Visible = false;
+				removingWidget.Visible = true;
+			});
+		}
+
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing)
@@ -245,6 +270,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				service.Adding -= HandleServiceAdding;
 				service.AddingFailed -= HandleServiceAddingFailed;
 				service.Removed -= HandleServiceAddedRemoved;
+				service.Removing -= HandleServiceRemoving;
 				service = null;
 			}
 			base.Dispose (disposing);
