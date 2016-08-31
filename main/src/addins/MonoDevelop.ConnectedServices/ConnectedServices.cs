@@ -98,7 +98,7 @@ namespace MonoDevelop.ConnectedServices
 			var binding = project.GetConnectedServicesBinding ();
 			var service = binding.SupportedServices.FirstOrDefault (x => x.Id == serviceId);
 			if (service != null) {
-				if (!ConfirmServiceRemoval (service))
+				if (! (await ConfirmServiceRemoval (service).ConfigureAwait (false)))
 					return;
 
 
@@ -107,7 +107,7 @@ namespace MonoDevelop.ConnectedServices
 			}
 		}
 
-		static bool ConfirmServiceRemoval(IConnectedService service)
+		static Task<bool> ConfirmServiceRemoval(IConnectedService service)
 		{
 			var msg1 = GettextCatalog.GetString ("Remove {0}", service.DisplayName);
 			var msg2 = GettextCatalog.GetString ("Removing this service will result in the following changes to this project:\n\n{0}\n\nThis action does not remove any added or user code that uses the service. "+
@@ -120,11 +120,11 @@ namespace MonoDevelop.ConnectedServices
 													 "Are you sure you want to remove the service?", BuildRemovalInfo (service));
 			}
 
-			bool result = false;
+			var result = new TaskCompletionSource<bool> ();
 			Xwt.Toolkit.NativeEngine.Invoke (delegate {
-				result = Xwt.MessageDialog.Confirm (msg1, msg2, Xwt.Command.Remove);
+				result.SetResult (Xwt.MessageDialog.Confirm (msg1, msg2, Xwt.Command.Remove));
 			});
-			return result;
+			return result.Task;
 		}
 
 		static string BuildRemovalInfo(IConnectedService service)
