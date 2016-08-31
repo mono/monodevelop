@@ -55,7 +55,6 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			if (HasChildNodes(treeBuilder, dataObject)) {
-				var connectedServices = ((ConnectedServiceFolderNode)dataObject).Project.GetConnectedServicesBinding ();
 				foreach (var node in ((ConnectedServiceFolderNode)dataObject).GetChildNodes ()) {
 					treeBuilder.AddChild (node);
 				}
