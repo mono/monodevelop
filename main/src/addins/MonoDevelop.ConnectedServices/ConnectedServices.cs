@@ -120,19 +120,26 @@ namespace MonoDevelop.ConnectedServices
 													 "Are you sure you want to remove the service?", BuildRemovalInfo (service));
 			}
 
-			return MessageService.Confirm (msg1, msg2, AlertButton.Remove);
+			bool result = false;
+			Xwt.Toolkit.NativeEngine.Invoke (delegate {
+				result = Xwt.MessageDialog.Confirm (msg1, msg2, Xwt.Command.Remove);
+			});
+			return result;
 		}
 
 		static string BuildRemovalInfo(IConnectedService service)
 		{
 			var sb = new StringBuilder ();
-			for (int i = 0; i < service.Dependencies.Length; i++) {
-				if (i > 0) {
-					sb.AppendLine ();
-				}
 
-				if (service.Dependencies [i].Category == ConnectedServices.PackageDependencyCategory) {
-					sb.Append (GettextCatalog.GetString ("Remove {0} package and dependencies.", service.Dependencies [i].DisplayName));
+			if (service.Dependencies.Length > 0) {
+				sb.AppendLine (GettextCatalog.GetString ("Remove packages and dependencies:"));
+				for (int i = 0; i < service.Dependencies.Length; i++) {
+
+					if (service.Dependencies [i].Category == ConnectedServices.PackageDependencyCategory) {
+						if (i > 0)
+							sb.AppendLine ();
+						sb.Append ("   • " + service.Dependencies [i].DisplayName);
+					}
 				}
 			}
 
