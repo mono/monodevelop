@@ -147,25 +147,32 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 
 				if (addProjects.Count > 0) {
-					var cmd = new Command (GettextCatalog.GetString ("Continue"));
-					var confirmation = new Xwt.ConfirmationMessage (service.DisplayName, cmd);
-					confirmation.SecondaryText = GettextCatalog.GetString ("The service will be enabled for the following projects:");
+					var question = new Xwt.QuestionMessage (service.DisplayName);
+					question.SecondaryText = GettextCatalog.GetString ("The service will be enabled for the following projects:");
 
 					foreach (var project in addProjects)
-						confirmation.AddOption (project.Key, project.Value.Name, true);
-					confirmation.ConfirmIsDefault = true;
+						question.AddOption (project.Key, project.Value.Name, true);
+
+					var cmdContinue = new Command (GettextCatalog.GetString ("Continue"));
+					var cmdProjectOnly = new Command (GettextCatalog.GetString ("Skip"));
+					var cmdCancel = new Command (GettextCatalog.GetString ("Cancel"));
+					question.Buttons.Add (cmdContinue);
+					question.Buttons.Add (cmdProjectOnly);
+					question.Buttons.Add (cmdCancel);
+					question.DefaultButton = 0;
 
 					Xwt.Toolkit.NativeEngine.Invoke (delegate {
-						var success = MessageDialog.Confirm (confirmation);
+						var result = MessageDialog.AskQuestion (question);
 
-						if (success) {
+						if (result != cmdCancel) {
 							service.AddToProject ();
-							foreach (var project in addProjects) {
-								if (confirmation.GetOptionValue (project.Key)) {
-									var svc = project.Value.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
-									svc.AddToProject ();
+							if (result == cmdContinue)
+								foreach (var project in addProjects) {
+									if (question.GetOptionValue (project.Key)) {
+										var svc = project.Value.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
+										svc.AddToProject ();
+									}
 								}
-							}
 						}
 					});
 				} else
