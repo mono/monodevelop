@@ -93,7 +93,7 @@ namespace MonoDevelop.Ide.WelcomePage
 						public static string HoverBorderColor { get; internal set; }
 						public const int TitleFontSize = 12;
 						public const int PathFontSize = 10;
-						public const int TextLeftPadding = 38 - 14;
+						public const int TextLeftPadding = 38 + HorizontalRepadding;
 						public const int TitleBottomMargin = 4;
 
 						// TODO: VV: Seems to be unused
