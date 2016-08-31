@@ -26,7 +26,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			enabledList = new VBox ();
 			availableList = new VBox ();
 
-			enabledLabel = new Label (GettextCatalog.GetString ("Enabled")) { Font = Font.WithSize (14) };
+			enabledLabel = new Label (GettextCatalog.GetString ("Added")) { Font = Font.WithSize (14) };
 			availableLabel = new Label (GettextCatalog.GetString ("Available")) { Font = Font.WithSize (14) };
 
 			enabledLabel.TextColor = availableLabel.TextColor = Styles.SecondaryTextColor;

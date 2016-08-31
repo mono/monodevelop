@@ -50,7 +50,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addButton.Visible = showDetails;
 				addButton.Sensitive = !service.IsAdded;
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
-				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
+				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Added") : GettextCatalog.GetString ("Add");
 
 				service.Added += HandleServiceAddedRemoved;
 				service.Adding += HandleServiceAdding;
@@ -91,13 +91,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			addedWidget = new HBox ();
 			addedWidget.Spacing = 3;
 			addedWidget.PackStart (new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small)));
-			addedWidget.PackStart (new Label (GettextCatalog.GetString ("Enabled")) {
+			addedWidget.PackStart (new Label (GettextCatalog.GetString ("Added")) {
 				Font = Font.WithSize (12),
 				TextColor = Styles.SecondaryTextColor,
 			});
 			addedWidget.Visible = false;
 
-			addButton = new Button (GettextCatalog.GetString ("Enable"));
+			addButton = new Button (GettextCatalog.GetString ("Add"));
 			addButton.Visible = false;
 			addButton.Clicked += HandleAddButtonClicked;
 
@@ -186,7 +186,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			if (!showDetails)
 				return;
 			Runtime.RunInMainThread (delegate {
-				addButton.Label = GettextCatalog.GetString ("Enabling\u2026");
+				addButton.Label = GettextCatalog.GetString ("Adding\u2026");
 				if (statusIconAnimation == null) {
 					if (animatedStatusIcon != null) {
 						addButton.Image = animatedStatusIcon.FirstFrame;
@@ -225,7 +225,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				addedWidget.Visible = Service.IsAdded && !showDetails;
 				StopButtonAnimation ();
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
-				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Enabled") : GettextCatalog.GetString ("Enable");
+				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Added") : GettextCatalog.GetString ("Add");
 				addButton.Sensitive = !Service.IsAdded;
 			});
 		}
