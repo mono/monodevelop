@@ -147,8 +147,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 
 				if (addProjects.Count > 0) {
-					var question = new Xwt.QuestionMessage (service.DisplayName);
-					question.SecondaryText = GettextCatalog.GetString ("The service will be enabled for the following projects:");
+					var question = new Xwt.QuestionMessage (GettextCatalog.GetString ("Add {0} to {1}", this.Service.DisplayName, this.Service.Project.Name));
+					question.SecondaryText = GettextCatalog.GetString ("Also add '{0}' to other projects in the solution?", this.Service.DisplayName);
 
 					foreach (var project in addProjects)
 						question.AddOption (project.Key, project.Value.Name, true);
