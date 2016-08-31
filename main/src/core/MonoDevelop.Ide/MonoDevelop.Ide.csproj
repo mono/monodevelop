@@ -3288,6 +3288,18 @@
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-open-solution-16~dark%402x.png">
       <LogicalName>welcome-open-solution-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\missing-item-32.png">
+      <LogicalName>missing-item-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\missing-item-32%402x.png">
+      <LogicalName>missing-item-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\missing-item-32~dark.png">
+      <LogicalName>missing-item-32~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\missing-item-32~dark%402x.png">
+      <LogicalName>missing-item-32~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\link-overlay-16.png">
       <LogicalName>link-overlay-16.png</LogicalName>
     </EmbeddedResource>
