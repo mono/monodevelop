@@ -272,7 +272,12 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			int x = Allocation.X + InternalPadding;
 			int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
+
+			if (!actionUrl.StartsWith ("monodevelop://", StringComparison.CurrentCulture))
+				x += Styles.WelcomeScreen.Pad.Solutions.HorizontalRepadding;
+
 			ctx.DrawImage (this, itemAccessible ? icon : disabledIcon, x, y);
+
 			if (AllowPinning && (mouseOver || pinned)) {
 				Xwt.Drawing.Image star;
 				if (pinned) {
@@ -294,8 +299,8 @@ namespace MonoDevelop.Ide.WelcomePage
 			}
 
 			if (hasRemoveButton && (mouseOver || !ItemAccessible)) {
-				x = Allocation.Right - InternalPadding;
-				y = Allocation.Y + Allocation.Height / 2 - (int)removeIcon.Height;
+				x = Allocation.Right - InternalPadding - 2;
+				y = Allocation.Y + (int)(Allocation.Height / 2) - (int)(removeIcon.Height / 2);
 				ctx.DrawImage (this, removeIcon, x, y);
 				removeRect = new Gdk.Rectangle (x, y, (int)removeIcon.Width, (int)removeIcon.Height);
 			}
