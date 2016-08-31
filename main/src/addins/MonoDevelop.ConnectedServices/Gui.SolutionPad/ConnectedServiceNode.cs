@@ -1,4 +1,5 @@
 using System;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 {
@@ -7,8 +8,9 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 	/// </summary>
 	sealed class ConnectedServiceNode
 	{
-		public ConnectedServiceNode (string serviceId, string displayName)
+		public ConnectedServiceNode (DotNetProject project, string serviceId, string displayName)
 		{
+			this.Project = project;
 			this.Id = serviceId;
 			this.DisplayName = displayName;
 		}
@@ -22,6 +24,11 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		/// Gets the display name to show as the text of the node
 		/// </summary>
 		public string DisplayName { get; private set; }
+
+		/// <summary>
+		/// Gets the project for this service node
+		/// </summary>
+		public DotNetProject Project { get; private set; }
 
 		/// <summary>
 		/// Occurs when the node requests to be selected.

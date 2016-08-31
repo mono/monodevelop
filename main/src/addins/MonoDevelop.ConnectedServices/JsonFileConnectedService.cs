@@ -109,7 +109,7 @@ namespace MonoDevelop.ConnectedServices
 		/// Gets the file path for the ConnectedService.json file for the given project and optionally ensures that the folder
 		/// that the file should reside in exists.
 		/// </summary>
-		static string GetConnectedServiceJsonFilePath (DotNetProject project, string id, bool ensureFolderExists)
+		internal static string GetConnectedServiceJsonFilePath (DotNetProject project, string id, bool ensureFolderExists)
 		{
 			var dir = project.BaseDirectory.Combine (ConnectedServices.ProjectStateFolderName).Combine (id);
 			if (ensureFolderExists) {
