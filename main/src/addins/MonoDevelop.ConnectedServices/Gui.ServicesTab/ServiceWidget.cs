@@ -17,6 +17,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		Label statusText;
 		ImageView image;
 		Label title, description, platforms;
+		HBox platformWidget;
 		Button addButton;
 		AnimatedIcon animatedButtonIcon, animatedStatusIcon;
 		IDisposable buttonIconAnimation, statusIconAnimation;
@@ -46,7 +47,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				title.Markup = "<b>" + service.DisplayName + "</b>";
 				description.Text = service.Description;
 
-				platforms.Text = service.SupportedPlatforms;
+				platforms.Markup = string.Format ("<span color='{1}'><b>{0}</b></span>", service.SupportedPlatforms, Styles.SecondaryTextColor.ToHexString ());
 
 				statusWidget.Visible = service.IsAdded && !showDetails;
 
@@ -60,6 +61,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				service.AddingFailed += HandleServiceAddingFailed;
 				service.Removed += HandleServiceAddedRemoved;
 				service.Removing += HandleServiceRemoving;
+
+				this.ShowDetails = this.showDetails;
 			}
 		}
 
@@ -69,7 +72,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 			set {
 				showDetails = value;
-				platforms.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
+				platformWidget.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
 				addButton.Visible = showDetails;
 				statusWidget.Visible = service?.IsAdded == true && !showDetails;
 			}
@@ -130,8 +133,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			platforms = new Label ();
 			platforms.TextColor = Styles.SecondaryTextColor;
 
+			platformWidget = new HBox ();
+			platformWidget.PackStart (new Label { Text = GettextCatalog.GetString ("Platforms:"), TextColor = Styles.SecondaryTextColor }, false, (WidgetPlacement)4, (WidgetPlacement)4, -1, -1, 20, -1, -1);
+			platformWidget.PackStart (platforms);
+
 			vbox.PackStart (description);
-			vbox.PackStart (platforms);
+			vbox.PackStart (platformWidget, false, (WidgetPlacement)4, (WidgetPlacement)4, -1, 10, -1, -1, -1);
 
 			var container = new HBox { Spacing = 0 };
 			container.Margin = 30;
