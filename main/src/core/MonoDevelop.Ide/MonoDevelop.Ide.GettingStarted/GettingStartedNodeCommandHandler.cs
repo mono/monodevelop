@@ -13,8 +13,10 @@ namespace MonoDevelop.Ide.GettingStarted
 		public override void ActivateItem ()
 		{
 			base.ActivateItem ();
-			var gettingStartedNode = (GettingStartedNode)CurrentNode.DataItem;
-			GettingStarted.ShowGettingStarted (gettingStartedNode.Project);
+			var gettingStartedNode = CurrentNode.DataItem as GettingStartedNode;
+			if (gettingStartedNode != null) {
+				GettingStarted.ShowGettingStarted (gettingStartedNode.Project);
+			}
 		}
 
 		public override bool CanDeleteItem ()
