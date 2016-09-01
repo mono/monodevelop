@@ -12,13 +12,14 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 {
 	class ServiceWidget : FrameBox
 	{
-		HBox addedWidget;
-		HBox removingWidget;
+		HBox statusWidget;
+		ImageView statusIcon;
+		Label statusText;
 		ImageView image;
 		Label title, description, platforms;
 		Button addButton;
-		AnimatedIcon animatedStatusIcon;
-		IDisposable statusIconAnimation;
+		AnimatedIcon animatedButtonIcon, animatedStatusIcon;
+		IDisposable buttonIconAnimation, statusIconAnimation;
 		bool showDetails = false;
 
 		IConnectedService service;
@@ -47,8 +48,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 				platforms.Text = service.SupportedPlatforms;
 
-				addedWidget.Visible = service.IsAdded && !showDetails;
-				removingWidget.Visible = false;
+				statusWidget.Visible = service.IsAdded && !showDetails;
 
 				addButton.Visible = showDetails;
 				addButton.Sensitive = !service.IsAdded;
@@ -71,8 +71,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				showDetails = value;
 				platforms.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
 				addButton.Visible = showDetails;
-				addedWidget.Visible = service?.IsAdded == true && !showDetails;
-				removingWidget.Visible = false;
+				statusWidget.Visible = service?.IsAdded == true && !showDetails;
 			}
 		}
 
@@ -93,37 +92,31 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			title = new Label ();
 			title.Font = title.Font.WithSize (16);
 
-			addedWidget = new HBox ();
-			addedWidget.Spacing = 3;
-			addedWidget.PackStart (new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small)));
-			addedWidget.PackStart (new Label (GettextCatalog.GetString ("Added")) {
+			statusWidget = new HBox ();
+			statusWidget.Spacing = 3;
+			statusIcon = new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small));
+			statusText = new Label (GettextCatalog.GetString ("Added")) {
 				Font = Font.WithSize (12),
 				TextColor = Styles.SecondaryTextColor,
-			});
-			addedWidget.Visible = false;
-
-			removingWidget = new HBox ();
-			removingWidget.Spacing = 3;
-			removingWidget.PackStart (new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small)));
-			removingWidget.PackStart (new Label (GettextCatalog.GetString ("Removing")) {
-				Font = Font.WithSize (12),
-				TextColor = Styles.SecondaryTextColor,
-			});
-			removingWidget.Visible = false;
+			};
+			statusWidget.PackStart (statusIcon);
+			statusWidget.PackStart (statusText);
+			statusWidget.Visible = false;
 
 			addButton = new Button (GettextCatalog.GetString ("Add"));
 			addButton.Visible = false;
 			addButton.Clicked += HandleAddButtonClicked;
 
-			if (ImageService.IsAnimation ("md-spinner-16", Gtk.IconSize.Menu))
+			if (ImageService.IsAnimation ("md-spinner-16", Gtk.IconSize.Menu)) {
+				animatedButtonIcon = ImageService.GetAnimatedIcon ("md-spinner-16", Gtk.IconSize.Menu);
 				animatedStatusIcon = ImageService.GetAnimatedIcon ("md-spinner-16", Gtk.IconSize.Menu);
+			}
 
 			var header = new HBox ();
 			header.Spacing = 10;
 			header.PackStart (image);
 			header.PackStart (title);
-			header.PackStart (addedWidget);
-			header.PackStart (removingWidget);
+			header.PackStart (statusWidget);
 
 			var vbox = new VBox ();
 			vbox.Spacing = 10;
@@ -197,26 +190,41 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void HandleServiceAdding (object sender, EventArgs e)
 		{
-			// TODO: should adding be visible without details / in the gallery view?
-			if (!showDetails)
-				return;
 			Runtime.RunInMainThread (delegate {
-				addButton.Label = GettextCatalog.GetString ("Adding\u2026");
-				if (statusIconAnimation == null) {
-					if (animatedStatusIcon != null) {
-						addButton.Image = animatedStatusIcon.FirstFrame;
-						statusIconAnimation = animatedStatusIcon.StartAnimation (p => {
-							addButton.Image = p;
-						});
-					} else
-						addButton.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
+				if (!showDetails) {
+					statusText.Text = GettextCatalog.GetString ("Adding\u2026");
+					if (statusIconAnimation == null) {
+						if (animatedStatusIcon != null) {
+							statusIcon.Image = animatedStatusIcon.FirstFrame;
+							buttonIconAnimation = animatedStatusIcon.StartAnimation (p => {
+								statusIcon.Image = p;
+							});
+						} else
+							statusIcon.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
+					}
+					statusWidget.Visible = true;
+				} else {
+					addButton.Label = GettextCatalog.GetString ("Adding\u2026");
+					if (buttonIconAnimation == null) {
+						if (animatedButtonIcon != null) {
+							addButton.Image = animatedButtonIcon.FirstFrame;
+							buttonIconAnimation = animatedButtonIcon.StartAnimation (p => {
+								addButton.Image = p;
+							});
+						} else
+							addButton.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
+					}
+					addButton.Sensitive = false;
 				}
-				addButton.Sensitive = false;
 			});
 		}
 
-		void StopButtonAnimation ()
+		void StopIconAnimations ()
 		{
+			if (buttonIconAnimation != null) {
+				buttonIconAnimation.Dispose ();
+				buttonIconAnimation = null;
+			}
 			if (statusIconAnimation != null) {
 				statusIconAnimation.Dispose ();
 				statusIconAnimation = null;
@@ -226,8 +234,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceAddingFailed (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (delegate {
-				addedWidget.Visible = false;
-				StopButtonAnimation ();
+				statusWidget.Visible = false;
+				statusIcon.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small);
+				StopIconAnimations ();
 				addButton.Image = ImageService.GetIcon ("md-error").WithSize (IconSize.Small);
 				addButton.Label = GettextCatalog.GetString ("Retry");
 				addButton.Sensitive = true;
@@ -237,9 +246,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceAddedRemoved (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (delegate {
-				removingWidget.Visible = false;
-				addedWidget.Visible = Service.IsAdded && !showDetails;
-				StopButtonAnimation ();
+				statusIcon.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small);
+				statusText.Text = GettextCatalog.GetString ("Added");
+				statusWidget.Visible = Service.IsAdded && !showDetails;
+				StopIconAnimations ();
 				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
 				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Added") : GettextCatalog.GetString ("Add");
 				addButton.Sensitive = !Service.IsAdded;
@@ -254,16 +264,26 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceRemoving (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (delegate {
-				var isAdded = this.Service.IsAdded;
-				addedWidget.Visible = false;
-				removingWidget.Visible = true;
+				if (!showDetails) {
+					statusText.Text = GettextCatalog.GetString ("Removing\u2026");
+					if (statusIconAnimation == null) {
+						if (animatedStatusIcon != null) {
+							statusIcon.Image = animatedStatusIcon.FirstFrame;
+							buttonIconAnimation = animatedStatusIcon.StartAnimation (p => {
+								statusIcon.Image = p;
+							});
+						} else
+							statusIcon.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
+					}
+					statusWidget.Visible = true;
+				}
 			});
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing)
-				StopButtonAnimation ();
+				StopIconAnimations ();
 
 			if (service != null) {
 				service.Added -= HandleServiceAddedRemoved;
