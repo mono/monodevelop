@@ -73,6 +73,15 @@ namespace MonoDevelop.PackageManagement
 		Task InstallPackagesAsync (Project project, IEnumerable<PackageManagementPackageReference> packages);
 
 		/// <summary>
+		/// Installs NuGet packages into the selected project using the enabled package sources.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		/// <param name="licensesAccepted">True if NuGet package licenses have already been accepted. If false then the 
+		/// license acceptance dialog will be displayed for any licences that require a license to be accepted.</param>
+		Task InstallPackagesAsync (Project project, IEnumerable<PackageManagementPackageReference> packages, bool licensesAccepted);
+
+		/// <summary>
 		/// Installs NuGet packages into the selected project. If a NuGet package requires a license to be
 		/// accepted then a dialog will be displayed.
 		/// </summary>

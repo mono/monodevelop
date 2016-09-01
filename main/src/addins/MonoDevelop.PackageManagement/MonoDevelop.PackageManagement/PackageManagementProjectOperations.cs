@@ -102,6 +102,22 @@ namespace MonoDevelop.PackageManagement
 			return backgroundActionRunner.RunAsync (progressMessage, actions);
 		}
 
+		/// <summary>
+		/// Installs NuGet packages into the selected project using the enabled package sources.
+		/// </summary>
+		/// <param name="project">Project.</param>
+		/// <param name="packages">Packages.</param>
+		public Task InstallPackagesAsync (Project project, IEnumerable<PackageManagementPackageReference> packages, bool licensesAccepted)
+		{
+			var repositoryProvider = SourceRepositoryProviderFactory.CreateSourceRepositoryProvider ();
+			var repositories = repositoryProvider.GetRepositories ().ToList ();
+
+			var actions = CreateInstallActions (repositories, project, packages, licensesAccepted).ToList ();
+
+			ProgressMonitorStatusMessage progressMessage = GetInstallingStatusMessages (actions);
+			return backgroundActionRunner.RunAsync (progressMessage, actions);
+		}
+
 		void InstallPackages (
 			IEnumerable<SourceRepository> repositories,
 			Project project,
