@@ -1161,6 +1161,11 @@ namespace MonoDevelop.Components
 		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtk_icon_set_render_icon_scaled (IntPtr handle, IntPtr style, int direction, int state, int size, IntPtr widget, IntPtr intPtr, ref double scale);
 
+		public static IntPtr GetData (GLib.Object o, string name)
+		{
+			return g_object_get_data (o.Handle, name);
+		}
+
 		public static bool SetSourceScale (Gtk.IconSource source, double scale)
 		{
 			if (!supportsHiResIcons)
