@@ -67,6 +67,9 @@ namespace MonoDevelop.Components
 			if (!Platform.IsLinux)
 				UpdateGtkTheme ();
 
+			if (Platform.IsMac)
+				Environment.SetEnvironmentVariable ("GTK_MODULES", "atkcocoa");
+
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			// Reset our environment after initialization on Mac
