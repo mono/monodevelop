@@ -37,9 +37,15 @@ namespace MonoDevelop.Ide.WelcomePage
 	{
 		public WelcomePageButtonBar (params WelcomePageBarButton[] buttons)
 		{
+			Accessible.Name = "WelcomePage.ButtonBar";
+
 			Spacing = Styles.WelcomeScreen.Links.LinkSeparation;
 
+			int idx = 1;
 			foreach (var button in buttons) {
+				button.Accessible.Name = string.Format ("WelcomePage.ButtonBar.Button{0}", idx);
+				idx++;
+
 				if (!button.IsVisible)
 					continue;
 				PackStart (button, false, false, 0);

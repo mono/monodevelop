@@ -24,8 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+
 using Gtk;
 
 namespace MonoDevelop.Ide.WelcomePage
@@ -77,8 +80,22 @@ namespace MonoDevelop.Ide.WelcomePage
 			starPinnedHover = Xwt.Drawing.Image.FromResource ("star-hover-16.png");
 		}
 
+		AtkCocoaHelper.ActionDelegate actionHandler;
 		public WelcomePageListButton (string title, string subtitle, Xwt.Drawing.Image icon, string actionUrl)
 		{
+			actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler.PerformPress += HandlePress;
+			actionHandler.PerformShowAlternateUI += HandleShowAlternateUI;
+			actionHandler.PerformShowDefaultUI += HandleShowDefaultUI;
+
+			Accessible.SetActionDelegate (actionHandler);
+			Accessible.Role = Atk.Role.PushButton;
+			Accessible.SetAccessibilityTitle (title);
+
+			if (!actionUrl.StartsWith ("monodevelop://")) {
+				Accessible.Description = string.Format ("Opens {0}", title);
+			}
+
 			VisibleWindow = false;
 			this.title = title;
 			this.subtitle = subtitle;
@@ -94,6 +111,20 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			Gui.Styles.Changed += UpdateStyle;
 			UpdateStyle ();
+
+			UpdateActions ();
+		}
+
+		void UpdateActions ()
+		{
+			List<AtkCocoaHelper.Actions> actions = new List<AtkCocoaHelper.Actions> ();
+			actions.Add (AtkCocoaHelper.Actions.AXPress);
+
+			if (AllowPinning) {
+				actions.Add (AtkCocoaHelper.Actions.AXShowAlternateUI);
+				actions.Add (AtkCocoaHelper.Actions.AXShowDefaultUI);
+			}
+			actionHandler.Actions = actions.ToArray ();
 		}
 
 		void UpdateStyle (object sender = null, EventArgs e = null)
@@ -117,12 +148,31 @@ namespace MonoDevelop.Ide.WelcomePage
 			SmallTitleFontSize = Styles.WelcomeScreen.Pad.Solutions.SolutionTile.PathFontSize;
 		}
 
-		public bool AllowPinning { get; set; }
+		bool allowPinning;
+		public bool AllowPinning {
+			get {
+				return allowPinning;
+			}
+			set {
+				allowPinning = value;
+				UpdateActions ();
+			}
+		}
 
 		public bool Pinned {
 			get { return pinned; }
 			set {
 				pinned = value;
+
+				if (pinned) {
+					Accessible.SetAccessibilityTitle (string.Format ("{0}. This item is pinned", title));
+				} else {
+					Accessible.SetAccessibilityTitle (title);
+				}
+
+				if (AllowPinning && mouseOver) {
+					UpdatePinnedHelp ();
+				}
 				QueueDraw ();
 			}
 		}
@@ -131,6 +181,9 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			GdkWindow.Cursor = hand_cursor;
 			mouseOver = true;
+			if (AllowPinning) {
+				Accessible.SetAccessibilityAlternateUIVisible (true);
+			}
 			QueueDraw ();
 			return base.OnEnterNotifyEvent (evnt);
 		}
@@ -139,6 +192,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		{
 			GdkWindow.Cursor = null;
 			mouseOver = false;
+			Accessible.SetAccessibilityAlternateUIVisible (false);
 			QueueDraw ();
 			return base.OnLeaveNotifyEvent (evnt);
 		}
@@ -158,6 +212,48 @@ namespace MonoDevelop.Ide.WelcomePage
 				}
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void HandlePress (object sender, EventArgs args)
+		{
+			// If alternate UI is shown then a press activates the pin
+			if (AllowPinning && mouseOver) {
+				Pinned = !pinned;
+
+				QueueDraw ();
+				PinClicked?.Invoke (this, EventArgs.Empty);
+			} else {
+				WelcomePageSection.DispatchLink (actionUrl);
+			}
+		}
+
+		void HandleShowAlternateUI (object sender, EventArgs args)
+		{
+			mouseOver = true;
+			Accessible.SetAccessibilityAlternateUIVisible (true);
+			if (!actionUrl.StartsWith ("monodevelop://", StringComparison.Ordinal)) {
+				UpdatePinnedHelp ();
+			}
+			QueueDraw ();
+		}
+
+		void UpdatePinnedHelp ()
+		{
+			if (pinned) {
+				Accessible.Description = string.Format ("Unpin {0}", title);
+			} else {
+				Accessible.Description = string.Format ("Pin {0}", title);
+			}
+		}
+
+		void HandleShowDefaultUI (object sender, EventArgs args)
+		{
+			mouseOver = false;
+			Accessible.SetAccessibilityAlternateUIVisible (false);
+			if (!actionUrl.StartsWith ("monodevelop://", StringComparison.Ordinal)) {
+				Accessible.Description = string.Format ("Open {0}", title);
+			}
+			QueueDraw ();
 		}
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)

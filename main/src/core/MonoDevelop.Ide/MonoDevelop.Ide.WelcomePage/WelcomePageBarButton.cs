@@ -74,6 +74,17 @@ namespace MonoDevelop.Ide.WelcomePage
 
 		public WelcomePageBarButton (string title, string href, string iconResource = null)
 		{
+			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress };
+			actionHandler.PerformPress += HandlePress;
+
+			Accessible.SetActionDelegate (actionHandler);
+			Accessible.Role = Atk.Role.Link;
+
+			Accessible.SetAccessibilityTitle (title);
+			Accessible.SetAccessibilityURL (href);
+			Accessible.Description = "Opens the link in a web browser";
+
 			UpdateStyle ();
 
 			VisibleWindow = false;
@@ -84,10 +95,16 @@ namespace MonoDevelop.Ide.WelcomePage
 				imageNormal = imageHover.WithAlpha (0.7);
 			}
 
+			box.Accessible.SetAccessibilityShouldIgnore (true);
+
 			IconTextSpacing = Styles.WelcomeScreen.Links.IconTextSpacing;
 			image = new Xwt.ImageView ();
 			label = CreateLabel ();
 			imageWidget = image.ToGtkWidget ();
+
+			label.Accessible.SetAccessibilityShouldIgnore (true);
+			imageWidget.Accessible.SetAccessibilityShouldIgnore (true);
+
 			box.PackStart (imageWidget, false, false, 0);
 			if (imageNormal == null)
 				imageWidget.NoShowAll = true;
@@ -166,6 +183,11 @@ namespace MonoDevelop.Ide.WelcomePage
 				return true;
 			}
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void HandlePress (object sender, EventArgs args)
+		{
+			OnClicked ();
 		}
 
 		protected virtual void OnClicked ()
