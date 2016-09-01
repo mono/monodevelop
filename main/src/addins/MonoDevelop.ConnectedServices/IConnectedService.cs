@@ -100,8 +100,9 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the service to the project
 		/// </summary>
+		/// <param name="licensesAccepted">Indicates if the licenses required by the service and it's dependencies have already been accepted or not</param>
 		/// <returns> <c>true</c> if the service has been added successfully; otherwise <c>false</c> </returns>
-		Task<bool> AddToProject ();
+		Task<bool> AddToProject (bool licensesAccepted);
 
 		/// <summary>
 		/// Removes the service from the project

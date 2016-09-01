@@ -180,18 +180,18 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 						var result = MessageDialog.AskQuestion (question);
 
 						if (result != cmdCancel) {
-							service.AddToProject ();
+							service.AddToProject (false);
 							if (result == cmdContinue)
 								foreach (var project in addProjects) {
 									if (question.GetOptionValue (project.Key)) {
 										var svc = project.Value.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
-										svc.AddToProject ();
+										svc.AddToProject (true);
 									}
 								}
 						}
 					});
 				} else
-					service.AddToProject ();
+					service.AddToProject (false);
 			}
 		}
 

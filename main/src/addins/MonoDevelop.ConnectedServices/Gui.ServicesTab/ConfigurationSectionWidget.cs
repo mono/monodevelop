@@ -132,7 +132,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// </summary>
 		protected virtual void OnAddSectionToProject()
 		{
-			this.Section.AddToProject (CancellationToken.None);
+			this.Section.AddToProject (false, CancellationToken.None);
 		}
 
 		/// <summary>

@@ -73,12 +73,12 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Performs the tasks necessary to add the components that this section represents to the project
 		/// </summary>
-		public async Task<bool> AddToProject (CancellationToken token)
+		public async Task<bool> AddToProject (bool licensesAccepted, CancellationToken token)
 		{
 			this.NotifyAddingToProject ();
 			var result = false;
 			try {
-				result = await this.OnAddToProject (token).ConfigureAwait (false);
+				result = await this.OnAddToProject (licensesAccepted, token).ConfigureAwait (false);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Could not add configuration", ex);
 			}
@@ -89,7 +89,7 @@ namespace MonoDevelop.ConnectedServices
 			return result;
 		}
 
-		protected abstract Task<bool> OnAddToProject (CancellationToken token);
+		protected abstract Task<bool> OnAddToProject (bool licensesAccepted, CancellationToken token);
 
 		/// <summary>
 		/// Invokes the Adding event on the main thread

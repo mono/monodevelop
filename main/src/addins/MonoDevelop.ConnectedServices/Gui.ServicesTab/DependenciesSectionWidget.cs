@@ -83,7 +83,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusLabel = new Label ();
 			statusLabel.LinkClicked += (sender, e) => {
 				if (!dependency.IsAdded)
-					dependency.AddToProject (CancellationToken.None);
+					dependency.AddToProject (false, CancellationToken.None);
 				e.SetHandled ();
 			};
 

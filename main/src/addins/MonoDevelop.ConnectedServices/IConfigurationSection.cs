@@ -49,7 +49,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Performs the tasks necessary to add the components that this section represents to the project
 		/// </summary>
-		Task<bool> AddToProject (CancellationToken token);
+		Task<bool> AddToProject (bool licensesAccepted, CancellationToken token);
 
 		/// <summary>
 		/// Occurs before the section is added to the project

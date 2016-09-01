@@ -31,7 +31,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependencies to the project
 		/// </summary>
-		public static async Task<bool> AddPackageDependency (this DotNetProject project, IPackageDependency dependency)
+		public static async Task<bool> AddPackageDependency (this DotNetProject project, IPackageDependency dependency, bool licensesAccepted)
 		{
 			if (project == null)
 				throw new ArgumentNullException (nameof (project));
@@ -47,7 +47,7 @@ namespace MonoDevelop.ConnectedServices
 				var references = new List<PackageManagementPackageReference> ();
 				references.Add (new PackageManagementPackageReference (dependency.PackageId, dependency.PackageVersion));
 
-				var task = PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, references);
+				var task = PackageManagementServices.ProjectOperations.InstallPackagesAsync (project, references, licensesAccepted);
 
 				LoggingService.LogInfo ("Queued for installation");
 				await task.ConfigureAwait (false);
