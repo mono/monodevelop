@@ -77,7 +77,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		protected sealed override async Task<bool> OnAddToProject (bool licensesAccepted, CancellationToken token)
+		protected sealed override async Task<bool> OnAddToProject (CancellationToken token)
 		{
 			int tryCount = 1;
 			bool keepTrying = true;

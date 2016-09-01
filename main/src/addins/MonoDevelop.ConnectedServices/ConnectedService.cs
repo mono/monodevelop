@@ -125,7 +125,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the service to the project
 		/// </summary>
-		public async Task<bool> AddToProject (bool licensesAccepted)
+		public async Task<bool> AddToProject ()
 		{
 			if (this.IsAdded) {
 				LoggingService.LogWarning ("Skipping adding of the service, it has already been added");
@@ -136,8 +136,8 @@ namespace MonoDevelop.ConnectedServices
 			this.NotifyServiceAdding ();
 
 			try {
-				await this.AddDependencies (licensesAccepted, CancellationToken.None).ConfigureAwait (false);
-				await this.OnAddToProject (licensesAccepted).ConfigureAwait (false);
+				await this.AddDependencies (CancellationToken.None).ConfigureAwait (false);
+				await this.OnAddToProject ().ConfigureAwait (false);
 				await this.StoreAddedState ().ConfigureAwait (false);
 
 				this.NotifyServiceAdded ();
@@ -211,7 +211,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
 		/// </summary>
-		protected virtual Task OnAddToProject (bool licensesAccepted)
+		protected virtual Task OnAddToProject ()
 		{
 			return Task.FromResult (true);
 		}
@@ -219,9 +219,9 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependencies to the project
 		/// </summary>
-		protected virtual async Task<bool> AddDependencies(bool licensesAccepted, CancellationToken token)
+		protected virtual async Task<bool> AddDependencies(CancellationToken token)
 		{
-			return await DependenciesSection.AddToProject (licensesAccepted, token);
+			return await DependenciesSection.AddToProject (token);
 		}
 
 		/// <summary>

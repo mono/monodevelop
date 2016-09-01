@@ -22,7 +22,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		protected override async Task<bool> OnAddToProject (bool licensesAccepted, CancellationToken token)
+		protected override async Task<bool> OnAddToProject (CancellationToken token)
 		{
 			if (this.dependencies.Length == 0) {
 				return true;
@@ -32,13 +32,13 @@ namespace MonoDevelop.ConnectedServices
 				case GroupedDependencyKind.All:
 				bool added = true;
 				foreach (var dependency in this.dependencies) {
-					added &= await dependency.AddToProject (licensesAccepted, token).ConfigureAwait (false);
+					added &= await dependency.AddToProject (token).ConfigureAwait (false);
 				}
 				return added;
 
 				case GroupedDependencyKind.Any:
 				foreach (var dependency in this.dependencies) {
-					if (await dependency.AddToProject (licensesAccepted, token).ConfigureAwait (false)) {
+					if (await dependency.AddToProject (token).ConfigureAwait (false)) {
 						return true;
 					}
 				}

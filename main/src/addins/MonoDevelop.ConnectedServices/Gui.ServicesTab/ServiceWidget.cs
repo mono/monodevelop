@@ -197,9 +197,9 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		async void AddSelectedServices(IConnectedService service, List<IConnectedService> others)
 		{
-			await service.AddToProject (false);
+			await service.AddToProject ();
 			foreach (var svc in others) {
-				await svc.AddToProject (true);
+				await svc.AddToProject ();
 			}
 		}
 

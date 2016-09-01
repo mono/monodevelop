@@ -84,7 +84,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the service dependencies to the project
 		/// </summary>
-		public async Task<bool> AddToProject (bool licensesAccepted, CancellationToken token)
+		public async Task<bool> AddToProject (CancellationToken token)
 		{
 			this.NotifyAddingToProject ();
 
@@ -92,7 +92,7 @@ namespace MonoDevelop.ConnectedServices
 			// we'll do them one at a time in case there are interdependencies between them
 			foreach (var dependency in Service.Dependencies) {
 				try {
-					await dependency.AddToProject (licensesAccepted, token).ConfigureAwait (false);
+					await dependency.AddToProject (token).ConfigureAwait (false);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not add dependency", ex);
 					NotifyAddingToProjectFailed ();

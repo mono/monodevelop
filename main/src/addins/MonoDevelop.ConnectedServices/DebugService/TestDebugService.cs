@@ -86,12 +86,12 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			return !string.IsNullOrEmpty (ext.TestDebugServiceProperty);
 		}
 
-		protected override async Task OnAddToProject (bool licensesAccepted)
+		protected override async Task OnAddToProject ()
 		{
 			var ext = this.Project.GetService<TestDebugServiceProjectExtension> ();
 			ext.TestDebugServiceProperty = "Installed";
 
-			await base.OnAddToProject (licensesAccepted).ConfigureAwait (false);
+			await base.OnAddToProject ().ConfigureAwait (false);
 		}
 
 		protected override async Task OnRemoveFromProject ()
@@ -121,7 +121,7 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			return new TestConfigurationWidget ();
 		}
 
-		protected override Task<bool> OnAddToProject (bool licensesAccepted, CancellationToken token)
+		protected override Task<bool> OnAddToProject (CancellationToken token)
 		{
 			added = true;
 			return Task.FromResult (true);

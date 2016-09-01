@@ -59,12 +59,12 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		public async Task<bool> AddToProject (bool licensesAccepted, CancellationToken token)
+		public async Task<bool> AddToProject (CancellationToken token)
 		{
 			Adding?.Invoke (this, EventArgs.Empty);
 			bool result;
 			try {
-				result = await OnAddToProject (licensesAccepted, token).ConfigureAwait (false);
+				result = await OnAddToProject (token).ConfigureAwait (false);
 			} catch {
 				AddingFailed?.Invoke (this, EventArgs.Empty);
 				throw;
@@ -93,7 +93,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
 		/// </summary>
-		protected abstract Task<bool> OnAddToProject (bool licensesAccepted, CancellationToken token);
+		protected abstract Task<bool> OnAddToProject (CancellationToken token);
 
 		/// <summary>
 		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.

@@ -34,9 +34,8 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
-		/// <param name="licensesAccepted">Used to indicate if any licenses that are required by the dependency have already been accepted or not</param>
 		/// <returns> <c>true</c> if the dependency has been added successfully; otherwise <c>false</c> </returns>
-		Task<bool> AddToProject (bool licensesAccepted, CancellationToken token);
+		Task<bool> AddToProject (CancellationToken token);
 
 		/// <summary>
 		/// Removes the dependency from the project
