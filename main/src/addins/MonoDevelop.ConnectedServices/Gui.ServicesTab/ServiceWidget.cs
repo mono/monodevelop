@@ -152,7 +152,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleAddButtonClicked (object sender, EventArgs e)
 		{
 			if (!service.IsAdded) {
-
 				var addProjects = new Dictionary<string, DotNetProject> ();
 
 				foreach (DotNetProject project in service.Project.ParentSolution.GetAllProjects ().Where (p => p is DotNetProject && p != service.Project)) {
@@ -160,6 +159,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					if (svc != null && !svc.IsAdded)
 						addProjects [project.ItemId] = project;
 				}
+
+				var servicesToAdd = new List<IConnectedService> ();
 
 				if (addProjects.Count > 0) {
 					var question = new Xwt.QuestionMessage (GettextCatalog.GetString ("Add {0} to {1}", this.Service.DisplayName, this.Service.Project.Name));
@@ -178,20 +179,27 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 					Xwt.Toolkit.NativeEngine.Invoke (delegate {
 						var result = MessageDialog.AskQuestion (question);
-
 						if (result != cmdCancel) {
-							service.AddToProject (false);
-							if (result == cmdContinue)
+							if (result == cmdContinue) {
 								foreach (var project in addProjects) {
 									if (question.GetOptionValue (project.Key)) {
-										var svc = project.Value.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
-										svc.AddToProject (true);
+										servicesToAdd.Add (project.Value.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id));
 									}
 								}
+							}
 						}
 					});
-				} else
-					service.AddToProject (false);
+				}
+
+				AddSelectedServices (service, servicesToAdd);
+			}
+		}
+
+		async void AddSelectedServices(IConnectedService service, List<IConnectedService> others)
+		{
+			await service.AddToProject (false);
+			foreach (var svc in others) {
+				await svc.AddToProject (true);
 			}
 		}
 
