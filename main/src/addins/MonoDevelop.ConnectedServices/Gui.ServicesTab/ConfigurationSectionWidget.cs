@@ -62,16 +62,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			var header = new HBox ();
 			header.Spacing = 7;
-			header.MarginLeft = 7;
+			header.MarginLeft = 15;
 			header.MarginRight = 30;
 			header.MinHeight = 34;
 
-			expanderImage = new ImageView (ImageService.GetIcon ("md-expander-arrow-closed").WithSize (8, 8));
+			expanderImage = new ImageView (arrowRight);
 
 			titleLabel = new Label { Text = this.Section.DisplayName };
 
 			statusLabel = new Label (GettextCatalog.GetString ("Enabled"));
-			statusLabel.Font = Font.WithSize (12);
 			statusLabel.TextColor = Styles.SecondaryTextColor;
 
 			statusImage = new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small));
@@ -96,9 +95,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			var container = new VBox ();
 			sectionWidget = GetSectionWidget ();
-			sectionWidget.Margin = 30;
-			sectionWidget.MarginTop = 10;
-			sectionWidget.MarginBottom = 10;
+			sectionWidget.MarginLeft = sectionWidget.MarginRight = 30;
+			sectionWidget.MarginBottom = 20;
 			sectionWidget.Visible = false;
 
 			container.PackStart (header);
