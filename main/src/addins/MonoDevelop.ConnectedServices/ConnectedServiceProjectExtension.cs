@@ -14,6 +14,7 @@ namespace MonoDevelop.ConnectedServices
 	sealed class ConnectedServiceProjectExtension : DotNetProjectExtension, IConnectedServicesBinding
 	{
 		IConnectedService[] services;
+		bool initialized;
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServicesProject"/> has any services that support the project.
@@ -30,6 +31,13 @@ namespace MonoDevelop.ConnectedServices
 		/// <value>The services.</value>
 		public IConnectedService [] SupportedServices { 
 			get {
+				if (!initialized) {
+					// HACK: ProjectManagementService may be not initialized during the extension point initialization
+					//       therefore we subscribe to its events when the services are requested for the first time.
+					PackageManagementServices.ProjectOperations.PackageReferenceAdded += HandlePackageReferenceAddedRemoved;
+					PackageManagementServices.ProjectOperations.PackageReferenceRemoved += HandlePackageReferenceAddedRemoved;
+					initialized = true;
+				}
 				return this.services;
 			}
 		}
@@ -76,9 +84,6 @@ namespace MonoDevelop.ConnectedServices
 					service.Added -= HandleServiceAddedRemoved;
 					service.Removed -= HandleServiceAddedRemoved;
 				}
-			} else {
-				PackageManagementServices.ProjectOperations.PackageReferenceAdded += HandlePackageReferenceAddedRemoved;
-				PackageManagementServices.ProjectOperations.PackageReferenceRemoved += HandlePackageReferenceAddedRemoved;
 			}
 			services = ConnectedServices.GetServices (Project);
 			foreach (var service in services) {
@@ -108,13 +113,16 @@ namespace MonoDevelop.ConnectedServices
 
 		public override void Dispose ()
 		{
-			if (services != null)
+			if (initialized) {
 				PackageManagementServices.ProjectOperations.PackageReferenceAdded -= HandlePackageReferenceAddedRemoved;
 				PackageManagementServices.ProjectOperations.PackageReferenceRemoved -= HandlePackageReferenceAddedRemoved;
+			}
+			if (services != null) {
 				foreach (var service in services) {
 					service.Added -= HandleServiceAddedRemoved;
 					service.Removed -= HandleServiceAddedRemoved;
 				}
+			}
 			base.Dispose ();
 		}
 	}
