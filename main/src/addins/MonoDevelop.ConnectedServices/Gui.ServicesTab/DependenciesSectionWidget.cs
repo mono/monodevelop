@@ -82,7 +82,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusIconView = new ImageView ();
 			statusLabel = new Label ();
 			statusLabel.LinkClicked += (sender, e) => {
-				if (!dependency.IsAdded)
+				if (dependency.Status == Status.NotAdded)
 					dependency.AddToProject (CancellationToken.None);
 				e.SetHandled ();
 			};
@@ -125,12 +125,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void Update ()
 		{
 			if (Service.Status == Status.Added) {
-				if (Dependency.IsAdded) {
+				if (Dependency.Status == Status.Added) {
 					nameLabel.TextColor = Styles.BaseForegroundColor;
 					iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small);
 					SetStatusIcon (IconId.Null);
 					statusLabel.Visible = false;
-				} else {
+				} else if (Dependency.Status == Status.NotAdded) {
 					nameLabel.TextColor = Styles.DimTextColor;
 					iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
 					SetStatusIcon ("md-warning");
@@ -139,14 +139,14 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 			} else {
 				double iconAlpha = 0.4;
-				if (Service.Status == Status.Adding && Dependency.IsAdded) {
+				if (Service.Status == Status.Adding && Dependency.Status == Status.Added) {
 					iconAlpha = 1.0;
 					nameLabel.TextColor = Styles.BaseForegroundColor;
 				} else
 					nameLabel.TextColor = Styles.DimTextColor;
 				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (iconAlpha);
 				statusLabel.Visible = false;
-				if (Dependency.IsAdded)
+				if (Dependency.Status == Status.Added)
 					SetStatusIcon ("md-done", iconAlpha);
 				else
 					SetStatusIcon (IconId.Null);
@@ -157,7 +157,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			if (e.IsAdding) {
 				this.HandleDependencyAdding ();
-			} else if (e.WasAdded) {
+			} else if (e.WasAdded || (e.NewStatus == Status.Added && e.OldStatus == Status.Added)) {
+				// we check for WasAdded or a double up of Added states, the double up comes from when the user uses the 
+				// link to restore the package - we get 2 events, the first from the AddToProject and the second from the
+				// event raised from the packagemanagement system
 				this.HandleDependencyAdded ();
 			} else if (e.WasRemoved) {
 				this.HandleDependencyRemoved ();

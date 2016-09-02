@@ -58,10 +58,10 @@ namespace MonoDevelop.ConnectedServices
 
 				switch (this.kind) {
 				case GroupedDependencyKind.All:
-					return this.dependencies.All (x => x.IsAdded);
+					return this.dependencies.All (x => x.Status == Status.Added);
 
 				case GroupedDependencyKind.Any:
-					return this.dependencies.Any (x => x.IsAdded);
+					return this.dependencies.Any (x => x.Status == Status.Added);
 
 				default:
 					throw new NotSupportedException (string.Format ("Unsupported GroupedDependencyKind {0}", this.kind));
@@ -80,7 +80,7 @@ namespace MonoDevelop.ConnectedServices
 
 			var result = true;
 			foreach (var dependency in this.dependencies.Reverse ()) {
-				if (dependency.IsAdded) {
+				if (dependency.Status == Status.Added) {
 					if (!await dependency.RemoveFromProject (token).ConfigureAwait (false)) {
 						result = false;
 					}

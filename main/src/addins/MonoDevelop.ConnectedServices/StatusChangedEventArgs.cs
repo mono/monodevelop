@@ -35,12 +35,12 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets a value indicating if the status change was a result of being added to the project
 		/// </summary>
-		public bool WasAdded { get { return this.NewStatus == Status.Added && this.OldStatus == Status.Adding; }}
+		public bool WasAdded { get { return this.NewStatus == Status.Added && (this.OldStatus == Status.Adding || this.OldStatus == Status.NotAdded); }}
 
 		/// <summary>
 		/// Gets a value indicating if the status change was a result of being added to the project
 		/// </summary>
-		public bool WasRemoved { get { return this.NewStatus == Status.NotAdded && this.OldStatus == Status.Removing; } }
+		public bool WasRemoved { get { return this.NewStatus == Status.NotAdded && (this.OldStatus == Status.Removing || this.OldStatus == Status.Added); } }
 
 		/// <summary>
 		/// Gets a value indicating if the current status is that of being added to the project

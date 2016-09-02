@@ -27,11 +27,6 @@ namespace MonoDevelop.ConnectedServices
 		Image Icon { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServiceDependency"/> is added to the project or not.
-		/// </summary>
-		bool IsAdded { get; }
-
-		/// <summary>
 		/// Gets the current status of the dependency.
 		/// </summary>
 		Status Status { get; }

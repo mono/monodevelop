@@ -88,7 +88,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public bool AreDependenciesInstalled {
 			get {
-				return this.Dependencies.All (x => x.IsAdded);
+				return this.Dependencies.All (x => x.Status == Status.Added);
 			}
 		}
 

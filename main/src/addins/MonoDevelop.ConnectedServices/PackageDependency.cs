@@ -71,9 +71,12 @@ namespace MonoDevelop.ConnectedServices
 			return true;
 		}
 
+		/// <summary>
+		/// Raises the status change event for the new status
+		/// </summary>
 		protected override void OnStatusChange (Status newStatus, Status oldStatus, Exception error = null)
 		{
-			// suppress Added or removed events
+			// suppress Added or removed events that are fired when we use the widget to add the package
 			if ((newStatus == Status.Added && oldStatus == Status.Adding) ||
 			    (newStatus == Status.NotAdded && oldStatus == Status.Removing)) {
 				return;
@@ -82,13 +85,17 @@ namespace MonoDevelop.ConnectedServices
 			base.OnStatusChange (newStatus, oldStatus, error);
 		}
 
+		/// <summary>
+		/// Handles the case when this package has been added or removed to or from the project by the packagemanagemt system externally
+		/// Updates the status of the dependency accordingly
+		/// </summary>
 		internal void HandlePackageStatusChanged ()
 		{
 			if (IsAdded) {
-				base.OnStatusChange (Status.Added, Status.Adding, null);
+				this.ChangeStatus (Status.Added);
 			}
 			else {
-				base.OnStatusChange (Status.NotAdded, Status.Removing, null);
+				this.ChangeStatus (Status.NotAdded);
 			}
 
 			(Service.DependenciesSection as DependenciesSection)?.HandleDependenciesChanged ();

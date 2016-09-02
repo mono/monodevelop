@@ -88,8 +88,7 @@ namespace MonoDevelop.ConnectedServices
 			try {
 				result = await OnAddToProject (token).ConfigureAwait (false);
 
-				// TODO: service status == added and .IsAdded need to make sure that they match
-				this.ChangeStatus (Status.Added);
+				this.ChangeStatus (this.IsAdded ? Status.Added : Status.NotAdded);
 			} catch (Exception ex) {
 				this.ChangeStatus (Status.NotAdded, ex);
 				throw;
@@ -138,7 +137,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Changes the status of the service and notifies subscribers
 		/// </summary>
-		void ChangeStatus(Status newStatus, Exception error = null)
+		protected void ChangeStatus(Status newStatus, Exception error = null)
 		{
 			var oldStatus = this.Status;
 			this.status = newStatus;

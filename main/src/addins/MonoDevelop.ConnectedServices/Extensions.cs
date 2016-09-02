@@ -38,7 +38,7 @@ namespace MonoDevelop.ConnectedServices
 
 			LoggingService.LogInfo ("Adding package dependency '{0}' to project", dependency.DisplayName);
 
-			if (dependency.IsAdded) {
+			if (dependency.Status == Status.Added) {
 				LoggingService.LogInfo ("Skipped, the package dependency is already added to the project");
 				return true;
 			}
@@ -68,7 +68,7 @@ namespace MonoDevelop.ConnectedServices
 
 			LoggingService.LogInfo ("Removing package dependency '{0}' from project", dependency.DisplayName);
 
-			if (!dependency.IsAdded) {
+			if (dependency.Status == Status.NotAdded) {
 				LoggingService.LogInfo ("Skipped, the package dependency is not added to the project");
 				return;
 			}
