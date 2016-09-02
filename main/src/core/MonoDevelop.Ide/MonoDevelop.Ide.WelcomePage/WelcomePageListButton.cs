@@ -33,13 +33,14 @@ namespace MonoDevelop.Ide.WelcomePage
 	public class WelcomePageListButton: EventBox
 	{
 		static Gdk.Cursor hand_cursor = new Gdk.Cursor(Gdk.CursorType.Hand1);
-		string title, subtitle, actionUrl, fileName;
+		string title, subtitle, actionUrl;
 		protected Xwt.Drawing.Image icon;
 		protected Xwt.Drawing.Image disabledIcon;
 		protected Xwt.Drawing.Image removeIcon;
 		protected bool mouseOver;
 		protected bool pinned;
 		protected readonly bool hasRemoveButton;
+		protected readonly string fileName;
 		protected bool itemAccessible;
 		protected Gdk.Rectangle starRect;
 		protected Gdk.Rectangle removeRect;
@@ -96,7 +97,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.title = title;
 			this.subtitle = subtitle;
 			this.icon = icon;
-			this.disabledIcon = icon.WithStyles ("hover");
+			this.disabledIcon = Xwt.Drawing.Image.FromResource ("missing-item-32.png");
 			this.removeIcon = Xwt.Drawing.Image.FromResource ("remove-16.png");
 			this.actionUrl = actionUrl;
 			this.fileName = fileName;
@@ -273,7 +274,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			int x = Allocation.X + InternalPadding;
 			int y = Allocation.Y + (Allocation.Height - (int)icon.Height) / 2;
 
-			if (!actionUrl.StartsWith ("monodevelop://", StringComparison.CurrentCulture))
+			if (fileName != null)
 				x += Styles.WelcomeScreen.Pad.Solutions.HorizontalRepadding;
 
 			ctx.DrawImage (this, itemAccessible ? icon : disabledIcon, x, y);
