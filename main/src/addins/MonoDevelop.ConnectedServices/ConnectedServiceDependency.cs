@@ -66,10 +66,10 @@ namespace MonoDevelop.ConnectedServices
 			try {
 				result = await OnAddToProject (token).ConfigureAwait (false);
 			} catch {
-				AddingFailed?.Invoke (this, EventArgs.Empty);
+				OnAddingFailed ();
 				throw;
 			}
-			Added?.Invoke (this, EventArgs.Empty);
+			OnAdded ();
 			return result;
 		}
 		
@@ -83,22 +83,54 @@ namespace MonoDevelop.ConnectedServices
 			try {
 				result = await OnRemoveFromProject (token).ConfigureAwait (false);
 			} catch {
-				RemovingFailed?.Invoke (this, EventArgs.Empty);
+				OnRemovingFailed ();
 				throw;
 			}
-			Removed?.Invoke (this, EventArgs.Empty);
+			OnRemoved ();
 			return result;
 		}
 
 		/// <summary>
-		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
+		/// Performs the logic of adding the dependency to the project.
 		/// </summary>
 		protected abstract Task<bool> OnAddToProject (CancellationToken token);
 
 		/// <summary>
-		/// Performs the logic of adding the service to the project. This is called after the dependencies have been added.
+		/// Performs the logic of removing the dependency from the project.
 		/// </summary>
 		protected abstract Task<bool> OnRemoveFromProject (CancellationToken token);
+
+		/// <summary>
+		/// Raises the Added event.
+		/// </summary>
+		protected virtual void OnAdded ()
+		{
+			Added?.Invoke (this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Raises the AddingFailed event.
+		/// </summary>
+		protected virtual void OnAddingFailed ()
+		{
+			AddingFailed?.Invoke (this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Raises the Removed event.
+		/// </summary>
+		protected virtual void OnRemoved ()
+		{
+			Removed?.Invoke (this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Raises the RemovingFailed event.
+		/// </summary>
+		protected virtual void OnRemovingFailed ()
+		{
+			RemovingFailed?.Invoke (this, EventArgs.Empty);
+		}
 
 		/// <summary>
 		/// Occurs before the dependency is added to the project

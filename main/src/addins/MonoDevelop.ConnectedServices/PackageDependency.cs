@@ -17,7 +17,6 @@ namespace MonoDevelop.ConnectedServices
 		{
 			this.PackageId = id;
 			this.PackageVersion = version;
-
 		}
 
 		public override Image Icon {
@@ -70,6 +69,25 @@ namespace MonoDevelop.ConnectedServices
 		{
 			await this.Service.Project.RemovePackageDependency (this).ConfigureAwait (false);
 			return true;
+		}
+
+		protected override void OnAdded ()
+		{
+			// suppress the Added event
+		}
+
+		protected override void OnRemoved ()
+		{
+			// suppress the Removed event
+		}
+
+		internal void HandlePackageStatusChanged ()
+		{
+			if (IsAdded)
+				base.OnAdded ();
+			else
+				base.OnRemoved ();
+			(Service.DependenciesSection as DependenciesSection)?.HandleDependenciesChanged ();
 		}
 	}
 }

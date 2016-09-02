@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Xml;
 using MonoDevelop.ConnectedServices.Gui.SolutionPad;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices
@@ -70,11 +71,15 @@ namespace MonoDevelop.ConnectedServices
 
 		void UpdateServices ()
 		{
-			if (services != null) // update might be called several times
+			if (services != null) { // update might be called several times
 				foreach (var service in services) {
 					service.Added -= HandleServiceAddedRemoved;
 					service.Removed -= HandleServiceAddedRemoved;
 				}
+			} else {
+				PackageManagementServices.ProjectOperations.PackageReferenceAdded += HandlePackageReferenceAddedRemoved;
+				PackageManagementServices.ProjectOperations.PackageReferenceRemoved += HandlePackageReferenceAddedRemoved;
+			}
 			services = ConnectedServices.GetServices (Project);
 			foreach (var service in services) {
 				service.Added += HandleServiceAddedRemoved;
@@ -88,9 +93,24 @@ namespace MonoDevelop.ConnectedServices
 				Core.Runtime.RunInMainThread (() => ServicesNode.NotifyServicesChanged ());
 		}
 
+		void HandlePackageReferenceAddedRemoved (object sender, PackageManagementPackageReferenceEventArgs e)
+		{
+			if (services == null || e.Project != Project)
+				return;
+
+			foreach (var service in services) {
+				foreach (var dep in service.Dependencies.Where (d => d is PackageDependency).Cast<PackageDependency> ()) {
+					if (dep.PackageId == e.PackageReference.Id)
+						dep.HandlePackageStatusChanged ();
+				}
+			}
+		}
+
 		public override void Dispose ()
 		{
 			if (services != null)
+				PackageManagementServices.ProjectOperations.PackageReferenceAdded -= HandlePackageReferenceAddedRemoved;
+				PackageManagementServices.ProjectOperations.PackageReferenceRemoved -= HandlePackageReferenceAddedRemoved;
 				foreach (var service in services) {
 					service.Added -= HandleServiceAddedRemoved;
 					service.Removed -= HandleServiceAddedRemoved;

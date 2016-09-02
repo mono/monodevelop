@@ -12,6 +12,9 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	sealed class DependenciesSection: IConfigurationSection
 	{
+		bool isAdded;
+		bool initialized;
+		
 		public DependenciesSection (IConnectedService service)
 		{
 			this.Service = service;
@@ -19,13 +22,14 @@ namespace MonoDevelop.ConnectedServices
 			// dependencies are added when the service is added, therefore it's not really optional
 			this.CanBeAdded = false;
 
+			this.isAdded = this.Service.AreDependenciesInstalled;
+
 			Service.Removed += HandleServiceRemoved;
 		}
 
 		void HandleServiceRemoved (object sender, EventArgs e)
 		{
-			if (!IsAdded)
-				NotifyRemovedFromProject ();
+			IsAdded = this.Service.AreDependenciesInstalled;
 		}
 
 		/// <summary>
@@ -51,7 +55,22 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets a value indicating that whatever changes to the project that can be added by this section have been added.
 		/// </summary>
-		public bool IsAdded { get { return this.Service.AreDependenciesInstalled; } }
+		public bool IsAdded {
+			get {
+				if (!initialized)
+					isAdded = this.Service.AreDependenciesInstalled;
+				return isAdded;
+			}
+			private set {
+				if (isAdded != value) {
+					isAdded = value;
+					if (isAdded)
+						NotifyAddedToProject ();
+					else
+						NotifyRemovedFromProject ();
+				}
+			}
+		}
 
 		/// <summary>
 		/// Occurs when the section is added to the project
@@ -96,11 +115,10 @@ namespace MonoDevelop.ConnectedServices
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not add dependency", ex);
 					NotifyAddingToProjectFailed ();
-					return false;
+					return IsAdded = false;
 				}
 			}
-			NotifyAddedToProject ();
-			return true;
+			return IsAdded = true;
 		}
 
 		/// <summary>
@@ -145,6 +163,11 @@ namespace MonoDevelop.ConnectedServices
 			if (handler != null) {
 				handler (this, new EventArgs ());
 			}
+		}
+
+		internal void HandleDependenciesChanged ()
+		{
+			IsAdded = this.Service.AreDependenciesInstalled;
 		}
 	}
 }
