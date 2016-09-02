@@ -103,7 +103,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			service.StatusChanged += HandleServiceStatusChanged;
 		}
 
-		void SetStatusIcon (IconId stockId)
+		void SetStatusIcon (IconId stockId, double alpha = 1.0)
 		{
 			animatedStatusIcon = null;
 			if (statusIconAnimation != null) {
@@ -116,12 +116,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 			if (ImageService.IsAnimation (stockId, Gtk.IconSize.Menu)) {
 				animatedStatusIcon = ImageService.GetAnimatedIcon (stockId, Gtk.IconSize.Menu);
-				statusIconView.Image = animatedStatusIcon.FirstFrame;
+				statusIconView.Image = animatedStatusIcon.FirstFrame.WithAlpha (alpha);
 				statusIconAnimation = animatedStatusIcon.StartAnimation (p => {
-					statusIconView.Image = p;
+					statusIconView.Image = p.WithAlpha (alpha);
 				});
 			} else
-				statusIconView.Image = ImageService.GetIcon (stockId).WithSize (Xwt.IconSize.Small);
+				statusIconView.Image = ImageService.GetIcon (stockId).WithSize (Xwt.IconSize.Small).WithAlpha (alpha);
 			statusIconView.Visible = true;
 		}
 
@@ -141,12 +141,18 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					statusLabel.Visible = true;
 				}
 			} else {
-				nameLabel.TextColor = Styles.BaseForegroundColor;
-				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small);
-				if (Dependency.IsAdded) {
-					SetStatusIcon ("md-done");
-					statusLabel.Visible = false;
-				}
+				double iconAlpha = 0.4;
+				if (Service.Status == ServiceStatus.Adding && Dependency.IsAdded) {
+					iconAlpha = 1.0;
+					nameLabel.TextColor = Styles.BaseForegroundColor;
+				} else
+					nameLabel.TextColor = Styles.DimTextColor;
+				iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small).WithAlpha (iconAlpha);
+				statusLabel.Visible = false;
+				if (Dependency.IsAdded)
+					SetStatusIcon ("md-done", iconAlpha);
+				else
+					SetStatusIcon (IconId.Null);
 			}
 		}
 
