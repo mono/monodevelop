@@ -121,7 +121,7 @@ namespace MonoDevelop.ConnectedServices
 		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
 			// update the status when the service is removed
-			if (e.NewStatus == Status.NotAdded && e.OldStatus == Status.Removing) {
+			if (e.WasRemoved) {
 				IsAdded = this.Service.AreDependenciesInstalled;
 			}
 		}

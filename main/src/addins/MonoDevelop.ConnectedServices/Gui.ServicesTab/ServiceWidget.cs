@@ -251,8 +251,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
 			UpdateServiceStatus ();
-			if (e.NewStatus == Status.NotAdded && e.OldStatus == Status.Adding) {
-				// adding failed
+			if (e.DidAddingFail) {
 				Runtime.RunInMainThread (delegate {
 					addButton.Image = ImageService.GetIcon ("md-error").WithSize (IconSize.Small);
 					addButton.Label = GettextCatalog.GetString ("Retry");

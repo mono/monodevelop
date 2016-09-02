@@ -92,14 +92,8 @@ namespace MonoDevelop.ConnectedServices
 
 		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
-			switch (e.NewStatus) {
-			case Status.Added:
-			case Status.NotAdded:
-				if (ServicesNode != null) {
-					Core.Runtime.RunInMainThread (() => ServicesNode.NotifyServicesChanged ());
-				}
-
-				break;
+			if ((e.WasAdded || e.WasRemoved) && ServicesNode != null) {
+				Core.Runtime.RunInMainThread (() => ServicesNode.NotifyServicesChanged ());
 			}
 		}
 

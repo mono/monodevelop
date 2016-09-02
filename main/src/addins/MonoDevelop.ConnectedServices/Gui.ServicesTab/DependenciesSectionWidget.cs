@@ -155,13 +155,13 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void HandleDependencyStatusChange (object sender, StatusChangedEventArgs e)
 		{
-			if (e.NewStatus == Status.Adding) {
+			if (e.IsAdding) {
 				this.HandleDependencyAdding ();
-			} else if (e.NewStatus == Status.Added && e.OldStatus == Status.Adding) {
+			} else if (e.WasAdded) {
 				this.HandleDependencyAdded ();
-			} else if (e.NewStatus == Status.NotAdded && e.OldStatus == Status.Removing) {
+			} else if (e.WasRemoved) {
 				this.HandleDependencyRemoved ();
-			} else if (e.NewStatus == Status.NotAdded && e.OldStatus == Status.Adding) {
+			} else if (e.DidAddingFail) {
 				this.HandleDependencyAddingFailed ();
 			}
 		}
