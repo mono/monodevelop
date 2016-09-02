@@ -96,7 +96,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the array of sections to be displayed to the user after the dependencies section.
 		/// </summary>
-		public IConfigurationSection [] Sections { get; protected set; }
+		public ImmutableArray<IConfigurationSection> Sections { get; protected set; }
 
 		/// <summary>
 		/// Occurs when the status of the service has changed.

@@ -107,7 +107,6 @@ namespace MonoDevelop.ConnectedServices
 				
 				EnsureServiceDetailTabIsClosed (project, serviceId);
 
-				// TODO: progress monitor
 				await service.RemoveFromProject ();
 			}
 		}

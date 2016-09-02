@@ -76,9 +76,9 @@ namespace MonoDevelop.ConnectedServices.DebugService
 				new PackageDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8")
 			);
 
-			this.Sections = new IConfigurationSection [] {
-				new TestDebugConfigurationSection(this),
-			};
+			this.Sections = ImmutableArray.Create < IConfigurationSection > (
+				new TestDebugConfigurationSection(this)
+			);
 		}
 
 		protected override bool GetIsAddedToProject ()

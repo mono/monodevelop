@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Components;
@@ -11,7 +12,7 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	public abstract class ConfigurationSection : IConfigurationSection
 	{
-		public static readonly IConfigurationSection [] Empty = new IConfigurationSection [0];
+		public static readonly ImmutableArray<IConfigurationSection> Empty = ImmutableArray.Create<IConfigurationSection> ();
 
 		protected ConfigurationSection (IConnectedService service, string displayName, bool canBeAdded = true)
 		{
