@@ -18,6 +18,8 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static readonly IConnectedService[] Empty = new IConnectedService[0];
 
+		ServiceStatus status = (ServiceStatus)(-1);
+
 		protected ConnectedService (DotNetProject project)
 		{
 			this.Project = project;
@@ -58,6 +60,28 @@ namespace MonoDevelop.ConnectedServices
 		public Xwt.Drawing.Image GalleryIcon { get; protected set; }
 
 		/// <summary>
+		/// Gets the status of the service.
+		/// </summary>
+		/// <value>The status.</value>
+		public ServiceStatus Status {
+			get {
+				if ((int)status == -1)
+					status = IsAdded ? ServiceStatus.Added : ServiceStatus.NotAdded;
+				return status;
+			}
+			private set {
+				// TODO: reflect adding/removing failures
+				var newStatus = value;
+				if (newStatus == ServiceStatus.Added && !IsAdded)
+					newStatus = ServiceStatus.NotAdded;
+				if (status != newStatus) {
+					status = value;
+					StatusChanged?.Invoke (this, EventArgs.Empty);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedService"/> is added to Project or not.
 		/// This is independent of whether or not the dependencies are installed or the service has been configured or not. It does imply that 
 		/// any code scaffolding that can be done has been done.
@@ -91,6 +115,11 @@ namespace MonoDevelop.ConnectedServices
 		/// Gets the array of sections to be displayed to the user after the dependencies section.
 		/// </summary>
 		public IConfigurationSection [] Sections { get; protected set; }
+
+		/// <summary>
+		/// Occurs when the status of the service has changed.
+		/// </summary>
+		public event EventHandler<EventArgs> StatusChanged;
 
 		/// <summary>
 		/// Occurs before the service is added to the project;
@@ -262,6 +291,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyServiceAdding ()
 		{
+			Status = ServiceStatus.Adding;
 			var handler = this.Adding;
 			if (handler != null) {
 				handler (this, new EventArgs ());
@@ -273,6 +303,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyServiceAddingFailed ()
 		{
+			Status = ServiceStatus.NotAdded;
 			var handler = this.AddingFailed;
 			if (handler != null) {
 				handler (this, new EventArgs ());
@@ -284,6 +315,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyServiceAdded()
 		{
+			Status = ServiceStatus.Added;
 			var handler = this.Added;
 			if (handler != null) {
 				handler (this, new EventArgs ());
@@ -295,6 +327,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyServiceRemoving ()
 		{
+			Status = ServiceStatus.Removing;
 			var handler = this.Removing;
 			if (handler != null) {
 				handler (this, new EventArgs ());
@@ -306,6 +339,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyServiceRemovingFailed ()
 		{
+			Status = ServiceStatus.Added;
 			var handler = this.RemovingFailed;
 			if (handler != null) {
 				handler (this, new EventArgs ());
@@ -317,6 +351,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyServiceRemoved ()
 		{
+			Status = ServiceStatus.NotAdded;
 			var handler = this.Removed;
 			if (handler != null) {
 				handler (this, new EventArgs ());

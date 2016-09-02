@@ -24,6 +24,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		bool expanded;
 		
 		public IConfigurationSection Section { get; private set; }
+		public IConnectedService Service { get; private set; }
 
 		public bool Expanded {
 			get {
@@ -48,7 +49,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		public ConfigurationSectionWidget (IConfigurationSection section)
 		{
+			if (section == null)
+				throw new ArgumentNullException (nameof (section));
+			if (section.Service == null)
+				throw new InvalidOperationException ("The service of a section is null");
 			Section = section;
+			Service = section.Service;
 
 			BackgroundColor = Styles.BaseBackgroundColor;
 			BorderColor = Styles.ThinSplitterColor;
@@ -105,13 +111,17 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Section.AddingFailed += HandleSectionAddingFailed;
 			Section.Added += HandleSectionAdded;
 			Section.Removed += HandleSectionRemoved;
+			Service.StatusChanged += HandleServiceStatusChanged;
 		}
 
 		void UpdateStatus ()
 		{
-			if (Section == null) {
+			if (disposed)
 				return;
-			}
+
+			// FIXME: the section widget should be disabled if the service is not added
+			//sectionWidget.Sensitive = Service.Status == ServiceStatus.Added;
+			addBtn.Sensitive = Service.Status == ServiceStatus.Added;
 
 			if (Section.IsAdded && (Section.CanBeAdded || Section == Section.Service.DependenciesSection)) {
 				if (Section == Section.Service.DependenciesSection)
@@ -171,6 +181,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Runtime.RunInMainThread (() => UpdateStatus ());
 		}
 
+		void HandleServiceStatusChanged (object sender, EventArgs e)
+		{
+			Runtime.RunInMainThread (() => UpdateStatus ());
+		}
+
 		protected override void OnButtonReleased (ButtonEventArgs args)
 		{
 			base.OnButtonReleased (args);
@@ -202,12 +217,21 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
+		bool disposed;
+
 		protected override void Dispose (bool disposing)
 		{
+			disposed = true;
 			if (Section != null) {
 				Section.Adding -= HandleSectionAdding;
+				Section.AddingFailed -= HandleSectionAddingFailed;
 				Section.Added -= HandleSectionAdded;
+				Section.Removed -= HandleSectionRemoved;
 				Section = null;
+			}
+			if (Service != null) {
+				Service.StatusChanged -= HandleServiceStatusChanged;
+				Service = null;
 			}
 			base.Dispose (disposing);
 		}

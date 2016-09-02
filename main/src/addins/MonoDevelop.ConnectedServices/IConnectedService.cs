@@ -68,6 +68,16 @@ namespace MonoDevelop.ConnectedServices
 		IConfigurationSection [] Sections { get; }
 
 		/// <summary>
+		/// Gets the current status of the service.
+		/// </summary>
+		ServiceStatus Status { get; }
+
+		/// <summary>
+		/// Occurs when the status of the service has changed.
+		/// </summary>
+		event EventHandler<EventArgs> StatusChanged;
+
+		/// <summary>
 		/// Occurs before the service is added to the project;
 		/// </summary>
 		event EventHandler<EventArgs> Adding;
@@ -108,5 +118,13 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		/// <returns> <c>true</c> if the service has been removed successfully; otherwise <c>false</c> </returns>
 		Task<bool> RemoveFromProject ();
+	}
+
+	public enum ServiceStatus
+	{
+		NotAdded,
+		Added,
+		Adding,
+		Removing,
 	}
 }

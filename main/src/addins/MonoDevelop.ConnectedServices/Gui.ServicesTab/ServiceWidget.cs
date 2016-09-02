@@ -19,8 +19,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		Label title, description, platforms;
 		HBox platformWidget;
 		Button addButton;
-		AnimatedIcon animatedButtonIcon, animatedStatusIcon;
-		IDisposable buttonIconAnimation, statusIconAnimation;
+		AnimatedIcon animatedStatusIcon;
+		IDisposable statusIconAnimation;
 		bool showDetails = false;
 
 		IConnectedService service;
@@ -35,11 +35,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				if (value == null)
 					throw new InvalidOperationException ("Service can not be null");
 				if (service != null) {
-					service.Added -= HandleServiceAddedRemoved;
-					service.Adding -= HandleServiceAdding;
 					service.AddingFailed -= HandleServiceAddingFailed;
-					service.Removed -= HandleServiceAddedRemoved;
-					service.Removing -= HandleServiceRemoving;
+					service.StatusChanged -= HandleServiceStatusChanged;
 				}
 				
 				service = value;
@@ -49,20 +46,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 				platforms.Markup = string.Format ("<span color='{1}'><b>{0}</b></span>", service.SupportedPlatforms, Styles.SecondaryTextColor.ToHexString ());
 
-				statusWidget.Visible = service.IsAdded && !showDetails;
-
-				addButton.Visible = showDetails;
-				addButton.Sensitive = !service.IsAdded;
-				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
-				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Added") : GettextCatalog.GetString ("Add");
-
-				service.Added += HandleServiceAddedRemoved;
-				service.Adding += HandleServiceAdding;
 				service.AddingFailed += HandleServiceAddingFailed;
-				service.Removed += HandleServiceAddedRemoved;
-				service.Removing += HandleServiceRemoving;
+				service.StatusChanged += HandleServiceStatusChanged;
 
-				this.ShowDetails = this.showDetails;
+				UpdateServiceStatus ();
 			}
 		}
 
@@ -97,8 +84,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			statusWidget = new HBox ();
 			statusWidget.Spacing = 3;
-			statusIcon = new ImageView (ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small));
-			statusText = new Label (GettextCatalog.GetString ("Added")) {
+			statusIcon = new ImageView ();
+			statusText = new Label () {
 				Font = Font.WithSize (12),
 				TextColor = Styles.SecondaryTextColor,
 			};
@@ -106,12 +93,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			statusWidget.PackStart (statusText);
 			statusWidget.Visible = false;
 
-			addButton = new Button (GettextCatalog.GetString ("Add"));
+			addButton = new Button ();
 			addButton.Visible = false;
 			addButton.Clicked += HandleAddButtonClicked;
 
 			if (ImageService.IsAnimation ("md-spinner-16", Gtk.IconSize.Menu)) {
-				animatedButtonIcon = ImageService.GetAnimatedIcon ("md-spinner-16", Gtk.IconSize.Menu);
 				animatedStatusIcon = ImageService.GetAnimatedIcon ("md-spinner-16", Gtk.IconSize.Menu);
 			}
 
@@ -203,95 +189,77 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
-		void HandleServiceAdding (object sender, EventArgs e)
+		void UpdateServiceStatus ()
 		{
+			if (Service == null)
+				return;
 			Runtime.RunInMainThread (delegate {
-				if (!showDetails) {
-					statusText.Text = GettextCatalog.GetString ("Adding\u2026");
+
+				StopIconAnimations ();
+				statusWidget.Visible = !showDetails && Service.Status != ServiceStatus.NotAdded;
+				addButton.Sensitive = Service.Status == ServiceStatus.NotAdded;
+
+				switch (Service.Status) {
+				case ServiceStatus.NotAdded:
+					addButton.Label = GettextCatalog.GetString ("Add");
+					addButton.Image = statusIcon.Image = null;
+
+					// if the service has just been added/removed then the document view won't know this and does not have the correct DocumentObject
+					// tell it to update
+					ConnectedServices.LocateServiceView (this.Service.Project)?.UpdateCurrentNode ();
+					break;
+				case ServiceStatus.Added:
+					addButton.Label = statusText.Text = GettextCatalog.GetString ("Added");
+					addButton.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4);
+					statusIcon.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small);
+
+					// if the service has just been added/removed then the document view won't know this and does not have the correct DocumentObject
+					// tell it to update
+					ConnectedServices.LocateServiceView (this.Service.Project)?.UpdateCurrentNode ();
+					break;
+				case ServiceStatus.Adding:
+				case ServiceStatus.Removing:
+					addButton.Label = statusText.Text =
+						Service.Status == ServiceStatus.Adding
+						? GettextCatalog.GetString ("Adding\u2026")
+						: GettextCatalog.GetString ("Removing\u2026");
 					if (statusIconAnimation == null) {
 						if (animatedStatusIcon != null) {
 							statusIcon.Image = animatedStatusIcon.FirstFrame;
-							buttonIconAnimation = animatedStatusIcon.StartAnimation (p => {
+							addButton.Image = animatedStatusIcon.FirstFrame.WithAlpha (0.4);
+							statusIconAnimation = animatedStatusIcon.StartAnimation (p => {
 								statusIcon.Image = p;
+								addButton.Image = p.WithAlpha (0.4);
 							});
-						} else
+						} else {
 							statusIcon.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
+							addButton.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small).WithAlpha (0.4);
+						}
 					}
-					statusWidget.Visible = true;
-				} else {
-					addButton.Label = GettextCatalog.GetString ("Adding\u2026");
-					if (buttonIconAnimation == null) {
-						if (animatedButtonIcon != null) {
-							addButton.Image = animatedButtonIcon.FirstFrame;
-							buttonIconAnimation = animatedButtonIcon.StartAnimation (p => {
-								addButton.Image = p;
-							});
-						} else
-							addButton.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
-					}
-					addButton.Sensitive = false;
+					break;
 				}
 			});
 		}
 
 		void StopIconAnimations ()
 		{
-			if (buttonIconAnimation != null) {
-				buttonIconAnimation.Dispose ();
-				buttonIconAnimation = null;
-			}
 			if (statusIconAnimation != null) {
 				statusIconAnimation.Dispose ();
 				statusIconAnimation = null;
 			}
 		}
 
+		void HandleServiceStatusChanged (object sender, EventArgs e)
+		{
+			UpdateServiceStatus ();
+		}
+
 		void HandleServiceAddingFailed (object sender, EventArgs e)
 		{
+			UpdateServiceStatus ();
 			Runtime.RunInMainThread (delegate {
-				statusWidget.Visible = false;
-				statusIcon.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small);
-				StopIconAnimations ();
 				addButton.Image = ImageService.GetIcon ("md-error").WithSize (IconSize.Small);
 				addButton.Label = GettextCatalog.GetString ("Retry");
-				addButton.Sensitive = true;
-			});
-		}
-
-		void HandleServiceAddedRemoved (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (delegate {
-				statusIcon.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small);
-				statusText.Text = GettextCatalog.GetString ("Added");
-				statusWidget.Visible = Service.IsAdded && !showDetails;
-				StopIconAnimations ();
-				addButton.Image = service.IsAdded ? ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4) : null;
-				addButton.Label = service.IsAdded ? GettextCatalog.GetString ("Added") : GettextCatalog.GetString ("Add");
-				addButton.Sensitive = !Service.IsAdded;
-
-				// if the service has just been added then the document view won't know this and does not have the correct DocumentObject
-				// tell it to update
-				var servicesView = ConnectedServices.LocateServiceView (this.Service.Project);
-				servicesView?.UpdateCurrentNode ();
-			});
-		}
-
-		void HandleServiceRemoving (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (delegate {
-				if (!showDetails) {
-					statusText.Text = GettextCatalog.GetString ("Removing\u2026");
-					if (statusIconAnimation == null) {
-						if (animatedStatusIcon != null) {
-							statusIcon.Image = animatedStatusIcon.FirstFrame;
-							buttonIconAnimation = animatedStatusIcon.StartAnimation (p => {
-								statusIcon.Image = p;
-							});
-						} else
-							statusIcon.Image = ImageService.GetIcon ("md-spinner-16").WithSize (Xwt.IconSize.Small);
-					}
-					statusWidget.Visible = true;
-				}
 			});
 		}
 
@@ -301,11 +269,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				StopIconAnimations ();
 
 			if (service != null) {
-				service.Added -= HandleServiceAddedRemoved;
-				service.Adding -= HandleServiceAdding;
 				service.AddingFailed -= HandleServiceAddingFailed;
-				service.Removed -= HandleServiceAddedRemoved;
-				service.Removing -= HandleServiceRemoving;
+				service.StatusChanged -= HandleServiceStatusChanged;
 				service = null;
 			}
 			base.Dispose (disposing);

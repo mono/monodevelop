@@ -100,8 +100,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			dependency.Adding += HandleDependencyAdding;
 			dependency.AddingFailed += HandleDependencyAddingFailed;
 			dependency.Removed += HandleDependencyRemoved;
-			service.Added += HandleServiceAdded;
-			service.Removed += HandleServiceRemoved;
+			service.StatusChanged += HandleServiceStatusChanged;
 		}
 
 		void SetStatusIcon (IconId stockId)
@@ -128,7 +127,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void Update ()
 		{
-			if (Service.IsAdded) {
+			if (Service.Status == ServiceStatus.Added) {
 				if (Dependency.IsAdded) {
 					nameLabel.TextColor = Styles.BaseForegroundColor;
 					iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small);
@@ -184,12 +183,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			});
 		}
 
-		void HandleServiceAdded (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => Update ());
-		}
-
-		void HandleServiceRemoved (object sender, EventArgs e)
+		void HandleServiceStatusChanged (object sender, EventArgs e)
 		{
 			Runtime.RunInMainThread (() => Update ());
 		}
@@ -204,8 +198,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				Dependency = null;
 			}
 			if (Service != null) {
-				Service.Added -= HandleServiceAdded;
-				Service.Removed -= HandleServiceRemoved;
+				Service.StatusChanged -= HandleServiceStatusChanged;
 				Service = null;
 			}
 			if (disposing && statusIconAnimation != null) {
