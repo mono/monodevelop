@@ -52,8 +52,10 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public bool IsAdded {
 			get {
-				if (!initialized)
+				if (!initialized) {
 					isAdded = this.Service.AreDependenciesInstalled;
+					initialized = true;
+				}
 				return isAdded;
 			}
 			private set {
