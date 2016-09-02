@@ -142,7 +142,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			static readonly string RunConfigurationIdentifier = "RunConfiguration";
 			static readonly string ConfigurationIdentifier = "Configuration";
 			static readonly string RuntimeIdentifier = "Runtime";
-			CellState state = CellState.AllShown;
 
 			static nfloat iconSize = 28;
 			nfloat AddCellSize (int cellId, nfloat totalWidth, nfloat layoutWidth, nfloat allIconsWidth)
