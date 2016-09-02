@@ -2577,11 +2577,11 @@ msgstr "_Borrar"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:12
 msgid "Clean all projects of all solutions"
-msgstr "Borrar todos los proyectos de todas las soluciones"
+msgstr "Limpiar todos los proyectos de todas las soluciones"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:12
 msgid "_Clean All"
-msgstr "_Borrar todo"
+msgstr "_Limpiar todo"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:12
 msgid "Copy the assembly to the output directory when building the project"
@@ -3454,7 +3454,7 @@ msgstr "Editor de texto"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
 msgid "Show Code Completion"
-msgstr "Mostrar finalización de código"
+msgstr "Mostrar completado de código"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:41
 msgid "Toggle Completion Suggestion Mode"
@@ -6649,7 +6649,7 @@ msgstr "Resumen"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:31
 msgid "No completions found"
-msgstr "No se han encontrado elementos de finalización"
+msgstr "No se han encontrado elementos de completado"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ListWidget.cs:31
 msgid "No suggestions"
@@ -17783,7 +17783,7 @@ msgstr "Haga clic aquí para desplazarse al siguiente mensaje"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:22
 msgid "_Show completion list after a character is typed"
-msgstr "_Mostrar lista de finalización después de escribir un carácter"
+msgstr "_Mostrar lista de completado después de escribir un carácter"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:22
 msgid "Complete with Space or Punctuation"
@@ -17791,11 +17791,11 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:22
 msgid "Include _keywords in completion list"
-msgstr "Incluir _palabras clave en lista de finalización"
+msgstr "Incluir _palabras clave en lista de completado"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:22
 msgid "Include _code snippets in completion list"
-msgstr "Incluir _fragmentos de código en lista de finalización"
+msgstr "Incluir _fragmentos de código en lista de completado"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:22
 msgid "_Show import items"
@@ -17803,7 +17803,7 @@ msgstr "_Mostrar elementos de importación"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:22
 msgid "A_utomatically insert parentheses after completion:"
-msgstr "Insertar a_utomáticamente un paréntesis tras la finalización:"
+msgstr "Insertar a_utomáticamente un paréntesis tras el completado:"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/gtk-gui/MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel.cs:22
 msgid "_Opening only"
@@ -17923,7 +17923,7 @@ msgstr "Comportamiento"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:15
 msgid "Code Completion"
-msgstr "Finalización de código"
+msgstr "Completado de código"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:15
 msgid "Appearance"
@@ -21824,7 +21824,7 @@ msgstr "Directorio de trabajo"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:5
 msgid "Debug Pads"
-msgstr "Depurar paneles"
+msgstr "Paneles de depuración"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:5
 msgid "Breakpoints"
@@ -21832,7 +21832,7 @@ msgstr "Puntos de interrupción"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:5
 msgid "Locals"
-msgstr "Configuraciones regionales"
+msgstr "Locales"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.addin.xml:5
 msgid "Watch"
