@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,7 +77,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the dependencies that will be added to the project
 		/// </summary>
-		public IConnectedServiceDependency [] Dependencies { get; protected set; }
+		public ImmutableArray<IConnectedServiceDependency> Dependencies { get; protected set; }
 
 		/// <summary>
 		/// Gets the dependencies section to be displayed before the configuration section

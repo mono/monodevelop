@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Ide;
@@ -14,7 +15,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// The empty set of IConnectedServiceDependencys
 		/// </summary>
-		public static readonly IConnectedServiceDependency [] Empty = new IConnectedServiceDependency [0];
+		public static readonly ImmutableArray<IConnectedServiceDependency> Empty = ImmutableArray.Create<IConnectedServiceDependency> ();
 
 		Status status = (Status)(-1);
 

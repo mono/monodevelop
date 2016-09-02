@@ -6,6 +6,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using System.Threading;
 using MonoDevelop.Core.Serialization;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.ConnectedServices.DebugService
 {
@@ -71,9 +72,9 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			this.DisplayName = "Test Service";
 			this.Description = "This is a simple service example to show how you might construct your own service implementation.";
 
-			this.Dependencies = new IConnectedServiceDependency [] {
-				new PackageDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8"),
-			};
+			this.Dependencies = ImmutableArray.Create<IConnectedServiceDependency>(
+				new PackageDependency (this, "Newtonsoft.Json", "Newtonsoft.Json", "6.0.8")
+			);
 
 			this.Sections = new IConfigurationSection [] {
 				new TestDebugConfigurationSection(this),
