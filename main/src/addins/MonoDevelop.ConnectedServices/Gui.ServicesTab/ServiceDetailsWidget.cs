@@ -50,7 +50,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		public void LoadService (IConnectedService service)
 		{
 			if (service != null) {
-				service.Added -= HandleServiceAdded;
+				service.StatusChanged -= HandleServiceStatusChanged;
 				foreach (var child in sections.Children.ToArray ()) {
 					sections.Remove (child);
 					child.Dispose ();
@@ -74,7 +74,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				sections.PackStart (w);
 			}
 
-			service.Added += HandleServiceAdded;
+			service.StatusChanged += HandleServiceStatusChanged;
 
 			// expand the first section if the service is already added to the project
 			if (service.IsAdded) {
@@ -90,14 +90,17 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
-		void HandleServiceAdded (object sender, EventArgs e)
+		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
-			if (service.AreDependenciesInstalled) {
-				Core.Runtime.RunInMainThread (delegate {
-					var configuration = sections.Children.FirstOrDefault (s => (s as ConfigurationSectionWidget)?.Section != service.DependenciesSection) as ConfigurationSectionWidget;
-					if (configuration != null)
-						configuration.Expanded = true;
-				});
+			// handle when the service has finished being added
+			if (e.NewStatus == ServiceStatus.Added && e.OldStatus == ServiceStatus.Adding) {
+				if (service.AreDependenciesInstalled) {
+					Core.Runtime.RunInMainThread (delegate {
+						var configuration = sections.Children.FirstOrDefault (s => (s as ConfigurationSectionWidget)?.Section != service.DependenciesSection) as ConfigurationSectionWidget;
+						if (configuration != null)
+							configuration.Expanded = true;
+					});
+				}
 			}
 		}
 
@@ -115,7 +118,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		protected override void Dispose (bool disposing)
 		{
 			if (service != null) {
-				service.Added -= HandleServiceAdded;
+				service.StatusChanged -= HandleServiceStatusChanged;
 				service = null;
 			}
 			base.Dispose (disposing);

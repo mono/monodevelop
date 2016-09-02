@@ -20,6 +20,9 @@ namespace MonoDevelop.ConnectedServices
 
 		ServiceStatus status = (ServiceStatus)(-1);
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.ConnectedService"/> class.
+		/// </summary>
 		protected ConnectedService (DotNetProject project)
 		{
 			this.Project = project;
@@ -60,24 +63,13 @@ namespace MonoDevelop.ConnectedServices
 		public Xwt.Drawing.Image GalleryIcon { get; protected set; }
 
 		/// <summary>
-		/// Gets the status of the service.
+		/// Gets the current status of the service.
 		/// </summary>
-		/// <value>The status.</value>
 		public ServiceStatus Status {
 			get {
 				if ((int)status == -1)
 					status = IsAdded ? ServiceStatus.Added : ServiceStatus.NotAdded;
 				return status;
-			}
-			private set {
-				// TODO: reflect adding/removing failures
-				var newStatus = value;
-				if (newStatus == ServiceStatus.Added && !IsAdded)
-					newStatus = ServiceStatus.NotAdded;
-				if (status != newStatus) {
-					status = value;
-					StatusChanged?.Invoke (this, EventArgs.Empty);
-				}
 			}
 		}
 
@@ -119,37 +111,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Occurs when the status of the service has changed.
 		/// </summary>
-		public event EventHandler<EventArgs> StatusChanged;
-
-		/// <summary>
-		/// Occurs before the service is added to the project;
-		/// </summary>
-		public event EventHandler<EventArgs> Adding;
-
-		/// <summary>
-		/// Occurs when adding the service to the project has failed;
-		/// </summary>
-		public event EventHandler<EventArgs> AddingFailed;
-
-		/// <summary>
-		/// Occurs when service is added to the project;
-		/// </summary>
-		public event EventHandler<EventArgs> Added;
-
-		/// <summary>
-		/// Occurs before the service is removed from the project;
-		/// </summary>
-		public event EventHandler<EventArgs> Removing;
-
-		/// <summary>
-		/// Occurs when removing the service from the project has failed;
-		/// </summary>
-		public event EventHandler<EventArgs> RemovingFailed;
-
-		/// <summary>
-		/// Occurs when service has been removed from the project;
-		/// </summary>
-		public event EventHandler<EventArgs> Removed;
+		public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
 		/// <summary>
 		/// Adds the service to the project
@@ -161,19 +123,19 @@ namespace MonoDevelop.ConnectedServices
 				return true;
 			}
 
-			// TODO: add ProgressMonitor support ? 
-			this.NotifyServiceAdding ();
+			this.ChangeStatus (ServiceStatus.Adding);
 
 			try {
 				await this.AddDependencies (CancellationToken.None).ConfigureAwait (false);
 				await this.OnAddToProject ().ConfigureAwait (false);
 				await this.StoreAddedState ().ConfigureAwait (false);
 
-				this.NotifyServiceAdded ();
+				// TODO: service status == added and .IsAdded need to make sure that they match
+				this.ChangeStatus (ServiceStatus.Added);
 				return true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
-				NotifyServiceAddingFailed ();
+				this.ChangeStatus (ServiceStatus.NotAdded, ex);
 				return false;
 			}
 		}
@@ -188,9 +150,7 @@ namespace MonoDevelop.ConnectedServices
 				return true;
 			}
 
-			// TODO: add ProgressMonitor support ? 
-
-			this.NotifyServiceRemoving ();
+			this.ChangeStatus (ServiceStatus.Removing);
 
 			// try to remove the dependencies first, these may sometimes fail if one of the packages is or has dependencies
 			// that other packages are dependent upon. A common one might be Json.Net for instance
@@ -207,7 +167,7 @@ namespace MonoDevelop.ConnectedServices
 			try {
 				await this.OnRemoveFromProject ().ConfigureAwait (false);
 				await this.RemoveAddedState ().ConfigureAwait (false);
-				this.NotifyServiceRemoved ();
+				this.ChangeStatus (ServiceStatus.NotAdded);
 
 				if (dependenciesFailed) {
 					// TODO: notify the user about the dependencies that failed, we might already have this from the package console and that might be enough for now
@@ -216,7 +176,7 @@ namespace MonoDevelop.ConnectedServices
 				return true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while removing the service from the project", ex);
-				NotifyServiceRemovingFailed ();
+				this.ChangeStatus (ServiceStatus.Added, ex);
 				return false;
 			}
 		}
@@ -287,74 +247,23 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Notifies subscribers that the service will be added to the project
+		/// Changes the status of the service and notifies subscribers
 		/// </summary>
-		void NotifyServiceAdding ()
+		void ChangeStatus(ServiceStatus newStatus, Exception error = null)
 		{
-			Status = ServiceStatus.Adding;
-			var handler = this.Adding;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
+			var oldStatus = this.Status;
+			this.status = newStatus;
+			this.NotifyServiceStatusChanged (newStatus, oldStatus, error);
 		}
 
 		/// <summary>
-		/// Notifies subscribers that adding the service to the project has failed
+		/// Notifies subscribers that the service status has changed
 		/// </summary>
-		void NotifyServiceAddingFailed ()
+		void NotifyServiceStatusChanged(ServiceStatus newStatus, ServiceStatus oldStatus, Exception error = null)
 		{
-			Status = ServiceStatus.NotAdded;
-			var handler = this.AddingFailed;
+			var handler = this.StatusChanged;
 			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
-		}
-
-		/// <summary>
-		/// Notifies subscribers that the service has been added to the project
-		/// </summary>
-		void NotifyServiceAdded()
-		{
-			Status = ServiceStatus.Added;
-			var handler = this.Added;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
-		}
-
-		/// <summary>
-		/// Notifies subscribers that the service will be removed from the project
-		/// </summary>
-		void NotifyServiceRemoving ()
-		{
-			Status = ServiceStatus.Removing;
-			var handler = this.Removing;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
-		}
-
-		/// <summary>
-		/// Notifies subscribers that removing the service from the project has failed
-		/// </summary>
-		void NotifyServiceRemovingFailed ()
-		{
-			Status = ServiceStatus.Added;
-			var handler = this.RemovingFailed;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
-		}
-
-		/// <summary>
-		/// Notifies subscribers that the service has been removed from the project
-		/// </summary>
-		void NotifyServiceRemoved ()
-		{
-			Status = ServiceStatus.NotAdded;
-			var handler = this.Removed;
-			if (handler != null) {
-				handler (this, new EventArgs ());
+				handler (this, new StatusChangedEventArgs (newStatus, oldStatus, error));
 			}
 		}
 	}

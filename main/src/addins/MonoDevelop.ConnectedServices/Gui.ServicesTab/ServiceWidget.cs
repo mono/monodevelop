@@ -35,7 +35,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				if (value == null)
 					throw new InvalidOperationException ("Service can not be null");
 				if (service != null) {
-					service.AddingFailed -= HandleServiceAddingFailed;
 					service.StatusChanged -= HandleServiceStatusChanged;
 				}
 				
@@ -46,7 +45,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 				platforms.Markup = string.Format ("<span color='{1}'><b>{0}</b></span>", service.SupportedPlatforms, Styles.SecondaryTextColor.ToHexString ());
 
-				service.AddingFailed += HandleServiceAddingFailed;
 				service.StatusChanged += HandleServiceStatusChanged;
 
 				UpdateServiceStatus ();
@@ -250,18 +248,16 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
-		void HandleServiceStatusChanged (object sender, EventArgs e)
+		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
 			UpdateServiceStatus ();
-		}
-
-		void HandleServiceAddingFailed (object sender, EventArgs e)
-		{
-			UpdateServiceStatus ();
-			Runtime.RunInMainThread (delegate {
-				addButton.Image = ImageService.GetIcon ("md-error").WithSize (IconSize.Small);
-				addButton.Label = GettextCatalog.GetString ("Retry");
-			});
+			if (e.NewStatus == ServiceStatus.NotAdded && e.OldStatus == ServiceStatus.Adding) {
+				// adding failed
+				Runtime.RunInMainThread (delegate {
+					addButton.Image = ImageService.GetIcon ("md-error").WithSize (IconSize.Small);
+					addButton.Label = GettextCatalog.GetString ("Retry");
+				});
+			}
 		}
 
 		protected override void Dispose (bool disposing)
@@ -270,7 +266,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				StopIconAnimations ();
 
 			if (service != null) {
-				service.AddingFailed -= HandleServiceAddingFailed;
 				service.StatusChanged -= HandleServiceStatusChanged;
 				service = null;
 			}

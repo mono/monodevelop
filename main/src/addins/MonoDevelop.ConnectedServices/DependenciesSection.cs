@@ -24,12 +24,7 @@ namespace MonoDevelop.ConnectedServices
 
 			this.isAdded = this.Service.AreDependenciesInstalled;
 
-			Service.Removed += HandleServiceRemoved;
-		}
-
-		void HandleServiceRemoved (object sender, EventArgs e)
-		{
-			IsAdded = this.Service.AreDependenciesInstalled;
+			Service.StatusChanged += HandleServiceStatusChanged;
 		}
 
 		/// <summary>
@@ -119,6 +114,14 @@ namespace MonoDevelop.ConnectedServices
 				}
 			}
 			return IsAdded = true;
+		}
+
+		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
+		{
+			// update the status when the service is removed
+			if (e.NewStatus == ServiceStatus.NotAdded && e.OldStatus == ServiceStatus.Removing) {
+				IsAdded = this.Service.AreDependenciesInstalled;
+			}
 		}
 
 		/// <summary>

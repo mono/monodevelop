@@ -75,37 +75,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Occurs when the status of the service has changed.
 		/// </summary>
-		event EventHandler<EventArgs> StatusChanged;
-
-		/// <summary>
-		/// Occurs before the service is added to the project;
-		/// </summary>
-		event EventHandler<EventArgs> Adding;
-
-		/// <summary>
-		/// Occurs when service is added to the project;
-		/// </summary>
-		event EventHandler<EventArgs> Added;
-
-		/// <summary>
-		/// Occurs when adding the service to the project has failed
-		/// </summary>
-		event EventHandler<EventArgs> AddingFailed;
-
-		/// <summary>
-		/// Occurs before the service is removed from the project;
-		/// </summary>
-		event EventHandler<EventArgs> Removing;
-
-		/// <summary>
-		/// Occurs when service has been removed from the project;
-		/// </summary>
-		event EventHandler<EventArgs> Removed;
-
-		/// <summary>
-		/// Occurs when removing the service from the project has failed
-		/// </summary>
-		event EventHandler<EventArgs> RemovingFailed;
+		event EventHandler<StatusChangedEventArgs> StatusChanged;
 
 		/// <summary>
 		/// Adds the service to the project
@@ -118,31 +88,5 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		/// <returns> <c>true</c> if the service has been removed successfully; otherwise <c>false</c> </returns>
 		Task<bool> RemoveFromProject ();
-	}
-
-	/// <summary>
-	/// Defines the various states that a service be in
-	/// </summary>
-	public enum ServiceStatus
-	{
-		/// <summary>
-		/// The service is not added to the project
-		/// </summary>
-		NotAdded,
-
-		/// <summary>
-		/// The service has been added to the project
-		/// </summary>
-		Added,
-
-		/// <summary>
-		/// The service is ciurrently being added to the project
-		/// </summary>
-		Adding,
-
-		/// <summary>
-		/// The service is currently being removed from the project
-		/// </summary>
-		Removing,
 	}
 }

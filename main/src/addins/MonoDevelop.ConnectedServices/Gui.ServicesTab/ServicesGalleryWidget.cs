@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects;
 using Xwt;
 
 namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
@@ -66,22 +63,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					availableList.PackStart (serviceWidget);
 					availableLabel.Visible = true;
 				}
-				service.Added += HandleServiceAddedRemoved;
-				service.Removed += HandleServiceAddedRemoved;
+				service.StatusChanged += HandleServiceStatusChanged;
 			}
 		}
 
 		void ClearServices ()
 		{
 			foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
-				widget.Service.Added -= HandleServiceAddedRemoved;
-				widget.Service.Removed -= HandleServiceAddedRemoved;
+				widget.Service.StatusChanged -= HandleServiceStatusChanged;
 				widget.ButtonReleased -= HandleServiceWidgetButtonReleased;
 			}
 			availableList.Clear ();
 			foreach (var widget in enabledList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
-				widget.Service.Added -= HandleServiceAddedRemoved;
-				widget.Service.Removed -= HandleServiceAddedRemoved;
+				widget.Service.StatusChanged -= HandleServiceStatusChanged;
 				widget.ButtonReleased -= HandleServiceWidgetButtonReleased;
 			}
 			enabledList.Clear ();
@@ -89,9 +83,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			availableLabel.Visible = false;
 		}
 
-		void HandleServiceAddedRemoved (object sender, EventArgs e)
+		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
-			var service = (IConnectedService)sender;
+			switch (e.NewStatus) {
+			case ServiceStatus.Added:
+			case ServiceStatus.NotAdded:
+				this.HandleServiceAddedRemoved ((IConnectedService)sender);
+
+				break;
+			}
+		}
+
+		void HandleServiceAddedRemoved (IConnectedService service)
+		{
 			//TODO: sort the lists
 			Runtime.RunInMainThread (delegate {
 				if (service.IsAdded) {

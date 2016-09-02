@@ -81,21 +81,26 @@ namespace MonoDevelop.ConnectedServices
 		{
 			if (services != null) { // update might be called several times
 				foreach (var service in services) {
-					service.Added -= HandleServiceAddedRemoved;
-					service.Removed -= HandleServiceAddedRemoved;
+					service.StatusChanged -= HandleServiceStatusChanged;
 				}
 			}
 			services = ConnectedServices.GetServices (Project);
 			foreach (var service in services) {
-				service.Added += HandleServiceAddedRemoved;
-				service.Removed += HandleServiceAddedRemoved;
+				service.StatusChanged += HandleServiceStatusChanged;
 			}
 		}
 
-		void HandleServiceAddedRemoved (object sender, EventArgs e)
+		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
-			if (ServicesNode != null)
-				Core.Runtime.RunInMainThread (() => ServicesNode.NotifyServicesChanged ());
+			switch (e.NewStatus) {
+			case ServiceStatus.Added:
+			case ServiceStatus.NotAdded:
+				if (ServicesNode != null) {
+					Core.Runtime.RunInMainThread (() => ServicesNode.NotifyServicesChanged ());
+				}
+
+				break;
+			}
 		}
 
 		void HandlePackageReferenceAddedRemoved (object sender, PackageManagementPackageReferenceEventArgs e)
@@ -119,8 +124,7 @@ namespace MonoDevelop.ConnectedServices
 			}
 			if (services != null) {
 				foreach (var service in services) {
-					service.Added -= HandleServiceAddedRemoved;
-					service.Removed -= HandleServiceAddedRemoved;
+					service.StatusChanged -= HandleServiceStatusChanged;
 				}
 			}
 			base.Dispose ();
