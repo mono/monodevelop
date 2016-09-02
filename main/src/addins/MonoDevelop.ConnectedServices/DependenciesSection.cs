@@ -14,7 +14,10 @@ namespace MonoDevelop.ConnectedServices
 	{
 		bool isAdded;
 		bool initialized;
-		
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.DependenciesSection"/> class.
+		/// </summary>
 		public DependenciesSection (IConnectedService service)
 		{
 			this.Service = service;
@@ -70,24 +73,9 @@ namespace MonoDevelop.ConnectedServices
 		}
 
 		/// <summary>
-		/// Occurs when the section is added to the project
+		/// Occurs when the status of the section changes
 		/// </summary>
-		public event EventHandler<EventArgs> Added;
-
-		/// <summary>
-		/// Occurs when adding dependencies to the project has failed
-		/// </summary>
-		public event EventHandler<EventArgs> AddingFailed;
-
-		/// <summary>
-		/// Occurs before the section is added to the project
-		/// </summary>
-		public event EventHandler<EventArgs> Adding;
-
-		/// <summary>
-		/// Occurs when the section has been removed from the project
-		/// </summary>
-		public event EventHandler<EventArgs> Removed;
+		public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
 		/// <summary>
 		/// Gets the widget to display to the user
@@ -131,10 +119,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyAddingToProject ()
 		{
-			var handler = this.Adding;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
+			this.NotifyStatusChange (Status.Adding, Status.NotAdded);
 		}
 
 		/// <summary>
@@ -142,10 +127,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyAddingToProjectFailed ()
 		{
-			var handler = this.AddingFailed;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
+			this.NotifyStatusChange (Status.NotAdded, Status.Adding);
 		}
 
 		/// <summary>
@@ -153,10 +135,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyAddedToProject ()
 		{
-			var handler = this.Added;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
+			this.NotifyStatusChange (Status.Added, Status.Adding);
 		}
 
 		/// <summary>
@@ -164,9 +143,17 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		void NotifyRemovedFromProject ()
 		{
-			var handler = this.Removed;
+			this.NotifyStatusChange (Status.NotAdded, Status.Removing);
+		}
+
+		void NotifyStatusChange(Status newStatus, Status oldStatus)
+		{
+			var handler = this.StatusChanged;
 			if (handler != null) {
-				handler (this, new EventArgs ());
+				// make sure this gets called on the main thread in case we have async calls for adding a nuget
+				Xwt.Application.Invoke (() => {
+					handler (this, new StatusChangedEventArgs (newStatus, oldStatus, null));
+				});
 			}
 		}
 

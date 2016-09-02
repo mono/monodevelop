@@ -22,8 +22,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		Button addBtn;
 		Widget sectionWidget;
 		bool expanded;
-		
+
+		/// <summary>
+		/// Gets the sectino that this widget represents
+		/// </summary>
 		public IConfigurationSection Section { get; private set; }
+
 		public IConnectedService Service { get; private set; }
 
 		public bool Expanded {
@@ -105,10 +109,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Content = container;
 
 			UpdateStatus ();
-			Section.Adding += HandleSectionAdding;
-			Section.AddingFailed += HandleSectionAddingFailed;
-			Section.Added += HandleSectionAdded;
-			Section.Removed += HandleSectionRemoved;
+			Section.StatusChanged += HandleSectionStatusChanged;
 			Service.StatusChanged += HandleServiceStatusChanged;
 		}
 
@@ -151,7 +152,16 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			return this.Section.GetSectionWidget ();
 		}
 
-		void HandleSectionAdding (object sender, EventArgs e)
+		void HandleSectionStatusChanged (object sender, StatusChangedEventArgs e)
+		{
+			if (e.IsAdding) {
+				HandleSectionAdding ();
+			} else {
+				Runtime.RunInMainThread (() => UpdateStatus ());
+			}
+		}
+
+		void HandleSectionAdding ()
 		{
 			Runtime.RunInMainThread (delegate {
 				if (Section is DependenciesSection)
@@ -162,21 +172,6 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				statusBox.Visible = true;
 				addBtn.Visible = false;
 			});
-		}
-
-		void HandleSectionAddingFailed (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => UpdateStatus ());
-		}
-
-		void HandleSectionAdded (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => UpdateStatus ());
-		}
-
-		void HandleSectionRemoved (object sender, EventArgs e)
-		{
-			Runtime.RunInMainThread (() => UpdateStatus ());
 		}
 
 		void HandleServiceStatusChanged (object sender, EventArgs e)
@@ -221,10 +216,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			disposed = true;
 			if (Section != null) {
-				Section.Adding -= HandleSectionAdding;
-				Section.AddingFailed -= HandleSectionAddingFailed;
-				Section.Added -= HandleSectionAdded;
-				Section.Removed -= HandleSectionRemoved;
+				Section.StatusChanged -= HandleSectionStatusChanged;
 				Section = null;
 			}
 			if (Service != null) {

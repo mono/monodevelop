@@ -52,23 +52,8 @@ namespace MonoDevelop.ConnectedServices
 		Task<bool> AddToProject (CancellationToken token);
 
 		/// <summary>
-		/// Occurs before the section is added to the project
+		/// Occurs when the status of the section changes
 		/// </summary>
-		event EventHandler<EventArgs> Adding;
-
-		/// <summary>
-		/// Occurs when adding the service to the project has failed
-		/// </summary>
-		event EventHandler<EventArgs> AddingFailed;
-
-		/// <summary>
-		/// Occurs when the section is added to the project
-		/// </summary>
-		event EventHandler<EventArgs> Added;
-
-		/// <summary>
-		/// Occurs when the section has been removed from the project
-		/// </summary>
-		event EventHandler<EventArgs> Removed;
+		event EventHandler<StatusChangedEventArgs> StatusChanged;
 	}
 }

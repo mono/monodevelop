@@ -122,10 +122,11 @@ namespace MonoDevelop.ConnectedServices.DebugService
 			return new TestConfigurationWidget ();
 		}
 
-		protected override Task<bool> OnAddToProject (CancellationToken token)
+		protected override async Task<bool> OnAddToProject (CancellationToken token)
 		{
+			await Task.Delay (1000).ConfigureAwait (false);
 			added = true;
-			return Task.FromResult (true);
+			return true;
 		}
 	}
 
