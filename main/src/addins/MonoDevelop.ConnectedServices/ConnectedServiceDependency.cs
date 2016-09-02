@@ -91,7 +91,7 @@ namespace MonoDevelop.ConnectedServices
 
 				this.ChangeStatus (this.IsAdded ? Status.Added : Status.NotAdded);
 			} catch (Exception ex) {
-				this.ChangeStatus (Status.NotAdded, ex);
+				this.ChangeStatus (this.IsAdded ? Status.Added : Status.NotAdded, ex);
 				throw;
 			}
 
@@ -110,7 +110,7 @@ namespace MonoDevelop.ConnectedServices
 				result = await OnRemoveFromProject (token).ConfigureAwait (false);
 				this.ChangeStatus (Status.NotAdded);
 			} catch (Exception ex) {
-				this.ChangeStatus (Status.Added, ex);
+				this.ChangeStatus (this.IsAdded ? Status.Added : Status.NotAdded, ex);
 				throw;
 			}
 
