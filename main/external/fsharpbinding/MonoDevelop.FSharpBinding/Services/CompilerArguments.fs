@@ -70,10 +70,6 @@ module CompilerArguments =
               else
                   []
 
-          let hasExplicitFSharpCore =
-              let project = reference.Project :?> DotNetProject
-              project.References |> Seq.exists (fun r -> r.Include = "FSharp.Core")
-
           match reference.ReferenceType with
           | ReferenceType.Assembly ->
               tryGetFromHintPath()
@@ -90,8 +86,9 @@ module CompilerArguments =
                       | None -> []
                   else
                       reference.Package.Assemblies
-                      |> Seq.choose (fun a -> match hasExplicitFSharpCore, a.Name with
-                                              | true, "FSharp.Core" -> None
+                      |> Seq.choose (fun a -> match a.Name with
+                                              | "FSharp.Core"
+                                              | "mscorlib" -> None
                                               | _ -> Some a.Location)
                       |> List.ofSeq
 
