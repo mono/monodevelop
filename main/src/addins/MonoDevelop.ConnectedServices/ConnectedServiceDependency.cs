@@ -89,7 +89,7 @@ namespace MonoDevelop.ConnectedServices
 			try {
 				result = await OnAddToProject (token).ConfigureAwait (false);
 
-				this.ChangeStatus (this.IsAdded ? Status.Added : Status.NotAdded);
+				this.ChangeStatus (Status.Added);
 			} catch (Exception ex) {
 				this.ChangeStatus (this.IsAdded ? Status.Added : Status.NotAdded, ex);
 				throw;
