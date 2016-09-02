@@ -16,8 +16,13 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static readonly IConnectedServiceDependency [] Empty = new IConnectedServiceDependency [0];
 
+		DependencyStatus status = (DependencyStatus)(-1);
+
 		Image icon;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.ConnectedServiceDependency"/> class.
+		/// </summary>
 		protected ConnectedServiceDependency (IConnectedService service, ConnectedServiceDependencyCategory category, string displayName)
 		{
 			this.Service = service;
@@ -57,19 +62,39 @@ namespace MonoDevelop.ConnectedServices
 		public virtual bool IsAdded { get { return this.Service.IsAdded; } }
 
 		/// <summary>
+		/// Gets the current status of the dependency.
+		/// </summary>
+		public DependencyStatus Status { 
+			get {
+				if ((int)status == -1)
+					status = IsAdded ? DependencyStatus.Added : DependencyStatus.NotAdded;
+				return status;
+			}
+		}
+
+		/// <summary>
+		/// Occurs when the status of the dependency has changed.
+		/// </summary>
+		public event EventHandler<DependencyStatusChangedEventArgs> StatusChanged;
+
+		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
 		public async Task<bool> AddToProject (CancellationToken token)
 		{
-			Adding?.Invoke (this, EventArgs.Empty);
-			bool result;
+			this.ChangeStatus (DependencyStatus.Adding);
+
+			var result = false;
 			try {
 				result = await OnAddToProject (token).ConfigureAwait (false);
-			} catch {
-				OnAddingFailed ();
+
+				// TODO: service status == added and .IsAdded need to make sure that they match
+				this.ChangeStatus (DependencyStatus.Added);
+			} catch (Exception ex) {
+				this.ChangeStatus (DependencyStatus.NotAdded, ex);
 				throw;
 			}
-			OnAdded ();
+
 			return result;
 		}
 		
@@ -78,15 +103,17 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public async Task<bool> RemoveFromProject (CancellationToken token)
 		{
-			Removing?.Invoke (this, EventArgs.Empty);
-			bool result;
+			this.ChangeStatus (DependencyStatus.Removing);
+
+			var result = false;
 			try {
 				result = await OnRemoveFromProject (token).ConfigureAwait (false);
-			} catch {
-				OnRemovingFailed ();
+				this.ChangeStatus (DependencyStatus.NotAdded);
+			} catch (Exception ex) {
+				this.ChangeStatus (DependencyStatus.Added, ex);
 				throw;
 			}
-			OnRemoved ();
+
 			return result;
 		}
 
@@ -101,65 +128,32 @@ namespace MonoDevelop.ConnectedServices
 		protected abstract Task<bool> OnRemoveFromProject (CancellationToken token);
 
 		/// <summary>
-		/// Raises the Added event.
+		/// Raises the status change event for the new status
 		/// </summary>
-		protected virtual void OnAdded ()
+		protected virtual void OnStatusChange(DependencyStatus newStatus, DependencyStatus oldStatus, Exception error = null)
 		{
-			Added?.Invoke (this, EventArgs.Empty);
+			this.NotifyStatusChanged (newStatus, oldStatus, error);
 		}
 
 		/// <summary>
-		/// Raises the AddingFailed event.
+		/// Changes the status of the service and notifies subscribers
 		/// </summary>
-		protected virtual void OnAddingFailed ()
+		void ChangeStatus(DependencyStatus newStatus, Exception error = null)
 		{
-			AddingFailed?.Invoke (this, EventArgs.Empty);
+			var oldStatus = this.Status;
+			this.status = newStatus;
+			this.OnStatusChange (newStatus, oldStatus, error);
 		}
 
 		/// <summary>
-		/// Raises the Removed event.
+		/// Notifies subscribers that the service status has changed
 		/// </summary>
-		protected virtual void OnRemoved ()
+		void NotifyStatusChanged (DependencyStatus newStatus, DependencyStatus oldStatus, Exception error = null)
 		{
-			Removed?.Invoke (this, EventArgs.Empty);
+			var handler = this.StatusChanged;
+			if (handler != null) {
+				handler (this, new DependencyStatusChangedEventArgs (newStatus, oldStatus, error));
+			}
 		}
-
-		/// <summary>
-		/// Raises the RemovingFailed event.
-		/// </summary>
-		protected virtual void OnRemovingFailed ()
-		{
-			RemovingFailed?.Invoke (this, EventArgs.Empty);
-		}
-
-		/// <summary>
-		/// Occurs before the dependency is added to the project
-		/// </summary>
-		public event EventHandler<EventArgs> Adding;
-
-		/// <summary>
-		/// Occurs when adding the dependency to the project has failed
-		/// </summary>
-		public event EventHandler<EventArgs> AddingFailed;
-
-		/// <summary>
-		/// Occurs when dependency has been added to the project
-		/// </summary>
-		public event EventHandler<EventArgs> Added;
-
-		/// <summary>
-		/// Occurs before the dependency is being removed from the project
-		/// </summary>
-		public event EventHandler<EventArgs> Removing;
-
-		/// <summary>
-		/// Occurs when the dependency has been removed to the project
-		/// </summary>
-		public event EventHandler<EventArgs> Removed;
-
-		/// <summary>
-		/// Occurs when removing the dependency to the project has failed
-		/// </summary>
-		public event EventHandler<EventArgs> RemovingFailed;
 	}
 }

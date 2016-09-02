@@ -3,7 +3,7 @@ using System;
 namespace MonoDevelop.ConnectedServices
 {
 	/// <summary>
-	/// Defines the various states that a service be in
+	/// Defines the various states that a service can be in
 	/// </summary>
 	public enum ServiceStatus
 	{

@@ -1,5 +1,4 @@
 using System;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.ConnectedServices
 {
@@ -8,6 +7,9 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	public sealed class StatusChangedEventArgs : EventArgs
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.StatusChangedEventArgs"/> class.
+		/// </summary>
 		public StatusChangedEventArgs (ServiceStatus newStatus, ServiceStatus oldStatus, Exception error = null)
 		{
 			this.NewStatus = newStatus;
@@ -21,7 +23,7 @@ namespace MonoDevelop.ConnectedServices
 		public ServiceStatus NewStatus { get; private set; }
 
 		/// <summary>
-		/// Gets the status of the service at the time of the event
+		/// Gets the old status of the service at the time of the event
 		/// </summary>
 		public ServiceStatus OldStatus { get; private set; }
 

@@ -32,6 +32,16 @@ namespace MonoDevelop.ConnectedServices
 		bool IsAdded { get; }
 
 		/// <summary>
+		/// Gets the current status of the dependency.
+		/// </summary>
+		DependencyStatus Status { get; }
+
+		/// <summary>
+		/// Occurs when the status of the dependency has changed.
+		/// </summary>
+		event EventHandler<DependencyStatusChangedEventArgs> StatusChanged;
+
+		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
 		/// <returns> <c>true</c> if the dependency has been added successfully; otherwise <c>false</c> </returns>
@@ -42,35 +52,5 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		/// <returns> <c>true</c> if the dependency has been removed successfully; otherwise <c>false</c> </returns>
 		Task<bool> RemoveFromProject (CancellationToken token);
-
-		/// <summary>
-		/// Occurs before the dependency is added to the project
-		/// </summary>
-		event EventHandler<EventArgs> Adding;
-
-		/// <summary>
-		/// Occurs when the dependency has been added to the project
-		/// </summary>
-		event EventHandler<EventArgs> Added;
-
-		/// <summary>
-		/// Occurs when adding the dependency to the project has failed
-		/// </summary>
-		event EventHandler<EventArgs> AddingFailed;
-
-		/// <summary>
-		/// Occurs before the dependency is being removed from the project
-		/// </summary>
-		event EventHandler<EventArgs> Removing;
-
-		/// <summary>
-		/// Occurs when the dependency has been removed to the project
-		/// </summary>
-		event EventHandler<EventArgs> Removed;
-
-		/// <summary>
-		/// Occurs when removing the dependency from the project has failed
-		/// </summary>
-		event EventHandler<EventArgs> RemovingFailed;
 	}
 }

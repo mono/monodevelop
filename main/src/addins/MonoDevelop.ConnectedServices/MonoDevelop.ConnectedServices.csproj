@@ -164,6 +164,8 @@
     <Compile Include="JsonFileConnectedService.cs" />
     <Compile Include="StatusChangedEventArgs.cs" />
     <Compile Include="ServiceStatus.cs" />
+    <Compile Include="DependencyStatus.cs" />
+    <Compile Include="DependencyStatusChangedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.ConnectedServices.addin.xml">

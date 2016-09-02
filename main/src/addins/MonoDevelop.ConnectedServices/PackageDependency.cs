@@ -71,22 +71,26 @@ namespace MonoDevelop.ConnectedServices
 			return true;
 		}
 
-		protected override void OnAdded ()
+		protected override void OnStatusChange (DependencyStatus newStatus, DependencyStatus oldStatus, Exception error = null)
 		{
-			// suppress the Added event
-		}
+			// suppress Added or removed events
+			if ((newStatus == DependencyStatus.Added && oldStatus == DependencyStatus.Adding) ||
+			    (newStatus == DependencyStatus.NotAdded && oldStatus == DependencyStatus.Removing)) {
+				return;
+			}
 
-		protected override void OnRemoved ()
-		{
-			// suppress the Removed event
+			base.OnStatusChange (newStatus, oldStatus, error);
 		}
 
 		internal void HandlePackageStatusChanged ()
 		{
-			if (IsAdded)
-				base.OnAdded ();
-			else
-				base.OnRemoved ();
+			if (IsAdded) {
+				base.OnStatusChange (DependencyStatus.Added, DependencyStatus.Adding, null);
+			}
+			else {
+				base.OnStatusChange (DependencyStatus.NotAdded, DependencyStatus.Removing, null);
+			}
+
 			(Service.DependenciesSection as DependenciesSection)?.HandleDependenciesChanged ();
 		}
 	}

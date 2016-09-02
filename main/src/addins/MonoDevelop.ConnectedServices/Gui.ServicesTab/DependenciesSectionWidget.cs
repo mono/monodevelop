@@ -96,10 +96,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Content = container;
 			Update ();
 
-			dependency.Added += HandleDependencyAdded;
-			dependency.Adding += HandleDependencyAdding;
-			dependency.AddingFailed += HandleDependencyAddingFailed;
-			dependency.Removed += HandleDependencyRemoved;
+			dependency.StatusChanged += HandleDependencyStatusChange;
 			service.StatusChanged += HandleServiceStatusChanged;
 		}
 
@@ -156,7 +153,20 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
-		void HandleDependencyAdding (object sender, EventArgs e)
+		void HandleDependencyStatusChange (object sender, DependencyStatusChangedEventArgs e)
+		{
+			if (e.NewStatus == DependencyStatus.Adding) {
+				this.HandleDependencyAdding ();
+			} else if (e.NewStatus == DependencyStatus.Added && e.OldStatus == DependencyStatus.Adding) {
+				this.HandleDependencyAdded ();
+			} else if (e.NewStatus == DependencyStatus.NotAdded && e.OldStatus == DependencyStatus.Removing) {
+				this.HandleDependencyRemoved ();
+			} else if (e.NewStatus == DependencyStatus.NotAdded && e.OldStatus == DependencyStatus.Adding) {
+				this.HandleDependencyAddingFailed ();
+			}
+		}
+
+		void HandleDependencyAdding ()
 		{
 			Runtime.RunInMainThread (delegate {
 				nameLabel.TextColor = Styles.DimTextColor;
@@ -168,17 +178,17 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			});
 		}
 
-		void HandleDependencyAdded (object sender, EventArgs e)
+		void HandleDependencyAdded ()
 		{
 			Runtime.RunInMainThread (() => Update ());
 		}
 
-		void HandleDependencyRemoved (object sender, EventArgs e)
+		void HandleDependencyRemoved ()
 		{
 			Runtime.RunInMainThread (() => Update ());
 		}
 
-		void HandleDependencyAddingFailed (object sender, EventArgs e)
+		void HandleDependencyAddingFailed ()
 		{
 			Runtime.RunInMainThread (delegate {
 				nameLabel.TextColor = Styles.DimTextColor;
@@ -197,10 +207,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		protected override void Dispose (bool disposing)
 		{
 			if (Dependency != null) {
-				Dependency.Adding -= HandleDependencyAdding;
-				Dependency.AddingFailed -= HandleDependencyAddingFailed;
-				Dependency.Added -= HandleDependencyAdded;
-				Dependency.Removed -= HandleDependencyRemoved;
+				Dependency.StatusChanged -= HandleDependencyStatusChange;
 				Dependency = null;
 			}
 			if (Service != null) {
