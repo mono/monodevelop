@@ -301,7 +301,7 @@ namespace MonoDevelop.Ide.WelcomePage
 
 			if (hasRemoveButton && (mouseOver || !ItemAccessible)) {
 				x = Allocation.Right - InternalPadding - 2;
-				y = Allocation.Y + (int)(Allocation.Height / 2) - (int)(removeIcon.Height / 2);
+				y = Allocation.Y + (int)(Allocation.Height / 2) - (int)(removeIcon.Height / 2) - 1;
 				ctx.DrawImage (this, removeIcon, x, y);
 				removeRect = new Gdk.Rectangle (x, y, (int)removeIcon.Width, (int)removeIcon.Height);
 			}
