@@ -18,7 +18,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static readonly IConnectedService[] Empty = new IConnectedService[0];
 
-		ServiceStatus status = (ServiceStatus)(-1);
+		Status status = (Status)(-1);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.ConnectedService"/> class.
@@ -65,10 +65,10 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the current status of the service.
 		/// </summary>
-		public ServiceStatus Status {
+		public Status Status {
 			get {
 				if ((int)status == -1)
-					status = IsAdded ? ServiceStatus.Added : ServiceStatus.NotAdded;
+					status = IsAdded ? Status.Added : Status.NotAdded;
 				return status;
 			}
 		}
@@ -123,7 +123,7 @@ namespace MonoDevelop.ConnectedServices
 				return true;
 			}
 
-			this.ChangeStatus (ServiceStatus.Adding);
+			this.ChangeStatus (Status.Adding);
 
 			try {
 				await this.AddDependencies (CancellationToken.None).ConfigureAwait (false);
@@ -131,11 +131,11 @@ namespace MonoDevelop.ConnectedServices
 				await this.StoreAddedState ().ConfigureAwait (false);
 
 				// TODO: service status == added and .IsAdded need to make sure that they match
-				this.ChangeStatus (ServiceStatus.Added);
+				this.ChangeStatus (Status.Added);
 				return true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
-				this.ChangeStatus (ServiceStatus.NotAdded, ex);
+				this.ChangeStatus (Status.NotAdded, ex);
 				return false;
 			}
 		}
@@ -150,7 +150,7 @@ namespace MonoDevelop.ConnectedServices
 				return true;
 			}
 
-			this.ChangeStatus (ServiceStatus.Removing);
+			this.ChangeStatus (Status.Removing);
 
 			// try to remove the dependencies first, these may sometimes fail if one of the packages is or has dependencies
 			// that other packages are dependent upon. A common one might be Json.Net for instance
@@ -167,7 +167,7 @@ namespace MonoDevelop.ConnectedServices
 			try {
 				await this.OnRemoveFromProject ().ConfigureAwait (false);
 				await this.RemoveAddedState ().ConfigureAwait (false);
-				this.ChangeStatus (ServiceStatus.NotAdded);
+				this.ChangeStatus (Status.NotAdded);
 
 				if (dependenciesFailed) {
 					// TODO: notify the user about the dependencies that failed, we might already have this from the package console and that might be enough for now
@@ -176,7 +176,7 @@ namespace MonoDevelop.ConnectedServices
 				return true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while removing the service from the project", ex);
-				this.ChangeStatus (ServiceStatus.Added, ex);
+				this.ChangeStatus (Status.Added, ex);
 				return false;
 			}
 		}
@@ -249,17 +249,17 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Changes the status of the service and notifies subscribers
 		/// </summary>
-		void ChangeStatus(ServiceStatus newStatus, Exception error = null)
+		void ChangeStatus(Status newStatus, Exception error = null)
 		{
 			var oldStatus = this.Status;
 			this.status = newStatus;
-			this.NotifyServiceStatusChanged (newStatus, oldStatus, error);
+			this.NotifyStatusChanged (newStatus, oldStatus, error);
 		}
 
 		/// <summary>
 		/// Notifies subscribers that the service status has changed
 		/// </summary>
-		void NotifyServiceStatusChanged(ServiceStatus newStatus, ServiceStatus oldStatus, Exception error = null)
+		void NotifyStatusChanged(Status newStatus, Status oldStatus, Exception error = null)
 		{
 			var handler = this.StatusChanged;
 			if (handler != null) {

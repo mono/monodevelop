@@ -124,7 +124,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void Update ()
 		{
-			if (Service.Status == ServiceStatus.Added) {
+			if (Service.Status == Status.Added) {
 				if (Dependency.IsAdded) {
 					nameLabel.TextColor = Styles.BaseForegroundColor;
 					iconView.Image = Dependency.Icon.WithSize (Xwt.IconSize.Small);
@@ -139,7 +139,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				}
 			} else {
 				double iconAlpha = 0.4;
-				if (Service.Status == ServiceStatus.Adding && Dependency.IsAdded) {
+				if (Service.Status == Status.Adding && Dependency.IsAdded) {
 					iconAlpha = 1.0;
 					nameLabel.TextColor = Styles.BaseForegroundColor;
 				} else
@@ -153,15 +153,15 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			}
 		}
 
-		void HandleDependencyStatusChange (object sender, DependencyStatusChangedEventArgs e)
+		void HandleDependencyStatusChange (object sender, StatusChangedEventArgs e)
 		{
-			if (e.NewStatus == DependencyStatus.Adding) {
+			if (e.NewStatus == Status.Adding) {
 				this.HandleDependencyAdding ();
-			} else if (e.NewStatus == DependencyStatus.Added && e.OldStatus == DependencyStatus.Adding) {
+			} else if (e.NewStatus == Status.Added && e.OldStatus == Status.Adding) {
 				this.HandleDependencyAdded ();
-			} else if (e.NewStatus == DependencyStatus.NotAdded && e.OldStatus == DependencyStatus.Removing) {
+			} else if (e.NewStatus == Status.NotAdded && e.OldStatus == Status.Removing) {
 				this.HandleDependencyRemoved ();
-			} else if (e.NewStatus == DependencyStatus.NotAdded && e.OldStatus == DependencyStatus.Adding) {
+			} else if (e.NewStatus == Status.NotAdded && e.OldStatus == Status.Adding) {
 				this.HandleDependencyAddingFailed ();
 			}
 		}

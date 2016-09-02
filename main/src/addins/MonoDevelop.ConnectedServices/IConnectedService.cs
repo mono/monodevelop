@@ -70,7 +70,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the current status of the service.
 		/// </summary>
-		ServiceStatus Status { get; }
+		Status Status { get; }
 
 		/// <summary>
 		/// Occurs when the status of the service has changed.

@@ -86,8 +86,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
 			switch (e.NewStatus) {
-			case ServiceStatus.Added:
-			case ServiceStatus.NotAdded:
+			case Status.Added:
+			case Status.NotAdded:
 				this.HandleServiceAddedRemoved ((IConnectedService)sender);
 
 				break;

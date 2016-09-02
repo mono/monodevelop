@@ -195,11 +195,11 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			Runtime.RunInMainThread (delegate {
 
 				StopIconAnimations ();
-				statusWidget.Visible = !showDetails && Service.Status != ServiceStatus.NotAdded;
-				addButton.Sensitive = Service.Status == ServiceStatus.NotAdded;
+				statusWidget.Visible = !showDetails && Service.Status != Status.NotAdded;
+				addButton.Sensitive = Service.Status == Status.NotAdded;
 
 				switch (Service.Status) {
-				case ServiceStatus.NotAdded:
+				case Status.NotAdded:
 					addButton.Label = GettextCatalog.GetString ("Add");
 					addButton.Image = statusIcon.Image = null;
 
@@ -207,7 +207,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					// tell it to update
 					ConnectedServices.LocateServiceView (this.Service.Project)?.UpdateCurrentNode ();
 					break;
-				case ServiceStatus.Added:
+				case Status.Added:
 					addButton.Label = statusText.Text = GettextCatalog.GetString ("Added");
 					addButton.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small).WithAlpha (0.4);
 					statusIcon.Image = ImageService.GetIcon ("md-checkmark").WithSize (IconSize.Small);
@@ -216,10 +216,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					// tell it to update
 					ConnectedServices.LocateServiceView (this.Service.Project)?.UpdateCurrentNode ();
 					break;
-				case ServiceStatus.Adding:
-				case ServiceStatus.Removing:
+				case Status.Adding:
+				case Status.Removing:
 					addButton.Label = statusText.Text =
-						Service.Status == ServiceStatus.Adding
+						Service.Status == Status.Adding
 						? GettextCatalog.GetString ("Adding\u2026")
 						: GettextCatalog.GetString ("Removing\u2026");
 					if (statusIconAnimation == null) {
@@ -251,7 +251,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
 			UpdateServiceStatus ();
-			if (e.NewStatus == ServiceStatus.NotAdded && e.OldStatus == ServiceStatus.Adding) {
+			if (e.NewStatus == Status.NotAdded && e.OldStatus == Status.Adding) {
 				// adding failed
 				Runtime.RunInMainThread (delegate {
 					addButton.Image = ImageService.GetIcon ("md-error").WithSize (IconSize.Small);

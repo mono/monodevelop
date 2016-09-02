@@ -34,12 +34,12 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the current status of the dependency.
 		/// </summary>
-		DependencyStatus Status { get; }
+		Status Status { get; }
 
 		/// <summary>
 		/// Occurs when the status of the dependency has changed.
 		/// </summary>
-		event EventHandler<DependencyStatusChangedEventArgs> StatusChanged;
+		event EventHandler<StatusChangedEventArgs> StatusChanged;
 
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project

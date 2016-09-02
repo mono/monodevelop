@@ -16,7 +16,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public static readonly IConnectedServiceDependency [] Empty = new IConnectedServiceDependency [0];
 
-		DependencyStatus status = (DependencyStatus)(-1);
+		Status status = (Status)(-1);
 
 		Image icon;
 
@@ -64,10 +64,10 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets the current status of the dependency.
 		/// </summary>
-		public DependencyStatus Status { 
+		public Status Status { 
 			get {
 				if ((int)status == -1)
-					status = IsAdded ? DependencyStatus.Added : DependencyStatus.NotAdded;
+					status = IsAdded ? Status.Added : Status.NotAdded;
 				return status;
 			}
 		}
@@ -75,23 +75,23 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Occurs when the status of the dependency has changed.
 		/// </summary>
-		public event EventHandler<DependencyStatusChangedEventArgs> StatusChanged;
+		public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
 		/// <summary>
 		/// Adds the dependency to the project and returns true if the dependency was added to the project
 		/// </summary>
 		public async Task<bool> AddToProject (CancellationToken token)
 		{
-			this.ChangeStatus (DependencyStatus.Adding);
+			this.ChangeStatus (Status.Adding);
 
 			var result = false;
 			try {
 				result = await OnAddToProject (token).ConfigureAwait (false);
 
 				// TODO: service status == added and .IsAdded need to make sure that they match
-				this.ChangeStatus (DependencyStatus.Added);
+				this.ChangeStatus (Status.Added);
 			} catch (Exception ex) {
-				this.ChangeStatus (DependencyStatus.NotAdded, ex);
+				this.ChangeStatus (Status.NotAdded, ex);
 				throw;
 			}
 
@@ -103,14 +103,14 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public async Task<bool> RemoveFromProject (CancellationToken token)
 		{
-			this.ChangeStatus (DependencyStatus.Removing);
+			this.ChangeStatus (Status.Removing);
 
 			var result = false;
 			try {
 				result = await OnRemoveFromProject (token).ConfigureAwait (false);
-				this.ChangeStatus (DependencyStatus.NotAdded);
+				this.ChangeStatus (Status.NotAdded);
 			} catch (Exception ex) {
-				this.ChangeStatus (DependencyStatus.Added, ex);
+				this.ChangeStatus (Status.Added, ex);
 				throw;
 			}
 
@@ -130,7 +130,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Raises the status change event for the new status
 		/// </summary>
-		protected virtual void OnStatusChange(DependencyStatus newStatus, DependencyStatus oldStatus, Exception error = null)
+		protected virtual void OnStatusChange(Status newStatus, Status oldStatus, Exception error = null)
 		{
 			this.NotifyStatusChanged (newStatus, oldStatus, error);
 		}
@@ -138,7 +138,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Changes the status of the service and notifies subscribers
 		/// </summary>
-		void ChangeStatus(DependencyStatus newStatus, Exception error = null)
+		void ChangeStatus(Status newStatus, Exception error = null)
 		{
 			var oldStatus = this.Status;
 			this.status = newStatus;
@@ -148,11 +148,11 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Notifies subscribers that the service status has changed
 		/// </summary>
-		void NotifyStatusChanged (DependencyStatus newStatus, DependencyStatus oldStatus, Exception error = null)
+		void NotifyStatusChanged (Status newStatus, Status oldStatus, Exception error = null)
 		{
 			var handler = this.StatusChanged;
 			if (handler != null) {
-				handler (this, new DependencyStatusChangedEventArgs (newStatus, oldStatus, error));
+				handler (this, new StatusChangedEventArgs (newStatus, oldStatus, error));
 			}
 		}
 	}

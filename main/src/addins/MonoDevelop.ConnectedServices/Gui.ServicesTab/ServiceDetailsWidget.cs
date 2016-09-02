@@ -93,7 +93,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		void HandleServiceStatusChanged (object sender, StatusChangedEventArgs e)
 		{
 			// handle when the service has finished being added
-			if (e.NewStatus == ServiceStatus.Added && e.OldStatus == ServiceStatus.Adding) {
+			if (e.NewStatus == Status.Added && e.OldStatus == Status.Adding) {
 				if (service.AreDependenciesInstalled) {
 					Core.Runtime.RunInMainThread (delegate {
 						var configuration = sections.Children.FirstOrDefault (s => (s as ConfigurationSectionWidget)?.Section != service.DependenciesSection) as ConfigurationSectionWidget;
