@@ -77,7 +77,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			service.StatusChanged += HandleServiceStatusChanged;
 
 			// expand the first section if the service is already added to the project
-			if (service.IsAdded) {
+			if (service.Status == Status.Added) {
 				var section = service.Sections.FirstOrDefault ();
 				if (section != null) {
 					foreach (ConfigurationSectionWidget child in this.sections.Children.Where (c => c is ConfigurationSectionWidget)) {

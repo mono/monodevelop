@@ -41,13 +41,6 @@ namespace MonoDevelop.ConnectedServices
 		Xwt.Drawing.Image GalleryIcon { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedService"/> is added to Project or not.
-		/// This is independent of whether or not the dependencies are installed or the service has been configured or not. It does imply that 
-		/// any code scaffolding that can be done has been done.
-		/// </summary>
-		bool IsAdded { get; }
-
-		/// <summary>
 		/// Gets the dependencies that will be added to the project
 		/// </summary>
 		IConnectedServiceDependency [] Dependencies { get; }
@@ -69,6 +62,8 @@ namespace MonoDevelop.ConnectedServices
 
 		/// <summary>
 		/// Gets the current status of the service.
+		/// This is independent of whether or not the dependencies are installed or the service has been configured or not. 
+		/// If the status is Added, it does imply that any code scaffolding that can be done has been done.
 		/// </summary>
 		Status Status { get; }
 

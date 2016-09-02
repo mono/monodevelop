@@ -68,19 +68,8 @@ namespace MonoDevelop.ConnectedServices
 		public Status Status {
 			get {
 				if ((int)status == -1)
-					status = IsAdded ? Status.Added : Status.NotAdded;
+					status = this.GetIsAddedToProject() ? Status.Added : Status.NotAdded;
 				return status;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedService"/> is added to Project or not.
-		/// This is independent of whether or not the dependencies are installed or the service has been configured or not. It does imply that 
-		/// any code scaffolding that can be done has been done.
-		/// </summary>
-		public bool IsAdded {
-			get {
-				return this.GetIsAddedToProject ();
 			}
 		}
 
@@ -118,7 +107,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public async Task<bool> AddToProject ()
 		{
-			if (this.IsAdded) {
+			if (this.GetIsAddedToProject()) {
 				LoggingService.LogWarning ("Skipping adding of the service, it has already been added");
 				return true;
 			}
@@ -130,8 +119,7 @@ namespace MonoDevelop.ConnectedServices
 				await this.OnAddToProject ().ConfigureAwait (false);
 				await this.StoreAddedState ().ConfigureAwait (false);
 
-				// TODO: service status == added and .IsAdded need to make sure that they match
-				this.ChangeStatus (Status.Added);
+				this.ChangeStatus (this.GetIsAddedToProject() ? Status.Added : Status.NotAdded);
 				return true;
 			} catch (Exception ex) {
 				LoggingService.LogError ("An error occurred while adding the service to the project", ex);
@@ -145,7 +133,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public async Task<bool> RemoveFromProject () 
 		{
-			if (!this.IsAdded) {
+			if (!this.GetIsAddedToProject()) {
 				LoggingService.LogWarning ("Skipping removing of the service, it is not added to the project");
 				return true;
 			}

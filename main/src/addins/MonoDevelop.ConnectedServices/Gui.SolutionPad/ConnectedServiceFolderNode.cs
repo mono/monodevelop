@@ -37,7 +37,7 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		void CreateChildNodes ()
 		{
 			childNodes.Clear ();
-			foreach (var service in Project.GetConnectedServicesBinding ()?.SupportedServices.Where (x => x.IsAdded))
+			foreach (var service in Project.GetConnectedServicesBinding ()?.SupportedServices.Where (x => x.Status == Status.Added))
 				childNodes.Add (new ConnectedServiceNode (this.Project, service.Id, service.DisplayName));
 		}
 

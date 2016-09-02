@@ -56,7 +56,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				serviceWidget.MarginTop = 5;
 				serviceWidget.ButtonReleased += HandleServiceWidgetButtonReleased;
 
-				if (service.IsAdded) {
+				if (service.Status == Status.Added) {
 					enabledList.PackStart (serviceWidget);
 					enabledLabel.Visible = true;
 				} else {
@@ -98,7 +98,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			//TODO: sort the lists
 			Runtime.RunInMainThread (delegate {
-				if (service.IsAdded) {
+				if (service.Status == Status.Added) {
 					foreach (var widget in availableList.Children.Where ((c) => c is ServiceWidget).Cast<ServiceWidget> ()) {
 						if (widget.Service == service) {
 							availableList.Remove (widget);
@@ -116,8 +116,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 					}
 				}
 
-				enabledLabel.Visible = services.Any (s => s.IsAdded);
-				availableLabel.Visible = services.Any (s => !s.IsAdded);
+				enabledLabel.Visible = services.Any (s => s.Status == Status.Added);
+				availableLabel.Visible = services.Any (s => s.Status == Status.NotAdded);
 			});
 		}
 

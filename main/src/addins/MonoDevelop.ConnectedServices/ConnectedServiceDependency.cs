@@ -59,7 +59,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="T:MonoDevelop.ConnectedServices.IConnectedServiceDependency"/> is added to the project or not.
 		/// </summary>
-		public virtual bool IsAdded { get { return this.Service.IsAdded; } }
+		public virtual bool IsAdded { get { return this.Service.Status == Status.Added; } }
 
 		/// <summary>
 		/// Gets the current status of the dependency.

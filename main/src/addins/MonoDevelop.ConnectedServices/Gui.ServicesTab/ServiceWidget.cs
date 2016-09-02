@@ -59,7 +59,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				showDetails = value;
 				platformWidget.Visible = showDetails && !string.IsNullOrEmpty (service?.SupportedPlatforms);
 				addButton.Visible = showDetails;
-				statusWidget.Visible = service?.IsAdded == true && !showDetails;
+				statusWidget.Visible = service?.Status == Status.Added && !showDetails;
 			}
 		}
 
@@ -136,12 +136,12 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 		void HandleAddButtonClicked (object sender, EventArgs e)
 		{
-			if (!service.IsAdded) {
+			if (service.Status == Status.NotAdded) {
 				var addProjects = new Dictionary<string, DotNetProject> ();
 
 				foreach (DotNetProject project in service.Project.ParentSolution.GetAllProjects ().Where (p => p is DotNetProject && p != service.Project)) {
 					var svc = project.GetConnectedServicesBinding ()?.SupportedServices.FirstOrDefault (s => s.Id == service.Id);
-					if (svc != null && !svc.IsAdded)
+					if (svc != null && svc.Status == Status.NotAdded)
 						addProjects [project.ItemId] = project;
 				}
 

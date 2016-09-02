@@ -47,7 +47,7 @@ namespace MonoDevelop.ConnectedServices
 		/// </summary>
 		public bool HasAddedServices { 
 			get {
-				return this.services.Any(x => x.IsAdded);
+				return this.services.Any(x => x.Status == Status.Added);
 			}
 		}
 
