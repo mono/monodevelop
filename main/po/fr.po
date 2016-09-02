@@ -3841,7 +3841,7 @@ msgstr "Informations sur l’auteur"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:2
 msgid "Key Bindings"
-msgstr "Combinaisons de touches"
+msgstr "Raccourcis clavier"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:2
 msgid "Fonts"
@@ -5628,7 +5628,7 @@ msgstr "Encodages affichés dans le menu :"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
 msgid "_Token List:"
-msgstr "_Liste de jetons :"
+msgstr "_Liste de mots-clés :"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.TasksPanelWidget.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Gui.OptionPanels.AuthorInformationPanelWidget.cs:2
@@ -17989,7 +17989,7 @@ msgstr "Apparence"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:15
 msgid "Syntax Highlighting"
-msgstr "Coloration syntaxique"
+msgstr "Coloration Syntaxique"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.addin.xml:16
 msgid "Inspect"
