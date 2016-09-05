@@ -218,7 +218,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ViewModelBase.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\LicenseAcceptanceDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.PackageManagement.LicenseAcceptanceDialog.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesOptionsPanel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageSourcesWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />

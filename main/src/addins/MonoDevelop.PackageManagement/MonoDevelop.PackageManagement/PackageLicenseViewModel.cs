@@ -50,5 +50,9 @@ namespace MonoDevelop.PackageManagement
 		public string Author {
 			get { return packageLicense.PackageAuthor; }
 		}
+
+		public Uri IconUrl {
+			get { return packageLicense.IconUrl; }
+		}
 	}
 }

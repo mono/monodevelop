@@ -40,6 +40,7 @@ namespace MonoDevelop.PackageManagement
 			PackageTitle = metadata.Title;
 			PackageAuthor = metadata.Authors;
 			LicenseUrl = metadata.LicenseUrl;
+			IconUrl = metadata.IconUrl;
 		}
 
 		public NuGetPackageLicense (IPackage package)
@@ -48,6 +49,7 @@ namespace MonoDevelop.PackageManagement
 			PackageTitle = package.Title;
 			PackageAuthor = GetAuthor (package);
 			LicenseUrl = package.LicenseUrl;
+			IconUrl = package.IconUrl;
 		}
 
 		public PackageIdentity PackageIdentity { get; private set; }
@@ -55,6 +57,7 @@ namespace MonoDevelop.PackageManagement
 		public string PackageTitle { get; private set; }
 		public string PackageAuthor { get; private set; }
 		public Uri LicenseUrl { get; private set; }
+		public Uri IconUrl { get; private set; }
 
 		static string GetAuthor (IPackage package)
 		{
