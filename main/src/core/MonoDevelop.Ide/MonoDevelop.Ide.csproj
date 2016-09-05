@@ -3300,6 +3300,18 @@
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-remove-16~dark%402x.png">
       <LogicalName>welcome-remove-16~dark@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-remove-over-16.png">
+      <LogicalName>welcome-remove-over-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-remove-over-16%402x.png">
+      <LogicalName>welcome-remove-over-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-remove-over-16~dark.png">
+      <LogicalName>welcome-remove-over-16~dark.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\welcome-remove-over-16~dark%402x.png">
+      <LogicalName>welcome-remove-over-16~dark@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\link-overlay-16.png">
       <LogicalName>link-overlay-16.png</LogicalName>
     </EmbeddedResource>
