@@ -45,7 +45,6 @@ namespace MonoDevelop.PackageManagement
 
 		public LicenseAcceptanceDialog (LicenseAcceptanceViewModel viewModel)
 		{
-			Width = 510;
 			Height = 350;
 			Resizable = false;
 			Padding = 0;
@@ -55,7 +54,6 @@ namespace MonoDevelop.PackageManagement
 			this.imageLoader.Loaded += HandleImageLoaded;
 
 			var titleLabel = new Label ();
-			titleLabel.Wrap = WrapMode.Word;
 			titleLabel.Text = GettextCatalog.GetPluralString (
 				"The following package requires that you accept its license terms before installing:",
 				"The following packages require that you accept their license terms before installing:",
@@ -70,7 +68,7 @@ namespace MonoDevelop.PackageManagement
 
 			scroll = new ScrollView (packagesList);
 			scroll.HorizontalScrollPolicy = ScrollPolicy.Never;
-			scroll.VerticalScrollPolicy = ScrollPolicy.Never;
+			scroll.VerticalScrollPolicy = ScrollPolicy.Automatic;
 			scroll.BorderVisible = false;
 			scroll.BackgroundColor = Ide.Gui.Styles.BackgroundColor;
 
