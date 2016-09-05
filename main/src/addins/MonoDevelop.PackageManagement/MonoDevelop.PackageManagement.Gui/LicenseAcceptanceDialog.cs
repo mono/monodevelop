@@ -94,9 +94,11 @@ namespace MonoDevelop.PackageManagement
 		void HandleImageLoaded (object sender, ImageLoadedEventArgs e)
 		{
 			if (!e.HasError) {
-				var view = e.State as ImageView;
-				if (view != null)
-					view.Image = e.Image?.WithSize (IconSize.Large) ?? ImageService.GetIcon ("md-package", Gtk.IconSize.Dnd);
+				Core.Runtime.RunInMainThread (delegate {
+					var view = e.State as ImageView;
+					if (view != null)
+						view.Image = e.Image?.WithSize (IconSize.Large) ?? ImageService.GetIcon ("md-package", Gtk.IconSize.Dnd);
+				});
 			}
 		}
 

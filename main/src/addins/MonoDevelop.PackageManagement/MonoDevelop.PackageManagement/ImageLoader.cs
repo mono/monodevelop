@@ -99,7 +99,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			try {
 				Stream stream = GetResponseStream (uri);
-				Image image = Image.FromStream (stream);
+				Image image = Core.Runtime.RunInMainThread (() => Image.FromStream (stream)).Result;
 
 				return new ImageLoadedEventArgs (image, uri, state);
 			} catch (Exception ex) {
