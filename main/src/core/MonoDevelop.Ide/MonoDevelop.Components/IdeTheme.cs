@@ -321,6 +321,7 @@ namespace MonoDevelop.Components
 
 			if (IdeApp.Preferences.UserInterfaceTheme == Theme.Light) {
 				window.StyleMask &= ~NSWindowStyle.TexturedBackground;
+				window.BackgroundColor = MonoDevelop.Ide.Gui.Styles.BackgroundColor.ToNSColor ();
 				return;
 			}
 
