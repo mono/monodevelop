@@ -98,7 +98,7 @@ namespace MonoDevelop.Ide.WelcomePage
 			this.subtitle = subtitle;
 			this.icon = icon;
 			this.disabledIcon = Xwt.Drawing.Image.FromResource ("missing-item-32.png");
-			this.removeIcon = Xwt.Drawing.Image.FromResource ("remove-16.png");
+			this.removeIcon = Xwt.Drawing.Image.FromResource ("welcome-remove-16.png");
 			this.actionUrl = actionUrl;
 			this.fileName = fileName;
 			hasRemoveButton = fileName != null;
