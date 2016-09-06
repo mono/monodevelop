@@ -52,6 +52,10 @@ namespace MonoDevelop.ConnectedServices
 				LoggingService.LogInfo ("Queued for installation");
 				await task.ConfigureAwait (false);
 				return true;
+			} catch (InvalidOperationException) {
+				// Nuget throws these and logs them, let's not pollute the log anymore than we need to
+				// and assume that it was already added to the project
+				return true;
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Could not queue package for installation", ex);
 				throw;
@@ -83,7 +87,7 @@ namespace MonoDevelop.ConnectedServices
 				await task.ConfigureAwait (false);
 			} catch (InvalidOperationException) {
 				// Nuget throws these and logs them, let's not pollute the log anymore than we need to
-				throw;
+				// and assume that it needs to be left in the project
 			} catch (Exception ex) {
 				LoggingService.LogInternalError ("Could not queue package for uninstallation", ex);
 				throw;
