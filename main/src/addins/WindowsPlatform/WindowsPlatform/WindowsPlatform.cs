@@ -171,7 +171,12 @@ namespace MonoDevelop.Platform
 		{
 			var path = Path.GetDirectoryName (GetType ().Assembly.Location);
 			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.WPF.dll"));
-			return WPFToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Wpf);
+			WPFToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Wpf);
+
+			WPFToolkit.RegisterBackend<Xwt.Backends.IDialogBackend, ThemedWpfDialogBackend> ();
+			WPFToolkit.RegisterBackend<Xwt.Backends.IWindowBackend, ThemedWpfWindowBackend> ();
+
+			return WPFToolkit;
 		}
 
 		internal override void SetMainWindowDecorations (Gtk.Window window)
@@ -563,6 +568,34 @@ namespace MonoDevelop.Platform
 			{
 				foreach (string file in files)
 					Process.Start (ExePath, ProcessArgumentBuilder.Quote (file));
+			}
+		}
+
+		static void ApplyTheme (System.Windows.Window window)
+		{
+			var color = System.Windows.Media.Color.FromArgb (
+				(byte)(MonoDevelop.Ide.Gui.Styles.BackgroundColor.Alpha * 255.0),
+				(byte)(MonoDevelop.Ide.Gui.Styles.BackgroundColor.Red * 255.0),
+				(byte)(MonoDevelop.Ide.Gui.Styles.BackgroundColor.Green * 255.0),
+				(byte)(MonoDevelop.Ide.Gui.Styles.BackgroundColor.Blue * 255.0));
+			window.Background = new System.Windows.Media.SolidColorBrush (color);
+		}
+
+		public class ThemedWpfWindowBackend : Xwt.WPFBackend.WindowBackend
+		{
+			public override void Initialize ()
+			{
+				base.Initialize ();
+				ApplyTheme (Window);
+			}
+		}
+
+		public class ThemedWpfDialogBackend : Xwt.WPFBackend.DialogBackend
+		{
+			public override void Initialize ()
+			{
+				base.Initialize ();
+				ApplyTheme (Window);
 			}
 		}
 	}
