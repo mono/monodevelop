@@ -11,6 +11,9 @@ namespace MonoDevelop.ConnectedServices
 	/// </summary>
 	public abstract class JsonFileConnectedService : ConnectedService
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.JsonFileConnectedService"/> class.
+		/// </summary>
 		protected JsonFileConnectedService (DotNetProject project) : base (project)
 		{
 		}
