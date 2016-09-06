@@ -454,7 +454,7 @@ namespace MonoDevelop.Core
 				// handle case a: some/path b: some/path/deeper...
 				if (a >= aEnd) {
 					if (IsSeparator (*b)) {
-						lastStartA = aEnd;
+						lastStartA = a + 1;
 						lastStartB = b;
 					}
 				}
@@ -466,14 +466,7 @@ namespace MonoDevelop.Core
 						goUpCount++;
 					lastStartB++;
 				}
-				int remainingPathLength = (int)(aEnd - lastStartA);
-				var size = goUpCount * 2 + goUpCount;
-				if (remainingPathLength > 0) {
-					if (goUpCount > 0)
-						size++;
-					size += remainingPathLength;
-				}
-				
+				var size = goUpCount * 2 + goUpCount + aEnd - lastStartA;
 				var result = new char [size];
 				fixed (char* rPtr = result) {
 					// go paths up
@@ -481,8 +474,7 @@ namespace MonoDevelop.Core
 					for (int i = 0; i < goUpCount; i++) {
 						*(r++) = '.';
 						*(r++) = '.';
-						if (i != goUpCount - 1 || remainingPathLength > 0) // If there is no remaining path, there is no need for a trailing slash
-							*(r++) = Path.DirectorySeparatorChar;
+						*(r++) = Path.DirectorySeparatorChar;
 					}
 					// copy the remaining absulute path
 					while (lastStartA < aEnd)
