@@ -182,8 +182,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		protected override void OnButtonReleased (ButtonEventArgs args)
 		{
 			base.OnButtonReleased (args);
-			if (args.Button == PointerButton.Left && !Expanded)
-				Expanded = true;
+			if (args.Button == PointerButton.Left)
+				Expanded = !Expanded;
 		}
 
 		protected override void OnMouseEntered (EventArgs args)

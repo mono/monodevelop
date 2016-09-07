@@ -61,32 +61,19 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 
 			if (service.DependenciesSection != null) {
 				var dependencies = new ConfigurationSectionWidget (service.DependenciesSection);
-				dependencies.ExpandedChanged += HandleSectionExpandedChanged;
 				sections.PackStart (dependencies);
-				dependencies.Expanded = true;
 			}
 
 			foreach (var section in service.Sections) {
 				var w = new ConfigurationSectionWidget (section);
-				if (sections.Children.Count () == 0)
-					w.Expanded = true;
-				w.ExpandedChanged += HandleSectionExpandedChanged;
 				sections.PackStart (w);
 			}
 
 			service.StatusChanged += HandleServiceStatusChanged;
 
-			// expand the first section if the service is already added to the project
+			// expand the first unconfigured section if the service is already added to the project
 			if (service.Status == Status.Added) {
-				var section = service.Sections.FirstOrDefault ();
-				if (section != null) {
-					foreach (ConfigurationSectionWidget child in this.sections.Children.Where (c => c is ConfigurationSectionWidget)) {
-						if (child.Section == section) {
-							child.Expanded = true;
-							break;
-						}
-					}
-				}
+				ExpandFirstOrUnconfiguredSection ();
 			}
 		}
 
@@ -94,23 +81,24 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		{
 			// handle when the service has finished being added
 			if (e.WasAdded) {
-				if (service.AreDependenciesInstalled) {
-					Core.Runtime.RunInMainThread (delegate {
-						var configuration = sections.Children.FirstOrDefault (s => (s as ConfigurationSectionWidget)?.Section != service.DependenciesSection) as ConfigurationSectionWidget;
-						if (configuration != null)
-							configuration.Expanded = true;
-					});
-				}
+				ExpandFirstOrUnconfiguredSection ();
 			}
 		}
 
-		void HandleSectionExpandedChanged (object sender, EventArgs e)
+		void ExpandFirstOrUnconfiguredSection ()
 		{
-			var section = sender as ConfigurationSectionWidget;
-			if (section?.Expanded == true) {
-				foreach (ConfigurationSectionWidget child in sections.Children.Where (c => c is ConfigurationSectionWidget)) {
-					if (child != sender)
-						child.Expanded = false;
+			var _sections = service.Sections.AsEnumerable ();
+			if (service.DependenciesSection != null) {
+				_sections = new IConfigurationSection [] { service.DependenciesSection }.Concat (_sections).AsEnumerable ();
+			}
+
+			var section = _sections.FirstOrDefault (s => !s.IsAdded) ?? _sections.FirstOrDefault ();
+			if (section != null) {
+				foreach (ConfigurationSectionWidget child in this.sections.Children.Where (c => c is ConfigurationSectionWidget)) {
+					if (child.Section == section) {
+						child.Expanded = true;
+						break;
+					}
 				}
 			}
 		}
