@@ -132,7 +132,7 @@ namespace MonoDevelop.PackageManagement
 			titleBox.PackStart (new Label {
 				Markup = string.Format ("<span weight='bold'>{0}</span> – {1}", package.Id, package.Author),
 			});
-			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View Lincese"));
+			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View License"));
 			licenseLabel.Uri = package.LicenseUrl;
 			licenseLabel.LinkClicked += (sender, e) => DesktopService.ShowUrl (e.Target.AbsoluteUri);
 			titleBox.PackStart (licenseLabel);
