@@ -390,15 +390,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				new JProperty (framework, new JObject())
 			);
 
-			project.AddFile (projectJsonFile);
-			if (packagesConfigFile != null) {
-				project.Files.Remove (packagesConfigFile);
-			}
-
 			file.Text = json.ToString ();
 
 			if (!isOpen) {
 				file.Save ();
+			}
+
+			project.AddFile (projectJsonFile);
+			if (packagesConfigFile != null) {
+				project.Files.Remove (packagesConfigFile);
 			}
 
 			return projectJsonFile;
