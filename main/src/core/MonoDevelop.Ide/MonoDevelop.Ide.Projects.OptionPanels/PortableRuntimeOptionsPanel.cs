@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		const string NetStandardPackageName = "NETStandard.Library";
 		const string NetStandardPackageVersion = "1.6.0";
+		const string NetStandardDefaultFramework = "netstandard1.3";
 
 		ComboBox netStandardCombo;
 		Entry targetFrameworkEntry;
@@ -213,28 +214,42 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 		}
 
+		//TODO error handling
 		public void Store ()
 		{
-			//TODO error handling
-			var fx = TargetFramework;
-			var isNetStandard = netstandardRadio.Active;
-			var nsVersion = NetStandardVersion;
-
 			bool projectFileDirty = false;
+
+			//get the new framework and netstandard version
+			var isNetStandard = netstandardRadio.Active;
+			var nsVersion = isNetStandard ? NetStandardVersion : null;
+			var fx = TargetFramework;
+
 
 			//netstandard always uses PCL5 framework
 			if (isNetStandard) {
 				fx = Runtime.SystemAssemblyService.GetTargetFramework (pcl5Tfm);
-				SetProjectJsonValues (project, nsVersion, out projectFileDirty);
-			} else {
-				//TODO: set target to PCL ID and remove dep
 			}
 
+			//netstandard always uses project.json, ensure it exists
+			var projectJsonFile = project.GetProjectFile (project.BaseDirectory.Combine ("project.json"));
+			if (isNetStandard && projectJsonFile == null) {
+				projectJsonFile = MigrateToProjectJson (project);
+				projectFileDirty = true;
+			}
+
+			//if project.json exists, update it
+			if (projectJsonFile != null) {
+				var nugetFx = nsVersion ?? GetPclShortNameMapping (fx.Id) ?? NetStandardDefaultFramework;
+				SetProjectJsonValues (projectJsonFile.FilePath, nugetFx);
+			}
+
+			//if the framework has changed, update it
 			if (fx != null && fx != project.TargetFramework) {
 				projectFileDirty = true;
 				project.TargetFramework = fx;
 			}
 
+			//if the project was modified, save it
 			if (projectFileDirty) {
 				IdeApp.ProjectOperations.SaveAsync (project);
 			}
@@ -242,7 +257,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		static IEnumerable<string> GetProjectJsonFrameworks (DotNetProject project)
 		{
-			var packagesJsonFile = project.Files.GetFileWithVirtualPath ("project.json");
+			var packagesJsonFile = project.GetProjectFile (project.BaseDirectory.Combine ("project.json"));
 			if (packagesJsonFile == null) {
 				return null;
 			}
@@ -263,18 +278,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return frameworks.Properties ().Select (p => p.Name);
 		}
 
-		static void SetProjectJsonValues (DotNetProject project, string framework, out bool projectFileDirty)
+		static void SetProjectJsonValues (string filename, string framework)
 		{
-			projectFileDirty = false;
-			var packagesJsonFile = project.Files.GetFileWithVirtualPath ("project.json");
-
-			if (packagesJsonFile == null) {
-				packagesJsonFile = AddProjectJson (project);
-				projectFileDirty = true;
-			}
-
 			bool isOpen;
-			var file = TextFileProvider.Instance.GetTextEditorData (packagesJsonFile.FilePath.ToString (), out isOpen);
+			var file = TextFileProvider.Instance.GetTextEditorData (filename, out isOpen);
 
 			JObject json;
 
@@ -283,6 +290,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				json = (JObject)JToken.Load (jr);
 			}
 
+			//TODO: remove this if the FX is not a NugetID
 			var deps = (json ["dependencies"] as JObject) ?? ((JObject) (json ["dependencies"] = new JObject ()));
 			var existingRefVersion = deps.Property (NetStandardPackageName)?.Value?.Value<string> ();
 			deps [NetStandardPackageName] = EnsureMinimumVersion (NetStandardPackageVersion, existingRefVersion);
@@ -299,22 +307,126 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 		}
 
-		static ProjectFile AddProjectJson (DotNetProject project)
+		static ProjectFile MigrateToProjectJson (DotNetProject project)
 		{
-			//TODO: migrate packages.config
-			ProjectFile packagesJsonFile = new ProjectFile (project.BaseDirectory.Combine ("project.json"), BuildAction.None);
+			var projectJsonName = project.BaseDirectory.Combine ("project.json");
+			var projectJsonFile = new ProjectFile (projectJsonName, BuildAction.None);
 
-			if (!System.IO.File.Exists (packagesJsonFile.FilePath)) {
-				System.IO.File.WriteAllText (packagesJsonFile.FilePath,
-@"{
-  ""supports"": {},
-  ""dependencies"": {},
-  ""frameworks"": {}
-}");
+			bool isOpen = false;
+			JObject json;
+			ITextDocument file;
+
+			if (System.IO.File.Exists (projectJsonName)) {
+				file = TextFileProvider.Instance.GetTextEditorData (projectJsonFile.FilePath.ToString (), out isOpen);
+				using (var tr = file.CreateReader ())
+				using (var jr = new Newtonsoft.Json.JsonTextReader (tr)) {
+					json = (JObject)JToken.Load (jr);
+				}
+			} else {
+				file = TextEditorFactory.CreateNewDocument ();
+				file.FileName = projectJsonName;
+				json = new JObject (
+					new JProperty ("supports", new JObject ()),
+					new JProperty ("dependencies", new JObject ()),
+					new JProperty ("frameworks", new JObject())
+				);
 			}
 
-			project.AddFile (packagesJsonFile);
-			return packagesJsonFile;
+			var packagesConfigFile = project.GetProjectFile (project.BaseDirectory.Combine ("packages.config"));
+			if (packagesConfigFile != null) {
+				//NOTE: it might also be open and unsaved, but that's an unimportant edge case, ignore it
+				var configDoc = System.Xml.Linq.XDocument.Load (packagesConfigFile.FilePath);
+				if (configDoc.Root != null) {
+					var deps = (json ["dependencies"] as JObject) ?? ((JObject)(json ["dependencies"] = new JObject ()));
+					foreach (var packagelEl in configDoc.Root.Elements ("package")) {
+						deps [(string)packagelEl.Attribute ("id")] = (string)packagelEl.Attribute ("version");
+					}
+				}
+			}
+
+			var framework = GetPclShortNameMapping (project.TargetFramework.Id) ?? NetStandardDefaultFramework;
+			json ["frameworks"] = new JObject (
+				new JProperty (framework, new JObject())
+			);
+
+			project.AddFile (projectJsonFile);
+			if (packagesConfigFile != null) {
+				project.Files.Remove (packagesConfigFile);
+			}
+
+			file.Text = json.ToString ();
+
+			if (!isOpen) {
+				file.Save ();
+			}
+
+			return projectJsonFile;
+		}
+
+		static string GetPclShortNameMapping (TargetFrameworkMoniker tfm)
+		{
+			if (tfm.Identifier != TargetFrameworkMoniker.ID_PORTABLE) {
+				return null;
+			}
+
+			//TODO: PCL5?
+
+			//we can only look up via profile numbers for 4.x PCLs
+			if (tfm.Version == null || !tfm.Version.StartsWith ("4.", StringComparison.Ordinal)
+			    || tfm.Profile == null || !tfm.Profile.StartsWith ("Profile", StringComparison.Ordinal))
+			{
+				return null;
+			}
+
+			// look up against all extant profile numbers
+			switch (tfm.Profile.Substring ("Profile".Length)) {
+			case "31": return "portable-win81+wp81";
+			case "32": return "portable-win81+wpa81";
+			case "44": return "portable-net451+win81";
+			case "84": return "portable-wp81+wpa81";
+			case "151": return "portable-net451+win81+wpa81";
+			case "157": return "portable-win81+wp81+wpa81";
+			case "7": return "portable-net45+win8";
+			case "49": return "portable-net45+wp8";
+			case "78": return "portable-net45+win8+wp8";
+			case "111": return "portable-net45+win8+wpa81";
+			case "259": return "portable-net45+win8+wpa81+wp8";
+			case "2": return "portable-net4+win8+sl4+wp7";
+			case "3": return "portable-net4+sl4";
+			case "4": return "portable-net45+sl4+win8+wp7";
+			case "5": return "portable-net4+win8";
+			case "6": return "portable-net403+win8";
+			case "14": return "portable-net4+sl5";
+			case "18": return "portable-net403+sl4";
+			case "19": return "portable-net403+sl5";
+			case "23": return "portable-net45+sl4";
+			case "24": return "portable-net45+sl5";
+			case "36": return "portable-net4+sl4+win8+wp8";
+			case "37": return "portable-net4+sl5+win8";
+			case "41": return "portable-net403+sl4+win8";
+			case "42": return "portable-net403+sl5+win8";
+			case "46": return "portable-net45+sl4+win8";
+			case "47": return "portable-net45+sl5+win8";
+			case "88": return "portable-net4+sl4+win8+wp75";
+			case "92": return "portable-net4+win8+wpa81";
+			case "95": return "portable-net403+sl4+win8+wp7";
+			case "96": return "portable-net403+sl4+win8+wp75";
+			case "102": return "portable-net403+win8+wpa81";
+			case "104": return "portable-net45+sl4+win8+wp75";
+			case "136": return "portable-net4+sl5+win8+wp8";
+			case "143": return "portable-net403+sl4+win8+wp8";
+			case "147": return "portable-net403+sl5+win8+wp8";
+			case "154": return "portable-net45+sl4+win8+wp8";
+			case "158": return "portable-net45+sl5+win8+wp8";
+			case "225": return "portable-net4+sl5+win8+wpa81";
+			case "240": return "portable-net403+sl5+win8+wpa81";
+			case "255": return "portable-net45+sl5+win8+wpa81";
+			case "328": return "portable-net4+sl5+win8+wpa81+wp8";
+			case "336": return "portable-net403+sl5+win8+wpa81+wp8";
+			case "344": return "portable-net45+sl5+win8+wpa81+wp8";
+			}
+
+			return null;
 		}
 
 		static string EnsureMinimumVersion (string minimum, string existing)
