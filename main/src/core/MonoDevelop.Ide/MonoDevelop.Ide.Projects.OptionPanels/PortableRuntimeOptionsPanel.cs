@@ -96,8 +96,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			TargetFramework = project.TargetFramework;
 
-			//TODO: error handling
-			NetStandardVersion = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
+			string projectJsonFramework = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
+
+			NetStandardVersion = projectJsonFramework;
+
+			if (projectJsonFramework != null && projectJsonFramework.StartsWith ("netstandard", StringComparison.Ordinal)) {
+				netstandardRadio.Active = true;
+			} else {
+				pclRadio.Active = true;
+			}
 		}
 
 		void Build ()
@@ -137,8 +144,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			// both toggle when we switch between them, only need to subscribe to one event
 			netstandardRadio.Toggled += RadioToggled;
-
-			UpdateSensitivity ();
 
 			ShowAll ();
 		}
