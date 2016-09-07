@@ -134,6 +134,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 				statusBox.Visible = false;
 				addBtn.Visible = Section.CanBeAdded;
 			}
+			sectionWidget.Sensitive = Service.Status == Status.Added;
 		}
 
 		/// <summary>
