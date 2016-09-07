@@ -217,7 +217,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		//TODO error handling
 		public void Store ()
 		{
-			bool projectFileDirty = false;
+			bool needsReload = false;
 
 			//get the new framework and netstandard version
 			var isNetStandard = netstandardRadio.Active;
@@ -234,25 +234,43 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var projectJsonFile = project.GetProjectFile (project.BaseDirectory.Combine ("project.json"));
 			if (isNetStandard && projectJsonFile == null) {
 				projectJsonFile = MigrateToProjectJson (project);
-				projectFileDirty = true;
+				needsReload = true;
 			}
 
 			//if project.json exists, update it
 			if (projectJsonFile != null) {
 				var nugetFx = nsVersion ?? GetPclShortNameMapping (fx.Id) ?? NetStandardDefaultFramework;
-				SetProjectJsonValues (projectJsonFile.FilePath, nugetFx);
+				bool projectJsonChanged;
+				SetProjectJsonValues (projectJsonFile.FilePath, nugetFx, out projectJsonChanged);
+				needsReload |= projectJsonChanged;
 			}
 
 			//if the framework has changed, update it
 			if (fx != null && fx != project.TargetFramework) {
-				projectFileDirty = true;
 				project.TargetFramework = fx;
 			}
 
-			//if the project was modified, save it
-			if (projectFileDirty) {
-				IdeApp.ProjectOperations.SaveAsync (project);
+			//FIXME: if we add or modify project.json, we currently need to reload the project to make the NuGet
+			//addin restore the packages and reset the code completion assembly references
+			if (needsReload) {
+				//the options dialog asynchronously saves the project, which will interfere with us reloading it
+				//instead, set the reload to happen after the project is next saved
+				project.Saved += OneShotProjectReloadAfterSave;
 			}
+		}
+
+		static void OneShotProjectReloadAfterSave (object sender, EventArgs args)
+		{
+			var project = (Project)sender;
+
+			project.Saved -= OneShotProjectReloadAfterSave;
+
+			//the project is marked as not needing reloading immediately after the event is fired, so defer this
+			GLib.Timeout.Add (0, () => {
+				project.NeedsReload = true;
+				FileService.NotifyFileChanged (project.FileName);
+				return false;
+			});
 		}
 
 		static IEnumerable<string> GetProjectJsonFrameworks (DotNetProject project)
@@ -278,8 +296,10 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			return frameworks.Properties ().Select (p => p.Name);
 		}
 
-		static void SetProjectJsonValues (string filename, string framework)
+		static void SetProjectJsonValues (string filename, string framework, out bool changed)
 		{
+			changed = false;
+
 			bool isOpen;
 			var file = TextFileProvider.Instance.GetTextEditorData (filename, out isOpen);
 
@@ -293,17 +313,32 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			//TODO: remove this if the FX is not a NugetID
 			var deps = (json ["dependencies"] as JObject) ?? ((JObject) (json ["dependencies"] = new JObject ()));
 			var existingRefVersion = deps.Property (NetStandardPackageName)?.Value?.Value<string> ();
-			deps [NetStandardPackageName] = EnsureMinimumVersion (NetStandardPackageVersion, existingRefVersion);
+			string newRefVersion = EnsureMinimumVersion (NetStandardPackageVersion, existingRefVersion);
+			if (existingRefVersion != newRefVersion) {
+				deps [NetStandardPackageName] = newRefVersion;
+				changed = true;
+			}
 
-			var existingFxValue = (json ["frameworks"] as JObject)?.Properties ()?.SingleOrDefault ();
-			json ["frameworks"] = new JObject (
-				new JProperty (framework, existingFxValue?.Value ?? new JObject ())
-			);
+			string [] existingTargetFrameworks = null;
+			var frameworks = (json ["frameworks"] as JObject);
+			if (frameworks != null) {
+				existingTargetFrameworks = frameworks.Properties ().Select (p => p.Name).ToArray ();
+			}
 
-			file.Text = json.ToString ();
+			if (existingTargetFrameworks != null && !existingTargetFrameworks.Any(f => f == framework)) {
+				var existingFxValue = ((JProperty) json ["frameworks"].First()).Value as JObject;
+				json ["frameworks"] = new JObject (
+					new JProperty (framework, existingFxValue ?? new JObject ())
+				);
+				changed = true;
+			}
 
-			if (!isOpen) {
-				file.Save ();
+			if (changed) {
+				file.Text = json.ToString ();
+
+				if (!isOpen) {
+					file.Save ();
+				}
 			}
 		}
 
