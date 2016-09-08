@@ -51,9 +51,10 @@ namespace MonoDevelop.UnitTesting.NUnit.External
 		{
 		}
 
-		public Task Connect (NUnitVersion version, IExecutionHandler executionHandler = null, OperationConsole console = null)
+		public Task Connect (NUnitVersion version, bool use64bitProcess, IExecutionHandler executionHandler = null, OperationConsole console = null)
 		{
-			var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), version.ToString (), "NUnitRunner.exe");
+			var aname = use64bitProcess ? "NUnitRunner64.exe" : "NUnitRunner.exe";
+			var exePath = Path.Combine (Path.GetDirectoryName (GetType ().Assembly.Location), version.ToString (), aname);
 			connection = new RemoteProcessConnection (exePath, executionHandler, console, Runtime.MainSynchronizationContext);
 			connection.AddListener (this);
 			return connection.Connect ();
