@@ -14,6 +14,10 @@
   	<Foo>support\file1.txt</Foo>
   	<ExistsTest Condition="Exists('$(Foo)')">OK</ExistsTest>
   	<TestRewrite>Val</TestRewrite>
+	<CASE1>value1</CASE1>
+	<Case1>value2</Case1>
+	<Case2>$(CasE1)</Case2>
+	<Case3>$(CASE1)</Case3>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
