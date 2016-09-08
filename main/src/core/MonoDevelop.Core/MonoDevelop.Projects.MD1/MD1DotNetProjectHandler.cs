@@ -436,5 +436,7 @@ namespace MonoDevelop.Projects.MD1
 			string val = value.Replace ("$(Configuration)", config.Name).Replace ("$(Platform)", config.Platform);
 			return val;
 		}
+
+		public Dictionary<string, string> EvaluationCache { get; } = new Dictionary<string, string> ();
 	}
 }

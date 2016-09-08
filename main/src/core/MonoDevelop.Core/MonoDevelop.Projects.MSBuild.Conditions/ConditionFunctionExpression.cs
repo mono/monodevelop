@@ -106,8 +106,13 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 				directory = Path.GetDirectoryName (context.FullFileName);
 
 			file = MSBuildProjectService.FromMSBuildPath (directory, file);
-
-			return File.Exists (file) || Directory.Exists (file);
+			string res;
+			if (context.EvaluationCache.TryGetValue (file, out res))
+				return bool.Parse (res);
+			
+			var ret =  File.Exists (file) || Directory.Exists (file);
+			context.EvaluationCache [file] = ret.ToString ();
+			return ret;
 		}
 
 		static bool HasTrailingSlash (string file, IExpressionContext context)

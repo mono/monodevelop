@@ -96,5 +96,6 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 	{
 		string FullFileName { get; }
 		string EvaluateString (string value);
+		System.Collections.Generic.Dictionary<string, string> EvaluationCache { get; }
 	}
 }
