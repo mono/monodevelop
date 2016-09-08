@@ -207,6 +207,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public INuGetProjectContext PreviewUninstallProjectContext;
 		public CancellationToken PreviewUninstallCancellationToken;
 
+		public Action BeforePreviewUninstallPackagesAsync = () => { };
+
 		public Task<IEnumerable<NuGetProjectAction>> PreviewUninstallPackageAsync (
 			NuGetProject nuGetProject,
 			string packageId,
@@ -219,6 +221,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PreviewUninstallContext = uninstallationContext;
 			PreviewUninstallProjectContext = nuGetProjectContext;
 			PreviewUninstallCancellationToken = token;
+
+			BeforePreviewUninstallPackagesAsync ();
 
 			IEnumerable<NuGetProjectAction> actions = UninstallActions.ToArray ();
 			return Task.FromResult (actions);

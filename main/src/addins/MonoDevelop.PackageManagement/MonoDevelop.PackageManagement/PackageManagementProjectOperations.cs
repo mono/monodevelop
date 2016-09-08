@@ -322,6 +322,7 @@ namespace MonoDevelop.PackageManagement
 						dotNetProject);
 					action.PackageId = packageId;
 					action.RemoveDependencies = removeDependencies;
+					action.IsErrorWhenPackageNotInstalled = false;
 					return (INuGetPackageAction)action;
 				}).ToList ();
 			}).Wait ();

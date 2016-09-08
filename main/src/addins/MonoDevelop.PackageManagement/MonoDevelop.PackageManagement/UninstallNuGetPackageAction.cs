@@ -24,9 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
 
@@ -65,12 +68,15 @@ namespace MonoDevelop.PackageManagement
 			this.packageManager = packageManager;
 			this.packageManagementEvents = packageManagementEvents;
 
+			IsErrorWhenPackageNotInstalled = true;
+
 			project = solutionManager.GetNuGetProject (dotNetProject);
 		}
 
 		public string PackageId { get; set; }
 		public bool ForceRemove { get; set; }
 		public bool RemoveDependencies { get; set; }
+		public bool IsErrorWhenPackageNotInstalled { get; set; }
 
 		public void Execute ()
 		{
@@ -86,6 +92,14 @@ namespace MonoDevelop.PackageManagement
 
 		async Task ExecuteAsync (CancellationToken cancellationToken)
 		{
+			if (!IsErrorWhenPackageNotInstalled) {
+				bool installed = await IsPackageInstalled (cancellationToken);
+				if (!installed) {
+					ReportPackageNotInstalled ();
+					return;
+				}
+			}
+
 			actions = await packageManager.PreviewUninstallPackageAsync (
 				project,
 				PackageId,
@@ -104,6 +118,24 @@ namespace MonoDevelop.PackageManagement
 			project.OnAfterExecuteActions (actions);
 
 			await project.RunPostProcessAsync (context, cancellationToken);
+		}
+
+		async Task<bool> IsPackageInstalled (CancellationToken cancellationToken)
+		{
+			var installedPackages = await project.GetInstalledPackagesAsync (cancellationToken);
+			var packageReference = installedPackages.FirstOrDefault (package => package.PackageIdentity.Id.Equals (PackageId, StringComparison.InvariantCultureIgnoreCase));
+
+			return packageReference?.PackageIdentity != null;
+		}
+
+		void ReportPackageNotInstalled ()
+		{
+			string message = GettextCatalog.GetString (
+				"Package '{0}' has already been uninstalled from project '{1}'",
+				PackageId,
+				dotNetProject.Name);
+
+			context.Log (MessageLevel.Info, message);
 		}
 
 		public bool HasPackageScriptsToRun ()
