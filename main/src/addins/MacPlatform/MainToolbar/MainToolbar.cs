@@ -149,8 +149,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				var awesomebarHeight = AwesomeBar.ToolbarWidgetHeight;
 				var size = new CGSize (win.Frame.Width - abFrameInWindow.X - 4, awesomebarHeight);
 
-				item.MinSize = size;
-				item.MaxSize = size;
+				if (item.MinSize != size) {
+					item.MinSize = size;
+					item.MaxSize = size;
+				}
 			});
 
 			// We can't use the events that Xamarin.Mac adds for delegate methods as they will overwrite
