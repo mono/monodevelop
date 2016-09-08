@@ -399,9 +399,25 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			project.AddFile (projectJsonFile);
 			if (packagesConfigFile != null) {
 				project.Files.Remove (packagesConfigFile);
+
+				//we have to delete the packages.config, or the NuGet addin will try to retarget its packages
+				FileService.DeleteFile (packagesConfigFile.FilePath);
+
+				//remove the package refs nuget put in the file, project.json doesn't use those
+				project.References.RemoveRange (project.References.Where (IsFromPackage).ToArray ());
 			}
 
 			return projectJsonFile;
+		}
+
+		//HACK: we don't have the info to do this properly, really the package management addin should handle this
+		static bool IsFromPackage (ProjectReference r)
+		{
+			FilePath hintPath = r.Metadata.GetValue<string> ("HintPath");
+			if (hintPath.IsNullOrEmpty)
+				return false;
+			var packagesDir = r.Project.ParentSolution.BaseDirectory.Combine ("packages");
+			return hintPath.IsChildPathOf (packagesDir);
 		}
 
 		static string GetPclShortNameMapping (TargetFrameworkMoniker tfm)
@@ -409,8 +425,6 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			if (tfm.Identifier != TargetFrameworkMoniker.ID_PORTABLE) {
 				return null;
 			}
-
-			//TODO: PCL5?
 
 			//we can only look up via profile numbers for 4.x PCLs
 			if (tfm.Version == null || !tfm.Version.StartsWith ("4.", StringComparison.Ordinal)
