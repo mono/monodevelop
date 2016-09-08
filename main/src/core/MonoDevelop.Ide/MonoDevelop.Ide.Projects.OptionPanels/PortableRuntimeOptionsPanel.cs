@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		RadioButton pclRadio;
 		Button frameworkPickerButton;
 
+		//TODO: better error handling
 		public PortableRuntimeOptionsPanelWidget (DotNetProject project, IEnumerable<ItemConfiguration> configurations)
 		{
 			Build ();
@@ -96,7 +97,12 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			TargetFramework = project.TargetFramework;
 
-			string projectJsonFramework = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
+			string projectJsonFramework = null;
+			try {
+				projectJsonFramework = GetProjectJsonFrameworks (project)?.FirstOrDefault ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error reading project.json file", ex);
+			}
 
 			NetStandardVersion = projectJsonFramework;
 
