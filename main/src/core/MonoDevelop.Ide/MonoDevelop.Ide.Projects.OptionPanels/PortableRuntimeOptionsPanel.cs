@@ -419,9 +419,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			} else {
 				file = TextEditorFactory.CreateNewDocument ();
 				file.FileName = projectJsonName;
-				file.Encoding = System.Text.Encoding.UTF8;
+				file.Encoding = Encoding.UTF8;
 				json = new JObject (
-					new JProperty ("supports", new JObject ()),
 					new JProperty ("dependencies", new JObject ()),
 					new JProperty ("frameworks", new JObject())
 				);
