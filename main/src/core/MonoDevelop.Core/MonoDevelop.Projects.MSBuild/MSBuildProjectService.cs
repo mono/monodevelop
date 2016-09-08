@@ -817,8 +817,8 @@ namespace MonoDevelop.Projects.MSBuild
 				if (fpath == null) {
 					// Part of the path does not exist. Can't do any more checking.
 					part = Path.GetFullPath (part);
-					for (; n < names.Length; n++)
-						part += "/" + names[n];
+					if (n < names.Length)
+						part += "/" + string.Join ("/", names, n, names.Length - n);
 					resultPath = part;
 					return true;
 				}
