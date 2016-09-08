@@ -223,6 +223,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		public void Store ()
 		{
 			bool needsReload = false;
+			bool needsRestore = false;
 
 			//get the new framework and netstandard version
 			var isNetStandard = netstandardRadio.Active;
@@ -247,7 +248,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				var nugetFx = nsVersion ?? GetPclShortNameMapping (fx.Id) ?? NetStandardDefaultFramework;
 				bool projectJsonChanged;
 				SetProjectJsonValues (projectJsonFile.FilePath, nugetFx, out projectJsonChanged);
-				needsReload |= projectJsonChanged;
+				needsRestore = projectJsonChanged;
 			}
 
 			//if the framework has changed, update it
@@ -255,12 +256,14 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				project.TargetFramework = fx;
 			}
 
-			//FIXME: if we add or modify project.json, we currently need to reload the project to make the NuGet
-			//addin restore the packages and reset the code completion assembly references
+			//FIXME: if we add project.json, we currently need to reload the project to make the NuGet
+			//addin load its project.json subsystem
 			if (needsReload) {
 				//the options dialog asynchronously saves the project, which will interfere with us reloading it
 				//instead, set the reload to happen after the project is next saved
 				project.Saved += OneShotProjectReloadAfterSave;
+			} else if (needsRestore) {
+				project.Saved += OneShotSolutionRestoreAfterSave;
 			}
 		}
 
@@ -273,9 +276,52 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			//the project is marked as not needing reloading immediately after the event is fired, so defer this
 			GLib.Timeout.Add (0, () => {
 				project.NeedsReload = true;
+				//when the item is added back after the reload, restore packages
+				project.ParentSolution.SolutionItemAdded += OneShotSolutionRestoreAfterReload;
 				FileService.NotifyFileChanged (project.FileName);
 				return false;
 			});
+		}
+
+		static void OneShotSolutionRestoreAfterReload (object sender, SolutionItemChangeEventArgs e)
+		{
+			var sln = (Solution)sender;
+
+			sln.SolutionItemAdded -= OneShotSolutionRestoreAfterReload;
+
+			GLib.Timeout.Add (0, () => {
+				RunPackageRestore ();
+				return false;
+			});
+		}
+
+		static void OneShotSolutionRestoreAfterSave (object sender, EventArgs args)
+		{
+			var project = (Project)sender;
+
+			project.Saved -= OneShotSolutionRestoreAfterSave;
+
+			//the project is marked as not needing reloading immediately after the event is fired, so defer this
+			GLib.Timeout.Add (0, () => {
+				RunPackageRestore ();
+				return false;
+			});
+		}
+
+		//HACK: this is fragile, but we need it as the package management addin doesn't automatically restore when the project.json is modified
+		static void RunPackageRestore ()
+		{
+			var rt = Type.GetType ("MonoDevelop.PackageManagement.Commands.RestorePackagesHandler,MonoDevelop.PackageManagement");
+			if (rt == null) {
+				return;
+			}
+			var cmd = Activator.CreateInstance (rt);
+			var mi = rt.GetMethod (
+				"Run",
+				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
+				null,new Type [0], null
+			);
+			mi.Invoke (cmd, null);
 		}
 
 		static IEnumerable<string> GetProjectJsonFrameworks (DotNetProject project)
