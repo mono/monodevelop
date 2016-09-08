@@ -75,7 +75,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			"netstandard1.3",
 			"netstandard1.4",
 			"netstandard1.5",
-			"netstandard1.6",
+			//FIXME: XS' version of NuGet doesn't support 1.6
+			//"netstandard1.6",
 		};
 
 		const string NetStandardPackageName = "NETStandard.Library";
