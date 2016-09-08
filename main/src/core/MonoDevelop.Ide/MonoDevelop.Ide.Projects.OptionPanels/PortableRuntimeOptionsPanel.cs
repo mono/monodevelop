@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			}
 
 			if (changed) {
-				file.Text = json.ToString ();
+				file.ReplaceText (0, file.Length, json.ToString ());
 
 				if (!isOpen) {
 					file.Save ();
