@@ -50,6 +50,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			Solution = solution;
 			LoadSettings ();
+			solution.SolutionItemAdded += (sender, e) => {
+				projects = null;
+			};
+			solution.SolutionItemRemoved += (sender, e) => {
+				projects = null;
+			};
 		}
 
 		public Solution Solution { get; private set; }
