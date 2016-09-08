@@ -111,6 +111,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			} else {
 				pclRadio.Active = true;
 			}
+
+			UpdateSensitivity ();
 		}
 
 		void Build ()
