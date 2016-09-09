@@ -20,6 +20,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		HBox statusBox;
 		ImageView expanderImage, statusImage;
 		Button addBtn;
+		HBox header;
 		Widget sectionWidget;
 		bool expanded;
 
@@ -64,7 +65,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			BorderColor = Styles.ThinSplitterColor;
 			BorderWidthTop = 1;
 
-			var header = new HBox ();
+			header = new HBox ();
 			header.Spacing = 7;
 			header.MarginLeft = 15;
 			header.MarginRight = 30;
@@ -183,8 +184,14 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		protected override void OnButtonReleased (ButtonEventArgs args)
 		{
 			base.OnButtonReleased (args);
-			if (args.Button == PointerButton.Left)
+			if (args.Button == PointerButton.Left) {
+				if (Expanded) {
+					var headerRect = new Rectangle (0, 0, Size.Width, header.Size.Height + header.MarginTop + header.MarginBottom);
+					if (!headerRect.Contains (args.Position))
+						return;
+				}
 				Expanded = !Expanded;
+			}
 		}
 
 		protected override void OnMouseEntered (EventArgs args)
