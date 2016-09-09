@@ -13,7 +13,10 @@ namespace MonoDevelop.ConnectedServices
 		readonly GroupedDependencyKind kind;
 		readonly ConnectedServiceDependency [] dependencies;
 
-		public GroupedDependency (IConnectedService service, string displayName, GroupedDependencyKind kind, ConnectedServiceDependency[] dependencies) : base (service, ConnectedServices.CodeDependencyCategory, displayName)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.GroupedDependency"/> class.
+		/// </summary>
+		public GroupedDependency (IConnectedService service, string displayName, GroupedDependencyKind kind, params ConnectedServiceDependency[] dependencies) : base (service, ConnectedServices.CodeDependencyCategory, displayName)
 		{
 			this.kind = kind;
 			this.dependencies = dependencies;
