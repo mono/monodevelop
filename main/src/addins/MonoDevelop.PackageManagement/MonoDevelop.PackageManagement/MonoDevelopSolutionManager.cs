@@ -159,6 +159,11 @@ namespace MonoDevelop.PackageManagement
 			string rootDirectory = Path.Combine (Solution.BaseDirectory, ".nuget");
 			Settings = SettingsLoader.LoadDefaultSettings (rootDirectory, reportError: true);
 		}
+
+		public void ClearProjectCache ()
+		{
+			projects = null;
+		}
 	}
 }
 
