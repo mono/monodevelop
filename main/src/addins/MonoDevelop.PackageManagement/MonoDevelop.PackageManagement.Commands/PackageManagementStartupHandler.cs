@@ -31,6 +31,8 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using NuGet.Common;
+using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -43,6 +45,7 @@ namespace MonoDevelop.PackageManagement.Commands
 			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 			IdeApp.Workspace.ItemUnloading += WorkspaceItemUnloading;
 			IdeApp.Workspace.LastWorkspaceItemClosed += LastWorkspaceItemClosed;
+			FileService.FileChanged += FileChanged;
 		}
 
 		async void SolutionLoaded (object sender, SolutionEventArgs e)
@@ -133,6 +136,48 @@ namespace MonoDevelop.PackageManagement.Commands
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error on unloading workspace item.", ex);
 			}
+		}
+
+		//auto-restore project.json files when they're saved
+		void FileChanged (object sender, FileEventArgs e)
+		{
+			List<DotNetProject> projects = null;
+
+			//collect all the projects with modified project.json files
+			foreach (var eventInfo in e) {
+				if (ProjectJsonPathUtilities.IsProjectConfig (eventInfo.FileName)) {
+					var directory = eventInfo.FileName.ParentDirectory;
+					foreach (var project in IdeApp.Workspace.GetAllItems<DotNetProject> ().Where (p => p.BaseDirectory == directory)) {
+						if (projects == null) {
+							projects = new List<DotNetProject> ();
+						}
+						projects.Add (project);
+					}
+				}
+			}
+
+			if (projects == null) {
+				return;
+			}
+
+			//queue up in a timeout in case this was kicked off from a command
+			GLib.Timeout.Add (0, () => {
+				if (projects.Count == 1) {
+					var project = projects [0];
+					//check the project is still open
+					if (IdeApp.Workspace.GetAllItems<DotNetProject> ().Any (p => p == project)) {
+						RestorePackagesInProjectHandler.Run (projects [0]);
+					}
+				} else {
+					var solution = projects [0].ParentSolution;
+					//check the solution is still open
+					if (IdeApp.Workspace.GetAllItems<Solution> ().Any (s => s == solution)) {
+						RestorePackagesHandler.Run (solution);
+					}
+				}
+				//TODO: handle project.json changing in multiple solutions at once
+				return false;
+			});
 		}
 	}
 }
