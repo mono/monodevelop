@@ -415,11 +415,11 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		//HACK: we don't have the info to do this properly, really the package management addin should handle this
 		static bool IsFromPackage (ProjectReference r)
 		{
-			FilePath hintPath = r.Metadata.GetValue<string> ("HintPath");
-			if (hintPath.IsNullOrEmpty)
+			if (r.ReferenceType != ReferenceType.Assembly) {
 				return false;
+			}
 			var packagesDir = r.Project.ParentSolution.BaseDirectory.Combine ("packages");
-			return hintPath.IsChildPathOf (packagesDir);
+			return r.GetReferencedFileNames(null).Any (f => ((FilePath)f).IsChildPathOf (packagesDir));
 		}
 
 		static string GetPclShortNameMapping (TargetFrameworkMoniker tfm)
