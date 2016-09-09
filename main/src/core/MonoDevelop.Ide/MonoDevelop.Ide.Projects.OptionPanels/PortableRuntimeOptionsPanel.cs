@@ -306,13 +306,25 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 				json = (JObject)JToken.Load (jr);
 			}
 
-			//TODO: remove this if the FX is not a NugetID
-			var deps = (json ["dependencies"] as JObject) ?? ((JObject) (json ["dependencies"] = new JObject ()));
-			var existingRefVersion = deps.Property (NetStandardPackageName)?.Value?.Value<string> ();
-			string newRefVersion = EnsureMinimumVersion (NetStandardPackageVersion, existingRefVersion);
-			if (existingRefVersion != newRefVersion) {
-				deps [NetStandardPackageName] = newRefVersion;
-				changed = true;
+			var deps = (json ["dependencies"] as JObject);
+
+			if (framework.StartsWith ("netstandard", StringComparison.Ordinal)) {
+				if (deps == null) {
+					deps = new JObject ();
+					json ["dependencies"] = deps;
+				}
+
+				var existingRefVersion = deps.Property (NetStandardPackageName)?.Value?.Value<string> ();
+				string newRefVersion = EnsureMinimumVersion (NetStandardPackageVersion, existingRefVersion);
+				if (existingRefVersion != newRefVersion) {
+					deps [NetStandardPackageName] = newRefVersion;
+					changed = true;
+				}
+			} else {
+				//not netstandard, remove the netstandard nuget package ref
+				if (deps != null) {
+					deps.Property (NetStandardPackageName)?.Remove ();
+				}
 			}
 
 			string [] existingTargetFrameworks = null;
