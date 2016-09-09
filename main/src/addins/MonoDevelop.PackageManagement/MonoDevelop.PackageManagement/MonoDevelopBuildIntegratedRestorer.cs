@@ -39,6 +39,7 @@ using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using NuGet.ProjectManagement.Projects;
 using NuGet.Protocol.Core.Types;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -69,12 +70,43 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<BuildIntegratedNuGetProject> projects,
 			CancellationToken cancellationToken)
 		{
+			var changedLocks = new List<FilePath> ();
+			var affectedProjects = new List<BuildIntegratedNuGetProject> ();
+
 			foreach (BuildIntegratedNuGetProject project in projects) {
-				await RestorePackages (project, cancellationToken);
+				var changedLock = await RestorePackagesInternal (project, cancellationToken);
+				if (changedLock != null) {
+					changedLocks.Add (changedLock);
+					affectedProjects.Add (project);
+				}
+			}
+
+			if (changedLocks.Count > 0) {
+				await Runtime.RunInMainThread (() => {
+					FileService.NotifyFilesChanged (changedLocks);
+					foreach (var project in affectedProjects) {
+						NotifyProjectReferencesChanged (project);
+					}
+				});
 			}
 		}
 
 		public async Task RestorePackages (
+			BuildIntegratedNuGetProject project,
+			CancellationToken cancellationToken)
+		{
+			var changedLock = await RestorePackagesInternal (project, cancellationToken);
+
+			if (changedLock != null) {
+				await Runtime.RunInMainThread (() => {
+					FileService.NotifyFileChanged (changedLock);
+					NotifyProjectReferencesChanged (project);
+				});
+			}
+		}
+
+		//returns the lock file, if it changed
+		async Task<string> RestorePackagesInternal (
 			BuildIntegratedNuGetProject project,
 			CancellationToken cancellationToken)
 		{
@@ -85,8 +117,22 @@ namespace MonoDevelop.PackageManagement
 				packagesFolder, 
 				cancellationToken);
 
-			if (!restoreResult.Success) {
+			if (restoreResult.Success) {
+				if (!object.Equals (restoreResult.LockFile, restoreResult.PreviousLockFile)) {
+					return restoreResult.LockFilePath;
+				}
+			} else {
 				ReportRestoreError (restoreResult);
+			}
+			return null;
+		}
+
+		static void NotifyProjectReferencesChanged (BuildIntegratedNuGetProject project)
+		{
+			var bips = project as BuildIntegratedProjectSystem;
+			if (bips != null) {
+				bips.Project.RefreshProjectBuilder ();
+				bips.Project.DotNetProject.NotifyModified ("References");
 			}
 		}
 
