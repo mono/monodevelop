@@ -129,7 +129,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					return new NSToolbarItem (AwesomeBarId) {
 						View = awesomeBar,
 						MinSize = new CGSize (1024, AwesomeBar.ToolbarWidgetHeight),
-						MaxSize = new CGSize (1024, AwesomeBar.ToolbarWidgetHeight)
+						MaxSize = new CGSize (float.PositiveInfinity, AwesomeBar.ToolbarWidgetHeight)
 					};
 
 				default:
@@ -151,7 +151,6 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 				if (item.MinSize != size) {
 					item.MinSize = size;
-					item.MaxSize = size;
 				}
 			});
 
