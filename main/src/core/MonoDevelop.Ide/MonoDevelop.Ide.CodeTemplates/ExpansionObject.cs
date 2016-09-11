@@ -166,7 +166,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			string var = callback (varName);
 
 			var offset = CurrentContext.Editor.CaretOffset;
-			var sym = compilation.LookupSymbols (offset).First (s => s.Name == var);
+			var sym = compilation.LookupSymbols (offset, name: var).First ();
 			if (sym == null)
 				return "var";
 			var rt = sym.GetReturnType ();
