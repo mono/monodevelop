@@ -23,9 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
 
 using Gtk;
 using Xwt.Motion;
+
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -34,13 +37,59 @@ namespace MonoDevelop.Components.DockNotebook
 		DockNotebook notebook;
 		readonly TabStrip strip;
 
+		internal AtkCocoaHelper.AccessibilityElementProxy Accessible { get; private set; }
+		internal AtkCocoaHelper.AccessibilityElementProxy CloseButtonAccessible { get; private set; }
+
 		string text;
 		string markup;
+		string tooltip;
 		Xwt.Drawing.Image icon;
 		Widget content;
 
-		internal Gdk.Rectangle Allocation;
-		internal Cairo.Rectangle CloseButtonActiveArea;
+		Gdk.Rectangle allocation;
+		internal Gdk.Rectangle Allocation {
+			get {
+				return allocation;
+			}
+			set {
+				Gdk.Rectangle cocoaFrame;
+
+				cocoaFrame.X = value.X;
+
+				// This will fail if Y != 0
+				cocoaFrame.Y = value.Y;
+				cocoaFrame.Width = value.Width;
+				cocoaFrame.Height = value.Height;
+
+				Accessible.SetFrameInParent (cocoaFrame);
+				Accessible.SetFrameInRealParent (value);
+				allocation = value;
+			}
+		}
+
+		Cairo.Rectangle closeButtonActiveArea;
+		internal Cairo.Rectangle CloseButtonActiveArea {
+			get {
+				return closeButtonActiveArea;
+			}
+			set {
+				Gdk.Rectangle cocoaFrame;
+
+				// value is in the TabStrip's coordinate space, whereas we need to set the button in the tab space.
+				cocoaFrame.X = (int)value.X - allocation.X;
+				int halfParentWidth = allocation.Height / 2;
+				double dy = value.Y - halfParentWidth;
+				cocoaFrame.Y = (int) (halfParentWidth + dy) - allocation.Y;
+				cocoaFrame.Width = (int) value.Width;
+				cocoaFrame.Height = (int) value.Height;
+
+				CloseButtonAccessible.SetFrameInParent (cocoaFrame);
+
+				Gdk.Rectangle realFrame = new Gdk.Rectangle ((int) value.X, (int) value.Y, (int) value.Width, (int) value.Height);
+				CloseButtonAccessible.SetFrameInRealParent (realFrame);
+				closeButtonActiveArea = value;
+			}
+		}
 
 		public DockNotebook Notebook { get { return notebook; } }
 
@@ -71,6 +120,15 @@ namespace MonoDevelop.Components.DockNotebook
 				this.Animate ("Dirty", f => DirtyStrength = f,
 				              easing: Easing.CubicInOut,
 				              start: DirtyStrength, end: value ? 1 : 0);
+
+				string accTitle;
+
+				if (dirty) {
+					accTitle = string.Format (Core.GettextCatalog.GetString ("{0}. (dirty)"), Text ?? Markup);
+				} else {
+					accTitle = Text ?? Markup;
+				}
+				Accessible.SetAccessibilityTitle (accTitle);
 			}
 		}
 
@@ -81,6 +139,18 @@ namespace MonoDevelop.Components.DockNotebook
 			set {
 				text = value;
 				markup = null;
+
+				string accTitle;
+
+				if (dirty) {
+					accTitle = string.Format (Core.GettextCatalog.GetString ("{0}. (dirty)"), value);
+				} else {
+					accTitle = value;
+				}
+
+				Accessible.SetAccessibilityTitle (accTitle);
+				CloseButtonAccessible.SetAccessibilityTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
+
 				strip.Update ();
 			}
 		}
@@ -92,6 +162,18 @@ namespace MonoDevelop.Components.DockNotebook
 			set {
 				markup = value;
 				text = null;
+
+				// FIXME: Strip markup
+				string accTitle;
+				if (dirty) {
+					accTitle = string.Format (Core.GettextCatalog.GetString ("{0}. (dirty)"), value);
+				} else {
+					accTitle = value;
+				}
+
+				Accessible.SetAccessibilityTitle (accTitle);
+				CloseButtonAccessible.SetAccessibilityTitle (string.Format (Core.GettextCatalog.GetString ("Close {0}"), value));
+
 				strip.Update ();
 			}
 		}
@@ -116,10 +198,37 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		public string Tooltip { get; set; }
+		public string Tooltip {
+			get {
+				return tooltip;
+			}
+			set {
+				tooltip = value;
+				Accessible.SetAccessibilityHelp (string.Format (Core.GettextCatalog.GetString ("Switch to {0}"), value));
+			}
+		}
 
 		internal DockNotebookTab (DockNotebook notebook, TabStrip strip)
 		{
+			Accessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
+			Accessible.PerformPress += OnPressTab;
+			// FIXME Should Role descriptions be translated?
+			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXRadioButton, "tab");
+			Accessible.SetRealParent (strip);
+			Accessible.Actions = new string [] { "AXShowMenu" };
+			Accessible.PerformShowPopupMenu += OnShowMenu;
+			Accessible.SetAccessibilityIdentifier ("DockNotebook.Tab");
+
+			CloseButtonAccessible = new AtkCocoaHelper.AccessibilityElementButtonProxy ();
+			CloseButtonAccessible.PerformPress += OnPressCloseButton;
+			CloseButtonAccessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXButton);
+			CloseButtonAccessible.SetRealParent (strip);
+			CloseButtonAccessible.Actions = new string [] { "AXShowMenu" };
+			CloseButtonAccessible.PerformShowPopupMenu += OnShowMenu;
+			CloseButtonAccessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Close document"));
+			CloseButtonAccessible.SetAccessibilityIdentifier ("DockNotebook.Tab.CloseButton");
+			Accessible.AddAccessibleChild (CloseButtonAccessible);
+
 			this.notebook = notebook;
 			this.strip = strip;
 		}
@@ -135,6 +244,30 @@ namespace MonoDevelop.Components.DockNotebook
 		public void QueueDraw ()
 		{
 			strip.QueueDraw ();
+		}
+
+		internal event EventHandler AccessibilityPressTab;
+		internal event EventHandler AccessibilityPressCloseButton;
+		internal event EventHandler AccessibilityShowMenu;
+
+		void OnPressTab (object sender, EventArgs args)
+		{
+			AccessibilityPressTab?.Invoke (this, args);
+		}
+
+		void OnShowMenu (object sender, EventArgs args)
+		{
+			AccessibilityShowMenu?.Invoke (this, args);
+		}
+
+		void OnPressCloseButton (object sender, EventArgs args)
+		{
+			AccessibilityPressCloseButton?.Invoke (this, args);
+		}
+
+		void OnCloseButtonShowMenu (object sender, EventArgs args)
+		{
+			AccessibilityShowMenu?.Invoke (this, args);
 		}
 	}
 }

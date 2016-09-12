@@ -35,6 +35,7 @@ using Xwt.Motion;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -47,6 +48,8 @@ namespace MonoDevelop.Components.DockNotebook
 		static Xwt.Drawing.Image tabbarBackImage = Xwt.Drawing.Image.FromResource ("tabbar-back.9.png");
 		static Xwt.Drawing.Image tabCloseImage = Xwt.Drawing.Image.FromResource ("tab-close-9.png");
 		static Xwt.Drawing.Image tabDirtyImage = Xwt.Drawing.Image.FromResource ("tab-dirty-9.png");
+
+		HBox innerBox;
 
 		List<Widget> children = new List<Widget> ();
 		readonly DockNotebook notebook;
@@ -68,6 +71,7 @@ namespace MonoDevelop.Components.DockNotebook
 		int animationTarget;
 
 		Dictionary<int, DockNotebookTab> closingTabs;
+		List<DockNotebookTab> allTabs;
 
 		public Button PreviousButton;
 		public Button NextButton;
@@ -149,10 +153,17 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			if (notebook == null)
 				throw new ArgumentNullException ("notebook");
+
+			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXTabGroup);
+
 			TabWidth = 125;
 			TargetWidth = 125;
 			tracker = new MouseTracker (this);
 			GtkWorkarounds.FixContainerLeak (this);
+
+			innerBox = new HBox (false, 0);
+			innerBox.Accessible.SetAccessibilityShouldIgnore (true);
+			Add (innerBox);
 
 			this.notebook = notebook;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
@@ -161,27 +172,36 @@ namespace MonoDevelop.Components.DockNotebook
 			var arr = new Xwt.ImageView (tabbarPrevImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
 
-			var alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
+			var alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			PreviousButton = new Button (alignment);
 			PreviousButton.TooltipText = Core.GettextCatalog.GetString ("Switch to previous document");
 			PreviousButton.Relief = ReliefStyle.None;
 			PreviousButton.CanDefault = PreviousButton.CanFocus = false;
+			PreviousButton.Accessible.Name = "DockNotebook.Tabstrip.PreviousButton";
+			PreviousButton.Accessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Previous document"));
+			PreviousButton.Accessible.Description = Core.GettextCatalog.GetString ("Switch to previous document");
 
 			arr = new Xwt.ImageView (tabbarNextImage);
 			arr.HeightRequest = arr.WidthRequest = 10;
 
-			alignment = new Alignment (0.5f, 1, 0.0f, 0.0f);
+			alignment = new Alignment (0.5f, 0.5f, 0.0f, 0.0f);
 			alignment.Add (arr.ToGtkWidget ());
 			NextButton = new Button (alignment);
 			NextButton.TooltipText = Core.GettextCatalog.GetString ("Switch to next document");
 			NextButton.Relief = ReliefStyle.None;
 			NextButton.CanDefault = NextButton.CanFocus = false;
+			NextButton.Accessible.Name = "DockNotebook.Tabstrip.NextButton";
+			NextButton.Accessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Next document"));
+			NextButton.Accessible.Description = Core.GettextCatalog.GetString ("Switch to next document");
 
 			DropDownButton = new MenuButton ();
-			DropDownButton.TooltipText = Core.GettextCatalog.GetString ("Document List"); 
+			DropDownButton.TooltipText = Core.GettextCatalog.GetString ("Document List");
 			DropDownButton.Relief = ReliefStyle.None;
 			DropDownButton.CanDefault = DropDownButton.CanFocus = false;
+			DropDownButton.Accessible.Name = "DockNotebook.Tabstrip.DocumentListButton";
+			DropDownButton.Accessible.SetAccessibilityTitle (Core.GettextCatalog.GetString ("Document list"));
+			DropDownButton.Accessible.Description = Core.GettextCatalog.GetString ("Display the document list menu");
 
 			PreviousButton.ShowAll ();
 			NextButton.ShowAll ();
@@ -191,9 +211,9 @@ namespace MonoDevelop.Components.DockNotebook
 			NextButton.Name = "MonoDevelop.DockNotebook.BarButton";
 			DropDownButton.Name = "MonoDevelop.DockNotebook.BarButton";
 
-			PreviousButton.Parent = this;
-			NextButton.Parent = this;
-			DropDownButton.Parent = this;
+			innerBox.PackStart (PreviousButton, false, false, 0);
+			innerBox.PackStart (NextButton, false, false, 0);
+			innerBox.PackEnd (DropDownButton, false, false, 0);
 
 			children.Add (PreviousButton);
 			children.Add (NextButton);
@@ -207,8 +227,15 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 			};
 
-			notebook.PageAdded += (sender, e) => QueueResize ();
-			notebook.PageRemoved += (sender, e) => QueueResize ();
+			// Create a copy of the tabs so we can track which tabs have been added or removed
+			// for accessibility purposes.
+			allTabs = new List<DockNotebookTab> ();
+			foreach (var tab in notebook.Tabs) {
+				allTabs.Add (tab);
+				Accessible.AddAccessibleElement (tab.Accessible);
+			}
+			notebook.PageAdded += PageAddedHandler;
+			notebook.PageRemoved += PageRemovedHandler;
 
 			closingTabs = new Dictionary<int, DockNotebookTab> ();
 		}
@@ -219,6 +246,46 @@ namespace MonoDevelop.Components.DockNotebook
 			this.AbortAnimation ("EndDrag");
 			this.AbortAnimation ("ScrollTabs");
 			base.OnDestroyed ();
+		}
+
+		void PageAddedHandler (object sender, EventArgs args)
+		{
+			int idx = 0;
+			foreach (var tab in notebook.Tabs) {
+				if (idx >= allTabs.Count || tab != allTabs [idx]) {
+					allTabs.Insert (idx, tab);
+					Accessible.AddAccessibleElement (tab.Accessible);
+
+					tab.AccessibilityPressTab += OnAccessibilityPressTab;
+					tab.AccessibilityPressCloseButton += OnAccessibilityPressCloseButton;
+					tab.AccessibilityShowMenu += OnAccessibilityShowMenu;
+					break;
+				}
+
+				idx++;
+			}
+
+			QueueResize ();
+		}
+
+		void PageRemovedHandler (object sender, EventArgs args)
+		{
+			int idx = 0;
+			foreach (var tab in notebook.Tabs) {
+				if (tab != allTabs [idx]) {
+					tab.AccessibilityPressTab -= OnAccessibilityPressTab;
+					tab.AccessibilityPressCloseButton -= OnAccessibilityPressCloseButton;
+					tab.AccessibilityShowMenu -= OnAccessibilityShowMenu;
+
+					Accessible.RemoveAccessibleElement (tab.Accessible);
+					allTabs.RemoveAt (idx);
+					break;
+				}
+
+				idx++;
+			}
+
+			QueueResize ();
 		}
 
 		void IAnimatable.BatchBegin ()
@@ -281,41 +348,6 @@ namespace MonoDevelop.Components.DockNotebook
 				tabStartX = LeanWidth / 2;
 			}
 			tabEndX = allocation.Width - RightBarPadding;
-			var height = allocation.Height;
-
-			PreviousButton.SizeAllocate (new Gdk.Rectangle (
-				0, // allocation.X,
-				0, // allocation.Y,
-				LeftBarPadding / 2,
-				height
-			)
-			);
-			NextButton.SizeAllocate (new Gdk.Rectangle (
-				LeftBarPadding / 2,
-				0,
-				LeftBarPadding / 2, height)
-			);
-
-			var image = PreviousButton.Child;
-			int buttonWidth = LeftBarPadding / 2;
-			image.SizeAllocate (new Gdk.Rectangle (
-				(buttonWidth - 12) / 2,
-				(height - 12) / 2,
-				12, 12)
-			);
-
-			image = NextButton.Child;
-			image.SizeAllocate (new Gdk.Rectangle (
-				buttonWidth + (buttonWidth - 12) / 2,
-				(height - 12) / 2,
-				12, 12)
-			);
-
-			DropDownButton.SizeAllocate (new Gdk.Rectangle (
-				tabEndX,
-				allocation.Y,
-				DropDownButton.SizeRequest ().Width,
-				height));
 
 			base.OnSizeAllocated (allocation);
 			Update ();
@@ -588,6 +620,46 @@ namespace MonoDevelop.Components.DockNotebook
 					finished: (f, a) => draggingTab = false);
 			QueueDraw ();
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void OnAccessibilityPressTab (object sender, EventArgs args)
+		{
+			DockNotebook.ActiveNotebook = notebook;
+			notebook.CurrentTab = sender as DockNotebookTab;
+
+			QueueDraw ();
+		}
+
+		void OnAccessibilityPressCloseButton (object sender, EventArgs args)
+		{
+			notebook.OnCloseTab (sender as DockNotebookTab);
+
+			QueueDraw ();
+		}
+
+		void OnAccessibilityShowMenu (object sender, EventArgs args)
+		{
+			var tab = sender as DockNotebookTab;
+			DockNotebook.ActiveNotebook = notebook;
+			notebook.CurrentTab = tab;
+
+			int x = tab.Allocation.X + (tab.Allocation.Width / 2);
+			int y = tab.Allocation.Y + (tab.Allocation.Height / 2);
+
+			// Fake an event, but all we need is the x and y.
+			// Ugly but the only way without messing up the public API.
+			var nativeEvent = new NativeEventButtonStruct {
+				x = x,
+				y = y,
+			};
+
+			IntPtr ptr = GLib.Marshaller.StructureToPtrAlloc (nativeEvent);
+			try {
+				Gdk.EventButton evnt = new Gdk.EventButton (ptr);
+				notebook.DoPopupMenu (notebook, tab.Index, evnt);
+			} finally {
+				Marshal.FreeHGlobal (ptr);
+			}
 		}
 
 		protected override void OnUnrealized ()
