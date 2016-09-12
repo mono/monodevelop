@@ -57,6 +57,8 @@ namespace MonoDevelop.Components.Docking
 		public DockContainer (DockFrame frame)
 		{
 			GtkWorkarounds.FixContainerLeak (this);
+
+			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXSplitGroup);
 			
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			this.frame = frame;
@@ -485,6 +487,8 @@ namespace MonoDevelop.Components.Docking
 	
 			public SplitterWidget ()
 			{
+				Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXSplitter);
+
 				this.VisibleWindow = false;
 				this.AboveChild = true;
 			}
@@ -497,6 +501,7 @@ namespace MonoDevelop.Components.Docking
 
 			protected override void OnSizeAllocated (Rectangle allocation)
 			{
+				Accessible.SetAccessibilityOrientation (allocation.Height > allocation.Width ? Orientation.Vertical : Orientation.Horizontal);
 				base.OnSizeAllocated (allocation);
 			}
 
