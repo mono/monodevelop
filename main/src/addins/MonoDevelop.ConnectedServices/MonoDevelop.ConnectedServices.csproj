@@ -156,7 +156,7 @@
     <Compile Include="PackageDependency.cs" />
     <Compile Include="Gui.ServicesTab\ServiceEventArgs.cs" />
     <Compile Include="CodeDependency.cs" />
-    <Compile Include="GroupedDependency.cs" />
+    <Compile Include="GroupedCodeDependency.cs" />
     <Compile Include="GroupedDependencyKind.cs" />
     <Compile Include="CodeExtensions.cs" />
     <Compile Include="ConnectedServiceDependencyCategory.cs" />

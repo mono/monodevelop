@@ -8,16 +8,20 @@ namespace MonoDevelop.ConnectedServices
 	/// <summary>
 	/// Represents a set of code dependencies that are added to the project.
 	/// </summary>
-	public sealed class GroupedDependency : ConnectedServiceDependency
+	public sealed class GroupedCodeDependency : ConnectedServiceDependency
 	{
 		readonly GroupedDependencyKind kind;
 		readonly ConnectedServiceDependency [] dependencies;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.GroupedDependency"/> class.
+		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.GroupedCodeDependency"/> class.
 		/// </summary>
-		public GroupedDependency (IConnectedService service, string displayName, GroupedDependencyKind kind, params ConnectedServiceDependency[] dependencies) : base (service, ConnectedServiceDependency.CodeDependencyCategory, displayName)
+		public GroupedCodeDependency (IConnectedService service, string displayName, GroupedDependencyKind kind, params ConnectedServiceDependency[] dependencies) : base (service, ConnectedServiceDependency.CodeDependencyCategory, displayName)
 		{
+			if (dependencies.Any (x => x.Category != ConnectedServiceDependency.CodeDependencyCategory)) {
+				throw new ArgumentException ("All dependencies in a group must be Code dependencies", nameof (dependencies));
+			}
+
 			this.kind = kind;
 			this.dependencies = dependencies;
 		}
