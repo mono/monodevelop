@@ -35,6 +35,7 @@ using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Tasks;
+using System.Text;
 
 namespace MonoDevelop.Components.AutoTest
 {
@@ -84,19 +85,30 @@ namespace MonoDevelop.Components.AutoTest
 			bf.Serialize (ms, oref);
 			string sref = Convert.ToBase64String (ms.ToArray ());
 
+			var output = new StringBuilder ();
 			var pi = new ProcessStartInfo (file, args) { UseShellExecute = false };
+			
 			pi.EnvironmentVariables ["MONO_AUTOTEST_CLIENT"] = sref;
 			if (environment != null)
 				foreach (var e in environment)
 					pi.EnvironmentVariables [e.Key] = e.Value;
 
-			process = Process.Start (pi);
+			process = new Process ();
+			process.StartInfo = pi;
+			process.OutputDataReceived += (sender, e) => {
+				lock (output) {
+					output.Append (e?.Data);
+				}
+			};
+			if (process.Start ())
+				throw new Exception ("Process start failed");
+			process.BeginErrorReadLine ();
 
 			if (!waitEvent.WaitOne (120000)) {
 				try {
 					process.Kill ();
 				} catch { }
-				throw new Exception ("Could not connect to application");
+				throw new Exception ("Could not connect to application\n"+output.ToString ());
 			}
 
 			return process.Id;
