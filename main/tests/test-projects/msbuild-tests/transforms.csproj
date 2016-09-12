@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<Special>foo</Special>
 		<Fada>t0</Fada>
+		<Nothing></Nothing>
 	</PropertyGroup>
 	<ItemGroup>
 		<File Include="a.txt">
@@ -17,6 +18,9 @@
 		<Dis Include="aa" />
 		<Dis Include="BB" />
 		<Cleared Include="@(File->ClearMetadata())" />
+		<Empty Include="AA;;BB" />
+		<Empty Include="$(Nothing)" />
+		<Empty Include="CC" />
 	</ItemGroup>
 	<PropertyGroup>
 		<TestCount>@(File -> Count())</TestCount>
@@ -44,6 +48,7 @@
 		<Replace>@(File->Replace('.','_._'))</Replace>
 		<get_Length>@(File->get_Length())</get_Length>
 		<get_Chars>@(File->get_Chars(2))</get_Chars>
+		<EmptyItem>@(Empty)</EmptyItem>
 	</PropertyGroup>
 	<ItemGroup>
 		<File Include="$(Fada).txt" />
@@ -140,5 +145,9 @@
 	<Target Name="Test23">
 		<Message Text="$(get_Chars)" />
 		<!-- t;t;. -->
+	</Target>
+	<Target Name="Test24">
+		<Message Text="$(EmptyItem)" />
+		<!-- AA;BB -->
 	</Target>
 </Project>

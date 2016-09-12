@@ -381,6 +381,9 @@ namespace MonoDevelop.Projects
 
 			// Metedata is kept when transforming
 			Assert.AreEqual ("a-m1-b1_m1;b-m2-b1_m2;t1--b1_", p.EvaluatedProperties.GetValue ("MetadataList2"));
+
+			// Exlude item with empty include
+			Assert.AreEqual ("AA;BB;CC", p.EvaluatedProperties.GetValue ("EmptyItem"));
 		}
 
 		[Test]

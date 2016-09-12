@@ -193,10 +193,11 @@ namespace MonoDevelop.Projects.MSBuild
 			EvaluateObjects (pi, context, objects, false);
 			EvaluateObjects (pi, context, objects, true);
 
+			pi.EvaluatedItems.RemoveAll (it => it.Include.Length == 0);
+
 			foreach (var propName in context.GetPropertiesNeedingTransformEvaluation ()) {
 				PropertyInfo prop;
 				if (pi.Properties.TryGetValue (propName, out prop)) {
-					var v = prop.FinalValue;
 					prop.FinalValue = context.EvaluateWithItems (prop.FinalValue, pi.EvaluatedItems);
 					context.SetPropertyValue (propName, prop.FinalValue);
 				}
