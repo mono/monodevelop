@@ -14,6 +14,8 @@
 
 #include "monostub-utils.h"
 
+#import <Foundation/Foundation.h>
+
 typedef int (* mono_main) (int argc, char **argv);
 typedef void (* mono_free) (void *ptr);
 typedef char * (* mono_get_runtime_build_info) (void);
@@ -210,6 +212,24 @@ run_md_bundle (NSString *appDir, NSArray *arguments)
 	exit (0);
 }
 
+static void
+correct_locale(void)
+{
+	NSString *preferredLanguage;
+
+	preferredLanguage = [[NSLocale preferredLanguages] objectAtIndex: 0];
+	// Apply fixups such as zh_HANS/HANT -> zh_CN/TW
+	// Strip other languages of remainder so we choose a generic culture.
+	if ([preferredLanguage caseInsensitiveCompare:@"zh-hans"] == NSOrderedSame)
+		preferredLanguage = @"zh_CN";
+	else if ([preferredLanguage caseInsensitiveCompare:@"zh-hant"] == NSOrderedSame)
+		preferredLanguage = @"zh_TW";
+	else
+		preferredLanguage = [[preferredLanguage componentsSeparatedByString:@"-"] objectAtIndex:0];
+
+	setenv("MONODEVELOP_STUB_LANGUAGE", [preferredLanguage UTF8String], 1);
+}
+
 int main (int argc, char **argv)
 {
 	//clock_t start = clock();
@@ -280,6 +300,7 @@ int main (int argc, char **argv)
 		return execv (argv[0], argv);
 	}
 
+	correct_locale();
 	//printf ("Running main app.\n");
 	
 	if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {

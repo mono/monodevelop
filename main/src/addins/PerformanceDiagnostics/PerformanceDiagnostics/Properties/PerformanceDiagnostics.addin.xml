@@ -8,9 +8,11 @@
 			defaultHandler="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler"
 			_label="Profile for 5 seconds" />
 	</Extension>
-	<Extension path="/MonoDevelop/Ide/MainMenu/Help/Diagnostics">
-		<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
-		<CommandItem id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler" />
+	<Extension path="/MonoDevelop/Ide/MainMenu/Help">
+		<ItemSet id="Diagnostics">
+			<CommandItem id="PerformanceDiagnosticsAddIn.StartStopListeningUIThreadMonitorHandler" />
+			<CommandItem id="PerformanceDiagnosticsAddIn.ProfileFor5SecondsHandler" />
+		</ItemSet>
 	</Extension>
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
 		<Section id="PerformanceDiagnostics"
