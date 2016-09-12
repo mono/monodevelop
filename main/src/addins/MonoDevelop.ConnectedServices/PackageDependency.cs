@@ -13,7 +13,7 @@ namespace MonoDevelop.ConnectedServices
 	{
 		Image icon;
 		
-		public PackageDependency (IConnectedService service, string id, string displayName, string version = null) : base(service, ConnectedServices.PackageDependencyCategory, displayName)
+		public PackageDependency (IConnectedService service, string id, string displayName, string version = null) : base(service, ConnectedServiceDependency.PackageDependencyCategory, displayName)
 		{
 			this.PackageId = id;
 			this.PackageVersion = version;

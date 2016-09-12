@@ -36,7 +36,7 @@ namespace MonoDevelop.ConnectedServices
 
 		Image icon;
 
-		protected CodeDependency (IConnectedService service, string displayName, string [] lookupTypes) : base (service, ConnectedServices.CodeDependencyCategory, displayName)
+		protected CodeDependency (IConnectedService service, string displayName, string [] lookupTypes) : base (service, ConnectedServiceDependency.CodeDependencyCategory, displayName)
 		{
 			this.lookupTypes = new Dictionary<string, INamedTypeSymbol> ();
 

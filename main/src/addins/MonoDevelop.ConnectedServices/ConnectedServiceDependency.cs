@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt.Drawing;
 
@@ -16,6 +17,18 @@ namespace MonoDevelop.ConnectedServices
 		/// The empty set of IConnectedServiceDependencys
 		/// </summary>
 		public static readonly ImmutableArray<IConnectedServiceDependency> Empty = ImmutableArray.Create<IConnectedServiceDependency> ();
+
+		/// <summary>
+		/// The category string for packages, this will be localised to the user
+		/// </summary>
+		public readonly static ConnectedServiceDependencyCategory PackageDependencyCategory =
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Packages"), "md-folder-services");
+
+		/// <summary>
+		/// The category string for code, this will be localised to the user
+		/// </summary>
+		public readonly static ConnectedServiceDependencyCategory CodeDependencyCategory =
+			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Code"), "md-folder-code");
 
 		Status status = (Status)(-1);
 

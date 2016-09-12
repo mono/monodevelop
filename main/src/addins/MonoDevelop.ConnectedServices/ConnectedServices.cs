@@ -18,18 +18,6 @@ namespace MonoDevelop.ConnectedServices
 	static class ConnectedServices
 	{
 		/// <summary>
-		/// The category string for packages, this will be localised to the user
-		/// </summary>
-		public readonly static ConnectedServiceDependencyCategory PackageDependencyCategory =
-			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Packages"), "md-folder-services");
-
-		/// <summary>
-		/// The category string for code, this will be localised to the user
-		/// </summary>
-		public readonly static ConnectedServiceDependencyCategory CodeDependencyCategory =
-			new ConnectedServiceDependencyCategory (GettextCatalog.GetString ("Code"), "md-folder-code");
-
-		/// <summary>
 		/// The extension point for service providers
 		/// </summary>
 		static readonly string ServiceProvidersExtensionPoint = "/MonoDevelop/ConnectedServices/ServiceProviders";
@@ -189,7 +177,7 @@ namespace MonoDevelop.ConnectedServices
 				sb.AppendLine (GettextCatalog.GetString ("Remove packages and dependencies:"));
 				for (int i = 0; i < service.Dependencies.Length; i++) {
 
-					if (service.Dependencies [i].Category == ConnectedServices.PackageDependencyCategory) {
+					if (service.Dependencies [i].Category == ConnectedServiceDependency.PackageDependencyCategory) {
 						if (i > 0)
 							sb.AppendLine ();
 						sb.Append ("   • " + service.Dependencies [i].DisplayName);

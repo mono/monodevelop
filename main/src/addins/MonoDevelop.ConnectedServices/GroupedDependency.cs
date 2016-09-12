@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace MonoDevelop.ConnectedServices
 {
 	/// <summary>
-	/// Represents a set of dependencies that are added to the project.
+	/// Represents a set of code dependencies that are added to the project.
 	/// </summary>
 	public sealed class GroupedDependency : ConnectedServiceDependency
 	{
@@ -16,7 +16,7 @@ namespace MonoDevelop.ConnectedServices
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:MonoDevelop.ConnectedServices.GroupedDependency"/> class.
 		/// </summary>
-		public GroupedDependency (IConnectedService service, string displayName, GroupedDependencyKind kind, params ConnectedServiceDependency[] dependencies) : base (service, ConnectedServices.CodeDependencyCategory, displayName)
+		public GroupedDependency (IConnectedService service, string displayName, GroupedDependencyKind kind, params ConnectedServiceDependency[] dependencies) : base (service, ConnectedServiceDependency.CodeDependencyCategory, displayName)
 		{
 			this.kind = kind;
 			this.dependencies = dependencies;
