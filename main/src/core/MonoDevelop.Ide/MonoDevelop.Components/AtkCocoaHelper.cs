@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 
 #if MAC
 using AppKit;
+using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 #endif
@@ -53,8 +54,23 @@ namespace MonoDevelop.Components
 			AXShowMenu
 		};
 
+		public enum Roles
+		{
+			AXButton,
+			AXGroup,
+			AXRadioButton,
+			AXSplitGroup,
+			AXSplitter,
+			AXTabGroup,
+		};
+
+		public enum SubRoles
+		{
+			AXCloseButton,
+		};
+
 #if MAC
-		static NSAccessibilityElement GetNSAccessibilityElement (Atk.Object o)
+		internal static NSAccessibilityElement GetNSAccessibilityElement (Atk.Object o)
 		{
 			IntPtr handle = GtkWorkarounds.GetData (o, "xamarin-private-atkcocoa-nsaccessibility");
 
@@ -114,6 +130,11 @@ namespace MonoDevelop.Components
 #endif
 		}
 
+		public static void SetAccessibilityRole (this Atk.Object o, Roles role, string description = null)
+		{
+			o.SetAccessibilityRole (role.ToString (), description);
+		}
+
 		public static void SetAccessibilitySubRole (this Atk.Object o, string subrole)
 		{
 #if MAC
@@ -138,6 +159,15 @@ namespace MonoDevelop.Components
 			var nsa = GetNSAccessibilityElement (o);
 			nsa.AccessibilityAlternateUIVisible = visible;
 #endif
+		}
+
+		public static void SetAccessibilityOrientation (this Atk.Object o, Gtk.Orientation orientation)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			nsa.AccessibilityOrientation = orientation == Gtk.Orientation.Vertical ? NSAccessibilityOrientation.Vertical : NSAccessibilityOrientation.Horizontal;
+#endif
+
 		}
 
 		public static void SetAccessibilityTitleFor (this Atk.Object o, params Atk.Object [] objects)
@@ -325,6 +355,339 @@ namespace MonoDevelop.Components
 		{
 			ad.Owner = o;
 		}
+
+		public static void AddAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			nsa.AccessibilityAddChildElement (child);
+#endif
+		}
+
+		public static void RemoveAccessibleElement (this Atk.Object o, AccessibilityElementProxy child)
+		{
+#if MAC
+			var nsa = GetNSAccessibilityElement (o);
+			var children = nsa.AccessibilityChildren;
+
+			if (children == null || children.Length == 0) {
+				return;
+			}
+
+			var idx = children.IndexOf (child);
+			if (idx == -1) {
+				return;
+			}
+
+			var newChildren = new NSObject [children.Length - 1];
+
+			for (int i = 0, j = 0; i < children.Length; i++) {
+				if (i == idx) {
+					continue;
+				}
+
+				newChildren [j] = children [i];
+				j++;
+			}
+
+			nsa.AccessibilityChildren = newChildren;
+#endif
+		}
+
+		// On anything other than Mac this is just a dummy class to prevent needing to have #ifdefs all over the main code
+#if MAC
+		public class AccessibilityElementProxy : NSAccessibilityElement, INSAccessibility
+#else
+		public class AccessibilityElementProxy
+#endif
+		{
+			public event EventHandler PerformCancel;
+			public event EventHandler PerformConfirm;
+			public event EventHandler PerformDecrement;
+			public event EventHandler PerformDelete;
+			public event EventHandler PerformIncrement;
+			public event EventHandler PerformPick;
+			public event EventHandler PerformPress;
+			public event EventHandler PerformRaise;
+			public event EventHandler PerformShowAlternateUI;
+			public event EventHandler PerformShowDefaultUI;
+			public event EventHandler PerformShowPopupMenu;
+
+#if MAC
+			Gtk.Widget parent;
+			NSAccessibilityElement parentElement;
+			Gdk.Rectangle realFrame;
+#endif
+
+			// The real parent is the Widget that ultimately this object will belong to
+			// It is used to convert the frame
+			public void SetRealParent (Gtk.Widget realParent)
+			{
+#if MAC
+				parent = realParent;
+				parentElement = GetNSAccessibilityElement (parent.Accessible);
+#endif
+			}
+
+			// The frame inside the GtkWidget parent, in Gtk coordinate space
+			public void SetFrameInRealParent (Gdk.Rectangle frame)
+			{
+#if MAC
+				realFrame = frame;
+#endif
+			}
+
+			public void AddAccessibleChild (AccessibilityElementProxy child)
+			{
+#if MAC
+				AccessibilityAddChildElement (child);
+#endif
+			}
+
+			public void SetAccessibilityRole (string role, string description = null)
+			{
+#if MAC
+				AccessibilityRole = role;
+				if (!string.IsNullOrEmpty (description)) {
+					AccessibilityRoleDescription = description;
+				}
+#endif
+			}
+
+			public void SetAccessibilityRole (AtkCocoaHelper.Roles role, string description = null)
+			{
+#if MAC
+				SetAccessibilityRole (role.ToString (), description);
+#endif
+			}
+
+			public void SetAccessibilityTitle (string title)
+			{
+#if MAC
+				AccessibilityTitle = title;
+#endif
+			}
+
+			public void SetAccessibilityIdentifier (string identifier)
+			{
+#if MAC
+				AccessibilityIdentifier = identifier;
+#endif
+			}
+
+			public void SetAccessibilityHelp (string help)
+			{
+#if MAC
+				AccessibilityHelp = help;
+#endif
+			}
+
+			public void SetFrameInParent (Gdk.Rectangle rect)
+			{
+#if MAC
+				AccessibilityFrameInParentSpace = new CoreGraphics.CGRect (rect.X, rect.Y, rect.Width, rect.Height);
+#endif
+			}
+
+#if MAC
+			void GetCoordsInWindow (Gtk.Widget widget, out int x, out int y)
+			{
+				x = widget.Allocation.X;
+				y = widget.Allocation.Y;
+
+				while ((widget = widget.Parent) != null) {
+					if (!(widget is Gtk.Container) || widget is Gtk.EventBox) {
+						x += widget.Allocation.X;
+						y += widget.Allocation.Y;
+					}
+				}
+			}
+
+			[DllImport ("libgtk-quartz-2.0.dylib")]
+			static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
+
+			[Export ("accessibilityHitTest:")]
+			public virtual NSObject GetAccessibilityHitTest (CoreGraphics.CGPoint pointOnScreen)
+			{
+				Gdk.Window gdkWindow = parent.GdkWindow;
+
+				if (gdkWindow == null) {
+					return this;
+				}
+
+				var ptr = gdk_quartz_window_get_nswindow (gdkWindow.Handle);
+				if (ptr == IntPtr.Zero) {
+					return this;
+				}
+				NSWindow nsWin = Runtime.GetNSObject<NSWindow> (ptr);
+
+				CGRect screenRect = new CGRect (pointOnScreen.X, pointOnScreen.Y, 1, 1);
+				CGRect windowRect = nsWin.ConvertRectFromScreen (screenRect);
+				CGPoint pointInWindow = new CGPoint (windowRect.X, windowRect.Y);
+
+				// Flip the y coords to Gtk origin
+				nfloat halfWindowHeight = nsWin.ContentView.Frame.Height / 2;
+				nfloat dy = pointInWindow.Y - halfWindowHeight;
+
+				CGPoint pointInGtkWindow = new CGPoint (pointInWindow.X, halfWindowHeight - dy);
+				int parentInWindowX, parentInWindowY;
+
+				GetCoordsInWindow (parent, out parentInWindowX, out parentInWindowY);
+
+				foreach (var o in AccessibilityChildren) {
+					var proxy = o as AccessibilityElementProxy;
+					if (proxy == null) {
+						throw new Exception ($"Unsupported type {o.GetType ()} inside AccessibilityElementProxy");
+					}
+
+					Gdk.Rectangle frameInRealParent = proxy.realFrame;
+
+					if (frameInRealParent.X + parentInWindowX < pointInGtkWindow.X &&
+						frameInRealParent.X + parentInWindowX + frameInRealParent.Width >= pointInGtkWindow.X &&
+						frameInRealParent.Y + parentInWindowY < pointInGtkWindow.Y &&
+						frameInRealParent.Y + parentInWindowY + frameInRealParent.Height >= pointInGtkWindow.Y) {
+						return o;
+					}
+				}
+				return this;
+			}
+
+			[Export ("accessibilityActionNames")]
+			public string [] Actions { get; set; }
+
+			[Export ("accessibilityPerformAction:")]
+			public void performAction (string actionName)
+			{
+				switch (actionName) {
+				case "AXCancel":
+					OnPerformCancel ();
+					break;
+
+				case "AXConfirm":
+					OnPerformConfirm ();
+					break;
+
+				case "AXDecrement":
+					OnPerformDecrement ();
+					break;
+
+				case "AXDelete":
+					OnPerformDelete ();
+					break;
+
+				case "AXIncrement":
+					OnPerformIncrement ();
+					break;
+
+				case "AXPick":
+					OnPerformPick ();
+					break;
+
+				case "AXPress":
+					OnPerformPress ();
+					break;
+
+				case "AXRaise":
+					OnPerformRaise ();
+					break;
+
+				case "AXShowAlternateUI":
+					OnPerformShowAlternateUI ();
+					break;
+
+				case "AXShowDefaultUI":
+					OnPerformShowDefaultUI ();
+					break;
+
+				case "AXShowMenu":
+					OnPerformShowPopupMenu ();
+					break;
+
+				default:
+					break;
+				}
+			}
+
+			protected bool OnPerformCancel ()
+			{
+				PerformCancel?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformConfirm ()
+			{
+				PerformConfirm?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformDecrement ()
+			{
+				PerformDecrement?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformDelete ()
+			{
+				PerformDelete?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformIncrement ()
+			{
+				PerformIncrement?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformPick ()
+			{
+				PerformPick?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformPress ()
+			{
+				PerformPress?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformRaise ()
+			{
+				PerformRaise?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformShowAlternateUI ()
+			{
+				PerformShowAlternateUI?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformShowDefaultUI ()
+			{
+				PerformShowDefaultUI?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+
+			protected bool OnPerformShowPopupMenu ()
+			{
+				PerformShowPopupMenu?.Invoke (this, EventArgs.Empty);
+				return true;
+			}
+#endif
+		}
+
+#if MAC
+		public class AccessibilityElementButtonProxy : AccessibilityElementProxy, INSAccessibilityButton
+#else
+		public class AccessibilityElementButtonProxy
+#endif
+		{
+#if MAC
+			public override bool AccessibilityPerformPress ()
+			{
+				return OnPerformPress ();
+			}
+#endif
+		}
 	}
 }
-
