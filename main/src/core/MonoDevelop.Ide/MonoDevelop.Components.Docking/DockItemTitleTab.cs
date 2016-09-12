@@ -95,6 +95,15 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)
 		{
+			var actionHandler = new AtkCocoaHelper.ActionDelegate ();
+			actionHandler.Actions = new AtkCocoaHelper.Actions [] { AtkCocoaHelper.Actions.AXPress, AtkCocoaHelper.Actions.AXShowMenu };
+			actionHandler.PerformPress += HandlePress;
+			actionHandler.PerformShowMenu += HandleShowMenu;
+
+			Accessible.SetActionDelegate (actionHandler);
+			Accessible.SetAccessibilityRole (AtkCocoaHelper.Roles.AXGroup, "pad header");
+			Accessible.SetAccessibilitySubRole ("XAPadHeader");
+
 			this.item = item;
 			this.frame = frame;
 			this.VisibleWindow = false;
@@ -177,12 +186,14 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			Gtk.HBox box = new HBox ();
+			box.Accessible.SetAccessibilityShouldIgnore (true);
 			box.Spacing = -2;
 			
 			if (icon == null)
 				icon = ImageService.GetIcon ("md-empty");
 
 			tabIcon = new ImageView (icon);
+			tabIcon.Accessible.SetAccessibilityShouldIgnore (true);
 			tabIcon.Show ();
 			box.PackStart (tabIcon, false, false, 3);
 
@@ -191,6 +202,7 @@ namespace MonoDevelop.Components.Docking
 				labelWidget.UseMarkup = true;
 				labelWidget.Name = label;
 				var alignLabel = new Alignment (0.0f, 0.5f, 1, 1);
+				alignLabel.Accessible.SetAccessibilityShouldIgnore (true);
 				alignLabel.BottomPadding = 0;
 				alignLabel.RightPadding = 15;
 				alignLabel.Add (labelWidget);
@@ -222,7 +234,9 @@ namespace MonoDevelop.Components.Docking
 			btnClose.Name = string.Format ("btnClose_{0}", label ?? string.Empty);
 
 			Gtk.Alignment al = new Alignment (0, 0.5f, 1, 1);
+			al.Accessible.SetAccessibilityShouldIgnore (true);
 			HBox btnBox = new HBox (false, 0);
+			btnBox.Accessible.SetAccessibilityShouldIgnore (true);
 			btnBox.PackStart (btnDock, false, false, 3);
 			btnBox.PackStart (btnClose, false, false, 1);
 			al.Add (btnBox);
@@ -343,6 +357,23 @@ namespace MonoDevelop.Components.Docking
 			}
 			tabPressed = false;
 			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		void HandlePress (object sender, EventArgs args)
+		{
+			// FIXME: How to support double click?
+			frame.DockInPlaceholder (item);
+			frame.HidePlaceholder ();
+			if (GdkWindow != null)
+				GdkWindow.Cursor = null;
+			frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
+			frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
+		}
+
+		void HandleShowMenu (object sender, EventArgs args)
+		{
+			// Show the menu at the middle of the widget
+			item.ShowDockPopupMenu (this, Allocation.Width / 2, Allocation.Height / 2);
 		}
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
