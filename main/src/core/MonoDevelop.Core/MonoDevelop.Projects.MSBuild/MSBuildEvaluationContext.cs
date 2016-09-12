@@ -244,44 +244,43 @@ namespace MonoDevelop.Projects.MSBuild
 			if (itemFile == null)
 				return "";
 
-			switch (name.ToLower ()) {
-			case "fullpath": return ToMSBuildPath (Path.GetFullPath (itemFile));
-			case "rootdir": return ToMSBuildDir (Path.GetPathRoot (itemFile));
-			case "filename": return Path.GetFileNameWithoutExtension (itemFile);
-			case "extension": return Path.GetExtension (itemFile);
-			case "relativedir": return ToMSBuildDir (new FilePath (itemFile).ToRelative (project.BaseDirectory).ParentDirectory);
-			case "directory": {
-					var root = Path.GetPathRoot (itemFile);
-					if (!string.IsNullOrEmpty (root))
-						return ToMSBuildDir (Path.GetFullPath (itemFile).Substring (root.Length));
-					return ToMSBuildDir (Path.GetFullPath (itemFile));
-				}
-			case "recursivedir": return recursiveDir != null ? ToMSBuildDir (recursiveDir) : "";
-			case "identity": return ToMSBuildPath (itemFile);
-			case "modifiedtime": {
-					try {
+			try {
+				switch (name.ToLower ()) {
+				case "fullpath": return ToMSBuildPath (Path.GetFullPath (itemFile));
+				case "rootdir": return ToMSBuildDir (Path.GetPathRoot (itemFile));
+				case "filename": return Path.GetFileNameWithoutExtension (itemFile);
+				case "extension": return Path.GetExtension (itemFile);
+				case "relativedir": return ToMSBuildDir (new FilePath (itemFile).ToRelative (project.BaseDirectory).ParentDirectory);
+				case "directory": {
+						var root = Path.GetPathRoot (itemFile);
+						if (!string.IsNullOrEmpty (root))
+							return ToMSBuildDir (Path.GetFullPath (itemFile).Substring (root.Length));
+						return ToMSBuildDir (Path.GetFullPath (itemFile));
+					}
+				case "recursivedir": return recursiveDir != null ? ToMSBuildDir (recursiveDir) : "";
+				case "identity": return ToMSBuildPath (itemFile);
+				case "modifiedtime": {
+						if (!File.Exists (itemFile))
+							return "";
 						return File.GetLastWriteTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
-					} catch {
-						return "";
 					}
-				}
-			case "createdtime": {
-				try {
-					return File.GetCreationTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
-				} catch {
-					return "";
-				}
-			}
-			case "accessedtime": {
-					try {
+				case "createdtime": {
+						if (!File.Exists (itemFile))
+							return "";
+						return File.GetCreationTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
+					}
+				case "accessedtime": {
+						if (!File.Exists (itemFile))
+							return "";
 						return File.GetLastAccessTime (itemFile).ToString ("yyyy-MM-dd hh:mm:ss");
-					} catch {
-						return "";
 					}
 				}
+				if (itemMetadata != null)
+					return itemMetadata.GetValue (name, "");
+			} catch (Exception ex) {
+				LoggingService.LogError ("Failure in MSBuild file", ex);
+				return "";
 			}
-			if (itemMetadata != null)
-				return itemMetadata.GetValue (name, "");
 
 			return "";
 		}

@@ -358,10 +358,10 @@ namespace MonoDevelop.Projects.MSBuild
 					return true;
 				} else if (ExecuteTransformItemListFunction (ref transformItems, itemFunction, itemFunctionArgs, out ignoreMetadata)) {
 					var sb = new StringBuilder ();
-					foreach (var it in transformItems) {
-						if (sb.Length > 0)
+					for (int n = 0; n < transformItems.Length; n++) {
+						if (n > 0)
 							sb.Append (';');
-						sb.Append (it.Include);
+						sb.Append (transformItems[n].Include);
 					}	
 					items = sb.ToString ();
 					return true;
@@ -369,7 +369,8 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 
 			var sbi = new StringBuilder ();
-		
+
+			int count = 0;
 			foreach (var eit in transformItems) {
 				context.SetItemContext (eit.Include, null, eit.Metadata);
 				try {
@@ -381,7 +382,7 @@ namespace MonoDevelop.Projects.MSBuild
 					else
 						evaluatedInclude = eit.Include;
 
-					if (sbi.Length > 0)
+					if (count++ > 0)
 						sbi.Append (';');
 					sbi.Append (evaluatedInclude);
 
