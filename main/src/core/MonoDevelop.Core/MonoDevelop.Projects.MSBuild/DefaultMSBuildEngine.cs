@@ -199,7 +199,6 @@ namespace MonoDevelop.Projects.MSBuild
 					var v = prop.FinalValue;
 					prop.FinalValue = context.EvaluateWithItems (prop.FinalValue, pi.EvaluatedItems);
 					context.SetPropertyValue (propName, prop.FinalValue);
-					Console.WriteLine ("EV " + propName + ": " + v + " [->] " + prop.FinalValue);
 				}
 			}
 		}
