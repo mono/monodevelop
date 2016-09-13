@@ -607,7 +607,8 @@ namespace MonoDevelop.SourceEditor
 				var links = result.TextLinks.Select (l => new Mono.TextEditor.TextLink (l.Name) {
 					Links = l.Links.Select (s => (ISegment)new TextSegment (s.Offset, s.Length)).ToList (),
 					IsEditable = l.IsEditable,
-					IsIdentifier = l.IsIdentifier
+					IsIdentifier = l.IsIdentifier,
+					GetStringFunc = l.GetStringFunc != null ? (Func<Func<string, string>, Mono.TextEditor.PopupWindow.IListDataProvider<string>>)(arg => new ListDataProviderWrapper (l.GetStringFunc (arg))) : null
 				}).ToList ();
 				var tle = new TextLinkEditMode (this, result.InsertPosition, links);
 				tle.TextLinkMode = TextLinkMode.General;
@@ -615,6 +616,10 @@ namespace MonoDevelop.SourceEditor
 					tle.OldMode = CurrentMode;
 					tle.StartMode ();
 					CurrentMode = tle;
+					GLib.Timeout.Add (10, delegate {
+						tle.UpdateTextLinks ();
+						return false;
+					}); 
 				}
 			}
 		}

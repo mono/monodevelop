@@ -1252,7 +1252,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 			
 			switch (status) {
-			case LibSvnClient.svn_wc_status_kind.None: return VersionStatus.Versioned;
+			case LibSvnClient.svn_wc_status_kind.None: return VersionStatus.Unversioned;
 			case LibSvnClient.svn_wc_status_kind.Normal: return VersionStatus.Versioned;
 			case LibSvnClient.svn_wc_status_kind.Unversioned: return VersionStatus.Unversioned;
 			case LibSvnClient.svn_wc_status_kind.Modified: return VersionStatus.Versioned | VersionStatus.Modified;

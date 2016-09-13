@@ -43,7 +43,7 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
-    <Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" />
+    <Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" icon="md-prefs-source" />
   </Extension>
 
   <Extension path="/MonoDevelop/TypeSystem/Parser">

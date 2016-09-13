@@ -1441,5 +1441,48 @@ class test
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.Count);
 		}
+
+		/// <summary>
+		/// Bug 42952 - Parameter info not working for extension methods in different namespace
+		/// </summary>
+		[Test]
+		public void TestBug42952 ()
+		{
+			var provider = CreateProvider (
+				@"
+using System;
+using DifferentNamespace.ha;
+
+namespace parametersInfoBug
+{
+    class MainClass
+    {
+        public static void Main(string[] args)
+        {
+            new Class1().Test1($$);
+        }
+    }
+}
+
+
+namespace DifferentNamespace.ha
+{
+    public static class Extensions
+    {
+        public static void Test1(this Class1 class1, string stringParam)
+        {
+
+        }
+    }
+
+    public class Class1
+    {
+
+    }
+}
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.Count);
+		}
 	}
 }

@@ -67,6 +67,9 @@ namespace MonoDevelop.Debugger
 		VPanedThin paned;
 		Expander expanderProperties;
 		Expander expanderStacktrace;
+		Button close;
+		VBox rightVBox;
+		VBox vboxAroundInnerExceptionMessage;
 
 		protected enum ModelColumn
 		{
@@ -96,8 +99,8 @@ namespace MonoDevelop.Debugger
 			var icon = new ImageView (WarningIconPixbuf);
 			icon.Yalign = 0;
 
-			ExceptionTypeLabel = new Label { Xalign = 0.0f };
-			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f };
+			ExceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true };
+			ExceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true };
 			ExceptionTypeLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
 			ExceptionMessageLabel.ModifyFg (StateType.Normal, new Gdk.Color (255, 255, 255));
 
@@ -113,8 +116,7 @@ namespace MonoDevelop.Debugger
 			var eventBox = new EventBox ();
 			var hBox = new HBox ();
 			var leftVBox = new VBox ();
-			var rightVBox = new VBox ();
-
+			rightVBox = new VBox ();
 			leftVBox.PackStart (icon, false, false, (uint)(Platform.IsWindows ? 5 : 0)); // as we change frame.BorderWidth below, we need to compensate
 
 			rightVBox.PackStart (ExceptionTypeLabel, false, false, (uint)(Platform.IsWindows ? 0 : 2));
@@ -134,6 +136,13 @@ namespace MonoDevelop.Debugger
 			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (119, 130, 140));
 
 			return eventBox;
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			ExceptionMessageLabel.WidthRequest = rightVBox.Allocation.Width;
+			InnerExceptionMessageLabel.WidthRequest = vboxAroundInnerExceptionMessage.Allocation.Width;
 		}
 
 		Widget CreateExceptionValueTreeView ()
@@ -277,7 +286,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 			buttons.PackStart (copy, false, true, 0);
 
-			var close = new Button (Stock.Close);
+			close = new Button (Stock.Close);
 			close.Activated += CloseClicked;
 			close.Clicked += CloseClicked;
 			close.Show ();
@@ -368,7 +377,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 		Widget CreateInnerExceptionMessage ()
 		{
 			var hboxMain = new HBox ();
-			var vbox = new VBox ();
+			vboxAroundInnerExceptionMessage = new VBox ();
 			var hbox = new HBox ();
 
 			var icon = new ImageView (WarningIconPixbufInner);
@@ -378,15 +387,17 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			InnerExceptionTypeLabel = new Label ();
 			InnerExceptionTypeLabel.UseMarkup = true;
 			InnerExceptionTypeLabel.Xalign = 0;
+			InnerExceptionTypeLabel.Selectable = true;
 			hbox.PackStart (InnerExceptionTypeLabel, false, true, 4);
 
 			InnerExceptionMessageLabel = new Label ();
 			InnerExceptionMessageLabel.Wrap = true;
+			InnerExceptionMessageLabel.Selectable = true;
 			InnerExceptionMessageLabel.Xalign = 0;
 			InnerExceptionMessageLabel.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
-			vbox.PackStart (hbox, false, true, 0);
-			vbox.PackStart (InnerExceptionMessageLabel, true, true, 10);
-			hboxMain.PackStart (vbox, true, true, 10);
+			vboxAroundInnerExceptionMessage.PackStart (hbox, false, true, 0);
+			vboxAroundInnerExceptionMessage.PackStart (InnerExceptionMessageLabel, true, true, 10);
+			hboxMain.PackStart (vboxAroundInnerExceptionMessage, true, true, 10);
 			hboxMain.ShowAll ();
 			return hboxMain;
 		}
@@ -562,6 +573,15 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			ExceptionMessageLabel.Text = exception.Message ?? string.Empty;
 
 			UpdateSelectedException (exception);
+		}
+
+		protected override void OnShown ()
+		{
+			base.OnShown ();
+			//Deselect text(it's selected by default if .Selectable = true;
+			ExceptionTypeLabel.SelectRegion (0, 0);
+			//Switch focus to Close button, so ExceptionTypeLabel doesn't have cursor dispayed
+			close.GrabFocus ();
 		}
 
 		void ExceptionChanged (object sender, EventArgs e)

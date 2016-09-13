@@ -35,6 +35,39 @@ using MonoDevelop.Core.Text;
 
 namespace Mono.TextEditor.Utils
 {
+	public class ColoredSegment
+	{
+		public string Style { get; set; }
+		public string Text { get; set; }
+
+		public ColoredSegment (Chunk chunk, TextDocument doc)
+		{
+			this.Style = chunk.Style;
+			this.Text = doc.GetTextAt (chunk);
+		}
+
+		public static List<List<ColoredSegment>> GetChunks (TextEditorData data, TextSegment selectedSegment)
+		{
+			int startLineNumber = data.OffsetToLineNumber (selectedSegment.Offset);
+			int endLineNumber = data.OffsetToLineNumber (selectedSegment.EndOffset);
+			var copiedColoredChunks = new List<List<ColoredSegment>> ();
+			foreach (var line in data.Document.GetLinesBetween (startLineNumber, endLineNumber)) {
+				var offset = System.Math.Max (selectedSegment.Offset, line.Offset);
+				var length = System.Math.Min (selectedSegment.EndOffset, line.EndOffset) - offset;
+				copiedColoredChunks.Add (
+					data.GetChunks (
+					line, 
+					offset,
+					length
+				)
+					.Select (chunk => new ColoredSegment (chunk, data.Document))
+					.ToList ()
+				);
+			}
+			return copiedColoredChunks;
+		}
+	}
+
 	/// <summary>
 	/// This class is used for converting a highlighted document to html.
 	/// </summary>
@@ -45,16 +78,18 @@ namespace Mono.TextEditor.Utils
 			return GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
 		}
 
-		internal static string GenerateHtml (List<List<ClipboardColoredText>> chunks, MonoDevelop.Ide.Editor.Highlighting.EditorTheme style, ITextEditorOptions options)
+		public static string GenerateHtml (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options, bool includeBoilerplate = true)
 		{
 			var htmlText = new StringBuilder ();
-			htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
-			htmlText.AppendLine ("<HTML>");
-			htmlText.AppendLine ("<HEAD>");
-			htmlText.AppendLine ("<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">");
-			htmlText.AppendLine ("<META NAME=\"GENERATOR\" CONTENT=\"Mono Text Editor\">");
-			htmlText.AppendLine ("</HEAD>");
-			htmlText.AppendLine ("<BODY>"); 
+			if (includeBoilerplate) {
+				htmlText.AppendLine (@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">");
+				htmlText.AppendLine ("<HTML>");
+				htmlText.AppendLine ("<HEAD>");
+				htmlText.AppendLine ("<META HTTP-EQUIV=\"CONTENT-TYPE\" CONTENT=\"text/html; charset=utf-8\">");
+				htmlText.AppendLine ("<META NAME=\"GENERATOR\" CONTENT=\"Mono Text Editor\">");
+				htmlText.AppendLine ("</HEAD>");
+				htmlText.AppendLine ("<BODY>"); 
+			}
 
 			htmlText.AppendLine ("<FONT face = '" + options.Font.Family + "'>");
 			bool first = true;
@@ -80,7 +115,10 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 			htmlText.AppendLine ("</FONT>");
-            htmlText.AppendLine ("</BODY></HTML>");
+
+			if (includeBoilerplate) {
+				htmlText.AppendLine ("</BODY></HTML>");
+			}
 
 			if (Platform.IsWindows)
                 return GenerateCFHtml (htmlText.ToString ());

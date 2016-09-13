@@ -37,6 +37,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 	{
 		protected Process SvnServe = null;
 
+		const string MacSvnAdminPath = "/Library/Developer/CommandLineTools/usr/bin/svnadmin";
 		[SetUp]
 		public override void Setup ()
 		{
@@ -49,7 +50,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			// Create repo in "repo".
 			svnAdmin = new Process ();
 			info = new ProcessStartInfo ();
-			info.FileName = "svnadmin";
+			info.FileName = File.Exists (MacSvnAdminPath) ? MacSvnAdminPath : "svnadmin";
 			info.Arguments = "create " + RemotePath.Combine ("repo");
 			info.WindowStyle = ProcessWindowStyle.Hidden;
 			svnAdmin.StartInfo = info;
@@ -79,12 +80,22 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			Checkout (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
 			DotDir = ".svn";
+
+			base.Setup ();
 		}
 
 		[Test]
 		[Ignore ("Subversion fails to revert special kind revisions.")]
 		public override void RevertsRevision ()
 		{
+		}
+
+		[Test]
+		public override void LogIsProper ()
+		{
+			if (!Platform.IsWindows)
+				Assert.Inconclusive ("Linux/Mac Svn seems to hiccup on symlinks.");
+			base.LogIsProper ();
 		}
 
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()

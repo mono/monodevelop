@@ -237,7 +237,7 @@ namespace MonoDevelop.GtkCore {
 		static string GetReferenceName (ProjectReference pref)
 		{
 			string stored = pref.StoredReference;
-			int idx =stored.IndexOf (",");
+			int idx = stored.IndexOf (",");
 			if (idx == -1)
 				return stored.Trim ();
 
@@ -249,7 +249,7 @@ namespace MonoDevelop.GtkCore {
 			if (pref.ReferenceType != ReferenceType.Package)
 				return false;
 
-			return GetReferenceName (pref) == "gtk-sharp";
+			return pref.StoredReference.StartsWith ("gtk-sharp,", StringComparison.Ordinal);
 		}
 
 		public static bool HasGtkReference (DotNetProject project)

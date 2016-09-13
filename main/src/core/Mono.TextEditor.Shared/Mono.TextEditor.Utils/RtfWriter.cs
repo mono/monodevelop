@@ -93,7 +93,8 @@ namespace Mono.TextEditor.Utils
 				}
 			}
 		}
-		internal static string GenerateRtf (List<List<ClipboardColoredText>> chunks, MonoDevelop.Ide.Editor.Highlighting.EditorTheme style, ITextEditorOptions options)
+
+		public static string GenerateRtf (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
 		{
 			var rtfText = new StringBuilder ();
 			var colorList = new List<Cairo.Color> ();

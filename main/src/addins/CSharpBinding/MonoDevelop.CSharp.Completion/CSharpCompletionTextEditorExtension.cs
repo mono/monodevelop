@@ -278,18 +278,6 @@ namespace MonoDevelop.CSharp.Completion
 			HandleDocumentParsed (null, null);
 		}
 		
-		public override bool KeyPress (KeyDescriptor descriptor)
-		{
-			bool result = base.KeyPress (descriptor);
-			
-			if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
-				base.RunParameterCompletionCommand ();
-			
-//			if (IsInsideComment ())
-//				ParameterInformationWindowManager.HideWindow (CompletionWidget);
-			return result;
-		}
-		
 		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 //			if (!EnableCodeCompletion)
@@ -726,7 +714,7 @@ namespace MonoDevelop.CSharp.Completion
 			return InternalHandleParameterCompletionCommand (completionContext, completionChar, false, token);
 		}
 
-		public async Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, bool force, CancellationToken token = default(CancellationToken))
+		public Task<MonoDevelop.Ide.CodeCompletion.ParameterHintingResult> InternalHandleParameterCompletionCommand (CodeCompletionContext completionContext, char completionChar, bool force, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
 			if (!force && completionChar != '(' && completionChar != '<' && completionChar != '[' && completionChar != ',')
@@ -735,23 +723,24 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 			var offset = Editor.CaretOffset;
 			try {
-
 				var analysisDocument = DocumentContext.AnalysisDocument;
 				if (analysisDocument == null)
 					return null;
-				var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
-				var semanticModel = await partialDoc.GetSemanticModelAsync ();
-				var engine = new ParameterHintingEngine (MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-				var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
-				return new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData>().ToList (), result.StartOffset);
+				return Task.Run (async delegate {
+					var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token);
+					var semanticModel = await partialDoc.GetSemanticModelAsync ();
+					var engine = new ParameterHintingEngine (MonoDevelop.Ide.TypeSystem.TypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+					var result = await engine.GetParameterDataProviderAsync (analysisDocument, semanticModel, offset, token);
+					return new MonoDevelop.Ide.CodeCompletion.ParameterHintingResult (result.OfType<MonoDevelop.Ide.CodeCompletion.ParameterHintingData> ().ToList (), result.StartOffset);
+				}, token);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 
 					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
 					"Line text: " + Editor.GetLineText (completionContext.TriggerLine), 
 					e);
+				return null;
 			}
-			return null;
 		}
 		
 //		List<string> GetUsedNamespaces ()
@@ -777,8 +766,8 @@ namespace MonoDevelop.CSharp.Completion
 			var caretOffset = Editor.CaretOffset;
 			if (analysisDocument == null || startOffset > caretOffset)
 				return -1;
-			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, default(CancellationToken)).ConfigureAwait (false);
-			var result = ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset).Result;
+			var partialDoc = await WithFrozenPartialSemanticsAsync (analysisDocument, token).ConfigureAwait (false);
+			var result = await ParameterUtil.GetCurrentParameterIndex (partialDoc, startOffset, caretOffset, token).ConfigureAwait (false);
 			return result.ParameterIndex;
 		}
 

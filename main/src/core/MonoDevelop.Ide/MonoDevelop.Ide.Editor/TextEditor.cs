@@ -1203,7 +1203,7 @@ namespace MonoDevelop.Ide.Editor
 		[Obsolete ("Use GetMarkup")]
 		public string GetPangoMarkup (int offset, int length, bool fitIdeStyle = false)
 		{
-			return textEditorImpl.GetPangoMarkup (offset, length, fitIdeStyle);
+			return GetMarkup (offset, length, new MarkupOptions (MarkupFormat.Pango, fitIdeStyle));
 		}
 
 		[Obsolete ("Use GetMarkup")]
@@ -1211,7 +1211,23 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (segment == null)
 				throw new ArgumentNullException (nameof (segment));
-			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length, fitIdeStyle);
+			return GetMarkup (segment, new MarkupOptions (MarkupFormat.Pango, fitIdeStyle));
+		}
+
+		public string GetMarkup (int offset, int length, MarkupOptions options)
+		{
+			if (options == null)
+				throw new ArgumentNullException (nameof (options));
+			return textEditorImpl.GetMarkup (offset, length, options);
+		}
+
+		public string GetMarkup (ISegment segment, MarkupOptions options)
+		{
+			if (options == null)
+				throw new ArgumentNullException (nameof (options));
+			if (segment == null)
+				throw new ArgumentNullException (nameof (segment));
+			return textEditorImpl.GetMarkup (segment.Offset, segment.Length, options);
 		}
 
 		public string GetMarkup (int offset, int length, MarkupOptions options)

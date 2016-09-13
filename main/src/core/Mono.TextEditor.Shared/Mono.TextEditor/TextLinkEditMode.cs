@@ -232,6 +232,7 @@ namespace Mono.TextEditor
 				if (closedLink == link)
 					return;
 				closedLink = null;
+				/* Disabled because code completion was enabled in link mode.
 				if (window == null) {
 					window = new ListWindow<string> ();
 					window.DoubleClicked += delegate {
@@ -242,7 +243,7 @@ namespace Mono.TextEditor
 					DocumentLocation loc = Editor.Document.OffsetToLocation (BaseOffset + link.PrimaryLink.Offset);
 					Editor.ShowListWindow (window, loc);
 					
-				} 
+				} */
 			} else {
 				DestroyWindow ();
 				closedLink = null;

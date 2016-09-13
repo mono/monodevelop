@@ -123,29 +123,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// Called after the key has been processed by the editor
 			if (currentMethodGroup == null)
 				return;
-	
+
 			var actualMethodGroup = new MethodData ();
 			actualMethodGroup.CompletionContext = widget.CurrentCodeCompletionContext;
 			actualMethodGroup.MethodProvider = await ext.ParameterCompletionCommand (widget.CurrentCodeCompletionContext);
-			if (actualMethodGroup.MethodProvider != null && (currentMethodGroup == null || !actualMethodGroup.MethodProvider.Equals (currentMethodGroup.MethodProvider))) 
+			if (actualMethodGroup.MethodProvider != null && (currentMethodGroup == null || !actualMethodGroup.MethodProvider.Equals (currentMethodGroup.MethodProvider)))
 				currentMethodGroup = actualMethodGroup;
-
-			int pos = await ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset, token);
-			if (pos == -1) {
-				if (actualMethodGroup.MethodProvider == null) {
-					currentMethodGroup = null;
-				} else {
-					pos = await ext.GetCurrentParameterIndex (actualMethodGroup.MethodProvider.StartOffset, token);
-					currentMethodGroup = pos >= 0 ? actualMethodGroup : null;
+			try {
+				int pos = await ext.GetCurrentParameterIndex (currentMethodGroup.MethodProvider.StartOffset, token);
+				if (pos == -1) {
+					if (actualMethodGroup.MethodProvider == null) {
+						currentMethodGroup = null;
+					} else {
+						pos = await ext.GetCurrentParameterIndex (actualMethodGroup.MethodProvider.StartOffset, token);
+						currentMethodGroup = pos >= 0 ? actualMethodGroup : null;
+					}
 				}
-			}
 
-			// If the user enters more parameters than the current overload has,
-			// look for another overload with more parameters.
-			UpdateOverload (ext, widget, token);
-			
-			// Refresh.
-			UpdateWindow (ext, widget);
+				// If the user enters more parameters than the current overload has,
+				// look for another overload with more parameters.
+				UpdateOverload (ext, widget, token);
+
+				// Refresh.
+				UpdateWindow (ext, widget);
+			} catch (OperationCanceledException) { }
 		}
 
 		internal static void RepositionWindow (CompletionTextEditorExtension ext, ICompletionWidget widget)
