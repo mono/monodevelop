@@ -72,6 +72,7 @@ namespace MonoDevelop.Components.DockNotebook
 			PackStart (tabStrip, false, false, 0);
 
 			contentBox = new EventBox ();
+			contentBox.Accessible.SetAccessibilityShouldIgnore (true);
 			PackStart (contentBox, true, true, 0);
 
 			ShowAll ();
