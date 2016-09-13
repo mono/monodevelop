@@ -384,6 +384,9 @@ namespace MonoDevelop.Projects
 
 			// Exlude item with empty include
 			Assert.AreEqual ("AA;BB;CC", p.EvaluatedProperties.GetValue ("EmptyItem"));
+
+			// Loader should not crash if metadata evaluation fails
+			Assert.AreEqual (";;", p.EvaluatedProperties.GetValue ("MetadataCatch"));
 		}
 
 		[Test]

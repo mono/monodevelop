@@ -49,6 +49,7 @@
 		<get_Length>@(File->get_Length())</get_Length>
 		<get_Chars>@(File->get_Chars(2))</get_Chars>
 		<EmptyItem>@(Empty)</EmptyItem>
+		<MetadataCatch>@(Empty->'%(createdtime)')</MetadataCatch>
 	</PropertyGroup>
 	<ItemGroup>
 		<File Include="$(Fada).txt" />
@@ -149,5 +150,9 @@
 	<Target Name="Test24">
 		<Message Text="$(EmptyItem)" />
 		<!-- AA;BB -->
+	</Target>
+	<Target Name="Test25">
+		<Message Text="$(MetadataCatch)" />
+		<!-- ;; -->
 	</Target>
 </Project>
