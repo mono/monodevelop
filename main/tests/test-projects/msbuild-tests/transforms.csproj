@@ -50,12 +50,16 @@
 		<get_Chars>@(File->get_Chars(2))</get_Chars>
 		<EmptyItem>@(Empty)</EmptyItem>
 		<MetadataCatch>@(Empty->'%(createdtime)')</MetadataCatch>
+		<MultiValue>@(Multi)</MultiValue>
+		<MultiValue2>@(Multi2)</MultiValue2>
 	</PropertyGroup>
 	<ItemGroup>
 		<File Include="$(Fada).txt" />
 		<File2 Include="@(File)">
 			<Extra>b1_%(foo)</Extra>
 		</File2>
+		<Multi Include="@(File);TT;@(Empty)"/>
+		<Multi2 Include="@(File->'%(filename)');TT;@(Empty)"/>
 	</ItemGroup>
 
 	
@@ -154,5 +158,13 @@
 	<Target Name="Test25">
 		<Message Text="$(MetadataCatch)" />
 		<!-- ;; -->
+	</Target>
+	<Target Name="Test26">
+		<Message Text="$(MultiValue)" />
+		<!-- a.txt;b.txt;t1.txt;TT;AA;BB;CC -->
+	</Target>
+	<Target Name="Test27">
+		<Message Text="$(MultiValue2)" />
+		<!-- a;b;t1;TT;AA;BB;CC -->
 	</Target>
 </Project>

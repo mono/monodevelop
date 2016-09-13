@@ -387,6 +387,10 @@ namespace MonoDevelop.Projects
 
 			// Loader should not crash if metadata evaluation fails
 			Assert.AreEqual (";;", p.EvaluatedProperties.GetValue ("MetadataCatch"));
+
+			// Includes can contain several transforms
+			Assert.AreEqual ("a.txt;b.txt;t1.txt;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue"));
+			Assert.AreEqual ("a;b;t1;TT;AA;BB;CC", p.EvaluatedProperties.GetValue ("MultiValue2"));
 		}
 
 		[Test]
