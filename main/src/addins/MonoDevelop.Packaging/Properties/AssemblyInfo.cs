@@ -6,3 +6,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("NuGet packaging addin for MonoDevelop")]
 [assembly: AssemblyVersion ("1.0")]
 [assembly: AssemblyCopyright ("MIT")]
+[assembly: InternalsVisibleTo ("MonoDevelop.Packaging.Tests")]

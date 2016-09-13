@@ -68,6 +68,11 @@
 				_description="Creates a NuGet package"
 				_label="Create NuGet _Package"
 				defaultHandler="MonoDevelop.Packaging.CreateNuGetPackageHandler" />
+			<Command
+				id="MonoDevelop.Packaging.Commands.AddPlatformImplementation"
+				_description="Adds platform specific implementation for a cross platform project"
+				_label="Add _Platform Implementation..."
+				defaultHandler="MonoDevelop.Packaging.AddPlatformImplementationHandler" />
 		</Category>
 	</Extension>
 
@@ -98,6 +103,19 @@
 				id="MonoDevelop.Packaging.Commands.CreateNuGetPackage"
 				insertafter="CreateNuGetPackageSeparator"
 				insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.CustomCommandList" />
+		</ComplexCondition>
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<ComplexCondition>
+			<And>
+				<Condition id="ItemType" value="DotNetProject" />
+				<Condition id="ProjectHasNuGetMetadata" />
+			</And>
+			<CommandItem
+				id="MonoDevelop.Packaging.Commands.AddPlatformImplementation"
+				insertafter="MonoDevelop.PackageManagement.Commands.AddPackages"
+				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		</ComplexCondition>
 	</Extension>
 

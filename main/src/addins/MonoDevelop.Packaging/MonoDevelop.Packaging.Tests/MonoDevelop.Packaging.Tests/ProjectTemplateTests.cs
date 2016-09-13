@@ -1,5 +1,5 @@
 ﻿//
-// MyClass.cs
+// ProjectTemplateTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>

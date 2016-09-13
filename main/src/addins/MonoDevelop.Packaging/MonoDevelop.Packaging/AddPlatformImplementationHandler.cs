@@ -1,5 +1,5 @@
 ﻿//
-// DotNetProjectExtensions.cs
+// AddPlatformImplementationHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,45 +24,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Packaging.Gui;
 using MonoDevelop.Projects;
-using MonoDevelop.Projects.MSBuild;
 
 namespace MonoDevelop.Packaging
 {
-	static class DotNetProjectExtensions
+	class AddPlatformImplementationHandler : CommandHandler
 	{
-		internal static readonly string packagingCommonProps = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.props";
-		internal static readonly string packagingCommonTargets = @"$(NuGetPackagingPath)\NuGet.Packaging.Common.targets";
-
-		public static bool AddCommonPackagingImports (this DotNetProject project)
+		protected override void Update (CommandInfo info)
 		{
-			bool modified = false;
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonProps)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonProps, true, null);
-				modified = true;
-			}
-
-			if (!project.MSBuildProject.ImportExists (packagingCommonTargets)) {
-				project.MSBuildProject.AddImportIfMissing (packagingCommonTargets, false, null);
-				modified = true;
-			}
-
-			return modified;
+			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			info.Visible = project?.IsPortableLibrary == true;
 		}
 
-		public static void RemoveCommonPackagingImports (this DotNetProject project)
+		protected override async void Run ()
 		{
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonProps);
-			project.MSBuildProject.RemoveImportIfExists (packagingCommonTargets);
+			var project = IdeApp.ProjectOperations.CurrentSelectedProject as DotNetProject;
+			if (project == null || !project.IsPortableLibrary)
+				return;
+
+			var viewModel = new AddPlatformImplementationViewModel (project);
+			using (var dialog = new AddPlatformImplementationDialog (viewModel)) {
+				if (dialog.ShowWithParent () == Xwt.Command.Ok) {
+					using (ProgressMonitor monitor = CreateProgressMonitor ()) {
+						await viewModel.CreateProjects (monitor);
+					}
+				}
+			}
 		}
 
-		public static bool HasNuGetMetadata (this DotNetProject project)
+		ProgressMonitor CreateProgressMonitor ()
 		{
-			MSBuildPropertyGroup propertyGroup = project.MSBuildProject.GetNuGetMetadataPropertyGroup ();
-			return propertyGroup.HasProperty ("NuGetId");
+			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				GettextCatalog.GetString ("Adding platform implementation..."),
+				Stock.StatusSolutionOperation,
+				false,
+				false,
+				false,
+				null,
+				false);
 		}
 	}
 }
-
