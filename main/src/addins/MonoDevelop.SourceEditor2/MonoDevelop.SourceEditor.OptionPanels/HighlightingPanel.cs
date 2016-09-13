@@ -163,11 +163,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while loading color style " + styleName, e);
 				error = true;
-				var style = Mono.TextEditor.Highlighting.SyntaxModeService.DefaultColorStyle.Clone ();
-				style.Name = styleName;
-				style.Description = GettextCatalog.GetString ("Loading error: {0}", e.Message);
-				style.FileName = Mono.TextEditor.Highlighting.SyntaxModeService.GetFileName (styleName);
-				return style;
+				return new EditorTheme (styleName, new System.Collections.Generic.List<ThemeSetting> (SyntaxHighlightingService.DefaultColorStyle.Settings));
 			}
 		
 		}

@@ -28,6 +28,7 @@ using System.Text;
 using System.Collections.Generic;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor.Utils
 {
@@ -94,7 +95,7 @@ namespace Mono.TextEditor.Utils
 			}
 		}
 
-		public static string GenerateRtf (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options)
+		internal static string GenerateRtf (List<List<ClipboardColoredText>> chunks, MonoDevelop.Ide.Editor.Highlighting.EditorTheme style, ITextEditorOptions options)
 		{
 			var rtfText = new StringBuilder ();
 			var colorList = new List<Cairo.Color> ();

@@ -32,42 +32,10 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace Mono.TextEditor.Utils
 {
-	public class ColoredSegment
-	{
-		public string Style { get; set; }
-		public string Text { get; set; }
-
-		public ColoredSegment (Chunk chunk, TextDocument doc)
-		{
-			this.Style = chunk.Style;
-			this.Text = doc.GetTextAt (chunk);
-		}
-
-		public static List<List<ColoredSegment>> GetChunks (TextEditorData data, TextSegment selectedSegment)
-		{
-			int startLineNumber = data.OffsetToLineNumber (selectedSegment.Offset);
-			int endLineNumber = data.OffsetToLineNumber (selectedSegment.EndOffset);
-			var copiedColoredChunks = new List<List<ColoredSegment>> ();
-			foreach (var line in data.Document.GetLinesBetween (startLineNumber, endLineNumber)) {
-				var offset = System.Math.Max (selectedSegment.Offset, line.Offset);
-				var length = System.Math.Min (selectedSegment.EndOffset, line.EndOffset) - offset;
-				copiedColoredChunks.Add (
-					data.GetChunks (
-					line, 
-					offset,
-					length
-				)
-					.Select (chunk => new ColoredSegment (chunk, data.Document))
-					.ToList ()
-				);
-			}
-			return copiedColoredChunks;
-		}
-	}
-
 	/// <summary>
 	/// This class is used for converting a highlighted document to html.
 	/// </summary>
@@ -75,10 +43,10 @@ namespace Mono.TextEditor.Utils
 	{
 		public static string GenerateHtml (TextEditorData data)
 		{
-			return GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)), data.ColorStyle, data.Options);
+			return GenerateHtml (ClipboardColoredText.GetChunks (data, new TextSegment (0, data.Length)), data.EditorTheme, data.Options);
 		}
 
-		public static string GenerateHtml (List<List<ColoredSegment>> chunks, Mono.TextEditor.Highlighting.ColorScheme style, ITextEditorOptions options, bool includeBoilerplate = true)
+		public static string GenerateHtml (List<List<ClipboardColoredText>> chunks, EditorTheme style, ITextEditorOptions options, bool includeBoilerplate = true)
 		{
 			var htmlText = new StringBuilder ();
 			if (includeBoilerplate) {
