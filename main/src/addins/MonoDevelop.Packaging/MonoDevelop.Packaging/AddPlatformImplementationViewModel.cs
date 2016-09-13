@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
@@ -43,6 +44,7 @@ namespace MonoDevelop.Packaging
 
 		Project sharedProject { get; set; }
 		Project androidProject { get; set; }
+		Project iosProject { get; set; }
 
 		public AddPlatformImplementationViewModel (DotNetProject project)
 		{
@@ -65,6 +67,7 @@ namespace MonoDevelop.Packaging
 			}
 
 			if (CreateIOSProject) {
+				await CreateNewIOSProject (monitor);
 			}
 
 			await CreateNuGetPackagingProject (monitor);
@@ -86,7 +89,12 @@ namespace MonoDevelop.Packaging
 			androidProject = await CreateNewProject (monitor, "MonoDroid");
 		}
 
-		async Task<Project> CreateNewProject (ProgressMonitor monitor, string projectType)
+		async Task CreateNewIOSProject (ProgressMonitor monitor)
+		{
+			iosProject = await CreateNewProject (monitor, "XamarinIOS", true) as DotNetProject;
+		}
+
+		async Task<Project> CreateNewProject (ProgressMonitor monitor, string projectType, bool addAssemblyInfo = false)
 		{
 			FilePath projectFileName = GetNewProjectFileName (projectType);
 			var createInfo = CreateProjectCreateInformation (projectFileName);
@@ -95,6 +103,9 @@ namespace MonoDevelop.Packaging
 			var newProject = Services.ProjectService.CreateProject ("C#", createInfo, options, projectType);
 
 			newProject.FileName = projectFileName;
+
+			if (addAssemblyInfo)
+				AddAssemblyInfoFile (newProject);
 
 			Project.ParentFolder.AddItem (newProject);
 
@@ -115,8 +126,18 @@ namespace MonoDevelop.Packaging
 		XmlElement CreateProjectOptions ()
 		{
 			var doc = new XmlDocument ();
-			doc.LoadXml ("<Options />");
+			doc.LoadXml ("<Options Target='Library' />");
 			return doc.DocumentElement;
+		}
+
+		void AddAssemblyInfoFile (Project project)
+		{
+			var doc = new XmlDocument ();
+			doc.LoadXml ("<FileTemplateReference TemplateID='CSharpAssemblyInfo' name='AssemblyInfo.cs' />");
+			var fileTemplate = new FileTemplateReference ();
+			fileTemplate.Load (doc.DocumentElement, null);
+
+			fileTemplate.AddToProject (project.ParentFolder, project, "C#", project.BaseDirectory, "");
 		}
 
 		Task SaveProject (ProgressMonitor monitor, Project project)
@@ -192,6 +213,9 @@ namespace MonoDevelop.Packaging
 
 			if (androidProject != null)
 				AddProjectReference (packagingProject, androidProject);
+
+			if (iosProject != null)
+				AddProjectReference (packagingProject, iosProject);
 		}
 
 		void AddProjectReference (DotNetProject project, Project projectToBeReferenced)

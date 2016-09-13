@@ -129,5 +129,84 @@ namespace MonoDevelop.Packaging.Tests
 			// Ensure NuGet imports are added to the Android project.
 			Assert.IsTrue (androidProject.MSBuildProject.ImportExists (DotNetProjectExtensions.packagingCommonTargets));
 		}
+
+		[Test]
+		public async Task AddIOSProjectForPCLProject ()
+		{
+			string templateId = "MonoDevelop.CSharp.PortableLibrary";
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == templateId);
+			var dir = Util.CreateTmpDir ("AddIOSProjectForPCLProject");
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = Path.Combine (dir, "MyProject"),
+				ProjectName = "MyProject",
+				SolutionName = "Solution",
+				SolutionPath = dir
+			};
+
+			var solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			string solutionFileName = Path.Combine (dir, "Solution.sln");
+			await solution.SaveAsync (solutionFileName, Util.GetMonitor ());
+
+			var pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().First ();
+
+			// Add NuGet package metadata to PCL project.
+			var metadata = new NuGetPackageMetadata ();
+			metadata.Load (pclProject);
+			metadata.Id = "MyPackage";
+			metadata.Authors = "Authors";
+			metadata.Owners = "Owners";
+			metadata.Version = "1.2.3";
+			metadata.UpdateProject (pclProject);
+			await pclProject.SaveAsync (Util.GetMonitor ());
+
+			// Add platform implementation.
+			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			viewModel.CreateAndroidProject = false;
+			viewModel.CreateSharedProject = false;
+			viewModel.CreateIOSProject = true;
+
+			await viewModel.CreateProjects (Util.GetMonitor ());
+
+			// Verify projects created as expected.
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+
+			pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject");
+
+			// Solution contains Android project.
+			var iosProject = solution.GetAllProjects ().OfType<DotNetProject> ().FirstOrDefault (p => p.Name == "MyProject.iOS");
+			Assert.That (iosProject.GetTypeTags (), Contains.Item ("XamarinIOS"));
+			Assert.AreEqual ("MyProject.iOS.csproj", iosProject.FileName.FileName);
+			Assert.AreEqual (CompileTarget.Library, iosProject.CompileTarget);
+
+			// Solution contains NuGet packaging project.
+			var nugetProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.NuGet") as PackagingProject;
+			Assert.AreEqual ("MyProject.NuGet.nuproj", nugetProject.FileName.FileName);
+
+			// NuGet packaging project references iOS project.
+			var iosProjectReference = nugetProject.References.Single (r => r.ResolveProject (solution) == iosProject);
+			Assert.IsNotNull (iosProjectReference);
+
+			// NuGet packaging project references PCL project.
+			var projectReference = nugetProject.References.Single (r => r.ResolveProject (solution) == pclProject);
+			Assert.IsNotNull (projectReference);
+
+			// NuGet packaging project contains metadata from PCL project.
+			metadata = nugetProject.GetPackageMetadata ();
+			Assert.AreEqual ("MyPackage", metadata.Id);
+			Assert.AreEqual ("1.2.3", metadata.Version);
+			Assert.AreEqual ("Authors", metadata.Authors);
+			Assert.AreEqual ("Owners", metadata.Owners);
+
+			// NuGet packaging metadata is removed from PCL project.
+			metadata = new NuGetPackageMetadata ();
+			metadata.Load (pclProject);
+			Assert.IsTrue (metadata.IsEmpty ());
+
+			// Ensure NuGet imports are added to the iOS project.
+			Assert.IsTrue (iosProject.MSBuildProject.ImportExists (DotNetProjectExtensions.packagingCommonTargets));
+
+			var assemblyInfoFile = iosProject.Items.OfType<ProjectFile> ().Single (file => file.FilePath.FileName == "AssemblyInfo.cs");
+			Assert.IsNotNull (assemblyInfoFile);
+		}
 	}
 }
