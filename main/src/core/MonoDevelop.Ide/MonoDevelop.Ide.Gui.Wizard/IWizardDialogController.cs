@@ -31,6 +31,7 @@ using System.ComponentModel;
 using System.Linq;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using Xwt;
 using Xwt.Drawing;
 namespace MonoDevelop.Ide.Gui.Wizard
 {
@@ -52,6 +53,8 @@ namespace MonoDevelop.Ide.Gui.Wizard
 		void GoNext ();
 
 		void GoBack ();
+
+		Size DefaultPageSize { get; }
 
 		event EventHandler Completed;
 	}

@@ -38,6 +38,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 		string title;
 		Image image;
 		Control rightSideWidget;
+		Xwt.Size defaultPageSize;
 		IWizardDialogPage currentPage;
 		ReadOnlyCollection<IWizardDialogPage> pages;
 
@@ -62,6 +63,14 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			set {
 				rightSideWidget = value;
 				OnPropertyChanged (nameof (RightSideWidget));
+			}
+		}
+
+		public Xwt.Size DefaultPageSize {
+			get { return defaultPageSize; }
+			set {
+				defaultPageSize = value;
+				OnPropertyChanged (nameof (DefaultPageSize));
 			}
 		}
 

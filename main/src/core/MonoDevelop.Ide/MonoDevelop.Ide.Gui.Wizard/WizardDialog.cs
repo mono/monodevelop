@@ -91,14 +91,15 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 		void UpdateRightSideFrame ()
 		{
+			var contentWidth = (Controller.DefaultPageSize.Width > 0 ? Controller.DefaultPageSize.Width : 660);
 			var rightSideWidget = currentPage.GetRightSideWidget () ?? Controller.RightSideWidget;
 			if (rightSideWidget != null) {
 				rightSideFrame.Content = rightSideWidget;
 				rightSideFrame.Visible = true;
-				Dialog.Width = 900;
+				Dialog.Width = contentWidth + RightSideWidgetWidth;
 			} else {
 				rightSideFrame.Visible = false;
-				Dialog.Width = 900 - RightSideWidgetWidth;
+				Dialog.Width = contentWidth;
 			}
 		}
 
@@ -110,8 +111,8 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			Dialog = new Dialog ();
 
 			Dialog.Name = "wizard_dialog";
-			Dialog.Width = 900;
-			Dialog.Height = 630;
+			Dialog.Width = Controller.DefaultPageSize.Width > 0 ? Controller.DefaultPageSize.Width : 900;
+			Dialog.Height = Controller.DefaultPageSize.Height > 0 ? Controller.DefaultPageSize.Height : 630;
 			Dialog.Resizable = false;
 			Dialog.Padding = 0;
 
@@ -199,6 +200,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				//case nameof (Controller.Icon): Dialog.Icon = Controller.Icon.WithSize (IconSize.Large); break;
 				case nameof (Controller.CurrentPage): CurrentPage = Controller.CurrentPage; break;
 				case nameof (Controller.RightSideWidget): UpdateRightSideFrame (); break;
+				case nameof (Controller.DefaultPageSize): UpdateRightSideFrame (); break;
 			}
 		}
 
