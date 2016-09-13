@@ -130,7 +130,10 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			container.Spacing = 0;
 
 			header = new MonoDevelop.Components.ExtendedHeaderBox (controller.Title, null, controller.Icon);
-			header.BackgroundColor = Styles.NewProjectDialog.BannerBackgroundColor;
+			header.BackgroundColor = Styles.Wizard.BannerBackgroundColor;
+			header.TitleColor = Styles.Wizard.BannerForegroundColor;
+			header.SubtitleColor = Styles.Wizard.BannerSecondaryForegroundColor;
+			header.BorderColor = Styles.Wizard.BannerShadowColor;
 
 			var buttonBox = new HBox ();
 			var buttonFrame = new FrameBox (buttonBox);
@@ -158,19 +161,23 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			contentHBox.Spacing = 0;
 
 			currentPageFrame = new FrameBox ();
-			currentPageFrame.BackgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor;
-			currentPageFrame.BorderColor = Styles.ThinSplitterColor;
-			currentPageFrame.BorderWidthBottom = 1;
+			currentPageFrame.BackgroundColor = Styles.Wizard.PageBackgroundColor;
 			contentHBox.PackStart (currentPageFrame, true, true);
 
 			rightSideFrame = new FrameBox () { Visible = false };
-			rightSideFrame.BorderColor = Styles.ThinSplitterColor;
-			rightSideFrame.BorderWidthBottom = 1;
+			rightSideFrame.BorderColor = Styles.Wizard.ContentSeparatorColor;
+			rightSideFrame.BorderWidthLeft = 1;
 			rightSideFrame.WidthRequest = RightSideWidgetWidth;
-			rightSideFrame.BackgroundColor = Styles.NewProjectDialog.ProjectConfigurationRightHandBackgroundColor;
+			rightSideFrame.BackgroundColor = Styles.Wizard.RightSideBackgroundColor;
 			contentHBox.PackEnd (rightSideFrame, false, true);
 
-			container.PackStart (contentHBox, true, true);
+			var contentFrame = new FrameBox (contentHBox);
+			contentFrame.Padding = 0;
+			contentFrame.BorderColor = Styles.Wizard.ContentShadowColor;
+			contentFrame.BorderWidth = 0;
+			contentFrame.BorderWidthBottom = 1;
+
+			container.PackStart (contentFrame, true, true);
 			container.PackEnd (buttonFrame);
 
 			Dialog.Content = container;

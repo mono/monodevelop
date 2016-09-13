@@ -65,7 +65,10 @@ namespace MonoDevelop.Components
 					image = value;
 					if (image != null) {
 						if (!BackButtonVisible) {
-							backButton.Image = image.WithSize (IconSize.Medium);
+							if (Surface.ToolkitEngine.Type == ToolkitType.XamMac)
+								backButton.Image = image.WithSize (IconSize.Medium).ToBitmap ();
+							else
+								backButton.Image = image.WithSize (IconSize.Medium);
 							backButton.Visible = true;
 							backButton.Sensitive = false;
 						}
@@ -105,6 +108,16 @@ namespace MonoDevelop.Components
 				if (BackButtonVisible)
 					backButton.TooltipText = value;
 			}
+		}
+
+		public Color TitleColor {
+			get { return headerTitle.TextColor; }
+			set { headerTitle.TextColor = value; }
+		}
+
+		public Color SubtitleColor {
+			get { return headerSubtitle.TextColor; }
+			set { headerSubtitle.TextColor = value; }
 		}
 
 		public WidgetSpacing Padding {

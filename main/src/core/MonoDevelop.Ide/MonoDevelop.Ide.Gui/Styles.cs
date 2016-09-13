@@ -235,6 +235,22 @@ namespace MonoDevelop.Ide.Gui
 			public static Color ProjectConfigurationSeparatorColor { get; internal set; }
 		}
 
+		// Wizards
+
+		public static class Wizard
+		{
+			public static Color BannerBackgroundColor { get; internal set; }
+			public static Color BannerShadowColor { get; internal set; }
+			public static Color BannerForegroundColor { get; internal set; }
+			public static Color BannerSecondaryForegroundColor { get; internal set; }
+			public static Color PageBackgroundColor { get; internal set; }
+			public static Color PageSeparatorColor { get; internal set; }
+			public static Color RightSideBackgroundColor { get; internal set; }
+			public static Color ContentShadowColor { get; internal set; }
+			public static Color ContentSeparatorColor { get; internal set; }
+		}
+
+
 		// Editor
 
 		public static class Editor
@@ -394,6 +410,11 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor = SecondaryBackgroundDarkerColor;
 			NewProjectDialog.ProjectConfigurationRightHandBackgroundColor = PrimaryBackgroundColor;
 
+			// Wizards
+
+			Wizard.PageBackgroundColor = SecondaryBackgroundDarkerColor;
+			Wizard.RightSideBackgroundColor = PrimaryBackgroundColor;
+
 			// Editor
 
 			Editor.SmartTagMarkerColorLight = Color.FromName ("#ff70fe").WithAlpha (.5);
@@ -517,6 +538,16 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.TemplateSectionSeparatorColor = Color.FromName ("#e2e2e2");
 			NewProjectDialog.TemplateLanguageButtonBackground = BaseBackgroundColor;
 			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#d2d5d9");
+
+			// Wizards
+
+			Wizard.BannerBackgroundColor = Color.FromName ("#77828c");
+			Wizard.BannerShadowColor = Color.FromName ("#707a83");
+			Wizard.BannerForegroundColor = BaseBackgroundColor;
+			Wizard.BannerSecondaryForegroundColor = SecondaryTextColor;
+			Wizard.PageSeparatorColor = ThinSplitterColor;
+			Wizard.ContentSeparatorColor = Color.FromName ("#d2d5d9");
+			Wizard.ContentShadowColor = ThinSplitterColor;
 		}
 
 		internal static void LoadDarkStyle ()
@@ -621,6 +652,16 @@ namespace MonoDevelop.Ide.Gui
 			NewProjectDialog.TemplateSectionSeparatorColor = ThinSplitterColor;
 			NewProjectDialog.TemplateLanguageButtonBackground = SecondaryBackgroundDarkerColor;
 			NewProjectDialog.ProjectConfigurationSeparatorColor = Color.FromName ("#6e6e6e");
+
+			// Wizards
+
+			Wizard.BannerBackgroundColor = Color.FromName ("#6a737e");
+			Wizard.BannerShadowColor = Wizard.BannerBackgroundColor;
+			Wizard.BannerForegroundColor = Color.FromName ("#ffffff");
+			Wizard.BannerSecondaryForegroundColor = SecondaryTextColor;
+			Wizard.PageSeparatorColor = ThinSplitterColor;
+			Wizard.ContentSeparatorColor = Color.FromName ("#6e6e6e");
+			Wizard.ContentShadowColor = ThinSplitterColor;
 		}
 
 		static StylesStringTagModel tagModel;
