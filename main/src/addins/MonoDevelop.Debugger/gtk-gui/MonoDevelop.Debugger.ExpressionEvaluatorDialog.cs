@@ -19,7 +19,6 @@ namespace MonoDevelop.Debugger
 			this.Name = "MonoDevelop.Debugger.ExpressionEvaluatorDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Expression Evaluator");
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
-			this.Modal = true;
 			// Internal child MonoDevelop.Debugger.ExpressionEvaluatorDialog.VBox
 			global::Gtk.VBox w1 = this.VBox;
 			w1.Name = "dialog1_VBox";

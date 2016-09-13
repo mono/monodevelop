@@ -173,7 +173,6 @@
     <property name="Visible">False</property>
     <property name="Title" translatable="yes">Expression Evaluator</property>
     <property name="WindowPosition">CenterOnParent</property>
-    <property name="Modal">True</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
