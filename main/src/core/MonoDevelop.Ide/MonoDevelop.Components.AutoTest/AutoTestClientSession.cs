@@ -85,7 +85,7 @@ namespace MonoDevelop.Components.AutoTest
 			bf.Serialize (ms, oref);
 			string sref = Convert.ToBase64String (ms.ToArray ());
 
-			var output = new StringBuilder ();
+			var errors = new StringBuilder ();
 			var pi = new ProcessStartInfo (file, args) { UseShellExecute = false };
 			
 			pi.EnvironmentVariables ["MONO_AUTOTEST_CLIENT"] = sref;
@@ -95,9 +95,9 @@ namespace MonoDevelop.Components.AutoTest
 
 			process = new Process ();
 			process.StartInfo = pi;
-			process.OutputDataReceived += (sender, e) => {
-				lock (output) {
-					output.Append (e?.Data);
+			process.ErrorDataReceived += (sender, e) => {
+				lock (errors) {
+					errors.Append (e?.Data);
 				}
 			};
 			if (process.Start ())
@@ -108,7 +108,7 @@ namespace MonoDevelop.Components.AutoTest
 				try {
 					process.Kill ();
 				} catch { }
-				throw new Exception ("Could not connect to application\n"+output.ToString ());
+				throw new Exception ("Could not connect to application\n"+errors.ToString ());
 			}
 
 			return process.Id;
