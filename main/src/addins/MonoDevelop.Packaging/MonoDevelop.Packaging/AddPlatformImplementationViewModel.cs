@@ -47,6 +47,8 @@ namespace MonoDevelop.Packaging
 		DotNetProject androidProject { get; set; }
 		DotNetProject iosProject { get; set; }
 
+		FilePath projectsBaseDirectory;
+
 		public AddPlatformImplementationViewModel (DotNetProject project)
 		{
 			Project = project;
@@ -176,8 +178,21 @@ namespace MonoDevelop.Packaging
 		{
 			string projectNameSuffix = GetProjectNameSuffix (projectType);
 			string fileExtension = GetProjectFileExtension (projectType);
-			FilePath projectDirectory = Project.BaseDirectory.ParentDirectory.Combine (Project.Name + "." + projectNameSuffix);
+			FilePath projectDirectory = ProjectsBaseDirectory.Combine (Project.Name + "." + projectNameSuffix);
 			return projectDirectory.Combine (string.Format ("{0}.{1}{2}", Project.Name, projectNameSuffix, fileExtension));
+		}
+
+		FilePath ProjectsBaseDirectory {
+			get {
+				if (projectsBaseDirectory.IsNull) {
+					if (Project.BaseDirectory == Project.ParentSolution.BaseDirectory)
+						projectsBaseDirectory = Project.ParentSolution.BaseDirectory;
+					else
+						projectsBaseDirectory = Project.BaseDirectory.ParentDirectory;
+				}
+
+				return projectsBaseDirectory;
+			}
 		}
 
 		static string GetProjectNameSuffix (string projectType)

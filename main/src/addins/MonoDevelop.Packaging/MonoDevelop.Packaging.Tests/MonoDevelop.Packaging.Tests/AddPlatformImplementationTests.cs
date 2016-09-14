@@ -317,6 +317,64 @@ namespace MonoDevelop.Packaging.Tests
 			string copiedAssemblyInfoFileName = sharedProject.BaseDirectory.Combine ("Properties", "AssemblyInfo.cs");
 			Assert.That (sharedProject.Files.Select (f => f.FilePath.ToString ()), Has.No.Member (copiedAssemblyInfoFileName));
 			Assert.IsFalse (File.Exists (copiedAssemblyInfoFileName));
+
+			var expectedBaseDirectory = pclProject.BaseDirectory.ParentDirectory;
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.Android", "MyProject.Android.csproj"), androidProject.FileName);
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.iOS", "MyProject.iOS.csproj"), iosProject.FileName);
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.NuGet", "MyProject.NuGet.nuproj"), nugetProject.FileName);
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.Shared", "MyProject.Shared.shproj"), sharedProject.FileName);
+		}
+
+		[Test]
+		public async Task PCLProjectInSameDirectoryAsSolution ()
+		{
+			string templateId = "MonoDevelop.CSharp.PortableLibrary";
+			var template = ProjectTemplate.ProjectTemplates.FirstOrDefault (t => t.Id == templateId);
+			var dir = Util.CreateTmpDir ("AddAndroidProjectForPCLProjectInSameDirectoryAsSolution");
+			var cinfo = new ProjectCreateInformation {
+				ProjectBasePath = dir,
+				ProjectName = "MyProject",
+				SolutionName = "Solution",
+				SolutionPath = dir
+			};
+
+			var solution = template.CreateWorkspaceItem (cinfo) as Solution;
+			string solutionFileName = Path.Combine (dir, "Solution.sln");
+			await solution.SaveAsync (solutionFileName, Util.GetMonitor ());
+
+			var pclProject = solution.GetAllProjects ().OfType<DotNetProject> ().First ();
+
+			// Add NuGet package metadata to PCL project.
+			var metadata = new NuGetPackageMetadata ();
+			metadata.Load (pclProject);
+			metadata.Id = "MyPackage";
+			metadata.Authors = "Authors";
+			metadata.Owners = "Owners";
+			metadata.Version = "1.2.3";
+			metadata.UpdateProject (pclProject);
+			await pclProject.SaveAsync (Util.GetMonitor ());
+
+			// Add platform implementation.
+			var viewModel = new AddPlatformImplementationViewModel (pclProject);
+			viewModel.CreateAndroidProject = true;
+			viewModel.CreateSharedProject = true;
+			viewModel.CreateIOSProject = true;
+
+			await viewModel.CreateProjects (Util.GetMonitor ());
+
+			// Verify projects created as expected.
+			solution = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+
+			var androidProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.Android");
+			var nugetProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.NuGet");
+			var iosProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.iOS");
+			var sharedProject = solution.GetAllProjects ().FirstOrDefault (p => p.Name == "MyProject.Shared");
+
+			var expectedBaseDirectory = solution.BaseDirectory;
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.Android", "MyProject.Android.csproj"), androidProject.FileName);
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.iOS", "MyProject.iOS.csproj"), iosProject.FileName);
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.NuGet", "MyProject.NuGet.nuproj"), nugetProject.FileName);
+			Assert.AreEqual (expectedBaseDirectory.Combine ("MyProject.Shared", "MyProject.Shared.shproj"), sharedProject.FileName);
 		}
 	}
 }
