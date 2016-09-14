@@ -149,8 +149,14 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			nextButton = new Button (GettextCatalog.GetString ("Next"));
 			nextButton.Clicked += (sender, e) => Controller.GoNext ();
 
-			if (Toolkit.CurrentEngine.Type == ToolkitType.XamMac)
-				cancelButton.MinWidth = backButton.MinWidth = nextButton.MinWidth = 77;
+			if (Toolkit.CurrentEngine.Type == ToolkitType.XamMac) {
+				var s = cancelButton.Surface.GetPreferredSize ();
+				cancelButton.WidthRequest = Math.Max (s.Width + 16, 77);
+				s = backButton.Surface.GetPreferredSize ();
+				backButton.WidthRequest = Math.Max (s.Width + 16, 77);
+				s = nextButton.Surface.GetPreferredSize ();
+				nextButton.WidthRequest = Math.Max (s.Width + 16, 77);
+			}
 
 			buttonBox.PackStart (cancelButton, false, false);
 			buttonBox.PackEnd (nextButton, false, false);
