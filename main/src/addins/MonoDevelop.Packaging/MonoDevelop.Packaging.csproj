@@ -93,6 +93,7 @@
       <DependentUpon>AddPlatformImplementationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="MonoDevelop.Packaging\AddPlatformImplementationViewModel.cs" />
+    <Compile Include="MonoDevelop.Packaging\ProjectFileMigrator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

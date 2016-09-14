@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Packaging
 {
@@ -42,9 +43,9 @@ namespace MonoDevelop.Packaging
 
 		public DotNetProject Project { get; set; }
 
-		Project sharedProject { get; set; }
-		Project androidProject { get; set; }
-		Project iosProject { get; set; }
+		SharedAssetsProject sharedProject { get; set; }
+		DotNetProject androidProject { get; set; }
+		DotNetProject iosProject { get; set; }
 
 		public AddPlatformImplementationViewModel (DotNetProject project)
 		{
@@ -72,12 +73,22 @@ namespace MonoDevelop.Packaging
 
 			await CreateNuGetPackagingProject (monitor);
 
+			if (CreateSharedProject) {
+				await MigrateFiles (monitor);
+			}
+
 			await Project.ParentSolution.SaveAsync (monitor);
 		}
 
 		async Task CreateNewSharedProject (ProgressMonitor monitor)
 		{
-			sharedProject = await CreateNewProject (monitor, "SharedAssetsProject");
+			sharedProject = new SharedAssetsProject ("C#");
+			sharedProject.FileName = GetNewProjectFileName ("SharedAssetsProject");
+			Project.ParentFolder.AddItem (sharedProject);
+
+			await SaveProject (monitor, sharedProject);
+
+			await Project.ParentSolution.SaveAsync (monitor);
 
 			AddProjectReference (Project, sharedProject);
 
@@ -86,12 +97,27 @@ namespace MonoDevelop.Packaging
 
 		async Task CreateNewAndroidProject (ProgressMonitor monitor)
 		{
-			androidProject = await CreateNewProject (monitor, "MonoDroid");
+			androidProject = await CreateNewProject (monitor, "MonoDroid") as DotNetProject;
+
+			if (sharedProject != null)
+				AddProjectReference (androidProject, sharedProject);
 		}
 
 		async Task CreateNewIOSProject (ProgressMonitor monitor)
 		{
 			iosProject = await CreateNewProject (monitor, "XamarinIOS", true) as DotNetProject;
+
+			if (sharedProject != null)
+				AddProjectReference (iosProject, sharedProject);
+		}
+
+		async Task MigrateFiles (ProgressMonitor monitor)
+		{
+			var migrator = new ProjectFileMigrator ();
+			migrator.MigrateFiles (Project, sharedProject);
+
+			await SaveProject (monitor, Project);
+			await SaveProject (monitor, sharedProject);
 		}
 
 		async Task<Project> CreateNewProject (ProgressMonitor monitor, string projectType, bool addAssemblyInfo = false)
