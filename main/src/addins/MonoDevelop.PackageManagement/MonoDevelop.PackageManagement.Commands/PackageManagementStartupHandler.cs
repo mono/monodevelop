@@ -189,7 +189,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				var solutionManager = (MonoDevelopSolutionManager)PackageManagementServices.Workspace.GetSolutionManager (solution.Key);
 				foreach (var nugetProject in solutionManager.GetNuGetProjects ()) {
 					var msbuildProject = nugetProject as NuGet.ProjectManagement.MSBuildNuGetProject;
-					if (solution.Any (p => p.FileName == msbuildProject.MSBuildNuGetProjectSystem.ProjectFullPath)) {
+					if (msbuildProject != null && solution.Any (p => p.FileName == msbuildProject.MSBuildNuGetProjectSystem.ProjectFullPath)) {
 						solutionManager.ClearProjectCache ();
 						break;
 					}
