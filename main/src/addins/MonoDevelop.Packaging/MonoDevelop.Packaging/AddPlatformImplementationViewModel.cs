@@ -41,6 +41,10 @@ namespace MonoDevelop.Packaging
 		public bool CreateIOSProject { get; set; }
 		public bool CreateSharedProject { get; set; }
 
+		public bool IsCreateAndroidProjectEnabled { get; set; }
+		public bool IsCreateIOSProjectEnabled { get; set; }
+		public bool IsCreateSharedProjectEnabled { get; set; }
+
 		public DotNetProject Project { get; set; }
 
 		SharedAssetsProject sharedProject { get; set; }
@@ -52,6 +56,15 @@ namespace MonoDevelop.Packaging
 		public AddPlatformImplementationViewModel (DotNetProject project)
 		{
 			Project = project;
+
+			ConfigureSettings ();
+		}
+
+		void ConfigureSettings ()
+		{
+			IsCreateAndroidProjectEnabled = Services.ProjectService.CanCreateProject ("C#", "MonoDroid");
+			IsCreateIOSProjectEnabled = Services.ProjectService.CanCreateProject ("C#", "XamarinIOS");
+			IsCreateSharedProjectEnabled = Services.ProjectService.CanCreateProject ("SharedAssetsProject");
 		}
 
 		public bool AnyItemsToCreate ()

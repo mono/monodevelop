@@ -41,8 +41,13 @@ namespace MonoDevelop.Packaging.Gui
 			Build ();
 
 			androidCheckBox.Active = viewModel.CreateAndroidProject;
+			androidCheckBox.Sensitive = viewModel.IsCreateAndroidProjectEnabled;
+
 			iosCheckBox.Active = viewModel.CreateIOSProject;
+			iosCheckBox.Sensitive = viewModel.IsCreateIOSProjectEnabled;
+
 			useSharedProjectCheckBox.Active = viewModel.CreateSharedProject;
+			useSharedProjectCheckBox.Sensitive = viewModel.IsCreateSharedProjectEnabled;
 
 			UpdateOkButton ();
 
