@@ -39,6 +39,7 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			scrollContainer.BorderVisible = false;
 
 			var container = new VBox ();
+			container.Spacing = 0;
 			container.PackStart (header);
 			container.PackStart (scrollContainer, true, true);
 			Content = container;
