@@ -97,10 +97,11 @@ namespace MonoDevelop.Components.AutoTest
 			process.StartInfo = pi;
 			process.ErrorDataReceived += (sender, e) => {
 				lock (errors) {
-					errors.Append (e?.Data);
+					if (e != null && e.Data != null)
+						errors.Append (e.Data);
 				}
 			};
-			if (process.Start ())
+			if (!process.Start ())
 				throw new Exception ("Process start failed");
 			process.BeginErrorReadLine ();
 
