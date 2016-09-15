@@ -62,6 +62,8 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			if (service.DependenciesSection != null) {
 				var dependencies = new ConfigurationSectionWidget (service.DependenciesSection);
 				sections.PackStart (dependencies);
+				if (service.Status != Status.Added)
+					dependencies.Expanded = true;
 			}
 
 			foreach (var section in service.Sections) {
@@ -95,10 +97,10 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 			var section = _sections.FirstOrDefault (s => !s.IsAdded) ?? _sections.FirstOrDefault ();
 			if (section != null) {
 				foreach (ConfigurationSectionWidget child in this.sections.Children.Where (c => c is ConfigurationSectionWidget)) {
-					if (child.Section == section) {
+					if (child.Section == section)
 						child.Expanded = true;
-						break;
-					}
+					else
+						child.Expanded = false;
 				}
 			}
 		}
