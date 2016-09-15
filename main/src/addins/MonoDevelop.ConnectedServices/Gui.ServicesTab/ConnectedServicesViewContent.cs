@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -66,26 +67,28 @@ namespace MonoDevelop.ConnectedServices.Gui.ServicesTab
 		/// <summary>
 		/// Tells the view content to update it's DocumentObject
 		/// </summary>
-		internal void UpdateCurrentNode ()
+		internal Task UpdateCurrentNode ()
 		{
-			var node = ((DotNetProject)this.Project).GetConnectedServicesBinding ()?.ServicesNode;
-			if (node != null && widget.ShowingService != null) {
-				var serviceNode = node.GetServiceNode (widget.ShowingService);
-				if (serviceNode != null) {
-					node.Expand ();
-					serviceNode.Select ();
-					currentNodeObject = serviceNode;
-					return;
+			return Runtime.RunInMainThread (() => {
+				var node = ((DotNetProject)this.Project).GetConnectedServicesBinding ()?.ServicesNode;
+				if (node != null && widget.ShowingService != null) {
+					var serviceNode = node.GetServiceNode (widget.ShowingService);
+					if (serviceNode != null) {
+						node.Expand ();
+						serviceNode.Select ();
+						currentNodeObject = serviceNode;
+						return;
+					}
 				}
-			}
-			node?.Select ();
-			currentNodeObject = node;
+				node?.Select ();
+				currentNodeObject = node;
+			});
 		}
 
 		public override object GetDocumentObject ()
 		{
 			if (currentNodeObject == null)
-				UpdateCurrentNode ();
+				UpdateCurrentNode ().Wait ();
 			return currentNodeObject;
 		}
 

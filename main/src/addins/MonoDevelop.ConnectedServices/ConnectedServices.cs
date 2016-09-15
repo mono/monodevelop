@@ -93,7 +93,7 @@ namespace MonoDevelop.ConnectedServices
 				if (! (await ConfirmServiceRemoval (service).ConfigureAwait (false)))
 					return;
 				
-				EnsureServiceDetailTabIsClosed (project, serviceId);
+				await Runtime.RunInMainThread (() => EnsureServiceDetailTabIsClosed (project, serviceId));
 
 				await service.RemoveFromProject ();
 			}
