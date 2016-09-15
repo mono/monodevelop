@@ -43,10 +43,12 @@
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplates">
 		<ProjectTemplate id="MonoDevelop.Packaging.Project" resource="PackagingProject.xpt.xml"/>
+		<ProjectTemplate id="MonoDevelop.Packaging.CrossPlatformLibrary" resource="CrossPlatformLibrary.xpt.xml"/>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
 		<Class id="MonoDevelop.Packaging.ProjectTemplateWizard" class="MonoDevelop.Packaging.Templating.PackagingProjectTemplateWizard" />
+		<Class id="MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard" class="MonoDevelop.Packaging.Templating.CrossPlatformLibraryTemplateWizard" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">

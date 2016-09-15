@@ -94,6 +94,7 @@
     </Compile>
     <Compile Include="MonoDevelop.Packaging\AddPlatformImplementationViewModel.cs" />
     <Compile Include="MonoDevelop.Packaging\ProjectFileMigrator.cs" />
+    <Compile Include="MonoDevelop.Packaging.Templating\CrossPlatformLibraryTemplateWizard.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -140,6 +141,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Templates\CrossPlatformLibrary.xpt.xml">
+      <LogicalName>CrossPlatformLibrary.xpt.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
