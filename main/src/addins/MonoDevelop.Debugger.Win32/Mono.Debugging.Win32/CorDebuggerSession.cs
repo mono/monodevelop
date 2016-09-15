@@ -20,8 +20,8 @@ namespace MonoDevelop.Debugger.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
 	{
-	  private readonly char[] badPathChars;
-	  readonly object debugLock = new object ();
+		readonly char[] badPathChars;
+		readonly object debugLock = new object ();
 		readonly object terminateLock = new object ();
 
 		CorDebugger dbg;
