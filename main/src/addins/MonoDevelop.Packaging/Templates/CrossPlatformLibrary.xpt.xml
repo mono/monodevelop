@@ -10,18 +10,26 @@
 		<Icon>md-crossplatform-shared-project</Icon>
 		<Image id="md-crossplatform-shared-project" />
 		<LanguageName>C#</LanguageName>
-		<_Description>A project template for creating cross platform library projects and its corresponding NuGet package.</_Description>
+		<_Description>A project template for creating a cross platform library project and its corresponding NuGet package.</_Description>
 		<Wizard>MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard</Wizard>
 	</TemplateConfiguration>
 
 	<Combine name="${ProjectName}" directory=".">
-		<Project name="${ProjectName}.Shared" directory="${ProjectName}.Shared" type="SharedAssetsProject">
+		<Project name="${ProjectName}.Shared" directory="${ProjectName}.Shared" type="SharedAssetsProject" if="CreateSharedProject">
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
 			</Files>
 		</Project>
-		
-		<Project name="${ProjectName}.iOS" directory="${ProjectName}.iOS" type="XamarinIOS">
+
+		<Project name="${ProjectName}" directory = "." type="C#PortableLibrary" if="CreatePortableProject">
+			<Options Target="Library" TargetFrameworkVersion=".NETPortable,Version=v4.5,Profile=Profile78"/>
+			<Files>
+				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
+		</Project>
+
+		<Project name="${ProjectName}.iOS" directory="${ProjectName}.iOS" type="XamarinIOS" if="CreateIOSProject">
 			<Options Target="Library" TargetFrameworkVersion="Xamarin.iOS,Version=v1.0" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -30,10 +38,12 @@
 				<Reference type="Gac" refto="Xamarin.iOS" />
 				<Reference type="Project" refto="${ProjectName}.Shared" />
 			</References>
-			<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			<Files>
+				<FileTemplateReference TemplateID="CSharpAssemblyInfo" name="AssemblyInfo.cs" />
+			</Files>
 		</Project>
 		
-		<Project name="${ProjectName}.Android" directory="${ProjectName}.Android" type="MonoDroid">
+		<Project name="${ProjectName}.Android" directory="${ProjectName}.Android" type="MonoDroid" if="CreateAndroidProject">
 			<Options Target="Library"  />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
@@ -47,7 +57,7 @@
 			</Files>
 		</Project>
 
-		<Project name="${ProjectName}.NuGet" directory="${ProjectName}.NuGet" type="NuGetPackaging">
+		<Project name="${ProjectName}.NuGet" directory="${ProjectName}.NuGet" type="NuGetPackaging" if="CreateNuGetProject">
 			<Options TargetFrameworkVersion="4.5" />
 			<References>
 				<Reference type="Project" refto="${ProjectName}.Android" />

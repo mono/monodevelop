@@ -60,6 +60,7 @@
       <HintPath>..\..\..\external\nuget-binary\NuGet.Versioning.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -95,6 +96,9 @@
     <Compile Include="MonoDevelop.Packaging\AddPlatformImplementationViewModel.cs" />
     <Compile Include="MonoDevelop.Packaging\ProjectFileMigrator.cs" />
     <Compile Include="MonoDevelop.Packaging.Templating\CrossPlatformLibraryTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.Packaging.Gui\GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.Packaging.Gui.GtkCrossPlatformLibraryProjectTemplateWizardPageWidget.cs" />
+    <Compile Include="MonoDevelop.Packaging.Templating\CrossPlatformLibraryTemplateWizardPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

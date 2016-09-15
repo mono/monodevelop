@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
@@ -38,20 +39,9 @@ namespace MonoDevelop.Packaging.Templating
 			get { return "MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard"; }
 		}
 
-		public override int TotalPages {
-			get { return 0; }
-		}
-
 		public override WizardPage GetPage (int pageNumber)
 		{
-			return null;
-		}
-
-		public override void ConfigureWizard ()
-		{
-			Parameters["PackageId"] = Parameters["UserDefinedProjectName"];
-			Parameters["PackageDescription"] = Parameters["UserDefinedProjectName"];
-			Parameters["Authors"] = AuthorInformation.Default.Name;
+			return new CrossPlatformLibraryTemplateWizardPage (this);
 		}
 
 		public override void ItemsCreated (IEnumerable<IWorkspaceFileObject> items)
@@ -60,6 +50,10 @@ namespace MonoDevelop.Packaging.Templating
 
 			foreach (DotNetProject project in libraryProjects) {
 				project.AddCommonPackagingImports ();
+			}
+
+			if (Parameters.GetBoolValue ("CreatePortableProject")) {
+				AddNuGetPackageMetadataToPclProject (libraryProjects);
 			}
 
 			IdeApp.ProjectOperations.SaveAsync (libraryProjects);
@@ -73,6 +67,20 @@ namespace MonoDevelop.Packaging.Templating
 			}
 
 			return items.OfType<DotNetProject> ().Where (p => !(p is PackagingProject));
+		}
+
+		void AddNuGetPackageMetadataToPclProject (IEnumerable<DotNetProject> projects)
+		{
+			var pclProject = projects.FirstOrDefault (p => p.IsPortableLibrary);
+			if (pclProject != null) {
+				var metadata = new NuGetPackageMetadata ();
+				metadata.Id = Parameters["PackageId"];
+				metadata.Description = Parameters["PackageDescription"];
+				metadata.Version = Parameters["PackageVersion"];
+				metadata.Authors = Parameters["PackageAuthors"];
+
+				metadata.UpdateProject (pclProject);
+			}
 		}
 	}
 }
