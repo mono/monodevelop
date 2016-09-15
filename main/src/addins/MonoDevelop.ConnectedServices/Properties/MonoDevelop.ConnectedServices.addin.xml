@@ -45,7 +45,7 @@
 				 _label = "Open Service Details" />
 
 		<Command id = "MonoDevelop.ConnectedServices.Commands.RemoveService"
-				 _label = "Remove Service..." />
+				 _label = "Remove Service…" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedServicesFolder">
@@ -54,7 +54,7 @@
 
 	<Extension path = "/MonoDevelop/ConnectedServices/ContextMenu/ProjectPad/ConnectedService">
 		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.OpenServiceDetails" />
-		<CommandItem id = "MonoDevelop.ConnectedServices.Commands.RemoveService" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Delete" _label = "Remove Service…" />
 	</Extension>
 	
 	<!-- end Solution Pad -->

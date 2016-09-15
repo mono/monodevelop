@@ -25,11 +25,16 @@ namespace MonoDevelop.ConnectedServices.Gui.SolutionPad
 		[CommandUpdateHandler (Commands.RemoveService)]
 		public void UpdateRemoveServiceCommand (CommandInfo info)
 		{
-			info.Visible = info.Enabled = true;
+			info.Visible = info.Enabled = CanDeleteItem ();
+		}
+
+		public override bool CanDeleteItem ()
+		{
+			return true;
 		}
 
 		[CommandHandler (Commands.RemoveService)]
-		public async void RemoveService()
+		public override async void DeleteItem ()
 		{
 			var service = this.CurrentNode.DataItem as ConnectedServiceNode;
 			try {
