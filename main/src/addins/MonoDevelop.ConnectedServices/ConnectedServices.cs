@@ -148,15 +148,9 @@ namespace MonoDevelop.ConnectedServices
 		static Task<bool> ConfirmServiceRemoval(IConnectedService service)
 		{
 			var msg1 = GettextCatalog.GetString ("Remove {0}", service.DisplayName);
-			var msg2 = GettextCatalog.GetString ("Removing this service will result in the following changes to this project:\n\n{0}\n\nThis action does not remove any added or user code that uses the service. "+
-			                                     "Removing the service will likely prevent the project from compiling until all usage of the service is removed.\n\n"+
-			                                     "Are you sure you want to remove the service?", BuildRemovalInfo(service));
-			
-			if (service.Dependencies.Length == 0) {
-				msg2 = GettextCatalog.GetString ("This action does not remove any added or user code that uses the service. " +
-													 "Removing the service will likely prevent the project from compiling until all usage of the service is removed.\n\n" +
-													 "Are you sure you want to remove the service?", BuildRemovalInfo (service));
-			}
+			var msg2 = GettextCatalog.GetString ("{0}" +
+			                                     "References in your code need to be removed manually. " +
+			                                     "Are you sure you want to remove the service from project {1}?", BuildRemovalInfo(service), service.Project.Name);
 
 			var result = new TaskCompletionSource<bool> ();
 			Xwt.Toolkit.NativeEngine.Invoke (delegate {
@@ -174,7 +168,8 @@ namespace MonoDevelop.ConnectedServices
 			var sb = new StringBuilder ();
 
 			if (service.Dependencies.Length > 0) {
-				sb.AppendLine (GettextCatalog.GetString ("Remove packages and dependencies:"));
+				sb.AppendLine (GettextCatalog.GetString ("The following packages and their dependencies will be removed:"));
+				sb.AppendLine ();
 				for (int i = 0; i < service.Dependencies.Length; i++) {
 
 					if (service.Dependencies [i].Category == ConnectedServiceDependency.PackageDependencyCategory) {
@@ -183,6 +178,7 @@ namespace MonoDevelop.ConnectedServices
 						sb.Append ("   • " + service.Dependencies [i].DisplayName);
 					}
 				}
+				sb.Append ("\n\n");
 			}
 
 			return sb.ToString ();
