@@ -35,13 +35,10 @@ namespace MonoDevelop.Packaging
 {
 	class NuGetFileDescriptor : CustomDescriptor
 	{
-		ProjectFile file;
 		string target;
 
 		public NuGetFileDescriptor (ProjectFile file)
 		{
-			this.file = file;
-
 			target = GetTargetDirectory (file);
 		}
 
