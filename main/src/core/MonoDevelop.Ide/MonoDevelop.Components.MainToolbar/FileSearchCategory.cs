@@ -112,7 +112,7 @@ namespace MonoDevelop.Components.MainToolbar
 					files = allFilesCache = allFilesCache ?? GenerateAllFiles ();
 				}
 				var matcher = StringMatcher.GetMatcher (pattern.Pattern, false);
-				var savedMatches = new Dictionary<string, MatchResult> ();
+				var savedMatches = new Dictionary<string, MatchResult> (files.Count * 2);
 				foreach (var file in files) {
 					if (token.IsCancellationRequested)
 						break;

@@ -222,9 +222,17 @@ namespace MonoDevelop.Core.Execution
 			if (environmentVariables != null)
 				foreach (KeyValuePair<string, string> kvp in environmentVariables)
 					psi.EnvironmentVariables [kvp.Key] = kvp.Value;
-			ProcessWrapper pw = StartProcess (psi, console.Out, console.Error, null);
-			new ProcessMonitor (console, pw.ProcessAsyncOperation, exited);
-			return pw.ProcessAsyncOperation;
+			try {
+				ProcessWrapper pw = StartProcess (psi, console.Out, console.Error, null);
+				new ProcessMonitor (console, pw.ProcessAsyncOperation, exited);
+				return pw.ProcessAsyncOperation;
+			} catch (Exception ex) {
+				// If the process can't be started, dispose the console now since ProcessMonitor won't do it
+				console.Error.WriteLine (GettextCatalog.GetString ("The application could not be started"));
+				LoggingService.LogError ("Could not start process for command: " + psi.FileName + " " + psi.Arguments, ex);
+				console.Dispose ();
+				return NullProcessAsyncOperation.Failure;
+			}
 		}
 		
 		public IExecutionHandler GetDefaultExecutionHandler (ExecutionCommand command)
@@ -269,8 +277,12 @@ namespace MonoDevelop.Core.Execution
 		public IExecutionModeSet GetDebugExecutionMode ()
 		{
 			foreach (ExtensionNode node in AddinManager.GetExtensionNodes (ExecutionModesExtensionPath)) {
-				if (node.Id == "MonoDevelop.Debugger")
-					return (IExecutionModeSet) ((TypeExtensionNode)node).GetInstance (typeof (IExecutionModeSet));
+				if (node.Id == "Debug") {
+					foreach (ExtensionNode childNode in node.ChildNodes) {
+						if (childNode.Id == "MonoDevelop.Debugger")
+							return (IExecutionModeSet) ((TypeExtensionNode)childNode).GetInstance (typeof (IExecutionModeSet));
+					}
+				}
 			}
 			return null;
 		}

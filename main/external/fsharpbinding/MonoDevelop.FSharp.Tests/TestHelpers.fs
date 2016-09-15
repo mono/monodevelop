@@ -41,10 +41,10 @@ module TestHelpers =
                 printf "%A" exn
                 return ParseAndCheckResults(None, None) }
 
-    let createDoc source compilerDefines =
+    let createDocWithParseResults source compilerDefines (parseFile:string -> ParseAndCheckResults) =
         FixtureSetup().Initialise()
 
-        let results = parseAndCheckFile source |> Async.RunSynchronously
+        let results = parseFile source
         let options = ParseOptions(FileName = filename, Content = StringTextSource(source))
 
         let parsedDocument =
@@ -54,6 +54,12 @@ module TestHelpers =
         let editor = MonoDevelop.Ide.Editor.TextEditorFactory.CreateNewEditor (doc)
 
         TestDocument(filename, parsedDocument, editor)
+
+    let createDoc source compilerDefines =
+        createDocWithParseResults source compilerDefines (fun source -> parseAndCheckFile source |> Async.RunSynchronously)
+
+    let createDocWithoutParsing source compilerDefines =
+        createDocWithParseResults source compilerDefines (fun _ -> ParseAndCheckResults(None, None))
 
     let getAllSymbols source =
         async {

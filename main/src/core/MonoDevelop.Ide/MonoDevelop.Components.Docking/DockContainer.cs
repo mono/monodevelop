@@ -84,8 +84,11 @@ namespace MonoDevelop.Components.Docking
 			layout = null;
 		}
 
+		internal bool IsSwitchingLayout { get; set; }
+
 		public void LoadLayout (DockLayout dl)
 		{
+			IsSwitchingLayout = true;
 			HidePlaceholder ();
 
 			// Sticky items currently selected in notebooks will remain
@@ -97,8 +100,8 @@ namespace MonoDevelop.Components.Docking
 					if (gitem != null && gitem.ParentGroup.IsSelectedPage (it))
 						sickyOnTop.Add (it);
 				}
-			}			
-			
+			}
+
 			if (layout != null)
 				layout.StoreAllocation ();
 			layout = dl;
@@ -116,6 +119,8 @@ namespace MonoDevelop.Components.Docking
 
 			foreach (DockItem it in sickyOnTop)
 				it.Present (false);
+
+			IsSwitchingLayout = false;
 		}
 		
 		public void StoreAllocation ()
@@ -171,21 +176,18 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
 		{
-			List<Widget> widgets = new List<Widget> ();
 			foreach (Widget w in notebooks)
-				widgets.Add (w);
+				callback (w);
 			foreach (DockItem it in items) {
 				if (it.HasWidget && it.Widget.Parent == this) {
-					widgets.Add (it.Widget);
+					callback (it.Widget);
 					if (it.TitleTab.Parent == this)
-						widgets.Add (it.TitleTab);
+						callback (it.TitleTab);
 				}
 			}
-			foreach (var s in splitters.Where (w => w.Parent != null))
-				widgets.Add (s);
-
-			foreach (Widget w in widgets)
-				callback (w);
+			foreach (var s in splitters)
+				if (s.Parent != null)
+					callback (s);
 		}
 		
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)

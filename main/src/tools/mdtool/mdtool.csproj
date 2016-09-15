@@ -78,7 +78,9 @@
   <ItemGroup>
     <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\mdtool.cs" />
-    <None Include="app.config" />
+    <None Include="..\..\core\MonoDevelop.Startup\app.config">
+      <Link>app.config</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

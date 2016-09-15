@@ -171,7 +171,7 @@ namespace MonoDevelop.Projects
 		{
 			return Runtime.RunInMainThread (async delegate {
 				if (!File.Exists (file))
-					throw new IOException (GettextCatalog.GetString ("File not found: {0}", file));
+					throw new UserException (GettextCatalog.GetString ("File not found: {0}", file));
 				string fullpath = file.ResolveLinks ().FullPath;
 				using (Counters.ReadWorkspaceItem.BeginTiming ("Read solution " + file)) {
 					fullpath = GetTargetFile (fullpath);

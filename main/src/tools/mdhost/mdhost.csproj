@@ -61,7 +61,9 @@
     <Compile Include="src\mdhost.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="..\..\core\MonoDevelop.Startup\app.config">
+      <Link>app.config</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

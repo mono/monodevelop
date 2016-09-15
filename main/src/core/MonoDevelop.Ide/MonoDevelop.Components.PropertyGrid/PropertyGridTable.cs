@@ -275,13 +275,15 @@ namespace MonoDevelop.Components.PropertyGrid
 
 		static TableRow FindRow (IEnumerable<TableRow> rows, PropertyDescriptor property)
 		{
-			foreach (var row in rows) {
-				if (row.Property == property)
-					return row;
+			if (rows != null) {
+				foreach (var row in rows) {
+					if (row.Property == property)
+						return row;
 
-				var childRes = FindRow (row.ChildRows, property);
-				if (childRes != null)
-					return childRes;
+					var childRes = FindRow (row.ChildRows, property);
+					if (childRes != null)
+						return childRes;
+				}
 			}
 			return null;
 		}

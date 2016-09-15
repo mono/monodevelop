@@ -332,7 +332,20 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}
 			}
 		}
-		
+
+		internal void ExpandChildren (IOptionsPanel parent)
+		{
+			foreach (SectionPage page in pages.Values) {
+				foreach (PanelInstance pi in page.Panels) {
+					if (pi.Panel == parent) {
+						tree.ExpandToPath (store.GetPath (page.Iter));
+						tree.ExpandRow (store.GetPath (page.Iter), false);
+						return;
+					}
+				}
+			}
+		}
+
 		internal void AddChildSection (IOptionsPanel parent, OptionsDialogSection section, object dataObject)
 		{
 			foreach (SectionPage page in pages.Values) {
@@ -539,7 +552,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				CreatePageWidget (page);
 
 			if (section.HeaderImage == null) {
-				labelTitle.Markup = "<span weight=\"bold\" size=\"large\">" + GLib.Markup.EscapeText (section.Label) + "</span>";
+				labelTitle.Markup = "<span weight=\"bold\" size=\"large\">" + GLib.Markup.EscapeText (section.HeaderLabel) + "</span>";
 				textHeader.Show ();
 				imageHeader.Hide ();
 			} else {

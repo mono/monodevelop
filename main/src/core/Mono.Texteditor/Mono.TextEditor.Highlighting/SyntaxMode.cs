@@ -135,6 +135,7 @@ namespace Mono.TextEditor.Highlighting
 					sematicRule.Analyze (doc, line, result, offset, offset + length);
 				}
 			}
+			var minOffset = offset;
 			if (result != null) {
 				// crop to begin
 				if (result.Offset < offset) {
@@ -145,6 +146,7 @@ namespace Mono.TextEditor.Highlighting
 						int endOffset = result.EndOffset;
 						result.Offset = offset;
 						result.Length = endOffset - offset;
+						minOffset = result.Offset;
 					}
 				}
 			}
@@ -158,6 +160,10 @@ namespace Mono.TextEditor.Highlighting
 						yield break;
 					}
 				}
+				while (result.Next != null && result.Offset < minOffset) {
+					result = result.Next;
+				}
+				minOffset = result.Offset + result.Length;
 				yield return result;
 				result = result.Next;
 			}
@@ -675,11 +681,12 @@ namespace Mono.TextEditor.Highlighting
 				if (lineOffset < offset)
 					SyntaxModeService.ScanSpans (doc, mode, spanParser.CurRule, spanParser.SpanStack, lineOffset, offset);
 				length = System.Math.Min (doc.TextLength - offset, length);
+				var minOffset = curChunk == null ? 0 : curChunk.Offset + curChunk.Length;
 				curChunk = new Chunk (offset, 0, GetSpanStyle ());
 				spanParser.ParseSpans (offset, length);
 				curChunk.SpanStack = spanParser.SpanStack;
 				curChunk.Length = offset + length - curChunk.Offset;
-				if (curChunk.Length > 0) {
+				if (curChunk.Length > 0 && curChunk.Offset >= minOffset) {
 					curChunk.Style = GetStyle (curChunk) ?? GetSpanStyle ();
 					AddRealChunk (curChunk);
 				}

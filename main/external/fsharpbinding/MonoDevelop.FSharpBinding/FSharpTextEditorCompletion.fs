@@ -82,7 +82,6 @@ type FSharpMemberCompletionData(name, icon, symbol:FSharpSymbolUse, overloads:FS
                 | a, b -> a.DisplayName.CompareTo(b.DisplayName)
             | _ -> -1
 
-
 type FsiMemberCompletionData(displayText, completionText, icon) =
     inherit CompletionData(CompletionText = completionText,
                            DisplayText = displayText,
@@ -101,10 +100,10 @@ type FsiMemberCompletionData(displayText, completionText, icon) =
                     async {
                         let! tooltip = Async.AwaitEvent (session.TooltipReceived)
                         match tooltip with
-                        | MonoDevelop.FSharp.Shared.ToolTip (signature, xmldoc, footer) ->
+                        | MonoDevelop.FSharp.Shared.ToolTips.ToolTip (signature, xmldoc, footer) ->
                             let! tooltipInfo = SymbolTooltips.getTooltipInformationFromTip (signature, xmldoc, footer)
                             return tooltipInfo
-                        | MonoDevelop.FSharp.Shared.EmptyTip ->
+                        | MonoDevelop.FSharp.Shared.ToolTips.EmptyTip ->
                             return TooltipInformation()
                     }
                 Async.StartAsTask(computation, cancellationToken = cancel)
@@ -129,6 +128,17 @@ module Completion =
             Some InvalidToken
         else
             None
+
+    let (|InsideBlockComment|_|) context =
+        let leftCommentDelimiter = context.editor.Text.LastIndexOf("(*", context.triggerOffset)
+        if leftCommentDelimiter = -1 then
+            None
+        else
+            let rightCommentDelimiter = context.editor.Text.IndexOf("*)", leftCommentDelimiter)
+            if rightCommentDelimiter = -1 || rightCommentDelimiter > context.triggerOffset then
+                Some InsideBlockComment
+            else
+                None
 
     let (|InvalidCompletionChar|_|) context =
         if Char.IsLetter context.completionChar || context.ctrlSpace || context.completionChar = '.' || context.completionChar = '#' then
@@ -433,9 +443,32 @@ module Completion =
                             return! document.TryGetAst()
                         })
 
-                let result = CompletionDataList()                 
+                let result = CompletionDataList()
+
+                let addIdentCompletions() =
+                    let (idents, residue) = Parsing.findLongIdentsAndResidue(column, lineToCaret)
+                    if idents.IsEmpty then
+                        let lineWithoutResidue = lineToCaret.[0..column-residue.Length-1]
+                        let tokens = Lexer.tokenizeLine lineWithoutResidue [||] 0 lineWithoutResidue Lexer.singleLineQueryLexState
+                        let tokenToCompletion (token:FSharpTokenInfo) =
+                            let displayText = lineToCaret.[token.LeftColumn..token.RightColumn]
+                            CompletionData(displayText, IconId "md-fs-field", displayText, displayText)
+                      
+                        // Add ident completions from the current line
+                        // as the semantic parse might not be up to date
+                        let lineCompletions = 
+                            tokens 
+                            |> List.filter (fun token -> token.TokenName = "IDENT")
+                            |> List.map tokenToCompletion
+
+                        result.AddRange (filterResults lineCompletions residue
+                                         |> Seq.filter(fun r -> not (result.Exists(fun e -> e.DisplayText = r.DisplayText))))
+                        result.DefaultCompletionString <- residue
+                        result.TriggerWordLength <- residue.Length
+
                 match typedParseResults with
-                | None       -> ()
+                | None -> 
+                    addIdentCompletions()
                 | Some tyRes ->
                     // Get declarations and generate list for MonoDevelop
                     let! symbols = tyRes.GetDeclarationSymbols(line, column, lineToCaret)
@@ -449,10 +482,13 @@ module Completion =
                         let data = getCompletionData symbols isInAttribute
                         result.AddRange (filterResults data residue)
 
+                        addIdentCompletions()
+
                         if completionChar <> '.' && result.Count > 0 then
                             LoggingService.logDebug "Completion: residue %s" residue
                             result.DefaultCompletionString <- residue
                             result.TriggerWordLength <- residue.Length
+
                             
                         //TODO Use previous token and pattern match to detect whitespace
                         if Regex.IsMatch(lineToCaret, "(^|\s+|\()\w+$", RegexOptions.Compiled) then
@@ -461,7 +497,8 @@ module Completion =
                             result.AddRange (filterResults compilerIdentifiers residue)
                                     
                             result.AddRange (filterResults keywordCompletionData residue)
-                    | None -> ()
+                    | None -> addIdentCompletions()
+                
                 return result
             with
             | :? Threading.Tasks.TaskCanceledException -> 
@@ -528,6 +565,7 @@ module Completion =
                     let completions = MonoDevelop.FSharp.Shared.Completion.getPathCompletion workingFolder directive path
                     return getCompletionList completions
                 | InvalidToken
+                | InsideBlockComment
                 | InvalidCompletionChar
                 | DoubleDot
                 | LiteralNumber

@@ -60,15 +60,16 @@ namespace MonoDevelop.Projects.MSBuild
 		internal object EndInnerWhitespace { get; set; }
 
 		internal virtual bool PreferEmptyElement { get { return true; } }
+		internal virtual bool ContentRequiredForEvaluation { get { return true; } }
 
-		#if ATTR_STATS
+#if ATTR_STATS
 		public static StringCounter UnknownAtts = new StringCounter ();
 		public static StringCounter KnownAttOrder = new StringCounter ();
-		#endif
+#endif
 
 		internal override void Read (MSBuildXmlReader reader)
 		{
-			if (reader.ForEvaluation) {
+			if (reader.ForEvaluation && !ContentRequiredForEvaluation) {
 				if (reader.MoveToFirstAttribute ()) {
 					do {
 						ReadAttribute (reader.LocalName, reader.Value);
@@ -319,7 +320,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal virtual void ReadChildElement (MSBuildXmlReader reader)
 		{
-			if (reader.ForEvaluation)
+			if (reader.ForEvaluation && !ContentRequiredForEvaluation)
 				reader.Skip ();
 			else {
 				var n = new MSBuildXmlElement ();

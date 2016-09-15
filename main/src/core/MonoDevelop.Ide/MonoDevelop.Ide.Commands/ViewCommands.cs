@@ -69,13 +69,13 @@ namespace MonoDevelop.Ide.Commands
 		{
 			string group;
 			var lastListGroup = new Dictionary <CommandArrayInfo, string>();
-
+			var descFormat = GettextCatalog.GetString ("Show {0}");
 			foreach (Pad pad in IdeApp.Workbench.Pads.OrderBy (p => p.Group, StringComparer.InvariantCultureIgnoreCase)) {
 
 				CommandInfo ci = new CommandInfo(pad.Title);
 				ci.Icon = pad.Icon;
 				ci.UseMarkup = true;
-				ci.Description = GettextCatalog.GetString ("Show {0}", pad.Title);
+				ci.Description = string.Format (descFormat, pad.Title);
 
 				ActionCommand cmd = IdeApp.CommandService.GetActionCommand ("Pad|" + pad.Id);
 				if (cmd != null) ci.AccelKey = cmd.AccelKey; 
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Commands
 						if (!found) {
 							CommandInfoSet set = new CommandInfoSet();
 							set.Text = pad.Categories[j];
-							set.Description = GettextCatalog.GetString ("Show {0}", set.Text);
+							set.Description = string.Format (descFormat, set.Text);
 							list.Add (set);
 							list = set.CommandInfos;
 						}
@@ -436,6 +436,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
+			IdeApp.Workbench.ActiveDocument.Select ();
 			IdeApp.Workbench.ActiveDocument.Editor.CenterToCaret ();
 			IdeApp.Workbench.ActiveDocument.Editor.StartCaretPulseAnimation ();
 		}

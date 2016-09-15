@@ -4,7 +4,7 @@
     <ProjectGuid>{74FADC4E-C9A8-456E-9A2C-DB933220E073}</ProjectGuid>
     <SimpleData>Test</SimpleData>
     <DataProperty>
-      <DataProperty Foo="rep" />
+      <Foo>rep</Foo>
     </DataProperty>
   </PropertyGroup>
   <ProjectExtensions>

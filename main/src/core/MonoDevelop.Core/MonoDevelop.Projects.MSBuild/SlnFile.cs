@@ -176,8 +176,8 @@ namespace MonoDevelop.Projects.MSBuild
 							var sec = new SlnSection ();
 							sec.Read (reader, line, ref curLineNum);
 							sections.Add (sec);
-						} else
-							throw new InvalidSolutionFormatException (curLineNum);
+						} else // Ignore text that's out of place
+							continue;
 					}
 					if (line == null)
 						throw new InvalidSolutionFormatException (curLineNum, "Global section not closed");

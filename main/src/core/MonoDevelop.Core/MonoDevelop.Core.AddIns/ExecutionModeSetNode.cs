@@ -32,6 +32,7 @@ using MonoDevelop.Core.Execution;
 namespace MonoDevelop.Core.AddIns
 {
 	[ExtensionNodeChild (typeof(ExecutionModeNode), "Mode")]
+	[ExtensionNodeChild (typeof(TypeExtensionNode), "ModeSetType")]
 	class ExecutionModeSetNode: ExtensionNode, IExecutionModeSet
 	{
 		[NodeAttribute ("_name", Localizable=true)]
@@ -43,8 +44,16 @@ namespace MonoDevelop.Core.AddIns
 		
 		public IEnumerable<IExecutionMode> ExecutionModes {
 			get {
-				foreach (ExecutionModeNode node in ChildNodes)
-					yield return node;
+				foreach (ExtensionNode node in ChildNodes) {
+					if (node is ExecutionModeNode)
+						yield return (ExecutionModeNode)node;
+					else if (node is TypeExtensionNode) {
+						var mset = ((TypeExtensionNode)node).GetInstance () as IExecutionModeSet;
+						if (mset != null)
+							foreach (var h in mset.ExecutionModes)
+								yield return h;
+					}
+				}
 			}
 		}
 	}

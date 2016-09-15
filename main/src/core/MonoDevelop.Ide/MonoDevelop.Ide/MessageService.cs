@@ -175,7 +175,7 @@ namespace MonoDevelop.Ide
 			}
 
 			if (string.IsNullOrEmpty (secondaryText) && (ex != null))
-				secondaryText = ex.Message;
+				secondaryText = ErrorHelper.GetErrorMessage (ex);
 
 			return GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, buttons);
 		}

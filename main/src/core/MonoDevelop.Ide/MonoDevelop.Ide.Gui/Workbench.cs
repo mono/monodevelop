@@ -556,32 +556,37 @@ namespace MonoDevelop.Ide.Gui
 			// Ensure that paths like /a/./a.cs are equalized 
 			using (Counters.OpenDocumentTimer.BeginTiming ("Opening file " + info.FileName)) {
 				NavigationHistoryService.LogActiveDocument ();
-				if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer)) {
-					Counters.OpenDocumentTimer.Trace ("Look for open document");
-					foreach (Document doc in Documents) {
-						BaseViewContent vcFound = null;
+				Counters.OpenDocumentTimer.Trace ("Look for open document");
+				foreach (Document doc in Documents) {
+					BaseViewContent vcFound = null;
 
-						//search all ViewContents to see if they can "re-use" this filename
-						if (doc.Window.ViewContent.CanReuseView (info.FileName))
-							vcFound = doc.Window.ViewContent;
-						
-						//old method as fallback
-						if ((vcFound == null) && (doc.FileName.CanonicalPath == info.FileName)) // info.FileName is already Canonical
-							vcFound = doc.Window.ViewContent;
-						//if found, select window and jump to line
-						if (vcFound != null) {
+					//search all ViewContents to see if they can "re-use" this filename
+					if (doc.Window.ViewContent.CanReuseView (info.FileName))
+						vcFound = doc.Window.ViewContent;
+					
+					//old method as fallback
+					if ((vcFound == null) && (doc.FileName.CanonicalPath == info.FileName)) // info.FileName is already Canonical
+						vcFound = doc.Window.ViewContent;
+					//if found, try to reuse or close the old view
+					if (vcFound != null) {
+						// reuse the view if the binidng didn't change
+						if (info.Options.HasFlag (OpenDocumentOptions.TryToReuseViewer) || vcFound.Binding == info.DisplayBinding) {
 							if (info.Project != null && doc.Project != info.Project) {
-								doc.SetProject (info.Project); 
+								doc.SetProject (info.Project);
 							}
 
 							ScrollToRequestedCaretLocation (doc, info);
-							
+
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
 								doc.Window.SelectWindow ();
 								NavigationHistoryService.LogActiveDocument ();
 							}
 							return doc;
+						} else {
+							if (!doc.Close ())
+								return doc;
+							break;
 						}
 					}
 				}
@@ -673,6 +678,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			newContent.UntitledName = defaultName;
 			newContent.IsDirty = true;
+			newContent.Binding = binding;
 			workbench.ShowView (newContent, true, binding);
 
 			var document = WrapDocument (newContent.WorkbenchWindow);
@@ -1541,7 +1547,8 @@ namespace MonoDevelop.Ide.Gui
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not be opened.", fileName), null);
 					return false;
 				}
-				
+
+				newContent.Binding = binding;
 				if (project != null)
 					newContent.Project = project;
 				

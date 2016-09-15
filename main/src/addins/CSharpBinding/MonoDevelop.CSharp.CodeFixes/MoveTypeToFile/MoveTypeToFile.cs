@@ -44,6 +44,8 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.StandardHeader;
 using ICSharpCode.NRefactory6.CSharp;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Projects;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 {
@@ -133,7 +135,8 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 					FileService.RenameFile (document.FilePath, correctFileName);
 					var doc = IdeApp.Workbench.ActiveDocument;
 					if (doc.HasProject) {
-						IdeApp.ProjectOperations.SaveAsync (doc.Project);
+						var prj = DetermineRealProject (doc);
+						IdeApp.ProjectOperations.SaveAsync (prj);
 					}
 					return document;
 				} 
@@ -167,13 +170,26 @@ namespace MonoDevelop.CSharp.CodeFixes.MoveTypeToFile
 
 				File.WriteAllText (correctFileName, content);
 				if (doc.HasProject) {
-					doc.Project.AddFile (correctFileName);
-					IdeApp.ProjectOperations.SaveAsync (doc.Project);
+					var prj = DetermineRealProject (doc);
+
+					prj.AddFile (correctFileName);
+					IdeApp.ProjectOperations.SaveAsync (prj);
 				}
 
 				doc.Editor.RemoveText (CalcTypeBounds (type));
 
 				return document;
+			}
+
+			static Projects.Project DetermineRealProject (Ide.Gui.Document doc)
+			{
+				// try to search for a shared project
+				var allProjects = IdeApp.Workspace.GetAllItems<SharedAssetsProject> ();
+				var projects = new List<SharedAssetsProject> (allProjects.Where (p => p.IsFileInProject (doc.FileName)));
+				if (projects.Count > 0)
+					return projects [0];
+				
+				return doc.Project;
 			}
 
 			ISegment CalcTypeBounds (BaseTypeDeclarationSyntax type)

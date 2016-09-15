@@ -20,11 +20,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>True</Externalconsole>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="Execute" command="../../../main/build/bin/MonoDevelop.exe" />
-      </CustomCommands>
-    </CustomCommands>
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\BackendBindings\MonoDevelop.DocFood.xml</DocumentationFile>
   </PropertyGroup>
@@ -67,6 +62,10 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
       <HintPath>..\..\..\external\roslyn\Binaries\Release\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

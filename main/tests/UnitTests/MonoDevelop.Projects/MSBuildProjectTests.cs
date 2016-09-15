@@ -278,6 +278,7 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual ("a", p.EvaluatedProperties.GetValue ("CharTrim"));
 			Assert.AreEqual ("2", p.EvaluatedProperties.GetValue ("SplitLength"));
 			Assert.AreEqual ("abcdefg", p.EvaluatedProperties.GetValue ("NewString"));
+			Assert.AreEqual ("100", p.EvaluatedProperties.GetValue ("CharConvert"));
 
 			var dir = System.IO.Path.GetFullPath (System.IO.Path.Combine (System.IO.Path.GetDirectoryName (projectFile), "foo"));
 			Assert.AreEqual (dir, p.EvaluatedProperties.GetValue ("FullPath"));
@@ -377,6 +378,16 @@ namespace MonoDevelop.Projects
 			p.Evaluate ();
 			Assert.AreEqual ("Foo", p.EvaluatedProperties.GetValue ("Test1"));
 			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("Test2"));
+		}
+
+		[Test]
+		public void ImplicitImportOfUserProject ()
+		{
+			string projectFile = Util.GetSampleProject ("msbuild-project-test", "test-user.csproj");
+			var p = new MSBuildProject ();
+			p.Load (projectFile);
+			p.Evaluate ();
+			Assert.AreEqual ("Bar", p.EvaluatedProperties.GetValue ("TestProp"));
 		}
 	}
 }

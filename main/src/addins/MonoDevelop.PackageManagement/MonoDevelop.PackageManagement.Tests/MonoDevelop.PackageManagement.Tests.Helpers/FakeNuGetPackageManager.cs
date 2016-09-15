@@ -114,6 +114,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public IEnumerable<SourceRepository> PreviewInstallSecondarySources;
 		public CancellationToken PreviewInstallCancellationToken;
 
+		public Action BeforePreviewInstallPackageAsyncAction = () => { };
+
 		public Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync (
 			NuGetProject nuGetProject,
 			PackageIdentity packageIdentity,
@@ -129,6 +131,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PreviewInstallPrimarySources = primarySources.ToList ();
 			PreviewInstallSecondarySources = secondarySources;
 			PreviewInstallCancellationToken = token;
+
+			BeforePreviewInstallPackageAsyncAction ();
 
 			IEnumerable<NuGetProjectAction> actions = InstallActions.ToArray ();
 			return Task.FromResult (actions);
