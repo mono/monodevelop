@@ -321,12 +321,12 @@ namespace MonoDevelop.Debugger
 
 		public static void ShowExpressionEvaluator (string expression)
 		{
-			using (var dlg = new ExpressionEvaluatorDialog ()) {
-				if (expression != null)
-					dlg.Expression = expression;
-
-				MessageService.ShowCustomDialog (dlg);
-			}
+			var dlg = new ExpressionEvaluatorDialog ();
+			if (expression != null)
+				dlg.Expression = expression;
+			dlg.TransientFor = MessageService.RootWindow;
+			dlg.Show ();
+			MessageService.PlaceDialog (dlg, MessageService.RootWindow);
 		}
 
 		public static void ShowExceptionCaughtDialog ()
@@ -1043,8 +1043,9 @@ namespace MonoDevelop.Debugger
 		
 		static void OnStoreUserPrefs (object s, UserPreferencesEventArgs args)
 		{
+			var baseDir = (args.Item as Solution)?.BaseDirectory;
 			lock (breakpoints)
-				args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.Breakpoints", breakpoints.Save ());
+				args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.Breakpoints", breakpoints.Save (baseDir));
 			args.Properties.SetValue ("MonoDevelop.Ide.DebuggingService.PinnedWatches", pinnedWatches);
 		}
 		
@@ -1053,8 +1054,9 @@ namespace MonoDevelop.Debugger
 			var elem = args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService.Breakpoints") ?? args.Properties.GetValue<XmlElement> ("MonoDevelop.Ide.DebuggingService");
 
 			if (elem != null) {
+				var baseDir = (args.Item as Solution)?.BaseDirectory;
 				lock (breakpoints)
-					breakpoints.Load (elem);
+					breakpoints.Load (elem, baseDir);
 			}
 
 			PinnedWatchStore wstore = args.Properties.GetValue<PinnedWatchStore> ("MonoDevelop.Ide.DebuggingService.PinnedWatches");

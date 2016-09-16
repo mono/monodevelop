@@ -73,6 +73,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			excludeThis = true;
 			var db = DisplayBindingService.GetDefaultViewBinding (fileName, mimeType, ownerProject);
 			var content = db.CreateContent (fileName, mimeType, ownerProject);
+			content.Binding = db;
 			var window = GetWindow (fileName, ownerProject);
 			if (window == null)
 				throw new InvalidOperationException ("GetWindow == null");

@@ -32,7 +32,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	class MSBuildPropertyGroupEvaluated: MSBuildNode, IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
 	{
-		protected Dictionary<string,IMSBuildPropertyEvaluated> properties = new Dictionary<string, IMSBuildPropertyEvaluated> ();
+		protected Dictionary<string,IMSBuildPropertyEvaluated> properties = new Dictionary<string, IMSBuildPropertyEvaluated> (StringComparer.OrdinalIgnoreCase);
 		object sourceItem;
 		MSBuildEngine engine;
 
@@ -74,6 +74,11 @@ namespace MonoDevelop.Projects.MSBuild
 		internal void SetProperties (Dictionary<string,IMSBuildPropertyEvaluated> properties)
 		{
 			this.properties = properties;
+		}
+
+		internal IEnumerable<IMSBuildPropertyEvaluated> GetRegisteredProperties ()
+		{
+			return properties.Values;
 		}
 
 		internal bool RemoveProperty (string name)

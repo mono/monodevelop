@@ -433,17 +433,18 @@ namespace MonoDevelop.Core
 			else if (exception != null)
 				LoggingService.LogError (message, exception);
 
-			var msg = message;
-			if (message == null && exception != null)
-				msg = exception.Message;
+			if (message == null && exception != null) {
+				message = ErrorHelper.GetErrorMessage (exception);
+				exception = null;
+			}
 
 			lock (errors)
-				errors.Add (new ProgressError (msg, exception));
+				errors.Add (new ProgressError (message, exception));
 
 			if (context != null)
-				context.Post ((o) => OnErrorReported (msg, exception), null);
+				context.Post ((o) => OnErrorReported (message, exception), null);
 			else
-				OnErrorReported (msg, exception);
+				OnErrorReported (message, exception);
 
 			if (followerMonitors != null) {
 				foreach (var sm in followerMonitors)
@@ -785,6 +786,10 @@ namespace MonoDevelop.Core
 
 		public Exception Exception {
 			get { return ex; }
+		}
+
+		public string DisplayMessage {
+			get { return ErrorHelper.GetErrorMessage (message, ex); }
 		}
 	}
 }

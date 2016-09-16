@@ -87,11 +87,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		//static Timer timer;
+		#pragma warning disable 414
+		static Timer timer;
+		#pragma warning restore 414
 
 		static MetadataReferenceCache ()
 		{
-			//timer = new Timer ((o) => CheckForChanges (), null, 10000, 10000);
+			timer = new Timer ((o) => CheckForChanges (), null, 5000, 5000);
 		}
 
 		//TODO: Call this method when focus returns to MD or even better use FileSystemWatcher
@@ -163,7 +165,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				timeStamp = File.GetLastWriteTimeUtc (path);
 				if (timeStamp == NonExistentFile) {
 					Reference = null;
-					LoggingService.LogError ("Error while loading reference " + path + ": File doesn't exist"); 
 				} else {
 					try {
 						Reference = MetadataReference.CreateFromFile (path, MetadataReferenceProperties.Assembly);

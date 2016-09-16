@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return string.Empty;
 			
 			StringBuilder sb = new StringBuilder (str.Length);
-			MarkupUtilities.AppendEscapedString (sb, str);
+			MarkupUtilities.AppendEscapedString (sb, str, 0, str.Length);
 			return sb.ToString (); 
 		}
 
@@ -247,7 +247,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				LoggingService.LogWarning ("Invalid cref:" + cref, e);
 			}
 
-			if (cref.Substring (1, 1) == ":")
+			if (cref[1] == ':')
 				return cref.Substring (2, cref.Length - 2);
 			
 			return cref;
@@ -308,7 +308,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (text == null)
 				return null;
-			StringBuilder result = new StringBuilder ();
+			StringBuilder result = new StringBuilder (text.Length);
 			foreach (char ch in text) {
 				switch (ch) {
 				case '<':
@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		public static string UnescapeText (string text)
 		{
-			var sb = new StringBuilder ();
+			var sb = new StringBuilder (text.Length);
 			for (int i = 0; i < text.Length; i++) {
 				char ch = text[i];
 				if (ch == '&') {

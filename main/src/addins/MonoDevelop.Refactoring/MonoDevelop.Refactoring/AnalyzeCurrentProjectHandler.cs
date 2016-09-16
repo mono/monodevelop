@@ -87,7 +87,7 @@ namespace MonoDevelop.Refactoring
 					}).ConfigureAwait (false);
 
 					await Runtime.RunInMainThread (delegate {
-						AnalyzeWholeSolutionHandler.Report (monitor, allDiagnostics);
+						AnalyzeWholeSolutionHandler.Report (monitor, allDiagnostics, project);
 					}).ConfigureAwait (false);
 				}
 			} catch (OperationCanceledException) {

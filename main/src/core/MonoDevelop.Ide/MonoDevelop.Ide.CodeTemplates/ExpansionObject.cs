@@ -123,20 +123,19 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetLengthProperty (Func<string, string> callback, string varName)
 		{
-			if (callback == null)
+			SemanticModel semanticModel;
+			if (!CurrentContext.DocumentContext.AnalysisDocument.TryGetSemanticModel (out semanticModel))
+				semanticModel = CurrentContext.Compilation;
+			if (callback == null || semanticModel == null)
 				return "Count";
-			
 			string var = callback (varName);
-			
-			ITextEditorResolver textEditorResolver = CurrentContext.DocumentContext.GetContent <ITextEditorResolver> ();
-			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
-				if (result != null) {
-					var returnType = result.GetReturnType ();
-					if (returnType != null && !returnType.IsReferenceType)
-						return "Length";
-				}
-			}
+			var offset = CurrentContext.Editor.CaretOffset;
+			var sym = semanticModel.LookupSymbols (offset, name: var).FirstOrDefault ();
+			if (sym == null)
+				return "Count";
+			var returnType = sym.GetReturnType ();
+			if (returnType?.Kind == SymbolKind.ArrayType)
+				return "Length";
 			return "Count";
 		}
 		
@@ -157,22 +156,22 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetComponentTypeOf (Func<string, string> callback, string varName)
 		{
-			if (callback == null)
-				return "var";
-			var compilation = CurrentContext.Compilation;
+			//if (callback == null)
+			return "var";
+			/*var compilation = CurrentContext.Compilation;
 			if (compilation == null)
 				return null;
 		
 			string var = callback (varName);
 
 			var offset = CurrentContext.Editor.CaretOffset;
-			var sym = compilation.LookupSymbols (offset).First (s => s.Name == var);
+			var sym = compilation.LookupSymbols (offset, name: var).FirstOrDefault ();
 			if (sym == null)
 				return "var";
 			var rt = sym.GetReturnType ();
 			if (rt != null)
 				return rt.ToMinimalDisplayString (compilation, offset);
-			return "var";
+			return "var";*/
 		}
 
 		ICompletionDataList list;
@@ -201,15 +200,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 								result.Add (new CodeTemplateVariableValue (data.Symbol.Name + " ()", ((CompletionData)data).Icon));
 							continue;
 						}
-
-						result.Add (new CodeTemplateVariableValue (data.Symbol.Name, ((CompletionData)data).Icon));
+						if (!result.Any (r => r.Text == data.Symbol.Name))
+							result.Add (new CodeTemplateVariableValue (data.Symbol.Name, ((CompletionData)data).Icon));
 					}
 				}
 				
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
 					var m = data.Symbol as IParameterSymbol;
 					if (m != null) {
-						if (GetElementType (compilation, m.Type) != null)
+						if (GetElementType (compilation, m.Type) != null && !result.Any (r => r.Text == m.Name))
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
@@ -218,7 +217,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					var m = sym.Symbol as ILocalSymbol;
 					if (m == null)
 						continue;
-					if (GetElementType (compilation, m.Type) != null)
+					if (GetElementType (compilation, m.Type) != null && !result.Any (r => r.Text == m.Name))
 						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)sym).Icon));
 				}
 			}
@@ -290,7 +289,6 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return new CodeTemplateListDataProvider (GetCurrentClassName ());
 			case "GetConstructorModifier":
 				return new CodeTemplateListDataProvider (GetConstructorModifier ());
-				
 			case "GetSimpleTypeName":
 				return new CodeTemplateListDataProvider (GetSimpleTypeName (match.Groups[2].Value.Trim ('"')));
 			case "GetLengthProperty":

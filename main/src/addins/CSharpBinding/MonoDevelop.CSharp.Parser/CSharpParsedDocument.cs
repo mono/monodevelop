@@ -426,7 +426,7 @@ namespace MonoDevelop.CSharp.Parser
 
 		static readonly IReadOnlyList<Error> emptyErrors = new Error[0];
 		IReadOnlyList<Error> errors;
-		object errorLock = new object ();
+		SemaphoreSlim errorLock = new SemaphoreSlim (1, 1);
 
 		public override Task<IReadOnlyList<Error>> GetErrorsAsync (CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -435,8 +435,9 @@ namespace MonoDevelop.CSharp.Parser
 				return Task.FromResult (emptyErrors);
 			
 			if (errors == null) {
-				return Task.Run (delegate {
-					lock (errorLock) {
+				return Task.Run (async delegate {
+					await errorLock.WaitAsync (cancellationToken);
+					try {
 						if (errors == null) {
 							try {
 								errors = model
@@ -451,8 +452,9 @@ namespace MonoDevelop.CSharp.Parser
 								errors = emptyErrors;
 							}
 						}
-					}
-					return errors;
+						return errors;
+					} finally {
+						errorLock.Release ();					}
 				});
 			}
 			return Task.FromResult (errors);

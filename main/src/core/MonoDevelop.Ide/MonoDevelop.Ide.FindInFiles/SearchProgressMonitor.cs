@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				outputPad.WriteText (msg + "\n");
 
 			foreach (var msg in Errors)
-				outputPad.WriteText (msg.Message + "\n");
+				outputPad.WriteText (msg.DisplayMessage + "\n");
 			
 			outputPad.EndProgress ();
 			base.OnCompleted ();

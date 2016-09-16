@@ -242,31 +242,5 @@ namespace MonoDevelop.Components
 			return GetNextCommandTarget ();
 		}
 	}
-
-	public class XwtControl : AbstractXwtControl
-	{
-		readonly Xwt.Widget widget;
-
-		public override Xwt.Widget Widget {
-			get { return widget; }
-		}
-
-		public XwtControl (Xwt.Widget widget)
-		{
-			this.widget = widget;
-		}
-	}
-
-	public abstract class AbstractXwtControl : Control
-	{
-		protected override object CreateNativeWidget<T> ()
-		{
-			return Widget.Surface.NativeWidget;
-		}
-
-		public abstract Xwt.Widget Widget {
-			get;
-		}
-	}
 }
 

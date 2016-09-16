@@ -200,9 +200,9 @@ namespace MonoDevelop.CSharp
 				if (method.Body != null && !method.Body.IsMissing) {
 					string tag = null;
 					if (method.Modifiers.Any (m => m.Kind () == SyntaxKind.AbstractKeyword))
-						tag = GettextCatalog.GetString ("(abstract)");
+						tag = "(abstract)";
 					if (method.Modifiers.Any (m => m.Kind () == SyntaxKind.PartialKeyword))
-						tag = GettextCatalog.GetString ("(partial)");
+						tag = "(partial)";
 					if (tag != null)
 						sb.Append (" <small>" + tag + "</small>");
 				}

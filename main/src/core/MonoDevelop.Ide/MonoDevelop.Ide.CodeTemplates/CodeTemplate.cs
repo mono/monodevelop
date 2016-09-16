@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			result.TextLinks = new List<TextLink> ();
 			foreach (System.Text.RegularExpressions.Match match in variableRegEx.Matches (code)) {
 				string name = match.Groups [1].Value;
-				sb.Append (code.Substring (lastOffset, match.Index - lastOffset));
+				sb.Append (code, lastOffset, match.Index - lastOffset);
 				lastOffset = match.Index + match.Length;
 				if (string.IsNullOrEmpty (name)) { // $$ is interpreted as $
 					sb.Append ("$");
@@ -260,7 +260,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				link.IsEditable = variableDecarations [name].IsEditable;
 				link.IsIdentifier = variableDecarations [name].IsIdentifier;
 				if (!string.IsNullOrEmpty (variableDecarations [name].Function)) {
-					IListDataProvider<string > functionResult = expansion.RunFunction (context, null, variableDecarations [name].Function);
+					var functionResult = expansion.RunFunction (context, null, variableDecarations [name].Function);
 					if (functionResult != null && functionResult.Count > 0) {
 						string s = (string)functionResult [functionResult.Count - 1];
 						if (s == null) {
@@ -283,7 +283,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					AddDefaultValue (sb, link, name);
 				}
 			}
-			sb.Append (code.Substring (lastOffset, code.Length - lastOffset));
+			sb.Append (code, lastOffset, code.Length - lastOffset);
 			
 			// format & indent template code
 			var data = TextEditorFactory.CreateNewDocument ();

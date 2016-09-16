@@ -78,7 +78,7 @@ namespace MonoDevelop.Projects.Policies
 			
 			DataCollection dc = new DataCollection ();
 			foreach (KeyValuePair<PolicyKey,object> p in policies)
-				dc.Add (PolicyService.DiffSerialize (p.Key.PolicyType, p.Value, p.Key.Scope));
+				dc.Add (PolicyService.DiffSerialize (p.Key.PolicyType, p.Value, p.Key.Scope, keepDeletedNodes: true));
 			return dc;
 		}
 

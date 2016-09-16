@@ -681,9 +681,12 @@ type FSharpFindReferencesProvider () =
             return
                 Search.getAllSymbolsInAllProjects()
                 |> AsyncSeq.toSeq
-                |> Seq.filter (fun symbol -> symbol.Symbol.XmlDocSig = documentationCommentId)
-                |> Seq.map (fun symbol -> let (filename, startOffset, endOffset) = Symbols.getOffsetsTrimmed symbol.Symbol.DisplayName symbol
-                                          SearchResult (FileProvider (filename), startOffset, endOffset-startOffset))
+                |> Seq.toArray
+
+                |> Array.filter (fun symbol -> symbol.Symbol.XmlDocSig = documentationCommentId)
+                |> Array.map (fun symbol -> let (filename, startOffset, endOffset) = Symbols.getOffsetsTrimmed symbol.Symbol.DisplayName symbol
+                                            SearchResult (FileProvider (filename), startOffset, endOffset-startOffset))
+                |> Array.toSeq
         }
 
         Async.StartAsTask(computation = computation, cancellationToken = token)

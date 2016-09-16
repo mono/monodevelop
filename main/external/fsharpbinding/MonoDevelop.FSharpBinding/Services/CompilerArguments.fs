@@ -79,12 +79,17 @@ module CompilerArguments =
               else
                   if reference.Include <> "System" then
                       let assembly =
-                              reference.Package.Assemblies
-                              |> Seq.find (fun a -> a.Name = reference.Include)
-                      [assembly.Location]
+                           reference.Package.Assemblies
+                           |> Seq.tryFind (fun a -> a.Name = reference.Include || a.FullName = reference.Include)
+                      match assembly with
+                      | Some asm -> [asm.Location]
+                      | None -> []
                   else
                       reference.Package.Assemblies
-                      |> Seq.map (fun a -> a.Location)
+                      |> Seq.choose (fun a -> match a.Name with
+                                              | "FSharp.Core"
+                                              | "mscorlib" -> None
+                                              | _ -> Some a.Location)
                       |> List.ofSeq
 
           | ReferenceType.Project ->
@@ -216,9 +221,18 @@ module CompilerArguments =
        let wrapf = if shouldWrap then wrapFile else id
 
        let getReferencedAssemblies (project: DotNetProject) =
+            let hasExplicitFSharpCore =
+                project.References |> Seq.exists (fun r -> r.Include = "FSharp.Core")
+
             LoggingService.logDebug "Fetching referenced assemblies for %s " project.Name
             async {
-                return! project.GetReferencedAssemblies configSelector |> Async.AwaitTask
+                let! refs =  project.GetReferencedAssemblies configSelector |> Async.AwaitTask
+
+                return 
+                    if hasExplicitFSharpCore then
+                        refs |> Seq.filter (fun r -> not (r.FilePath.ToString().EndsWith "FSharp.Core.dll"))
+                    else
+                        refs
             } |> Async.RunSynchronously
 
        [
@@ -230,18 +244,20 @@ module CompilerArguments =
             else
                 Seq.empty
 
-        let refs =
+        let getAbsolutePath (ref:AssemblyReference) =
+            let assemblyPath = ref.FilePath
+            if assemblyPath.IsAbsolute then
+                assemblyPath |> string
+            else
+                let s = Path.Combine(project.FileName.ParentDirectory.ToString(), assemblyPath.ToString())
+                Path.GetFullPath s
+
+        let projectReferences =
             project.References
             |> Seq.collect Project.getAssemblyLocations
             |> Seq.append portableRefs
-            |> Seq.append (getReferencedAssemblies project |> Seq.map (fun a -> a.FilePath |> string))
-
-        let projectReferences =
-            refs
-            // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be
-            // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
-            |> Seq.filter (fun (ref: string) -> not (ref.Contains("FSharp.Core")))
-            |> set
+            |> Seq.append (getReferencedAssemblies project |> Seq.map getAbsolutePath)
+            |> Seq.distinct
 
         let find assemblyName=
             projectReferences

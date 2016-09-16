@@ -38,7 +38,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	public class MSBuildPropertyGroup: MSBuildElement, IMSBuildPropertySet, IMSBuildEvaluatedPropertyCollection
 	{
-		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> ();
+		Dictionary<string,MSBuildProperty> properties = new Dictionary<string, MSBuildProperty> (StringComparer.OrdinalIgnoreCase);
 
 		public MSBuildPropertyGroup ()
 		{
@@ -258,6 +258,11 @@ namespace MonoDevelop.Projects.MSBuild
 		}
 
 		internal IPropertyGroupListener PropertyGroupListener { get; set; }
+
+		internal void UnlinkFromProjectInstance ()
+		{
+			PropertyGroupListener = null;
+		}
 
 		MSBuildProperty FindExistingProperty (int index, int inc)
 		{

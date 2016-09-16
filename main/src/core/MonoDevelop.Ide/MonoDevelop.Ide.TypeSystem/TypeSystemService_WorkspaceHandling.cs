@@ -82,6 +82,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static object workspaceLock = new object();
 		static ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
+		static ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> workspaceRequests = new ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> ();
 
 		public static ImmutableArray<Microsoft.CodeAnalysis.Workspace> AllWorkspaces {
 			get {
@@ -90,7 +91,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 
-		internal static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
+		public static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
 			if (solution == null)
 				throw new ArgumentNullException ("solution");
@@ -99,6 +100,25 @@ namespace MonoDevelop.Ide.TypeSystem
 					return ws;
 			}
 			return emptyWorkspace;
+			}
+		
+		public static async Task<MonoDevelopWorkspace> GetWorkspaceAsync (MonoDevelop.Projects.Solution solution, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var workspace = GetWorkspace (solution);
+			if (workspace != emptyWorkspace)
+				return workspace;
+			var tcs = workspaceRequests.GetOrAdd (solution, _ => new TaskCompletionSource<MonoDevelopWorkspace> ());
+			try {
+				workspace = GetWorkspace (solution);
+				if (workspace != emptyWorkspace)
+					return workspace;
+				cancellationToken.ThrowIfCancellationRequested ();
+				cancellationToken.Register (() => tcs.TrySetCanceled ());
+				workspace = await tcs.Task;
+			} finally {
+				workspaceRequests.TryRemove (solution, out tcs);
+			}
+			return workspace;
 		}
 
 		internal static MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
@@ -122,8 +142,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static void NotifyFileChange (string fileName, string text)
 		{
-			foreach (var ws in workspaces)
-				ws.UpdateFileContent (fileName, text);
+			try {
+				foreach (var ws in workspaces)
+					ws.UpdateFileContent (fileName, text);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while notify file change.", e);
+			}
 		}
 
 		internal static Task<List<MonoDevelopWorkspace>> Load (WorkspaceItem item, ProgressMonitor progressMonitor, CancellationToken cancellationToken = default(CancellationToken))
@@ -150,12 +174,15 @@ namespace MonoDevelop.Ide.TypeSystem
 						var workspace = new MonoDevelopWorkspace ();
 						list.Add (workspace);
 						workspace.ShowStatusIcon ();
+						await workspace.TryLoadSolution (solution, cancellationToken);
 						lock (workspaceLock)
 							workspaces = workspaces.Add (workspace);
-						await workspace.TryLoadSolution (solution, cancellationToken);
 						solution.SolutionItemAdded += OnSolutionItemAdded;
 						solution.SolutionItemRemoved += OnSolutionItemRemoved;
 						workspace.HideStatusIcon ();
+						TaskCompletionSource <MonoDevelopWorkspace> request;
+						if (workspaceRequests.TryGetValue (solution, out request))
+							request.TrySetResult (workspace);
 					}
 				}
 			});
@@ -256,6 +283,14 @@ namespace MonoDevelop.Ide.TypeSystem
 					return w.CurrentSolution.GetProject (projectId);
 			}
 			return null;
+		}
+
+		public static async Task<Microsoft.CodeAnalysis.Project> GetCodeAnalysisProjectAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var parentSolution = project.ParentSolution;
+			var workspace = await GetWorkspaceAsync (parentSolution, cancellationToken);
+			var projectId = workspace.GetProjectId (project);
+			return projectId == null ? null : workspace.CurrentSolution.GetProject (projectId);
 		}
 
 		public static Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))

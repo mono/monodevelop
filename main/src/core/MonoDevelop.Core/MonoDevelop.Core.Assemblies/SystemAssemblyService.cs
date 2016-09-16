@@ -359,21 +359,22 @@ namespace MonoDevelop.Core.Assemblies
 					}
 					LoggingService.LogError ("Invalid TargetFrameworkAttribute in assembly {0}", file);
 				}
-
-				foreach (var r in assembly.GetReferencedAssemblies ()) {
-					if (r.Name == "mscorlib") {
-						TargetFramework compatibleFramework = null;
-						// If there are several frameworks that can run the file, pick one that is installed
-						foreach (TargetFramework tf in GetKnownFrameworks ()) {
-							if (tf.GetCorlibVersion () == r.Version.ToString ()) {
-								compatibleFramework = tf;
-								if (tr.IsInstalled (tf))
-									return tf.Id;
+				if (tr != null) {
+					foreach (var r in assembly.GetReferencedAssemblies ()) {
+						if (r.Name == "mscorlib") {
+							TargetFramework compatibleFramework = null;
+							// If there are several frameworks that can run the file, pick one that is installed
+							foreach (TargetFramework tf in GetKnownFrameworks ()) {
+								if (tf.GetCorlibVersion () == r.Version.ToString ()) {
+									compatibleFramework = tf;
+									if (tr.IsInstalled (tf))
+										return tf.Id;
+								}
 							}
+							if (compatibleFramework != null)
+								return compatibleFramework.Id;
+							break;
 						}
-						if (compatibleFramework != null)
-							return compatibleFramework.Id;
-						break;
 					}
 				}
 			} catch (Exception ex) {
