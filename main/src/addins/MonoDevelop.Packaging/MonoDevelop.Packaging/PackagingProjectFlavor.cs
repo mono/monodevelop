@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Packaging
@@ -34,6 +33,12 @@ namespace MonoDevelop.Packaging
 		protected override ProjectFeatures OnGetSupportedFeatures ()
 		{
 			return ProjectFeatures.Build | ProjectFeatures.Configurations;
+		}
+
+		protected override bool OnGetCanReferenceProject (DotNetProject targetProject, out string reason)
+		{
+			reason = null;
+			return true;
 		}
 	}
 }
