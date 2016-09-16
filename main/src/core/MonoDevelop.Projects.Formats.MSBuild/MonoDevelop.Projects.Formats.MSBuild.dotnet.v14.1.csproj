@@ -36,28 +36,34 @@
   </PropertyGroup>
   <!-- TODO: Linux -->
   <PropertyGroup>
-    <MSBuild_14_1_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\..\..\14.1\Bin</MSBuild_14_1_BinDir>
-    <MSBuild_14_1_BinDir Condition="'$(OS)' == 'Unix'">$(MSBuildToolsPath)\..\..\..\msbuild\14.1\bin\</MSBuild_14_1_BinDir>
+    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_OSS_BinDir>
+
+    <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
+	 when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
+	 Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway
+	 -->
+    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\MSBuild.exe')">$(MSBuildToolsPath)\..\..\..\msbuild\15.0\bin\</MSBuild_OSS_BinDir>
+    <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Unix' and '$(MSBuild_OSS_BinDir)' == '' and Exists('$(MSBuildToolsPath)\..\..\..\msbuild\14.1\bin\MSBuild.exe')">$(MSBuildToolsPath)\..\..\..\msbuild\14.1\bin\</MSBuild_OSS_BinDir>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.Build">
-      <HintPath>$(MSBuild_14_1_BinDir)Microsoft.Build.dll</HintPath>
+      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Framework">
-      <HintPath>$(MSBuild_14_1_BinDir)Microsoft.Build.Framework.dll</HintPath>
+      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core">
-      <HintPath>$(MSBuild_14_1_BinDir)Microsoft.Build.Utilities.Core.dll</HintPath>
+      <HintPath>$(MSBuild_OSS_BinDir)Microsoft.Build.Utilities.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.v14.1.config">
+    <None Include="app.v15.0.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Link>MonoDevelop.Projects.Formats.MSBuild.exe.config</Link>
     </None>
