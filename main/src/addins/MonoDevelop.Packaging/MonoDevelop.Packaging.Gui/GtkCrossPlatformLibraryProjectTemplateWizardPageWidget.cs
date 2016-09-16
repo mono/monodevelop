@@ -26,6 +26,8 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Packaging.Templating;
 
 namespace MonoDevelop.Packaging.Gui
@@ -38,6 +40,10 @@ namespace MonoDevelop.Packaging.Gui
 		public GtkCrossPlatformLibraryProjectTemplateWizardPageWidget ()
 		{
 			this.Build ();
+
+			var separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
+			targetPlatformsSeparator.ModifyBg (StateType.Normal, separatorColor);
+			sharedCodeSeparator.ModifyBg (StateType.Normal, separatorColor);
 		}
 
 		internal GtkCrossPlatformLibraryProjectTemplateWizardPageWidget (CrossPlatformLibraryTemplateWizardPage wizardPage)
