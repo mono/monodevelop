@@ -496,7 +496,9 @@ namespace MonoDevelop.Core.Execution
 							ProcessRemoteMessage (msg);
 					});
 					t.ContinueWith (ta => {
-						pendingMessageTasks.Remove (ta);
+						lock (pendingMessageTasks) {
+							pendingMessageTasks.Remove (ta);
+						}
 					});
 					pendingMessageTasks.Add (t);
 				}
