@@ -34,7 +34,7 @@ namespace MonoDevelop.Packaging.Templating
 {
 	class CrossPlatformLibraryTemplateWizardPage : WizardPage
 	{
-		readonly string title = GettextCatalog.GetString ("Configure your Cross Platform Library");
+		readonly string title = GettextCatalog.GetString ("Configure your Multiplatform Library");
 		readonly CrossPlatformLibraryTemplateWizard wizard;
 		GtkCrossPlatformLibraryProjectTemplateWizardPageWidget view;
 		string libraryName = string.Empty;

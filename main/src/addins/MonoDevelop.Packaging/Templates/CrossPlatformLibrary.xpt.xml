@@ -5,12 +5,12 @@
 	lastModified="2016/09/09">
 
 	<TemplateConfiguration>
-		<_Name>Cross Platform Library</_Name>
+		<_Name>Multiplatform Library</_Name>
 		<Category>multiplat/library/general</Category>
 		<Icon>md-crossplatform-shared-project</Icon>
 		<Image id="md-crossplatform-shared-project" />
 		<LanguageName>C#</LanguageName>
-		<_Description>A project template for creating a cross platform library project and its corresponding NuGet package.</_Description>
+		<_Description>A project template for creating a multiplatform library project and its corresponding NuGet package.</_Description>
 		<Wizard>MonoDevelop.Packaging.CrossPlatformLibraryTemplateWizard</Wizard>
 	</TemplateConfiguration>
 
