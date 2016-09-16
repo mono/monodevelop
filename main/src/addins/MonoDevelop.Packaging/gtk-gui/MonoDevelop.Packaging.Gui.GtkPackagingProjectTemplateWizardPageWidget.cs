@@ -34,8 +34,6 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.Entry packageVersionTextBox;
 
-		private global::Gtk.DrawingArea targetPlatformsSeparator;
-
 		private global::Gtk.EventBox configurationBottomEventBox;
 
 		private global::Gtk.EventBox deviceLargeImageEventBox;
@@ -73,7 +71,7 @@ namespace MonoDevelop.Packaging.Gui
 			this.configurationTableEventBox = new global::Gtk.EventBox();
 			this.configurationTableEventBox.Name = "configurationTableEventBox";
 			// Container child configurationTableEventBox.Gtk.Container+ContainerChild
-			this.configurationTable = new global::Gtk.Table(((uint)(5)), ((uint)(3)), false);
+			this.configurationTable = new global::Gtk.Table(((uint)(4)), ((uint)(3)), false);
 			this.configurationTable.Name = "configurationTable";
 			this.configurationTable.RowSpacing = ((uint)(7));
 			this.configurationTable.ColumnSpacing = ((uint)(6));
@@ -195,35 +193,23 @@ namespace MonoDevelop.Packaging.Gui
 			w11.RightAttach = ((uint)(2));
 			w11.XOptions = ((global::Gtk.AttachOptions)(4));
 			w11.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child configurationTable.Gtk.Table+TableChild
-			this.targetPlatformsSeparator = new global::Gtk.DrawingArea();
-			this.targetPlatformsSeparator.HeightRequest = 1;
-			this.targetPlatformsSeparator.Name = "targetPlatformsSeparator";
-			this.configurationTable.Add(this.targetPlatformsSeparator);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.targetPlatformsSeparator]));
-			w12.TopAttach = ((uint)(4));
-			w12.BottomAttach = ((uint)(5));
-			w12.RightAttach = ((uint)(3));
-			w12.YPadding = ((uint)(10));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.configurationTableEventBox.Add(this.configurationTable);
 			this.configurationVBox.Add(this.configurationTableEventBox);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTableEventBox]));
-			w14.Position = 1;
-			w14.Expand = false;
-			w14.Fill = false;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTableEventBox]));
+			w13.Position = 1;
+			w13.Expand = false;
+			w13.Fill = false;
 			// Container child configurationVBox.Gtk.Box+BoxChild
 			this.configurationBottomEventBox = new global::Gtk.EventBox();
 			this.configurationBottomEventBox.Name = "configurationBottomEventBox";
 			this.configurationVBox.Add(this.configurationBottomEventBox);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationBottomEventBox]));
-			w15.Position = 2;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationBottomEventBox]));
+			w14.Position = 2;
 			this.mainHBox.Add(this.configurationVBox);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.configurationVBox]));
-			w16.Position = 1;
-			w16.Expand = false;
-			w16.Fill = false;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.configurationVBox]));
+			w15.Position = 1;
+			w15.Expand = false;
+			w15.Fill = false;
 			// Container child mainHBox.Gtk.Box+BoxChild
 			this.deviceLargeImageEventBox = new global::Gtk.EventBox();
 			this.deviceLargeImageEventBox.Name = "deviceLargeImageEventBox";
@@ -232,8 +218,8 @@ namespace MonoDevelop.Packaging.Gui
 			this.deviceLargeImageVBox.Name = "deviceLargeImageVBox";
 			this.deviceLargeImageEventBox.Add(this.deviceLargeImageVBox);
 			this.mainHBox.Add(this.deviceLargeImageEventBox);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.deviceLargeImageEventBox]));
-			w18.Position = 2;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.deviceLargeImageEventBox]));
+			w17.Position = 2;
 			this.Add(this.mainHBox);
 			if ((this.Child != null))
 			{
