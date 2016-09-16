@@ -44,6 +44,13 @@ namespace MonoDevelop.Packaging.Gui
 			var separatorColor = Styles.NewProjectDialog.ProjectConfigurationSeparatorColor.ToGdkColor ();
 			targetPlatformsSeparator.ModifyBg (StateType.Normal, separatorColor);
 			sharedCodeSeparator.ModifyBg (StateType.Normal, separatorColor);
+
+			var backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
+			leftBorderEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			configurationTopEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			deviceLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
 		}
 
 		internal GtkCrossPlatformLibraryProjectTemplateWizardPageWidget (CrossPlatformLibraryTemplateWizardPage wizardPage)

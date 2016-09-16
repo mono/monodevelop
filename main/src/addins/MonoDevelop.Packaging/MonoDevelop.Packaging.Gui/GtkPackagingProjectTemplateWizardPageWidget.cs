@@ -26,6 +26,8 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Packaging.Templating;
 
 namespace MonoDevelop.Packaging.Gui
@@ -38,6 +40,13 @@ namespace MonoDevelop.Packaging.Gui
 		public GtkPackagingProjectTemplateWizardPageWidget ()
 		{
 			this.Build ();
+
+			var backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
+			leftBorderEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			configurationTopEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			configurationTableEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			configurationBottomEventBox.ModifyBg (StateType.Normal, backgroundColor);
+			deviceLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
 		}
 
 		internal GtkPackagingProjectTemplateWizardPageWidget (PackagingProjectTemplateWizardPage wizardPage)
