@@ -45,24 +45,24 @@ namespace MonoDevelop.Packaging.Gui
 		{
 			this.wizardPage = wizardPage;
 
-			packageDescriptionTextView.AcceptsTab = false;
-
 			packageAuthorsTextBox.Text = wizardPage.Authors;
 			packageVersionTextBox.Text = wizardPage.Version;
 
 			packageIdTextBox.TextInserted += PackageIdTextInserted;
 			packageIdTextBox.Changed += PackageIdTextBoxChanged;
 			packageVersionTextBox.Changed += PackageVersionTextBoxChanged;
-			packageAuthorsTextBox.Changed += PackageDescriptionTextChanged;
-			packageDescriptionTextView.Buffer.Changed += PackageDescriptionTextChanged;
+			packageAuthorsTextBox.Changed += PackageAuthorsTextBoxChanged;
+			packageDescriptionTextBox.Changed += PackageDescriptionTextChanged;
 
 			packageIdTextBox.ActivatesDefault = true;
 			packageVersionTextBox.ActivatesDefault = true;
 			packageAuthorsTextBox.ActivatesDefault = true;
+			packageDescriptionTextBox.ActivatesDefault = true;
 
 			packageIdTextBox.TruncateMultiline = true;
 			packageVersionTextBox.TruncateMultiline = true;
 			packageAuthorsTextBox.TruncateMultiline = true;
+			packageDescriptionTextBox.TruncateMultiline = true;
 		}
 
 		protected override void OnFocusGrabbed ()
@@ -95,7 +95,7 @@ namespace MonoDevelop.Packaging.Gui
 
 		void PackageDescriptionTextChanged (object sender, EventArgs e)
 		{
-			wizardPage.Description = packageDescriptionTextView.Buffer.Text;
+			wizardPage.Description = packageDescriptionTextBox.Text;
 		}
 	}
 }

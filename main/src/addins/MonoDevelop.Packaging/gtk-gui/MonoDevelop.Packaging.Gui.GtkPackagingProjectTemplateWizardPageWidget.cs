@@ -16,10 +16,6 @@ namespace MonoDevelop.Packaging.Gui
 
 		private global::Gtk.Table configurationTable;
 
-		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-
-		private global::Gtk.TextView packageDescriptionTextView;
-
 		private global::Gtk.EventBox organizationInfoEventBox;
 
 		private global::Gtk.Label packageAuthorsLabel;
@@ -27,6 +23,8 @@ namespace MonoDevelop.Packaging.Gui
 		private global::Gtk.Entry packageAuthorsTextBox;
 
 		private global::Gtk.Label packageDescriptionLabel;
+
+		private global::Gtk.Entry packageDescriptionTextBox;
 
 		private global::Gtk.Label packageIdLabel;
 
@@ -80,51 +78,32 @@ namespace MonoDevelop.Packaging.Gui
 			this.configurationTable.RowSpacing = ((uint)(7));
 			this.configurationTable.ColumnSpacing = ((uint)(6));
 			// Container child configurationTable.Gtk.Table+TableChild
-			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow();
-			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
-			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
-			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-			this.packageDescriptionTextView = new global::Gtk.TextView();
-			this.packageDescriptionTextView.CanFocus = true;
-			this.packageDescriptionTextView.Name = "packageDescriptionTextView";
-			this.packageDescriptionTextView.AcceptsTab = false;
-			this.packageDescriptionTextView.WrapMode = ((global::Gtk.WrapMode)(2));
-			this.GtkScrolledWindow.Add(this.packageDescriptionTextView);
-			this.configurationTable.Add(this.GtkScrolledWindow);
-			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.GtkScrolledWindow]));
-			w4.TopAttach = ((uint)(3));
-			w4.BottomAttach = ((uint)(5));
-			w4.LeftAttach = ((uint)(1));
-			w4.RightAttach = ((uint)(2));
-			w4.XOptions = ((global::Gtk.AttachOptions)(4));
-			w4.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child configurationTable.Gtk.Table+TableChild
 			this.organizationInfoEventBox = new global::Gtk.EventBox();
 			this.organizationInfoEventBox.WidthRequest = 16;
 			this.organizationInfoEventBox.HeightRequest = 16;
 			this.organizationInfoEventBox.Name = "organizationInfoEventBox";
 			this.organizationInfoEventBox.VisibleWindow = false;
 			this.configurationTable.Add(this.organizationInfoEventBox);
-			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.organizationInfoEventBox]));
-			w5.TopAttach = ((uint)(1));
-			w5.BottomAttach = ((uint)(2));
-			w5.LeftAttach = ((uint)(2));
-			w5.RightAttach = ((uint)(3));
-			w5.XOptions = ((global::Gtk.AttachOptions)(2));
-			w5.YOptions = ((global::Gtk.AttachOptions)(2));
+			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.organizationInfoEventBox]));
+			w3.TopAttach = ((uint)(1));
+			w3.BottomAttach = ((uint)(2));
+			w3.LeftAttach = ((uint)(2));
+			w3.RightAttach = ((uint)(3));
+			w3.XOptions = ((global::Gtk.AttachOptions)(2));
+			w3.YOptions = ((global::Gtk.AttachOptions)(2));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.packageAuthorsLabel = new global::Gtk.Label();
 			this.packageAuthorsLabel.Name = "packageAuthorsLabel";
 			this.packageAuthorsLabel.Xpad = 5;
 			this.packageAuthorsLabel.Xalign = 1F;
-			this.packageAuthorsLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Authors:");
+			this.packageAuthorsLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Author:");
 			this.packageAuthorsLabel.Justify = ((global::Gtk.Justification)(1));
 			this.configurationTable.Add(this.packageAuthorsLabel);
-			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageAuthorsLabel]));
-			w6.TopAttach = ((uint)(2));
-			w6.BottomAttach = ((uint)(3));
-			w6.XOptions = ((global::Gtk.AttachOptions)(4));
-			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w4 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageAuthorsLabel]));
+			w4.TopAttach = ((uint)(2));
+			w4.BottomAttach = ((uint)(3));
+			w4.XOptions = ((global::Gtk.AttachOptions)(4));
+			w4.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.packageAuthorsTextBox = new global::Gtk.Entry();
 			this.packageAuthorsTextBox.CanFocus = true;
@@ -132,13 +111,13 @@ namespace MonoDevelop.Packaging.Gui
 			this.packageAuthorsTextBox.IsEditable = true;
 			this.packageAuthorsTextBox.InvisibleChar = '●';
 			this.configurationTable.Add(this.packageAuthorsTextBox);
-			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageAuthorsTextBox]));
-			w7.TopAttach = ((uint)(2));
-			w7.BottomAttach = ((uint)(3));
-			w7.LeftAttach = ((uint)(1));
-			w7.RightAttach = ((uint)(2));
-			w7.XOptions = ((global::Gtk.AttachOptions)(4));
-			w7.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w5 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageAuthorsTextBox]));
+			w5.TopAttach = ((uint)(2));
+			w5.BottomAttach = ((uint)(3));
+			w5.LeftAttach = ((uint)(1));
+			w5.RightAttach = ((uint)(2));
+			w5.XOptions = ((global::Gtk.AttachOptions)(4));
+			w5.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.packageDescriptionLabel = new global::Gtk.Label();
 			this.packageDescriptionLabel.Name = "packageDescriptionLabel";
@@ -147,11 +126,25 @@ namespace MonoDevelop.Packaging.Gui
 			this.packageDescriptionLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Description:");
 			this.packageDescriptionLabel.Justify = ((global::Gtk.Justification)(1));
 			this.configurationTable.Add(this.packageDescriptionLabel);
-			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageDescriptionLabel]));
-			w8.TopAttach = ((uint)(3));
-			w8.BottomAttach = ((uint)(4));
-			w8.XOptions = ((global::Gtk.AttachOptions)(4));
-			w8.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w6 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageDescriptionLabel]));
+			w6.TopAttach = ((uint)(3));
+			w6.BottomAttach = ((uint)(4));
+			w6.XOptions = ((global::Gtk.AttachOptions)(4));
+			w6.YOptions = ((global::Gtk.AttachOptions)(4));
+			// Container child configurationTable.Gtk.Table+TableChild
+			this.packageDescriptionTextBox = new global::Gtk.Entry();
+			this.packageDescriptionTextBox.CanFocus = true;
+			this.packageDescriptionTextBox.Name = "packageDescriptionTextBox";
+			this.packageDescriptionTextBox.IsEditable = true;
+			this.packageDescriptionTextBox.InvisibleChar = '●';
+			this.configurationTable.Add(this.packageDescriptionTextBox);
+			global::Gtk.Table.TableChild w7 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageDescriptionTextBox]));
+			w7.TopAttach = ((uint)(3));
+			w7.BottomAttach = ((uint)(4));
+			w7.LeftAttach = ((uint)(1));
+			w7.RightAttach = ((uint)(2));
+			w7.XOptions = ((global::Gtk.AttachOptions)(4));
+			w7.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.packageIdLabel = new global::Gtk.Label();
 			this.packageIdLabel.WidthRequest = 132;
@@ -161,9 +154,9 @@ namespace MonoDevelop.Packaging.Gui
 			this.packageIdLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Id:");
 			this.packageIdLabel.Justify = ((global::Gtk.Justification)(1));
 			this.configurationTable.Add(this.packageIdLabel);
-			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageIdLabel]));
-			w9.XOptions = ((global::Gtk.AttachOptions)(4));
-			w9.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w8 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageIdLabel]));
+			w8.XOptions = ((global::Gtk.AttachOptions)(4));
+			w8.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.packageIdTextBox = new global::Gtk.Entry();
 			this.packageIdTextBox.CanFocus = true;
@@ -171,10 +164,10 @@ namespace MonoDevelop.Packaging.Gui
 			this.packageIdTextBox.IsEditable = true;
 			this.packageIdTextBox.InvisibleChar = '●';
 			this.configurationTable.Add(this.packageIdTextBox);
-			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageIdTextBox]));
-			w10.LeftAttach = ((uint)(1));
-			w10.RightAttach = ((uint)(2));
-			w10.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w9 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageIdTextBox]));
+			w9.LeftAttach = ((uint)(1));
+			w9.RightAttach = ((uint)(2));
+			w9.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.packageVersionLabel = new global::Gtk.Label();
 			this.packageVersionLabel.Name = "packageVersionLabel";
@@ -183,11 +176,11 @@ namespace MonoDevelop.Packaging.Gui
 			this.packageVersionLabel.LabelProp = global::Mono.Unix.Catalog.GetString("Version:");
 			this.packageVersionLabel.Justify = ((global::Gtk.Justification)(1));
 			this.configurationTable.Add(this.packageVersionLabel);
-			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageVersionLabel]));
-			w11.TopAttach = ((uint)(1));
-			w11.BottomAttach = ((uint)(2));
-			w11.XOptions = ((global::Gtk.AttachOptions)(4));
-			w11.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w10 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageVersionLabel]));
+			w10.TopAttach = ((uint)(1));
+			w10.BottomAttach = ((uint)(2));
+			w10.XOptions = ((global::Gtk.AttachOptions)(4));
+			w10.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.packageVersionTextBox = new global::Gtk.Entry();
 			this.packageVersionTextBox.CanFocus = true;
@@ -195,42 +188,42 @@ namespace MonoDevelop.Packaging.Gui
 			this.packageVersionTextBox.IsEditable = true;
 			this.packageVersionTextBox.InvisibleChar = '●';
 			this.configurationTable.Add(this.packageVersionTextBox);
-			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageVersionTextBox]));
-			w12.TopAttach = ((uint)(1));
-			w12.BottomAttach = ((uint)(2));
-			w12.LeftAttach = ((uint)(1));
-			w12.RightAttach = ((uint)(2));
-			w12.XOptions = ((global::Gtk.AttachOptions)(4));
-			w12.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w11 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.packageVersionTextBox]));
+			w11.TopAttach = ((uint)(1));
+			w11.BottomAttach = ((uint)(2));
+			w11.LeftAttach = ((uint)(1));
+			w11.RightAttach = ((uint)(2));
+			w11.XOptions = ((global::Gtk.AttachOptions)(4));
+			w11.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child configurationTable.Gtk.Table+TableChild
 			this.targetPlatformsSeparator = new global::Gtk.DrawingArea();
 			this.targetPlatformsSeparator.HeightRequest = 1;
 			this.targetPlatformsSeparator.Name = "targetPlatformsSeparator";
 			this.configurationTable.Add(this.targetPlatformsSeparator);
-			global::Gtk.Table.TableChild w13 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.targetPlatformsSeparator]));
-			w13.TopAttach = ((uint)(4));
-			w13.BottomAttach = ((uint)(5));
-			w13.RightAttach = ((uint)(3));
-			w13.YPadding = ((uint)(10));
-			w13.XOptions = ((global::Gtk.AttachOptions)(4));
-			w13.YOptions = ((global::Gtk.AttachOptions)(0));
+			global::Gtk.Table.TableChild w12 = ((global::Gtk.Table.TableChild)(this.configurationTable[this.targetPlatformsSeparator]));
+			w12.TopAttach = ((uint)(4));
+			w12.BottomAttach = ((uint)(5));
+			w12.RightAttach = ((uint)(3));
+			w12.YPadding = ((uint)(10));
+			w12.XOptions = ((global::Gtk.AttachOptions)(4));
+			w12.YOptions = ((global::Gtk.AttachOptions)(0));
 			this.configurationTableEventBox.Add(this.configurationTable);
 			this.configurationVBox.Add(this.configurationTableEventBox);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTableEventBox]));
-			w15.Position = 1;
-			w15.Expand = false;
-			w15.Fill = false;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationTableEventBox]));
+			w14.Position = 1;
+			w14.Expand = false;
+			w14.Fill = false;
 			// Container child configurationVBox.Gtk.Box+BoxChild
 			this.configurationBottomEventBox = new global::Gtk.EventBox();
 			this.configurationBottomEventBox.Name = "configurationBottomEventBox";
 			this.configurationVBox.Add(this.configurationBottomEventBox);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationBottomEventBox]));
-			w16.Position = 2;
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.configurationVBox[this.configurationBottomEventBox]));
+			w15.Position = 2;
 			this.mainHBox.Add(this.configurationVBox);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.configurationVBox]));
-			w17.Position = 1;
-			w17.Expand = false;
-			w17.Fill = false;
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.configurationVBox]));
+			w16.Position = 1;
+			w16.Expand = false;
+			w16.Fill = false;
 			// Container child mainHBox.Gtk.Box+BoxChild
 			this.deviceLargeImageEventBox = new global::Gtk.EventBox();
 			this.deviceLargeImageEventBox.Name = "deviceLargeImageEventBox";
@@ -239,8 +232,8 @@ namespace MonoDevelop.Packaging.Gui
 			this.deviceLargeImageVBox.Name = "deviceLargeImageVBox";
 			this.deviceLargeImageEventBox.Add(this.deviceLargeImageVBox);
 			this.mainHBox.Add(this.deviceLargeImageEventBox);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.deviceLargeImageEventBox]));
-			w19.Position = 2;
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.mainHBox[this.deviceLargeImageEventBox]));
+			w18.Position = 2;
 			this.Add(this.mainHBox);
 			if ((this.Child != null))
 			{
