@@ -369,7 +369,12 @@ namespace MonoDevelop.Ide.CustomTools
 				if (result.UnhandledException != null) {
 					broken = true;
 					string msg = GettextCatalog.GetString ("The '{0}' code generator crashed", file.Generator);
-					result.Errors.Add (new CompilerError (file.Name, 0, 0, "", msg + ": " + result.UnhandledException.Message));
+					result.Errors.Add (new CompilerError (file.Name, 0, 0, "",
+														  msg +
+														  ": " +
+														  result.UnhandledException.Message +
+														  Environment.NewLine +
+														  result.UnhandledException.StackTrace));
 					monitor.ReportError (msg, result.UnhandledException);
 					LoggingService.LogError (msg, result.UnhandledException);
 				}
