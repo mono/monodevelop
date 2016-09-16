@@ -457,6 +457,14 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual ("Error", invalidOperationException.Message);
 		}
+
+		[Test]
+		public void GetNuGetProjectActions_NotExecuted_ReturnsEmptyList ()
+		{
+			CreateAction ("Test");
+
+			Assert.AreEqual (0, action.GetNuGetProjectActions ().Count ());
+		}
 	}
 }
 

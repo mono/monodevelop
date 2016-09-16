@@ -150,7 +150,7 @@ namespace MonoDevelop.PackageManagement
 
 		public IEnumerable<NuGetProjectAction> GetNuGetProjectActions ()
 		{
-			return actions;
+			return actions ?? Enumerable.Empty<NuGetProjectAction> ();
 		}
 	}
 }

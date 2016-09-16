@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet.PackageManagement;
 using NuGet.ProjectManagement;
@@ -226,6 +227,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (packageManager.UninstallActions, packageManager.ExecutedActions);
 			Assert.AreEqual (nugetProject, packageManager.ExecutedNuGetProject);
 			Assert.AreEqual (action.ProjectContext, packageManager.ExecutedProjectContext);
+		}
+
+		[Test]
+		public void GetNuGetProjectActions_NotExecuted_ReturnsEmptyList ()
+		{
+			CreateAction ("Test");
+
+			Assert.AreEqual (0, action.GetNuGetProjectActions ().Count ());
 		}
 	}
 }
