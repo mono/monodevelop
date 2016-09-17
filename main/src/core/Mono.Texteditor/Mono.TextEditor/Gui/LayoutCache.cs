@@ -35,6 +35,7 @@ namespace Mono.TextEditor
 	{
 		readonly MonoTextEditor widget;
 		readonly Queue<LayoutProxy> layoutQueue = new Queue<LayoutProxy> ();
+		bool isDisposed;
 
 		public LayoutCache (MonoTextEditor widget)
 		{
@@ -54,6 +55,7 @@ namespace Mono.TextEditor
 		#region IDisposable implementation
 		public void Dispose ()
 		{
+			isDisposed = true;
 			foreach (var proxy in layoutQueue) {
 				proxy.DisposeNativeObject ();
 			}
@@ -93,7 +95,10 @@ namespace Mono.TextEditor
 				layout.Tabs = null;
 				layout.Width = -1;
 				layout.Alignment = Pango.Alignment.Left;
-				layoutCache.layoutQueue.Enqueue (this);
+				if (layoutCache.isDisposed)
+					DisposeNativeObject ();
+				else
+					layoutCache.layoutQueue.Enqueue (this);
 			}
 
 			#endregion
