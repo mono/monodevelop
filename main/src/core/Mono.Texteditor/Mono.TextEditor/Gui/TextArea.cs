@@ -2623,6 +2623,10 @@ namespace Mono.TextEditor
 					x2 = 0;
 					Console.WriteLine ("Invalid end index :" + index);
 				}
+
+				if (lineLayout.IsUncached) {
+					lineLayout.Dispose ();
+				}
 				
 				double y = Editor.LineToY (lineNr);
 				double w = (x2 - x1) / Pango.Scale.PangoScale;
