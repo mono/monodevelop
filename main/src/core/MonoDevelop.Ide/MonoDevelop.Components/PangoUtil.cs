@@ -48,7 +48,7 @@ namespace MonoDevelop.Components
 		public static Pango.Layout CreateLayout (Widget widget)
 		{
 			var ptr = gtk_widget_create_pango_layout (widget.Handle, IntPtr.Zero);
-			return ptr == IntPtr.Zero? null : new Pango.Layout (ptr);
+			return GLib.Object.GetObject (ptr, true) as Pango.Layout;
 		}
 
 		public static Pango.Layout CreateLayout (Widget widget, string text)
@@ -60,7 +60,7 @@ namespace MonoDevelop.Components
 			if (textPtr != IntPtr.Zero)
 				GLib.Marshaller.Free (textPtr);
 			
-			return ptr == IntPtr.Zero? null : new Pango.Layout (ptr);
+			return GLib.Object.GetObject (ptr, true) as Pango.Layout;
 		}
 		
 		public static Pango.Layout CreateLayout (PrintContext context)
