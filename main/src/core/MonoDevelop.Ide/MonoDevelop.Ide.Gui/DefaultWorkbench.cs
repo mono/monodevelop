@@ -244,8 +244,11 @@ namespace MonoDevelop.Ide.Gui
 				var iconsEl = BrandingService.GetElement ("ApplicationIcons");
 				if (iconsEl != null) {
 					try {
-						Gtk.Window.DefaultIconList = iconsEl.Elements ("Icon")
+						var icons = iconsEl.Elements ("Icon")
 							.Select (el => new Gdk.Pixbuf (BrandingService.GetFile ((string)el))).ToArray ();
+						Gtk.Window.DefaultIconList = icons;
+						foreach (var icon in icons)
+							icon.Dispose ();
 						return;
 					} catch (Exception ex) {
 						LoggingService.LogError ("Could not load app icons", ex);
