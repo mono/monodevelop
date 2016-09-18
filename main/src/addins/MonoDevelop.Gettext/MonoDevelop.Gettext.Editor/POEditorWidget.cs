@@ -852,7 +852,6 @@ namespace MonoDevelop.Gettext
 				return entry1.GetTranslation (0).CompareTo (entry2.GetTranslation (0));
 			});
 			IdeApp.Workbench.StatusBar.ShowMessage (string.Format (GettextCatalog.GetPluralString ("Found {0} catalog entry.", "Found {0} catalog entries.", found), found));
-			store.Dispose ();
 			treeviewEntries.Model = store = newStore;
 		}
 		
@@ -951,16 +950,6 @@ namespace MonoDevelop.Gettext
 		{
 			MonoDevelop.Ide.Gui.Styles.Changed -= HandleStylesChanged;
 			StopTaskWorkerThread ();
-		
-			if (store != null) {
-				store.Dispose ();
-				store = null;
-			}
-			
-			if (foundInStore != null) {
-				foundInStore.Dispose ();
-				foundInStore = null;
-			}
 			
 			widgets.Remove (this);
 			ClearTasks ();

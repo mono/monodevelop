@@ -591,12 +591,6 @@ namespace MonoDevelop.Ide.Projects
 			{
 				templateStore.Clear ();
 			}
-			
-			protected override void OnDestroyed ()
-			{
-				filterModel.Dispose ();
-				templateStore.Dispose ();
-			}
 		}
 		
 		class TemplateItem

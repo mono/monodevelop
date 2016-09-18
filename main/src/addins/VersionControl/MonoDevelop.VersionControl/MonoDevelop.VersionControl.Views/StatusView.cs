@@ -398,10 +398,6 @@ namespace MonoDevelop.VersionControl.Views
 				colFile.Destroy ();
 				colFile = null;
 			}
-			if (filestore != null) {
-				filestore.Dispose ();
-				filestore = null;
-			}
 			if (filelist != null) {
 				filelist.DoPopupMenu = null;
 				filelist.RowActivated -= OnRowActivated;

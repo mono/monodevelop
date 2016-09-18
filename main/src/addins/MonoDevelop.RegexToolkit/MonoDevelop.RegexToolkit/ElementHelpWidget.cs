@@ -146,10 +146,6 @@ namespace MonoDevelop.RegexToolkit
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
-			if (elementsStore != null) {
-				elementsStore.Dispose ();
-				elementsStore = null;
-			}
 			
 			HideTooltipWindow ();
 		}

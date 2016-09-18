@@ -177,11 +177,7 @@ namespace MonoDevelop.VersionControl.Views
 				colCommit.Destroy ();
 				colCommit = null;
 			}
-			
-			if (filestore != null) {
-				filestore.Dispose ();
-				filestore = null;
-			}
+
 			if (this.diffRenderer != null) {
 				this.diffRenderer.Destroy ();
 				this.diffRenderer = null;

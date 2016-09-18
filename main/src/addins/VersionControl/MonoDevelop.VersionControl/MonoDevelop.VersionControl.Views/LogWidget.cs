@@ -501,9 +501,6 @@ namespace MonoDevelop.VersionControl.Views
 			refreshButton.Clicked -= RefreshClicked;
 			Ide.Gui.Styles.Changed -= HandleStylesChanged;
 
-			logstore.Dispose ();
-			changedpathstore.Dispose ();
-
 			diffRenderer.Dispose ();
 			messageRenderer.Dispose ();
 			textRenderer.Dispose ();

@@ -154,16 +154,6 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-
-		protected override void OnDestroyed ()
-		{
-			if (catStore != null) {
-				catStore.Dispose ();
-				catStore = null;
-			}
-			base.OnDestroyed ();
-		}
-
 		static string GetCategoryPropertyKey (Project proj)
 		{
 			string key = "Dialogs.NewFileDialog.LastSelectedCategory";

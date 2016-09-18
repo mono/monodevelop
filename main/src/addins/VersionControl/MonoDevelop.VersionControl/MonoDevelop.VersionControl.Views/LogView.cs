@@ -99,10 +99,6 @@ namespace MonoDevelop.VersionControl.Views
 				widget.Destroy ();
 				widget = null;
 			}
-			if (changedpathstore != null) {
-				changedpathstore.Dispose ();
-				changedpathstore = null;
-			}
 			if (info != null) {
 				info.Updated -= OnInfoUpdated;
 				info = null;

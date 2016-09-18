@@ -204,19 +204,6 @@ namespace MonoDevelop.RegexToolkit
 			Ide.IdeApp.Workbench.StatusBar.ShowReady ();
 		}
 		
-		protected override void OnDestroyed ()
-		{
-			base.OnDestroyed ();
-			if (optionsStore != null) {
-				optionsStore.Dispose ();
-				optionsStore = null;
-			}
-			if (resultStore != null) {
-				resultStore.Dispose ();
-				resultStore = null;
-			}
-		}
-		
 		
 		RegexOptions GetOptions ()
 		{
