@@ -144,7 +144,7 @@ namespace MonoDevelop.Components
 			xwtParent = widget;
 			this.currentCaret = new Gdk.Rectangle ((int)caret.X, (int)caret.Y, (int)caret.Width, (int)caret.Height);
 			Theme.TargetPosition = position;
-			var pos = widget.ScreenBounds;
+			var pos = GtkUtil.GetSceenBounds (widget);
 			targetWindowOrigin = new Point ((int)pos.X, (int)pos.Y);
 			RepositionWindow ();
 		}
@@ -174,8 +174,7 @@ namespace MonoDevelop.Components
 			if (parent != null)
 				return GtkUtil.ToScreenCoordinates (parent, parent.GdkWindow, caret);
 			if (xwtParent != null) {
-				var spoint = xwtParent.ConvertToScreenCoordinates (new Xwt.Point (caret.X, caret.Y));
-				return new Gdk.Rectangle (new Gdk.Point ((int)spoint.X, (int)spoint.Y), caret.Size);
+				return GtkUtil.ToScreenCoordinates (xwtParent, caret.ToXwtRectangle ());
 			}
 			return Gdk.Rectangle.Zero;
 		}
@@ -199,14 +198,15 @@ namespace MonoDevelop.Components
 
 		Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Rectangle caret)
 		{
-			if (parent != null) {
-				var screen = parent.Screen;
+			Screen screen = null;
+			if (parent != null)
+				screen = parent.Screen;
+			else if (xwtParent != null)
+				screen = Gdk.Screen.Default; // FIXME: should we try to get the Screen from the backend?
+
+			if (screen != null)
 				return GtkWorkarounds.GetUsableMonitorGeometry (screen, screen.GetMonitorAtPoint (caret.X, caret.Y));
-			}
-			if (xwtParent != null) {
-				var sbounds = Xwt.Desktop.GetScreenAtLocation (caret.X, caret.Y).VisibleBounds;
-				return new Gdk.Rectangle ((int)sbounds.X, (int)sbounds.Y, (int)sbounds.Width, (int)sbounds.Height);
-			}
+			
 			return Gdk.Rectangle.Zero;
 		}
 		
