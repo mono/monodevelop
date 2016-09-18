@@ -653,13 +653,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		{
 		}
 
-		protected override void OnDestroyed ()
-		{
-			keyStore.Dispose ();
-			filterModel.Dispose ();
-			base.OnDestroyed ();
-		}
-
 		class KeyBindingSelectedEventArgs : EventArgs
 		{
 			public int SelectedKey { get; private set; }

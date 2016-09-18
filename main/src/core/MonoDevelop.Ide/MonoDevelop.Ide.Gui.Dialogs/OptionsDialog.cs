@@ -296,7 +296,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				if (disp != null)
 					disp.Dispose ();
 			}
-			store.Dispose ();
 			base.OnDestroyed ();
 		}
 

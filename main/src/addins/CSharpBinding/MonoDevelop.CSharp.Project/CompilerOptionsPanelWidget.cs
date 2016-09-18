@@ -111,15 +111,6 @@ namespace MonoDevelop.CSharp.Project
 			langVerCombo.Model = langVerStore;
 			langVerCombo.Active = (int) compilerParameters.LangVersion;
 		}
-		
-		protected override void OnDestroyed ()
-		{
-			if (classListStore != null) {
-				classListStore.Dispose ();
-				classListStore = null;
-			}
-			base.OnDestroyed ();
-		}
 
 		public bool ValidateChanges ()
 		{

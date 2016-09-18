@@ -2126,7 +2126,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			if (store != null) {
 				Clear ();
-				store.Dispose ();
 				store = null;
 			}
 

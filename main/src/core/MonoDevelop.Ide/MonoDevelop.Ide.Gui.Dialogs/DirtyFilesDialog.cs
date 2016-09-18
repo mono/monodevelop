@@ -116,10 +116,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				textRender.Destroy ();
 				textRender = null;
 			}
-			if (tsFiles != null) {
-				tsFiles.Dispose ();
-				tsFiles = null;
-			}
 			base.OnDestroyed ();
 		}
 		
