@@ -35,14 +35,15 @@ namespace MonoDevelop.Ide.Gui.Wizard
 	{
 		public static readonly int RightSideWidgetWidth = 240;
 
-		Dialog Dialog;
-		MonoDevelop.Components.ExtendedHeaderBox header;
-		Button cancelButton, backButton, nextButton;
+		readonly Dialog Dialog;
+		readonly MonoDevelop.Components.ExtendedHeaderBox header;
+		readonly Button cancelButton, backButton, nextButton;
+		readonly HBox buttonBox;
 		IWizardDialogPage currentPage;
 		Widget currentPageWidget;
-		FrameBox currentPageFrame;
-		FrameBox rightSideFrame;
-		VBox container;
+		readonly FrameBox currentPageFrame;
+		readonly FrameBox rightSideFrame;
+		readonly VBox container;
 		Dictionary<IWizardDialogPage, Widget> pageWidgets = new Dictionary<IWizardDialogPage, Widget> ();
 
 		public IWizardDialogPage CurrentPage {
@@ -79,19 +80,16 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				currentPageFrame.Content = currentPageWidget;
 
 				UpdateRightSideFrame ();
-
-				if (Toolkit.CurrentEngine != MonoDevelop.Components.GtkUtil.GtkToolkit) {
-					// HACK: force foreign Dialog to reallocate
-					container.QueueForReallocate ();
-					Dialog.Width += 1;
-					Dialog.Width -= 1;
-				}
 			}
 		}
 
 		void UpdateRightSideFrame ()
 		{
 			var contentWidth = (Controller.DefaultPageSize.Width > 0 ? Controller.DefaultPageSize.Width : 660);
+			var pageRequest = currentPageWidget.Surface.GetPreferredSize (true);
+			contentWidth = Math.Max (contentWidth, pageRequest.Width);
+			pageRequest = currentPageWidget.Surface.GetPreferredSize (SizeConstraint.WithSize (contentWidth), SizeConstraint.Unconstrained, true);
+			var contentHeight = pageRequest.Height;
 			var rightSideWidget = currentPage.GetRightSideWidget () ?? Controller.RightSideWidget;
 			if (rightSideWidget != null) {
 				rightSideFrame.Content = rightSideWidget;
@@ -101,6 +99,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				rightSideFrame.Visible = false;
 				Dialog.Width = contentWidth;
 			}
+			Dialog.Height = Math.Max (contentHeight, Controller.DefaultPageSize.Height) + buttonBox.Size.Height;
 		}
 
 		public IWizardDialogController Controller { get; private set; }
@@ -111,8 +110,6 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			Dialog = new Dialog ();
 
 			Dialog.Name = "wizard_dialog";
-			Dialog.Width = Controller.DefaultPageSize.Width > 0 ? Controller.DefaultPageSize.Width : 900;
-			Dialog.Height = Controller.DefaultPageSize.Height > 0 ? Controller.DefaultPageSize.Height : 630;
 			Dialog.Resizable = false;
 			Dialog.Padding = 0;
 
@@ -136,7 +133,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			header.SubtitleColor = Styles.Wizard.BannerSecondaryForegroundColor;
 			header.BorderColor = Styles.Wizard.BannerShadowColor;
 
-			var buttonBox = new HBox ();
+			buttonBox = new HBox ();
 			var buttonFrame = new FrameBox (buttonBox);
 			buttonFrame.Padding = 10;
 
