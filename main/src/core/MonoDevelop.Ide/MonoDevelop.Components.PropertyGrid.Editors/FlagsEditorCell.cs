@@ -94,30 +94,31 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors {
 					InitializeStyle (Container);
 
 				var container = (Widget)Container;
-				var layout = new Pango.Layout (container.PangoContext);
-				layout.Width = -1;
-				layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
+				using (var layout = new Pango.Layout (container.PangoContext)) {
+					layout.Width = -1;
+					layout.FontDescription = FontService.SansFont.CopyModified (Ide.Gui.Styles.FontScale11);
 
-				ulong value = Convert.ToUInt64 (Value);
-				int dy = 2;
-				foreach (var val in values) {
-					ulong uintVal = Convert.ToUInt64 (val);
-					Gtk.ShadowType sh = (value & uintVal) != 0 ? Gtk.ShadowType.In : Gtk.ShadowType.Out;
-					if (value == 0 && uintVal == 0)
-						sh = Gtk.ShadowType.In;
-					int s = indicatorSize - 1;
-					Gtk.Style.PaintCheck (style, window, state, sh, bounds, Container, "checkbutton", bounds.X + indicatorSpacing - 1, bounds.Y + dy, s, s);
+					ulong value = Convert.ToUInt64 (Value);
+					int dy = 2;
+					foreach (var val in values) {
+						ulong uintVal = Convert.ToUInt64 (val);
+						Gtk.ShadowType sh = (value & uintVal) != 0 ? Gtk.ShadowType.In : Gtk.ShadowType.Out;
+						if (value == 0 && uintVal == 0)
+							sh = Gtk.ShadowType.In;
+						int s = indicatorSize - 1;
+						Gtk.Style.PaintCheck (style, window, state, sh, bounds, Container, "checkbutton", bounds.X + indicatorSpacing - 1, bounds.Y + dy, s, s);
 
-					layout.SetText (val.ToString ());
-					int tw, th;
-					layout.GetPixelSize (out tw, out th);
-					ctx.Save ();
-					ctx.SetSourceColor (container.Style.Text (state).ToCairoColor ());
-					ctx.MoveTo (bounds.X + indicatorSize + indicatorSpacing, dy + bounds.Y + ((indicatorSize - th) / 2));
-					Pango.CairoHelper.ShowLayout (ctx, layout);
-					ctx.Restore ();
+						layout.SetText (val.ToString ());
+						int tw, th;
+						layout.GetPixelSize (out tw, out th);
+						ctx.Save ();
+						ctx.SetSourceColor (container.Style.Text (state).ToCairoColor ());
+						ctx.MoveTo (bounds.X + indicatorSize + indicatorSpacing, dy + bounds.Y + ((indicatorSize - th) / 2));
+						Pango.CairoHelper.ShowLayout (ctx, layout);
+						ctx.Restore ();
 
-					dy += indicatorSize + CheckSpacing;
+						dy += indicatorSize + CheckSpacing;
+					}
 				}
 			} else {
 				base.Render (window, ctx, bounds, state);
