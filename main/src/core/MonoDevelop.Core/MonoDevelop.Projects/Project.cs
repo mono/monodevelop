@@ -994,7 +994,7 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public async Task<TargetEvaluationResult> RunTarget (ProgressMonitor monitor, string target, ConfigurationSelector configuration, TargetEvaluationContext context = null)
 		{
-			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context);
+			return await ProjectExtension.OnRunTarget (monitor, target, configuration, context ?? new TargetEvaluationContext ());
 		}
 
 		public bool SupportsTarget (string target)
@@ -1073,7 +1073,8 @@ namespace MonoDevelop.Projects
 
 			try {
 				var tr = await OnRunTarget (monitor, target, configuration, context);
-				tr.BuildResult.SourceTarget = this;
+				if (tr != null)
+					tr.BuildResult.SourceTarget = this;
 				return tr;
 			} finally {
 				// If any of the project generated files changes, notify it
