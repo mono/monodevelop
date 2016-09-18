@@ -499,9 +499,10 @@ namespace Stetic
 			} else {
 				window.DrawLayout (widget.Style.TextGC (state), x, y, layout);
 				int bx = background_area.X + background_area.Width - 1;
-				Gdk.GC gc = new Gdk.GC (window);
-		   		gc.RgbFgColor = tree.Style.MidColors [(int)Gtk.StateType.Normal];
-				window.DrawLine (gc, bx, background_area.Y, bx, background_area.Y + background_area.Height);
+				using (Gdk.GC gc = new Gdk.GC (window)) {
+					gc.RgbFgColor = tree.Style.MidColors [(int)Gtk.StateType.Normal];
+					window.DrawLine (gc, bx, background_area.Y, bx, background_area.Y + background_area.Height);
+				}
 			}
 		}
 
