@@ -733,6 +733,7 @@ namespace MonoDevelop.Components.Chart
 					}
 				}
 			}
+			layout?.Dispose ();
 		}
 		
 		int MeasureAxisSize (AxisPosition pos)
@@ -791,6 +792,7 @@ namespace MonoDevelop.Components.Chart
 						max = tw;
 				}
 			}
+			layout.Dispose ();
 			return max;
 		}
 		
@@ -889,6 +891,7 @@ namespace MonoDevelop.Components.Chart
 					GdkWindow.DrawRectangle (Style.WhiteGC, true, tl - 1, tt - 1, tw + 2, th + 2);
 					GdkWindow.DrawRectangle (Style.BlackGC, false, tl - 2, tt - 2, tw + 3, th + 3);
 					GdkWindow.DrawLayout (gc, tl, tt, layout);
+					layout.Dispose ();
 				}
 			} else {
 				throw new NotSupportedException ();

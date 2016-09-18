@@ -538,6 +538,15 @@ namespace Mono.Instrumentation.Monitor
 			}
 			ctx.Stroke ();
 		}
+
+		protected override void OnDestroyed ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			base.OnDestroyed ();
+		}
 	}
 }
 

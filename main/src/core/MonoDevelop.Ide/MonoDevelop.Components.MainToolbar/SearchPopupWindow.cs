@@ -156,6 +156,12 @@ namespace MonoDevelop.Components.MainToolbar
 			if (src != null)
 				src.Cancel ();
 			HideTooltip ();
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+				headerLayout.Dispose ();
+				headerLayout = null;
+			}
 			this.declarationviewwindow.Destroy ();
 			selectedItem = topItem = null;
 			currentTooltip = null;

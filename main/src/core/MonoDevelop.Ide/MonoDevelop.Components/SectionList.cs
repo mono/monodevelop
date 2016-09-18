@@ -183,6 +183,12 @@ namespace MonoDevelop.Components
 			layout = null;
 		}
 
+		protected override void OnDestroyed ()
+		{
+			KillLayout ();
+			base.OnDestroyed ();
+		}
+
 		protected override void OnAdded (Widget widget)
 		{
 			throw new InvalidOperationException ("Cannot add widget directly, must add a section");

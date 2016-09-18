@@ -680,6 +680,10 @@ namespace MonoDevelop.Components
 			protected override void OnDestroyed ()
 			{
 				RefreshGC ();
+				if (layout != null) {
+					layout.Dispose ();
+					layout = null;
+				}
 				parent.StyleSet -= OnParentStyleSet;
 				base.OnDestroyed ();
 			}

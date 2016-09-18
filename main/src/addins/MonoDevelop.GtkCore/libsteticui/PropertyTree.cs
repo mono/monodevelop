@@ -296,6 +296,10 @@ namespace Stetic
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
 			if (resizeCursor != null) {
 				resizeCursor.Dispose ();
 				resizeCursor = null;
@@ -499,6 +503,15 @@ namespace Stetic
 		   		gc.RgbFgColor = tree.Style.MidColors [(int)Gtk.StateType.Normal];
 				window.DrawLine (gc, bx, background_area.Y, bx, background_area.Y + background_area.Height);
 			}
+		}
+
+		protected override void OnDestroyed ()
+		{
+			if (layout != null) {
+				layout.Dispose ();
+				layout = null;
+			}
+			base.OnDestroyed ();
 		}
 	}
 
