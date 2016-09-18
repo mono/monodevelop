@@ -18,8 +18,6 @@ namespace MonoDevelop.VersionControl.Views
 		LogWidget widget;
 		VersionInfo vinfo;
 		
-		ListStore changedpathstore;
-		
 		public LogWidget LogWidget {
 			get {
 				return widget;
