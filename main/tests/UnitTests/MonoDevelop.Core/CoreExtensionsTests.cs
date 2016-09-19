@@ -32,6 +32,13 @@ namespace MonoDevelop.Core
 	[TestFixture]
 	public class CoreExtensionsTests
 	{
+		[SetUp]
+		public void SetUp ()
+		{
+			memoTest1CallCount = 0;
+			memoTest2CallCount = 0;
+		}
+
 		[Test]
 		public void ConcatWorks ()
 		{
@@ -61,6 +68,89 @@ namespace MonoDevelop.Core
 			var toSearch = Enumerable.Empty<string> ().Concat (toAdd1).Concat (toAdd2);
 
 			Assert.AreEqual (expectedIndex, toSearch.FindIndex (i => i == toFind));
+		}
+
+		static int memoTest1CallCount;
+		static object MemoTest1 ()
+		{
+			memoTest1CallCount++;
+			return new object ();
+		}
+
+		[Test]
+		public void TestMemoizeMethod1 ()
+		{
+			var f1 = CoreExtensions.Memoize (MemoTest1);
+			var obj1 = f1 ();
+			var obj2 = f1 ();
+			Assert.AreSame (obj1, obj2);
+			Assert.AreEqual (1, memoTest1CallCount);
+		}
+
+		[Test]
+		public void TestMemoizeMethodsAreDifferent ()
+		{
+			var f1 = CoreExtensions.Memoize (MemoTest1);
+			var f2 = CoreExtensions.Memoize (MemoTest1);
+
+			Assert.AreNotSame (f1(), f2());
+			Assert.AreEqual (2, memoTest1CallCount);
+		}
+
+		static int memoTest2CallCount;
+		const int knownArg = 1;
+		static object MemoTest2 (int a)
+		{
+			memoTest2CallCount++;
+			if (a == knownArg)
+				return new object ();
+			return new object ();
+		}
+
+		[Test]
+		public void TestMemoizeMethod2 ()
+		{
+			var f2 = CoreExtensions.Memoize<int, object> (MemoTest2);
+			var obj11 = f2 (knownArg);
+			var obj12 = f2 (knownArg);
+			var obj21 = f2 (knownArg + 1);
+			var obj22 = f2 (knownArg + 1);
+			Assert.AreSame (obj11, obj12);
+			Assert.AreSame (obj21, obj22);
+			Assert.AreNotSame (obj11, obj22);
+			Assert.AreEqual (2, memoTest2CallCount);
+		}
+
+		static int memoTest3CallCount;
+		static object MemoTest3 (int a, int b)
+		{
+			memoTest3CallCount++;
+			if (a == knownArg && b == knownArg)
+				return new object ();
+			
+			if (a != knownArg) {
+				if (b != knownArg)
+					return new object ();
+				return new object ();
+			}
+			return new object ();
+		}
+
+		[Test]
+		public void TestMemoizeMethod3 ()
+		{
+			var f2 = CoreExtensions.Memoize<int, int, object> (MemoTest3);
+			var obj1 = f2 (knownArg, knownArg);
+			var obj2 = f2 (knownArg, knownArg + 1);
+			var obj3 = f2 (knownArg + 1, knownArg);
+			var obj4 = f2 (knownArg + 1, knownArg + 1);
+			Assert.AreNotSame (obj1, obj2);
+			Assert.AreNotSame (obj2, obj3);
+			Assert.AreNotSame (obj3, obj4);
+
+			// Force this, we already test the general algorithm in memo1 and memo2.
+			obj1 = f2 (knownArg, knownArg);
+			Assert.AreEqual (4, memoTest2CallCount);
 		}
 	}
 }
