@@ -137,23 +137,36 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			static readonly string ConfigurationPlaceholder = GettextCatalog.GetString ("Default");
 			static readonly string RuntimePlaceholder = GettextCatalog.GetString ("Default");
 
+			static nfloat iconSize = 28;
+			nfloat AddCellSize (int cellId, nfloat totalWidth, nfloat layoutWidth, nfloat allIconsWidth)
+			{
+				var cellWidth = GetRequiredWidthForPathCell (cellId);
+
+				if (totalWidth + cellWidth + allIconsWidth < layoutWidth) {
+					UpdatePathText (cellId, GetTextForCell (cellId));
+					return cellWidth;
+				}
+
+				UpdatePathText (cellId, string.Empty);
+				return iconSize;
+			}
+
 			public override CGSize SizeThatFits (CGSize size)
 			{
-				nfloat iconSize = 28;
-			
 				int n = 0;
 				nfloat totalWidth = SeparatorWidth * VisibleCells.Length - 1;
-				for (;n < VisibleCells.Length; n++) {
-					var cellId = VisibleCellIds [n];
-					var cellWidth = GetRequiredWidthForPathCell (cellId);
+				nfloat allIconsWidth = iconSize * VisibleCells.Length;
 
-					if (totalWidth + cellWidth + iconSize * (VisibleCells.Length - n - 1) < size.Width) {
-						UpdatePathText (cellId, GetTextForCell (cellId));
-						totalWidth += cellWidth;
-					} else {
-						UpdatePathText (cellId, string.Empty);
-						totalWidth += iconSize;
-					}
+				allIconsWidth -= iconSize;
+				totalWidth += AddCellSize (LastSelectedCell, totalWidth, size.Width, allIconsWidth);
+
+				for (;n < VisibleCells.Length; n++) {
+					int cellId = VisibleCellIds [n];
+					if (cellId == LastSelectedCell)
+						continue;
+					
+					allIconsWidth -= iconSize;
+					totalWidth += AddCellSize (cellId, totalWidth, size.Width, allIconsWidth);
 				}
 				return new CGSize (totalWidth, size.Height);
 			}
@@ -206,13 +219,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			nfloat GetRequiredWidthForPathCell (int cellId)
 			{
 				var cell = Cells [cellId];
-				return new NSAttributedString (GetTextForCell (cellId), new NSStringAttributes { Font = cell.Font }).Size.Width + 28;
+				return new NSAttributedString (GetTextForCell (cellId), new NSStringAttributes { Font = cell.Font }).Size.Width + iconSize;
 			}
 
 			nfloat GetWidthForPathCell (int cellId)
 			{
 				var cell = Cells [cellId];
-				return new NSAttributedString (cell.Title, new NSStringAttributes { Font = cell.Font }).Size.Width + 28;
+				return new NSAttributedString (cell.Title, new NSStringAttributes { Font = cell.Font }).Size.Width + iconSize;
 			}
 
 			NSMenu CreateSubMenuForRuntime (IRuntimeModel runtime)
@@ -285,6 +298,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			NSPathComponentCell [] VisibleCells;
 			int [] VisibleCellIds;
 
+			int lastSelectedCell;
+			int LastSelectedCell {
+				get { return lastSelectedCell; }
+				set {
+					lastSelectedCell = value;
+					SetFrameSize (Frame.Size);
+				}
+			}
+
 			public PathSelectorView (CGRect frameRect) : base (frameRect)
 			{
 				Cells = new [] {
@@ -317,6 +339,7 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			void SetVisibleCells (params int[] ids)
 			{
 				VisibleCellIds = ids;
+				LastSelectedCell = ids [0];
 				VisibleCells = new NSPathComponentCell [ids.Length];
 				for (int n = 0; n < ids.Length; n++)
 					VisibleCells [n] = Cells [ids [n]];
@@ -427,7 +450,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 					}
 				} else
 					throw new NotSupportedException ();
-
+				
+				LastSelectedCell = cellIdx;
 				if (menu.Count > 1) {
 					var offs = new CGPoint (componentRect.Left + 3, componentRect.Top + 3);
 
