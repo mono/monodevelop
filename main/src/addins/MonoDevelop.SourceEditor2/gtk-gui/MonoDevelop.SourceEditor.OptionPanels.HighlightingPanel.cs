@@ -18,11 +18,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.TreeView styleTreeview;
 
-		private global::Gtk.VBox vbox1;
-
-		private global::Gtk.Button buttonNew;
-
-		private global::Gtk.Button buttonEdit;
+		private global::Gtk.Label label1;
 
 		private global::Gtk.HBox hbox2;
 
@@ -30,7 +26,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		private global::Gtk.Button removeButton;
 
-		private global::Gtk.Button buttonExport;
+		private global::Gtk.Button buttonOpenFolder;
 
 		protected virtual void Build()
 		{
@@ -83,41 +79,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.hbox1.Add(this.scrolledwindow1);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.scrolledwindow1]));
 			w5.Position = 0;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.vbox1 = new global::Gtk.VBox();
-			this.vbox1.Name = "vbox1";
-			this.vbox1.Spacing = 6;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.buttonNew = new global::Gtk.Button();
-			this.buttonNew.CanFocus = true;
-			this.buttonNew.Name = "buttonNew";
-			this.buttonNew.UseStock = true;
-			this.buttonNew.UseUnderline = true;
-			this.buttonNew.Label = "gtk-new";
-			this.vbox1.Add(this.buttonNew);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.buttonNew]));
+			this.vbox5.Add(this.hbox1);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox1]));
 			w6.Position = 0;
-			w6.Expand = false;
-			w6.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.buttonEdit = new global::Gtk.Button();
-			this.buttonEdit.CanFocus = true;
-			this.buttonEdit.Name = "buttonEdit";
-			this.buttonEdit.UseUnderline = true;
-			this.buttonEdit.Label = global::Mono.Unix.Catalog.GetString("_Edit");
-			this.vbox1.Add(this.buttonEdit);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1[this.buttonEdit]));
+			// Container child vbox5.Gtk.Box+BoxChild
+			this.label1 = new global::Gtk.Label();
+			this.label1.Name = "label1";
+			this.label1.Xalign = 0F;
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString("Supported formats: \nTextMate (.tmTheme), Visual Studio (.vssettings) ,Xamarin Studio (.json) \nChanges in the theme folder require a restart.");
+			this.vbox5.Add(this.label1);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.label1]));
 			w7.Position = 1;
 			w7.Expand = false;
 			w7.Fill = false;
-			this.hbox1.Add(this.vbox1);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox1[this.vbox1]));
-			w8.Position = 1;
-			w8.Expand = false;
-			w8.Fill = false;
-			this.vbox5.Add(this.hbox1);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox1]));
-			w9.Position = 0;
 			// Container child vbox5.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox();
 			this.hbox2.Name = "hbox2";
@@ -130,11 +104,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.addButton.UseUnderline = true;
 			this.addButton.Label = "gtk-add";
 			this.hbox2.Add(this.addButton);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.addButton]));
-			w10.PackType = ((global::Gtk.PackType)(1));
-			w10.Position = 0;
-			w10.Expand = false;
-			w10.Fill = false;
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.addButton]));
+			w8.PackType = ((global::Gtk.PackType)(1));
+			w8.Position = 0;
+			w8.Expand = false;
+			w8.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.removeButton = new global::Gtk.Button();
 			this.removeButton.CanFocus = true;
@@ -143,33 +117,33 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.removeButton.UseUnderline = true;
 			this.removeButton.Label = "gtk-remove";
 			this.hbox2.Add(this.removeButton);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.removeButton]));
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.removeButton]));
+			w9.PackType = ((global::Gtk.PackType)(1));
+			w9.Position = 1;
+			w9.Expand = false;
+			w9.Fill = false;
+			// Container child hbox2.Gtk.Box+BoxChild
+			this.buttonOpenFolder = new global::Gtk.Button();
+			this.buttonOpenFolder.CanFocus = true;
+			this.buttonOpenFolder.Name = "buttonOpenFolder";
+			this.buttonOpenFolder.UseUnderline = true;
+			this.buttonOpenFolder.Label = global::Mono.Unix.Catalog.GetString("Open Themes Folder");
+			this.hbox2.Add(this.buttonOpenFolder);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonOpenFolder]));
+			w10.PackType = ((global::Gtk.PackType)(1));
+			w10.Position = 2;
+			w10.Expand = false;
+			w10.Fill = false;
+			this.vbox5.Add(this.hbox2);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox2]));
 			w11.PackType = ((global::Gtk.PackType)(1));
-			w11.Position = 1;
+			w11.Position = 2;
 			w11.Expand = false;
 			w11.Fill = false;
-			// Container child hbox2.Gtk.Box+BoxChild
-			this.buttonExport = new global::Gtk.Button();
-			this.buttonExport.CanFocus = true;
-			this.buttonExport.Name = "buttonExport";
-			this.buttonExport.UseUnderline = true;
-			this.buttonExport.Label = global::Mono.Unix.Catalog.GetString("Export");
-			this.hbox2.Add(this.buttonExport);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox2[this.buttonExport]));
-			w12.PackType = ((global::Gtk.PackType)(1));
-			w12.Position = 2;
-			w12.Expand = false;
-			w12.Fill = false;
-			this.vbox5.Add(this.hbox2);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox5[this.hbox2]));
-			w13.PackType = ((global::Gtk.PackType)(1));
-			w13.Position = 1;
-			w13.Expand = false;
-			w13.Fill = false;
 			this.GtkAlignment.Add(this.vbox5);
 			this.vbox4.Add(this.GtkAlignment);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.GtkAlignment]));
-			w15.Position = 1;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4[this.GtkAlignment]));
+			w13.Position = 1;
 			this.Add(this.vbox4);
 			if ((this.Child != null))
 			{

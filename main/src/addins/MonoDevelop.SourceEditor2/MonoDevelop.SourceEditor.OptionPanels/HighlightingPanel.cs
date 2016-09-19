@@ -98,9 +98,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.addButton.Clicked += AddColorScheme;
 			this.removeButton.Clicked += RemoveColorScheme;
-			this.buttonEdit.Clicked += HandleButtonEdithandleClicked;
-			this.buttonNew.Clicked += HandleButtonNewClicked;
-			this.buttonExport.Clicked += HandleButtonExportClicked;
+			this.buttonOpenFolder.Clicked += ButtonOpenFolder_Clicked;;
 			this.styleTreeview.Selection.Changed += HandleStyleTreeviewSelectionChanged;
 			EnableHighlightingCheckbuttonToggled (this, EventArgs.Empty);
 			ShowStyles ();
@@ -108,20 +106,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			return this;
 		}
 
-		void HandleButtonNewClicked (object sender, EventArgs e)
-		{
-			using (var newShemeDialog = new NewColorShemeDialog ()) {
-				MessageService.ShowCustomDialog (newShemeDialog, dialog);
-			}
-			SyntaxHighlightingService.LoadStylesAndModesInPath (TextEditorDisplayBinding.SyntaxModePath);
-			TextEditorDisplayBinding.LoadCustomStylesAndModes ();
-			ShowStyles ();
-		}
-
 		void HandleStyleTreeviewSelectionChanged (object sender, EventArgs e)
 		{
 			this.removeButton.Sensitive = false;
-			this.buttonExport.Sensitive = false;
 			Gtk.TreeIter iter;
 			if (!styleTreeview.Selection.GetSelected (out iter)) 
 				return;
@@ -134,22 +121,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 			}
 			DefaultSourceEditorOptions.Instance.EditorTheme = sheme.Name;
-			this.buttonExport.Sensitive = true;
 			string fileName = sheme.FileName;
 			if (fileName == null)
 				return;
 			this.removeButton.Sensitive = true;
-		}
-
-		void HandleButtonEdithandleClicked (object sender, EventArgs e)
-		{
-			TreeIter selectedIter;
-			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				var browseButton = new AlertButton (GettextCatalog.GetString ("Start browser"));
-				var button = MessageService.AskQuestion ("The color schemes are edited using an external program inside the web browser.\nEdit your highlghting schemes in:\n" + TextEditorDisplayBinding.SyntaxModePath + "\n\nyou've to open a local file inside the browser.\nRestart the IDE for changes to take effect", new AlertButton [] { browseButton, AlertButton.Cancel }); 
-				if (button == browseButton)
-					Process.Start ("http://tmtheme-editor.herokuapp.com");
-			}
 		}
 
 		EditorTheme LoadStyle (string styleName, out bool error)
@@ -212,38 +187,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				ShowStyles ();
 			}
 		}
-		
-		void HandleButtonExportClicked (object sender, EventArgs e)
-		{
-			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.FileChooserAction.Save) {
-				TransientFor = this.Toplevel as Gtk.Window,
-			};
-			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json");
-			if (!dialog.Run ())
-				return;
-			TreeIter selectedIter;
-			if (styleTreeview.Selection.GetSelected (out selectedIter)) {
-				var sheme = (Ide.Editor.Highlighting.EditorTheme)this.styleStore.GetValue (selectedIter, 1);
-				var selectedFile = dialog.SelectedFile.ToString ();
-				if (!selectedFile.EndsWith (".tmTheme", StringComparison.Ordinal))
-					selectedFile += ".tmTheme";
-				try {
-					using (var writer = new StreamWriter (selectedFile))
-						TextMateFormat.Save (writer, sheme);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while exporting color scheme to :" + selectedFile, ex);
-					MessageService.ShowError (GettextCatalog.GetString ("Error while exporting color scheme."), ex); 
-				}
-			}
 
-		}
-		
 		void AddColorScheme (object sender, EventArgs args)
 		{
 			var dialog = new SelectFileDialog (GettextCatalog.GetString ("Highlighting Scheme"), MonoDevelop.Components.FileChooserAction.Open) {
 				TransientFor = this.Toplevel as Gtk.Window,
 			};
-			dialog.AddFilter (GettextCatalog.GetString ("Color schemes"), "*.json", "*.vssettings", "*.tmTheme");
+
+			dialog.AddFilter (GettextCatalog.GetString ("Color schemes (TextMate, Visual Studio, Xamarin Studio) "), "*.json", "*.vssettings", "*.tmTheme");
 			if (!dialog.Run ())
 				return;
 
@@ -307,6 +258,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public bool ValidateChanges ()
 		{
 			return true;
+		}
+
+		void ButtonOpenFolder_Clicked (object sender, EventArgs e)
+		{
+			DesktopService.OpenFolder (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath);
 		}
 	}
 }
