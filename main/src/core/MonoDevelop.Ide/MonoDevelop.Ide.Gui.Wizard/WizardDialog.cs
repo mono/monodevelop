@@ -79,11 +79,11 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				currentPage.PropertyChanged += HandleCurrentPagePropertyChanged;
 				currentPageFrame.Content = currentPageWidget;
 
-				UpdateRightSideFrame ();
+				Reallocate ();
 			}
 		}
 
-		void UpdateRightSideFrame ()
+		void Reallocate ()
 		{
 			var contentWidth = (Controller.DefaultPageSize.Width > 0 ? Controller.DefaultPageSize.Width : 660);
 			var pageRequest = currentPageWidget.Surface.GetPreferredSize (true);
@@ -123,6 +123,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			//	Dialog.Icon = controller.Image.WithSize (IconSize.Large);
 			
 			Dialog.ShowInTaskbar = false;
+			Dialog.Shown += HandleDialogShown;
 
 			container = new VBox ();
 			container.Spacing = 0;
@@ -202,8 +203,8 @@ namespace MonoDevelop.Ide.Gui.Wizard
 				// FIXME: Gtk dialogs don't support ThemedImage
 				//case nameof (Controller.Icon): Dialog.Icon = Controller.Icon.WithSize (IconSize.Large); break;
 				case nameof (Controller.CurrentPage): CurrentPage = Controller.CurrentPage; break;
-				case nameof (Controller.RightSideWidget): UpdateRightSideFrame (); break;
-				case nameof (Controller.DefaultPageSize): UpdateRightSideFrame (); break;
+				case nameof (Controller.RightSideWidget): Reallocate (); break;
+				case nameof (Controller.DefaultPageSize): Reallocate (); break;
 			}
 		}
 
@@ -237,6 +238,11 @@ namespace MonoDevelop.Ide.Gui.Wizard
 			Respond (true);
 		}
 
+		void HandleDialogShown (object sender, EventArgs e)
+		{
+			Reallocate ();
+		}
+
 		void Respond (bool finished)
 		{
 			Dialog.Respond (finished ? Command.Ok : Command.Cancel);
@@ -258,6 +264,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 		public void Dispose ()
 		{
 			if (!disposed) {
+				Dialog.Shown -= HandleDialogShown;
 				Controller.Completed -= HandleControllerCompleted;
 				Controller.PropertyChanged -= HandleControllerPropertyChanged;
 				if (CurrentPage != null)
